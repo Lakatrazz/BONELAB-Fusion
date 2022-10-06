@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 using MelonLoader;
 
+using UnhollowerRuntimeLib;
+
+using UnityEngine;
+
 namespace LabFusion
 {
     public class FusionMod : MelonMod

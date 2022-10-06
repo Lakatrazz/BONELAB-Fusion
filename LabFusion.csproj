@@ -505,11 +505,24 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LabFusion\dependencies\PhotonFusion\FusionAddressables\FusionAddressablePrefabsPreloader.cs" />
+    <Compile Include="LabFusion\dependencies\PhotonFusion\FusionAddressables\NetworkPrefabSourceUnityAddressable.cs" />
+    <Compile Include="LabFusion\dependencies\PhotonFusion\FusionBurstIntegration.cs" />
+    <Compile Include="LabFusion\dependencies\PhotonFusion\FusionProfiler.cs" />
+    <Compile Include="LabFusion\dependencies\PhotonFusion\FusionRuntimeCheck.cs" />
+    <Compile Include="LabFusion\dependencies\PhotonFusion\SocketWebTcp.cs" />
+    <Compile Include="LabFusion\dependencies\PhotonFusion\Utilities\BoundsTools.cs" />
+    <Compile Include="LabFusion\dependencies\PhotonFusion\WebSocket.cs" />
     <Compile Include="LabFusion\src\Mod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="LabFusion\dependencies\" />
+    <EmbeddedResource Include="LabFusion\resources\PhotonFusion\Configuration\ConfigAssetsFolder.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="LabFusion\resources\PhotonFusion\Configuration\FusionGraphShader.shader" />
+    <EmbeddedResource Include="LabFusion\resources\PhotonFusion\Configuration\NetworkProjectConfig.fusion" />
+    <EmbeddedResource Include="LabFusion\resources\PhotonFusion\Configuration\PhotonAppSettings.asset" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
