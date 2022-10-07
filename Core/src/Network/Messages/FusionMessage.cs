@@ -6,6 +6,12 @@ using System.Threading.Tasks;
 
 namespace LabFusion.Network
 {
+    public enum NetworkChannel : byte {
+        Reliable = 0,
+        Unreliable = 1,
+    }
+
+
     public class FusionMessage : IDisposable
     {
         private byte[] buffer;
