@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using LabFusion.Data;
 using LabFusion.Network;
+using LabFusion.Representation;
 using LabFusion.Utilities;
 
 using MelonLoader;
@@ -57,6 +58,7 @@ namespace LabFusion
 
         public override void OnSceneWasInitialized(int buildIndex, string sceneName) {
             RigData.OnCacheRigInfo();
+            PlayerRep.OnRecreateReps();
         }
 
         public override void OnUpdate() {

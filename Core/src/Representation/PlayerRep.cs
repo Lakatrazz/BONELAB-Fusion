@@ -15,10 +15,18 @@ namespace LabFusion.Representation
         {
             PlayerId = playerId;
             Representations.Add(playerId.SmallId, this);
+
+            CreateRep();
         }
 
-        public void OnCreateRepresentations() {
+        public void CreateRep() {
 
+        }
+
+        public static void OnRecreateReps() {
+            foreach (var rep in Representations.Values) {
+                rep.CreateRep();
+            }
         }
 
         public void Dispose() {
