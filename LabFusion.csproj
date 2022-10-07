@@ -649,18 +649,28 @@
     <Compile Include="Core\src\Data\Files\EmbeddedResource.cs" />
     <Compile Include="Core\src\Data\Files\PersistentData.cs" />
     <Compile Include="Core\src\Data\Files\ResourcePaths.cs" />
+    <Compile Include="Core\src\Extensions\Array.cs" />
+    <Compile Include="Core\src\Extensions\IEnumerable.cs" />
     <Compile Include="Core\src\Mod.cs" />
     <Compile Include="Core\src\Modularity\DllTools.cs" />
+    <Compile Include="Core\src\Network\Messages\FusionMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\FusionMessageHandler.cs" />
+    <Compile Include="Core\src\Network\Messages\FusionReader.cs" />
+    <Compile Include="Core\src\Network\Messages\FusionWriter.cs" />
+    <Compile Include="Core\src\Network\Messages\NativeMessageTag.cs" />
     <Compile Include="Core\src\Network\Steam\SteamConnectionManager.cs" />
     <Compile Include="Core\src\Network\Steam\SteamNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Discord\DiscordNetworkLayer.cs" />
     <Compile Include="Core\src\Network\NetworkLayer.cs" />
     <Compile Include="Core\src\Network\Steam\SteamSocketManager.cs" />
+    <Compile Include="Core\src\Network\Steam\SteamSocketHandler.cs" />
+    <Compile Include="Core\src\Utilities\BigEndianHelper.cs" />
     <Compile Include="Core\src\Utilities\FusionLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Core\src\Extensions\" />
+    <Folder Include="Core\src\Data\Containers\" />
+    <Folder Include="Core\src\Data\Interfaces\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Core\resources\lib\x86_64\discord_game_sdk.dll" />

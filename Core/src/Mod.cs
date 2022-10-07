@@ -31,7 +31,10 @@ namespace LabFusion
         public override void OnEarlyInitializeMelon() {
             Instance = this;
             FusionAssembly = MelonAssembly.Assembly;
+
             PersistentData.OnPathInitialize();
+            FusionMessageHandler.RegisterHandlersFromAssembly(FusionAssembly);
+
             OnInitializeNetworking();
         }
 

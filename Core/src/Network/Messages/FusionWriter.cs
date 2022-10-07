@@ -207,7 +207,7 @@ namespace LabFusion.Network
                 byte[] bytes = BitConverter.GetBytes(value[num]);
                 if (BitConverter.IsLittleEndian)
                 {
-                    Array.Reverse(bytes);
+                    System.Array.Reverse(bytes);
                 }
                 System.Buffer.BlockCopy(bytes, 0, buffer, num2, 8);
                 num++;
@@ -285,7 +285,7 @@ namespace LabFusion.Network
                 byte[] bytes = BitConverter.GetBytes(value[num]);
                 if (BitConverter.IsLittleEndian)
                 {
-                    Array.Reverse(bytes);
+                    System.Array.Reverse(bytes);
                 }
                 System.Buffer.BlockCopy(bytes, 0, buffer, num2, 4);
                 num++;
