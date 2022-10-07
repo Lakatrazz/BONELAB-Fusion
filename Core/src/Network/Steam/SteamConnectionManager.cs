@@ -33,6 +33,7 @@ namespace LabFusion.Network
 
         public override void OnMessage(IntPtr data, int size, long messageNum, long recvTime, int channel)
         {
+            base.OnMessage(data, size, messageNum, recvTime, channel);
             FusionLogger.Log("Connection Got A Message");
         }
     }
