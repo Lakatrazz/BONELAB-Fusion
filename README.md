@@ -1,9 +1,10 @@
 # BONELAB Fusion Pre Alpha
 A multiplayer mod for BONELAB featuring support for Oculus and SteamVR.
-This is only for PC PLATFORMS and requires an install of Discord!
+This is currently only for STEAM due to the fact that Discord networking has become broken (for the majority of old accounts)!
+That broken list includes me and I would not be able to test it!
 
 ## Networking
-This mod is networked and built around Discord. This means no mobile support, but unfortunately it was either this or port forwarding.
+This mod is networked and built around Steam. This means no Oculus support in general, but unfortunately I have found no alternatives except port forwarding.
 
 ## Disclaimer
 
