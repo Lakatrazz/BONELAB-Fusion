@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using LabFusion.Extensions;
 using LabFusion.Utilities;
+using LabFusion.Data;
 
 namespace LabFusion.Network
 {
@@ -48,6 +49,12 @@ namespace LabFusion.Network
                 buffer = new byte[initialCapacity],
                 Position = 0
             };
+        }
+
+        public T Write<T>() where T : IFusionSerializable, new() {
+            T instance = new T();
+            instance.Serialize(this);
+            return instance;
         }
 
         public void Write(byte value)

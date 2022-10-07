@@ -1,4 +1,5 @@
-﻿using LabFusion.Utilities;
+﻿using LabFusion.Data;
+using LabFusion.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +31,12 @@ namespace LabFusion.Network
                 Position = 0
             };
             return reader;
+        }
+
+        public T ReadFusionSerializable<T>() where T : IFusionSerializable, new() {
+            T instance = new T();
+            instance.Deserialize(this);
+            return instance;
         }
 
         /// <summary>
