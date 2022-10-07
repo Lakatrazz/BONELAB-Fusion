@@ -51,10 +51,8 @@ namespace LabFusion.Network
             };
         }
 
-        public T Write<T>() where T : IFusionSerializable, new() {
-            T instance = new T();
-            instance.Serialize(this);
-            return instance;
+        public void Write<T>(T value) where T : IFusionSerializable {
+            value.Serialize(this);
         }
 
         public void Write(byte value)

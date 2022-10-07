@@ -8,7 +8,8 @@ namespace LabFusion.Extensions
 {
     public static partial class ArrayExtensions {
         public static void EnsureLength<T>(ref T[] array, int length) where T : struct {
-            Array.Resize(ref array, Math.Max(array.Length, length));
+            if (array.Length < length)
+                Array.Resize(ref array, length);
         }
     }
 }

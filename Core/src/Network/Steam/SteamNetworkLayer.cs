@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 using LabFusion.Data;
+using LabFusion.Extensions;
+using LabFusion.Representation;
 using LabFusion.Utilities;
 
 using Steamworks;
@@ -43,6 +45,7 @@ namespace LabFusion.Network
         public override void OnLateInitializeLayer() { 
             if (SteamClient.IsLoggedOn) {
                 SteamId = SteamClient.SteamId;
+                PlayerId.SetConstantId(SteamId.Value);
                 FusionLogger.Log($"Steamworks initialized with SteamID {SteamId}!");
 
                 SteamNetworkingUtils.InitRelayNetworkAccess();
@@ -81,7 +84,19 @@ namespace LabFusion.Network
             }
         }
 
-        public void StartServer()
+        public override void SendServerMessage(byte userId, NetworkChannel channel, FusionMessage message) {
+            var id = PlayerId.GetPlayerId(userId);
+            if (id != null)
+                SendServerMessage(id.LongId, channel, message);
+        }
+
+        public override void SendServerMessage(ulong userId, NetworkChannel channel, FusionMessage message) {
+            if (IsServer && SteamServer.ConnectedSteamIds.ContainsKey(userId)) {
+                SteamServer.SendToClient(SteamServer.ConnectedSteamIds[userId], channel, message);
+            }
+        }
+
+        public override void StartServer()
         {
             SteamServer = SteamNetworkingSockets.CreateRelaySocket<SteamSocketManager>(0);
 
@@ -90,30 +105,52 @@ namespace LabFusion.Network
             SteamConnection = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(SteamId);
             _isServerActive = true;
             _isConnectionActive = true;
+
+            // Go ahead and fill in our own id
+            var id = new PlayerId(SteamId, 0);
+            id.Insert();
+            PlayerId.UpdateSelfId();
         }
 
         public void JoinServer(SteamId serverId)
         {
             FusionLogger.Log("Joining socket server!");
             SteamConnection = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(serverId, 0);
+
             _isServerActive = false;
             _isConnectionActive = true;
+
+            using (FusionWriter writer = FusionWriter.Create()) {
+                using (ConnectionRequestData data = ConnectionRequestData.Create(SteamId.Value)) {
+                    writer.Write(data);
+
+                    using (FusionMessage message = FusionMessage.Create(NativeMessageTag.ConnectionRequest, writer)) {
+                        BroadcastMessage(NetworkChannel.Reliable, message);
+                    }
+                }
+            }
         }
 
-        private void Disconnect()
+        public override void Disconnect()
         {
-            _isServerActive = false;
-            _isConnectionActive = false;
             try
             {
                 // Shutdown connections/sockets. I put this in try block because if player 2 is leaving they don't have a socketManager to close, only connection
-                SteamConnection.Close();
-                SteamServer.Close();
+                if (SteamConnection != null)
+                    SteamConnection.Close();
+
+                if (SteamServer != null)
+                    SteamServer.Close();
             }
             catch
             {
                 FusionLogger.Log("Error closing socket server / connection manager");
             }
+
+            _isServerActive = false;
+            _isConnectionActive = false;
+
+            NetworkUtilities.OnDisconnect();
         }
 
         public override void OnGUILayer() {

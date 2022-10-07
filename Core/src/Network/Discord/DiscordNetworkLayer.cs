@@ -32,6 +32,16 @@ namespace LabFusion.Network
             DiscordSDKLoader.OnLoadGameSDK();
         }
 
+        public override void StartServer()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Disconnect()
+        {
+            throw new NotImplementedException();
+        }
+
         public override void OnLateInitializeLayer() {
             FusionLogger.Log("Initializing Discord Instance");
 

@@ -4,9 +4,11 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+
 using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Utilities;
+
 using MelonLoader;
 
 using UnhollowerRuntimeLib;
@@ -51,6 +53,10 @@ namespace LabFusion
         public override void OnDeinitializeMelon() {
             if (CurrentNetworkLayer != null)
                 CurrentNetworkLayer.OnCleanupLayer();
+        }
+
+        public override void OnSceneWasInitialized(int buildIndex, string sceneName) {
+            RigData.OnCacheRigInfo();
         }
 
         public override void OnUpdate() {

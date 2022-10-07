@@ -39,6 +39,9 @@
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>LabFusion\managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
+    <Reference Include="BoneLib">
+      <HintPath>Core\dependencies\BoneLib.dll</HintPath>
+    </Reference>
     <Reference Include="Boo.Lang">
       <HintPath>LabFusion\managed\Boo.Lang.dll</HintPath>
     </Reference>
@@ -644,6 +647,7 @@
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\SteamInterface.cs" />
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utf8String.cs" />
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utility.cs" />
+    <Compile Include="Core\src\Data\Containers\RigData.cs" />
     <Compile Include="Core\src\Data\Files\SteamAPILoader.cs" />
     <Compile Include="Core\src\Data\Files\DiscordSDKLoader.cs" />
     <Compile Include="Core\src\Data\Files\EmbeddedResource.cs" />
@@ -659,20 +663,24 @@
     <Compile Include="Core\src\Network\Messages\FusionReader.cs" />
     <Compile Include="Core\src\Network\Messages\FusionWriter.cs" />
     <Compile Include="Core\src\Network\Messages\NativeMessageTag.cs" />
+    <Compile Include="Core\src\Network\Messages\Server\ConnectionResponseMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Server\ConnectionRequestMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Server\DisconnectMessage.cs" />
     <Compile Include="Core\src\Network\Messages\SimpleStringMessage.cs" />
+    <Compile Include="Core\src\Network\NetworkUtilities.cs" />
     <Compile Include="Core\src\Network\Steam\SteamConnectionManager.cs" />
     <Compile Include="Core\src\Network\Steam\SteamNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Discord\DiscordNetworkLayer.cs" />
     <Compile Include="Core\src\Network\NetworkLayer.cs" />
     <Compile Include="Core\src\Network\Steam\SteamSocketManager.cs" />
     <Compile Include="Core\src\Network\Steam\SteamSocketHandler.cs" />
+    <Compile Include="Core\src\Representation\PlayerId.cs" />
+    <Compile Include="Core\src\Representation\PlayerRep.cs" />
     <Compile Include="Core\src\Utilities\BigEndianHelper.cs" />
     <Compile Include="Core\src\Utilities\FusionLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Core\src\Data\Containers\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Core\resources\lib\x86_64\discord_game_sdk.dll" />
   </ItemGroup>

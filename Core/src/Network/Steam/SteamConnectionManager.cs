@@ -16,25 +16,26 @@ namespace LabFusion.Network
         public override void OnConnected(ConnectionInfo info)
         {
             base.OnConnected(info);
-            FusionLogger.Log("ConnectionOnConnected");
         }
 
         public override void OnConnecting(ConnectionInfo info)
         {
             base.OnConnecting(info);
-            FusionLogger.Log("ConnectionOnConnecting");
         }
 
-        public override void OnDisconnected(ConnectionInfo info)
-        {
+        public override void OnDisconnected(ConnectionInfo info) {
             base.OnDisconnected(info);
-            FusionLogger.Log("ConnectionOnDisconnected");
+
+            NetworkUtilities.OnDisconnect();
+
+#if DEBUG
+            FusionLogger.Log("Client was disconnected.");
+#endif
         }
 
         public override void OnMessage(IntPtr data, int size, long messageNum, long recvTime, int channel)
         {
             base.OnMessage(data, size, messageNum, recvTime, channel);
-            FusionLogger.Log("Connection Got A Message");
             SteamSocketHandler.OnSocketMessageReceived(data, size);
         }
     }
