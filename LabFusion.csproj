@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
@@ -66,21 +68,6 @@
       <HintPath>LabFusion\managed\cscompmgd.dll</HintPath>
     </Reference>
     <Reference Include="CustomMarshalers" />
-    <Reference Include="Facepunch.Steamworks.Win64">
-      <HintPath>LabFusion\managed\Facepunch.Steamworks.Win64.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusion.Common">
-      <HintPath>LabFusion\resources\PhotonFusion\Fusion.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusion.Realtime">
-      <HintPath>LabFusion\resources\PhotonFusion\Fusion.Realtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusion.Runtime">
-      <HintPath>LabFusion\resources\PhotonFusion\Fusion.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusion.Sockets">
-      <HintPath>LabFusion\resources\PhotonFusion\Fusion.Sockets.dll</HintPath>
-    </Reference>
     <Reference Include="Google.Protobuf">
       <HintPath>LabFusion\managed\Google.Protobuf.dll</HintPath>
     </Reference>
@@ -505,24 +492,181 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LabFusion\dependencies\PhotonFusion\FusionAddressables\FusionAddressablePrefabsPreloader.cs" />
-    <Compile Include="LabFusion\dependencies\PhotonFusion\FusionAddressables\NetworkPrefabSourceUnityAddressable.cs" />
-    <Compile Include="LabFusion\dependencies\PhotonFusion\FusionBurstIntegration.cs" />
-    <Compile Include="LabFusion\dependencies\PhotonFusion\FusionProfiler.cs" />
-    <Compile Include="LabFusion\dependencies\PhotonFusion\FusionRuntimeCheck.cs" />
-    <Compile Include="LabFusion\dependencies\PhotonFusion\SocketWebTcp.cs" />
-    <Compile Include="LabFusion\dependencies\PhotonFusion\Utilities\BoundsTools.cs" />
-    <Compile Include="LabFusion\dependencies\PhotonFusion\WebSocket.cs" />
-    <Compile Include="LabFusion\src\Mod.cs" />
+    <Compile Include="Core\dependencies\DiscordGameSDK\ActivityManager.cs" />
+    <Compile Include="Core\dependencies\DiscordGameSDK\Constants.cs" />
+    <Compile Include="Core\dependencies\DiscordGameSDK\Core.cs" />
+    <Compile Include="Core\dependencies\DiscordGameSDK\ImageManager.cs" />
+    <Compile Include="Core\dependencies\DiscordGameSDK\LobbyManager.cs" />
+    <Compile Include="Core\dependencies\DiscordGameSDK\StorageManager.cs" />
+    <Compile Include="Core\dependencies\DiscordGameSDK\StoreManager.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Callbacks\CallResult.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Callbacks\ICallbackData.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Classes\AuthTicket.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Classes\Dispatch.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Classes\SteamApi.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Classes\SteamGameServer.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Classes\SteamInternal.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Enum\LeaderboardDisplay.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Enum\LeaderboardSort.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Enum\SendType.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\CustomEnums.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamAppList.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamApps.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamClient.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamController.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamFriends.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamGameSearch.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamGameServer.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamGameServerStats.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamHTMLSurface.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamHTTP.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamInput.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamInventory.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamMatchmaking.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamMatchmakingPingResponse.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamMatchmakingPlayersResponse.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamMatchmakingRulesResponse.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamMatchmakingServerListResponse.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamMatchmakingServers.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamMusic.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamMusicRemote.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamNetworking.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamNetworkingConnectionCustomSignaling.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamNetworkingCustomSignalingRecvContext.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamNetworkingSockets.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamNetworkingUtils.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamParentalSettings.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamParties.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamRemotePlay.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamRemoteStorage.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamScreenshots.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamTV.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamUGC.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamUser.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamUserStats.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamUtils.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamVideo.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\SteamCallbacks.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\SteamConstants.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\SteamEnums.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\SteamStructFunctions.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\SteamStructs.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Generated\SteamTypes.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Networking\Connection.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Networking\ConnectionInfo.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Networking\ConnectionManager.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Networking\IConnectionManager.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Networking\ISocketManager.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Networking\NetAddress.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Networking\NetDebugFunc.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Networking\NetErrorMessage.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Networking\NetIdentity.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Networking\NetKeyValue.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Networking\NetMsg.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Networking\NetPingLocation.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Networking\Socket.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Networking\SocketManager.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Networking\SteamDatagramRelayAuthTicket.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\ServerList\Base.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\ServerList\Favourites.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\ServerList\Friends.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\ServerList\History.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\ServerList\Internet.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\ServerList\IpList.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\ServerList\LocalNetwork.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\SteamApps.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\SteamClient.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\SteamFriends.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\SteamInput.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\SteamInventory.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\SteamMatchmaking.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\SteamMatchmakingServers.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\SteamMusic.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\SteamNetworking.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\SteamNetworkingSockets.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\SteamNetworkingUtils.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\SteamParental.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\SteamParties.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\SteamRemotePlay.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\SteamRemoteStorage.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\SteamScreenshots.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\SteamServer.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\SteamServerStats.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\SteamUgc.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\SteamUser.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\SteamUserStats.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\SteamUtils.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\SteamVideo.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\Achievement.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\AppId.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\Controller.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\DepotId.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\DlcInformation.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\DownloadProgress.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\DurationControl.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\FileDetails.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\Friend.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\GameId.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\Image.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\InventoryDef.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\InventoryItem.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\InventoryPurchaseResult.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\InventoryRecipe.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\InventoryResult.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\Leaderboard.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\LeaderboardEntry.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\LeaderboardUpdate.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\Lobby.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\LobbyQuery.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\MatchMakingKeyValuePair.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\NumericalFilter.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\OutgoingPacket.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\P2Packet.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\PartyBeacon.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\RemotePlaySession.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\Screenshot.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\Server.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\ServerInit.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\Stat.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\SteamId.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\SteamIpAddress.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\SteamParamStringArray.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\Ugc.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\UgcEditor.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\UgcItem.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\UgcQuery.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\UgcResultPage.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Structs\UserItemVote.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Epoch.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Helpers.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Platform.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\SourceServerQuery.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\SteamInterface.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utf8String.cs" />
+    <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utility.cs" />
+    <Compile Include="Core\src\Data\Files\SteamAPILoader.cs" />
+    <Compile Include="Core\src\Data\Files\DiscordSDKLoader.cs" />
+    <Compile Include="Core\src\Data\Files\EmbeddedResource.cs" />
+    <Compile Include="Core\src\Data\Files\PersistentData.cs" />
+    <Compile Include="Core\src\Data\Files\ResourcePaths.cs" />
+    <Compile Include="Core\src\Mod.cs" />
+    <Compile Include="Core\src\Modularity\DllTools.cs" />
+    <Compile Include="Core\src\Network\Steam\SteamConnectionManager.cs" />
+    <Compile Include="Core\src\Network\Steam\SteamNetworkLayer.cs" />
+    <Compile Include="Core\src\Network\Discord\DiscordNetworkLayer.cs" />
+    <Compile Include="Core\src\Network\NetworkLayer.cs" />
+    <Compile Include="Core\src\Network\Steam\SteamSocketManager.cs" />
+    <Compile Include="Core\src\Utilities\FusionLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="LabFusion\resources\PhotonFusion\Configuration\ConfigAssetsFolder.txt" />
+    <Folder Include="Core\src\Extensions\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="LabFusion\resources\PhotonFusion\Configuration\FusionGraphShader.shader" />
-    <EmbeddedResource Include="LabFusion\resources\PhotonFusion\Configuration\NetworkProjectConfig.fusion" />
-    <EmbeddedResource Include="LabFusion\resources\PhotonFusion\Configuration\PhotonAppSettings.asset" />
+    <EmbeddedResource Include="Core\resources\lib\x86_64\discord_game_sdk.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Core\resources\lib\x86_64\steam_api64.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
