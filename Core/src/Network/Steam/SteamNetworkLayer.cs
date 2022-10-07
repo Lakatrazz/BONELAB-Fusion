@@ -17,6 +17,8 @@ namespace LabFusion.Network
     public class SteamNetworkLayer : NetworkLayer {
         public const uint ApplicationID = 1592190;
 
+        public override bool IsServer => _isServerActive;
+
         public SteamId SteamId;
 
         public static SteamSocketManager SteamServer;
@@ -67,6 +69,15 @@ namespace LabFusion.Network
             }
             catch {
                 FusionLogger.Log("Error receiving data on socket/connection!");
+            }
+        }
+
+        public override void BroadcastMessage(NetworkChannel channel, FusionMessage message) {
+            if (IsServer) {
+                SteamSocketHandler.BroadcastToClients(SteamServer, channel, message);
+            }
+            else {
+                SteamSocketHandler.BroadcastToServer(channel, message);
             }
         }
 
@@ -133,7 +144,7 @@ namespace LabFusion.Network
                         writer.Write("Hi! This is my test message!");
                         
                         using (FusionMessage message = FusionMessage.Create(NativeMessageTag.Unknown, writer)) {
-                            SteamSocketHandler.SendMessageToServer(message);
+                            BroadcastMessage(NetworkChannel.Reliable, message);
                         }
                     }
                 }

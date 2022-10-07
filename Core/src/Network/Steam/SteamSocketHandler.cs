@@ -15,30 +15,61 @@ using UnityEngine;
 namespace LabFusion.Network
 {
     public static class SteamSocketHandler {
-        public static void SendMessageToServer(FusionMessage message)
-        {
+        public static void BroadcastToClients(this SteamSocketManager socketManager, NetworkChannel channel, FusionMessage message) {
+            SendType sendType;
+            switch (channel)
+            {
+                case NetworkChannel.Unreliable:
+                default:
+                    sendType = SendType.Unreliable;
+                    break;
+                case NetworkChannel.Reliable:
+                    sendType = SendType.Reliable;
+                    break;
+            }
+
+            // Convert string/byte[] message into IntPtr data type for efficient message send / garbage management
+            int sizeOfMessage = message.Length;
+            IntPtr intPtrMessage = System.Runtime.InteropServices.Marshal.AllocHGlobal(sizeOfMessage);
+            System.Runtime.InteropServices.Marshal.Copy(message.Buffer, 0, intPtrMessage, sizeOfMessage);
+
+            foreach (var connection in socketManager.Connected) {
+                connection.SendMessage(intPtrMessage, sizeOfMessage, sendType);
+            }
+
+            System.Runtime.InteropServices.Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
+        }
+
+        public static void BroadcastToServer(NetworkChannel channel, FusionMessage message) {
             try
             {
+                SendType sendType;
+                switch (channel) {
+                    case NetworkChannel.Unreliable:
+                    default:
+                        sendType = SendType.Unreliable;
+                        break;
+                    case NetworkChannel.Reliable:
+                        sendType = SendType.Reliable;
+                        break;
+                }
+
                 // Convert string/byte[] message into IntPtr data type for efficient message send / garbage management
                 int sizeOfMessage = message.Length;
                 IntPtr intPtrMessage = System.Runtime.InteropServices.Marshal.AllocHGlobal(sizeOfMessage);
                 System.Runtime.InteropServices.Marshal.Copy(message.Buffer, 0, intPtrMessage, sizeOfMessage);
-                Result success = SteamNetworkLayer.SteamConnection.Connection.SendMessage(intPtrMessage, sizeOfMessage, SendType.Reliable);
-                if (success == Result.OK)
-                {
+                Result success = SteamNetworkLayer.SteamConnection.Connection.SendMessage(intPtrMessage, sizeOfMessage, sendType);
+                if (success == Result.OK) {
                     System.Runtime.InteropServices.Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
                 }
-                else
-                {
+                else {
                     // RETRY
-                    Result retry = SteamNetworkLayer.SteamConnection.Connection.SendMessage(intPtrMessage, sizeOfMessage, SendType.Reliable);
+                    Result retry = SteamNetworkLayer.SteamConnection.Connection.SendMessage(intPtrMessage, sizeOfMessage, sendType);
                     System.Runtime.InteropServices.Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
                 }
             }
-            catch (Exception e)
-            {
-                Debug.Log(e.Message);
-                Debug.Log("Unable to send message to socket server");
+            catch (Exception e) {
+                FusionLogger.Error($"Failed sending message to socket server with reason: {e.Message}\nTrace:{e.StackTrace}");
             }
         }
 
@@ -49,8 +80,8 @@ namespace LabFusion.Network
 
                 FusionMessageHandler.ReadMessage(message);
             }
-            catch {
-                FusionLogger.Log("Unable to process message from socket server!");
+            catch (Exception e) {
+                FusionLogger.Error($"Failed reading message from socket server with reason: {e.Message}\nTrace:{e.StackTrace}");
             }
         }
     }
