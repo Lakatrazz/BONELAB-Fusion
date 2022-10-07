@@ -14,7 +14,7 @@ namespace LabFusion.Network
     {
         public virtual byte? Tag { get; } = null;
 
-        public abstract void HandleMessage(FusionMessage message);
+        public abstract void HandleMessage(byte[] bytes);
 
         // Handlers are created up front, they're not static
         public static void RegisterHandlersFromAssembly(Assembly targetAssembly)
@@ -57,6 +57,24 @@ namespace LabFusion.Network
                 FusionLogger.Log($"Registered {type.Name}");
 
                 Handlers[index] = handler;
+            }
+        }
+
+        public static void ReadMessage(byte[] bytes)
+        {
+            try
+            {
+                byte tag = bytes[0];
+                byte[] buffer = new byte[bytes.Length - 1];
+
+                for (var i = 0; i < buffer.Length; i++)
+                    buffer[i] = bytes[i + 1];
+
+                Handlers[tag].HandleMessage(bytes);
+            }
+            catch (Exception e)
+            {
+                FusionLogger.Error($"Failed handling network message with reason: {e.Message}\nTrace:{e.StackTrace}");
             }
         }
 
