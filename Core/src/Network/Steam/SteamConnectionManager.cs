@@ -35,6 +35,7 @@ namespace LabFusion.Network
         {
             base.OnMessage(data, size, messageNum, recvTime, channel);
             FusionLogger.Log("Connection Got A Message");
+            SteamSocketHandler.OnSocketMessageReceived(data, size);
         }
     }
 }

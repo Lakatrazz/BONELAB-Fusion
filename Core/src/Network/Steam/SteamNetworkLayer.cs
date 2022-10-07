@@ -9,6 +9,7 @@ using LabFusion.Utilities;
 
 using Steamworks;
 using Steamworks.Data;
+
 using UnityEngine;
 
 namespace LabFusion.Network
@@ -18,8 +19,8 @@ namespace LabFusion.Network
 
         public SteamId SteamId;
 
-        public SteamSocketManager SteamServer;
-        public SteamConnectionManager SteamConnection;
+        public static SteamSocketManager SteamServer;
+        public static SteamConnectionManager SteamConnection;
 
         protected bool _isServerActive = false;
         protected bool _isConnectionActive = false;
@@ -126,9 +127,15 @@ namespace LabFusion.Network
 
                 origin.y += 30;
 
-                if (GUI.Button(new Rect(origin, size), "Send Hi"))
-                {
-                    FusionLogger.Log($"Hi Result: {SendMessageToSocketServer(Encoding.ASCII.GetBytes("Say hi"))}");
+                if (GUI.Button(new Rect(origin, size), "Send Hi")) {
+                    using (FusionWriter writer = FusionWriter.Create())
+                    {
+                        writer.Write("Hi! This is my test message!");
+                        
+                        using (FusionMessage message = FusionMessage.Create(NativeMessageTag.Unknown, writer)) {
+                            SteamSocketHandler.SendMessageToServer(message);
+                        }
+                    }
                 }
             }
             else {
@@ -139,59 +146,6 @@ namespace LabFusion.Network
 
                 if (GUI.Button(new Rect(origin, size), "Join Server"))
                     JoinServer(ulong.Parse(_targetJoinId));
-            }
-        }
-
-
-        public Result SendMessageToSocketServer(byte[] messageToSend)
-        {
-            try
-            {
-                // Convert string/byte[] message into IntPtr data type for efficient message send / garbage management
-                int sizeOfMessage = messageToSend.Length;
-                IntPtr intPtrMessage = System.Runtime.InteropServices.Marshal.AllocHGlobal(sizeOfMessage);
-                System.Runtime.InteropServices.Marshal.Copy(messageToSend, 0, intPtrMessage, sizeOfMessage);
-                Result success = SteamConnection.Connection.SendMessage(intPtrMessage, sizeOfMessage, SendType.Reliable);
-                if (success == Result.OK)
-                {
-                    System.Runtime.InteropServices.Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
-                    return success;
-                }
-                else
-                {
-                    // RETRY
-                    Result retry = SteamConnection.Connection.SendMessage(intPtrMessage, sizeOfMessage, SendType.Reliable);
-                    System.Runtime.InteropServices.Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
-                    if (retry == Result.OK)
-                    {
-                        return success;
-                    }
-                    return success;
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.Log(e.Message);
-                Debug.Log("Unable to send message to socket server");
-                return Result.None;
-            }
-        }
-
-        public void ProcessMessageFromSocketServer(IntPtr messageIntPtr, int dataBlockSize)
-        {
-            try
-            {
-                byte[] message = new byte[dataBlockSize];
-                System.Runtime.InteropServices.Marshal.Copy(messageIntPtr, message, 0, dataBlockSize);
-                string messageString = System.Text.Encoding.UTF8.GetString(message);
-
-                // Do something with received message
-                FusionLogger.Log("He says hi!");
-
-            }
-            catch
-            {
-                Debug.Log("Unable to process message from socket server");
             }
         }
     }

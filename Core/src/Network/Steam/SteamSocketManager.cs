@@ -30,8 +30,7 @@ namespace LabFusion.Network
             base.OnMessage(connection, identity, data, size, messageNum, recvTime, channel);
             FusionLogger.Log($"We got a message from {identity.SteamId}!");
 
-            // Send it right back
-            connection.SendMessage(data, size, SendType.Reliable);
+            SteamSocketHandler.OnSocketMessageReceived(data, size);
         }
     }
 }

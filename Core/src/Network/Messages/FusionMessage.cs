@@ -10,6 +10,22 @@ namespace LabFusion.Network
     {
         private byte[] buffer;
 
+        public int Length
+        {
+            get
+            {
+                return buffer.Length;
+            }
+        }
+
+        public byte[] Buffer
+        {
+            get
+            {
+                return buffer;
+            }
+        }
+
         public static FusionMessage Create(byte tag, FusionWriter writer) {
             var message = new FusionMessage {
                 buffer = new byte[writer.Length + 1]

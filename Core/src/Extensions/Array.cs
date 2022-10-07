@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 namespace LabFusion.Extensions
 {
     public static partial class ArrayExtensions {
-        public static void EnsureLength<T>(this T[] array, int length) where T : struct {
-            if (array.Length < length)
-                System.Array.Resize(ref array, length);
+        public static void EnsureLength<T>(ref T[] array, int length) where T : struct {
+            Array.Resize(ref array, Math.Max(array.Length, length));
         }
     }
 }

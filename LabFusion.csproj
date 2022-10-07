@@ -649,6 +649,7 @@
     <Compile Include="Core\src\Data\Files\EmbeddedResource.cs" />
     <Compile Include="Core\src\Data\Files\PersistentData.cs" />
     <Compile Include="Core\src\Data\Files\ResourcePaths.cs" />
+    <Compile Include="Core\src\Data\Interfaces\IFusionSerializable.cs" />
     <Compile Include="Core\src\Extensions\Array.cs" />
     <Compile Include="Core\src\Extensions\IEnumerable.cs" />
     <Compile Include="Core\src\Mod.cs" />
@@ -658,6 +659,7 @@
     <Compile Include="Core\src\Network\Messages\FusionReader.cs" />
     <Compile Include="Core\src\Network\Messages\FusionWriter.cs" />
     <Compile Include="Core\src\Network\Messages\NativeMessageTag.cs" />
+    <Compile Include="Core\src\Network\Messages\SimpleStringMessage.cs" />
     <Compile Include="Core\src\Network\Steam\SteamConnectionManager.cs" />
     <Compile Include="Core\src\Network\Steam\SteamNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Discord\DiscordNetworkLayer.cs" />
@@ -670,7 +672,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core\src\Data\Containers\" />
-    <Folder Include="Core\src\Data\Interfaces\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Core\resources\lib\x86_64\discord_game_sdk.dll" />
