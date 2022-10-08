@@ -161,9 +161,6 @@
     <Reference Include="MelonLoader">
       <HintPath>LabFusion\managed\MelonLoader.dll</HintPath>
     </Reference>
-    <Reference Include="Photon3Unity3D">
-      <HintPath>LabFusion\resources\PhotonFusion\PhotonLibs\netstandard2.0\Photon3Unity3D.dll</HintPath>
-    </Reference>
     <Reference Include="SLZ.Algorithms">
       <HintPath>LabFusion\managed\SLZ.Algorithms.dll</HintPath>
     </Reference>
@@ -490,9 +487,6 @@
     <Reference Include="UnityEngine.XRModule">
       <HintPath>LabFusion\managed\UnityEngine.XRModule.dll</HintPath>
     </Reference>
-    <Reference Include="websocket-sharp">
-      <HintPath>LabFusion\resources\PhotonFusion\PhotonLibs\WebSocket\websocket-sharp.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\dependencies\DiscordGameSDK\ActivityManager.cs" />
@@ -647,7 +641,10 @@
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\SteamInterface.cs" />
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utf8String.cs" />
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utility.cs" />
+    <Compile Include="Core\src\Data\Containers\DataCorruptionException.cs" />
     <Compile Include="Core\src\Data\Containers\RigData.cs" />
+    <Compile Include="Core\src\Data\Containers\SerializedQuaternion.cs" />
+    <Compile Include="Core\src\Data\Containers\SerializedTransform.cs" />
     <Compile Include="Core\src\Data\Files\SteamAPILoader.cs" />
     <Compile Include="Core\src\Data\Files\DiscordSDKLoader.cs" />
     <Compile Include="Core\src\Data\Files\EmbeddedResource.cs" />
@@ -663,6 +660,7 @@
     <Compile Include="Core\src\Network\Messages\FusionReader.cs" />
     <Compile Include="Core\src\Network\Messages\FusionWriter.cs" />
     <Compile Include="Core\src\Network\Messages\NativeMessageTag.cs" />
+    <Compile Include="Core\src\Network\Messages\Representation\PlayerRepTransformMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ConnectionResponseMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ConnectionRequestMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\DisconnectMessage.cs" />

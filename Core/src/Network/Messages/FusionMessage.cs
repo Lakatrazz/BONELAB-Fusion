@@ -41,6 +41,8 @@ namespace LabFusion.Network
             return message;
         }
 
-        public void Dispose() { }
+        public void Dispose() {
+            GC.SuppressFinalize(this);
+        }
     }
 }

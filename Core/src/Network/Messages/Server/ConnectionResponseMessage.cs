@@ -22,7 +22,9 @@ namespace LabFusion.Network
             playerId = reader.ReadFusionSerializable<PlayerId>();
         }
 
-        public void Dispose() {}
+        public void Dispose() {
+            GC.SuppressFinalize(this);
+        }
 
         public static ConnectionResponseData Create(ulong longId, byte smallId) {
             return new ConnectionResponseData() {

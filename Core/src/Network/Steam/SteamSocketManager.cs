@@ -44,6 +44,8 @@ namespace LabFusion.Network
             }
 
             ConnectedSteamIds.Remove(pair.Key);
+
+            NetworkUtilities.RemoveUser(pair.Key);
         }
 
         public override void OnMessage(Connection connection, NetIdentity identity, IntPtr data, int size, long messageNum, long recvTime, int channel) {
@@ -51,10 +53,6 @@ namespace LabFusion.Network
 
             if (!ConnectedSteamIds.ContainsKey(identity.steamid))
                 ConnectedSteamIds.Add(identity.steamid, connection);
-
-#if DEBUG
-            FusionLogger.Log($"Server received a Steam message from {identity}.");
-#endif
 
             SteamSocketHandler.OnSocketMessageReceived(data, size);
         }

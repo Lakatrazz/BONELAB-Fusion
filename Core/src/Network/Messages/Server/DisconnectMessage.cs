@@ -30,6 +30,8 @@ namespace LabFusion.Network
             var playerId = PlayerId.GetPlayerId(longId);
             if (playerId != null)
                 playerId.Dispose();
+
+            GC.SuppressFinalize(this);
         }
     }
 

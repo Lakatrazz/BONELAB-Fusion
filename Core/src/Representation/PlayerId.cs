@@ -61,6 +61,8 @@ namespace LabFusion.Representation
             PlayerIds.Remove(this);
             if (SelfId == this)
                 SelfId = null;
+
+            GC.SuppressFinalize(this);
         }
 
         public void Serialize(FusionWriter writer) {

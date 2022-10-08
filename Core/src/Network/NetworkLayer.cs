@@ -9,6 +9,8 @@ namespace LabFusion.Network
     public abstract class NetworkLayer {
         public virtual bool IsServer => false;
 
+        public virtual bool IsClient => false;
+
         public abstract void StartServer();
 
         public abstract void Disconnect();

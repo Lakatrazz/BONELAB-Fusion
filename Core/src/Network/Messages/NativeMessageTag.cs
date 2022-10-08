@@ -15,6 +15,8 @@ namespace LabFusion.Network
             ConnectionResponse = 2,
             Disconnect = 3,
 
+            PlayerRepTransform = 4,
+
             ModuleMessage = 80;
     }
 

@@ -17,7 +17,9 @@ namespace LabFusion.Network
             longId = reader.ReadUInt64();
         }
 
-        public void Dispose() {}
+        public void Dispose() {
+            GC.SuppressFinalize(this);
+        }
 
         public static ConnectionRequestData Create(ulong longId) {
             return new ConnectionRequestData() {

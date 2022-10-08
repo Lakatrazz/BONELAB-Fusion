@@ -9,6 +9,8 @@ using LabFusion.Utilities;
 
 namespace LabFusion.Network {
     public static class NetworkUtilities {
+        public static bool IsInServer => FusionMod.CurrentNetworkLayer.IsServer || FusionMod.CurrentNetworkLayer.IsClient;
+
         public static void RemoveUser(ulong longId) {
             var id = PlayerId.GetPlayerId(longId);
 

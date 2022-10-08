@@ -20,6 +20,7 @@ namespace LabFusion.Network
         public const uint ApplicationID = 1592190;
 
         public override bool IsServer => _isServerActive;
+        public override bool IsClient => _isConnectionActive;
 
         public SteamId SteamId;
 
@@ -72,6 +73,24 @@ namespace LabFusion.Network
             }
             catch {
                 FusionLogger.Log("Error receiving data on socket/connection!");
+            }
+        }
+
+        public override void OnLateUpdateLayer() {
+            try {
+                // Server flushing
+                if (SteamServer != null) {
+                    foreach (var connection in SteamServer.Connected)
+                        connection.Flush();
+                }
+
+                // Client side flushing
+                if (SteamConnection != null) {
+                    SteamConnection.Connection.Flush();
+                }
+            }
+            catch {
+                FusionLogger.Log("Error flushing data on connection!");
             }
         }
 

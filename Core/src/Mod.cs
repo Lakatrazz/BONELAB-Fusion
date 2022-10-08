@@ -58,12 +58,15 @@ namespace LabFusion
 
         public override void OnSceneWasInitialized(int buildIndex, string sceneName) {
             RigData.OnCacheRigInfo();
-            PlayerRep.OnRecreateReps();
+            PlayerRep.OnRecreateReps(true);
         }
 
         public override void OnUpdate() {
+            PlayerRep.OnVerifyReps();
+
             if (CurrentNetworkLayer != null) {
                 CurrentNetworkLayer.OnUpdateLayer();
+                PlayerRep.OnSyncRep();
             }
         }
 

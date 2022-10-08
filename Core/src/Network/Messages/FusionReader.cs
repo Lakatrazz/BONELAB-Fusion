@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace LabFusion.Network
 {
@@ -143,6 +144,10 @@ namespace LabFusion.Network
             float result = BigEndianHelper.ReadSingle(buffer, Offset + Position);
             Position += 4;
             return result;
+        }
+
+        public Vector3 ReadVector3() {
+            return new Vector3(ReadSingle(), ReadSingle(), ReadSingle());
         }
 
         /// <summary>
@@ -941,7 +946,7 @@ namespace LabFusion.Network
 
 
         public void Dispose() {
-
+            GC.SuppressFinalize(this);
         }
     }
 }

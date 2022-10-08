@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LabFusion.Extensions;
 using LabFusion.Utilities;
 using LabFusion.Data;
+using UnityEngine;
 
 namespace LabFusion.Network
 {
@@ -111,6 +112,12 @@ namespace LabFusion.Network
             BigEndianHelper.WriteBytes(buffer, Position, value);
             Position += 4;
             ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+        }
+
+        public void Write(Vector3 value) {
+            Write(value.x);
+            Write(value.y);
+            Write(value.z);
         }
 
         public void Write(ushort value)
@@ -368,6 +375,8 @@ namespace LabFusion.Network
             ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
         }
 
-        public void Dispose() { }
+        public void Dispose() {
+            GC.SuppressFinalize(this);
+        }
     }
 }
