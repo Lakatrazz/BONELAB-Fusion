@@ -33,11 +33,15 @@ namespace LabFusion.Network
         }
 
         public static FusionMessage Create(byte tag, FusionWriter writer) {
+            return Create(tag, writer.Buffer);
+        }
+
+        public static FusionMessage Create(byte tag, byte[] buffer) {
             var message = new FusionMessage {
-                buffer = new byte[writer.Length + 1]
+                buffer = new byte[buffer.Length + 1]
             };
             message.buffer[0] = tag;
-            writer.Buffer.CopyTo(message.buffer, 1);
+            buffer.CopyTo(message.buffer, 1);
             return message;
         }
 

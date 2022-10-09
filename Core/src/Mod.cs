@@ -83,6 +83,8 @@ namespace LabFusion
         }
 
         public override void OnUpdate() {
+            RigData.OnRigUpdate();
+
             if (CurrentNetworkLayer != null) {
                 CurrentNetworkLayer.OnUpdateLayer();
                 PlayerRep.OnSyncRep();

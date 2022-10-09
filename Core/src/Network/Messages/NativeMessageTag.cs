@@ -16,6 +16,7 @@ namespace LabFusion.Network
             Disconnect = 3,
 
             PlayerRepTransform = 4,
+            PlayerRepAvatar = 5,
 
             ModuleMessage = 80;
     }

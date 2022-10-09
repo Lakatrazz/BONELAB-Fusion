@@ -17,6 +17,8 @@ using SLZ.Marrow.Utilities;
 using SLZ.Marrow.Warehouse;
 using LabFusion.Utilities;
 using UnhollowerRuntimeLib;
+using LabFusion.Network;
+using LabFusion.Representation;
 
 namespace LabFusion.Data
 {
@@ -31,6 +33,7 @@ namespace LabFusion.Data
         public static BaseController RightController { get; private set; }
 
         public static string RigScene { get; private set; }
+        public static string RigAvatarId { get; private set; } = NetworkUtilities.InvalidAvatarId;
 
         public static void OnCacheRigInfo(string sceneName) {
             var rigObject = Player.GetRigManager();
@@ -39,15 +42,47 @@ namespace LabFusion.Data
                 RigScene = null;
                 return;
             }
-
+            
             RigScene = sceneName;
 
             RigManager = rigObject.GetComponent<RigManager>();
+            
             LeftHand = Player.leftHand;
             RightHand = Player.rightHand;
 
             LeftController = Player.leftController;
             RightController = Player.rightController;
+        }
+
+        public static void OnRigUpdate() {
+            if (RigManager) {
+                var barcode = GetAvatarBarcode();
+                if (barcode != RigAvatarId) {
+#if DEBUG
+                    FusionLogger.Log($"Local avatar switched from {RigAvatarId} to {barcode}!");
+#endif
+
+                    // Send switch message to notify the server
+                    if (NetworkUtilities.HasServer) {
+                        using (FusionWriter writer = FusionWriter.Create()) {
+                            using (PlayerRepAvatarData data = PlayerRepAvatarData.Create(PlayerId.SelfId.SmallId, barcode)) {
+                                writer.Write(data);
+
+                                using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepAvatar, writer)) {
+                                    FusionMod.CurrentNetworkLayer.BroadcastMessage(NetworkChannel.Reliable, message);
+                                }
+                            }
+                        }
+                    }
+                }
+                RigAvatarId = barcode;
+            }
+        }
+
+        public static string GetAvatarBarcode() {
+            if (RigManager)
+                return RigManager.AvatarCrate.Barcode;
+            return NetworkUtilities.InvalidAvatarId;
         }
     }
 }

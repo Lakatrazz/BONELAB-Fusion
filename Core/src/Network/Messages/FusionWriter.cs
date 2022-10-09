@@ -120,6 +120,11 @@ namespace LabFusion.Network
             Write(value.z);
         }
 
+        public void Write(Vector2 value) {
+            Write(value.x);
+            Write(value.y);
+        }
+
         public void Write(ushort value)
         {
             ArrayExtensions.EnsureLength(ref buffer, Position + 2);

@@ -150,6 +150,10 @@ namespace LabFusion.Network
             return new Vector3(ReadSingle(), ReadSingle(), ReadSingle());
         }
 
+        public Vector2 ReadVector2() {
+            return new Vector2(ReadSingle(), ReadSingle());
+        }
+
         /// <summary>
         ///     Reads a single string from the reader using the reader's encoding.
         /// </summary>

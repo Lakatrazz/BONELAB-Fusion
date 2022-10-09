@@ -13,22 +13,26 @@ namespace LabFusion.Network
 {
     public class ConnectionResponseData : IFusionSerializable, IDisposable {
         public PlayerId playerId = null;
+        public string avatarBarcode = null;
 
         public void Serialize(FusionWriter writer) {
             writer.Write(playerId);
+            writer.Write(avatarBarcode);
         }
         
         public void Deserialize(FusionReader reader) {
             playerId = reader.ReadFusionSerializable<PlayerId>();
+            avatarBarcode = reader.ReadString();
         }
 
         public void Dispose() {
             GC.SuppressFinalize(this);
         }
 
-        public static ConnectionResponseData Create(ulong longId, byte smallId) {
+        public static ConnectionResponseData Create(ulong longId, byte smallId, string avatarBarcode) {
             return new ConnectionResponseData() {
-                playerId = new PlayerId(longId, smallId)
+                playerId = new PlayerId(longId, smallId),
+                avatarBarcode = avatarBarcode,
             };
         }
     }
@@ -59,7 +63,7 @@ namespace LabFusion.Network
                     FusionLogger.Log($"Client received a join message from long id {data.playerId.LongId} and small id {data.playerId.SmallId}!");
 #endif
 
-                    new PlayerRep(data.playerId);
+                    new PlayerRep(data.playerId, data.avatarBarcode);
                 }
             }
         }

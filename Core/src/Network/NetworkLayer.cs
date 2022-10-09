@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LabFusion.Representation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,6 +39,19 @@ namespace LabFusion.Network
         /// <param name="channel"></param>
         /// <param name="message"></param>
         public virtual void BroadcastMessage(NetworkChannel channel, FusionMessage message) { }
+
+        /// <summary>
+        /// If this is a server, sends this message back to all users except for the provided id.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="channel"></param>
+        /// <param name="message"></param>
+        public virtual void BroadcastMessageExcept(byte userId, NetworkChannel  channel, FusionMessage message) {
+            foreach (var id in PlayerId.PlayerIds) {
+                if (id.SmallId != userId)
+                    SendServerMessage(id.SmallId, channel, message);
+            }
+        }
 
         public abstract void OnInitializeLayer();
 

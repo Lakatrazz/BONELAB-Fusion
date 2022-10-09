@@ -2,6 +2,7 @@
 using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Utilities;
+using SLZ.Marrow.Warehouse;
 using SLZ.Rig;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,8 @@ namespace LabFusion.Representation
         public static Transform syncedControllerRig;
         public static Transform syncedPlayspace;
         public static Transform syncedPelvis;
+        public static BaseController syncedLeftController;
+        public static BaseController syncedRightController;
 
         public SerializedTransform[] serializedTransforms = new SerializedTransform[3];
         public Vector3 serializedPelvisPos;
@@ -33,6 +36,8 @@ namespace LabFusion.Representation
         public OpenControllerRig repControllerRig;
         public Rigidbody repPelvis;
         public Rigidbody repConnected;
+        public BaseController repLeftController;
+        public BaseController repRightController;
 
         public RigManager rigManager;
 
@@ -41,12 +46,22 @@ namespace LabFusion.Representation
         public Transform repCanvasTransform;
         public TextMeshProUGUI repNameText;
 
-        public PlayerRep(PlayerId playerId)
+        public string avatarId = NetworkUtilities.InvalidAvatarId;
+
+        public PlayerRep(PlayerId playerId, string barcode)
         {
             PlayerId = playerId;
             Representations.Add(playerId.SmallId, this);
+            avatarId = barcode;
 
             CreateRep();
+        }
+
+        public void SwapAvatar(string barcode) {
+            avatarId = barcode;
+
+            if (rigManager && !string.IsNullOrWhiteSpace(barcode))
+                rigManager.SwapAvatarCrate(barcode);
         }
 
         public void CreateRep() {
@@ -69,16 +84,26 @@ namespace LabFusion.Representation
 
             rigManager = PlayerRepUtilities.CreateNewRig();
 
-            rigManager.openControllerRig.leftController = rigManager.openControllerRig.leftController.gameObject.AddComponent<NullController>();
+            if (!string.IsNullOrWhiteSpace(avatarId))
+                rigManager.SwapAvatarCrate(avatarId);
+
+            var leftHaptor = rigManager.openControllerRig.leftController.haptor;
+            rigManager.openControllerRig.leftController = rigManager.openControllerRig.leftController.gameObject.AddComponent<Controller>();
+            leftHaptor.device_Controller = rigManager.openControllerRig.leftController;
             rigManager.openControllerRig.leftController.handedness = SLZ.Handedness.LEFT;
 
-            rigManager.openControllerRig.rightController = rigManager.openControllerRig.rightController.gameObject.AddComponent<NullController>();
+            var rightHaptor = rigManager.openControllerRig.rightController.haptor;
+            rigManager.openControllerRig.rightController = rigManager.openControllerRig.rightController.gameObject.AddComponent<Controller>();
+            rightHaptor.device_Controller = rigManager.openControllerRig.rightController;
             rigManager.openControllerRig.rightController.handedness = SLZ.Handedness.RIGHT;
 
             PlayerRepControllers.Add(rigManager.openControllerRig, this);
 
             repPelvis = rigManager.physicsRig.m_pelvis.GetComponent<Rigidbody>();
             repControllerRig = rigManager.openControllerRig;
+
+            repLeftController = repControllerRig.leftController;
+            repRightController = repControllerRig.rightController;
 
             var joint = repPelvis.gameObject.AddComponent<ConfigurableJoint>();
             joint.xMotion = ConfigurableJointMotion.Locked;
@@ -120,7 +145,7 @@ namespace LabFusion.Representation
                         return false;
 
                 using (var writer = FusionWriter.Create()) {
-                    using (var data = PlayerRepTransformData.Create(PlayerId.SelfId.SmallId, syncedPoints, syncedPelvis, syncedControllerRig, syncedPlayspace)) {
+                    using (var data = PlayerRepTransformData.Create(PlayerId.SelfId.SmallId, syncedPoints, syncedPelvis, syncedControllerRig, syncedPlayspace, syncedLeftController, syncedRightController)) {
                         writer.Write(data);
 
                         using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepTransform, writer)) {
@@ -140,7 +165,7 @@ namespace LabFusion.Representation
         }
 
         public static void OnSyncRep() {
-            if (NetworkUtilities.IsInServer) {
+            if (NetworkUtilities.HasServer) {
                 if (!TrySendRep())
                     OnCachePlayerTransforms();
             }
@@ -187,6 +212,8 @@ namespace LabFusion.Representation
                 syncedPelvis = RigData.RigManager.physicsRig.m_pelvis;
                 syncedControllerRig = RigData.RigManager.openControllerRig.transform;
                 syncedPlayspace = RigData.RigManager.openControllerRig.vrRoot;
+                syncedLeftController = RigData.RigManager.openControllerRig.leftController;
+                syncedRightController = RigData.RigManager.openControllerRig.rightController;
 
                 syncedPoints[0] = heptaRig.m_head;
                 syncedPoints[1] = heptaRig.m_handLf;

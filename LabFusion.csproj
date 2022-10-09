@@ -190,6 +190,17 @@
     <Reference Include="UnhollowerRuntimeLib">
       <HintPath>LabFusion\managed\UnhollowerRuntimeLib.dll</HintPath>
     </Reference>
+    <Reference Include="UniTask, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Core\managed\UniTask.dll</HintPath>
+    </Reference>
+    <Reference Include="UniTask.Addressables">
+      <HintPath>Core\managed\UniTask.Addressables.dll</HintPath>
+    </Reference>
+    <Reference Include="UniTask.Linq, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Core\managed\UniTask.Linq.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.Addressables">
       <HintPath>LabFusion\managed\Unity.Addressables.dll</HintPath>
     </Reference>
@@ -646,6 +657,7 @@
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utility.cs" />
     <Compile Include="Core\src\Data\Containers\DataCorruptionException.cs" />
     <Compile Include="Core\src\Data\Containers\RigData.cs" />
+    <Compile Include="Core\src\Data\Containers\SerializedHand.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedQuaternion.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedTransform.cs" />
     <Compile Include="Core\src\Data\Files\EmbeddedAssetBundle.cs" />
@@ -664,6 +676,7 @@
     <Compile Include="Core\src\Network\Messages\FusionReader.cs" />
     <Compile Include="Core\src\Network\Messages\FusionWriter.cs" />
     <Compile Include="Core\src\Network\Messages\NativeMessageTag.cs" />
+    <Compile Include="Core\src\Network\Messages\Representation\PlayerRepAvatarMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\PlayerRepTransformMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ConnectionResponseMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ConnectionRequestMessage.cs" />

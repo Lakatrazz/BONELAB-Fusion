@@ -9,7 +9,11 @@ using LabFusion.Utilities;
 
 namespace LabFusion.Network {
     public static class NetworkUtilities {
-        public static bool IsInServer => FusionMod.CurrentNetworkLayer.IsServer || FusionMod.CurrentNetworkLayer.IsClient;
+        public static bool HasServer => FusionMod.CurrentNetworkLayer.IsServer || FusionMod.CurrentNetworkLayer.IsClient;
+        public static bool IsServer => FusionMod.CurrentNetworkLayer.IsServer;
+        public static bool IsClient => FusionMod.CurrentNetworkLayer.IsClient && !FusionMod.CurrentNetworkLayer.IsServer;
+
+        public const string InvalidAvatarId = "BONELABFUSION.NONE";
 
         public static void RemoveUser(ulong longId) {
             var id = PlayerId.GetPlayerId(longId);

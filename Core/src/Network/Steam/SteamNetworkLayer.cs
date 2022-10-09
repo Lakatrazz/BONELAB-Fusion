@@ -140,7 +140,7 @@ namespace LabFusion.Network
             _isConnectionActive = true;
 
             using (FusionWriter writer = FusionWriter.Create()) {
-                using (ConnectionRequestData data = ConnectionRequestData.Create(SteamId.Value)) {
+                using (ConnectionRequestData data = ConnectionRequestData.Create(SteamId.Value, RigData.GetAvatarBarcode())) {
                     writer.Write(data);
 
                     using (FusionMessage message = FusionMessage.Create(NativeMessageTag.ConnectionRequest, writer)) {
