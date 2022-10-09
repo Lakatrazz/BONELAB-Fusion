@@ -669,6 +669,7 @@
     <Compile Include="Core\src\Data\Interfaces\IFusionSerializable.cs" />
     <Compile Include="Core\src\Extensions\Array.cs" />
     <Compile Include="Core\src\Extensions\IEnumerable.cs" />
+    <Compile Include="Core\src\Extensions\UnityComparer.cs" />
     <Compile Include="Core\src\Mod.cs" />
     <Compile Include="Core\src\Modularity\DllTools.cs" />
     <Compile Include="Core\src\Network\Messages\FusionMessage.cs" />
@@ -690,12 +691,15 @@
     <Compile Include="Core\src\Network\Steam\SteamSocketManager.cs" />
     <Compile Include="Core\src\Network\Steam\SteamSocketHandler.cs" />
     <Compile Include="Core\src\Patching\Patches\OpenControllerRigPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\TriggerLasersPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\ZonePatches.cs" />
     <Compile Include="Core\src\Representation\PlayerId.cs" />
     <Compile Include="Core\src\Representation\PlayerRep.cs" />
     <Compile Include="Core\src\Representation\PlayerRepUtilities.cs" />
     <Compile Include="Core\src\Utilities\AssetBundleManager.cs" />
     <Compile Include="Core\src\Utilities\BigEndianHelper.cs" />
     <Compile Include="Core\src\Utilities\FusionLogger.cs" />
+    <Compile Include="Core\src\Utilities\TriggerUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -2,6 +2,7 @@
 using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Utilities;
+using SLZ;
 using SLZ.Marrow.Warehouse;
 using SLZ.Rig;
 using System;
@@ -35,7 +36,6 @@ namespace LabFusion.Representation
         public Transform[] repTransforms = new Transform[3];
         public OpenControllerRig repControllerRig;
         public Rigidbody repPelvis;
-        public Rigidbody repConnected;
         public BaseController repLeftController;
         public BaseController repRightController;
 
@@ -84,6 +84,13 @@ namespace LabFusion.Representation
 
             rigManager = PlayerRepUtilities.CreateNewRig();
 
+            // Lock many of the bones in place to increase stability
+            foreach (var found in rigManager.GetComponentsInChildren<ConfigurableJoint>(true)) {
+                found.projectionMode = JointProjectionMode.PositionAndRotation;
+                found.projectionDistance = 0.001f;
+                found.projectionAngle = 40f;
+            }
+
             if (!string.IsNullOrWhiteSpace(avatarId))
                 rigManager.SwapAvatarCrate(avatarId);
 
@@ -105,19 +112,6 @@ namespace LabFusion.Representation
             repLeftController = repControllerRig.leftController;
             repRightController = repControllerRig.rightController;
 
-            var joint = repPelvis.gameObject.AddComponent<ConfigurableJoint>();
-            joint.xMotion = ConfigurableJointMotion.Locked;
-            joint.yMotion = ConfigurableJointMotion.Locked;
-            joint.zMotion = ConfigurableJointMotion.Locked;
-            joint.projectionMode = JointProjectionMode.PositionAndRotation;
-            joint.projectionDistance = 0.01f;
-            repConnected = new GameObject("Rep Connected").AddComponent<Rigidbody>();
-            repConnected.transform.position = joint.transform.position;
-            repConnected.transform.rotation = joint.transform.rotation;
-            repConnected.isKinematic = true;
-            repConnected.mass = 1000f;
-            joint.connectedBody = repConnected;
-            
             repTransforms[0] = rigManager.openControllerRig.m_head;
             repTransforms[1] = rigManager.openControllerRig.m_handLf;
             repTransforms[2] = rigManager.openControllerRig.m_handRt;
@@ -135,7 +129,8 @@ namespace LabFusion.Representation
                 repTransforms[i].localRotation = serializedTransforms[i].rotation.Expand();
             }
 
-            repConnected.transform.position = serializedPelvisPos;
+            if (Time.timeScale > 0f && Time.deltaTime > 0f && Time.fixedDeltaTime > 0f)
+                repPelvis.velocity = PhysXUtils.GetLinearVelocity(repPelvis.transform.position, serializedPelvisPos);
         }
 
         private static bool TrySendRep() {
