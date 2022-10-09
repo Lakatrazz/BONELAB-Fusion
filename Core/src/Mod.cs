@@ -81,7 +81,7 @@ namespace LabFusion
 
             PlayerRep.OnRecreateReps(true);
 
-            GameObject.Instantiate(AssetBundleManager.PlayerRepBundle.LoadAsset(ResourcePaths.PlayerRepName, Il2CppType.Of<GameObject>()));
+            //PlayerRepUtilities.CreateNewRig();
         }
 
         public override void OnUpdate() {

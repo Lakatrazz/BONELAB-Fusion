@@ -14,7 +14,9 @@ namespace LabFusion.Network {
 
         public byte smallId;
         public SerializedTransform[] serializedTransforms = new SerializedTransform[TransformCount];
-        public Vector3 rootPosition;
+        public SerializedTransform serializedPelvis;
+        public SerializedQuaternion serializedControllerRig;
+        public SerializedQuaternion serializedPlayspace;
 
 
         public void Serialize(FusionWriter writer)
@@ -24,7 +26,9 @@ namespace LabFusion.Network {
             for (var i = 0; i < TransformCount; i++)
                 writer.Write(serializedTransforms[i]);
 
-            writer.Write(rootPosition);
+            writer.Write(serializedPelvis);
+            writer.Write(serializedControllerRig);
+            writer.Write(serializedPlayspace);
         }
 
         public void Deserialize(FusionReader reader)
@@ -34,21 +38,25 @@ namespace LabFusion.Network {
             for (var i = 0; i < TransformCount; i++)
                 serializedTransforms[i] = reader.ReadFusionSerializable<SerializedTransform>();
 
-            rootPosition = reader.ReadVector3();
+            serializedPelvis = reader.ReadFusionSerializable<SerializedTransform>();
+            serializedControllerRig = reader.ReadFusionSerializable<SerializedQuaternion>();
+            serializedPlayspace = reader.ReadFusionSerializable<SerializedQuaternion>();
         }
 
         public void Dispose() { 
             GC.SuppressFinalize(this);
         }
 
-        public static PlayerRepTransformData Create(byte smallId, Transform[] syncTransforms)
+        public static PlayerRepTransformData Create(byte smallId, Transform[] syncTransforms, Transform syncedPelvis, Transform syncedControllerRig, Transform syncedPlayspace)
         {
             var data = new PlayerRepTransformData();
             data.smallId = smallId;
-            data.rootPosition = Vector3.zero;
+            data.serializedPelvis = new SerializedTransform(syncedPelvis);
+            data.serializedControllerRig = SerializedQuaternion.Compress(syncedControllerRig.rotation);
+            data.serializedPlayspace = SerializedQuaternion.Compress(syncedPlayspace.rotation);
 
             for (var i = 0; i < TransformCount; i++) {
-                data.serializedTransforms[i] = new SerializedTransform(syncTransforms[i]);
+                data.serializedTransforms[i] = new SerializedTransform(syncTransforms[i].localPosition, syncTransforms[i].localRotation);
             }
 
             return data;
@@ -64,10 +72,10 @@ namespace LabFusion.Network {
                 
                 if (PlayerRep.Representations.ContainsKey(data.smallId)) {
                     var rep = PlayerRep.Representations[data.smallId];
-                    for (var i = 0; i < PlayerRepTransformData.TransformCount; i++) {
-                        rep.repTransforms[i].position = data.serializedTransforms[i].position;
-                        rep.repTransforms[i].rotation = data.serializedTransforms[i].rotation.Expand();
-                    }
+                    rep.serializedTransforms = data.serializedTransforms;
+                    rep.repPelvis.transform.position = data.serializedPelvis.position;
+                    rep.repControllerRig.transform.rotation = data.serializedControllerRig.Expand();
+                    rep.repControllerRig.vrRoot.rotation = data.serializedPlayspace.Expand();
                 }
             }
         }

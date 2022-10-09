@@ -33,6 +33,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>Core\managed\0Harmony.dll</HintPath>
+    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>LabFusion\managed\Assembly-CSharp.dll</HintPath>
     </Reference>
@@ -673,8 +676,10 @@
     <Compile Include="Core\src\Network\NetworkLayer.cs" />
     <Compile Include="Core\src\Network\Steam\SteamSocketManager.cs" />
     <Compile Include="Core\src\Network\Steam\SteamSocketHandler.cs" />
+    <Compile Include="Core\src\Patching\Patches\OpenControllerRigPatches.cs" />
     <Compile Include="Core\src\Representation\PlayerId.cs" />
     <Compile Include="Core\src\Representation\PlayerRep.cs" />
+    <Compile Include="Core\src\Representation\PlayerRepUtilities.cs" />
     <Compile Include="Core\src\Utilities\AssetBundleManager.cs" />
     <Compile Include="Core\src\Utilities\BigEndianHelper.cs" />
     <Compile Include="Core\src\Utilities\FusionLogger.cs" />
