@@ -73,7 +73,7 @@ namespace LabFusion.Network {
                 if (PlayerRep.Representations.ContainsKey(data.smallId)) {
                     var rep = PlayerRep.Representations[data.smallId];
                     rep.serializedTransforms = data.serializedTransforms;
-                    rep.repPelvis.transform.position = data.serializedPelvis.position;
+                    rep.serializedPelvisPos = data.serializedPelvis.position;
                     rep.repControllerRig.transform.rotation = data.serializedControllerRig.Expand();
                     rep.repControllerRig.vrRoot.rotation = data.serializedPlayspace.Expand();
                 }

@@ -80,13 +80,9 @@ namespace LabFusion
 #endif
 
             PlayerRep.OnRecreateReps(true);
-
-            //PlayerRepUtilities.CreateNewRig();
         }
 
         public override void OnUpdate() {
-            PlayerRep.OnVerifyReps();
-
             if (CurrentNetworkLayer != null) {
                 CurrentNetworkLayer.OnUpdateLayer();
                 PlayerRep.OnSyncRep();

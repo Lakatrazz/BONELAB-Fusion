@@ -214,6 +214,13 @@ namespace LabFusion.Network
                 if (GUI.Button(new Rect(origin, size), "Join Server"))
                     JoinServer(ulong.Parse(_targetJoinId));
             }
+
+            origin.y += 30;
+
+            if (GUI.Button(new Rect(origin, size), "Spawn Player Rep")) {
+                var rig = PlayerRepUtilities.CreateNewRig();
+                rig.Teleport(RigData.RigManager.physicsRig.feet.transform.position, true);
+            }
         }
     }
 }

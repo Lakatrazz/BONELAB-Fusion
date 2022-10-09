@@ -1,4 +1,5 @@
-﻿using LabFusion.Data;
+﻿using I18N.Common;
+using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Utilities;
 using SLZ.Rig;
@@ -26,10 +27,13 @@ namespace LabFusion.Representation
         public static Transform syncedPelvis;
 
         public SerializedTransform[] serializedTransforms = new SerializedTransform[3];
+        public Vector3 serializedPelvisPos;
 
         public Transform[] repTransforms = new Transform[3];
         public OpenControllerRig repControllerRig;
         public Rigidbody repPelvis;
+        public Rigidbody repConnected;
+
         public RigManager rigManager;
 
         public GameObject repCanvas;
@@ -45,12 +49,7 @@ namespace LabFusion.Representation
             CreateRep();
         }
 
-        public void CreateRep(bool isSceneLoad = false) {
-            // Not necessary to create a new one
-            if (isSceneLoad && HasRepTransforms()) {
-                return;
-            }
-
+        public void CreateRep() {
             // Make sure we don't have any extra objects
             DestroyRep();
 
@@ -69,12 +68,30 @@ namespace LabFusion.Representation
             repNameText.text = "Placeholder";
 
             rigManager = PlayerRepUtilities.CreateNewRig();
-            rigManager.physicsRig.m_pelvis.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
+
+            rigManager.openControllerRig.leftController = rigManager.openControllerRig.leftController.gameObject.AddComponent<NullController>();
+            rigManager.openControllerRig.leftController.handedness = SLZ.Handedness.LEFT;
+
+            rigManager.openControllerRig.rightController = rigManager.openControllerRig.rightController.gameObject.AddComponent<NullController>();
+            rigManager.openControllerRig.rightController.handedness = SLZ.Handedness.RIGHT;
 
             PlayerRepControllers.Add(rigManager.openControllerRig, this);
 
             repPelvis = rigManager.physicsRig.m_pelvis.GetComponent<Rigidbody>();
             repControllerRig = rigManager.openControllerRig;
+
+            var joint = repPelvis.gameObject.AddComponent<ConfigurableJoint>();
+            joint.xMotion = ConfigurableJointMotion.Locked;
+            joint.yMotion = ConfigurableJointMotion.Locked;
+            joint.zMotion = ConfigurableJointMotion.Locked;
+            joint.projectionMode = JointProjectionMode.PositionAndRotation;
+            joint.projectionDistance = 0.01f;
+            repConnected = new GameObject("Rep Connected").AddComponent<Rigidbody>();
+            repConnected.transform.position = joint.transform.position;
+            repConnected.transform.rotation = joint.transform.rotation;
+            repConnected.isKinematic = true;
+            repConnected.mass = 1000f;
+            joint.connectedBody = repConnected;
             
             repTransforms[0] = rigManager.openControllerRig.m_head;
             repTransforms[1] = rigManager.openControllerRig.m_handLf;
@@ -83,7 +100,7 @@ namespace LabFusion.Representation
 
         public static void OnRecreateReps(bool isSceneLoad = false) {
             foreach (var rep in Representations.Values) {
-                rep.CreateRep(isSceneLoad);
+                rep.CreateRep();
             }
         }
 
@@ -92,13 +109,8 @@ namespace LabFusion.Representation
                 repTransforms[i].localPosition = serializedTransforms[i].position;
                 repTransforms[i].localRotation = serializedTransforms[i].rotation.Expand();
             }
-        }
 
-        public static void OnVerifyReps() {
-            foreach (var rep in Representations.Values) {
-                if (!rep.HasRepTransforms())
-                    rep.CreateRep();
-            }
+            repConnected.transform.position = serializedPelvisPos;
         }
 
         private static bool TrySendRep() {
@@ -162,14 +174,6 @@ namespace LabFusion.Representation
 
             if (repCanvas != null)
                 GameObject.Destroy(repCanvas.gameObject);
-        }
-
-        /// <summary>
-        /// Checks if all player rep transforms exist
-        /// </summary>
-        /// <returns></returns>
-        public bool HasRepTransforms() {
-            return rigManager != null && repCanvas != null;
         }
 
         public static void OnCachePlayerTransforms() {
