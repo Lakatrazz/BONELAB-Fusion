@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections;
 
 using LabFusion.Data;
 using LabFusion.Network;
@@ -12,9 +13,13 @@ using LabFusion.Utilities;
 
 using MelonLoader;
 
+using SLZ.Marrow.SceneStreaming;
+
 using UnhollowerRuntimeLib;
 
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using SLZ.Rig;
 
 namespace LabFusion
 {
@@ -31,12 +36,15 @@ namespace LabFusion
         public static Assembly FusionAssembly { get; private set; }
         public static NetworkLayer CurrentNetworkLayer { get; private set; }
 
+        private static float _prevTimeScale;
+
         public override void OnEarlyInitializeMelon() {
             Instance = this;
             FusionAssembly = MelonAssembly.Assembly;
 
             PersistentData.OnPathInitialize();
             FusionMessageHandler.RegisterHandlersFromAssembly(FusionAssembly);
+            AssetBundleManager.OnLoadBundles();
 
             OnInitializeNetworking();
         }
@@ -56,9 +64,24 @@ namespace LabFusion
                 CurrentNetworkLayer.OnCleanupLayer();
         }
 
+        public override void OnSceneWasLoaded(int buildIndex, string sceneName) {
+            if (!RigData.RigManager)
+                RigData.OnCacheRigInfo(sceneName);
+        }
+
         public override void OnSceneWasInitialized(int buildIndex, string sceneName) {
-            RigData.OnCacheRigInfo();
+            if (sceneName == RigData.RigScene)
+                OnMainSceneInitialized(buildIndex, sceneName);
+        }
+
+        public static void OnMainSceneInitialized(int buildIndex, string sceneName) {
+#if DEBUG
+            FusionLogger.Log($"Main scene {sceneName} was initialized.");
+#endif
+
             PlayerRep.OnRecreateReps(true);
+
+            GameObject.Instantiate(AssetBundleManager.PlayerRepBundle.LoadAsset(ResourcePaths.PlayerRepName, Il2CppType.Of<GameObject>()));
         }
 
         public override void OnUpdate() {
@@ -74,6 +97,13 @@ namespace LabFusion
             if (CurrentNetworkLayer != null) {
                 CurrentNetworkLayer.OnLateUpdateLayer();
             }
+
+            // Temp fix for 0, 0, 0 player scale bug! Find a better one in the future that doesn't break third person!
+            if (Time.timeScale > 0f && _prevTimeScale <= 0f && RigData.RigManager) {
+                RigData.RigManager.bodyVitals.CalibratePlayerBodyScale();
+            }
+
+            _prevTimeScale = Time.timeScale;
         }
 
         public override void OnGUI() {

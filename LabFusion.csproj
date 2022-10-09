@@ -645,6 +645,7 @@
     <Compile Include="Core\src\Data\Containers\RigData.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedQuaternion.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedTransform.cs" />
+    <Compile Include="Core\src\Data\Files\EmbeddedAssetBundle.cs" />
     <Compile Include="Core\src\Data\Files\SteamAPILoader.cs" />
     <Compile Include="Core\src\Data\Files\DiscordSDKLoader.cs" />
     <Compile Include="Core\src\Data\Files\EmbeddedResource.cs" />
@@ -674,11 +675,14 @@
     <Compile Include="Core\src\Network\Steam\SteamSocketHandler.cs" />
     <Compile Include="Core\src\Representation\PlayerId.cs" />
     <Compile Include="Core\src\Representation\PlayerRep.cs" />
+    <Compile Include="Core\src\Utilities\AssetBundleManager.cs" />
     <Compile Include="Core\src\Utilities\BigEndianHelper.cs" />
     <Compile Include="Core\src\Utilities\FusionLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Core\resources\rep.atom" />
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Core\resources\lib\x86_64\discord_game_sdk.dll" />
   </ItemGroup>

@@ -11,6 +11,10 @@ namespace LabFusion.Data
 
         public const string SteamAPIPath = "LabFusion.Core.resources.lib.x86_64.steam_api64.dll";
 
+        public const string PlayerRepPath = "LabFusion.Core.resources.rep.atom";
+
+        public const string PlayerRepName = "[RigManager (PlayerRep)]";
+
         public const string AppDataSubFolder = "/LabFusion/";
     }
 }

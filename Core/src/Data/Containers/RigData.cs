@@ -15,6 +15,8 @@ using BoneLib;
 using UnityEngine;
 using SLZ.Marrow.Utilities;
 using SLZ.Marrow.Warehouse;
+using LabFusion.Utilities;
+using UnhollowerRuntimeLib;
 
 namespace LabFusion.Data
 {
@@ -28,15 +30,17 @@ namespace LabFusion.Data
         public static BaseController LeftController { get; private set; }
         public static BaseController RightController { get; private set; }
 
-        public static void OnCacheRigInfo() {
-            MelonCoroutines.Start(CoWaitForRigRoutine());
-        }
+        public static string RigScene { get; private set; }
 
-        private static IEnumerator CoWaitForRigRoutine() {
-            GameObject rigObject;
+        public static void OnCacheRigInfo(string sceneName) {
+            var rigObject = Player.GetRigManager();
 
-            while (!(rigObject = Player.GetRigManager()))
-                yield return null;
+            if (!rigObject) {
+                RigScene = null;
+                return;
+            }
+
+            RigScene = sceneName;
 
             RigManager = rigObject.GetComponent<RigManager>();
             LeftHand = Player.leftHand;
