@@ -17,6 +17,8 @@ namespace LabFusion.Representation {
     public static class PlayerRepUtilities {
         public const int TransformSyncCount = 3;
 
+        public const string PolyBlankBarcode = "c3534c5a-94b2-40a4-912a-24a8506f6c79";
+
         public static RigManager CreateNewRig() {
             var go = GameObject.Instantiate(AssetBundleManager.PlayerRepBundle.LoadAsset(ResourcePaths.PlayerRepName, Il2CppType.Of<GameObject>())).Cast<GameObject>();
 

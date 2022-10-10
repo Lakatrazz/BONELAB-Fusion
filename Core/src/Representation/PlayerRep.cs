@@ -49,6 +49,8 @@ namespace LabFusion.Representation
         public SerializedBodyVitals vitals = null;
         public string avatarId = NetworkUtilities.InvalidAvatarId;
 
+        public bool avatarFailure = false;
+
         public PlayerRep(PlayerId playerId, string barcode)
         {
             PlayerId = playerId;
@@ -60,9 +62,18 @@ namespace LabFusion.Representation
 
         public void SwapAvatar(string barcode) {
             avatarId = barcode;
+            avatarFailure = false;
 
             if (rigManager && !string.IsNullOrWhiteSpace(barcode))
-                rigManager.SwapAvatarCrate(barcode);
+                rigManager.SwapAvatarCrate(barcode, false, (Il2CppSystem.Action<bool>)OnAvatarCallback);
+        }
+
+        public void OnAvatarCallback(bool success) {
+            // If failure, load into poly blank
+            if (!success && rigManager && !avatarFailure) {
+                rigManager.SwapAvatarCrate(PlayerRepUtilities.PolyBlankBarcode);
+                avatarFailure = true;
+            }
         }
 
         public void SetVitals(SerializedBodyVitals vitals) {
@@ -76,6 +87,8 @@ namespace LabFusion.Representation
         public void CreateRep() {
             // Make sure we don't have any extra objects
             DestroyRep();
+
+            avatarFailure = false;
 
             repCanvas = new GameObject("RepCanvas");
             repCanvasComponent = repCanvas.AddComponent<Canvas>();
@@ -146,6 +159,11 @@ namespace LabFusion.Representation
         public void OnUpdateVelocity() {
             if (Time.timeScale > 0f && Time.deltaTime > 0f && Time.fixedDeltaTime > 0f)
                 repPelvis.velocity = PhysXUtils.GetLinearVelocity(repPelvis.transform.position, serializedPelvis.position);
+
+            float distSqr = (repPelvis.transform.position - serializedPelvis.position).sqrMagnitude;
+            if (distSqr > 2f) {
+                rigManager.Teleport(serializedPelvis.position);
+            }
         }
 
         private static bool TrySendRep() {
