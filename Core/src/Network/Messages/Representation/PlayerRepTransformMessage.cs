@@ -89,7 +89,7 @@ namespace LabFusion.Network {
                     var rep = PlayerRep.Representations[data.smallId];
                     rep.repControllerRig.feetOffset = data.feetOffset;
                     rep.serializedTransforms = data.serializedTransforms;
-                    rep.serializedPelvisPos = data.serializedPelvis.position;
+                    rep.serializedPelvis = data.serializedPelvis;
                     rep.repPlayspace.rotation = data.serializedPlayspace.Expand();
 
                     data.leftHand.CopyTo(rep.repLeftController);

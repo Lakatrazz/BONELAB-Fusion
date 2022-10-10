@@ -19,6 +19,12 @@ namespace LabFusion.Representation {
 
         public static RigManager CreateNewRig() {
             var go = GameObject.Instantiate(AssetBundleManager.PlayerRepBundle.LoadAsset(ResourcePaths.PlayerRepName, Il2CppType.Of<GameObject>())).Cast<GameObject>();
+
+            if (RigData.RigManager) {
+                go.transform.position = RigData.RigSpawn;
+                go.transform.rotation = RigData.RigSpawnRot;
+            }
+
             return go.GetComponent<RigManager>();
         }
 

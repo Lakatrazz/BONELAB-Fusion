@@ -36,6 +36,9 @@ namespace LabFusion.Data
         public static string RigScene { get; private set; }
         public static string RigAvatarId { get; private set; } = NetworkUtilities.InvalidAvatarId;
 
+        public static Vector3 RigSpawn { get; private set; }
+        public static Quaternion RigSpawnRot { get; private set; }
+
         public static void OnCacheRigInfo(string sceneName) {
             var rigObject = Player.GetRigManager();
 
@@ -48,7 +51,10 @@ namespace LabFusion.Data
 
             RigManager = rigObject.GetComponent<RigManager>();
             RigManager.bodyVitals.rescaleEvent += (BodyVitals.RescaleUI)OnRigRescale;
-            
+
+            RigSpawn = RigManager.transform.position;
+            RigSpawnRot = RigManager.transform.rotation;
+
             LeftHand = Player.leftHand;
             RightHand = Player.rightHand;
 

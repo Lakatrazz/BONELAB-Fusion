@@ -691,6 +691,7 @@
     <Compile Include="Core\src\Network\NetworkLayer.cs" />
     <Compile Include="Core\src\Network\Steam\SteamSocketManager.cs" />
     <Compile Include="Core\src\Network\Steam\SteamSocketHandler.cs" />
+    <Compile Include="Core\src\Patching\Patches\ChunkTriggerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\OpenControllerRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\TriggerLasersPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ZonePatches.cs" />

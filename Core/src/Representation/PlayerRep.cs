@@ -30,7 +30,7 @@ namespace LabFusion.Representation
         public static BaseController syncedRightController;
 
         public SerializedTransform[] serializedTransforms = new SerializedTransform[PlayerRepUtilities.TransformSyncCount];
-        public Vector3 serializedPelvisPos;
+        public SerializedTransform serializedPelvis;
 
         public Transform[] repTransforms = new Transform[PlayerRepUtilities.TransformSyncCount];
         public OpenControllerRig repControllerRig;
@@ -145,7 +145,7 @@ namespace LabFusion.Representation
 
         public void OnUpdateVelocity() {
             if (Time.timeScale > 0f && Time.deltaTime > 0f && Time.fixedDeltaTime > 0f)
-                repPelvis.velocity = PhysXUtils.GetLinearVelocity(repPelvis.transform.position, serializedPelvisPos);
+                repPelvis.velocity = PhysXUtils.GetLinearVelocity(repPelvis.transform.position, serializedPelvis.position);
         }
 
         private static bool TrySendRep() {
