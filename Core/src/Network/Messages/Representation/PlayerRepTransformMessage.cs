@@ -1,22 +1,24 @@
 ﻿using LabFusion.Data;
 using LabFusion.Representation;
+
 using SLZ.Rig;
+using SLZ.VRMK;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using UnityEngine;
 
 namespace LabFusion.Network {
     public class PlayerRepTransformData : IFusionSerializable, IDisposable
     {
-        public const int TransformCount = 3;
-
         public byte smallId;
-        public SerializedTransform[] serializedTransforms = new SerializedTransform[TransformCount];
+        public float feetOffset;
+        public SerializedTransform[] serializedTransforms = new SerializedTransform[PlayerRepUtilities.TransformSyncCount];
         public SerializedTransform serializedPelvis;
-        public SerializedQuaternion serializedControllerRig;
         public SerializedQuaternion serializedPlayspace;
 
         public SerializedHand leftHand;
@@ -26,12 +28,12 @@ namespace LabFusion.Network {
         public void Serialize(FusionWriter writer)
         {
             writer.Write(smallId);
+            writer.Write(feetOffset);
 
-            for (var i = 0; i < TransformCount; i++)
+            for (var i = 0; i < PlayerRepUtilities.TransformSyncCount; i++)
                 writer.Write(serializedTransforms[i]);
 
             writer.Write(serializedPelvis);
-            writer.Write(serializedControllerRig);
             writer.Write(serializedPlayspace);
 
             writer.Write(leftHand);
@@ -41,12 +43,12 @@ namespace LabFusion.Network {
         public void Deserialize(FusionReader reader)
         {
             smallId = reader.ReadByte();
+            feetOffset = reader.ReadSingle();
 
-            for (var i = 0; i < TransformCount; i++)
+            for (var i = 0; i < PlayerRepUtilities.TransformSyncCount; i++)
                 serializedTransforms[i] = reader.ReadFusionSerializable<SerializedTransform>();
 
             serializedPelvis = reader.ReadFusionSerializable<SerializedTransform>();
-            serializedControllerRig = reader.ReadFusionSerializable<SerializedQuaternion>();
             serializedPlayspace = reader.ReadFusionSerializable<SerializedQuaternion>();
 
             leftHand = reader.ReadFusionSerializable<SerializedHand>();
@@ -57,17 +59,18 @@ namespace LabFusion.Network {
             GC.SuppressFinalize(this);
         }
 
-        public static PlayerRepTransformData Create(byte smallId, Transform[] syncTransforms, Transform syncedPelvis, Transform syncedControllerRig, Transform syncedPlayspace, BaseController leftHand, BaseController rightHand)
+        public static PlayerRepTransformData Create(byte smallId, Transform[] syncTransforms, Transform syncedPelvis, Transform syncedPlayspace, BaseController leftHand, BaseController rightHand)
         {
             var data = new PlayerRepTransformData();
             data.smallId = smallId;
+            data.feetOffset = RigData.RigManager.openControllerRig.feetOffset;
             data.serializedPelvis = new SerializedTransform(syncedPelvis);
-            data.serializedControllerRig = SerializedQuaternion.Compress(syncedControllerRig.rotation);
             data.serializedPlayspace = SerializedQuaternion.Compress(syncedPlayspace.rotation);
+
             data.leftHand = new SerializedHand(leftHand);
             data.rightHand = new SerializedHand(rightHand);
 
-            for (var i = 0; i < TransformCount; i++) {
+            for (var i = 0; i < PlayerRepUtilities.TransformSyncCount; i++) {
                 data.serializedTransforms[i] = new SerializedTransform(syncTransforms[i].localPosition, syncTransforms[i].localRotation);
             }
 
@@ -84,10 +87,10 @@ namespace LabFusion.Network {
                 
                 if (PlayerRep.Representations.ContainsKey(data.smallId)) {
                     var rep = PlayerRep.Representations[data.smallId];
+                    rep.repControllerRig.feetOffset = data.feetOffset;
                     rep.serializedTransforms = data.serializedTransforms;
                     rep.serializedPelvisPos = data.serializedPelvis.position;
-                    rep.repControllerRig.transform.rotation = data.serializedControllerRig.Expand();
-                    rep.repControllerRig.vrRoot.rotation = data.serializedPlayspace.Expand();
+                    rep.repPlayspace.rotation = data.serializedPlayspace.Expand();
 
                     data.leftHand.CopyTo(rep.repLeftController);
                     data.rightHand.CopyTo(rep.repRightController);

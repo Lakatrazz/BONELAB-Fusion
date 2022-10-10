@@ -17,6 +17,7 @@ namespace LabFusion.Network
 
             PlayerRepTransform = 4,
             PlayerRepAvatar = 5,
+            PlayerRepVitals = 6,
 
             ModuleMessage = 80;
     }

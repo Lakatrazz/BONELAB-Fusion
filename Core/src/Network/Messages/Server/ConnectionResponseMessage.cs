@@ -53,6 +53,9 @@ namespace LabFusion.Network
                 if (data.playerId.LongId == PlayerId.ConstantLongId) {
                     PlayerId.UpdateSelfId();
 
+                    if (RigData.RigManager)
+                        RigData.OnRigRescale();
+
 #if DEBUG    
                     FusionLogger.Log($"Assigned our local smallId to {data.playerId.SmallId}");
 #endif

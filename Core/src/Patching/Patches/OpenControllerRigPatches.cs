@@ -17,9 +17,10 @@ namespace LabFusion.Patches
     public class OpenFixedUpdatePatch
     {
         public static void Postfix(OpenControllerRig __instance, float deltaTime) {
-            foreach (var pair in PlayerRep.PlayerRepControllers) {
-                if (pair.Key == __instance) {
+            foreach (var pair in PlayerRep.Managers) {
+                if (pair.Key == __instance.manager) {
                     pair.Value.OnUpdateTransforms();
+                    pair.Value.OnUpdateVelocity();
                 }
             }
         }

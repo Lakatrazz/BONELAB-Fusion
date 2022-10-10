@@ -679,6 +679,7 @@
     <Compile Include="Core\src\Network\Messages\NativeMessageTag.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\PlayerRepAvatarMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\PlayerRepTransformMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Representation\PlayerRepVitalsMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ConnectionResponseMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ConnectionRequestMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\DisconnectMessage.cs" />

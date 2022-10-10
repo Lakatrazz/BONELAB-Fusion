@@ -19,6 +19,7 @@ using LabFusion.Utilities;
 using UnhollowerRuntimeLib;
 using LabFusion.Network;
 using LabFusion.Representation;
+using SLZ.VRMK;
 
 namespace LabFusion.Data
 {
@@ -46,12 +47,28 @@ namespace LabFusion.Data
             RigScene = sceneName;
 
             RigManager = rigObject.GetComponent<RigManager>();
+            RigManager.bodyVitals.rescaleEvent += (BodyVitals.RescaleUI)OnRigRescale;
             
             LeftHand = Player.leftHand;
             RightHand = Player.rightHand;
 
             LeftController = Player.leftController;
             RightController = Player.rightController;
+        }
+
+        public static void OnRigRescale() {
+            // Send body vitals to network
+            if (NetworkUtilities.HasServer) {
+                using (FusionWriter writer = FusionWriter.Create()) {
+                    using (PlayerRepVitalsData data = PlayerRepVitalsData.Create(PlayerId.SelfId.SmallId, RigManager.bodyVitals)) {
+                        writer.Write(data);
+
+                        using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepVitals, writer)) {
+                            FusionMod.CurrentNetworkLayer.BroadcastMessage(NetworkChannel.Reliable, message);
+                        }
+                    }
+                }
+            }
         }
 
         public static void OnRigUpdate() {
