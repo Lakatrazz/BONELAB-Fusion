@@ -36,7 +36,7 @@ namespace LabFusion.Network
         public override void OnMessage(IntPtr data, int size, long messageNum, long recvTime, int channel)
         {
             base.OnMessage(data, size, messageNum, recvTime, channel);
-            SteamSocketHandler.OnSocketMessageReceived(data, size);
+            SteamSocketHandler.OnSocketMessageReceived(data, size, false);
         }
     }
 }

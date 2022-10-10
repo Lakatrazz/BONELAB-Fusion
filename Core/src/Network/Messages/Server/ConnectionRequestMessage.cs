@@ -1,8 +1,8 @@
 ﻿using LabFusion.Data;
 using LabFusion.Representation;
 using LabFusion.Utilities;
+
 using System;
-using static Valve.VR.IVRIOBuffer;
 
 namespace LabFusion.Network
 {
@@ -36,7 +36,7 @@ namespace LabFusion.Network
     {
         public override byte? Tag => NativeMessageTag.ConnectionRequest;
 
-        public override void HandleMessage(byte[] bytes) {
+        public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
             if (FusionMod.CurrentNetworkLayer.IsServer) {
                 using (FusionReader reader = FusionReader.Create(bytes)) {
                     var data = reader.ReadFusionSerializable<ConnectionRequestData>();

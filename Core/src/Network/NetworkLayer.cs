@@ -17,6 +17,13 @@ namespace LabFusion.Network
         public abstract void Disconnect();
 
         /// <summary>
+        /// Returns the username of the player with id userId.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public virtual string GetUsername(ulong userId) => "Unknown";
+
+        /// <summary>
         /// Sends the message to the specified user if this is a server.
         /// </summary>
         /// <param name="userId"></param>

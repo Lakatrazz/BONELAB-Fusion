@@ -1,10 +1,11 @@
-﻿using I18N.Common;
-using LabFusion.Data;
+﻿using LabFusion.Data;
+using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Utilities;
 using SLZ;
 using SLZ.Marrow.Warehouse;
 using SLZ.Rig;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,16 +13,15 @@ using System.Text;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Rendering;
-using static UnityEngine.InputSystem.LowLevel.InputStateHistory;
 
 namespace LabFusion.Representation
 {
     public class PlayerRep : IDisposable {
         public static readonly Dictionary<byte, PlayerRep> Representations = new Dictionary<byte, PlayerRep>();
-        public static readonly Dictionary<RigManager, PlayerRep> Managers = new Dictionary<RigManager, PlayerRep>();
+        public static readonly Dictionary<RigManager, PlayerRep> Managers = new Dictionary<RigManager, PlayerRep>(new UnityComparer());
 
         public PlayerId PlayerId { get; private set; }
+        public string Username { get; private set; } = "Unknown";
 
         public static Transform[] syncedPoints = new Transform[PlayerRepUtilities.TransformSyncCount];
         public static Transform syncedPlayspace;
@@ -31,6 +31,9 @@ namespace LabFusion.Representation
 
         public SerializedTransform[] serializedTransforms = new SerializedTransform[PlayerRepUtilities.TransformSyncCount];
         public SerializedTransform serializedPelvis;
+
+        public Vector3 predictVelocity;
+        public float timeSincePelvisSent;
 
         public Transform[] repTransforms = new Transform[PlayerRepUtilities.TransformSyncCount];
         public OpenControllerRig repControllerRig;
@@ -48,12 +51,15 @@ namespace LabFusion.Representation
 
         public SerializedBodyVitals vitals = null;
         public string avatarId = NetworkUtilities.InvalidAvatarId;
-
-        public bool avatarFailure = false;
+        public int swapCount = 0;
 
         public PlayerRep(PlayerId playerId, string barcode)
         {
             PlayerId = playerId;
+
+            if (FusionMod.CurrentNetworkLayer != null)
+                Username = FusionMod.CurrentNetworkLayer.GetUsername(playerId.LongId);
+
             Representations.Add(playerId.SmallId, this);
             avatarId = barcode;
 
@@ -62,18 +68,10 @@ namespace LabFusion.Representation
 
         public void SwapAvatar(string barcode) {
             avatarId = barcode;
-            avatarFailure = false;
+            swapCount++;
 
             if (rigManager && !string.IsNullOrWhiteSpace(barcode))
-                rigManager.SwapAvatarCrate(barcode, false, (Il2CppSystem.Action<bool>)OnAvatarCallback);
-        }
-
-        public void OnAvatarCallback(bool success) {
-            // If failure, load into poly blank
-            if (!success && rigManager && !avatarFailure) {
-                rigManager.SwapAvatarCrate(PlayerRepUtilities.PolyBlankBarcode);
-                avatarFailure = true;
-            }
+                rigManager.SwapAvatarCrate(barcode, false);
         }
 
         public void SetVitals(SerializedBodyVitals vitals) {
@@ -88,8 +86,6 @@ namespace LabFusion.Representation
             // Make sure we don't have any extra objects
             DestroyRep();
 
-            avatarFailure = false;
-
             repCanvas = new GameObject("RepCanvas");
             repCanvasComponent = repCanvas.AddComponent<Canvas>();
 
@@ -102,7 +98,7 @@ namespace LabFusion.Representation
             repNameText.alignment = TextAlignmentOptions.Midline;
             repNameText.enableAutoSizing = true;
 
-            repNameText.text = "Placeholder";
+            repNameText.text = Username;
 
             rigManager = PlayerRepUtilities.CreateNewRig();
 
@@ -150,27 +146,75 @@ namespace LabFusion.Representation
         }
 
         public void OnUpdateTransforms() {
-            for (var i = 0; i < PlayerRepUtilities.TransformSyncCount; i++) {
-                repTransforms[i].localPosition = serializedTransforms[i].position;
-                repTransforms[i].localRotation = serializedTransforms[i].rotation.Expand();
+            try
+            {
+                if (repTransforms == null)
+                    return;
+
+                if (serializedTransforms == null)
+                    return;
+
+                for (var i = 0; i < PlayerRepUtilities.TransformSyncCount; i++)
+                {
+                    if (repTransforms[i] == null)
+                        break;
+
+                    repTransforms[i].localPosition = serializedTransforms[i].position;
+                    repTransforms[i].localRotation = serializedTransforms[i].rotation.Expand();
+                }
+
+                if (repCanvasTransform) {
+                    repCanvasTransform.position = repTransforms[0].position + Vector3.up * 0.4f;
+
+                    if (RigData.RigManager)
+                        repCanvasTransform.rotation = Quaternion.LookRotation(Vector3.Normalize(repCanvasTransform.position - RigData.RigManager.physicsRig.m_head.position), Vector3.up);
+                }
+            }
+            catch {
+                // Literally no reason this should happen but it does
+                // Doesn't cause anything soooo
             }
         }
 
         public void OnUpdateVelocity() {
-            if (Time.timeScale > 0f && Time.deltaTime > 0f && Time.fixedDeltaTime > 0f)
-                repPelvis.velocity = PhysXUtils.GetLinearVelocity(repPelvis.transform.position, serializedPelvis.position);
+            try {
+                // Stop pelvis
+                if (repPelvis == null)
+                    return;
 
-            float distSqr = (repPelvis.transform.position - serializedPelvis.position).sqrMagnitude;
-            if (distSqr > 2f) {
-                rigManager.Teleport(serializedPelvis.position);
+                // Move position with prediction
+                if (Time.realtimeSinceStartup - timeSincePelvisSent <= 2.5f)
+                    serializedPelvis.position += predictVelocity;
+
+                // Apply velocity
+                if (Time.timeScale > 0f && Time.deltaTime > 0f && Time.fixedDeltaTime > 0f)
+                    repPelvis.velocity = PhysXUtils.GetLinearVelocity(repPelvis.transform.position, serializedPelvis.position);
+
+                // Check for stability teleport
+                if (RigData.RigManager && RigData.RigManager.avatar)
+                {
+                    float distSqr = (repPelvis.transform.position - serializedPelvis.position).sqrMagnitude;
+                    if (distSqr > (1.2f * RigData.RigManager.avatar.height))
+                    {
+                        rigManager.Teleport(serializedPelvis.position);
+                    }
+                }
+            }
+            catch {
+                // I give up idk there was so many null checks and yet still an error when missed
+                // Il2?
             }
         }
 
         private static bool TrySendRep() {
             try {
-                foreach (var syncPoint in syncedPoints)
-                    if (syncPoint == null)
+                if (syncedPoints == null)
+                    return false;
+
+                for (var i = 0; i < syncedPoints.Length; i++) {
+                    if (syncedPoints[i] == null)
                         return false;
+                }
 
                 using (var writer = FusionWriter.Create()) {
                     using (var data = PlayerRepTransformData.Create(PlayerId.SelfId.SmallId, syncedPoints, syncedPelvis, syncedPlayspace, syncedLeftController, syncedRightController)) {

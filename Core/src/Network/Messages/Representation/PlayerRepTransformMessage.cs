@@ -1,6 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Representation;
-
+using LabFusion.Utilities;
 using SLZ.Rig;
 using SLZ.VRMK;
 
@@ -20,6 +20,7 @@ namespace LabFusion.Network {
         public SerializedTransform[] serializedTransforms = new SerializedTransform[PlayerRepUtilities.TransformSyncCount];
         public SerializedTransform serializedPelvis;
         public SerializedQuaternion serializedPlayspace;
+        public Vector3 predictVelocity;
 
         public SerializedHand leftHand;
         public SerializedHand rightHand;
@@ -28,6 +29,7 @@ namespace LabFusion.Network {
         public void Serialize(FusionWriter writer)
         {
             writer.Write(smallId);
+            writer.Write(predictVelocity);
             writer.Write(feetOffset);
 
             for (var i = 0; i < PlayerRepUtilities.TransformSyncCount; i++)
@@ -43,6 +45,7 @@ namespace LabFusion.Network {
         public void Deserialize(FusionReader reader)
         {
             smallId = reader.ReadByte();
+            predictVelocity = reader.ReadVector3();
             feetOffset = reader.ReadSingle();
 
             for (var i = 0; i < PlayerRepUtilities.TransformSyncCount; i++)
@@ -63,6 +66,7 @@ namespace LabFusion.Network {
         {
             var data = new PlayerRepTransformData();
             data.smallId = smallId;
+            data.predictVelocity = RigData.RigManager.physicsRig.torso._pelvisRb.velocity * Time.fixedDeltaTime;
             data.feetOffset = RigData.RigManager.openControllerRig.feetOffset;
             data.serializedPelvis = new SerializedTransform(syncedPelvis);
             data.serializedPlayspace = SerializedQuaternion.Compress(syncedPlayspace.rotation);
@@ -81,25 +85,31 @@ namespace LabFusion.Network {
     public class PlayerRepTransformMessage : FusionMessageHandler {
         public override byte? Tag => NativeMessageTag.PlayerRepTransform;
 
-        public override void HandleMessage(byte[] bytes) {
+        public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
             using (var reader = FusionReader.Create(bytes)) {
                 var data = reader.ReadFusionSerializable<PlayerRepTransformData>();
-                
-                if (PlayerRep.Representations.ContainsKey(data.smallId)) {
+
+                // Send message to other clients if server
+                if (NetworkUtilities.IsServer && isServerHandled) {
+                    if (data.smallId != 0) {
+                        using (var message = FusionMessage.Create(Tag.Value, bytes)) {
+                            FusionMod.CurrentNetworkLayer.BroadcastMessageExcept(data.smallId, NetworkChannel.Unreliable, message);
+                        }
+                    }
+                }
+
+                // Apply player rep data
+                if (data.smallId != PlayerId.SelfId.SmallId && PlayerRep.Representations.ContainsKey(data.smallId)) {
                     var rep = PlayerRep.Representations[data.smallId];
                     rep.repControllerRig.feetOffset = data.feetOffset;
                     rep.serializedTransforms = data.serializedTransforms;
                     rep.serializedPelvis = data.serializedPelvis;
                     rep.repPlayspace.rotation = data.serializedPlayspace.Expand();
+                    rep.predictVelocity = data.predictVelocity;
+                    rep.timeSincePelvisSent = Time.realtimeSinceStartup;
 
                     data.leftHand.CopyTo(rep.repLeftController);
                     data.rightHand.CopyTo(rep.repRightController);
-                }
-
-                if (NetworkUtilities.IsServer) {
-                    using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                        FusionMod.CurrentNetworkLayer.BroadcastMessageExcept(data.smallId, NetworkChannel.Unreliable, message);
-                    }
                 }
             }
         }

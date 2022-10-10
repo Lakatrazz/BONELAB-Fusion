@@ -94,6 +94,10 @@ namespace LabFusion.Network
             }
         }
 
+        public override string GetUsername(ulong userId) {
+            return new Friend(userId).Name;
+        }
+
         public override void BroadcastMessage(NetworkChannel channel, FusionMessage message) {
             if (IsServer) {
                 SteamSocketHandler.BroadcastToClients(SteamServer, channel, message);

@@ -39,7 +39,7 @@ namespace LabFusion.Network
     {
         public override byte? Tag => NativeMessageTag.Disconnect;
 
-        public override void HandleMessage(byte[] bytes) {
+        public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
             if (!FusionMod.CurrentNetworkLayer.IsServer) {
                 using (var reader = FusionReader.Create(bytes)) {
                     var data = reader.ReadFusionSerializable<DisconnectMessageData>();

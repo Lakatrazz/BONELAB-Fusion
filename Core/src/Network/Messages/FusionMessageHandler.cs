@@ -14,7 +14,7 @@ namespace LabFusion.Network
     {
         public virtual byte? Tag { get; } = null;
 
-        public abstract void HandleMessage(byte[] bytes);
+        public abstract void HandleMessage(byte[] bytes, bool isServerHandled = false);
 
         // Handlers are created up front, they're not static
         public static void RegisterHandlersFromAssembly(Assembly targetAssembly)
@@ -60,7 +60,7 @@ namespace LabFusion.Network
             }
         }
 
-        public static void ReadMessage(byte[] bytes)
+        public static void ReadMessage(byte[] bytes, bool isServerHandled = false)
         {
             try
             {
@@ -70,7 +70,7 @@ namespace LabFusion.Network
                 for (var i = 0; i < buffer.Length; i++)
                     buffer[i] = bytes[i + 1];
 
-                Handlers[tag].HandleMessage(bytes);
+                Handlers[tag].HandleMessage(buffer, isServerHandled);
             }
             catch (Exception e)
             {

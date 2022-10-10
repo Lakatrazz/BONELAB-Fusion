@@ -41,7 +41,7 @@ namespace LabFusion.Network
     {
         public override byte? Tag => NativeMessageTag.ConnectionResponse;
 
-        public override void HandleMessage(byte[] bytes) {
+        public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
             using (FusionReader reader = FusionReader.Create(bytes)) {
                 var data = reader.ReadFusionSerializable<ConnectionResponseData>();
 
@@ -57,7 +57,7 @@ namespace LabFusion.Network
                         RigData.OnRigRescale();
 
 #if DEBUG    
-                    FusionLogger.Log($"Assigned our local smallId to {data.playerId.SmallId}");
+                    FusionLogger.Log($"Assigned our local smallId to {data.playerId.SmallId}, real id was {PlayerId.SelfId.SmallId}");
 #endif
                 }
                 // Otherwise, create a player rep

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using LabFusion.Data;
+using LabFusion.Representation;
 using LabFusion.Utilities;
 
 using Steamworks;
@@ -55,6 +56,24 @@ namespace LabFusion.Network
             System.Runtime.InteropServices.Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
         }
 
+        public static void BroadcastToClientsExcept(this SteamSocketManager socketManager, byte smallId, NetworkChannel channel, FusionMessage message) {
+            SendType sendType = ConvertToSendType(channel);
+
+            // Convert string/byte[] message into IntPtr data type for efficient message send / garbage management
+            int sizeOfMessage = message.Length;
+            IntPtr intPtrMessage = System.Runtime.InteropServices.Marshal.AllocHGlobal(sizeOfMessage);
+            System.Runtime.InteropServices.Marshal.Copy(message.Buffer, 0, intPtrMessage, sizeOfMessage);
+
+            foreach (var connection in socketManager.Connected) {
+                var playerId = PlayerId.GetPlayerId(smallId);
+
+                if (playerId != null && SteamNetworkLayer.SteamServer.ConnectedSteamIds.ContainsKey(playerId.LongId) && SteamNetworkLayer.SteamServer.ConnectedSteamIds[playerId.LongId] != connection)
+                    connection.SendMessage(intPtrMessage, sizeOfMessage, sendType);
+            }
+
+            System.Runtime.InteropServices.Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
+        }
+
         public static void BroadcastToServer(NetworkChannel channel, FusionMessage message) {
             try
             {
@@ -79,12 +98,12 @@ namespace LabFusion.Network
             }
         }
 
-        public static void OnSocketMessageReceived(IntPtr messageIntPtr, int dataBlockSize) {
+        public static void OnSocketMessageReceived(IntPtr messageIntPtr, int dataBlockSize, bool isServerHandled = false) {
             try {
                 byte[] message = new byte[dataBlockSize];
                 System.Runtime.InteropServices.Marshal.Copy(messageIntPtr, message, 0, dataBlockSize);
 
-                FusionMessageHandler.ReadMessage(message);
+                FusionMessageHandler.ReadMessage(message, isServerHandled);
             }
             catch (Exception e) {
                 FusionLogger.Error($"Failed reading message from socket server with reason: {e.Message}\nTrace:{e.StackTrace}");

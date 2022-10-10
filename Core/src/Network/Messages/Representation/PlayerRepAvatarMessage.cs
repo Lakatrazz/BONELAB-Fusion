@@ -39,7 +39,7 @@ namespace LabFusion.Network
     public class PlayerRepAvatarMessage : FusionMessageHandler {
         public override byte? Tag => NativeMessageTag.PlayerRepAvatar;
 
-        public override void HandleMessage(byte[] bytes) {
+        public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
             using (var reader = FusionReader.Create(bytes)) {
                 using (var data = reader.ReadFusionSerializable<PlayerRepAvatarData>()) {
                     // Swap the avatar for the rep

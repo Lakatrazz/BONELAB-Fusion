@@ -54,7 +54,7 @@ namespace LabFusion.Network
             if (!ConnectedSteamIds.ContainsKey(identity.steamid))
                 ConnectedSteamIds.Add(identity.steamid, connection);
 
-            SteamSocketHandler.OnSocketMessageReceived(data, size);
+            SteamSocketHandler.OnSocketMessageReceived(data, size, true);
         }
     }
 }

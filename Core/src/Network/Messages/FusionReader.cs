@@ -12,7 +12,7 @@ namespace LabFusion.Network
     public class FusionReader : IDisposable {
         private byte[] buffer;
 
-        private int Offset = 1;
+        private int Offset = 0;
 
         public int Length
         {
