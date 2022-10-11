@@ -51,7 +51,6 @@ namespace LabFusion.Representation
 
         public SerializedBodyVitals vitals = null;
         public string avatarId = NetworkUtilities.InvalidAvatarId;
-        public int swapCount = 0;
 
         public PlayerRep(PlayerId playerId, string barcode)
         {
@@ -68,7 +67,6 @@ namespace LabFusion.Representation
 
         public void SwapAvatar(string barcode) {
             avatarId = barcode;
-            swapCount++;
 
             if (rigManager && !string.IsNullOrWhiteSpace(barcode))
                 rigManager.SwapAvatarCrate(barcode, false);

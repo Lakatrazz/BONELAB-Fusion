@@ -17,40 +17,30 @@ using LabFusion.Data;
 using SLZ.AI;
 using SLZ.Rig;
 
-namespace Entanglement.Patching
+namespace LabFusion.Patching
 {
     [HarmonyPatch(typeof(TriggerLasers), "OnTriggerEnter")]
     public static class PlayerTriggerEnterPatch
     {
         public static bool Prefix(TriggerLasers __instance, Collider other)
         {
-            if (other.CompareTag("Player"))
-            {
-                // Regular trigger events
-                if (!__instance.onlyTriggerOnPlayer)
-                {
-                    TriggerUtilities.Increment(__instance);
-                    bool canEnter = TriggerUtilities.CanEnter(__instance);
+            if (other.CompareTag("Player")) {
+
+                TriggerUtilities.Increment(__instance);
+                bool canEnter = TriggerUtilities.CanEnter(__instance);
 #if DEBUG
-                    FusionLogger.Log($"Entering TriggerLasers {__instance.name} with number {TriggerUtilities.triggerCount[__instance]} and result {canEnter}");
+                FusionLogger.Log($"Entering TriggerLasers {__instance.name} with number {TriggerUtilities.triggerCount[__instance]} and result {canEnter}");
 #endif
 
-                    return canEnter;
-                }
-                // Only let the main player enter
-                else
-                {
-                    var trigger = TriggerRefProxy.Cache.Get(other.gameObject);
-                    RigManager rig;
-
-                    if (trigger && trigger.root && (rig = RigManager.Cache.Get(trigger.root)))
-                    {
-                        return rig == RigData.RigManager;
-                    }
-                }
+                return canEnter;
             }
 
             return true;
+        }
+
+        public static void Postfix(TriggerLasers __instance, Collider other) {
+            if (__instance.rigManager != null && __instance.rigManager != RigData.RigManager)
+                __instance.rigManager = RigData.RigManager;
         }
     }
 
@@ -59,34 +49,23 @@ namespace Entanglement.Patching
     {
         public static bool Prefix(TriggerLasers __instance, Collider other)
         {
-            if (other.CompareTag("Player"))
-            {
-                // Regular trigger events
-                if (!__instance.onlyTriggerOnPlayer)
-                {
-                    TriggerUtilities.Decrement(__instance);
-                    bool canExit = TriggerUtilities.CanExit(__instance);
+            if (other.CompareTag("Player")) {
+                TriggerUtilities.Decrement(__instance);
+                bool canExit = TriggerUtilities.CanExit(__instance);
 
 #if DEBUG
-                    FusionLogger.Log($"Exiting TriggerLasers {__instance.name} with number {TriggerUtilities.triggerCount[__instance]} and result {canExit}");
+                FusionLogger.Log($"Exiting TriggerLasers {__instance.name} with number {TriggerUtilities.triggerCount[__instance]} and result {canExit}");
 #endif
 
-                    return canExit;
-                }
-                // Only exit if its the main player
-                else
-                {
-                    var trigger = TriggerRefProxy.Cache.Get(other.gameObject);
-                    RigManager rig;
-
-                    if (trigger && trigger.root && (rig = RigManager.Cache.Get(trigger.root)))
-                    {
-                        return rig == RigData.RigManager;
-                    }
-                }
+                return canExit;
             }
 
             return true;
+        }
+
+        public static void Postfix(TriggerLasers __instance, Collider other) {
+            if (__instance.rigManager != null && __instance.rigManager != RigData.RigManager)
+                __instance.rigManager = RigData.RigManager;
         }
     }
 }

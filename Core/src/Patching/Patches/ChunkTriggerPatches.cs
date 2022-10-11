@@ -20,7 +20,7 @@ using LabFusion.Data;
 
 using SLZ.Marrow.SceneStreaming;
 
-namespace Entanglement.Patching
+namespace LabFusion.Patching
 {
     [HarmonyPatch(typeof(ChunkTrigger), "OnTriggerEnter")]
     public static class ChunkEnterPatch
@@ -29,12 +29,7 @@ namespace Entanglement.Patching
         {
             if (other.CompareTag("Player"))
             {
-                var trigger = TriggerRefProxy.Cache.Get(other.gameObject);
-                RigManager rig;
-
-                if (trigger && trigger.root && (rig = RigManager.Cache.Get(trigger.root))) {
-                    return rig == RigData.RigManager;
-                }
+                return TriggerUtilities.IsMainRig(other);
             }
 
             return true;
@@ -48,12 +43,7 @@ namespace Entanglement.Patching
         {
             if (other.CompareTag("Player"))
             {
-                var trigger = TriggerRefProxy.Cache.Get(other.gameObject);
-                RigManager rig;
-
-                if (trigger && trigger.root && (rig = RigManager.Cache.Get(trigger.root))) {
-                    return rig == RigData.RigManager;
-                }
+                return TriggerUtilities.IsMainRig(other);
             }
 
             return true;
