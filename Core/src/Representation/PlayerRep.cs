@@ -43,6 +43,7 @@ namespace LabFusion.Representation
         public BaseController repRightController;
 
         public RigManager rigManager;
+        public PullCordDevice pullCord;
 
         public GameObject repCanvas;
         public Canvas repCanvasComponent;
@@ -69,7 +70,14 @@ namespace LabFusion.Representation
             avatarId = barcode;
 
             if (rigManager && !string.IsNullOrWhiteSpace(barcode))
-                rigManager.SwapAvatarCrate(barcode, false);
+                rigManager.SwapAvatarCrate(barcode, false, (Il2CppSystem.Action<bool>)OnSwapAvatar);
+        }
+
+        public void OnSwapAvatar(bool success) {
+            if (pullCord) {
+                pullCord.PlayAvatarParticleEffects();
+                pullCord.PlayClip(pullCord.switchAvatar, pullCord.ap3, pullCord.switchVolume, 4f, false);
+            }
         }
 
         public void SetVitals(SerializedBodyVitals vitals) {
@@ -99,6 +107,7 @@ namespace LabFusion.Representation
             repNameText.text = Username;
 
             rigManager = PlayerRepUtilities.CreateNewRig();
+            pullCord = rigManager.GetComponentInChildren<PullCordDevice>(true);
 
             if (vitals != null) {
                 vitals.CopyTo(rigManager.bodyVitals);
