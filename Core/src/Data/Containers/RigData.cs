@@ -20,18 +20,62 @@ using UnhollowerRuntimeLib;
 using LabFusion.Network;
 using LabFusion.Representation;
 using SLZ.VRMK;
+using SLZ;
 
 namespace LabFusion.Data
 {
+    /// <summary>
+    /// A collection of basic rig information for use across PlayerReps and the Main RigManager.
+    /// </summary>
+    public struct RigReferenceCollection {
+        public RigManager RigManager { get; private set; }
+
+        public Grip[] RigGrips { get; private set; }
+
+        public Hand LeftHand { get; private set; }
+        public Hand RightHand { get; private set; }
+
+        public BaseController LeftController { get; private set; }
+        public BaseController RightController { get; private set; }
+
+        public byte? GetIndex(Grip grip) {
+            for (byte i = 0; i < RigGrips.Length; i++) {
+                if (RigGrips[i] == grip)
+                    return i;
+            }
+            return null;
+        }
+
+        public Grip GetGrip(byte index) {
+            if (RigGrips.Length > index)
+                return RigGrips[index];
+            return null;
+        }
+
+        public Hand GetHand(Handedness hand) {
+            switch (hand) {
+                default:
+                    return LeftHand;
+                case Handedness.RIGHT:
+                    return RightHand;
+            }
+        }
+
+        public RigReferenceCollection(RigManager rigManager) {
+            RigManager = rigManager;
+            RigGrips = rigManager.physicsRig.GetComponentsInChildren<Grip>(true);
+
+            LeftHand = rigManager.physicsRig.m_handLf.GetComponent<Hand>();
+            RightHand = rigManager.physicsRig.m_handRt.GetComponent<Hand>();
+
+            LeftController = rigManager.openControllerRig.leftController;
+            RightController = rigManager.openControllerRig.rightController;
+        }
+    }
+
     public static class RigData
     {
-        public static RigManager RigManager { get; private set; }
-
-        public static Hand LeftHand { get; private set; }
-        public static Hand RightHand { get; private set; }
-
-        public static BaseController LeftController { get; private set; }
-        public static BaseController RightController { get; private set; }
+        public static RigReferenceCollection RigReferences { get; private set; }
 
         public static string RigScene { get; private set; }
         public static string RigAvatarId { get; private set; } = NetworkUtilities.InvalidAvatarId;
@@ -49,24 +93,18 @@ namespace LabFusion.Data
             
             RigScene = sceneName;
 
-            RigManager = rigObject.GetComponent<RigManager>();
-            RigManager.bodyVitals.rescaleEvent += (BodyVitals.RescaleUI)OnRigRescale;
+            RigReferences = new RigReferenceCollection(rigObject.GetComponent<RigManager>());
+            RigReferences.RigManager.bodyVitals.rescaleEvent += (BodyVitals.RescaleUI)OnRigRescale;
 
-            RigSpawn = RigManager.transform.position;
-            RigSpawnRot = RigManager.transform.rotation;
-
-            LeftHand = Player.leftHand;
-            RightHand = Player.rightHand;
-
-            LeftController = Player.leftController;
-            RightController = Player.rightController;
+            RigSpawn = rigObject.transform.position;
+            RigSpawnRot = rigObject.transform.rotation;
         }
 
         public static void OnRigRescale() {
             // Send body vitals to network
             if (NetworkUtilities.HasServer) {
                 using (FusionWriter writer = FusionWriter.Create()) {
-                    using (PlayerRepVitalsData data = PlayerRepVitalsData.Create(PlayerId.SelfId.SmallId, RigManager.bodyVitals)) {
+                    using (PlayerRepVitalsData data = PlayerRepVitalsData.Create(PlayerId.SelfId.SmallId, RigReferences.RigManager.bodyVitals)) {
                         writer.Write(data);
 
                         using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepVitals, writer)) {
@@ -78,7 +116,7 @@ namespace LabFusion.Data
         }
 
         public static void OnRigUpdate() {
-            if (RigManager) {
+            if (RigReferences.RigManager) {
                 var barcode = GetAvatarBarcode();
                 if (barcode != RigAvatarId) {
 #if DEBUG
@@ -103,8 +141,8 @@ namespace LabFusion.Data
         }
 
         public static string GetAvatarBarcode() {
-            if (RigManager)
-                return RigManager.AvatarCrate.Barcode;
+            if (RigReferences.RigManager)
+                return RigReferences.RigManager.AvatarCrate.Barcode;
             return NetworkUtilities.InvalidAvatarId;
         }
     }

@@ -39,8 +39,8 @@ namespace LabFusion.Patching
         }
 
         public static void Postfix(TriggerLasers __instance, Collider other) {
-            if (__instance.rigManager != null && __instance.rigManager != RigData.RigManager)
-                __instance.rigManager = RigData.RigManager;
+            if (__instance.rigManager != null && __instance.rigManager != RigData.RigReferences.RigManager)
+                __instance.rigManager = RigData.RigReferences.RigManager;
         }
     }
 
@@ -64,8 +64,8 @@ namespace LabFusion.Patching
         }
 
         public static void Postfix(TriggerLasers __instance, Collider other) {
-            if (__instance.rigManager != null && __instance.rigManager != RigData.RigManager)
-                __instance.rigManager = RigData.RigManager;
+            if (__instance.rigManager != null && __instance.rigManager != RigData.RigReferences.RigManager)
+                __instance.rigManager = RigData.RigReferences.RigManager;
         }
     }
 }

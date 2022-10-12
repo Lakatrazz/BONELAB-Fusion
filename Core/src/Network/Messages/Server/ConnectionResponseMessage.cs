@@ -53,7 +53,7 @@ namespace LabFusion.Network
                 if (data.playerId.LongId == PlayerId.ConstantLongId) {
                     PlayerId.UpdateSelfId();
 
-                    if (RigData.RigManager)
+                    if (RigData.RigReferences.RigManager)
                         RigData.OnRigRescale();
 
 #if DEBUG    

@@ -223,7 +223,7 @@ namespace LabFusion.Network
 
             if (GUI.Button(new Rect(origin, size), "Spawn Player Rep")) {
                 var rig = PlayerRepUtilities.CreateNewRig();
-                rig.Teleport(RigData.RigManager.physicsRig.feet.transform.position, true);
+                rig.Teleport(RigData.RigReferences.RigManager.physicsRig.feet.transform.position, true);
             }
         }
     }

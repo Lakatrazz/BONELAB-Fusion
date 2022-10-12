@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LabFusion.Network
 {
-    public class NativeMessageTag
+    public static class NativeMessageTag
     {
         public static byte
             Unknown = 0,
@@ -18,6 +18,10 @@ namespace LabFusion.Network
             PlayerRepTransform = 4,
             PlayerRepAvatar = 5,
             PlayerRepVitals = 6,
+
+            PlayerRepGrab = 7,
+            PlayerRepRelease = 8,
+            PlayerRepAnchors = 9,
 
             ModuleMessage = 80;
     }

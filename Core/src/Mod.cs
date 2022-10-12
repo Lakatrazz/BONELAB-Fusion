@@ -65,7 +65,7 @@ namespace LabFusion
         }
 
         public override void OnSceneWasLoaded(int buildIndex, string sceneName) {
-            if (!RigData.RigManager)
+            if (!RigData.RigReferences.RigManager)
                 RigData.OnCacheRigInfo(sceneName);
         }
 
@@ -91,14 +91,18 @@ namespace LabFusion
             }
         }
 
+        public override void OnFixedUpdate() {
+            PlayerRep.OnRigFixedUpdate();
+        }
+
         public override void OnLateUpdate() {
             if (CurrentNetworkLayer != null) {
                 CurrentNetworkLayer.OnLateUpdateLayer();
             }
 
             // Temp fix for 0, 0, 0 player scale bug! Find a better one in the future that doesn't break third person!
-            if (Time.timeScale > 0f && _prevTimeScale <= 0f && RigData.RigManager) {
-                RigData.RigManager.bodyVitals.CalibratePlayerBodyScale();
+            if (Time.timeScale > 0f && _prevTimeScale <= 0f && RigData.RigReferences.RigManager) {
+                RigData.RigReferences.RigManager.bodyVitals.CalibratePlayerBodyScale();
             }
 
             _prevTimeScale = Time.timeScale;

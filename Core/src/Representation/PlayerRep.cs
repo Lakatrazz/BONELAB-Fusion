@@ -3,6 +3,7 @@ using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Utilities;
 using SLZ;
+using SLZ.Interaction;
 using SLZ.Marrow.Warehouse;
 using SLZ.Rig;
 
@@ -23,6 +24,8 @@ namespace LabFusion.Representation
         public PlayerId PlayerId { get; private set; }
         public string Username { get; private set; } = "Unknown";
 
+        public RigReferenceCollection RigReferences { get; private set; }
+
         public static Transform[] syncedPoints = new Transform[PlayerRepUtilities.TransformSyncCount];
         public static Transform syncedPlayspace;
         public static Transform syncedPelvis;
@@ -42,7 +45,6 @@ namespace LabFusion.Representation
         public BaseController repLeftController;
         public BaseController repRightController;
 
-        public RigManager rigManager;
         public PullCordDevice pullCord;
 
         public GameObject repCanvas;
@@ -66,11 +68,29 @@ namespace LabFusion.Representation
             CreateRep();
         }
 
+        public void AttachObject(Handedness handedness, Grip grip) {
+            var hand = RigReferences.GetHand(handedness);
+            if (hand == null)
+                return;
+
+            if (grip) {
+                grip.OnGrabConfirm(hand, true);
+            }
+        }
+
+        public void DetachObject(Handedness handedness) {
+            var hand = RigReferences.GetHand(handedness);
+            if (hand == null)
+                return;
+
+            hand.DetachObject();
+        }
+
         public void SwapAvatar(string barcode) {
             avatarId = barcode;
 
-            if (rigManager && !string.IsNullOrWhiteSpace(barcode))
-                rigManager.SwapAvatarCrate(barcode, false, (Il2CppSystem.Action<bool>)OnSwapAvatar);
+            if (RigReferences.RigManager && !string.IsNullOrWhiteSpace(barcode))
+                RigReferences.RigManager.SwapAvatarCrate(barcode, false, (Il2CppSystem.Action<bool>)OnSwapAvatar);
         }
 
         public void OnSwapAvatar(bool success) {
@@ -82,9 +102,9 @@ namespace LabFusion.Representation
 
         public void SetVitals(SerializedBodyVitals vitals) {
             this.vitals = vitals;
-            if (rigManager != null && vitals != null) {
-                vitals.CopyTo(rigManager.bodyVitals);
-                rigManager.bodyVitals.CalibratePlayerBodyScale();
+            if (RigReferences.RigManager != null && vitals != null) {
+                vitals.CopyTo(RigReferences.RigManager.bodyVitals);
+                RigReferences.RigManager.bodyVitals.CalibratePlayerBodyScale();
             }
         }
 
@@ -106,44 +126,46 @@ namespace LabFusion.Representation
 
             repNameText.text = Username;
 
-            rigManager = PlayerRepUtilities.CreateNewRig();
-            pullCord = rigManager.GetComponentInChildren<PullCordDevice>(true);
+            var rig = PlayerRepUtilities.CreateNewRig();
+            pullCord = rig.GetComponentInChildren<PullCordDevice>(true);
 
             if (vitals != null) {
-                vitals.CopyTo(rigManager.bodyVitals);
-                rigManager.bodyVitals.CalibratePlayerBodyScale();
+                vitals.CopyTo(rig.bodyVitals);
+                rig.bodyVitals.CalibratePlayerBodyScale();
             }
 
             // Lock many of the bones in place to increase stability
-            foreach (var found in rigManager.GetComponentsInChildren<ConfigurableJoint>(true)) {
+            foreach (var found in rig.GetComponentsInChildren<ConfigurableJoint>(true)) {
                 found.projectionMode = JointProjectionMode.PositionAndRotation;
                 found.projectionDistance = 0.001f;
                 found.projectionAngle = 40f;
             }
 
             if (!string.IsNullOrWhiteSpace(avatarId))
-                rigManager.SwapAvatarCrate(avatarId);
+                rig.SwapAvatarCrate(avatarId);
 
-            var leftHaptor = rigManager.openControllerRig.leftController.haptor;
-            rigManager.openControllerRig.leftController = rigManager.openControllerRig.leftController.gameObject.AddComponent<Controller>();
-            leftHaptor.device_Controller = rigManager.openControllerRig.leftController;
-            rigManager.openControllerRig.leftController.handedness = Handedness.LEFT;
+            var leftHaptor = rig.openControllerRig.leftController.haptor;
+            rig.openControllerRig.leftController = rig.openControllerRig.leftController.gameObject.AddComponent<Controller>();
+            leftHaptor.device_Controller = rig.openControllerRig.leftController;
+            rig.openControllerRig.leftController.handedness = Handedness.LEFT;
 
-            var rightHaptor = rigManager.openControllerRig.rightController.haptor;
-            rigManager.openControllerRig.rightController = rigManager.openControllerRig.rightController.gameObject.AddComponent<Controller>();
-            rightHaptor.device_Controller = rigManager.openControllerRig.rightController;
-            rigManager.openControllerRig.rightController.handedness = Handedness.RIGHT;
+            var rightHaptor = rig.openControllerRig.rightController.haptor;
+            rig.openControllerRig.rightController = rig.openControllerRig.rightController.gameObject.AddComponent<Controller>();
+            rightHaptor.device_Controller = rig.openControllerRig.rightController;
+            rig.openControllerRig.rightController.handedness = Handedness.RIGHT;
 
-            Managers.Add(rigManager, this);
+            Managers.Add(rig, this);
 
-            repPelvis = rigManager.physicsRig.m_pelvis.GetComponent<Rigidbody>();
-            repControllerRig = rigManager.openControllerRig;
-            repPlayspace = rigManager.openControllerRig.vrRoot.transform;
+            repPelvis = rig.physicsRig.m_pelvis.GetComponent<Rigidbody>();
+            repControllerRig = rig.openControllerRig;
+            repPlayspace = rig.openControllerRig.vrRoot.transform;
 
             repLeftController = repControllerRig.leftController;
             repRightController = repControllerRig.rightController;
 
-            PlayerRepUtilities.FillTransformArray(ref repTransforms, rigManager);
+            RigReferences = new RigReferenceCollection(rig);
+
+            PlayerRepUtilities.FillTransformArray(ref repTransforms, rig);
         }
 
         public static void OnRecreateReps(bool isSceneLoad = false) {
@@ -173,14 +195,63 @@ namespace LabFusion.Representation
                 if (repCanvasTransform) {
                     repCanvasTransform.position = repTransforms[0].position + Vector3.up * 0.4f;
 
-                    if (RigData.RigManager)
-                        repCanvasTransform.rotation = Quaternion.LookRotation(Vector3.Normalize(repCanvasTransform.position - RigData.RigManager.physicsRig.m_head.position), Vector3.up);
+                    if (RigData.RigReferences.RigManager)
+                        repCanvasTransform.rotation = Quaternion.LookRotation(Vector3.Normalize(repCanvasTransform.position - RigData.RigReferences.RigManager.physicsRig.m_head.position), Vector3.up);
                 }
             }
             catch {
                 // Literally no reason this should happen but it does
                 // Doesn't cause anything soooo
             }
+        }
+
+        public void FixedUpdate() {
+            try {
+                OnHandFixedUpdate(RigReferences.LeftHand);
+                OnHandFixedUpdate(RigReferences.RightHand);
+            }
+            catch (Exception e) {
+#if DEBUG
+                FusionLogger.Error($"Failed fixed updating rep with reason: {e.Message}\nTrace:{e.StackTrace}");
+#endif
+            }
+        }
+        
+        public void OnHandFixedUpdate(Hand hand) {
+            // Make sure this rep actually has hands
+            if (hand == null)
+                return;
+
+            // Fixes break force being an issue between grabs
+            if (hand.tempJoint) {
+                var go = hand.m_CurrentAttachedGO;
+
+                Grip grip;
+                if (grip = Grip.Cache.Get(go)) {
+                    // Update hand states
+                    foreach (var pair in grip._handStates) {
+                        if (pair.key == hand) {
+                            var state = pair.Value;
+                            state.isIgnoreAnchorUpdate = true;
+                            state.isIgnoreConnAnchorUpdate = true;
+                        }
+                    }
+
+                    // Update specific grip types
+                    CylinderGrip cylinder;
+                    if (cylinder = grip.TryCast<CylinderGrip>()) {
+                        cylinder.LockJoint(hand);
+                    }
+                }
+
+                hand.tempJoint.breakForce = float.PositiveInfinity;
+                hand.tempJoint.breakTorque = float.PositiveInfinity;
+            }
+        }
+
+        public static void OnRigFixedUpdate() {
+            foreach (var rep in Representations.Values)
+                rep.FixedUpdate();
         }
 
         public void OnUpdateVelocity() {
@@ -198,12 +269,12 @@ namespace LabFusion.Representation
                     repPelvis.velocity = PhysXUtils.GetLinearVelocity(repPelvis.transform.position, serializedPelvis.position);
 
                 // Check for stability teleport
-                if (RigData.RigManager && RigData.RigManager.avatar)
+                if (RigData.RigReferences.RigManager && RigData.RigReferences.RigManager.avatar)
                 {
                     float distSqr = (repPelvis.transform.position - serializedPelvis.position).sqrMagnitude;
-                    if (distSqr > (1.2f * RigData.RigManager.avatar.height))
+                    if (distSqr > (1.2f * RigData.RigReferences.RigManager.avatar.height))
                     {
-                        rigManager.Teleport(serializedPelvis.position);
+                        RigReferences.RigManager.Teleport(serializedPelvis.position);
                     }
                 }
             }
@@ -250,10 +321,6 @@ namespace LabFusion.Representation
             }
         }
 
-        public static void OnUpdateTrackers() {
-
-        }
-
         /// <summary>
         /// Destroys anything about the PlayerRep and frees it from memory.
         /// </summary>
@@ -273,23 +340,23 @@ namespace LabFusion.Representation
         /// Destroys the GameObjects of the PlayerRep. Does not free it from memory or remove it from its slots. Use Dispose for that.
         /// </summary>
         public void DestroyRep() {
-            if (rigManager != null)
-                GameObject.Destroy(rigManager.gameObject);
+            if (RigReferences.RigManager != null)
+                GameObject.Destroy(RigReferences.RigManager.gameObject);
 
             if (repCanvas != null)
                 GameObject.Destroy(repCanvas.gameObject);
         }
 
         public static void OnCachePlayerTransforms() {
-            if (RigData.RigManager == null)
+            if (RigData.RigReferences.RigManager == null)
                 return;
 
-            syncedPelvis = RigData.RigManager.physicsRig.m_pelvis;
-            syncedPlayspace = RigData.RigManager.openControllerRig.vrRoot.transform;
-            syncedLeftController = RigData.RigManager.openControllerRig.leftController;
-            syncedRightController = RigData.RigManager.openControllerRig.rightController;
+            syncedPelvis = RigData.RigReferences.RigManager.physicsRig.m_pelvis;
+            syncedPlayspace = RigData.RigReferences.RigManager.openControllerRig.vrRoot.transform;
+            syncedLeftController = RigData.RigReferences.RigManager.openControllerRig.leftController;
+            syncedRightController = RigData.RigReferences.RigManager.openControllerRig.rightController;
 
-            PlayerRepUtilities.FillTransformArray(ref syncedPoints, RigData.RigManager);
+            PlayerRepUtilities.FillTransformArray(ref syncedPoints, RigData.RigReferences.RigManager);
         }
     }
 }

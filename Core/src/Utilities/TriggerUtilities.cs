@@ -53,7 +53,7 @@ namespace LabFusion.Utilities {
             RigManager rig;
 
             if (trigger && trigger.root && (rig = RigManager.Cache.Get(trigger.root))) {
-                return rig == RigData.RigManager;
+                return rig == RigData.RigReferences.RigManager;
             }
 
             return false;
