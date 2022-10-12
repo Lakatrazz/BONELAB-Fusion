@@ -15,20 +15,6 @@ using LabFusion.Representation;
 
 namespace LabFusion.Patching
 {
-    [HarmonyPatch(typeof(Hand), "OnPhysRigUpdate")]
-    public static class OnPhysRigUpdatePatch {
-        public static void Postfix(Hand __instance) {
-            if (!__instance.m_CurrentAttachedGO)
-                return;
-
-            if (PlayerRep.Managers.ContainsKey(__instance.manager) && __instance.tempJoint) {
-                __instance.tempJoint.xMotion = __instance.tempJoint.yMotion = __instance.tempJoint.zMotion 
-                    = __instance.tempJoint.angularXMotion = __instance.tempJoint.angularYMotion = __instance.tempJoint.angularZMotion = ConfigurableJointMotion.Locked;
-            }            
-        }
-
-    }
-
     [HarmonyPatch(typeof(Hand), "AttachObject")]
     public static class AttachObjectPatch
     {
