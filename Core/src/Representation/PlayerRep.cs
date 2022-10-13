@@ -24,7 +24,7 @@ namespace LabFusion.Representation
         public PlayerId PlayerId { get; private set; }
         public string Username { get; private set; } = "Unknown";
 
-        public RigReferenceCollection RigReferences { get; private set; }
+        public RigReferenceCollection RigReferences { get; private set; } = new RigReferenceCollection();
 
         public static Transform[] syncedPoints = new Transform[PlayerRepUtilities.TransformSyncCount];
         public static Transform syncedPlayspace;
@@ -74,7 +74,8 @@ namespace LabFusion.Representation
                 return;
 
             if (grip) {
-                grip.OnGrabConfirm(hand, true);
+                grip.OnGrabConfirm(hand, false);
+                RigReferences.SetSnatch(handedness, grip);
             }
         }
 
@@ -83,7 +84,11 @@ namespace LabFusion.Representation
             if (hand == null)
                 return;
 
-            hand.DetachObject();
+            var grip = RigReferences.GetSnatch(handedness);
+            if (grip)
+                grip.ForceDetach(hand);
+            else
+                hand.DetachObject();
         }
 
         public void SwapAvatar(string barcode) {
@@ -168,7 +173,7 @@ namespace LabFusion.Representation
             PlayerRepUtilities.FillTransformArray(ref repTransforms, rig);
         }
 
-        public static void OnRecreateReps(bool isSceneLoad = false) {
+        public static void OnRecreateReps() {
             foreach (var rep in Representations.Values) {
                 rep.CreateRep();
             }
@@ -203,55 +208,6 @@ namespace LabFusion.Representation
                 // Literally no reason this should happen but it does
                 // Doesn't cause anything soooo
             }
-        }
-
-        public void FixedUpdate() {
-            try {
-                OnHandFixedUpdate(RigReferences.LeftHand);
-                OnHandFixedUpdate(RigReferences.RightHand);
-            }
-            catch (Exception e) {
-#if DEBUG
-                FusionLogger.Error($"Failed fixed updating rep with reason: {e.Message}\nTrace:{e.StackTrace}");
-#endif
-            }
-        }
-        
-        public void OnHandFixedUpdate(Hand hand) {
-            // Make sure this rep actually has hands
-            if (hand == null)
-                return;
-
-            // Fixes break force being an issue between grabs
-            if (hand.tempJoint) {
-                var go = hand.m_CurrentAttachedGO;
-
-                Grip grip;
-                if (grip = Grip.Cache.Get(go)) {
-                    // Update hand states
-                    foreach (var pair in grip._handStates) {
-                        if (pair.key == hand) {
-                            var state = pair.Value;
-                            state.isIgnoreAnchorUpdate = true;
-                            state.isIgnoreConnAnchorUpdate = true;
-                        }
-                    }
-
-                    // Update specific grip types
-                    CylinderGrip cylinder;
-                    if (cylinder = grip.TryCast<CylinderGrip>()) {
-                        cylinder.LockJoint(hand);
-                    }
-                }
-
-                hand.tempJoint.breakForce = float.PositiveInfinity;
-                hand.tempJoint.breakTorque = float.PositiveInfinity;
-            }
-        }
-
-        public static void OnRigFixedUpdate() {
-            foreach (var rep in Representations.Values)
-                rep.FixedUpdate();
         }
 
         public void OnUpdateVelocity() {

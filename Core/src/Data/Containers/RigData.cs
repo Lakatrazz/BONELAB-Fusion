@@ -27,7 +27,7 @@ namespace LabFusion.Data
     /// <summary>
     /// A collection of basic rig information for use across PlayerReps and the Main RigManager.
     /// </summary>
-    public struct RigReferenceCollection {
+    public class RigReferenceCollection {
         public RigManager RigManager { get; private set; }
 
         public Grip[] RigGrips { get; private set; }
@@ -37,6 +37,32 @@ namespace LabFusion.Data
 
         public BaseController LeftController { get; private set; }
         public BaseController RightController { get; private set; }
+
+        public Grip LeftSnatchGrip { get; private set; }
+        public Grip RightSnatchGrip { get; private set; }
+
+        public Grip GetSnatch(Handedness handedness) {
+            switch (handedness)
+            {
+                default:
+                    return LeftSnatchGrip;
+                case Handedness.RIGHT:
+                    return RightSnatchGrip;
+            }
+        } 
+
+        public void SetSnatch(Handedness handedness, Grip grip)
+        {
+            switch (handedness)
+            {
+                default:
+                    LeftSnatchGrip = grip;
+                    break;
+                case Handedness.RIGHT:
+                    RightSnatchGrip = grip;
+                    break;
+            }
+        }
 
         public byte? GetIndex(Grip grip) {
             for (byte i = 0; i < RigGrips.Length; i++) {
@@ -52,14 +78,16 @@ namespace LabFusion.Data
             return null;
         }
 
-        public Hand GetHand(Handedness hand) {
-            switch (hand) {
+        public Hand GetHand(Handedness handedness) {
+            switch (handedness) {
                 default:
                     return LeftHand;
                 case Handedness.RIGHT:
                     return RightHand;
             }
         }
+
+        public RigReferenceCollection() { }
 
         public RigReferenceCollection(RigManager rigManager) {
             RigManager = rigManager;
@@ -70,12 +98,15 @@ namespace LabFusion.Data
 
             LeftController = rigManager.openControllerRig.leftController;
             RightController = rigManager.openControllerRig.rightController;
+
+            LeftSnatchGrip = null;
+            RightSnatchGrip = null;
         }
     }
 
     public static class RigData
     {
-        public static RigReferenceCollection RigReferences { get; private set; }
+        public static RigReferenceCollection RigReferences { get; private set; } = new RigReferenceCollection();
 
         public static string RigScene { get; private set; }
         public static string RigAvatarId { get; private set; } = NetworkUtilities.InvalidAvatarId;

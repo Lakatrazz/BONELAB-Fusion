@@ -79,7 +79,7 @@ namespace LabFusion
             FusionLogger.Log($"Main scene {sceneName} was initialized.");
 #endif
 
-            PlayerRep.OnRecreateReps(true);
+            PlayerRep.OnRecreateReps();
         }
 
         public override void OnUpdate() {
@@ -89,10 +89,6 @@ namespace LabFusion
                 CurrentNetworkLayer.OnUpdateLayer();
                 PlayerRep.OnSyncRep();
             }
-        }
-
-        public override void OnFixedUpdate() {
-            PlayerRep.OnRigFixedUpdate();
         }
 
         public override void OnLateUpdate() {
