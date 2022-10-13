@@ -21,6 +21,8 @@ namespace LabFusion.Representation
         public static readonly Dictionary<byte, PlayerRep> Representations = new Dictionary<byte, PlayerRep>();
         public static readonly Dictionary<RigManager, PlayerRep> Managers = new Dictionary<RigManager, PlayerRep>(new UnityComparer());
 
+        public const float PelvisPinMlp = 0.1f;
+
         public PlayerId PlayerId { get; private set; }
         public string Username { get; private set; } = "Unknown";
 
@@ -222,7 +224,7 @@ namespace LabFusion.Representation
 
                 // Apply velocity
                 if (Time.timeScale > 0f && Time.deltaTime > 0f && Time.fixedDeltaTime > 0f)
-                    repPelvis.velocity = PhysXUtils.GetLinearVelocity(repPelvis.transform.position, serializedPelvis.position);
+                    repPelvis.velocity = PhysXUtils.GetLinearVelocity(repPelvis.transform.position, serializedPelvis.position) * PelvisPinMlp;
 
                 // Check for stability teleport
                 if (RigData.RigReferences.RigManager && RigData.RigReferences.RigManager.avatar)
