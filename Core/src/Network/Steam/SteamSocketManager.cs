@@ -45,7 +45,7 @@ namespace LabFusion.Network
 
             ConnectedSteamIds.Remove(pair.Key);
 
-            NetworkUtilities.RemoveUser(pair.Key);
+            InternalServerHelpers.OnUserLeave(pair.Key);
         }
 
         public override void OnMessage(Connection connection, NetIdentity identity, IntPtr data, int size, long messageNum, long recvTime, int channel) {

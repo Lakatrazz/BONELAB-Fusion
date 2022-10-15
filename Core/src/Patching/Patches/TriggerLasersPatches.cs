@@ -29,7 +29,7 @@ namespace LabFusion.Patching
                 TriggerUtilities.Increment(__instance);
                 bool canEnter = TriggerUtilities.CanEnter(__instance);
 #if DEBUG
-                FusionLogger.Log($"Entering TriggerLasers {__instance.name} with number {TriggerUtilities.triggerCount[__instance]} and result {canEnter}");
+                FusionLogger.Log($"Entering TriggerLasers {__instance.name} with number {TriggerUtilities.TriggerCount[__instance]} and result {canEnter}");
 #endif
 
                 return canEnter;
@@ -54,7 +54,7 @@ namespace LabFusion.Patching
                 bool canExit = TriggerUtilities.CanExit(__instance);
 
 #if DEBUG
-                FusionLogger.Log($"Exiting TriggerLasers {__instance.name} with number {TriggerUtilities.triggerCount[__instance]} and result {canExit}");
+                FusionLogger.Log($"Exiting TriggerLasers {__instance.name} with number {TriggerUtilities.TriggerCount[__instance]} and result {canExit}");
 #endif
 
                 return canExit;

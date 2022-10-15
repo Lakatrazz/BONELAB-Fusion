@@ -45,9 +45,9 @@ namespace LabFusion.Representation {
         }
 
         public static void SendObjectAttach(Handedness handedness, Grip grip) { 
-            if (NetworkUtilities.HasServer) {
+            if (NetworkInfo.HasServer) {
                 // Get base values for the message
-                byte smallId = PlayerId.SelfId.SmallId;
+                byte smallId = PlayerIdManager.LocalSmallId;
                 SyncUtilities.SyncGroup group = SyncUtilities.SyncGroup.UNKNOWN;
                 SerializedGrab serializedGrab = null;
                 bool validGrip = false;
@@ -69,7 +69,7 @@ namespace LabFusion.Representation {
                             writer.Write(data);
 
                             using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepGrab, writer)) {
-                                NetworkUtilities.BroadcastMessage(NetworkChannel.Reliable, message);
+                                MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
                             }
                         }
                     }
@@ -78,13 +78,13 @@ namespace LabFusion.Representation {
         }
 
         public static void SendObjectDetach(Handedness handedness) {
-            if (NetworkUtilities.HasServer) {
+            if (NetworkInfo.HasServer) {
                 using (var writer = FusionWriter.Create()) {
-                    using (var data = PlayerRepReleaseData.Create(PlayerId.SelfId.SmallId, handedness)) {
+                    using (var data = PlayerRepReleaseData.Create(PlayerIdManager.LocalSmallId, handedness)) {
                         writer.Write(data);
 
                         using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepRelease, writer)) {
-                            NetworkUtilities.BroadcastMessage(NetworkChannel.Reliable, message);
+                            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
                         }
                     }
                 }

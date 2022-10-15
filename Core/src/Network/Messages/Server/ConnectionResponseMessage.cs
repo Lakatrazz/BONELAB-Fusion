@@ -50,14 +50,14 @@ namespace LabFusion.Network
 
                 // Check the id to see if its our own
                 // If it is, just update our self reference
-                if (data.playerId.LongId == PlayerId.ConstantLongId) {
-                    PlayerId.UpdateSelfId();
+                if (data.playerId.LongId == PlayerIdManager.LocalLongId) {
+                    PlayerIdManager.ApplyLocalId();
 
                     if (RigData.RigReferences.RigManager)
                         RigData.OnRigRescale();
 
 #if DEBUG    
-                    FusionLogger.Log($"Assigned our local smallId to {data.playerId.SmallId}, real id was {PlayerId.SelfId.SmallId}");
+                    FusionLogger.Log($"Assigned our local smallId to {data.playerId.SmallId}, real id was {PlayerIdManager.LocalSmallId}");
 #endif
                 }
                 // Otherwise, create a player rep

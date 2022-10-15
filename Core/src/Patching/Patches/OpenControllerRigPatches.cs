@@ -12,6 +12,7 @@ using UnityEngine;
 
 using LabFusion.Representation;
 using LabFusion.Data;
+using LabFusion.Utilities;
 
 namespace LabFusion.Patches
 {
@@ -20,10 +21,19 @@ namespace LabFusion.Patches
     public class OpenFixedUpdatePatch
     {
         public static void Postfix(OpenControllerRig __instance, float deltaTime) {
-            if (PlayerRep.Managers.ContainsKey(__instance.manager)) {
-                var rep = PlayerRep.Managers[__instance.manager];
-                rep.OnUpdateTransforms();
-                rep.OnUpdateVelocity();
+            try {
+                if (PlayerRep.Managers.ContainsKey(__instance.manager))
+                {
+                    var rep = PlayerRep.Managers[__instance.manager];
+                    rep.OnUpdateTransforms();
+                    rep.OnUpdateVelocity();
+                }
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                FusionLogger.LogException("to execute patch OpenControllerRig.OnFixedUpdate", e);
+#endif
             }
         }
     }
@@ -34,15 +44,25 @@ namespace LabFusion.Patches
     {
         public static bool Prefix(OpenControllerRig __instance)
         {
-            // Check to make sure this isn't the main rig
-            if (__instance.manager != RigData.RigReferences.RigManager) {
-                // Update the time controller to prevent errors
-                if (!__instance.globalTimeControl && RigData.RigReferences.RigManager)
-                    __instance.globalTimeControl = RigData.RigReferences.RigManager.openControllerRig.globalTimeControl;
+            try
+            {
+                // Check to make sure this isn't the main rig
+                if (__instance.manager != RigData.RigReferences.RigManager)
+                {
+                    // Update the time controller to prevent errors
+                    if (!__instance.globalTimeControl && RigData.RigReferences.RigManager)
+                        __instance.globalTimeControl = RigData.RigReferences.RigManager.openControllerRig.globalTimeControl;
 
-                // Return false if we are paused
-                if (Time.timeScale <= 0f)
-                    return false;
+                    // Return false if we are paused
+                    if (Time.timeScale <= 0f)
+                        return false;
+                }
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                FusionLogger.LogException("to execute patch OpenControllerRig.OnEarlyUpdate", e);
+#endif
             }
 
             return true;

@@ -55,14 +55,14 @@ namespace LabFusion.Representation
         public TextMeshProUGUI repNameText;
 
         public SerializedBodyVitals vitals = null;
-        public string avatarId = NetworkUtilities.InvalidAvatarId;
+        public string avatarId = AvatarWarehouseUtilities.INVALID_AVATAR_BARCODE;
 
         public PlayerRep(PlayerId playerId, string barcode)
         {
             PlayerId = playerId;
 
-            if (FusionMod.CurrentNetworkLayer != null)
-                Username = FusionMod.CurrentNetworkLayer.GetUsername(playerId.LongId);
+            if (NetworkInfo.CurrentNetworkLayer != null)
+                Username = NetworkInfo.CurrentNetworkLayer.GetUsername(playerId.LongId);
 
             Representations.Add(playerId.SmallId, this);
             avatarId = barcode;
@@ -265,11 +265,11 @@ namespace LabFusion.Representation
                 }
 
                 using (var writer = FusionWriter.Create()) {
-                    using (var data = PlayerRepTransformData.Create(PlayerId.SelfId.SmallId, syncedPoints, syncedPelvis, syncedPlayspace, syncedLeftController, syncedRightController)) {
+                    using (var data = PlayerRepTransformData.Create(PlayerIdManager.LocalSmallId, syncedPoints, syncedPelvis, syncedPlayspace, syncedLeftController, syncedRightController)) {
                         writer.Write(data);
 
                         using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepTransform, writer)) {
-                            NetworkUtilities.BroadcastMessage(NetworkChannel.Unreliable, message);
+                            MessageSender.BroadcastMessage(NetworkChannel.Unreliable, message);
                         }
                     }
                 }
@@ -285,7 +285,7 @@ namespace LabFusion.Representation
         }
 
         public static void OnSyncRep() {
-            if (NetworkUtilities.HasServer) {
+            if (NetworkInfo.HasServer) {
                 if (!TrySendRep())
                     OnCachePlayerTransforms();
             }

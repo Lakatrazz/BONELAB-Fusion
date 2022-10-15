@@ -136,7 +136,7 @@ namespace LabFusion.Data
         public static RigReferenceCollection RigReferences { get; private set; } = new RigReferenceCollection();
 
         public static string RigScene { get; private set; }
-        public static string RigAvatarId { get; private set; } = NetworkUtilities.InvalidAvatarId;
+        public static string RigAvatarId { get; private set; } = AvatarWarehouseUtilities.INVALID_AVATAR_BARCODE;
 
         public static Vector3 RigSpawn { get; private set; }
         public static Quaternion RigSpawnRot { get; private set; }
@@ -160,13 +160,13 @@ namespace LabFusion.Data
 
         public static void OnRigRescale() {
             // Send body vitals to network
-            if (NetworkUtilities.HasServer) {
+            if (NetworkInfo.HasServer) {
                 using (FusionWriter writer = FusionWriter.Create()) {
-                    using (PlayerRepVitalsData data = PlayerRepVitalsData.Create(PlayerId.SelfId.SmallId, RigReferences.RigManager.bodyVitals)) {
+                    using (PlayerRepVitalsData data = PlayerRepVitalsData.Create(PlayerIdManager.LocalSmallId, RigReferences.RigManager.bodyVitals)) {
                         writer.Write(data);
 
                         using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepVitals, writer)) {
-                            NetworkUtilities.BroadcastMessage(NetworkChannel.Reliable, message);
+                            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
                         }
                     }
                 }
@@ -179,17 +179,17 @@ namespace LabFusion.Data
 
             var grip = Grip.Cache.Get(hand.m_CurrentAttachedGO);
 
-            if (NetworkUtilities.HasServer)
+            if (NetworkInfo.HasServer)
             {
                 using (FusionWriter writer = FusionWriter.Create())
                 {
-                    using (PlayerRepAnchorData data = PlayerRepAnchorData.Create(PlayerId.SelfId.SmallId, new SerializedGripAnchor(hand, grip)))
+                    using (PlayerRepAnchorData data = PlayerRepAnchorData.Create(PlayerIdManager.LocalSmallId, new SerializedGripAnchor(hand, grip)))
                     {
                         writer.Write(data);
 
                         using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepAnchors, writer))
                         {
-                            NetworkUtilities.BroadcastMessage(NetworkChannel.Unreliable, message);
+                            MessageSender.BroadcastMessage(NetworkChannel.Unreliable, message);
                         }
                     }
                 }
@@ -205,13 +205,13 @@ namespace LabFusion.Data
 #endif
 
                     // Send switch message to notify the server
-                    if (NetworkUtilities.HasServer) {
+                    if (NetworkInfo.HasServer) {
                         using (FusionWriter writer = FusionWriter.Create()) {
-                            using (PlayerRepAvatarData data = PlayerRepAvatarData.Create(PlayerId.SelfId.SmallId, barcode)) {
+                            using (PlayerRepAvatarData data = PlayerRepAvatarData.Create(PlayerIdManager.LocalSmallId, barcode)) {
                                 writer.Write(data);
 
                                 using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepAvatar, writer)) {
-                                    NetworkUtilities.BroadcastMessage(NetworkChannel.Reliable, message);
+                                    MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
                                 }
                             }
                         }
@@ -230,7 +230,7 @@ namespace LabFusion.Data
         public static string GetAvatarBarcode() {
             if (RigReferences.RigManager)
                 return RigReferences.RigManager.AvatarCrate.Barcode;
-            return NetworkUtilities.InvalidAvatarId;
+            return AvatarWarehouseUtilities.INVALID_AVATAR_BARCODE;
         }
     }
 }

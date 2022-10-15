@@ -19,8 +19,8 @@ namespace LabFusion.Network
     public class SteamNetworkLayer : NetworkLayer {
         public const uint ApplicationID = 1592190;
 
-        public override bool IsServer => _isServerActive;
-        public override bool IsClient => _isConnectionActive;
+        internal override bool IsServer => _isServerActive;
+        internal override bool IsClient => _isConnectionActive;
 
         public SteamId SteamId;
 
@@ -32,7 +32,7 @@ namespace LabFusion.Network
 
         protected string _targetJoinId;
 
-        public override void OnInitializeLayer() {
+        internal override void OnInitializeLayer() {
             SteamAPILoader.OnLoadSteamAPI();
 
             try {
@@ -43,10 +43,10 @@ namespace LabFusion.Network
             }
         }
 
-        public override void OnLateInitializeLayer() { 
+        internal override void OnLateInitializeLayer() { 
             if (SteamClient.IsLoggedOn) {
                 SteamId = SteamClient.SteamId;
-                PlayerId.SetConstantId(SteamId.Value);
+                PlayerIdManager.SetLongId(SteamId.Value);
                 FusionLogger.Log($"Steamworks initialized with SteamID {SteamId}!");
 
                 SteamNetworkingUtils.InitRelayNetworkAccess();
@@ -56,11 +56,11 @@ namespace LabFusion.Network
             }
         }
 
-        public override void OnCleanupLayer() {
+        internal override void OnCleanupLayer() {
             SteamAPILoader.OnFreeSteamAPI();
         }
 
-        public override void OnUpdateLayer() {
+        internal override void OnUpdateLayer() {
             SteamClient.RunCallbacks();
 
             try {
@@ -76,7 +76,7 @@ namespace LabFusion.Network
             }
         }
 
-        public override void OnLateUpdateLayer() {
+        internal override void OnLateUpdateLayer() {
             try {
                 // Server flushing
                 if (SteamServer != null) {
@@ -94,11 +94,11 @@ namespace LabFusion.Network
             }
         }
 
-        public override string GetUsername(ulong userId) {
+        internal override string GetUsername(ulong userId) {
             return new Friend(userId).Name;
         }
 
-        public override void BroadcastMessage(NetworkChannel channel, FusionMessage message) {
+        internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message) {
             if (IsServer) {
                 SteamSocketHandler.BroadcastToClients(SteamServer, channel, message);
             }
@@ -107,19 +107,19 @@ namespace LabFusion.Network
             }
         }
 
-        public override void SendServerMessage(byte userId, NetworkChannel channel, FusionMessage message) {
-            var id = PlayerId.GetPlayerId(userId);
+        internal override void SendServerMessage(byte userId, NetworkChannel channel, FusionMessage message) {
+            var id = PlayerIdManager.GetPlayerId(userId);
             if (id != null)
                 SendServerMessage(id.LongId, channel, message);
         }
 
-        public override void SendServerMessage(ulong userId, NetworkChannel channel, FusionMessage message) {
+        internal override void SendServerMessage(ulong userId, NetworkChannel channel, FusionMessage message) {
             if (IsServer && SteamServer.ConnectedSteamIds.ContainsKey(userId)) {
                 SteamServer.SendToClient(SteamServer.ConnectedSteamIds[userId], channel, message);
             }
         }
 
-        public override void StartServer()
+        internal override void StartServer()
         {
             SteamServer = SteamNetworkingSockets.CreateRelaySocket<SteamSocketManager>(0);
 
@@ -132,7 +132,7 @@ namespace LabFusion.Network
             // Go ahead and fill in our own id
             var id = new PlayerId(SteamId, 0);
             id.Insert();
-            PlayerId.UpdateSelfId();
+            PlayerIdManager.ApplyLocalId();
         }
 
         public void JoinServer(SteamId serverId)
@@ -154,29 +154,27 @@ namespace LabFusion.Network
             }
         }
 
-        public override void Disconnect()
+        internal override void Disconnect()
         {
-            try
-            {
+            try {
                 // Shutdown connections/sockets. I put this in try block because if player 2 is leaving they don't have a socketManager to close, only connection
                 if (SteamConnection != null)
                     SteamConnection.Close();
-
+                
                 if (SteamServer != null)
                     SteamServer.Close();
             }
-            catch
-            {
+            catch {
                 FusionLogger.Log("Error closing socket server / connection manager");
             }
 
             _isServerActive = false;
             _isConnectionActive = false;
 
-            NetworkUtilities.OnDisconnect();
+            InternalServerHelpers.OnDisconnect();
         }
 
-        public override void OnGUILayer() {
+        internal override void OnGUILayer() {
             var origin = new Vector2(10, 10);
             var size = new Vector2(300, 20);
 
@@ -190,11 +188,11 @@ namespace LabFusion.Network
 
             if (_isServerActive) {
                 if (GUI.Button(new Rect(origin, size), "Stop Server"))
-                    Disconnect();
+                    NetworkHelper.Disconnect();
             }
             else if (_isConnectionActive) {
                 if (GUI.Button(new Rect(origin, size), "Disconnect"))
-                    Disconnect();
+                    NetworkHelper.Disconnect();
 
                 origin.y += 30;
 

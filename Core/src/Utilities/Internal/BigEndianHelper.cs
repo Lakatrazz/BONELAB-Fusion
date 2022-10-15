@@ -9,7 +9,7 @@ namespace LabFusion.Utilities
     /// <summary>
     ///     Helper class for writing primitives to arrays in big endian format.
     /// </summary>
-    public static class BigEndianHelper
+    internal static class BigEndianHelper
     {
         /// <summary>
         ///     Writes the bytes from the short to the destination array at offset.
@@ -17,7 +17,7 @@ namespace LabFusion.Utilities
         /// <param name="destination">The array to write to.</param>
         /// <param name="offset">The position of the array to begin writing.</param>
         /// <param name="value">The value to write.</param>
-        public static void WriteBytes(byte[] destination, int offset, short value)
+        internal static void WriteBytes(byte[] destination, int offset, short value)
         {
             destination[offset] = (byte)(value >> 8);
             destination[offset + 1] = (byte)value;
@@ -29,7 +29,7 @@ namespace LabFusion.Utilities
         /// <param name="destination">The array to write to.</param>
         /// <param name="offset">The position of the array to begin writing.</param>
         /// <param name="value">The value to write.</param>
-        public static void WriteBytes(byte[] destination, int offset, ushort value)
+        internal static void WriteBytes(byte[] destination, int offset, ushort value)
         {
             destination[offset] = (byte)(value >> 8);
             destination[offset + 1] = (byte)value;
@@ -41,7 +41,7 @@ namespace LabFusion.Utilities
         /// <param name="destination">The array to write to.</param>
         /// <param name="offset">The position of the array to begin writing.</param>
         /// <param name="value">The value to write.</param>
-        public static void WriteBytes(byte[] destination, int offset, int value)
+        internal static void WriteBytes(byte[] destination, int offset, int value)
         {
             destination[offset] = (byte)(value >> 24);
             destination[offset + 1] = (byte)(value >> 16);
@@ -55,7 +55,7 @@ namespace LabFusion.Utilities
         /// <param name="destination">The array to write to.</param>
         /// <param name="offset">The position of the array to begin writing.</param>
         /// <param name="value">The value to write.</param>
-        public static void WriteBytes(byte[] destination, int offset, uint value)
+        internal static void WriteBytes(byte[] destination, int offset, uint value)
         {
             destination[offset] = (byte)(value >> 24);
             destination[offset + 1] = (byte)(value >> 16);
@@ -69,7 +69,7 @@ namespace LabFusion.Utilities
         /// <param name="destination">The array to write to.</param>
         /// <param name="offset">The position of the array to begin writing.</param>
         /// <param name="value">The value to write.</param>
-        public static void WriteBytes(byte[] destination, int offset, long value)
+        internal static void WriteBytes(byte[] destination, int offset, long value)
         {
             destination[offset] = (byte)(value >> 56);
             destination[offset + 1] = (byte)(value >> 48);
@@ -87,7 +87,7 @@ namespace LabFusion.Utilities
         /// <param name="destination">The array to write to.</param>
         /// <param name="offset">The position of the array to begin writing.</param>
         /// <param name="value">The value to write.</param>
-        public static void WriteBytes(byte[] destination, int offset, ulong value)
+        internal static void WriteBytes(byte[] destination, int offset, ulong value)
         {
             destination[offset] = (byte)(value >> 56);
             destination[offset + 1] = (byte)(value >> 48);
@@ -105,7 +105,7 @@ namespace LabFusion.Utilities
         /// <param name="destination">The array to write to.</param>
         /// <param name="offset">The position of the array to begin writing.</param>
         /// <param name="value">The value to write.</param>
-        public unsafe static void WriteBytes(byte[] destination, int offset, float value)
+        internal unsafe static void WriteBytes(byte[] destination, int offset, float value)
         {
             float* ptr = &value;
             uint value2 = *(uint*)ptr;
@@ -118,7 +118,7 @@ namespace LabFusion.Utilities
         /// <param name="destination">The array to write to.</param>
         /// <param name="offset">The position of the array to begin writing.</param>
         /// <param name="value">The value to write.</param>
-        public unsafe static void WriteBytes(byte[] destination, int offset, double value)
+        internal unsafe static void WriteBytes(byte[] destination, int offset, double value)
         {
             double* ptr = &value;
             ulong value2 = *(ulong*)ptr;
@@ -131,7 +131,7 @@ namespace LabFusion.Utilities
         /// <param name="source">The array to read from.</param>
         /// <param name="offset">The position to begin reading from.</param>
         /// <returns>The short read.</returns>
-        public static short ReadInt16(byte[] source, int offset)
+        internal static short ReadInt16(byte[] source, int offset)
         {
             return (short)((source[offset] << 8) | source[offset + 1]);
         }
@@ -142,7 +142,7 @@ namespace LabFusion.Utilities
         /// <param name="source">The array to read from.</param>
         /// <param name="offset">The position to begin reading from.</param>
         /// <returns>The unsigned short read.</returns>
-        public static ushort ReadUInt16(byte[] source, int offset)
+        internal static ushort ReadUInt16(byte[] source, int offset)
         {
             return (ushort)((source[offset] << 8) | source[offset + 1]);
         }
@@ -153,7 +153,7 @@ namespace LabFusion.Utilities
         /// <param name="source">The array to read from.</param>
         /// <param name="offset">The position to begin reading from.</param>
         /// <returns>The integer read.</returns>
-        public static int ReadInt32(byte[] source, int offset)
+        internal static int ReadInt32(byte[] source, int offset)
         {
             return (source[offset] << 24) | (source[offset + 1] << 16) | (source[offset + 2] << 8) | source[offset + 3];
         }
@@ -164,7 +164,7 @@ namespace LabFusion.Utilities
         /// <param name="source">The array to read from.</param>
         /// <param name="offset">The position to begin reading from.</param>
         /// <returns>The unsigned integer read.</returns>
-        public static uint ReadUInt32(byte[] source, int offset)
+        internal static uint ReadUInt32(byte[] source, int offset)
         {
             return (uint)((source[offset] << 24) | (source[offset + 1] << 16) | (source[offset + 2] << 8) | source[offset + 3]);
         }
@@ -175,7 +175,7 @@ namespace LabFusion.Utilities
         /// <param name="source">The array to read from.</param>
         /// <param name="offset">The position to begin reading from.</param>
         /// <returns>The long read.</returns>
-        public static long ReadInt64(byte[] source, int offset)
+        internal static long ReadInt64(byte[] source, int offset)
         {
             return (long)(((ulong)source[offset] << 56) | ((ulong)source[offset + 1] << 48) | ((ulong)source[offset + 2] << 40) | ((ulong)source[offset + 3] << 32) | ((ulong)source[offset + 4] << 24) | ((ulong)source[offset + 5] << 16) | ((ulong)source[offset + 6] << 8) | source[offset + 7]);
         }
@@ -186,7 +186,7 @@ namespace LabFusion.Utilities
         /// <param name="source">The array to read from.</param>
         /// <param name="offset">The position to begin reading from.</param>
         /// <returns>The unsigned long read.</returns>
-        public static ulong ReadUInt64(byte[] source, int offset)
+        internal static ulong ReadUInt64(byte[] source, int offset)
         {
             return ((ulong)source[offset] << 56) | ((ulong)source[offset + 1] << 48) | ((ulong)source[offset + 2] << 40) | ((ulong)source[offset + 3] << 32) | ((ulong)source[offset + 4] << 24) | ((ulong)source[offset + 5] << 16) | ((ulong)source[offset + 6] << 8) | source[offset + 7];
         }
@@ -197,7 +197,7 @@ namespace LabFusion.Utilities
         /// <param name="source">The array to read from.</param>
         /// <param name="offset">The position to begin reading from.</param>
         /// <returns>The single read.</returns>
-        public unsafe static float ReadSingle(byte[] source, int offset)
+        internal unsafe static float ReadSingle(byte[] source, int offset)
         {
             uint num = ReadUInt32(source, offset);
             uint* ptr = &num;
@@ -210,7 +210,7 @@ namespace LabFusion.Utilities
         /// <param name="source">The array to read from.</param>
         /// <param name="offset">The position to begin reading from.</param>
         /// <returns>The double read.</returns>
-        public unsafe static double ReadDouble(byte[] source, int offset)
+        internal unsafe static double ReadDouble(byte[] source, int offset)
         {
             ulong num = ReadUInt64(source, offset);
             ulong* ptr = &num;
@@ -222,7 +222,7 @@ namespace LabFusion.Utilities
         /// </summary>
         /// <param name="value">The bytes to swap.</param>
         /// <returns>The reversed bytes.</returns>
-        public static ushort SwapBytes(ushort value)
+        internal static ushort SwapBytes(ushort value)
         {
             return (ushort)(((value & 0xFF) << 8) | ((value & 0xFF00) >> 8));
         }
@@ -232,7 +232,7 @@ namespace LabFusion.Utilities
         /// </summary>
         /// <param name="value">The bytes to swap.</param>
         /// <returns>The reversed bytes.</returns>
-        public static uint SwapBytes(uint value)
+        internal static uint SwapBytes(uint value)
         {
             return ((value & 0xFF) << 24) | ((value & 0xFF00) << 8) | ((value & 0xFF0000) >> 8) | ((value & 0xFF000000u) >> 24);
         }
@@ -242,7 +242,7 @@ namespace LabFusion.Utilities
         /// </summary>
         /// <param name="value">The bytes to swap.</param>
         /// <returns>The reversed bytes.</returns>
-        public static ulong SwapBytes(ulong value)
+        internal static ulong SwapBytes(ulong value)
         {
             return ((value & 0xFF) << 56) | ((value & 0xFF00) << 40) | ((value & 0xFF0000) << 24) | ((value & 0xFF000000u) << 8) | ((value & 0xFF00000000L) >> 8) | ((value & 0xFF0000000000L) >> 24) | ((value & 0xFF000000000000L) >> 40) | ((value & 0xFF00000000000000uL) >> 56);
         }

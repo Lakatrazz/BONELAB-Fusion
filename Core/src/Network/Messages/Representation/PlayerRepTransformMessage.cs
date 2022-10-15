@@ -90,16 +90,16 @@ namespace LabFusion.Network {
                 var data = reader.ReadFusionSerializable<PlayerRepTransformData>();
 
                 // Send message to other clients if server
-                if (NetworkUtilities.IsServer && isServerHandled) {
+                if (NetworkInfo.IsServer && isServerHandled) {
                     if (data.smallId != 0) {
                         using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            FusionMod.CurrentNetworkLayer.BroadcastMessageExcept(data.smallId, NetworkChannel.Unreliable, message);
+                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Unreliable, message);
                         }
                     }
                 }
 
                 // Apply player rep data
-                if (data.smallId != PlayerId.SelfId.SmallId && PlayerRep.Representations.ContainsKey(data.smallId)) {
+                if (data.smallId != PlayerIdManager.LocalSmallId && PlayerRep.Representations.ContainsKey(data.smallId)) {
                     var rep = PlayerRep.Representations[data.smallId];
                     rep.repControllerRig.feetOffset = data.feetOffset;
                     rep.serializedTransforms = data.serializedTransforms;

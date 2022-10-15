@@ -60,7 +60,7 @@ namespace LabFusion.Network
         {
             using (FusionReader reader = FusionReader.Create(bytes)) {
                 using (var data = reader.ReadFusionSerializable<PlayerRepAnchorData>()) {
-                    if (data.smallId != PlayerId.SelfId.SmallId) {
+                    if (data.smallId != PlayerIdManager.LocalSmallId) {
                         var rep = data.GetRep();
 
                         if (rep != null) {
@@ -70,9 +70,9 @@ namespace LabFusion.Network
                         }
 
                         // Send message to other clients if server
-                        if (NetworkUtilities.IsServer && isServerHandled) {
+                        if (NetworkInfo.IsServer && isServerHandled) {
                             using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                                FusionMod.CurrentNetworkLayer.BroadcastMessageExcept(data.smallId, NetworkChannel.Unreliable, message);
+                                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Unreliable, message);
                             }
                         }
                     }

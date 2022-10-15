@@ -20,8 +20,8 @@ namespace LabFusion.Utilities {
         internal static bool IsLoadingAllowed = false;
 
         private static object _activeLoadCoroutine;
-
         private static string _targetLevelBarcode;
+        private static string _prevLevelBarcode = null;
 
         public static LevelCrate GetCurrentLevel() {
             return SceneStreamer.Session.Level;
@@ -58,6 +58,23 @@ namespace LabFusion.Utilities {
                 yield return null;
 
             SendToStreamer();
+        }
+
+        internal static void OnUpdateLevelLoading() {
+            // If the loading has finished, we can check to update the load method
+            if (IsLoadDone()) {
+                var code = GetCurrentLevel().Barcode;
+
+                if (_prevLevelBarcode != code) {
+                    FusionMod.OnMainSceneInitialized();
+                    _prevLevelBarcode = code;
+                }
+            }
+            // If we are in the loading screen we need to make sure to reset this value
+            // Otherwise, reloading the scene will never notify the game
+            else if (IsLoading()) {
+                _prevLevelBarcode = null;
+            }
         }
     }
 }

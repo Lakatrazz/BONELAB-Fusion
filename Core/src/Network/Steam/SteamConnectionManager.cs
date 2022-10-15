@@ -26,7 +26,7 @@ namespace LabFusion.Network
         public override void OnDisconnected(ConnectionInfo info) {
             base.OnDisconnected(info);
 
-            NetworkUtilities.OnDisconnect();
+            NetworkHelper.Disconnect();
 
 #if DEBUG
             FusionLogger.Log("Client was disconnected.");

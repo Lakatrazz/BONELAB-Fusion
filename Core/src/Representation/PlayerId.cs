@@ -10,41 +10,8 @@ using LabFusion.Network;
 namespace LabFusion.Representation
 {
     public class PlayerId : IFusionSerializable, IDisposable {
-        public static readonly List<PlayerId> PlayerIds = new List<PlayerId>();
-
-        public static ulong ConstantLongId { get; private set; }
-        public static PlayerId SelfId { get; private set; }
-
         public ulong LongId { get; private set; }
         public byte SmallId { get; private set; }
-
-        public static byte? GetUnusedPlayerId() {
-            for (byte i = 0; i < 255; i++) {
-                if (GetPlayerId(i) == null)
-                    return i;
-            }
-            return null;
-        }
-
-        public static PlayerId GetPlayerId(byte smallId) {
-            return PlayerIds.FirstOrDefault(x => x.SmallId == smallId);
-        }
-
-        public static PlayerId GetPlayerId(ulong longId) {
-            return PlayerIds.FirstOrDefault(x => x.LongId == longId);
-        }
-
-        public static void UpdateSelfId() {
-            var id = GetPlayerId(ConstantLongId);
-            if (id != null)
-                SelfId = id;
-            else
-                SelfId = null;
-        }
-
-        public static void SetConstantId(ulong longId) {
-            ConstantLongId = longId;
-        }
 
         public PlayerId() { }
 
@@ -54,13 +21,13 @@ namespace LabFusion.Representation
         }
 
         public void Insert() {
-            PlayerIds.Add(this);
+            PlayerIdManager.PlayerIds.Add(this);
         }
 
         public void Dispose() {
-            PlayerIds.Remove(this);
-            if (SelfId == this)
-                SelfId = null;
+            PlayerIdManager.PlayerIds.Remove(this);
+            if (PlayerIdManager.LocalId == this)
+                PlayerIdManager.RemoveLocalId();
 
             GC.SuppressFinalize(this);
         }

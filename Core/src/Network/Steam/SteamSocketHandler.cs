@@ -65,7 +65,7 @@ namespace LabFusion.Network
             System.Runtime.InteropServices.Marshal.Copy(message.Buffer, 0, intPtrMessage, sizeOfMessage);
 
             foreach (var connection in socketManager.Connected) {
-                var playerId = PlayerId.GetPlayerId(smallId);
+                var playerId = PlayerIdManager.GetPlayerId(smallId);
 
                 if (playerId != null && SteamNetworkLayer.SteamServer.ConnectedSteamIds.ContainsKey(playerId.LongId) && SteamNetworkLayer.SteamServer.ConnectedSteamIds[playerId.LongId] != connection)
                     connection.SendMessage(intPtrMessage, sizeOfMessage, sendType);

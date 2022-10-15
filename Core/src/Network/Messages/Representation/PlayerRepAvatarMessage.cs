@@ -49,9 +49,9 @@ namespace LabFusion.Network
                     }
 
                     // Bounce the message back
-                    if (NetworkUtilities.IsServer) {
+                    if (NetworkInfo.IsServer) {
                         using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            FusionMod.CurrentNetworkLayer.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
+                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
                         }
                     }
                 }

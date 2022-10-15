@@ -12,6 +12,7 @@ using HarmonyLib;
 
 using LabFusion.Data;
 using LabFusion.Representation;
+using LabFusion.Utilities;
 
 namespace LabFusion.Patching
 {
@@ -19,11 +20,18 @@ namespace LabFusion.Patching
     public static class AttachObjectPatch
     {
         public static void Prefix(Hand __instance, GameObject objectToAttach) {
-            // Make sure this is the main rig
-            if (__instance.manager != RigData.RigReferences.RigManager)
-                return;
+            try {
+                // Make sure this is the main rig
+                if (__instance.manager != RigData.RigReferences.RigManager)
+                    return;
 
-            PlayerRepUtilities.SendObjectAttach(__instance.handedness, Grip.Cache.Get(objectToAttach));
+                PlayerRepUtilities.SendObjectAttach(__instance.handedness, Grip.Cache.Get(objectToAttach));
+            }
+            catch (Exception e) {
+#if DEBUG
+                FusionLogger.LogException("to execute patch Hand.AttachObject", e);
+#endif
+            }
         }
     }
 
@@ -31,15 +39,22 @@ namespace LabFusion.Patching
     public static class DetachObjectPatch
     {
         public static void Prefix(Hand __instance) {
-            // Make sure this is the main rig
-            if (__instance.manager != RigData.RigReferences.RigManager)
-                return;
+            try {
+                // Make sure this is the main rig
+                if (__instance.manager != RigData.RigReferences.RigManager)
+                    return;
 
-            // Make sure we actually have something to detach
-            if (!__instance.HasAttachedObject())
-                return;
+                // Make sure we actually have something to detach
+                if (!__instance.HasAttachedObject())
+                    return;
 
-            PlayerRepUtilities.SendObjectDetach(__instance.handedness);
+                PlayerRepUtilities.SendObjectDetach(__instance.handedness);
+            }
+            catch (Exception e) {
+#if DEBUG
+                FusionLogger.LogException("to execute patch Hand.DetachObject", e);
+#endif
+            }
         }
     }
 

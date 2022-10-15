@@ -5,8 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace LabFusion.Utilities {
-    public static class SyncUtilities
-    {
+    public static class SyncUtilities {
         public enum SyncGroup : byte {
             UNKNOWN = 0,
             PLAYER_BODY = 1,

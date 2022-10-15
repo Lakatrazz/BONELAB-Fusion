@@ -16,10 +16,18 @@ namespace LabFusion.Patching
     [HarmonyPatch(typeof(AssetPoolee), "OnSpawn")]
     public class PooleeSpawnPatch {
         public static void Postfix(AssetPoolee __instance, ulong spawnId) {
-            bool isFadeOutVfx = __instance.spawnableCrate && __instance.spawnableCrate.Barcode == AssetWarehouseUtilities.FADE_OUT_BARCODE;
+            try {
+                bool isFadeOutVfx = __instance.spawnableCrate && __instance.spawnableCrate.Barcode == SpawnableWarehouseUtilities.FADE_OUT_BARCODE;
 
-            if (isFadeOutVfx && NetworkUtilities.HasServer && !NetworkUtilities.IsServer) {
-                __instance.gameObject.SetActive(false);
+                if (isFadeOutVfx && NetworkInfo.HasServer && !NetworkInfo.IsServer)
+                {
+                    __instance.gameObject.SetActive(false);
+                }
+            } 
+            catch (Exception e) {
+#if DEBUG
+                FusionLogger.LogException("to execute patch AssetPoolee.OnSpawn", e);
+#endif
             }
         }
     }

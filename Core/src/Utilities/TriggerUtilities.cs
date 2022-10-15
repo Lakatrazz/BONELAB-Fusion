@@ -12,41 +12,38 @@ using UnityEngine;
 
 namespace LabFusion.Utilities {
     public static class TriggerUtilities {
-        public static Dictionary<TriggerLasers, int> triggerCount = new Dictionary<TriggerLasers, int>(new UnityComparer());
+        public static readonly Dictionary<TriggerLasers, int> TriggerCount = new Dictionary<TriggerLasers, int>(new UnityComparer());
 
-        public static void Increment(TriggerLasers trigger)
-        {
-            if (!triggerCount.ContainsKey(trigger))
-                triggerCount.Add(trigger, 0);
+        internal static void Increment(TriggerLasers trigger) {
+            if (!TriggerCount.ContainsKey(trigger))
+                TriggerCount.Add(trigger, 0);
 
-            triggerCount[trigger]++;
+            TriggerCount[trigger]++;
         }
 
-        public static void Decrement(TriggerLasers trigger)
-        {
-            if (!triggerCount.ContainsKey(trigger))
-                triggerCount.Add(trigger, 0);
+        internal static void Decrement(TriggerLasers trigger) {
+            if (!TriggerCount.ContainsKey(trigger))
+                TriggerCount.Add(trigger, 0);
 
-            triggerCount[trigger]--;
-            triggerCount[trigger] = Mathf.Clamp(triggerCount[trigger], 0, int.MaxValue);
+            TriggerCount[trigger]--;
+            TriggerCount[trigger] = Mathf.Clamp(TriggerCount[trigger], 0, int.MaxValue);
         }
 
         public static bool CanEnter(TriggerLasers trigger)
         {
-            if (!triggerCount.ContainsKey(trigger))
+            if (!TriggerCount.ContainsKey(trigger))
                 return false;
 
-            return triggerCount[trigger] <= 1;
+            return TriggerCount[trigger] <= 1;
         }
 
         public static bool CanExit(TriggerLasers trigger)
         {
-            if (!triggerCount.ContainsKey(trigger))
+            if (!TriggerCount.ContainsKey(trigger))
                 return false;
 
-            return triggerCount[trigger] <= 0;
+            return TriggerCount[trigger] <= 0;
         }
-
 
         public static bool IsMainRig(Collider other) {
             var trigger = TriggerRefProxy.Cache.Get(other.gameObject);

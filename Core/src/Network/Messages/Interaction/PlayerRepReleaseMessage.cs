@@ -67,11 +67,11 @@ namespace LabFusion.Network
                     }
 
                     // Send message to other clients if server
-                    if (NetworkUtilities.IsServer && isServerHandled) {
+                    if (NetworkInfo.IsServer && isServerHandled) {
                         if (data.smallId != 0) {
                             using (var message = FusionMessage.Create(Tag.Value, bytes))
                             {
-                                FusionMod.CurrentNetworkLayer.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
+                                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
                             }
                         }
                     }

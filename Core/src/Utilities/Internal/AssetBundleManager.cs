@@ -10,10 +10,10 @@ using LabFusion.Data;
 
 namespace LabFusion.Utilities
 {
-    public static class AssetBundleManager {
-        public static AssetBundle PlayerRepBundle { get; private set; }
+    internal static class AssetBundleManager {
+        internal static AssetBundle PlayerRepBundle { get; private set; }
 
-        public static void OnLoadBundles() {
+        internal static void OnLoadBundles() {
             PlayerRepBundle = EmebeddedAssetBundle.LoadFromAssembly(FusionMod.FusionAssembly, ResourcePaths.PlayerRepPath);
 
             if (PlayerRepBundle == null)

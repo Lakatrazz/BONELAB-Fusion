@@ -27,7 +27,7 @@ namespace LabFusion.Network
         }
 
         public void Dispose() {
-            var playerId = PlayerId.GetPlayerId(longId);
+            var playerId = PlayerIdManager.GetPlayerId(longId);
             if (playerId != null)
                 playerId.Dispose();
 
@@ -40,13 +40,13 @@ namespace LabFusion.Network
         public override byte? Tag => NativeMessageTag.Disconnect;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
-            if (!FusionMod.CurrentNetworkLayer.IsServer) {
+            if (!NetworkInfo.CurrentNetworkLayer.IsServer) {
                 using (var reader = FusionReader.Create(bytes)) {
                     var data = reader.ReadFusionSerializable<DisconnectMessageData>();
 
                     // If this is our id, disconnect ourselves
-                    if (data.longId == PlayerId.SelfId.LongId) {
-                        FusionMod.CurrentNetworkLayer.Disconnect();
+                    if (data.longId == PlayerIdManager.LocalLongId) {
+                        NetworkHelper.Disconnect();
 
 #if DEBUG
                         FusionLogger.Log("The server has requested you disconnect.");
@@ -54,7 +54,7 @@ namespace LabFusion.Network
                     }
                     // Otherwise, disconnect the other person in the lobby
                     else {
-                        NetworkUtilities.RemoveUser(data.longId);
+                        InternalServerHelpers.OnUserLeave(data.longId);
                     }
                 }
             }

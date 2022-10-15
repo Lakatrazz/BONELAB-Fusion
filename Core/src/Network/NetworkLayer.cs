@@ -1,27 +1,43 @@
-﻿using LabFusion.Representation;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using LabFusion.Representation;
+
 namespace LabFusion.Network
 {
+    /// <summary>
+    /// The foundational class for a server's networking system.
+    /// </summary>
     public abstract class NetworkLayer {
-        public virtual bool IsServer => false;
+        /// <summary>
+        /// Returns true if this layer is hosting a server.
+        /// </summary>
+        internal virtual bool IsServer => false;
 
-        public virtual bool IsClient => false;
+        /// <summary>
+        /// Returns true if this layer is a client inside of a server (still returns true if this is the host!)
+        /// </summary>
+        internal virtual bool IsClient => false;
 
-        public abstract void StartServer();
+        /// <summary>
+        /// Starts the server.
+        /// </summary>
+        internal abstract void StartServer();
 
-        public abstract void Disconnect();
+        /// <summary>
+        /// Disconnects the client from the connection and/or server.
+        /// </summary>
+        internal abstract void Disconnect();
 
         /// <summary>
         /// Returns the username of the player with id userId.
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public virtual string GetUsername(ulong userId) => "Unknown";
+        internal virtual string GetUsername(ulong userId) => "Unknown";
 
         /// <summary>
         /// Sends the message to the specified user if this is a server.
@@ -29,7 +45,7 @@ namespace LabFusion.Network
         /// <param name="userId"></param>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        public virtual void SendServerMessage(byte userId, NetworkChannel channel, FusionMessage message) { }
+        internal virtual void SendServerMessage(byte userId, NetworkChannel channel, FusionMessage message) { }
 
         /// <summary>
         /// Sends the message to the specified user if this is a server.
@@ -37,15 +53,14 @@ namespace LabFusion.Network
         /// <param name="userId"></param>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        public virtual void SendServerMessage(ulong userId, NetworkChannel channel, FusionMessage message) { }
-
+        internal virtual void SendServerMessage(ulong userId, NetworkChannel channel, FusionMessage message) { }
 
         /// <summary>
         /// Sends the message to the server if this is a client. Sends to all clients if this is a server.
         /// </summary>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        public virtual void BroadcastMessage(NetworkChannel channel, FusionMessage message) { }
+        internal virtual void BroadcastMessage(NetworkChannel channel, FusionMessage message) { }
 
         /// <summary>
         /// If this is a server, sends this message back to all users except for the provided id.
@@ -53,23 +68,37 @@ namespace LabFusion.Network
         /// <param name="userId"></param>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        public virtual void BroadcastMessageExcept(byte userId, NetworkChannel  channel, FusionMessage message) {
-            foreach (var id in PlayerId.PlayerIds) {
+        internal virtual void BroadcastMessageExcept(byte userId, NetworkChannel  channel, FusionMessage message) {
+            foreach (var id in PlayerIdManager.PlayerIds) {
                 if (id.SmallId != userId)
                     SendServerMessage(id.SmallId, channel, message);
             }
         }
 
-        public abstract void OnInitializeLayer();
+        /// <summary>
+        /// If this is a server, sends this message back to all users except for the provided id.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="channel"></param>
+        /// <param name="message"></param>
+        internal virtual void BroadcastMessageExcept(ulong userId, NetworkChannel channel, FusionMessage message)
+        {
+            foreach (var id in PlayerIdManager.PlayerIds) {
+                if (id.LongId != userId)
+                    SendServerMessage(id.SmallId, channel, message);
+            }
+        }
 
-        public virtual void OnLateInitializeLayer() { }
+        internal abstract void OnInitializeLayer();
 
-        public abstract void OnCleanupLayer();
+        internal virtual void OnLateInitializeLayer() { }
 
-        public virtual void OnUpdateLayer() { }
+        internal abstract void OnCleanupLayer();
 
-        public virtual void OnLateUpdateLayer() { }
+        internal virtual void OnUpdateLayer() { }
 
-        public virtual void OnGUILayer() { }
+        internal virtual void OnLateUpdateLayer() { }
+
+        internal virtual void OnGUILayer() { }
     }
 }

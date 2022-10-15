@@ -35,7 +35,7 @@ namespace LabFusion.Patching
         [HarmonyPrefix]
         public static bool StringLoad(string levelBarcode, string loadLevelBarcode = "") {
             // Check if we need to exit early
-            if (!LevelWarehouseUtilities.IsLoadingAllowed && NetworkUtilities.HasServer && !NetworkUtilities.IsServer) {
+            if (!LevelWarehouseUtilities.IsLoadingAllowed && NetworkInfo.HasServer && !NetworkInfo.IsServer) {
                 return false;
             }
 
@@ -45,22 +45,36 @@ namespace LabFusion.Patching
         [HarmonyPatch("Load", typeof(LevelCrateReference), typeof(LevelCrateReference))]
         [HarmonyPrefix]
         public static bool CrateLoad(LevelCrateReference level, LevelCrateReference loadLevel) {
-            // Check if we need to exit early
-            if (!LevelWarehouseUtilities.IsLoadingAllowed && NetworkUtilities.HasServer && !NetworkUtilities.IsServer) {
-                return false;
-            }
+            try {
+                // Check if we need to exit early
+                if (!LevelWarehouseUtilities.IsLoadingAllowed && NetworkInfo.HasServer && !NetworkInfo.IsServer)
+                {
+                    return false;
+                }
 
-            // A check to make sure we don't try and send an infinite loop of messages. This is also checked server side.
-            if (NetworkUtilities.IsServer) {
-                using (FusionWriter writer = FusionWriter.Create()) {
-                    using (var data = SceneLoadData.Create(level.Barcode)) {
-                        writer.Write(data);
+                // A check to make sure we don't try and send an infinite loop of messages. This is also checked server side.
+                if (NetworkInfo.IsServer)
+                {
+                    using (FusionWriter writer = FusionWriter.Create())
+                    {
+                        using (var data = SceneLoadData.Create(level.Barcode))
+                        {
+                            writer.Write(data);
 
-                        using (var message = FusionMessage.Create(NativeMessageTag.SceneLoad, writer)) {
-                            NetworkUtilities.BroadcastMessage(NetworkChannel.Reliable, message);
+                            using (var message = FusionMessage.Create(NativeMessageTag.SceneLoad, writer))
+                            {
+                                MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                            }
                         }
                     }
                 }
+            }
+
+            catch (Exception e)
+            {
+#if DEBUG
+                FusionLogger.LogException("to execute patch SceneStreamer.Load", e);
+#endif
             }
 
             return true;

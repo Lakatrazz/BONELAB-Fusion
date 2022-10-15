@@ -27,22 +27,22 @@ namespace LabFusion.Network
 
         public User currentUser;
 
-        public override void OnInitializeLayer() {
+        internal override void OnInitializeLayer() {
             // Load our game SDK
             DiscordSDKLoader.OnLoadGameSDK();
         }
 
-        public override void StartServer()
+        internal override void StartServer()
         {
             throw new NotImplementedException();
         }
 
-        public override void Disconnect()
+        internal override void Disconnect()
         {
             throw new NotImplementedException();
         }
 
-        public override void OnLateInitializeLayer() {
+        internal override void OnLateInitializeLayer() {
             FusionLogger.Log("Initializing Discord Instance");
 
             discord = new Discord.Discord(ApplicationID, (long)CreateFlags.Default);
@@ -66,13 +66,13 @@ namespace LabFusion.Network
             DefaultRichPresence();
         }
 
-        public override void OnUpdateLayer() {
+        internal override void OnUpdateLayer() {
         }
 
-        public override void OnLateUpdateLayer() {
+        internal override void OnLateUpdateLayer() {
         }
 
-        public override void OnCleanupLayer() {
+        internal override void OnCleanupLayer() {
             discord.Dispose();
             DiscordSDKLoader.OnFreeGameSDK();
         }

@@ -40,7 +40,7 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            if (!NetworkUtilities.IsServer && !isServerHandled) {
+            if (!NetworkInfo.IsServer && !isServerHandled) {
                 using (var reader = FusionReader.Create(bytes)) {
                     using (var data = reader.ReadFusionSerializable<SceneLoadData>()) {
                         LevelWarehouseUtilities.LoadClientLevel(data.levelBarcode);

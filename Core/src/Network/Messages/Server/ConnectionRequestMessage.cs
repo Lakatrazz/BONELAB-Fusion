@@ -40,12 +40,12 @@ namespace LabFusion.Network
         public override byte? Tag => NativeMessageTag.ConnectionRequest;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
-            if (FusionMod.CurrentNetworkLayer.IsServer) {
+            if (NetworkInfo.CurrentNetworkLayer.IsServer) {
                 using (FusionReader reader = FusionReader.Create(bytes)) {
                     var data = reader.ReadFusionSerializable<ConnectionRequestData>();
-                    var newSmallId = PlayerId.GetUnusedPlayerId();
+                    var newSmallId = PlayerIdManager.GetUnusedPlayerId();
 
-                    if (PlayerId.GetPlayerId(data.longId) == null && newSmallId.HasValue) {
+                    if (PlayerIdManager.GetPlayerId(data.longId) == null && newSmallId.HasValue) {
 
 #if DEBUG
                         FusionLogger.Log($"Server received user with long id {data.longId}. Assigned small id {newSmallId}");
@@ -57,14 +57,14 @@ namespace LabFusion.Network
                                 writer.Write(response);
 
                                 using (var message = FusionMessage.Create(NativeMessageTag.ConnectionResponse, writer)) {
-                                    NetworkUtilities.BroadcastMessage(NetworkChannel.Reliable, message);
+                                    MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
                                 }
                             }
                         }
 
                         // Now we send all of our other players to the new player
-                        foreach (var id in PlayerId.PlayerIds) {
-                            var barcode = NetworkUtilities.InvalidAvatarId;
+                        foreach (var id in PlayerIdManager.PlayerIds) {
+                            var barcode = AvatarWarehouseUtilities.INVALID_AVATAR_BARCODE;
                             if (id.SmallId == 0)
                                 barcode = RigData.RigAvatarId;
                             else if (PlayerRep.Representations.ContainsKey(id.SmallId))
@@ -75,7 +75,7 @@ namespace LabFusion.Network
                                     writer.Write(response);
 
                                     using (var message = FusionMessage.Create(NativeMessageTag.ConnectionResponse, writer)) {
-                                        NetworkUtilities.SendServerMessage(data.longId, NetworkChannel.Reliable, message);
+                                        MessageSender.SendServerMessage(data.longId, NetworkChannel.Reliable, message);
                                     }
                                 }
                             }
@@ -87,7 +87,7 @@ namespace LabFusion.Network
                                 writer.Write(loadData);
 
                                 using (var message = FusionMessage.Create(NativeMessageTag.SceneLoad, writer)) {
-                                    NetworkUtilities.BroadcastMessage(NetworkChannel.Reliable, message);
+                                    MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
                                 }
                             }
                         }

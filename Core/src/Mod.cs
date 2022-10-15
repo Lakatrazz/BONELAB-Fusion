@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections;
 
 using LabFusion.Data;
 using LabFusion.Network;
@@ -12,15 +7,6 @@ using LabFusion.Representation;
 using LabFusion.Utilities;
 
 using MelonLoader;
-
-using SLZ.Marrow.SceneStreaming;
-
-using UnhollowerRuntimeLib;
-
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using SLZ.Rig;
-using static SLZ.UI.SceneAmmoUI;
 
 namespace LabFusion
 {
@@ -35,9 +21,6 @@ namespace LabFusion
         public static readonly Version Version = new Version(FusionVersion.versionMajor, FusionVersion.versionMinor, FusionVersion.versionPatch);
         public static FusionMod Instance { get; private set; }
         public static Assembly FusionAssembly { get; private set; }
-        public static NetworkLayer CurrentNetworkLayer { get; private set; }
-
-        private static string _prevLevelBarcode = null;
 
         public override void OnEarlyInitializeMelon() {
             Instance = this;
@@ -51,29 +34,15 @@ namespace LabFusion
         }
 
         public override void OnLateInitializeMelon() {
-            if (CurrentNetworkLayer != null)
-                CurrentNetworkLayer.OnLateInitializeLayer();
+            InternalLayerHelpers.OnLateInitializeLayer();
         }
 
         protected void OnInitializeNetworking() {
-            CurrentNetworkLayer = new SteamNetworkLayer();
-            CurrentNetworkLayer.OnInitializeLayer();
+            InternalLayerHelpers.SetLayer(new SteamNetworkLayer());
         }
 
         public override void OnDeinitializeMelon() {
-            if (CurrentNetworkLayer != null)
-                CurrentNetworkLayer.OnCleanupLayer();
-        }
-
-        public static void OnUpdateLevelLoading() {
-            if (LevelWarehouseUtilities.IsLoadDone()) {
-                var code = LevelWarehouseUtilities.GetCurrentLevel().Barcode;
-
-                if (_prevLevelBarcode != code) {
-                    OnMainSceneInitialized();
-                    _prevLevelBarcode = code;
-                }
-            }
+            InternalLayerHelpers.OnCleanupLayer();
         }
 
         public static void OnMainSceneInitialized() {
@@ -88,14 +57,12 @@ namespace LabFusion
         }
 
         public override void OnUpdate() {
-            OnUpdateLevelLoading();
+            LevelWarehouseUtilities.OnUpdateLevelLoading();
 
             RigData.OnRigUpdate();
 
-            if (CurrentNetworkLayer != null) {
-                CurrentNetworkLayer.OnUpdateLayer();
-                PlayerRep.OnSyncRep();
-            }
+            InternalLayerHelpers.OnUpdateLayer();
+            PlayerRep.OnSyncRep();
         }
 
         public override void OnFixedUpdate() {
@@ -103,15 +70,11 @@ namespace LabFusion
         }
 
         public override void OnLateUpdate() {
-            if (CurrentNetworkLayer != null) {
-                CurrentNetworkLayer.OnLateUpdateLayer();
-            }
+            InternalLayerHelpers.OnLateUpdateLayer();
         }
 
         public override void OnGUI() {
-            if (CurrentNetworkLayer != null) {
-                CurrentNetworkLayer.OnGUILayer();
-            }
+            InternalLayerHelpers.OnGUILayer();
         }
     }
 }
