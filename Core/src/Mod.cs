@@ -36,8 +36,6 @@ namespace LabFusion
         public static Assembly FusionAssembly { get; private set; }
         public static NetworkLayer CurrentNetworkLayer { get; private set; }
 
-        private static float _prevTimeScale;
-
         public override void OnEarlyInitializeMelon() {
             Instance = this;
             FusionAssembly = MelonAssembly.Assembly;
@@ -99,13 +97,6 @@ namespace LabFusion
             if (CurrentNetworkLayer != null) {
                 CurrentNetworkLayer.OnLateUpdateLayer();
             }
-
-            // Temp fix for 0, 0, 0 player scale bug! Find a better one in the future that doesn't break third person!
-            if (Time.timeScale > 0f && _prevTimeScale <= 0f && RigData.RigReferences.RigManager) {
-                RigData.RigReferences.RigManager.bodyVitals.CalibratePlayerBodyScale();
-            }
-
-            _prevTimeScale = Time.timeScale;
         }
 
         public override void OnGUI() {
