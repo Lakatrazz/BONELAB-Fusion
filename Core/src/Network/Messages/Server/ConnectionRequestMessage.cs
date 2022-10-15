@@ -1,8 +1,11 @@
 ﻿using LabFusion.Data;
+using LabFusion.Patching;
 using LabFusion.Representation;
 using LabFusion.Utilities;
 
 using System;
+using static MelonLoader.MelonLogger;
+using static SLZ.Bonelab.BonelabProgressionHelper;
 
 namespace LabFusion.Network
 {
@@ -54,7 +57,7 @@ namespace LabFusion.Network
                                 writer.Write(response);
 
                                 using (var message = FusionMessage.Create(NativeMessageTag.ConnectionResponse, writer)) {
-                                    FusionMod.CurrentNetworkLayer.BroadcastMessage(NetworkChannel.Reliable, message);
+                                    NetworkUtilities.BroadcastMessage(NetworkChannel.Reliable, message);
                                 }
                             }
                         }
@@ -72,8 +75,19 @@ namespace LabFusion.Network
                                     writer.Write(response);
 
                                     using (var message = FusionMessage.Create(NativeMessageTag.ConnectionResponse, writer)) {
-                                        FusionMod.CurrentNetworkLayer.SendServerMessage(data.longId, NetworkChannel.Reliable, message);
+                                        NetworkUtilities.SendServerMessage(data.longId, NetworkChannel.Reliable, message);
                                     }
+                                }
+                            }
+                        }
+
+                        // Now, make sure the player loads into the scene
+                        using (FusionWriter writer = FusionWriter.Create()) {
+                            using (var loadData = SceneLoadData.Create(LevelWarehouseUtilities.GetCurrentLevel().Barcode)) {
+                                writer.Write(loadData);
+
+                                using (var message = FusionMessage.Create(NativeMessageTag.SceneLoad, writer)) {
+                                    NetworkUtilities.BroadcastMessage(NetworkChannel.Reliable, message);
                                 }
                             }
                         }

@@ -20,6 +20,7 @@ using UnhollowerRuntimeLib;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using SLZ.Rig;
+using static SLZ.UI.SceneAmmoUI;
 
 namespace LabFusion
 {
@@ -35,6 +36,8 @@ namespace LabFusion
         public static FusionMod Instance { get; private set; }
         public static Assembly FusionAssembly { get; private set; }
         public static NetworkLayer CurrentNetworkLayer { get; private set; }
+
+        private static string _prevLevelBarcode = null;
 
         public override void OnEarlyInitializeMelon() {
             Instance = this;
@@ -62,25 +65,31 @@ namespace LabFusion
                 CurrentNetworkLayer.OnCleanupLayer();
         }
 
-        public override void OnSceneWasLoaded(int buildIndex, string sceneName) {
-            if (!RigData.RigReferences.RigManager)
-                RigData.OnCacheRigInfo(sceneName);
+        public static void OnUpdateLevelLoading() {
+            if (LevelWarehouseUtilities.IsLoadDone()) {
+                var code = LevelWarehouseUtilities.GetCurrentLevel().Barcode;
+
+                if (_prevLevelBarcode != code) {
+                    OnMainSceneInitialized();
+                    _prevLevelBarcode = code;
+                }
+            }
         }
 
-        public override void OnSceneWasInitialized(int buildIndex, string sceneName) {
-            if (sceneName == RigData.RigScene)
-                OnMainSceneInitialized(buildIndex, sceneName);
-        }
+        public static void OnMainSceneInitialized() {
+            string sceneName = LevelWarehouseUtilities.GetCurrentLevel().Title;
 
-        public static void OnMainSceneInitialized(int buildIndex, string sceneName) {
 #if DEBUG
             FusionLogger.Log($"Main scene {sceneName} was initialized.");
 #endif
 
+            RigData.OnCacheRigInfo(sceneName);
             PlayerRep.OnRecreateReps();
         }
 
         public override void OnUpdate() {
+            OnUpdateLevelLoading();
+
             RigData.OnRigUpdate();
 
             if (CurrentNetworkLayer != null) {

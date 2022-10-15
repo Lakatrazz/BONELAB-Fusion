@@ -69,7 +69,7 @@ namespace LabFusion.Representation {
                             writer.Write(data);
 
                             using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepGrab, writer)) {
-                                FusionMod.CurrentNetworkLayer.BroadcastMessage(NetworkChannel.Reliable, message);
+                                NetworkUtilities.BroadcastMessage(NetworkChannel.Reliable, message);
                             }
                         }
                     }
@@ -84,7 +84,7 @@ namespace LabFusion.Representation {
                         writer.Write(data);
 
                         using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepRelease, writer)) {
-                            FusionMod.CurrentNetworkLayer.BroadcastMessage(NetworkChannel.Reliable, message);
+                            NetworkUtilities.BroadcastMessage(NetworkChannel.Reliable, message);
                         }
                     }
                 }

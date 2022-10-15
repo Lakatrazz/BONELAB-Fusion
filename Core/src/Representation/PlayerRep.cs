@@ -269,7 +269,7 @@ namespace LabFusion.Representation
                         writer.Write(data);
 
                         using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepTransform, writer)) {
-                            FusionMod.CurrentNetworkLayer.BroadcastMessage(NetworkChannel.Unreliable, message);
+                            NetworkUtilities.BroadcastMessage(NetworkChannel.Unreliable, message);
                         }
                     }
                 }

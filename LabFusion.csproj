@@ -683,6 +683,7 @@
     <Compile Include="Core\src\Network\Messages\Interaction\PlayerRepAnchorMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\PlayerRepGrabMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\PlayerRepReleaseMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Levels\SceneLoadMessage.cs" />
     <Compile Include="Core\src\Network\Messages\NativeMessageTag.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\PlayerRepAvatarMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\PlayerRepTransformMessage.cs" />
@@ -698,17 +699,22 @@
     <Compile Include="Core\src\Network\NetworkLayer.cs" />
     <Compile Include="Core\src\Network\Steam\SteamSocketManager.cs" />
     <Compile Include="Core\src\Network\Steam\SteamSocketHandler.cs" />
+    <Compile Include="Core\src\Patching\Patches\AssetPooleePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ChunkTriggerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\GrabPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\LevelsPanelViewPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\OpenControllerRigPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\SceneStreamerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\TriggerLasersPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ZonePatches.cs" />
     <Compile Include="Core\src\Representation\PlayerId.cs" />
     <Compile Include="Core\src\Representation\PlayerRep.cs" />
     <Compile Include="Core\src\Representation\PlayerRepUtilities.cs" />
     <Compile Include="Core\src\Utilities\AssetBundleManager.cs" />
+    <Compile Include="Core\src\Utilities\AssetWarehouseUtilities.cs" />
     <Compile Include="Core\src\Utilities\BigEndianHelper.cs" />
     <Compile Include="Core\src\Utilities\FusionLogger.cs" />
+    <Compile Include="Core\src\Utilities\LevelWarehouseUtilities.cs" />
     <Compile Include="Core\src\Utilities\SyncUtilities.cs" />
     <Compile Include="Core\src\Utilities\TriggerUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -721,6 +727,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Core\resources\lib\x86_64\steam_api64.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Core\src\Network\Messages\Global\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -23,6 +23,8 @@ namespace LabFusion.Network
             PlayerRepRelease = 8,
             PlayerRepAnchors = 9,
 
+            SceneLoad = 10,
+
             ModuleMessage = 80;
     }
 

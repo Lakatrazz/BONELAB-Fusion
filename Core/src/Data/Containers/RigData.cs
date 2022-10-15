@@ -166,7 +166,7 @@ namespace LabFusion.Data
                         writer.Write(data);
 
                         using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepVitals, writer)) {
-                            FusionMod.CurrentNetworkLayer.BroadcastMessage(NetworkChannel.Reliable, message);
+                            NetworkUtilities.BroadcastMessage(NetworkChannel.Reliable, message);
                         }
                     }
                 }
@@ -189,7 +189,7 @@ namespace LabFusion.Data
 
                         using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepAnchors, writer))
                         {
-                            FusionMod.CurrentNetworkLayer.BroadcastMessage(NetworkChannel.Unreliable, message);
+                            NetworkUtilities.BroadcastMessage(NetworkChannel.Unreliable, message);
                         }
                     }
                 }
@@ -211,7 +211,7 @@ namespace LabFusion.Data
                                 writer.Write(data);
 
                                 using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepAvatar, writer)) {
-                                    FusionMod.CurrentNetworkLayer.BroadcastMessage(NetworkChannel.Reliable, message);
+                                    NetworkUtilities.BroadcastMessage(NetworkChannel.Reliable, message);
                                 }
                             }
                         }
