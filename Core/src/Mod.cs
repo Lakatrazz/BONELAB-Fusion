@@ -91,6 +91,10 @@ namespace LabFusion
             }
         }
 
+        public override void OnFixedUpdate() {
+            PlayerRep.OnFixedUpdate();
+        }
+
         public override void OnLateUpdate() {
             if (CurrentNetworkLayer != null) {
                 CurrentNetworkLayer.OnLateUpdateLayer();

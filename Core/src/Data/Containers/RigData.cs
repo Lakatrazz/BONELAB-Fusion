@@ -41,6 +41,33 @@ namespace LabFusion.Data
         public Grip LeftSnatchGrip { get; private set; }
         public Grip RightSnatchGrip { get; private set; }
 
+        public SerializedGripAnchor LeftSerializedAnchor { get; private set; }
+        public SerializedGripAnchor RightSerializedAnchor { get; private set; }
+
+        public SerializedGripAnchor GetSerializedAnchor(Handedness handedness)
+        {
+            switch (handedness)
+            {
+                default:
+                    return LeftSerializedAnchor;
+                case Handedness.RIGHT:
+                    return RightSerializedAnchor;
+            }
+        }
+
+        public void SetSerializedAnchor(Handedness handedness, SerializedGripAnchor anchor)
+        {
+            switch (handedness)
+            {
+                default:
+                    LeftSerializedAnchor = anchor;
+                    break;
+                case Handedness.RIGHT:
+                    RightSerializedAnchor = anchor;
+                    break;
+            }
+        }
+
         public Grip GetSnatch(Handedness handedness) {
             switch (handedness)
             {
@@ -146,6 +173,29 @@ namespace LabFusion.Data
             }
         }
 
+        public static void OnRigHandUpdate(Hand hand) {
+            if (!hand || !hand.m_CurrentAttachedGO || !hand.joint)
+                return;
+
+            var grip = Grip.Cache.Get(hand.m_CurrentAttachedGO);
+
+            if (NetworkUtilities.HasServer)
+            {
+                using (FusionWriter writer = FusionWriter.Create())
+                {
+                    using (PlayerRepAnchorData data = PlayerRepAnchorData.Create(PlayerId.SelfId.SmallId, new SerializedGripAnchor(hand, grip)))
+                    {
+                        writer.Write(data);
+
+                        using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepAnchors, writer))
+                        {
+                            FusionMod.CurrentNetworkLayer.BroadcastMessage(NetworkChannel.Unreliable, message);
+                        }
+                    }
+                }
+            }
+        }
+
         public static void OnRigUpdate() {
             if (RigReferences.RigManager) {
                 var barcode = GetAvatarBarcode();
@@ -168,6 +218,12 @@ namespace LabFusion.Data
                     }
                 }
                 RigAvatarId = barcode;
+
+                if (RigReferences.LeftHand)
+                    OnRigHandUpdate(RigReferences.LeftHand);
+
+                if (RigReferences.RightHand)
+                    OnRigHandUpdate(RigReferences.RightHand);
             }
         }
 

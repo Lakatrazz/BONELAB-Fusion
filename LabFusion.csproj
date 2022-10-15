@@ -658,6 +658,7 @@
     <Compile Include="Core\src\Data\Containers\DataCorruptionException.cs" />
     <Compile Include="Core\src\Data\Containers\RigData.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedGrab.cs" />
+    <Compile Include="Core\src\Data\Containers\SerializedGripAnchor.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedHand.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedPlayerBodyGrab.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedQuaternion.cs" />
@@ -671,6 +672,7 @@
     <Compile Include="Core\src\Data\Interfaces\IFusionSerializable.cs" />
     <Compile Include="Core\src\Extensions\Array.cs" />
     <Compile Include="Core\src\Extensions\IEnumerable.cs" />
+    <Compile Include="Core\src\Extensions\Joint.cs" />
     <Compile Include="Core\src\Extensions\UnityComparer.cs" />
     <Compile Include="Core\src\Mod.cs" />
     <Compile Include="Core\src\Modularity\DllTools.cs" />
@@ -678,6 +680,7 @@
     <Compile Include="Core\src\Network\Messages\FusionMessageHandler.cs" />
     <Compile Include="Core\src\Network\Messages\FusionReader.cs" />
     <Compile Include="Core\src\Network\Messages\FusionWriter.cs" />
+    <Compile Include="Core\src\Network\Messages\Interaction\PlayerRepAnchorMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\PlayerRepGrabMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\PlayerRepReleaseMessage.cs" />
     <Compile Include="Core\src\Network\Messages\NativeMessageTag.cs" />

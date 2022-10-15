@@ -76,7 +76,7 @@ namespace LabFusion.Representation
                 return;
 
             if (grip) {
-                grip.OnGrabConfirm(hand, false);
+                grip.OnGrabConfirm(hand, true);
                 RigReferences.SetSnatch(handedness, grip);
             }
         }
@@ -91,6 +91,18 @@ namespace LabFusion.Representation
                 grip.ForceDetach(hand);
             else
                 hand.DetachObject();
+        }
+
+        public void OnHandFixedUpdate(Hand hand) {
+            if (hand.m_CurrentAttachedGO == null || hand.joint == null) {
+                RigReferences.SetSerializedAnchor(hand.handedness, null);
+            }
+            else {
+                var anchor = RigReferences.GetSerializedAnchor(hand.handedness);
+
+                if (anchor != null)
+                    anchor.CopyTo(hand, Grip.Cache.Get(hand.m_CurrentAttachedGO));
+            }
         }
 
         public void SwapAvatar(string barcode) {
@@ -277,6 +289,16 @@ namespace LabFusion.Representation
                 if (!TrySendRep())
                     OnCachePlayerTransforms();
             }
+        }
+
+        public void OnRepFixedUpdate() {
+            OnHandFixedUpdate(RigReferences.LeftHand);
+            OnHandFixedUpdate(RigReferences.RightHand);
+        }
+
+        public static void OnFixedUpdate() {
+            foreach (var rep in Representations.Values)
+                rep.OnRepFixedUpdate();
         }
 
         /// <summary>
