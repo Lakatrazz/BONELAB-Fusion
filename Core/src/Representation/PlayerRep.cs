@@ -61,8 +61,7 @@ namespace LabFusion.Representation
         {
             PlayerId = playerId;
 
-            if (NetworkInfo.CurrentNetworkLayer != null)
-                Username = NetworkInfo.CurrentNetworkLayer.GetUsername(playerId.LongId);
+            Username = playerId.Username;
 
             Representations.Add(playerId.SmallId, this);
             avatarId = barcode;

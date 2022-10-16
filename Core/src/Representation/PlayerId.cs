@@ -12,12 +12,14 @@ namespace LabFusion.Representation
     public class PlayerId : IFusionSerializable, IDisposable {
         public ulong LongId { get; private set; }
         public byte SmallId { get; private set; }
+        public string Username { get; private set; }
 
         public PlayerId() { }
 
-        public PlayerId(ulong longId, byte smallId) {
+        public PlayerId(ulong longId, byte smallId, string username) {
             LongId = longId;
             SmallId = smallId;
+            Username = username;
         }
 
         public void Insert() {
@@ -35,11 +37,13 @@ namespace LabFusion.Representation
         public void Serialize(FusionWriter writer) {
             writer.Write(LongId);
             writer.Write(SmallId);
+            writer.Write(Username);
         }
         
         public void Deserialize(FusionReader reader) {
             LongId = reader.ReadUInt64();
             SmallId = reader.ReadByte();
+            Username = reader.ReadString();
         }
     }
 }

@@ -29,9 +29,9 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static ConnectionResponseData Create(ulong longId, byte smallId, string avatarBarcode) {
+        public static ConnectionResponseData Create(ulong longId, byte smallId, string username, string avatarBarcode) {
             return new ConnectionResponseData() {
-                playerId = new PlayerId(longId, smallId),
+                playerId = new PlayerId(longId, smallId, username),
                 avatarBarcode = avatarBarcode,
             };
         }

@@ -47,6 +47,8 @@ namespace LabFusion.Network
             if (SteamClient.IsLoggedOn) {
                 SteamId = SteamClient.SteamId;
                 PlayerIdManager.SetLongId(SteamId.Value);
+                PlayerIdManager.SetUsername(GetUsername(SteamId.Value));
+
                 FusionLogger.Log($"Steamworks initialized with SteamID {SteamId}!");
 
                 SteamNetworkingUtils.InitRelayNetworkAccess();
@@ -130,7 +132,7 @@ namespace LabFusion.Network
             _isConnectionActive = true;
 
             // Go ahead and fill in our own id
-            var id = new PlayerId(SteamId, 0);
+            var id = new PlayerId(SteamId, 0, PlayerIdManager.LocalUsername);
             id.Insert();
             PlayerIdManager.ApplyLocalId();
         }
@@ -144,7 +146,7 @@ namespace LabFusion.Network
             _isConnectionActive = true;
 
             using (FusionWriter writer = FusionWriter.Create()) {
-                using (ConnectionRequestData data = ConnectionRequestData.Create(SteamId.Value, RigData.GetAvatarBarcode())) {
+                using (ConnectionRequestData data = ConnectionRequestData.Create(SteamId.Value, PlayerIdManager.LocalUsername, RigData.GetAvatarBarcode())) {
                     writer.Write(data);
 
                     using (FusionMessage message = FusionMessage.Create(NativeMessageTag.ConnectionRequest, writer)) {

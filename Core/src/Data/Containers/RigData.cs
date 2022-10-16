@@ -100,7 +100,7 @@ namespace LabFusion.Data
         }
 
         public Grip GetGrip(byte index) {
-            if (RigGrips.Length > index)
+            if (RigGrips != null && RigGrips.Length > index)
                 return RigGrips[index];
             return null;
         }

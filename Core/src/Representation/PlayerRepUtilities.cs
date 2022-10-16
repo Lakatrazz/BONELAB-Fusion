@@ -57,7 +57,7 @@ namespace LabFusion.Representation {
                     // Check for player body grab
                     if (FindAttachedPlayerRep(grip, out var rep)) {
                         group = SyncUtilities.SyncGroup.PLAYER_BODY;
-                        serializedGrab = new SerializedPlayerBodyGrab(rep.RigReferences.GetIndex(grip).Value);
+                        serializedGrab = new SerializedPlayerBodyGrab(rep.PlayerId.SmallId, rep.RigReferences.GetIndex(grip).Value);
                         validGrip = true;
                     }
                 }

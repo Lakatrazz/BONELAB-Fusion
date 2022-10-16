@@ -11,15 +11,18 @@ namespace LabFusion.Network
 {
     public class ConnectionRequestData : IFusionSerializable, IDisposable {
         public ulong longId;
+        public string username;
         public string avatarBarcode;
 
         public void Serialize(FusionWriter writer) {
             writer.Write(longId);
+            writer.Write(username);
             writer.Write(avatarBarcode);
         }
         
         public void Deserialize(FusionReader reader) {
             longId = reader.ReadUInt64();
+            username = reader.ReadString();
             avatarBarcode = reader.ReadString();
         }
 
@@ -27,9 +30,10 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static ConnectionRequestData Create(ulong longId, string avatarBarcode) {
+        public static ConnectionRequestData Create(ulong longId, string username, string avatarBarcode) {
             return new ConnectionRequestData() {
                 longId = longId,
+                username = username,
                 avatarBarcode = avatarBarcode,
             };
         }
@@ -53,7 +57,7 @@ namespace LabFusion.Network
 
                         // First we send the new player to all existing players (and the new player so they know they exist)
                         using (FusionWriter writer = FusionWriter.Create()) {
-                            using (var response = ConnectionResponseData.Create(data.longId, newSmallId.Value, data.avatarBarcode)) {
+                            using (var response = ConnectionResponseData.Create(data.longId, newSmallId.Value, data.username, data.avatarBarcode)) {
                                 writer.Write(response);
 
                                 using (var message = FusionMessage.Create(NativeMessageTag.ConnectionResponse, writer)) {
@@ -71,7 +75,7 @@ namespace LabFusion.Network
                                 barcode = PlayerRep.Representations[id.SmallId].avatarId;
 
                             using (FusionWriter writer = FusionWriter.Create()) {
-                                using (var response = ConnectionResponseData.Create(id.LongId, id.SmallId, barcode)) {
+                                using (var response = ConnectionResponseData.Create(id.LongId, id.SmallId, id.Username, barcode)) {
                                     writer.Write(response);
 
                                     using (var message = FusionMessage.Create(NativeMessageTag.ConnectionResponse, writer)) {
@@ -87,7 +91,7 @@ namespace LabFusion.Network
                                 writer.Write(loadData);
 
                                 using (var message = FusionMessage.Create(NativeMessageTag.SceneLoad, writer)) {
-                                    MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                                    MessageSender.SendServerMessage(data.longId, NetworkChannel.Reliable, message);
                                 }
                             }
                         }

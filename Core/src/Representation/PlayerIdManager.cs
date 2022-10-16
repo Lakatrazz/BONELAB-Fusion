@@ -12,6 +12,7 @@ namespace LabFusion.Representation
     public static class PlayerIdManager {
         public static readonly List<PlayerId> PlayerIds = new List<PlayerId>();
 
+        public static string LocalUsername { get; private set; } = "[unknown]";
         public static ulong LocalLongId { get; private set; }
         public static byte LocalSmallId => LocalId.SmallId;
         public static PlayerId LocalId { get; private set; }
@@ -46,6 +47,10 @@ namespace LabFusion.Representation
 
         internal static void SetLongId(ulong longId) {
             LocalLongId = longId;
+        }
+
+        internal static void SetUsername(string username) {
+            LocalUsername = username;
         }
     }
 }
