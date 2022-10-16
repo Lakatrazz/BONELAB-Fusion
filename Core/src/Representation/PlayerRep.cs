@@ -231,7 +231,7 @@ namespace LabFusion.Representation
 
                 // Move position with prediction
                 if (Time.realtimeSinceStartup - timeSincePelvisSent <= 2.5f)
-                    serializedPelvis.position += predictVelocity;
+                    serializedPelvis.position += predictVelocity * Time.fixedDeltaTime;
 
                 // Apply velocity
                 if (Time.timeScale > 0f && Time.deltaTime > 0f && Time.fixedDeltaTime > 0f)
@@ -241,7 +241,7 @@ namespace LabFusion.Representation
                 if (RigData.RigReferences.RigManager && RigData.RigReferences.RigManager.avatar)
                 {
                     float distSqr = (repPelvis.transform.position - serializedPelvis.position).sqrMagnitude;
-                    if (distSqr > (1.2f * RigData.RigReferences.RigManager.avatar.height))
+                    if (distSqr > (2f * (predictVelocity.magnitude + 1f)))
                     {
                         RigReferences.RigManager.Teleport(serializedPelvis.position);
                     }
