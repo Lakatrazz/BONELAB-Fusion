@@ -656,6 +656,7 @@
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utf8String.cs" />
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utility.cs" />
     <Compile Include="Core\src\Data\Containers\DataCorruptionException.cs" />
+    <Compile Include="Core\src\Data\Containers\Grips\SerializedWorldGrab.cs" />
     <Compile Include="Core\src\Data\Containers\RigData.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedGrab.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedGripAnchor.cs" />

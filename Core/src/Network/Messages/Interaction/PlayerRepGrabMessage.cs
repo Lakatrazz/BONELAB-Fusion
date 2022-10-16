@@ -42,6 +42,9 @@ namespace LabFusion.Network
                 case SyncUtilities.SyncGroup.STATIC:
                     serializedGrab = reader.ReadFusionSerializable<SerializedStaticGrab>();
                     break;
+                case SyncUtilities.SyncGroup.WORLD_GRIP:
+                    serializedGrab = reader.ReadFusionSerializable<SerializedWorldGrab>();
+                    break;
             }
         }
 

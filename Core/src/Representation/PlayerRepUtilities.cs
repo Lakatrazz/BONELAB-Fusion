@@ -67,9 +67,16 @@ namespace LabFusion.Representation {
                         FusionLogger.Log("Found grip with no rigidbody!");
 #endif
 
-                        group = SyncUtilities.SyncGroup.STATIC;
-                        serializedGrab = new SerializedStaticGrab(grip.transform.GetPath());
-                        validGrip = true;
+                        if (grip.TryCast<WorldGrip>() != null) {
+                            group = SyncUtilities.SyncGroup.WORLD_GRIP;
+                            serializedGrab = new SerializedWorldGrab(smallId, new SerializedTransform(grip.transform));
+                            validGrip = true;
+                        }
+                        else {
+                            group = SyncUtilities.SyncGroup.STATIC;
+                            serializedGrab = new SerializedStaticGrab(grip.transform.GetPath());
+                            validGrip = true;
+                        }
                     }
                     else {
 #if DEBUG
