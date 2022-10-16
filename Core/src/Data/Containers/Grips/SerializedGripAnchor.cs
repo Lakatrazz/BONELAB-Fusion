@@ -21,13 +21,6 @@ namespace LabFusion.Data
         public Vector3 anchor;
         public Vector3 connectedAnchor;
         public SerializedQuaternion relativeRotation;
-        public SerializedQuaternion jointStartRotation;
-
-        public bool isZFlipped;
-        public float posInFlippedBase;
-        public float rotInFlippedBase;
-        public SerializedQuaternion targetRotationInBase;
-        public SerializedQuaternion amplifyRotationInBase;
 
         public SerializedGripAnchor() { }
 
@@ -40,30 +33,12 @@ namespace LabFusion.Data
                 anchor = hand.joint.GetLocalAnchor(origin);
                 connectedAnchor = hand.joint.GetLocalConnectedAnchor(origin);
                 relativeRotation = SerializedQuaternion.Compress(Quaternion.Inverse(grip.transform.rotation) * hand.transform.rotation);
-                jointStartRotation = SerializedQuaternion.Compress(hand.jointStartRotation);
-
-                var state = grip.GetHandState(hand);
-                isZFlipped = state.isZFlipped;
-                posInFlippedBase = state.posInFlippedBase;
-                rotInFlippedBase = state.rotInFlippedBase;
-                targetRotationInBase = SerializedQuaternion.Compress(state.targetRotationInBase);
-                amplifyRotationInBase = SerializedQuaternion.Compress(state.amplifyRotationInBase);
             }
         }
 
         public void CopyTo(Hand hand, Grip grip, ConfigurableJoint clientJoint) {
             if (hand.joint && clientJoint) {
                 grip.FreeJoints(hand);
-                hand.jointStartRotation = jointStartRotation.Expand();
-
-                // Update hand state
-                var handState = grip.GetHandState(hand);
-
-                handState.isZFlipped = isZFlipped;
-                handState.posInFlippedBase = posInFlippedBase;
-                handState.rotInFlippedBase = rotInFlippedBase;
-                handState.targetRotationInBase = targetRotationInBase.Expand();
-                handState.amplifyRotationInBase = amplifyRotationInBase.Expand();
 
                 // Update client joint
                 clientJoint.autoConfigureConnectedAnchor = false;
@@ -102,13 +77,6 @@ namespace LabFusion.Data
             writer.Write(anchor);
             writer.Write(connectedAnchor);
             writer.Write(relativeRotation);
-            writer.Write(jointStartRotation);
-
-            writer.Write(isZFlipped);
-            writer.Write(posInFlippedBase);
-            writer.Write(rotInFlippedBase);
-            writer.Write(targetRotationInBase);
-            writer.Write(amplifyRotationInBase);
         }
 
         public void Deserialize(FusionReader reader) {
@@ -116,13 +84,6 @@ namespace LabFusion.Data
             anchor = reader.ReadVector3();
             connectedAnchor = reader.ReadVector3();
             relativeRotation = reader.ReadFusionSerializable<SerializedQuaternion>();
-            jointStartRotation = reader.ReadFusionSerializable<SerializedQuaternion>();
-
-            isZFlipped = reader.ReadBoolean();
-            posInFlippedBase = reader.ReadSingle();
-            rotInFlippedBase = reader.ReadSingle();
-            targetRotationInBase = reader.ReadFusionSerializable<SerializedQuaternion>();
-            amplifyRotationInBase = reader.ReadFusionSerializable<SerializedQuaternion>();
         }
     }
 }
