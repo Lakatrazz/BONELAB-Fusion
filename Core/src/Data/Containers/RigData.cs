@@ -44,6 +44,9 @@ namespace LabFusion.Data
         public SerializedGripAnchor LeftSerializedAnchor { get; private set; }
         public SerializedGripAnchor RightSerializedAnchor { get; private set; }
 
+        public ConfigurableJoint LeftClientJoint { get; private set; }
+        public ConfigurableJoint RightClientJoint { get; private set; }
+
         public SerializedGripAnchor GetSerializedAnchor(Handedness handedness)
         {
             switch (handedness)
@@ -64,6 +67,45 @@ namespace LabFusion.Data
                     break;
                 case Handedness.RIGHT:
                     RightSerializedAnchor = anchor;
+                    break;
+            }
+        }
+
+
+        public ConfigurableJoint GetClientJoint(Handedness handedness)
+        {
+            switch (handedness)
+            {
+                default:
+                    return LeftClientJoint;
+                case Handedness.RIGHT:
+                    return RightClientJoint;
+            }
+        }
+
+        public void SetClientJoint(Handedness handedness, ConfigurableJoint joint)
+        {
+            switch (handedness)
+            {
+                default:
+                    LeftClientJoint = joint;
+                    break;
+                case Handedness.RIGHT:
+                    RightClientJoint = joint;
+                    break;
+            }
+        }
+
+        public void RemoveJoint(Handedness handedness) {
+            switch (handedness)
+            {
+                default:
+                    if (LeftClientJoint)
+                        GameObject.Destroy(LeftClientJoint);
+                    break;
+                case Handedness.RIGHT:
+                    if (RightClientJoint)
+                        GameObject.Destroy(RightClientJoint);
                     break;
             }
         }

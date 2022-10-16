@@ -657,11 +657,12 @@
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utility.cs" />
     <Compile Include="Core\src\Data\Containers\DataCorruptionException.cs" />
     <Compile Include="Core\src\Data\Containers\RigData.cs" />
-    <Compile Include="Core\src\Data\Containers\SerializedGrab.cs" />
-    <Compile Include="Core\src\Data\Containers\SerializedGripAnchor.cs" />
+    <Compile Include="Core\src\Data\Containers\Grips\SerializedGrab.cs" />
+    <Compile Include="Core\src\Data\Containers\Grips\SerializedGripAnchor.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedHand.cs" />
-    <Compile Include="Core\src\Data\Containers\SerializedPlayerBodyGrab.cs" />
+    <Compile Include="Core\src\Data\Containers\Grips\SerializedPlayerBodyGrab.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedQuaternion.cs" />
+    <Compile Include="Core\src\Data\Containers\Grips\SerializedStaticGrab.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedTransform.cs" />
     <Compile Include="Core\src\Data\Files\EmbeddedAssetBundle.cs" />
     <Compile Include="Core\src\Data\Files\SteamAPILoader.cs" />
@@ -671,8 +672,10 @@
     <Compile Include="Core\src\Data\Files\ResourcePaths.cs" />
     <Compile Include="Core\src\Data\Interfaces\IFusionSerializable.cs" />
     <Compile Include="Core\src\Extensions\Array.cs" />
+    <Compile Include="Core\src\Extensions\Grip.cs" />
     <Compile Include="Core\src\Extensions\IEnumerable.cs" />
     <Compile Include="Core\src\Extensions\Joint.cs" />
+    <Compile Include="Core\src\Extensions\Transform.cs" />
     <Compile Include="Core\src\Extensions\UnityComparer.cs" />
     <Compile Include="Core\src\Mod.cs" />
     <Compile Include="Core\src\Modularity\DllTools.cs" />

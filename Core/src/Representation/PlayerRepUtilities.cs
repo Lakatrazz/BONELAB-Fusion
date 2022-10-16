@@ -13,6 +13,7 @@ using UnityEngine;
 using LabFusion.Utilities;
 using LabFusion.Data;
 using LabFusion.Network;
+using LabFusion.Extensions;
 
 using SLZ;
 using SLZ.Interaction;
@@ -36,10 +37,6 @@ namespace LabFusion.Representation {
                 return true;
             }
             else {
-#if DEBUG
-                FusionLogger.Warn("Failed to find parent rig of grip!");
-#endif
-
                 return false;
             }
         }
@@ -56,9 +53,28 @@ namespace LabFusion.Representation {
                 if (grip != null) {
                     // Check for player body grab
                     if (FindAttachedPlayerRep(grip, out var rep)) {
+#if DEBUG
+                        FusionLogger.Log("Found player rep grip!");
+#endif
+
                         group = SyncUtilities.SyncGroup.PLAYER_BODY;
                         serializedGrab = new SerializedPlayerBodyGrab(rep.PlayerId.SmallId, rep.RigReferences.GetIndex(grip).Value);
                         validGrip = true;
+                    }
+                    // Check for static grips
+                    else if (grip.IsStatic) {
+#if DEBUG
+                        FusionLogger.Log("Found grip with no rigidbody!");
+#endif
+
+                        group = SyncUtilities.SyncGroup.STATIC;
+                        serializedGrab = new SerializedStaticGrab(grip.transform.GetPath());
+                        validGrip = true;
+                    }
+                    else {
+#if DEBUG
+                        FusionLogger.Log("Found no valid grip for syncing!");
+#endif
                     }
                 }
 

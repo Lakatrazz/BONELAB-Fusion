@@ -39,6 +39,9 @@ namespace LabFusion.Network
                 case SyncUtilities.SyncGroup.PLAYER_BODY:
                     serializedGrab = reader.ReadFusionSerializable<SerializedPlayerBodyGrab>();
                     break;
+                case SyncUtilities.SyncGroup.STATIC:
+                    serializedGrab = reader.ReadFusionSerializable<SerializedStaticGrab>();
+                    break;
             }
         }
 

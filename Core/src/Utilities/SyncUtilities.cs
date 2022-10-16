@@ -11,6 +11,8 @@ namespace LabFusion.Utilities {
             PLAYER_BODY = 1,
             PROP = 2,
             NPC = 3,
+            STATIC = 4,
+            WORLD_GRIP = 5,
         }
     }
 }

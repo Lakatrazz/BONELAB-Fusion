@@ -51,10 +51,9 @@ namespace LabFusion.Data
             }
         }
 
-        public void CopyTo(Hand hand, Grip grip) {
-            if (hand.joint) {
-                var joint = hand.joint;
-
+        public void CopyTo(Hand hand, Grip grip, ConfigurableJoint clientJoint) {
+            if (hand.joint && clientJoint) {
+                grip.FreeJoints(hand);
                 hand.jointStartRotation = jointStartRotation.Expand();
 
                 // Update hand state
@@ -65,37 +64,37 @@ namespace LabFusion.Data
                 handState.rotInFlippedBase = rotInFlippedBase;
                 handState.targetRotationInBase = targetRotationInBase.Expand();
                 handState.amplifyRotationInBase = amplifyRotationInBase.Expand();
-                
+
+                // Update client joint
+                clientJoint.autoConfigureConnectedAnchor = false;
+                clientJoint.connectedBody = hand.joint.connectedBody;
+
                 // Pos anchors
-                joint.autoConfigureConnectedAnchor = false;
-                joint.anchor = anchor;
-                joint.connectedAnchor = connectedAnchor;
+                clientJoint.anchor = anchor;
+                clientJoint.connectedAnchor = connectedAnchor;
 
                 // Rot anchors
                 var initialRot = hand.transform.rotation;
                 hand.transform.rotation = grip.transform.rotation * relativeRotation.Expand();
 
-                joint.swapBodies = !joint.swapBodies;
-                joint.swapBodies = !joint.swapBodies;
+                clientJoint.swapBodies = !clientJoint.swapBodies;
+                clientJoint.swapBodies = !clientJoint.swapBodies;
 
                 hand.transform.rotation = initialRot;
 
-                // Update joint targets
-                hand.joint.targetPosition = Vector3.zero;
-                hand.joint.targetVelocity = Vector3.zero;
+                // Motion and drives
+                clientJoint.linearLimit = new SoftJointLimit() { limit = 0.5f };
+                clientJoint.xDrive = clientJoint.yDrive = clientJoint.zDrive = new JointDrive() { positionSpring = 5000000f, positionDamper = 100000f, maximumForce = 5000000f };
 
-                // Update joint drives
-                var drive = new JointDrive() { positionSpring = 50000000f, maximumForce = 50000000f };
-
-                var limit = new SoftJointLimit();
-
-                joint.linearLimit = limit;
-                joint.xDrive = joint.yDrive = joint.zDrive = drive;
-
-                // Rotation drives
-                joint.lowAngularXLimit = joint.highAngularXLimit = joint.angularYLimit = joint.angularZLimit = limit;
-                joint.angularXMotion = joint.angularYMotion = joint.angularZMotion = ConfigurableJointMotion.Limited;
+                clientJoint.xMotion = clientJoint.yMotion = clientJoint.zMotion 
+                    = clientJoint.angularXMotion = clientJoint.angularYMotion = clientJoint.angularZMotion = ConfigurableJointMotion.Limited;
             }
+        }
+
+        public void FreeJoint(ConfigurableJoint joint) {
+            joint.xDrive = joint.yDrive = joint.zDrive = joint.angularXDrive = joint.angularYZDrive = new JointDrive();
+            joint.xMotion = joint.yMotion = joint.zMotion =
+                joint.angularXMotion = joint.angularYMotion = joint.angularZMotion = ConfigurableJointMotion.Free;
         }
 
         public void Serialize(FusionWriter writer) {

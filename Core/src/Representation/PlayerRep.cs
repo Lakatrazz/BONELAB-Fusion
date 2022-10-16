@@ -77,6 +77,11 @@ namespace LabFusion.Representation
             if (grip) {
                 grip.OnGrabConfirm(hand, true);
                 RigReferences.SetSnatch(handedness, grip);
+
+                grip.FreeJoints(hand);
+
+                RigReferences.RemoveJoint(handedness);
+                RigReferences.SetClientJoint(handedness, hand.gameObject.AddComponent<ConfigurableJoint>());
             }
         }
 
@@ -90,6 +95,8 @@ namespace LabFusion.Representation
                 grip.ForceDetach(hand);
             else
                 hand.DetachObject();
+
+            RigReferences.RemoveJoint(handedness);
         }
 
         public void OnHandFixedUpdate(Hand hand) {
@@ -100,7 +107,9 @@ namespace LabFusion.Representation
                 var anchor = RigReferences.GetSerializedAnchor(hand.handedness);
 
                 if (anchor != null)
-                    anchor.CopyTo(hand, Grip.Cache.Get(hand.m_CurrentAttachedGO));
+                    anchor.CopyTo(hand, Grip.Cache.Get(hand.m_CurrentAttachedGO), RigReferences.GetClientJoint(hand.handedness));
+                else
+                    Grip.Cache.Get(hand.m_CurrentAttachedGO).FreeJoints(hand);
             }
         }
 
