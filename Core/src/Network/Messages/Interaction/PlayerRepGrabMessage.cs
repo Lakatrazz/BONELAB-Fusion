@@ -31,20 +31,9 @@ namespace LabFusion.Network
             handedness = (Handedness)reader.ReadByte();
             group = (SyncUtilities.SyncGroup)reader.ReadByte();
             
-            switch (group) {
-                case SyncUtilities.SyncGroup.UNKNOWN:
-                default:
-                    // Probably throw an error here
-                    break;
-                case SyncUtilities.SyncGroup.PLAYER_BODY:
-                    serializedGrab = reader.ReadFusionSerializable<SerializedPlayerBodyGrab>();
-                    break;
-                case SyncUtilities.SyncGroup.STATIC:
-                    serializedGrab = reader.ReadFusionSerializable<SerializedStaticGrab>();
-                    break;
-                case SyncUtilities.SyncGroup.WORLD_GRIP:
-                    serializedGrab = reader.ReadFusionSerializable<SerializedWorldGrab>();
-                    break;
+            if (SyncUtilities.SerializedGrabTypes.ContainsKey(group)) {
+                var type = SyncUtilities.SerializedGrabTypes[group];
+                serializedGrab = (SerializedGrab)reader.ReadFusionSerializable(type);
             }
         }
 

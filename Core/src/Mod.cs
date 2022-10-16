@@ -28,6 +28,7 @@ namespace LabFusion
 
             PersistentData.OnPathInitialize();
             FusionMessageHandler.RegisterHandlersFromAssembly(FusionAssembly);
+            SyncUtilities.RegisterGrabTypeFromAssembly(FusionAssembly);
             AssetBundleManager.OnLoadBundles();
 
             OnInitializeNetworking();

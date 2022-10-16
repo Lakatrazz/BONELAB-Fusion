@@ -40,6 +40,13 @@ namespace LabFusion.Network
             return instance;
         }
 
+        public IFusionSerializable ReadFusionSerializable(Type type)
+        {
+            var instance = Activator.CreateInstance(type) as IFusionSerializable;
+            instance.Deserialize(this);
+            return instance;
+        }
+
         /// <summary>
         ///     Reads a single byte from the reader.
         /// </summary>

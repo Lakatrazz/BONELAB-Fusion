@@ -6,9 +6,13 @@ using System.Threading.Tasks;
 
 using LabFusion.Network;
 using LabFusion.Representation;
+using LabFusion.Utilities;
+
 using SLZ.Interaction;
 
 namespace LabFusion.Data {
+
+    [SerializedGrabGroup(group = SyncUtilities.SyncGroup.PLAYER_BODY)]
     public class SerializedPlayerBodyGrab : SerializedGrab {
         public byte grabbedUser;
         public byte gripIndex;

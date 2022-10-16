@@ -7,11 +7,15 @@ using System.Threading.Tasks;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Utilities;
+
 using SLZ.Interaction;
+
 using UnityEngine;
 
 namespace LabFusion.Data
 {
+
+    [SerializedGrabGroup(group = SyncUtilities.SyncGroup.STATIC)]
     public class SerializedStaticGrab : SerializedGrab
     {
         public string fullPath;
