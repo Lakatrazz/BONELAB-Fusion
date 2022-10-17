@@ -4,8 +4,6 @@ using LabFusion.Representation;
 using LabFusion.Utilities;
 
 using System;
-using static MelonLoader.MelonLogger;
-using static SLZ.Bonelab.BonelabProgressionHelper;
 
 namespace LabFusion.Network
 {

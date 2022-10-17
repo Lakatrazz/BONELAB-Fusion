@@ -11,5 +11,7 @@ namespace LabFusion.Extensions {
             foreach (T iterator in enumerable)
                 action(iterator);
         }
+
+        public static bool Has<T>(this IEnumerable<T> list, T obj) where T : UnityEngine.Object => list.Any(o => o == obj);
     }
 }

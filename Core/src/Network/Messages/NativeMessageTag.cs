@@ -25,6 +25,9 @@ namespace LabFusion.Network
 
             SceneLoad = 10,
 
+            SyncableIDRequest = 11,
+            SyncableIDResponse = 12,
+
             ModuleMessage = 80;
     }
 

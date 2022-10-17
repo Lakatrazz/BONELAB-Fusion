@@ -73,7 +73,7 @@ namespace LabFusion.Network
                         var grip = data.GetGrip();
 
                         if (rep != null && grip != null) {
-                            rep.AttachObject(data.handedness, grip);
+                            data.serializedGrab.RequestGrab(rep, data.handedness, grip);
                         }
                         else {
 #if DEBUG

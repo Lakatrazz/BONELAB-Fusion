@@ -656,6 +656,7 @@
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utf8String.cs" />
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utility.cs" />
     <Compile Include="Core\src\Data\Containers\DataCorruptionException.cs" />
+    <Compile Include="Core\src\Data\Containers\Grips\SerializedPropGrab.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedWorldGrab.cs" />
     <Compile Include="Core\src\Data\Containers\RigData.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedGrab.cs" />
@@ -701,6 +702,8 @@
     <Compile Include="Core\src\Network\Messages\SimpleStringMessage.cs" />
     <Compile Include="Core\src\Network\Helpers\NetworkInfo.cs" />
     <Compile Include="Core\src\Network\Internal\InternalServerHelpers.cs" />
+    <Compile Include="Core\src\Network\Messages\Syncables\SyncableIDResponseMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Syncables\SyncableIDRequestMessage.cs" />
     <Compile Include="Core\src\Network\Steam\SteamConnectionManager.cs" />
     <Compile Include="Core\src\Network\Steam\SteamNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Discord\DiscordNetworkLayer.cs" />
@@ -725,6 +728,8 @@
     <Compile Include="Core\src\Utilities\Internal\BigEndianHelper.cs" />
     <Compile Include="Core\src\Utilities\Internal\FusionLogger.cs" />
     <Compile Include="Core\src\Utilities\Asset Warehouses\LevelWarehouseUtilities.cs" />
+    <Compile Include="Core\src\Utilities\ISyncable.cs" />
+    <Compile Include="Core\src\Utilities\PropSyncable.cs" />
     <Compile Include="Core\src\Utilities\SyncUtilities.cs" />
     <Compile Include="Core\src\Utilities\TriggerUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

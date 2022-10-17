@@ -53,6 +53,7 @@ namespace LabFusion
             FusionLogger.Log($"Main scene {sceneName} was initialized.");
 #endif
 
+            SyncUtilities.OnCleanup();
             RigData.OnCacheRigInfo(sceneName);
             PlayerRep.OnRecreateReps();
         }

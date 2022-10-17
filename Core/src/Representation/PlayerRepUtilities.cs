@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ using LabFusion.Extensions;
 
 using SLZ;
 using SLZ.Interaction;
+using MelonLoader;
 
 namespace LabFusion.Representation {
     public static class PlayerRepUtilities {
@@ -41,7 +43,13 @@ namespace LabFusion.Representation {
             }
         }
 
-        public static void SendObjectAttach(Handedness handedness, Grip grip) { 
+        public static void SendObjectAttach(Handedness handedness, Grip grip) {
+            if (NetworkInfo.HasServer) {
+                MelonCoroutines.Start(Internal_ObjectAttachRoutine(handedness, grip));
+            }
+        }
+
+        internal static IEnumerator Internal_ObjectAttachRoutine(Handedness handedness, Grip grip) { 
             if (NetworkInfo.HasServer) {
                 // Get base values for the message
                 byte smallId = PlayerIdManager.LocalSmallId;
@@ -78,6 +86,53 @@ namespace LabFusion.Representation {
                             validGrip = true;
                         }
                     }
+                    // Check for prop grips
+                    else if (grip.HasRigidbody && !grip.GetComponentInParent<RigManager>()) {
+                        group = SyncUtilities.SyncGroup.PROP;
+                        var go = grip.Host.Rb.gameObject;
+                        
+                        // Do we already have a synced object?
+                        if (PropSyncable.Cache.TryGetValue(go, out var syncable)) {
+                            serializedGrab = new SerializedPropGrab("_", syncable.GetIndex(grip).Value, syncable.GetId(), true);
+                            validGrip = true;
+                        }
+                        // Create a new one
+                        else if (!NetworkInfo.IsServer) {
+                            syncable = new PropSyncable(go);
+
+                            ushort queuedId = SyncUtilities.QueueSyncable(syncable);
+
+                            using (var writer = FusionWriter.Create()) {
+                                using (var data = SyncableIDRequestData.Create(smallId, queuedId)) {
+                                    writer.Write(data);
+
+                                    using (var message = FusionMessage.Create(NativeMessageTag.SyncableIDRequest, writer)) {
+                                        MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                                    }
+                                }
+                            }
+
+                            while (syncable.IsQueued())
+                                yield return null;
+
+                            yield return null;
+
+#if DEBUG
+                            FusionLogger.Log($"Sending new grab message with an id of {syncable.Id}");
+#endif
+
+                            serializedGrab = new SerializedPropGrab(grip.Host.Rb.transform.GetPath(), syncable.GetIndex(grip).Value, syncable.Id, true);
+                            validGrip = true;
+                        }
+                        else if (NetworkInfo.IsServer) {
+                            syncable = new PropSyncable(go);
+                            SyncUtilities.RegisterSyncable(syncable, SyncUtilities.AllocateSyncID());
+                            serializedGrab = new SerializedPropGrab(grip.Host.Rb.transform.GetPath(), syncable.GetIndex(grip).Value, syncable.Id, true);
+
+                            validGrip = true;
+                        }
+                    }
+                    // Nothing left
                     else {
 #if DEBUG
                         FusionLogger.Log("Found no valid grip for syncing!");
