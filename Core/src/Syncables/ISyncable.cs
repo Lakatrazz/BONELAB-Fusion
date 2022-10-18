@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using SLZ.Interaction;
 
-namespace LabFusion.Utilities {
+namespace LabFusion.Syncables {
     public interface ISyncable {
         Grip GetGrip(ushort index);
 

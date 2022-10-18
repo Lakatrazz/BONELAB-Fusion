@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LabFusion.Data;
 using LabFusion.Representation;
 using LabFusion.Utilities;
+using LabFusion.Grabbables;
 
 using SLZ;
 using SLZ.Interaction;
@@ -16,7 +17,7 @@ namespace LabFusion.Network
     public class PlayerRepGrabData : IFusionSerializable, IDisposable {
         public byte smallId;
         public Handedness handedness;
-        public SyncUtilities.SyncGroup group;
+        public GrabGroup group;
         public SerializedGrab serializedGrab;
 
         public void Serialize(FusionWriter writer) {
@@ -29,12 +30,9 @@ namespace LabFusion.Network
         public void Deserialize(FusionReader reader) {
             smallId = reader.ReadByte();
             handedness = (Handedness)reader.ReadByte();
-            group = (SyncUtilities.SyncGroup)reader.ReadByte();
-            
-            if (SyncUtilities.SerializedGrabTypes.ContainsKey(group)) {
-                var type = SyncUtilities.SerializedGrabTypes[group];
-                serializedGrab = (SerializedGrab)reader.ReadFusionSerializable(type);
-            }
+            group = (GrabGroup)reader.ReadByte();
+
+            GrabGroupHandler.ReadGrab(ref serializedGrab, reader, group);
         }
 
         public Grip GetGrip() {
@@ -51,7 +49,7 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static PlayerRepGrabData Create(byte smallId, Handedness handedness, SyncUtilities.SyncGroup group, SerializedGrab serializedGrab) {
+        public static PlayerRepGrabData Create(byte smallId, Handedness handedness, GrabGroup group, SerializedGrab serializedGrab) {
             return new PlayerRepGrabData() {
                 smallId = smallId,
                 handedness = handedness,

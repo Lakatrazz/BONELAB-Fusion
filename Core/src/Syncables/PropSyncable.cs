@@ -8,7 +8,7 @@ using SLZ.Interaction;
 
 using UnityEngine;
 
-namespace LabFusion.Utilities
+namespace LabFusion.Syncables
 {
     public class PropSyncable : ISyncable {
         public static readonly Dictionary<GameObject, PropSyncable> Cache = new Dictionary<GameObject, PropSyncable>();
@@ -20,10 +20,10 @@ namespace LabFusion.Utilities
 
         public ushort Id;
 
-        public PropSyncable(GameObject go) {
+        public PropSyncable(GameObject go, Grip[] grips) {
             GameObject = go;
 
-            PropGrips = go.GetComponentsInChildren<Grip>(true);
+            PropGrips = grips;
             Rigidbodies = go.GetComponentsInChildren<Rigidbody>(true);
 
             Cache.Add(go, this);
@@ -58,7 +58,7 @@ namespace LabFusion.Utilities
         }
 
         public bool IsQueued() {
-            return SyncUtilities.QueuedSyncables.Contains(this);
+            return SyncManager.QueuedSyncables.Contains(this);
         }
     }
 }

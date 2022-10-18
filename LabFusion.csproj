@@ -679,6 +679,8 @@
     <Compile Include="Core\src\Extensions\Joint.cs" />
     <Compile Include="Core\src\Extensions\Transform.cs" />
     <Compile Include="Core\src\Extensions\UnityComparer.cs" />
+    <Compile Include="Core\src\Grabbables\GrabHelper.cs" />
+    <Compile Include="Core\src\Grabbables\SerializedGrabHandler.cs" />
     <Compile Include="Core\src\Mod.cs" />
     <Compile Include="Core\src\Modularity\DllTools.cs" />
     <Compile Include="Core\src\Network\Helpers\NetworkHelper.cs" />
@@ -728,9 +730,9 @@
     <Compile Include="Core\src\Utilities\Internal\BigEndianHelper.cs" />
     <Compile Include="Core\src\Utilities\Internal\FusionLogger.cs" />
     <Compile Include="Core\src\Utilities\Asset Warehouses\LevelWarehouseUtilities.cs" />
-    <Compile Include="Core\src\Utilities\ISyncable.cs" />
-    <Compile Include="Core\src\Utilities\PropSyncable.cs" />
-    <Compile Include="Core\src\Utilities\SyncUtilities.cs" />
+    <Compile Include="Core\src\Syncables\ISyncable.cs" />
+    <Compile Include="Core\src\Syncables\PropSyncable.cs" />
+    <Compile Include="Core\src\Syncables\SyncManager.cs" />
     <Compile Include="Core\src\Utilities\TriggerUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

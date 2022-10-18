@@ -7,15 +7,21 @@ using System.Threading.Tasks;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Utilities;
+using LabFusion.Syncables;
+
 using SLZ;
 using SLZ.Interaction;
 
 using UnityEngine;
+using LabFusion.Grabbables;
 
 namespace LabFusion.Data
 {
+    public class PropGrabGroupHandler : GrabGroupHandler<SerializedPropGrab>
+    {
+        public override GrabGroup? Group => GrabGroup.PROP;
+    }
 
-    [SerializedGrabGroup(group = SyncUtilities.SyncGroup.PROP)]
     public class SerializedPropGrab : SerializedGrab {
         public string fullPath;
         public ushort index;
@@ -51,17 +57,18 @@ namespace LabFusion.Data
         public override Grip GetGrip()
         {
             GameObject go;
+            InteractableHost host;
 
-            if (SyncUtilities.TryGetSyncable(id, out var syncable)) {
+            if (SyncManager.TryGetSyncable(id, out var syncable)) {
 #if DEBUG
                 FusionLogger.Log($"Found existing prop grip!");
 #endif
 
                 return syncable.GetGrip(index);
             }
-            else if ((go = GameObject.Find(fullPath))) {
-                syncable = new PropSyncable(go);
-                SyncUtilities.RegisterSyncable(syncable, id);
+            else if ((go = GameObject.Find(fullPath)) && (host = InteractableHost.Cache.Get(go))) {
+                syncable = new PropSyncable(go, (Grip[])host._grips.ToArray());
+                SyncManager.RegisterSyncable(syncable, id);
 
 #if DEBUG
                 FusionLogger.Log($"Creating new prop grip with id {id} at index {index}!");

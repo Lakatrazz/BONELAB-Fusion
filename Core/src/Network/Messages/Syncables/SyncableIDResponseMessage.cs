@@ -1,5 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Utilities;
+using LabFusion.Syncables;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,7 +48,7 @@ namespace LabFusion.Network {
                 {
                     using (var data = reader.ReadFusionSerializable<SyncableIDResponseData>())
                     {
-                        SyncUtilities.UnqueueSyncable(data.queuedId, data.newId, out var syncable);
+                        SyncManager.UnqueueSyncable(data.queuedId, data.newId, out var syncable);
 
 #if DEBUG
                         FusionLogger.Log($"Unqueued syncable with new id {syncable.GetId()}");

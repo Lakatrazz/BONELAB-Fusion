@@ -1,5 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Utilities;
+using LabFusion.Syncables;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,7 +48,7 @@ namespace LabFusion.Network {
                     using (var data = reader.ReadFusionSerializable<SyncableIDRequestData>()) {
 
                         using (var writer = FusionWriter.Create()) {
-                            using (var response = SyncableIDResponseData.Create(data.queuedId, SyncUtilities.AllocateSyncID())) {
+                            using (var response = SyncableIDResponseData.Create(data.queuedId, SyncManager.AllocateSyncID())) {
                                 writer.Write(response);
 
 #if DEBUG

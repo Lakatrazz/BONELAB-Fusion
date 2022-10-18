@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using LabFusion.Grabbables;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Utilities;
@@ -11,8 +12,10 @@ using LabFusion.Utilities;
 using SLZ.Interaction;
 
 namespace LabFusion.Data {
+    public class PlayerGrabGroupHandler : GrabGroupHandler<SerializedPlayerBodyGrab> {
+        public override GrabGroup? Group => GrabGroup.PLAYER_BODY;
+    }
 
-    [SerializedGrabGroup(group = SyncUtilities.SyncGroup.PLAYER_BODY)]
     public class SerializedPlayerBodyGrab : SerializedGrab {
         public byte grabbedUser;
         public byte gripIndex;

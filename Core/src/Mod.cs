@@ -5,8 +5,10 @@ using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Utilities;
+using LabFusion.Syncables;
 
 using MelonLoader;
+using LabFusion.Grabbables;
 
 namespace LabFusion
 {
@@ -28,7 +30,7 @@ namespace LabFusion
 
             PersistentData.OnPathInitialize();
             FusionMessageHandler.RegisterHandlersFromAssembly(FusionAssembly);
-            SyncUtilities.RegisterGrabTypeFromAssembly(FusionAssembly);
+            GrabGroupHandler.RegisterHandlersFromAssembly(FusionAssembly);
             AssetBundleManager.OnLoadBundles();
 
             OnInitializeNetworking();
@@ -53,7 +55,7 @@ namespace LabFusion
             FusionLogger.Log($"Main scene {sceneName} was initialized.");
 #endif
 
-            SyncUtilities.OnCleanup();
+            SyncManager.OnCleanup();
             RigData.OnCacheRigInfo(sceneName);
             PlayerRep.OnRecreateReps();
         }

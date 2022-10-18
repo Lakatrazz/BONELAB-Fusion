@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Utilities;
+using LabFusion.Grabbables;
 
 using SLZ.Interaction;
 
@@ -14,8 +15,11 @@ using UnityEngine;
 
 namespace LabFusion.Data
 {
+    public class StaticGrabGroupHandler : GrabGroupHandler<SerializedStaticGrab>
+    {
+        public override GrabGroup? Group => GrabGroup.STATIC;
+    }
 
-    [SerializedGrabGroup(group = SyncUtilities.SyncGroup.STATIC)]
     public class SerializedStaticGrab : SerializedGrab
     {
         public string fullPath;

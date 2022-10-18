@@ -13,6 +13,7 @@ using HarmonyLib;
 using LabFusion.Data;
 using LabFusion.Representation;
 using LabFusion.Utilities;
+using LabFusion.Grabbables;
 
 namespace LabFusion.Patching
 {
@@ -25,7 +26,7 @@ namespace LabFusion.Patching
                 if (__instance.manager != RigData.RigReferences.RigManager)
                     return;
 
-                PlayerRepUtilities.SendObjectAttach(__instance.handedness, Grip.Cache.Get(objectToAttach));
+                GrabHelper.SendObjectAttach(__instance.handedness, Grip.Cache.Get(objectToAttach));
             }
             catch (Exception e) {
 #if DEBUG
@@ -48,7 +49,7 @@ namespace LabFusion.Patching
                 if (!__instance.HasAttachedObject())
                     return;
 
-                PlayerRepUtilities.SendObjectDetach(__instance.handedness);
+                GrabHelper.SendObjectDetach(__instance.handedness);
             }
             catch (Exception e) {
 #if DEBUG
