@@ -18,8 +18,7 @@ namespace LabFusion.Data
     public class SerializedGripAnchor : IFusionSerializable
     {
         public Handedness handedness;
-        public Vector3 anchor;
-        public Vector3 connectedAnchor;
+        public Vector3 localGrip;
         public SerializedQuaternion relativeRotation;
 
         public SerializedGripAnchor() { }
@@ -28,10 +27,7 @@ namespace LabFusion.Data
             handedness = hand.handedness;
 
             if (hand.joint) {
-                Vector3 origin = hand.transform.position;
-
-                anchor = hand.joint.GetLocalAnchor(origin);
-                connectedAnchor = hand.joint.GetLocalConnectedAnchor(origin);
+                localGrip = grip.transform.InverseTransformPoint(hand.transform.position);
                 relativeRotation = SerializedQuaternion.Compress(Quaternion.Inverse(grip.transform.rotation) * hand.transform.rotation);
             }
         }
@@ -45,8 +41,8 @@ namespace LabFusion.Data
                 clientJoint.connectedBody = hand.joint.connectedBody;
 
                 // Pos anchors
-                clientJoint.anchor = anchor;
-                clientJoint.connectedAnchor = connectedAnchor;
+                clientJoint.anchor = Vector3.zero;
+                clientJoint.connectedAnchor = clientJoint.GetLocalConnectedAnchor(grip.transform.TransformPoint(localGrip));
 
                 // Rot anchors
                 var initialRot = hand.transform.rotation;
@@ -58,11 +54,12 @@ namespace LabFusion.Data
                 hand.transform.rotation = initialRot;
 
                 // Motion and drives
-                clientJoint.linearLimit = new SoftJointLimit() { limit = 0.5f };
-                clientJoint.xDrive = clientJoint.yDrive = clientJoint.zDrive = new JointDrive() { positionSpring = 5000000f, positionDamper = 100000f, maximumForce = 5000000f };
-
+                clientJoint.linearLimitSpring = clientJoint.angularXLimitSpring = clientJoint.angularYZLimitSpring = new SoftJointLimitSpring() { spring = 5000000f, damper = 50000f };
                 clientJoint.xMotion = clientJoint.yMotion = clientJoint.zMotion 
-                    = clientJoint.angularXMotion = clientJoint.angularYMotion = clientJoint.angularZMotion = ConfigurableJointMotion.Limited;
+                    = clientJoint.angularXMotion = clientJoint.angularYMotion = clientJoint.angularZMotion = ConfigurableJointMotion.Locked;
+                clientJoint.projectionMode = JointProjectionMode.PositionAndRotation;
+                clientJoint.projectionDistance = 0.001f;
+                clientJoint.projectionAngle = 20f;
             }
         }
 
@@ -74,15 +71,13 @@ namespace LabFusion.Data
 
         public void Serialize(FusionWriter writer) {
             writer.Write((byte)handedness);
-            writer.Write(anchor);
-            writer.Write(connectedAnchor);
+            writer.Write(localGrip);
             writer.Write(relativeRotation);
         }
 
         public void Deserialize(FusionReader reader) {
             handedness = (Handedness)reader.ReadByte();
-            anchor = reader.ReadVector3();
-            connectedAnchor = reader.ReadVector3();
+            localGrip = reader.ReadVector3();
             relativeRotation = reader.ReadFusionSerializable<SerializedQuaternion>();
         }
     }
