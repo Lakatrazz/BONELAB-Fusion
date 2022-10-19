@@ -8,7 +8,10 @@ using LabFusion.Utilities;
 using LabFusion.Syncables;
 
 using MelonLoader;
+
 using LabFusion.Grabbables;
+
+using UnityEngine.SceneManagement;
 
 namespace LabFusion
 {
@@ -37,6 +40,7 @@ namespace LabFusion
         }
 
         public override void OnLateInitializeMelon() {
+            HookingUtilities.HookAll();
             InternalLayerHelpers.OnLateInitializeLayer();
         }
 
@@ -50,7 +54,7 @@ namespace LabFusion
 
         public static void OnMainSceneInitialized() {
             string sceneName = LevelWarehouseUtilities.GetCurrentLevel().Title;
-
+            
 #if DEBUG
             FusionLogger.Log($"Main scene {sceneName} was initialized.");
 #endif

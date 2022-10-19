@@ -39,7 +39,7 @@ namespace LabFusion.Data
         }
 
         public override Grip GetGrip() {
-            var go = GameObject.Find(fullPath);
+            var go = GameObjectUtilities.GetGameObject(fullPath);
 
             if (go) {
                 var grip = Grip.Cache.Get(go);

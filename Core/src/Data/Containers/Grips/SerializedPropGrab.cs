@@ -66,7 +66,7 @@ namespace LabFusion.Data
 
                 return syncable.GetGrip(index);
             }
-            else if ((go = GameObject.Find(fullPath)) && (host = InteractableHost.Cache.Get(go))) {
+            else if ((go = GameObjectUtilities.GetGameObject(fullPath)) && (host = InteractableHost.Cache.Get(go))) {
                 syncable = new PropSyncable(go, (Grip[])host._grips.ToArray());
                 SyncManager.RegisterSyncable(syncable, id);
 

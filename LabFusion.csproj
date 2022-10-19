@@ -724,6 +724,8 @@
     <Compile Include="Core\src\Representation\PlayerIdManager.cs" />
     <Compile Include="Core\src\Representation\PlayerRep.cs" />
     <Compile Include="Core\src\Representation\PlayerRepUtilities.cs" />
+    <Compile Include="Core\src\Utilities\GameObjectUtilities.cs" />
+    <Compile Include="Core\src\Utilities\HookingUtilities.cs" />
     <Compile Include="Core\src\Utilities\Internal\AssetBundleManager.cs" />
     <Compile Include="Core\src\Utilities\Asset Warehouses\SpawnableWarehouseUtilities.cs" />
     <Compile Include="Core\src\Utilities\Asset Warehouses\AvatarWarehouseUtilities.cs" />

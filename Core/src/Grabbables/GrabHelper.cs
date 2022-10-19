@@ -88,7 +88,7 @@ namespace LabFusion.Grabbables {
                         else
                         {
                             group = GrabGroup.STATIC;
-                            serializedGrab = new SerializedStaticGrab(grip.transform.GetPath());
+                            serializedGrab = new SerializedStaticGrab(grip.gameObject.GetFullPath());
                             validGrip = true;
                         }
                     }
@@ -133,14 +133,14 @@ namespace LabFusion.Grabbables {
                             FusionLogger.Log($"Sending new grab message with an id of {syncable.Id}");
 #endif
 
-                            serializedGrab = new SerializedPropGrab(grip.Host.Rb.transform.GetPath(), syncable.GetIndex(grip).Value, syncable.Id, true);
+                            serializedGrab = new SerializedPropGrab(grip.Host.Rb.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id, true);
                             validGrip = true;
                         }
                         else if (NetworkInfo.IsServer)
                         {
                             syncable = new PropSyncable(root, otherGrips);
                             SyncManager.RegisterSyncable(syncable, SyncManager.AllocateSyncID());
-                            serializedGrab = new SerializedPropGrab(grip.Host.Rb.transform.GetPath(), syncable.GetIndex(grip).Value, syncable.Id, true);
+                            serializedGrab = new SerializedPropGrab(grip.Host.Rb.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id, true);
 
                             validGrip = true;
                         }
