@@ -10,6 +10,12 @@ namespace LabFusion.Syncables {
     public interface ISyncable {
         Grip GetGrip(ushort index);
 
+        bool IsGrabbed();
+
+        void SetOwner(byte owner);
+
+        byte? GetOwner();
+
         bool IsQueued();
 
         void Cleanup();
@@ -19,5 +25,7 @@ namespace LabFusion.Syncables {
         byte? GetIndex(Grip grip);
 
         ushort GetId();
+
+        void OnFixedUpdate();
     }
 }

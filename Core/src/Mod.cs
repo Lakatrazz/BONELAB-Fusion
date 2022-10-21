@@ -75,6 +75,17 @@ namespace LabFusion
 
         public override void OnFixedUpdate() {
             PlayerRep.OnFixedUpdate();
+
+            foreach (var syncable in SyncManager.Syncables) {
+                try {
+                    syncable.Value.OnFixedUpdate();
+                } 
+                catch (Exception e) {
+#if DEBUG
+                    FusionLogger.LogException("executing OnFixedUpdate for syncable", e);
+#endif
+                }
+            }
         }
 
         public override void OnLateUpdate() {

@@ -679,6 +679,7 @@
     <Compile Include="Core\src\Extensions\Joint.cs" />
     <Compile Include="Core\src\Extensions\Transform.cs" />
     <Compile Include="Core\src\Extensions\UnityComparer.cs" />
+    <Compile Include="Core\src\Extensions\Vector3.cs" />
     <Compile Include="Core\src\Grabbables\GrabHelper.cs" />
     <Compile Include="Core\src\Grabbables\SerializedGrabHandler.cs" />
     <Compile Include="Core\src\Mod.cs" />
@@ -704,6 +705,7 @@
     <Compile Include="Core\src\Network\Messages\SimpleStringMessage.cs" />
     <Compile Include="Core\src\Network\Helpers\NetworkInfo.cs" />
     <Compile Include="Core\src\Network\Internal\InternalServerHelpers.cs" />
+    <Compile Include="Core\src\Network\Messages\Syncables\PropSyncableUpdateMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Syncables\SyncableIDResponseMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Syncables\SyncableIDRequestMessage.cs" />
     <Compile Include="Core\src\Network\Steam\SteamConnectionManager.cs" />
@@ -735,6 +737,7 @@
     <Compile Include="Core\src\Syncables\ISyncable.cs" />
     <Compile Include="Core\src\Syncables\PropSyncable.cs" />
     <Compile Include="Core\src\Syncables\SyncManager.cs" />
+    <Compile Include="Core\src\Utilities\SafetyUtilities.cs" />
     <Compile Include="Core\src\Utilities\TriggerUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

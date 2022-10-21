@@ -243,15 +243,13 @@ namespace LabFusion.Representation
                     serializedPelvis.position += predictVelocity * Time.fixedDeltaTime;
 
                 // Apply velocity
-                if (Time.timeScale > 0f && Time.deltaTime > 0f && Time.fixedDeltaTime > 0f)
+                if (SafetyUtilities.IsValidTime)
                     repPelvis.velocity = PhysXUtils.GetLinearVelocity(repPelvis.transform.position, serializedPelvis.position) * PelvisPinMlp;
 
                 // Check for stability teleport
-                if (RigData.RigReferences.RigManager && RigData.RigReferences.RigManager.avatar)
-                {
+                if (RigData.RigReferences.RigManager) {
                     float distSqr = (repPelvis.transform.position - serializedPelvis.position).sqrMagnitude;
-                    if (distSqr > (2f * (predictVelocity.magnitude + 1f)))
-                    {
+                    if (distSqr > (2f * (predictVelocity.magnitude + 1f))) {
                         RigReferences.RigManager.Teleport(serializedPelvis.position);
                     }
                 }

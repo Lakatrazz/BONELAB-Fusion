@@ -28,6 +28,8 @@ namespace LabFusion.Network
             SyncableIDRequest = 11,
             SyncableIDResponse = 12,
 
+            PropSyncableUpdate = 13,
+
             ModuleMessage = 80;
     }
 

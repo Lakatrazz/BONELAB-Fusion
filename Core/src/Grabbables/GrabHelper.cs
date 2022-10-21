@@ -24,19 +24,34 @@ using MelonLoader;
 
 namespace LabFusion.Grabbables {
     public static class GrabHelper {
-        public static void GetGripInfo(Grip grip, out GameObject root, out Grip[] otherGrips) {
-            root = null;
-            otherGrips = null;
+        public static void GetGripInfo(Grip grip, out InteractableHost host, out InteractableHostManager manager) {
+            host = null;
+            manager = null;
 
             if (grip == null)
                 return;
 
             var iGrippable = grip.Host;
-            root = iGrippable.GetHostGameObject();
 
             InteractableHost interactableHost;
             if (interactableHost = iGrippable.TryCast<InteractableHost>()) {
-                otherGrips = (Grip[])interactableHost._grips.ToArray();
+                // Try and find the host and manager
+                host = interactableHost;
+                manager = host.manager;
+
+                // Loop through the cache of all parents if there is no manager
+                if (manager == null) {
+                    Transform parent = host.transform.parent;
+
+                    while (parent != null) {
+                        var foundHost = InteractableHost.Cache.Get(parent.gameObject);
+
+                        if (foundHost != null)
+                            host = foundHost;
+
+                        parent = parent.parent;
+                    }
+                }
             }
         }
 
@@ -96,7 +111,9 @@ namespace LabFusion.Grabbables {
                     else if (grip.HasRigidbody  && !grip.GetComponentInParent<RigManager>())
                     {
                         group = GrabGroup.PROP;
-                        GetGripInfo(grip, out var root, out var otherGrips);
+                        GetGripInfo(grip, out var host, out var manager);
+
+                        GameObject root = manager ? manager.gameObject : host.gameObject;
 
                         // Do we already have a synced object?
                         if (PropSyncable.Cache.TryGetValue(root, out var syncable))
@@ -107,7 +124,7 @@ namespace LabFusion.Grabbables {
                         // Create a new one
                         else if (!NetworkInfo.IsServer)
                         {
-                            syncable = new PropSyncable(root, otherGrips);
+                            syncable = new PropSyncable(host);
 
                             ushort queuedId = SyncManager.QueueSyncable(syncable);
 
@@ -133,14 +150,14 @@ namespace LabFusion.Grabbables {
                             FusionLogger.Log($"Sending new grab message with an id of {syncable.Id}");
 #endif
 
-                            serializedGrab = new SerializedPropGrab(grip.Host.Rb.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id, true);
+                            serializedGrab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id, true);
                             validGrip = true;
                         }
                         else if (NetworkInfo.IsServer)
                         {
-                            syncable = new PropSyncable(root, otherGrips);
+                            syncable = new PropSyncable(host);
                             SyncManager.RegisterSyncable(syncable, SyncManager.AllocateSyncID());
-                            serializedGrab = new SerializedPropGrab(grip.Host.Rb.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id, true);
+                            serializedGrab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id, true);
 
                             validGrip = true;
                         }

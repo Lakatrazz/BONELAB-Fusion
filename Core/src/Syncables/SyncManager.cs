@@ -47,6 +47,16 @@ namespace LabFusion.Syncables {
             LastId = id;
         }
 
+        public static void RemoveSyncable(ISyncable syncable) {
+            if (Syncables.ContainsValue(syncable))
+                Syncables.Remove(syncable.GetId());
+
+            if (QueuedSyncables.Contains(syncable))
+                QueuedSyncables.Remove(syncable);
+
+            syncable.Cleanup();
+        }
+
         public static ushort QueueSyncable(ISyncable syncable) {
             if (QueuedSyncables.Contains(syncable)) {
                 int index = QueuedSyncables.FindIndex(o => o == syncable);
