@@ -679,6 +679,7 @@
     <Compile Include="Core\src\Extensions\Joint.cs" />
     <Compile Include="Core\src\Extensions\Transform.cs" />
     <Compile Include="Core\src\Extensions\UnityComparer.cs" />
+    <Compile Include="Core\src\Extensions\UnityObject.cs" />
     <Compile Include="Core\src\Extensions\Vector3.cs" />
     <Compile Include="Core\src\Grabbables\GrabHelper.cs" />
     <Compile Include="Core\src\Grabbables\SerializedGrabHandler.cs" />
@@ -691,6 +692,7 @@
     <Compile Include="Core\src\Network\Messages\FusionMessageHandler.cs" />
     <Compile Include="Core\src\Network\Messages\FusionReader.cs" />
     <Compile Include="Core\src\Network\Messages\FusionWriter.cs" />
+    <Compile Include="Core\src\Network\Messages\Global\WorldGravityMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\PlayerRepAnchorMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\PlayerRepGrabMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\PlayerRepReleaseMessage.cs" />
@@ -721,6 +723,7 @@
     <Compile Include="Core\src\Patching\Patches\OpenControllerRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\SceneStreamerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\TriggerLasersPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\UnityPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ZonePatches.cs" />
     <Compile Include="Core\src\Representation\PlayerId.cs" />
     <Compile Include="Core\src\Representation\PlayerIdManager.cs" />
@@ -737,6 +740,7 @@
     <Compile Include="Core\src\Syncables\ISyncable.cs" />
     <Compile Include="Core\src\Syncables\PropSyncable.cs" />
     <Compile Include="Core\src\Syncables\SyncManager.cs" />
+    <Compile Include="Core\src\Utilities\Internal\PhysicsUtilities.cs" />
     <Compile Include="Core\src\Utilities\SafetyUtilities.cs" />
     <Compile Include="Core\src\Utilities\TriggerUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -750,8 +754,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Core\resources\lib\x86_64\steam_api64.dll" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Core\src\Network\Messages\Global\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

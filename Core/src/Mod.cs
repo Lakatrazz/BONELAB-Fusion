@@ -65,17 +65,24 @@ namespace LabFusion
         }
 
         public override void OnUpdate() {
+            // Update the jank level loading check
             LevelWarehouseUtilities.OnUpdateLevelLoading();
 
+            // Store rig info/update avatars
             RigData.OnRigUpdate();
 
-            InternalLayerHelpers.OnUpdateLayer();
+            // Send world messages
             PlayerRep.OnSyncRep();
+            PhysicsUtilities.OnSendPhysicsInformation();
+
+            // Update and push all network messages
+            InternalLayerHelpers.OnUpdateLayer();
         }
 
         public override void OnFixedUpdate() {
             PlayerRep.OnFixedUpdate();
 
+            // Here we update the positions/etc of all of our synced objects
             foreach (var syncable in SyncManager.Syncables) {
                 try {
                     syncable.Value.OnFixedUpdate();
@@ -89,6 +96,7 @@ namespace LabFusion
         }
 
         public override void OnLateUpdate() {
+            // Flush any left over network messages
             InternalLayerHelpers.OnLateUpdateLayer();
         }
 

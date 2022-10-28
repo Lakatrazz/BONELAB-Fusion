@@ -28,6 +28,11 @@ namespace LabFusion.Representation
 
         public RigReferenceCollection RigReferences { get; private set; } = new RigReferenceCollection();
 
+        /// <summary>
+        /// Returns true if the transforms of the rep have been created yet.
+        /// </summary>
+        public bool IsCreated => !RigReferences.RigManager.IsNOC();
+
         public static Transform[] syncedPoints = new Transform[PlayerRepUtilities.TransformSyncCount];
         public static Transform syncedPlayspace;
         public static Transform syncedPelvis;
@@ -235,7 +240,7 @@ namespace LabFusion.Representation
         public void OnUpdateVelocity() {
             try {
                 // Stop pelvis
-                if (repPelvis == null)
+                if (repPelvis.IsNOC())
                     return;
 
                 // Move position with prediction
@@ -247,16 +252,27 @@ namespace LabFusion.Representation
                     repPelvis.velocity = PhysXUtils.GetLinearVelocity(repPelvis.transform.position, serializedPelvis.position) * PelvisPinMlp;
 
                 // Check for stability teleport
-                if (RigData.RigReferences.RigManager) {
+                if (!RigData.RigReferences.RigManager.IsNOC()) {
                     float distSqr = (repPelvis.transform.position - serializedPelvis.position).sqrMagnitude;
                     if (distSqr > (2f * (predictVelocity.magnitude + 1f))) {
-                        RigReferences.RigManager.Teleport(serializedPelvis.position);
+                        // Get teleport position
+                        var pos = serializedPelvis.position;
+                        var physRig = RigReferences.RigManager.physicsRig;
+
+                        // Offset
+                        pos += physRig.feet.transform.position - physRig.m_pelvis.position;
+                        pos += physRig.footballRadius * -physRig.m_pelvis.up;
+
+                        RigReferences.RigManager.Teleport(pos);
+
+                        // Reset locosphere and knee pos so the rig doesn't get stuck
+                        physRig.knee.transform.position = serializedPelvis.position;
+                        physRig.feet.transform.position = serializedPelvis.position;
                     }
                 }
             }
             catch {
-                // I give up idk there was so many null checks and yet still an error when missed
-                // Il2?
+                // Just ignore these. Don't really matter.
             }
         }
 
@@ -266,7 +282,7 @@ namespace LabFusion.Representation
                     return false;
 
                 for (var i = 0; i < syncedPoints.Length; i++) {
-                    if (syncedPoints[i] == null)
+                    if (syncedPoints[i].IsNOC())
                         return false;
                 }
 
@@ -326,15 +342,15 @@ namespace LabFusion.Representation
         /// Destroys the GameObjects of the PlayerRep. Does not free it from memory or remove it from its slots. Use Dispose for that.
         /// </summary>
         public void DestroyRep() {
-            if (RigReferences.RigManager != null)
+            if (!RigReferences.RigManager.IsNOC())
                 GameObject.Destroy(RigReferences.RigManager.gameObject);
 
-            if (repCanvas != null)
+            if (!repCanvas.IsNOC())
                 GameObject.Destroy(repCanvas.gameObject);
         }
 
         public static void OnCachePlayerTransforms() {
-            if (RigData.RigReferences.RigManager == null)
+            if (RigData.RigReferences.RigManager.IsNOC())
                 return;
 
             syncedPelvis = RigData.RigReferences.RigManager.physicsRig.m_pelvis;

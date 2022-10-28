@@ -99,8 +99,7 @@ namespace LabFusion.Network {
                 }
 
                 // Apply player rep data
-                if (data.smallId != PlayerIdManager.LocalSmallId && PlayerRep.Representations.ContainsKey(data.smallId)) {
-                    var rep = PlayerRep.Representations[data.smallId];
+                if (data.smallId != PlayerIdManager.LocalSmallId && PlayerRep.Representations.TryGetValue(data.smallId, out var rep) && rep.IsCreated) {
                     rep.repControllerRig.feetOffset = data.feetOffset;
                     rep.serializedTransforms = data.serializedTransforms;
                     rep.serializedPelvis = data.serializedPelvis;

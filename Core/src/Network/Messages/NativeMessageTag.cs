@@ -30,6 +30,8 @@ namespace LabFusion.Network
 
             PropSyncableUpdate = 13,
 
+            WorldGravity = 14,
+
             ModuleMessage = 80;
     }
 
