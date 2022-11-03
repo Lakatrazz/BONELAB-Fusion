@@ -62,6 +62,8 @@ namespace LabFusion.Representation
         public SerializedBodyVitals vitals = null;
         public string avatarId = AvatarWarehouseUtilities.INVALID_AVATAR_BARCODE;
 
+        private bool _hasLockedPosition = false;
+
         public PlayerRep(PlayerId playerId, string barcode)
         {
             PlayerId = playerId;
@@ -206,7 +208,7 @@ namespace LabFusion.Representation
             }
         }
 
-        public void OnUpdateTransforms() {
+        public void OnControllerRigUpdate() {
             try
             {
                 if (repTransforms == null)
@@ -217,17 +219,17 @@ namespace LabFusion.Representation
 
                 for (var i = 0; i < PlayerRepUtilities.TransformSyncCount; i++)
                 {
-                    if (repTransforms[i] == null)
+                    if (repTransforms[i].IsNOC())
                         break;
 
                     repTransforms[i].localPosition = serializedTransforms[i].position;
                     repTransforms[i].localRotation = serializedTransforms[i].rotation.Expand();
                 }
 
-                if (repCanvasTransform) {
+                if (!repCanvasTransform.IsNOC()) {
                     repCanvasTransform.position = repTransforms[0].position + Vector3.up * 0.4f;
 
-                    if (RigData.RigReferences.RigManager)
+                    if (!RigData.RigReferences.RigManager.IsNOC())
                         repCanvasTransform.rotation = Quaternion.LookRotation(Vector3.Normalize(repCanvasTransform.position - RigData.RigReferences.RigManager.physicsRig.m_head.position), Vector3.up);
                 }
             }
@@ -237,19 +239,28 @@ namespace LabFusion.Representation
             }
         }
 
-        public void OnUpdateVelocity() {
+        public void OnPelvisPin() {
             try {
                 // Stop pelvis
                 if (repPelvis.IsNOC())
                     return;
 
                 // Move position with prediction
-                if (Time.realtimeSinceStartup - timeSincePelvisSent <= 2.5f)
+                if (Time.realtimeSinceStartup - timeSincePelvisSent <= 1.5f) {
                     serializedPelvis.position += predictVelocity * Time.fixedDeltaTime;
+
+                    _hasLockedPosition = false;
+                }
+                else if (!_hasLockedPosition) {
+                    serializedPelvis.position = repPelvis.transform.position;
+                    predictVelocity = Vector3.zero;
+
+                    _hasLockedPosition = true;
+                }
 
                 // Apply velocity
                 if (SafetyUtilities.IsValidTime)
-                    repPelvis.velocity = PhysXUtils.GetLinearVelocity(repPelvis.transform.position, serializedPelvis.position) * PelvisPinMlp;
+                    repPelvis.velocity = (PhysXUtils.GetLinearVelocity(repPelvis.transform.position, serializedPelvis.position) * PelvisPinMlp) + predictVelocity;
 
                 // Check for stability teleport
                 if (!RigData.RigReferences.RigManager.IsNOC()) {
@@ -314,6 +325,8 @@ namespace LabFusion.Representation
         }
 
         public void OnRepFixedUpdate() {
+            OnPelvisPin();
+
             OnHandFixedUpdate(RigReferences.LeftHand);
             OnHandFixedUpdate(RigReferences.RightHand);
         }

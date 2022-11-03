@@ -59,6 +59,8 @@ namespace LabFusion.Network
         }
 
         internal override void OnCleanupLayer() {
+            Disconnect();
+
             SteamAPILoader.OnFreeSteamAPI();
         }
 

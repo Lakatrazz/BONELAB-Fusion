@@ -25,8 +25,7 @@ namespace LabFusion.Patches
                 if (PlayerRep.Managers.ContainsKey(__instance.manager))
                 {
                     var rep = PlayerRep.Managers[__instance.manager];
-                    rep.OnUpdateTransforms();
-                    rep.OnUpdateVelocity();
+                    rep.OnControllerRigUpdate();
                 }
             }
             catch (Exception e)

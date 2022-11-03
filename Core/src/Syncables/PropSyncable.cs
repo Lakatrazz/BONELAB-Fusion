@@ -40,11 +40,11 @@ namespace LabFusion.Syncables
 
         public float TimeSinceUpdateReceived;
 
-        private InteractableHost _host;
         private bool _verifyRigidbodies;
 
+        private bool _hasLockedPosition = false;
+
         public PropSyncable(InteractableHost host) {
-            _host = host;
             GameObject = host.manager ? host.manager.gameObject : host.gameObject;
 
             if (host.manager)
@@ -255,12 +255,23 @@ namespace LabFusion.Syncables
 
                 if (hasValues) {
                     // Move position with prediction
-                    if (Time.realtimeSinceStartup - TimeSinceUpdateReceived <= 2.5f) {
+                    if (Time.realtimeSinceStartup - TimeSinceUpdateReceived <= 1.5f) {
                         pos += vel * dt;
                         DesiredPositions[i] = pos;
+
+                        _hasLockedPosition = false;
+                    }
+                    else if (!_hasLockedPosition) {
+                        pos = rb.transform.position;
+                        DesiredPositions[i] = pos;
+
+                        vel = Vector3.zero;
+                        DesiredVelocities[i] = Vector3.zero;
+
+                        _hasLockedPosition = true;
                     }
 
-                    var outputVel = (pos.Value - rb.transform.position) * invDt * PropPinMlp;
+                    var outputVel = ((pos.Value - rb.transform.position) * invDt * PropPinMlp) + vel.Value;
                     var outputAngVel = PhysXUtils.GetAngularVelocity(rb.transform.rotation, rot.Value) * PropPinMlp;
 
                     if (!outputVel.IsNanOrInf())

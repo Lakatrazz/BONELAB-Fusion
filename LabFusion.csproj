@@ -729,6 +729,7 @@
     <Compile Include="Core\src\Representation\PlayerIdManager.cs" />
     <Compile Include="Core\src\Representation\PlayerRep.cs" />
     <Compile Include="Core\src\Representation\PlayerRepUtilities.cs" />
+    <Compile Include="Core\src\Utilities\FloatingOriginUtilities.cs" />
     <Compile Include="Core\src\Utilities\GameObjectUtilities.cs" />
     <Compile Include="Core\src\Utilities\HookingUtilities.cs" />
     <Compile Include="Core\src\Utilities\Internal\AssetBundleManager.cs" />
