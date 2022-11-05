@@ -289,7 +289,7 @@ namespace LabFusion.Representation
 
         private static bool TrySendRep() {
             try {
-                if (syncedPoints == null)
+                if (syncedPoints == null || PlayerIdManager.LocalId == null)
                     return false;
 
                 for (var i = 0; i < syncedPoints.Length; i++) {
