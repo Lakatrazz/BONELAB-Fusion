@@ -98,8 +98,6 @@ namespace LabFusion.Network
                     // Find the prop syncable and update its info
                     var syncable = data.GetPropSyncable();
                     if (syncable != null && syncable.Owner.HasValue && syncable.Owner.Value == data.ownerId) {
-                        syncable.TimeSinceUpdateReceived = Time.realtimeSinceStartup;
-
                         for (var i = 0; i < data.serializedTransforms.Length; i++) {
                             syncable.DesiredPositions[i] = data.serializedTransforms[i].position;
                             syncable.DesiredRotations[i] = data.serializedTransforms[i].rotation.Expand();

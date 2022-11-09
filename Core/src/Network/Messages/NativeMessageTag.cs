@@ -32,6 +32,10 @@ namespace LabFusion.Network
 
             WorldGravity = 14,
 
+            SpawnRequest = 15,
+            SpawnResponse = 16,
+            DespawnPoolee = 17,
+
             ModuleMessage = 80;
     }
 

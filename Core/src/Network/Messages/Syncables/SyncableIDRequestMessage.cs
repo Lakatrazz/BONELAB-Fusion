@@ -51,10 +51,6 @@ namespace LabFusion.Network {
                             using (var response = SyncableIDResponseData.Create(data.queuedId, SyncManager.AllocateSyncID())) {
                                 writer.Write(response);
 
-#if DEBUG
-                                FusionLogger.Log($"Received ID request. Sending back {response.newId}");
-#endif
-
                                 using (var message = FusionMessage.Create(NativeMessageTag.SyncableIDResponse, writer)) {
                                     MessageSender.SendServerMessage(data.smallId, NetworkChannel.Reliable, message);
                                 }

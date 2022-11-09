@@ -12,11 +12,19 @@ using LabFusion.Utilities;
 
 namespace LabFusion.Syncables {
     public static class SyncManager {
-        public static readonly Dictionary<ushort, ISyncable> Syncables = new Dictionary<ushort, ISyncable>();
+        public static readonly Dictionary<ushort, ISyncable> Syncables = new Dictionary<ushort, ISyncable>(new SyncableComparer());
 
-        public static readonly List<ISyncable> QueuedSyncables = new List<ISyncable>();
+        public static readonly Dictionary<ushort, ISyncable> QueuedSyncables = new Dictionary<ushort, ISyncable>(new SyncableComparer());
 
+        /// <summary>
+        /// The last allocated id. Incremented server side.
+        /// </summary>
         public static ushort LastId = 0;
+
+        /// <summary>
+        /// The last registered queue id. Only kept client side.
+        /// </summary>
+        public static ushort LastQueueId = 0;
 
         public static void OnCleanup() {
             foreach (var syncable in Syncables.Values)
@@ -25,11 +33,12 @@ namespace LabFusion.Syncables {
             Syncables.Clear();
 
             foreach (var syncable in QueuedSyncables)
-                syncable.Cleanup();
+                syncable.Value.Cleanup();
 
             QueuedSyncables.Clear();
 
             LastId = 0;
+            LastQueueId = 0;
         }
 
         public static ushort AllocateSyncID() {
@@ -37,10 +46,13 @@ namespace LabFusion.Syncables {
             return LastId;
         }
 
+        public static ushort AllocateQueueID() {
+            LastQueueId++;
+            return LastQueueId;
+        }
+
         public static void RegisterSyncable(ISyncable syncable, ushort id) {
-            if (Syncables.ContainsKey(id)) {
-                Syncables.Remove(id);
-            }
+            RemoveSyncable(id);
 
             syncable.OnRegister(id);
             Syncables.Add(id, syncable);
@@ -51,28 +63,37 @@ namespace LabFusion.Syncables {
             if (Syncables.ContainsValue(syncable))
                 Syncables.Remove(syncable.GetId());
 
-            if (QueuedSyncables.Contains(syncable))
-                QueuedSyncables.Remove(syncable);
+            if (QueuedSyncables.ContainsValue(syncable))
+                QueuedSyncables.Remove(syncable.GetId());
 
             syncable.Cleanup();
         }
 
-        public static ushort QueueSyncable(ISyncable syncable) {
-            if (QueuedSyncables.Contains(syncable)) {
-                int index = QueuedSyncables.FindIndex(o => o == syncable);
-                QueuedSyncables.RemoveAt(index);
+        public static void RemoveSyncable(ushort id) {
+            if (Syncables.ContainsKey(id)) {
+                var syncToRemove = Syncables[id];
+                Syncables.Remove(id);
+                syncToRemove.Cleanup();
             }
-            
-            QueuedSyncables.Add(syncable);
-            return (ushort)QueuedSyncables.IndexOf(syncable);
+        }
+
+        public static ushort QueueSyncable(ISyncable syncable) {
+            if (QueuedSyncables.ContainsValue(syncable)) {
+                var pair = QueuedSyncables.First(o => o.Value == syncable);
+                QueuedSyncables.Remove(pair.Key);
+            }
+
+            var id = AllocateQueueID();
+            QueuedSyncables.Add(id, syncable);
+            return id;
         }
 
         public static bool UnqueueSyncable(ushort queuedId, ushort newId, out ISyncable syncable) {
             syncable = null;
 
-            if (QueuedSyncables.Count > queuedId) {
+            if (QueuedSyncables.ContainsKey(queuedId)) {
                 syncable = QueuedSyncables[queuedId];
-                QueuedSyncables.RemoveAt(queuedId);
+                QueuedSyncables.Remove(queuedId);
                 RegisterSyncable(syncable, newId);
 
                 return true;

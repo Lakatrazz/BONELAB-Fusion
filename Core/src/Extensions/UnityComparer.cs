@@ -10,7 +10,7 @@ namespace LabFusion.Extensions
 
         public bool Equals(ushort lft, ushort rht) => lft == rht;
 
-        public int GetHashCode(Object obj) => obj.GetInstanceID();
+        public int GetHashCode(Object obj) => !obj.IsNOC() ? obj.GetHashCode() : -1;
 
         public int GetHashCode(ushort sh) => sh.GetHashCode();
     }

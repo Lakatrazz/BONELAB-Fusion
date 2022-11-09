@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using SLZ.Rig;
+using SLZ.Marrow.Pool;
 
 using UnhollowerRuntimeLib;
 
@@ -108,12 +109,12 @@ namespace LabFusion.Grabbables {
                         }
                     }
                     // Check for prop grips
-                    else if (grip.HasRigidbody  && !grip.GetComponentInParent<RigManager>())
+                    else if (grip.HasRigidbody && !grip.GetComponentInParent<RigManager>())
                     {
                         group = GrabGroup.PROP;
                         GetGripInfo(grip, out var host, out var manager);
 
-                        GameObject root = manager ? manager.gameObject : host.gameObject;
+                        GameObject root = host.GetRoot();
 
                         // Do we already have a synced object?
                         if (PropSyncable.Cache.TryGetValue(root, out var syncable))

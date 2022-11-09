@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 
 using LabFusion.Data;
 using LabFusion.Extensions;
+using LabFusion.Grabbables;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Utilities;
 
 using SLZ;
 using SLZ.Interaction;
+using SLZ.Marrow.Pool;
 using SLZ.Utilities;
 
 using UnityEngine;
@@ -27,6 +29,8 @@ namespace LabFusion.Syncables
         public Rigidbody[] Rigidbodies;
         public GameObject[] HostGameObjects;
 
+        public readonly AssetPoolee AssetPoolee;
+
         public readonly GameObject GameObject;
 
         public ushort Id;
@@ -38,14 +42,22 @@ namespace LabFusion.Syncables
 
         public Vector3?[] DesiredVelocities;
 
-        public float TimeSinceUpdateReceived;
-
         private bool _verifyRigidbodies;
 
-        private bool _hasLockedPosition = false;
+        private bool _hasRegistered = false;
 
-        public PropSyncable(InteractableHost host) {
-            GameObject = host.manager ? host.manager.gameObject : host.gameObject;
+        public PropSyncable(InteractableHost host, GameObject root = null) {
+            if (root != null)
+                GameObject = root;
+            else
+                GameObject = host.GetRoot();
+
+            AssetPoolee = AssetPoolee.Cache.Get(GameObject);
+            Cache.Add(GameObject, this);
+
+#if DEBUG
+            FusionLogger.Log($"Cached PropSyncable on root object {GameObject.name}.");
+#endif
 
             if (host.manager)
                 AssignInformation(host.manager);
@@ -65,8 +77,6 @@ namespace LabFusion.Syncables
             DesiredPositions = new Vector3?[Rigidbodies.Length];
             DesiredRotations = new Quaternion?[Rigidbodies.Length];
             DesiredVelocities = new Vector3?[Rigidbodies.Length];
-
-            Cache.Add(GameObject, this);
         }
 
         private void AssignInformation(InteractableHost host) {
@@ -114,7 +124,13 @@ namespace LabFusion.Syncables
         }
 
         public void Cleanup() {
-            Cache.Remove(GameObject);
+            if (!GameObject.IsNOC()) {
+#if DEBUG
+                FusionLogger.Log($"Removing PropSyncable cache from {GameObject.name}.");
+#endif
+
+                Cache.Remove(GameObject);
+            }
         }
 
         public Grip GetGrip(ushort index) {
@@ -141,6 +157,17 @@ namespace LabFusion.Syncables
         public void VerifyOwner() {
             if (Owner.HasValue && PlayerIdManager.GetPlayerId(Owner.Value) == null)
                 Owner = null;
+        }
+
+        public void VerifyID() {
+            bool mismatchId = !SyncManager.Syncables.ContainsKey(Id) || SyncManager.Syncables[Id] != this;
+
+            if (SyncManager.Syncables.ContainsValue(this) && mismatchId) {
+                foreach (var pair in SyncManager.Syncables) {
+                    if (pair.Value == this)
+                        Id = pair.Key;
+                }
+            }
         }
 
         public void VerifyRigidbodies() {
@@ -170,6 +197,7 @@ namespace LabFusion.Syncables
 
         public void OnRegister(ushort id) {
             Id = id;
+            _hasRegistered = true;
         }
 
         public ushort GetId() {
@@ -187,13 +215,14 @@ namespace LabFusion.Syncables
         }
 
         public bool IsQueued() {
-            return SyncManager.QueuedSyncables.Contains(this);
+            return SyncManager.QueuedSyncables.ContainsValue(this);
         }
 
         public void OnFixedUpdate() {
-            if (GameObject == null || !GameObject.active)
+            if (GameObject == null || !GameObject.active || !_hasRegistered)
                 return;
 
+            VerifyID();
             VerifyOwner();
             VerifyRigidbodies();
 
@@ -254,24 +283,7 @@ namespace LabFusion.Syncables
                 bool hasValues = pos != null && rot != null && vel != null;
 
                 if (hasValues) {
-                    // Move position with prediction
-                    if (Time.realtimeSinceStartup - TimeSinceUpdateReceived <= 1.5f) {
-                        pos += vel * dt;
-                        DesiredPositions[i] = pos;
-
-                        _hasLockedPosition = false;
-                    }
-                    else if (!_hasLockedPosition) {
-                        pos = rb.transform.position;
-                        DesiredPositions[i] = pos;
-
-                        vel = Vector3.zero;
-                        DesiredVelocities[i] = Vector3.zero;
-
-                        _hasLockedPosition = true;
-                    }
-
-                    var outputVel = ((pos.Value - rb.transform.position) * invDt * PropPinMlp) + vel.Value;
+                    var outputVel = ((pos.Value - rb.transform.position) * invDt * PropPinMlp);
                     var outputAngVel = PhysXUtils.GetAngularVelocity(rb.transform.rotation, rot.Value) * PropPinMlp;
 
                     if (!outputVel.IsNanOrInf())
@@ -283,8 +295,8 @@ namespace LabFusion.Syncables
                     // Teleport check
                     float distSqr = (rb.transform.position - pos.Value).sqrMagnitude;
                     if (distSqr > (2f * (vel.Value.magnitude + 1f))) {
-                        rb.MovePosition(pos.Value);
-                        rb.MoveRotation(rot.Value);
+                        rb.transform.position = pos.Value;
+                        rb.transform.rotation = rot.Value;
                     }
                 }
             }
