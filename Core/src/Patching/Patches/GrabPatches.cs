@@ -17,6 +17,23 @@ using LabFusion.Grabbables;
 
 namespace LabFusion.Patching
 {
+    [HarmonyPatch(typeof(ForcePullGrip), nameof(ForcePullGrip.OnFarHandHoverUpdate))]
+    public class ForcePullPatch
+    {
+        public static void Prefix(ForcePullGrip __instance, ref bool __state, Hand hand)
+        {
+            __state = __instance.pullCoroutine != null;
+        }
+
+        public static void Postfix(ForcePullGrip __instance, ref bool __state, Hand hand)
+        {
+            if (!(__instance.pullCoroutine != null && !__state))
+                return;
+
+            GrabHelper.SendObjectForcePull(hand.handedness, __instance._grip);
+        }
+    }
+
     [HarmonyPatch(typeof(Hand), "AttachObject")]
     public static class AttachObjectPatch
     {

@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace LabFusion.Network
 {
-    public enum NetworkChannel : byte {
-        Reliable = 0,
-        Unreliable = 1,
+    public enum NetworkChannel : byte
+    {
+        Reliable,
+        Unreliable,
     }
 
 

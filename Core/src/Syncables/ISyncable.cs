@@ -18,6 +18,8 @@ namespace LabFusion.Syncables {
 
         bool IsQueued();
 
+        bool IsRegistered();
+
         void Cleanup();
 
         void OnRegister(ushort id);
@@ -27,5 +29,7 @@ namespace LabFusion.Syncables {
         ushort GetId();
 
         void OnFixedUpdate();
+
+        void OnUpdate();
     }
 }

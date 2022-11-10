@@ -20,6 +20,7 @@ namespace LabFusion.Network
             PlayerRepVitals = 6,
 
             PlayerRepGrab = 7,
+            PlayerRepForceGrab = 18,
             PlayerRepRelease = 8,
             PlayerRepAnchors = 9,
 
@@ -27,6 +28,8 @@ namespace LabFusion.Network
 
             SyncableIDRequest = 11,
             SyncableIDResponse = 12,
+            SyncableOwnershipRequest = 19,
+            SyncableOwnershipResponse = 20,
 
             PropSyncableUpdate = 13,
 

@@ -56,6 +56,86 @@ namespace LabFusion.Grabbables {
             }
         }
 
+        public static void SendObjectForcePull(Handedness handedness, Grip grip) {
+            if (NetworkInfo.HasServer) {
+                MelonCoroutines.Start(Internal_ObjectForcePullRoutine(handedness, grip));
+            }
+        }
+
+        internal static IEnumerator Internal_ObjectForcePullRoutine(Handedness handedness, Grip grip) {
+            if (NetworkInfo.HasServer) {
+                // Check to see if this has a rigidbody
+                if (grip.HasRigidbody && !grip.GetComponentInParent<RigManager>())
+                {
+                    // Get base values for the message
+                    byte smallId = PlayerIdManager.LocalSmallId;
+
+                    GetGripInfo(grip, out var host, out _);
+
+                    GameObject root = host.GetRoot();
+
+                    // Do we already have a synced object?
+                    if (PropSyncable.Cache.TryGetValue(root, out var syncable)) {
+                        SyncManager.SendOwnershipTransfer(syncable.Id);
+                    }
+                    // Create a new one
+                    else if (!NetworkInfo.IsServer) {
+                        // Create this as a syncable
+                        syncable = new PropSyncable(host);
+                        syncable.SetOwner(PlayerIdManager.LocalSmallId);
+
+                        // Add it to the queue and get a unique id
+                        ushort queuedId = SyncManager.QueueSyncable(syncable);
+
+                        using (var writer = FusionWriter.Create()) {
+                            using (var data = SyncableIDRequestData.Create(smallId, queuedId)) {
+                                writer.Write(data);
+
+                                using (var message = FusionMessage.Create(NativeMessageTag.SyncableIDRequest, writer)) {
+                                    MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                                }
+                            }
+                        }
+
+                        while (syncable.IsQueued())
+                            yield return null;
+
+                        yield return null;
+
+                        // Send force grab message
+                        var grab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id, true);
+
+                        using (var writer = FusionWriter.Create()) {
+                            using (var data = PlayerRepForceGrabData.Create(smallId, grab)) {
+                                writer.Write(data);
+
+                                using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepForceGrab, writer)) {
+                                    MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                                }
+                            }
+                        }
+                    }
+                    else if (NetworkInfo.IsServer)
+                    {
+                        // Add new syncable and send force grab message
+                        syncable = new PropSyncable(host);
+                        SyncManager.RegisterSyncable(syncable, SyncManager.AllocateSyncID());
+                        var grab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id, true);
+
+                        using (var writer = FusionWriter.Create()) {
+                            using (var data = PlayerRepForceGrabData.Create(smallId, grab)) {
+                                writer.Write(data);
+
+                                using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepForceGrab, writer)) {
+                                    MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         public static void SendObjectAttach(Handedness handedness, Grip grip)
         {
             if (NetworkInfo.HasServer)

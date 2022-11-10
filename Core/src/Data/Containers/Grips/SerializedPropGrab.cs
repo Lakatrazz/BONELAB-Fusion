@@ -54,23 +54,30 @@ namespace LabFusion.Data
             isGrabbed = reader.ReadBoolean();
         }
 
-        public override Grip GetGrip()
-        {
+        public Grip GetGrip(out PropSyncable syncable) {
             GameObject go;
             InteractableHost host;
+            syncable = null;
 
 #if DEBUG
             FusionLogger.Log($"Received prop grip request, id was {id}, valid path is {fullPath != "_"}.");
 #endif
 
-            if (SyncManager.TryGetSyncable(id, out var syncable)) {
+            if (SyncManager.TryGetSyncable(id, out var foundSyncable))
+            {
+
+                if (foundSyncable is PropSyncable prop) {
+                    syncable = prop;
+
 #if DEBUG
-                FusionLogger.Log($"Found existing prop grip!");
+                    FusionLogger.Log($"Found existing prop grip!");
 #endif
 
-                return syncable.GetGrip(index);
+                    return syncable.GetGrip(index);
+                }
             }
-            else if (fullPath != "_" && (go = GameObjectUtilities.GetGameObject(fullPath)) && (host = InteractableHost.Cache.Get(go))) {
+            else if (fullPath != "_" && (go = GameObjectUtilities.GetGameObject(fullPath)) && (host = InteractableHost.Cache.Get(go)))
+            {
                 syncable = new PropSyncable(host);
                 SyncManager.RegisterSyncable(syncable, id);
 
@@ -88,6 +95,10 @@ namespace LabFusion.Data
             }
 
             return null;
+        }
+
+        public override Grip GetGrip() {
+            return GetGrip(out _);
         }
 
         public override void RequestGrab(PlayerRep rep, Handedness handedness, Grip grip) {

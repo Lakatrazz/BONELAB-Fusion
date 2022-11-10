@@ -21,6 +21,7 @@ using MelonLoader;
 using static MelonLoader.MelonLogger;
 using SLZ.Zones;
 using SLZ.AI;
+using LabFusion.Extensions;
 
 namespace LabFusion.Network
 {
@@ -105,8 +106,8 @@ namespace LabFusion.Network
                         ushort syncId = data.syncId;
                         string path = data.spawnerPath;
 
-                        AssetSpawner.Spawn(spawnable, data.serializedTransform.position, data.serializedTransform.rotation.Expand(), new BoxedNullable<Vector3>(null), 
-                            true, new BoxedNullable<int>(null), (Action<GameObject>)((go) => { OnSpawnFinished(owner, syncId, go, path); }), null);
+                        NullableMethodExtensions.PoolManager_Spawn(spawnable, data.serializedTransform.position, data.serializedTransform.rotation.Expand(), null, 
+                            true, null, (Action<GameObject>)((go) => { OnSpawnFinished(owner, syncId, go, path); }), null);
                     }
                 }
             }
@@ -132,16 +133,11 @@ namespace LabFusion.Network
             try {
                 ZoneTracker tracker;
                 if (spawner != null && (tracker = go.GetComponent<ZoneTracker>())) {
-                    spawner.spawns.Add(go);
                     tracker.spawner = spawner;
 
-                    spawner.OnPreSpawnDelegate?.Invoke(go, SceneZone.PlayerObject);
-                    spawner.OnSpawnDelegate?.Invoke(go, SceneZone.PlayerObject);
-
-                    AIBrain brain;
-                    if (brain = go.GetComponent<AIBrain>())
-                    {
-                        spawner.onSpawnNPCDelegate?.Invoke(spawner, brain, spawner.currEnemyProfile, true);
+                    AIBrain brain = go.GetComponent<AIBrain>();
+                    if (!brain.IsNOC() && !brain.behaviour.IsNOC() && !spawner.currEnemyProfile.baseConfig.IsNOC()) {
+                        brain.behaviour.SetBaseConfig(spawner.currEnemyProfile.baseConfig);
                     }
                 }
             }

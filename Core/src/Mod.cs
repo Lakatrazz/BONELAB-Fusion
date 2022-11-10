@@ -12,6 +12,7 @@ using MelonLoader;
 using LabFusion.Grabbables;
 
 using UnityEngine.SceneManagement;
+using Il2CppSystem.Diagnostics;
 
 namespace LabFusion
 {
@@ -73,6 +74,7 @@ namespace LabFusion
 
             // Send world messages
             PlayerRep.OnSyncRep();
+            SyncManager.OnUpdate();
             PhysicsUtilities.OnSendPhysicsInformation();
 
             // Update and push all network messages
@@ -81,18 +83,7 @@ namespace LabFusion
 
         public override void OnFixedUpdate() {
             PlayerRep.OnFixedUpdate();
-
-            // Here we update the positions/etc of all of our synced objects
-            foreach (var syncable in SyncManager.Syncables) {
-                try {
-                    syncable.Value.OnFixedUpdate();
-                } 
-                catch (Exception e) {
-#if DEBUG
-                    FusionLogger.LogException("executing OnFixedUpdate for syncable", e);
-#endif
-                }
-            }
+            SyncManager.OnFixedUpdate();
         }
 
         public override void OnLateUpdate() {

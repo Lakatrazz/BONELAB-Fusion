@@ -677,6 +677,7 @@
     <Compile Include="Core\src\Extensions\Grip.cs" />
     <Compile Include="Core\src\Extensions\IEnumerable.cs" />
     <Compile Include="Core\src\Extensions\Joint.cs" />
+    <Compile Include="Core\src\Extensions\Rigidbody.cs" />
     <Compile Include="Core\src\Extensions\Transform.cs" />
     <Compile Include="Core\src\Extensions\SyncableComparer.cs" />
     <Compile Include="Core\src\Extensions\UnityComparer.cs" />
@@ -696,6 +697,7 @@
     <Compile Include="Core\src\Network\Messages\FusionWriter.cs" />
     <Compile Include="Core\src\Network\Messages\Global\WorldGravityMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\PlayerRepAnchorMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Interaction\PlayerRepForceGrabMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\PlayerRepGrabMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\PlayerRepReleaseMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Levels\SceneLoadMessage.cs" />
@@ -715,6 +717,8 @@
     <Compile Include="Core\src\Network\Messages\Syncables\PropSyncableUpdateMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Syncables\SyncableIDResponseMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Syncables\SyncableIDRequestMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Syncables\SyncableOwnershipResponse.cs" />
+    <Compile Include="Core\src\Network\Messages\Syncables\SyncableOwnershipRequest.cs" />
     <Compile Include="Core\src\Network\Steam\SteamConnectionManager.cs" />
     <Compile Include="Core\src\Network\Steam\SteamNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Discord\DiscordNetworkLayer.cs" />

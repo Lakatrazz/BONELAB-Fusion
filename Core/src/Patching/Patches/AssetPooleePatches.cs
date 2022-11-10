@@ -20,6 +20,7 @@ using static MelonLoader.MelonLogger;
 using MelonLoader;
 using SLZ.Marrow.Warehouse;
 using SLZ.Zones;
+using LabFusion.Extensions;
 
 namespace LabFusion.Patching
 {
@@ -76,20 +77,30 @@ namespace LabFusion.Patching
             for (var i = 0; i < 4; i++)
                 yield return null;
 
-            if (!PooleeUtilities.DequeueServerSpawned(__instance)) {
-                var barcode = __instance.spawnableCrate.Barcode;
+            try
+            {
+                if (!PooleeUtilities.DequeueServerSpawned(__instance))
+                {
+                    var barcode = __instance.spawnableCrate.Barcode;
 
-                var syncId = SyncManager.AllocateSyncID();
-                SpawnResponseMessage.OnSpawnFinished(0, syncId, __instance.gameObject);
+                    var syncId = SyncManager.AllocateSyncID();
+                    SpawnResponseMessage.OnSpawnFinished(0, syncId, __instance.gameObject);
 
-                var zoneTracker = ZoneTracker.Cache.Get(__instance.gameObject);
-                ZoneSpawner spawner = null;
+                    var zoneTracker = ZoneTracker.Cache.Get(__instance.gameObject);
+                    ZoneSpawner spawner = null;
 
-                if (zoneTracker && zoneTracker.spawner) {
-                    spawner = zoneTracker.spawner;
+                    if (zoneTracker && zoneTracker.spawner)
+                    {
+                        spawner = zoneTracker.spawner;
+                    }
+
+                    PooleeUtilities.SendSpawn(0, barcode, syncId, new SerializedTransform(__instance.transform), true, spawner);
                 }
-
-                PooleeUtilities.SendSpawn(0, barcode, syncId, new SerializedTransform(__instance.transform), true, spawner);
+            }
+            catch (Exception e) {
+#if DEBUG
+                FusionLogger.LogException("to execute WaitForVerify", e);
+#endif
             }
         }
     }
@@ -97,13 +108,20 @@ namespace LabFusion.Patching
     [HarmonyPatch(typeof(AssetPoolee), nameof(AssetPoolee.Despawn))]
     public class PooleeDespawnPatch {
         public static bool Prefix(AssetPoolee __instance) {
-            if (NetworkInfo.HasServer && PropSyncable.Cache.TryGetValue(__instance.gameObject, out var syncable)) {
-                if (!NetworkInfo.IsServer && !PooleeUtilities.CanDespawn) {
-                    return false;
+            try {
+                if (NetworkInfo.HasServer && !__instance.IsNOC() && !__instance.gameObject.IsNOC() && PropSyncable.Cache.TryGetValue(__instance.gameObject, out var syncable)) {
+                    if (!NetworkInfo.IsServer && !PooleeUtilities.CanDespawn) {
+                        return false;
+                    }
+                    else if (NetworkInfo.IsServer) {
+                        PooleeUtilities.SendDespawn(syncable.Id);
+                    }
                 }
-                else if (NetworkInfo.IsServer) {
-                    PooleeUtilities.SendDespawn(syncable.Id);
-                }
+            } 
+            catch (Exception e) {
+#if DEBUG
+                FusionLogger.LogException("to execute patch AssetPoolee.Despawn", e);
+#endif
             }
 
             return true;

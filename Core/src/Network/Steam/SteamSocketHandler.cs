@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -35,10 +36,12 @@ namespace LabFusion.Network
 
             // Convert string/byte[] message into IntPtr data type for efficient message send / garbage management
             int sizeOfMessage = message.Length;
-            IntPtr intPtrMessage = System.Runtime.InteropServices.Marshal.AllocHGlobal(sizeOfMessage);
-            System.Runtime.InteropServices.Marshal.Copy(message.Buffer, 0, intPtrMessage, sizeOfMessage);
+            IntPtr intPtrMessage = Marshal.AllocHGlobal(sizeOfMessage);
+            Marshal.Copy(message.Buffer, 0, intPtrMessage, sizeOfMessage);
 
             connection.SendMessage(intPtrMessage, sizeOfMessage, sendType);
+
+            Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
         }
 
         public static void BroadcastToClients(this SteamSocketManager socketManager, NetworkChannel channel, FusionMessage message) {
@@ -46,32 +49,14 @@ namespace LabFusion.Network
 
             // Convert string/byte[] message into IntPtr data type for efficient message send / garbage management
             int sizeOfMessage = message.Length;
-            IntPtr intPtrMessage = System.Runtime.InteropServices.Marshal.AllocHGlobal(sizeOfMessage);
-            System.Runtime.InteropServices.Marshal.Copy(message.Buffer, 0, intPtrMessage, sizeOfMessage);
+            IntPtr intPtrMessage = Marshal.AllocHGlobal(sizeOfMessage);
+            Marshal.Copy(message.Buffer, 0, intPtrMessage, sizeOfMessage);
 
             foreach (var connection in socketManager.Connected) {
                 connection.SendMessage(intPtrMessage, sizeOfMessage, sendType);
             }
 
-            System.Runtime.InteropServices.Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
-        }
-
-        public static void BroadcastToClientsExcept(this SteamSocketManager socketManager, byte smallId, NetworkChannel channel, FusionMessage message) {
-            SendType sendType = ConvertToSendType(channel);
-
-            // Convert string/byte[] message into IntPtr data type for efficient message send / garbage management
-            int sizeOfMessage = message.Length;
-            IntPtr intPtrMessage = System.Runtime.InteropServices.Marshal.AllocHGlobal(sizeOfMessage);
-            System.Runtime.InteropServices.Marshal.Copy(message.Buffer, 0, intPtrMessage, sizeOfMessage);
-
-            foreach (var connection in socketManager.Connected) {
-                var playerId = PlayerIdManager.GetPlayerId(smallId);
-
-                if (playerId != null && SteamNetworkLayer.SteamServer.ConnectedSteamIds.ContainsKey(playerId.LongId) && SteamNetworkLayer.SteamServer.ConnectedSteamIds[playerId.LongId] != connection)
-                    connection.SendMessage(intPtrMessage, sizeOfMessage, sendType);
-            }
-
-            System.Runtime.InteropServices.Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
+            Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
         }
 
         public static void BroadcastToServer(NetworkChannel channel, FusionMessage message) {
@@ -81,16 +66,20 @@ namespace LabFusion.Network
 
                 // Convert string/byte[] message into IntPtr data type for efficient message send / garbage management
                 int sizeOfMessage = message.Length;
-                IntPtr intPtrMessage = System.Runtime.InteropServices.Marshal.AllocHGlobal(sizeOfMessage);
-                System.Runtime.InteropServices.Marshal.Copy(message.Buffer, 0, intPtrMessage, sizeOfMessage);
+                IntPtr intPtrMessage = Marshal.AllocHGlobal(sizeOfMessage);
+                Marshal.Copy(message.Buffer, 0, intPtrMessage, sizeOfMessage);
                 Result success = SteamNetworkLayer.SteamConnection.Connection.SendMessage(intPtrMessage, sizeOfMessage, sendType);
                 if (success == Result.OK) {
-                    System.Runtime.InteropServices.Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
+                    Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
                 }
                 else {
                     // RETRY
                     Result retry = SteamNetworkLayer.SteamConnection.Connection.SendMessage(intPtrMessage, sizeOfMessage, sendType);
-                    System.Runtime.InteropServices.Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
+                    Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
+
+                    if (retry != Result.OK) {
+                        throw new Exception($"Steam result was {retry}.");
+                    }
                 }
             }
             catch (Exception e) {
@@ -101,7 +90,7 @@ namespace LabFusion.Network
         public static void OnSocketMessageReceived(IntPtr messageIntPtr, int dataBlockSize, bool isServerHandled = false) {
             try {
                 byte[] message = new byte[dataBlockSize];
-                System.Runtime.InteropServices.Marshal.Copy(messageIntPtr, message, 0, dataBlockSize);
+                Marshal.Copy(messageIntPtr, message, 0, dataBlockSize);
 
                 FusionMessageHandler.ReadMessage(message, isServerHandled);
             }

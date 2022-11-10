@@ -6,27 +6,28 @@ using UnityEngine.SceneManagement;
 
 using LabFusion.Extensions;
 
-using GameObjectList = Il2CppSystem.Collections.Generic.List<UnityEngine.GameObject>;
-
 namespace LabFusion.Utilities {
     public static class GameObjectUtilities {
         public const char PathSeparator = '¬';
 
-        internal const int RootBufferCap = 4096;
-
-        private static GameObjectList _rootObjectBuffer = new GameObjectList(RootBufferCap);
+        private static GameObject[] _rootObjectBuffer;
 
         internal static List<GameObject> FindRootsWithName(string scene, string name) {
             var gameObjects = new List<GameObject>();
 
             var sceneAsset = SceneManager.GetSceneByName(scene);
-            sceneAsset.GetRootGameObjects(_rootObjectBuffer);
+            if (!sceneAsset.IsValid())
+                return gameObjects;
+
+            _rootObjectBuffer = sceneAsset.GetRootGameObjects();
 
             for (var i = 0; i < sceneAsset.rootCount; i++) {
                 var go = _rootObjectBuffer[i];
                 if (go != null && go.name == name)
                     gameObjects.Add(go);
             }
+
+            _rootObjectBuffer = null;
 
             return gameObjects;
         }
@@ -46,7 +47,14 @@ namespace LabFusion.Utilities {
         {
             var matching = FindRootsWithName(scene, name);
 
-            if (matching.Count <= index)
+            if (matching.Count == 0) {
+#if DEBUG
+                FusionLogger.Warn("Failed to find a list of matching root GameObjects! Searching for root by name!");
+#endif
+
+                return GameObject.Find($"/{name}");
+            }
+            else if (matching.Count <= index)
                 return matching[matching.Count - 1];
             else
                 return matching[index];

@@ -9,6 +9,7 @@ using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Extensions;
 using LabFusion.Utilities;
+using LabFusion.Representation;
 
 namespace LabFusion.Syncables {
     public static class SyncManager {
@@ -25,6 +26,68 @@ namespace LabFusion.Syncables {
         /// The last registered queue id. Only kept client side.
         /// </summary>
         public static ushort LastQueueId = 0;
+
+        public static void SendOwnershipTransfer(ushort syncableId) {
+            if (!TryGetSyncable(syncableId, out var syncable))
+                return;
+
+            var owner = PlayerIdManager.LocalSmallId;
+
+            // Broadcast response
+            if (NetworkInfo.IsServer) {
+                syncable.SetOwner(owner);
+
+                using (var writer = FusionWriter.Create()) {
+                    using (var response = SyncableOwnershipResponseData.Create(owner, syncableId)) {
+                        writer.Write(response);
+
+                        using (var message = FusionMessage.Create(NativeMessageTag.SyncableOwnershipResponse, writer)) {
+                            MessageSender.BroadcastMessageExcept(0, NetworkChannel.Reliable, message);
+                        }
+                    }
+                }
+            }
+            // Send request to server
+            else {
+                using (var writer = FusionWriter.Create()) {
+                    using (var response = SyncableOwnershipRequestData.Create(owner, syncableId)) {
+                        writer.Write(response);
+
+                        using (var message = FusionMessage.Create(NativeMessageTag.SyncableOwnershipRequest, writer)) {
+                            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                        }
+                    }
+                }
+            }
+        }
+
+        internal static void OnUpdate() {
+            // Here we send over position information/etc of our syncables
+            foreach (var syncable in Syncables) {
+                try {
+                    syncable.Value.OnUpdate();
+                }
+                catch (Exception e) {
+#if DEBUG
+                    FusionLogger.LogException("executing OnUpdate for syncable", e);
+#endif
+                }
+            }
+        }
+
+        internal static void OnFixedUpdate() {
+            // Here we update the positions/etc of all of our synced objects
+            foreach (var syncable in Syncables) {
+                try {
+                    syncable.Value.OnFixedUpdate();
+                }
+                catch (Exception e) {
+#if DEBUG
+                    FusionLogger.LogException("executing OnFixedUpdate for syncable", e);
+#endif
+                }
+            }
+        }
 
         public static void OnCleanup() {
             foreach (var syncable in Syncables.Values)

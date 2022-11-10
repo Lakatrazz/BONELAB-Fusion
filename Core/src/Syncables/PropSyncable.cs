@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Il2CppSystem.Diagnostics;
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Grabbables;
@@ -46,27 +46,34 @@ namespace LabFusion.Syncables
 
         private bool _hasRegistered = false;
 
-        public PropSyncable(InteractableHost host, GameObject root = null) {
+        private readonly Dictionary<Grip, int> _grabbedGrips = new Dictionary<Grip, int>();
+
+        public PropSyncable(InteractableHost host = null, GameObject root = null) {
             if (root != null)
                 GameObject = root;
-            else
+            else if (host != null)
                 GameObject = host.GetRoot();
 
             AssetPoolee = AssetPoolee.Cache.Get(GameObject);
+
+            if (Cache.ContainsKey(GameObject))
+                SyncManager.RemoveSyncable(Cache[GameObject]);
+
             Cache.Add(GameObject, this);
 
-#if DEBUG
-            FusionLogger.Log($"Cached PropSyncable on root object {GameObject.name}.");
-#endif
-
-            if (host.manager)
-                AssignInformation(host.manager);
-            else
-                AssignInformation(host);
+            if (host) {
+                if (host.manager)
+                    AssignInformation(host.manager);
+                else
+                    AssignInformation(host);
+            }
+            else if (GameObject) {
+                AssignInformation(GameObject);
+            }
 
             foreach (var grip in PropGrips) {
-                grip.attachedHandDelegate += (Grip.HandDelegate)OnTransferOwner;
-                grip.detachedHandDelegate += (Grip.HandDelegate)OnTransferOwner;
+                grip.attachedHandDelegate += (Grip.HandDelegate)((h) => { OnAttach(h, grip);});
+                grip.detachedHandDelegate += (Grip.HandDelegate)((h) => { OnDetach(h, grip); });
             }
 
             HostGameObjects = new GameObject[Rigidbodies.Length];
@@ -109,26 +116,39 @@ namespace LabFusion.Syncables
             Rigidbodies = rigidbodies.ToArray();
         }
 
+        private void AssignInformation(GameObject go) {
+            PropGrips = new Grip[0];
+            Rigidbodies = go.GetComponentsInChildren<Rigidbody>(true);
+        }
+
         public void OnTransferOwner(Hand hand) {
             // Determine the manager
             // Main player
             if (hand.manager == RigData.RigReferences.RigManager) {
-                SetOwner(PlayerIdManager.LocalSmallId);
-            }
-            // Player rep
-            else if (PlayerRep.Managers.TryGetValue(hand.manager, out var rep)) {
-                SetOwner(rep.PlayerId.SmallId);
+                SyncManager.SendOwnershipTransfer(GetId());
             }
 
             _verifyRigidbodies = true;
         }
 
+        public void OnAttach(Hand hand, Grip grip) {
+            OnTransferOwner(hand);
+
+            if (_grabbedGrips.ContainsKey(grip))
+                _grabbedGrips[grip]++;
+            else
+                _grabbedGrips.Add(grip, 1);
+        }
+
+        public void OnDetach(Hand hand, Grip grip) {
+            OnTransferOwner(hand);
+
+            if (_grabbedGrips.ContainsKey(grip))
+                _grabbedGrips[grip]--;
+        }
+
         public void Cleanup() {
             if (!GameObject.IsNOC()) {
-#if DEBUG
-                FusionLogger.Log($"Removing PropSyncable cache from {GameObject.name}.");
-#endif
-
                 Cache.Remove(GameObject);
             }
         }
@@ -218,8 +238,22 @@ namespace LabFusion.Syncables
             return SyncManager.QueuedSyncables.ContainsValue(this);
         }
 
+        public bool IsRegistered() => _hasRegistered;
+
+        private bool HasValidParameters() => !(GameObject.IsNOC() || !GameObject.active || !_hasRegistered);
+
         public void OnFixedUpdate() {
-            if (GameObject == null || !GameObject.active || !_hasRegistered)
+            if (!HasValidParameters())
+                return;
+
+            if (Owner.HasValue && Owner != PlayerIdManager.LocalSmallId) {
+                OnReceivedUpdate();
+            }
+        }
+
+        public void OnUpdate()
+        {
+            if (!HasValidParameters())
                 return;
 
             VerifyID();
@@ -228,9 +262,6 @@ namespace LabFusion.Syncables
 
             if (Owner.HasValue && Owner == PlayerIdManager.LocalSmallId) {
                 OnOwnedUpdate();
-            }
-            else {
-                OnReceivedUpdate();
             }
         }
 
@@ -264,40 +295,43 @@ namespace LabFusion.Syncables
 
             for (var i = 0; i < Rigidbodies.Length; i++) {
                 var rb = Rigidbodies[i];
-                if (rb == null || rb.IsSleeping())
+                if (rb.IsNOC() || rb.ShouldSleep())
                     continue;
 
-                var host = InteractableHost.Cache.Get(rb.gameObject);
-                if (host && host.IsAttached) {
-                    DesiredPositions[i] = null;
-                    DesiredRotations[i] = null;
-                    DesiredVelocities[i] = null;
+                bool isGrabbed = false;
 
-                    continue;
+                foreach (var pair in _grabbedGrips) {
+                    if (pair.Value > 0 && pair.Key.Host.Rb == rb) {
+                        DesiredPositions[i] = null;
+                        DesiredRotations[i] = null;
+                        DesiredVelocities[i] = null;
+
+                        isGrabbed = true;
+                        break;
+                    }
                 }
 
-                var pos = DesiredPositions[i];
-                var rot = DesiredRotations[i];
-                var vel = DesiredVelocities[i];
+                if (isGrabbed || !DesiredPositions[i].HasValue || !DesiredRotations[i].HasValue || !DesiredVelocities[i].HasValue)
+                    continue;
 
-                bool hasValues = pos != null && rot != null && vel != null;
+                var pos = DesiredPositions[i].Value;
+                var rot = DesiredRotations[i].Value;
+                var vel = DesiredVelocities[i].Value;
 
-                if (hasValues) {
-                    var outputVel = ((pos.Value - rb.transform.position) * invDt * PropPinMlp);
-                    var outputAngVel = PhysXUtils.GetAngularVelocity(rb.transform.rotation, rot.Value) * PropPinMlp;
+                var outputVel = (pos - rb.transform.position) * invDt * PropPinMlp;
+                var outputAngVel = PhysXUtils.GetAngularVelocity(rb.transform.rotation, rot) * PropPinMlp;
 
-                    if (!outputVel.IsNanOrInf())
-                        rb.velocity = Vector3.Lerp(rb.velocity, outputVel, outputVel.sqrMagnitude + rb.velocity.sqrMagnitude + (15f * dt));
+                if (!outputVel.IsNanOrInf())
+                    rb.velocity = outputVel;
 
-                    if (!outputAngVel.IsNanOrInf())
-                        rb.angularVelocity = outputAngVel;
+                if (!outputAngVel.IsNanOrInf())
+                    rb.angularVelocity = outputAngVel;
 
-                    // Teleport check
-                    float distSqr = (rb.transform.position - pos.Value).sqrMagnitude;
-                    if (distSqr > (2f * (vel.Value.magnitude + 1f))) {
-                        rb.transform.position = pos.Value;
-                        rb.transform.rotation = rot.Value;
-                    }
+                // Teleport check
+                float distSqr = (rb.transform.position - pos).sqrMagnitude;
+                if (distSqr > (2f * (vel.sqrMagnitude + 1f))) {
+                    rb.transform.position = pos;
+                    rb.transform.rotation = rot;
                 }
             }
         }
