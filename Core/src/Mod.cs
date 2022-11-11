@@ -11,9 +11,6 @@ using MelonLoader;
 
 using LabFusion.Grabbables;
 
-using UnityEngine.SceneManagement;
-using Il2CppSystem.Diagnostics;
-
 namespace LabFusion
 {
     public class FusionMod : MelonMod

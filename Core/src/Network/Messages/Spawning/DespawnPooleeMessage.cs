@@ -47,7 +47,7 @@ namespace LabFusion.Network
                     if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable) {
                         PooleeUtilities.CanDespawn = true;
 
-                        if (propSyncable.AssetPoolee)
+                        if (propSyncable.AssetPoolee && propSyncable.AssetPoolee.gameObject.activeInHierarchy)
                             propSyncable.AssetPoolee.Despawn();
 
                         PooleeUtilities.CanDespawn = false;
@@ -58,7 +58,7 @@ namespace LabFusion.Network
             // Send the message to clients
             if (isServerHandled) {
                 using (var message = FusionMessage.Create(NativeMessageTag.DespawnPoolee, bytes)) {
-                    MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                    MessageSender.BroadcastMessageExcept(0, NetworkChannel.Reliable, message);
                 }
             }
         }
