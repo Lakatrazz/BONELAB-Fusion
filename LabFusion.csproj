@@ -711,7 +711,8 @@
     <Compile Include="Core\src\Network\Messages\SimpleStringMessage.cs" />
     <Compile Include="Core\src\Network\Helpers\NetworkInfo.cs" />
     <Compile Include="Core\src\Network\Internal\InternalServerHelpers.cs" />
-    <Compile Include="Core\src\Network\Messages\Spawning\DespawnPooleeMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Spawning\DespawnResponseMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Spawning\DespawnRequestMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Spawning\SpawnRequestMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Spawning\SpawnResponseMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Syncables\PropSyncableUpdateMessage.cs" />

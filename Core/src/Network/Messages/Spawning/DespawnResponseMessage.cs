@@ -8,42 +8,39 @@ using System;
 
 namespace LabFusion.Network
 {
-    public class DespawnPooleeData : IFusionSerializable, IDisposable
+    public class DespawnResponseData : IFusionSerializable, IDisposable
     {
         public ushort syncId;
 
-        public void Serialize(FusionWriter writer)
-        {
+        public void Serialize(FusionWriter writer) {
             writer.Write(syncId);
         }
 
-        public void Deserialize(FusionReader reader)
-        {
+        public void Deserialize(FusionReader reader) {
             syncId = reader.ReadUInt16();
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             GC.SuppressFinalize(this);
         }
 
-        public static DespawnPooleeData Create(ushort syncId)
+        public static DespawnResponseData Create(ushort syncId)
         {
-            return new DespawnPooleeData()
+            return new DespawnResponseData()
             {
                 syncId = syncId,
             };
         }
     }
 
-    public class DespawnPooleeMessage : FusionMessageHandler
+    public class DespawnResponseMessage : FusionMessageHandler
     {
-        public override byte? Tag => NativeMessageTag.DespawnPoolee;
+        public override byte? Tag => NativeMessageTag.DespawnResponse;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
             // Despawn the poolee if it exists
             using (var reader = FusionReader.Create(bytes)) {
-                using (var data = reader.ReadFusionSerializable<DespawnPooleeData>()) {
+                using (var data = reader.ReadFusionSerializable<DespawnResponseData>()) {
                     if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable) {
                         PooleeUtilities.CanDespawn = true;
 
@@ -52,13 +49,6 @@ namespace LabFusion.Network
 
                         PooleeUtilities.CanDespawn = false;
                     }
-                }
-            }
-
-            // Send the message to clients
-            if (isServerHandled) {
-                using (var message = FusionMessage.Create(NativeMessageTag.DespawnPoolee, bytes)) {
-                    MessageSender.BroadcastMessageExcept(0, NetworkChannel.Reliable, message);
                 }
             }
         }

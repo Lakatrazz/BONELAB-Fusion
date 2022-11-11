@@ -55,12 +55,30 @@ namespace LabFusion.Utilities {
         }
 
         public static void SendDespawn(ushort syncId) {
-            using (var writer = FusionWriter.Create()) {
-                using (var data = DespawnPooleeData.Create(syncId)) {
-                    writer.Write(data);
+            // Send response
+            if (NetworkInfo.IsServer) {
+                using (var writer = FusionWriter.Create()) {
+                    using (var data = DespawnResponseData.Create(syncId)) {
+                        writer.Write(data);
 
-                    using (var message = FusionMessage.Create(NativeMessageTag.DespawnPoolee, writer)) {
-                        MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                        using (var message = FusionMessage.Create(NativeMessageTag.DespawnResponse, writer)) {
+                            MessageSender.BroadcastMessageExcept(0, NetworkChannel.Reliable, message);
+                        }
+                    }
+                }
+            }
+            // Send request
+            else {
+                using (var writer = FusionWriter.Create())
+                {
+                    using (var data = DespawnRequestData.Create(syncId))
+                    {
+                        writer.Write(data);
+
+                        using (var message = FusionMessage.Create(NativeMessageTag.DespawnRequest, writer))
+                        {
+                            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                        }
                     }
                 }
             }

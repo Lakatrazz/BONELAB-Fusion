@@ -14,6 +14,7 @@ using LabFusion.Utilities;
 using SLZ;
 using SLZ.Interaction;
 using SLZ.Marrow.Pool;
+using SLZ.Marrow.SceneStreaming;
 using SLZ.Utilities;
 
 using UnityEngine;
@@ -240,7 +241,7 @@ namespace LabFusion.Syncables
 
         public bool IsRegistered() => _hasRegistered;
 
-        private bool HasValidParameters() => !(GameObject.IsNOC() || !GameObject.active || !_hasRegistered);
+        private bool HasValidParameters() => !(LevelWarehouseUtilities.IsLoading() || GameObject.IsNOC() || !GameObject.active || !_hasRegistered);
 
         public void OnFixedUpdate() {
             if (!HasValidParameters())

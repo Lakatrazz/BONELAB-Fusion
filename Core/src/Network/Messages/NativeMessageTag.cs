@@ -20,24 +20,25 @@ namespace LabFusion.Network
             PlayerRepVitals = 6,
 
             PlayerRepGrab = 7,
-            PlayerRepForceGrab = 18,
-            PlayerRepRelease = 8,
-            PlayerRepAnchors = 9,
+            PlayerRepForceGrab = 8,
+            PlayerRepRelease = 9,
+            PlayerRepAnchors = 10,
 
-            SceneLoad = 10,
+            SceneLoad = 11,
 
-            SyncableIDRequest = 11,
-            SyncableIDResponse = 12,
-            SyncableOwnershipRequest = 19,
-            SyncableOwnershipResponse = 20,
+            SyncableIDRequest = 12,
+            SyncableIDResponse = 13,
+            SyncableOwnershipRequest = 14,
+            SyncableOwnershipResponse = 15,
 
-            PropSyncableUpdate = 13,
+            PropSyncableUpdate = 16,
 
-            WorldGravity = 14,
+            WorldGravity = 17,
 
-            SpawnRequest = 15,
-            SpawnResponse = 16,
-            DespawnPoolee = 17,
+            SpawnRequest = 18,
+            SpawnResponse = 19,
+            DespawnRequest = 20,
+            DespawnResponse = 21,
 
             ModuleMessage = 80;
     }
