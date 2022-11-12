@@ -37,6 +37,7 @@ namespace LabFusion.Network
         }
     }
 
+    [Net.SkipHandleWhileLoading]
     public class WorldGravityMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.WorldGravity;

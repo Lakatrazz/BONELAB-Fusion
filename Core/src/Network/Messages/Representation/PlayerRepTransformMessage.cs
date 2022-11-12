@@ -82,6 +82,7 @@ namespace LabFusion.Network {
         }
     }
 
+    [Net.SkipHandleWhileLoading]
     public class PlayerRepTransformMessage : FusionMessageHandler {
         public override byte? Tag => NativeMessageTag.PlayerRepTransform;
 

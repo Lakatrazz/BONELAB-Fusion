@@ -50,6 +50,7 @@ namespace LabFusion.Network
         }
     }
 
+    [Net.DelayWhileLoading]
     public class PlayerRepReleaseMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.PlayerRepRelease;

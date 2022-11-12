@@ -87,6 +87,7 @@ namespace LabFusion.Network
         }
     }
 
+    [Net.SkipHandleWhileLoading]
     public class PropSyncableUpdateMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.PropSyncableUpdate;

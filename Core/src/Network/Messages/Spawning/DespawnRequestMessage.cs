@@ -36,6 +36,7 @@ namespace LabFusion.Network
         }
     }
 
+    [Net.DelayWhileLoading]
     public class DespawnRequestMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.DespawnRequest;

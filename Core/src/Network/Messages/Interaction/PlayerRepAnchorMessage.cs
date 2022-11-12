@@ -52,6 +52,7 @@ namespace LabFusion.Network
         }
     }
 
+    [Net.SkipHandleWhileLoading]
     public class PlayerRepAnchorMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.PlayerRepAnchors;
