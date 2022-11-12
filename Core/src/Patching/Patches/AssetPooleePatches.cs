@@ -130,4 +130,20 @@ namespace LabFusion.Patching
             return true;
         }
     }
+
+    [HarmonyPatch(typeof(AssetPoolee), nameof(AssetPoolee.OnDespawn))]
+    public class PooleeOnDespawnPatch {
+        public static void Postfix(AssetPoolee __instance) {
+            try {
+                if (NetworkInfo.HasServer && !__instance.IsNOC() && !__instance.gameObject.IsNOC() && PropSyncable.Cache.TryGetValue(__instance.gameObject, out var syncable)) {
+                    SyncManager.RemoveSyncable(syncable);
+                }
+            } 
+            catch (Exception e) {
+#if DEBUG
+                FusionLogger.LogException("to execute patch AssetPoolee.OnDespawn", e);
+#endif
+            }
+        }
+    }
 }
