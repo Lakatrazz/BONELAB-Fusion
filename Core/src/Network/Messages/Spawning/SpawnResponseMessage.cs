@@ -113,7 +113,7 @@ namespace LabFusion.Network
             }
         }
 
-        public static void OnSpawnFinished(byte owner, ushort syncId, GameObject go, string spawnerPath = "_") {
+        public static void OnSpawnFinished(byte owner, ushort syncId, GameObject go, string spawnerPath = "_", bool keepEnabled = true) {
             ZoneSpawner spawner = null;
             if (spawnerPath != "_") {
                 try {
@@ -158,8 +158,10 @@ namespace LabFusion.Network
 
             SyncManager.RegisterSyncable(newSyncable, syncId);
 
-            go.SetActive(true);
-            MelonCoroutines.Start(KeepEnabled(poolee));
+            if (keepEnabled) {
+                go.SetActive(true);
+                MelonCoroutines.Start(KeepEnabled(poolee));
+            }
         }
         
         public static IEnumerator KeepEnabled(AssetPoolee __instance) {

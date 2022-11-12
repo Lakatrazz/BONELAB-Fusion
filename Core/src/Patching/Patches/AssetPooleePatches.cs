@@ -74,6 +74,9 @@ namespace LabFusion.Patching
         }
 
         public static IEnumerator WaitForVerify(AssetPoolee __instance) {
+            while (LevelWarehouseUtilities.IsLoading())
+                yield return null;
+
             for (var i = 0; i < 4; i++)
                 yield return null;
 
@@ -84,7 +87,7 @@ namespace LabFusion.Patching
                     var barcode = __instance.spawnableCrate.Barcode;
 
                     var syncId = SyncManager.AllocateSyncID();
-                    SpawnResponseMessage.OnSpawnFinished(0, syncId, __instance.gameObject);
+                    SpawnResponseMessage.OnSpawnFinished(0, syncId, __instance.gameObject, "_", false);
 
                     var zoneTracker = ZoneTracker.Cache.Get(__instance.gameObject);
                     ZoneSpawner spawner = null;
