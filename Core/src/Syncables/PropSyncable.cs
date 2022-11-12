@@ -10,7 +10,7 @@ using LabFusion.Grabbables;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Utilities;
-
+using PuppetMasta;
 using SLZ;
 using SLZ.Interaction;
 using SLZ.Marrow.Pool;
@@ -33,6 +33,8 @@ namespace LabFusion.Syncables
         public readonly AssetPoolee AssetPoolee;
 
         public readonly GameObject GameObject;
+
+        public readonly bool IsRotationBased;
 
         public ushort Id;
 
@@ -92,6 +94,13 @@ namespace LabFusion.Syncables
 
             LastSentPositions = new Vector3[Rigidbodies.Length];
             LastSentRotations = new Quaternion[Rigidbodies.Length];
+
+            if (GameObject.GetComponentInChildren<BehaviourPowerLegs>(true) || GameObject.GetComponentInChildren<BehaviourCrablet>(true)) {
+                IsRotationBased = true;
+            }
+            else {
+                IsRotationBased = false;
+            }
         }
 
         private void AssignInformation(InteractableHost host) {
@@ -357,12 +366,13 @@ namespace LabFusion.Syncables
                 }
                 // Instead calculate velocity stuff
                 else {
-                    var outputVel = (pos - rb.transform.position) * invDt * PropPinMlp;
+                    if (!IsRotationBased || i == 0) {
+                        var outputVel = (pos - rb.transform.position) * invDt * PropPinMlp;
+                        if (!outputVel.IsNanOrInf())
+                            rb.velocity = outputVel;
+                    }
+
                     var outputAngVel = PhysXUtils.GetAngularVelocity(rb.transform.rotation, rot) * PropPinMlp;
-
-                    if (!outputVel.IsNanOrInf())
-                        rb.velocity = outputVel;
-
                     if (!outputAngVel.IsNanOrInf())
                         rb.angularVelocity = outputAngVel;
                 }

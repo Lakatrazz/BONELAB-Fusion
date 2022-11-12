@@ -2,10 +2,13 @@
 using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Representation;
+using LabFusion.Syncables;
 using LabFusion.Utilities;
 
 using SLZ.Marrow.Pool;
 using SLZ.Zones;
+using SLZ.Interaction;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,23 +25,31 @@ namespace LabFusion.Utilities {
 
         internal static List<AssetPoolee> ServerSpawnedList = new List<AssetPoolee>();
 
+        public static void OnServerLocalSpawn(ushort syncId, GameObject go) {
+            if (!NetworkInfo.IsServer)
+                return;
+
+            if (PropSyncable.Cache.TryGetValue(go, out var syncable))
+                SyncManager.RemoveSyncable(syncable);
+
+            var poolee = AssetPoolee.Cache.Get(go);
+            if (poolee == null)
+                poolee = go.AddComponent<AssetPoolee>();
+
+            PropSyncable newSyncable = new PropSyncable(go.GetComponentInChildren<InteractableHost>(true), go.gameObject);
+            newSyncable.SetOwner(0);
+
+            SyncManager.RegisterSyncable(newSyncable, syncId);
+        }
+
         public static void AddToServer(AssetPoolee poolee) {
-            if (!ServerSpawnedList.Has(poolee))
+            if (!ServerSpawnedList.Contains(poolee))
                 ServerSpawnedList.Add(poolee);
         }
 
         public static bool DequeueServerSpawned(AssetPoolee poolee)
         {
-            for (var i = 0; i < ServerSpawnedList.Count; i++) {
-                var found = ServerSpawnedList[i];
-
-                if (poolee == found) {
-                    ServerSpawnedList.RemoveAt(i);
-                    return true;
-                }
-            }
-
-            return false;
+            return ServerSpawnedList.Remove(poolee);
         }
 
         public static void PermitSpawning(AssetPoolee poolee) {

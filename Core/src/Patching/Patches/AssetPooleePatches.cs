@@ -47,6 +47,9 @@ namespace LabFusion.Patching
                     else
                     {
                         if (PooleeUtilities.CanSendSpawn(__instance)) {
+                            if (PropSyncable.Cache.TryGetValue(__instance.gameObject, out var syncable))
+                                SyncManager.RemoveSyncable(syncable);
+
                             MelonCoroutines.Start(WaitForVerify(__instance));
                         }
                     }
@@ -87,7 +90,7 @@ namespace LabFusion.Patching
                     var barcode = __instance.spawnableCrate.Barcode;
 
                     var syncId = SyncManager.AllocateSyncID();
-                    SpawnResponseMessage.OnSpawnFinished(0, syncId, __instance.gameObject, "_", false);
+                    PooleeUtilities.OnServerLocalSpawn(syncId, __instance.gameObject);
 
                     var zoneTracker = ZoneTracker.Cache.Get(__instance.gameObject);
                     ZoneSpawner spawner = null;
