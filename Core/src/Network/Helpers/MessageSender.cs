@@ -45,8 +45,14 @@ namespace LabFusion.Network
         /// <param name="message"></param>
         public static void BroadcastMessage(NetworkChannel channel, FusionMessage message)
         {
-            if (NetworkInfo.CurrentNetworkLayer != null)
+            if (NetworkInfo.CurrentNetworkLayer != null) {
                 NetworkInfo.CurrentNetworkLayer.BroadcastMessage(channel, message);
+
+                // Backup incase the message cannot be sent to the host, which this targets.
+                if (!NetworkInfo.ServerCanSendToHost && NetworkInfo.IsServer) {
+                    FusionMessageHandler.ReadMessage(message.Buffer, false);
+                }
+            }
         }
 
         /// <summary>
@@ -57,8 +63,14 @@ namespace LabFusion.Network
         /// <param name="message"></param>
         public static void BroadcastMessageExcept(byte userId, NetworkChannel channel, FusionMessage message)
         {
-            if (NetworkInfo.CurrentNetworkLayer != null)
+            if (NetworkInfo.CurrentNetworkLayer != null) {
                 NetworkInfo.CurrentNetworkLayer.BroadcastMessageExcept(userId, channel, message);
+
+                // Backup incase the message cannot be sent to the host, which this targets.
+                if (userId != PlayerIdManager.LocalSmallId && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsServer) {
+                    FusionMessageHandler.ReadMessage(message.Buffer, false);
+                }
+            }
         }
 
         /// <summary>
@@ -69,8 +81,14 @@ namespace LabFusion.Network
         /// <param name="message"></param>
         public static void BroadcastMessageExcept(ulong userId, NetworkChannel channel, FusionMessage message)
         {
-            if (NetworkInfo.CurrentNetworkLayer != null)
+            if (NetworkInfo.CurrentNetworkLayer != null) {
                 NetworkInfo.CurrentNetworkLayer.BroadcastMessageExcept(userId, channel, message);
+
+                // Backup incase the message cannot be sent to the host, which this targets.
+                if (userId != PlayerIdManager.LocalLongId && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsServer) {
+                    FusionMessageHandler.ReadMessage(message.Buffer, false);
+                }
+            }
         }
 
         /// <summary>

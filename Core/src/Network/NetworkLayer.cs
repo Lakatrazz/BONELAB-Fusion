@@ -23,6 +23,11 @@ namespace LabFusion.Network
         internal virtual bool IsClient => false;
 
         /// <summary>
+        /// Returns true if the networking solution allows the server to send messages to the host (Actual Server Logic vs P2P).
+        /// </summary>
+        internal virtual bool ServerCanSendToHost => true;
+
+        /// <summary>
         /// Starts the server.
         /// </summary>
         internal abstract void StartServer();
