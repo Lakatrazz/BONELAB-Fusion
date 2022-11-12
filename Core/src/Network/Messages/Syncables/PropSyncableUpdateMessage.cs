@@ -16,7 +16,7 @@ namespace LabFusion.Network
         public byte ownerId;
         public ushort syncId;
         public SerializedTransform[] serializedTransforms;
-        public Vector3[] velocities;
+        public float[] velocities;
 
         public void Serialize(FusionWriter writer)
         {
@@ -37,13 +37,13 @@ namespace LabFusion.Network
             syncId = reader.ReadUInt16();
             byte transformCount = reader.ReadByte();
             serializedTransforms = new SerializedTransform[transformCount];
-            velocities = new Vector3[transformCount];
+            velocities = new float[transformCount];
 
             for (var i = 0; i < transformCount; i++)
                 serializedTransforms[i] = reader.ReadFusionSerializable<SerializedTransform>();
 
             for (var i = 0; i < transformCount; i++)
-                velocities[i] = reader.ReadVector3();
+                velocities[i] = reader.ReadSingle();
         }
 
         public PropSyncable GetPropSyncable() {
@@ -63,7 +63,7 @@ namespace LabFusion.Network
                 ownerId = ownerId,
                 syncId = syncId,
                 serializedTransforms = new SerializedTransform[rigidbodies.Length],
-                velocities = new Vector3[rigidbodies.Length]
+                velocities = new float[rigidbodies.Length]
             };
 
             for (var i = 0; i < rigidbodies.Length; i++) {
@@ -77,10 +77,10 @@ namespace LabFusion.Network
                     data.serializedTransforms[i] = new SerializedTransform(Vector3.zero, Quaternion.identity);
 
                 if (rb != null) {
-                    data.velocities[i] = rb.velocity;
+                    data.velocities[i] = rb.velocity.sqrMagnitude;
                 }
                 else
-                    data.velocities[i] = Vector3.zero;
+                    data.velocities[i] = 0f;
             }
 
             return data;

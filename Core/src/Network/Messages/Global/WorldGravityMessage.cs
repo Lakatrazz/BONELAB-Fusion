@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Extensions;
 using LabFusion.Representation;
 using LabFusion.Utilities;
 
@@ -14,11 +15,11 @@ namespace LabFusion.Network
 {
     public class WorldGravityMessageData : IFusionSerializable, IDisposable
     {
-        public Vector3 gravity;
+        public ulong gravity;
 
         public static WorldGravityMessageData Create(Vector3 gravity) {
             return new WorldGravityMessageData() {
-                gravity = gravity
+                gravity = gravity.ToULong(true)
             };
         }
 
@@ -29,7 +30,7 @@ namespace LabFusion.Network
 
         public void Deserialize(FusionReader reader)
         {
-            gravity = reader.ReadVector3();
+            gravity = reader.ReadUInt64();
         }
 
         public void Dispose() {
@@ -48,7 +49,7 @@ namespace LabFusion.Network
                 using (var reader = FusionReader.Create(bytes)) {
                     using (var data = reader.ReadFusionSerializable<WorldGravityMessageData>()) {
                         PhysicsUtilities.CanModifyGravity = true;
-                        Physics.gravity = data.gravity;
+                        Physics.gravity = data.gravity.ToVector3();
                         PhysicsUtilities.CanModifyGravity = false;
                     }
                 }

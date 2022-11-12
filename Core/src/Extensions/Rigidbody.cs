@@ -14,7 +14,7 @@ namespace LabFusion.Extensions {
         /// <param name="rigidbody"></param>
         /// <returns></returns>
         public static bool ShouldSleep(this Rigidbody rigidbody) {
-            return (rigidbody.velocity.sqrMagnitude < rigidbody.sleepVelocity * rigidbody.sleepVelocity) 
+            return rigidbody.IsSleeping() || (rigidbody.velocity.sqrMagnitude < rigidbody.sleepVelocity * rigidbody.sleepVelocity) 
                 || (rigidbody.angularVelocity.sqrMagnitude < rigidbody.sleepAngularVelocity * rigidbody.sleepAngularVelocity);
         }
     }

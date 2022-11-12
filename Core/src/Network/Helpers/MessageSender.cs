@@ -22,8 +22,11 @@ namespace LabFusion.Network
         /// <param name="message"></param>
         public static void SendServerMessage(byte userId, NetworkChannel channel, FusionMessage message)
         {
-            if (NetworkInfo.CurrentNetworkLayer != null)
+            if (NetworkInfo.CurrentNetworkLayer != null) {
+                NetworkInfo.BytesUp += message.Buffer.Length;
+
                 NetworkInfo.CurrentNetworkLayer.SendServerMessage(userId, channel, message);
+            }
         }
 
         /// <summary>
@@ -34,8 +37,11 @@ namespace LabFusion.Network
         /// <param name="message"></param>
         public static void SendServerMessage(ulong userId, NetworkChannel channel, FusionMessage message)
         {
-            if (NetworkInfo.CurrentNetworkLayer != null)
+            if (NetworkInfo.CurrentNetworkLayer != null) {
+                NetworkInfo.BytesUp += message.Buffer.Length;
+
                 NetworkInfo.CurrentNetworkLayer.SendServerMessage(userId, channel, message);
+            }
         }
 
         /// <summary>
@@ -46,6 +52,8 @@ namespace LabFusion.Network
         public static void BroadcastMessage(NetworkChannel channel, FusionMessage message)
         {
             if (NetworkInfo.CurrentNetworkLayer != null) {
+                NetworkInfo.BytesUp += message.Buffer.Length;
+
                 NetworkInfo.CurrentNetworkLayer.BroadcastMessage(channel, message);
 
                 // Backup incase the message cannot be sent to the host, which this targets.
@@ -64,6 +72,8 @@ namespace LabFusion.Network
         public static void BroadcastMessageExcept(byte userId, NetworkChannel channel, FusionMessage message)
         {
             if (NetworkInfo.CurrentNetworkLayer != null) {
+                NetworkInfo.BytesUp += message.Buffer.Length;
+
                 NetworkInfo.CurrentNetworkLayer.BroadcastMessageExcept(userId, channel, message);
 
                 // Backup incase the message cannot be sent to the host, which this targets.
@@ -82,6 +92,8 @@ namespace LabFusion.Network
         public static void BroadcastMessageExcept(ulong userId, NetworkChannel channel, FusionMessage message)
         {
             if (NetworkInfo.CurrentNetworkLayer != null) {
+                NetworkInfo.BytesUp += message.Buffer.Length;
+
                 NetworkInfo.CurrentNetworkLayer.BroadcastMessageExcept(userId, channel, message);
 
                 // Backup incase the message cannot be sent to the host, which this targets.

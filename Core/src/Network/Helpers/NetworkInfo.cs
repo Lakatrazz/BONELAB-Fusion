@@ -30,5 +30,15 @@ namespace LabFusion.Network {
         /// Returns true if the networking solution allows the server to send messages to the host (Actual Server Logic vs P2P).
         /// </summary>
         public static bool ServerCanSendToHost => CurrentNetworkLayer.ServerCanSendToHost;
+
+        /// <summary>
+        /// The amount of bytes downloaded this frame.
+        /// </summary>
+        public static int BytesDown { get; internal set; }
+
+        /// <summary>
+        /// The amount of bytes sent this frame.
+        /// </summary>
+        public static int BytesUp { get; internal set; }
     }
 }

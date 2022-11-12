@@ -38,10 +38,14 @@ namespace LabFusion.Syncables
 
         public byte? Owner = null;
 
+        // Target info
         public Vector3?[] DesiredPositions;
         public Quaternion?[] DesiredRotations;
+        public float?[] DesiredVelocities;
 
-        public Vector3?[] DesiredVelocities;
+        // Last sent info
+        public Vector3[] LastSentPositions;
+        public Quaternion[] LastSentRotations;
 
         private bool _verifyRigidbodies;
 
@@ -84,7 +88,10 @@ namespace LabFusion.Syncables
 
             DesiredPositions = new Vector3?[Rigidbodies.Length];
             DesiredRotations = new Quaternion?[Rigidbodies.Length];
-            DesiredVelocities = new Vector3?[Rigidbodies.Length];
+            DesiredVelocities = new float?[Rigidbodies.Length];
+
+            LastSentPositions = new Vector3[Rigidbodies.Length];
+            LastSentRotations = new Quaternion[Rigidbodies.Length];
         }
 
         private void AssignInformation(InteractableHost host) {
@@ -266,6 +273,14 @@ namespace LabFusion.Syncables
             }
         }
 
+        private bool HasMoved(int index) {
+            var transform = Rigidbodies[index].transform;
+            var lastPosition = LastSentPositions[index];
+            var lastRotation = LastSentRotations[index];
+
+            return (transform.position - lastPosition).sqrMagnitude > 0.001f || Quaternion.Angle(transform.rotation, lastRotation) > 0.05f; 
+        }
+
         private void OnOwnedUpdate() {
             for (var i = 0; i < Rigidbodies.Length; i++) {
                 DesiredPositions[i] = null;
@@ -273,8 +288,20 @@ namespace LabFusion.Syncables
                 DesiredVelocities[i] = null;
             }
 
-            foreach (var rb in Rigidbodies)
-                if (rb != null && rb.ShouldSleep()) return;
+            for (var i = 0; i < Rigidbodies.Length; i++) {
+                var rb = Rigidbodies[i];
+
+                if (rb.IsNOC() || rb.IsSleeping() || !HasMoved(i)) {
+                    return;
+                }
+            }
+
+            for (var i = 0; i < Rigidbodies.Length; i++) {
+                var rb = Rigidbodies[i];
+
+                LastSentPositions[i] = rb.transform.position;
+                LastSentRotations[i] = rb.transform.rotation;
+            }
 
             using (var writer = FusionWriter.Create()) {
                 using (var data = PropSyncableUpdateData.Create(PlayerIdManager.LocalSmallId, Id, HostGameObjects, Rigidbodies)) {
@@ -296,7 +323,7 @@ namespace LabFusion.Syncables
 
             for (var i = 0; i < Rigidbodies.Length; i++) {
                 var rb = Rigidbodies[i];
-                if (rb.IsNOC() || rb.ShouldSleep())
+                if (rb.IsNOC())
                     continue;
 
                 bool isGrabbed = false;
@@ -321,7 +348,7 @@ namespace LabFusion.Syncables
 
                 // Teleport check
                 float distSqr = (rb.transform.position - pos).sqrMagnitude;
-                if (distSqr > (2f * (vel.sqrMagnitude + 1f))) {
+                if (distSqr > (2f * (vel + 1f))) {
                     rb.transform.position = pos;
                     rb.transform.rotation = rot;
 

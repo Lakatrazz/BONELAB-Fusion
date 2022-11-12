@@ -19,12 +19,16 @@ namespace LabFusion.Network
     public class SteamNetworkLayer : NetworkLayer {
         public const uint ApplicationID = 1592190;
 
+        public const int ReceiveBufferSize = 32;
+
+        public const bool AsyncCallbacks = false;
+
         internal override bool IsServer => _isServerActive;
         internal override bool IsClient => _isConnectionActive;
 
         public SteamId SteamId;
 
-        public static SteamSocketManager SteamServer;
+        public static SteamSocketManager SteamSocket;
         public static SteamConnectionManager SteamConnection;
 
         protected bool _isServerActive = false;
@@ -36,7 +40,7 @@ namespace LabFusion.Network
             SteamAPILoader.OnLoadSteamAPI();
 
             try {
-                SteamClient.Init(ApplicationID, false);
+                SteamClient.Init(ApplicationID, AsyncCallbacks);
             } 
             catch (Exception e) {
                 FusionLogger.Error($"Failed to initialize Steamworks! \n{e}");
@@ -65,36 +69,22 @@ namespace LabFusion.Network
         }
 
         internal override void OnUpdateLayer() {
-            SteamClient.RunCallbacks();
+            // Run callbacks for our client
+            if (!AsyncCallbacks) {
+                SteamClient.RunCallbacks();
+            }
 
+            // Receive any needed messages
             try {
-                if (SteamServer != null) {
-                    SteamServer.Receive();
+                if (SteamSocket != null) {
+                    SteamSocket.Receive(ReceiveBufferSize);
                 }
                 if (SteamConnection != null) {
-                    SteamConnection.Receive();
+                    SteamConnection.Receive(ReceiveBufferSize);
                 }
             }
             catch {
                 FusionLogger.Log("Error receiving data on socket/connection!");
-            }
-        }
-
-        internal override void OnLateUpdateLayer() {
-            try {
-                // Server flushing
-                if (SteamServer != null) {
-                    foreach (var connection in SteamServer.Connected)
-                        connection.Flush();
-                }
-
-                // Client side flushing
-                if (SteamConnection != null) {
-                    SteamConnection.Connection.Flush();
-                }
-            }
-            catch {
-                FusionLogger.Log("Error flushing data on connection!");
             }
         }
 
@@ -104,7 +94,7 @@ namespace LabFusion.Network
 
         internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message) {
             if (IsServer) {
-                SteamSocketHandler.BroadcastToClients(SteamServer, channel, message);
+                SteamSocketHandler.BroadcastToClients(SteamSocket, channel, message);
             }
             else {
                 SteamSocketHandler.BroadcastToServer(channel, message);
@@ -118,14 +108,14 @@ namespace LabFusion.Network
         }
 
         internal override void SendServerMessage(ulong userId, NetworkChannel channel, FusionMessage message) {
-            if (IsServer && SteamServer.ConnectedSteamIds.ContainsKey(userId)) {
-                SteamServer.SendToClient(SteamServer.ConnectedSteamIds[userId], channel, message);
+            if (IsServer && SteamSocket.ConnectedSteamIds.ContainsKey(userId)) {
+                SteamSocket.SendToClient(SteamSocket.ConnectedSteamIds[userId], channel, message);
             }
         }
 
         internal override void StartServer()
         {
-            SteamServer = SteamNetworkingSockets.CreateRelaySocket<SteamSocketManager>(0);
+            SteamSocket = SteamNetworkingSockets.CreateRelaySocket<SteamSocketManager>(0);
 
             // Host needs to connect to own socket server with a ConnectionManager to send/receive messages
             // Relay Socket servers are created/connected to through SteamIds rather than "Normal" Socket Servers which take IP addresses
@@ -165,8 +155,8 @@ namespace LabFusion.Network
                 if (SteamConnection != null)
                     SteamConnection.Close();
                 
-                if (SteamServer != null)
-                    SteamServer.Close();
+                if (SteamSocket != null)
+                    SteamSocket.Close();
             }
             catch {
                 FusionLogger.Log("Error closing socket server / connection manager");

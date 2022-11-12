@@ -98,6 +98,8 @@ namespace LabFusion.Network
 
         public static void ReadMessage(byte[] bytes, bool isServerHandled = false)
         {
+            NetworkInfo.BytesDown += bytes.Length;
+
             try
             {
                 byte tag = bytes[0];

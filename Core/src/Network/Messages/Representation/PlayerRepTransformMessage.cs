@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Extensions;
 using LabFusion.Representation;
 using LabFusion.Utilities;
 using SLZ.Rig;
@@ -17,10 +18,10 @@ namespace LabFusion.Network {
     {
         public byte smallId;
         public float feetOffset;
-        public SerializedTransform[] serializedTransforms = new SerializedTransform[PlayerRepUtilities.TransformSyncCount];
+        public SerializedLocalTransform[] serializedLocalTransforms = new SerializedLocalTransform[PlayerRepUtilities.TransformSyncCount];
         public SerializedTransform serializedPelvis;
         public SerializedQuaternion serializedPlayspace;
-        public Vector3 predictVelocity;
+        public ulong predictVelocity;
 
         public SerializedHand leftHand;
         public SerializedHand rightHand;
@@ -33,7 +34,7 @@ namespace LabFusion.Network {
             writer.Write(feetOffset);
 
             for (var i = 0; i < PlayerRepUtilities.TransformSyncCount; i++)
-                writer.Write(serializedTransforms[i]);
+                writer.Write(serializedLocalTransforms[i]);
 
             writer.Write(serializedPelvis);
             writer.Write(serializedPlayspace);
@@ -45,11 +46,11 @@ namespace LabFusion.Network {
         public void Deserialize(FusionReader reader)
         {
             smallId = reader.ReadByte();
-            predictVelocity = reader.ReadVector3();
+            predictVelocity = reader.ReadUInt64();
             feetOffset = reader.ReadSingle();
 
             for (var i = 0; i < PlayerRepUtilities.TransformSyncCount; i++)
-                serializedTransforms[i] = reader.ReadFusionSerializable<SerializedTransform>();
+                serializedLocalTransforms[i] = reader.ReadFusionSerializable<SerializedLocalTransform>();
 
             serializedPelvis = reader.ReadFusionSerializable<SerializedTransform>();
             serializedPlayspace = reader.ReadFusionSerializable<SerializedQuaternion>();
@@ -64,18 +65,19 @@ namespace LabFusion.Network {
 
         public static PlayerRepTransformData Create(byte smallId, Transform[] syncTransforms, Transform syncedPelvis, Transform syncedPlayspace, BaseController leftHand, BaseController rightHand)
         {
-            var data = new PlayerRepTransformData();
-            data.smallId = smallId;
-            data.predictVelocity = RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.velocity;
-            data.feetOffset = RigData.RigReferences.RigManager.openControllerRig.feetOffset;
-            data.serializedPelvis = new SerializedTransform(syncedPelvis);
-            data.serializedPlayspace = SerializedQuaternion.Compress(syncedPlayspace.rotation);
+            var data = new PlayerRepTransformData {
+                smallId = smallId,
+                predictVelocity = RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.velocity.ToULong(true),
+                feetOffset = RigData.RigReferences.RigManager.openControllerRig.feetOffset,
+                serializedPelvis = new SerializedTransform(syncedPelvis),
+                serializedPlayspace = SerializedQuaternion.Compress(syncedPlayspace.rotation),
 
-            data.leftHand = new SerializedHand(leftHand);
-            data.rightHand = new SerializedHand(rightHand);
+                leftHand = new SerializedHand(leftHand),
+                rightHand = new SerializedHand(rightHand)
+            };
 
             for (var i = 0; i < PlayerRepUtilities.TransformSyncCount; i++) {
-                data.serializedTransforms[i] = new SerializedTransform(syncTransforms[i].localPosition, syncTransforms[i].localRotation);
+                data.serializedLocalTransforms[i] = new SerializedLocalTransform(syncTransforms[i]);
             }
 
             return data;
@@ -102,10 +104,10 @@ namespace LabFusion.Network {
                 // Apply player rep data
                 if (data.smallId != PlayerIdManager.LocalSmallId && PlayerRep.Representations.TryGetValue(data.smallId, out var rep) && rep.IsCreated) {
                     rep.repControllerRig.feetOffset = data.feetOffset;
-                    rep.serializedTransforms = data.serializedTransforms;
+                    rep.serializedLocalTransforms = data.serializedLocalTransforms;
                     rep.serializedPelvis = data.serializedPelvis;
                     rep.repPlayspace.rotation = data.serializedPlayspace.Expand();
-                    rep.predictVelocity = data.predictVelocity;
+                    rep.predictVelocity = data.predictVelocity.ToVector3();
                     rep.timeSincePelvisSent = Time.realtimeSinceStartup;
 
                     data.leftHand.CopyTo(rep.repLeftController);

@@ -39,7 +39,7 @@ namespace LabFusion.Representation
         public static BaseController syncedLeftController;
         public static BaseController syncedRightController;
 
-        public SerializedTransform[] serializedTransforms = new SerializedTransform[PlayerRepUtilities.TransformSyncCount];
+        public SerializedLocalTransform[] serializedLocalTransforms = new SerializedLocalTransform[PlayerRepUtilities.TransformSyncCount];
         public SerializedTransform serializedPelvis;
 
         public Vector3 predictVelocity;
@@ -214,7 +214,7 @@ namespace LabFusion.Representation
                 if (repTransforms == null)
                     return;
 
-                if (serializedTransforms == null)
+                if (serializedLocalTransforms == null)
                     return;
 
                 for (var i = 0; i < PlayerRepUtilities.TransformSyncCount; i++)
@@ -222,8 +222,8 @@ namespace LabFusion.Representation
                     if (repTransforms[i].IsNOC())
                         break;
 
-                    repTransforms[i].localPosition = serializedTransforms[i].position;
-                    repTransforms[i].localRotation = serializedTransforms[i].rotation.Expand();
+                    repTransforms[i].localPosition = serializedLocalTransforms[i].position.ToVector3();
+                    repTransforms[i].localRotation = serializedLocalTransforms[i].rotation.Expand();
                 }
 
                 if (!repCanvasTransform.IsNOC()) {

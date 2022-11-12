@@ -665,6 +665,7 @@
     <Compile Include="Core\src\Data\Containers\Grips\SerializedPlayerBodyGrab.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedQuaternion.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedStaticGrab.cs" />
+    <Compile Include="Core\src\Data\Containers\SerializedLocalTransform.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedTransform.cs" />
     <Compile Include="Core\src\Data\Files\EmbeddedAssetBundle.cs" />
     <Compile Include="Core\src\Data\Files\SteamAPILoader.cs" />
