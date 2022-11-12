@@ -63,11 +63,6 @@ namespace LabFusion
         }
 
         public override void OnUpdate() {
-            // Log byte counts
-#if DEBUG
-            //FusionLogger.Log($"Network Frame Data: Bytes Upload: {NetworkInfo.BytesUp}, Bytes Download: {NetworkInfo.BytesDown}");
-#endif
-
             // Reset byte counts
             NetworkInfo.BytesDown = 0;
             NetworkInfo.BytesUp = 0;

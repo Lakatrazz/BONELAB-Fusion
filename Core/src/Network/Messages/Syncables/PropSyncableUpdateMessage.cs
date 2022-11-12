@@ -15,35 +15,56 @@ namespace LabFusion.Network
     {
         public byte ownerId;
         public ushort syncId;
-        public SerializedTransform[] serializedTransforms;
-        public float[] velocities;
+        public bool isRotationBased;
+        public byte length;
+        public Vector3[] serializedPositions;
+        public SerializedQuaternion[] serializedQuaternions;
+        public float velocity;
 
         public void Serialize(FusionWriter writer)
         {
             writer.Write(ownerId);
             writer.Write(syncId);
-            writer.Write((byte)serializedTransforms.Length);
 
-            foreach (var transform in serializedTransforms)
-                writer.Write(transform);
+            writer.Write(isRotationBased);
+            writer.Write(length);
 
-            foreach (var vel in velocities)
-                writer.Write(vel);
+            for (var i = 0; i < serializedPositions.Length; i++) {
+                if (i > 0 && isRotationBased)
+                    break;
+
+                var position = serializedPositions[i];
+                writer.Write(position);
+            }
+
+            foreach (var rotation in serializedQuaternions)
+                writer.Write(rotation);
+
+            writer.Write(velocity);
         }
 
         public void Deserialize(FusionReader reader)
         {
             ownerId = reader.ReadByte();
             syncId = reader.ReadUInt16();
-            byte transformCount = reader.ReadByte();
-            serializedTransforms = new SerializedTransform[transformCount];
-            velocities = new float[transformCount];
+            isRotationBased = reader.ReadBoolean();
+            length = reader.ReadByte();
 
-            for (var i = 0; i < transformCount; i++)
-                serializedTransforms[i] = reader.ReadFusionSerializable<SerializedTransform>();
+            serializedPositions = new Vector3[length];
+            serializedQuaternions = new SerializedQuaternion[length];
 
-            for (var i = 0; i < transformCount; i++)
-                velocities[i] = reader.ReadSingle();
+            for (var i = 0; i < length; i++) {
+                if (i > 0 && isRotationBased)
+                    break;
+
+                serializedPositions[i] = reader.ReadVector3();
+            }
+
+            for (var i = 0; i < length; i++) {
+                serializedQuaternions[i] = reader.ReadFusionSerializable<SerializedQuaternion>();
+            }
+
+            velocity = reader.ReadSingle();
         }
 
         public PropSyncable GetPropSyncable() {
@@ -57,30 +78,42 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static PropSyncableUpdateData Create(byte ownerId, ushort syncId, GameObject[] hosts, Rigidbody[] rigidbodies)
+        public static PropSyncableUpdateData Create(byte ownerId, PropSyncable syncable)
         {
+            var syncId = syncable.GetId();
+            var hosts = syncable.HostGameObjects;
+            var rigidbodies = syncable.Rigidbodies;
+
+            int length = rigidbodies.Length;
+
             var data = new PropSyncableUpdateData {
                 ownerId = ownerId,
                 syncId = syncId,
-                serializedTransforms = new SerializedTransform[rigidbodies.Length],
-                velocities = new float[rigidbodies.Length]
+                isRotationBased = syncable.IsRotationBased,
+                length = (byte)length,
+                serializedPositions = new Vector3[length],
+                serializedQuaternions = new SerializedQuaternion[length],
+                velocity = 0f,
             };
+
+            float maxVelocity = 0f;
 
             for (var i = 0; i < rigidbodies.Length; i++) {
                 var rb = rigidbodies[i];
                 var host = hosts[i];
 
                 if (host != null) {
-                    data.serializedTransforms[i] = new SerializedTransform(host.transform);
+                    data.serializedPositions[i] = host.transform.position;
+                    data.serializedQuaternions[i] = SerializedQuaternion.Compress(host.transform.rotation);
                 }
-                else
-                    data.serializedTransforms[i] = new SerializedTransform(Vector3.zero, Quaternion.identity);
+                else {
+                    data.serializedPositions[i] = Vector3.zero;
+                    data.serializedQuaternions[i] = SerializedQuaternion.Compress(Quaternion.identity);
+                }
 
                 if (rb != null) {
-                    data.velocities[i] = rb.velocity.sqrMagnitude;
+                    maxVelocity = Mathf.Max(maxVelocity, rb.velocity.sqrMagnitude);
                 }
-                else
-                    data.velocities[i] = 0f;
             }
 
             return data;
@@ -99,10 +132,10 @@ namespace LabFusion.Network
                     // Find the prop syncable and update its info
                     var syncable = data.GetPropSyncable();
                     if (syncable != null && syncable.IsRegistered() && syncable.Owner.HasValue && syncable.Owner.Value == data.ownerId) {
-                        for (var i = 0; i < data.serializedTransforms.Length; i++) {
-                            syncable.DesiredPositions[i] = data.serializedTransforms[i].position;
-                            syncable.DesiredRotations[i] = data.serializedTransforms[i].rotation.Expand();
-                            syncable.DesiredVelocities[i] = data.velocities[i];
+                        for (var i = 0; i < data.length; i++) {
+                            syncable.DesiredPositions[i] = data.serializedPositions[i];
+                            syncable.DesiredRotations[i] = data.serializedQuaternions[i].Expand();
+                            syncable.DesiredVelocity = data.velocity;
                         }
                     }
 

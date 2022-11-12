@@ -43,7 +43,7 @@ namespace LabFusion.Syncables
         // Target info
         public Vector3?[] DesiredPositions;
         public Quaternion?[] DesiredRotations;
-        public float?[] DesiredVelocities;
+        public float DesiredVelocity;
 
         // Last sent info
         public Vector3[] LastSentPositions;
@@ -90,7 +90,7 @@ namespace LabFusion.Syncables
 
             DesiredPositions = new Vector3?[Rigidbodies.Length];
             DesiredRotations = new Quaternion?[Rigidbodies.Length];
-            DesiredVelocities = new float?[Rigidbodies.Length];
+            DesiredVelocity = 0f;
 
             LastSentPositions = new Vector3[Rigidbodies.Length];
             LastSentRotations = new Quaternion[Rigidbodies.Length];
@@ -294,7 +294,7 @@ namespace LabFusion.Syncables
             for (var i = 0; i < Rigidbodies.Length; i++) {
                 DesiredPositions[i] = null;
                 DesiredRotations[i] = null;
-                DesiredVelocities[i] = null;
+                DesiredVelocity = 0f;
             }
 
             for (var i = 0; i < Rigidbodies.Length; i++) {
@@ -313,7 +313,7 @@ namespace LabFusion.Syncables
             }
 
             using (var writer = FusionWriter.Create()) {
-                using (var data = PropSyncableUpdateData.Create(PlayerIdManager.LocalSmallId, Id, HostGameObjects, Rigidbodies)) {
+                using (var data = PropSyncableUpdateData.Create(PlayerIdManager.LocalSmallId, this)) {
                     writer.Write(data);
 
                     using (var message = FusionMessage.Create(NativeMessageTag.PropSyncableUpdate, writer)) {
@@ -341,23 +341,22 @@ namespace LabFusion.Syncables
                     if (pair.Value > 0 && pair.Key.Host.Rb == rb) {
                         DesiredPositions[i] = null;
                         DesiredRotations[i] = null;
-                        DesiredVelocities[i] = null;
+                        DesiredVelocity = 0f;
 
                         isGrabbed = true;
                         break;
                     }
                 }
 
-                if (isGrabbed || !DesiredPositions[i].HasValue || !DesiredRotations[i].HasValue || !DesiredVelocities[i].HasValue)
+                if (isGrabbed || !DesiredPositions[i].HasValue || !DesiredRotations[i].HasValue)
                     continue;
 
                 var pos = DesiredPositions[i].Value;
                 var rot = DesiredRotations[i].Value;
-                var vel = DesiredVelocities[i].Value;
 
                 // Teleport check
                 float distSqr = (rb.transform.position - pos).sqrMagnitude;
-                if (distSqr > (2f * (vel + 1f))) {
+                if (distSqr > (2f * (DesiredVelocity + 1f))) {
                     rb.transform.position = pos;
                     rb.transform.rotation = rot;
 
