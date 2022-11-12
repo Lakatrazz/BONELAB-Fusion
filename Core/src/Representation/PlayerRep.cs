@@ -302,7 +302,7 @@ namespace LabFusion.Representation
                         writer.Write(data);
 
                         using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepTransform, writer)) {
-                            MessageSender.BroadcastMessage(NetworkChannel.Unreliable, message);
+                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Unreliable, message);
                         }
                     }
                 }

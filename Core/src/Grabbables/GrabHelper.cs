@@ -92,7 +92,7 @@ namespace LabFusion.Grabbables {
                                 writer.Write(data);
 
                                 using (var message = FusionMessage.Create(NativeMessageTag.SyncableIDRequest, writer)) {
-                                    MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                                    MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
                                 }
                             }
                         }
@@ -110,7 +110,7 @@ namespace LabFusion.Grabbables {
                                 writer.Write(data);
 
                                 using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepForceGrab, writer)) {
-                                    MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                                    MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
                                 }
                             }
                         }
@@ -127,7 +127,7 @@ namespace LabFusion.Grabbables {
                                 writer.Write(data);
 
                                 using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepForceGrab, writer)) {
-                                    MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                                    MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
                                 }
                             }
                         }
@@ -217,7 +217,7 @@ namespace LabFusion.Grabbables {
 
                                     using (var message = FusionMessage.Create(NativeMessageTag.SyncableIDRequest, writer))
                                     {
-                                        MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                                        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
                                     }
                                 }
                             }
@@ -263,7 +263,7 @@ namespace LabFusion.Grabbables {
 
                             using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepGrab, writer))
                             {
-                                MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                                MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
                             }
                         }
                     }
@@ -283,7 +283,7 @@ namespace LabFusion.Grabbables {
 
                         using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepRelease, writer))
                         {
-                            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
                         }
                     }
                 }

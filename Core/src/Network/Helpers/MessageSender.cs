@@ -72,5 +72,19 @@ namespace LabFusion.Network
             if (NetworkInfo.CurrentNetworkLayer != null)
                 NetworkInfo.CurrentNetworkLayer.BroadcastMessageExcept(userId, channel, message);
         }
+
+        /// <summary>
+        /// Sends the message to the server if this is a client. Sends to all clients EXCEPT THE HOST if this is a server.
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <param name="message"></param>
+        public static void BroadcastMessageExceptSelf(NetworkChannel channel, FusionMessage message) {
+            if (NetworkInfo.IsServer) {
+                BroadcastMessageExcept(0, channel, message);
+            }
+            else {
+                BroadcastMessage(channel, message);
+            }
+        }
     }
 }

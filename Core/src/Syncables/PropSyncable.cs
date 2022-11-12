@@ -274,14 +274,14 @@ namespace LabFusion.Syncables
             }
 
             foreach (var rb in Rigidbodies)
-                if (rb != null && rb.IsSleeping()) return;
+                if (rb != null && rb.ShouldSleep()) return;
 
             using (var writer = FusionWriter.Create()) {
                 using (var data = PropSyncableUpdateData.Create(PlayerIdManager.LocalSmallId, Id, HostGameObjects, Rigidbodies)) {
                     writer.Write(data);
 
                     using (var message = FusionMessage.Create(NativeMessageTag.PropSyncableUpdate, writer)) {
-                        MessageSender.BroadcastMessage(NetworkChannel.Unreliable, message);
+                        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Unreliable, message);
                     }
                 }
             }

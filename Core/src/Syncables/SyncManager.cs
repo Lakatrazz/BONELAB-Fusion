@@ -42,7 +42,7 @@ namespace LabFusion.Syncables {
                         writer.Write(response);
 
                         using (var message = FusionMessage.Create(NativeMessageTag.SyncableOwnershipResponse, writer)) {
-                            MessageSender.BroadcastMessageExcept(0, NetworkChannel.Reliable, message);
+                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
                         }
                     }
                 }

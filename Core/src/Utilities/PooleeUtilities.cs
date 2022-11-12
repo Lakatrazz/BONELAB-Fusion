@@ -62,7 +62,7 @@ namespace LabFusion.Utilities {
                         writer.Write(data);
 
                         using (var message = FusionMessage.Create(NativeMessageTag.DespawnResponse, writer)) {
-                            MessageSender.BroadcastMessageExcept(0, NetworkChannel.Reliable, message);
+                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
                         }
                     }
                 }
@@ -77,7 +77,7 @@ namespace LabFusion.Utilities {
 
                         using (var message = FusionMessage.Create(NativeMessageTag.DespawnRequest, writer))
                         {
-                            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
                         }
                     }
                 }
@@ -95,7 +95,7 @@ namespace LabFusion.Utilities {
                     writer.Write(data);
 
                     using (var message = FusionMessage.Create(NativeMessageTag.SpawnRequest, writer)) {
-                        MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
                     }
                 }
             }
@@ -113,7 +113,7 @@ namespace LabFusion.Utilities {
                         if (!ignoreSelf)
                             MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
                         else
-                            MessageSender.BroadcastMessageExcept(0, NetworkChannel.Reliable, message);
+                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
                     }
                 }
             }

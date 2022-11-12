@@ -63,7 +63,7 @@ namespace LabFusion.Patching
 
                             using (var message = FusionMessage.Create(NativeMessageTag.SceneLoad, writer))
                             {
-                                MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                                MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
                             }
                         }
                     }

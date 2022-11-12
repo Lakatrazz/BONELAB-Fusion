@@ -19,7 +19,7 @@ namespace LabFusion.Utilities {
                         writer.Write(data);
 
                         using (var message = FusionMessage.Create(NativeMessageTag.WorldGravity, writer)) {
-                            MessageSender.BroadcastMessage(NetworkChannel.Unreliable, message);
+                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Unreliable, message);
                         }
                     }
                 }
