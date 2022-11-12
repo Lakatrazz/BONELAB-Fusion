@@ -1,4 +1,5 @@
 ﻿using LabFusion.Representation;
+using LabFusion.Syncables;
 using LabFusion.Utilities;
 using System;
 using System.Collections.Generic;
@@ -39,6 +40,7 @@ namespace LabFusion.Network {
         /// </summary>
         internal static void OnDisconnect() {
             DisposeUsers();
+            SyncManager.OnCleanup();
         }
 
         /// <summary>

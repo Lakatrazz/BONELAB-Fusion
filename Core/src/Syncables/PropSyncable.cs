@@ -319,20 +319,25 @@ namespace LabFusion.Syncables
                 var rot = DesiredRotations[i].Value;
                 var vel = DesiredVelocities[i].Value;
 
-                var outputVel = (pos - rb.transform.position) * invDt * PropPinMlp;
-                var outputAngVel = PhysXUtils.GetAngularVelocity(rb.transform.rotation, rot) * PropPinMlp;
-
-                if (!outputVel.IsNanOrInf())
-                    rb.velocity = outputVel;
-
-                if (!outputAngVel.IsNanOrInf())
-                    rb.angularVelocity = outputAngVel;
-
                 // Teleport check
                 float distSqr = (rb.transform.position - pos).sqrMagnitude;
                 if (distSqr > (2f * (vel.sqrMagnitude + 1f))) {
                     rb.transform.position = pos;
                     rb.transform.rotation = rot;
+
+                    rb.velocity = Vector3.zero;
+                    rb.angularVelocity = Vector3.zero;
+                }
+                // Instead calculate velocity stuff
+                else {
+                    var outputVel = (pos - rb.transform.position) * invDt * PropPinMlp;
+                    var outputAngVel = PhysXUtils.GetAngularVelocity(rb.transform.rotation, rot) * PropPinMlp;
+
+                    if (!outputVel.IsNanOrInf())
+                        rb.velocity = outputVel;
+
+                    if (!outputAngVel.IsNanOrInf())
+                        rb.angularVelocity = outputAngVel;
                 }
             }
         }

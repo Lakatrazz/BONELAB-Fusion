@@ -43,6 +43,10 @@ namespace LabFusion.Network
             if (!NetworkInfo.IsServer && !isServerHandled) {
                 using (var reader = FusionReader.Create(bytes)) {
                     using (var data = reader.ReadFusionSerializable<SceneLoadData>()) {
+#if DEBUG
+                        FusionLogger.Log($"Received level load for {data.levelBarcode}!");
+#endif
+
                         LevelWarehouseUtilities.LoadClientLevel(data.levelBarcode);
                     }
                 }

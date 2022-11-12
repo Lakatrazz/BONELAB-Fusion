@@ -23,26 +23,16 @@ namespace LabFusion.Utilities {
         private static string _targetLevelBarcode;
         private static string _prevLevelBarcode = null;
 
-        private static bool _hasInitializedScene = false;
-
         public static LevelCrate GetCurrentLevel() {
             return SceneStreamer.Session.Level;
         }
 
-        private static bool IsLoading_Internal() {
+        public static bool IsLoading() {
             return SceneStreamer.Session.Status == StreamStatus.LOADING;
         }
 
-        public static bool IsLoading() {
-            return IsLoading_Internal() || !_hasInitializedScene;
-        }
-
-        private static bool IsLoadDone_Internal() {
-            return SceneStreamer.Session.Status == StreamStatus.DONE;
-        }
-
         public static bool IsLoadDone() {
-            return IsLoading_Internal() && _hasInitializedScene;
+            return SceneStreamer.Session.Status == StreamStatus.DONE;
         }
 
         public static void LoadClientLevel(string levelBarcode) {
@@ -61,31 +51,31 @@ namespace LabFusion.Utilities {
         }
 
         internal static IEnumerator LoadLevelDelayed() {
-            while (IsLoading() || !IsLoadDone())
-                yield return null;
+            if (IsLoading() || !IsLoadDone()) {
+                while (IsLoading() || !IsLoadDone())
+                    yield return null;
 
-            for (var i = 0; i < 60; i++)
-                yield return null;
-
+                for (var i = 0; i < 60; i++)
+                    yield return null;
+            }
+            
             SendToStreamer();
         }
 
         internal static void OnUpdateLevelLoading() {
             // If the loading has finished, we can check to update the load method
-            if (IsLoadDone_Internal()) {
+            if (IsLoadDone()) {
                 var code = GetCurrentLevel().Barcode;
 
                 if (_prevLevelBarcode != code) {
                     FusionMod.OnMainSceneInitialized();
-                    _hasInitializedScene = true;
                     _prevLevelBarcode = code;
                 }
             }
             // If we are in the loading screen we need to make sure to reset this value
             // Otherwise, reloading the scene will never notify the game
-            else if (IsLoading_Internal()) {
+            else if (IsLoading()) {
                 _prevLevelBarcode = null;
-                _hasInitializedScene = false;
             }
         }
     }
