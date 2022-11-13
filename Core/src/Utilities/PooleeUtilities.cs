@@ -43,26 +43,44 @@ namespace LabFusion.Utilities {
         }
 
         public static void AddToServer(AssetPoolee poolee) {
-            if (!ServerSpawnedList.Contains(poolee))
+            if (!ServerSpawnedList.Has(poolee))
                 ServerSpawnedList.Add(poolee);
         }
 
         public static bool DequeueServerSpawned(AssetPoolee poolee)
         {
-            return ServerSpawnedList.Remove(poolee);
+            for (var i = 0; i < ServerSpawnedList.Count; i++) {
+                var found = ServerSpawnedList[i];
+
+                if (found == poolee) {
+                    ServerSpawnedList.RemoveAt(i);
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public static void PermitSpawning(AssetPoolee poolee) {
-            if (!CanSpawnList.Contains(poolee))
+            if (!CanSpawnList.Has(poolee))
                 CanSpawnList.Add(poolee);
         }
 
         public static bool CanSpawn(AssetPoolee poolee) {
-            return CanSpawnList.Contains(poolee);
+            return CanSpawnList.Has(poolee);
         }
 
         public static bool DequeueSpawning(AssetPoolee poolee) {
-            return CanSpawnList.Remove(poolee);
+            for (var i = 0; i < CanSpawnList.Count; i++) {
+                var found = CanSpawnList[i];
+
+                if (found == poolee) {
+                    CanSpawnList.RemoveAt(i);
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public static void SendDespawn(ushort syncId) {
