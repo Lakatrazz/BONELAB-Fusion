@@ -249,8 +249,9 @@ namespace LabFusion.Syncables
             if (owner == PlayerIdManager.LocalSmallId) {
                 ResetJointDrives();
             }
-            else
+            else {
                 ClearJointDrives();
+            }
         }
 
         public void ResetJointDrives() {
@@ -428,7 +429,15 @@ namespace LabFusion.Syncables
             if (!SafetyUtilities.IsValidTime)
                 return;
 
-            if (Time.timeSinceLevelLoad - TimeOfMessage >= 1f) {
+            bool isSomethingGrabbed = false;
+            foreach (var pair in _grabbedGrips) {
+                if (!pair.Key.IsNOC() && pair.Value > 0) {
+                    isSomethingGrabbed = true;
+                    break;
+                }
+            }
+
+            if (!isSomethingGrabbed && Time.timeSinceLevelLoad - TimeOfMessage >= 1f) {
                 foreach (var rb in Rigidbodies) {
                     if (!rb.IsNOC() && !rb.IsSleeping())
                         rb.Sleep();
