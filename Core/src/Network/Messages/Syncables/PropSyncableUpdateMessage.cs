@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using LabFusion.Extensions;
 
 namespace LabFusion.Network
 {
@@ -132,10 +133,17 @@ namespace LabFusion.Network
                     // Find the prop syncable and update its info
                     var syncable = data.GetPropSyncable();
                     if (syncable != null && syncable.IsRegistered() && syncable.Owner.HasValue && syncable.Owner.Value == data.ownerId) {
+                        syncable.TimeOfMessage = Time.timeSinceLevelLoad;
+                        
                         for (var i = 0; i < data.length; i++) {
                             syncable.DesiredPositions[i] = data.serializedPositions[i];
                             syncable.DesiredRotations[i] = data.serializedQuaternions[i].Expand();
                             syncable.DesiredVelocity = data.velocity;
+
+                            var rb = syncable.Rigidbodies[i];
+
+                            if (!rb.IsNOC() && rb.IsSleeping())
+                                rb.WakeUp();
                         }
                     }
 
