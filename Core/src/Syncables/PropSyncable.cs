@@ -297,13 +297,22 @@ namespace LabFusion.Syncables
                 DesiredVelocity = 0f;
             }
 
+            bool hasMovingBody = false;
+
             for (var i = 0; i < Rigidbodies.Length; i++) {
                 var rb = Rigidbodies[i];
 
-                if (rb.IsNOC() || rb.IsSleeping() || !HasMoved(i)) {
+                if (rb.IsNOC()) {
                     return;
                 }
+
+                if (!hasMovingBody && !rb.IsSleeping() && HasMoved(i)) {
+                    hasMovingBody = true;
+                }
             }
+
+            if (!hasMovingBody)
+                return;
 
             for (var i = 0; i < Rigidbodies.Length; i++) {
                 var rb = Rigidbodies[i];
@@ -354,9 +363,11 @@ namespace LabFusion.Syncables
                 var pos = DesiredPositions[i].Value;
                 var rot = DesiredRotations[i].Value;
 
+                bool allowPosition = !IsRotationBased || i == 0;
+
                 // Teleport check
                 float distSqr = (rb.transform.position - pos).sqrMagnitude;
-                if (distSqr > (2f * (DesiredVelocity + 1f))) {
+                if (distSqr > (2f * (DesiredVelocity + 1f)) && allowPosition) {
                     rb.transform.position = pos;
                     rb.transform.rotation = rot;
 
@@ -365,7 +376,7 @@ namespace LabFusion.Syncables
                 }
                 // Instead calculate velocity stuff
                 else {
-                    if (!IsRotationBased || i == 0) {
+                    if (allowPosition) {
                         var outputVel = (pos - rb.transform.position) * invDt * PropPinMlp;
                         if (!outputVel.IsNanOrInf())
                             rb.velocity = outputVel;

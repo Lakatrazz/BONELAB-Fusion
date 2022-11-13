@@ -12,11 +12,16 @@ namespace LabFusion.Grabbables {
     public static class InteractableHelpers {
         public static GameObject GetRoot(this InteractableHost host) {
             var poolee = host.GetComponentInParent<AssetPoolee>();
+            var ignoreHierarchy = host.GetComponentInParent<IgnoreHierarchy>();
+
             if (poolee)
                 return poolee.gameObject;
             else if (host.manager)
                 return host.manager.gameObject;
-            else {
+            else if (ignoreHierarchy)
+                return ignoreHierarchy.gameObject;
+            else
+            {
                 var rigidbodies = host.GetComponentsInParent<Rigidbody>(true);
                 if (rigidbodies.Length > 0)
                     return rigidbodies.Last().gameObject;
