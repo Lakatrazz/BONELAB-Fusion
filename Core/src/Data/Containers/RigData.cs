@@ -243,10 +243,6 @@ namespace LabFusion.Data
             if (RigReferences.RigManager) {
                 var barcode = GetAvatarBarcode();
                 if (barcode != RigAvatarId) {
-#if DEBUG
-                    FusionLogger.Log($"Local avatar switched from {RigAvatarId} to {barcode}!");
-#endif
-
                     // Send switch message to notify the server
                     if (NetworkInfo.HasServer) {
                         using (FusionWriter writer = FusionWriter.Create()) {

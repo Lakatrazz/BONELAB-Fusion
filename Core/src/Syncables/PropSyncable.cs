@@ -104,7 +104,7 @@ namespace LabFusion.Syncables
         }
 
         private void AssignInformation(InteractableHost host) {
-            var hosts = host.GetComponentsInChildren<InteractableHost>(true);
+            var hosts = host.GetRoot().GetComponentsInChildren<InteractableHost>(true);
 
             List<Grip> grips = new List<Grip>();
             List<Rigidbody> rigidbodies = new List<Rigidbody>();
