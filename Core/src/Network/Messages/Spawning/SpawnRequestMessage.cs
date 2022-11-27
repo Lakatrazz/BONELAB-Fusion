@@ -3,7 +3,7 @@ using LabFusion.Patching;
 using LabFusion.Representation;
 using LabFusion.Syncables;
 using LabFusion.Utilities;
-
+using SLZ;
 using System;
 
 namespace LabFusion.Network
@@ -13,12 +13,14 @@ namespace LabFusion.Network
         public byte owner;
         public string barcode;
         public SerializedTransform serializedTransform;
+        public Handedness hand;
 
         public void Serialize(FusionWriter writer)
         {
             writer.Write(owner);
             writer.Write(barcode);
             writer.Write(serializedTransform);
+            writer.Write((byte)hand);
         }
 
         public void Deserialize(FusionReader reader)
@@ -26,6 +28,7 @@ namespace LabFusion.Network
             owner = reader.ReadByte();
             barcode = reader.ReadString();
             serializedTransform = reader.ReadFusionSerializable<SerializedTransform>();
+            hand = (Handedness)reader.ReadByte();
         }
 
         public void Dispose()
@@ -33,13 +36,14 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static SpawnRequestData Create(byte owner, string barcode, SerializedTransform serializedTransform)
+        public static SpawnRequestData Create(byte owner, string barcode, SerializedTransform serializedTransform, Handedness hand)
         {
             return new SpawnRequestData()
             {
                 owner = owner,
                 barcode = barcode,
                 serializedTransform = serializedTransform,
+                hand = hand,
             };
         }
     }
@@ -55,7 +59,7 @@ namespace LabFusion.Network
                     using (var data = reader.ReadFusionSerializable<SpawnRequestData>()) {
                         var syncId = SyncManager.AllocateSyncID();
 
-                        PooleeUtilities.SendSpawn(data.owner, data.barcode, syncId, data.serializedTransform);
+                        PooleeUtilities.SendSpawn(data.owner, data.barcode, syncId, data.serializedTransform, false, null, data.hand);
                     }
                 }
             }

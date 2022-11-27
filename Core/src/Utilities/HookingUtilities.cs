@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using UnityEngine.SceneManagement;
 using UnityEngine.Events;
+using BoneLib;
 
 namespace LabFusion.Utilities {
     public static class HookingUtilities {

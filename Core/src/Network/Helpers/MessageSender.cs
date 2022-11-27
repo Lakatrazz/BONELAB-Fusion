@@ -45,6 +45,22 @@ namespace LabFusion.Network
         }
 
         /// <summary>
+        /// Sends the message to the dedicated server.
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <param name="message"></param>
+        public static void SendToServer(NetworkChannel channel, FusionMessage message) {
+            if (NetworkInfo.CurrentNetworkLayer != null) {
+                NetworkInfo.BytesUp += message.Buffer.Length;
+
+                if (!NetworkInfo.IsServer)
+                    NetworkInfo.CurrentNetworkLayer.SendToServer(channel, message);
+                else
+                    FusionMessageHandler.ReadMessage(message.Buffer, true);
+            }
+        }
+
+        /// <summary>
         /// Sends the message to the server if this is a client. Sends to all clients if this is a server.
         /// </summary>
         /// <param name="channel"></param>

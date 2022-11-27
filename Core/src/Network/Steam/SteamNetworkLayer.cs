@@ -8,7 +8,7 @@ using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Representation;
 using LabFusion.Utilities;
-
+using SLZ.Rig;
 using Steamworks;
 using Steamworks.Data;
 
@@ -99,6 +99,10 @@ namespace LabFusion.Network
             else {
                 SteamSocketHandler.BroadcastToServer(channel, message);
             }
+        }
+
+        internal override void SendToServer(NetworkChannel channel, FusionMessage message) {
+            SteamSocketHandler.BroadcastToServer(channel, message);
         }
 
         internal override void SendServerMessage(byte userId, NetworkChannel channel, FusionMessage message) {
@@ -214,9 +218,12 @@ namespace LabFusion.Network
             origin.y += 30;
 
             if (GUI.Button(new Rect(origin, size), "Spawn Player Rep")) {
-                var rig = PlayerRepUtilities.CreateNewRig();
-                rig.Teleport(RigData.RigReferences.RigManager.physicsRig.feet.transform.position, true);
+                PlayerRepUtilities.CreateNewRig(OnRigCreated);
             }
+        }
+
+        internal void OnRigCreated(RigManager rig) {
+            rig.Teleport(RigData.RigReferences.RigManager.physicsRig.feet.transform.position, true);
         }
     }
 }

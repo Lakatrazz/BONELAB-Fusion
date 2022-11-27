@@ -7,21 +7,19 @@ using System.Threading.Tasks;
 
 using MelonLoader;
 
+
+using SLZ.VRMK;
+using SLZ;
 using SLZ.Rig;
 using SLZ.Interaction;
 
 using BoneLib;
 
 using UnityEngine;
-using SLZ.Marrow.Utilities;
-using SLZ.Marrow.Warehouse;
+
 using LabFusion.Utilities;
-using UnhollowerRuntimeLib;
 using LabFusion.Network;
 using LabFusion.Representation;
-using SLZ.VRMK;
-using SLZ;
-using SLZ.UI.Radial;
 
 namespace LabFusion.Data
 {
@@ -151,6 +149,8 @@ namespace LabFusion.Data
         public Hand GetHand(Handedness handedness) {
             switch (handedness) {
                 default:
+                    return null;
+                case Handedness.LEFT:
                     return LeftHand;
                 case Handedness.RIGHT:
                     return RightHand;

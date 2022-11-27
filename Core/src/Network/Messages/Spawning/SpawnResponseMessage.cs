@@ -22,6 +22,10 @@ using static MelonLoader.MelonLogger;
 using SLZ.Zones;
 using SLZ.AI;
 using LabFusion.Extensions;
+using SLZ.Props.Weapons;
+using SLZ;
+using SLZ.Utilities;
+using SLZ.Player;
 
 namespace LabFusion.Network
 {
@@ -35,6 +39,8 @@ namespace LabFusion.Network
 
         public string spawnerPath;
 
+        public Handedness hand;
+
         public void Serialize(FusionWriter writer)
         {
             writer.Write(owner);
@@ -42,6 +48,7 @@ namespace LabFusion.Network
             writer.Write(syncId);
             writer.Write(serializedTransform);
             writer.Write(spawnerPath);
+            writer.Write((byte)hand);
         }
 
         public void Deserialize(FusionReader reader)
@@ -51,6 +58,7 @@ namespace LabFusion.Network
             syncId = reader.ReadUInt16();
             serializedTransform = reader.ReadFusionSerializable<SerializedTransform>();
             spawnerPath = reader.ReadString();
+            hand = (Handedness)reader.ReadByte();
         }
 
         public void Dispose()
@@ -58,7 +66,7 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static SpawnResponseData Create(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, ZoneSpawner spawner = null)
+        public static SpawnResponseData Create(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, ZoneSpawner spawner = null, Handedness hand = Handedness.UNDEFINED)
         {
             string path = "_";
 
@@ -81,6 +89,7 @@ namespace LabFusion.Network
                 syncId = syncId,
                 serializedTransform = serializedTransform,
                 spawnerPath = path,
+                hand = hand,
             };
         }
     }
@@ -106,15 +115,16 @@ namespace LabFusion.Network
                         byte owner = data.owner;
                         ushort syncId = data.syncId;
                         string path = data.spawnerPath;
+                        var hand = data.hand;
 
                         NullableMethodExtensions.PoolManager_Spawn(spawnable, data.serializedTransform.position, data.serializedTransform.rotation.Expand(), null, 
-                            true, null, (Action<GameObject>)((go) => { OnSpawnFinished(owner, syncId, go, path); }), null);
+                            true, null, (Action<GameObject>)((go) => { OnSpawnFinished(owner, syncId, go, path, hand); }), null);
                     }
                 }
             }
         }
 
-        public static void OnSpawnFinished(byte owner, ushort syncId, GameObject go, string spawnerPath = "_") {
+        public static void OnSpawnFinished(byte owner, ushort syncId, GameObject go, string spawnerPath = "_", Handedness hand = Handedness.UNDEFINED) {
             ZoneSpawner spawner = null;
             if (spawnerPath != "_") {
                 try {
@@ -159,18 +169,73 @@ namespace LabFusion.Network
 
             SyncManager.RegisterSyncable(newSyncable, syncId);
 
+            // Force the object active
+            Grip grip = null;
             go.SetActive(true);
-            MelonCoroutines.Start(KeepEnabled(poolee));
-        }
-        
-        public static IEnumerator KeepEnabled(AssetPoolee __instance) {
-            for (var i = 0; i < 5; i++) {
-                yield return null;
+            PooleeUtilities.KeepForceEnabled(poolee);
 
-                __instance.gameObject.SetActive(true);
+            // Setup magazine info
+            var magazine = go.GetComponent<Magazine>();
+            if (magazine) {
+                grip = magazine.grip;
+
+                var ammoInventory = RigData.RigReferences.RigManager.AmmoInventory;
+
+                CartridgeData cart = ammoInventory.ammoReceiver.defaultLightCart;
+
+                if (owner == PlayerIdManager.LocalSmallId) { 
+                    if (ammoInventory.ammoReceiver._selectedCartridgeData != null)
+                        cart = ammoInventory.ammoReceiver._selectedCartridgeData;
+                }
+                else if (PlayerRep.Representations.TryGetValue(owner, out var rep)) {
+                    if (rep.RigReferences.RigManager.AmmoInventory.ammoReceiver._selectedCartridgeData != null) {
+                        ammoInventory = rep.RigReferences.RigManager.AmmoInventory;
+
+                        cart = ammoInventory.ammoReceiver._selectedCartridgeData;
+                    }
+                }
+
+                magazine.Initialize(cart, ammoInventory.GetCartridgeCount(cart));
+
+                NullableMethodExtensions.AudioPlayer_PlayAtPoint(ammoInventory.ammoReceiver.grabClips, ammoInventory.ammoReceiver.transform.position, null, null, false, null, null);
+
+                // Attach the object to the hand
+                if (owner == PlayerIdManager.LocalSmallId) {
+                    var found = RigData.RigReferences.GetHand(hand);
+
+                    if (found) {
+                        found.GrabLock = false;
+
+                        if (found.HasAttachedObject()) {
+                            var current = Grip.Cache.Get(found.m_CurrentAttachedGO);
+                            if (current)
+                                current.ForceDetach(found);
+                        }
+
+                        MelonCoroutines.Start(Internal_ForceGrabConfirm(found, grip));
+                    }
+                }
+                else if (PlayerRep.Representations.TryGetValue(owner, out var rep)) {
+                    rep.AttachObject(hand, grip);
+                }
+            }
+
+            MelonCoroutines.Start(PostSpawnRoutine(poolee, owner, grip, hand));
+        }
+
+        private static IEnumerator Internal_ForceGrabConfirm(Hand hand, Grip grip) {
+            yield return null;
+
+            grip.OnGrabConfirm(hand, true);
+        }
+
+        private static IEnumerator PostSpawnRoutine(AssetPoolee __instance, byte owner, Grip grip = null, Handedness hand = Handedness.UNDEFINED) {
+            for (var i = 0; i < 3; i++) {
+                yield return null;
             }
 
             PooleeUtilities.DequeueSpawning(__instance);
+            PooleeUtilities.RemoveForceEnabled(__instance);
         }
     }
 }

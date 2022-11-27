@@ -1,21 +1,19 @@
 ﻿using HarmonyLib;
 
 using System;
-
-using LabFusion.Network;
-using LabFusion.Extensions;
-
-using SLZ.Zones;
+using System.Collections.Generic;
 
 using UnityEngine;
 
-using System.Collections.Generic;
-
 using LabFusion.Utilities;
 using LabFusion.Data;
+using LabFusion.Network;
+using LabFusion.Extensions;
 
 using SLZ.AI;
 using SLZ.Rig;
+using SLZ.Zones;
+using SLZ.Bonelab;
 
 namespace LabFusion.Patching
 {

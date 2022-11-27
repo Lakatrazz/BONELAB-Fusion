@@ -61,6 +61,13 @@ namespace LabFusion.Network
         internal virtual void SendServerMessage(ulong userId, NetworkChannel channel, FusionMessage message) { }
 
         /// <summary>
+        /// Sends the message to the dedicated server.
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <param name="message"></param>
+        internal virtual void SendToServer(NetworkChannel channel, FusionMessage message) { }
+
+        /// <summary>
         /// Sends the message to the server if this is a client. Sends to all clients if this is a server.
         /// </summary>
         /// <param name="channel"></param>

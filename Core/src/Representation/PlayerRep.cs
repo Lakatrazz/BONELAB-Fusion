@@ -4,7 +4,7 @@ using LabFusion.Network;
 using LabFusion.Utilities;
 using SLZ;
 using SLZ.Interaction;
-using SLZ.Marrow.Warehouse;
+using SLZ.Props;
 using SLZ.Rig;
 
 using System;
@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 namespace LabFusion.Representation
 {
@@ -160,16 +161,21 @@ namespace LabFusion.Representation
 
             repNameText.text = Username;
 
-            var rig = PlayerRepUtilities.CreateNewRig();
+            PlayerRepUtilities.CreateNewRig(OnRigCreated);
+        }
+
+        public void OnRigCreated(RigManager rig) {
             pullCord = rig.GetComponentInChildren<PullCordDevice>(true);
 
-            if (vitals != null) {
+            if (vitals != null)
+            {
                 vitals.CopyTo(rig.bodyVitals);
                 rig.bodyVitals.CalibratePlayerBodyScale();
             }
 
             // Lock many of the bones in place to increase stability
-            foreach (var found in rig.GetComponentsInChildren<ConfigurableJoint>(true)) {
+            foreach (var found in rig.GetComponentsInChildren<ConfigurableJoint>(true))
+            {
                 found.projectionMode = JointProjectionMode.PositionAndRotation;
                 found.projectionDistance = 0.001f;
                 found.projectionAngle = 40f;
@@ -187,7 +193,6 @@ namespace LabFusion.Representation
             rig.openControllerRig.rightController = rig.openControllerRig.rightController.gameObject.AddComponent<Controller>();
             rightHaptor.device_Controller = rig.openControllerRig.rightController;
             rig.openControllerRig.rightController.handedness = Handedness.RIGHT;
-
             Managers.Add(rig, this);
 
             repPelvis = rig.physicsRig.m_pelvis.GetComponent<Rigidbody>();

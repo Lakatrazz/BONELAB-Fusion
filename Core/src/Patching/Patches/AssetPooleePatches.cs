@@ -37,11 +37,10 @@ namespace LabFusion.Patching
                         // Check if we should prevent this object from spawning
                         if (barcode == SpawnableWarehouseUtilities.FADE_OUT_BARCODE) {
                             __instance.gameObject.SetActive(false);
-                            MelonCoroutines.Start(KeepDisabled(__instance));
                         }
-                        else if (PooleeUtilities.CanForceDespawn(__instance)) {
+                        else if (!PooleeUtilities.IsForceEnabled(__instance) && PooleeUtilities.CanForceDespawn(__instance)) {
                             __instance.gameObject.SetActive(false);
-                            MelonCoroutines.Start(KeepDisabled(__instance));
+                            MelonCoroutines.Start(CoForceDespawnRoutine(__instance));
                         }
                     }
                     else
@@ -50,7 +49,7 @@ namespace LabFusion.Patching
                             if (PropSyncable.Cache.TryGetValue(__instance.gameObject, out var syncable))
                                 SyncManager.RemoveSyncable(syncable);
 
-                            MelonCoroutines.Start(WaitForVerify(__instance));
+                            MelonCoroutines.Start(CoVerifySpawnedRoutine(__instance));
                         }
                     }
                 }
@@ -63,20 +62,25 @@ namespace LabFusion.Patching
             }
         }
 
-        public static IEnumerator KeepDisabled(AssetPoolee __instance) {
+        private static IEnumerator CoForceDespawnRoutine(AssetPoolee __instance) {
             var go = __instance.gameObject;
 
             for (var i = 0; i < 3; i++) {
                 yield return null;
 
-                if (PooleeUtilities.CanSpawn(__instance))
+                if (!PooleeUtilities.CanForceDespawn(__instance)) {
+                    go.SetActive(true);
+                    yield break;
+                }
+
+                if (PooleeUtilities.CanSpawn(__instance) || PooleeUtilities.IsForceEnabled(__instance))
                     yield break;
 
                 go.SetActive(false);
             }
         }
 
-        public static IEnumerator WaitForVerify(AssetPoolee __instance) {
+        private static IEnumerator CoVerifySpawnedRoutine(AssetPoolee __instance) {
             while (LevelWarehouseUtilities.IsLoading())
                 yield return null;
 
@@ -85,7 +89,7 @@ namespace LabFusion.Patching
 
             try
             {
-                if (!PooleeUtilities.DequeueServerSpawned(__instance))
+                if (PooleeUtilities.CanSendSpawn(__instance) && !PooleeUtilities.DequeueServerSpawned(__instance))
                 {
                     var barcode = __instance.spawnableCrate.Barcode;
 
@@ -95,8 +99,7 @@ namespace LabFusion.Patching
                     var zoneTracker = ZoneTracker.Cache.Get(__instance.gameObject);
                     ZoneSpawner spawner = null;
 
-                    if (zoneTracker && zoneTracker.spawner)
-                    {
+                    if (zoneTracker && zoneTracker.spawner) {
                         spawner = zoneTracker.spawner;
                     }
 

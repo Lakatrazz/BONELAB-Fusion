@@ -5,8 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-using Discord;
-
 using LabFusion.Modularity;
 
 namespace LabFusion.Data

@@ -9,7 +9,7 @@ using HarmonyLib;
 using LabFusion.Network;
 using LabFusion.Utilities;
 
-using SLZ.UI.Radial;
+using SLZ.UI;
 
 namespace LabFusion.Patching
 {

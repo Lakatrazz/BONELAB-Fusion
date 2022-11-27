@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using HarmonyLib;
 
-using SLZ.UI.Radial;
+using SLZ.UI;
 
 using LabFusion.Data;
 using LabFusion.Network;

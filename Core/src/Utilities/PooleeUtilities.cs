@@ -8,6 +8,10 @@ using LabFusion.Utilities;
 using SLZ.Marrow.Pool;
 using SLZ.Zones;
 using SLZ.Interaction;
+using SLZ;
+using SLZ.Combat;
+using SLZ.VFX;
+using SLZ.Bonelab;
 
 using System;
 using System.Collections.Generic;
@@ -19,6 +23,8 @@ using UnityEngine;
 
 namespace LabFusion.Utilities {
     public static class PooleeUtilities {
+        internal static List<AssetPoolee> ForceEnabled = new List<AssetPoolee>();
+
         internal static List<AssetPoolee> CanSpawnList = new List<AssetPoolee>();
 
         internal static bool CanDespawn = false;
@@ -40,6 +46,39 @@ namespace LabFusion.Utilities {
             newSyncable.SetOwner(0);
 
             SyncManager.RegisterSyncable(newSyncable, syncId);
+        }
+
+        public static void KeepForceEnabled(AssetPoolee poolee)
+        {
+            if (!ForceEnabled.Has(poolee))
+                ForceEnabled.Add(poolee);
+        }
+
+        public static bool IsForceEnabled(AssetPoolee poolee)
+        {
+            for (var i = 0; i < ForceEnabled.Count; i++) {
+                var found = ForceEnabled[i];
+
+                if (found == poolee) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static void RemoveForceEnabled(AssetPoolee poolee)
+        {
+            for (var i = 0; i < ForceEnabled.Count; i++)
+            {
+                var found = ForceEnabled[i];
+
+                if (found == poolee)
+                {
+                    ForceEnabled.RemoveAt(i);
+                    return;
+                }
+            }
         }
 
         public static void AddToServer(AssetPoolee poolee) {
@@ -113,29 +152,23 @@ namespace LabFusion.Utilities {
             }
         }
 
-        public static void RequestSpawn(string barcode, SerializedTransform serializedTransform, byte? owner = null) {
-            if (NetworkInfo.IsServer)
-                return;
-
+        public static void RequestSpawn(string barcode, SerializedTransform serializedTransform, byte? owner = null, Handedness hand = Handedness.UNDEFINED) {
             using (var writer = FusionWriter.Create())
             {
-                using (var data = SpawnRequestData.Create(owner.HasValue ? owner.Value : PlayerIdManager.LocalSmallId, barcode, serializedTransform))
+                using (var data = SpawnRequestData.Create(owner.HasValue ? owner.Value : PlayerIdManager.LocalSmallId, barcode, serializedTransform, hand))
                 {
                     writer.Write(data);
 
                     using (var message = FusionMessage.Create(NativeMessageTag.SpawnRequest, writer)) {
-                        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
                     }
                 }
             }
         }
 
-        public static void SendSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, bool ignoreSelf = false, ZoneSpawner spawner = null) {
-            if (!NetworkInfo.IsServer)
-                return;
-
+        public static void SendSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, bool ignoreSelf = false, ZoneSpawner spawner = null, Handedness hand = Handedness.UNDEFINED) {
             using (var writer = FusionWriter.Create()) {
-                using (var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, spawner)) {
+                using (var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, spawner, hand)) {
                     writer.Write(data);
 
                     using (var message = FusionMessage.Create(NativeMessageTag.SpawnResponse, writer)) {
@@ -149,11 +182,19 @@ namespace LabFusion.Utilities {
         }
 
         public static bool CanForceDespawn(AssetPoolee instance) {
-            return !DequeueSpawning(instance) && instance.GetComponentInChildren<Rigidbody>(true) != null;
+            return !DequeueSpawning(instance) && IsWhitelisted(instance);
         }
 
         public static bool CanSendSpawn(AssetPoolee instance) {
-            return instance.GetComponentInChildren<Rigidbody>(true) != null;
+            return IsWhitelisted(instance);
+        }
+
+        private static bool IsWhitelisted(AssetPoolee instance) {
+            bool isValid = instance.GetComponentInChildren<Rigidbody>(true) != null
+                && instance.GetComponentInChildren<FirearmCartridge>(true) == null
+                && instance.GetComponentInChildren<GetVelocity>(true) == null;
+
+            return isValid;
         }
     }
 }

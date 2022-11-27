@@ -12,10 +12,8 @@ using LabFusion.Utilities;
 using SLZ.Bonelab;
 using SLZ.Marrow.SceneStreaming;
 using SLZ.Marrow.Warehouse;
-using SLZ.SceneStreaming;
 
 using UnityEngine;
-using static SLZ.Bonelab.BonelabProgressionHelper;
 
 namespace LabFusion.Patching
 {

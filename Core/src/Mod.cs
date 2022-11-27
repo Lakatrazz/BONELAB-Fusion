@@ -10,6 +10,8 @@ using LabFusion.Syncables;
 using MelonLoader;
 
 using LabFusion.Grabbables;
+using BoneLib;
+using UnityEngine;
 
 namespace LabFusion
 {
@@ -27,12 +29,11 @@ namespace LabFusion
 
         public override void OnEarlyInitializeMelon() {
             Instance = this;
-            FusionAssembly = MelonAssembly.Assembly;
+            FusionAssembly = Assembly.GetExecutingAssembly();
 
             PersistentData.OnPathInitialize();
             FusionMessageHandler.RegisterHandlersFromAssembly(FusionAssembly);
             GrabGroupHandler.RegisterHandlersFromAssembly(FusionAssembly);
-            AssetBundleManager.OnLoadBundles();
 
             OnInitializeNetworking();
         }
@@ -40,6 +41,11 @@ namespace LabFusion
         public override void OnLateInitializeMelon() {
             HookingUtilities.HookAll();
             InternalLayerHelpers.OnLateInitializeLayer();
+        }
+
+        public static void LogCallback(string condition, string stackTrace, LogType type) {
+            FusionLogger.Log($"Unity Log: {condition} \nStack Trace: {stackTrace}", type == LogType.Log ? ConsoleColor.White 
+                : type == LogType.Error ? ConsoleColor.Red : ConsoleColor.Yellow);
         }
 
         protected void OnInitializeNetworking() {

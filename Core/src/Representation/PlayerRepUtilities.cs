@@ -21,6 +21,18 @@ using SLZ;
 using SLZ.Interaction;
 using MelonLoader;
 using LabFusion.Grabbables;
+using SLZ.Marrow.Utilities;
+using SLZ.Marrow.Warehouse;
+using SLZ.Bonelab;
+using SLZ.Marrow;
+using SLZ.UI;
+using SLZ.Utilities;
+using SLZ.VRMK;
+using UnhollowerBaseLib;
+using UnityEngine.Events;
+using UnityEngine.Rendering;
+using SLZ.SFX;
+using UnityEngine.Rendering.Universal;
 
 namespace LabFusion.Representation {
     public static class PlayerRepUtilities {
@@ -45,15 +57,185 @@ namespace LabFusion.Representation {
             }
         }
 
-        public static RigManager CreateNewRig() {
-            var go = GameObject.Instantiate(AssetBundleManager.PlayerRepBundle.LoadAsset(ResourcePaths.PlayerRepName, Il2CppType.Of<GameObject>())).Cast<GameObject>();
+        public static void CreateNewRig(Action<RigManager> onRigCreated) {
+            MarrowSettings.RuntimeInstance.DefaultPlayerRig.Crate.LoadAsset((Action<GameObject>)((go) => Internal_OnLoadPlayer(go, onRigCreated)));
+        }
 
-            if (RigData.RigReferences.RigManager) {
+        private static void Internal_OnLoadPlayer(GameObject asset, Action<RigManager> onRigCreated) {
+            // Create a temporary parent that is disabled
+            GameObject tempParent = new GameObject();
+            tempParent.SetActive(false);
+
+            var rigAsset = asset.GetComponentInChildren<RigManager>().gameObject;
+
+            var go = GameObject.Instantiate(rigAsset, tempParent.transform);
+            go.name = ResourcePaths.PlayerRepName;
+            go.SetActive(false);
+            
+            if (RigData.RigReferences.RigManager)
+            {
                 go.transform.position = RigData.RigSpawn;
                 go.transform.rotation = RigData.RigSpawnRot;
             }
 
-            return go.GetComponent<RigManager>();
+            var rigManager = go.GetComponent<RigManager>();
+            Internal_SetupPlayerRep(rigManager);
+
+            go.transform.parent = null;
+            GameObject.Destroy(tempParent);
+
+            go.SetActive(true);
+
+            onRigCreated?.Invoke(rigManager);
+        }
+
+        private static void Internal_SetupPlayerRep(RigManager rigManager)
+        {
+            // IMPORTANT NOTICE!
+            // When destroying stuff on this player, make sure to use DestroyImmediate!
+            // Destroy is "safe", and waits for the next frame to destroy the object.
+            // However, this means methods on that object will be called, even if we want it to have never existed in the first place.
+            // Using regular Destroy may cause weird effects!
+
+            // Add ammo. If theres no ammo in each category it wont set cartridges properly when grabbing guns
+            var ammoInventory = rigManager.AmmoInventory;
+            var count = 100000;
+            ammoInventory.AddCartridge(ammoInventory.lightAmmoGroup, count);
+            ammoInventory.AddCartridge(ammoInventory.mediumAmmoGroup, count);
+            ammoInventory.AddCartridge(ammoInventory.heavyAmmoGroup, count);
+
+            // Create empty vignetter
+            GameObject fakeVignette = new GameObject();
+            fakeVignette.name = "Vignetter";
+            fakeVignette.AddComponent<SkinnedMeshRenderer>().enabled = false;
+            fakeVignette.gameObject.SetActive(false);
+
+            var playerHealth = rigManager.health.TryCast<Player_Health>();
+            if (playerHealth != null) {
+                playerHealth.healthMode = Health.HealthMode.Invincible;
+                playerHealth.Vignetter = fakeVignette;
+            }
+
+            // Fix spatial audio
+            rigManager.physicsRig.headSfx.mouthSrc.spatialBlend = 1f;
+
+            // Enable extras
+            rigManager.bodyVitals.hasBodyLog = true;
+            rigManager.bodyVitals.bodyLogFlipped = true;
+            rigManager.bodyVitals.bodyLogEnabled = true;
+
+            // Disable extra rigs
+            GameObject.DestroyImmediate(rigManager.GetComponent<LineMesh>());
+            GameObject.DestroyImmediate(rigManager.GetComponent<CheatTool>());
+            GameObject.DestroyImmediate(rigManager.GetComponent<UtilitySpawnables>());
+            GameObject.DestroyImmediate(rigManager.GetComponent<TempTextureRef>());
+            GameObject.DestroyImmediate(rigManager.GetComponent<RigVolumeSettings>());
+            GameObject.DestroyImmediate(rigManager.GetComponent<ForceLevels>());
+            GameObject.DestroyImmediate(rigManager.GetComponent<Volume>());
+
+            var screenOptions = rigManager.GetComponent<RigScreenOptions>();
+            GameObject.DestroyImmediate(screenOptions.cam.gameObject);
+            GameObject.DestroyImmediate(screenOptions.OverlayCam.gameObject);
+            GameObject.DestroyImmediate(screenOptions);
+
+            rigManager.uiRig.gameObject.SetActive(false);
+            rigManager.uiRig.Start();
+            rigManager.uiRig.popUpMenu.radialPageView.Start();
+
+            rigManager.uiRig.popUpMenu.Awake();
+
+            try {
+                rigManager.uiRig.popUpMenu.Start();
+            }
+            catch { }
+
+            rigManager.tutorialRig.gameObject.SetActive(false);
+
+            var spawnGunUI = rigManager.GetComponentInChildren<SpawnGunUI>().gameObject;
+            spawnGunUI.SetActive(false);
+
+            rigManager.loadAvatarFromSaveData = false;
+
+            // Remove extra inputs on the controller rig
+            rigManager.openControllerRig.primaryEnabled = true;
+            rigManager.openControllerRig.jumpEnabled = true;
+            rigManager.openControllerRig.quickmenuEnabled = false;
+            rigManager.openControllerRig.slowMoEnabled = false;
+            rigManager.openControllerRig.isRightHanded = true;
+            rigManager.openControllerRig.autoLiftLegs = true;
+            rigManager.openControllerRig.doubleJump = false;
+
+            // Remove camera stuff
+            GameObject.DestroyImmediate(rigManager.openControllerRig.m_head.GetComponent<AudioListener>());
+            GameObject.DestroyImmediate(rigManager.openControllerRig.m_head.GetComponent<DebugDraw>());
+            GameObject.DestroyImmediate(rigManager.openControllerRig.m_head.GetComponent<CameraSettings>());
+            GameObject.DestroyImmediate(rigManager.openControllerRig.m_head.GetComponent<XRLODBias>());
+            GameObject.DestroyImmediate(rigManager.openControllerRig.m_head.GetComponent<VolumetricPlatformSwitch>());
+            GameObject.DestroyImmediate(rigManager.openControllerRig.m_head.GetComponent<StreamingController>());
+            GameObject.DestroyImmediate(rigManager.openControllerRig.m_head.GetComponent<VolumetricRendering>());
+            GameObject.DestroyImmediate(rigManager.openControllerRig.m_head.GetComponent<UniversalAdditionalCameraData>());
+            GameObject.DestroyImmediate(rigManager.openControllerRig.m_head.GetComponent<Camera>());
+
+            rigManager.openControllerRig.cameras = new Il2CppReferenceArray<Camera>(0);
+            rigManager.openControllerRig.OnLastCameraUpdate = new UnityEvent();
+
+            rigManager.openControllerRig.m_head.tag = "Untagged";
+
+            // Remove unnecessary player art manager
+            GameObject.DestroyImmediate(rigManager.GetComponent<PlayerAvatarArt>());
+
+            // Remove unnecessary controller components
+            GameObject.DestroyImmediate(rigManager.openControllerRig.leftController.GetComponent<UIControllerInput>());
+            GameObject.DestroyImmediate(rigManager.openControllerRig.rightController.GetComponent<UIControllerInput>());
+            
+            Internal_ClearHaptor(rigManager.openControllerRig.leftController.GetComponent<Haptor>());
+            Internal_ClearHaptor(rigManager.openControllerRig.rightController.GetComponent<Haptor>());
+
+            // Spatialize wind audio
+            MelonCoroutines.Start(Internal_SpatializeWind(rigManager.physicsRig.m_head.GetComponent<WindBuffetSFX>()));
+        }
+
+        private static void Internal_ClearHaptor(Haptor haptor)
+        {
+            haptor.hapticsAllowed = false;
+            haptor.low_thr_freq = 0f;
+            haptor.hap_duration = 0f;
+            haptor.hap_frequency = 0f;
+            haptor.hap_amplitude = 0f;
+            haptor.hap_calc_t = 0f;
+            haptor.hap_click_down_t = 0f;
+            haptor.hap_click_down_frequency = 0f;
+            haptor.hap_click_down_amplitude = 0f;
+            haptor.hap_click_up_t = 0f;
+            haptor.hap_click_up_frequency = 0f;
+            haptor.hap_click_up_amplitude = 0f;
+            haptor.hap_tap_duration = 0f;
+            haptor.hap_tap_frequency = 0f;
+            haptor.hap_tap_amplitude = 0f;
+            haptor.hap_knock_duration = 0f;
+            haptor.hap_knock_frequency = 0f;
+            haptor.hap_knock_amplitude = 0f;
+            haptor.hap_hit_mod = 0f;
+            haptor.hap_hit_frequency = 0f;
+            haptor.sin_gateCount = 0;
+            haptor.hap_softSin_length = 0f;
+            haptor.hap_softSin_freq = 0f;
+            haptor.hap_max_softSin_amp = 0f;
+            haptor.hap_min_softSin_amp = 0f;
+            haptor.hap_hardSin_length = 0f;
+            haptor.hap_hardSin_freq = 0f;
+            haptor.hap_max_hardSin_amp = 0f;
+            haptor.hap_min_hardSin_amp = 0f;
+
+            haptor.enabled = false;
+        }
+
+        private static IEnumerator Internal_SpatializeWind(WindBuffetSFX sfx) {
+            for (var i = 0; i < 5; i++)
+                yield return null;
+
+            if (!sfx.IsNOC() && sfx._buffetSrc)
+                sfx._buffetSrc.spatialBlend = 1f;
         }
 
         public static void FillTransformArray(ref Transform[] array, RigManager manager) {

@@ -11,7 +11,7 @@ using LabFusion.Utilities;
 using LabFusion.Data;
 
 using SLZ.Marrow.Pool;
-using SLZ.Props.Weapons;
+using SLZ.Props;
 
 using UnityEngine;
 using LabFusion.Syncables;
