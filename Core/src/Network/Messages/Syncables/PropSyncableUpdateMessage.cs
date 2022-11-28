@@ -103,7 +103,7 @@ namespace LabFusion.Network
                 var rb = rigidbodies[i];
                 var host = hosts[i];
 
-                if (host != null) {
+                if (!host.IsNOC()) {
                     data.serializedPositions[i] = host.transform.position;
                     data.serializedQuaternions[i] = SerializedQuaternion.Compress(host.transform.rotation);
                 }
@@ -112,7 +112,7 @@ namespace LabFusion.Network
                     data.serializedQuaternions[i] = SerializedQuaternion.Compress(Quaternion.identity);
                 }
 
-                if (rb != null) {
+                if (!rb.IsNOC()) {
                     maxVelocity = Mathf.Max(maxVelocity, rb.velocity.sqrMagnitude);
                 }
             }

@@ -15,6 +15,7 @@ using SLZ;
 using SLZ.Interaction;
 using SLZ.Marrow.Pool;
 using SLZ.Marrow.SceneStreaming;
+using SLZ.Props.Weapons;
 using SLZ.Utilities;
 
 using UnityEngine;
@@ -24,6 +25,7 @@ namespace LabFusion.Syncables
     public class PropSyncable : ISyncable {
         public static readonly Dictionary<GameObject, PropSyncable> Cache = new Dictionary<GameObject, PropSyncable>(new UnityComparer());
         public static readonly Dictionary<ConfigurableJoint, PropSyncable> JointCache = new Dictionary<ConfigurableJoint, PropSyncable>(new UnityComparer());
+        public static readonly Dictionary<WeaponSlot, PropSyncable> WeaponSlotCache = new Dictionary<WeaponSlot, PropSyncable>(new UnityComparer());
 
         public const float PropPinMlp = 0.8f;
 
@@ -34,6 +36,7 @@ namespace LabFusion.Syncables
         public Dictionary<ConfigurableJoint, ConfigurableJointDriveData> ConfigurableJoints;
 
         public readonly AssetPoolee AssetPoolee;
+        public readonly WeaponSlot WeaponSlot;
 
         public readonly GameObject GameObject;
 
@@ -116,6 +119,11 @@ namespace LabFusion.Syncables
             else {
                 IsRotationBased = false;
             }
+
+            WeaponSlot = GameObject.GetComponentInChildren<WeaponSlot>(true);
+
+            if (WeaponSlot)
+                WeaponSlotCache.Add(WeaponSlot, this);
         }
 
         public void OnSetDrive(ConfigurableJoint joint, JointDrive drive, JointExtensions.JointDriveAxis axis) {
@@ -224,6 +232,9 @@ namespace LabFusion.Syncables
                     JointCache.Remove(pair.Key);
                 }
             }
+
+            if (!WeaponSlot.IsNOC())
+                WeaponSlotCache.Remove(WeaponSlot);
         }
 
         public Grip GetGrip(ushort index) {
@@ -396,7 +407,7 @@ namespace LabFusion.Syncables
                 var rb = Rigidbodies[i];
 
                 if (rb.IsNOC()) {
-                    return;
+                    continue;
                 }
 
                 if (!hasMovingBody && !rb.IsSleeping() && HasMoved(i)) {
@@ -409,6 +420,9 @@ namespace LabFusion.Syncables
 
             for (var i = 0; i < Rigidbodies.Length; i++) {
                 var rb = Rigidbodies[i];
+
+                if (rb.IsNOC())
+                    continue;
 
                 LastSentPositions[i] = rb.transform.position;
                 LastSentRotations[i] = rb.transform.rotation;

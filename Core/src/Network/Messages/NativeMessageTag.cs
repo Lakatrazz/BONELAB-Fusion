@@ -40,6 +40,9 @@ namespace LabFusion.Network
             DespawnRequest = 20,
             DespawnResponse = 21,
 
+            InventorySlotInsert = 22,
+            InventorySlotDrop = 23,
+
             ModuleMessage = 80;
     }
 

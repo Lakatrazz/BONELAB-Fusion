@@ -31,6 +31,8 @@ namespace LabFusion.Data
 
         public Grip[] RigGrips { get; private set; }
 
+        public InventorySlotReceiver[] RigSlots { get; private set; }
+
         public Hand LeftHand { get; private set; }
         public Hand RightHand { get; private set; }
 
@@ -146,6 +148,22 @@ namespace LabFusion.Data
             return null;
         }
 
+        public byte? GetIndex(InventorySlotReceiver slot)
+        {
+            for (byte i = 0; i < RigSlots.Length; i++)
+            {
+                if (RigSlots[i] == slot)
+                    return i;
+            }
+            return null;
+        }
+
+        public InventorySlotReceiver GetSlot(byte index) {
+            if (RigSlots != null && RigSlots.Length > index)
+                return RigSlots[index];
+            return null;
+        }
+
         public Hand GetHand(Handedness handedness) {
             switch (handedness) {
                 default:
@@ -162,6 +180,7 @@ namespace LabFusion.Data
         public RigReferenceCollection(RigManager rigManager) {
             RigManager = rigManager;
             RigGrips = rigManager.physicsRig.GetComponentsInChildren<Grip>(true);
+            RigSlots = rigManager.GetComponentsInChildren<InventorySlotReceiver>(true);
 
             LeftHand = rigManager.physicsRig.m_handLf.GetComponent<Hand>();
             RightHand = rigManager.physicsRig.m_handRt.GetComponent<Hand>();

@@ -85,15 +85,15 @@ namespace LabFusion.Network
         /// <param name="userId"></param>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        public static void BroadcastMessageExcept(byte userId, NetworkChannel channel, FusionMessage message)
+        public static void BroadcastMessageExcept(byte userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
         {
             if (NetworkInfo.CurrentNetworkLayer != null) {
                 NetworkInfo.BytesUp += message.Buffer.Length;
 
-                NetworkInfo.CurrentNetworkLayer.BroadcastMessageExcept(userId, channel, message);
+                NetworkInfo.CurrentNetworkLayer.BroadcastMessageExcept(userId, channel, message, ignoreHost);
 
                 // Backup incase the message cannot be sent to the host, which this targets.
-                if (userId != PlayerIdManager.LocalSmallId && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsServer) {
+                if (!ignoreHost && userId != PlayerIdManager.LocalSmallId && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsServer) {
                     FusionMessageHandler.ReadMessage(message.Buffer, false);
                 }
             }
@@ -105,15 +105,15 @@ namespace LabFusion.Network
         /// <param name="userId"></param>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        public static void BroadcastMessageExcept(ulong userId, NetworkChannel channel, FusionMessage message)
+        public static void BroadcastMessageExcept(ulong userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
         {
             if (NetworkInfo.CurrentNetworkLayer != null) {
                 NetworkInfo.BytesUp += message.Buffer.Length;
 
-                NetworkInfo.CurrentNetworkLayer.BroadcastMessageExcept(userId, channel, message);
+                NetworkInfo.CurrentNetworkLayer.BroadcastMessageExcept(userId, channel, message, ignoreHost);
 
                 // Backup incase the message cannot be sent to the host, which this targets.
-                if (userId != PlayerIdManager.LocalLongId && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsServer) {
+                if (!ignoreHost && userId != PlayerIdManager.LocalLongId && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsServer) {
                     FusionMessageHandler.ReadMessage(message.Buffer, false);
                 }
             }

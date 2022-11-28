@@ -221,6 +221,8 @@
     <Compile Include="Core\src\Network\Messages\FusionReader.cs" />
     <Compile Include="Core\src\Network\Messages\FusionWriter.cs" />
     <Compile Include="Core\src\Network\Messages\Global\WorldGravityMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Interaction\InventorySlotDropMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Interaction\InventorySlotInsertMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\PlayerRepAnchorMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\PlayerRepForceGrabMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\PlayerRepGrabMessage.cs" />
@@ -255,6 +257,7 @@
     <Compile Include="Core\src\Patching\Patches\ConfigurableJointPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\GrabPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\GunPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\InventorySlotReceiverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\InventoryAmmoReceiverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\LevelsPanelViewPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\OpenControllerRigPatches.cs" />
