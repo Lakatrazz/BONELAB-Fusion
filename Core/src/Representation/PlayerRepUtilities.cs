@@ -100,9 +100,9 @@ namespace LabFusion.Representation {
             // Add ammo. If theres no ammo in each category it wont set cartridges properly when grabbing guns
             var ammoInventory = rigManager.AmmoInventory;
             var count = 100000;
-            ammoInventory.AddCartridge(ammoInventory.lightAmmoGroup, count);
-            ammoInventory.AddCartridge(ammoInventory.mediumAmmoGroup, count);
             ammoInventory.AddCartridge(ammoInventory.heavyAmmoGroup, count);
+            ammoInventory.AddCartridge(ammoInventory.mediumAmmoGroup, count);
+            ammoInventory.AddCartridge(ammoInventory.lightAmmoGroup, count);
 
             // Create empty vignetter
             GameObject fakeVignette = new GameObject();

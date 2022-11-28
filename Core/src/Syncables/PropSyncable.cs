@@ -487,7 +487,7 @@ namespace LabFusion.Syncables
                 // Instead calculate velocity stuff
                 else {
                     if (allowPosition) {
-                        var outputVel = (pos - rb.transform.position) * invDt * PropPinMlp;
+                        var outputVel = (pos - rb.transform.position) * invDt * (IsRotationBased ? 0.1f : PropPinMlp);
                         if (!outputVel.IsNanOrInf())
                             rb.velocity = outputVel;
                     }

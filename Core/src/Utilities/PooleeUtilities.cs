@@ -126,7 +126,7 @@ namespace LabFusion.Utilities {
             // Send response
             if (NetworkInfo.IsServer) {
                 using (var writer = FusionWriter.Create()) {
-                    using (var data = DespawnResponseData.Create(syncId)) {
+                    using (var data = DespawnResponseData.Create(syncId, PlayerIdManager.LocalSmallId)) {
                         writer.Write(data);
 
                         using (var message = FusionMessage.Create(NativeMessageTag.DespawnResponse, writer)) {
@@ -139,7 +139,7 @@ namespace LabFusion.Utilities {
             else {
                 using (var writer = FusionWriter.Create())
                 {
-                    using (var data = DespawnRequestData.Create(syncId))
+                    using (var data = DespawnRequestData.Create(syncId, PlayerIdManager.LocalSmallId))
                     {
                         writer.Write(data);
 
@@ -147,6 +147,21 @@ namespace LabFusion.Utilities {
                         {
                             MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
                         }
+                    }
+                }
+            }
+        }
+
+        public static void RequestDespawn(ushort syncId, bool isMag = false) {
+            using (var writer = FusionWriter.Create())
+            {
+                using (var data = DespawnRequestData.Create(syncId, PlayerIdManager.LocalSmallId, isMag))
+                {
+                    writer.Write(data);
+
+                    using (var message = FusionMessage.Create(NativeMessageTag.DespawnRequest, writer))
+                    {
+                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
                     }
                 }
             }

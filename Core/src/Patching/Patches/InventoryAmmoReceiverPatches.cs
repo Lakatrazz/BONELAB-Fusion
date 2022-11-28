@@ -8,25 +8,56 @@ using HarmonyLib;
 
 using LabFusion.Data;
 using LabFusion.Network;
+using LabFusion.Syncables;
 using LabFusion.Utilities;
+
 using SLZ.Interaction;
+using SLZ.Props.Weapons;
 
 namespace LabFusion.Patching {
 
     [HarmonyPatch(typeof(InventoryAmmoReceiver), nameof(InventoryAmmoReceiver.OnHandGrab))]
-    public class InventoryAmmoReceiverPatch {
+    public class InventoryAmmoReceiverGrab {
         public static bool Prefix(InventoryAmmoReceiver __instance, Hand hand) {
             try {
                 if (NetworkInfo.HasServer && __instance.rigManager == RigData.RigReferences.RigManager && __instance._selectedMagazineData != null && __instance._selectedMagazineData.spawnable != null) {
-                    hand.SetGrabLock();
-                    PooleeUtilities.RequestSpawn(__instance._selectedMagazineData.spawnable.crateRef.Barcode, new SerializedTransform(__instance.transform), null, hand.handedness);
+                    var cartridgeData = __instance._selectedCartridgeData;
 
-                    return false;
+                    if (__instance._AmmoInventory.GetCartridgeCount(cartridgeData) > 0) {
+                        hand.SetGrabLock();
+                        PooleeUtilities.RequestSpawn(__instance._selectedMagazineData.spawnable.crateRef.Barcode, new SerializedTransform(__instance.transform), null, hand.handedness);
+
+                        return false;
+                    }
                 }
             }
             catch (Exception e) {
 #if DEBUG
                 FusionLogger.LogException("patching InventoryAmmoReceiver.OnHandGrab", e);
+#endif
+            }
+
+            return true;
+        }
+    }
+
+    [HarmonyPatch(typeof(InventoryAmmoReceiver), nameof(InventoryAmmoReceiver.OnHandDrop))]
+    public class InventoryAmmoReceiverDrop
+    {
+        public static bool Prefix(InventoryAmmoReceiver __instance, IGrippable host)
+        {
+            try
+            {
+                if (NetworkInfo.HasServer && __instance.rigManager == RigData.RigReferences.RigManager && Magazine.Cache.Get(host.GetHostGameObject()) && PropSyncable.Cache.TryGetValue(host.GetHostGameObject(), out var syncable)) {
+                    PooleeUtilities.RequestDespawn(syncable.Id, true);
+
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                FusionLogger.LogException("patching InventoryAmmoReceiver.OnHandDrop", e);
 #endif
             }
 
