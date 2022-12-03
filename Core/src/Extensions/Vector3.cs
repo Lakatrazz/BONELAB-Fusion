@@ -21,7 +21,9 @@ namespace LabFusion.Extensions {
         {
             // Clamp the vector parameters if safety is on
             if (safetyCheck) {
-                vector3 = Vector3.Max(Vector3.Min(vector3, Vector3.one * 320), Vector3.one * -320);
+                float extent = 32000f / precision;
+
+                vector3 = Vector3.Max(Vector3.Min(vector3, Vector3.one * extent), Vector3.one * -extent);
             }
 
             //Vectors must stay within the -320.00 to 320.00 range per axis - no error handling is coded here

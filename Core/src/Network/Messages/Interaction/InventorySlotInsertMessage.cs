@@ -19,12 +19,14 @@ namespace LabFusion.Network
     public class InventorySlotInsertData : IFusionSerializable, IDisposable
     {
         public byte smallId;
+        public byte inserter;
         public ushort syncId;
         public byte slotIndex;
 
         public void Serialize(FusionWriter writer)
         {
             writer.Write(smallId);
+            writer.Write(inserter);
             writer.Write(syncId);
             writer.Write(slotIndex);
         }
@@ -32,6 +34,7 @@ namespace LabFusion.Network
         public void Deserialize(FusionReader reader)
         {
             smallId = reader.ReadByte();
+            inserter = reader.ReadByte();
             syncId = reader.ReadUInt16();
             slotIndex = reader.ReadByte();
         }
@@ -41,11 +44,12 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static InventorySlotInsertData Create(byte smallId, ushort syncId, byte slotIndex)
+        public static InventorySlotInsertData Create(byte smallId, byte inserter, ushort syncId, byte slotIndex)
         {
             return new InventorySlotInsertData()
             {
                 smallId = smallId,
+                inserter = inserter,
                 syncId = syncId,
                 slotIndex = slotIndex,
             };
@@ -65,16 +69,25 @@ namespace LabFusion.Network
                     // Send message to other clients if server
                     if (NetworkInfo.IsServer && isServerHandled) {
                         using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+                            MessageSender.BroadcastMessageExcept(data.inserter, NetworkChannel.Reliable, message, false);
                         }
                     }
                     else {
-                        if (PlayerRep.Representations.TryGetValue(data.smallId, out var rep) && SyncManager.TryGetSyncable(data.syncId, out var syncable) 
-                            && syncable is PropSyncable propSyncable && propSyncable.WeaponSlot) {
+                        if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable && propSyncable.WeaponSlot) {
+                            RigReferenceCollection references = null;
+                            
+                            if (data.smallId == PlayerIdManager.LocalSmallId) {
+                                references = RigData.RigReferences;
+                            }
+                            else if (PlayerRep.Representations.TryGetValue(data.smallId, out var rep)) {
+                                references = rep.RigReferences;
+                            }
 
-                            InventorySlotReceiverDrop.PreventInsertCheck = true;
-                            rep.RigReferences.GetSlot(data.slotIndex).InsertInSlot(propSyncable.WeaponSlot.interactableHost);
-                            InventorySlotReceiverDrop.PreventInsertCheck = false;
+                            if (references != null) {
+                                InventorySlotReceiverDrop.PreventInsertCheck = true;
+                                references.GetSlot(data.slotIndex).InsertInSlot(propSyncable.WeaponSlot.interactableHost);
+                                InventorySlotReceiverDrop.PreventInsertCheck = false;
+                            }
                         }
                     }
                 }

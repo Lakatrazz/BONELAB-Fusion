@@ -29,19 +29,33 @@ namespace LabFusion.Patching {
                 return;
 
             try {
-                if (NetworkInfo.HasServer && __instance._slottedWeapon && hand.manager == RigData.RigReferences.RigManager) {
+                if (NetworkInfo.HasServer && __instance._slottedWeapon) {
                     var rigManager = __instance.GetComponentInParent<RigManager>();
 
-                    if (rigManager == RigData.RigReferences.RigManager) {
-                        byte? index = RigData.RigReferences.GetIndex(__instance);
+                    if (rigManager != null) {
+                        byte? smallId = null;
+                        RigReferenceCollection references = null;
 
-                        if (!index.HasValue) {
-                            return;
+                        if (rigManager == RigData.RigReferences.RigManager) {
+                            smallId = PlayerIdManager.LocalSmallId;
+                            references = RigData.RigReferences;
                         }
+                        else if (PlayerRep.Managers.TryGetValue(rigManager, out var rep)) {
+                            smallId = rep.PlayerId.SmallId;
+                            references = rep.RigReferences;
+                        }
+
+                        if (!smallId.HasValue)
+                            return;
+
+                        byte? index = references.GetIndex(__instance);
+
+                        if (!index.HasValue)
+                            return;
                         
                         using (var writer = FusionWriter.Create())
                         {
-                            using (var data = InventorySlotDropData.Create(PlayerIdManager.LocalSmallId, index.Value, hand.handedness))
+                            using (var data = InventorySlotDropData.Create(smallId.Value, PlayerIdManager.LocalSmallId, index.Value, hand.handedness))
                             {
                                 writer.Write(data);
 
@@ -77,17 +91,31 @@ namespace LabFusion.Patching {
                 if (NetworkInfo.HasServer && __instance._slottedWeapon && PropSyncable.WeaponSlotCache.TryGetValue(__instance._slottedWeapon, out var syncable)) {
                     var rigManager = __instance.GetComponentInParent<RigManager>();
 
-                    if (rigManager == RigData.RigReferences.RigManager) {
-                        byte? index = RigData.RigReferences.GetIndex(__instance);
+                    if (rigManager != null) {
+                        byte? smallId = null;
+                        RigReferenceCollection references = null;
 
-                        if (!index.HasValue) {
-                            return;
+                        if (rigManager == RigData.RigReferences.RigManager) {
+                            smallId = PlayerIdManager.LocalSmallId;
+                            references = RigData.RigReferences;
                         }
+                        else if (PlayerRep.Managers.TryGetValue(rigManager, out var rep)) {
+                            smallId = rep.PlayerId.SmallId;
+                            references = rep.RigReferences;
+                        }
+
+                        if (!smallId.HasValue)
+                            return; 
+
+                        byte? index = references.GetIndex(__instance);
+
+                        if (!index.HasValue)
+                            return;
 
 
                         using (var writer = FusionWriter.Create())
                         {
-                            using (var data = InventorySlotInsertData.Create(PlayerIdManager.LocalSmallId, syncable.Id, index.Value))
+                            using (var data = InventorySlotInsertData.Create(smallId.Value, PlayerIdManager.LocalSmallId, syncable.Id, index.Value))
                             {
                                 writer.Write(data);
 

@@ -21,12 +21,14 @@ namespace LabFusion.Network
     public class InventorySlotDropData : IFusionSerializable, IDisposable
     {
         public byte smallId;
+        public byte grabber;
         public byte slotIndex;
         public Handedness handedness;
 
         public void Serialize(FusionWriter writer)
         {
             writer.Write(smallId);
+            writer.Write(grabber);
             writer.Write(slotIndex);
             writer.Write((byte)handedness);
         }
@@ -34,6 +36,7 @@ namespace LabFusion.Network
         public void Deserialize(FusionReader reader)
         {
             smallId = reader.ReadByte();
+            grabber = reader.ReadByte();
             slotIndex = reader.ReadByte();
             handedness = (Handedness)reader.ReadByte();
         }
@@ -43,11 +46,12 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static InventorySlotDropData Create(byte smallId, byte slotIndex, Handedness handedness)
+        public static InventorySlotDropData Create(byte smallId, byte grabber, byte slotIndex, Handedness handedness)
         {
             return new InventorySlotDropData()
             {
                 smallId = smallId,
+                grabber = grabber,
                 slotIndex = slotIndex,
                 handedness = handedness,
             };
@@ -67,13 +71,22 @@ namespace LabFusion.Network
                     // Send message to other clients if server
                     if (NetworkInfo.IsServer && isServerHandled) {
                         using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+                            MessageSender.BroadcastMessageExcept(data.grabber, NetworkChannel.Reliable, message, false);
                         }
                     }
                     else {
-                        if (PlayerRep.Representations.TryGetValue(data.smallId, out var rep))
-                        {
-                            var slotReceiver = rep.RigReferences.GetSlot(data.slotIndex);
+                        FusionLogger.Log("Receive message thing!");
+                        RigReferenceCollection references = null;
+
+                        if (data.smallId == PlayerIdManager.LocalSmallId) {
+                            references = RigData.RigReferences;
+                        }
+                        else if (PlayerRep.Representations.TryGetValue(data.smallId, out var rep)) {
+                            references = rep.RigReferences;
+                        }
+
+                        if (references != null) {
+                            var slotReceiver = references.GetSlot(data.slotIndex);
                             WeaponSlot weaponSlot = null;
 
                             if (slotReceiver != null && slotReceiver._weaponHost != null) {
@@ -85,12 +98,14 @@ namespace LabFusion.Network
                             slotReceiver.DropWeapon();
                             InventorySlotReceiverGrab.PreventDropCheck = false;
 
-                            if (weaponSlot && weaponSlot.grip)
-                                rep.AttachObject(data.handedness, weaponSlot.grip);
+                            if (PlayerRep.Representations.TryGetValue(data.grabber, out var grabber)) {
+                                if (weaponSlot && weaponSlot.grip)
+                                    grabber.AttachObject(data.handedness, weaponSlot.grip);
 
-                            var hand = rep.RigReferences.GetHand(data.handedness);
-                            if (hand) {
-                                HandSFX.Cache.Get(hand.gameObject).BodySlot();
+                                var hand = grabber.RigReferences.GetHand(data.handedness);
+                                if (hand) {
+                                    HandSFX.Cache.Get(hand.gameObject).BodySlot();
+                                }
                             }
                         }
                     }

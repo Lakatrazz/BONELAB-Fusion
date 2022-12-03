@@ -20,6 +20,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using UnityEngine;
+using SLZ.Props.Weapons;
 
 namespace LabFusion.Utilities {
     public static class PooleeUtilities {
@@ -205,9 +206,11 @@ namespace LabFusion.Utilities {
         }
 
         private static bool IsWhitelisted(AssetPoolee instance) {
-            bool isValid = instance.GetComponentInChildren<Rigidbody>(true) != null
-                && instance.GetComponentInChildren<FirearmCartridge>(true) == null
-                && instance.GetComponentInChildren<GetVelocity>(true) == null;
+            bool hasRigidbody = instance.GetComponentInChildren<Rigidbody>(true) != null;
+            bool hasGunProperties = instance.GetComponentInChildren<FirearmCartridge>(true) == null || instance.GetComponentInChildren<Gun>(true) != null;
+            bool miscProperties = instance.GetComponentInChildren<GetVelocity>(true) == null;
+
+            bool isValid = hasRigidbody && hasGunProperties && miscProperties;
 
             return isValid;
         }

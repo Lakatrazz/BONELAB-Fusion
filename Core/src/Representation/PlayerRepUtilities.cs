@@ -33,6 +33,7 @@ using UnityEngine.Events;
 using UnityEngine.Rendering;
 using SLZ.SFX;
 using UnityEngine.Rendering.Universal;
+using SLZ.Player;
 
 namespace LabFusion.Representation {
     public static class PlayerRepUtilities {
@@ -100,13 +101,12 @@ namespace LabFusion.Representation {
             // Add ammo. If theres no ammo in each category it wont set cartridges properly when grabbing guns
             var ammoInventory = rigManager.AmmoInventory;
             var count = 100000;
-            ammoInventory.AddCartridge(ammoInventory.heavyAmmoGroup, count);
-            ammoInventory.AddCartridge(ammoInventory.mediumAmmoGroup, count);
             ammoInventory.AddCartridge(ammoInventory.lightAmmoGroup, count);
 
             // Create empty vignetter
-            GameObject fakeVignette = new GameObject();
-            fakeVignette.name = "Vignetter";
+            GameObject fakeVignette = new GameObject {
+                name = "Vignetter"
+            };
             fakeVignette.AddComponent<SkinnedMeshRenderer>().enabled = false;
             fakeVignette.gameObject.SetActive(false);
 
@@ -184,6 +184,19 @@ namespace LabFusion.Representation {
             // Remove unnecessary player art manager
             GameObject.DestroyImmediate(rigManager.GetComponent<PlayerAvatarArt>());
 
+            // Disable ammo trigger
+            rigManager.AmmoInventory.ammoReceiver.GetComponent<Collider>().enabled = false;
+
+            // Prevent player rep inventory stuff
+            var leftPhysHand = rigManager.physicsRig.leftHand.GetComponent<PhysHand>();
+            var rightPhysHand = rigManager.physicsRig.rightHand.GetComponent<PhysHand>();
+
+            leftPhysHand.inventoryPlug.enabled = false;
+            leftPhysHand.inventoryPlug.gameObject.SetActive(false);
+
+            rightPhysHand.inventoryPlug.enabled = false;
+            rightPhysHand.inventoryPlug.gameObject.SetActive(false);
+
             // Remove unnecessary controller components
             GameObject.DestroyImmediate(rigManager.openControllerRig.leftController.GetComponent<UIControllerInput>());
             GameObject.DestroyImmediate(rigManager.openControllerRig.rightController.GetComponent<UIControllerInput>());
@@ -191,8 +204,22 @@ namespace LabFusion.Representation {
             Internal_ClearHaptor(rigManager.openControllerRig.leftController.GetComponent<Haptor>());
             Internal_ClearHaptor(rigManager.openControllerRig.rightController.GetComponent<Haptor>());
 
+            // Add ammo to the other categories
+            MelonCoroutines.Start(Internal_DelayAddAmmo(ammoInventory));
+
             // Spatialize wind audio
             MelonCoroutines.Start(Internal_SpatializeWind(rigManager.physicsRig.m_head.GetComponent<WindBuffetSFX>()));
+        }
+
+        private static IEnumerator Internal_DelayAddAmmo(AmmoInventory inventory) {
+            for (var i = 0; i < 2; i++)
+                yield return null;
+
+            if (!inventory.IsNOC()) {
+                var count = 100000;
+                inventory.AddCartridge(inventory.heavyAmmoGroup, count);
+                inventory.AddCartridge(inventory.mediumAmmoGroup, count);
+            }
         }
 
         private static void Internal_ClearHaptor(Haptor haptor)
