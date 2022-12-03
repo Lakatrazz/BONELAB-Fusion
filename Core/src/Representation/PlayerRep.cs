@@ -268,7 +268,7 @@ namespace LabFusion.Representation
                     repPelvis.velocity = (PhysXUtils.GetLinearVelocity(repPelvis.transform.position, serializedPelvis.position) * PelvisPinMlp) + predictVelocity;
 
                 // Check for stability teleport
-                if (!RigData.RigReferences.RigManager.IsNOC()) {
+                if (!RigReferences.RigManager.IsNOC()) {
                     float distSqr = (repPelvis.transform.position - serializedPelvis.position).sqrMagnitude;
                     if (distSqr > (2f * (predictVelocity.magnitude + 1f))) {
                         // Get teleport position

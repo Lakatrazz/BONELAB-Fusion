@@ -27,6 +27,9 @@ namespace LabFusion.Patching
     [HarmonyPatch(typeof(AssetPoolee), nameof(AssetPoolee.OnSpawn))]
     public class PooleeOnSpawnPatch {
         public static void Postfix(AssetPoolee __instance, ulong spawnId) {
+            if (PooleeUtilities.IsPlayer(__instance))
+                return;
+
             try {
                 if (NetworkInfo.HasServer && __instance.spawnableCrate)
                 {
@@ -117,6 +120,9 @@ namespace LabFusion.Patching
     [HarmonyPatch(typeof(AssetPoolee), nameof(AssetPoolee.Despawn))]
     public class PooleeDespawnPatch {
         public static bool Prefix(AssetPoolee __instance) {
+            if (PooleeUtilities.IsPlayer(__instance))
+                return true;
+
             try {
                 if (NetworkInfo.HasServer && !__instance.IsNOC() && !__instance.gameObject.IsNOC() && PropSyncable.Cache.TryGetValue(__instance.gameObject, out var syncable)) {
                     if (!NetworkInfo.IsServer && !PooleeUtilities.CanDespawn) {
@@ -140,6 +146,9 @@ namespace LabFusion.Patching
     [HarmonyPatch(typeof(AssetPoolee), nameof(AssetPoolee.OnDespawn))]
     public class PooleeOnDespawnPatch {
         public static void Postfix(AssetPoolee __instance) {
+            if (PooleeUtilities.IsPlayer(__instance))
+                return;
+
             try {
                 if (NetworkInfo.HasServer && !__instance.IsNOC() && !__instance.gameObject.IsNOC() && PropSyncable.Cache.TryGetValue(__instance.gameObject, out var syncable)) {
                     SyncManager.RemoveSyncable(syncable);

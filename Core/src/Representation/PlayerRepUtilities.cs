@@ -124,6 +124,9 @@ namespace LabFusion.Representation {
             rigManager.bodyVitals.bodyLogFlipped = true;
             rigManager.bodyVitals.bodyLogEnabled = true;
 
+            // Destroy unnecessary data manager
+            GameObject.DestroyImmediate(rigManager.uiRig.transform.Find("DATAMANAGER").gameObject);
+
             // Disable extra rigs
             GameObject.DestroyImmediate(rigManager.GetComponent<LineMesh>());
             GameObject.DestroyImmediate(rigManager.GetComponent<CheatTool>());
@@ -179,7 +182,7 @@ namespace LabFusion.Representation {
             rigManager.openControllerRig.cameras = new Il2CppReferenceArray<Camera>(0);
             rigManager.openControllerRig.OnLastCameraUpdate = new UnityEvent();
 
-            rigManager.openControllerRig.m_head.tag = "Untagged";
+            rigManager.openControllerRig.m_head.tag = null;
 
             // Remove unnecessary player art manager
             GameObject.DestroyImmediate(rigManager.GetComponent<PlayerAvatarArt>());

@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 using SLZ.Props.Weapons;
+using SLZ.Rig;
 
 namespace LabFusion.Utilities {
     public static class PooleeUtilities {
@@ -53,6 +54,10 @@ namespace LabFusion.Utilities {
         {
             if (!ForceEnabled.Has(poolee))
                 ForceEnabled.Add(poolee);
+        }
+
+        public static bool IsPlayer(AssetPoolee poolee) {
+            return poolee.GetComponentInChildren<RigManager>(true);
         }
 
         public static bool IsForceEnabled(AssetPoolee poolee)
