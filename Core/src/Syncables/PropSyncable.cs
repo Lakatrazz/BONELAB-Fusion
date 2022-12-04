@@ -27,6 +27,9 @@ namespace LabFusion.Syncables
         public static readonly Dictionary<ConfigurableJoint, PropSyncable> JointCache = new Dictionary<ConfigurableJoint, PropSyncable>(new UnityComparer());
         public static readonly Dictionary<WeaponSlot, PropSyncable> WeaponSlotCache = new Dictionary<WeaponSlot, PropSyncable>(new UnityComparer());
 
+        public static readonly Dictionary<Magazine, PropSyncable> MagazineCache = new Dictionary<Magazine, PropSyncable>(new UnityComparer());
+        public static readonly Dictionary<Gun, PropSyncable> GunCache = new Dictionary<Gun, PropSyncable>(new UnityComparer());
+
         public const float PropPinMlp = 0.8f;
 
         public Grip[] PropGrips;
@@ -37,6 +40,10 @@ namespace LabFusion.Syncables
 
         public readonly AssetPoolee AssetPoolee;
         public readonly WeaponSlot WeaponSlot;
+
+        public readonly Magazine Magazine;
+        public readonly Gun Gun;
+        public readonly AmmoSocket AmmoSocket;
 
         public readonly GameObject GameObject;
 
@@ -122,8 +129,26 @@ namespace LabFusion.Syncables
 
             WeaponSlot = GameObject.GetComponentInChildren<WeaponSlot>(true);
 
-            if (WeaponSlot)
+            if (WeaponSlot) {
+                WeaponSlotCache.Remove(WeaponSlot);
                 WeaponSlotCache.Add(WeaponSlot, this);
+            }
+
+            Magazine = GameObject.GetComponentInChildren<Magazine>(true);
+
+            if (Magazine) {
+                MagazineCache.Remove(Magazine);
+                MagazineCache.Add(Magazine, this);
+            }
+
+            Gun = GameObject.GetComponentInChildren<Gun>(true);
+
+            if (Gun) {
+                GunCache.Remove(Gun);
+                GunCache.Add(Gun, this);
+            }
+
+            AmmoSocket = GameObject.GetComponentInChildren<AmmoSocket>(true);
         }
 
         public void OnSetDrive(ConfigurableJoint joint, JointDrive drive, JointExtensions.JointDriveAxis axis) {
@@ -235,6 +260,12 @@ namespace LabFusion.Syncables
 
             if (!WeaponSlot.IsNOC())
                 WeaponSlotCache.Remove(WeaponSlot);
+
+            if (!Magazine.IsNOC())
+                MagazineCache.Remove(Magazine);
+
+            if (!Gun.IsNOC())
+                GunCache.Remove(Gun);
         }
 
         public Grip GetGrip(ushort index) {
@@ -311,12 +342,16 @@ namespace LabFusion.Syncables
             }
         }
 
+        public void SetRigidbodiesDirty() {
+            _verifyRigidbodies = true;
+        }
+
         public void VerifyRigidbodies() {
             if (_verifyRigidbodies) {
                 // Check if any are missing
                 bool needToUpdate = false;
                 foreach (var rb in Rigidbodies) {
-                    if (rb == null) {
+                    if (rb.IsNOC()) {
                         needToUpdate = true;
                         break;
                     }
@@ -327,7 +362,7 @@ namespace LabFusion.Syncables
                     for (var i = 0; i < HostGameObjects.Length; i++) {
                         var host = HostGameObjects[i];
 
-                        if (host != null)
+                        if (!host.IsNOC())
                             Rigidbodies[i] = host.GetComponent<Rigidbody>();
                     }
                 }

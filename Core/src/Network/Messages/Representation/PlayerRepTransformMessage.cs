@@ -67,7 +67,7 @@ namespace LabFusion.Network {
         {
             var data = new PlayerRepTransformData {
                 smallId = smallId,
-                predictVelocity = RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.velocity.ToULong(true),
+                predictVelocity = (RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.velocity * Time.timeScale).ToULong(true),
                 feetOffset = RigData.RigReferences.RigManager.openControllerRig.feetOffset,
                 serializedPelvis = new SerializedTransform(syncedPelvis),
                 serializedPlayspace = SerializedQuaternion.Compress(syncedPlayspace.rotation),

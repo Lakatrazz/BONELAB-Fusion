@@ -226,6 +226,10 @@ namespace LabFusion.Network
         private static IEnumerator Internal_ForceGrabConfirm(Hand hand, Grip grip) {
             yield return null;
 
+            var hostTransform = grip.Host.GetTransform();
+            hostTransform.position = hand.transform.position;
+            hostTransform.rotation = hand.transform.rotation;
+
             grip.OnGrabConfirm(hand, true);
         }
 

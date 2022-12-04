@@ -43,6 +43,11 @@ namespace LabFusion.Network
             InventorySlotInsert = 22,
             InventorySlotDrop = 23,
 
+            MagazineInsert = 24,
+            MagazineEject = 25,
+
+            GunShot = 26,
+
             ModuleMessage = 80;
     }
 

@@ -24,6 +24,11 @@ namespace LabFusion.Patching {
                     var cartridgeData = __instance._selectedCartridgeData;
 
                     if (__instance._AmmoInventory.GetCartridgeCount(cartridgeData) > 0) {
+                        var inventoryHand = InventoryHand.Cache.Get(hand.gameObject);
+                        if (inventoryHand) {
+                            inventoryHand.IgnoreUnlock();
+                        }
+                        
                         hand.SetGrabLock();
                         PooleeUtilities.RequestSpawn(__instance._selectedMagazineData.spawnable.crateRef.Barcode, new SerializedTransform(__instance.transform), null, hand.handedness);
 

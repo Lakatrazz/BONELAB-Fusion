@@ -75,7 +75,6 @@ namespace LabFusion.Network
                         }
                     }
                     else {
-                        FusionLogger.Log("Receive message thing!");
                         RigReferenceCollection references = null;
 
                         if (data.smallId == PlayerIdManager.LocalSmallId) {

@@ -12,6 +12,8 @@ using MelonLoader;
 using LabFusion.Grabbables;
 using BoneLib;
 using UnityEngine;
+using SLZ.Bonelab;
+using SLZ.SaveData;
 
 namespace LabFusion
 {
@@ -43,11 +45,6 @@ namespace LabFusion
             InternalLayerHelpers.OnLateInitializeLayer();
         }
 
-        public static void LogCallback(string condition, string stackTrace, LogType type) {
-            FusionLogger.Log($"Unity Log: {condition} \nStack Trace: {stackTrace}", type == LogType.Log ? ConsoleColor.White 
-                : type == LogType.Error ? ConsoleColor.Red : ConsoleColor.Yellow);
-        }
-
         protected void OnInitializeNetworking() {
             InternalLayerHelpers.SetLayer(new SteamNetworkLayer());
         }
@@ -58,7 +55,7 @@ namespace LabFusion
 
         public static void OnMainSceneInitialized() {
             string sceneName = LevelWarehouseUtilities.GetCurrentLevel().Title;
-            
+
 #if DEBUG
             FusionLogger.Log($"Main scene {sceneName} was initialized.");
 #endif
