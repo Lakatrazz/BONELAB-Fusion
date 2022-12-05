@@ -24,7 +24,7 @@ namespace LabFusion.Syncables {
 
         void OnRegister(ushort id);
 
-        byte? GetIndex(Grip grip);
+        ushort? GetIndex(Grip grip);
 
         ushort GetId();
 

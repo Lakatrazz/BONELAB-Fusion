@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 using Il2CppSystem.Diagnostics;
@@ -17,7 +18,7 @@ using SLZ.Marrow.Pool;
 using SLZ.Marrow.SceneStreaming;
 using SLZ.Props.Weapons;
 using SLZ.Utilities;
-
+using SLZ.Vehicle;
 using UnityEngine;
 
 namespace LabFusion.Syncables
@@ -30,6 +31,8 @@ namespace LabFusion.Syncables
         public static readonly Dictionary<Magazine, PropSyncable> MagazineCache = new Dictionary<Magazine, PropSyncable>(new UnityComparer());
         public static readonly Dictionary<Gun, PropSyncable> GunCache = new Dictionary<Gun, PropSyncable>(new UnityComparer());
 
+        public static readonly Dictionary<Seat, PropSyncable> SeatCache = new Dictionary<Seat, PropSyncable>(new UnityComparer());
+
         public const float PropPinMlp = 0.8f;
 
         public Grip[] PropGrips;
@@ -40,6 +43,8 @@ namespace LabFusion.Syncables
 
         public readonly AssetPoolee AssetPoolee;
         public readonly WeaponSlot WeaponSlot;
+
+        public readonly Seat[] Seats;
 
         public readonly Magazine Magazine;
         public readonly Gun Gun;
@@ -149,6 +154,12 @@ namespace LabFusion.Syncables
             }
 
             AmmoSocket = GameObject.GetComponentInChildren<AmmoSocket>(true);
+
+            Seats = GameObject.GetComponentsInChildren<Seat>(true);
+
+            foreach (var seat in Seats) {
+                SeatCache.Add(seat, this);
+            }
         }
 
         public void OnSetDrive(ConfigurableJoint joint, JointDrive drive, JointExtensions.JointDriveAxis axis) {
@@ -245,6 +256,23 @@ namespace LabFusion.Syncables
                 _grabbedGrips[grip]--;
         }
 
+        public byte? GetIndex(Seat seat)
+        {
+            for (byte i = 0; i < Seats.Length; i++)
+            {
+                if (Seats[i] == seat)
+                    return i;
+            }
+            return null;
+        }
+
+        public Seat GetSeat(byte index)
+        {
+            if (Seats != null && Seats.Length > index)
+                return Seats[index];
+            return null;
+        }
+
         public void Cleanup() {
             if (!GameObject.IsNOC()) {
                 Cache.Remove(GameObject);
@@ -266,6 +294,11 @@ namespace LabFusion.Syncables
 
             if (!Gun.IsNOC())
                 GunCache.Remove(Gun);
+
+            foreach (var seat in Seats) {
+                if (!seat.IsNOC())
+                    SeatCache.Remove(seat);
+            }
         }
 
         public Grip GetGrip(ushort index) {
@@ -380,9 +413,9 @@ namespace LabFusion.Syncables
             return Id;
         }
 
-        public byte? GetIndex(Grip grip)
+        public ushort? GetIndex(Grip grip)
         {
-            for (byte i = 0; i < PropGrips.Length; i++)
+            for (ushort i = 0; i < PropGrips.Length; i++)
             {
                 if (PropGrips[i] == grip)
                     return i;
@@ -481,18 +514,35 @@ namespace LabFusion.Syncables
             bool isSomethingGrabbed = false;
             foreach (var pair in _grabbedGrips) {
                 if (!pair.Key.IsNOC() && pair.Value > 0) {
-                    isSomethingGrabbed = true;
-                    break;
+                    foreach (var hand in pair.Key.attachedHands) {
+                        if (!hand.manager.activeSeat) {
+                            isSomethingGrabbed = true;
+                            break;
+                        }
+                    }
                 }
             }
 
             if (!isSomethingGrabbed && Time.timeSinceLevelLoad - TimeOfMessage >= 1f) {
-                foreach (var rb in Rigidbodies) {
-                    if (!rb.IsNOC() && !rb.IsSleeping())
-                        rb.Sleep();
+                bool runVelocityCheck = false;
+
+                for (var i = 0; i < Rigidbodies.Length; i++) {
+                    var pos = DesiredPositions[i];
+                    var rot = DesiredRotations[i];
+                    var rb = Rigidbodies[i];
+
+                    if (!rb.IsNOC() && pos.HasValue && rot.HasValue) {
+                        bool distanceCheck = (rb.transform.position - pos.Value).sqrMagnitude > 0.01f || Quaternion.Angle(rb.transform.rotation, rot.Value) > 0.05f;
+
+                        if (distanceCheck) {
+                            runVelocityCheck = true;
+                            break;
+                        }
+                    }
                 }
 
-                return;
+                if (!runVelocityCheck)
+                    return;
             }
 
             float dt = Time.fixedDeltaTime;
@@ -507,12 +557,19 @@ namespace LabFusion.Syncables
 
                 foreach (var pair in _grabbedGrips) {
                     if (pair.Value > 0 && pair.Key.Host.Rb == rb) {
-                        DesiredPositions[i] = null;
-                        DesiredRotations[i] = null;
-                        DesiredVelocity = 0f;
+                        foreach (var hand in pair.Key.attachedHands) {
+                            if (!hand.manager.activeSeat) {
+                                DesiredPositions[i] = null;
+                                DesiredRotations[i] = null;
+                                DesiredVelocity = 0f;
 
-                        isGrabbed = true;
-                        break;
+                                isGrabbed = true;
+                                break;
+                            }
+                        }
+
+                        if (isGrabbed)
+                            break;
                     }
                 }
 

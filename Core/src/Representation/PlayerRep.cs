@@ -24,6 +24,8 @@ namespace LabFusion.Representation
 
         public const float PelvisPinMlp = 0.1f;
 
+        public const float NametagHeight = 0.23f;
+
         public PlayerId PlayerId { get; private set; }
         public string Username { get; private set; } = "Unknown";
 
@@ -35,18 +37,22 @@ namespace LabFusion.Representation
         public bool IsCreated => !RigReferences.RigManager.IsNOC();
 
         public static Transform[] syncedPoints = new Transform[PlayerRepUtilities.TransformSyncCount];
+        public static Transform[] gameworldPoints = new Transform[PlayerRepUtilities.GameworldRigTransformCount];
         public static Transform syncedPlayspace;
         public static Transform syncedPelvis;
         public static BaseController syncedLeftController;
         public static BaseController syncedRightController;
 
         public SerializedLocalTransform[] serializedLocalTransforms = new SerializedLocalTransform[PlayerRepUtilities.TransformSyncCount];
+        public SerializedLocalTransform[] serializedGameworldLocalTransforms = new SerializedLocalTransform[PlayerRepUtilities.GameworldRigTransformCount];
         public SerializedTransform serializedPelvis;
 
         public Vector3 predictVelocity;
         public float timeSincePelvisSent;
 
         public Transform[] repTransforms = new Transform[PlayerRepUtilities.TransformSyncCount];
+        public Transform[] gameworldRigTransforms = new Transform[PlayerRepUtilities.GameworldRigTransformCount];
+
         public OpenControllerRig repControllerRig;
         public Transform repPlayspace;
         public Rigidbody repPelvis;
@@ -205,11 +211,49 @@ namespace LabFusion.Representation
             RigReferences = new RigReferenceCollection(rig);
 
             PlayerRepUtilities.FillTransformArray(ref repTransforms, rig);
+            PlayerRepUtilities.FillGameworldArray(ref gameworldRigTransforms, rig);
         }
 
         public static void OnRecreateReps() {
             foreach (var rep in Representations.Values) {
                 rep.CreateRep();
+            }
+        }
+
+        public void OnHeptaBody2Update() {
+            try {
+                if (gameworldRigTransforms == null)
+                    return;
+
+                if (serializedGameworldLocalTransforms == null)
+                    return;
+
+                for (var i = 0; i < PlayerRepUtilities.GameworldRigTransformCount; i++)
+                {
+                    if (gameworldRigTransforms[i].IsNOC())
+                        break;
+
+                    if (serializedGameworldLocalTransforms[i] == null)
+                        break;
+
+                    var pos = serializedGameworldLocalTransforms[i].position.ToVector3();
+                    var rot = serializedGameworldLocalTransforms[i].rotation.Expand();
+
+                    gameworldRigTransforms[i].localPosition = pos;
+                    gameworldRigTransforms[i].localRotation = rot;
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        public void OnUpdateNametags() {
+            if (!repCanvasTransform.IsNOC()) {
+                repCanvasTransform.position = RigReferences.RigManager.physicsRig.m_head.transform.position + Vector3.up * NametagHeight * RigReferences.RigManager.avatar.height;
+
+                if (!RigData.RigReferences.RigManager.IsNOC())
+                    repCanvasTransform.rotation = Quaternion.LookRotation(Vector3.Normalize(repCanvasTransform.position - RigData.RigReferences.RigManager.physicsRig.m_head.position), Vector3.up);
             }
         }
 
@@ -229,13 +273,6 @@ namespace LabFusion.Representation
 
                     repTransforms[i].localPosition = serializedLocalTransforms[i].position.ToVector3();
                     repTransforms[i].localRotation = serializedLocalTransforms[i].rotation.Expand();
-                }
-
-                if (!repCanvasTransform.IsNOC()) {
-                    repCanvasTransform.position = repTransforms[0].position + Vector3.up * 0.4f;
-
-                    if (!RigData.RigReferences.RigManager.IsNOC())
-                        repCanvasTransform.rotation = Quaternion.LookRotation(Vector3.Normalize(repCanvasTransform.position - RigData.RigReferences.RigManager.physicsRig.m_head.position), Vector3.up);
                 }
             }
             catch {
@@ -264,8 +301,17 @@ namespace LabFusion.Representation
                 }
 
                 // Apply velocity
-                if (SafetyUtilities.IsValidTime)
+                var rigManager = RigReferences.RigManager;
+
+                // Seats will cause issues due to jointing
+                if (SafetyUtilities.IsValidTime && !rigManager.activeSeat) {
                     repPelvis.velocity = (PhysXUtils.GetLinearVelocity(repPelvis.transform.position, serializedPelvis.position) * PelvisPinMlp) + predictVelocity;
+
+                    // We only want to apply angular force when ragdolled
+                    if (rigManager.physicsRig.torso.spineInternalMult <= 0f) {
+                        repPelvis.angularVelocity = PhysXUtils.GetAngularVelocity(repPelvis.transform.rotation, serializedPelvis.rotation.Expand());
+                    }
+                }
 
                 // Check for stability teleport
                 if (!RigReferences.RigManager.IsNOC()) {
@@ -290,6 +336,43 @@ namespace LabFusion.Representation
             catch {
                 // Just ignore these. Don't really matter.
             }
+        }
+
+        private static bool TrySendGameworldRep()
+        {
+            try
+            {
+                if (gameworldPoints == null || PlayerIdManager.LocalId == null)
+                    return false;
+
+                for (var i = 0; i < gameworldPoints.Length; i++)
+                {
+                    if (gameworldPoints[i].IsNOC())
+                        return false;
+                }
+
+                using (var writer = FusionWriter.Create())
+                {
+                    using (var data = PlayerRepGameworldData.Create(PlayerIdManager.LocalSmallId, gameworldPoints))
+                    {
+                        writer.Write(data);
+
+                        using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepGameworld, writer))
+                        {
+                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Unreliable, message);
+                        }
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                FusionLogger.Error($"Failed sending gameworld transforms with reason: {e.Message}\nTrace:{e.StackTrace}");
+#endif
+            }
+            return false;
         }
 
         private static bool TrySendRep() {
@@ -326,6 +409,9 @@ namespace LabFusion.Representation
             if (NetworkInfo.HasServer) {
                 if (!TrySendRep())
                     OnCachePlayerTransforms();
+                else if (!RigData.RigReferences.RigManager.IsNOC() && RigData.RigReferences.RigManager.activeSeat) {
+                    TrySendGameworldRep();
+                }
             }
         }
 
@@ -334,11 +420,26 @@ namespace LabFusion.Representation
 
             OnHandFixedUpdate(RigReferences.LeftHand);
             OnHandFixedUpdate(RigReferences.RightHand);
+
+            if (RigReferences.RigManager.IsNOC() || !RigReferences.RigManager.activeSeat) {
+                for (var i = 0; i < serializedGameworldLocalTransforms.Length; i++)
+                    serializedGameworldLocalTransforms[i] = null;
+            }
+        }
+
+        public void OnRepLateUpdate() {
+            OnUpdateNametags();
         }
 
         public static void OnFixedUpdate() {
             foreach (var rep in Representations.Values)
                 rep.OnRepFixedUpdate();
+        }
+
+        public static void OnLateUpdate()
+        {
+            foreach (var rep in Representations.Values)
+                rep.OnRepLateUpdate();
         }
 
         /// <summary>
@@ -377,6 +478,7 @@ namespace LabFusion.Representation
             syncedRightController = RigData.RigReferences.RigManager.openControllerRig.rightController;
 
             PlayerRepUtilities.FillTransformArray(ref syncedPoints, RigData.RigReferences.RigManager);
+            PlayerRepUtilities.FillGameworldArray(ref gameworldPoints, RigData.RigReferences.RigManager);
         }
     }
 }

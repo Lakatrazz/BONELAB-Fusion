@@ -91,6 +91,9 @@ namespace LabFusion
         }
 
         public override void OnLateUpdate() {
+            // Update stuff like nametags
+            PlayerRep.OnLateUpdate();
+
             // Flush any left over network messages
             InternalLayerHelpers.OnLateUpdateLayer();
         }

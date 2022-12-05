@@ -16,9 +16,11 @@ namespace LabFusion.Network
             Disconnect = 3,
 
             PlayerRepTransform = 4,
+            PlayerRepGameworld = 29,
             PlayerRepAvatar = 5,
             PlayerRepVitals = 6,
             PlayerRepRagdoll = 27,
+            PlayerRepSeat = 28,
 
             PlayerRepGrab = 7,
             PlayerRepForceGrab = 8,

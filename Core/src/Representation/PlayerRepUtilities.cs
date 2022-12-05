@@ -38,6 +38,7 @@ using SLZ.Player;
 namespace LabFusion.Representation {
     public static class PlayerRepUtilities {
         public const int TransformSyncCount = 3;
+        public const int GameworldRigTransformCount = 10;
 
         public const string PolyBlankBarcode = "c3534c5a-94b2-40a4-912a-24a8506f6c79";
 
@@ -274,6 +275,22 @@ namespace LabFusion.Representation {
             array[0] = rig.m_head;
             array[1] = rig.m_handLf;
             array[2] = rig.m_handRt;
+        }
+
+        public static void FillGameworldArray(ref Transform[] array, RigManager manager)
+        {
+            var rig = manager.virtualHeptaRig;
+
+            array[0] = rig.m_head;
+            array[1] = rig.m_chest;
+            array[2] = rig.m_spine;
+            array[3] = rig.m_pelvis;
+            array[4] = rig.m_shoulderLf;
+            array[5] = rig.m_elbowLf;
+            array[6] = rig.m_handLf;
+            array[7] = rig.m_shoulderRt;
+            array[8] = rig.m_elbowRt;
+            array[9] = rig.m_handRt;
         }
     }
 }
