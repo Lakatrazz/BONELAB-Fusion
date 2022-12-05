@@ -35,6 +35,7 @@ namespace LabFusion.Network
             SyncableOwnershipResponse = 15,
 
             PropSyncableUpdate = 16,
+            PropSyncableCreate = 40,
 
             WorldGravity = 17,
 

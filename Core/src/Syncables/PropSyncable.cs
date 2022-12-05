@@ -111,10 +111,15 @@ namespace LabFusion.Syncables
             for (var i = 0; i < Rigidbodies.Length; i++) {
                 HostGameObjects[i] = Rigidbodies[i].gameObject;
 
-                var joint = Rigidbodies[i].gameObject.GetComponent<ConfigurableJoint>();
-                if (joint) {
-                    ConfigurableJoints.Add(joint, new ConfigurableJointDriveData(joint));
-                    JointCache.Add(joint, this);
+                var joints = Rigidbodies[i].gameObject.GetComponents<ConfigurableJoint>();
+
+                foreach (var joint in joints) {
+                    if (ConfigurableJoints.ContainsKey(joint)) {
+                        ConfigurableJoints.Remove(joint);
+                    }
+                    if (JointCache.ContainsKey(joint)) {
+                        JointCache.Remove(joint);
+                    }
                 }
             }
 

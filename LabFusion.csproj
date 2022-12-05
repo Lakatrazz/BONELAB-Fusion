@@ -249,6 +249,7 @@
     <Compile Include="Core\src\Network\Messages\Spawning\DespawnRequestMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Spawning\SpawnRequestMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Spawning\SpawnResponseMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Syncables\PropSyncableCreateMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Syncables\PropSyncableUpdateMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Syncables\SyncableIDResponseMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Syncables\SyncableIDRequestMessage.cs" />
