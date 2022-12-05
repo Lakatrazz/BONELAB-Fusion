@@ -234,6 +234,7 @@
     <Compile Include="Core\src\Network\Messages\Magazines\MagazineInsertMessage.cs" />
     <Compile Include="Core\src\Network\Messages\NativeMessageTag.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\PlayerRepAvatarMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Representation\PlayerRepRagdollMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\PlayerRepTransformMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\PlayerRepVitalsMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ConnectionResponseMessage.cs" />
@@ -265,8 +266,11 @@
     <Compile Include="Core\src\Patching\Patches\InventoryAmmoReceiverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\LevelsPanelViewPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\OpenControllerRigPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\PhysicsRigPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\PlayerHealthPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PlugPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PopUpMenuPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\RigManagerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\SceneStreamerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\TriggerLasersPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\UnityPatches.cs" />

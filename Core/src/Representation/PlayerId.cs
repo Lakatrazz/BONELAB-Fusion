@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using LabFusion.Data;
+using LabFusion.Extensions;
 using LabFusion.Network;
 
 namespace LabFusion.Representation
@@ -23,11 +24,17 @@ namespace LabFusion.Representation
         }
 
         public void Insert() {
+            if (PlayerIdManager.PlayerIds.Any((id) => id.SmallId == SmallId)) {
+                var list = PlayerIdManager.PlayerIds.FindAll((id) => id.SmallId == SmallId);
+                for (var i = 0; i < list.Count; i++)
+                    list[i].Dispose();
+            }
+
             PlayerIdManager.PlayerIds.Add(this);
         }
 
         public void Dispose() {
-            PlayerIdManager.PlayerIds.Remove(this);
+            PlayerIdManager.PlayerIds.RemoveInstance(this);
             if (PlayerIdManager.LocalId == this)
                 PlayerIdManager.RemoveLocalId();
 

@@ -119,8 +119,10 @@ namespace LabFusion.Patching
 
     [HarmonyPatch(typeof(AssetPoolee), nameof(AssetPoolee.Despawn))]
     public class PooleeDespawnPatch {
+        public static bool IgnorePatch = false;
+
         public static bool Prefix(AssetPoolee __instance) {
-            if (PooleeUtilities.IsPlayer(__instance))
+            if (PooleeUtilities.IsPlayer(__instance) || IgnorePatch)
                 return true;
 
             try {

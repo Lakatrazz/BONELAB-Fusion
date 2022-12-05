@@ -20,6 +20,7 @@ using UnityEngine;
 using LabFusion.Utilities;
 using LabFusion.Network;
 using LabFusion.Representation;
+using LabFusion.Extensions;
 
 namespace LabFusion.Data
 {
@@ -216,8 +217,21 @@ namespace LabFusion.Data
             RigReferences = new RigReferenceCollection(rigObject.GetComponent<RigManager>());
             RigReferences.RigManager.bodyVitals.rescaleEvent += (BodyVitals.RescaleUI)OnRigRescale;
 
+            if (NetworkInfo.HasServer) {
+                EnableRagdollOnDeath();
+            }
+
             RigSpawn = rigObject.transform.position;
             RigSpawnRot = rigObject.transform.rotation;
+        }
+
+        public static void EnableRagdollOnDeath() {
+            if (!RigReferences.RigManager.IsNOC()) {
+                var health = RigReferences.RigManager.health;
+
+                if (health.healthMode != Health.HealthMode.Invincible)
+                    health._testRagdollOnDeath = true;
+            }
         }
 
         public static void OnRigRescale() {

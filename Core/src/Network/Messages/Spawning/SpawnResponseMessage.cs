@@ -216,6 +216,11 @@ namespace LabFusion.Network
                     }
                 }
                 else if (PlayerRep.Representations.TryGetValue(owner, out var rep)) {
+                    var hostTransform = grip.Host.GetTransform();
+                    var repHand = rep.RigReferences.GetHand(hand);
+                    hostTransform.position = repHand.transform.position;
+                    hostTransform.rotation = repHand.transform.rotation;
+
                     rep.AttachObject(hand, grip);
                 }
             }

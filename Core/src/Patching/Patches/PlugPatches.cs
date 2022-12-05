@@ -37,6 +37,23 @@ namespace LabFusion.Patching
         }
     }
 
+    [HarmonyPatch(typeof(AmmoPlug))]
+    public static class AmmoPlugPatches {
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(AmmoPlug.OnPlugInsertComplete))]
+        public static void OnPlugInsertCompletePrefix() {
+            PooleeDespawnPatch.IgnorePatch = true;
+            AmmoSocketPatches.IgnorePatch = true;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(AmmoPlug.OnPlugInsertComplete))]
+        public static void OnPlugInsertCompletePostfix() {
+            PooleeDespawnPatch.IgnorePatch = false;
+            AmmoSocketPatches.IgnorePatch = false;
+        }
+    }
+
     [HarmonyPatch(typeof(AmmoSocket))]
     public static class AmmoSocketPatches {
         public static bool IgnorePatch = false;

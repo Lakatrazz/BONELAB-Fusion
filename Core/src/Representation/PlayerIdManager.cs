@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using LabFusion.Data;
+using LabFusion.Extensions;
 using LabFusion.Network;
 
 namespace LabFusion.Representation

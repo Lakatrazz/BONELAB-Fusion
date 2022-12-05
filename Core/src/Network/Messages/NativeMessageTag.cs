@@ -18,6 +18,7 @@ namespace LabFusion.Network
             PlayerRepTransform = 4,
             PlayerRepAvatar = 5,
             PlayerRepVitals = 6,
+            PlayerRepRagdoll = 27,
 
             PlayerRepGrab = 7,
             PlayerRepForceGrab = 8,
