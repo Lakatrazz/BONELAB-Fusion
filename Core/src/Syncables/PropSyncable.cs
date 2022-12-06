@@ -5,14 +5,17 @@ using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 using Il2CppSystem.Diagnostics;
+
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Grabbables;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Utilities;
+
 using PuppetMasta;
 using SLZ;
+using SLZ.AI;
 using SLZ.Interaction;
 using SLZ.Marrow.Pool;
 using SLZ.Marrow.SceneStreaming;
@@ -25,7 +28,6 @@ namespace LabFusion.Syncables
 {
     public class PropSyncable : ISyncable {
         public static readonly Dictionary<GameObject, PropSyncable> Cache = new Dictionary<GameObject, PropSyncable>(new UnityComparer());
-        public static readonly Dictionary<ConfigurableJoint, PropSyncable> JointCache = new Dictionary<ConfigurableJoint, PropSyncable>(new UnityComparer());
         public static readonly Dictionary<WeaponSlot, PropSyncable> WeaponSlotCache = new Dictionary<WeaponSlot, PropSyncable>(new UnityComparer());
 
         public static readonly Dictionary<Magazine, PropSyncable> MagazineCache = new Dictionary<Magazine, PropSyncable>(new UnityComparer());
@@ -33,13 +35,12 @@ namespace LabFusion.Syncables
 
         public static readonly Dictionary<Seat, PropSyncable> SeatCache = new Dictionary<Seat, PropSyncable>(new UnityComparer());
 
-        public const float PropPinMlp = 0.8f;
+        public PuppetMaster PuppetMaster;
+        public AIBrain AIBrain;
 
         public Grip[] PropGrips;
         public Rigidbody[] Rigidbodies;
         public GameObject[] HostGameObjects;
-
-        public Dictionary<ConfigurableJoint, ConfigurableJointDriveData> ConfigurableJoints;
 
         public readonly AssetPoolee AssetPoolee;
         public readonly WeaponSlot WeaponSlot;
@@ -54,9 +55,9 @@ namespace LabFusion.Syncables
 
         public readonly bool IsRotationBased;
 
-        public float TimeOfMessage = 0f;
+        public readonly bool HasIgnoreHierarchy;
 
-        public bool CanSetJointDrives => !HasValidParameters() || !Owner.HasValue || Owner.Value == PlayerIdManager.LocalSmallId;
+        public float TimeOfMessage = 0f;
 
         public ushort Id;
 
@@ -106,21 +107,9 @@ namespace LabFusion.Syncables
             }
 
             HostGameObjects = new GameObject[Rigidbodies.Length];
-            ConfigurableJoints = new Dictionary<ConfigurableJoint, ConfigurableJointDriveData>(new UnityComparer());
 
             for (var i = 0; i < Rigidbodies.Length; i++) {
                 HostGameObjects[i] = Rigidbodies[i].gameObject;
-
-                var joints = Rigidbodies[i].gameObject.GetComponents<ConfigurableJoint>();
-
-                foreach (var joint in joints) {
-                    if (ConfigurableJoints.ContainsKey(joint)) {
-                        ConfigurableJoints.Remove(joint);
-                    }
-                    if (JointCache.ContainsKey(joint)) {
-                        JointCache.Remove(joint);
-                    }
-                }
             }
 
             DesiredPositions = new Vector3?[Rigidbodies.Length];
@@ -160,44 +149,16 @@ namespace LabFusion.Syncables
 
             AmmoSocket = GameObject.GetComponentInChildren<AmmoSocket>(true);
 
+            PuppetMaster = GameObject.GetComponentInChildren<PuppetMaster>(true);
+            AIBrain = GameObject.GetComponentInChildren<AIBrain>(true);
+
             Seats = GameObject.GetComponentsInChildren<Seat>(true);
 
             foreach (var seat in Seats) {
                 SeatCache.Add(seat, this);
             }
-        }
 
-        public void OnSetDrive(ConfigurableJoint joint, JointDrive drive, JointExtensions.JointDriveAxis axis) {
-            if (joint.IsNOC())
-                return;
-
-            if (ConfigurableJoints.ContainsKey(joint)) {
-                var data = ConfigurableJoints[joint];
-
-                switch (axis) {
-                    default:
-                    case JointExtensions.JointDriveAxis.XDrive:
-                        data.xDrive = drive;
-                        break;
-                    case JointExtensions.JointDriveAxis.YDrive:
-                        data.yDrive = drive;
-                        break;
-                    case JointExtensions.JointDriveAxis.ZDrive:
-                        data.zDrive = drive;
-                        break;
-                    case JointExtensions.JointDriveAxis.AngularXDrive:
-                        data.angularXDrive = drive;
-                        break;
-                    case JointExtensions.JointDriveAxis.AngularYZDrive:
-                        data.angularYZDrive = drive;
-                        break;
-                    case JointExtensions.JointDriveAxis.SlerpDrive:
-                        data.slerpDrive = drive;
-                        break;
-                }
-
-                ConfigurableJoints[joint] = data;
-            }
+            HasIgnoreHierarchy = GameObject.GetComponentInParent<IgnoreHierarchy>(true);
         }
 
         private void AssignInformation(InteractableHost host) {
@@ -283,14 +244,6 @@ namespace LabFusion.Syncables
                 Cache.Remove(GameObject);
             }
 
-            ResetJointDrives();
-
-            foreach (var pair in ConfigurableJoints) {
-                if (!pair.Key.IsNOC()) {
-                    JointCache.Remove(pair.Key);
-                }
-            }
-
             if (!WeaponSlot.IsNOC())
                 WeaponSlotCache.Remove(WeaponSlot);
 
@@ -325,43 +278,6 @@ namespace LabFusion.Syncables
 
         public void SetOwner(byte owner) {
             Owner = owner;
-
-            if (owner == PlayerIdManager.LocalSmallId) {
-                ResetJointDrives();
-            }
-            else {
-                ClearJointDrives();
-            }
-        }
-
-        public void ResetJointDrives() {
-            JointExtensions.IgnoreDriveCheck = true;
-
-            foreach (var pair in ConfigurableJoints) {
-                if (!pair.Key.IsNOC()) {
-                    pair.Value.CopyTo(pair.Key);
-                }
-            }
-
-            JointExtensions.IgnoreDriveCheck = false;
-        }
-
-        public void ClearJointDrives() {
-            JointExtensions.IgnoreDriveCheck = true;
-
-            foreach (var joint in ConfigurableJoints.Keys) {
-                if (!joint.IsNOC())  {
-                    joint.xDrive = new JointDrive();
-                    joint.yDrive = new JointDrive();
-                    joint.zDrive = new JointDrive();
-
-                    joint.angularXDrive = new JointDrive();
-                    joint.angularYZDrive = new JointDrive();
-                    joint.slerpDrive = new JointDrive();
-                }
-            }
-
-            JointExtensions.IgnoreDriveCheck = false;
         }
 
         public void VerifyOwner() {
@@ -584,7 +500,7 @@ namespace LabFusion.Syncables
                 var pos = DesiredPositions[i].Value;
                 var rot = DesiredRotations[i].Value;
 
-                bool allowPosition = !IsRotationBased || i == 0;
+                bool allowPosition = (!IsRotationBased || i == 0) && !HasIgnoreHierarchy;
 
                 // Teleport check
                 float distSqr = (rb.transform.position - pos).sqrMagnitude;
@@ -598,12 +514,12 @@ namespace LabFusion.Syncables
                 // Instead calculate velocity stuff
                 else {
                     if (allowPosition) {
-                        var outputVel = (pos - rb.transform.position) * invDt * (IsRotationBased ? 0.1f : PropPinMlp);
+                        var outputVel = (pos - rb.transform.position) * invDt;
                         if (!outputVel.IsNanOrInf())
                             rb.velocity = outputVel;
                     }
 
-                    var outputAngVel = PhysXUtils.GetAngularVelocity(rb.transform.rotation, rot) * PropPinMlp;
+                    var outputAngVel = PhysXUtils.GetAngularVelocity(rb.transform.rotation, rot);
                     if (!outputAngVel.IsNanOrInf())
                         rb.angularVelocity = outputAngVel;
                 }

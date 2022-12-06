@@ -33,6 +33,11 @@ namespace LabFusion.Data
             _kd = 4.5f * frequency * damping;
         }
 
+        public PDController(float frequency, float damping) {
+            _kp = (6f * frequency) * (6f * frequency) * 0.25f;
+            _kd = 4.5f * frequency * damping;
+        }
+
         public Vector3 GetInstantAccelerationForce(in Rigidbody rb, in Vector3 targetPos) {
             var vel = PhysXUtils.GetLinearVelocity(LastTargetPos, targetPos);
             var accel = PhysXUtils.GetLinearVelocity(_lastInstantVel, vel);

@@ -263,7 +263,6 @@
     <Compile Include="Core\src\Network\Steam\SteamSocketHandler.cs" />
     <Compile Include="Core\src\Patching\Patches\AssetPooleePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ChunkTriggerPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\ConfigurableJointPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\GrabPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\GunPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\InventorySlotReceiverPatches.cs" />
