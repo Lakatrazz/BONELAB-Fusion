@@ -48,6 +48,7 @@ namespace LabFusion.Representation
         public SerializedTransform serializedPelvis;
 
         public Vector3 predictVelocity;
+        public PDController pdController;
         public float timeSincePelvisSent;
 
         public Transform[] repTransforms = new Transform[PlayerRepUtilities.TransformSyncCount];
@@ -79,6 +80,8 @@ namespace LabFusion.Representation
 
             Representations.Add(playerId.SmallId, this);
             avatarId = barcode;
+
+            pdController = new PDController();
 
             CreateRep();
         }
@@ -192,16 +195,20 @@ namespace LabFusion.Representation
 
             var leftHaptor = rig.openControllerRig.leftController.haptor;
             rig.openControllerRig.leftController = rig.openControllerRig.leftController.gameObject.AddComponent<Controller>();
+            rig.openControllerRig.leftController.manager = rig.openControllerRig;
             leftHaptor.device_Controller = rig.openControllerRig.leftController;
             rig.openControllerRig.leftController.handedness = Handedness.LEFT;
 
             var rightHaptor = rig.openControllerRig.rightController.haptor;
             rig.openControllerRig.rightController = rig.openControllerRig.rightController.gameObject.AddComponent<Controller>();
+            rig.openControllerRig.rightController.manager = rig.openControllerRig;
             rightHaptor.device_Controller = rig.openControllerRig.rightController;
             rig.openControllerRig.rightController.handedness = Handedness.RIGHT;
             Managers.Add(rig, this);
 
             repPelvis = rig.physicsRig.m_pelvis.GetComponent<Rigidbody>();
+            pdController.OnResetDerivatives(repPelvis);
+
             repControllerRig = rig.openControllerRig;
             repPlayspace = rig.openControllerRig.vrRoot.transform;
 
@@ -305,13 +312,20 @@ namespace LabFusion.Representation
 
                 // Seats will cause issues due to jointing
                 if (SafetyUtilities.IsValidTime && !rigManager.activeSeat) {
-                    repPelvis.velocity = (PhysXUtils.GetLinearVelocity(repPelvis.transform.position, serializedPelvis.position) * PelvisPinMlp) + predictVelocity;
+                    var pos = serializedPelvis.position;
+                    var rot = serializedPelvis.rotation.Expand();
+
+                    repPelvis.AddForce(pdController.GetInstantAccelerationForce(repPelvis, pos) + pdController.GetForce(repPelvis, pos), ForceMode.Acceleration);
 
                     // We only want to apply angular force when ragdolled
                     if (rigManager.physicsRig.torso.spineInternalMult <= 0f) {
-                        repPelvis.angularVelocity = PhysXUtils.GetAngularVelocity(repPelvis.transform.rotation, serializedPelvis.rotation.Expand());
+                        repPelvis.AddTorque(pdController.GetInstantAccelerationTorque(repPelvis, rot) + pdController.GetTorque(repPelvis, rot), ForceMode.Acceleration);
                     }
+                    else
+                        pdController.OnResetRotDerivatives(repPelvis);
                 }
+                else
+                    pdController.OnResetDerivatives(repPelvis);
 
                 // Check for stability teleport
                 if (!RigReferences.RigManager.IsNOC()) {
@@ -326,6 +340,8 @@ namespace LabFusion.Representation
                         pos += physRig.footballRadius * -physRig.m_pelvis.up;
 
                         RigReferences.RigManager.Teleport(pos);
+
+                        pdController.OnResetDerivatives(repPelvis);
 
                         // Reset locosphere and knee pos so the rig doesn't get stuck
                         physRig.knee.transform.position = serializedPelvis.position;
