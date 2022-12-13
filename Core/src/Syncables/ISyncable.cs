@@ -16,6 +16,8 @@ namespace LabFusion.Syncables {
 
         byte? GetOwner();
 
+        bool IsOwner();
+
         bool IsQueued();
 
         bool IsRegistered();

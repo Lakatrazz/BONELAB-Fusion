@@ -40,6 +40,8 @@ namespace LabFusion.Syncables
 
         public Grip[] PropGrips;
         public Rigidbody[] Rigidbodies;
+        public RigidbodyState[] RigidbodyStates;
+        public PDController[] PDControllers;
         public GameObject[] HostGameObjects;
 
         public readonly AssetPoolee AssetPoolee;
@@ -107,9 +109,15 @@ namespace LabFusion.Syncables
             }
 
             HostGameObjects = new GameObject[Rigidbodies.Length];
+            RigidbodyStates = new RigidbodyState[Rigidbodies.Length];
+            PDControllers = new PDController[Rigidbodies.Length];
 
             for (var i = 0; i < Rigidbodies.Length; i++) {
                 HostGameObjects[i] = Rigidbodies[i].gameObject;
+                RigidbodyStates[i] = new RigidbodyState(Rigidbodies[i]);
+
+                PDControllers[i] = new PDController();
+                PDControllers[i].OnResetDerivatives(Rigidbodies[i]);
             }
 
             DesiredPositions = new Vector3?[Rigidbodies.Length];
@@ -257,6 +265,8 @@ namespace LabFusion.Syncables
                 if (!seat.IsNOC())
                     SeatCache.Remove(seat);
             }
+
+            OnClearOverrides();
         }
 
         public Grip GetGrip(ushort index) {
@@ -278,6 +288,38 @@ namespace LabFusion.Syncables
 
         public void SetOwner(byte owner) {
             Owner = owner;
+            OnVerifyOverrides();
+        }
+
+        public bool IsOwner() => Owner.HasValue && Owner.Value == PlayerIdManager.LocalSmallId;
+
+        private void OnVerifyOverrides() {
+            for (var i = 0; i < HostGameObjects.Length; i++) {
+                var rb = Rigidbodies[i];
+
+                // Update rigidbody states
+                if (!rb.IsNOC()) {
+                    // If we are the owner
+                    if (IsOwner()) {
+                        RigidbodyStates[i].OnClearOverride(rb);
+                    }
+                    // Otherwise
+                    else {
+                        RigidbodyStates[i].OnSetOverride(rb);
+                    }
+                }
+            }
+        }
+
+        private void OnClearOverrides() {
+            for (var i = 0; i < HostGameObjects.Length; i++) {
+                var rb = Rigidbodies[i];
+
+                // Update rigidbody states
+                if (!rb.IsNOC()) {
+                    RigidbodyStates[i].OnClearOverride(rb);
+                }
+            }
         }
 
         public void VerifyOwner() {
@@ -319,6 +361,8 @@ namespace LabFusion.Syncables
                         if (!host.IsNOC())
                             Rigidbodies[i] = host.GetComponent<Rigidbody>();
                     }
+
+                    OnVerifyOverrides();
                 }
 
                 _verifyRigidbodies = false;
@@ -399,6 +443,8 @@ namespace LabFusion.Syncables
                     continue;
                 }
 
+                PDControllers[i].OnResetDerivatives(rb);
+
                 if (!hasMovingBody && !rb.IsSleeping() && HasMoved(i)) {
                     hasMovingBody = true;
                 }
@@ -466,9 +512,6 @@ namespace LabFusion.Syncables
                     return;
             }
 
-            float dt = Time.fixedDeltaTime;
-            float invDt = 1f / dt;
-
             for (var i = 0; i < Rigidbodies.Length; i++) {
                 var rb = Rigidbodies[i];
                 if (rb.IsNOC() || rb.IsSleeping())
@@ -494,13 +537,17 @@ namespace LabFusion.Syncables
                     }
                 }
 
-                if (isGrabbed || !DesiredPositions[i].HasValue || !DesiredRotations[i].HasValue)
+                if (isGrabbed || !DesiredPositions[i].HasValue || !DesiredRotations[i].HasValue) {
+                    PDControllers[i].OnResetDerivatives(rb);
                     continue;
+                }
 
                 var pos = DesiredPositions[i].Value;
                 var rot = DesiredRotations[i].Value;
 
                 bool allowPosition = (!IsRotationBased || i == 0) && !HasIgnoreHierarchy;
+
+                var pdController = PDControllers[i];
 
                 // Teleport check
                 float distSqr = (rb.transform.position - pos).sqrMagnitude;
@@ -510,18 +557,18 @@ namespace LabFusion.Syncables
 
                     rb.velocity = Vector3.zero;
                     rb.angularVelocity = Vector3.zero;
+
+                    pdController.OnResetDerivatives(rb);
                 }
                 // Instead calculate velocity stuff
                 else {
                     if (allowPosition) {
-                        var outputVel = (pos - rb.transform.position) * invDt;
-                        if (!outputVel.IsNanOrInf())
-                            rb.velocity = outputVel;
+                        rb.AddForce(pdController.GetForce(rb, pos), ForceMode.Acceleration);
                     }
+                    else
+                        pdController.OnResetPosDerivatives(rb);
 
-                    var outputAngVel = PhysXUtils.GetAngularVelocity(rb.transform.rotation, rot);
-                    if (!outputAngVel.IsNanOrInf())
-                        rb.angularVelocity = outputAngVel;
+                    rb.AddTorque(pdController.GetTorque(rb, rot), ForceMode.Acceleration);
                 }
             }
         }

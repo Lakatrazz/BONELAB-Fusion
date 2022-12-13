@@ -13,7 +13,7 @@ namespace LabFusion.Data
 {
     public class PDController {
         // Constant to replace stripped(?) value
-        public const float Deg2Rad = ((float)Math.PI * 2f) / 360f;
+        public const float Deg2Rad = (float)Math.PI * 2f / 360f;
 
         // Tweak these values to control movement properties of all synced objects
         public const float frequency = 20f;
@@ -23,59 +23,26 @@ namespace LabFusion.Data
         private readonly float _kd;
 
         public Vector3 LastTargetPos { get; private set; }
-        private Vector3 _lastInstantVel;
 
         public Quaternion LastTargetRot { get; private set; }
-        private Vector3 _lastInstantAngVel;
 
         public PDController() {
             _kp = (6f * frequency) * (6f * frequency) * 0.25f;
             _kd = 4.5f * frequency * damping;
         }
 
-        public PDController(float frequency, float damping) {
-            _kp = (6f * frequency) * (6f * frequency) * 0.25f;
-            _kd = 4.5f * frequency * damping;
-        }
-
-        public Vector3 GetInstantAccelerationForce(in Rigidbody rb, in Vector3 targetPos) {
-            var vel = PhysXUtils.GetLinearVelocity(LastTargetPos, targetPos);
-            var accel = PhysXUtils.GetLinearVelocity(_lastInstantVel, vel);
-
-            _lastInstantVel = vel;
-            LastTargetPos = targetPos;
-
-            return accel;
-        }
-
-        public Vector3 GetInstantAccelerationTorque(in Rigidbody rb, in Quaternion targetRot)
-        {
-            var angVel = PhysXUtils.GetAngularVelocity(LastTargetRot, targetRot);
-            var accel = PhysXUtils.GetLinearVelocity(_lastInstantAngVel, angVel);
-
-            _lastInstantAngVel = angVel;
-            LastTargetRot = targetRot;
-
-            return accel;
-        }
-
         public void OnResetDerivatives(in Rigidbody rb) {
-            _lastInstantAngVel = Vector3.zero;
-            _lastInstantVel = Vector3.zero;
-
-            LastTargetPos = rb.transform.position;
-            LastTargetRot = rb.transform.rotation;
+            OnResetPosDerivatives(rb);
+            OnResetRotDerivatives(rb);
         }
 
         public void OnResetPosDerivatives(in Rigidbody rb)
         {
-            _lastInstantVel = Vector3.zero;
             LastTargetPos = rb.transform.position;
         }
 
         public void OnResetRotDerivatives(in Rigidbody rb)
         {
-            _lastInstantAngVel = Vector3.zero;
             LastTargetRot = rb.transform.rotation;
         }
 
@@ -84,7 +51,14 @@ namespace LabFusion.Data
 
             Vector3 Pt0 = rb.transform.position;
             Vector3 Vt0 = rb.velocity;
-            return ((targetPos - Pt0) * ksg + (-Vt0) * kdg) - (rb.useGravity ? Physics.gravity : Vector3.zero);
+
+            Vector3 Pt1 = LastTargetPos;
+            Vector3 Vt1 = PhysXUtils.GetLinearVelocity(LastTargetPos, targetPos);
+
+            var force = (Pt1 - Pt0) * ksg + (Vt1 - Vt0) * kdg - (rb.useGravity ? Physics.gravity : Vector3.zero);
+
+            LastTargetPos = targetPos;
+            return force;
         }
 
         public Vector3 GetTorque(Rigidbody rb, in Quaternion targetRot)
@@ -93,7 +67,10 @@ namespace LabFusion.Data
 
             var currentRotation = rb.transform.rotation;
 
-            Quaternion q = targetRot * Quaternion.Inverse(currentRotation);
+            Quaternion Qt1 = LastTargetRot;
+            Vector3 Vt1 = PhysXUtils.GetAngularVelocity(LastTargetRot, targetRot);
+
+            Quaternion q = Qt1 * Quaternion.Inverse(currentRotation);
             if (q.w < 0)
             {
                 q.x = -q.x;
@@ -105,7 +82,10 @@ namespace LabFusion.Data
             x.Normalize();
             
             x *= Deg2Rad;
-            return ksg * x * xMag - kdg * rb.angularVelocity;
+            var torque = ksg * x * xMag + kdg * (Vt1 - rb.angularVelocity);
+
+            LastTargetRot = targetRot;
+            return torque;
         }
 
         private void CalculateFrameValues(out float ksg, out float kdg) {

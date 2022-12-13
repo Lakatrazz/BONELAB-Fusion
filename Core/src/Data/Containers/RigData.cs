@@ -205,7 +205,7 @@ namespace LabFusion.Data
         public static Quaternion RigSpawnRot { get; private set; }
 
         public static void OnCacheRigInfo(string sceneName) {
-            var rigObject = Player.GetRigManager();
+            var rigObject = Player.rigManager;
 
             if (!rigObject) {
                 RigScene = null;
@@ -214,7 +214,7 @@ namespace LabFusion.Data
             
             RigScene = sceneName;
 
-            RigReferences = new RigReferenceCollection(rigObject.GetComponent<RigManager>());
+            RigReferences = new RigReferenceCollection(rigObject);
             RigReferences.RigManager.bodyVitals.rescaleEvent += (BodyVitals.RescaleUI)OnRigRescale;
 
             if (NetworkInfo.HasServer) {

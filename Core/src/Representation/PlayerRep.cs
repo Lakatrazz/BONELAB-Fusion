@@ -207,6 +207,8 @@ namespace LabFusion.Representation
             Managers.Add(rig, this);
 
             repPelvis = rig.physicsRig.m_pelvis.GetComponent<Rigidbody>();
+            repPelvis.drag = 0f;
+            repPelvis.angularDrag = 0f;
             pdController.OnResetDerivatives(repPelvis);
 
             repControllerRig = rig.openControllerRig;
@@ -315,11 +317,11 @@ namespace LabFusion.Representation
                     var pos = serializedPelvis.position;
                     var rot = serializedPelvis.rotation.Expand();
 
-                    repPelvis.AddForce(pdController.GetInstantAccelerationForce(repPelvis, pos) + pdController.GetForce(repPelvis, pos), ForceMode.Acceleration);
+                    repPelvis.AddForce(pdController.GetForce(repPelvis, pos), ForceMode.Acceleration);
 
                     // We only want to apply angular force when ragdolled
                     if (rigManager.physicsRig.torso.spineInternalMult <= 0f) {
-                        repPelvis.AddTorque(pdController.GetInstantAccelerationTorque(repPelvis, rot) + pdController.GetTorque(repPelvis, rot), ForceMode.Acceleration);
+                        repPelvis.AddTorque(pdController.GetTorque(repPelvis, rot), ForceMode.Acceleration);
                     }
                     else
                         pdController.OnResetRotDerivatives(repPelvis);
