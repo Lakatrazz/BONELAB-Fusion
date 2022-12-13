@@ -327,17 +327,6 @@ namespace LabFusion.Syncables
                 Owner = null;
         }
 
-        public void VerifyID() {
-            bool mismatchId = !SyncManager.Syncables.ContainsKey(Id) || SyncManager.Syncables[Id] != this;
-
-            if (SyncManager.Syncables.ContainsValue(this) && mismatchId) {
-                foreach (var pair in SyncManager.Syncables) {
-                    if (pair.Value == this)
-                        Id = pair.Key;
-                }
-            }
-        }
-
         public void SetRigidbodiesDirty() {
             _verifyRigidbodies = true;
         }
@@ -394,7 +383,7 @@ namespace LabFusion.Syncables
 
         public bool IsRegistered() => _hasRegistered;
 
-        private bool HasValidParameters() => !(LevelWarehouseUtilities.IsLoading() || GameObject.IsNOC() || !GameObject.activeInHierarchy || !_hasRegistered);
+        private bool HasValidParameters() => !(!_hasRegistered || LevelWarehouseUtilities.IsLoading() || GameObject.IsNOC() || !GameObject.activeInHierarchy);
 
         public void OnFixedUpdate() {
             if (!HasValidParameters())
@@ -410,7 +399,6 @@ namespace LabFusion.Syncables
             if (!HasValidParameters())
                 return;
 
-            VerifyID();
             VerifyOwner();
             VerifyRigidbodies();
 

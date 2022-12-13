@@ -249,8 +249,8 @@ namespace LabFusion.Data
             }
         }
 
-        public static void OnRigHandUpdate(Hand hand) {
-            if (!hand || !hand.m_CurrentAttachedGO || !hand.joint)
+        private static void OnRigHandUpdate(Hand hand) {
+            if (!hand.m_CurrentAttachedGO || !hand.joint)
                 return;
 
             var grip = Grip.Cache.Get(hand.m_CurrentAttachedGO);
@@ -273,8 +273,10 @@ namespace LabFusion.Data
         }
 
         public static void OnRigUpdate() {
-            if (RigReferences.RigManager) {
-                var barcode = GetAvatarBarcode();
+            var rm = RigReferences.RigManager;
+
+            if (!rm.IsNOC()) {
+                var barcode = rm.AvatarCrate.Barcode;
                 if (barcode != RigAvatarId) {
                     // Send switch message to notify the server
                     if (NetworkInfo.HasServer) {
@@ -288,20 +290,20 @@ namespace LabFusion.Data
                             }
                         }
                     }
+
+                    RigAvatarId = barcode;
                 }
-                RigAvatarId = barcode;
 
-                if (RigReferences.LeftHand)
-                    OnRigHandUpdate(RigReferences.LeftHand);
-
-                if (RigReferences.RightHand)
-                    OnRigHandUpdate(RigReferences.RightHand);
+                OnRigHandUpdate(RigReferences.LeftHand);
+                OnRigHandUpdate(RigReferences.RightHand);
             }
         }
 
         public static string GetAvatarBarcode() {
-            if (RigReferences.RigManager)
-                return RigReferences.RigManager.AvatarCrate.Barcode;
+            var rm = RigReferences.RigManager;
+
+            if (rm)
+                return rm.AvatarCrate.Barcode;
             return AvatarWarehouseUtilities.INVALID_AVATAR_BARCODE;
         }
     }

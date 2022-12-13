@@ -1,4 +1,5 @@
-﻿using PathCreation.Utility;
+﻿using LabFusion.Extensions;
+using PathCreation.Utility;
 using SLZ;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using UnityEngine;
+using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace LabFusion.Data
 {
@@ -58,6 +60,11 @@ namespace LabFusion.Data
             var force = (Pt1 - Pt0) * ksg + (Vt1 - Vt0) * kdg - (rb.useGravity ? Physics.gravity : Vector3.zero);
 
             LastTargetPos = targetPos;
+
+            // Safety check
+            if (force.IsNanOrInf())
+                force = Vector3.zero;
+
             return force;
         }
 
@@ -85,6 +92,11 @@ namespace LabFusion.Data
             var torque = ksg * x * xMag + kdg * (Vt1 - rb.angularVelocity);
 
             LastTargetRot = targetRot;
+
+            // Safety check
+            if (torque.IsNanOrInf())
+                torque = Vector3.zero;
+
             return torque;
         }
 

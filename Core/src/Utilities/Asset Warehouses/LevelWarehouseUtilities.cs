@@ -21,19 +21,21 @@ namespace LabFusion.Utilities {
 
         private static object _activeLoadCoroutine;
         private static string _targetLevelBarcode;
-        private static string _prevLevelBarcode = null;
+        private static string _prevLevelBarcode = "NONE";
+
+        private static bool _isLoading = false;
 
         public static LevelCrate GetCurrentLevel() {
             return SceneStreamer.Session.Level;
         }
 
-        public static bool IsLoading() {
+        private static bool IsLoading_Internal() {
             return SceneStreamer.Session.Status == StreamStatus.LOADING;
         }
 
-        public static bool IsLoadDone() {
-            return SceneStreamer.Session.Status == StreamStatus.DONE;
-        }
+        public static bool IsLoading() => _isLoading;
+
+        public static bool IsLoadDone() => !_isLoading;
 
         public static void LoadClientLevel(string levelBarcode) {
             _targetLevelBarcode = levelBarcode;
@@ -51,8 +53,8 @@ namespace LabFusion.Utilities {
         }
 
         internal static IEnumerator LoadLevelDelayed() {
-            if (IsLoading() || !IsLoadDone()) {
-                while (IsLoading() || !IsLoadDone())
+            if (IsLoading()) {
+                while (IsLoading())
                     yield return null;
 
                 for (var i = 0; i < 60; i++)
@@ -63,19 +65,16 @@ namespace LabFusion.Utilities {
         }
 
         internal static void OnUpdateLevelLoading() {
-            // If the loading has finished, we can check to update the load method
-            if (IsLoadDone()) {
-                var code = GetCurrentLevel().Barcode;
-
-                if (_prevLevelBarcode != code) {
-                    FusionMod.OnMainSceneInitialized();
-                    _prevLevelBarcode = code;
-                }
-            }
             // If we are in the loading screen we need to make sure to reset this value
             // Otherwise, reloading the scene will never notify the game
-            else if (IsLoading()) {
+            if (IsLoading_Internal()) {
                 _prevLevelBarcode = null;
+                _isLoading = true;
+            }
+            else if (_prevLevelBarcode == null) {
+                FusionMod.OnMainSceneInitialized();
+                _prevLevelBarcode = GetCurrentLevel().Barcode;
+                _isLoading = false;
             }
         }
     }
