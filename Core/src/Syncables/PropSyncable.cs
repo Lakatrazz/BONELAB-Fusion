@@ -35,6 +35,8 @@ namespace LabFusion.Syncables
 
         public static readonly Dictionary<Seat, PropSyncable> SeatCache = new Dictionary<Seat, PropSyncable>(new UnityComparer());
 
+        public static readonly Dictionary<PuppetMaster, PropSyncable> PuppetMasterCache = new Dictionary<PuppetMaster, PropSyncable>(new UnityComparer());
+
         public PuppetMaster PuppetMaster;
         public AIBrain AIBrain;
 
@@ -127,13 +129,6 @@ namespace LabFusion.Syncables
             LastSentPositions = new Vector3[Rigidbodies.Length];
             LastSentRotations = new Quaternion[Rigidbodies.Length];
 
-            if (GameObject.GetComponentInChildren<BehaviourPowerLegs>(true) || GameObject.GetComponentInChildren<BehaviourCrablet>(true)) {
-                IsRotationBased = true;
-            }
-            else {
-                IsRotationBased = false;
-            }
-
             WeaponSlot = GameObject.GetComponentInChildren<WeaponSlot>(true);
 
             if (WeaponSlot) {
@@ -158,6 +153,10 @@ namespace LabFusion.Syncables
             AmmoSocket = GameObject.GetComponentInChildren<AmmoSocket>(true);
 
             PuppetMaster = GameObject.GetComponentInChildren<PuppetMaster>(true);
+
+            if (PuppetMaster)
+                PuppetMasterCache.Add(PuppetMaster, this);
+
             AIBrain = GameObject.GetComponentInChildren<AIBrain>(true);
 
             Seats = GameObject.GetComponentsInChildren<Seat>(true);
@@ -260,6 +259,9 @@ namespace LabFusion.Syncables
 
             if (!Gun.IsNOC())
                 GunCache.Remove(Gun);
+
+            if (!PuppetMaster.IsNOC())
+                PuppetMasterCache.Remove(PuppetMaster);
 
             foreach (var seat in Seats) {
                 if (!seat.IsNOC())
@@ -553,8 +555,11 @@ namespace LabFusion.Syncables
                     if (allowPosition) {
                         rb.AddForce(pdController.GetForce(rb, pos), ForceMode.Acceleration);
                     }
-                    else
+                    else {
+                        if (rb.useGravity)
+                            rb.AddForce(-Physics.gravity, ForceMode.Acceleration);
                         pdController.OnResetPosDerivatives(rb);
+                    }
 
                     rb.AddTorque(pdController.GetTorque(rb, rot), ForceMode.Acceleration);
                 }
