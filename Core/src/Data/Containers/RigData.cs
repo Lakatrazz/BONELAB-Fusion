@@ -79,6 +79,8 @@ namespace LabFusion.Data
             switch (handedness)
             {
                 default:
+                    return null;
+                case Handedness.LEFT:
                     return LeftClientJoint;
                 case Handedness.RIGHT:
                     return RightClientJoint;
@@ -101,7 +103,7 @@ namespace LabFusion.Data
         public void RemoveJoint(Handedness handedness) {
             switch (handedness)
             {
-                default:
+                case Handedness.LEFT:
                     if (LeftClientJoint)
                         GameObject.Destroy(LeftClientJoint);
                     break;
