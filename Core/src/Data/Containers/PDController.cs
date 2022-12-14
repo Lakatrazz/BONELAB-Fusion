@@ -49,12 +49,12 @@ namespace LabFusion.Data
             float dt = Time.fixedDeltaTime;
 
             // Position
-            float pG = 1 / (1 + _positionKd * dt + _positionKp * dt * dt);
+            float pG = 1f / (1f + _positionKd * dt + _positionKp * dt * dt);
             _positionKsg = _positionKp * pG;
             _positionKdg = (_positionKd + _positionKp * dt) * pG;
 
             // Rotation
-            float rG = 1 / (1 + _rotationKd * dt + _rotationKp * dt * dt);
+            float rG = 1f / (1f + _rotationKd * dt + _rotationKp * dt * dt);
             _rotationKsg = _rotationKp * rG;
             _rotationKdg = (_rotationKd + _rotationKp * dt) * rG;
         }

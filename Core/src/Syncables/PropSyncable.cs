@@ -324,6 +324,20 @@ namespace LabFusion.Syncables
             }
         }
 
+        public void VerifyID()
+        {
+            bool mismatchId = !SyncManager.Syncables.ContainsKey(Id) || SyncManager.Syncables[Id] != this;
+
+            if (SyncManager.Syncables.ContainsValue(this) && mismatchId)
+            {
+                foreach (var pair in SyncManager.Syncables)
+                {
+                    if (pair.Value == this)
+                        Id = pair.Key;
+                }
+            }
+        }
+
         public void VerifyOwner() {
             if (Owner.HasValue && PlayerIdManager.GetPlayerId(Owner.Value) == null)
                 Owner = null;
@@ -401,6 +415,7 @@ namespace LabFusion.Syncables
             if (!HasValidParameters())
                 return;
 
+            VerifyID();
             VerifyOwner();
             VerifyRigidbodies();
 
@@ -480,25 +495,15 @@ namespace LabFusion.Syncables
             }
 
             if (!isSomethingGrabbed && Time.timeSinceLevelLoad - TimeOfMessage >= 1f) {
-                bool runVelocityCheck = false;
-
                 for (var i = 0; i < Rigidbodies.Length; i++) {
-                    var pos = DesiredPositions[i];
-                    var rot = DesiredRotations[i];
                     var rb = Rigidbodies[i];
 
-                    if (!rb.IsNOC() && pos.HasValue && rot.HasValue) {
-                        bool distanceCheck = (rb.transform.position - pos.Value).sqrMagnitude > 0.01f || Quaternion.Angle(rb.transform.rotation, rot.Value) > 0.05f;
-
-                        if (distanceCheck) {
-                            runVelocityCheck = true;
-                            break;
-                        }
+                    if (!rb.IsNOC() && !rb.IsSleeping()) {
+                        rb.Sleep();
                     }
                 }
 
-                if (!runVelocityCheck)
-                    return;
+                return;
             }
 
             for (var i = 0; i < Rigidbodies.Length; i++) {
