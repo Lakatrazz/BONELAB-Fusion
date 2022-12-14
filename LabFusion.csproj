@@ -276,7 +276,6 @@
     <Compile Include="Core\src\Patching\Patches\PlugPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PopUpMenuPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PuppetMasterPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\RigManagerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\SceneStreamerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\SeatPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\TriggerLasersPatches.cs" />

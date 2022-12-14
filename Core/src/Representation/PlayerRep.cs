@@ -2,6 +2,7 @@
 using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Utilities;
+
 using SLZ;
 using SLZ.Interaction;
 using SLZ.Props;
@@ -9,12 +10,16 @@ using SLZ.Rig;
 
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using TMPro;
+
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
+using MelonLoader;
 
 namespace LabFusion.Representation
 {
@@ -173,14 +178,28 @@ namespace LabFusion.Representation
             PlayerRepUtilities.CreateNewRig(OnRigCreated);
         }
 
-        public void OnRigCreated(RigManager rig) {
-            pullCord = rig.GetComponentInChildren<PullCordDevice>(true);
+        private IEnumerator Internal_DelayInitialAvatar() {
+            for (var i = 0; i < 40; i++) {
+                if (RigReferences.RigManager.IsNOC())
+                    yield break;
 
-            if (vitals != null)
-            {
+                yield return null;
+            }
+
+            var rig = RigReferences.RigManager;
+
+            if (vitals != null) {
                 vitals.CopyTo(rig.bodyVitals);
+                rig.bodyVitals.PROPEGATE_SOFT();
                 rig.bodyVitals.CalibratePlayerBodyScale();
             }
+
+            if (!string.IsNullOrWhiteSpace(avatarId))
+                rig.SwapAvatarCrate(avatarId);
+        }
+
+        public void OnRigCreated(RigManager rig) {
+            pullCord = rig.GetComponentInChildren<PullCordDevice>(true);
 
             // Lock many of the bones in place to increase stability
             foreach (var found in rig.GetComponentsInChildren<ConfigurableJoint>(true))
@@ -189,9 +208,6 @@ namespace LabFusion.Representation
                 found.projectionDistance = 0.001f;
                 found.projectionAngle = 40f;
             }
-
-            if (!string.IsNullOrWhiteSpace(avatarId))
-                rig.SwapAvatarCrate(avatarId);
 
             var leftHaptor = rig.openControllerRig.leftController.haptor;
             rig.openControllerRig.leftController = rig.openControllerRig.leftController.gameObject.AddComponent<Controller>();
@@ -221,6 +237,9 @@ namespace LabFusion.Representation
 
             PlayerRepUtilities.FillTransformArray(ref repTransforms, rig);
             PlayerRepUtilities.FillGameworldArray(ref gameworldRigTransforms, rig);
+
+            // Delay avatar switching for safety
+            MelonCoroutines.Start(Internal_DelayInitialAvatar());
         }
 
         public static void OnRecreateReps() {

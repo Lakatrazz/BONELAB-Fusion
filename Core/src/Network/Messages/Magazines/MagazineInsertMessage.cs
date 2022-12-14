@@ -77,9 +77,6 @@ namespace LabFusion.Network
                                 if (gunSyncable.AmmoSocket._magazinePlug) {
                                     var otherPlug = gunSyncable.AmmoSocket._magazinePlug;
 
-                                    if (otherPlug == magazineSyncable.Magazine.magazinePlug)
-                                        return;
-
                                     AmmoSocketPatches.IgnorePatch = true;
                                     if (otherPlug) {
                                         otherPlug.ForceEject();
