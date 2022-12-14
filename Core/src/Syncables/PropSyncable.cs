@@ -414,7 +414,7 @@ namespace LabFusion.Syncables
             var lastPosition = LastSentPositions[index];
             var lastRotation = LastSentRotations[index];
 
-            return (transform.position - lastPosition).sqrMagnitude > 0.001f || Quaternion.Angle(transform.rotation, lastRotation) > 0.05f; 
+            return (transform.position - lastPosition).sqrMagnitude > 0.01f || Quaternion.Angle(transform.rotation, lastRotation) > 0.15f; 
         }
 
         private void OnOwnedUpdate() {
@@ -433,8 +433,6 @@ namespace LabFusion.Syncables
                     continue;
                 }
 
-                PDControllers[i].OnResetDerivatives(rb);
-
                 if (!hasMovingBody && !rb.IsSleeping() && HasMoved(i)) {
                     hasMovingBody = true;
                 }
@@ -451,6 +449,7 @@ namespace LabFusion.Syncables
 
                 LastSentPositions[i] = rb.transform.position;
                 LastSentRotations[i] = rb.transform.rotation;
+                PDControllers[i].OnResetDerivatives(rb);
             }
 
             using (var writer = FusionWriter.Create()) {

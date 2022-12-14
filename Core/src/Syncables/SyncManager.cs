@@ -62,16 +62,25 @@ namespace LabFusion.Syncables {
         }
 
         internal static void OnUpdate() {
+            PropSyncable.part1Ms = 0;
+            PropSyncable.part2Ms = 0;
+            PropSyncable.part3Ms = 0;
+            PropSyncable.part4Ms = 0;
+
             // Here we send over position information/etc of our syncables
-            foreach (var syncable in Syncables) {
+            foreach (var syncable in Syncables.Values) {
                 try {
-                    syncable.Value.OnUpdate();
+                    syncable.OnUpdate();
                 }
                 catch (Exception e) {
 #if DEBUG
                     FusionLogger.LogException("executing OnUpdate for syncable", e);
 #endif
                 }
+            }
+
+            if (NetworkInfo.HasServer && !NetworkInfo.IsServer) {
+                FusionLogger.Log($"Part 1: {PropSyncable.part1Ms}ms, Part 2: {PropSyncable.part2Ms}ms, Part 3: {PropSyncable.part3Ms}ms, Part 4: {PropSyncable.part4Ms}ms");
             }
         }
 

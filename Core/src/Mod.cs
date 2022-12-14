@@ -38,6 +38,8 @@ namespace LabFusion
             FusionMessageHandler.RegisterHandlersFromAssembly(FusionAssembly);
             GrabGroupHandler.RegisterHandlersFromAssembly(FusionAssembly);
 
+            PDController.OnMelonInitialize();
+
             OnInitializeNetworking();
         }
 
@@ -87,6 +89,7 @@ namespace LabFusion
         }
 
         public override void OnFixedUpdate() {
+            PDController.OnFixedUpdate();
             PlayerRep.OnFixedUpdate();
             SyncManager.OnFixedUpdate();
         }
