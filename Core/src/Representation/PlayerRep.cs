@@ -101,7 +101,7 @@ namespace LabFusion.Representation
                 grip.OnGrabConfirm(hand, true);
                 RigReferences.SetSnatch(handedness, grip);
 
-                if (grip.GetIl2CppType() == Il2CppType.Of<TargetGrip>()) {
+                if (grip.GetIl2CppType() != Il2CppType.Of<TargetGrip>()) {
                     grip.FreeJoints(hand);
 
                     RigReferences.RemoveJoint(handedness);
