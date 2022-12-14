@@ -101,12 +101,10 @@ namespace LabFusion.Representation
                 grip.OnGrabConfirm(hand, true);
                 RigReferences.SetSnatch(handedness, grip);
 
-                if (grip.GetIl2CppType() != Il2CppType.Of<TargetGrip>()) {
-                    grip.FreeJoints(hand);
+                grip.FreeJoints(hand);
 
-                    RigReferences.RemoveJoint(handedness);
-                    RigReferences.SetClientJoint(handedness, hand.gameObject.AddComponent<ConfigurableJoint>());
-                }
+                RigReferences.RemoveJoint(handedness);
+                RigReferences.SetClientJoint(handedness, hand.gameObject.AddComponent<ConfigurableJoint>());
             }
         }
 
@@ -118,8 +116,6 @@ namespace LabFusion.Representation
             var grip = RigReferences.GetSnatch(handedness);
             if (grip)
                 grip.ForceDetach(hand);
-            else
-                hand.DetachObject();
 
             RigReferences.RemoveJoint(handedness);
         }

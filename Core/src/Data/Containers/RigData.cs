@@ -54,6 +54,8 @@ namespace LabFusion.Data
             switch (handedness)
             {
                 default:
+                    return null;
+                case Handedness.LEFT:
                     return LeftSerializedAnchor;
                 case Handedness.RIGHT:
                     return RightSerializedAnchor;
@@ -64,7 +66,7 @@ namespace LabFusion.Data
         {
             switch (handedness)
             {
-                default:
+                case Handedness.LEFT:
                     LeftSerializedAnchor = anchor;
                     break;
                 case Handedness.RIGHT:
@@ -91,7 +93,7 @@ namespace LabFusion.Data
         {
             switch (handedness)
             {
-                default:
+                case Handedness.LEFT:
                     LeftClientJoint = joint;
                     break;
                 case Handedness.RIGHT:
@@ -118,6 +120,8 @@ namespace LabFusion.Data
             switch (handedness)
             {
                 default:
+                    return null;
+                case Handedness.LEFT:
                     return LeftSnatchGrip;
                 case Handedness.RIGHT:
                     return RightSnatchGrip;
@@ -128,7 +132,7 @@ namespace LabFusion.Data
         {
             switch (handedness)
             {
-                default:
+                case Handedness.LEFT:
                     LeftSnatchGrip = grip;
                     break;
                 case Handedness.RIGHT:

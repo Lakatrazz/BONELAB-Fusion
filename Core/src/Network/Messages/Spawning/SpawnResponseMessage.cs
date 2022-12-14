@@ -216,7 +216,12 @@ namespace LabFusion.Network
                     }
                 }
                 else if (PlayerRep.Representations.TryGetValue(owner, out var rep)) {
-                    MelonCoroutines.Start(Internal_ForceGrabConfirm(rep, hand, grip));
+                    var hostTransform = grip.Host.GetTransform();
+                    var repHand = rep.RigReferences.GetHand(hand);
+                    hostTransform.position = repHand.transform.position;
+                    hostTransform.rotation = repHand.transform.rotation;
+
+                    rep.AttachObject(hand, grip);
                 }
             }
 
@@ -231,18 +236,6 @@ namespace LabFusion.Network
             hostTransform.rotation = hand.transform.rotation;
 
             grip.OnGrabConfirm(hand, true);
-        }
-
-        private static IEnumerator Internal_ForceGrabConfirm(PlayerRep rep, Handedness hand, Grip grip)
-        {
-            yield return null;
-
-            var hostTransform = grip.Host.GetTransform();
-            var repHand = rep.RigReferences.GetHand(hand);
-            hostTransform.position = repHand.transform.position;
-            hostTransform.rotation = repHand.transform.rotation;
-
-            rep.AttachObject(hand, grip);
         }
 
         private static IEnumerator PostSpawnRoutine(AssetPoolee __instance, byte owner, Grip grip = null, Handedness hand = Handedness.UNDEFINED) {
