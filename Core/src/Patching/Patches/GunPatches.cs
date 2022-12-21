@@ -27,6 +27,22 @@ namespace LabFusion.Patching
     public static class GunPatches {
         public static bool IgnorePatches = false;
 
+        [HarmonyPatch(nameof(Gun.Fire))]
+        [HarmonyPrefix]
+        public static bool Fire(Gun __instance) {
+            if (IgnorePatches)
+                return true;
+
+            if (NetworkInfo.HasServer && __instance.triggerGrip) {
+                var hand = __instance.triggerGrip.GetHand();
+
+                if (PlayerRep.Managers.ContainsKey(hand.manager))
+                    return false;
+            }
+
+            return true;
+        }
+
         [HarmonyPatch(nameof(Gun.OnFire))]
         [HarmonyPrefix]
         public static void OnFire(Gun __instance) {

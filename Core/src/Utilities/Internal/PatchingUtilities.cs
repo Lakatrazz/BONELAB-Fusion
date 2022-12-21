@@ -8,9 +8,12 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Events;
 using BoneLib;
 
+using LabFusion.Patching;
+
 namespace LabFusion.Utilities {
-    public static class HookingUtilities {
-        public static void HookAll() {
+    internal static class PatchingUtilities {
+        internal static void PatchAll() {
+            VirtualControllerPatches.Patch();
         }
     }
 }

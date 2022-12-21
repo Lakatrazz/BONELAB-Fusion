@@ -68,7 +68,6 @@ namespace LabFusion.Data
 
                 if (foundSyncable is PropSyncable prop) {
                     syncable = prop;
-
 #if DEBUG
                     FusionLogger.Log($"Found existing prop grip!");
 #endif
@@ -101,9 +100,9 @@ namespace LabFusion.Data
             return GetGrip(out _);
         }
 
-        public override void RequestGrab(PlayerRep rep, Handedness handedness, Grip grip) {
+        public override void RequestGrab(PlayerRep rep, Handedness handedness, Grip grip, bool useCustomJoint = true) {
             if (isGrabbed)
-                base.RequestGrab(rep, handedness, grip);
+                base.RequestGrab(rep, handedness, grip, useCustomJoint);
         }
     }
 }

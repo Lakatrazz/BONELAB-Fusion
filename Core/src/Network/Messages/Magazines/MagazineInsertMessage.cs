@@ -77,15 +77,19 @@ namespace LabFusion.Network
                                 if (gunSyncable.AmmoSocket._magazinePlug) {
                                     var otherPlug = gunSyncable.AmmoSocket._magazinePlug;
 
-                                    AmmoSocketPatches.IgnorePatch = true;
-                                    if (otherPlug) {
-                                        otherPlug.ForceEject();
+                                    if (otherPlug != magazineSyncable.Magazine.magazinePlug) {
+                                        AmmoSocketPatches.IgnorePatch = true;
+                                        if (otherPlug)
+                                        {
+                                            otherPlug.ForceEject();
 
-                                        if (PropSyncable.MagazineCache.TryGetValue(otherPlug.magazine, out var otherMag)) {
-                                            otherMag.SetRigidbodiesDirty();
+                                            if (PropSyncable.MagazineCache.TryGetValue(otherPlug.magazine, out var otherMag))
+                                            {
+                                                otherMag.SetRigidbodiesDirty();
+                                            }
                                         }
+                                        AmmoSocketPatches.IgnorePatch = false;
                                     }
-                                    AmmoSocketPatches.IgnorePatch = false;
                                 }
 
                                 AmmoSocketPatches.IgnorePatch = true;

@@ -92,19 +92,26 @@ namespace LabFusion.Representation
             CreateRep();
         }
 
-        public void AttachObject(Handedness handedness, Grip grip) {
+        public void AttachObject(Handedness handedness, Grip grip, bool useCustomJoint = true) {
             var hand = RigReferences.GetHand(handedness);
             if (hand == null)
                 return;
 
             if (grip) {
-                grip.OnGrabConfirm(hand, true);
+                hand.HoveringReceiver = grip;
+                hand.farHoveringReciever = null;
+
+                grip.OnHandHoverUpdate(hand);
+
+                grip.OnGrabConfirm(hand, useCustomJoint);
                 RigReferences.SetSnatch(handedness, grip);
 
-                grip.FreeJoints(hand);
+                if (useCustomJoint) {
+                    grip.FreeJoints(hand);
 
-                RigReferences.RemoveJoint(handedness);
-                RigReferences.SetClientJoint(handedness, hand.gameObject.AddComponent<ConfigurableJoint>());
+                    RigReferences.RemoveJoint(handedness);
+                    RigReferences.SetClientJoint(handedness, hand.gameObject.AddComponent<ConfigurableJoint>());
+                }
             }
         }
 
@@ -118,6 +125,7 @@ namespace LabFusion.Representation
                 grip.ForceDetach(hand);
 
             RigReferences.RemoveJoint(handedness);
+            RigReferences.SetGrabPoint(handedness, null);
         }
 
         public void OnHandFixedUpdate(Hand hand) {
@@ -135,9 +143,6 @@ namespace LabFusion.Representation
                     else
                         Grip.Cache.Get(hand.m_CurrentAttachedGO).FreeJoints(hand);
                 }
-
-                hand.joint.breakForce = float.PositiveInfinity;
-                hand.joint.breakTorque = float.PositiveInfinity;
             }
         }
 

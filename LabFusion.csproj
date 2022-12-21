@@ -262,10 +262,12 @@
     <Compile Include="Core\src\Network\NetworkLayer.cs" />
     <Compile Include="Core\src\Network\Steam\SteamSocketManager.cs" />
     <Compile Include="Core\src\Network\Steam\SteamSocketHandler.cs" />
+    <Compile Include="Core\src\Patching\NativeStructs\HandGripPair_.cs" />
     <Compile Include="Core\src\Patching\Patches\AssetPooleePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ChunkTriggerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\GrabPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\GunPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\HandJointConfigurationPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\InventorySlotReceiverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\InventoryAmmoReceiverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\LevelsPanelViewPatches.cs" />
@@ -280,6 +282,7 @@
     <Compile Include="Core\src\Patching\Patches\SeatPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\TriggerLasersPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\UnityPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\VirtualControllerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ZonePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ZoneSpawnerPatches.cs" />
     <Compile Include="Core\src\Representation\PlayerId.cs" />
@@ -288,7 +291,7 @@
     <Compile Include="Core\src\Representation\PlayerRepUtilities.cs" />
     <Compile Include="Core\src\Utilities\FloatingOriginUtilities.cs" />
     <Compile Include="Core\src\Utilities\GameObjectUtilities.cs" />
-    <Compile Include="Core\src\Utilities\HookingUtilities.cs" />
+    <Compile Include="Core\src\Utilities\Internal\PatchingUtilities.cs" />
     <Compile Include="Core\src\Utilities\Asset Warehouses\SpawnableWarehouseUtilities.cs" />
     <Compile Include="Core\src\Utilities\Asset Warehouses\AvatarWarehouseUtilities.cs" />
     <Compile Include="Core\src\Utilities\Internal\BigEndianHelper.cs" />

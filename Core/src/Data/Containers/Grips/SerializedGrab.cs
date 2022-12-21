@@ -18,8 +18,8 @@ namespace LabFusion.Data {
 
         public abstract Grip GetGrip();
 
-        public virtual void RequestGrab(PlayerRep rep, Handedness handedness, Grip grip) {
-            rep.AttachObject(handedness, grip);
+        public virtual void RequestGrab(PlayerRep rep, Handedness handedness, Grip grip, bool useCustomJoint = true) {
+            rep.AttachObject(handedness, grip, useCustomJoint);
         }
     }
 }

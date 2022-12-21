@@ -10,11 +10,6 @@ using LabFusion.Syncables;
 using MelonLoader;
 
 using LabFusion.Grabbables;
-using BoneLib;
-using UnityEngine;
-using SLZ.Bonelab;
-using SLZ.SaveData;
-using System.Diagnostics;
 
 namespace LabFusion
 {
@@ -44,7 +39,7 @@ namespace LabFusion
         }
 
         public override void OnLateInitializeMelon() {
-            HookingUtilities.HookAll();
+            PatchingUtilities.PatchAll();
             InternalLayerHelpers.OnLateInitializeLayer();
         }
 

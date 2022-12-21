@@ -46,6 +46,9 @@ namespace LabFusion.Data
         public SerializedGripAnchor LeftSerializedAnchor { get; private set; }
         public SerializedGripAnchor RightSerializedAnchor { get; private set; }
 
+        public SerializedTransform LeftGrabPoint { get; private set; }
+        public SerializedTransform RightGrabPoint { get; private set; }
+
         public ConfigurableJoint LeftClientJoint { get; private set; }
         public ConfigurableJoint RightClientJoint { get; private set; }
 
@@ -75,6 +78,44 @@ namespace LabFusion.Data
             }
         }
 
+        public void SetHandPosition(Handedness handedness, Grip grip)
+        {
+            var point = GetGrabPoint(handedness);
+
+            if (point != null)
+            {
+                var hand = GetHand(handedness);
+
+                hand.transform.position = grip.transform.TransformPoint(point.position);
+                hand.transform.rotation = grip.transform.rotation * point.rotation.Expand();
+            }
+        }
+
+        public SerializedTransform GetGrabPoint(Handedness handedness)
+        {
+            switch (handedness)
+            {
+                default:
+                    return null;
+                case Handedness.LEFT:
+                    return LeftGrabPoint;
+                case Handedness.RIGHT:
+                    return RightGrabPoint;
+            }
+        }
+
+        public void SetGrabPoint(Handedness handedness, SerializedTransform anchor)
+        {
+            switch (handedness)
+            {
+                case Handedness.LEFT:
+                    LeftGrabPoint = anchor;
+                    break;
+                case Handedness.RIGHT:
+                    RightGrabPoint = anchor;
+                    break;
+            }
+        }
 
         public ConfigurableJoint GetClientJoint(Handedness handedness)
         {
