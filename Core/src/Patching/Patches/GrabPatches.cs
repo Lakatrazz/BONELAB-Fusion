@@ -30,24 +30,24 @@ namespace LabFusion.Patching
             if (!(__instance.pullCoroutine != null && !__state))
                 return;
 
-            GrabHelper.SendObjectForcePull(hand.handedness, __instance._grip);
+            GrabHelper.SendObjectForcePull(hand, __instance._grip);
         }
     }
 
-    [HarmonyPatch(typeof(Hand), "AttachObject")]
-    public static class AttachObjectPatch
+    [HarmonyPatch(typeof(Grip), nameof(Grip.OnAttachedToHand))]
+    public static class OnAttachedToHandPatch
     {
-        public static void Prefix(Hand __instance, GameObject objectToAttach) {
+        public static void Prefix(Grip __instance, Hand hand) {
             try {
                 // Make sure this is the main rig
-                if (__instance.manager != RigData.RigReferences.RigManager)
+                if (hand.manager != RigData.RigReferences.RigManager)
                     return;
 
-                GrabHelper.SendObjectAttach(__instance.handedness, Grip.Cache.Get(objectToAttach));
+                GrabHelper.SendObjectAttach(hand, __instance);
             }
             catch (Exception e) {
 #if DEBUG
-                FusionLogger.LogException("to execute patch Hand.AttachObject", e);
+                FusionLogger.LogException("to execute patch Grip.OnAttachedToHand", e);
 #endif
             }
         }

@@ -7,6 +7,7 @@ using SLZ;
 using SLZ.Interaction;
 using SLZ.Props;
 using SLZ.Rig;
+using SLZ.Marrow.Utilities;
 
 using System;
 using System.Collections.Generic;
@@ -18,17 +19,14 @@ using System.Threading.Tasks;
 using TMPro;
 
 using UnityEngine;
-using UnityEngine.Animations.Rigging;
+
 using MelonLoader;
-using UnhollowerRuntimeLib;
 
 namespace LabFusion.Representation
 {
     public class PlayerRep : IDisposable {
         public static readonly Dictionary<byte, PlayerRep> Representations = new Dictionary<byte, PlayerRep>();
         public static readonly Dictionary<RigManager, PlayerRep> Managers = new Dictionary<RigManager, PlayerRep>(new UnityComparer());
-
-        public const float PelvisPinMlp = 0.1f;
 
         public const float NametagHeight = 0.23f;
 
@@ -98,21 +96,56 @@ namespace LabFusion.Representation
                 return;
 
             if (grip) {
-                hand.HoveringReceiver = grip;
-                hand.farHoveringReciever = null;
-
-                grip.OnHandHoverUpdate(hand);
-
-                grip.OnGrabConfirm(hand, useCustomJoint);
+                // Update snatch grip
                 RigReferences.SetSnatch(handedness, grip);
 
-                if (useCustomJoint) {
-                    grip.FreeJoints(hand);
+                // Create lock joint
+                var joint = hand.gameObject.AddComponent<ConfigurableJoint>();
+                joint.xMotion = joint.yMotion = joint.zMotion = joint.angularXMotion = joint.angularYMotion = joint.angularZMotion = ConfigurableJointMotion.Locked;
+                joint.projectionMode = JointProjectionMode.PositionAndRotation;
+                joint.projectionAngle = 0f;
+                joint.projectionDistance = 0f;
 
-                    RigReferences.RemoveJoint(handedness);
-                    RigReferences.SetClientJoint(handedness, hand.gameObject.AddComponent<ConfigurableJoint>());
+                if (grip.HasRigidbody)
+                    joint.connectedBody = grip.Host.Rb;
+
+                // Delay grabbing the object and destroying the joint
+                MelonCoroutines.Start(Internal_DelayedGrab(joint, hand, handedness, grip, useCustomJoint));
+            }
+        }
+
+        private IEnumerator Internal_DelayedGrab(Joint joint, Hand hand, Handedness handedness, Grip grip, bool useCustomJoint = true) {
+            // Wait a few frames
+            for (var i = 0; i < 5; i++) {
+                if (RigReferences.GetSnatch(handedness) != null) {
+                    // Update last time grabbed, so that the hovering actually updates properly
+                    hand.Controller._lastTimeGrabbed = Time.realtimeSinceStartup;
+
+                    yield return null;
+                }
+                else
+                {
+                    // Destroy the joint if we are cancelling the grab
+                    if (!joint.IsNOC())
+                        GameObject.Destroy(joint);
+
+                    yield break;
                 }
             }
+
+            // Actually attach the joints
+            grip.OnGrabConfirm(hand, true);
+
+            if (useCustomJoint) {
+                grip.FreeJoints(hand);
+
+                RigReferences.RemoveJoint(handedness);
+                RigReferences.SetClientJoint(handedness, hand.gameObject.AddComponent<ConfigurableJoint>());
+            }
+
+            // Destroy the temp joint
+            if (!joint.IsNOC())
+                GameObject.Destroy(joint);
         }
 
         public void DetachObject(Handedness handedness) {

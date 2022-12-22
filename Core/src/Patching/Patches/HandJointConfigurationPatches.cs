@@ -19,6 +19,9 @@ namespace LabFusion.Patching
     public static class HandJointConfigurationPatches
     {
         private static void Internal_ApplyJointSettings(ConfigurableJoint joint) {
+            joint.breakForce = float.PositiveInfinity;
+            joint.breakTorque = float.PositiveInfinity;
+
             if (NetworkInfo.HasServer) {
                 var hand = Hand.Cache.Get(joint.gameObject);
 

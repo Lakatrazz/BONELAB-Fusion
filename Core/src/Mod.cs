@@ -10,6 +10,9 @@ using LabFusion.Syncables;
 using MelonLoader;
 
 using LabFusion.Grabbables;
+using UnityEngine;
+using SLZ.Interaction;
+using Il2CppSystem.Collections;
 
 namespace LabFusion
 {

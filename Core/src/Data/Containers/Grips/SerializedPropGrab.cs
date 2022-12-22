@@ -30,12 +30,17 @@ namespace LabFusion.Data
 
         public SerializedPropGrab() { }
 
-        public SerializedPropGrab(string fullPath, ushort index, ushort id, bool isGrabbed)
+        public SerializedPropGrab(string fullPath, ushort index, ushort id, bool isGrabbed, GripPair pair)
         {
             this.fullPath = fullPath;
             this.index = index;
             this.id = id;
             this.isGrabbed = isGrabbed;
+
+            var handTransform = pair.hand.transform;
+            var gripTransform = pair.grip.transform;
+
+            relativeHand = new SerializedTransform(gripTransform.InverseTransformPoint(handTransform.position), Quaternion.Inverse(gripTransform.rotation) * handTransform.rotation);
         }
 
         public override void Serialize(FusionWriter writer)
@@ -44,6 +49,7 @@ namespace LabFusion.Data
             writer.Write(index);
             writer.Write(id);
             writer.Write(isGrabbed);
+            writer.Write(relativeHand);
         }
 
         public override void Deserialize(FusionReader reader)
@@ -52,6 +58,7 @@ namespace LabFusion.Data
             index = reader.ReadUInt16();
             id = reader.ReadUInt16();
             isGrabbed = reader.ReadBoolean();
+            relativeHand = reader.ReadFusionSerializable<SerializedTransform>();
         }
 
         public Grip GetGrip(out PropSyncable syncable) {

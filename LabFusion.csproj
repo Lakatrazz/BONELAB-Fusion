@@ -182,6 +182,7 @@
     <Compile Include="Core\src\Data\Containers\DataCorruptionException.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedPropGrab.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedWorldGrab.cs" />
+    <Compile Include="Core\src\Data\Containers\GripPair.cs" />
     <Compile Include="Core\src\Data\Containers\PDController.cs" />
     <Compile Include="Core\src\Data\Containers\RigData.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedGrab.cs" />
