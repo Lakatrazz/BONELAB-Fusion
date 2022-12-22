@@ -18,14 +18,12 @@ using SLZ.Interaction;
 using SLZ.Marrow.Warehouse;
 using SLZ.Marrow.Data;
 using MelonLoader;
-using static MelonLoader.MelonLogger;
+
 using SLZ.Zones;
 using SLZ.AI;
 using LabFusion.Extensions;
 using SLZ.Props.Weapons;
 using SLZ;
-using SLZ.Utilities;
-using SLZ.Player;
 
 namespace LabFusion.Network
 {
@@ -71,15 +69,7 @@ namespace LabFusion.Network
             string path = "_";
 
             if (spawner != null) {
-#if DEBUG
-                FusionLogger.Log("Spawn Response spawner was not null! Getting path!");
-#endif
-
                 path = spawner.gameObject.GetFullPath();
-
-#if DEBUG
-                FusionLogger.Log($"ZoneSpawner {spawner.name} got a path!");
-#endif
             }
 
             return new SpawnResponseData()
@@ -130,8 +120,16 @@ namespace LabFusion.Network
                 try {
                     var spawnerGo = GameObjectUtilities.GetGameObject(spawnerPath);
                     spawner = ZoneSpawner.Cache.Get(spawnerGo);
+
+#if DEBUG
+                    FusionLogger.Log($"Found spawner from path? {spawner != null}");
+#endif
                 } 
-                catch { }
+                catch (Exception e) {
+#if DEBUG
+                    FusionLogger.LogException("trying to get ZoneSpawner", e);
+#endif
+                }
             }
 
             if (PropSyncable.Cache.TryGetValue(go, out var syncable))
@@ -142,14 +140,9 @@ namespace LabFusion.Network
                 poolee = go.AddComponent<AssetPoolee>();
 
             try {
-                ZoneTracker tracker;
-                if (spawner != null && (tracker = go.GetComponent<ZoneTracker>())) {
-                    tracker.spawner = spawner;
-
-                    AIBrain brain = go.GetComponent<AIBrain>();
-                    if (!brain.IsNOC() && !brain.behaviour.IsNOC() && !spawner.currEnemyProfile.baseConfig.IsNOC()) {
-                        brain.behaviour.SetBaseConfig(spawner.currEnemyProfile.baseConfig);
-                    }
+                AIBrain brain;
+                if (spawner != null && (brain = go.GetComponent<AIBrain>())) {
+                    spawner.InsertNPC(brain);
                 }
             }
             catch (Exception e) {

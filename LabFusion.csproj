@@ -211,6 +211,7 @@
     <Compile Include="Core\src\Extensions\UnityComparer.cs" />
     <Compile Include="Core\src\Extensions\UnityObject.cs" />
     <Compile Include="Core\src\Extensions\Vector3.cs" />
+    <Compile Include="Core\src\Extensions\ZoneSpawner.cs" />
     <Compile Include="Core\src\Grabbables\GrabHelper.cs" />
     <Compile Include="Core\src\Grabbables\InteractableHelpers.cs" />
     <Compile Include="Core\src\Grabbables\SerializedGrabHandler.cs" />
