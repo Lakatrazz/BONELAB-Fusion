@@ -16,43 +16,43 @@ namespace LabFusion.Network
             Disconnect = 3,
 
             PlayerRepTransform = 4,
-            PlayerRepGameworld = 29,
-            PlayerRepAvatar = 5,
-            PlayerRepVitals = 6,
-            PlayerRepRagdoll = 27,
-            PlayerRepSeat = 28,
+            PlayerRepGameworld = 5,
+            PlayerRepAvatar = 6,
+            PlayerRepVitals = 7,
+            PlayerRepRagdoll = 8,
+            PlayerRepSeat = 9,
 
-            PlayerRepGrab = 7,
-            PlayerRepForceGrab = 8,
-            PlayerRepRelease = 9,
-            PlayerRepAnchors = 10,
+            PlayerRepGrab = 10,
+            PlayerRepForceGrab = 11,
+            PlayerRepRelease = 12,
+            PlayerRepAnchors = 13,
 
-            SceneLoad = 11,
+            SceneLoad = 14,
 
-            SyncableIDRequest = 12,
-            SyncableIDResponse = 13,
-            SyncableOwnershipRequest = 14,
-            SyncableOwnershipResponse = 15,
+            SyncableIDRequest = 15,
+            SyncableIDResponse = 16,
+            SyncableOwnershipRequest = 17,
+            SyncableOwnershipResponse = 18,
 
-            PropSyncableUpdate = 16,
-            PropSyncableCreate = 40,
+            PropSyncableUpdate = 19,
+            PropSyncableCreate = 20,
 
-            WorldGravity = 17,
+            WorldGravity = 21,
 
-            SpawnRequest = 18,
-            SpawnResponse = 19,
-            DespawnRequest = 20,
-            DespawnResponse = 21,
+            SpawnRequest = 22,
+            SpawnResponse = 23,
+            DespawnRequest = 24,
+            DespawnResponse = 25,
 
-            InventorySlotInsert = 22,
-            InventorySlotDrop = 23,
+            InventorySlotInsert = 26,
+            InventorySlotDrop = 27,
 
-            MagazineInsert = 24,
-            MagazineEject = 25,
+            MagazineInsert = 28,
+            MagazineEject = 29,
 
-            GunShot = 26,
+            GunShot = 30,
 
-            PuppetMasterKill = 27,
+            PuppetMasterKill = 31,
 
             ModuleMessage = 80;
     }
