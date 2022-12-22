@@ -222,6 +222,8 @@
     <Compile Include="Core\src\Network\Helpers\MessageSender.cs" />
     <Compile Include="Core\src\Network\Messages\Combat\GunShotMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Combat\PuppetMasterKillMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Destruction\ObjectDestructableDestroyMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Destruction\PropHealthDestroyMessage.cs" />
     <Compile Include="Core\src\Network\Messages\FusionMessage.cs" />
     <Compile Include="Core\src\Network\Messages\FusionMessageHandler.cs" />
     <Compile Include="Core\src\Network\Messages\FusionReader.cs" />
@@ -274,12 +276,14 @@
     <Compile Include="Core\src\Patching\Patches\InventorySlotReceiverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\InventoryAmmoReceiverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\LevelsPanelViewPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\ObjectDestructablePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\OpenControllerRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\GameworldSkeletonRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PhysicsRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PlayerHealthPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PlugPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PopUpMenuPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\PropHealthPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PuppetMasterPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\SceneStreamerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\SeatPatches.cs" />

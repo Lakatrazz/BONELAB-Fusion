@@ -14,14 +14,17 @@ using LabFusion.Representation;
 using LabFusion.Utilities;
 
 using PuppetMasta;
+
 using SLZ;
 using SLZ.AI;
 using SLZ.Interaction;
 using SLZ.Marrow.Pool;
 using SLZ.Marrow.SceneStreaming;
+using SLZ.Props;
 using SLZ.Props.Weapons;
 using SLZ.Utilities;
 using SLZ.Vehicle;
+
 using UnityEngine;
 
 namespace LabFusion.Syncables
@@ -39,6 +42,10 @@ namespace LabFusion.Syncables
 
         public static readonly Dictionary<SimpleGripEvents, PropSyncable> SimpleGripEventsCache = new Dictionary<SimpleGripEvents, PropSyncable>(new UnityComparer());
 
+        public static readonly Dictionary<Prop_Health, PropSyncable> PropHealthCache = new Dictionary<Prop_Health, PropSyncable>(new UnityComparer());
+        public static readonly Dictionary<ObjectDestructable, PropSyncable> ObjectDestructableCache = new Dictionary<ObjectDestructable, PropSyncable>(new UnityComparer());
+
+
         public PuppetMaster PuppetMaster;
         public AIBrain AIBrain;
 
@@ -53,6 +60,9 @@ namespace LabFusion.Syncables
         public readonly WeaponSlot WeaponSlot;
 
         public readonly Seat[] Seats;
+
+        public readonly Prop_Health[] PropHealths;
+        public readonly ObjectDestructable[] ObjectDestructables;
 
         public readonly Magazine Magazine;
         public readonly Gun Gun;
@@ -175,6 +185,16 @@ namespace LabFusion.Syncables
             foreach (var events in SimpleGripEvents) {
                 SimpleGripEventsCache.Add(events, this);
             }
+
+            PropHealths = GameObject.GetComponentsInChildren<Prop_Health>(true);
+
+            foreach (var health in PropHealths)
+                PropHealthCache.Add(health, this);
+
+            ObjectDestructables = GameObject.GetComponentsInChildren<ObjectDestructable>(true);
+
+            foreach (var destructable in ObjectDestructables)
+                ObjectDestructableCache.Add(destructable, this);
         }
 
         private void AssignInformation(InteractableHost host) {
@@ -238,6 +258,40 @@ namespace LabFusion.Syncables
                 _grabbedGrips[grip]--;
         }
 
+        public byte? GetIndex(Prop_Health health)
+        {
+            for (byte i = 0; i < PropHealths.Length; i++)
+            {
+                if (PropHealths[i] == health)
+                    return i;
+            }
+            return null;
+        }
+
+        public Prop_Health GetPropHealth(byte index)
+        {
+            if (PropHealths != null && PropHealths.Length > index)
+                return PropHealths[index];
+            return null;
+        }
+
+        public byte? GetIndex(ObjectDestructable destructable)
+        {
+            for (byte i = 0; i < ObjectDestructables.Length; i++)
+            {
+                if (ObjectDestructables[i] == destructable)
+                    return i;
+            }
+            return null;
+        }
+
+        public ObjectDestructable GetDestructable(byte index)
+        {
+            if (ObjectDestructables != null && ObjectDestructables.Length > index)
+                return ObjectDestructables[index];
+            return null;
+        }
+
         public byte? GetIndex(SimpleGripEvents gripEvents)
         {
             for (byte i = 0; i < SimpleGripEvents.Length; i++)
@@ -297,6 +351,18 @@ namespace LabFusion.Syncables
             foreach (var events in SimpleGripEvents) {
                 if (!events.IsNOC())
                     SimpleGripEventsCache.Remove(events);
+            }
+
+            foreach (var health in PropHealths)
+            {
+                if (!health.IsNOC())
+                    PropHealthCache.Remove(health);
+            }
+
+            foreach (var destructable in ObjectDestructables)
+            {
+                if (!destructable.IsNOC())
+                    ObjectDestructableCache.Remove(destructable);
             }
 
             OnClearOverrides();

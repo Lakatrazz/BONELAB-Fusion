@@ -56,6 +56,9 @@ namespace LabFusion.Network
 
             SimpleGripEvent = 32,
 
+            PropHealthDestroy = 33,
+            ObjectDestructableDestroy = 34,
+
             ModuleMessage = 80;
     }
 
