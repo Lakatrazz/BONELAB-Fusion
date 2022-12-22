@@ -52,6 +52,8 @@ namespace LabFusion.Network
 
             GunShot = 26,
 
+            PuppetMasterKill = 27,
+
             ModuleMessage = 80;
     }
 

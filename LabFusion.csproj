@@ -221,6 +221,7 @@
     <Compile Include="Core\src\Network\Internal\InternalLayerHelpers.cs" />
     <Compile Include="Core\src\Network\Helpers\MessageSender.cs" />
     <Compile Include="Core\src\Network\Messages\Combat\GunShotMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Combat\PuppetMasterKillMessage.cs" />
     <Compile Include="Core\src\Network\Messages\FusionMessage.cs" />
     <Compile Include="Core\src\Network\Messages\FusionMessageHandler.cs" />
     <Compile Include="Core\src\Network\Messages\FusionReader.cs" />
@@ -281,6 +282,7 @@
     <Compile Include="Core\src\Patching\Patches\PuppetMasterPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\SceneStreamerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\SeatPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\SubBehaviourHealthPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\TriggerLasersPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\UnityPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\VirtualControllerPatches.cs" />
