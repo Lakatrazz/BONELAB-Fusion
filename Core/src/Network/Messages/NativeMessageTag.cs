@@ -54,6 +54,8 @@ namespace LabFusion.Network
 
             PuppetMasterKill = 31,
 
+            SimpleGripEvent = 32,
+
             ModuleMessage = 80;
     }
 

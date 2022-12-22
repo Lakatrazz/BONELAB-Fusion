@@ -37,10 +37,13 @@ namespace LabFusion.Syncables
 
         public static readonly Dictionary<PuppetMaster, PropSyncable> PuppetMasterCache = new Dictionary<PuppetMaster, PropSyncable>(new UnityComparer());
 
+        public static readonly Dictionary<SimpleGripEvents, PropSyncable> SimpleGripEventsCache = new Dictionary<SimpleGripEvents, PropSyncable>(new UnityComparer());
+
         public PuppetMaster PuppetMaster;
         public AIBrain AIBrain;
 
         public Grip[] PropGrips;
+        public SimpleGripEvents[] SimpleGripEvents;
         public Rigidbody[] Rigidbodies;
         public RigidbodyState[] RigidbodyStates;
         public PDController[] PDControllers;
@@ -166,6 +169,12 @@ namespace LabFusion.Syncables
             }
 
             HasIgnoreHierarchy = GameObject.GetComponentInParent<IgnoreHierarchy>(true);
+
+            SimpleGripEvents = GameObject.GetComponentsInChildren<SimpleGripEvents>(true);
+
+            foreach (var events in SimpleGripEvents) {
+                SimpleGripEventsCache.Add(events, this);
+            }
         }
 
         private void AssignInformation(InteractableHost host) {
@@ -229,6 +238,23 @@ namespace LabFusion.Syncables
                 _grabbedGrips[grip]--;
         }
 
+        public byte? GetIndex(SimpleGripEvents gripEvents)
+        {
+            for (byte i = 0; i < SimpleGripEvents.Length; i++)
+            {
+                if (SimpleGripEvents[i] == gripEvents)
+                    return i;
+            }
+            return null;
+        }
+
+        public SimpleGripEvents GetGripEvents(byte index)
+        {
+            if (SimpleGripEvents != null && SimpleGripEvents.Length > index)
+                return SimpleGripEvents[index];
+            return null;
+        }
+
         public byte? GetIndex(Seat seat)
         {
             for (byte i = 0; i < Seats.Length; i++)
@@ -266,6 +292,11 @@ namespace LabFusion.Syncables
             foreach (var seat in Seats) {
                 if (!seat.IsNOC())
                     SeatCache.Remove(seat);
+            }
+
+            foreach (var events in SimpleGripEvents) {
+                if (!events.IsNOC())
+                    SimpleGripEventsCache.Remove(events);
             }
 
             OnClearOverrides();
