@@ -59,6 +59,11 @@ namespace LabFusion.Network
             PropHealthDestroy = 33,
             ObjectDestructableDestroy = 34,
 
+            ArenaTransition = 35,
+            ChallengeSelect = 36,
+            ArenaMenu = 37,
+            GeoSelect = 38,
+
             ModuleMessage = 80;
     }
 

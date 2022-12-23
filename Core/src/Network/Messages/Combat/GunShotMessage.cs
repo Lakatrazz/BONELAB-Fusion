@@ -78,7 +78,10 @@ namespace LabFusion.Network
 
                                 gunSyncable.Gun.CeaseFire();
                                 gunSyncable.Gun.Charge();
-                                gunSyncable.Gun.InstantLoad();
+
+                                if (gunSyncable.Gun._magState != null)
+                                    gunSyncable.Gun._magState.Refill();
+
                                 gunSyncable.Gun.SlideGrabbedReleased();
                                 gunSyncable.Gun.SlideOverrideReleased();
 

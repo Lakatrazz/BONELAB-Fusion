@@ -63,6 +63,7 @@ namespace LabFusion
 
             SyncManager.OnCleanup();
             RigData.OnCacheRigInfo(sceneName);
+            ArenaData.OnCacheArenaInfo();
             PlayerRep.OnRecreateReps();
         }
 

@@ -178,6 +178,7 @@
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\SteamInterface.cs" />
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utf8String.cs" />
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utility.cs" />
+    <Compile Include="Core\src\Data\Containers\ArenaData.cs" />
     <Compile Include="Core\src\Data\Containers\ConfigurableJointDriveData.cs" />
     <Compile Include="Core\src\Data\Containers\DataCorruptionException.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedPropGrab.cs" />
@@ -221,6 +222,10 @@
     <Compile Include="Core\src\Network\Helpers\NetworkHelper.cs" />
     <Compile Include="Core\src\Network\Internal\InternalLayerHelpers.cs" />
     <Compile Include="Core\src\Network\Helpers\MessageSender.cs" />
+    <Compile Include="Core\src\Network\Messages\Arena\ArenaMenuMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Arena\GeoSelectMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Arena\ChallengeSelectMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Arena\ArenaTransitionMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Combat\GunShotMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Combat\PuppetMasterKillMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Destruction\ObjectDestructableDestroyMessage.cs" />
@@ -269,6 +274,7 @@
     <Compile Include="Core\src\Network\Steam\SteamSocketManager.cs" />
     <Compile Include="Core\src\Network\Steam\SteamSocketHandler.cs" />
     <Compile Include="Core\src\Patching\NativeStructs\HandGripPair_.cs" />
+    <Compile Include="Core\src\Patching\Patches\ArenaPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\AssetPooleePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ChunkTriggerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\GrabPatches.cs" />
@@ -900,5 +906,6 @@
       <HintPath>Core\managed\UnityEngine.XRModule.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
