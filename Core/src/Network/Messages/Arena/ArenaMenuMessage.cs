@@ -23,6 +23,9 @@ namespace LabFusion.Network
         TRIAL_SELECT = 2,
         SURVIVAL_SELECT = 3,
         TOGGLE_DIFFICULTY = 4,
+        TOGGLE_ENEMY_PROFILE = 5,
+        CREATE_CUSTOM_GAME_AND_START = 6,
+        RESUME_SURVIVAL_FROM_ROUND = 7,
     }
 
     public class ArenaMenuData : IFusionSerializable, IDisposable
@@ -90,15 +93,17 @@ namespace LabFusion.Network
                             case ArenaMenuType.TOGGLE_DIFFICULTY:
                                 menu.ToggleDifficulty(data.selectionNumber);
                                 break;
+                            case ArenaMenuType.TOGGLE_ENEMY_PROFILE:
+                                menu.ToggleEnemyProfile(data.selectionNumber);
+                                break;
+                            case ArenaMenuType.CREATE_CUSTOM_GAME_AND_START:
+                                menu.CreateCustomGameAndStart();
+                                break;
+                            case ArenaMenuType.RESUME_SURVIVAL_FROM_ROUND:
+                                menu.ResumeSurvivalFromRound();
+                                break;
                         }
                     }
-
-                    var canvas = menu.transform.parent.gameObject;
-
-                    // Update the UI
-                    canvas.gameObject.SetActive(false);
-
-                    canvas.gameObject.SetActive(true);
 
                     ArenaMenuPatches.IgnorePatches = false;
                 }

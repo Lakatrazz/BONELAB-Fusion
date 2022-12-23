@@ -133,6 +133,66 @@ namespace LabFusion.Patching {
 
             return true;
         }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(ArenaMenuController.ToggleEnemyProfile))]
+        public static bool ToggleEnemyProfile(ArenaMenuController __instance, int profileIndex)
+        {
+            if (IgnorePatches)
+                return true;
+
+            if (NetworkInfo.HasServer)
+            {
+                if (!NetworkInfo.IsServer)
+                    return false;
+                else
+                {
+                    ArenaData.TEMP_SendMenuController((byte)profileIndex, ArenaMenuType.TOGGLE_ENEMY_PROFILE);
+                }
+            }
+
+            return true;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(ArenaMenuController.CreateCustomGameAndStart))]
+        public static bool CreateCustomGameAndStart(ArenaMenuController __instance)
+        {
+            if (IgnorePatches)
+                return true;
+
+            if (NetworkInfo.HasServer)
+            {
+                if (!NetworkInfo.IsServer)
+                    return false;
+                else
+                {
+                    ArenaData.TEMP_SendMenuController(0, ArenaMenuType.CREATE_CUSTOM_GAME_AND_START);
+                }
+            }
+
+            return true;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(ArenaMenuController.ResumeSurvivalFromRound))]
+        public static bool ResumeSurvivalFromRound(ArenaMenuController __instance)
+        {
+            if (IgnorePatches)
+                return true;
+
+            if (NetworkInfo.HasServer)
+            {
+                if (!NetworkInfo.IsServer)
+                    return false;
+                else
+                {
+                    ArenaData.TEMP_SendMenuController(0, ArenaMenuType.RESUME_SURVIVAL_FROM_ROUND);
+                }
+            }
+
+            return true;
+        }
     }
 
     [HarmonyPatch(typeof(ChallengeSelectMenu))]

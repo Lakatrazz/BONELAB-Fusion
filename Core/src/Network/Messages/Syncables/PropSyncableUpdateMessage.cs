@@ -139,11 +139,6 @@ namespace LabFusion.Network
                             syncable.DesiredPositions[i] = data.serializedPositions[i];
                             syncable.DesiredRotations[i] = data.serializedQuaternions[i].Expand();
                             syncable.DesiredVelocity = data.velocity;
-
-                            var rb = syncable.Rigidbodies[i];
-
-                            if (!rb.IsNOC() && rb.IsSleeping())
-                                rb.WakeUp();
                         }
                     }
 

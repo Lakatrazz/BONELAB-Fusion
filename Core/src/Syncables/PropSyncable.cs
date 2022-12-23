@@ -591,21 +591,12 @@ namespace LabFusion.Syncables
                 }
             }
 
-            if (!isSomethingGrabbed && Time.timeSinceLevelLoad - TimeOfMessage >= 1f) {
-                for (var i = 0; i < Rigidbodies.Length; i++) {
-                    var rb = Rigidbodies[i];
-
-                    if (!rb.IsNOC() && !rb.IsSleeping()) {
-                        rb.Sleep();
-                    }
-                }
-
+            if (!isSomethingGrabbed && Time.timeSinceLevelLoad - TimeOfMessage >= 1f)
                 return;
-            }
 
             for (var i = 0; i < Rigidbodies.Length; i++) {
                 var rb = Rigidbodies[i];
-                if (rb.IsNOC() || rb.IsSleeping())
+                if (rb.IsNOC())
                     continue;
 
                 bool isGrabbed = false;
