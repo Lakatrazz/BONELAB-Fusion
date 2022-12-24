@@ -181,6 +181,7 @@
     <Compile Include="Core\src\Data\Containers\ArenaData.cs" />
     <Compile Include="Core\src\Data\Containers\ConfigurableJointDriveData.cs" />
     <Compile Include="Core\src\Data\Containers\DataCorruptionException.cs" />
+    <Compile Include="Core\src\Data\Containers\DescentData.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedPropGrab.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedWorldGrab.cs" />
     <Compile Include="Core\src\Data\Containers\GripPair.cs" />
@@ -226,6 +227,8 @@
     <Compile Include="Core\src\Network\Messages\Arena\GeoSelectMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Arena\ChallengeSelectMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Arena\ArenaTransitionMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Campaign\DescentElevatorMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Campaign\DescentNooseMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Combat\GunShotMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Combat\PuppetMasterKillMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Destruction\ObjectDestructableDestroyMessage.cs" />
@@ -255,6 +258,7 @@
     <Compile Include="Core\src\Network\Messages\Server\ConnectionResponseMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ConnectionRequestMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\DisconnectMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Server\LoadingStateMessage.cs" />
     <Compile Include="Core\src\Network\Messages\SimpleStringMessage.cs" />
     <Compile Include="Core\src\Network\Helpers\NetworkInfo.cs" />
     <Compile Include="Core\src\Network\Internal\InternalServerHelpers.cs" />
@@ -277,6 +281,7 @@
     <Compile Include="Core\src\Patching\Patches\ArenaPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\AssetPooleePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ChunkTriggerPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\DescentPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\GrabPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\GunPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\HandJointConfigurationPatches.cs" />

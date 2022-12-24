@@ -14,6 +14,7 @@ namespace LabFusion.Representation
         public ulong LongId { get; private set; }
         public byte SmallId { get; private set; }
         public string Username { get; private set; }
+        public bool IsLoading { get; private set; }
 
         public PlayerId() { }
 
@@ -21,6 +22,10 @@ namespace LabFusion.Representation
             LongId = longId;
             SmallId = smallId;
             Username = username;
+        }
+
+        public void SetLoading(bool isLoading) {
+            IsLoading = isLoading;
         }
 
         public void Insert() {

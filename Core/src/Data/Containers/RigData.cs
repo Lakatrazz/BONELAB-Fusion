@@ -245,31 +245,28 @@ namespace LabFusion.Data
     {
         public static RigReferenceCollection RigReferences { get; private set; } = new RigReferenceCollection();
 
-        public static string RigScene { get; private set; }
         public static string RigAvatarId { get; private set; } = AvatarWarehouseUtilities.INVALID_AVATAR_BARCODE;
 
         public static Vector3 RigSpawn { get; private set; }
         public static Quaternion RigSpawnRot { get; private set; }
 
-        public static void OnCacheRigInfo(string sceneName) {
-            var rigObject = Player.rigManager;
+        public static void OnCacheRigInfo() {
+            var manager = Player.rigManager;
 
-            if (!rigObject) {
-                RigScene = null;
+            if (!manager) {
                 return;
             }
             
-            RigScene = sceneName;
-
-            RigReferences = new RigReferenceCollection(rigObject);
+            RigReferences = new RigReferenceCollection(manager);
             RigReferences.RigManager.bodyVitals.rescaleEvent += (BodyVitals.RescaleUI)OnRigRescale;
 
             if (NetworkInfo.HasServer) {
                 EnableRagdollOnDeath();
+                manager.health.TryCast<Player_Health>().reloadLevelOnDeath = false;
             }
 
-            RigSpawn = rigObject.transform.position;
-            RigSpawnRot = rigObject.transform.rotation;
+            RigSpawn = manager.transform.position;
+            RigSpawnRot = manager.transform.rotation;
         }
 
         public static void EnableRagdollOnDeath() {

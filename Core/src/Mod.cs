@@ -61,10 +61,20 @@ namespace LabFusion
             FusionLogger.Log($"Main scene {sceneName} was initialized.");
 #endif
 
+            // Cache info
             SyncManager.OnCleanup();
-            RigData.OnCacheRigInfo(sceneName);
+            RigData.OnCacheRigInfo();
+
+            // Level info
             ArenaData.OnCacheArenaInfo();
+            DescentData.OnCacheDescentInfo();
+            
+            // Create player reps
             PlayerRep.OnRecreateReps();
+
+            // Disable physics
+            if (NetworkInfo.HasServer)
+                Physics.autoSimulation = false;
         }
 
         public override void OnUpdate() {
@@ -85,6 +95,21 @@ namespace LabFusion
 
             // Update and push all network messages
             InternalLayerHelpers.OnUpdateLayer();
+
+            // Check all players loading
+            if (NetworkInfo.HasServer && !Physics.autoSimulation) {
+                bool canResume = true;
+
+                foreach (var id in PlayerIdManager.PlayerIds) {
+                    if (id.IsLoading) {
+                        canResume = false;
+                        break;
+                    }
+                }
+
+                if (canResume)
+                    Physics.autoSimulation = true;
+            }
         }
 
         public override void OnFixedUpdate() {

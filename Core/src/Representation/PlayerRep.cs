@@ -44,15 +44,18 @@ namespace LabFusion.Representation
         public static Transform[] gameworldPoints = new Transform[PlayerRepUtilities.GameworldRigTransformCount];
         public static Transform syncedPlayspace;
         public static Transform syncedPelvis;
+        public static Transform syncedFootball;
         public static BaseController syncedLeftController;
         public static BaseController syncedRightController;
 
         public SerializedLocalTransform[] serializedLocalTransforms = new SerializedLocalTransform[PlayerRepUtilities.TransformSyncCount];
         public SerializedLocalTransform[] serializedGameworldLocalTransforms = new SerializedLocalTransform[PlayerRepUtilities.GameworldRigTransformCount];
         public SerializedTransform serializedPelvis;
+        public SerializedTransform serializedFootball;
 
         public Vector3 predictVelocity;
-        public PDController pdController;
+        public PDController pelvisPDController;
+        public PDController footPDController;
         public float timeSincePelvisSent;
 
         public Transform[] repTransforms = new Transform[PlayerRepUtilities.TransformSyncCount];
@@ -61,6 +64,7 @@ namespace LabFusion.Representation
         public OpenControllerRig repControllerRig;
         public Transform repPlayspace;
         public Rigidbody repPelvis;
+        public Rigidbody repFootBall;
         public BaseController repLeftController;
         public BaseController repRightController;
 
@@ -85,7 +89,8 @@ namespace LabFusion.Representation
             Representations.Add(playerId.SmallId, this);
             avatarId = barcode;
 
-            pdController = new PDController();
+            pelvisPDController = new PDController();
+            footPDController = new PDController();
 
             CreateRep();
         }
@@ -269,7 +274,10 @@ namespace LabFusion.Representation
             repPelvis = rig.physicsRig.m_pelvis.GetComponent<Rigidbody>();
             repPelvis.drag = 0f;
             repPelvis.angularDrag = 0f;
-            pdController.OnResetDerivatives(repPelvis);
+            pelvisPDController.OnResetDerivatives(repPelvis);
+
+            repFootBall = rig.physicsRig.physG.GetComponent<Rigidbody>();
+            footPDController.OnResetDerivatives(repFootBall);
 
             repControllerRig = rig.openControllerRig;
             repPlayspace = rig.openControllerRig.vrRoot.transform;
@@ -288,8 +296,32 @@ namespace LabFusion.Representation
 
         public static void OnRecreateReps() {
             foreach (var rep in Representations.Values) {
-                rep.CreateRep();
+                rep.StartRepCreation();
             }
+        }
+
+        public void StartRepCreation() {
+            MelonCoroutines.Start(Co_DelayCreateRep());
+        }
+
+        private IEnumerator Co_DelayCreateRep() {
+            // Wait for loading
+            while (LevelWarehouseUtilities.IsDelayedLoading() || PlayerId.IsLoading) {
+                if (LevelWarehouseUtilities.IsLoading())
+                    yield break;
+
+                yield return null;
+            }
+
+            // Extra delay
+            for (var i = 0; i < 300; i++) {
+                if (LevelWarehouseUtilities.IsLoading())
+                    yield break;
+
+                yield return null;
+            }
+
+            CreateRep();
         }
 
         public void OnHeptaBody2Update() {
@@ -376,21 +408,30 @@ namespace LabFusion.Representation
                 var rigManager = RigReferences.RigManager;
 
                 // Seats will cause issues due to jointing
-                if (SafetyUtilities.IsValidTime && !rigManager.activeSeat) {
+                if (SafetyUtilities.IsValidTime && !rigManager.activeSeat)
+                {
                     var pos = serializedPelvis.position;
                     var rot = serializedPelvis.rotation.Expand();
 
-                    repPelvis.AddForce(pdController.GetForce(repPelvis, pos), ForceMode.Acceleration);
+                    repPelvis.AddForce(pelvisPDController.GetForce(repPelvis, pos), ForceMode.Acceleration);
+                    repFootBall.AddForce(footPDController.GetForce(repFootBall, serializedFootball.position), ForceMode.Acceleration);
 
                     // We only want to apply angular force when ragdolled
-                    if (rigManager.physicsRig.torso.spineInternalMult <= 0f) {
-                        repPelvis.AddTorque(pdController.GetTorque(repPelvis, rot), ForceMode.Acceleration);
+                    if (rigManager.physicsRig.torso.spineInternalMult <= 0f)
+                    {
+                        repPelvis.AddTorque(pelvisPDController.GetTorque(repPelvis, rot), ForceMode.Acceleration);
+                        repFootBall.AddTorque(footPDController.GetTorque(repFootBall, serializedFootball.rotation.Expand()), ForceMode.Acceleration);
                     }
                     else
-                        pdController.OnResetRotDerivatives(repPelvis);
+                    {
+                        pelvisPDController.OnResetRotDerivatives(repPelvis);
+                        footPDController.OnResetRotDerivatives(repFootBall);
+                    }
                 }
-                else
-                    pdController.OnResetDerivatives(repPelvis);
+                else {
+                    pelvisPDController.OnResetDerivatives(repPelvis);
+                    footPDController.OnResetDerivatives(repFootBall);
+                }
 
                 // Check for stability teleport
                 if (!RigReferences.RigManager.IsNOC()) {
@@ -406,7 +447,8 @@ namespace LabFusion.Representation
 
                         RigReferences.RigManager.Teleport(pos);
 
-                        pdController.OnResetDerivatives(repPelvis);
+                        pelvisPDController.OnResetDerivatives(repPelvis);
+                        footPDController.OnResetDerivatives(repFootBall);
 
                         // Reset locosphere and knee pos so the rig doesn't get stuck
                         physRig.knee.transform.position = serializedPelvis.position;
@@ -467,7 +509,7 @@ namespace LabFusion.Representation
                 }
 
                 using (var writer = FusionWriter.Create()) {
-                    using (var data = PlayerRepTransformData.Create(PlayerIdManager.LocalSmallId, syncedPoints, syncedPelvis, syncedPlayspace, syncedLeftController, syncedRightController)) {
+                    using (var data = PlayerRepTransformData.Create(PlayerIdManager.LocalSmallId, syncedPoints, syncedPelvis, syncedFootball, syncedPlayspace, syncedLeftController, syncedRightController)) {
                         writer.Write(data);
 
                         using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepTransform, writer)) {
@@ -554,6 +596,7 @@ namespace LabFusion.Representation
                 return;
 
             syncedPelvis = RigData.RigReferences.RigManager.physicsRig.m_pelvis;
+            syncedFootball = RigData.RigReferences.RigManager.physicsRig.physG.transform;
             syncedPlayspace = RigData.RigReferences.RigManager.openControllerRig.vrRoot.transform;
             syncedLeftController = RigData.RigReferences.RigManager.openControllerRig.leftController;
             syncedRightController = RigData.RigReferences.RigManager.openControllerRig.rightController;

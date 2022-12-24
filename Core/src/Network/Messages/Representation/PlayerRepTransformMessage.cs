@@ -20,6 +20,7 @@ namespace LabFusion.Network {
         public float feetOffset;
         public SerializedLocalTransform[] serializedLocalTransforms = new SerializedLocalTransform[PlayerRepUtilities.TransformSyncCount];
         public SerializedTransform serializedPelvis;
+        public SerializedTransform serializedFootball;
         public SerializedQuaternion serializedPlayspace;
         public ulong predictVelocity;
 
@@ -37,6 +38,7 @@ namespace LabFusion.Network {
                 writer.Write(serializedLocalTransforms[i]);
 
             writer.Write(serializedPelvis);
+            writer.Write(serializedFootball);
             writer.Write(serializedPlayspace);
 
             writer.Write(leftHand);
@@ -53,6 +55,7 @@ namespace LabFusion.Network {
                 serializedLocalTransforms[i] = reader.ReadFusionSerializable<SerializedLocalTransform>();
 
             serializedPelvis = reader.ReadFusionSerializable<SerializedTransform>();
+            serializedFootball = reader.ReadFusionSerializable<SerializedTransform>();
             serializedPlayspace = reader.ReadFusionSerializable<SerializedQuaternion>();
 
             leftHand = reader.ReadFusionSerializable<SerializedHand>();
@@ -63,13 +66,15 @@ namespace LabFusion.Network {
             GC.SuppressFinalize(this);
         }
 
-        public static PlayerRepTransformData Create(byte smallId, Transform[] syncTransforms, Transform syncedPelvis, Transform syncedPlayspace, BaseController leftHand, BaseController rightHand)
+        public static PlayerRepTransformData Create(byte smallId, Transform[] syncTransforms, Transform syncedPelvis, Transform syncedFootball, Transform syncedPlayspace, BaseController leftHand, BaseController rightHand)
         {
             var data = new PlayerRepTransformData {
                 smallId = smallId,
                 predictVelocity = (RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.velocity * Time.timeScale).ToULong(true),
                 feetOffset = RigData.RigReferences.RigManager.openControllerRig.feetOffset,
                 serializedPelvis = new SerializedTransform(syncedPelvis),
+                serializedFootball = new SerializedTransform(syncedFootball),
+
                 serializedPlayspace = SerializedQuaternion.Compress(syncedPlayspace.rotation),
 
                 leftHand = new SerializedHand(leftHand),
@@ -106,6 +111,7 @@ namespace LabFusion.Network {
                     rep.repControllerRig.feetOffset = data.feetOffset;
                     rep.serializedLocalTransforms = data.serializedLocalTransforms;
                     rep.serializedPelvis = data.serializedPelvis;
+                    rep.serializedFootball = data.serializedFootball;
                     rep.repPlayspace.rotation = data.serializedPlayspace.Expand();
                     rep.predictVelocity = data.predictVelocity.ToVector3();
                     rep.timeSincePelvisSent = Time.realtimeSinceStartup;

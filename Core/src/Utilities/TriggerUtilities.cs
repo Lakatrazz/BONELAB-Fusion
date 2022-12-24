@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using UnityEngine;
+using LabFusion.Network;
 
 namespace LabFusion.Utilities {
     public static class TriggerUtilities {
@@ -50,6 +51,9 @@ namespace LabFusion.Utilities {
         }
 
         public static bool IsMainRig(Collider other) {
+            if (!NetworkInfo.HasServer || RigData.RigReferences.RigManager.IsNOC())
+                return true;
+
             var trigger = TriggerRefProxy.Cache.Get(other.gameObject);
             RigManager rig;
 

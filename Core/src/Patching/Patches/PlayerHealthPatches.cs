@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using HarmonyLib;
 using LabFusion.Data;
+using LabFusion.Network;
 using SLZ.Rig;
 
 using UnityEngine;

@@ -64,6 +64,11 @@ namespace LabFusion.Network
             ArenaMenu = 37,
             GeoSelect = 38,
 
+            DescentNoose = 39,
+            DescentElevator = 40,
+
+            LoadingState = 41,
+
             ModuleMessage = 80;
     }
 
