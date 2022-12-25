@@ -69,6 +69,7 @@ namespace LabFusion
             // Level info
             ArenaData.OnCacheArenaInfo();
             DescentData.OnCacheDescentInfo();
+            MagmaGateData.OnCacheMagmaGateInfo();
             
             // Create player reps
             PlayerRep.OnRecreateReps();

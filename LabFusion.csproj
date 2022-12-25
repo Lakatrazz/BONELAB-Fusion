@@ -178,13 +178,14 @@
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\SteamInterface.cs" />
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utf8String.cs" />
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utility.cs" />
-    <Compile Include="Core\src\Data\Containers\ArenaData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\ArenaData.cs" />
     <Compile Include="Core\src\Data\Containers\ConfigurableJointDriveData.cs" />
     <Compile Include="Core\src\Data\Containers\DataCorruptionException.cs" />
-    <Compile Include="Core\src\Data\Containers\DescentData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DescentData.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedPropGrab.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedWorldGrab.cs" />
     <Compile Include="Core\src\Data\Containers\GripPair.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\MagmaGateData.cs" />
     <Compile Include="Core\src\Data\Containers\PDController.cs" />
     <Compile Include="Core\src\Data\Containers\RigData.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedGrab.cs" />
@@ -230,6 +231,7 @@
     <Compile Include="Core\src\Network\Messages\Arena\ChallengeSelectMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Arena\ArenaTransitionMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\DescentElevatorMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Campaign\MagmaGateMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\DescentNooseMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Combat\GunShotMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Combat\PuppetMasterKillMessage.cs" />
@@ -290,6 +292,7 @@
     <Compile Include="Core\src\Patching\Patches\InventorySlotReceiverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\InventoryAmmoReceiverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\LevelsPanelViewPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\MagmaGatePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ObjectDestructablePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\OpenControllerRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\GameworldSkeletonRigPatches.cs" />

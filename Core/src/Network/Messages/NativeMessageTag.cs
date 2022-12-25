@@ -69,6 +69,8 @@ namespace LabFusion.Network
 
             LoadingState = 41,
 
+            MagmaGateEvent = 42,
+
             ModuleMessage = 80;
     }
 
