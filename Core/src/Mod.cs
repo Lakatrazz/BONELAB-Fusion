@@ -85,10 +85,12 @@ namespace LabFusion
             // Store rig info/update avatars
             RigData.OnRigUpdate();
 
-            // Send world messages
-            PlayerRep.OnSyncRep();
-            SyncManager.OnUpdate();
-            PhysicsUtilities.OnSendPhysicsInformation();
+            // Send world messages every other frame
+            if (Time.frameCount % 2 == 0) {
+                PlayerRep.OnSyncRep();
+                SyncManager.OnUpdate();
+                PhysicsUtilities.OnSendPhysicsInformation();
+            }
 
             // Update and push all network messages
             InternalLayerHelpers.OnUpdateLayer();

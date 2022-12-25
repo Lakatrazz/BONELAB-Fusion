@@ -1,4 +1,7 @@
-﻿using System;
+﻿using LabFusion.Data;
+using LabFusion.Network;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

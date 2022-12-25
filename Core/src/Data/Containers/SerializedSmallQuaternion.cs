@@ -31,12 +31,13 @@ namespace LabFusion.Data
 
         public static SerializedSmallQuaternion Compress(Quaternion quat)
         {
-            SerializedSmallQuaternion serialized = new SerializedSmallQuaternion();
-            serialized.c1 = quat.x.ToSByte();
-            serialized.c2 = quat.y.ToSByte();
-            serialized.c3 = quat.z.ToSByte();
-            serialized.c4 = quat.w.ToSByte();
-            return serialized;
+            return new SerializedSmallQuaternion
+            {
+                c1 = quat.x.ToSByte(),
+                c2 = quat.y.ToSByte(),
+                c3 = quat.z.ToSByte(),
+                c4 = quat.w.ToSByte()
+            };
         }
 
         public Quaternion Expand() {

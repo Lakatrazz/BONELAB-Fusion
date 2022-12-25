@@ -91,6 +91,11 @@ namespace LabFusion.Syncables
 
         private readonly Dictionary<Grip, int> _grabbedGrips = new Dictionary<Grip, int>();
 
+        private bool _isLockingDirty = false;
+        private bool _lockedState = false;
+
+        private bool _disabledForces = false;
+
         public PropSyncable(InteractableHost host = null, GameObject root = null) {
             if (root != null)
                 GameObject = root;
@@ -381,6 +386,25 @@ namespace LabFusion.Syncables
             return false;
         }
 
+        public void CheckLocking() {
+            if (_isLockingDirty) {
+                for (var i = 0; i < Rigidbodies.Length; i++) {
+                    var rb = Rigidbodies[i];
+
+                    if (rb == null)
+                        continue;
+
+                    if (_lockedState) {
+                        rb.constraints = RigidbodyConstraints.FreezeAll;
+                    }
+                    else
+                        rb.constraints = RigidbodyConstraints.None;
+                }
+
+                _isLockingDirty = false;
+            }
+        }
+
         public byte? GetOwner() => Owner;
 
         public void SetOwner(byte owner) {
@@ -391,6 +415,9 @@ namespace LabFusion.Syncables
         public bool IsOwner() => Owner.HasValue && Owner.Value == PlayerIdManager.LocalSmallId;
 
         private void OnVerifyOverrides() {
+            _isLockingDirty = true;
+            _lockedState = false;
+
             for (var i = 0; i < HostGameObjects.Length; i++) {
                 var rb = Rigidbodies[i];
 
@@ -466,6 +493,7 @@ namespace LabFusion.Syncables
                 }
 
                 _verifyRigidbodies = false;
+                _isLockingDirty = true;
             }
         }
 
@@ -511,6 +539,7 @@ namespace LabFusion.Syncables
             VerifyID();
             VerifyOwner();
             VerifyRigidbodies();
+            CheckLocking();
 
             if (Owner.HasValue && Owner.Value == PlayerIdManager.LocalSmallId) {
                 OnOwnedUpdate();
@@ -588,7 +617,19 @@ namespace LabFusion.Syncables
             }
 
             if (!isSomethingGrabbed && Time.timeSinceLevelLoad - TimeOfMessage >= 1f) {
+                if (!_disabledForces) {
+                    _isLockingDirty = true;
+                    _lockedState = true;
+                    _disabledForces = true;
+                }
+
                 return;
+            }
+
+            if (_disabledForces) {
+                _isLockingDirty = true;
+                _lockedState = false;
+                _disabledForces = false;
             }
 
             for (var i = 0; i < Rigidbodies.Length; i++) {

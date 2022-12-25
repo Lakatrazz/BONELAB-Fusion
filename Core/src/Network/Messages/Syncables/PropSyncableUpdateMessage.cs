@@ -16,7 +16,6 @@ namespace LabFusion.Network
     {
         public byte ownerId;
         public ushort syncId;
-        public bool isRotationBased;
         public byte length;
         public Vector3[] serializedPositions;
         public SerializedSmallQuaternion[] serializedQuaternions;
@@ -26,14 +25,9 @@ namespace LabFusion.Network
         {
             writer.Write(ownerId);
             writer.Write(syncId);
-
-            writer.Write(isRotationBased);
             writer.Write(length);
 
             for (var i = 0; i < serializedPositions.Length; i++) {
-                if (i > 0 && isRotationBased)
-                    break;
-
                 var position = serializedPositions[i];
                 writer.Write(position);
             }
@@ -48,16 +42,12 @@ namespace LabFusion.Network
         {
             ownerId = reader.ReadByte();
             syncId = reader.ReadUInt16();
-            isRotationBased = reader.ReadBoolean();
             length = reader.ReadByte();
 
             serializedPositions = new Vector3[length];
             serializedQuaternions = new SerializedSmallQuaternion[length];
 
             for (var i = 0; i < length; i++) {
-                if (i > 0 && isRotationBased)
-                    break;
-
                 serializedPositions[i] = reader.ReadVector3();
             }
 
@@ -90,7 +80,6 @@ namespace LabFusion.Network
             var data = new PropSyncableUpdateData {
                 ownerId = ownerId,
                 syncId = syncId,
-                isRotationBased = syncable.IsRotationBased,
                 length = (byte)length,
                 serializedPositions = new Vector3[length],
                 serializedQuaternions = new SerializedSmallQuaternion[length],
@@ -134,8 +123,9 @@ namespace LabFusion.Network
                         for (var i = 0; i < data.length; i++) {
                             syncable.DesiredPositions[i] = data.serializedPositions[i];
                             syncable.DesiredRotations[i] = data.serializedQuaternions[i].Expand();
-                            syncable.DesiredVelocity = data.velocity;
                         }
+
+                        syncable.DesiredVelocity = data.velocity;
                     }
 
                     // Send message to other clients if server
