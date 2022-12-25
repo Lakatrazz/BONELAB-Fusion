@@ -50,7 +50,7 @@ namespace LabFusion.Patching
                 return;
 
             try {
-                if (NetworkInfo.HasServer && PropSyncable.GunCache.TryGetValue(__instance, out var gunSyncable)) {
+                if (NetworkInfo.HasServer && PropSyncable.GunCache.TryGet(__instance, out var gunSyncable)) {
                     // Make sure this is being grabbed by our main player
                     if (__instance.triggerGrip && __instance.triggerGrip.attachedHands.Find((Il2CppSystem.Predicate<Hand>)((h) => h.manager == RigData.RigReferences.RigManager))) {
                         using (var writer = FusionWriter.Create()) {
@@ -95,7 +95,7 @@ namespace LabFusion.Patching
                             assetPoolee = poolee;
                     }
 
-                    if (assetPoolee != null && PropSyncable.Cache.TryGetValue(assetPoolee.gameObject, out var syncable)) {
+                    if (assetPoolee != null && PropSyncable.Cache.TryGet(assetPoolee.gameObject, out var syncable)) {
                         PooleeUtilities.SendDespawn(syncable.GetId());
                     }
                 }

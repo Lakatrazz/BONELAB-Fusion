@@ -15,7 +15,7 @@ namespace LabFusion.Representation
 
         public static string LocalUsername { get; private set; } = "[unknown]";
         public static ulong LocalLongId { get; private set; }
-        public static byte LocalSmallId => LocalId.SmallId;
+        public static byte LocalSmallId { get; private set; }
         public static PlayerId LocalId { get; private set; }
 
         public static byte? GetUnusedPlayerId() {
@@ -36,10 +36,14 @@ namespace LabFusion.Representation
 
         internal static void ApplyLocalId() {
             var id = GetPlayerId(LocalLongId);
-            if (id != null)
+            if (id != null) {
                 LocalId = id;
-            else
+                LocalSmallId = id.SmallId;
+            }
+            else {
                 LocalId = null;
+                LocalSmallId = 0;
+            }
         }
 
         internal static void RemoveLocalId() {

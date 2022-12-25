@@ -13,6 +13,8 @@ using LabFusion.Grabbables;
 using UnityEngine;
 using SLZ.Interaction;
 using Il2CppSystem.Collections;
+using System.Diagnostics;
+using PuppetMasta;
 
 namespace LabFusion
 {
@@ -60,7 +62,6 @@ namespace LabFusion
 #if DEBUG
             FusionLogger.Log($"Main scene {sceneName} was initialized.");
 #endif
-
             // Cache info
             SyncManager.OnCleanup();
             RigData.OnCacheRigInfo();
@@ -71,10 +72,6 @@ namespace LabFusion
             
             // Create player reps
             PlayerRep.OnRecreateReps();
-
-            // Disable physics
-            if (NetworkInfo.HasServer)
-                Physics.autoSimulation = false;
         }
 
         public override void OnUpdate() {
@@ -95,21 +92,6 @@ namespace LabFusion
 
             // Update and push all network messages
             InternalLayerHelpers.OnUpdateLayer();
-
-            // Check all players loading
-            if (NetworkInfo.HasServer && !Physics.autoSimulation) {
-                bool canResume = true;
-
-                foreach (var id in PlayerIdManager.PlayerIds) {
-                    if (id.IsLoading) {
-                        canResume = false;
-                        break;
-                    }
-                }
-
-                if (canResume)
-                    Physics.autoSimulation = true;
-            }
         }
 
         public override void OnFixedUpdate() {

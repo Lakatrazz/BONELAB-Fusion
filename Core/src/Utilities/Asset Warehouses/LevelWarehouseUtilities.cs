@@ -105,7 +105,7 @@ namespace LabFusion.Utilities {
                 _loadingTimer += Time.deltaTime;
                 _isDelayedLoading = true;
             }
-            else {
+            else if (_isDelayedLoading) {
                 _isDelayedLoading = false;
             }
         }

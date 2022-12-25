@@ -68,10 +68,7 @@ namespace LabFusion.Network
                     }
                 }
                 else if (PlayerRep.Representations.TryGetValue(data.smallId, out var rep)) {
-                    if (data.isRagdoll)
-                        rep.RigReferences.RigManager.physicsRig.RagdollRig();
-                    else
-                        rep.RigReferences.RigManager.physicsRig.UnRagdollRig();
+                    rep.SetRagdoll(data.isRagdoll);
                 }
             }
         }

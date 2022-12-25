@@ -5,10 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 
 using HarmonyLib;
+
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Syncables;
 using LabFusion.Utilities;
+
 using PuppetMasta;
 
 namespace LabFusion.Patching
@@ -20,11 +22,11 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(PuppetMaster.Kill))]
         [HarmonyPrefix]
         [HarmonyPatch(new Type[0])]
-        public static bool Kill(this PuppetMaster __instance) {
+        public static bool Kill(PuppetMaster __instance) {
             if (IgnorePatches)
                 return true;
 
-            if (NetworkInfo.HasServer && PropSyncable.PuppetMasterCache.TryGetValue(__instance, out var syncable)) {
+            if (NetworkInfo.HasServer && PropSyncable.PuppetMasterCache.TryGet(__instance, out var syncable)) {
                 if (!syncable.IsOwner())
                     return false;
                 else {
@@ -47,17 +49,42 @@ namespace LabFusion.Patching
 
             return true;
         }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(PuppetMaster.OnLateUpdate))]
+        public static void OnLateUpdatePrefix(PuppetMaster __instance) {
+            if (NetworkInfo.HasServer && PropSyncable.PuppetMasterCache.TryGet(__instance, out var syncable) && !syncable.IsOwner()) {
+                MusclePatches.CancelAnchorUpdate = true;
+            }
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(PuppetMaster.OnLateUpdate))]
+        public static void OnLateUpdatePostfix(PuppetMaster __instance) {
+            MusclePatches.CancelAnchorUpdate = false;
+        }
     }
 
     [HarmonyPatch(typeof(Muscle))]
     public static class MusclePatches {
+        public static bool CancelAnchorUpdate = false;
+
         [HarmonyPrefix]
-        [HarmonyPatch(nameof(Muscle.FixedUpdate))]
-        public static bool FixedUpdate(this Muscle __instance, float t)
+        [HarmonyPatch(nameof(Muscle.UpdateAnchor))]
+        public static bool UpdateAnchor(Muscle __instance) {
+            if (CancelAnchorUpdate)
+                return false;
+
+            return true;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(Muscle.MusclePdDrive))]
+        public static bool MusclePdDrive(this Muscle __instance, float muscleWeightMaster, float muscleSpring, float muscleDamper)
         {
             try
             {
-                if (NetworkInfo.HasServer && PropSyncable.PuppetMasterCache.TryGetValue(__instance.broadcaster.puppetMaster, out var syncable) && !syncable.IsOwner())
+                if (NetworkInfo.HasServer && PropSyncable.PuppetMasterCache.TryGet(__instance.broadcaster.puppetMaster, out var syncable) && !syncable.IsOwner())
                 {
                     __instance.joint.slerpDrive = default;
                     return false;
@@ -65,40 +92,7 @@ namespace LabFusion.Patching
             }
             catch (Exception e)
             {
-                FusionLogger.LogException("patching Muscle.FixedUpdate", e);
-            }
-
-            return true;
-        }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(Muscle.MusclePdDrive))]
-        public static bool MusclePdDrive(this Muscle __instance, float muscleWeightMaster, float muscleSpring, float muscleDamper) {
-            try {
-                if (NetworkInfo.HasServer && PropSyncable.PuppetMasterCache.TryGetValue(__instance.broadcaster.puppetMaster, out var syncable) && !syncable.IsOwner()) {
-                    __instance.joint.slerpDrive = default;
-                    return false;
-                }
-            }
-            catch (Exception e) {
                 FusionLogger.LogException("patching Muscle.MusclePdDrive", e);
-            }
-
-            return true;
-        }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(Muscle.UpdateAnchor))]
-        public static bool UpdateAnchor(this Muscle __instance) {
-            try {
-                if (NetworkInfo.HasServer && PropSyncable.PuppetMasterCache.TryGetValue(__instance.broadcaster.puppetMaster, out var syncable) && !syncable.IsOwner()) {
-                    __instance.joint.connectedAnchor = __instance._defaultConnectedAnchor;
-                    return false;
-                }
-            }
-            catch (Exception e)
-            {
-                FusionLogger.LogException("patching Muscle.UpdateAnchor", e);
             }
 
             return true;

@@ -25,7 +25,7 @@ namespace LabFusion.Patching {
             if (IgnorePatches)
                 return true;
 
-            if (NetworkInfo.HasServer && PropSyncable.ObjectDestructableCache.TryGetValue(__instance, out var syncable) && !syncable.IsOwner())
+            if (NetworkInfo.HasServer && PropSyncable.ObjectDestructableCache.TryGet(__instance, out var syncable) && !syncable.IsOwner())
                 return false;
 
             __state = __instance._isDead;
@@ -42,7 +42,7 @@ namespace LabFusion.Patching {
             if (IgnorePatches)
                 return;
 
-            if (NetworkInfo.HasServer && PropSyncable.ObjectDestructableCache.TryGetValue(__instance, out var syncable)) {
+            if (NetworkInfo.HasServer && PropSyncable.ObjectDestructableCache.TryGet(__instance, out var syncable)) {
                 // Send object destroy
                 if (syncable.IsOwner() && !__state && __instance._isDead) {
                     using (var writer = FusionWriter.Create())

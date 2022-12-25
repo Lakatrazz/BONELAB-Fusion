@@ -19,7 +19,7 @@ namespace LabFusion.Network
         public bool isRotationBased;
         public byte length;
         public Vector3[] serializedPositions;
-        public SerializedQuaternion[] serializedQuaternions;
+        public SerializedSmallQuaternion[] serializedQuaternions;
         public float velocity;
 
         public void Serialize(FusionWriter writer)
@@ -52,7 +52,7 @@ namespace LabFusion.Network
             length = reader.ReadByte();
 
             serializedPositions = new Vector3[length];
-            serializedQuaternions = new SerializedQuaternion[length];
+            serializedQuaternions = new SerializedSmallQuaternion[length];
 
             for (var i = 0; i < length; i++) {
                 if (i > 0 && isRotationBased)
@@ -62,7 +62,7 @@ namespace LabFusion.Network
             }
 
             for (var i = 0; i < length; i++) {
-                serializedQuaternions[i] = reader.ReadFusionSerializable<SerializedQuaternion>();
+                serializedQuaternions[i] = reader.ReadFusionSerializable<SerializedSmallQuaternion>();
             }
 
             velocity = reader.ReadSingle();
@@ -82,7 +82,7 @@ namespace LabFusion.Network
         public static PropSyncableUpdateData Create(byte ownerId, PropSyncable syncable)
         {
             var syncId = syncable.GetId();
-            var hosts = syncable.HostGameObjects;
+            var hosts = syncable.HostTransforms;
             var rigidbodies = syncable.Rigidbodies;
 
             int length = rigidbodies.Length;
@@ -93,29 +93,25 @@ namespace LabFusion.Network
                 isRotationBased = syncable.IsRotationBased,
                 length = (byte)length,
                 serializedPositions = new Vector3[length],
-                serializedQuaternions = new SerializedQuaternion[length],
+                serializedQuaternions = new SerializedSmallQuaternion[length],
                 velocity = 0f,
             };
 
-            float maxVelocity = 0f;
-
-            for (var i = 0; i < rigidbodies.Length; i++) {
-                var rb = rigidbodies[i];
+            for (var i = 0; i < length; i++) {
                 var host = hosts[i];
 
-                if (!host.IsNOC()) {
-                    data.serializedPositions[i] = host.transform.position;
-                    data.serializedQuaternions[i] = SerializedQuaternion.Compress(host.transform.rotation);
+                if (host != null) {
+                    data.serializedPositions[i] = host.position;
+                    data.serializedQuaternions[i] = SerializedSmallQuaternion.Compress(host.rotation);
                 }
                 else {
                     data.serializedPositions[i] = Vector3.zero;
-                    data.serializedQuaternions[i] = SerializedQuaternion.Compress(Quaternion.identity);
-                }
-
-                if (!rb.IsNOC()) {
-                    maxVelocity = Mathf.Max(maxVelocity, rb.velocity.sqrMagnitude);
+                    data.serializedQuaternions[i] = SerializedSmallQuaternion.Compress(Quaternion.identity);
                 }
             }
+
+            if (rigidbodies[0] != null)
+                data.velocity = rigidbodies[0].velocity.sqrMagnitude;
 
             return data;
         }

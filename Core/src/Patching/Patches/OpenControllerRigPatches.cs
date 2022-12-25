@@ -13,9 +13,24 @@ using UnityEngine;
 using LabFusion.Representation;
 using LabFusion.Data;
 using LabFusion.Utilities;
+using LabFusion.Network;
+
+using SLZ.Marrow.Input;
 
 namespace LabFusion.Patches
 {
+    // Disables game pausing completely while in a server
+    [HarmonyPatch(typeof(XRHMD))]
+    public static class XRHMDPatches
+    {
+        [HarmonyPatch(nameof(XRHMD.IsUserPresent), MethodType.Getter)]
+        [HarmonyPostfix]
+        public static void IsUserPresent(ref bool __result) {
+            if (NetworkInfo.HasServer)
+                __result = true;
+        }
+    }
+
     // Here we update controller positions on the reps so they use our desired targets.
     [HarmonyPatch(typeof(OpenControllerRig), "OnFixedUpdate")]
     public class OpenFixedUpdatePatch

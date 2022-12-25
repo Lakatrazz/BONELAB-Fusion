@@ -17,6 +17,30 @@ using SLZ.Bonelab;
 
 namespace LabFusion.Patching
 {
+    [HarmonyPatch(typeof(Mirror))]
+    public static class MirrorPatches {
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(Mirror.OnTriggerEnter))]
+        public static bool OnTriggerEnter(Collider c) {
+            if (c.CompareTag("Player")) {
+                return TriggerUtilities.IsMainRig(c);
+            }
+
+            return true;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(Mirror.OnTriggerExit))]
+        public static bool OnTriggerExit(Collider c) {
+            if (c.CompareTag("Player")) {
+                return TriggerUtilities.IsMainRig(c);
+            }
+
+
+            return true;
+        }
+    }
+
     [HarmonyPatch(typeof(TriggerLasers), "OnTriggerEnter")]
     public static class PlayerTriggerEnterPatch
     {

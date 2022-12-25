@@ -45,7 +45,7 @@ namespace LabFusion.Patching
 
         private static IEnumerator Internal_SyncSeat(Seat __instance) {
             // Create new syncable if this doesn't exist
-            if (!PropSyncable.SeatCache.ContainsKey(__instance)) {
+            if (!PropSyncable.SeatCache.ContainsSource(__instance)) {
                 // We aren't a server. Request an id.
                 if (!NetworkInfo.IsServer) {
                     // Get grip host
@@ -114,7 +114,7 @@ namespace LabFusion.Patching
             yield return null;
 
             // Send seat request
-            if (__instance.rigManager == RigData.RigReferences.RigManager && PropSyncable.SeatCache.TryGetValue(__instance, out var syncable))
+            if (__instance.rigManager == RigData.RigReferences.RigManager && PropSyncable.SeatCache.TryGet(__instance, out var syncable))
             {
                 using (var writer = FusionWriter.Create())
                 {
@@ -137,7 +137,7 @@ namespace LabFusion.Patching
         {
             try
             {
-                if (NetworkInfo.HasServer && __instance._rig == RigData.RigReferences.RigManager && PropSyncable.SeatCache.TryGetValue(__instance, out var syncable))
+                if (NetworkInfo.HasServer && __instance._rig == RigData.RigReferences.RigManager && PropSyncable.SeatCache.TryGet(__instance, out var syncable))
                 {
                     using (var writer = FusionWriter.Create())
                     {

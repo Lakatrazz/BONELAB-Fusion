@@ -38,7 +38,7 @@ namespace LabFusion.Utilities {
             if (!NetworkInfo.IsServer)
                 return;
 
-            if (PropSyncable.Cache.TryGetValue(go, out var syncable))
+            if (PropSyncable.Cache.TryGet(go, out var syncable))
                 SyncManager.RemoveSyncable(syncable);
 
             var poolee = AssetPoolee.Cache.Get(go);

@@ -223,6 +223,12 @@ namespace LabFusion.Network
             if (GUI.Button(new Rect(origin, size), "Spawn Player Rep")) {
                 PlayerRepUtilities.CreateNewRig(OnRigCreated);
             }
+
+            origin.y += 30;
+            GUI.Label(new Rect(origin, size), $"Bytes Down: {NetworkInfo.BytesDown}");
+
+            origin.y += 30;
+            GUI.Label(new Rect(origin, size), $"Bytes Up: {NetworkInfo.BytesUp}");
         }
 
         internal void OnRigCreated(RigManager rig) {

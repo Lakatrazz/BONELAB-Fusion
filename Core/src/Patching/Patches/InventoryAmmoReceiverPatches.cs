@@ -53,7 +53,7 @@ namespace LabFusion.Patching {
         {
             try
             {
-                if (NetworkInfo.HasServer && __instance.rigManager == RigData.RigReferences.RigManager && Magazine.Cache.Get(host.GetHostGameObject()) && PropSyncable.Cache.TryGetValue(host.GetHostGameObject(), out var syncable)) {
+                if (NetworkInfo.HasServer && __instance.rigManager == RigData.RigReferences.RigManager && Magazine.Cache.Get(host.GetHostGameObject()) && PropSyncable.Cache.TryGet(host.GetHostGameObject(), out var syncable)) {
                     PooleeUtilities.RequestDespawn(syncable.Id, true);
 
                     return false;

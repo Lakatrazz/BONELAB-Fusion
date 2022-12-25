@@ -83,7 +83,7 @@ namespace LabFusion.Network
                                         {
                                             otherPlug.ForceEject();
 
-                                            if (PropSyncable.MagazineCache.TryGetValue(otherPlug.magazine, out var otherMag))
+                                            if (PropSyncable.MagazineCache.TryGet(otherPlug.magazine, out var otherMag))
                                             {
                                                 otherMag.SetRigidbodiesDirty();
                                             }

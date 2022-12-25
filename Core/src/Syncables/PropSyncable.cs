@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.Xml;
-using System.Text;
-using System.Threading.Tasks;
-using Il2CppSystem.Diagnostics;
+﻿using System.Collections.Generic;
 
 using LabFusion.Data;
 using LabFusion.Extensions;
@@ -30,20 +24,20 @@ using UnityEngine;
 namespace LabFusion.Syncables
 {
     public class PropSyncable : ISyncable {
-        public static readonly Dictionary<GameObject, PropSyncable> Cache = new Dictionary<GameObject, PropSyncable>(new UnityComparer());
-        public static readonly Dictionary<WeaponSlot, PropSyncable> WeaponSlotCache = new Dictionary<WeaponSlot, PropSyncable>(new UnityComparer());
+        public static readonly FusionComponentCache<GameObject, PropSyncable> Cache = new FusionComponentCache<GameObject, PropSyncable>();
+        public static readonly FusionComponentCache<WeaponSlot, PropSyncable> WeaponSlotCache = new FusionComponentCache<WeaponSlot, PropSyncable>();
 
-        public static readonly Dictionary<Magazine, PropSyncable> MagazineCache = new Dictionary<Magazine, PropSyncable>(new UnityComparer());
-        public static readonly Dictionary<Gun, PropSyncable> GunCache = new Dictionary<Gun, PropSyncable>(new UnityComparer());
+        public static readonly FusionComponentCache<Magazine, PropSyncable> MagazineCache = new FusionComponentCache<Magazine, PropSyncable>();
+        public static readonly FusionComponentCache<Gun, PropSyncable> GunCache = new FusionComponentCache<Gun, PropSyncable>();
 
-        public static readonly Dictionary<Seat, PropSyncable> SeatCache = new Dictionary<Seat, PropSyncable>(new UnityComparer());
+        public static readonly FusionComponentCache<Seat, PropSyncable> SeatCache = new FusionComponentCache<Seat, PropSyncable>();
 
-        public static readonly Dictionary<PuppetMaster, PropSyncable> PuppetMasterCache = new Dictionary<PuppetMaster, PropSyncable>(new UnityComparer());
+        public static readonly FusionComponentCache<PuppetMaster, PropSyncable> PuppetMasterCache = new FusionComponentCache<PuppetMaster, PropSyncable>();
 
-        public static readonly Dictionary<SimpleGripEvents, PropSyncable> SimpleGripEventsCache = new Dictionary<SimpleGripEvents, PropSyncable>(new UnityComparer());
+        public static readonly FusionComponentCache<SimpleGripEvents, PropSyncable> SimpleGripEventsCache = new FusionComponentCache<SimpleGripEvents, PropSyncable>();
 
-        public static readonly Dictionary<Prop_Health, PropSyncable> PropHealthCache = new Dictionary<Prop_Health, PropSyncable>(new UnityComparer());
-        public static readonly Dictionary<ObjectDestructable, PropSyncable> ObjectDestructableCache = new Dictionary<ObjectDestructable, PropSyncable>(new UnityComparer());
+        public static readonly FusionComponentCache<Prop_Health, PropSyncable> PropHealthCache = new FusionComponentCache<Prop_Health, PropSyncable>();
+        public static readonly FusionComponentCache<ObjectDestructable, PropSyncable> ObjectDestructableCache = new FusionComponentCache<ObjectDestructable, PropSyncable>();
 
 
         public PuppetMaster PuppetMaster;
@@ -54,7 +48,9 @@ namespace LabFusion.Syncables
         public Rigidbody[] Rigidbodies;
         public RigidbodyState[] RigidbodyStates;
         public PDController[] PDControllers;
+
         public GameObject[] HostGameObjects;
+        public Transform[] HostTransforms;
 
         public readonly AssetPoolee AssetPoolee;
         public readonly WeaponSlot WeaponSlot;
@@ -103,8 +99,8 @@ namespace LabFusion.Syncables
 
             AssetPoolee = AssetPoolee.Cache.Get(GameObject);
 
-            if (Cache.ContainsKey(GameObject))
-                SyncManager.RemoveSyncable(Cache[GameObject]);
+            if (Cache.TryGet(GameObject, out var syncable))
+                SyncManager.RemoveSyncable(syncable);
 
             Cache.Add(GameObject, this);
 
@@ -124,15 +120,17 @@ namespace LabFusion.Syncables
             }
 
             HostGameObjects = new GameObject[Rigidbodies.Length];
+            HostTransforms = new Transform[Rigidbodies.Length];
             RigidbodyStates = new RigidbodyState[Rigidbodies.Length];
             PDControllers = new PDController[Rigidbodies.Length];
 
             for (var i = 0; i < Rigidbodies.Length; i++) {
                 HostGameObjects[i] = Rigidbodies[i].gameObject;
+                HostTransforms[i] = HostGameObjects[i].transform;
                 RigidbodyStates[i] = new RigidbodyState(Rigidbodies[i]);
 
                 PDControllers[i] = new PDController();
-                PDControllers[i].OnResetDerivatives(Rigidbodies[i]);
+                PDControllers[i].OnResetDerivatives(HostTransforms[i]);
             }
 
             DesiredPositions = new Vector3?[Rigidbodies.Length];
@@ -496,37 +494,36 @@ namespace LabFusion.Syncables
 
         public bool IsRegistered() => _hasRegistered;
 
-        private bool HasValidParameters() => !(!_hasRegistered || LevelWarehouseUtilities.IsLoading() || GameObject.IsNOC() || !GameObject.activeInHierarchy);
+        private bool HasValidParameters() => _hasRegistered && LevelWarehouseUtilities.IsLoadDone() && !GameObject.IsNOC() && GameObject.activeInHierarchy;
 
         public void OnFixedUpdate() {
-            if (!HasValidParameters())
+            if (!Owner.HasValue || Owner.Value == PlayerIdManager.LocalSmallId || !HasValidParameters())
                 return;
 
-            if (Owner.HasValue && Owner != PlayerIdManager.LocalSmallId) {
-                OnReceivedUpdate();
-            }
+            OnReceivedUpdate();
         }
 
         public void OnUpdate()
         {
             if (!HasValidParameters())
                 return;
-
+            
             VerifyID();
             VerifyOwner();
             VerifyRigidbodies();
 
-            if (Owner.HasValue && Owner == PlayerIdManager.LocalSmallId) {
+            if (Owner.HasValue && Owner.Value == PlayerIdManager.LocalSmallId) {
                 OnOwnedUpdate();
             }
         }
 
-        private bool HasMoved(int index) {
-            var transform = Rigidbodies[index].transform;
+        private bool HasMoved(int index)
+        {
+            var transform = HostTransforms[index];
             var lastPosition = LastSentPositions[index];
             var lastRotation = LastSentRotations[index];
 
-            return (transform.position - lastPosition).sqrMagnitude > 0.01f || Quaternion.Angle(transform.rotation, lastRotation) > 0.15f; 
+            return (transform.position - lastPosition).sqrMagnitude > 0.01f || Quaternion.Angle(transform.rotation, lastRotation) > 0.15f;
         }
 
         private void OnOwnedUpdate() {
@@ -541,28 +538,27 @@ namespace LabFusion.Syncables
             for (var i = 0; i < Rigidbodies.Length; i++) {
                 var rb = Rigidbodies[i];
 
-                if (rb.IsNOC()) {
+                if (rb == null) {
                     continue;
                 }
 
                 if (!hasMovingBody && !rb.IsSleeping() && HasMoved(i)) {
                     hasMovingBody = true;
+                    break;
                 }
             }
 
             if (!hasMovingBody)
                 return;
 
-            for (var i = 0; i < Rigidbodies.Length; i++) {
-                var rb = Rigidbodies[i];
+            for (var i = 0; i < HostTransforms.Length; i++) {
+                var transform = HostTransforms[i];
 
-                if (rb.IsNOC())
-                    continue;
-
-                LastSentPositions[i] = rb.transform.position;
-                LastSentRotations[i] = rb.transform.rotation;
-                PDControllers[i].OnResetDerivatives(rb);
+                LastSentPositions[i] = transform.position;
+                LastSentRotations[i] = transform.rotation;
+                PDControllers[i].OnResetDerivatives(transform);
             }
+
 
             using (var writer = FusionWriter.Create()) {
                 using (var data = PropSyncableUpdateData.Create(PlayerIdManager.LocalSmallId, this)) {
@@ -591,12 +587,15 @@ namespace LabFusion.Syncables
                 }
             }
 
-            if (!isSomethingGrabbed && Time.timeSinceLevelLoad - TimeOfMessage >= 1f)
+            if (!isSomethingGrabbed && Time.timeSinceLevelLoad - TimeOfMessage >= 1f) {
                 return;
+            }
 
             for (var i = 0; i < Rigidbodies.Length; i++) {
                 var rb = Rigidbodies[i];
-                if (rb.IsNOC())
+                var transform = HostTransforms[i];
+
+                if (rb == null)
                     continue;
 
                 bool isGrabbed = false;
@@ -620,7 +619,7 @@ namespace LabFusion.Syncables
                 }
 
                 if (isGrabbed || !DesiredPositions[i].HasValue || !DesiredRotations[i].HasValue) {
-                    PDControllers[i].OnResetDerivatives(rb);
+                    PDControllers[i].OnResetDerivatives(transform);
                     continue;
                 }
 
@@ -632,28 +631,28 @@ namespace LabFusion.Syncables
                 var pdController = PDControllers[i];
 
                 // Teleport check
-                float distSqr = (rb.transform.position - pos).sqrMagnitude;
+                float distSqr = (transform.position - pos).sqrMagnitude;
                 if (distSqr > (2f * (DesiredVelocity + 1f)) && allowPosition) {
-                    rb.transform.position = pos;
-                    rb.transform.rotation = rot;
+                    transform.position = pos;
+                    transform.rotation = rot;
 
                     rb.velocity = Vector3.zero;
                     rb.angularVelocity = Vector3.zero;
 
-                    pdController.OnResetDerivatives(rb);
+                    pdController.OnResetDerivatives(transform);
                 }
                 // Instead calculate velocity stuff
                 else {
                     if (allowPosition) {
-                        rb.AddForce(pdController.GetForce(rb, pos), ForceMode.Acceleration);
+                        rb.AddForce(pdController.GetForce(rb, transform, pos), ForceMode.Acceleration);
                     }
                     else {
                         if (rb.useGravity)
                             rb.AddForce(-Physics.gravity, ForceMode.Acceleration);
-                        pdController.OnResetPosDerivatives(rb);
+                        pdController.OnResetPosDerivatives(transform);
                     }
 
-                    rb.AddTorque(pdController.GetTorque(rb, rot), ForceMode.Acceleration);
+                    rb.AddTorque(pdController.GetTorque(rb, transform, rot), ForceMode.Acceleration);
                 }
             }
         }

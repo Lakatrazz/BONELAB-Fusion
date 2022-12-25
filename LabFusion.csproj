@@ -192,6 +192,7 @@
     <Compile Include="Core\src\Data\Containers\RigidbodyState.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedHand.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedPlayerBodyGrab.cs" />
+    <Compile Include="Core\src\Data\Containers\SerializedSmallQuaternion.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedQuaternion.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedStaticGrab.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedLocalTransform.cs" />
@@ -204,6 +205,7 @@
     <Compile Include="Core\src\Data\Interfaces\IFusionSerializable.cs" />
     <Compile Include="Core\src\Extensions\AlignPlug.cs" />
     <Compile Include="Core\src\Extensions\Array.cs" />
+    <Compile Include="Core\src\Extensions\Byte.cs" />
     <Compile Include="Core\src\Extensions\Grip.cs" />
     <Compile Include="Core\src\Extensions\IEnumerable.cs" />
     <Compile Include="Core\src\Extensions\Joint.cs" />
@@ -311,6 +313,7 @@
     <Compile Include="Core\src\Representation\PlayerRep.cs" />
     <Compile Include="Core\src\Representation\PlayerRepUtilities.cs" />
     <Compile Include="Core\src\Utilities\FloatingOriginUtilities.cs" />
+    <Compile Include="Core\src\Utilities\FusionComponentCache.cs" />
     <Compile Include="Core\src\Utilities\GameObjectUtilities.cs" />
     <Compile Include="Core\src\Utilities\Internal\PatchingUtilities.cs" />
     <Compile Include="Core\src\Utilities\Asset Warehouses\SpawnableWarehouseUtilities.cs" />

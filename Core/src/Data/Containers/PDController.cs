@@ -3,7 +3,6 @@
 using SLZ;
 
 using System;
-
 using UnityEngine;
 
 namespace LabFusion.Data
@@ -33,6 +32,9 @@ namespace LabFusion.Data
         private static float _rotationKsg;
         private static float _rotationKdg;
 
+        // Last frame value
+        private static float _lastFixedDelta;
+
         public Vector3 LastTargetPos { get; private set; }
 
         public Quaternion LastTargetRot { get; private set; }
@@ -47,6 +49,12 @@ namespace LabFusion.Data
 
         public static void OnFixedUpdate() {
             float dt = Time.fixedDeltaTime;
+
+            if (Mathf.Round(dt * 1000f) == Mathf.Round(_lastFixedDelta * 1000f)) {
+                return;
+            }
+
+            _lastFixedDelta = dt;
 
             // Position
             float pG = 1f / (1f + _positionKd * dt + _positionKp * dt * dt);
@@ -67,21 +75,21 @@ namespace LabFusion.Data
             return 4.5f * frequency * damping;
         }
 
-        public void OnResetDerivatives(in Rigidbody rb) {
-            OnResetPosDerivatives(rb);
-            OnResetRotDerivatives(rb);
+        public void OnResetDerivatives(in Transform transform) {
+            OnResetPosDerivatives(transform);
+            OnResetRotDerivatives(transform);
         }
 
-        public void OnResetPosDerivatives(in Rigidbody rb) {
-            LastTargetPos = rb.transform.position;
+        public void OnResetPosDerivatives(in Transform transform) {
+            LastTargetPos = transform.position;
         }
 
-        public void OnResetRotDerivatives(in Rigidbody rb) {
-            LastTargetRot = rb.transform.rotation;
+        public void OnResetRotDerivatives(in Transform transform) {
+            LastTargetRot = transform.rotation;
         }
 
-        public Vector3 GetForce(in Rigidbody rb, in Vector3 targetPos) {
-            Vector3 Pt0 = rb.transform.position;
+        public Vector3 GetForce(in Rigidbody rb, in Transform transform, in Vector3 targetPos) {
+            Vector3 Pt0 = transform.position;
             Vector3 Vt0 = rb.velocity;
 
             Vector3 Pt1 = LastTargetPos;
@@ -98,9 +106,9 @@ namespace LabFusion.Data
             return force;
         }
 
-        public Vector3 GetTorque(Rigidbody rb, in Quaternion targetRot)
+        public Vector3 GetTorque(Rigidbody rb, in Transform transform, in Quaternion targetRot)
         {
-            var currentRotation = rb.transform.rotation;
+            var currentRotation = transform.rotation;
 
             Quaternion Qt1 = LastTargetRot;
             Vector3 Vt1 = PhysXUtils.GetAngularVelocity(LastTargetRot, targetRot);

@@ -49,7 +49,7 @@ namespace LabFusion.Patching
                     else
                     {
                         if (PooleeUtilities.CanSendSpawn(__instance)) {
-                            if (PropSyncable.Cache.TryGetValue(__instance.gameObject, out var syncable))
+                            if (PropSyncable.Cache.TryGet(__instance.gameObject, out var syncable))
                                 SyncManager.RemoveSyncable(syncable);
 
                             MelonCoroutines.Start(CoVerifySpawnedRoutine(__instance));
@@ -149,7 +149,7 @@ namespace LabFusion.Patching
                 return true;
 
             try {
-                if (NetworkInfo.HasServer && !__instance.IsNOC() && !__instance.gameObject.IsNOC() && PropSyncable.Cache.TryGetValue(__instance.gameObject, out var syncable)) {
+                if (NetworkInfo.HasServer && !__instance.IsNOC() && !__instance.gameObject.IsNOC() && PropSyncable.Cache.TryGet(__instance.gameObject, out var syncable)) {
                     if (!NetworkInfo.IsServer && !PooleeUtilities.CanDespawn) {
                         return false;
                     }
@@ -175,7 +175,7 @@ namespace LabFusion.Patching
                 return;
 
             try {
-                if (NetworkInfo.HasServer && !__instance.IsNOC() && !__instance.gameObject.IsNOC() && PropSyncable.Cache.TryGetValue(__instance.gameObject, out var syncable)) {
+                if (NetworkInfo.HasServer && !__instance.IsNOC() && !__instance.gameObject.IsNOC() && PropSyncable.Cache.TryGet(__instance.gameObject, out var syncable)) {
                     SyncManager.RemoveSyncable(syncable);
                 }
             } 

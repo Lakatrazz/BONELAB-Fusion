@@ -77,7 +77,7 @@ namespace LabFusion.Network
                             AmmoSocketPatches.IgnorePatch = true;
 
                             var ammoPlug = gunSyncable.AmmoSocket._magazinePlug;
-                            if (ammoPlug.magazine && PropSyncable.MagazineCache.TryGetValue(ammoPlug.magazine, out var magSyncable) && magSyncable.Id == data.magazineId) {
+                            if (ammoPlug.magazine && PropSyncable.MagazineCache.TryGet(ammoPlug.magazine, out var magSyncable) && magSyncable.Id == data.magazineId) {
                                 Hand grabHand = null;
 
                                 if (ammoPlug.magazine.grip) {

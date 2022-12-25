@@ -80,6 +80,11 @@ namespace LabFusion.Representation
 
         private bool _hasLockedPosition = false;
 
+        private bool _isAvatarDirty = false;
+
+        private bool _isRagdollDirty = false;
+        private bool _ragdollState = false;
+
         public PlayerRep(PlayerId playerId, string barcode)
         {
             PlayerId = playerId;
@@ -186,12 +191,15 @@ namespace LabFusion.Representation
 
         public void SwapAvatar(string barcode) {
             avatarId = barcode;
-
-            if (RigReferences.RigManager && !string.IsNullOrWhiteSpace(barcode))
-                RigReferences.RigManager.SwapAvatarCrate(barcode, false, (Il2CppSystem.Action<bool>)OnSwapAvatar);
+            _isAvatarDirty = true;
         }
 
-        public void OnSwapAvatar(bool success) {
+        public void SetRagdoll(bool isRagdolled) {
+            _ragdollState = isRagdolled;
+            _isRagdollDirty = true;
+        }
+
+        private void OnSwapAvatar(bool success) {
             if (pullCord) {
                 pullCord.PlayAvatarParticleEffects();
                 pullCord.PlayClip(pullCord.switchAvatar, pullCord.ap3, pullCord.switchVolume, 4f, false);
@@ -227,26 +235,6 @@ namespace LabFusion.Representation
             PlayerRepUtilities.CreateNewRig(OnRigCreated);
         }
 
-        private IEnumerator Internal_DelayInitialAvatar() {
-            for (var i = 0; i < 40; i++) {
-                if (RigReferences.RigManager.IsNOC())
-                    yield break;
-
-                yield return null;
-            }
-
-            var rig = RigReferences.RigManager;
-
-            if (vitals != null) {
-                vitals.CopyTo(rig.bodyVitals);
-                rig.bodyVitals.PROPEGATE_SOFT();
-                rig.bodyVitals.CalibratePlayerBodyScale();
-            }
-
-            if (!string.IsNullOrWhiteSpace(avatarId))
-                rig.SwapAvatarCrate(avatarId);
-        }
-
         public void OnRigCreated(RigManager rig) {
             pullCord = rig.GetComponentInChildren<PullCordDevice>(true);
 
@@ -274,10 +262,10 @@ namespace LabFusion.Representation
             repPelvis = rig.physicsRig.m_pelvis.GetComponent<Rigidbody>();
             repPelvis.drag = 0f;
             repPelvis.angularDrag = 0f;
-            pelvisPDController.OnResetDerivatives(repPelvis);
+            pelvisPDController.OnResetDerivatives(repPelvis.transform);
 
             repFootBall = rig.physicsRig.physG.GetComponent<Rigidbody>();
-            footPDController.OnResetDerivatives(repFootBall);
+            footPDController.OnResetDerivatives(repFootBall.transform);
 
             repControllerRig = rig.openControllerRig;
             repPlayspace = rig.openControllerRig.vrRoot.transform;
@@ -290,8 +278,12 @@ namespace LabFusion.Representation
             PlayerRepUtilities.FillTransformArray(ref repTransforms, rig);
             PlayerRepUtilities.FillGameworldArray(ref gameworldRigTransforms, rig);
 
-            // Delay avatar switching for safety
-            MelonCoroutines.Start(Internal_DelayInitialAvatar());
+            // Make sure the rig gets its initial avatar
+            _isAvatarDirty = true;
+
+            // Reset the ragdoll state
+            _isRagdollDirty = true;
+            _ragdollState = false;
         }
 
         public static void OnRecreateReps() {
@@ -307,14 +299,6 @@ namespace LabFusion.Representation
         private IEnumerator Co_DelayCreateRep() {
             // Wait for loading
             while (LevelWarehouseUtilities.IsDelayedLoading() || PlayerId.IsLoading) {
-                if (LevelWarehouseUtilities.IsLoading())
-                    yield break;
-
-                yield return null;
-            }
-
-            // Extra delay
-            for (var i = 0; i < 300; i++) {
                 if (LevelWarehouseUtilities.IsLoading())
                     yield break;
 
@@ -413,24 +397,24 @@ namespace LabFusion.Representation
                     var pos = serializedPelvis.position;
                     var rot = serializedPelvis.rotation.Expand();
 
-                    repPelvis.AddForce(pelvisPDController.GetForce(repPelvis, pos), ForceMode.Acceleration);
-                    repFootBall.AddForce(footPDController.GetForce(repFootBall, serializedFootball.position), ForceMode.Acceleration);
+                    repPelvis.AddForce(pelvisPDController.GetForce(repPelvis, repPelvis.transform, pos), ForceMode.Acceleration);
+                    repFootBall.AddForce(footPDController.GetForce(repFootBall, repFootBall.transform, serializedFootball.position), ForceMode.Acceleration);
 
                     // We only want to apply angular force when ragdolled
                     if (rigManager.physicsRig.torso.spineInternalMult <= 0f)
                     {
-                        repPelvis.AddTorque(pelvisPDController.GetTorque(repPelvis, rot), ForceMode.Acceleration);
-                        repFootBall.AddTorque(footPDController.GetTorque(repFootBall, serializedFootball.rotation.Expand()), ForceMode.Acceleration);
+                        repPelvis.AddTorque(pelvisPDController.GetTorque(repPelvis, repPelvis.transform, rot), ForceMode.Acceleration);
+                        repFootBall.AddTorque(footPDController.GetTorque(repFootBall, repFootBall.transform, serializedFootball.rotation.Expand()), ForceMode.Acceleration);
                     }
                     else
                     {
-                        pelvisPDController.OnResetRotDerivatives(repPelvis);
-                        footPDController.OnResetRotDerivatives(repFootBall);
+                        pelvisPDController.OnResetRotDerivatives(repPelvis.transform);
+                        footPDController.OnResetRotDerivatives(repFootBall.transform);
                     }
                 }
                 else {
-                    pelvisPDController.OnResetDerivatives(repPelvis);
-                    footPDController.OnResetDerivatives(repFootBall);
+                    pelvisPDController.OnResetDerivatives(repPelvis.transform);
+                    footPDController.OnResetDerivatives(repFootBall.transform);
                 }
 
                 // Check for stability teleport
@@ -447,8 +431,14 @@ namespace LabFusion.Representation
 
                         RigReferences.RigManager.Teleport(pos);
 
-                        pelvisPDController.OnResetDerivatives(repPelvis);
-                        footPDController.OnResetDerivatives(repFootBall);
+                        // Zero our teleport velocity, cause the rig doesn't seem to do that on its own?
+                        foreach (var rb in RigReferences.RigManager.physicsRig.GetComponentsInChildren<Rigidbody>()) {
+                            rb.velocity = Vector3.zero;
+                            rb.angularVelocity = Vector3.zero;
+                        }
+
+                        pelvisPDController.OnResetDerivatives(repPelvis.transform);
+                        footPDController.OnResetDerivatives(repFootBall.transform);
 
                         // Reset locosphere and knee pos so the rig doesn't get stuck
                         physRig.knee.transform.position = serializedPelvis.position;
@@ -552,6 +542,24 @@ namespace LabFusion.Representation
 
         public void OnRepLateUpdate() {
             OnUpdateNametags();
+
+            // Update the avatar if its dirty
+            var rm = RigReferences.RigManager;
+            if (!rm.IsNOC() && !rm._avatar.IsNOC()) {
+                if (_isAvatarDirty) {
+                    rm.SwapAvatarCrate(avatarId, false, (Action<bool>)OnSwapAvatar);
+                    _isAvatarDirty = false;
+                }
+
+                if (_isRagdollDirty) {
+                    if (_ragdollState)
+                        rm.physicsRig.RagdollRig();
+                    else
+                        rm.physicsRig.UnRagdollRig();
+
+                    _isRagdollDirty = false;
+                }
+            }
         }
 
         public static void OnFixedUpdate() {

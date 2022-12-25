@@ -104,17 +104,16 @@ namespace LabFusion.Representation {
             var count = 100000;
             ammoInventory.AddCartridge(ammoInventory.lightAmmoGroup, count);
 
-            // Create empty vignetter
-            GameObject fakeVignette = new GameObject {
-                name = "Vignetter"
-            };
-            fakeVignette.AddComponent<SkinnedMeshRenderer>().enabled = false;
-            fakeVignette.gameObject.SetActive(false);
-
             var playerHealth = rigManager.health.TryCast<Player_Health>();
             if (playerHealth != null) {
                 playerHealth.healthMode = Health.HealthMode.Invincible;
-                playerHealth.Vignetter = fakeVignette;
+
+                var newVignetter = GameObject.Instantiate(playerHealth.Vignetter);
+                newVignetter.GetComponent<SkinnedMeshRenderer>().enabled = false;
+                newVignetter.name = "Vignetter";
+                newVignetter.SetActive(false);
+
+                playerHealth.Vignetter = newVignetter;
             }
 
             // Fix spatial audio
@@ -183,7 +182,7 @@ namespace LabFusion.Representation {
             rigManager.openControllerRig.cameras = new Il2CppReferenceArray<Camera>(0);
             rigManager.openControllerRig.OnLastCameraUpdate = new UnityEvent();
 
-            rigManager.openControllerRig.m_head.tag = null;
+            rigManager.openControllerRig.m_head.tag = "Untagged";
 
             // Remove unnecessary player art manager
             GameObject.DestroyImmediate(rigManager.GetComponent<PlayerAvatarArt>());

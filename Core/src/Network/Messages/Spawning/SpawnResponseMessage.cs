@@ -132,7 +132,7 @@ namespace LabFusion.Network
                 }
             }
 
-            if (PropSyncable.Cache.TryGetValue(go, out var syncable))
+            if (PropSyncable.Cache.TryGet(go, out var syncable))
                 SyncManager.RemoveSyncable(syncable);
 
             var poolee = AssetPoolee.Cache.Get(go);

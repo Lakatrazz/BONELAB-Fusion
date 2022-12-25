@@ -22,7 +22,7 @@ namespace LabFusion.Patching {
             if (IgnorePatches)
                 return true;
 
-            if (NetworkInfo.HasServer && PropSyncable.PropHealthCache.TryGetValue(__instance, out var syncable) && !syncable.IsOwner())
+            if (NetworkInfo.HasServer && PropSyncable.PropHealthCache.TryGet(__instance, out var syncable) && !syncable.IsOwner())
                 return false;
 
             return true;
@@ -34,7 +34,7 @@ namespace LabFusion.Patching {
             if (IgnorePatches)
                 return true;
 
-            if (NetworkInfo.HasServer && PropSyncable.PropHealthCache.TryGetValue(__instance, out var syncable)) {
+            if (NetworkInfo.HasServer && PropSyncable.PropHealthCache.TryGet(__instance, out var syncable)) {
                 if (!syncable.IsOwner())
                     return false;
                 // Send object destroy
