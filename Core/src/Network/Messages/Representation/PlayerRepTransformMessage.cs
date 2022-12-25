@@ -21,7 +21,7 @@ namespace LabFusion.Network {
         public SerializedLocalTransform[] serializedLocalTransforms = new SerializedLocalTransform[PlayerRepUtilities.TransformSyncCount];
         public SerializedTransform serializedPelvis;
         public SerializedTransform serializedFootball;
-        public SerializedQuaternion serializedPlayspace;
+        public SerializedSmallQuaternion serializedPlayspace;
         public ulong predictVelocity;
 
         public SerializedHand leftHand;
@@ -56,7 +56,7 @@ namespace LabFusion.Network {
 
             serializedPelvis = reader.ReadFusionSerializable<SerializedTransform>();
             serializedFootball = reader.ReadFusionSerializable<SerializedTransform>();
-            serializedPlayspace = reader.ReadFusionSerializable<SerializedQuaternion>();
+            serializedPlayspace = reader.ReadFusionSerializable<SerializedSmallQuaternion>();
 
             leftHand = reader.ReadFusionSerializable<SerializedHand>();
             rightHand = reader.ReadFusionSerializable<SerializedHand>();
@@ -75,7 +75,7 @@ namespace LabFusion.Network {
                 serializedPelvis = new SerializedTransform(syncedPelvis),
                 serializedFootball = new SerializedTransform(syncedFootball),
 
-                serializedPlayspace = SerializedQuaternion.Compress(syncedPlayspace.rotation),
+                serializedPlayspace = SerializedSmallQuaternion.Compress(syncedPlayspace.rotation),
 
                 leftHand = new SerializedHand(leftHand),
                 rightHand = new SerializedHand(rightHand)
