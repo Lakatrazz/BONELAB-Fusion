@@ -29,7 +29,6 @@ namespace LabFusion.Syncables
 
         public Grip[] PropGrips;
         public Rigidbody[] Rigidbodies;
-        public RigidbodyState[] RigidbodyStates;
         public PDController[] PDControllers;
 
         public GameObject[] HostGameObjects;
@@ -40,6 +39,8 @@ namespace LabFusion.Syncables
         public readonly GameObject GameObject;
 
         public readonly bool HasIgnoreHierarchy;
+
+        public bool IsIgnoringMessages { get; private set; }
 
         public float TimeOfMessage = 0f;
 
@@ -60,11 +61,6 @@ namespace LabFusion.Syncables
         private bool _hasRegistered = false;
 
         private readonly Dictionary<Grip, int> _grabbedGrips = new Dictionary<Grip, int>();
-
-        private bool _isLockingDirty = false;
-        private bool _lockedState = false;
-
-        private bool _disabledForces = false;
 
         private IReadOnlyList<IPropExtender> _extenders;
 
@@ -98,13 +94,11 @@ namespace LabFusion.Syncables
 
             HostGameObjects = new GameObject[Rigidbodies.Length];
             HostTransforms = new Transform[Rigidbodies.Length];
-            RigidbodyStates = new RigidbodyState[Rigidbodies.Length];
             PDControllers = new PDController[Rigidbodies.Length];
 
             for (var i = 0; i < Rigidbodies.Length; i++) {
                 HostGameObjects[i] = Rigidbodies[i].gameObject;
                 HostTransforms[i] = HostGameObjects[i].transform;
-                RigidbodyStates[i] = new RigidbodyState(Rigidbodies[i]);
 
                 PDControllers[i] = new PDController();
                 PDControllers[i].OnResetDerivatives(HostTransforms[i]);
@@ -290,8 +284,6 @@ namespace LabFusion.Syncables
             foreach (var extender in _extenders) {
                 extender.OnCleanup();
             }
-
-            OnClearOverrides();
         }
 
         public Grip GetGrip(ushort index) {
@@ -309,65 +301,13 @@ namespace LabFusion.Syncables
             return false;
         }
 
-        public void CheckLocking() {
-            if (_isLockingDirty) {
-                for (var i = 0; i < Rigidbodies.Length; i++) {
-                    var rb = Rigidbodies[i];
-
-                    if (rb == null)
-                        continue;
-
-                    if (_lockedState) {
-                        rb.constraints = RigidbodyConstraints.FreezeAll;
-                    }
-                    else
-                        rb.constraints = RigidbodyConstraints.None;
-                }
-
-                _isLockingDirty = false;
-            }
-        }
-
         public byte? GetOwner() => Owner;
 
         public void SetOwner(byte owner) {
             Owner = owner;
-            OnVerifyOverrides();
         }
 
         public bool IsOwner() => Owner.HasValue && Owner.Value == PlayerIdManager.LocalSmallId;
-
-        private void OnVerifyOverrides() {
-            _isLockingDirty = true;
-            _lockedState = false;
-
-            for (var i = 0; i < HostGameObjects.Length; i++) {
-                var rb = Rigidbodies[i];
-
-                // Update rigidbody states
-                if (!rb.IsNOC()) {
-                    // If we are the owner
-                    if (IsOwner()) {
-                        RigidbodyStates[i].OnClearOverride(rb);
-                    }
-                    // Otherwise
-                    else {
-                        RigidbodyStates[i].OnSetOverride(rb);
-                    }
-                }
-            }
-        }
-
-        private void OnClearOverrides() {
-            for (var i = 0; i < HostGameObjects.Length; i++) {
-                var rb = Rigidbodies[i];
-
-                // Update rigidbody states
-                if (!rb.IsNOC()) {
-                    RigidbodyStates[i].OnClearOverride(rb);
-                }
-            }
-        }
 
         public void VerifyID()
         {
@@ -411,12 +351,9 @@ namespace LabFusion.Syncables
                         if (!host.IsNOC())
                             Rigidbodies[i] = host.GetComponent<Rigidbody>();
                     }
-
-                    OnVerifyOverrides();
                 }
 
                 _verifyRigidbodies = false;
-                _isLockingDirty = true;
             }
         }
 
@@ -462,7 +399,6 @@ namespace LabFusion.Syncables
             VerifyID();
             VerifyOwner();
             VerifyRigidbodies();
-            CheckLocking();
 
             if (Owner.HasValue && Owner.Value == PlayerIdManager.LocalSmallId) {
                 OnOwnedUpdate();
@@ -539,25 +475,11 @@ namespace LabFusion.Syncables
             }
 
             if (!isSomethingGrabbed && Time.timeSinceLevelLoad - TimeOfMessage >= 1f) {
-                if (!_disabledForces) {
-                    _isLockingDirty = true;
-                    _lockedState = true;
-                    _disabledForces = true;
-
-                    for (var i = 0; i < Rigidbodies.Length; i++) {
-                        DesiredPositions[i] = null;
-                        DesiredRotations[i] = null;
-                    }
-                }
-
+                IsIgnoringMessages = true;
                 return;
             }
 
-            if (_disabledForces) {
-                _isLockingDirty = true;
-                _lockedState = false;
-                _disabledForces = false;
-            }
+            IsIgnoringMessages = false;
 
             for (var i = 0; i < Rigidbodies.Length; i++) {
                 var rb = Rigidbodies[i];

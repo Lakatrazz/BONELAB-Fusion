@@ -84,7 +84,7 @@ namespace LabFusion.Patching
         {
             try
             {
-                if (NetworkInfo.HasServer && PuppetMasterExtender.Cache.TryGet(__instance.broadcaster.puppetMaster, out var syncable) && !syncable.IsOwner())
+                if (NetworkInfo.HasServer && PuppetMasterExtender.Cache.TryGet(__instance.broadcaster.puppetMaster, out var syncable) && !syncable.IsIgnoringMessages && !syncable.IsOwner())
                 {
                     __instance.joint.slerpDrive = default;
                     return false;

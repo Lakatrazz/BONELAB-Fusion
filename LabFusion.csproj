@@ -196,7 +196,6 @@
     <Compile Include="Core\src\Data\Containers\RigData.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedGrab.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedGripAnchor.cs" />
-    <Compile Include="Core\src\Data\Containers\RigidbodyState.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedHand.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedPlayerBodyGrab.cs" />
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedSmallQuaternion.cs" />
