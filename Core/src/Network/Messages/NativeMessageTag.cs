@@ -75,6 +75,8 @@ namespace LabFusion.Network
 
             BodyLogEffect = 44,
 
+            BonelabHubEvent = 45,
+
             Module = 80,
             ModuleAssignment = 81;
     }

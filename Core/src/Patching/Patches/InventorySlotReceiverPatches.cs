@@ -12,13 +12,15 @@ using LabFusion.Representation;
 using LabFusion.Syncables;
 using LabFusion.Utilities;
 
+using Newtonsoft.Json.Linq;
+
+using SLZ.Bonelab;
 using SLZ.Interaction;
 using SLZ.Player;
 using SLZ.Props.Weapons;
 using SLZ.Rig;
 
 namespace LabFusion.Patching {
-
     [HarmonyPatch(typeof(InventorySlotReceiver), nameof(InventorySlotReceiver.OnHandGrab))]
     public class InventorySlotReceiverGrab
     {

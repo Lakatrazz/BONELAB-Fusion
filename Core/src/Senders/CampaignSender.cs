@@ -8,6 +8,22 @@ using System.Threading.Tasks;
 
 namespace LabFusion.Senders {
     public static class CampaignSender {
+        public static void SendHubEvent(BonelabHubEventType type)
+        {
+            using (var writer = FusionWriter.Create())
+            {
+                using (var data = BonelabHubEventData.Create(type))
+                {
+                    writer.Write(data);
+
+                    using (var message = FusionMessage.Create(NativeMessageTag.BonelabHubEvent, writer))
+                    {
+                        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+                    }
+                }
+            }
+        }
+
         public static void SendDescentIntro(int selectionNumber, DescentIntroType type)
         {
             using (var writer = FusionWriter.Create())
