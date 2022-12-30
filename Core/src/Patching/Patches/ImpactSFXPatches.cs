@@ -31,10 +31,6 @@ namespace LabFusion.Patching {
                     if (physRig != null) {
                         var host = __instance._host;
 
-                        // No hands? Damage anyways
-                        if (host.HandCount() <= 0)
-                            return true;
-
                         foreach (var hand in host._hands) {
                             if (hand.manager != physRig.manager)
                                 return true;
