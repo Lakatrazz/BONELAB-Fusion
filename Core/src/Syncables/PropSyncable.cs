@@ -29,6 +29,7 @@ namespace LabFusion.Syncables
 
         public Grip[] PropGrips;
         public Rigidbody[] Rigidbodies;
+        public FixedJoint[] LockJoints;
         public PDController[] PDControllers;
 
         public GameObject[] HostGameObjects;
@@ -39,8 +40,6 @@ namespace LabFusion.Syncables
         public readonly GameObject GameObject;
 
         public readonly bool HasIgnoreHierarchy;
-
-        public bool IsIgnoringMessages { get; private set; }
 
         public float TimeOfMessage = 0f;
 
@@ -59,6 +58,11 @@ namespace LabFusion.Syncables
         private bool _verifyRigidbodies;
 
         private bool _hasRegistered = false;
+
+        private bool _isLockingDirty = false;
+        private bool _lockedState = false;
+
+        private bool _isIgnoringForces = false;
 
         private readonly Dictionary<Grip, int> _grabbedGrips = new Dictionary<Grip, int>();
 
@@ -95,6 +99,7 @@ namespace LabFusion.Syncables
             HostGameObjects = new GameObject[Rigidbodies.Length];
             HostTransforms = new Transform[Rigidbodies.Length];
             PDControllers = new PDController[Rigidbodies.Length];
+            LockJoints = new FixedJoint[Rigidbodies.Length];
 
             for (var i = 0; i < Rigidbodies.Length; i++) {
                 HostGameObjects[i] = Rigidbodies[i].gameObject;
@@ -113,94 +118,6 @@ namespace LabFusion.Syncables
             HasIgnoreHierarchy = GameObject.GetComponentInParent<IgnoreHierarchy>(true);
 
             _extenders = PropExtenderManager.GetPropExtenders(this);
-        }
-
-        public void RecursiveSetDesiredPositions() {
-            // If this is a skeleton (crumbles on death) and its dead, don't calcualte positions here
-            if (TryGetExtender<PuppetMasterExtender>(out var puppet) && TryGetExtender<BehaviourPowerLegsExtender>(out var powerLegs)) {
-                if (puppet.Component.isDead && powerLegs.Component.crumbleDeath)
-                    return;
-            }
-
-            for (var i = 0; i < HostTransforms.Length; i++) {
-                if (i != 0)
-                    Internal_TryGetDesiredPosition(HostTransforms[i], out _);
-            }
-        }
-
-        private bool Internal_TryGetDesiredPosition(Transform transform, out Vector3 position) {
-            position = default;
-            int hostIndex = -1;
-            
-            if (TryGetExtender<PuppetMasterExtender>(out var extender)) {
-                var puppet = extender.Component;
-                Transform connectedBodyTransform = null;
-
-                // Get host transform index
-                for (var i = 0; i < HostTransforms.Length; i++) {
-                    var host = HostTransforms[i];
-                    if (host == transform) {
-                        hostIndex = i;
-                        break;
-                    }
-                }
-
-                if (hostIndex == -1)
-                    return false;
-                
-                // Prevent unnecessary calcs
-                if (DesiredPositions[hostIndex].HasValue) {
-                    position = DesiredPositions[hostIndex].Value;
-                    return true;
-                }
-
-                // Get connected body transform
-                foreach (var muscle in puppet.muscles) {
-                    if (muscle.transform == transform) {
-                        connectedBodyTransform = muscle.connectedBodyTransform;
-                        break;
-                    }
-                }
-
-                if (connectedBodyTransform == null)
-                    return false;
-
-                // Get desired rotation of connected body
-                Vector3? desiredPosition = null;
-                Quaternion? desiredRotation = null;
-                for (var i = 0; i < HostTransforms.Length; i++) {
-                    var host = HostTransforms[i];
-                    if (host == connectedBodyTransform) {
-                        if (i == 0)
-                            desiredPosition = DesiredPositions[i];
-
-                        desiredRotation = DesiredRotations[i];
-                        break;
-                    }
-                }
-
-                if (!desiredRotation.HasValue)
-                    return false;
-
-                // Translate current local position based on rotation offset
-                Vector3 localPos = Quaternion.Inverse(connectedBodyTransform.rotation) * (transform.position - connectedBodyTransform.position);
-
-                Vector3 connectedBodyDesired = connectedBodyTransform.position;
-                if (desiredPosition.HasValue)
-                    connectedBodyDesired = desiredPosition.Value;
-                else if (Internal_TryGetDesiredPosition(connectedBodyTransform, out var found)) {
-                    connectedBodyDesired = found;
-                }
-
-                position = (desiredRotation.Value * localPos) + connectedBodyDesired;
-
-                if (hostIndex != 0)
-                    DesiredPositions[hostIndex] = position;
-
-                return true;
-            }
-
-            return false;
         }
 
         public bool TryGetExtender<T>(out T extender) where T : IPropExtender {
@@ -284,6 +201,11 @@ namespace LabFusion.Syncables
             foreach (var extender in _extenders) {
                 extender.OnCleanup();
             }
+
+            foreach (var joint in LockJoints) {
+                if (joint != null)
+                    GameObject.Destroy(joint);
+            }
         }
 
         public Grip GetGrip(ushort index) {
@@ -305,6 +227,9 @@ namespace LabFusion.Syncables
 
         public void SetOwner(byte owner) {
             Owner = owner;
+
+            _isLockingDirty = true;
+            _lockedState = false;
         }
 
         public bool IsOwner() => Owner.HasValue && Owner.Value == PlayerIdManager.LocalSmallId;
@@ -357,6 +282,23 @@ namespace LabFusion.Syncables
             }
         }
 
+        private void VerifyLocking() {
+            if (_isLockingDirty) {
+                for (var i = 0; i < Rigidbodies.Length; i++) {
+                    if (LockJoints[i] != null)
+                        GameObject.Destroy(LockJoints[i]);
+
+                    var rb = Rigidbodies[i];
+
+                    if (rb && _lockedState) {
+                        LockJoints[i] = rb.gameObject.AddComponent<FixedJoint>();
+                    }
+                }
+
+                _isLockingDirty = false;
+            }
+        }
+
         public void OnRegister(ushort id) {
             Id = id;
             _hasRegistered = true;
@@ -399,6 +341,7 @@ namespace LabFusion.Syncables
             VerifyID();
             VerifyOwner();
             VerifyRigidbodies();
+            VerifyLocking();
 
             if (Owner.HasValue && Owner.Value == PlayerIdManager.LocalSmallId) {
                 OnOwnedUpdate();
@@ -475,11 +418,19 @@ namespace LabFusion.Syncables
             }
 
             if (!isSomethingGrabbed && Time.timeSinceLevelLoad - TimeOfMessage >= 1f) {
-                IsIgnoringMessages = true;
+                if (!_isIgnoringForces) {
+                    _isLockingDirty = true;
+                    _lockedState = true;
+                    _isIgnoringForces = true;
+                }
                 return;
             }
 
-            IsIgnoringMessages = false;
+            if (_isIgnoringForces) {
+                _isLockingDirty = true;
+                _lockedState = false;
+                _isIgnoringForces = false;
+            }
 
             for (var i = 0; i < Rigidbodies.Length; i++) {
                 var rb = Rigidbodies[i];
