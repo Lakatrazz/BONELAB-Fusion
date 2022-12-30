@@ -130,10 +130,8 @@ namespace LabFusion.Network
             _isServerActive = true;
             _isConnectionActive = true;
 
-            // Go ahead and fill in our own id
-            var id = new PlayerId(SteamId, 0, PlayerIdManager.LocalUsername);
-            id.Insert();
-            PlayerIdManager.ApplyLocalId();
+            // Call server setup
+            InternalServerHelpers.OnStartServer();
         }
 
         public void JoinServer(SteamId serverId)

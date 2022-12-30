@@ -19,13 +19,13 @@ namespace LabFusion.Patching {
         [HarmonyPostfix]
         [HarmonyPatch(nameof(SimpleGripEvents.OnAttachedUpdateDelegate))]
         public static void OnAttachedUpdateDelegate(SimpleGripEvents __instance, Hand hand) {
-            if (NetworkInfo.HasServer && hand.manager == RigData.RigReferences.RigManager && PropSyncable.SimpleGripEventsCache.TryGet(__instance, out var syncable)) {
+            if (NetworkInfo.HasServer && hand.manager == RigData.RigReferences.RigManager && SimpleGripEventsExtender.Cache.TryGet(__instance, out var syncable) && syncable.TryGetExtender<SimpleGripEventsExtender>(out var extender)) {
                 if (hand._indexButtonDown) {
-                    SendGripEvent(syncable.Id, syncable.GetIndex(__instance).Value, SimpleGripEventType.TRIGGER_DOWN);
+                    SendGripEvent(syncable.Id, extender.GetIndex(__instance).Value, SimpleGripEventType.TRIGGER_DOWN);
                 }
 
                 if (hand.Controller.GetMenuTap()) {
-                    SendGripEvent(syncable.Id, syncable.GetIndex(__instance).Value, SimpleGripEventType.MENU_TAP);
+                    SendGripEvent(syncable.Id, extender.GetIndex(__instance).Value, SimpleGripEventType.MENU_TAP);
                 }
             }
         }

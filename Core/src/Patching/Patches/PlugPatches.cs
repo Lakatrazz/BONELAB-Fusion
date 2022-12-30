@@ -65,10 +65,10 @@ namespace LabFusion.Patching
                 return;
 
             try {
-                if (NetworkInfo.HasServer && __instance.gun && PropSyncable.GunCache.TryGet(__instance.gun, out var gunSyncable)) {
+                if (NetworkInfo.HasServer && __instance.gun && GunExtender.Cache.TryGet(__instance.gun, out var gunSyncable)) {
                     var ammoPlug = plug.TryCast<AmmoPlug>();
 
-                    if (ammoPlug != null && ammoPlug.magazine && PropSyncable.MagazineCache.TryGet(ammoPlug.magazine, out var magSyncable)) {
+                    if (ammoPlug != null && ammoPlug.magazine && MagazineExtender.Cache.TryGet(ammoPlug.magazine, out var magSyncable)) {
                         
                         using (var writer = FusionWriter.Create()) {
                             using (var data = MagazineInsertData.Create(PlayerIdManager.LocalSmallId, magSyncable.Id, gunSyncable.Id)) {
@@ -97,10 +97,10 @@ namespace LabFusion.Patching
 
             try
             {
-                if (NetworkInfo.HasServer && __instance.gun && PropSyncable.GunCache.TryGet(__instance.gun, out var gunSyncable)) {
+                if (NetworkInfo.HasServer && __instance.gun && GunExtender.Cache.TryGet(__instance.gun, out var gunSyncable)) {
 
                     // Proceed with the ejection
-                    if (ammoPlug && ammoPlug.magazine && PropSyncable.MagazineCache.TryGet(ammoPlug.magazine, out var magSyncable)) {
+                    if (ammoPlug && ammoPlug.magazine && MagazineExtender.Cache.TryGet(ammoPlug.magazine, out var magSyncable)) {
                         magSyncable.SetRigidbodiesDirty();
 
                         using (var writer = FusionWriter.Create())

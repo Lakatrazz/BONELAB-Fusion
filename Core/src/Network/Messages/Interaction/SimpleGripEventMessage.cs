@@ -83,8 +83,8 @@ namespace LabFusion.Network
                     }
                     else
                     {
-                        if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable) {
-                            var gripEvent = propSyncable.GetGripEvents(data.gripEventIndex);
+                        if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable && propSyncable.TryGetExtender<SimpleGripEventsExtender>(out var extender)) {
+                            var gripEvent = extender.GetComponent(data.gripEventIndex);
 
                             if (gripEvent) {
                                 switch (data.type) {

@@ -6,29 +6,32 @@ using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Syncables;
+using LabFusion.Grabbables;
+using LabFusion.SDK.Modules;
 
 using MelonLoader;
 
-using LabFusion.Grabbables;
 using UnityEngine;
-using SLZ.Interaction;
-using Il2CppSystem.Collections;
-using System.Diagnostics;
-using PuppetMasta;
+using LabFusion.Extensions;
 
 namespace LabFusion
 {
-    public class FusionMod : MelonMod
+    public struct FusionVersion
     {
-        public struct FusionVersion {
-            public const byte versionMajor = 0;
-            public const byte versionMinor = 0;
-            public const short versionPatch = 1;
-        }
+        public const byte versionMajor = 0;
+        public const byte versionMinor = 0;
+        public const short versionPatch = 1;
+    }
 
+    public class FusionMod : MelonMod {
+        public const string Name = "LabFusion";
+        public const string Author = "Lakatrazz";
         public static readonly Version Version = new Version(FusionVersion.versionMajor, FusionVersion.versionMinor, FusionVersion.versionPatch);
+
         public static FusionMod Instance { get; private set; }
         public static Assembly FusionAssembly { get; private set; }
+
+        private static int _nextSyncableSendRate = 1;
 
         public override void OnEarlyInitializeMelon() {
             Instance = this;
@@ -37,8 +40,11 @@ namespace LabFusion
             PersistentData.OnPathInitialize();
             FusionMessageHandler.RegisterHandlersFromAssembly(FusionAssembly);
             GrabGroupHandler.RegisterHandlersFromAssembly(FusionAssembly);
+            PropExtenderManager.RegisterExtendersFromAssembly(FusionAssembly);
 
             PDController.OnMelonInitialize();
+
+            ModuleHandler.Internal_HookAssemblies();
 
             OnInitializeNetworking();
         }
@@ -54,6 +60,7 @@ namespace LabFusion
 
         public override void OnDeinitializeMelon() {
             InternalLayerHelpers.OnCleanupLayer();
+            ModuleHandler.Internal_UnhookAssemblies();
         }
 
         public static void OnMainSceneInitialized() {
@@ -73,6 +80,9 @@ namespace LabFusion
             
             // Create player reps
             PlayerRep.OnRecreateReps();
+
+            // Update hooks
+            HookingUtilities.Internal_OnMainSceneInitialized();
         }
 
         public override void OnUpdate() {
@@ -86,21 +96,41 @@ namespace LabFusion
             // Store rig info/update avatars
             RigData.OnRigUpdate();
 
-            // Send world messages every other frame
-            if (Time.frameCount % 2 == 0) {
+            // Send players based on player count
+            int playerSendRate = SendRateTable.GetPlayerSendRate();
+            if (Time.frameCount % playerSendRate == 0) {
                 PlayerRep.OnSyncRep();
+            }
+
+            // Send syncables based on byte amount
+            if (Time.frameCount % _nextSyncableSendRate == 0) {
+                var lastBytes = NetworkInfo.BytesUp;
+
                 SyncManager.OnUpdate();
+
+                var byteDifference = NetworkInfo.BytesUp - lastBytes;
+                _nextSyncableSendRate = SendRateTable.GetObjectSendRate(byteDifference);
+            }
+
+            // Send gravity every 40 frames
+            if (Time.frameCount % 40 == 0) {
                 PhysicsUtilities.OnSendPhysicsInformation();
             }
 
             // Update and push all network messages
             InternalLayerHelpers.OnUpdateLayer();
+
+            // Update hooks
+            HookingUtilities.Internal_OnUpdate();
         }
 
         public override void OnFixedUpdate() {
             PDController.OnFixedUpdate();
             PlayerRep.OnFixedUpdate();
             SyncManager.OnFixedUpdate();
+
+            // Update hooks
+            HookingUtilities.Internal_OnFixedUpdate();
         }
 
         public override void OnLateUpdate() {
@@ -109,6 +139,9 @@ namespace LabFusion
 
             // Flush any left over network messages
             InternalLayerHelpers.OnLateUpdateLayer();
+
+            // Update hooks
+            HookingUtilities.Internal_OnLateUpdate();
         }
 
         public override void OnGUI() {

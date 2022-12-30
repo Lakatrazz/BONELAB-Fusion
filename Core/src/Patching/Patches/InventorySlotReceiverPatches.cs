@@ -88,7 +88,7 @@ namespace LabFusion.Patching {
 
             try
             {
-                if (NetworkInfo.HasServer && __instance._slottedWeapon && PropSyncable.WeaponSlotCache.TryGet(__instance._slottedWeapon, out var syncable)) {
+                if (NetworkInfo.HasServer && __instance._slottedWeapon && WeaponSlotExtender.Cache.TryGet(__instance._slottedWeapon, out var syncable)) {
                     var rigManager = __instance.GetComponentInParent<RigManager>();
 
                     if (rigManager != null) {

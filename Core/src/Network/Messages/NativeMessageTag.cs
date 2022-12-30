@@ -71,7 +71,10 @@ namespace LabFusion.Network
 
             MagmaGateEvent = 42,
 
-            ModuleMessage = 80;
+            DescentIntro = 43,
+
+            Module = 80,
+            ModuleAssignment = 81;
     }
 
 }

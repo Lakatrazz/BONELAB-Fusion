@@ -22,7 +22,7 @@ namespace LabFusion.Network {
         public SerializedTransform serializedPelvis;
         public SerializedTransform serializedFootball;
         public SerializedSmallQuaternion serializedPlayspace;
-        public ulong predictVelocity;
+        public SerializedSmallVector3 predictVelocity;
 
         public SerializedHand leftHand;
         public SerializedHand rightHand;
@@ -48,7 +48,7 @@ namespace LabFusion.Network {
         public void Deserialize(FusionReader reader)
         {
             smallId = reader.ReadByte();
-            predictVelocity = reader.ReadUInt64();
+            predictVelocity = reader.ReadFusionSerializable<SerializedSmallVector3>();
             feetOffset = reader.ReadSingle();
 
             for (var i = 0; i < PlayerRepUtilities.TransformSyncCount; i++)
@@ -70,7 +70,7 @@ namespace LabFusion.Network {
         {
             var data = new PlayerRepTransformData {
                 smallId = smallId,
-                predictVelocity = (RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.velocity * Time.timeScale).ToULong(true),
+                predictVelocity = SerializedSmallVector3.Compress(RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.velocity * Time.timeScale),
                 feetOffset = RigData.RigReferences.RigManager.openControllerRig.feetOffset,
                 serializedPelvis = new SerializedTransform(syncedPelvis),
                 serializedFootball = new SerializedTransform(syncedFootball),
@@ -113,7 +113,7 @@ namespace LabFusion.Network {
                     rep.serializedPelvis = data.serializedPelvis;
                     rep.serializedFootball = data.serializedFootball;
                     rep.repPlayspace.rotation = data.serializedPlayspace.Expand();
-                    rep.predictVelocity = data.predictVelocity.ToVector3();
+                    rep.predictVelocity = data.predictVelocity.Expand();
                     rep.timeSincePelvisSent = Time.realtimeSinceStartup;
 
                     data.leftHand.CopyTo(rep.repLeftController);

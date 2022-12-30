@@ -1,9 +1,12 @@
 ﻿using LabFusion.Data;
+using LabFusion.Exceptions;
 using LabFusion.Patching;
 using LabFusion.Representation;
 using LabFusion.Syncables;
 using LabFusion.Utilities;
+
 using SLZ;
+
 using System;
 
 namespace LabFusion.Network
@@ -54,15 +57,18 @@ namespace LabFusion.Network
         public override byte? Tag => NativeMessageTag.SpawnRequest;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
-            if (isServerHandled) {
+            if (NetworkInfo.IsServer && isServerHandled) {
                 using (var reader = FusionReader.Create(bytes)) {
-                    using (var data = reader.ReadFusionSerializable<SpawnRequestData>()) {
+                    using (var data = reader.ReadFusionSerializable<SpawnRequestData>())
+                    {
                         var syncId = SyncManager.AllocateSyncID();
 
                         PooleeUtilities.SendSpawn(data.owner, data.barcode, syncId, data.serializedTransform, false, null, data.hand);
                     }
                 }
             }
+            else
+                throw new ExpectedServerException();
         }
     }
 }

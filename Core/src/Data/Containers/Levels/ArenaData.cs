@@ -21,63 +21,6 @@ namespace LabFusion.Data {
         public static ArenaMenuController MenuController;
         public static GeoManager GeoManager;
         public static ChallengeSelectMenu[] ChallengeSelections;
-
-        public static void TEMP_SendArenaMessage(ArenaTransitionType type) {
-            using (var writer = FusionWriter.Create()) {
-                using (var data = ArenaTransitionData.Create(type)) {
-                    writer.Write(data);
-
-                    using (var message = FusionMessage.Create(NativeMessageTag.ArenaTransition, writer)) {
-                        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                    }
-                }
-            }
-        }
-
-        public static void TEMP_SendChallengeSelect(byte menuIndex, byte challengeNumber, ChallengeSelectType type)
-        {
-            using (var writer = FusionWriter.Create()) {
-                using (var data = ChallengeSelectData.Create(menuIndex, challengeNumber, type)) {
-                    writer.Write(data);
-
-                    using (var message = FusionMessage.Create(NativeMessageTag.ChallengeSelect, writer)) {
-                        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                    }
-                }
-            }
-        }
-
-        public static void TEMP_SendGeo(byte geoIndex) {
-            using (var writer = FusionWriter.Create())
-            {
-                using (var data = GeoSelectData.Create(geoIndex))
-                {
-                    writer.Write(data);
-
-                    using (var message = FusionMessage.Create(NativeMessageTag.GeoSelect, writer))
-                    {
-                        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                    }
-                }
-            }
-        }
-
-        public static void TEMP_SendMenuController(byte selectionNumber, ArenaMenuType type)
-        {
-            using (var writer = FusionWriter.Create())
-            {
-                using (var data = ArenaMenuData.Create(selectionNumber, type))
-                {
-                    writer.Write(data);
-
-                    using (var message = FusionMessage.Create(NativeMessageTag.ArenaMenu, writer))
-                    {
-                        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                    }
-                }
-            }
-        }
-
         public static void OnCacheArenaInfo() {
             GameController = GameObject.FindObjectOfType<Arena_GameController>();
 

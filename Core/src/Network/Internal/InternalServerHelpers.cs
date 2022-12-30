@@ -1,4 +1,5 @@
 ﻿using LabFusion.Representation;
+using LabFusion.SDK.Modules;
 using LabFusion.Syncables;
 using LabFusion.Utilities;
 
@@ -39,12 +40,51 @@ namespace LabFusion.Network {
         }
 
         /// <summary>
+        /// Initializes information about the server, such as module types.
+        /// </summary>
+        internal static void OnStartServer() {
+            // Create local id
+            var id = new PlayerId(PlayerIdManager.LocalLongId, 0, PlayerIdManager.LocalUsername);
+            id.Insert();
+            PlayerIdManager.ApplyLocalId();
+
+            // Register module message handlers so they can send messages
+            var names = ModuleMessageHandler.GetExistingTypeNames();
+            ModuleMessageHandler.PopulateHandlerTable(names);
+
+            // Update hooks
+            HookingUtilities.Internal_OnStartServer();
+        }
+
+        /// <summary>
+        /// Called when the user joins a server.
+        /// </summary>
+        internal static void OnJoinServer() {
+            // Update hooks
+            HookingUtilities.Internal_OnJoinServer();
+        }
+
+        /// <summary>
         /// Cleans up the scene from all users. ONLY call this from within a network layer!
         /// </summary>
         internal static void OnDisconnect() {
+            // Cleanup information
             DisposeUsers();
             SyncManager.OnCleanup();
+            ModuleMessageHandler.ClearHandlerTable();
             Physics.autoSimulation = true;
+
+            // Update hooks
+            HookingUtilities.Internal_OnDisconnect();
+        }
+
+        /// <summary>
+        /// Updates information about the new user.
+        /// </summary>
+        /// <param name="id"></param>
+        internal static void OnUserJoin(PlayerId id) {
+            // Update hooks
+            HookingUtilities.Internal_OnPlayerJoin(id);
         }
 
         /// <summary>

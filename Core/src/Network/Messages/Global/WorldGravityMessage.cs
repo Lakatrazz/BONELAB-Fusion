@@ -15,11 +15,11 @@ namespace LabFusion.Network
 {
     public class WorldGravityMessageData : IFusionSerializable, IDisposable
     {
-        public ulong gravity;
+        public SerializedSmallVector3 gravity;
 
         public static WorldGravityMessageData Create(Vector3 gravity) {
             return new WorldGravityMessageData() {
-                gravity = gravity.ToULong(true)
+                gravity = SerializedSmallVector3.Compress(gravity),
             };
         }
 
@@ -30,7 +30,7 @@ namespace LabFusion.Network
 
         public void Deserialize(FusionReader reader)
         {
-            gravity = reader.ReadUInt64();
+            gravity = reader.ReadFusionSerializable<SerializedSmallVector3>();
         }
 
         public void Dispose() {
@@ -49,7 +49,7 @@ namespace LabFusion.Network
                 using (var reader = FusionReader.Create(bytes)) {
                     using (var data = reader.ReadFusionSerializable<WorldGravityMessageData>()) {
                         PhysicsUtilities.CanModifyGravity = true;
-                        Physics.gravity = data.gravity.ToVector3();
+                        Physics.gravity = data.gravity.Expand();
                         PhysicsUtilities.CanModifyGravity = false;
                     }
                 }

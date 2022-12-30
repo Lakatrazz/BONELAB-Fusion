@@ -55,7 +55,7 @@ namespace LabFusion.Patching {
         {
             if (NetworkInfo.HasServer) {
                 var subBehaviourHealth = new SubBehaviourHealth(instance);
-                if (PropSyncable.PuppetMasterCache.TryGet(subBehaviourHealth.behaviour.puppetMaster, out var syncable) && !syncable.IsOwner()) {
+                if (PuppetMasterExtender.Cache.TryGet(subBehaviourHealth.behaviour.puppetMaster, out var syncable) && !syncable.IsOwner()) {
                     return 0f;
                 }
             }

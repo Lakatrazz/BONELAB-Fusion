@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 //https://stackoverflow.com/questions/16518943/dllimport-or-loadlibrary-for-best-performance
 //https://newbedev.com/how-can-i-specify-a-dllimport-path-at-runtime
-namespace LabFusion.Modularity
+namespace LabFusion.Utilities
 {
     public static class DllTools
     {

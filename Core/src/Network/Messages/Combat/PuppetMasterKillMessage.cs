@@ -68,15 +68,12 @@ namespace LabFusion.Network
                     }
                     else
                     {
-                        if (SyncManager.TryGetSyncable(data.puppetId, out var puppet) && puppet is PropSyncable puppetSyncable)
+                        if (SyncManager.TryGetSyncable(data.puppetId, out var puppet) && puppet is PropSyncable puppetSyncable && puppetSyncable.TryGetExtender<PuppetMasterExtender>(out var extender))
                         {
                             // Kill the puppet
-                            if (puppetSyncable.PuppetMaster)
-                            {
-                                PuppetMasterPatches.IgnorePatches = true;
-                                puppetSyncable.PuppetMaster.Kill();
-                                PuppetMasterPatches.IgnorePatches = false;
-                            }
+                            PuppetMasterPatches.IgnorePatches = true;
+                            extender.Component.Kill();
+                            PuppetMasterPatches.IgnorePatches = false;
                         }
                     }
                 }

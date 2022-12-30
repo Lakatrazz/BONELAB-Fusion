@@ -71,13 +71,13 @@ namespace LabFusion.Network
                             MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
                         }
                     }
-                    else if (SyncManager.TryGetSyncable(data.gunId, out var gun) && gun is PropSyncable gunSyncable) {
+                    else if (SyncManager.TryGetSyncable(data.gunId, out var gun) && gun is PropSyncable gunSyncable && gunSyncable.TryGetExtender<AmmoSocketExtender>(out var extender)) {
                         // Eject mag from gun
-                        if (gunSyncable.AmmoSocket && gunSyncable.AmmoSocket._magazinePlug) {
+                        if (extender.Component._magazinePlug) {
                             AmmoSocketPatches.IgnorePatch = true;
 
-                            var ammoPlug = gunSyncable.AmmoSocket._magazinePlug;
-                            if (ammoPlug.magazine && PropSyncable.MagazineCache.TryGet(ammoPlug.magazine, out var magSyncable) && magSyncable.Id == data.magazineId) {
+                            var ammoPlug = extender.Component._magazinePlug;
+                            if (ammoPlug.magazine && MagazineExtender.Cache.TryGet(ammoPlug.magazine, out var magSyncable) && magSyncable.Id == data.magazineId) {
                                 Hand grabHand = null;
 
                                 if (ammoPlug.magazine.grip) {

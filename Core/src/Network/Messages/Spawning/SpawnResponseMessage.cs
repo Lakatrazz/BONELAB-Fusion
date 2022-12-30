@@ -17,13 +17,18 @@ using LabFusion.Syncables;
 using SLZ.Interaction;
 using SLZ.Marrow.Warehouse;
 using SLZ.Marrow.Data;
+
 using MelonLoader;
 
 using SLZ.Zones;
 using SLZ.AI;
+
 using LabFusion.Extensions;
+
 using SLZ.Props.Weapons;
 using SLZ;
+
+using LabFusion.Exceptions;
 
 namespace LabFusion.Network
 {
@@ -90,12 +95,16 @@ namespace LabFusion.Network
         public override byte? Tag => NativeMessageTag.SpawnResponse;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
-            if (!isServerHandled) {
-                using (var reader = FusionReader.Create(bytes)) {
-                    using (var data = reader.ReadFusionSerializable<SpawnResponseData>()) {
+            if (!isServerHandled)
+            {
+                using (var reader = FusionReader.Create(bytes))
+                {
+                    using (var data = reader.ReadFusionSerializable<SpawnResponseData>())
+                    {
                         var crateRef = new SpawnableCrateReference(data.barcode);
 
-                        var spawnable = new Spawnable() {
+                        var spawnable = new Spawnable()
+                        {
                             crateRef = crateRef,
                             policyData = null
                         };
@@ -106,12 +115,14 @@ namespace LabFusion.Network
                         ushort syncId = data.syncId;
                         string path = data.spawnerPath;
                         var hand = data.hand;
-
-                        NullableMethodExtensions.PoolManager_Spawn(spawnable, data.serializedTransform.position, data.serializedTransform.rotation.Expand(), null, 
+                        
+                        NullableMethodExtensions.PoolManager_Spawn(spawnable, data.serializedTransform.position, data.serializedTransform.rotation.Expand(), null,
                             true, null, (Action<GameObject>)((go) => { OnSpawnFinished(owner, syncId, go, path, hand); }), null);
                     }
                 }
             }
+            else
+                throw new ExpectedClientException();
         }
 
         public static void OnSpawnFinished(byte owner, ushort syncId, GameObject go, string spawnerPath = "_", Handedness hand = Handedness.UNDEFINED) {
@@ -120,10 +131,6 @@ namespace LabFusion.Network
                 try {
                     var spawnerGo = GameObjectUtilities.GetGameObject(spawnerPath);
                     spawner = ZoneSpawner.Cache.Get(spawnerGo);
-
-#if DEBUG
-                    FusionLogger.Log($"Found spawner from path? {spawner != null}");
-#endif
                 } 
                 catch (Exception e) {
 #if DEBUG

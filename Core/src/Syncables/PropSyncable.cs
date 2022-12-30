@@ -20,31 +20,14 @@ using SLZ.Utilities;
 using SLZ.Vehicle;
 
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace LabFusion.Syncables
 {
     public class PropSyncable : ISyncable {
         public static readonly FusionComponentCache<GameObject, PropSyncable> Cache = new FusionComponentCache<GameObject, PropSyncable>();
-        public static readonly FusionComponentCache<WeaponSlot, PropSyncable> WeaponSlotCache = new FusionComponentCache<WeaponSlot, PropSyncable>();
-
-        public static readonly FusionComponentCache<Magazine, PropSyncable> MagazineCache = new FusionComponentCache<Magazine, PropSyncable>();
-        public static readonly FusionComponentCache<Gun, PropSyncable> GunCache = new FusionComponentCache<Gun, PropSyncable>();
-
-        public static readonly FusionComponentCache<Seat, PropSyncable> SeatCache = new FusionComponentCache<Seat, PropSyncable>();
-
-        public static readonly FusionComponentCache<PuppetMaster, PropSyncable> PuppetMasterCache = new FusionComponentCache<PuppetMaster, PropSyncable>();
-
-        public static readonly FusionComponentCache<SimpleGripEvents, PropSyncable> SimpleGripEventsCache = new FusionComponentCache<SimpleGripEvents, PropSyncable>();
-
-        public static readonly FusionComponentCache<Prop_Health, PropSyncable> PropHealthCache = new FusionComponentCache<Prop_Health, PropSyncable>();
-        public static readonly FusionComponentCache<ObjectDestructable, PropSyncable> ObjectDestructableCache = new FusionComponentCache<ObjectDestructable, PropSyncable>();
-
-
-        public PuppetMaster PuppetMaster;
-        public AIBrain AIBrain;
 
         public Grip[] PropGrips;
-        public SimpleGripEvents[] SimpleGripEvents;
         public Rigidbody[] Rigidbodies;
         public RigidbodyState[] RigidbodyStates;
         public PDController[] PDControllers;
@@ -53,20 +36,8 @@ namespace LabFusion.Syncables
         public Transform[] HostTransforms;
 
         public readonly AssetPoolee AssetPoolee;
-        public readonly WeaponSlot WeaponSlot;
-
-        public readonly Seat[] Seats;
-
-        public readonly Prop_Health[] PropHealths;
-        public readonly ObjectDestructable[] ObjectDestructables;
-
-        public readonly Magazine Magazine;
-        public readonly Gun Gun;
-        public readonly AmmoSocket AmmoSocket;
 
         public readonly GameObject GameObject;
-
-        public readonly bool IsRotationBased;
 
         public readonly bool HasIgnoreHierarchy;
 
@@ -79,7 +50,6 @@ namespace LabFusion.Syncables
         // Target info
         public Vector3?[] DesiredPositions;
         public Quaternion?[] DesiredRotations;
-        public float DesiredVelocity;
 
         // Last sent info
         public Vector3[] LastSentPositions;
@@ -95,6 +65,8 @@ namespace LabFusion.Syncables
         private bool _lockedState = false;
 
         private bool _disabledForces = false;
+
+        private IReadOnlyList<IPropExtender> _extenders;
 
         public PropSyncable(InteractableHost host = null, GameObject root = null) {
             if (root != null)
@@ -120,7 +92,7 @@ namespace LabFusion.Syncables
             }
 
             foreach (var grip in PropGrips) {
-                grip.attachedHandDelegate += (Grip.HandDelegate)((h) => { OnAttach(h, grip);});
+                grip.attachedHandDelegate += (Grip.HandDelegate)((h) => { OnAttach(h, grip); });
                 grip.detachedHandDelegate += (Grip.HandDelegate)((h) => { OnDetach(h, grip); });
             }
 
@@ -140,64 +112,113 @@ namespace LabFusion.Syncables
 
             DesiredPositions = new Vector3?[Rigidbodies.Length];
             DesiredRotations = new Quaternion?[Rigidbodies.Length];
-            DesiredVelocity = 0f;
 
             LastSentPositions = new Vector3[Rigidbodies.Length];
             LastSentRotations = new Quaternion[Rigidbodies.Length];
 
-            WeaponSlot = GameObject.GetComponentInChildren<WeaponSlot>(true);
-
-            if (WeaponSlot) {
-                WeaponSlotCache.Remove(WeaponSlot);
-                WeaponSlotCache.Add(WeaponSlot, this);
-            }
-
-            Magazine = GameObject.GetComponentInChildren<Magazine>(true);
-
-            if (Magazine) {
-                MagazineCache.Remove(Magazine);
-                MagazineCache.Add(Magazine, this);
-            }
-
-            Gun = GameObject.GetComponentInChildren<Gun>(true);
-
-            if (Gun) {
-                GunCache.Remove(Gun);
-                GunCache.Add(Gun, this);
-            }
-
-            AmmoSocket = GameObject.GetComponentInChildren<AmmoSocket>(true);
-
-            PuppetMaster = GameObject.GetComponentInChildren<PuppetMaster>(true);
-
-            if (PuppetMaster)
-                PuppetMasterCache.Add(PuppetMaster, this);
-
-            AIBrain = GameObject.GetComponentInChildren<AIBrain>(true);
-
-            Seats = GameObject.GetComponentsInChildren<Seat>(true);
-
-            foreach (var seat in Seats) {
-                SeatCache.Add(seat, this);
-            }
-
             HasIgnoreHierarchy = GameObject.GetComponentInParent<IgnoreHierarchy>(true);
 
-            SimpleGripEvents = GameObject.GetComponentsInChildren<SimpleGripEvents>(true);
+            _extenders = PropExtenderManager.GetPropExtenders(this);
+        }
 
-            foreach (var events in SimpleGripEvents) {
-                SimpleGripEventsCache.Add(events, this);
+        public void RecursiveSetDesiredPositions() {
+            // If this is a skeleton (crumbles on death) and its dead, don't calcualte positions here
+            if (TryGetExtender<PuppetMasterExtender>(out var puppet) && TryGetExtender<BehaviourPowerLegsExtender>(out var powerLegs)) {
+                if (puppet.Component.isDead && powerLegs.Component.crumbleDeath)
+                    return;
             }
 
-            PropHealths = GameObject.GetComponentsInChildren<Prop_Health>(true);
+            for (var i = 0; i < HostTransforms.Length; i++) {
+                if (i != 0)
+                    Internal_TryGetDesiredPosition(HostTransforms[i], out _);
+            }
+        }
 
-            foreach (var health in PropHealths)
-                PropHealthCache.Add(health, this);
+        private bool Internal_TryGetDesiredPosition(Transform transform, out Vector3 position) {
+            position = default;
+            int hostIndex = -1;
+            
+            if (TryGetExtender<PuppetMasterExtender>(out var extender)) {
+                var puppet = extender.Component;
+                Transform connectedBodyTransform = null;
 
-            ObjectDestructables = GameObject.GetComponentsInChildren<ObjectDestructable>(true);
+                // Get host transform index
+                for (var i = 0; i < HostTransforms.Length; i++) {
+                    var host = HostTransforms[i];
+                    if (host == transform) {
+                        hostIndex = i;
+                        break;
+                    }
+                }
 
-            foreach (var destructable in ObjectDestructables)
-                ObjectDestructableCache.Add(destructable, this);
+                if (hostIndex == -1)
+                    return false;
+                
+                // Prevent unnecessary calcs
+                if (DesiredPositions[hostIndex].HasValue) {
+                    position = DesiredPositions[hostIndex].Value;
+                    return true;
+                }
+
+                // Get connected body transform
+                foreach (var muscle in puppet.muscles) {
+                    if (muscle.transform == transform) {
+                        connectedBodyTransform = muscle.connectedBodyTransform;
+                        break;
+                    }
+                }
+
+                if (connectedBodyTransform == null)
+                    return false;
+
+                // Get desired rotation of connected body
+                Vector3? desiredPosition = null;
+                Quaternion? desiredRotation = null;
+                for (var i = 0; i < HostTransforms.Length; i++) {
+                    var host = HostTransforms[i];
+                    if (host == connectedBodyTransform) {
+                        if (i == 0)
+                            desiredPosition = DesiredPositions[i];
+
+                        desiredRotation = DesiredRotations[i];
+                        break;
+                    }
+                }
+
+                if (!desiredRotation.HasValue)
+                    return false;
+
+                // Translate current local position based on rotation offset
+                Vector3 localPos = Quaternion.Inverse(connectedBodyTransform.rotation) * (transform.position - connectedBodyTransform.position);
+
+                Vector3 connectedBodyDesired = connectedBodyTransform.position;
+                if (desiredPosition.HasValue)
+                    connectedBodyDesired = desiredPosition.Value;
+                else if (Internal_TryGetDesiredPosition(connectedBodyTransform, out var found)) {
+                    connectedBodyDesired = found;
+                }
+
+                position = (desiredRotation.Value * localPos) + connectedBodyDesired;
+
+                if (hostIndex != 0)
+                    DesiredPositions[hostIndex] = position;
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool TryGetExtender<T>(out T extender) where T : IPropExtender {
+            foreach (var found in _extenders) {
+                if (found.GetType() == typeof(T)) {
+                    extender = (T)found;
+                    return true;
+                }
+            }
+
+            extender = default;
+            return false;
         }
 
         private void AssignInformation(InteractableHost host) {
@@ -261,111 +282,13 @@ namespace LabFusion.Syncables
                 _grabbedGrips[grip]--;
         }
 
-        public byte? GetIndex(Prop_Health health)
-        {
-            for (byte i = 0; i < PropHealths.Length; i++)
-            {
-                if (PropHealths[i] == health)
-                    return i;
-            }
-            return null;
-        }
-
-        public Prop_Health GetPropHealth(byte index)
-        {
-            if (PropHealths != null && PropHealths.Length > index)
-                return PropHealths[index];
-            return null;
-        }
-
-        public byte? GetIndex(ObjectDestructable destructable)
-        {
-            for (byte i = 0; i < ObjectDestructables.Length; i++)
-            {
-                if (ObjectDestructables[i] == destructable)
-                    return i;
-            }
-            return null;
-        }
-
-        public ObjectDestructable GetDestructable(byte index)
-        {
-            if (ObjectDestructables != null && ObjectDestructables.Length > index)
-                return ObjectDestructables[index];
-            return null;
-        }
-
-        public byte? GetIndex(SimpleGripEvents gripEvents)
-        {
-            for (byte i = 0; i < SimpleGripEvents.Length; i++)
-            {
-                if (SimpleGripEvents[i] == gripEvents)
-                    return i;
-            }
-            return null;
-        }
-
-        public SimpleGripEvents GetGripEvents(byte index)
-        {
-            if (SimpleGripEvents != null && SimpleGripEvents.Length > index)
-                return SimpleGripEvents[index];
-            return null;
-        }
-
-        public byte? GetIndex(Seat seat)
-        {
-            for (byte i = 0; i < Seats.Length; i++)
-            {
-                if (Seats[i] == seat)
-                    return i;
-            }
-            return null;
-        }
-
-        public Seat GetSeat(byte index)
-        {
-            if (Seats != null && Seats.Length > index)
-                return Seats[index];
-            return null;
-        }
-
         public void Cleanup() {
             if (!GameObject.IsNOC()) {
                 Cache.Remove(GameObject);
             }
 
-            if (!WeaponSlot.IsNOC())
-                WeaponSlotCache.Remove(WeaponSlot);
-
-            if (!Magazine.IsNOC())
-                MagazineCache.Remove(Magazine);
-
-            if (!Gun.IsNOC())
-                GunCache.Remove(Gun);
-
-            if (!PuppetMaster.IsNOC())
-                PuppetMasterCache.Remove(PuppetMaster);
-
-            foreach (var seat in Seats) {
-                if (!seat.IsNOC())
-                    SeatCache.Remove(seat);
-            }
-
-            foreach (var events in SimpleGripEvents) {
-                if (!events.IsNOC())
-                    SimpleGripEventsCache.Remove(events);
-            }
-
-            foreach (var health in PropHealths)
-            {
-                if (!health.IsNOC())
-                    PropHealthCache.Remove(health);
-            }
-
-            foreach (var destructable in ObjectDestructables)
-            {
-                if (!destructable.IsNOC())
-                    ObjectDestructableCache.Remove(destructable);
+            foreach (var extender in _extenders) {
+                extender.OnCleanup();
             }
 
             OnClearOverrides();
@@ -559,7 +482,6 @@ namespace LabFusion.Syncables
             for (var i = 0; i < Rigidbodies.Length; i++) {
                 DesiredPositions[i] = null;
                 DesiredRotations[i] = null;
-                DesiredVelocity = 0f;
             }
 
             bool hasMovingBody = false;
@@ -621,6 +543,11 @@ namespace LabFusion.Syncables
                     _isLockingDirty = true;
                     _lockedState = true;
                     _disabledForces = true;
+
+                    for (var i = 0; i < Rigidbodies.Length; i++) {
+                        DesiredPositions[i] = null;
+                        DesiredRotations[i] = null;
+                    }
                 }
 
                 return;
@@ -647,8 +574,6 @@ namespace LabFusion.Syncables
                             if (!hand.manager.activeSeat) {
                                 DesiredPositions[i] = null;
                                 DesiredRotations[i] = null;
-                                DesiredVelocity = 0f;
-
                                 isGrabbed = true;
                                 break;
                             }
@@ -667,13 +592,13 @@ namespace LabFusion.Syncables
                 var pos = DesiredPositions[i].Value;
                 var rot = DesiredRotations[i].Value;
 
-                bool allowPosition = (!IsRotationBased || i == 0) && !HasIgnoreHierarchy;
+                bool allowPosition = !HasIgnoreHierarchy;
 
                 var pdController = PDControllers[i];
 
                 // Teleport check
                 float distSqr = (transform.position - pos).sqrMagnitude;
-                if (distSqr > (2f * (DesiredVelocity + 1f)) && allowPosition) {
+                if (distSqr > (2f * (rb.velocity.sqrMagnitude + 1f)) && allowPosition) {
                     transform.position = pos;
                     transform.rotation = rot;
 

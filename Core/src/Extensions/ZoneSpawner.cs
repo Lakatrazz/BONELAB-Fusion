@@ -14,7 +14,7 @@ namespace LabFusion.Extensions {
             brain.onDeathDelegate += (Action)(() => { spawner.OnDeathDelegate.Invoke(); });
 
             // Update enemy config
-            if (brain.behaviour != null && spawner.currEnemyProfile.baseConfig != null)
+            if (brain.behaviour != null && spawner.currEnemyProfile != null && spawner.currEnemyProfile.baseConfig != null)
                 brain.behaviour.SetBaseConfig(spawner.currEnemyProfile.baseConfig);
         }
     }

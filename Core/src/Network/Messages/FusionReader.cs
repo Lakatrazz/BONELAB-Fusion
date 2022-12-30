@@ -40,11 +40,19 @@ namespace LabFusion.Network
             return instance;
         }
 
+        public void ReadFusionSerializable<T>(ref T value) where T : IFusionSerializable {
+            value.Deserialize(this);
+        }
+
         public IFusionSerializable ReadFusionSerializable(Type type)
         {
             var instance = Activator.CreateInstance(type) as IFusionSerializable;
             instance.Deserialize(this);
             return instance;
+        }
+
+        public void ReadFusionSerializable(ref IFusionSerializable value) {
+            value.Deserialize(this);
         }
 
         /// <summary>

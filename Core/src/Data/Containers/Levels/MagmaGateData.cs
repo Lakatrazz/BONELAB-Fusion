@@ -20,22 +20,6 @@ namespace LabFusion.Data
     {
         public static GameControl_MagmaGate GameController;
 
-        public static void TEMP_SendMagmaGateMessage(MagmaGateEventType type)
-        {
-            using (var writer = FusionWriter.Create())
-            {
-                using (var data = MagmaGateEventData.Create(type))
-                {
-                    writer.Write(data);
-
-                    using (var message = FusionMessage.Create(NativeMessageTag.MagmaGateEvent, writer))
-                    {
-                        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                    }
-                }
-            }
-        }
-
         public static void OnCacheMagmaGateInfo()
         {
             GameController = GameObject.FindObjectOfType<GameControl_MagmaGate>(true);

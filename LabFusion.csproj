@@ -178,6 +178,11 @@
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\SteamInterface.cs" />
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utf8String.cs" />
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utility.cs" />
+    <Compile Include="Core\src\AssemblyInfo.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AssemblyInfo.tt</DependentUpon>
+    </Compile>
     <Compile Include="Core\src\Data\Containers\Levels\ArenaData.cs" />
     <Compile Include="Core\src\Data\Containers\ConfigurableJointDriveData.cs" />
     <Compile Include="Core\src\Data\Containers\DataCorruptionException.cs" />
@@ -193,17 +198,20 @@
     <Compile Include="Core\src\Data\Containers\RigidbodyState.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedHand.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedPlayerBodyGrab.cs" />
-    <Compile Include="Core\src\Data\Containers\SerializedSmallQuaternion.cs" />
-    <Compile Include="Core\src\Data\Containers\SerializedQuaternion.cs" />
+    <Compile Include="Core\src\Data\Containers\Transforms\SerializedSmallQuaternion.cs" />
+    <Compile Include="Core\src\Data\Containers\Transforms\SerializedQuaternion.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedStaticGrab.cs" />
-    <Compile Include="Core\src\Data\Containers\SerializedLocalTransform.cs" />
-    <Compile Include="Core\src\Data\Containers\SerializedTransform.cs" />
+    <Compile Include="Core\src\Data\Containers\Transforms\SerializedLocalTransform.cs" />
+    <Compile Include="Core\src\Data\Containers\Transforms\SerializedSmallVector3.cs" />
+    <Compile Include="Core\src\Data\Containers\Transforms\SerializedTransform.cs" />
     <Compile Include="Core\src\Data\Files\EmbeddedAssetBundle.cs" />
     <Compile Include="Core\src\Data\Files\SteamAPILoader.cs" />
     <Compile Include="Core\src\Data\Files\EmbeddedResource.cs" />
     <Compile Include="Core\src\Data\Files\PersistentData.cs" />
     <Compile Include="Core\src\Data\Files\ResourcePaths.cs" />
     <Compile Include="Core\src\Data\Interfaces\IFusionSerializable.cs" />
+    <Compile Include="Core\src\Exceptions\ExpectedClientException.cs" />
+    <Compile Include="Core\src\Exceptions\ExpectedServerException.cs" />
     <Compile Include="Core\src\Extensions\AlignPlug.cs" />
     <Compile Include="Core\src\Extensions\Array.cs" />
     <Compile Include="Core\src\Extensions\Byte.cs" />
@@ -221,7 +229,15 @@
     <Compile Include="Core\src\Grabbables\InteractableHelpers.cs" />
     <Compile Include="Core\src\Grabbables\SerializedGrabHandler.cs" />
     <Compile Include="Core\src\Mod.cs" />
-    <Compile Include="Core\src\Modularity\DllTools.cs" />
+    <Compile Include="Core\src\Network\Helpers\SendRateTable.cs" />
+    <Compile Include="Core\src\Network\Messages\Campaign\DescentIntroMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Server\ModuleAssignMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Server\ModuleMessage.cs" />
+    <Compile Include="Core\src\SDK\Network\Messages\ModuleMessageHandler.cs" />
+    <Compile Include="Core\src\Senders\ArenaSender.cs" />
+    <Compile Include="Core\src\Senders\CampaignSender.cs" />
+    <Compile Include="Core\src\Syncables\Extenders\BehaviourPowerLegsExtender.cs" />
+    <Compile Include="Core\src\Utilities\DllTools.cs" />
     <Compile Include="Core\src\Network\Helpers\Net.cs" />
     <Compile Include="Core\src\Network\Helpers\NetworkHelper.cs" />
     <Compile Include="Core\src\Network\Internal\InternalLayerHelpers.cs" />
@@ -315,9 +331,28 @@
     <Compile Include="Core\src\Representation\PlayerIdManager.cs" />
     <Compile Include="Core\src\Representation\PlayerRep.cs" />
     <Compile Include="Core\src\Representation\PlayerRepUtilities.cs" />
+    <Compile Include="Core\src\SDK\Modules\Module.cs" />
+    <Compile Include="Core\src\SDK\Modules\ModuleHandler.cs" />
+    <Compile Include="Core\src\SDK\Modules\ModuleInfo.cs" />
+    <Compile Include="Core\src\SDK\Modules\ModuleLogger.cs" />
+    <Compile Include="Core\src\Syncables\Extenders\ObjectDestructableExtender.cs" />
+    <Compile Include="Core\src\Syncables\Extenders\PropHealthExtender.cs" />
+    <Compile Include="Core\src\Syncables\Extenders\SimpleGripEventsExtender.cs" />
+    <Compile Include="Core\src\Syncables\Extenders\SeatExtender.cs" />
+    <Compile Include="Core\src\Syncables\Extenders\AIBrainExtender.cs" />
+    <Compile Include="Core\src\Syncables\Extenders\PuppetMasterExtender.cs" />
+    <Compile Include="Core\src\Syncables\Extenders\AmmoSocketExtender.cs" />
+    <Compile Include="Core\src\Syncables\Extenders\IPropExtender.cs" />
+    <Compile Include="Core\src\Syncables\Extenders\GunExtender.cs" />
+    <Compile Include="Core\src\Syncables\Extenders\MagazineExtender.cs" />
+    <Compile Include="Core\src\Syncables\Extenders\WeaponSlotExtender.cs" />
+    <Compile Include="Core\src\Syncables\PropComponentArrayExtender.cs" />
+    <Compile Include="Core\src\Syncables\PropComponentExtender.cs" />
+    <Compile Include="Core\src\Syncables\Extenders\PropExtenderManager.cs" />
     <Compile Include="Core\src\Utilities\FloatingOriginUtilities.cs" />
     <Compile Include="Core\src\Utilities\FusionComponentCache.cs" />
     <Compile Include="Core\src\Utilities\GameObjectUtilities.cs" />
+    <Compile Include="Core\src\Utilities\HookingUtilities.cs" />
     <Compile Include="Core\src\Utilities\Internal\PatchingUtilities.cs" />
     <Compile Include="Core\src\Utilities\Asset Warehouses\SpawnableWarehouseUtilities.cs" />
     <Compile Include="Core\src\Utilities\Asset Warehouses\AvatarWarehouseUtilities.cs" />
@@ -331,7 +366,6 @@
     <Compile Include="Core\src\Utilities\PooleeUtilities.cs" />
     <Compile Include="Core\src\Utilities\SafetyUtilities.cs" />
     <Compile Include="Core\src\Utilities\TriggerUtilities.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Core\resources\lib\x86_64\steam_api64.dll" />
@@ -917,6 +951,17 @@
       <HintPath>Core\managed\UnityEngine.XRModule.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Core\src\AssemblyInfo.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>AssemblyInfo.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

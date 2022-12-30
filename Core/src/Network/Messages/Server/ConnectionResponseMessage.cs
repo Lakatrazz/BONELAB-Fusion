@@ -56,6 +56,7 @@ namespace LabFusion.Network
                     if (RigData.RigReferences.RigManager)
                         RigData.OnRigRescale();
 
+                    InternalServerHelpers.OnJoinServer();
 #if DEBUG    
                     FusionLogger.Log($"Assigned our local smallId to {data.playerId.SmallId}, real id was {PlayerIdManager.LocalSmallId}");
 #endif
@@ -65,7 +66,7 @@ namespace LabFusion.Network
 #if DEBUG    
                     FusionLogger.Log($"Client received a join message from long id {data.playerId.LongId} and small id {data.playerId.SmallId}!");
 #endif
-
+                    InternalServerHelpers.OnUserJoin(data.playerId);
                     new PlayerRep(data.playerId, data.avatarBarcode);
                 }
             }

@@ -93,6 +93,17 @@ namespace LabFusion.Network
                                 }
                             }
                         }
+
+                        // Send the module list
+                        using (var writer = FusionWriter.Create()) {
+                            using (var assignData = ModuleAssignData.Create()) {
+                                writer.Write(assignData);
+
+                                using (var message = FusionMessage.Create(NativeMessageTag.ModuleAssignment, writer)) {
+                                    MessageSender.SendServerMessage(data.longId, NetworkChannel.Reliable, message);
+                                }
+                            }
+                        }
                     }
                 }
             }

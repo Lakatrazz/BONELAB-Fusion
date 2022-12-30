@@ -26,7 +26,7 @@ namespace LabFusion.Patching
             if (IgnorePatches)
                 return true;
 
-            if (NetworkInfo.HasServer && PropSyncable.PuppetMasterCache.TryGet(__instance, out var syncable)) {
+            if (NetworkInfo.HasServer && PuppetMasterExtender.Cache.TryGet(__instance, out var syncable)) {
                 if (!syncable.IsOwner())
                     return false;
                 else {
@@ -53,7 +53,7 @@ namespace LabFusion.Patching
         [HarmonyPrefix]
         [HarmonyPatch(nameof(PuppetMaster.OnLateUpdate))]
         public static void OnLateUpdatePrefix(PuppetMaster __instance) {
-            if (NetworkInfo.HasServer && PropSyncable.PuppetMasterCache.TryGet(__instance, out var syncable) && !syncable.IsOwner()) {
+            if (NetworkInfo.HasServer && PuppetMasterExtender.Cache.TryGet(__instance, out var syncable) && !syncable.IsOwner()) {
                 MusclePatches.CancelAnchorUpdate = true;
             }
         }
@@ -84,7 +84,7 @@ namespace LabFusion.Patching
         {
             try
             {
-                if (NetworkInfo.HasServer && PropSyncable.PuppetMasterCache.TryGet(__instance.broadcaster.puppetMaster, out var syncable) && !syncable.IsOwner())
+                if (NetworkInfo.HasServer && PuppetMasterExtender.Cache.TryGet(__instance.broadcaster.puppetMaster, out var syncable) && !syncable.IsOwner())
                 {
                     __instance.joint.slerpDrive = default;
                     return false;

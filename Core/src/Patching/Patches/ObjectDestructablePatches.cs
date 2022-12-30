@@ -25,7 +25,7 @@ namespace LabFusion.Patching {
             if (IgnorePatches)
                 return true;
 
-            if (NetworkInfo.HasServer && PropSyncable.ObjectDestructableCache.TryGet(__instance, out var syncable) && !syncable.IsOwner())
+            if (NetworkInfo.HasServer && ObjectDestructableExtender.Cache.TryGet(__instance, out var syncable) && !syncable.IsOwner())
                 return false;
 
             __state = __instance._isDead;
@@ -42,12 +42,12 @@ namespace LabFusion.Patching {
             if (IgnorePatches)
                 return;
 
-            if (NetworkInfo.HasServer && PropSyncable.ObjectDestructableCache.TryGet(__instance, out var syncable)) {
+            if (NetworkInfo.HasServer && ObjectDestructableExtender.Cache.TryGet(__instance, out var syncable) && syncable.TryGetExtender<ObjectDestructableExtender>(out var extender)) {
                 // Send object destroy
                 if (syncable.IsOwner() && !__state && __instance._isDead) {
                     using (var writer = FusionWriter.Create())
                     {
-                        using (var data = ObjectDestructableDestroyData.Create(PlayerIdManager.LocalSmallId, syncable.Id, syncable.GetIndex(__instance).Value))
+                        using (var data = ObjectDestructableDestroyData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value))
                         {
                             writer.Write(data);
 

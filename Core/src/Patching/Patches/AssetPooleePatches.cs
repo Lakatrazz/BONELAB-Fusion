@@ -31,7 +31,7 @@ namespace LabFusion.Patching
                 return;
 
             try {
-                if (NetworkInfo.HasServer && __instance.spawnableCrate)
+                if (NetworkInfo.HasServer && __instance.spawnableCrate && !PropSyncable.Cache.ContainsSource(__instance.gameObject))
                 {
                     var barcode = __instance.spawnableCrate.Barcode;
 
@@ -49,9 +49,6 @@ namespace LabFusion.Patching
                     else
                     {
                         if (PooleeUtilities.CanSendSpawn(__instance)) {
-                            if (PropSyncable.Cache.TryGet(__instance.gameObject, out var syncable))
-                                SyncManager.RemoveSyncable(syncable);
-
                             MelonCoroutines.Start(CoVerifySpawnedRoutine(__instance));
                         }
                     }

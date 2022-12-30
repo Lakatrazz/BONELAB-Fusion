@@ -72,9 +72,9 @@ namespace LabFusion.Network
                     }
                     else
                     {
-                        if (SyncManager.TryGetSyncable(data.syncId, out var health) && health is PropSyncable healthSyncable)
+                        if (SyncManager.TryGetSyncable(data.syncId, out var health) && health is PropSyncable healthSyncable && healthSyncable.TryGetExtender<PropHealthExtender>(out var extender))
                         {
-                            var propHealth = healthSyncable.GetPropHealth(data.healthIndex);
+                            var propHealth = extender.GetComponent(data.healthIndex);
                             PropHealthPatches.IgnorePatches = true;
                             propHealth.DESTROYED();
                             PropHealthPatches.IgnorePatches = false;

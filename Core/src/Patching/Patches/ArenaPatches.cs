@@ -8,6 +8,7 @@ using HarmonyLib;
 using Il2CppSystem;
 using LabFusion.Data;
 using LabFusion.Network;
+using LabFusion.Senders;
 using LabFusion.Utilities;
 
 using SLZ.Bonelab;
@@ -29,7 +30,7 @@ namespace LabFusion.Patching {
                     return false;
                 else
                 {
-                    ArenaData.TEMP_SendGeo((byte)index);
+                    ArenaSender.SendGeometryChange((byte)index);
                 }
             }
 
@@ -67,7 +68,7 @@ namespace LabFusion.Patching {
                     return false;
                 else
                 {
-                    ArenaData.TEMP_SendMenuController((byte)sel, ArenaMenuType.CHALLENGE_SELECT);
+                    ArenaSender.SendMenuSelection((byte)sel, ArenaMenuType.CHALLENGE_SELECT);
                 }
             }
 
@@ -87,7 +88,7 @@ namespace LabFusion.Patching {
                     return false;
                 else
                 {
-                    ArenaData.TEMP_SendMenuController((byte)sel, ArenaMenuType.TRIAL_SELECT);
+                    ArenaSender.SendMenuSelection((byte)sel, ArenaMenuType.TRIAL_SELECT);
                 }
             }
 
@@ -107,7 +108,7 @@ namespace LabFusion.Patching {
                     return false;
                 else
                 {
-                    ArenaData.TEMP_SendMenuController(0, ArenaMenuType.SURVIVAL_SELECT);
+                    ArenaSender.SendMenuSelection(0, ArenaMenuType.SURVIVAL_SELECT);
                 }
             }
 
@@ -127,7 +128,7 @@ namespace LabFusion.Patching {
                     return false;
                 else
                 {
-                    ArenaData.TEMP_SendMenuController((byte)diff, ArenaMenuType.TOGGLE_DIFFICULTY);
+                    ArenaSender.SendMenuSelection((byte)diff, ArenaMenuType.TOGGLE_DIFFICULTY);
                 }
             }
 
@@ -147,7 +148,7 @@ namespace LabFusion.Patching {
                     return false;
                 else
                 {
-                    ArenaData.TEMP_SendMenuController((byte)profileIndex, ArenaMenuType.TOGGLE_ENEMY_PROFILE);
+                    ArenaSender.SendMenuSelection((byte)profileIndex, ArenaMenuType.TOGGLE_ENEMY_PROFILE);
                 }
             }
 
@@ -167,7 +168,7 @@ namespace LabFusion.Patching {
                     return false;
                 else
                 {
-                    ArenaData.TEMP_SendMenuController(0, ArenaMenuType.CREATE_CUSTOM_GAME_AND_START);
+                    ArenaSender.SendMenuSelection(0, ArenaMenuType.CREATE_CUSTOM_GAME_AND_START);
                 }
             }
 
@@ -187,7 +188,7 @@ namespace LabFusion.Patching {
                     return false;
                 else
                 {
-                    ArenaData.TEMP_SendMenuController(0, ArenaMenuType.RESUME_SURVIVAL_FROM_ROUND);
+                    ArenaSender.SendMenuSelection(0, ArenaMenuType.RESUME_SURVIVAL_FROM_ROUND);
                 }
             }
 
@@ -212,7 +213,7 @@ namespace LabFusion.Patching {
                     return false;
                 else
                 {
-                    ArenaData.TEMP_SendChallengeSelect(ArenaData.GetIndex(__instance).Value, 0, ChallengeSelectType.ON_CHALLENGE_SELECT);
+                    ArenaSender.SendChallengeSelect(ArenaData.GetIndex(__instance).Value, 0, ChallengeSelectType.ON_CHALLENGE_SELECT);
                 }
             }
 
@@ -230,7 +231,7 @@ namespace LabFusion.Patching {
                     return false;
                 else
                 {
-                    ArenaData.TEMP_SendChallengeSelect(ArenaData.GetIndex(__instance).Value, (byte)idx, ChallengeSelectType.SELECT_CHALLENGE);
+                    ArenaSender.SendChallengeSelect(ArenaData.GetIndex(__instance).Value, (byte)idx, ChallengeSelectType.SELECT_CHALLENGE);
                 }
             }
 
@@ -255,7 +256,7 @@ namespace LabFusion.Patching {
                     return false;
                 else
                 {
-                    ArenaData.TEMP_SendArenaMessage(ArenaTransitionType.ARENA_PLAYER_ENTER);
+                    ArenaSender.SendArenaTransition(ArenaTransitionType.ARENA_PLAYER_ENTER);
                 }
             }
 
@@ -275,7 +276,7 @@ namespace LabFusion.Patching {
                     return false;
                 else
                 {
-                    ArenaData.TEMP_SendArenaMessage(ArenaTransitionType.INIT_OBJECTIVE_CONTAINER);
+                    ArenaSender.SendArenaTransition(ArenaTransitionType.INIT_OBJECTIVE_CONTAINER);
                 }
             }
 
@@ -295,7 +296,7 @@ namespace LabFusion.Patching {
                     return false;
                 else
                 {
-                    ArenaData.TEMP_SendArenaMessage(ArenaTransitionType.ARENA_START_MATCH);
+                    ArenaSender.SendArenaTransition(ArenaTransitionType.ARENA_START_MATCH);
                 }
             }
 
@@ -312,7 +313,7 @@ namespace LabFusion.Patching {
                 if (!NetworkInfo.IsServer)
                     return false;
                 else {
-                    ArenaData.TEMP_SendArenaMessage(ArenaTransitionType.START_NEXT_WAVE);
+                    ArenaSender.SendArenaTransition(ArenaTransitionType.START_NEXT_WAVE);
                 }
             }
             
@@ -332,7 +333,7 @@ namespace LabFusion.Patching {
                     return false;
                 else
                 {
-                    ArenaData.TEMP_SendArenaMessage(ArenaTransitionType.ARENA_QUIT_CHALLENGE);
+                    ArenaSender.SendArenaTransition(ArenaTransitionType.ARENA_QUIT_CHALLENGE);
                 }
             }
 
@@ -352,7 +353,7 @@ namespace LabFusion.Patching {
                     return false;
                 else
                 {
-                    ArenaData.TEMP_SendArenaMessage(ArenaTransitionType.ARENA_CANCEL_MATCH);
+                    ArenaSender.SendArenaTransition(ArenaTransitionType.ARENA_CANCEL_MATCH);
                 }
             }
 
@@ -372,7 +373,7 @@ namespace LabFusion.Patching {
                     return false;
                 else
                 {
-                    ArenaData.TEMP_SendArenaMessage(ArenaTransitionType.ARENA_RESET_THE_BELL);
+                    ArenaSender.SendArenaTransition(ArenaTransitionType.ARENA_RESET_THE_BELL);
                 }
             }
 
@@ -392,7 +393,7 @@ namespace LabFusion.Patching {
                     return false;
                 else
                 {
-                    ArenaData.TEMP_SendArenaMessage(ArenaTransitionType.ARENA_RING_THE_BELL);
+                    ArenaSender.SendArenaTransition(ArenaTransitionType.ARENA_RING_THE_BELL);
                 }
             }
 
@@ -412,7 +413,7 @@ namespace LabFusion.Patching {
                     return false;
                 else
                 {
-                    ArenaData.TEMP_SendArenaMessage(ArenaTransitionType.FAIL_OBJECTIVE_MODE);
+                    ArenaSender.SendArenaTransition(ArenaTransitionType.FAIL_OBJECTIVE_MODE);
                 }
             }
 
@@ -432,7 +433,7 @@ namespace LabFusion.Patching {
                     return false;
                 else
                 {
-                    ArenaData.TEMP_SendArenaMessage(ArenaTransitionType.FAIL_ESCAPE_MODE);
+                    ArenaSender.SendArenaTransition(ArenaTransitionType.FAIL_ESCAPE_MODE);
                 }
             }
 

@@ -43,6 +43,10 @@ namespace LabFusion.Patching
                 if (hand.manager != RigData.RigReferences.RigManager)
                     return;
 
+                // Make sure this isn't currently slotted
+                if (__instance.HasHost && __instance.Host.HasRigidbody && __instance.Host.Rb == null)
+                    return;
+
                 GrabHelper.SendObjectAttach(hand, __instance);
             }
             catch (Exception e) {

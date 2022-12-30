@@ -11,7 +11,7 @@ namespace LabFusion.Data
 {
     public class SerializedLocalTransform : IFusionSerializable
     {
-        public ulong position;
+        public SerializedSmallVector3 position;
         public SerializedSmallQuaternion rotation;
 
         public void Serialize(FusionWriter writer) {
@@ -20,7 +20,7 @@ namespace LabFusion.Data
         }
 
         public void Deserialize(FusionReader reader) {
-            position = reader.ReadUInt64();
+            position = reader.ReadFusionSerializable<SerializedSmallVector3>();
             rotation = reader.ReadFusionSerializable<SerializedSmallQuaternion>();
         }
 
@@ -28,13 +28,13 @@ namespace LabFusion.Data
 
         public SerializedLocalTransform(Vector3 localPosition, Quaternion localRotation)
         {
-            this.position = localPosition.ToULong(true);
+            this.position = SerializedSmallVector3.Compress(localPosition);
             this.rotation = SerializedSmallQuaternion.Compress(localRotation);
         }
 
         public SerializedLocalTransform(Transform transform)
         {
-            this.position = transform.localPosition.ToULong(true);
+            this.position = SerializedSmallVector3.Compress(transform.localPosition);
             this.rotation = SerializedSmallQuaternion.Compress(transform.localRotation);
         }
     }

@@ -71,31 +71,29 @@ namespace LabFusion.Network
                         }
                     }
                     else {
-                        if (SyncManager.TryGetSyncable(data.magazineId, out var mag) && mag is PropSyncable magazineSyncable && SyncManager.TryGetSyncable(data.gunId, out var gun) && gun is PropSyncable gunSyncable) {
+                        if (SyncManager.TryGetSyncable(data.magazineId, out var mag) && mag is PropSyncable magazineSyncable && magazineSyncable.TryGetExtender<MagazineExtender>(out var magExtender) && SyncManager.TryGetSyncable(data.gunId, out var gun) && gun is PropSyncable gunSyncable && gunSyncable.TryGetExtender<AmmoSocketExtender>(out var socketExtender)) {
                             // Insert mag into gun
-                            if (magazineSyncable.Magazine && gunSyncable.Gun) {
-                                if (gunSyncable.AmmoSocket._magazinePlug) {
-                                    var otherPlug = gunSyncable.AmmoSocket._magazinePlug;
+                            if (socketExtender.Component._magazinePlug) {
+                                var otherPlug = socketExtender.Component._magazinePlug;
 
-                                    if (otherPlug != magazineSyncable.Magazine.magazinePlug) {
-                                        AmmoSocketPatches.IgnorePatch = true;
-                                        if (otherPlug)
+                                if (otherPlug != magExtender.Component.magazinePlug) {
+                                    AmmoSocketPatches.IgnorePatch = true;
+                                    if (otherPlug)
+                                    {
+                                        otherPlug.ForceEject();
+
+                                        if (MagazineExtender.Cache.TryGet(otherPlug.magazine, out var otherMag))
                                         {
-                                            otherPlug.ForceEject();
-
-                                            if (PropSyncable.MagazineCache.TryGet(otherPlug.magazine, out var otherMag))
-                                            {
-                                                otherMag.SetRigidbodiesDirty();
-                                            }
+                                            otherMag.SetRigidbodiesDirty();
                                         }
-                                        AmmoSocketPatches.IgnorePatch = false;
                                     }
+                                    AmmoSocketPatches.IgnorePatch = false;
                                 }
-
-                                AmmoSocketPatches.IgnorePatch = true;
-                                magazineSyncable.Magazine.magazinePlug.InsertPlug(gunSyncable.AmmoSocket);
-                                AmmoSocketPatches.IgnorePatch = false;
                             }
+
+                            AmmoSocketPatches.IgnorePatch = true;
+                            magExtender.Component.magazinePlug.InsertPlug(socketExtender.Component);
+                            AmmoSocketPatches.IgnorePatch = false;
                         }
                     }
                 }

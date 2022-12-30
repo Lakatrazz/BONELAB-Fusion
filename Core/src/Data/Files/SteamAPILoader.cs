@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-using LabFusion.Modularity;
+using LabFusion.Utilities;
 
 namespace LabFusion.Data
 {
@@ -18,7 +18,6 @@ namespace LabFusion.Data
             File.WriteAllBytes(sdkPath, EmbeddedResource.LoadFromAssembly(FusionMod.FusionAssembly, ResourcePaths.SteamAPIPath));
 
             _libraryPtr = DllTools.LoadLibrary(sdkPath);
-
         }
 
         public static void OnFreeSteamAPI() {

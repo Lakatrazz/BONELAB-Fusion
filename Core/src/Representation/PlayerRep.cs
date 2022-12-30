@@ -324,7 +324,7 @@ namespace LabFusion.Representation
                     if (serializedGameworldLocalTransforms[i] == null)
                         break;
 
-                    var pos = serializedGameworldLocalTransforms[i].position.ToVector3();
+                    var pos = serializedGameworldLocalTransforms[i].position.Expand();
                     var rot = serializedGameworldLocalTransforms[i].rotation.Expand();
 
                     gameworldRigTransforms[i].localPosition = pos;
@@ -359,7 +359,7 @@ namespace LabFusion.Representation
                     if (repTransforms[i].IsNOC())
                         break;
 
-                    repTransforms[i].localPosition = serializedLocalTransforms[i].position.ToVector3();
+                    repTransforms[i].localPosition = serializedLocalTransforms[i].position.Expand();
                     repTransforms[i].localRotation = serializedLocalTransforms[i].rotation.Expand();
                 }
             }

@@ -45,7 +45,7 @@ namespace LabFusion.Patching
 
         private static IEnumerator Internal_SyncSeat(Seat __instance) {
             // Create new syncable if this doesn't exist
-            if (!PropSyncable.SeatCache.ContainsSource(__instance)) {
+            if (!SeatExtender.Cache.ContainsSource(__instance)) {
                 // We aren't a server. Request an id.
                 if (!NetworkInfo.IsServer) {
                     // Get grip host
@@ -114,11 +114,11 @@ namespace LabFusion.Patching
             yield return null;
 
             // Send seat request
-            if (__instance.rigManager == RigData.RigReferences.RigManager && PropSyncable.SeatCache.TryGet(__instance, out var syncable))
+            if (__instance.rigManager == RigData.RigReferences.RigManager && SeatExtender.Cache.TryGet(__instance, out var syncable) && syncable.TryGetExtender<SeatExtender>(out var extender))
             {
                 using (var writer = FusionWriter.Create())
                 {
-                    using (var data = PlayerRepSeatData.Create(PlayerIdManager.LocalSmallId, syncable.Id, syncable.GetIndex(__instance).Value, true))
+                    using (var data = PlayerRepSeatData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value, true))
                     {
                         writer.Write(data);
 
@@ -137,11 +137,11 @@ namespace LabFusion.Patching
         {
             try
             {
-                if (NetworkInfo.HasServer && __instance._rig == RigData.RigReferences.RigManager && PropSyncable.SeatCache.TryGet(__instance, out var syncable))
+                if (NetworkInfo.HasServer && __instance._rig == RigData.RigReferences.RigManager && SeatExtender.Cache.TryGet(__instance, out var syncable) && syncable.TryGetExtender<SeatExtender>(out var extender))
                 {
                     using (var writer = FusionWriter.Create())
                     {
-                        using (var data = PlayerRepSeatData.Create(PlayerIdManager.LocalSmallId, syncable.Id, syncable.GetIndex(__instance).Value, false))
+                        using (var data = PlayerRepSeatData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value, false))
                         {
                             writer.Write(data);
 

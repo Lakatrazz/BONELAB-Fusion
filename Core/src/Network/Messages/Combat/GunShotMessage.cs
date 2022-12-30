@@ -68,27 +68,27 @@ namespace LabFusion.Network
                     }
                     else
                     {
-                        if (SyncManager.TryGetSyncable(data.gunId, out var gun) && gun is PropSyncable gunSyncable)
+                        if (SyncManager.TryGetSyncable(data.gunId, out var gun) && gun is PropSyncable gunSyncable && gunSyncable.TryGetExtender<GunExtender>(out var extender))
                         {
                             // Fire the gun, make sure it has ammo in its mag so it can fire properly
-                            if (gunSyncable.Gun) {
-                                gunSyncable.Gun.hasFiredOnce = false;
-                                gunSyncable.Gun._hasFiredSinceLastBroadcast = false;
-                                gunSyncable.Gun.isTriggerPulledOnAttach = false;
+                            var comp = extender.Component;
 
-                                gunSyncable.Gun.CeaseFire();
-                                gunSyncable.Gun.Charge();
+                            comp.hasFiredOnce = false;
+                            comp._hasFiredSinceLastBroadcast = false;
+                            comp.isTriggerPulledOnAttach = false;
 
-                                if (gunSyncable.Gun._magState != null)
-                                    gunSyncable.Gun._magState.Refill();
+                            comp.CeaseFire();
+                            comp.Charge();
 
-                                gunSyncable.Gun.SlideGrabbedReleased();
-                                gunSyncable.Gun.SlideOverrideReleased();
+                            if (comp._magState != null)
+                                comp._magState.Refill();
 
-                                GunPatches.IgnorePatches = true;
-                                gunSyncable.Gun.Fire();
-                                GunPatches.IgnorePatches = false;
-                            }
+                            comp.SlideGrabbedReleased();
+                            comp.SlideOverrideReleased();
+
+                            GunPatches.IgnorePatches = true;
+                            comp.Fire();
+                            GunPatches.IgnorePatches = false;
                         }
                     }
                 }

@@ -22,7 +22,7 @@ namespace LabFusion.Patching {
             if (IgnorePatches)
                 return true;
 
-            if (NetworkInfo.HasServer && PropSyncable.PropHealthCache.TryGet(__instance, out var syncable) && !syncable.IsOwner())
+            if (NetworkInfo.HasServer && PropHealthExtender.Cache.TryGet(__instance, out var syncable) && !syncable.IsOwner())
                 return false;
 
             return true;
@@ -34,13 +34,13 @@ namespace LabFusion.Patching {
             if (IgnorePatches)
                 return true;
 
-            if (NetworkInfo.HasServer && PropSyncable.PropHealthCache.TryGet(__instance, out var syncable)) {
+            if (NetworkInfo.HasServer && PropHealthExtender.Cache.TryGet(__instance, out var syncable) && syncable.TryGetExtender<PropHealthExtender>(out var extender)) {
                 if (!syncable.IsOwner())
                     return false;
                 // Send object destroy
                 else {
                     using (var writer = FusionWriter.Create()) {
-                        using (var data = PropHealthDestroyData.Create(PlayerIdManager.LocalSmallId, syncable.Id, syncable.GetIndex(__instance).Value)) {
+                        using (var data = PropHealthDestroyData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value)) {
                             writer.Write(data);
 
                             using (var message = FusionMessage.Create(NativeMessageTag.PropHealthDestroy, writer)) {

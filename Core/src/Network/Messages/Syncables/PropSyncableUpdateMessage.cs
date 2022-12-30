@@ -19,7 +19,6 @@ namespace LabFusion.Network
         public byte length;
         public Vector3[] serializedPositions;
         public SerializedSmallQuaternion[] serializedQuaternions;
-        public float velocity;
 
         public void Serialize(FusionWriter writer)
         {
@@ -34,8 +33,6 @@ namespace LabFusion.Network
 
             foreach (var rotation in serializedQuaternions)
                 writer.Write(rotation);
-
-            writer.Write(velocity);
         }
 
         public void Deserialize(FusionReader reader)
@@ -54,8 +51,6 @@ namespace LabFusion.Network
             for (var i = 0; i < length; i++) {
                 serializedQuaternions[i] = reader.ReadFusionSerializable<SerializedSmallQuaternion>();
             }
-
-            velocity = reader.ReadSingle();
         }
 
         public PropSyncable GetPropSyncable() {
@@ -83,24 +78,14 @@ namespace LabFusion.Network
                 length = (byte)length,
                 serializedPositions = new Vector3[length],
                 serializedQuaternions = new SerializedSmallQuaternion[length],
-                velocity = 0f,
             };
 
             for (var i = 0; i < length; i++) {
                 var host = hosts[i];
 
-                if (host != null) {
-                    data.serializedPositions[i] = host.position;
-                    data.serializedQuaternions[i] = SerializedSmallQuaternion.Compress(host.rotation);
-                }
-                else {
-                    data.serializedPositions[i] = Vector3.zero;
-                    data.serializedQuaternions[i] = SerializedSmallQuaternion.Compress(Quaternion.identity);
-                }
+                data.serializedPositions[i] = host.position;
+                data.serializedQuaternions[i] = SerializedSmallQuaternion.Compress(host.rotation);
             }
-
-            if (rigidbodies[0] != null)
-                data.velocity = rigidbodies[0].velocity.sqrMagnitude;
 
             return data;
         }
@@ -124,8 +109,6 @@ namespace LabFusion.Network
                             syncable.DesiredPositions[i] = data.serializedPositions[i];
                             syncable.DesiredRotations[i] = data.serializedQuaternions[i].Expand();
                         }
-
-                        syncable.DesiredVelocity = data.velocity;
                     }
 
                     // Send message to other clients if server

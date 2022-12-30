@@ -73,7 +73,7 @@ namespace LabFusion.Network
                         }
                     }
                     else {
-                        if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable && propSyncable.WeaponSlot) {
+                        if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable && propSyncable.TryGetExtender<WeaponSlotExtender>(out var extender)) {
                             RigReferenceCollection references = null;
                             
                             if (data.smallId == PlayerIdManager.LocalSmallId) {
@@ -85,7 +85,7 @@ namespace LabFusion.Network
 
                             if (references != null) {
                                 InventorySlotReceiverDrop.PreventInsertCheck = true;
-                                references.GetSlot(data.slotIndex).InsertInSlot(propSyncable.WeaponSlot.interactableHost);
+                                references.GetSlot(data.slotIndex).InsertInSlot(extender.Component.interactableHost);
                                 InventorySlotReceiverDrop.PreventInsertCheck = false;
                             }
                         }

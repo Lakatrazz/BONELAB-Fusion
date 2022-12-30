@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using HarmonyLib;
 using LabFusion.Data;
 using LabFusion.Network;
+using LabFusion.Senders;
 using SLZ.Bonelab;
 
 namespace LabFusion.Patching {
@@ -26,7 +27,7 @@ namespace LabFusion.Patching {
                 if (!NetworkInfo.IsServer)
                     return false;
                 else {
-                    MagmaGateData.TEMP_SendMagmaGateMessage(MagmaGateEventType.BUTTONS_SETUP);
+                    CampaignSender.SendMagmaGateEvent(MagmaGateEventType.BUTTONS_SETUP);
                 }
             }
 
@@ -46,7 +47,7 @@ namespace LabFusion.Patching {
                     return false;
                 else
                 {
-                    MagmaGateData.TEMP_SendMagmaGateMessage(MagmaGateEventType.OBJECTIVE_COMPLETE_SETUP);
+                    CampaignSender.SendMagmaGateEvent(MagmaGateEventType.OBJECTIVE_COMPLETE_SETUP);
                 }
             }
 
@@ -66,7 +67,7 @@ namespace LabFusion.Patching {
                     return false;
                 else
                 {
-                    MagmaGateData.TEMP_SendMagmaGateMessage(MagmaGateEventType.LOSE_SEQUENCE);
+                    CampaignSender.SendMagmaGateEvent(MagmaGateEventType.LOSE_SEQUENCE);
                 }
             }
 
@@ -86,7 +87,7 @@ namespace LabFusion.Patching {
                     return false;
                 else
                 {
-                    MagmaGateData.TEMP_SendMagmaGateMessage(MagmaGateEventType.DOOR_DISSOLVE);
+                    CampaignSender.SendMagmaGateEvent(MagmaGateEventType.DOOR_DISSOLVE);
                 }
             }
 
