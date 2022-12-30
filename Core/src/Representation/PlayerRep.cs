@@ -200,10 +200,12 @@ namespace LabFusion.Representation
         }
 
         private void OnSwapAvatar(bool success) {
-            if (pullCord) {
-                pullCord.PlayAvatarParticleEffects();
-                pullCord.PlayClip(pullCord.switchAvatar, pullCord.ap3, pullCord.switchVolume, 4f, false);
-            }
+            // TODO: implement scaled poly blank if failure
+        }
+
+        public void PlayPullCordEffects() {
+            pullCord.PlayAvatarParticleEffects();
+            pullCord.PlayClip(pullCord.switchAvatar, pullCord.ap3, pullCord.switchVolume, 4f, false);
         }
 
         public void SetVitals(SerializedBodyVitals vitals) {

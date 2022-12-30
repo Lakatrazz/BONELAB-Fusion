@@ -73,6 +73,8 @@ namespace LabFusion.Network
 
             DescentIntro = 43,
 
+            BodyLogEffect = 44,
+
             Module = 80,
             ModuleAssignment = 81;
     }

@@ -231,8 +231,10 @@
     <Compile Include="Core\src\Mod.cs" />
     <Compile Include="Core\src\Network\Helpers\SendRateTable.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\DescentIntroMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Representation\BodyLogEffectMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ModuleAssignMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ModuleMessage.cs" />
+    <Compile Include="Core\src\Patching\Patches\PullCordDevicePatches.cs" />
     <Compile Include="Core\src\SDK\Network\Messages\ModuleMessageHandler.cs" />
     <Compile Include="Core\src\Senders\ArenaSender.cs" />
     <Compile Include="Core\src\Senders\CampaignSender.cs" />
