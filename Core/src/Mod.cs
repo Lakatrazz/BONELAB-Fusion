@@ -52,6 +52,7 @@ namespace LabFusion
         public override void OnLateInitializeMelon() {
             PatchingUtilities.PatchAll();
             InternalLayerHelpers.OnLateInitializeLayer();
+            PersistentAssetCreator.OnMelonInitialize();
         }
 
         protected void OnInitializeNetworking() {
@@ -65,7 +66,7 @@ namespace LabFusion
 
         public static void OnMainSceneInitialized() {
             string sceneName = LevelWarehouseUtilities.GetCurrentLevel().Title;
-
+            
 #if DEBUG
             FusionLogger.Log($"Main scene {sceneName} was initialized.");
 #endif

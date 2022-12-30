@@ -237,6 +237,8 @@
     <Compile Include="Core\src\Network\Messages\Server\ModuleMessage.cs" />
     <Compile Include="Core\src\Patching\Patches\BonelabHubPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PullCordDevicePatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\ImpactSFXPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\StabSlashPatches.cs" />
     <Compile Include="Core\src\SDK\Network\Messages\ModuleMessageHandler.cs" />
     <Compile Include="Core\src\Senders\ArenaSender.cs" />
     <Compile Include="Core\src\Senders\CampaignSender.cs" />
@@ -366,6 +368,7 @@
     <Compile Include="Core\src\Syncables\ISyncable.cs" />
     <Compile Include="Core\src\Syncables\PropSyncable.cs" />
     <Compile Include="Core\src\Syncables\SyncManager.cs" />
+    <Compile Include="Core\src\Utilities\Internal\PersistentAssetCreator.cs" />
     <Compile Include="Core\src\Utilities\Internal\PhysicsUtilities.cs" />
     <Compile Include="Core\src\Utilities\PooleeUtilities.cs" />
     <Compile Include="Core\src\Utilities\SafetyUtilities.cs" />

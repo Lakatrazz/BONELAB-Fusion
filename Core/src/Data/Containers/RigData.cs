@@ -22,6 +22,11 @@ using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Extensions;
 
+using SLZ.Combat;
+using SLZ.Data;
+using SLZ.Marrow.Data;
+using SLZ.Marrow.Warehouse;
+
 namespace LabFusion.Data
 {
     /// <summary>
@@ -243,6 +248,8 @@ namespace LabFusion.Data
 
     public static class RigData
     {
+        private static SurfaceData _bloodSurfaceData;
+
         public static RigReferenceCollection RigReferences { get; private set; } = new RigReferenceCollection();
 
         public static string RigAvatarId { get; private set; } = AvatarWarehouseUtilities.INVALID_AVATAR_BARCODE;
@@ -263,6 +270,7 @@ namespace LabFusion.Data
             if (NetworkInfo.HasServer) {
                 EnableRagdollOnDeath();
                 manager.health.TryCast<Player_Health>().reloadLevelOnDeath = false;
+                PersistentAssetCreator.SetupImpactProperties(manager);
             }
 
             RigSpawn = manager.transform.position;

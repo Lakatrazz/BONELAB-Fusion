@@ -207,6 +207,9 @@ namespace LabFusion.Representation {
             Internal_ClearHaptor(rigManager.openControllerRig.leftController.GetComponent<Haptor>());
             Internal_ClearHaptor(rigManager.openControllerRig.rightController.GetComponent<Haptor>());
 
+            // Add impact properties for blunt + stabbing
+            PersistentAssetCreator.SetupImpactProperties(rigManager);
+
             // Add ammo to the other categories
             MelonCoroutines.Start(Internal_DelayAddAmmo(ammoInventory));
 
