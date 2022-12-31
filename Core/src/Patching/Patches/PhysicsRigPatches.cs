@@ -14,6 +14,8 @@ using LabFusion.Utilities;
 using SLZ.Rig;
 using SLZ.VRMK;
 
+using UnityEngine;
+
 namespace LabFusion.Patching
 {
     [HarmonyPatch(typeof(PhysGrounder))]

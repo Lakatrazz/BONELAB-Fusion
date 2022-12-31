@@ -248,8 +248,6 @@ namespace LabFusion.Data
 
     public static class RigData
     {
-        private static SurfaceData _bloodSurfaceData;
-
         public static RigReferenceCollection RigReferences { get; private set; } = new RigReferenceCollection();
 
         public static string RigAvatarId { get; private set; } = AvatarWarehouseUtilities.INVALID_AVATAR_BARCODE;

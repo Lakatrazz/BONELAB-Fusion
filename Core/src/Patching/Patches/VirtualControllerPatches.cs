@@ -21,6 +21,7 @@ using SLZ.Marrow.Data;
 using SLZ.Marrow.Utilities;
 
 using UnityEngine;
+using LabFusion.Utilities;
 
 namespace LabFusion.Patching
 {
@@ -49,18 +50,27 @@ namespace LabFusion.Patching
         }
 
         private static bool CheckHandDesync(IntPtr instance, IntPtr pair, IntPtr contHandle, IntPtr rigHandle, IntPtr method) {
-            if (NetworkInfo.HasServer) {
-                unsafe
+            try {
+                if (NetworkInfo.HasServer)
                 {
-                    var _pair = *(HandGripPair_*)pair;
-                    var hand = new Hand(_pair.hand);
+                    unsafe
+                    {
+                        var _pair = *(HandGripPair_*)pair;
+                        var hand = new Hand(_pair.hand);
 
-                    if (PlayerRep.Managers.ContainsKey(hand.manager))
-                        return false;
+                        if (PlayerRep.Managers.ContainsKey(hand.manager))
+                            return false;
+                    }
                 }
-            }
 
-            return _original(instance, pair, contHandle, rigHandle, method);
+                return _original(instance, pair, contHandle, rigHandle, method);
+            }
+            catch (Exception e) {
+#if DEBUG
+                FusionLogger.LogException("executing native patch VirtualController.CheckHandDesync", e);
+#endif
+                return false;
+            }
         }
     }
 }

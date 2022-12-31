@@ -11,6 +11,7 @@ using LabFusion.NativeStructs;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Syncables;
+using LabFusion.Utilities;
 using MelonLoader;
 
 using PuppetMasta;
@@ -53,14 +54,25 @@ namespace LabFusion.Patching {
 
         private static float TakeDamage(IntPtr instance, int m, IntPtr attack, IntPtr method)
         {
-            if (NetworkInfo.HasServer) {
-                var subBehaviourHealth = new SubBehaviourHealth(instance);
-                if (PuppetMasterExtender.Cache.TryGet(subBehaviourHealth.behaviour.puppetMaster, out var syncable) && !syncable.IsOwner()) {
-                    return 0f;
+            try {
+                if (NetworkInfo.HasServer)
+                {
+                    var subBehaviourHealth = new SubBehaviourHealth(instance);
+                    if (PuppetMasterExtender.Cache.TryGet(subBehaviourHealth.behaviour.puppetMaster, out var syncable) && !syncable.IsOwner())
+                    {
+                        return 0f;
+                    }
                 }
-            }
 
-            return _original(instance, m, attack, method);
+                return _original(instance, m, attack, method);
+            }
+            catch (Exception e) {
+#if DEBUG
+                FusionLogger.LogException("executing native patch SubBehaviourHealth.TakeDamage", e);
+#endif
+
+                return 0f;
+            }
         }
     }
 }
