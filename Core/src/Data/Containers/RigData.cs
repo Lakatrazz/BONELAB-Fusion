@@ -279,8 +279,12 @@ namespace LabFusion.Data
             if (!RigReferences.RigManager.IsNOC()) {
                 var health = RigReferences.RigManager.health;
 
-                if (health.healthMode != Health.HealthMode.Invincible)
+                if (health.healthMode != Health.HealthMode.Invincible) {
                     health._testRagdollOnDeath = true;
+
+                    var playerHealth = health.Cast<Player_Health>();
+                    playerHealth.slowMoOnDeath = false;
+                }
             }
         }
 
