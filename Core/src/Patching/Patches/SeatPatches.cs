@@ -76,7 +76,7 @@ namespace LabFusion.Patching
                     yield return null;
 
                     using (var writer = FusionWriter.Create()) {
-                        using (var data = PropSyncableCreateData.Create(PlayerIdManager.LocalSmallId, host.gameObject.GetFullPath(), queuedId)) {
+                        using (var data = PropSyncableCreateData.Create(PlayerIdManager.LocalSmallId, host.gameObject.GetFullPath(), newSyncable.Id)) {
                             writer.Write(data);
 
                             using (var message = FusionMessage.Create(NativeMessageTag.PropSyncableCreate, writer)) {
