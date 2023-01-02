@@ -11,12 +11,22 @@ using UnityEngine;
 
 namespace LabFusion.Extensions {
     public static class Vector3Extensions {
+        private const float Rad2Deg = 360f / ((float)Math.PI * 2);
+
         public static bool IsNanOrInf(this Vector3 vector) {
             return Internal_IsNanOrInf(vector.x) || Internal_IsNanOrInf(vector.y) || Internal_IsNanOrInf(vector.z);
         }
 
         internal static bool Internal_IsNanOrInf(float value) {
             return float.IsPositiveInfinity(value) || float.IsNegativeInfinity(value) || float.IsNaN(value);
+        }
+
+        public static Quaternion GetQuaternionDisplacement(this Vector3 displacement)
+        {
+            float xMag = displacement.magnitude * Rad2Deg;
+            Vector3 x = displacement.normalized;
+
+            return Quaternion.AngleAxis(xMag, x);
         }
 
         // Credits to https://forum.unity.com/threads/encoding-vector2-and-vector3-variables-into-single-int-or-float-and-back.448346/

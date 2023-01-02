@@ -53,6 +53,8 @@ namespace LabFusion
             PatchingUtilities.PatchAll();
             InternalLayerHelpers.OnLateInitializeLayer();
             PersistentAssetCreator.OnMelonInitialize();
+
+            FusionPreferences.OnInitializePreferences();
         }
 
         protected void OnInitializeNetworking() {
@@ -85,6 +87,16 @@ namespace LabFusion
 
             // Update hooks
             HookingUtilities.Internal_OnMainSceneInitialized();
+        }
+
+        public static void OnMainSceneInitializeDelayed() {
+            // Make sure the rig exists
+            if (RigData.RigReferences.RigManager.IsNOC())
+                return;
+
+            // Force enable radial menu
+            RigData.RigReferences.RigManager.bodyVitals.quickmenuEnabled = true;
+            RigData.RigReferences.RigManager.openControllerRig.quickmenuEnabled = true;
         }
 
         public override void OnUpdate() {

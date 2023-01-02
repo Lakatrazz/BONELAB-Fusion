@@ -33,12 +33,16 @@ namespace LabFusion.Patching
             if (IgnorePatches)
                 return true;
 
-            if (NetworkInfo.HasServer && __instance.triggerGrip) {
-                var hand = __instance.triggerGrip.GetHand();
+             if (NetworkInfo.HasServer && __instance.triggerGrip)
+             {
+                 var hand = __instance.triggerGrip.GetHand();
 
-                if (PlayerRep.Managers.ContainsKey(hand.manager))
-                    return false;
-            }
+                 if (hand == null)
+                     return true;
+
+                 if (PlayerRep.Managers.ContainsKey(hand.manager))
+                     return false;
+             }
 
             return true;
         }

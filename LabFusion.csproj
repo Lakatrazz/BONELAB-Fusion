@@ -370,6 +370,7 @@
     <Compile Include="Core\src\Syncables\SyncManager.cs" />
     <Compile Include="Core\src\Utilities\Internal\PersistentAssetCreator.cs" />
     <Compile Include="Core\src\Utilities\Internal\PhysicsUtilities.cs" />
+    <Compile Include="Core\src\Utilities\Internal\FusionPreferences.cs" />
     <Compile Include="Core\src\Utilities\PooleeUtilities.cs" />
     <Compile Include="Core\src\Utilities\SafetyUtilities.cs" />
     <Compile Include="Core\src\Utilities\TriggerUtilities.cs" />

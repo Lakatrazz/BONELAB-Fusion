@@ -107,6 +107,7 @@ namespace LabFusion.Utilities {
             }
             else if (_isDelayedLoading) {
                 _isDelayedLoading = false;
+                FusionMod.OnMainSceneInitializeDelayed();
             }
         }
 

@@ -50,6 +50,8 @@ namespace LabFusion.Syncables
         // Target info
         public Vector3?[] DesiredPositions;
         public Quaternion?[] DesiredRotations;
+        public Vector3?[] DesiredVelocities;
+        public Vector3?[] DesiredAngularVelocities;
 
         // Last sent info
         public Vector3[] LastSentPositions;
@@ -111,6 +113,8 @@ namespace LabFusion.Syncables
 
             DesiredPositions = new Vector3?[Rigidbodies.Length];
             DesiredRotations = new Quaternion?[Rigidbodies.Length];
+            DesiredVelocities = new Vector3?[Rigidbodies.Length];
+            DesiredAngularVelocities = new Vector3?[Rigidbodies.Length];
 
             LastSentPositions = new Vector3[Rigidbodies.Length];
             LastSentRotations = new Quaternion[Rigidbodies.Length];
@@ -464,14 +468,30 @@ namespace LabFusion.Syncables
 
                 var pos = DesiredPositions[i].Value;
                 var rot = DesiredRotations[i].Value;
+                var vel = DesiredVelocities[i].Value;
+                var angVel = DesiredAngularVelocities[i].Value;
 
                 bool allowPosition = !HasIgnoreHierarchy;
 
                 var pdController = PDControllers[i];
+                
+                // Don't over predict
+                if (Time.timeSinceLevelLoad - TimeOfMessage <= 0.8f) {
+                    // Move position with prediction
+                    if (allowPosition)
+                    {
+                        pos += vel * Time.fixedDeltaTime;
+                        DesiredPositions[i] = pos;
+                    }
+
+                    // Move rotation with prediction
+                    rot = (angVel * Time.fixedDeltaTime).GetQuaternionDisplacement() * rot;
+                    DesiredRotations[i] = rot;
+                }
 
                 // Teleport check
                 float distSqr = (transform.position - pos).sqrMagnitude;
-                if (distSqr > (2f * (rb.velocity.sqrMagnitude + 1f)) && allowPosition) {
+                if (distSqr > (2f * (vel.sqrMagnitude + 1f)) && allowPosition) {
                     transform.position = pos;
                     transform.rotation = rot;
 
@@ -483,7 +503,7 @@ namespace LabFusion.Syncables
                 // Instead calculate velocity stuff
                 else {
                     if (allowPosition) {
-                        rb.AddForce(pdController.GetForce(rb, transform, pos), ForceMode.Acceleration);
+                        rb.AddForce(pdController.GetForce(rb, transform, pos, vel), ForceMode.Acceleration);
                     }
                     else {
                         if (rb.useGravity)
@@ -491,7 +511,7 @@ namespace LabFusion.Syncables
                         pdController.OnResetPosDerivatives(transform);
                     }
 
-                    rb.AddTorque(pdController.GetTorque(rb, transform, rot), ForceMode.Acceleration);
+                    rb.AddTorque(pdController.GetTorque(rb, transform, rot, angVel), ForceMode.Acceleration);
                 }
             }
         }

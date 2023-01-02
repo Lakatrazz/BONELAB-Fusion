@@ -1,4 +1,6 @@
-﻿using LabFusion.Representation;
+﻿using BoneLib.BoneMenu.Elements;
+
+using LabFusion.Representation;
 using LabFusion.Utilities;
 
 using System;
@@ -46,6 +48,16 @@ namespace LabFusion.Network
         internal static void OnGUILayer() {
             if (CurrentNetworkLayer != null)
                 CurrentNetworkLayer.OnGUILayer();
+        }
+
+        internal static void OnSetupBoneMenuLayer(MenuCategory category) {
+            if (CurrentNetworkLayer != null)
+                CurrentNetworkLayer.OnSetupBoneMenu(category);
+        }
+
+        internal static void OnUserJoin(PlayerId id) {
+            if (CurrentNetworkLayer != null)
+                CurrentNetworkLayer.OnUserJoin(id);
         }
     }
 }

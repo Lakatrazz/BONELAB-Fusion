@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using BoneLib.BoneMenu.Elements;
+
 using LabFusion.Representation;
 
 namespace LabFusion.Network
@@ -112,5 +114,9 @@ namespace LabFusion.Network
         internal virtual void OnLateUpdateLayer() { }
 
         internal virtual void OnGUILayer() { }
+
+        internal virtual void OnUserJoin(PlayerId id) { }
+
+        internal virtual void OnSetupBoneMenu(MenuCategory category) { }
     }
 }

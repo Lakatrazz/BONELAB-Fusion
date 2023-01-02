@@ -1,18 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BoneLib.BoneMenu;
+using BoneLib.BoneMenu.Elements;
 
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Representation;
 using LabFusion.Utilities;
+
 using SLZ.Rig;
+
 using Steamworks;
 using Steamworks.Data;
 
 using UnityEngine;
+
+using Color = UnityEngine.Color;
+
+using MelonLoader;
+
+using System.Windows.Forms;
 
 namespace LabFusion.Network
 {
@@ -34,7 +45,15 @@ namespace LabFusion.Network
         protected bool _isServerActive = false;
         protected bool _isConnectionActive = false;
 
+        protected ulong _targetServerId;
+
         protected string _targetJoinId;
+
+        protected bool _isInitialized = false;
+
+        // A local reference to a lobby
+        // This isn't actually used for joining servers, just for matchmaking
+        protected Lobby _localLobby;
 
         internal override void OnInitializeLayer() {
             SteamAPILoader.OnLoadSteamAPI();
@@ -56,6 +75,10 @@ namespace LabFusion.Network
                 FusionLogger.Log($"Steamworks initialized with SteamID {SteamId}!");
 
                 SteamNetworkingUtils.InitRelayNetworkAccess();
+
+                HookSteamEvents();
+
+                _isInitialized = true;
             }
             else {
                 FusionLogger.Log("Steamworks failed to initialize!");
@@ -66,6 +89,8 @@ namespace LabFusion.Network
             Disconnect();
 
             SteamAPILoader.OnFreeSteamAPI();
+
+            UnHookSteamEvents();
         }
 
         internal override void OnUpdateLayer() {
@@ -123,7 +148,7 @@ namespace LabFusion.Network
         internal override void StartServer()
         {
             SteamSocket = SteamNetworkingSockets.CreateRelaySocket<SteamSocketManager>(0);
-
+            
             // Host needs to connect to own socket server with a ConnectionManager to send/receive messages
             // Relay Socket servers are created/connected to through SteamIds rather than "Normal" Socket Servers which take IP addresses
             SteamConnection = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(SteamId);
@@ -132,13 +157,20 @@ namespace LabFusion.Network
 
             // Call server setup
             InternalServerHelpers.OnStartServer();
+
+            UpdateLobbySettings();
+            UpdateRichPresence();
         }
 
         public void JoinServer(SteamId serverId)
         {
+            // Leave existing server
+            if (_isConnectionActive || _isServerActive)
+                Disconnect();
+
             FusionLogger.Log("Joining socket server!");
             SteamConnection = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(serverId, 0);
-
+            
             _isServerActive = false;
             _isConnectionActive = true;
 
@@ -151,12 +183,14 @@ namespace LabFusion.Network
                     }
                 }
             }
+
+            UpdateLobbySettings();
+            UpdateRichPresence();
         }
 
         internal override void Disconnect()
         {
             try {
-                // Shutdown connections/sockets. I put this in try block because if player 2 is leaving they don't have a socketManager to close, only connection
                 if (SteamConnection != null)
                     SteamConnection.Close();
                 
@@ -169,68 +203,250 @@ namespace LabFusion.Network
 
             _isServerActive = false;
             _isConnectionActive = false;
-
+            
             InternalServerHelpers.OnDisconnect();
+
+            UpdateLobbySettings();
+            UpdateRichPresence();
         }
 
-        internal override void OnGUILayer() {
-            var origin = new Vector2(10, 10);
-            var size = new Vector2(300, 20);
-
-            GUI.Label(new Rect(origin, size), "SteamID");
-
-            origin.y += 30;
-
-            _targetJoinId = GUI.TextField(new Rect(origin, size), _targetJoinId);
-
-            origin.y += 30;
-
-            if (_isServerActive) {
-                if (GUI.Button(new Rect(origin, size), "Stop Server"))
-                    NetworkHelper.Disconnect();
-            }
-            else if (_isConnectionActive) {
-                if (GUI.Button(new Rect(origin, size), "Disconnect"))
-                    NetworkHelper.Disconnect();
-
-                origin.y += 30;
-
-                if (GUI.Button(new Rect(origin, size), "Send Hi")) {
-                    using (FusionWriter writer = FusionWriter.Create())
-                    {
-                        writer.Write("Hi! This is my test message!");
-                        
-                        using (FusionMessage message = FusionMessage.Create(NativeMessageTag.Unknown, writer)) {
-                            BroadcastMessage(NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
+        private void UpdateRichPresence() {
+            if (_isConnectionActive) {
+                SteamFriends.SetRichPresence("connect", "true");
             }
             else {
-                if (GUI.Button(new Rect(origin, size), "Start Server"))
-                    StartServer();
+                SteamFriends.SetRichPresence("connect", null);
+            }
+        }
 
-                origin.y += 30;
+        private void HookSteamEvents() {
+            SteamFriends.OnGameRichPresenceJoinRequested += OnGameRichPresenceJoinRequested;
 
-                if (GUI.Button(new Rect(origin, size), "Join Server"))
-                    JoinServer(ulong.Parse(_targetJoinId));
+            // Create a local lobby
+            AwaitLobbyCreation();
+        }
+
+        private async void AwaitLobbyCreation() {
+            var lobbyTask = await SteamMatchmaking.CreateLobbyAsync();
+            _localLobby = lobbyTask.Value;
+            _localLobby.SetData("LobbyId", SteamId.Value.ToString());
+            _localLobby.SetData("LobbyName", PlayerIdManager.LocalUsername);
+            _localLobby.SetData("HasServerOpen", "False");
+        }
+
+        private void UnHookSteamEvents() {
+            SteamFriends.OnGameRichPresenceJoinRequested -= OnGameRichPresenceJoinRequested;
+
+            // Remove the local lobby
+            _localLobby.Leave();
+        }
+
+        private void OnGameRichPresenceJoinRequested(Friend friend, string value) {
+            // Forward this to joining a server from the friend
+            JoinServer(friend.Id);
+        }
+
+        private void UpdateLobbySettings() {
+            if (_isServerActive) {
+                _localLobby.SetData("HasServerOpen", "True");
+            }
+            else {
+                _localLobby.SetData("HasServerOpen", "False");
             }
 
-            origin.y += 30;
-
-            if (GUI.Button(new Rect(origin, size), "Spawn Player Rep")) {
-                PlayerRepUtilities.CreateNewRig(OnRigCreated);
-            }
-
-            origin.y += 30;
-            GUI.Label(new Rect(origin, size), $"Bytes Down: {NetworkInfo.BytesDown}");
-
-            origin.y += 30;
-            GUI.Label(new Rect(origin, size), $"Bytes Up: {NetworkInfo.BytesUp}");
+            OnUpdateCreateServerText();
         }
 
         internal void OnRigCreated(RigManager rig) {
             rig.Teleport(RigData.RigReferences.RigManager.physicsRig.feet.transform.position, true);
+        }
+
+        internal override void OnSetupBoneMenu(MenuCategory category) {
+            // This element does nothing
+            // Just informs what networking is being used
+            category.CreateFunctionElement("Powered by Facepunch.Steamworks", Color.yellow, null);
+
+            // Now for the actual options
+            CreateMatchmakingMenu(category);
+            CreateSettingsMenu(category);
+        }
+
+        private void CreateSettingsMenu(MenuCategory category) {
+            // Root settings
+            var settings = category.CreateCategory("Settings", Color.gray);
+
+            // Server settings
+            var serverSettings = settings.CreateCategory("Server Settings", Color.white);
+
+            // Client settings
+            var clientSettings = settings.CreateCategory("Client Settings", Color.white);
+        }
+
+        // Matchmaking menu
+        private MenuCategory _serverInfoCategory;
+        private MenuCategory _manualJoiningCategory;
+        private MenuCategory _publicLobbiesCategory;
+        private MenuCategory _friendsCategory;
+
+        private void CreateMatchmakingMenu(MenuCategory category) {
+            // Root category
+            var matchmaking = category.CreateCategory("Matchmaking", Color.red);
+
+            // Server making
+            _serverInfoCategory = matchmaking.CreateCategory("Server Info", Color.white);
+            CreateServerInfoMenu(_serverInfoCategory);
+
+            // Manual joining
+            _manualJoiningCategory = matchmaking.CreateCategory("Manual Joining", Color.white);
+            CreateManualJoiningMenu(_manualJoiningCategory);
+
+            // Public lobbies list
+            _publicLobbiesCategory = matchmaking.CreateCategory("Public Lobbies", Color.white);
+            _publicLobbiesCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshPublicLobbies);
+
+            // Steam friends list
+            _friendsCategory = matchmaking.CreateCategory("Steam Friends", Color.white);
+            _friendsCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshFriendLobbies);
+        }
+
+        private FunctionElement _createServerElement;
+
+        private void CreateServerInfoMenu(MenuCategory category) {
+            _createServerElement = category.CreateFunctionElement("Create Server", Color.white, OnClickCreateServer);
+            category.CreateFunctionElement("Copy SteamID to Clipboard", Color.white, OnCopySteamID);
+        }
+
+        private void OnClickCreateServer() {
+            // Is a server already running? Disconnect
+            if (_isConnectionActive) {
+                Disconnect();
+            }
+            // Otherwise, start a server
+            else {
+                StartServer();
+            }
+        }
+
+        private void OnCopySteamID() {
+            Clipboard.SetText(SteamId.Value.ToString());
+        }
+
+        private void OnUpdateCreateServerText() {
+            if (_isConnectionActive)
+                _createServerElement.SetName("Disconnect from Server");
+            else
+                _createServerElement.SetName("Create Server");
+        }
+
+        private FunctionElement _targetServerElement;
+
+        private void CreateManualJoiningMenu(MenuCategory category) {
+            category.CreateFunctionElement("Join Server", Color.white, OnClickJoinServer);
+            _targetServerElement = category.CreateFunctionElement("Server ID:", Color.white, null);
+            category.CreateFunctionElement("Paste Server ID from Clipboard", Color.white, OnPasteServerID);
+        }
+
+        private void OnClickJoinServer() {
+            JoinServer(_targetServerId);
+        }
+
+        private void OnPasteServerID() {
+            var text = Clipboard.GetText();
+            if (!string.IsNullOrWhiteSpace(text) && ulong.TryParse(text, out var result)) {
+                _targetServerId = result;
+                _targetServerElement.SetName($"Server ID: {_targetServerId}");
+            }
+        }
+
+        private void Menu_RefreshPublicLobbies() {
+            // Clear existing lobbies
+            _publicLobbiesCategory.Elements.Clear();
+            _publicLobbiesCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshPublicLobbies);
+
+            MelonCoroutines.Start(CoAwaitLobbyListRoutine());
+        }
+
+        private IEnumerator CoAwaitLobbyListRoutine() {
+            // Fetch lobbies
+            var list = SteamMatchmaking.LobbyList;
+            list.FilterDistanceWorldwide();
+            var task = list.RequestAsync();
+
+            while (!task.IsCompleted)
+                yield return null;
+
+            var lobbies = task.Result;
+
+            foreach (var lobby in lobbies) {
+                // Make sure this is not us
+                if (lobby.Owner.IsMe)
+                    continue;
+
+                string isOpen = lobby.GetData("HasServerOpen");
+
+                if (isOpen == "True") {
+                    // Add to list
+                    Menu_CreateJoinableLobby(_publicLobbiesCategory, lobby);
+                }
+            }
+
+            // Select the updated category
+            MenuManager.SelectCategory(_publicLobbiesCategory);
+        }
+
+        private void Menu_RefreshFriendLobbies() {
+            // Clear existing lobbies
+            _friendsCategory.Elements.Clear();
+            _friendsCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshFriendLobbies);
+
+            MelonCoroutines.Start(CoAwaitFriendListRoutine());
+        }
+
+        private IEnumerator CoAwaitFriendListRoutine()
+        {
+            // Fetch lobbies
+            var list = SteamMatchmaking.LobbyList;
+            list.FilterDistanceWorldwide();
+            var task = list.RequestAsync();
+
+            while (!task.IsCompleted)
+                yield return null;
+
+            var lobbies = task.Result;
+
+            foreach (var lobby in lobbies)
+            {
+                // Make sure this is not us but is also a friend
+                if (lobby.Owner.IsMe)
+                    continue;
+
+                var lobbyId = ulong.Parse(lobby.GetData("LobbyId"));
+                if (!new Friend(lobbyId).IsFriend)
+                    continue;
+
+                string isOpen = lobby.GetData("HasServerOpen");
+
+                if (isOpen == "True")
+                {
+                    // Add to list
+                    Menu_CreateJoinableLobby(_friendsCategory, lobby);
+                }
+            }
+
+            // Select the updated category
+            MenuManager.SelectCategory(_friendsCategory);
+        }
+
+        private void Menu_CreateJoinableLobby(MenuCategory category, Lobby lobby) {
+            var lobbyId = ulong.Parse(lobby.GetData("LobbyId"));
+            var lobbyName = lobby.GetData("LobbyName");
+
+            var userString = $"{lobbyName}'s Server";
+            
+            var lobbyCategory = category.CreateCategory(userString, Color.white);
+            lobbyCategory.CreateFunctionElement("Join Server", Color.white, () => {
+                JoinServer(lobbyId);
+            });
         }
     }
 }

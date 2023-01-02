@@ -399,8 +399,8 @@ namespace LabFusion.Representation
                     var pos = serializedPelvis.position;
                     var rot = serializedPelvis.rotation.Expand();
 
-                    repPelvis.AddForce(pelvisPDController.GetForce(repPelvis, repPelvis.transform, pos), ForceMode.Acceleration);
-                    repFootBall.AddForce(footPDController.GetForce(repFootBall, repFootBall.transform, serializedFootball.position), ForceMode.Acceleration);
+                    repPelvis.AddForce(pelvisPDController.GetForce(repPelvis, repPelvis.transform, pos, predictVelocity), ForceMode.Acceleration);
+                    repFootBall.AddForce(footPDController.GetForce(repFootBall, repFootBall.transform, serializedFootball.position, predictVelocity), ForceMode.Acceleration);
 
                     // We only want to apply angular force when ragdolled
                     if (rigManager.physicsRig.torso.spineInternalMult <= 0f)

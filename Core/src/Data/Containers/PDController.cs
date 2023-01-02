@@ -13,10 +13,10 @@ namespace LabFusion.Data
 
         // Tweak these values to control movement properties of all synced objects
         private const float PositionFrequency = 20f;
-        private const float PositionDamping = 3f;
+        private const float PositionDamping = 5f;
 
         private const float RotationFrequency = 500f;
-        private const float RotationDamping = 100f;
+        private const float RotationDamping = 200f;
 
         // Calculated KP and KD values for adding forces. These are only calculated once
         private static float _positionKp;
@@ -88,12 +88,17 @@ namespace LabFusion.Data
             LastTargetRot = transform.rotation;
         }
 
-        public Vector3 GetForce(in Rigidbody rb, in Transform transform, in Vector3 targetPos) {
+        public Vector3 GetForce(in Rigidbody rb, in Transform transform, in Vector3 targetPos, in Vector3? targetVel = null) {
             Vector3 Pt0 = transform.position;
             Vector3 Vt0 = rb.velocity;
 
             Vector3 Pt1 = LastTargetPos;
-            Vector3 Vt1 = PhysXUtils.GetLinearVelocity(LastTargetPos, targetPos);
+            Vector3 Vt1;
+
+            if (targetVel.HasValue)
+                Vt1 = targetVel.Value;
+            else
+                Vt1 = PhysXUtils.GetLinearVelocity(LastTargetPos, targetPos);
 
             var force = (Pt1 - Pt0) * _positionKsg + (Vt1 - Vt0) * _positionKdg - (rb.useGravity ? Physics.gravity : Vector3.zero);
 
@@ -106,12 +111,17 @@ namespace LabFusion.Data
             return force;
         }
 
-        public Vector3 GetTorque(Rigidbody rb, in Transform transform, in Quaternion targetRot)
+        public Vector3 GetTorque(Rigidbody rb, in Transform transform, in Quaternion targetRot, in Vector3? targetVel = null)
         {
             var currentRotation = transform.rotation;
 
             Quaternion Qt1 = LastTargetRot;
-            Vector3 Vt1 = PhysXUtils.GetAngularVelocity(LastTargetRot, targetRot);
+            Vector3 Vt1;
+
+            if (targetVel.HasValue)
+                Vt1 = targetVel.Value;
+            else
+                Vt1 = PhysXUtils.GetAngularVelocity(LastTargetRot, targetRot);
 
             Quaternion q = Qt1 * Quaternion.Inverse(currentRotation);
             if (q.w < 0)

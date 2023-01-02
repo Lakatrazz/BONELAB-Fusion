@@ -83,6 +83,9 @@ namespace LabFusion.Network {
         /// </summary>
         /// <param name="id"></param>
         internal static void OnUserJoin(PlayerId id) {
+            // Update layer
+            InternalLayerHelpers.OnUserJoin(id);
+
             // Update hooks
             HookingUtilities.Internal_OnPlayerJoin(id);
         }
