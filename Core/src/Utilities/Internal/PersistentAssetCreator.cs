@@ -1,19 +1,52 @@
 ﻿using SLZ.Combat;
 using SLZ.Data;
 using SLZ.Rig;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using TMPro;
+
 using UnityEngine;
 
 namespace LabFusion.Utilities {
     internal static class PersistentAssetCreator {
+        // ALL FONTS AT THE START:
+        // - arlon-medium SDF
+        // - nasalization-rg SDF
+        private const string _targetFont = "arlon-medium";
+
         internal static SurfaceData BloodSurfaceData { get; private set; }
+        internal static TMP_FontAsset Font { get; private set; }
 
         internal static void OnMelonInitialize() {
             CreateSurfaceData();
+            CreateTextFont();
+        }
+
+        private static void CreateTextFont() {
+            // I don't want to use asset bundles in this mod.
+            // Is this a bad method? Sure, but it only runs once.
+            // So WHO CARES!
+            var fonts = Resources.FindObjectsOfTypeAll<TMP_FontAsset>();
+            foreach (var font in fonts) {
+                if (font.name.ToLower().Contains(_targetFont)) {
+                    Font = font;
+                    break;
+                }
+            }
+
+            // Make sure we at least have a font
+            if (Font == null) {
+#if DEBUG
+                FusionLogger.Error($"Failed finding the {_targetFont} font! Defaulting to the first font in the game!");
+#endif
+
+                Font = fonts[0];
+            }
         }
 
         private static void CreateSurfaceData() {

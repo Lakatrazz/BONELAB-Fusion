@@ -196,6 +196,7 @@
     <Compile Include="Core\src\Data\Containers\RigData.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedGrab.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedGripAnchor.cs" />
+    <Compile Include="Core\src\Data\Containers\SerializedAvatarStats.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedHand.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedPlayerBodyGrab.cs" />
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedSmallQuaternion.cs" />
@@ -235,6 +236,7 @@
     <Compile Include="Core\src\Network\Messages\Representation\BodyLogEffectMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ModuleAssignMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ModuleMessage.cs" />
+    <Compile Include="Core\src\Patching\Patches\AvatarPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\BonelabHubPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PullCordDevicePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ImpactSFXPatches.cs" />

@@ -251,6 +251,7 @@ namespace LabFusion.Data
         public static RigReferenceCollection RigReferences { get; private set; } = new RigReferenceCollection();
 
         public static string RigAvatarId { get; private set; } = AvatarWarehouseUtilities.INVALID_AVATAR_BARCODE;
+        public static SerializedAvatarStats RigAvatarStats { get; private set; } = null;
 
         public static Vector3 RigSpawn { get; private set; }
         public static Quaternion RigSpawnRot { get; private set; }
@@ -332,10 +333,13 @@ namespace LabFusion.Data
             if (!rm.IsNOC()) {
                 var barcode = rm.AvatarCrate.Barcode;
                 if (barcode != RigAvatarId) {
+                    // Save the stats
+                    RigAvatarStats = new SerializedAvatarStats(rm.avatar);
+
                     // Send switch message to notify the server
                     if (NetworkInfo.HasServer) {
                         using (FusionWriter writer = FusionWriter.Create()) {
-                            using (PlayerRepAvatarData data = PlayerRepAvatarData.Create(PlayerIdManager.LocalSmallId, barcode)) {
+                            using (PlayerRepAvatarData data = PlayerRepAvatarData.Create(PlayerIdManager.LocalSmallId, RigAvatarStats, barcode)) {
                                 writer.Write(data);
 
                                 using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepAvatar, writer)) {

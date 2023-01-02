@@ -175,7 +175,7 @@ namespace LabFusion.Network
             _isConnectionActive = true;
 
             using (FusionWriter writer = FusionWriter.Create()) {
-                using (ConnectionRequestData data = ConnectionRequestData.Create(SteamId.Value, PlayerIdManager.LocalUsername, RigData.GetAvatarBarcode())) {
+                using (ConnectionRequestData data = ConnectionRequestData.Create(SteamId.Value, PlayerIdManager.LocalUsername, RigData.GetAvatarBarcode(), RigData.RigAvatarStats)) {
                     writer.Write(data);
 
                     using (FusionMessage message = FusionMessage.Create(NativeMessageTag.ConnectionRequest, writer)) {

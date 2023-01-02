@@ -29,6 +29,7 @@ namespace LabFusion.Representation
         public static readonly Dictionary<RigManager, PlayerRep> Managers = new Dictionary<RigManager, PlayerRep>(new UnityComparer());
 
         public const float NametagHeight = 0.23f;
+        public const float NameTagDivider = 250f;
 
         public PlayerId PlayerId { get; private set; }
         public string Username { get; private set; } = "Unknown";
@@ -76,6 +77,7 @@ namespace LabFusion.Representation
         public TextMeshProUGUI repNameText;
 
         public SerializedBodyVitals vitals = null;
+        public SerializedAvatarStats avatarStats = null;
         public string avatarId = AvatarWarehouseUtilities.INVALID_AVATAR_BARCODE;
 
         private bool _hasLockedPosition = false;
@@ -85,14 +87,13 @@ namespace LabFusion.Representation
         private bool _isRagdollDirty = false;
         private bool _ragdollState = false;
 
-        public PlayerRep(PlayerId playerId, string barcode)
+        public PlayerRep(PlayerId playerId)
         {
             PlayerId = playerId;
 
             Username = playerId.Username;
 
             Representations.Add(playerId.SmallId, this);
-            avatarId = barcode;
 
             pelvisPDController = new PDController();
             footPDController = new PDController();
@@ -189,7 +190,8 @@ namespace LabFusion.Representation
             }
         }
 
-        public void SwapAvatar(string barcode) {
+        public void SwapAvatar(SerializedAvatarStats stats, string barcode) {
+            avatarStats = stats;
             avatarId = barcode;
             _isAvatarDirty = true;
         }
@@ -201,6 +203,19 @@ namespace LabFusion.Representation
 
         private void OnSwapAvatar(bool success) {
             // TODO: implement scaled poly blank if failure
+            var rm = RigReferences.RigManager;
+
+            if (!success) {
+                rm.SwapAvatarCrate(PlayerRepUtilities.PolyBlankBarcode, false, (Action<bool>)OnSwapFallback);
+            }
+            // Update transforms
+            else {
+                UpdateNametag();
+            }
+        }
+
+        private void OnSwapFallback(bool success) {
+            UpdateNametag();
         }
 
         public void PlayPullCordEffects() {
@@ -220,12 +235,18 @@ namespace LabFusion.Representation
             // Make sure we don't have any extra objects
             DestroyRep();
 
+            CreateNametag();
+
+            PlayerRepUtilities.CreateNewRig(OnRigCreated);
+        }
+
+        private void CreateNametag() {
             repCanvas = new GameObject("RepCanvas");
             repCanvasComponent = repCanvas.AddComponent<Canvas>();
 
             repCanvasComponent.renderMode = RenderMode.WorldSpace;
             repCanvasTransform = repCanvas.transform;
-            repCanvasTransform.localScale = Vector3.one / 200.0f;
+            repCanvasTransform.localScale = Vector3.one / NameTagDivider;
 
             repNameText = repCanvas.AddComponent<TextMeshProUGUI>();
 
@@ -233,8 +254,15 @@ namespace LabFusion.Representation
             repNameText.enableAutoSizing = true;
 
             repNameText.text = Username;
+            repNameText.font = PersistentAssetCreator.Font;
+        }
 
-            PlayerRepUtilities.CreateNewRig(OnRigCreated);
+        private void UpdateNametag() {
+            var rm = RigReferences.RigManager;
+            if (!rm.IsNOC() && rm.avatar) {
+                float height = rm.avatar.height / 1.76f;
+                repCanvasTransform.localScale = Vector3.one / NameTagDivider * height;
+            }
         }
 
         public void OnRigCreated(RigManager rig) {

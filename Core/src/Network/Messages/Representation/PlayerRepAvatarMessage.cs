@@ -11,15 +11,18 @@ namespace LabFusion.Network
 {
     public class PlayerRepAvatarData : IFusionSerializable, IDisposable {
         public byte smallId;
+        public SerializedAvatarStats stats;
         public string barcode;
 
         public void Serialize(FusionWriter writer) {
             writer.Write(smallId);
+            writer.Write(stats);
             writer.Write(barcode);
         }
 
         public void Deserialize(FusionReader reader) { 
             smallId = reader.ReadByte();
+            stats = reader.ReadFusionSerializable<SerializedAvatarStats>();
             barcode = reader.ReadString();
         }
 
@@ -27,10 +30,11 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static PlayerRepAvatarData Create(byte smallId, string barcode) {
+        public static PlayerRepAvatarData Create(byte smallId, SerializedAvatarStats stats, string barcode) {
             return new PlayerRepAvatarData()
             {
                 smallId = smallId,
+                stats = stats,
                 barcode = barcode
             };
         }
@@ -45,7 +49,7 @@ namespace LabFusion.Network
                     // Swap the avatar for the rep
                     if (PlayerRep.Representations.ContainsKey(data.smallId)) {
                         var rep = PlayerRep.Representations[data.smallId];
-                        rep.SwapAvatar(data.barcode);
+                        rep.SwapAvatar(data.stats, data.barcode);
                     }
 
                     // Bounce the message back

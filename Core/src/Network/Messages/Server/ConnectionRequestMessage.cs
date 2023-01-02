@@ -11,28 +11,32 @@ namespace LabFusion.Network
         public ulong longId;
         public string username;
         public string avatarBarcode;
+        public SerializedAvatarStats avatarStats;
 
         public void Serialize(FusionWriter writer) {
             writer.Write(longId);
             writer.Write(username);
             writer.Write(avatarBarcode);
+            writer.Write(avatarStats);
         }
         
         public void Deserialize(FusionReader reader) {
             longId = reader.ReadUInt64();
             username = reader.ReadString();
             avatarBarcode = reader.ReadString();
+            avatarStats = reader.ReadFusionSerializable<SerializedAvatarStats>();
         }
 
         public void Dispose() {
             GC.SuppressFinalize(this);
         }
 
-        public static ConnectionRequestData Create(ulong longId, string username, string avatarBarcode) {
+        public static ConnectionRequestData Create(ulong longId, string username, string avatarBarcode, SerializedAvatarStats stats) {
             return new ConnectionRequestData() {
                 longId = longId,
                 username = username,
                 avatarBarcode = avatarBarcode,
+                avatarStats = stats,
             };
         }
     }
@@ -55,7 +59,7 @@ namespace LabFusion.Network
 
                         // First we send the new player to all existing players (and the new player so they know they exist)
                         using (FusionWriter writer = FusionWriter.Create()) {
-                            using (var response = ConnectionResponseData.Create(data.longId, newSmallId.Value, data.username, data.avatarBarcode)) {
+                            using (var response = ConnectionResponseData.Create(data.longId, newSmallId.Value, data.username, data.avatarBarcode, data.avatarStats)) {
                                 writer.Write(response);
 
                                 using (var message = FusionMessage.Create(NativeMessageTag.ConnectionResponse, writer)) {
@@ -67,13 +71,18 @@ namespace LabFusion.Network
                         // Now we send all of our other players to the new player
                         foreach (var id in PlayerIdManager.PlayerIds) {
                             var barcode = AvatarWarehouseUtilities.INVALID_AVATAR_BARCODE;
-                            if (id.SmallId == 0)
+                            SerializedAvatarStats stats = new SerializedAvatarStats();
+                            if (id.SmallId == 0) {
                                 barcode = RigData.RigAvatarId;
-                            else if (PlayerRep.Representations.ContainsKey(id.SmallId))
+                                stats = RigData.RigAvatarStats;
+                            }
+                            else if (PlayerRep.Representations.ContainsKey(id.SmallId)) {
                                 barcode = PlayerRep.Representations[id.SmallId].avatarId;
+                                stats = PlayerRep.Representations[id.SmallId].avatarStats;
+                            }
 
                             using (FusionWriter writer = FusionWriter.Create()) {
-                                using (var response = ConnectionResponseData.Create(id.LongId, id.SmallId, id.Username, barcode)) {
+                                using (var response = ConnectionResponseData.Create(id.LongId, id.SmallId, id.Username, barcode, stats)) {
                                     writer.Write(response);
 
                                     using (var message = FusionMessage.Create(NativeMessageTag.ConnectionResponse, writer)) {
