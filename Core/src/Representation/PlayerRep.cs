@@ -240,14 +240,6 @@ namespace LabFusion.Representation
         public void OnRigCreated(RigManager rig) {
             pullCord = rig.GetComponentInChildren<PullCordDevice>(true);
 
-            // Lock many of the bones in place to increase stability
-            foreach (var found in rig.GetComponentsInChildren<ConfigurableJoint>(true))
-            {
-                found.projectionMode = JointProjectionMode.PositionAndRotation;
-                found.projectionDistance = 0.001f;
-                found.projectionAngle = 40f;
-            }
-
             var leftHaptor = rig.openControllerRig.leftController.haptor;
             rig.openControllerRig.leftController = rig.openControllerRig.leftController.gameObject.AddComponent<Controller>();
             rig.openControllerRig.leftController.manager = rig.openControllerRig;
@@ -342,8 +334,10 @@ namespace LabFusion.Representation
             if (!repCanvasTransform.IsNOC()) {
                 repCanvasTransform.position = RigReferences.RigManager.physicsRig.m_head.transform.position + Vector3.up * NametagHeight * RigReferences.RigManager.avatar.height;
 
-                if (!RigData.RigReferences.RigManager.IsNOC())
-                    repCanvasTransform.rotation = Quaternion.LookRotation(Vector3.Normalize(repCanvasTransform.position - RigData.RigReferences.RigManager.physicsRig.m_head.position), Vector3.up);
+                if (!RigData.RigReferences.RigManager.IsNOC()) {
+                    var head = RigData.RigReferences.RigManager.physicsRig.m_head;
+                    repCanvasTransform.rotation = Quaternion.LookRotation(Vector3.Normalize(repCanvasTransform.position - head.position), head.up);
+                }
             }
         }
 
