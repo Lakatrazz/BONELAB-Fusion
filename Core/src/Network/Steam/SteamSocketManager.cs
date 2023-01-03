@@ -28,24 +28,26 @@ namespace LabFusion.Network
             base.OnDisconnected(connection, data);
 
             var pair = ConnectedSteamIds.First((p) => p.Value.Id == connection.Id);
+            var longId = pair.Key;
 
 #if DEBUG
-            FusionLogger.Log($"Server received disconnect from long id {pair.Key}.");
+            FusionLogger.Log($"Server received disconnect from long id {longId}.");
 #endif
-
-            using (FusionWriter writer = FusionWriter.Create()) {
-                var disconnect = new DisconnectMessageData() {
-                    longId = pair.Key
-                };
-
-                using (var message = FusionMessage.Create(NativeMessageTag.Disconnect, writer)) {
-                    this.BroadcastToClients(NetworkChannel.Reliable, message);
-                }
-            }
 
             ConnectedSteamIds.Remove(pair.Key);
 
             InternalServerHelpers.OnUserLeave(pair.Key);
+
+            // Send disconnect notif to everyone
+            using (FusionWriter writer = FusionWriter.Create()) {
+                using (var disconnect = DisconnectMessageData.Create(longId)) {
+                    writer.Write(disconnect);
+
+                    using (var message = FusionMessage.Create(NativeMessageTag.Disconnect, writer)) {
+                        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+                    }
+                }
+            }
         }
 
         public override void OnMessage(Connection connection, NetIdentity identity, IntPtr data, int size, long messageNum, long recvTime, int channel) {

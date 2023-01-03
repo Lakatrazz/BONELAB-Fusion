@@ -8,6 +8,22 @@ using System.Threading.Tasks;
 
 namespace LabFusion.Senders {
     public static class CampaignSender {
+        public static void SendKartRaceEvent(KartRaceEventType type)
+        {
+            using (var writer = FusionWriter.Create())
+            {
+                using (var data = KartRaceEventData.Create(PlayerIdManager.LocalSmallId, type))
+                {
+                    writer.Write(data);
+
+                    using (var message = FusionMessage.Create(NativeMessageTag.KartRaceEvent, writer))
+                    {
+                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+                    }
+                }
+            }
+        }
+
         public static void SendHubEvent(BonelabHubEventType type)
         {
             using (var writer = FusionWriter.Create())

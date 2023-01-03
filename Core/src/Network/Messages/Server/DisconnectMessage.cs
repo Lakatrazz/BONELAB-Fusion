@@ -23,7 +23,7 @@ namespace LabFusion.Network
         }
 
         public void Deserialize(FusionReader reader) {
-            longId = reader.ReadUInt16();
+            longId = reader.ReadUInt64();
         }
 
         public void Dispose() {
@@ -40,7 +40,7 @@ namespace LabFusion.Network
         public override byte? Tag => NativeMessageTag.Disconnect;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
-            if (!NetworkInfo.CurrentNetworkLayer.IsServer) {
+            if (!NetworkInfo.IsServer) {
                 using (var reader = FusionReader.Create(bytes)) {
                     var data = reader.ReadFusionSerializable<DisconnectMessageData>();
 

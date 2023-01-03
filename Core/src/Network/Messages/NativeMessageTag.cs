@@ -80,6 +80,8 @@ namespace LabFusion.Network
             PlayerSettings = 46,
             ServerSettings = 47,
 
+            KartRaceEvent = 48,
+
             Module = 80,
             ModuleAssignment = 81;
     }

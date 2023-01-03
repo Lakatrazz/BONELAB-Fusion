@@ -183,6 +183,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>AssemblyInfo.tt</DependentUpon>
     </Compile>
+    <Compile Include="Core\src\Data\Containers\Levels\KartRaceData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\ArenaData.cs" />
     <Compile Include="Core\src\Data\Containers\ConfigurableJointDriveData.cs" />
     <Compile Include="Core\src\Data\Containers\DataCorruptionException.cs" />
@@ -235,6 +236,7 @@
     <Compile Include="Core\src\Network\Helpers\SendRateTable.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\BonelabHubMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\DescentIntroMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Campaign\KartRaceMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\BodyLogEffectMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ModuleAssignMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ModuleMessage.cs" />
@@ -242,6 +244,7 @@
     <Compile Include="Core\src\Network\Messages\Server\PlayerSettingsMessage.cs" />
     <Compile Include="Core\src\Patching\Patches\AvatarPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\BonelabHubPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\KartRacePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PullCordDevicePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ImpactSFXPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\StabSlashPatches.cs" />

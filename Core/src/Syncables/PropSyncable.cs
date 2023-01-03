@@ -21,6 +21,7 @@ using SLZ.Vehicle;
 
 using UnityEngine;
 using UnityEngine.UIElements;
+using static RootMotion.FinalIK.GrounderQuadruped;
 
 namespace LabFusion.Syncables
 {
@@ -137,33 +138,28 @@ namespace LabFusion.Syncables
         }
 
         private void AssignInformation(InteractableHost host) {
-            var hosts = host.GetRoot().GetComponentsInChildren<InteractableHost>(true);
+            var root = host.GetRoot();
+            var hosts = root.GetComponentsInChildren<InteractableHost>(true);
 
             List<Grip> grips = new List<Grip>();
-            List<Rigidbody> rigidbodies = new List<Rigidbody>();
 
             foreach (var newHost in hosts) {
-                if (newHost.Rb == null)
-                    continue;
-
                 grips.AddRange(newHost._grips.ToArray());
-                rigidbodies.Add(newHost.Rb);
             }
 
             PropGrips = grips.ToArray();
-            Rigidbodies = rigidbodies.ToArray();
+            Rigidbodies = root.GetComponentsInChildren<Rigidbody>(true);
         }
 
         private void AssignInformation(InteractableHostManager manager) {
             List<Grip> grips = new List<Grip>();
-            List<Rigidbody> rigidbodies = new List<Rigidbody>();
+
             foreach (var host in manager.hosts) {
                 grips.AddRange(host._grips.ToArray());
-                rigidbodies.Add(host.Rb);
             }
 
             PropGrips = grips.ToArray();
-            Rigidbodies = rigidbodies.ToArray();
+            Rigidbodies = manager.GetComponentsInChildren<Rigidbody>(true);
         }
 
         private void AssignInformation(GameObject go) {

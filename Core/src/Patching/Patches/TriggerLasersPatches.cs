@@ -47,6 +47,10 @@ namespace LabFusion.Patching
         public static bool Prefix(TriggerLasers __instance, Collider other)
         {
             if (other.CompareTag("Player")) {
+                // Make sure this isn't a lap trigger for Monogon Motorway
+                if (KartRaceData.GameController != null && KartRaceData.GameController.transform == __instance.transform.parent) {
+                    return TriggerUtilities.IsMainRig(other);
+                }
 
                 TriggerUtilities.Increment(__instance);
                 bool canEnter = TriggerUtilities.CanEnter(__instance);

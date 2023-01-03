@@ -85,6 +85,7 @@ namespace LabFusion
             DescentData.OnCacheDescentInfo();
             HubData.OnCacheHubInfo();
             MagmaGateData.OnCacheMagmaGateInfo();
+            KartRaceData.OnCacheKartRaceInfo();
             
             // Create player reps
             PlayerRep.OnRecreateReps();
