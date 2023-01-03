@@ -113,6 +113,9 @@ namespace LabFusion.Network
                                 }
                             }
                         }
+
+                        // Send the active server settings
+                        FusionPreferences.SendServerSettings(data.longId);
                     }
                 }
             }

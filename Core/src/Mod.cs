@@ -66,6 +66,10 @@ namespace LabFusion
             ModuleHandler.Internal_UnhookAssemblies();
         }
 
+        public override void OnPreferencesLoaded() {
+            FusionPreferences.OnPreferencesLoaded();
+        }
+
         public static void OnMainSceneInitialized() {
             string sceneName = LevelWarehouseUtilities.GetCurrentLevel().Title;
             

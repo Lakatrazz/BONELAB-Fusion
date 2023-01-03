@@ -56,6 +56,21 @@ namespace LabFusion.Network
         }
 
         /// <summary>
+        /// Reads a single color from the reader.
+        /// </summary>
+        /// <returns></returns>
+        public Color ReadColor()
+        {
+            return new Color()
+            {
+                r = ReadSingle(),
+                g = ReadSingle(),
+                b = ReadSingle(),
+                a = ReadSingle(),
+            };
+        }
+
+        /// <summary>
         ///     Reads a single byte from the reader.
         /// </summary>
         /// <returns>The byte read.</returns>

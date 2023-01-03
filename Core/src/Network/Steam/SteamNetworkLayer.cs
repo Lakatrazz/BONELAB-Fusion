@@ -271,15 +271,67 @@ namespace LabFusion.Network
             CreateSettingsMenu(category);
         }
 
+        // Settings menu
+        private MenuCategory _serverSettingsCategory;
+        private MenuCategory _clientSettingsCategory;
+
         private void CreateSettingsMenu(MenuCategory category) {
             // Root settings
             var settings = category.CreateCategory("Settings", Color.gray);
 
             // Server settings
-            var serverSettings = settings.CreateCategory("Server Settings", Color.white);
+            _serverSettingsCategory = settings.CreateCategory("Server Settings", Color.white);
+            CreateServerSettingsMenu(_serverSettingsCategory);
 
             // Client settings
-            var clientSettings = settings.CreateCategory("Client Settings", Color.white);
+            _clientSettingsCategory = settings.CreateCategory("Client Settings", Color.white);
+            CreateClientSettingsMenu(_clientSettingsCategory);
+        }
+
+        private void CreateServerSettingsMenu(MenuCategory category) {
+            // Nametags enabled
+            var nametags = category.CreateBoolElement("Nametags", Color.white, FusionPreferences.ServerSettings.NametagsEnabled, (v) => {
+                FusionPreferences.ServerSettings.NametagsEnabled.SetValue(v);
+            });
+            FusionPreferences.ServerSettings.NametagsEnabled.OnValueChanged += (v) => {
+                nametags.SetValue(v);
+            };
+        }
+
+        private void CreateClientSettingsMenu(MenuCategory category) {
+            // Nametags enabled
+            var nametags = category.CreateBoolElement("Nametags", Color.white, FusionPreferences.ClientSettings.NametagsEnabled, (v) => {
+                FusionPreferences.ClientSettings.NametagsEnabled.SetValue(v);
+            });
+            FusionPreferences.ClientSettings.NametagsEnabled.OnValueChanged += (v) => {
+                nametags.SetValue(v);
+            };
+
+            // Nametag color
+            var currentColor = FusionPreferences.ClientSettings.NametagColor;
+            var colorR = category.CreateFloatElement("Red", Color.red, currentColor.GetValue().r, 0.05f, 0f, 1f, (r) => {
+                var color = currentColor.GetValue();
+                color.r = r;
+                currentColor.SetValue(color);
+            });
+            var colorG = category.CreateFloatElement("Green", Color.green, currentColor.GetValue().g, 0.05f, 0f, 1f, (g) => {
+                var color = currentColor.GetValue();
+                color.g = g;
+                currentColor.SetValue(color);
+            });
+            var colorB = category.CreateFloatElement("Blue", Color.blue, currentColor.GetValue().b, 0.05f, 0f, 1f, (b) => {
+                var color = currentColor.GetValue();
+                color.b = b;
+                currentColor.SetValue(color);
+            });
+            var colorPreview = category.CreateFunctionElement("□□□□□□□□", currentColor, null);
+
+            currentColor.OnValueChanged += (color) => {
+                colorR.SetValue(color.r);
+                colorG.SetValue(color.g);
+                colorB.SetValue(color.b);
+                colorPreview.SetColor(color);
+            };
         }
 
         // Matchmaking menu

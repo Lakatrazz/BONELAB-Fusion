@@ -77,6 +77,9 @@ namespace LabFusion.Network
 
             BonelabHubEvent = 45,
 
+            PlayerSettings = 46,
+            ServerSettings = 47,
+
             Module = 80,
             ModuleAssignment = 81;
     }

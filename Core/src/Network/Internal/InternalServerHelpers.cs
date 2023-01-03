@@ -60,6 +60,9 @@ namespace LabFusion.Network {
         /// Called when the user joins a server.
         /// </summary>
         internal static void OnJoinServer() {
+            // Send settings
+            FusionPreferences.SendClientSettings();
+
             // Update hooks
             HookingUtilities.Internal_OnJoinServer();
         }
@@ -74,6 +77,10 @@ namespace LabFusion.Network {
             ModuleMessageHandler.ClearHandlerTable();
             Physics.autoSimulation = true;
 
+            // Cleanup prefs
+            FusionPreferences.ReceivedServerSettings = null;
+            FusionPreferences.OnServerSettingsChange = null;
+
             // Update hooks
             HookingUtilities.Internal_OnDisconnect();
         }
@@ -83,6 +90,9 @@ namespace LabFusion.Network {
         /// </summary>
         /// <param name="id"></param>
         internal static void OnUserJoin(PlayerId id) {
+            // Send client info
+            FusionPreferences.SendClientSettings();
+
             // Update layer
             InternalLayerHelpers.OnUserJoin(id);
 

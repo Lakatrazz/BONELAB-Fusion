@@ -78,6 +78,7 @@ namespace LabFusion.Representation
 
         public SerializedBodyVitals vitals = null;
         public SerializedAvatarStats avatarStats = null;
+        public SerializedPlayerSettings playerSettings = null;
         public string avatarId = AvatarWarehouseUtilities.INVALID_AVATAR_BARCODE;
 
         private bool _hasLockedPosition = false;
@@ -86,6 +87,9 @@ namespace LabFusion.Representation
 
         private bool _isRagdollDirty = false;
         private bool _ragdollState = false;
+
+        private bool _isSettingsDirty = false;
+        private bool _isServerDirty = false;
 
         public PlayerRep(PlayerId playerId)
         {
@@ -98,7 +102,13 @@ namespace LabFusion.Representation
             pelvisPDController = new PDController();
             footPDController = new PDController();
 
+            FusionPreferences.OnServerSettingsChange += OnServerSettingsChange;
+
             CreateRep();
+        }
+
+        private void OnServerSettingsChange() {
+            _isServerDirty = true;
         }
 
         public void AttachObject(Handedness handedness, Grip grip, bool useCustomJoint = true) {
@@ -201,6 +211,11 @@ namespace LabFusion.Representation
             _isRagdollDirty = true;
         }
 
+        public void SetSettings(SerializedPlayerSettings settings) {
+            playerSettings = settings;
+            _isSettingsDirty = true;
+        }
+
         private void OnSwapAvatar(bool success) {
             // TODO: implement scaled poly blank if failure
             var rm = RigReferences.RigManager;
@@ -210,12 +225,12 @@ namespace LabFusion.Representation
             }
             // Update transforms
             else {
-                UpdateNametag();
+                UpdateNametagSettings();
             }
         }
 
         private void OnSwapFallback(bool success) {
-            UpdateNametag();
+            UpdateNametagSettings();
         }
 
         public void PlayPullCordEffects() {
@@ -257,11 +272,13 @@ namespace LabFusion.Representation
             repNameText.font = PersistentAssetCreator.Font;
         }
 
-        private void UpdateNametag() {
+        private void UpdateNametagSettings() {
             var rm = RigReferences.RigManager;
             if (!rm.IsNOC() && rm.avatar) {
                 float height = rm.avatar.height / 1.76f;
                 repCanvasTransform.localScale = Vector3.one / NameTagDivider * height;
+
+                repNameText.text = Username;
             }
         }
 
@@ -300,8 +317,10 @@ namespace LabFusion.Representation
             PlayerRepUtilities.FillTransformArray(ref repTransforms, rig);
             PlayerRepUtilities.FillGameworldArray(ref gameworldRigTransforms, rig);
 
-            // Make sure the rig gets its initial avatar
+            // Make sure the rig gets its initial avatar and settings
             _isAvatarDirty = true;
+            _isSettingsDirty = true;
+            _isServerDirty = true;
 
             // Reset the ragdoll state
             _isRagdollDirty = true;
@@ -567,14 +586,16 @@ namespace LabFusion.Representation
         public void OnRepLateUpdate() {
             OnUpdateNametags();
 
-            // Update the avatar if its dirty
+            // Update the player if its dirty
             var rm = RigReferences.RigManager;
             if (!rm.IsNOC() && !rm._avatar.IsNOC()) {
+                // Swap the avatar
                 if (_isAvatarDirty) {
                     rm.SwapAvatarCrate(avatarId, false, (Action<bool>)OnSwapAvatar);
                     _isAvatarDirty = false;
                 }
-
+                
+                // Toggle ragdoll mode
                 if (_isRagdollDirty) {
                     if (_ragdollState)
                         rm.physicsRig.RagdollRig();
@@ -582,6 +603,22 @@ namespace LabFusion.Representation
                         rm.physicsRig.UnRagdollRig();
 
                     _isRagdollDirty = false;
+                }
+
+                // Update settings
+                if (_isSettingsDirty) {
+                    if (playerSettings != null) {
+                        repNameText.color = playerSettings.nametagColor;
+                    }
+
+                    _isSettingsDirty = false;
+                }
+                
+                // Update server side settings
+                if (_isServerDirty) {
+                    repCanvas.gameObject.SetActive(FusionPreferences.ShowNametags);
+
+                    _isServerDirty = false;
                 }
             }
         }
@@ -606,6 +643,8 @@ namespace LabFusion.Representation
             DestroyRep();
 
             GC.SuppressFinalize(this);
+
+            FusionPreferences.OnServerSettingsChange -= OnServerSettingsChange;
 
 #if DEBUG
             FusionLogger.Log($"Disposed PlayerRep with small id {PlayerId.SmallId}");

@@ -199,6 +199,8 @@
     <Compile Include="Core\src\Data\Containers\SerializedAvatarStats.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedHand.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedPlayerBodyGrab.cs" />
+    <Compile Include="Core\src\Data\Containers\SerializedServerSettings.cs" />
+    <Compile Include="Core\src\Data\Containers\SerializedPlayerSettings.cs" />
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedSmallQuaternion.cs" />
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedQuaternion.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedStaticGrab.cs" />
@@ -236,6 +238,8 @@
     <Compile Include="Core\src\Network\Messages\Representation\BodyLogEffectMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ModuleAssignMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ModuleMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Server\ServerSettingsMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Server\PlayerSettingsMessage.cs" />
     <Compile Include="Core\src\Patching\Patches\AvatarPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\BonelabHubPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PullCordDevicePatches.cs" />
@@ -361,6 +365,7 @@
     <Compile Include="Core\src\Utilities\FusionComponentCache.cs" />
     <Compile Include="Core\src\Utilities\GameObjectUtilities.cs" />
     <Compile Include="Core\src\Utilities\HookingUtilities.cs" />
+    <Compile Include="Core\src\Utilities\Internal\FusionPref.cs" />
     <Compile Include="Core\src\Utilities\Internal\PatchingUtilities.cs" />
     <Compile Include="Core\src\Utilities\Asset Warehouses\SpawnableWarehouseUtilities.cs" />
     <Compile Include="Core\src\Utilities\Asset Warehouses\AvatarWarehouseUtilities.cs" />

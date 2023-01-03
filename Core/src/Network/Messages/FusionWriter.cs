@@ -56,6 +56,13 @@ namespace LabFusion.Network
             value.Serialize(this);
         }
 
+        public void Write(Color color) {
+            Write(color.r);
+            Write(color.g);
+            Write(color.b);
+            Write(color.a);
+        }
+
         public void Write(byte value)
         {
             ArrayExtensions.EnsureLength(ref buffer, Position + 1);
