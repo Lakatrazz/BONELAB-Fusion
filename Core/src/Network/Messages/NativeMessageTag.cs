@@ -82,6 +82,10 @@ namespace LabFusion.Network
 
             KartRaceEvent = 48,
 
+            FlashlightToggle = 49,
+
+            ZoneEncounterEvent = 50,
+
             Module = 80,
             ModuleAssignment = 81;
     }

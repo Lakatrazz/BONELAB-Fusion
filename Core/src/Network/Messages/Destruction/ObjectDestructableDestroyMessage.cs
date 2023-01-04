@@ -80,6 +80,7 @@ namespace LabFusion.Network
                             ObjectDestructablePatches.IgnorePatches = true;
                             PooleeDespawnPatch.IgnorePatch = true;
 
+                            objectDestructable._hits = objectDestructable.reqHitCount + 1;
                             objectDestructable.TakeDamage(Vector3.up, objectDestructable._health + 1f, false, AttackType.Blunt);
                             
                             ObjectDestructablePatches.IgnorePatches = false;

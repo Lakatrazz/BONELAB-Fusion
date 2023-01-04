@@ -13,6 +13,7 @@ using MelonLoader;
 
 using UnityEngine;
 using LabFusion.Extensions;
+using SLZ.Marrow.SceneStreaming;
 
 namespace LabFusion
 {

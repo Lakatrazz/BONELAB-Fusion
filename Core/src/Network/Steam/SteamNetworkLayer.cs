@@ -324,7 +324,7 @@ namespace LabFusion.Network
                 color.b = b;
                 currentColor.SetValue(color);
             });
-            var colorPreview = category.CreateFunctionElement("□□□□□□□□", currentColor, null);
+            var colorPreview = category.CreateFunctionElement("■■■■■■■■■■■", currentColor, null);
 
             currentColor.OnValueChanged += (color) => {
                 colorR.SetValue(color.r);
