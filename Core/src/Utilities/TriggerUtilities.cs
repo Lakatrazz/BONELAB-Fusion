@@ -8,6 +8,7 @@ using SLZ.Bonelab;
 
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using LabFusion.Network;
 using SLZ.Marrow.SceneStreaming;
+using MelonLoader;
 
 namespace LabFusion.Utilities {
     public static class TriggerUtilities {
@@ -37,18 +39,36 @@ namespace LabFusion.Utilities {
         }
 
         internal static void Increment(Chunk chunk) {
-            if (!ChunkCount.ContainsKey(chunk))
-                ChunkCount.Add(chunk, 0);
+            var chunks = chunk.GetChunks();
 
-            ChunkCount[chunk]++;
+            foreach (var found in chunks) {
+                if (!ChunkCount.ContainsKey(found))
+                    ChunkCount.Add(found, 0);
+
+                ChunkCount[found]++;
+            }
         }
 
         internal static void Decrement(Chunk chunk) {
-            if (!ChunkCount.ContainsKey(chunk))
-                ChunkCount.Add(chunk, 0);
+            MelonCoroutines.Start(CoDelayedDecrement(chunk));
+        }
 
-            ChunkCount[chunk]--;
-            ChunkCount[chunk] = Mathf.Clamp(ChunkCount[chunk], 0, int.MaxValue);
+        private static IEnumerator CoDelayedDecrement(Chunk chunk) {
+            // Delay a while
+            for (var i = 0; i < 300; i++) {
+                yield return null;
+            }
+
+            // Decrement chunks
+            var chunks = chunk.GetChunks();
+
+            foreach (var found in chunks) {
+                if (!ChunkCount.ContainsKey(found))
+                    ChunkCount.Add(found, 0);
+
+                ChunkCount[found]--;
+                ChunkCount[found] = Mathf.Clamp(ChunkCount[found], 0, int.MaxValue);
+            }
         }
 
         internal static bool CanUnload(Chunk chunk) {

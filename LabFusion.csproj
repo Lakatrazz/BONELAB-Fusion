@@ -219,6 +219,7 @@
     <Compile Include="Core\src\Extensions\AlignPlug.cs" />
     <Compile Include="Core\src\Extensions\Array.cs" />
     <Compile Include="Core\src\Extensions\Byte.cs" />
+    <Compile Include="Core\src\Extensions\Chunk.cs" />
     <Compile Include="Core\src\Extensions\Grip.cs" />
     <Compile Include="Core\src\Extensions\IEnumerable.cs" />
     <Compile Include="Core\src\Extensions\Joint.cs" />
