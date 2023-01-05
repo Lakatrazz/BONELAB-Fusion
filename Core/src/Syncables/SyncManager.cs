@@ -165,6 +165,8 @@ namespace LabFusion.Syncables {
             return false;
         }
 
+        public static bool HasSyncable(ushort id) => Syncables.ContainsKey(id);
+
         public static bool TryGetSyncable(ushort id, out ISyncable syncable) => Syncables.TryGetValue(id, out syncable);
     }
 }

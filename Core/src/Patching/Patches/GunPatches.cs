@@ -85,21 +85,9 @@ namespace LabFusion.Patching
                 }
                 else if (__instance._selectedMode == UtilityModes.REMOVER && __instance._hitInfo.rigidbody != null) {
                     var hitBody = __instance._hitInfo.rigidbody;
+                    AssetPoolee poolee = hitBody.GetComponentInParent<AssetPoolee>();
 
-                    var transform = hitBody.transform;
-                    AssetPoolee assetPoolee = null;
-
-                    while (!AssetPoolee.Cache.TryGet(transform.gameObject, out var poolee)) {
-                        transform = transform.parent;
-
-                        if (transform == null)
-                            break;
-
-                        if (poolee != null)
-                            assetPoolee = poolee;
-                    }
-
-                    if (assetPoolee != null && PropSyncable.Cache.TryGet(assetPoolee.gameObject, out var syncable)) {
+                    if (poolee != null && PropSyncable.Cache.TryGet(poolee.gameObject, out var syncable)) {
                         PooleeUtilities.SendDespawn(syncable.GetId());
                     }
                 }

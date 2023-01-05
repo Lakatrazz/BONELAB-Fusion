@@ -56,6 +56,19 @@ namespace LabFusion.Network
         }
 
         /// <summary>
+        /// Reads a gameObject from the reader. This is not always accurate.
+        /// </summary>
+        /// <returns></returns>
+        public GameObject ReadGameObject() {
+            string path = ReadString();
+            if (path == "null") {
+                return null;
+            }
+            else
+                return GameObjectUtilities.GetGameObject(path);
+        }
+
+        /// <summary>
         /// Reads a single color from the reader.
         /// </summary>
         /// <returns></returns>

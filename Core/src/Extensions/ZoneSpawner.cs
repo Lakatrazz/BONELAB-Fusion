@@ -11,7 +11,7 @@ namespace LabFusion.Extensions {
     public static class ZoneSpawnerExtensions {
         public static void InsertNPC(this ZoneSpawner spawner, AIBrain brain) {
             // Hook brain events
-            brain.onDeathDelegate += (Action)(() => { spawner.OnDeathDelegate.Invoke(); });
+            brain.onDeathDelegate += (Action)(() => { spawner.OnDeath(); });
 
             // Update enemy config
             if (brain.behaviour != null && spawner.currEnemyProfile != null && spawner.currEnemyProfile.baseConfig != null)

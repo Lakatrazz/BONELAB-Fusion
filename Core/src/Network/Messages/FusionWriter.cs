@@ -56,6 +56,14 @@ namespace LabFusion.Network
             value.Serialize(this);
         }
 
+        public void Write(GameObject gameObject)
+        {
+            if (gameObject != null)
+                Write(gameObject.GetFullPath());
+            else
+                Write("null");
+        }
+
         public void Write(Color color) {
             Write(color.r);
             Write(color.g);

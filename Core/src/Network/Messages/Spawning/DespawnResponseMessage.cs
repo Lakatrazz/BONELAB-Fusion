@@ -4,8 +4,10 @@ using LabFusion.Patching;
 using LabFusion.Representation;
 using LabFusion.Syncables;
 using LabFusion.Utilities;
+using MelonLoader;
 using SLZ.Player;
 using System;
+using System.Collections;
 
 namespace LabFusion.Network
 {
@@ -51,29 +53,46 @@ namespace LabFusion.Network
             // Despawn the poolee if it exists
             using (var reader = FusionReader.Create(bytes)) {
                 using (var data = reader.ReadFusionSerializable<DespawnResponseData>()) {
-                    if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable) {
-                        PooleeUtilities.CanDespawn = true;
+                    MelonCoroutines.Start(Internal_WaitForValidDespawn(data.syncId, data.despawnerId, data.isMag));
+                }
+            }
+        }
 
-                        if (propSyncable.AssetPoolee && propSyncable.AssetPoolee.gameObject.activeInHierarchy) {
-                            if (data.isMag) {
-                                AmmoInventory ammoInventory = RigData.RigReferences.RigManager.AmmoInventory;
+        private static IEnumerator Internal_WaitForValidDespawn(ushort syncId, byte despawnerId, bool isMag) {
+            // Delay at most 300 frames until this syncable exists
+            int i = 0;
+            while (!SyncManager.HasSyncable(syncId)) {
+                yield return null;
 
-                                if (PlayerRep.Representations.TryGetValue(data.despawnerId, out var rep)) {
-                                    ammoInventory = rep.RigReferences.RigManager.AmmoInventory;
-                                }
+                i++;
 
-                                NullableMethodExtensions.AudioPlayer_PlayAtPoint(ammoInventory.ammoReceiver.grabClips, ammoInventory.ammoReceiver.transform.position, null, null, false, null, null);
+                if (i >= 300)
+                    break;
+            }
+            
+            // Get the syncable from the valid id
+            if (SyncManager.TryGetSyncable(syncId, out var syncable) && syncable is PropSyncable propSyncable)
+            {
+                PooleeUtilities.CanDespawn = true;
 
-                                propSyncable.AssetPoolee.gameObject.SetActive(false);
-                            }
-                            else {
-                                propSyncable.AssetPoolee.Despawn();
-                            }
+                if (propSyncable.AssetPoolee && propSyncable.AssetPoolee.gameObject.activeInHierarchy) {
+                    if (isMag) {
+                        AmmoInventory ammoInventory = RigData.RigReferences.RigManager.AmmoInventory;
+
+                        if (PlayerRep.Representations.TryGetValue(despawnerId, out var rep)) {
+                            ammoInventory = rep.RigReferences.RigManager.AmmoInventory;
                         }
 
-                        PooleeUtilities.CanDespawn = false;
+                        NullableMethodExtensions.AudioPlayer_PlayAtPoint(ammoInventory.ammoReceiver.grabClips, ammoInventory.ammoReceiver.transform.position, null, null, false, null, null);
+
+                        propSyncable.AssetPoolee.gameObject.SetActive(false);
+                    }
+                    else {
+                        propSyncable.AssetPoolee.Despawn();
                     }
                 }
+
+                PooleeUtilities.CanDespawn = false;
             }
         }
     }
