@@ -135,8 +135,12 @@ namespace LabFusion.Network
                         syncable.TimeOfMessage = Time.timeSinceLevelLoad;
                         
                         for (var i = 0; i < data.length; i++) {
+                            syncable.InitialPositions[i] = data.serializedPositions[i];
+                            syncable.InitialRotations[i] = data.serializedQuaternions[i].Expand();
+                            
                             syncable.DesiredPositions[i] = data.serializedPositions[i];
                             syncable.DesiredRotations[i] = data.serializedQuaternions[i].Expand();
+
                             syncable.DesiredVelocities[i] = data.serializedVelocities[i].Expand();
                             syncable.DesiredAngularVelocities[i] = data.serializedAngularVelocities[i].Expand();
                         }

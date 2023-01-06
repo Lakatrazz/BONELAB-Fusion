@@ -10,6 +10,10 @@ using UnityEngine;
 
 namespace LabFusion.Extensions {
     public static class TransformExtensions {
+        public static Quaternion TransformRotation(this Transform transform, Quaternion rotation) => transform.rotation * rotation;
+
+        public static Quaternion InverseTransformRotation(this Transform transform, Quaternion rotation) => Quaternion.Inverse(transform.rotation) * rotation;
+
         internal static string GetBasePath(this Transform transform) {
             if (transform.parent == null)
                 return $"{GameObjectUtilities.PathSeparator}{transform.name}";

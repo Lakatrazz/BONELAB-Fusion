@@ -49,6 +49,9 @@ namespace LabFusion.Syncables
         public byte? Owner = null;
 
         // Target info
+        public Vector3?[] InitialPositions;
+        public Quaternion?[] InitialRotations;
+
         public Vector3?[] DesiredPositions;
         public Quaternion?[] DesiredRotations;
         public Vector3?[] DesiredVelocities;
@@ -112,6 +115,8 @@ namespace LabFusion.Syncables
                 PDControllers[i].OnResetDerivatives(HostTransforms[i]);
             }
 
+            InitialPositions = new Vector3?[Rigidbodies.Length];
+            InitialRotations = new Quaternion?[Rigidbodies.Length];
             DesiredPositions = new Vector3?[Rigidbodies.Length];
             DesiredRotations = new Quaternion?[Rigidbodies.Length];
             DesiredVelocities = new Vector3?[Rigidbodies.Length];
@@ -139,31 +144,18 @@ namespace LabFusion.Syncables
 
         private void AssignInformation(InteractableHost host) {
             var root = host.GetRoot();
-            var hosts = root.GetComponentsInChildren<InteractableHost>(true);
 
-            List<Grip> grips = new List<Grip>();
-
-            foreach (var newHost in hosts) {
-                grips.AddRange(newHost._grips.ToArray());
-            }
-
-            PropGrips = grips.ToArray();
+            PropGrips = root.GetComponentsInChildren<Grip>(true);
             Rigidbodies = root.GetComponentsInChildren<Rigidbody>(true);
         }
 
         private void AssignInformation(InteractableHostManager manager) {
-            List<Grip> grips = new List<Grip>();
-
-            foreach (var host in manager.hosts) {
-                grips.AddRange(host._grips.ToArray());
-            }
-
-            PropGrips = grips.ToArray();
+            PropGrips = manager.GetComponentsInChildren<Grip>(true);
             Rigidbodies = manager.GetComponentsInChildren<Rigidbody>(true);
         }
 
         private void AssignInformation(GameObject go) {
-            PropGrips = new Grip[0];
+            PropGrips = go.GetComponentsInChildren<Grip>(true);
             Rigidbodies = go.GetComponentsInChildren<Rigidbody>(true);
         }
 
@@ -230,6 +222,21 @@ namespace LabFusion.Syncables
 
             _isLockingDirty = true;
             _lockedState = false;
+
+            TimeOfMessage = Time.timeSinceLevelLoad;
+
+            NullValues();
+        }
+
+        public void NullValues() {
+            for (var i = 0; i < Rigidbodies.Length; i++) {
+                DesiredPositions[i] = null;
+                DesiredRotations[i] = null;
+                DesiredVelocities[i] = null;
+                DesiredAngularVelocities[i] = null;
+                InitialPositions[i] = null;
+                InitialRotations[i] = null;
+            }
         }
 
         public bool IsOwner() => Owner.HasValue && Owner.Value == PlayerIdManager.LocalSmallId;
@@ -289,9 +296,17 @@ namespace LabFusion.Syncables
                         GameObject.Destroy(LockJoints[i]);
 
                     var rb = Rigidbodies[i];
+                    var gameObject = HostGameObjects[i];
+                    var transform = HostTransforms[i];
 
-                    if (rb && _lockedState) {
-                        LockJoints[i] = rb.gameObject.AddComponent<FixedJoint>();
+                    var lockPos = InitialPositions[i];
+                    var lockRot = InitialRotations[i];
+
+                    if (rb && _lockedState && lockPos.HasValue && lockRot.HasValue) {
+
+                        transform.SetPositionAndRotation(lockPos.Value, lockRot.Value);
+
+                        LockJoints[i] = gameObject.AddComponent<FixedJoint>();
                     }
                 }
 
@@ -358,10 +373,7 @@ namespace LabFusion.Syncables
         }
 
         private void OnOwnedUpdate() {
-            for (var i = 0; i < Rigidbodies.Length; i++) {
-                DesiredPositions[i] = null;
-                DesiredRotations[i] = null;
-            }
+            NullValues();
 
             bool hasMovingBody = false;
 
@@ -388,7 +400,6 @@ namespace LabFusion.Syncables
                 LastSentRotations[i] = transform.rotation;
                 PDControllers[i].OnResetDerivatives(transform);
             }
-
 
             using (var writer = FusionWriter.Create()) {
                 using (var data = PropSyncableUpdateData.Create(PlayerIdManager.LocalSmallId, this)) {
@@ -419,6 +430,14 @@ namespace LabFusion.Syncables
 
             if (!isSomethingGrabbed && Time.timeSinceLevelLoad - TimeOfMessage >= 1f) {
                 if (!_isIgnoringForces) {
+                    // Set all desired values to nothing
+                    for (var i = 0; i < Rigidbodies.Length; i++) {
+                        DesiredPositions[i] = null;
+                        DesiredRotations[i] = null;
+                        DesiredVelocities[i] = null;
+                        DesiredAngularVelocities[i] = null;
+                    }
+
                     _isLockingDirty = true;
                     _lockedState = true;
                     _isIgnoringForces = true;
@@ -472,7 +491,7 @@ namespace LabFusion.Syncables
                 var pdController = PDControllers[i];
                 
                 // Don't over predict
-                if (Time.timeSinceLevelLoad - TimeOfMessage <= 0.8f) {
+                if (Time.timeSinceLevelLoad - TimeOfMessage <= 0.6f) {
                     // Move position with prediction
                     if (allowPosition)
                     {
@@ -482,6 +501,16 @@ namespace LabFusion.Syncables
 
                     // Move rotation with prediction
                     rot = (angVel * Time.fixedDeltaTime).GetQuaternionDisplacement() * rot;
+                    DesiredRotations[i] = rot;
+                }
+                else {
+                    // Reset transform values
+                    if (allowPosition) {
+                        pos = InitialPositions[i].Value;
+                        DesiredPositions[i] = pos;
+                    }
+
+                    rot = InitialRotations[i].Value;
                     DesiredRotations[i] = rot;
                 }
 

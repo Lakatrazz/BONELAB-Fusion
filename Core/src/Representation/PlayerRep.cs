@@ -379,7 +379,9 @@ namespace LabFusion.Representation
 
         public void OnUpdateNametags() {
             if (!repCanvasTransform.IsNOC()) {
-                repCanvasTransform.position = RigReferences.RigManager.physicsRig.m_head.transform.position + Vector3.up * NametagHeight * RigReferences.RigManager.avatar.height;
+                var rm = RigReferences.RigManager;
+                var physHead = rm.physicsRig.m_head;
+                repCanvasTransform.position = physHead.position + Vector3.up * NametagHeight * RigReferences.RigManager.avatar.height;
 
                 if (!RigData.RigReferences.RigManager.IsNOC()) {
                     var head = RigData.RigReferences.RigManager.physicsRig.m_head;
