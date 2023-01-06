@@ -21,7 +21,8 @@ using MelonLoader;
 namespace LabFusion.Utilities {
     public static class TriggerUtilities {
         public static readonly Dictionary<TriggerLasers, int> TriggerCount = new Dictionary<TriggerLasers, int>(new UnityComparer());
-        public static readonly Dictionary<Chunk, int> ChunkCount = new Dictionary<Chunk, int>(new UnityComparer());
+
+        public static readonly Dictionary<TriggerRefProxy, List<Chunk>> PlayerChunks = new Dictionary<TriggerRefProxy, List<Chunk>>(new UnityComparer());
 
         internal static void Increment(TriggerLasers trigger) {
             if (!TriggerCount.ContainsKey(trigger))
@@ -38,44 +39,25 @@ namespace LabFusion.Utilities {
             TriggerCount[trigger] = Mathf.Clamp(TriggerCount[trigger], 0, int.MaxValue);
         }
 
-        internal static void Increment(Chunk chunk) {
-            var chunks = chunk.GetChunks();
+        internal static void SetChunk(Collider other, Chunk chunk) {
+            var proxy = TriggerRefProxy.Cache.Get(other.gameObject);
+            if (!proxy)
+                return;
 
-            foreach (var found in chunks) {
-                if (!ChunkCount.ContainsKey(found))
-                    ChunkCount.Add(found, 0);
-
-                ChunkCount[found]++;
-            }
-        }
-
-        internal static void Decrement(Chunk chunk) {
-            MelonCoroutines.Start(CoDelayedDecrement(chunk));
-        }
-
-        private static IEnumerator CoDelayedDecrement(Chunk chunk) {
-            // Delay a while
-            for (var i = 0; i < 300; i++) {
-                yield return null;
+            if (!PlayerChunks.ContainsKey(proxy)) {
+                PlayerChunks.Add(proxy, new List<Chunk>());
             }
 
-            // Decrement chunks
-            var chunks = chunk.GetChunks();
-
-            foreach (var found in chunks) {
-                if (!ChunkCount.ContainsKey(found))
-                    ChunkCount.Add(found, 0);
-
-                ChunkCount[found]--;
-                ChunkCount[found] = Mathf.Clamp(ChunkCount[found], 0, int.MaxValue);
-            }
+            PlayerChunks[proxy] = chunk.GetChunks();
         }
 
         internal static bool CanUnload(Chunk chunk) {
-            if (!ChunkCount.ContainsKey(chunk))
-                return false;
+            foreach (var pair in PlayerChunks) {
+                if (pair.Value.Has(chunk))
+                    return false;
+            }
 
-            return ChunkCount[chunk] <= 0;
+            return true;
         }
 
         public static bool CanEnter(TriggerLasers trigger)

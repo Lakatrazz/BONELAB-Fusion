@@ -87,6 +87,14 @@ namespace LabFusion.Syncables
 
             Cache.Add(GameObject, this);
 
+            // Recreate all rigidbodies incase of them being gone (ascent Amber ball, looking at you)
+            var tempHosts = GameObject.GetComponentsInChildren<InteractableHost>(true);
+            foreach (var tempHost in tempHosts) {
+                tempHost.CreateRigidbody();
+                tempHost.EnableInteraction();
+            }
+
+            // Assign grip, rigidbody, etc. info
             if (host) {
                 if (host.manager)
                     AssignInformation(host.manager);

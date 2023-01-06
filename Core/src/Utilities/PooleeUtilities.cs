@@ -213,6 +213,7 @@ namespace LabFusion.Utilities {
 
         private static bool IsWhitelisted(AssetPoolee instance) {
             bool hasRigidbody = instance.GetComponentInChildren<Rigidbody>(true) != null;
+
             bool hasGunProperties = instance.GetComponentInChildren<FirearmCartridge>(true) == null || instance.GetComponentInChildren<Gun>(true) != null;
             bool miscProperties = instance.GetComponentInChildren<GetVelocity>(true) == null && instance.GetComponentInChildren<SpawnFragment>(true) == null; 
 

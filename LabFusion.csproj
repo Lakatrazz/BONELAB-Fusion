@@ -420,6 +420,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\Il2CppSystem.dll</HintPath>
     </Reference>
+    <Reference Include="Il2CppSystem.Core, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Core\managed\Il2CppSystem.Core.dll</HintPath>
+    </Reference>
     <Reference Include="MelonLoader, Version=0.5.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\MelonLoader.dll</HintPath>

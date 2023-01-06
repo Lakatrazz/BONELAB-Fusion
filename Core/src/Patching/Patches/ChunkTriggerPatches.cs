@@ -31,10 +31,13 @@ namespace LabFusion.Patching
             if (NetworkInfo.HasServer) {
                 var loader = SceneStreamer.Session.ChunkLoader;
 
-                foreach (var chunk in TriggerUtilities.ChunkCount.Keys) {
-                    foreach (var layer in chunk.sceneLayers) {
-                        if (layer.AssetGUID == address && loader._activeChunks.Contains(chunk)) {
-                            return false;
+                // Ew, nested foreach loops
+                foreach (var pair in TriggerUtilities.PlayerChunks) {
+                    foreach (var chunk in pair.Value) {
+                        foreach (var layer in chunk.sceneLayers) {
+                            if (layer.AssetGUID == address && loader._activeChunks.Contains(chunk)) {
+                                return false;
+                            }
                         }
                     }
                 }
@@ -54,15 +57,20 @@ namespace LabFusion.Patching
 
             if (NetworkInfo.HasServer) {
                 var loader = SceneStreamer.Session.ChunkLoader;
-                var chunk = __instance.chunk;
+                var chunks = __instance.chunk.GetChunks();
                 bool canUnload = true;
 
-                if (!TriggerUtilities.CanUnload(chunk)) {
-                    canUnload = false;
+                foreach (var chunk in chunks)
+                {
+                    if (!TriggerUtilities.CanUnload(chunk))
+                    {
+                        canUnload = false;
 
-                    if (loader._chunksToUnload.Contains(chunk)) {
-                        loader._chunksToUnload.Remove(chunk);
-                        loader._activeChunks.Add(chunk);
+                        if (loader._chunksToUnload.Contains(chunk))
+                        {
+                            loader._chunksToUnload.Remove(chunk);
+                            loader._activeChunks.Add(chunk);
+                        }
                     }
                 }
 
@@ -79,20 +87,7 @@ namespace LabFusion.Patching
         public static bool Prefix(ChunkTrigger __instance, Collider other)
         {
             if (other.CompareTag("Player") && NetworkInfo.HasServer) {
-                TriggerUtilities.Increment(__instance.chunk);
-            }
-
-            return true;
-        }
-    }
-
-    [HarmonyPatch(typeof(ChunkTrigger), "OnTriggerExit")]
-    public static class ChunkExitPatch
-    {
-        public static bool Prefix(ChunkTrigger __instance, Collider other)
-        {
-            if (other.CompareTag("Player") && NetworkInfo.HasServer) {
-                TriggerUtilities.Decrement(__instance.chunk);
+                TriggerUtilities.SetChunk(other, __instance.chunk);
             }
 
             return true;
