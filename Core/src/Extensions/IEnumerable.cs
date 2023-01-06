@@ -31,5 +31,14 @@ namespace LabFusion.Extensions {
         }
 
         public static bool Has<T>(this IEnumerable<T> list, T obj) where T : UnityEngine.Object => list.Any(o => o == obj);
+
+        public static bool Has<T>(this Il2CppSystem.Collections.Generic.List<T> list, T obj) where T : UnityEngine.Object {
+            foreach (var other in list) {
+                if (other == obj)
+                    return true;
+            }
+
+            return false;
+        }
     }
 }

@@ -21,6 +21,8 @@ using LabFusion.Data;
 
 using SLZ.Marrow.SceneStreaming;
 
+using IL2ChunkList = Il2CppSystem.Collections.Generic.List<SLZ.Marrow.SceneStreaming.Chunk>;
+
 namespace LabFusion.Patching
 {
     [HarmonyPatch(typeof(SceneLoadQueue))]
@@ -35,7 +37,7 @@ namespace LabFusion.Patching
                 foreach (var pair in TriggerUtilities.PlayerChunks) {
                     foreach (var chunk in pair.Value) {
                         foreach (var layer in chunk.sceneLayers) {
-                            if (layer.AssetGUID == address && loader._activeChunks.Contains(chunk)) {
+                            if (layer.AssetGUID == address && loader._activeChunks.Has(chunk)) {
                                 return false;
                             }
                         }
@@ -57,20 +59,16 @@ namespace LabFusion.Patching
 
             if (NetworkInfo.HasServer) {
                 var loader = SceneStreamer.Session.ChunkLoader;
-                var chunks = __instance.chunk.GetChunks();
+                var chunk = __instance.chunk;
                 bool canUnload = true;
 
-                foreach (var chunk in chunks)
-                {
-                    if (!TriggerUtilities.CanUnload(chunk))
+                if (!TriggerUtilities.CanUnload(chunk)) {
+                    canUnload = false;
+                
+                    if (loader._chunksToUnload.Has(chunk) && !loader._activeChunks.Has(chunk))
                     {
-                        canUnload = false;
-
-                        if (loader._chunksToUnload.Contains(chunk))
-                        {
-                            loader._chunksToUnload.Remove(chunk);
-                            loader._activeChunks.Add(chunk);
-                        }
+                        loader._chunksToUnload.Remove(chunk);
+                        loader._activeChunks.Add(chunk);
                     }
                 }
 
@@ -84,13 +82,28 @@ namespace LabFusion.Patching
     [HarmonyPatch(typeof(ChunkTrigger), "OnTriggerEnter")]
     public static class ChunkEnterPatch
     {
-        public static bool Prefix(ChunkTrigger __instance, Collider other)
+        public static bool Prefix(ChunkTrigger __instance, Collider other, ref IL2ChunkList __state)
         {
             if (other.CompareTag("Player") && NetworkInfo.HasServer) {
                 TriggerUtilities.SetChunk(other, __instance.chunk);
+
+                var loader = SceneStreamer.Session.ChunkLoader;
+                __state = loader._occupiedChunks;
+                loader._occupiedChunks.Clear();
             }
 
             return true;
+        }
+
+        public static void Postfix(ChunkTrigger __instance, Collider other, IL2ChunkList __state) {
+            if (__state == null)
+                return;
+
+            var loader = SceneStreamer.Session.ChunkLoader;
+            foreach (var chunk in __state) {
+                if (!loader._occupiedChunks.Has(chunk))
+                    loader._occupiedChunks.Add(chunk);
+            }
         }
     }
 }

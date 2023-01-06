@@ -17,18 +17,6 @@ namespace LabFusion.Patching {
         public static bool IgnorePatches = false;
 
         [HarmonyPrefix]
-        [HarmonyPatch(nameof(Prop_Health.TAKEDAMAGE))]
-        public static bool TAKEDAMAGE(Prop_Health __instance, float damage, bool crit = false, AttackType attackType = AttackType.None) {
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer && PropHealthExtender.Cache.TryGet(__instance, out var syncable) && !syncable.IsOwner())
-                return false;
-
-            return true;
-        }
-
-        [HarmonyPrefix]
         [HarmonyPatch(nameof(Prop_Health.DESTROYED))]
         public static bool DESTROYEDPrefix(Prop_Health __instance) {
             if (IgnorePatches)

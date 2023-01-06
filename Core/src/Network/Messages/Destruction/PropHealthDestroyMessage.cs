@@ -76,7 +76,12 @@ namespace LabFusion.Network
                         {
                             var propHealth = extender.GetComponent(data.healthIndex);
                             PropHealthPatches.IgnorePatches = true;
-                            propHealth.DESTROYED();
+
+                            propHealth.hits = propHealth.req_hit_count + 1;
+                            propHealth.bloodied = true;
+
+                            propHealth.TIMEDKILL();
+
                             PropHealthPatches.IgnorePatches = false;
                         }
                     }
