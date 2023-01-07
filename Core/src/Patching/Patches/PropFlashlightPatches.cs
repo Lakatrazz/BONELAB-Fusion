@@ -18,9 +18,21 @@ namespace LabFusion.Patching
     public static class PropFlashlightPatches {
         public static bool IgnorePatches = false;
 
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(PropFlashlight.SwitchLight))]
+        public static bool SwitchLightPrefix(PropFlashlight __instance) {
+            if (IgnorePatches)
+                return true;
+
+            if (NetworkInfo.HasServer && PropFlashlightExtender.Cache.TryGet(__instance, out var syncable) && !syncable.IsOwner())
+                return false;
+
+            return true;
+        }
+
         [HarmonyPostfix]
         [HarmonyPatch(nameof(PropFlashlight.SwitchLight))]
-        public static void SwitchLight(PropFlashlight __instance) {
+        public static void SwitchLightPostfix(PropFlashlight __instance) {
             if (IgnorePatches)
                 return;
 

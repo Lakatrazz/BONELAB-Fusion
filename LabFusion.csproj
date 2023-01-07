@@ -249,6 +249,8 @@
     <Compile Include="Core\src\Patching\Patches\AvatarDicePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\AvatarPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\BonelabHubPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\ConstrainerPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\DevManipulatorPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\KartRacePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\KeyRecieverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PropFlashlightPatches.cs" />

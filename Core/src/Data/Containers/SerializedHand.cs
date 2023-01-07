@@ -24,6 +24,8 @@ namespace LabFusion.Data
         public BaseController.GesturePose gesturePose;
         public float gesturePoseIntensity;
 
+        public bool primaryInteractionButton;
+
         public const float PRECISION_MULTIPLIER = 255f;
 
         public SerializedHand() { }
@@ -42,6 +44,8 @@ namespace LabFusion.Data
             controllerType = controller.Type;
             gesturePose = controller._gesturePose;
             gesturePoseIntensity = controller._gesturePoseIntensity;
+
+            primaryInteractionButton = controller._primaryInteractionButton;
         }
 
         public void CopyTo(BaseController controller) {
@@ -57,6 +61,26 @@ namespace LabFusion.Data
             controller.Type = controllerType;
             controller._gesturePose = gesturePose;
             controller._gesturePoseIntensity = gesturePoseIntensity;
+
+            // Down/up button logic (so we don't need to send the value)
+            if (primaryInteractionButton) {
+                controller._primaryInteractionButtonUp = false;
+
+                if (!controller._primaryInteractionButton)
+                    controller._primaryInteractionButtonDown = true;
+                else
+                    controller._primaryInteractionButtonDown = false;
+            }
+            else {
+                controller._primaryInteractionButtonDown = false;
+
+                if (controller._primaryInteractionButton)
+                    controller._primaryInteractionButtonUp = true;
+                else
+                    controller._primaryInteractionButtonUp = false;
+            }
+
+            controller._primaryInteractionButton = primaryInteractionButton;
         }
 
         public void Serialize(FusionWriter writer) {
@@ -72,6 +96,8 @@ namespace LabFusion.Data
             writer.Write((byte)controllerType);
             writer.Write((byte)gesturePose);
             writer.Write((byte)(gesturePoseIntensity * PRECISION_MULTIPLIER));
+
+            writer.Write(primaryInteractionButton);
         }
 
         public void Deserialize(FusionReader reader) {
@@ -87,6 +113,8 @@ namespace LabFusion.Data
             controllerType = (XRControllerType)reader.ReadByte();
             gesturePose = (BaseController.GesturePose)reader.ReadByte();
             gesturePoseIntensity = ReadCompressedFloat(reader);
+
+            primaryInteractionButton = reader.ReadBoolean();
         }
 
         private float ReadCompressedFloat(FusionReader reader) {
