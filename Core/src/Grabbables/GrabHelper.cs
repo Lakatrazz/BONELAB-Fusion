@@ -65,8 +65,6 @@ namespace LabFusion.Grabbables {
 
         internal static IEnumerator Internal_ObjectForcePullRoutine(Hand hand, Grip grip) {
             if (NetworkInfo.HasServer) {
-                var handedness = hand.handedness;
-
                 // Check to see if this has a rigidbody
                 if (grip.HasRigidbody && !grip.GetComponentInParent<RigManager>())
                 {
@@ -163,23 +161,15 @@ namespace LabFusion.Grabbables {
                 if (grip != null)
                 {
                     // Check for player body grab
-                    if (PlayerRepUtilities.FindAttachedPlayerRep(grip, out var rep))
+                    if (PlayerRepUtilities.FindAttachedPlayer(grip, out var repId, out var repReferences))
                     {
-#if DEBUG
-                        FusionLogger.Log("Found player rep grip!");
-#endif
-
                         group = GrabGroup.PLAYER_BODY;
-                        serializedGrab = new SerializedPlayerBodyGrab(rep.PlayerId.SmallId, rep.RigReferences.GetIndex(grip).Value);
+                        serializedGrab = new SerializedPlayerBodyGrab(repId, repReferences.GetIndex(grip).Value, new GripPair(hand, grip));
                         validGrip = true;
                     }
                     // Check for static grips
                     else if (grip.IsStatic)
                     {
-#if DEBUG
-                        FusionLogger.Log("Found grip with no rigidbody!");
-#endif
-
                         if (grip.TryCast<WorldGrip>() != null)
                         {
                             group = GrabGroup.WORLD_GRIP;
@@ -232,10 +222,6 @@ namespace LabFusion.Grabbables {
 
                             yield return null;
 
-#if DEBUG
-                            FusionLogger.Log($"Sending new grab message with an id of {syncable.Id}");
-#endif
-
                             serializedGrab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id, true, new GripPair(hand, grip));
                             validGrip = true;
                         }
@@ -247,13 +233,6 @@ namespace LabFusion.Grabbables {
 
                             validGrip = true;
                         }
-                    }
-                    // Nothing left
-                    else
-                    {
-#if DEBUG
-                        FusionLogger.Log("Found no valid grip for syncing!");
-#endif
                     }
                 }
 

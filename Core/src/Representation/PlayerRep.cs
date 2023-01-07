@@ -84,6 +84,7 @@ namespace LabFusion.Representation
         private bool _hasLockedPosition = false;
 
         private bool _isAvatarDirty = false;
+        private bool _isVitalsDirty = false;
 
         private bool _isRagdollDirty = false;
         private bool _ragdollState = false;
@@ -240,10 +241,7 @@ namespace LabFusion.Representation
 
         public void SetVitals(SerializedBodyVitals vitals) {
             this.vitals = vitals;
-            if (RigReferences.RigManager != null && vitals != null) {
-                vitals.CopyTo(RigReferences.RigManager.bodyVitals);
-                RigReferences.RigManager.bodyVitals.CalibratePlayerBodyScale();
-            }
+            _isVitalsDirty = true;
         }
 
         public void CreateRep() {
@@ -318,11 +316,16 @@ namespace LabFusion.Representation
             PlayerRepUtilities.FillGameworldArray(ref gameworldRigTransforms, rig);
 
             // Make sure the rig gets its initial avatar and settings
+            MarkDirty();
+        }
+
+        public void MarkDirty() {
             _isAvatarDirty = true;
+            _isVitalsDirty = true;
+
             _isSettingsDirty = true;
             _isServerDirty = true;
 
-            // Reset the ragdoll state
             _isRagdollDirty = true;
             _ragdollState = false;
         }
@@ -595,6 +598,15 @@ namespace LabFusion.Representation
                 if (_isAvatarDirty) {
                     rm.SwapAvatarCrate(avatarId, false, (Action<bool>)OnSwapAvatar);
                     _isAvatarDirty = false;
+                }
+
+                // Change body vitals
+                if (_isVitalsDirty) {
+                    if (vitals != null) {
+                        vitals.CopyTo(rm.bodyVitals);
+                    }
+
+                    _isVitalsDirty = false;
                 }
                 
                 // Toggle ragdoll mode

@@ -29,6 +29,7 @@ namespace LabFusion.Patching {
                     var rm = __instance.GetComponentInParent<RigManager>();
 
                     if (rm != null && PlayerRep.Managers.TryGetValue(rm, out var rep) && rep.avatarStats != null) {
+                        // Apply the avatar stats
                         rep.avatarStats.CopyTo(__instance);
 
                         // Scale the mesh if its poly blank

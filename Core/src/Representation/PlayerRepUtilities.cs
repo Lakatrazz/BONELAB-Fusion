@@ -42,17 +42,34 @@ namespace LabFusion.Representation {
 
         public const string PolyBlankBarcode = "c3534c5a-94b2-40a4-912a-24a8506f6c79";
 
-        public static bool FindAttachedPlayerRep(Grip grip, out PlayerRep rep) {
-            rep = null;
+        public static bool FindAttachedPlayer(Grip grip, out byte smallId, out RigReferenceCollection references) {
+            smallId = 0;
+            references = null;
 
             if (grip == null)
                 return false;
 
-            var rig = RigManager.Cache.Get(grip.transform.root.gameObject);
-            if (rig && PlayerRep.Managers.ContainsKey(rig))
-            {
-                rep = PlayerRep.Managers[rig];
-                return true;
+            var rig = grip.GetComponentInParent<RigManager>();
+
+            // If we have a RigManager, we can get our player info
+            if (rig) {
+                // Check if this is the main player
+                if (rig == RigData.RigReferences.RigManager) {
+                    smallId = PlayerIdManager.LocalSmallId;
+                    references = RigData.RigReferences;
+
+                    return true;
+                }
+                // Otherwise, check if this is another player
+                else if (PlayerRep.Managers.TryGetValue(rig, out var rep)) {
+                    smallId = rep.PlayerId.SmallId;
+                    references = rep.RigReferences;
+
+                    return true;
+                }
+                // This isn't a rig that is part of our mod, so we can ignore it
+                else
+                    return false;
             }
             else {
                 return false;

@@ -24,6 +24,8 @@ namespace LabFusion.Network
         public float inseam;
         public float sittingOffset;
         public float floorOffset;
+        public bool bodyLogFlipped;
+        public bool bodyLogEnabled;
 
         public SerializedBodyVitals() { }
 
@@ -38,6 +40,9 @@ namespace LabFusion.Network
             wingspan = vitals.wingspan;
             sittingOffset = vitals.sittingOffset;
             floorOffset = vitals.floorOffset;
+
+            bodyLogFlipped = vitals.bodyLogFlipped;
+            bodyLogEnabled = vitals.bodyLogEnabled;
         }
 
         public void Serialize(FusionWriter writer)
@@ -51,6 +56,9 @@ namespace LabFusion.Network
             writer.Write(wingspan);
             writer.Write(sittingOffset);
             writer.Write(floorOffset);
+
+            writer.Write(bodyLogFlipped);
+            writer.Write(bodyLogEnabled);
         }
 
         public void Deserialize(FusionReader reader)
@@ -64,6 +72,9 @@ namespace LabFusion.Network
             wingspan = reader.ReadSingle();
             sittingOffset = reader.ReadSingle();
             floorOffset = reader.ReadSingle();
+
+            bodyLogFlipped = reader.ReadBoolean();
+            bodyLogEnabled = reader.ReadBoolean();
         }
 
         public void CopyTo(BodyVitals vitals)
@@ -77,6 +88,11 @@ namespace LabFusion.Network
             vitals.wingspan = wingspan;
             vitals.sittingOffset = sittingOffset;
             vitals.floorOffset = floorOffset;
+
+            vitals.bodyLogFlipped = bodyLogFlipped;
+            vitals.bodyLogEnabled = bodyLogEnabled;
+
+            vitals.PROPEGATE_SOFT();
         }
     }
 
