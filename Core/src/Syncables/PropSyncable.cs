@@ -92,6 +92,11 @@ namespace LabFusion.Syncables
             foreach (var tempHost in tempHosts) {
                 tempHost.CreateRigidbody();
                 tempHost.EnableInteraction();
+
+                // Remove from key lists
+                if (KeyReciever.ClaimedHosts != null) {
+                    KeyReciever.ClaimedHosts.Remove(tempHost.TryCast<IGrippable>());
+                }
             }
 
             // Assign grip, rigidbody, etc. info

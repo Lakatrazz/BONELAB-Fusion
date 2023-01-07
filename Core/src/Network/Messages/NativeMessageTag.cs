@@ -86,6 +86,8 @@ namespace LabFusion.Network
 
             ZoneEncounterEvent = 50,
 
+            KeySlot = 51,
+
             Module = 80,
             ModuleAssignment = 81;
     }
