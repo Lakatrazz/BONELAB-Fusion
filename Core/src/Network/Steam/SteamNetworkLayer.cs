@@ -269,7 +269,24 @@ namespace LabFusion.Network
             // Now for the actual options
             CreateMatchmakingMenu(category);
             CreateSettingsMenu(category);
+
+#if DEBUG
+            CreateDebugMenu(category);
+#endif
         }
+
+#if DEBUG
+        private void CreateDebugMenu(MenuCategory category) {
+            var debugCategory = category.CreateCategory("DEBUG", Color.red);
+            debugCategory.CreateFunctionElement("Spawn Player Rep", Color.white, () =>
+            {
+                PlayerRepUtilities.CreateNewRig((rig) =>
+                {
+                    rig.transform.position = RigData.RigReferences.RigManager.physicsRig.feet.transform.position;
+                });
+            });
+        }
+#endif
 
         // Settings menu
         private MenuCategory _serverSettingsCategory;

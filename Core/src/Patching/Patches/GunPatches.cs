@@ -33,7 +33,7 @@ namespace LabFusion.Patching
             if (IgnorePatches)
                 return true;
 
-             if (NetworkInfo.HasServer && __instance.triggerGrip)
+             if (NetworkInfo.HasServer && __instance.cartridgeState == Gun.CartridgeStates.UNSPENT && __instance.triggerGrip)
              {
                  var hand = __instance.triggerGrip.GetHand();
 
@@ -58,7 +58,9 @@ namespace LabFusion.Patching
                     // Make sure this is being grabbed by our main player
                     if (__instance.triggerGrip && __instance.triggerGrip.attachedHands.Find((Il2CppSystem.Predicate<Hand>)((h) => h.manager == RigData.RigReferences.RigManager))) {
                         using (var writer = FusionWriter.Create()) {
-                            using (var data = GunShotData.Create(PlayerIdManager.LocalSmallId, gunSyncable.Id)) {
+                            var ammoCount = __instance._magState != null ? (byte)__instance._magState.AmmoCount : (byte)0;
+
+                            using (var data = GunShotData.Create(PlayerIdManager.LocalSmallId, ammoCount, gunSyncable.Id)) {
                                 writer.Write(data);
 
                                 using (var message = FusionMessage.Create(NativeMessageTag.GunShot, writer)) {

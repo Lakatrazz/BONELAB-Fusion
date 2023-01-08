@@ -20,17 +20,20 @@ namespace LabFusion.Network
     public class GunShotData : IFusionSerializable, IDisposable
     {
         public byte smallId;
+        public byte ammoCount;
         public ushort gunId;
 
         public void Serialize(FusionWriter writer)
         {
             writer.Write(smallId);
+            writer.Write(ammoCount);
             writer.Write(gunId);
         }
 
         public void Deserialize(FusionReader reader)
         {
             smallId = reader.ReadByte();
+            ammoCount = reader.ReadByte();
             gunId = reader.ReadUInt16();
         }
 
@@ -39,11 +42,12 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static GunShotData Create(byte smallId, ushort gunId)
+        public static GunShotData Create(byte smallId, byte ammoCount, ushort gunId)
         {
             return new GunShotData()
             {
                 smallId = smallId,
+                ammoCount = ammoCount,
                 gunId = gunId,
             };
         }
@@ -77,15 +81,16 @@ namespace LabFusion.Network
                             comp._hasFiredSinceLastBroadcast = false;
                             comp.isTriggerPulledOnAttach = false;
 
+                            if (comp._magState != null) {
+                                comp._magState.SetCartridge(data.ammoCount + 1);
+                            }
+
                             comp.CeaseFire();
                             comp.Charge();
 
-                            if (comp._magState != null)
-                                comp._magState.Refill();
-
-                            comp.SlideGrabbedReleased();
-                            comp.SlideOverrideReleased();
-
+                            if (!comp.allowFireOnSlideGrabbed)
+                                comp.SlideGrabbedReleased();
+                            
                             GunPatches.IgnorePatches = true;
                             comp.Fire();
                             GunPatches.IgnorePatches = false;

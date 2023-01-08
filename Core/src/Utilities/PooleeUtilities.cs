@@ -216,8 +216,9 @@ namespace LabFusion.Utilities {
 
             bool hasGunProperties = instance.GetComponentInChildren<FirearmCartridge>(true) == null || instance.GetComponentInChildren<Gun>(true) != null;
             bool miscProperties = instance.GetComponentInChildren<GetVelocity>(true) == null && instance.GetComponentInChildren<SpawnFragment>(true) == null;
+            bool projectileProperties = instance.GetComponentInChildren<ProjectileBalloon>(true) == null;
 
-            bool isValid = hasRigidbody && hasGunProperties && miscProperties;
+            bool isValid = hasRigidbody && hasGunProperties && miscProperties && projectileProperties;
 
             return isValid;
         }

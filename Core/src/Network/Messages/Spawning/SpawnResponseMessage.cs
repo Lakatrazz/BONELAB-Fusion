@@ -196,6 +196,7 @@ namespace LabFusion.Network
                 }
 
                 magazine.Initialize(cart, ammoInventory.GetCartridgeCount(cart));
+                magazine.Claim();
 
                 NullableMethodExtensions.AudioPlayer_PlayAtPoint(ammoInventory.ammoReceiver.grabClips, ammoInventory.ammoReceiver.transform.position, null, null, false, null, null);
 
