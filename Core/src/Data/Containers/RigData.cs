@@ -264,7 +264,7 @@ namespace LabFusion.Data
             }
             
             RigReferences = new RigReferenceCollection(manager);
-            RigReferences.RigManager.bodyVitals.rescaleEvent += (BodyVitals.RescaleUI)OnRigRescale;
+            RigReferences.RigManager.bodyVitals.rescaleEvent += (BodyVitals.RescaleUI)OnSendVitals;
 
             if (NetworkInfo.HasServer) {
                 EnableRagdollOnDeath();
@@ -289,7 +289,7 @@ namespace LabFusion.Data
             }
         }
 
-        public static void OnRigRescale() {
+        public static void OnSendVitals() {
             // Send body vitals to network
             if (NetworkInfo.HasServer) {
                 using (FusionWriter writer = FusionWriter.Create()) {

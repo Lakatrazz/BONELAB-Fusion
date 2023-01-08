@@ -57,9 +57,6 @@ namespace LabFusion.Network
                 if (data.playerId.LongId == PlayerIdManager.LocalLongId) {
                     PlayerIdManager.ApplyLocalId();
 
-                    if (RigData.RigReferences.RigManager)
-                        RigData.OnRigRescale();
-
                     InternalServerHelpers.OnJoinServer();
 #if DEBUG    
                     FusionLogger.Log($"Assigned our local smallId to {data.playerId.SmallId}, real id was {PlayerIdManager.LocalSmallId}");
@@ -74,6 +71,10 @@ namespace LabFusion.Network
                     var rep = new PlayerRep(data.playerId);
                     rep.SwapAvatar(data.avatarStats, data.avatarBarcode);
                 }
+
+                // Update our vitals to everyone
+                if (RigData.RigReferences.RigManager)
+                    RigData.OnSendVitals();
             }
         }
     }

@@ -54,6 +54,14 @@ namespace LabFusion.Representation
         public SerializedTransform serializedPelvis;
         public SerializedTransform serializedFootball;
 
+        public float serializedFeetOffset;
+        public float serializedCrouchTarget;
+        public float serializedSpineCrouchOff;
+
+        public ControllerRig.TraversalState serializedTravState;
+        public ControllerRig.VertState serializedVertState;
+        public ControllerRig.VrVertState serializedVrVertState;
+
         public Vector3 predictVelocity;
         public PDController pelvisPDController;
         public PDController footPDController;
@@ -105,7 +113,15 @@ namespace LabFusion.Representation
 
             FusionPreferences.OnServerSettingsChange += OnServerSettingsChange;
 
+            ResetSerializedTransforms();
+
             CreateRep();
+        }
+
+        public void ResetSerializedTransforms() {
+            for (var i = 0; i < PlayerRepUtilities.TransformSyncCount; i++) {
+                serializedLocalTransforms[i] = new SerializedLocalTransform(Vector3.zero, Quaternion.identity);
+            }
         }
 
         private void OnServerSettingsChange() {
@@ -410,6 +426,19 @@ namespace LabFusion.Representation
                     repTransforms[i].localPosition = serializedLocalTransforms[i].position.Expand();
                     repTransforms[i].localRotation = serializedLocalTransforms[i].rotation.Expand();
                 }
+
+                var rm = RigReferences.RigManager;
+                var controllerRig = rm.openControllerRig;
+
+                controllerRig.feetOffset = serializedFeetOffset;
+                controllerRig._crouchTarget = serializedCrouchTarget;
+                controllerRig._spineCrouchOff = serializedSpineCrouchOff;
+
+                rm.virtualHeptaRig.spineCrouchOffset = serializedSpineCrouchOff;
+
+                controllerRig.travState = serializedTravState;
+                controllerRig.vertState = serializedVertState;
+                controllerRig.vrVertState = serializedVrVertState;
             }
             catch {
                 // Literally no reason this should happen but it does
@@ -420,11 +449,11 @@ namespace LabFusion.Representation
         public void OnPelvisPin() {
             try {
                 // Stop pelvis
-                if (repPelvis.IsNOC())
+                if (repPelvis.IsNOC() || serializedPelvis == null || serializedFootball == null)
                     return;
 
                 // Move position with prediction
-                if (Time.realtimeSinceStartup - timeSincePelvisSent <= 1.5f) {
+                if (Time.timeSinceLevelLoad - timeSincePelvisSent <= 1.5f) {
                     serializedPelvis.position += predictVelocity * Time.fixedDeltaTime;
 
                     _hasLockedPosition = false;
@@ -634,6 +663,11 @@ namespace LabFusion.Representation
 
                     _isServerDirty = false;
                 }
+            }
+            // Reset synced positions
+            else {
+                serializedPelvis = null;
+                serializedFootball = null;
             }
         }
 

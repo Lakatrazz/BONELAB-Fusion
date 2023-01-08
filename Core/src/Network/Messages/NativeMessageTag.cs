@@ -88,6 +88,10 @@ namespace LabFusion.Network
 
             KeySlot = 51,
 
+            NimbusGunNoclip = 52,
+
+            PlayerRepEvent = 53,
+
             Module = 80,
             ModuleAssignment = 81;
     }

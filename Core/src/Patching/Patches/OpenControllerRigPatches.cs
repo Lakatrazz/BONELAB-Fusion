@@ -16,6 +16,7 @@ using LabFusion.Utilities;
 using LabFusion.Network;
 
 using SLZ.Marrow.Input;
+using LabFusion.Senders;
 
 namespace LabFusion.Patches
 {
@@ -31,11 +32,28 @@ namespace LabFusion.Patches
         }
     }
 
+    [HarmonyPatch(typeof(ControllerRig))]
+    public static class ControllerRigPatches {
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(ControllerRig.JumpCharge))]
+        public static void JumpChargePrefix(ControllerRig __instance, float deltaTime, bool chargeInput, ref bool __state) {
+            __state = __instance._chargeInput;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(ControllerRig.JumpCharge))]
+        public static void JumpChargePostfix(ControllerRig __instance, float deltaTime, bool chargeInput, bool __state) {
+            if (NetworkInfo.HasServer && __instance.manager == RigData.RigReferences.RigManager && __state && !__instance._chargeInput) {
+                PlayerSender.SendPlayerRepEvent(PlayerRepEventType.JUMP);
+            }
+        }
+    }
+
     // Here we update controller positions on the reps so they use our desired targets.
     [HarmonyPatch(typeof(OpenControllerRig), "OnFixedUpdate")]
     public class OpenFixedUpdatePatch
     {
-        public static void Postfix(OpenControllerRig __instance, float deltaTime) {
+        public static void Postfix(OpenControllerRig __instance, float deltaTime, bool __state) {
             try {
                 if (PlayerRep.Managers.ContainsKey(__instance.manager))
                 {

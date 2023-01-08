@@ -181,7 +181,6 @@ namespace LabFusion.Representation {
             rigManager.openControllerRig.jumpEnabled = true;
             rigManager.openControllerRig.quickmenuEnabled = false;
             rigManager.openControllerRig.slowMoEnabled = false;
-            rigManager.openControllerRig.isRightHanded = true;
             rigManager.openControllerRig.autoLiftLegs = true;
             rigManager.openControllerRig.doubleJump = false;
 

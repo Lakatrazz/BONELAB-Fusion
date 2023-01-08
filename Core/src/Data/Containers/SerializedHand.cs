@@ -62,25 +62,36 @@ namespace LabFusion.Data
             controller._gesturePose = gesturePose;
             controller._gesturePoseIntensity = gesturePoseIntensity;
 
-            // Down/up button logic (so we don't need to send the value)
-            if (primaryInteractionButton) {
-                controller._primaryInteractionButtonUp = false;
+            // Primary interaction button
+            bool primaryUp = controller._primaryInteractionButtonUp;
+            bool primaryDown = controller._primaryInteractionButtonDown;
 
-                if (!controller._primaryInteractionButton)
-                    controller._primaryInteractionButtonDown = true;
-                else
-                    controller._primaryInteractionButtonDown = false;
-            }
-            else {
-                controller._primaryInteractionButtonDown = false;
+            SolveButtonPress(controller._primaryInteractionButton, primaryInteractionButton, ref primaryUp, ref primaryDown);
 
-                if (controller._primaryInteractionButton)
-                    controller._primaryInteractionButtonUp = true;
-                else
-                    controller._primaryInteractionButtonUp = false;
-            }
+            controller._primaryInteractionButtonUp = primaryUp;
+            controller._primaryInteractionButtonDown = primaryDown;
 
             controller._primaryInteractionButton = primaryInteractionButton;
+        }
+
+        public void SolveButtonPress(bool lastValue, bool newValue, ref bool up, ref bool down)
+        {
+            if (newValue) {
+                up = false;
+
+                if (!lastValue)
+                    down = true;
+                else
+                    down = false;
+            }
+            else {
+                down = false;
+
+                if (lastValue)
+                    up = true;
+                else
+                    up = false;
+            }
         }
 
         public void Serialize(FusionWriter writer) {

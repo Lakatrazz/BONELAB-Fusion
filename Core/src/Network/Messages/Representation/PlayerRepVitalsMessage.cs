@@ -27,6 +27,8 @@ namespace LabFusion.Network
         public bool bodyLogFlipped;
         public bool bodyLogEnabled;
 
+        public bool isRightHanded;
+
         public SerializedBodyVitals() { }
 
         public SerializedBodyVitals(BodyVitals vitals)
@@ -43,6 +45,8 @@ namespace LabFusion.Network
 
             bodyLogFlipped = vitals.bodyLogFlipped;
             bodyLogEnabled = vitals.bodyLogEnabled;
+
+            isRightHanded = vitals.isRightHanded;
         }
 
         public void Serialize(FusionWriter writer)
@@ -59,6 +63,8 @@ namespace LabFusion.Network
 
             writer.Write(bodyLogFlipped);
             writer.Write(bodyLogEnabled);
+
+            writer.Write(isRightHanded);
         }
 
         public void Deserialize(FusionReader reader)
@@ -75,6 +81,8 @@ namespace LabFusion.Network
 
             bodyLogFlipped = reader.ReadBoolean();
             bodyLogEnabled = reader.ReadBoolean();
+
+            isRightHanded = reader.ReadBoolean();
         }
 
         public void CopyTo(BodyVitals vitals)
@@ -91,6 +99,8 @@ namespace LabFusion.Network
 
             vitals.bodyLogFlipped = bodyLogFlipped;
             vitals.bodyLogEnabled = bodyLogEnabled;
+
+            vitals.isRightHanded = isRightHanded;
 
             vitals.PROPEGATE_SOFT();
         }
