@@ -25,6 +25,7 @@ namespace LabFusion.Data
         public float gesturePoseIntensity;
 
         public bool primaryInteractionButton;
+        public bool secondaryInteractionButton;
 
         public const float PRECISION_MULTIPLIER = 255f;
 
@@ -46,6 +47,7 @@ namespace LabFusion.Data
             gesturePoseIntensity = controller._gesturePoseIntensity;
 
             primaryInteractionButton = controller._primaryInteractionButton;
+            secondaryInteractionButton = controller._secondaryInteractionButton;
         }
 
         public void CopyTo(BaseController controller) {
@@ -72,6 +74,17 @@ namespace LabFusion.Data
             controller._primaryInteractionButtonDown = primaryDown;
 
             controller._primaryInteractionButton = primaryInteractionButton;
+
+            // Secondary interaction button
+            bool secondaryUp = controller._secondaryInteractionButtonUp;
+            bool secondaryDown = controller._secondaryInteractionButtonDown;
+
+            SolveButtonPress(controller._secondaryInteractionButton, secondaryInteractionButton, ref secondaryUp, ref secondaryDown);
+
+            controller._secondaryInteractionButtonUp = secondaryUp;
+            controller._secondaryInteractionButtonDown = secondaryDown;
+
+            controller._secondaryInteractionButton = secondaryInteractionButton;
         }
 
         public void SolveButtonPress(bool lastValue, bool newValue, ref bool up, ref bool down)
@@ -109,6 +122,7 @@ namespace LabFusion.Data
             writer.Write((byte)(gesturePoseIntensity * PRECISION_MULTIPLIER));
 
             writer.Write(primaryInteractionButton);
+            writer.Write(secondaryInteractionButton);
         }
 
         public void Deserialize(FusionReader reader) {
@@ -126,6 +140,7 @@ namespace LabFusion.Data
             gesturePoseIntensity = ReadCompressedFloat(reader);
 
             primaryInteractionButton = reader.ReadBoolean();
+            secondaryInteractionButton = reader.ReadBoolean();
         }
 
         private float ReadCompressedFloat(FusionReader reader) {

@@ -124,6 +124,10 @@ namespace LabFusion.Data
                     host.SetPositionAndRotation(hand.TransformPoint(relativeGrip.position), hand.TransformRotation(relativeGrip.rotation.Expand()));
                 }
 
+                // There is no need for custom joints on prop grips
+                // Since friction works properly and the grab is attached in the same spot
+                useCustomJoint = false;
+
                 // Apply the grab
                 base.RequestGrab(rep, handedness, grip, useCustomJoint);
 
