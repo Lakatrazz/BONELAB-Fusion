@@ -53,7 +53,7 @@ namespace LabFusion.Network {
             ModuleMessageHandler.PopulateHandlerTable(names);
 
             // Update hooks
-            HookingUtilities.Internal_OnStartServer();
+            MultiplayerHooks.Internal_OnStartServer();
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace LabFusion.Network {
             FusionPreferences.SendClientSettings();
 
             // Update hooks
-            HookingUtilities.Internal_OnJoinServer();
+            MultiplayerHooks.Internal_OnJoinServer();
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace LabFusion.Network {
             FusionPreferences.OnServerSettingsChange = null;
 
             // Update hooks
-            HookingUtilities.Internal_OnDisconnect();
+            MultiplayerHooks.Internal_OnDisconnect();
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace LabFusion.Network {
             InternalLayerHelpers.OnUserJoin(id);
 
             // Update hooks
-            HookingUtilities.Internal_OnPlayerJoin(id);
+            MultiplayerHooks.Internal_OnPlayerJoin(id);
         }
 
         /// <summary>

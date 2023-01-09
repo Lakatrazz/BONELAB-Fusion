@@ -8,12 +8,12 @@ using LabFusion.Utilities;
 using LabFusion.Syncables;
 using LabFusion.Grabbables;
 using LabFusion.SDK.Modules;
+using LabFusion.Extensions;
 
 using MelonLoader;
 
 using UnityEngine;
-using LabFusion.Extensions;
-using SLZ.Marrow.SceneStreaming;
+
 using BoneLib;
 
 namespace LabFusion
@@ -103,7 +103,7 @@ namespace LabFusion
             PlayerRep.OnRecreateReps();
 
             // Update hooks
-            HookingUtilities.Internal_OnMainSceneInitialized();
+            MultiplayerHooks.Internal_OnMainSceneInitialized();
         }
 
         public static void OnMainSceneInitializeDelayed() {
@@ -152,7 +152,7 @@ namespace LabFusion
             InternalLayerHelpers.OnUpdateLayer();
 
             // Update hooks
-            HookingUtilities.Internal_OnUpdate();
+            MultiplayerHooks.Internal_OnUpdate();
         }
 
         public override void OnFixedUpdate() {
@@ -161,7 +161,7 @@ namespace LabFusion
             SyncManager.OnFixedUpdate();
 
             // Update hooks
-            HookingUtilities.Internal_OnFixedUpdate();
+            MultiplayerHooks.Internal_OnFixedUpdate();
         }
 
         public override void OnLateUpdate() {
@@ -172,7 +172,7 @@ namespace LabFusion
             InternalLayerHelpers.OnLateUpdateLayer();
 
             // Update hooks
-            HookingUtilities.Internal_OnLateUpdate();
+            MultiplayerHooks.Internal_OnLateUpdate();
         }
 
         public override void OnGUI() {

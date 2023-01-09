@@ -9,7 +9,7 @@ using BoneLib;
 using LabFusion.Representation;
 
 namespace LabFusion.Utilities {
-    public static class HookingUtilities {
+    public static class MultiplayerHooks {
         // Server hooks
         public static Action OnStartServer, OnJoinServer, OnDisconnect;
         public static Action<PlayerId> OnPlayerJoin;

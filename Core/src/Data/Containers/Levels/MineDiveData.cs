@@ -1,25 +1,17 @@
 ﻿using LabFusion.Representation;
-using LabFusion.Utilities;
 
 using SLZ.Bonelab;
-using SLZ.Marrow.Warehouse;
-using SLZ.UI;
 using SLZ.Vehicle;
-using System;
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UIElements;
-
 namespace LabFusion.Data
 {
     public static class MineDiveData
     {
         public static GameObject Minecart;
+        public static GameObject AvatarCart;
         public static GameObject InvisibleMinecart;
 
         private static readonly float LocalOffset = -1.581f;
@@ -28,6 +20,7 @@ namespace LabFusion.Data
 
         public static void OnSceneAwake() {
             Minecart = GameObject.Find("Minecart Gun Variant");
+            AvatarCart = GameObject.Find("Avatar-Gun Variant (1)");
 
             if (Minecart != null) {
                 Transform tempParent = new GameObject().transform;
@@ -50,17 +43,18 @@ namespace LabFusion.Data
         {
             if (Minecart != null)
             {
-                var splineTrack = GameObject.Find("MineCart-Track-01-Player-Track").GetComponent<SplineJoint>();
+                var minecartColliders = Minecart.GetComponentsInChildren<Collider>(true);
+                var avatarcartColliders = AvatarCart.GetComponentsInChildren<Collider>(true);
 
-                var avatarCart = GameObject.Find("Avatar-Gun Variant (1)");
+                var splineTrack = GameObject.Find("MineCart-Track-01-Player-Track").GetComponent<SplineJoint>();
 
                 var extraPlayers = PlayerIdManager.PlayerCount - 1;
 
                 Transform lastCart = Minecart.transform;
 
                 List<Collider> colliders = new List<Collider>();
-                colliders.AddRange(Minecart.GetComponentsInChildren<Collider>(true));
-                colliders.AddRange(avatarCart.GetComponentsInChildren<Collider>(true));
+                colliders.AddRange(minecartColliders);
+                colliders.AddRange(avatarcartColliders);
 
                 List<Transform> carts = new List<Transform>();
 
@@ -131,10 +125,8 @@ namespace LabFusion.Data
                 }
 
                 // Ignore colliders between each other
-                foreach (var first in colliders)
-                {
-                    foreach (var second in colliders)
-                    {
+                foreach (var first in colliders) {
+                    foreach (var second in colliders) {
                         Physics.IgnoreCollision(first, second, true);
                     }
                 }
@@ -142,6 +134,13 @@ namespace LabFusion.Data
                 // Parent all carts
                 foreach (var cart in carts) {
                     cart.transform.parent = Minecart.transform;
+                }
+
+                // Re-enable collision between front cart and avatar cart
+                foreach (var first in minecartColliders) {
+                    foreach (var second in avatarcartColliders) {
+                        Physics.IgnoreCollision(first, second, false);
+                    }
                 }
             }
         }
