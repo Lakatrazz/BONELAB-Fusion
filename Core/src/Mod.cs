@@ -14,6 +14,7 @@ using MelonLoader;
 using UnityEngine;
 using LabFusion.Extensions;
 using SLZ.Marrow.SceneStreaming;
+using BoneLib;
 
 namespace LabFusion
 {
@@ -56,6 +57,12 @@ namespace LabFusion
             PersistentAssetCreator.OnMelonInitialize();
 
             FusionPreferences.OnInitializePreferences();
+
+            Hooking.OnLevelInitialized += OnBonelibLevelLoaded;
+        }
+
+        public void OnBonelibLevelLoaded(LevelInfo info) {
+            MineDiveData.OnSceneAwake();
         }
 
         protected void OnInitializeNetworking() {
@@ -90,6 +97,7 @@ namespace LabFusion
             HubData.OnCacheHubInfo();
             MagmaGateData.OnCacheMagmaGateInfo();
             KartRaceData.OnCacheKartRaceInfo();
+            MineDiveData.OnCacheMineDiveInfo();
             
             // Create player reps
             PlayerRep.OnRecreateReps();

@@ -193,6 +193,7 @@
     <Compile Include="Core\src\Data\Containers\Grips\SerializedWorldGrab.cs" />
     <Compile Include="Core\src\Data\Containers\GripPair.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\MagmaGateData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\MineDiveData.cs" />
     <Compile Include="Core\src\Data\Containers\PDController.cs" />
     <Compile Include="Core\src\Data\Containers\RigData.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedGrab.cs" />
@@ -252,6 +253,7 @@
     <Compile Include="Core\src\Patching\Patches\AvatarPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\BonelabHubPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ConstrainerPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\BonelabProgressionHelperPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\DevManipulatorPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\FlyingGunPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\KartRacePatches.cs" />

@@ -86,7 +86,7 @@ namespace LabFusion.Network
                                     writer.Write(response);
 
                                     using (var message = FusionMessage.Create(NativeMessageTag.ConnectionResponse, writer)) {
-                                        MessageSender.SendServerMessage(data.longId, NetworkChannel.Reliable, message);
+                                        MessageSender.SendFromServer(data.longId, NetworkChannel.Reliable, message);
                                     }
                                 }
                             }
@@ -98,7 +98,7 @@ namespace LabFusion.Network
                                 writer.Write(loadData);
 
                                 using (var message = FusionMessage.Create(NativeMessageTag.SceneLoad, writer)) {
-                                    MessageSender.SendServerMessage(data.longId, NetworkChannel.Reliable, message);
+                                    MessageSender.SendFromServer(data.longId, NetworkChannel.Reliable, message);
                                 }
                             }
                         }
@@ -109,7 +109,7 @@ namespace LabFusion.Network
                                 writer.Write(assignData);
 
                                 using (var message = FusionMessage.Create(NativeMessageTag.ModuleAssignment, writer)) {
-                                    MessageSender.SendServerMessage(data.longId, NetworkChannel.Reliable, message);
+                                    MessageSender.SendFromServer(data.longId, NetworkChannel.Reliable, message);
                                 }
                             }
                         }

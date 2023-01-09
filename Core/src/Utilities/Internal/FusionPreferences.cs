@@ -62,7 +62,7 @@ namespace LabFusion.Utilities {
 
                         using (var message = FusionMessage.Create(NativeMessageTag.ServerSettings, writer))
                         {
-                            MessageSender.SendServerMessage(longId, NetworkChannel.Reliable, message);
+                            MessageSender.SendFromServer(longId, NetworkChannel.Reliable, message);
                         }
                     }
                 }

@@ -52,7 +52,7 @@ namespace LabFusion.Network
         /// <param name="userId"></param>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        internal virtual void SendServerMessage(byte userId, NetworkChannel channel, FusionMessage message) { }
+        internal virtual void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message) { }
 
         /// <summary>
         /// Sends the message to the specified user if this is a server.
@@ -60,7 +60,7 @@ namespace LabFusion.Network
         /// <param name="userId"></param>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        internal virtual void SendServerMessage(ulong userId, NetworkChannel channel, FusionMessage message) { }
+        internal virtual void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message) { }
 
         /// <summary>
         /// Sends the message to the dedicated server.
@@ -85,7 +85,7 @@ namespace LabFusion.Network
         internal virtual void BroadcastMessageExcept(byte userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true) {
             foreach (var id in PlayerIdManager.PlayerIds) {
                 if (id.SmallId != userId && (id.SmallId != 0 || !ignoreHost))
-                    SendServerMessage(id.SmallId, channel, message);
+                    SendFromServer(id.SmallId, channel, message);
             }
         }
 
@@ -99,7 +99,7 @@ namespace LabFusion.Network
         {
             foreach (var id in PlayerIdManager.PlayerIds) {
                 if (id.LongId != userId && (id.SmallId != 0 || !ignoreHost))
-                    SendServerMessage(id.SmallId, channel, message);
+                    SendFromServer(id.SmallId, channel, message);
             }
         }
 

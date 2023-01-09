@@ -130,13 +130,13 @@ namespace LabFusion.Network
             SteamSocketHandler.BroadcastToServer(channel, message);
         }
 
-        internal override void SendServerMessage(byte userId, NetworkChannel channel, FusionMessage message) {
+        internal override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message) {
             var id = PlayerIdManager.GetPlayerId(userId);
             if (id != null)
-                SendServerMessage(id.LongId, channel, message);
+                SendFromServer(id.LongId, channel, message);
         }
 
-        internal override void SendServerMessage(ulong userId, NetworkChannel channel, FusionMessage message) {
+        internal override void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message) {
             if (IsServer) {
                 if (SteamSocket.ConnectedSteamIds.ContainsKey(userId))
                     SteamSocket.SendToClient(SteamSocket.ConnectedSteamIds[userId], channel, message);

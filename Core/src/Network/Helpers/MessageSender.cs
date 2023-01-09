@@ -20,12 +20,12 @@ namespace LabFusion.Network
         /// <param name="userId"></param>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        public static void SendServerMessage(byte userId, NetworkChannel channel, FusionMessage message)
+        public static void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message)
         {
             if (NetworkInfo.CurrentNetworkLayer != null) {
                 NetworkInfo.BytesUp += message.Buffer.Length;
 
-                NetworkInfo.CurrentNetworkLayer.SendServerMessage(userId, channel, message);
+                NetworkInfo.CurrentNetworkLayer.SendFromServer(userId, channel, message);
             }
         }
 
@@ -35,12 +35,12 @@ namespace LabFusion.Network
         /// <param name="userId"></param>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        public static void SendServerMessage(ulong userId, NetworkChannel channel, FusionMessage message)
+        public static void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message)
         {
             if (NetworkInfo.CurrentNetworkLayer != null) {
                 NetworkInfo.BytesUp += message.Buffer.Length;
 
-                NetworkInfo.CurrentNetworkLayer.SendServerMessage(userId, channel, message);
+                NetworkInfo.CurrentNetworkLayer.SendFromServer(userId, channel, message);
             }
         }
 

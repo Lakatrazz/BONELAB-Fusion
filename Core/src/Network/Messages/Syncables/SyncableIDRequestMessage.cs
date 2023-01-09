@@ -52,7 +52,7 @@ namespace LabFusion.Network {
                                 writer.Write(response);
 
                                 using (var message = FusionMessage.Create(NativeMessageTag.SyncableIDResponse, writer)) {
-                                    MessageSender.SendServerMessage(data.smallId, NetworkChannel.Reliable, message);
+                                    MessageSender.SendFromServer(data.smallId, NetworkChannel.Reliable, message);
                                 }
                             }
                         }
