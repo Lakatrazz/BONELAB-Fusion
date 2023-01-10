@@ -6,6 +6,8 @@ using SLZ.Vehicle;
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEngine.Events;
+
 namespace LabFusion.Data
 {
     public static class MineDiveData
@@ -84,9 +86,14 @@ namespace LabFusion.Data
                     newCart.transform.Find("gun_minecart").gameObject.SetActive(false);
                     newCart.transform.Find("mineCart_Light").gameObject.SetActive(false);
                     newCart.transform.Find("mineCart_birdcage").gameObject.SetActive(false);
-                    newCart.GetComponentInChildren<MineCartLapBar>().gameObject.SetActive(false);
 
                     GameObject.DestroyImmediate(newCart.GetComponent<MineCartControl>());
+
+                    // Configure lap bar
+                    var lapBar = newCart.GetComponentInChildren<MineCartLapBar>();
+                    lapBar.OnSeat = new UnityEvent();
+                    lapBar.OnUnseat = new UnityEvent();
+                    lapBar.OnBarLocked = new UnityEvent();
 
                     // Configure seat
                     var seat = newCart.GetComponentInChildren<Seat>();
