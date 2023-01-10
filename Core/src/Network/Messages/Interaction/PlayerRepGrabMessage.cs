@@ -11,6 +11,9 @@ using LabFusion.Grabbables;
 
 using SLZ;
 using SLZ.Interaction;
+using System.Collections;
+using UnityEngine;
+using MelonLoader;
 
 namespace LabFusion.Network
 {
@@ -68,17 +71,7 @@ namespace LabFusion.Network
                 using (var data = reader.ReadFusionSerializable<PlayerRepGrabData>()) {
 
                     if (data.smallId != PlayerIdManager.LocalSmallId) {
-                        var rep = data.GetRep();
-                        var grip = data.GetGrip();
-
-                        if (rep != null && grip != null) {
-                            data.serializedGrab.RequestGrab(rep, data.handedness, grip);
-                        }
-                        else {
-#if DEBUG
-                            FusionLogger.Warn($"Failed to execute Player Grab message! Rep was {rep != null}, grip was {grip != null}");
-#endif
-                        }
+                        MelonCoroutines.Start(CoWaitAndGrab(data));
 
                         // Send message to other clients if server
                         if (NetworkInfo.IsServer && isServerHandled) {
@@ -89,6 +82,27 @@ namespace LabFusion.Network
                     }
                 }
             }
+        }
+
+        private IEnumerator CoWaitAndGrab(PlayerRepGrabData data) {
+            var rep = data.GetRep();
+
+            if (rep == null)
+                yield break;
+
+            var grip = data.GetGrip();
+            if (grip == null) {
+                float time = Time.timeSinceLevelLoad;
+                while (grip == null && (Time.timeSinceLevelLoad - time) <= 1f) {
+                    yield return null;
+                    grip = data.GetGrip();
+                }
+
+                if (grip == null)
+                    yield break;
+            }
+
+            data.serializedGrab.RequestGrab(rep, data.handedness, grip);
         }
     }
 }

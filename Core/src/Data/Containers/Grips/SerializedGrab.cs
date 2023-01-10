@@ -14,13 +14,23 @@ using SLZ.Interaction;
 
 namespace LabFusion.Data {
     public abstract class SerializedGrab : IFusionSerializable {
-        public abstract void Serialize(FusionWriter writer);
+        public bool isGrabbed;
 
-        public abstract void Deserialize(FusionReader reader);
+        public virtual void Serialize(FusionWriter writer) {
+            writer.Write(isGrabbed);
+        }
+
+        public virtual void Deserialize(FusionReader reader) {
+            isGrabbed = reader.ReadBoolean();
+        }
 
         public abstract Grip GetGrip();
 
         public virtual void RequestGrab(PlayerRep rep, Handedness handedness, Grip grip, bool useCustomJoint = true) {
+            // Don't do anything if this isn't grabbed anymore
+            if (!isGrabbed)
+                return;
+
             rep.AttachObject(handedness, grip, useCustomJoint);
         }
     }

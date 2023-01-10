@@ -199,6 +199,7 @@
     <Compile Include="Core\src\Data\Containers\Grips\SerializedGrab.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedGripAnchor.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedAvatarStats.cs" />
+    <Compile Include="Core\src\Data\Containers\SerializedGameObjectReference.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedHand.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedPlayerBodyGrab.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedServerSettings.cs" />
@@ -240,6 +241,8 @@
     <Compile Include="Core\src\Network\Messages\Campaign\DescentIntroMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\KartRaceMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Combat\ZoneEncounterEventMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Interaction\ConstraintDeleteMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Interaction\ConstraintCreateMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\NimbusGunNoclipMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\FlashlightToggleMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Magazines\KeySlotMessage.cs" />
@@ -254,6 +257,7 @@
     <Compile Include="Core\src\Patching\Patches\BonelabHubPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ConstrainerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\BonelabProgressionHelperPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\ConstraintTrackerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\DevManipulatorPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\FlyingGunPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\KartRacePatches.cs" />
@@ -261,6 +265,7 @@
     <Compile Include="Core\src\Patching\Patches\PropFlashlightPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PullCordDevicePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ImpactSFXPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\PullCordForceChangePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\StabSlashPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ZoneEncounterPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\GenGameControl_TriggerPatches.cs" />
@@ -270,7 +275,9 @@
     <Compile Include="Core\src\Senders\PlayerSender.cs" />
     <Compile Include="Core\src\Senders\ZoneSender.cs" />
     <Compile Include="Core\src\Senders\CampaignSender.cs" />
+    <Compile Include="Core\src\Syncables\ConstraintSyncable.cs" />
     <Compile Include="Core\src\Syncables\Extenders\BehaviourPowerLegsExtender.cs" />
+    <Compile Include="Core\src\Syncables\Extenders\ConstrainerExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\KeyExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\NimbusGunExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\PropFlashlightExtender.cs" />
@@ -389,7 +396,7 @@
     <Compile Include="Core\src\Utilities\FloatingOriginUtilities.cs" />
     <Compile Include="Core\src\Utilities\FusionComponentCache.cs" />
     <Compile Include="Core\src\Utilities\GameObjectUtilities.cs" />
-    <Compile Include="Core\src\Utilities\HookingUtilities.cs" />
+    <Compile Include="Core\src\Utilities\MultiplayerHooks.cs" />
     <Compile Include="Core\src\Utilities\Internal\FusionPref.cs" />
     <Compile Include="Core\src\Utilities\Internal\PatchingUtilities.cs" />
     <Compile Include="Core\src\Utilities\Asset Warehouses\SpawnableWarehouseUtilities.cs" />

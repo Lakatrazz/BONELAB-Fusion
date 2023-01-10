@@ -148,6 +148,9 @@ namespace LabFusion
                 PhysicsUtilities.OnSendPhysicsInformation();
             }
 
+            // Update reps
+            PlayerRep.OnUpdate();
+
             // Update and push all network messages
             InternalLayerHelpers.OnUpdateLayer();
 

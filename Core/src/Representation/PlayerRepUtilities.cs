@@ -42,6 +42,39 @@ namespace LabFusion.Representation {
 
         public const string PolyBlankBarcode = "c3534c5a-94b2-40a4-912a-24a8506f6c79";
 
+        public static bool TryGetRigInfo(RigManager rig, out byte smallId, out RigReferenceCollection references) {
+            smallId = 0;
+            references = null;
+            
+            if (rig == RigData.RigReferences.RigManager) {
+                smallId = PlayerIdManager.LocalSmallId;
+                references = RigData.RigReferences;
+                return true;
+            }
+            else if (PlayerRep.Managers.TryGetValue(rig, out var rep)) {
+                smallId = rep.PlayerId.SmallId;
+                references = rep.RigReferences;
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool TryGetReferences(byte smallId, out RigReferenceCollection references) {
+            references = null;
+
+            if (smallId == PlayerIdManager.LocalSmallId) {
+                references = RigData.RigReferences;
+                return true;
+            }
+            else if (PlayerRep.Representations.TryGetValue(smallId, out var rep)) {
+                references = rep.RigReferences;
+                return true;
+            }
+
+            return false;
+        }
+
         public static bool FindAttachedPlayer(Grip grip, out byte smallId, out RigReferenceCollection references) {
             smallId = 0;
             references = null;

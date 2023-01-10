@@ -39,12 +39,16 @@ namespace LabFusion.Data {
         public SerializedPlayerBodyGrab() { }
 
         public override void Serialize(FusionWriter writer) {
+            base.Serialize(writer);
+
             writer.Write(grabbedUser);
             writer.Write(gripIndex);
             writer.Write(relativeGrip);
         }
 
         public override void Deserialize(FusionReader reader) {
+            base.Deserialize(reader);
+
             grabbedUser = reader.ReadByte();
             gripIndex = reader.ReadByte();
             relativeGrip = reader.ReadFusionSerializable<SerializedTransform>();
@@ -62,6 +66,10 @@ namespace LabFusion.Data {
 
         public override void RequestGrab(PlayerRep rep, Handedness handedness, Grip grip, bool useCustomJoint = true)
         {
+            // Don't do anything if this isn't grabbed anymore
+            if (!isGrabbed)
+                return;
+
             // Set the host position so that the grip is created in the right spot
             var host = grip.Host.GetTransform();
             Vector3 position = host.position;

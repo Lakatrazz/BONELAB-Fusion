@@ -92,6 +92,10 @@ namespace LabFusion.Network
 
             PlayerRepEvent = 53,
 
+            ConstrainerMode = 54,
+            ConstraintCreate = 55,
+            ConstraintDelete = 56,
+
             Module = 80,
             ModuleAssignment = 81;
     }

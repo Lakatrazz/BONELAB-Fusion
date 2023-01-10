@@ -10,6 +10,7 @@ using LabFusion.Network;
 using LabFusion.Extensions;
 using LabFusion.Utilities;
 using LabFusion.Representation;
+using System.IdentityModel.Tokens;
 
 namespace LabFusion.Syncables {
     public static class SyncManager {
@@ -55,6 +56,29 @@ namespace LabFusion.Syncables {
 
                         using (var message = FusionMessage.Create(NativeMessageTag.SyncableOwnershipRequest, writer)) {
                             MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void RequestSyncableID(ushort queuedId) {
+            if (NetworkInfo.HasServer) {
+                if (NetworkInfo.IsServer) {
+                    UnqueueSyncable(queuedId, AllocateSyncID(), out var syncable);
+                }
+                else
+                {
+                    using (var writer = FusionWriter.Create())
+                    {
+                        using (var data = SyncableIDRequestData.Create(PlayerIdManager.LocalSmallId, queuedId))
+                        {
+                            writer.Write(data);
+
+                            using (var message = FusionMessage.Create(NativeMessageTag.SyncableIDRequest, writer))
+                            {
+                                MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+                            }
                         }
                     }
                 }

@@ -31,10 +31,14 @@ namespace LabFusion.Data
         }
 
         public override void Serialize(FusionWriter writer) {
+            base.Serialize(writer);
+
             writer.Write(fullPath);
         }
 
         public override void Deserialize(FusionReader reader) {
+            base.Deserialize(reader);
+
             fullPath = reader.ReadString();
         }
 

@@ -154,8 +154,8 @@ namespace LabFusion.Network {
                     rep.predictVelocity = data.predictVelocity.Expand();
                     rep.timeSincePelvisSent = Time.timeSinceLevelLoad;
 
-                    data.leftHand.CopyTo(rep.repLeftController);
-                    data.rightHand.CopyTo(rep.repRightController);
+                    rep.serializedLeftHand = data.leftHand;
+                    rep.serializedRightHand = data.rightHand;
                 }
             }
         }

@@ -36,6 +36,7 @@ namespace LabFusion.Data
         public RigManager RigManager { get; private set; }
 
         public Grip[] RigGrips { get; private set; }
+        public Rigidbody[] RigRigidbodies { get; private set; }
 
         public InventorySlotReceiver[] RigSlots { get; private set; }
 
@@ -201,6 +202,23 @@ namespace LabFusion.Data
             return null;
         }
 
+        public byte? GetIndex(Rigidbody rb)
+        {
+            for (byte i = 0; i < RigRigidbodies.Length; i++)
+            {
+                if (RigRigidbodies[i] == rb)
+                    return i;
+            }
+            return null;
+        }
+
+        public Rigidbody GetRigidbody(byte index)
+        {
+            if (RigRigidbodies != null && RigRigidbodies.Length > index)
+                return RigRigidbodies[index];
+            return null;
+        }
+
         public byte? GetIndex(InventorySlotReceiver slot)
         {
             for (byte i = 0; i < RigSlots.Length; i++)
@@ -233,6 +251,12 @@ namespace LabFusion.Data
         public RigReferenceCollection(RigManager rigManager) {
             RigManager = rigManager;
             RigGrips = rigManager.physicsRig.GetComponentsInChildren<Grip>(true);
+
+            // Get rigidbodies and sort them alphabetically
+            // This is because order randomly changes?
+            RigRigidbodies = rigManager.physicsRig.GetComponentsInChildren<Rigidbody>(true);
+            RigRigidbodies = RigRigidbodies.OrderBy(rb => rb.name).ToArray();
+
             RigSlots = rigManager.GetComponentsInChildren<InventorySlotReceiver>(true);
 
             LeftHand = rigManager.physicsRig.m_handLf.GetComponent<Hand>();

@@ -20,13 +20,12 @@ using SLZ.Utilities;
 using SLZ.Vehicle;
 
 using UnityEngine;
-using UnityEngine.UIElements;
-using static RootMotion.FinalIK.GrounderQuadruped;
 
 namespace LabFusion.Syncables
 {
     public class PropSyncable : ISyncable {
         public static readonly FusionComponentCache<GameObject, PropSyncable> Cache = new FusionComponentCache<GameObject, PropSyncable>();
+        public static readonly FusionComponentCache<GameObject, PropSyncable> HostCache = new FusionComponentCache<GameObject, PropSyncable>();
 
         public Grip[] PropGrips;
         public Rigidbody[] Rigidbodies;
@@ -124,6 +123,8 @@ namespace LabFusion.Syncables
                 HostGameObjects[i] = Rigidbodies[i].gameObject;
                 HostTransforms[i] = HostGameObjects[i].transform;
 
+                HostCache.Add(HostGameObjects[i], this);
+
                 PDControllers[i] = new PDController();
                 PDControllers[i].OnResetDerivatives(HostTransforms[i]);
             }
@@ -203,6 +204,13 @@ namespace LabFusion.Syncables
                 Cache.Remove(GameObject);
             }
 
+            foreach (var host in HostGameObjects) {
+                if (host == null)
+                    continue;
+
+                HostCache.Remove(host);
+            }
+
             foreach (var extender in _extenders) {
                 extender.OnCleanup();
             }
@@ -253,20 +261,6 @@ namespace LabFusion.Syncables
         }
 
         public bool IsOwner() => Owner.HasValue && Owner.Value == PlayerIdManager.LocalSmallId;
-
-        public void VerifyID()
-        {
-            bool mismatchId = !SyncManager.Syncables.ContainsKey(Id) || SyncManager.Syncables[Id] != this;
-
-            if (SyncManager.Syncables.ContainsValue(this) && mismatchId)
-            {
-                foreach (var pair in SyncManager.Syncables)
-                {
-                    if (pair.Value == this)
-                        Id = pair.Key;
-                }
-            }
-        }
 
         public void VerifyOwner() {
             if (Owner.HasValue && PlayerIdManager.GetPlayerId(Owner.Value) == null)
@@ -346,6 +340,22 @@ namespace LabFusion.Syncables
             return null;
         }
 
+        public ushort? GetIndex(GameObject go) {
+            for (ushort i = 0; i < HostGameObjects.Length; i++)
+            {
+                if (HostGameObjects[i] == go)
+                    return i;
+            }
+            return null;
+        }
+
+        public GameObject GetHost(ushort index)
+        {
+            if (HostGameObjects != null && HostGameObjects.Length > index)
+                return HostGameObjects[index];
+            return null;
+        }
+
         public bool IsQueued() {
             return SyncManager.QueuedSyncables.ContainsValue(this);
         }
@@ -366,7 +376,6 @@ namespace LabFusion.Syncables
             if (!HasValidParameters())
                 return;
             
-            VerifyID();
             VerifyOwner();
             VerifyRigidbodies();
             VerifyLocking();

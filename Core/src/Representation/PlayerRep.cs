@@ -89,6 +89,9 @@ namespace LabFusion.Representation
         public SerializedPlayerSettings playerSettings = null;
         public string avatarId = AvatarWarehouseUtilities.INVALID_AVATAR_BARCODE;
 
+        public SerializedHand serializedLeftHand = null;
+        public SerializedHand serializedRightHand = null;
+
         private bool _hasLockedPosition = false;
 
         private bool _isAvatarDirty = false;
@@ -197,6 +200,19 @@ namespace LabFusion.Representation
 
             RigReferences.RemoveJoint(handedness);
             RigReferences.SetGrabPoint(handedness, null);
+        }
+
+        public void OnHandUpdate(Hand hand) {
+            switch (hand.handedness) {
+                case Handedness.RIGHT:
+                    if (serializedRightHand != null)
+                        serializedRightHand.CopyTo(hand.Controller);
+                    break;
+                case Handedness.LEFT:
+                    if (serializedLeftHand != null)
+                        serializedLeftHand.CopyTo(hand.Controller);
+                    break;
+            }
         }
 
         public void OnHandFixedUpdate(Hand hand) {
@@ -605,7 +621,14 @@ namespace LabFusion.Representation
             }
         }
 
-        public void OnRepFixedUpdate() {
+        private void OnRepUpdate() {
+            if (!RigReferences.RigManager.IsNOC()) {
+                OnHandUpdate(RigReferences.LeftHand);
+                OnHandUpdate(RigReferences.RightHand);
+            }
+        }
+
+        private void OnRepFixedUpdate() {
             OnPelvisPin();
 
             OnHandFixedUpdate(RigReferences.LeftHand);
@@ -617,7 +640,7 @@ namespace LabFusion.Representation
             }
         }
 
-        public void OnRepLateUpdate() {
+        private void OnRepLateUpdate() {
             OnUpdateNametags();
 
             // Update the player if its dirty
@@ -669,6 +692,11 @@ namespace LabFusion.Representation
                 serializedPelvis = null;
                 serializedFootball = null;
             }
+        }
+
+        public static void OnUpdate() {
+            foreach (var rep in Representations.Values)
+                rep.OnRepUpdate();
         }
 
         public static void OnFixedUpdate() {

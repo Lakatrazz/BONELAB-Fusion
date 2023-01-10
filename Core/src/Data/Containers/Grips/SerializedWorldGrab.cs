@@ -34,12 +34,16 @@ namespace LabFusion.Data
 
         public override void Serialize(FusionWriter writer)
         {
+            base.Serialize(writer);
+
             writer.Write(grabberId);
             writer.Write(gripTransform);
         }
 
         public override void Deserialize(FusionReader reader)
         {
+            base.Deserialize(reader);
+
             grabberId = reader.ReadByte();
             gripTransform = reader.ReadFusionSerializable<SerializedTransform>();
         }

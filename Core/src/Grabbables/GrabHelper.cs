@@ -26,9 +26,8 @@ using MelonLoader;
 
 namespace LabFusion.Grabbables {
     public static class GrabHelper {
-        public static void GetGripInfo(Grip grip, out InteractableHost host, out InteractableHostManager manager) {
+        public static void GetGripInfo(Grip grip, out InteractableHost host) {
             host = null;
-            manager = null;
 
             if (grip == null)
                 return;
@@ -39,7 +38,7 @@ namespace LabFusion.Grabbables {
             if (interactableHost = iGrippable.TryCast<InteractableHost>()) {
                 // Try and find the host and manager
                 host = interactableHost;
-                manager = host.manager;
+                var manager = host.manager;
 
                 // Loop through the cache of all parents if there is no manager
                 if (manager == null) {
@@ -64,6 +63,10 @@ namespace LabFusion.Grabbables {
         }
 
         internal static IEnumerator Internal_ObjectForcePullRoutine(Hand hand, Grip grip) {
+            // Delay a few frames
+            for (var i = 0; i < 4; i++)
+                yield return null;
+
             if (NetworkInfo.HasServer) {
                 // Check to see if this has a rigidbody
                 if (grip.HasRigidbody && !grip.GetComponentInParent<RigManager>())
@@ -71,12 +74,12 @@ namespace LabFusion.Grabbables {
                     // Get base values for the message
                     byte smallId = PlayerIdManager.LocalSmallId;
 
-                    GetGripInfo(grip, out var host, out _);
+                    GetGripInfo(grip, out var host);
 
                     GameObject root = host.GetRoot();
 
                     // Do we already have a synced object?
-                    if (PropSyncable.Cache.TryGet(root, out var syncable)) {
+                    if (PropSyncable.Cache.TryGet(root, out var syncable) || PropSyncable.HostCache.TryGet(host.gameObject, out syncable)) {
                         SyncManager.SendOwnershipTransfer(syncable.Id);
                     }
                     // Create a new one
@@ -104,7 +107,7 @@ namespace LabFusion.Grabbables {
                         yield return null;
 
                         // Send force grab message
-                        var grab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id, true, new GripPair(hand, grip));
+                        var grab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id, new GripPair(hand, grip));
 
                         using (var writer = FusionWriter.Create()) {
                             using (var data = PlayerRepForceGrabData.Create(smallId, grab)) {
@@ -121,7 +124,7 @@ namespace LabFusion.Grabbables {
                         // Add new syncable and send force grab message
                         syncable = new PropSyncable(host);
                         SyncManager.RegisterSyncable(syncable, SyncManager.AllocateSyncID());
-                        var grab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id, true, new GripPair(hand, grip));
+                        var grab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id, new GripPair(hand, grip));
 
                         using (var writer = FusionWriter.Create()) {
                             using (var data = PlayerRepForceGrabData.Create(smallId, grab)) {
@@ -147,6 +150,10 @@ namespace LabFusion.Grabbables {
 
         internal static IEnumerator Internal_ObjectAttachRoutine(Hand hand, Grip grip)
         {
+            // Delay a few frames
+            for (var i = 0; i < 4; i++)
+                yield return null;
+
             if (NetworkInfo.HasServer)
             {
                 var handedness = hand.handedness;
@@ -187,14 +194,14 @@ namespace LabFusion.Grabbables {
                     else if (grip.HasRigidbody && !grip.GetComponentInParent<RigManager>())
                     {
                         group = GrabGroup.PROP;
-                        GetGripInfo(grip, out var host, out var manager);
+                        GetGripInfo(grip, out var host);
 
                         GameObject root = host.GetRoot();
 
                         // Do we already have a synced object?
-                        if (PropSyncable.Cache.TryGet(root, out var syncable))
+                        if (PropSyncable.Cache.TryGet(root, out var syncable) || PropSyncable.HostCache.TryGet(host.gameObject, out syncable))
                         {
-                            serializedGrab = new SerializedPropGrab("_", syncable.GetIndex(grip).Value, syncable.GetId(), true, new GripPair(hand, grip));
+                            serializedGrab = new SerializedPropGrab("_", syncable.GetIndex(grip).Value, syncable.GetId(), new GripPair(hand, grip));
                             validGrip = true;
                         }
                         // Create a new one
@@ -222,14 +229,14 @@ namespace LabFusion.Grabbables {
 
                             yield return null;
 
-                            serializedGrab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id, true, new GripPair(hand, grip));
+                            serializedGrab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id, new GripPair(hand, grip));
                             validGrip = true;
                         }
                         else if (NetworkInfo.IsServer)
                         {
                             syncable = new PropSyncable(host);
                             SyncManager.RegisterSyncable(syncable, SyncManager.AllocateSyncID());
-                            serializedGrab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id, true, new GripPair(hand, grip));
+                            serializedGrab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id, new GripPair(hand, grip));
 
                             validGrip = true;
                         }
@@ -237,8 +244,10 @@ namespace LabFusion.Grabbables {
                 }
 
                 // Now, send the message
-                if (validGrip)
-                {
+                if (validGrip) {
+                    // Set whether or not this is still currently grabbed
+                    serializedGrab.isGrabbed = hand.m_CurrentAttachedGO == grip.gameObject;
+
                     using (var writer = FusionWriter.Create())
                     {
                         using (var data = PlayerRepGrabData.Create(smallId, handedness, group, serializedGrab))

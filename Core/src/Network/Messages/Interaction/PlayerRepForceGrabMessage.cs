@@ -62,10 +62,6 @@ namespace LabFusion.Network
 
                     if (syncable != null && !syncable.GameObject.IsNOC()) {
                         syncable.SetOwner(data.smallId);
-
-#if DEBUG
-                        FusionLogger.Log($"Received force pull grip on object {syncable.GameObject.name}!");
-#endif
                     }
 
                     // Send message to other clients if server

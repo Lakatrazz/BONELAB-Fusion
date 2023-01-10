@@ -28,18 +28,16 @@ namespace LabFusion.Data
         public string fullPath;
         public ushort index;
         public ushort id;
-        public bool isGrabbed;
 
         public SerializedTransform relativeGrip = null;
 
         public SerializedPropGrab() { }
 
-        public SerializedPropGrab(string fullPath, ushort index, ushort id, bool isGrabbed, GripPair pair)
+        public SerializedPropGrab(string fullPath, ushort index, ushort id, GripPair pair)
         {
             this.fullPath = fullPath;
             this.index = index;
             this.id = id;
-            this.isGrabbed = isGrabbed;
 
             var handTransform = pair.hand.transform;
             var gripTransform = pair.grip.Host.GetTransform();
@@ -49,19 +47,21 @@ namespace LabFusion.Data
 
         public override void Serialize(FusionWriter writer)
         {
+            base.Serialize(writer);
+
             writer.Write(fullPath);
             writer.Write(index);
             writer.Write(id);
-            writer.Write(isGrabbed);
             writer.Write(relativeGrip);
         }
 
         public override void Deserialize(FusionReader reader)
         {
+            base.Deserialize(reader);
+
             fullPath = reader.ReadString();
             index = reader.ReadUInt16();
             id = reader.ReadUInt16();
-            isGrabbed = reader.ReadBoolean();
             relativeGrip = reader.ReadFusionSerializable<SerializedTransform>();
         }
 
@@ -112,29 +112,31 @@ namespace LabFusion.Data
         }
 
         public override void RequestGrab(PlayerRep rep, Handedness handedness, Grip grip, bool useCustomJoint = true) {
-            if (isGrabbed) {
-                // Set the host position so that the grip is created in the right spot
-                var host = grip.Host.GetTransform();
-                Vector3 position = host.position;
-                Quaternion rotation = host.rotation;
+            // Don't do anything if this isn't grabbed anymore
+            if (!isGrabbed)
+                return;
 
-                if (relativeGrip != null) {
-                    var hand = rep.RigReferences.GetHand(handedness).transform;
+            // Set the host position so that the grip is created in the right spot
+            var host = grip.Host.GetTransform();
+            Vector3 position = host.position;
+            Quaternion rotation = host.rotation;
 
-                    host.SetPositionAndRotation(hand.TransformPoint(relativeGrip.position), hand.TransformRotation(relativeGrip.rotation.Expand()));
-                }
+            if (relativeGrip != null) {
+                var hand = rep.RigReferences.GetHand(handedness).transform;
 
-                // There is no need for custom joints on prop grips
-                // Since friction works properly and the grab is attached in the same spot
-                useCustomJoint = false;
-
-                // Apply the grab
-                base.RequestGrab(rep, handedness, grip, useCustomJoint);
-
-                // Reset the host position
-                host.position = position;
-                host.rotation = rotation;
+                host.SetPositionAndRotation(hand.TransformPoint(relativeGrip.position), hand.TransformRotation(relativeGrip.rotation.Expand()));
             }
+
+            // There is no need for custom joints on prop grips
+            // Since friction works properly and the grab is attached in the same spot
+            useCustomJoint = false;
+
+            // Apply the grab
+            base.RequestGrab(rep, handedness, grip, useCustomJoint);
+
+            // Reset the host position
+            host.position = position;
+            host.rotation = rotation;
         }
     }
 }
