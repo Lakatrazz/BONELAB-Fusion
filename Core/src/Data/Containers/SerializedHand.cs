@@ -27,6 +27,8 @@ namespace LabFusion.Data
         public bool primaryInteractionButton;
         public bool secondaryInteractionButton;
 
+        public Vector2 thumbstickAxis;
+
         public const float PRECISION_MULTIPLIER = 255f;
 
         public SerializedHand() { }
@@ -48,6 +50,8 @@ namespace LabFusion.Data
 
             primaryInteractionButton = controller._primaryInteractionButton;
             secondaryInteractionButton = controller._secondaryInteractionButton;
+
+            thumbstickAxis = controller._thumbstickAxis;
         }
 
         public void CopyTo(BaseController controller) {
@@ -85,6 +89,9 @@ namespace LabFusion.Data
             controller._secondaryInteractionButtonDown = secondaryDown;
 
             controller._secondaryInteractionButton = secondaryInteractionButton;
+
+            // Thumbstick
+            controller._thumbstickAxis = thumbstickAxis;
         }
 
         public void SolveButtonPress(bool lastValue, bool newValue, ref bool up, ref bool down)
@@ -123,6 +130,8 @@ namespace LabFusion.Data
 
             writer.Write(primaryInteractionButton);
             writer.Write(secondaryInteractionButton);
+
+            writer.Write(thumbstickAxis);
         }
 
         public void Deserialize(FusionReader reader) {
@@ -141,6 +150,8 @@ namespace LabFusion.Data
 
             primaryInteractionButton = reader.ReadBoolean();
             secondaryInteractionButton = reader.ReadBoolean();
+
+            thumbstickAxis = reader.ReadVector2();
         }
 
         private float ReadCompressedFloat(FusionReader reader) {

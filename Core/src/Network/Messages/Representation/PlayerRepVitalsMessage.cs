@@ -29,6 +29,9 @@ namespace LabFusion.Network
 
         public bool isRightHanded;
 
+        public int loco_CurveMode;
+        public int loco_Direction;
+
         public SerializedBodyVitals() { }
 
         public SerializedBodyVitals(BodyVitals vitals)
@@ -47,6 +50,9 @@ namespace LabFusion.Network
             bodyLogEnabled = vitals.bodyLogEnabled;
 
             isRightHanded = vitals.isRightHanded;
+
+            loco_CurveMode = vitals.loco_CurveMode;
+            loco_Direction = vitals.loco_Direction;
         }
 
         public void Serialize(FusionWriter writer)
@@ -65,6 +71,9 @@ namespace LabFusion.Network
             writer.Write(bodyLogEnabled);
 
             writer.Write(isRightHanded);
+
+            writer.Write(loco_CurveMode);
+            writer.Write(loco_Direction);
         }
 
         public void Deserialize(FusionReader reader)
@@ -83,6 +92,9 @@ namespace LabFusion.Network
             bodyLogEnabled = reader.ReadBoolean();
 
             isRightHanded = reader.ReadBoolean();
+
+            loco_CurveMode = reader.ReadInt32();
+            loco_Direction = reader.ReadInt32();
         }
 
         public void CopyTo(BodyVitals vitals)
@@ -102,7 +114,10 @@ namespace LabFusion.Network
 
             vitals.isRightHanded = isRightHanded;
 
-            vitals.PROPEGATE_SOFT();
+            vitals.loco_CurveMode = loco_CurveMode;
+            vitals.loco_Direction = loco_Direction;
+
+            vitals.PROPEGATE();
         }
     }
 

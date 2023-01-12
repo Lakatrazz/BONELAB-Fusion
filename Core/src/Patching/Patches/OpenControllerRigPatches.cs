@@ -17,6 +17,7 @@ using LabFusion.Network;
 
 using SLZ.Marrow.Input;
 using LabFusion.Senders;
+using UnityEngine.Rendering;
 
 namespace LabFusion.Patches
 {
@@ -47,14 +48,13 @@ namespace LabFusion.Patches
                 PlayerSender.SendPlayerRepEvent(PlayerRepEventType.JUMP);
             }
         }
-    }
 
-    // Here we update controller positions on the reps so they use our desired targets.
-    [HarmonyPatch(typeof(OpenControllerRig), "OnFixedUpdate")]
-    public class OpenFixedUpdatePatch
-    {
-        public static void Postfix(OpenControllerRig __instance, float deltaTime, bool __state) {
-            try {
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(ControllerRig.OnFixedUpdate))]
+        public static void OnFixedUpdate(ControllerRig __instance, float deltaTime)
+        {
+            try
+            {
                 if (PlayerRep.Managers.ContainsKey(__instance.manager))
                 {
                     var rep = PlayerRep.Managers[__instance.manager];
@@ -64,9 +64,22 @@ namespace LabFusion.Patches
             catch (Exception e)
             {
 #if DEBUG
-                FusionLogger.LogException("to execute patch OpenControllerRig.OnFixedUpdate", e);
+                FusionLogger.LogException("to execute patch ControllerRig.OnFixedUpdate", e);
 #endif
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(OpenControllerRig))]
+    public static class OpenControllerRigPatches {
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(OpenControllerRig.OnBeginCameraRendering))]
+        public static bool OnBeginCameraRendering(OpenControllerRig __instance, ScriptableRenderContext ctx, Camera cam) {
+            if (PlayerRep.Managers.ContainsKey(__instance.manager)) {
+                return false;
+            }
+            
+            return true;
         }
     }
 

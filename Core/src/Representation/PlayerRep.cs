@@ -58,6 +58,8 @@ namespace LabFusion.Representation
         public float serializedCrouchTarget;
         public float serializedSpineCrouchOff;
 
+        public float serializedVrTwist;
+
         public ControllerRig.TraversalState serializedTravState;
         public ControllerRig.VertState serializedVertState;
         public ControllerRig.VrVertState serializedVrVertState;
@@ -195,8 +197,9 @@ namespace LabFusion.Representation
                 return;
 
             var grip = RigReferences.GetSnatch(handedness);
-            if (grip)
+            if (grip) {
                 grip.ForceDetach(hand);
+            }
 
             RigReferences.RemoveJoint(handedness);
             RigReferences.SetGrabPoint(handedness, null);

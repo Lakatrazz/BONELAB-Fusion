@@ -22,6 +22,7 @@ using SLZ.Marrow.Utilities;
 
 using UnityEngine;
 using LabFusion.Utilities;
+using LabFusion.Data;
 
 namespace LabFusion.Patching
 {
