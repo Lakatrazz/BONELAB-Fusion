@@ -118,6 +118,7 @@ namespace LabFusion.Network
             vitals.loco_Direction = loco_Direction;
 
             vitals.PROPEGATE();
+            vitals.CalibratePlayerBodyScale();
         }
     }
 
