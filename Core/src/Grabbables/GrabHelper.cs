@@ -264,8 +264,21 @@ namespace LabFusion.Grabbables {
             }
         }
 
-        public static void SendObjectDetach(Handedness handedness)
+        public static void SendObjectDetach(Hand hand)
         {
+            MelonCoroutines.Start(Internal_ObjectDetachRoutine(hand));
+        }
+
+        internal static IEnumerator Internal_ObjectDetachRoutine(Hand hand) {
+            // Delay a few frames
+            for (var i = 0; i < 8; i++)
+                yield return null;
+
+            var handedness = hand.handedness;
+
+            if (hand.m_CurrentAttachedGO != null)
+                yield break;
+
             if (NetworkInfo.HasServer)
             {
                 using (var writer = FusionWriter.Create())
@@ -282,6 +295,5 @@ namespace LabFusion.Grabbables {
                 }
             }
         }
-
     }
 }

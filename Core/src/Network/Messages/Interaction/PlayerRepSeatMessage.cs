@@ -1,5 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Extensions;
+using LabFusion.Patching;
 using LabFusion.Representation;
 using LabFusion.Syncables;
 using LabFusion.Utilities;
@@ -77,10 +78,14 @@ namespace LabFusion.Network
                     var seat = extender.GetComponent(data.seatIndex);
 
                     if (seat) {
+                        SeatPatches.IgnorePatches = true;
+
                         if (data.isIngress)
                             seat.IngressRig(rep.RigReferences.RigManager);
                         else if (rep.RigReferences.RigManager.activeSeat)
                             rep.RigReferences.RigManager.activeSeat.EgressRig(true);
+
+                        SeatPatches.IgnorePatches = false;
                     }
                 }
             }

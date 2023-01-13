@@ -41,46 +41,47 @@ namespace LabFusion.Patching
         }
     }
 
-    [HarmonyPatch(typeof(Grip), nameof(Grip.OnAttachedToHand))]
-    public static class OnAttachedToHandPatch
+    [HarmonyPatch(typeof(Grip))]
+    public static class GripPatches
     {
-        public static void Prefix(Grip __instance, Hand hand) {
-            try {
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(Grip.OnAttachedToHand))]
+        public static void OnAttachedToHand(Grip __instance, Hand hand)
+        {
+            try
+            {
                 // Make sure this is the main rig
                 if (hand.manager != RigData.RigReferences.RigManager)
                     return;
 
                 GrabHelper.SendObjectAttach(hand, __instance);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
 #if DEBUG
                 FusionLogger.LogException("to execute patch Grip.OnAttachedToHand", e);
 #endif
             }
         }
-    }
 
-    [HarmonyPatch(typeof(Hand), "DetachObject")]
-    public static class DetachObjectPatch
-    {
-        public static void Prefix(Hand __instance) {
-            try {
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(Grip.OnDetachedFromHand))]
+        public static void OnDetachedFromHand(Grip __instance, Hand hand)
+        {
+            try
+            {
                 // Make sure this is the main rig
-                if (__instance.manager != RigData.RigReferences.RigManager)
+                if (hand.manager != RigData.RigReferences.RigManager)
                     return;
 
-                // Make sure we actually have something to detach
-                if (!__instance.HasAttachedObject())
-                    return;
-
-                GrabHelper.SendObjectDetach(__instance.handedness);
+                GrabHelper.SendObjectDetach(hand);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
 #if DEBUG
                 FusionLogger.LogException("to execute patch Hand.DetachObject", e);
 #endif
             }
         }
     }
-
 }

@@ -23,24 +23,49 @@ using SLZ.Interaction;
 using System.IdentityModel.Tokens;
 using LabFusion.Grabbables;
 using MelonLoader;
+using SLZ.VRMK;
 
 namespace LabFusion.Patching
 {
     [HarmonyPatch(typeof(Seat))]
     public static class SeatPatches
     {
+        public static bool IgnorePatches = false;
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(Seat.OnTriggerStay))]
+        public static bool OnTriggerStay(Collider other) {
+            if (NetworkInfo.HasServer) {
+                var grounder = other.GetComponent<PhysGrounder>();
+
+                if (grounder != null && PlayerRep.Managers.ContainsKey(grounder.physRig.manager))
+                    return false;
+            }
+
+            return true;
+        }
+
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Seat.Register))]
-        public static void Register(Seat __instance, RigManager rM) {
-            try {
-                if (NetworkInfo.HasServer && rM == RigData.RigReferences.RigManager) {
-                    MelonCoroutines.Start(Internal_SyncSeat(__instance));
+        public static bool Register(Seat __instance, RigManager rM) {
+            if (IgnorePatches)
+                return true;
+
+            if (NetworkInfo.HasServer) {
+                try {
+                    if (rM == RigData.RigReferences.RigManager) {
+                        MelonCoroutines.Start(Internal_SyncSeat(__instance));
+                    }
+                    else if (PlayerRep.Managers.ContainsKey(rM))
+                        return false;
+                }
+                catch (Exception e)
+                {
+                    FusionLogger.LogException("patching Seat.Register", e);
                 }
             }
-            catch (Exception e)
-            {
-                FusionLogger.LogException("patching Seat.Register", e);
-            }
+
+            return true;
         }
 
         private static IEnumerator Internal_SyncSeat(Seat __instance) {

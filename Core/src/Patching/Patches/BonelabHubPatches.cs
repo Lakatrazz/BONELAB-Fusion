@@ -271,5 +271,46 @@ namespace LabFusion.Patching {
 
             return true;
         }
+
+        // Prevent the hub controller from unloading parts of the level
+        // This is due to it not using triggers, but instead manual chunk loading?
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(GameControl_Hub.OnAirlockUnloaded))]
+        public static bool OnAirlockUnloaded() {
+            if (NetworkInfo.HasServer)
+                return false;
+
+            return true;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(GameControl_Hub.OnFunicularUnloaded))]
+        public static bool OnFunicularUnloaded()
+        {
+            if (NetworkInfo.HasServer)
+                return false;
+
+            return true;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(GameControl_Hub.OnLabUnloaded))]
+        public static bool OnLabUnloaded()
+        {
+            if (NetworkInfo.HasServer)
+                return false;
+
+            return true;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(GameControl_Hub.OnSLZRoomUnloaded))]
+        public static bool OnSLZRoomUnloaded()
+        {
+            if (NetworkInfo.HasServer)
+                return false;
+
+            return true;
+        }
     }
 }
