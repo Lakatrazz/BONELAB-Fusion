@@ -96,6 +96,8 @@ namespace LabFusion.Network
             ConstraintCreate = 55,
             ConstraintDelete = 56,
 
+            BoardCreate = 57,
+
             Module = 80,
             ModuleAssignment = 81;
     }

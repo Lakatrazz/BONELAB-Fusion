@@ -9,6 +9,8 @@ using MelonLoader;
 
 using LabFusion.Utilities;
 
+using BoneLib;
+
 namespace LabFusion.Data
 {
     public static class PersistentData
@@ -16,6 +18,13 @@ namespace LabFusion.Data
         public static string persistentPath { get; private set; }
 
         public static void OnPathInitialize() {
+            if (HelperMethods.IsAndroid()) {
+#if DEBUG
+                FusionLogger.Log("Ignoring data directories due to running on quest.", ConsoleColor.Blue);
+#endif
+                return;
+            }
+
             string appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             persistentPath = appdata + ResourcePaths.AppDataSubFolder;
 

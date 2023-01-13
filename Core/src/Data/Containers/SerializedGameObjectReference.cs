@@ -19,6 +19,7 @@ namespace LabFusion.Data
             FULL_PATH = 1,
             PROP_SYNCABLE = 2,
             RIG_MANAGER = 3,
+            NULL = 4,
         }
 
         // Base gameobject reference
@@ -31,6 +32,11 @@ namespace LabFusion.Data
         }
 
         public void Serialize(FusionWriter writer) {
+            if (gameObject == null) {
+                writer.Write((byte)ReferenceType.NULL);
+                return;
+            }
+
             PhysicsRig physRig;
 
             // Check if there is a syncable, and write it
@@ -73,6 +79,10 @@ namespace LabFusion.Data
             switch (type) {
                 default:
                 case ReferenceType.UNKNOWN:
+                    // This should never happen
+                    break;
+                case ReferenceType.NULL:
+                    // Do nothing for null
                     break;
                 case ReferenceType.PROP_SYNCABLE:
                     var id = reader.ReadUInt16();

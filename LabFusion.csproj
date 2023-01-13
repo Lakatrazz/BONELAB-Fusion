@@ -236,11 +236,13 @@
     <Compile Include="Core\src\Grabbables\InteractableHelpers.cs" />
     <Compile Include="Core\src\Grabbables\SerializedGrabHandler.cs" />
     <Compile Include="Core\src\Mod.cs" />
+    <Compile Include="Core\src\Network\Debugging\EmptyNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Helpers\SendRateTable.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\BonelabHubMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\DescentIntroMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\KartRaceMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Combat\ZoneEncounterEventMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Interaction\BoardCreateMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\ConstraintDeleteMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\ConstraintCreateMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\NimbusGunNoclipMessage.cs" />
@@ -255,6 +257,7 @@
     <Compile Include="Core\src\Patching\Patches\AvatarDicePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\AvatarPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\BonelabHubPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\BoardGeneratorPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ConstrainerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\BonelabProgressionHelperPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ConstraintTrackerPatches.cs" />
@@ -277,6 +280,7 @@
     <Compile Include="Core\src\Senders\CampaignSender.cs" />
     <Compile Include="Core\src\Syncables\ConstraintSyncable.cs" />
     <Compile Include="Core\src\Syncables\Extenders\BehaviourPowerLegsExtender.cs" />
+    <Compile Include="Core\src\Syncables\Extenders\BoardGeneratorExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\ConstrainerExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\KeyExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\NimbusGunExtender.cs" />

@@ -10,6 +10,10 @@ using LabFusion.Grabbables;
 using LabFusion.SDK.Modules;
 using LabFusion.Extensions;
 
+#if DEBUG
+using LabFusion.Debugging;
+#endif
+
 using MelonLoader;
 
 using UnityEngine;
@@ -30,6 +34,11 @@ namespace LabFusion
         public const string Author = "Lakatrazz";
         public static readonly Version Version = new Version(FusionVersion.versionMajor, FusionVersion.versionMinor, FusionVersion.versionPatch);
 
+        /// <summary>
+        /// The desired networking layer. Swap this out to change the networking system.
+        /// </summary>
+        public static Type ActiveNetworkingType { get; private set; } = typeof(SteamNetworkLayer);
+
         public static FusionMod Instance { get; private set; }
         public static Assembly FusionAssembly { get; private set; }
 
@@ -39,15 +48,19 @@ namespace LabFusion
             Instance = this;
             FusionAssembly = Assembly.GetExecutingAssembly();
 
+            // Initialize data and hooks
             PersistentData.OnPathInitialize();
+            PDController.OnMelonInitialize();
+            ModuleHandler.Internal_HookAssemblies();
+        }
+
+        public override void OnInitializeMelon() {
+            // Register our base handlers
             FusionMessageHandler.RegisterHandlersFromAssembly(FusionAssembly);
             GrabGroupHandler.RegisterHandlersFromAssembly(FusionAssembly);
             PropExtenderManager.RegisterExtendersFromAssembly(FusionAssembly);
 
-            PDController.OnMelonInitialize();
-
-            ModuleHandler.Internal_HookAssemblies();
-
+            // Finally, initialize the network layer
             OnInitializeNetworking();
         }
 
@@ -66,7 +79,22 @@ namespace LabFusion
         }
 
         protected void OnInitializeNetworking() {
-            InternalLayerHelpers.SetLayer(new SteamNetworkLayer());
+            // If a layer is already set, don't initialize
+            if (NetworkInfo.CurrentNetworkLayer != null) {
+                FusionLogger.Warn("Cannot initialize new network layer because a previous one is active!");
+                return;
+            }
+
+            // Validate the type
+            if (!ActiveNetworkingType.IsSubclassOf(typeof(NetworkLayer))) {
+                FusionLogger.Error("The target network layer type is invalid!");
+                return;
+            }
+
+            // Create the network layer based on the selected type
+            // Then, set the layer
+            var layer = Activator.CreateInstance(ActiveNetworkingType) as NetworkLayer;
+            InternalLayerHelpers.SetLayer(layer);
         }
 
         public override void OnDeinitializeMelon() {
