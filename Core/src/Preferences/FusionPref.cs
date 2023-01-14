@@ -6,7 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabFusion.Utilities {
+using LabFusion.Utilities;
+
+namespace LabFusion.Preferences {
     public enum PrefUpdateMode {
         IGNORE = 0,
         SERVER_UPDATE = 1,
@@ -48,13 +50,13 @@ namespace LabFusion.Utilities {
                     break;
                 case PrefUpdateMode.SERVER_UPDATE:
                     FusionPreferences.SendServerSettings();
-                    FusionPreferences.OnServerSettingsChange?.Invoke();
+                    MultiplayerHooking.Internal_OnServerSettingsChanged();
                     break;
                 case PrefUpdateMode.CLIENT_UPDATE:
                     FusionPreferences.SendClientSettings();
                     break;
                 case PrefUpdateMode.LOCAL_UPDATE:
-                    FusionPreferences.OnServerSettingsChange?.Invoke();
+                    MultiplayerHooking.Internal_OnServerSettingsChanged();
                     break;
             }
         }

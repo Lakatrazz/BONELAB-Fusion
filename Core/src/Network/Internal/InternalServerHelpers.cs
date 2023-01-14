@@ -1,7 +1,7 @@
 ﻿using LabFusion.Representation;
-using LabFusion.SDK.Modules;
 using LabFusion.Syncables;
 using LabFusion.Utilities;
+using LabFusion.Preferences;
 
 using System;
 using System.Collections.Generic;
@@ -79,7 +79,6 @@ namespace LabFusion.Network {
 
             // Cleanup prefs
             FusionPreferences.ReceivedServerSettings = null;
-            FusionPreferences.OnServerSettingsChange = null;
 
             // Update hooks
             MultiplayerHooking.Internal_OnDisconnect();

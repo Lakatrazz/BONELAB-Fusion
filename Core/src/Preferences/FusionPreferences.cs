@@ -14,15 +14,16 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Utilities {
-    internal static class FusionPreferences {
-        internal struct ServerSettings  {
-            public static FusionPref<bool> NametagsEnabled { get; set; }
+namespace LabFusion.Preferences {
+    public static class FusionPreferences {
+        public struct ServerSettings  {
+            public static FusionPref<bool> NametagsEnabled { get; internal set; }
+            public static FusionPref<ServerPrivacy> Privacy { get; internal set; }
         }
 
-        internal struct ClientSettings {
-            public static FusionPref<bool> NametagsEnabled { get; set; }
-            public static FusionPref<Color> NametagColor { get; set; }
+        public struct ClientSettings {
+            public static FusionPref<bool> NametagsEnabled { get; internal set; }
+            public static FusionPref<Color> NametagColor { get; internal set; }
         }
 
         internal static SerializedServerSettings ReceivedServerSettings { get; set; } = null;
@@ -34,8 +35,6 @@ namespace LabFusion.Utilities {
         internal static MelonPreferences_Category prefCategory;
 
         internal static Action OnFusionPreferencesLoaded;
-
-        internal static Action OnServerSettingsChange;
 
         internal static void SendServerSettings() {
             if (NetworkInfo.HasServer && NetworkInfo.IsServer) {
@@ -92,6 +91,7 @@ namespace LabFusion.Utilities {
 
             // Server settings
             ServerSettings.NametagsEnabled = new FusionPref<bool>(prefCategory, "Server Nametags Enabled", true, PrefUpdateMode.SERVER_UPDATE);
+            ServerSettings.Privacy = new FusionPref<ServerPrivacy>(prefCategory, "Server Privacy", ServerPrivacy.PUBLIC, PrefUpdateMode.LOCAL_UPDATE);
 
             // Client settings
             ClientSettings.NametagsEnabled = new FusionPref<bool>(prefCategory, "Client Nametags Enabled", true, PrefUpdateMode.LOCAL_UPDATE);

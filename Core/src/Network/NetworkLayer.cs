@@ -11,6 +11,16 @@ using LabFusion.Representation;
 namespace LabFusion.Network
 {
     /// <summary>
+    /// Privacy type for a server.
+    /// </summary>
+    public enum ServerPrivacy {
+        PUBLIC = 0,
+        PRIVATE = 1,
+        FRIENDS_ONLY = 2,
+        LOCKED = 3,
+    }
+
+    /// <summary>
     /// The foundational class for a server's networking system.
     /// </summary>
     public abstract class NetworkLayer {
@@ -45,6 +55,13 @@ namespace LabFusion.Network
         /// <param name="userId"></param>
         /// <returns></returns>
         internal virtual string GetUsername(ulong userId) => "Unknown";
+
+        /// <summary>
+        /// Returns true if this is a friend (ex. steam friends).
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        internal virtual bool IsFriend(ulong userId) => false;
 
         /// <summary>
         /// Sends the message to the specified user if this is a server.

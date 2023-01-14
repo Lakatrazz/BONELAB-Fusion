@@ -9,6 +9,7 @@ using LabFusion.Exceptions;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Utilities;
+using LabFusion.Preferences;
 
 namespace LabFusion.Network
 {
@@ -53,7 +54,7 @@ namespace LabFusion.Network
                     // ONLY clients should receive this!
                     if (!NetworkInfo.IsServer) {
                         FusionPreferences.ReceivedServerSettings = data.settings;
-                        FusionPreferences.OnServerSettingsChange?.Invoke();
+                        MultiplayerHooking.Internal_OnServerSettingsChanged();
                     }
                     else
                         throw new ExpectedClientException();

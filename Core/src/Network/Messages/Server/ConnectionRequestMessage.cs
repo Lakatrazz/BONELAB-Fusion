@@ -2,6 +2,7 @@
 using LabFusion.Patching;
 using LabFusion.Representation;
 using LabFusion.Utilities;
+using LabFusion.Preferences;
 
 using System;
 
@@ -52,6 +53,11 @@ namespace LabFusion.Network
                     var newSmallId = PlayerIdManager.GetUnusedPlayerId();
 
                     if (PlayerIdManager.GetPlayerId(data.longId) == null && newSmallId.HasValue) {
+                        // Verify joining
+                        bool isVerified = NetworkVerification.IsClientApproved(data.longId);
+
+                        if (!isVerified)
+                            return;
 
 #if DEBUG
                         FusionLogger.Log($"Server received user with long id {data.longId}. Assigned small id {newSmallId}");

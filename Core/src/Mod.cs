@@ -9,6 +9,7 @@ using LabFusion.Syncables;
 using LabFusion.Grabbables;
 using LabFusion.SDK.Modules;
 using LabFusion.Extensions;
+using LabFusion.Preferences;
 
 #if DEBUG
 using LabFusion.Debugging;

@@ -11,6 +11,7 @@ using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Representation;
 using LabFusion.Utilities;
+using LabFusion.Preferences;
 
 using SLZ.Rig;
 
@@ -117,6 +118,10 @@ namespace LabFusion.Network
             return new Friend(userId).Name;
         }
 
+        internal override bool IsFriend(ulong userId) {
+            return new Friend(userId).IsFriend;
+        }
+
         internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message) {
             if (IsServer) {
                 SteamSocketHandler.BroadcastToClients(SteamSocket, channel, message);
@@ -158,8 +163,8 @@ namespace LabFusion.Network
             // Call server setup
             InternalServerHelpers.OnStartServer();
 
-            UpdateLobbySettings();
-            UpdateRichPresence();
+            OnUpdateSteamLobby();
+            OnUpdateRichPresence();
         }
 
         public void JoinServer(SteamId serverId)
@@ -184,8 +189,8 @@ namespace LabFusion.Network
                 }
             }
 
-            UpdateLobbySettings();
-            UpdateRichPresence();
+            OnUpdateSteamLobby();
+            OnUpdateRichPresence();
         }
 
         internal override void Disconnect()
@@ -206,11 +211,11 @@ namespace LabFusion.Network
             
             InternalServerHelpers.OnDisconnect();
 
-            UpdateLobbySettings();
-            UpdateRichPresence();
+            OnUpdateSteamLobby();
+            OnUpdateRichPresence();
         }
 
-        private void UpdateRichPresence() {
+        private void OnUpdateRichPresence() {
             if (_isConnectionActive) {
                 SteamFriends.SetRichPresence("connect", "true");
             }
@@ -220,10 +225,27 @@ namespace LabFusion.Network
         }
 
         private void HookSteamEvents() {
+            // Add steam hooks
             SteamFriends.OnGameRichPresenceJoinRequested += OnGameRichPresenceJoinRequested;
+
+            // Add server hooks
+            MultiplayerHooking.OnMainSceneInitialized += OnUpdateSteamLobby;
+            MultiplayerHooking.OnServerSettingsChanged += OnUpdateSteamLobby;
 
             // Create a local lobby
             AwaitLobbyCreation();
+        }
+
+        private void UnHookSteamEvents() {
+            // Remove steam hooks
+            SteamFriends.OnGameRichPresenceJoinRequested -= OnGameRichPresenceJoinRequested;
+            
+            // Remove server hooks
+            MultiplayerHooking.OnMainSceneInitialized -= OnUpdateSteamLobby;
+            MultiplayerHooking.OnServerSettingsChanged -= OnUpdateSteamLobby;
+
+            // Remove the local lobby
+            _localLobby.Leave();
         }
 
         private async void AwaitLobbyCreation() {
@@ -232,13 +254,7 @@ namespace LabFusion.Network
             _localLobby.SetData("LobbyId", SteamId.Value.ToString());
             _localLobby.SetData("LobbyName", PlayerIdManager.LocalUsername);
             _localLobby.SetData("HasServerOpen", "False");
-        }
-
-        private void UnHookSteamEvents() {
-            SteamFriends.OnGameRichPresenceJoinRequested -= OnGameRichPresenceJoinRequested;
-
-            // Remove the local lobby
-            _localLobby.Leave();
+            _localLobby.SetData("Privacy", ((int)ServerPrivacy.PUBLIC).ToString());
         }
 
         private void OnGameRichPresenceJoinRequested(Friend friend, string value) {
@@ -246,13 +262,18 @@ namespace LabFusion.Network
             JoinServer(friend.Id);
         }
 
-        private void UpdateLobbySettings() {
+        private void OnUpdateSteamLobby() {
+            // Update server open status
             if (_isServerActive) {
                 _localLobby.SetData("HasServerOpen", "True");
             }
             else {
                 _localLobby.SetData("HasServerOpen", "False");
             }
+
+            // Update info about the lobby
+            var privacy = FusionPreferences.ServerSettings.Privacy.GetValue();
+            _localLobby.SetData("Privacy", ((int)privacy).ToString());
 
             OnUpdateCreateServerText();
         }
@@ -313,6 +334,14 @@ namespace LabFusion.Network
             FusionPreferences.ServerSettings.NametagsEnabled.OnValueChanged += (v) => {
                 nametags.SetValue(v);
             };
+
+            // Server privacy
+            var privacy = category.CreateEnumElement<ServerPrivacy>("Server Privacy", Color.white, FusionPreferences.ServerSettings.Privacy, (v) => {
+                FusionPreferences.ServerSettings.Privacy.SetValue(v);
+            });
+            FusionPreferences.ServerSettings.Privacy.OnValueChanged += (v) => {
+                privacy.SetValue(v);
+            };
         }
 
         private void CreateClientSettingsMenu(MenuCategory category) {
@@ -372,10 +401,12 @@ namespace LabFusion.Network
             // Public lobbies list
             _publicLobbiesCategory = matchmaking.CreateCategory("Public Lobbies", Color.white);
             _publicLobbiesCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshPublicLobbies);
+            _publicLobbiesCategory.CreateFunctionElement("Select Refresh to load servers!", Color.yellow, null);
 
             // Steam friends list
             _friendsCategory = matchmaking.CreateCategory("Steam Friends", Color.white);
             _friendsCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshFriendLobbies);
+            _friendsCategory.CreateFunctionElement("Select Refresh to load servers!", Color.yellow, null);
         }
 
         private FunctionElement _createServerElement;
@@ -435,6 +466,34 @@ namespace LabFusion.Network
             MelonCoroutines.Start(CoAwaitLobbyListRoutine());
         }
 
+        private bool Internal_CanShowLobby(Lobby lobby) {
+            // Make sure the lobby is actually open
+            string isOpen = lobby.GetData("HasServerOpen");
+
+            if (isOpen != "True")
+                return false;
+
+            // Get privacy
+            if (int.TryParse(lobby.GetData("Privacy"), out var result)) {
+                var privacy = (ServerPrivacy)result;
+
+                // Decide outcome
+                switch (privacy) {
+                    default:
+                    case ServerPrivacy.LOCKED:
+                    case ServerPrivacy.PRIVATE:
+                        return false;
+                    case ServerPrivacy.PUBLIC:
+                        return true;
+                    case ServerPrivacy.FRIENDS_ONLY:
+                        var lobbyId = ulong.Parse(lobby.GetData("LobbyId"));
+                        return IsFriend(lobbyId);
+                }
+            }
+
+            return false;
+        }
+
         private IEnumerator CoAwaitLobbyListRoutine() {
             // Fetch lobbies
             var list = SteamMatchmaking.LobbyList;
@@ -451,9 +510,7 @@ namespace LabFusion.Network
                 if (lobby.Owner.IsMe)
                     continue;
 
-                string isOpen = lobby.GetData("HasServerOpen");
-
-                if (isOpen == "True") {
+                if (Internal_CanShowLobby(lobby)) {
                     // Add to list
                     Menu_CreateJoinableLobby(_publicLobbiesCategory, lobby);
                 }
@@ -493,10 +550,7 @@ namespace LabFusion.Network
                 if (!new Friend(lobbyId).IsFriend)
                     continue;
 
-                string isOpen = lobby.GetData("HasServerOpen");
-
-                if (isOpen == "True")
-                {
+                if (Internal_CanShowLobby(lobby)) {
                     // Add to list
                     Menu_CreateJoinableLobby(_friendsCategory, lobby);
                 }

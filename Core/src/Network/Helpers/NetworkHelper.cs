@@ -34,5 +34,17 @@ namespace LabFusion.Network {
             if (NetworkInfo.CurrentNetworkLayer != null)
                 NetworkInfo.CurrentNetworkLayer.Disconnect();
         }
+
+        /// <summary>
+        /// Returns true if this user is friended on the active network platform.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public static bool IsFriend(ulong userId) {
+            if (NetworkInfo.CurrentNetworkLayer != null)
+                return NetworkInfo.CurrentNetworkLayer.IsFriend(userId);
+
+            return false;
+        }
     }
 }

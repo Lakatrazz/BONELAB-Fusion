@@ -2,6 +2,8 @@
 using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Utilities;
+using LabFusion.Preferences;
+
 
 using SLZ;
 using SLZ.Interaction;
@@ -116,7 +118,7 @@ namespace LabFusion.Representation
             pelvisPDController = new PDController();
             footPDController = new PDController();
 
-            FusionPreferences.OnServerSettingsChange += OnServerSettingsChange;
+            MultiplayerHooking.OnServerSettingsChanged += OnServerSettingsChanged;
 
             ResetSerializedTransforms();
 
@@ -129,7 +131,7 @@ namespace LabFusion.Representation
             }
         }
 
-        private void OnServerSettingsChange() {
+        private void OnServerSettingsChanged() {
             _isServerDirty = true;
         }
 
@@ -723,7 +725,7 @@ namespace LabFusion.Representation
 
             GC.SuppressFinalize(this);
 
-            FusionPreferences.OnServerSettingsChange -= OnServerSettingsChange;
+            MultiplayerHooking.OnServerSettingsChanged -= OnServerSettingsChanged;
 
 #if DEBUG
             FusionLogger.Log($"Disposed PlayerRep with small id {PlayerId.SmallId}");

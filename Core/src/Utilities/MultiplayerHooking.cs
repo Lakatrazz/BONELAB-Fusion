@@ -24,23 +24,28 @@ namespace LabFusion.Utilities {
         public static event PlayerUpdate OnPlayerJoin;
         public static event PlayerAction OnPlayerAction;
 
-        internal static void Internal_OnStartServer() => OnStartServer.InvokeSafe();
+        internal static void Internal_OnStartServer() => OnStartServer.InvokeSafe("executing OnStartServer hook");
 
-        internal static void Internal_OnJoinServer() => OnJoinServer.InvokeSafe();
+        internal static void Internal_OnJoinServer() => OnJoinServer.InvokeSafe("executing OnJoinServer hook");
 
-        internal static void Internal_OnDisconnect() => OnDisconnect.InvokeSafe();
+        internal static void Internal_OnDisconnect() => OnDisconnect.InvokeSafe("executing OnDisconnect hook");
 
-        internal static void Internal_OnPlayerJoin(PlayerId id) => OnPlayerJoin.InvokeSafe(id);
+        internal static void Internal_OnPlayerJoin(PlayerId id) => OnPlayerJoin.InvokeSafe(id, "executing OnPlayerJoin hook");
 
-        internal static void Internal_OnPlayerAction(PlayerId id, PlayerActionType type) => OnPlayerAction.InvokeSafe(id, type);
+        internal static void Internal_OnPlayerAction(PlayerId id, PlayerActionType type) => OnPlayerAction.InvokeSafe(id, type, "executing OnPlayerAction hook");
+
+        // Settings updates
+        public static event ServerEvent OnServerSettingsChanged;
+
+        internal static void Internal_OnServerSettingsChanged() => OnServerSettingsChanged.InvokeSafe("executing server settings changed hook");
 
         // Unity hooks
         public static event UpdateEvent OnUpdate, OnFixedUpdate, OnLateUpdate,
             OnMainSceneInitialized;
 
-        internal static void Internal_OnUpdate() => OnUpdate.InvokeSafe();
-        internal static void Internal_OnFixedUpdate() => OnFixedUpdate.InvokeSafe();
-        internal static void Internal_OnLateUpdate() => OnLateUpdate.InvokeSafe();
-        internal static void Internal_OnMainSceneInitialized() => OnMainSceneInitialized.InvokeSafe();
+        internal static void Internal_OnUpdate() => OnUpdate.InvokeSafe("executing OnUpdate hook");
+        internal static void Internal_OnFixedUpdate() => OnFixedUpdate.InvokeSafe("executing OnFixedUpdate hook");
+        internal static void Internal_OnLateUpdate() => OnLateUpdate.InvokeSafe("executing OnLateUpdate hook");
+        internal static void Internal_OnMainSceneInitialized() => OnMainSceneInitialized.InvokeSafe("executing OnMainSceneInitialized hook");
     }
 }
