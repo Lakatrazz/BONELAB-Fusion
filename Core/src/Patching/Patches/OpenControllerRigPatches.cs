@@ -45,7 +45,7 @@ namespace LabFusion.Patches
         [HarmonyPatch(nameof(ControllerRig.JumpCharge))]
         public static void JumpChargePostfix(ControllerRig __instance, float deltaTime, bool chargeInput, bool __state) {
             if (NetworkInfo.HasServer && __instance.manager == RigData.RigReferences.RigManager && __state && !__instance._chargeInput) {
-                PlayerSender.SendPlayerRepEvent(PlayerRepEventType.JUMP);
+                PlayerSender.SendPlayerAction(PlayerActionType.JUMP);
             }
         }
 

@@ -249,7 +249,7 @@
     <Compile Include="Core\src\Network\Messages\Interaction\FlashlightToggleMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Magazines\KeySlotMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\BodyLogEffectMessage.cs" />
-    <Compile Include="Core\src\Network\Messages\Representation\PlayerRepEventMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Representation\PlayerRepActionMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ModuleAssignMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ModuleMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ServerSettingsMessage.cs" />
@@ -400,7 +400,8 @@
     <Compile Include="Core\src\Utilities\FloatingOriginUtilities.cs" />
     <Compile Include="Core\src\Utilities\FusionComponentCache.cs" />
     <Compile Include="Core\src\Utilities\GameObjectUtilities.cs" />
-    <Compile Include="Core\src\Utilities\MultiplayerHooks.cs" />
+    <Compile Include="Core\src\Utilities\Internal\SafeEvents.cs" />
+    <Compile Include="Core\src\Utilities\MultiplayerHooking.cs" />
     <Compile Include="Core\src\Utilities\Internal\FusionPref.cs" />
     <Compile Include="Core\src\Utilities\Internal\PatchingUtilities.cs" />
     <Compile Include="Core\src\Utilities\Asset Warehouses\SpawnableWarehouseUtilities.cs" />

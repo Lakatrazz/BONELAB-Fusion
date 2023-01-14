@@ -131,7 +131,7 @@ namespace LabFusion
             PlayerRep.OnRecreateReps();
 
             // Update hooks
-            MultiplayerHooks.Internal_OnMainSceneInitialized();
+            MultiplayerHooking.Internal_OnMainSceneInitialized();
         }
 
         public static void OnMainSceneInitializeDelayed() {
@@ -183,7 +183,7 @@ namespace LabFusion
             InternalLayerHelpers.OnUpdateLayer();
 
             // Update hooks
-            MultiplayerHooks.Internal_OnUpdate();
+            MultiplayerHooking.Internal_OnUpdate();
         }
 
         public override void OnFixedUpdate() {
@@ -192,7 +192,7 @@ namespace LabFusion
             SyncManager.OnFixedUpdate();
 
             // Update hooks
-            MultiplayerHooks.Internal_OnFixedUpdate();
+            MultiplayerHooking.Internal_OnFixedUpdate();
         }
 
         public override void OnLateUpdate() {
@@ -203,7 +203,7 @@ namespace LabFusion
             InternalLayerHelpers.OnLateUpdateLayer();
 
             // Update hooks
-            MultiplayerHooks.Internal_OnLateUpdate();
+            MultiplayerHooking.Internal_OnLateUpdate();
         }
 
         public override void OnGUI() {

@@ -63,10 +63,6 @@ namespace LabFusion.Data {
 
                         // Add to reset button
                         resetButton.onDepress.AddListener((UnityAction)newPlacerScript.RePlaceSpawnable);
-
-#if DEBUG
-                        FusionLogger.Log("Adding additional go-kart!");
-#endif
                     }
                 }
                 else

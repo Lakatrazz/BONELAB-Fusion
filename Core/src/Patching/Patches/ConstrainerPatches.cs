@@ -21,8 +21,12 @@ namespace LabFusion.Patching {
 
         public Vector3 point1;
         public Vector3 point2;
+
         public Vector3 normal1;
         public Vector3 normal2;
+
+        public GameObject go1;
+        public GameObject go2;
 
         public ConstrainerPointPair(Constrainer constrainer)
         {
@@ -30,8 +34,12 @@ namespace LabFusion.Patching {
 
             point1 = constrainer._point1;
             point2 = constrainer._point2;
+
             normal1 = constrainer._normal1;
             normal2 = constrainer._normal2;
+
+            go1 = constrainer._rb1 ? constrainer._rb1.gameObject : constrainer._gO1;
+            go2 = constrainer._rb2 ? constrainer._rb2.gameObject : constrainer._gO2;
         }
     }
 

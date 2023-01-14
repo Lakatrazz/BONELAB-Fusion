@@ -90,7 +90,7 @@ namespace LabFusion.Network
 
             NimbusGunNoclip = 52,
 
-            PlayerRepEvent = 53,
+            PlayerRepAction = 53,
 
             ConstrainerMode = 54,
             ConstraintCreate = 55,

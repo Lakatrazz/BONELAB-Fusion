@@ -14,20 +14,50 @@ using SLZ.SFX;
 using SLZ;
 
 using UnityEngine;
+using LabFusion.Senders;
 
 namespace LabFusion.Patching
 {
     [HarmonyPatch(typeof(HeadSFX))]
     public static class HeadSFXPatches {
+        [HarmonyPatch(nameof(HeadSFX.RecoveryVocal))]
+        [HarmonyPrefix]
+        public static void RecoveryVocal(HeadSFX __instance) {
+            // Is this our player?
+            var rm = __instance.physRig.manager;
+            if (NetworkInfo.HasServer && rm == RigData.RigReferences.RigManager) {
+                // Notify the server about the recovery
+                PlayerSender.SendPlayerAction(PlayerActionType.RECOVERY);
+            }
+        }
+
+        [HarmonyPatch(nameof(HeadSFX.DyingVocal))]
+        [HarmonyPrefix]
+        public static void DyingVocal(HeadSFX __instance) {
+            // Is this our player?
+            var rm = __instance.physRig.manager;
+            if (NetworkInfo.HasServer && rm == RigData.RigReferences.RigManager) {
+                // Notify the server about the death beginning
+                PlayerSender.SendPlayerAction(PlayerActionType.DYING);
+            }
+        }
+
         [HarmonyPatch(nameof(HeadSFX.DeathVocal))]
         [HarmonyPrefix]
         public static void DeathVocal(HeadSFX __instance) {
-            // Did this player actually die? + do we need to reset the rig so that it respawns properly from a ragdoll?
+            // Is this our player? Did they actually die?
             var rm = __instance.physRig.manager;
-            if (NetworkInfo.HasServer && rm.health._testRagdollOnDeath && !rm.health.alive) {
-                rm.physicsRig.UnRagdollRig();
-                rm.physicsRig.ResetHands(Handedness.BOTH);
-                rm.physicsRig.TeleportToPose();
+            if (NetworkInfo.HasServer && rm == RigData.RigReferences.RigManager && !rm.health.alive) {
+                // If the player is ragdoll on death, reset them
+                // This prevents them spawning in the ground
+                if (rm.health._testRagdollOnDeath) {
+                    rm.physicsRig.UnRagdollRig();
+                    rm.physicsRig.ResetHands(Handedness.BOTH);
+                    rm.physicsRig.TeleportToPose();
+                }
+
+                // Notify the server about the death
+                PlayerSender.SendPlayerAction(PlayerActionType.DEATH);
             }
         }
     }

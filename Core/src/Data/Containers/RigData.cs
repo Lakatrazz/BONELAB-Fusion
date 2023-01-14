@@ -202,8 +202,19 @@ namespace LabFusion.Data
             return null;
         }
 
+        // Rigidbody order likes to randomly change on players
+        // So we have to disgustingly update it every index call
+        private void GetRigidbodies() {
+            if (RigManager.IsNOC())
+                return;
+
+            RigRigidbodies = RigManager.physicsRig.GetComponentsInChildren<Rigidbody>(true);
+        }
+
         public byte? GetIndex(Rigidbody rb)
         {
+            GetRigidbodies();
+
             for (byte i = 0; i < RigRigidbodies.Length; i++)
             {
                 if (RigRigidbodies[i] == rb)
@@ -214,6 +225,8 @@ namespace LabFusion.Data
 
         public Rigidbody GetRigidbody(byte index)
         {
+            GetRigidbodies();
+
             if (RigRigidbodies != null && RigRigidbodies.Length > index)
                 return RigRigidbodies[index];
             return null;
@@ -251,11 +264,6 @@ namespace LabFusion.Data
         public RigReferenceCollection(RigManager rigManager) {
             RigManager = rigManager;
             RigGrips = rigManager.physicsRig.GetComponentsInChildren<Grip>(true);
-
-            // Get rigidbodies and sort them alphabetically
-            // This is because order randomly changes?
-            RigRigidbodies = rigManager.physicsRig.GetComponentsInChildren<Rigidbody>(true);
-            RigRigidbodies = RigRigidbodies.OrderBy(rb => rb.name).ToArray();
 
             RigSlots = rigManager.GetComponentsInChildren<InventorySlotReceiver>(true);
 
