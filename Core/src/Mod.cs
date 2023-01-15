@@ -76,7 +76,7 @@ namespace LabFusion
         }
 
         public void OnBonelibLevelLoaded(LevelInfo info) {
-            MineDiveData.OnSceneAwake();
+            LevelData.OnSceneAwake();
         }
 
         protected void OnInitializeNetworking() {
@@ -116,18 +116,13 @@ namespace LabFusion
             // Fix random static grips in the scene
             StaticGripFixer.OnMainSceneInitialized();
 
+            // Update level data
+            LevelData.OnMainSceneInitialized();
+
             // Cache info
             SyncManager.OnCleanup();
             RigData.OnCacheRigInfo();
 
-            // Level info
-            ArenaData.OnCacheArenaInfo();
-            DescentData.OnCacheDescentInfo();
-            HubData.OnCacheHubInfo();
-            MagmaGateData.OnCacheMagmaGateInfo();
-            KartRaceData.OnCacheKartRaceInfo();
-            MineDiveData.OnCacheMineDiveInfo();
-            
             // Create player reps
             PlayerRep.OnRecreateReps();
 

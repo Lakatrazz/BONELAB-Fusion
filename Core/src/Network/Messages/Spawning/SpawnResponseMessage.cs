@@ -129,8 +129,14 @@ namespace LabFusion.Network
             ZoneSpawner spawner = null;
             if (spawnerPath != "_") {
                 try {
+                    // Try finding the zone spawner
                     var spawnerGo = GameObjectUtilities.GetGameObject(spawnerPath);
                     spawner = ZoneSpawner.Cache.Get(spawnerGo);
+
+                    // Assign the parent
+                    if (spawner != null && spawner.parentOverride != null) {
+                        go.transform.parent = spawner.parentOverride.transform;
+                    }
                 } 
                 catch (Exception e) {
 #if DEBUG

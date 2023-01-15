@@ -13,6 +13,7 @@ using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Syncables;
+using LabFusion.Utilities;
 
 namespace LabFusion.Data
 {
@@ -20,7 +21,7 @@ namespace LabFusion.Data
     {
         public static GameControl_MagmaGate GameController;
 
-        public static void OnCacheMagmaGateInfo()
+        public static void OnCacheInfo()
         {
             GameController = GameObject.FindObjectOfType<GameControl_MagmaGate>(true);
         }

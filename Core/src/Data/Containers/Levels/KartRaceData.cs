@@ -33,7 +33,8 @@ namespace LabFusion.Data {
         };
 
         public static GameControl_KartRace GameController;
-        public static void OnCacheKartRaceInfo() {
+
+        public static void OnCacheInfo() {
             GameController = GameObject.FindObjectOfType<GameControl_KartRace>();
             SpawnExtraKarts();
         }

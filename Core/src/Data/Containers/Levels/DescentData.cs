@@ -1,4 +1,5 @@
-﻿using SLZ.Bonelab;
+﻿using LabFusion.Utilities;
+using SLZ.Bonelab;
 using SLZ.UI;
 
 using System;
@@ -16,7 +17,7 @@ namespace LabFusion.Data {
         public static GameControl_Descent GameController;
         public static Control_UI_BodyMeasurements BodyMeasurementsUI;
 
-        public static void OnCacheDescentInfo() {
+        public static void OnCacheInfo() {
             Noose = GameObject.FindObjectOfType<NooseBonelabIntro>(true);
             Elevator = GameObject.FindObjectOfType<TutorialElevator>(true);
             GameController = GameObject.FindObjectOfType<GameControl_Descent>(true);

@@ -192,6 +192,8 @@
     <Compile Include="Core\src\Data\Containers\Grips\SerializedPropGrab.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedWorldGrab.cs" />
     <Compile Include="Core\src\Data\Containers\GripPair.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\HomeData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\LevelData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\MagmaGateData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\MineDiveData.cs" />
     <Compile Include="Core\src\Data\Containers\PDController.cs" />
@@ -241,6 +243,7 @@
     <Compile Include="Core\src\Network\Helpers\SendRateTable.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\BonelabHubMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\DescentIntroMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Campaign\HomeMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\KartRaceMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Combat\ZoneEncounterEventMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\BoardCreateMessage.cs" />
@@ -257,15 +260,16 @@
     <Compile Include="Core\src\Network\Messages\Server\PlayerSettingsMessage.cs" />
     <Compile Include="Core\src\Patching\Patches\AvatarDicePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\AvatarPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\BonelabHubPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Levels\BonelabHubPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\BoardGeneratorPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ConstrainerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\BonelabProgressionHelperPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ConstraintTrackerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\DevManipulatorPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\FlyingGunPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\KartRacePatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Levels\KartRacePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\KeyRecieverPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Levels\HomePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PropFlashlightPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PullCordDevicePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ImpactSFXPatches.cs" />
@@ -347,7 +351,7 @@
     <Compile Include="Core\src\Network\Steam\SteamSocketManager.cs" />
     <Compile Include="Core\src\Network\Steam\SteamSocketHandler.cs" />
     <Compile Include="Core\src\Patching\NativeStructs\HandGripPair_.cs" />
-    <Compile Include="Core\src\Patching\Patches\ArenaPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Levels\ArenaPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\AssetPooleePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ChunkTriggerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\DescentPatches.cs" />
@@ -357,7 +361,7 @@
     <Compile Include="Core\src\Patching\Patches\InventorySlotReceiverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\InventoryAmmoReceiverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\LevelsPanelViewPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\MagmaGatePatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Levels\MagmaGatePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ObjectDestructablePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\OpenControllerRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\GameworldSkeletonRigPatches.cs" />

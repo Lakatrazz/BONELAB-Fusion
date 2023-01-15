@@ -23,6 +23,9 @@ namespace LabFusion.Patching {
         [HarmonyPatch(nameof(GenGameControl_Trigger.OnTriggerEnter))]
         public static bool OnTriggerEnter(GenGameControl_Trigger __instance, Collider other) {
             if (NetworkInfo.HasServer && other.CompareTag("Player")) {
+                if (TriggerUtilities.VerifyLevelTrigger(__instance, other, out bool runMethod))
+                    return runMethod;
+
                 TriggerUtilities.Increment(__instance);
                 bool canEnter = TriggerUtilities.CanEnter(__instance);
 

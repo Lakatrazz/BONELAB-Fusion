@@ -13,6 +13,7 @@ using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Syncables;
+using LabFusion.Utilities;
 
 namespace LabFusion.Data {
     public static class ArenaData {
@@ -21,7 +22,8 @@ namespace LabFusion.Data {
         public static ArenaMenuController MenuController;
         public static GeoManager GeoManager;
         public static ChallengeSelectMenu[] ChallengeSelections;
-        public static void OnCacheArenaInfo() {
+
+        public static void OnCacheInfo() {
             GameController = GameObject.FindObjectOfType<Arena_GameController>();
 
             if (GameController != null) {

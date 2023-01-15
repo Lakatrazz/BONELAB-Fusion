@@ -109,6 +109,46 @@ namespace LabFusion.Utilities {
             return GenTriggerCount[trigger] <= 0;
         }
 
+        public static bool VerifyLevelTrigger(TriggerLasers trigger, Collider other, out bool runMethod) {
+            runMethod = false;
+
+            // Get transform of trigger
+            var transform = trigger.transform;
+
+            // Check if this is a lap trigger for Monogon Motorway
+            if (KartRaceData.GameController != null && KartRaceData.GameController.transform == transform.parent) {
+                runMethod = IsMainRig(other);
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool VerifyLevelTrigger(GenGameControl_Trigger trigger, Collider other, out bool runMethod)
+        {
+            runMethod = true;
+
+            // Get transform of trigger
+            var transform = trigger.transform;
+
+            // Check if this is a taxi trigger for Home
+            if (HomeData.GameController != null && transform.parent.name.Contains("TaxiSequence_EnableWithTaxiStartChunk"))
+            {
+                var seat = HomeData.TaxiSeat;
+                if (seat.rigManager != null) {
+                    var proxy = TriggerRefProxy.Cache.Get(other.gameObject);
+                    RigManager rig;
+
+                    if (proxy && proxy.root && (rig = RigManager.Cache.Get(proxy.root))) {
+                        runMethod = seat.rigManager == rig;
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         public static bool IsMainRig(Collider other) {
             if (!NetworkInfo.HasServer || RigData.RigReferences.RigManager.IsNOC())
                 return true;

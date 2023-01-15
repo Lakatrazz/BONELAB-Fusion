@@ -1,5 +1,6 @@
 ﻿using LabFusion.Network;
 using LabFusion.Representation;
+using LabFusion.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,6 +81,22 @@ namespace LabFusion.Senders {
                     using (var message = FusionMessage.Create(NativeMessageTag.DescentElevator, writer))
                     {
                         MessageSender.SendToServer(NetworkChannel.Reliable, message);
+                    }
+                }
+            }
+        }
+
+        public static void SendHomeEvent(int selectionNumber, HomeEventType type)
+        {
+            using (var writer = FusionWriter.Create())
+            {
+                using (var data = HomeEventData.Create((byte)selectionNumber, type))
+                {
+                    writer.Write(data);
+
+                    using (var message = FusionMessage.Create(NativeMessageTag.HomeEvent, writer))
+                    {
+                        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
                     }
                 }
             }

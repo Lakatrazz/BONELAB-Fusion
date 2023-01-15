@@ -98,6 +98,8 @@ namespace LabFusion.Network
 
             BoardCreate = 57,
 
+            HomeEvent = 58,
+
             Module = 80,
             ModuleAssignment = 81;
     }

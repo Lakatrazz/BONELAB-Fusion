@@ -1,5 +1,5 @@
 ﻿using LabFusion.Representation;
-
+using LabFusion.Utilities;
 using SLZ.Bonelab;
 using SLZ.Vehicle;
 
@@ -37,7 +37,7 @@ namespace LabFusion.Data
             }
         }
 
-        public static void OnCacheMineDiveInfo() {
+        public static void OnCacheInfo() {
             CreateExtraCarts();
         }
 
