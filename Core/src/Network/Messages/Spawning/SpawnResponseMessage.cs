@@ -133,9 +133,24 @@ namespace LabFusion.Network
                     var spawnerGo = GameObjectUtilities.GetGameObject(spawnerPath);
                     spawner = ZoneSpawner.Cache.Get(spawnerGo);
 
-                    // Assign the parent
-                    if (spawner != null && spawner.parentOverride != null) {
-                        go.transform.parent = spawner.parentOverride.transform;
+                    // Invoke generic parts of the spawner
+                    if (spawner != null) {
+                        // Add to spawn list
+                        spawner.spawns.Add(go);
+
+                        // Get player object
+                        var playerObj = SceneZone.PlayerObject;
+
+                        // Pre spawn
+                        spawner.OnPreSpawnDelegate?.Invoke(playerObj, go);
+
+                        // Assign the parent
+                        if (spawner.parentOverride != null)
+                            go.transform.parent = spawner.parentOverride.transform;
+
+                        // Call hooks
+                        spawner.OnSpawnDelegate?.Invoke(playerObj, go);
+                        spawner.onSpawn?.Invoke();
                     }
                 } 
                 catch (Exception e) {
@@ -152,6 +167,7 @@ namespace LabFusion.Network
             if (poolee == null)
                 poolee = go.AddComponent<AssetPoolee>();
 
+            // Check for adding an NPC to the spawner
             try {
                 AIBrain brain;
                 if (spawner != null && (brain = go.GetComponent<AIBrain>())) {
