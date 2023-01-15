@@ -680,8 +680,10 @@ namespace LabFusion.Representation
             var rm = RigReferences.RigManager;
             if (!rm.IsNOC() && !rm._avatar.IsNOC()) {
                 // Disable body log
-                if (_isBodyLogDirty)
+                if (_isBodyLogDirty) {
                     SetPullCordActive(false);
+                    _isBodyLogDirty = false;
+                }
 
                 // Swap the avatar
                 if (_isAvatarDirty) {
