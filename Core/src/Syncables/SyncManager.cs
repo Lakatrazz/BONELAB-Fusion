@@ -130,11 +130,27 @@ namespace LabFusion.Syncables {
 
         public static ushort AllocateSyncID() {
             LastId++;
+
+            // Safety check incase the id is being used
+            if (Syncables.ContainsKey(LastId)) {
+                while (Syncables.ContainsKey(LastId) && LastId < ushort.MaxValue) {
+                    LastId++;
+                }
+            }
+
             return LastId;
         }
 
         public static ushort AllocateQueueID() {
             LastQueueId++;
+
+            // Safety check incase the id is being used
+            if (QueuedSyncables.ContainsKey(LastQueueId)) {
+                while (QueuedSyncables.ContainsKey(LastQueueId) && LastQueueId < ushort.MaxValue) {
+                    LastQueueId++;
+                }
+            }
+
             return LastQueueId;
         }
 
