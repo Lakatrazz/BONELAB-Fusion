@@ -77,7 +77,7 @@ namespace LabFusion.Syncables
             if (root != null)
                 GameObject = root;
             else if (host != null)
-                GameObject = host.GetRoot();
+                GameObject = host.GetSyncRoot();
 
             AssetPoolee = AssetPoolee.Cache.Get(GameObject);
 
@@ -87,13 +87,18 @@ namespace LabFusion.Syncables
             Cache.Add(GameObject, this);
 
             // Recreate all rigidbodies incase of them being gone (ascent Amber ball, looking at you)
+            // Make sure the host is active cause otherwise there will be strange artifacts
             var tempHosts = GameObject.GetComponentsInChildren<InteractableHost>(true);
             foreach (var tempHost in tempHosts) {
+                if (!tempHost.gameObject.activeInHierarchy)
+                    continue;
+
                 tempHost.CreateRigidbody();
                 tempHost.EnableInteraction();
 
                 // Remove from key lists
-                if (KeyReciever.ClaimedHosts != null) {
+                if (KeyReciever.ClaimedHosts != null)
+                {
                     KeyReciever.ClaimedHosts.Remove(tempHost.TryCast<IGrippable>());
                 }
             }
@@ -157,7 +162,7 @@ namespace LabFusion.Syncables
         }
 
         private void AssignInformation(InteractableHost host) {
-            var root = host.GetRoot();
+            var root = host.GetSyncRoot();
 
             PropGrips = root.GetComponentsInChildren<Grip>(true);
             Rigidbodies = root.GetComponentsInChildren<Rigidbody>(true);

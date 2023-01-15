@@ -196,6 +196,7 @@
     <Compile Include="Core\src\Data\Containers\Levels\LevelData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\MagmaGateData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\MineDiveData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\SprintBridgeData.cs" />
     <Compile Include="Core\src\Data\Containers\PDController.cs" />
     <Compile Include="Core\src\Data\Containers\RigData.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedGrab.cs" />
@@ -252,6 +253,7 @@
     <Compile Include="Core\src\Network\Messages\Interaction\NimbusGunNoclipMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\FlashlightToggleMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Magazines\KeySlotMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Representation\BodyLogEnableMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\BodyLogEffectMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\PlayerRepActionMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ModuleAssignMessage.cs" />
@@ -281,6 +283,7 @@
     <Compile Include="Core\src\Senders\ArenaSender.cs" />
     <Compile Include="Core\src\Senders\KeySender.cs" />
     <Compile Include="Core\src\Senders\PlayerSender.cs" />
+    <Compile Include="Core\src\Senders\PropSender.cs" />
     <Compile Include="Core\src\Senders\ZoneSender.cs" />
     <Compile Include="Core\src\Senders\CampaignSender.cs" />
     <Compile Include="Core\src\Syncables\ConstraintSyncable.cs" />

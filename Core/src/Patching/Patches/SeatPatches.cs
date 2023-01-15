@@ -24,6 +24,7 @@ using System.IdentityModel.Tokens;
 using LabFusion.Grabbables;
 using MelonLoader;
 using SLZ.VRMK;
+using LabFusion.Senders;
 
 namespace LabFusion.Patching
 {
@@ -71,69 +72,13 @@ namespace LabFusion.Patching
         private static IEnumerator Internal_SyncSeat(Seat __instance) {
             // Create new syncable if this doesn't exist
             if (!SeatExtender.Cache.ContainsSource(__instance)) {
-                // We aren't a server. Request an id.
-                if (!NetworkInfo.IsServer) {
-                    // Get grip host
-                    var host = __instance.GetComponentInParent<InteractableHost>();
-                    if (!host)
-                        host = __instance.GetComponentInChildren<InteractableHost>();
+                bool isAwaiting = true;
+                PropSender.SendPropCreation(__instance.gameObject, (p) => {
+                    isAwaiting = false;
+                });
 
-                    var newSyncable = new PropSyncable(host);
-
-                    ushort queuedId = SyncManager.QueueSyncable(newSyncable);
-
-                    using (var writer = FusionWriter.Create())
-                    {
-                        using (var data = SyncableIDRequestData.Create(PlayerIdManager.LocalSmallId, queuedId))
-                        {
-                            writer.Write(data);
-
-                            using (var message = FusionMessage.Create(NativeMessageTag.SyncableIDRequest, writer))
-                            {
-                                MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                            }
-                        }
-                    }
-
-                    while (newSyncable.IsQueued())
-                        yield return null;
-
+                while (isAwaiting)
                     yield return null;
-
-                    using (var writer = FusionWriter.Create()) {
-                        using (var data = PropSyncableCreateData.Create(PlayerIdManager.LocalSmallId, host.gameObject.GetFullPath(), newSyncable.Id)) {
-                            writer.Write(data);
-
-                            using (var message = FusionMessage.Create(NativeMessageTag.PropSyncableCreate, writer)) {
-                                MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                            }
-                        }
-                    }
-
-                    yield return null;
-                }
-                else if (NetworkInfo.IsServer)
-                {
-                    // Get grip host
-                    var host = __instance.GetComponentInParent<InteractableHost>();
-                    if (!host)
-                        host = __instance.GetComponentInChildren<InteractableHost>();
-
-                    var newSyncable = new PropSyncable(host);
-                    SyncManager.RegisterSyncable(newSyncable, SyncManager.AllocateSyncID());
-
-                    using (var writer = FusionWriter.Create()) {
-                        using (var data = PropSyncableCreateData.Create(PlayerIdManager.LocalSmallId, host.gameObject.GetFullPath(), newSyncable.Id)) {
-                            writer.Write(data);
-
-                            using (var message = FusionMessage.Create(NativeMessageTag.PropSyncableCreate, writer)) {
-                                MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                            }
-                        }
-                    }
-
-                    yield return null;
-                }
             }
 
             yield return null;

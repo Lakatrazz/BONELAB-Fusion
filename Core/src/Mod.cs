@@ -116,15 +116,15 @@ namespace LabFusion
             // Fix random static grips in the scene
             StaticGripFixer.OnMainSceneInitialized();
 
-            // Update level data
-            LevelData.OnMainSceneInitialized();
-
             // Cache info
             SyncManager.OnCleanup();
             RigData.OnCacheRigInfo();
 
             // Create player reps
             PlayerRep.OnRecreateReps();
+
+            // Update level data
+            LevelData.OnMainSceneInitialized();
 
             // Update hooks
             MultiplayerHooking.Internal_OnMainSceneInitialized();

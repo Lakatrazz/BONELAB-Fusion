@@ -9,13 +9,51 @@ using HarmonyLib;
 using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Representation;
-
+using LabFusion.Senders;
 using SLZ.Marrow.Warehouse;
 using SLZ.Props;
 
 namespace LabFusion.Patching {
     [HarmonyPatch(typeof(PullCordDevice))]
     public static class PullCordDevicePatches {
+        public static bool IgnorePatches = false;
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(PullCordDevice.EnableBall))]
+        public static bool EnableBall(PullCordDevice __instance) {
+            if (IgnorePatches)
+                return true;
+
+            if (NetworkInfo.HasServer) {
+                if (PlayerRep.Managers.ContainsKey(__instance.rm))
+                    return false;
+                else if (__instance.rm == RigData.RigReferences.RigManager) {
+                    PlayerSender.SendBodyLogEnable(true);
+                }
+            }
+
+            return true;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(PullCordDevice.DisableBall))]
+        public static bool DisableBall(PullCordDevice __instance)
+        {
+            if (IgnorePatches)
+                return true;
+
+            if (NetworkInfo.HasServer) {
+                if (PlayerRep.Managers.ContainsKey(__instance.rm))
+                    return false;
+                else if (__instance.rm == RigData.RigReferences.RigManager) {
+                    PlayerSender.SendBodyLogEnable(false);
+                }
+            }
+
+            return true;
+        }
+
+
         [HarmonyPrefix]
         [HarmonyPatch(nameof(PullCordDevice.Update))]
         public static void Update(PullCordDevice __instance) {

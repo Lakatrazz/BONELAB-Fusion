@@ -1,4 +1,6 @@
-﻿using LabFusion.Utilities;
+﻿using LabFusion.Senders;
+using LabFusion.Utilities;
+
 using SLZ.Bonelab;
 using SLZ.UI;
 
@@ -16,6 +18,14 @@ namespace LabFusion.Data {
 
         public static void OnCacheInfo() {
             GameController = GameObject.FindObjectOfType<GameControl_Hub>(true);
+
+            if (GameController != null) {
+                var funicular = GameObject.FindObjectOfType<FunicularController>();
+
+                if (funicular != null) {
+                    PropSender.SendPropCreation(funicular.gameObject);
+                }
+            }
         }
     }
 }

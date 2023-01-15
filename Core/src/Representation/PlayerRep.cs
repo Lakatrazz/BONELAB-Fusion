@@ -23,6 +23,7 @@ using TMPro;
 using UnityEngine;
 
 using MelonLoader;
+using LabFusion.Patching;
 
 namespace LabFusion.Representation
 {
@@ -274,6 +275,20 @@ namespace LabFusion.Representation
         public void PlayPullCordEffects() {
             pullCord.PlayAvatarParticleEffects();
             pullCord.PlayClip(pullCord.switchAvatar, pullCord.ap3, pullCord.switchVolume, 4f, false);
+        }
+
+        public void SetPullCordActive(bool isEnabled) {
+            if (pullCord.IsNOC())
+                return;
+
+            PullCordDevicePatches.IgnorePatches = true;
+
+            if (isEnabled)
+                pullCord.EnableBall();
+            else
+                pullCord.DisableBall();
+
+            PullCordDevicePatches.IgnorePatches = false;
         }
 
         public void SetVitals(SerializedBodyVitals vitals) {

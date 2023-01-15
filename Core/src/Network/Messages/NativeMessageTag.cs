@@ -100,6 +100,8 @@ namespace LabFusion.Network
 
             HomeEvent = 58,
 
+            BodyLogEnable = 59,
+
             Module = 80,
             ModuleAssignment = 81;
     }

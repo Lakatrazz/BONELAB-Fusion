@@ -18,6 +18,7 @@ namespace LabFusion.Data {
             HomeData.OnCacheInfo();
             DescentData.OnCacheInfo();
             ArenaData.OnCacheInfo();
+            SprintBridgeData.OnCacheInfo();
         }
     }
 }

@@ -76,7 +76,7 @@ namespace LabFusion.Grabbables {
 
                     GetGripInfo(grip, out var host);
 
-                    GameObject root = host.GetRoot();
+                    GameObject root = host.GetSyncRoot();
 
                     // Do we already have a synced object?
                     if (PropSyncable.Cache.TryGet(root, out var syncable) || PropSyncable.HostCache.TryGet(host.gameObject, out syncable)) {
@@ -196,7 +196,7 @@ namespace LabFusion.Grabbables {
                         group = GrabGroup.PROP;
                         GetGripInfo(grip, out var host);
 
-                        GameObject root = host.GetRoot();
+                        GameObject root = host.GetSyncRoot();
 
                         // Do we already have a synced object?
                         if (PropSyncable.Cache.TryGet(root, out var syncable) || PropSyncable.HostCache.TryGet(host.gameObject, out syncable))

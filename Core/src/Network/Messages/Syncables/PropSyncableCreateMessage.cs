@@ -21,20 +21,20 @@ namespace LabFusion.Network
     public class PropSyncableCreateData : IFusionSerializable, IDisposable
     {
         public byte smallId;
-        public string fullPath;
+        public GameObject gameObject;
         public ushort id;
 
         public void Serialize(FusionWriter writer)
         {
             writer.Write(smallId);
-            writer.Write(fullPath);
+            writer.Write(gameObject);
             writer.Write(id);
         }
 
         public void Deserialize(FusionReader reader)
         {
             smallId = reader.ReadByte();
-            fullPath = reader.ReadString();
+            gameObject = reader.ReadGameObject();
             id = reader.ReadUInt16();
         }
 
@@ -43,12 +43,12 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static PropSyncableCreateData Create(byte smallId, string fullPath, ushort id)
+        public static PropSyncableCreateData Create(byte smallId, GameObject gameObject, ushort id)
         {
             return new PropSyncableCreateData()
             {
                 smallId = smallId,
-                fullPath = fullPath,
+                gameObject = gameObject,
                 id = id
             };
         }
@@ -76,12 +76,12 @@ namespace LabFusion.Network
                     }
                     else
                     {
-                        GameObject go;
-
-                        if (data.fullPath != "_" && (go = GameObjectUtilities.GetGameObject(data.fullPath)))
+                        if (data.gameObject != null)
                         {
+                            var go = data.gameObject;
+
                             var host = InteractableHost.Cache.Get(go);
-                            PropSyncable syncable = null;
+                            PropSyncable syncable;
 
                             if (host)
                                 syncable = new PropSyncable(host);
@@ -89,6 +89,8 @@ namespace LabFusion.Network
                                 syncable = new PropSyncable(null, go);
 
                             SyncManager.RegisterSyncable(syncable, data.id);
+
+                            syncable.SetOwner(data.smallId);
                         }
                     }
                 }
