@@ -152,7 +152,7 @@ namespace LabFusion.Network {
                     rep.serializedFootball = data.serializedFootball;
                     rep.repPlayspace.rotation = data.serializedPlayspace.Expand();
                     rep.predictVelocity = data.predictVelocity.Expand();
-                    rep.timeSincePelvisSent = Time.timeSinceLevelLoad;
+                    rep.timeSincePelvisSent = Time.realtimeSinceStartup;
 
                     rep.serializedLeftHand = data.leftHand;
                     rep.serializedRightHand = data.rightHand;

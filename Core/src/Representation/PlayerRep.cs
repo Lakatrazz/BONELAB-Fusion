@@ -493,7 +493,7 @@ namespace LabFusion.Representation
                     return;
 
                 // Move position with prediction
-                if (Time.timeSinceLevelLoad - timeSincePelvisSent <= 1.5f) {
+                if (Time.realtimeSinceStartup - timeSincePelvisSent <= 1.5f) {
                     serializedPelvis.position += predictVelocity * Time.fixedDeltaTime;
 
                     _hasLockedPosition = false;

@@ -38,22 +38,6 @@ namespace LabFusion.Patching
                 return false;
             }
 
-            // The ingame method checks if the game is already reloading, so we check it here too
-            if (!LevelWarehouseUtilities.IsLoading()) {
-                var level = LevelWarehouseUtilities.GetCurrentLevel();
-                if (NetworkInfo.IsServer && level != null) {
-                    using (FusionWriter writer = FusionWriter.Create()) {
-                        using (var data = SceneLoadData.Create(level.Barcode)) {
-                            writer.Write(data);
-
-                            using (var message = FusionMessage.Create(NativeMessageTag.SceneLoad, writer)) {
-                                MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                            }
-                        }
-                    }
-                }
-            }
-
             return true;
         }
 
@@ -73,26 +57,8 @@ namespace LabFusion.Patching
         public static bool CrateLoad(LevelCrateReference level, LevelCrateReference loadLevel) {
             try {
                 // Check if we need to exit early
-                if (!LevelWarehouseUtilities.IsLoadingAllowed && NetworkInfo.HasServer && !NetworkInfo.IsServer)
-                {
+                if (!LevelWarehouseUtilities.IsLoadingAllowed && NetworkInfo.HasServer && !NetworkInfo.IsServer) {
                     return false;
-                }
-
-                // A check to make sure we don't try and send an infinite loop of messages. This is also checked server side.
-                if (NetworkInfo.IsServer)
-                {
-                    using (FusionWriter writer = FusionWriter.Create())
-                    {
-                        using (var data = SceneLoadData.Create(level.Barcode))
-                        {
-                            writer.Write(data);
-
-                            using (var message = FusionMessage.Create(NativeMessageTag.SceneLoad, writer))
-                            {
-                                MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                            }
-                        }
-                    }
                 }
             }
 

@@ -5,6 +5,7 @@ using LabFusion.Utilities;
 using LabFusion.Preferences;
 
 using System;
+using LabFusion.Senders;
 
 namespace LabFusion.Network
 {
@@ -99,15 +100,7 @@ namespace LabFusion.Network
                         }
 
                         // Now, make sure the player loads into the scene
-                        using (FusionWriter writer = FusionWriter.Create()) {
-                            using (var loadData = SceneLoadData.Create(LevelWarehouseUtilities.GetCurrentLevel().Barcode)) {
-                                writer.Write(loadData);
-
-                                using (var message = FusionMessage.Create(NativeMessageTag.SceneLoad, writer)) {
-                                    MessageSender.SendFromServer(data.longId, NetworkChannel.Reliable, message);
-                                }
-                            }
-                        }
+                        LoadSender.SendLevelLoad(LevelWarehouseUtilities.GetCurrentLevel().Barcode, data.longId);
 
                         // Send the module list
                         using (var writer = FusionWriter.Create()) {

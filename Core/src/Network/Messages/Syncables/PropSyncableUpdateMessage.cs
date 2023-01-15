@@ -132,7 +132,7 @@ namespace LabFusion.Network
                     // Find the prop syncable and update its info
                     var syncable = data.GetPropSyncable();
                     if (syncable != null && syncable.IsRegistered() && syncable.Owner.HasValue && syncable.Owner.Value == data.ownerId) {
-                        syncable.TimeOfMessage = Time.timeSinceLevelLoad;
+                        syncable.TimeOfMessage = Time.realtimeSinceStartup;
                         
                         for (var i = 0; i < data.length; i++) {
                             syncable.InitialPositions[i] = data.serializedPositions[i];

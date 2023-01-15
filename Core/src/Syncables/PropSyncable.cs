@@ -249,7 +249,7 @@ namespace LabFusion.Syncables
             _isLockingDirty = true;
             _lockedState = false;
 
-            TimeOfMessage = Time.timeSinceLevelLoad;
+            TimeOfMessage = Time.realtimeSinceStartup;
 
             NullValues();
         }
@@ -455,7 +455,7 @@ namespace LabFusion.Syncables
                 }
             }
 
-            if (!isSomethingGrabbed && Time.timeSinceLevelLoad - TimeOfMessage >= 1f) {
+            if (!isSomethingGrabbed && Time.realtimeSinceStartup - TimeOfMessage >= 1f) {
                 if (!_isIgnoringForces) {
                     // Set all desired values to nothing
                     for (var i = 0; i < Rigidbodies.Length; i++) {
@@ -518,7 +518,7 @@ namespace LabFusion.Syncables
                 var pdController = PDControllers[i];
                 
                 // Don't over predict
-                if (Time.timeSinceLevelLoad - TimeOfMessage <= 0.6f) {
+                if (Time.realtimeSinceStartup - TimeOfMessage <= 0.6f) {
                     // Move position with prediction
                     if (allowPosition)
                     {

@@ -284,6 +284,7 @@
     <Compile Include="Core\src\SDK\Network\Messages\ModuleMessageHandler.cs" />
     <Compile Include="Core\src\Senders\ArenaSender.cs" />
     <Compile Include="Core\src\Senders\KeySender.cs" />
+    <Compile Include="Core\src\Senders\LoadSender.cs" />
     <Compile Include="Core\src\Senders\PlayerSender.cs" />
     <Compile Include="Core\src\Senders\PropSender.cs" />
     <Compile Include="Core\src\Senders\ZoneSender.cs" />

@@ -13,6 +13,7 @@ using MelonLoader;
 using UnityEngine;
 using LabFusion.Network;
 using LabFusion.Representation;
+using LabFusion.Senders;
 
 namespace LabFusion.Utilities {
     public static class LevelWarehouseUtilities {
@@ -81,8 +82,14 @@ namespace LabFusion.Utilities {
                 _prevLevelBarcode = null;
                 _isLoading = true;
 
-                if (!_wasLoading)
+                // Update loading state
+                if (!_wasLoading) {
                     SendLoadingState(true);
+
+                    // Send level load
+                    if (NetworkInfo.IsServer)
+                        LoadSender.SendLevelLoad(GetCurrentLevel().Barcode);
+                }
             }
             else if (_prevLevelBarcode == null) {
                 _isLoading = false;
