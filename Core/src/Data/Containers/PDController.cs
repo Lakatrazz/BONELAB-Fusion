@@ -39,7 +39,7 @@ namespace LabFusion.Data
 
         public Quaternion LastTargetRot { get; private set; }
 
-        public static void OnMelonInitialize() {
+        public static void OnInitializeMelon() {
             _positionKp = CalculateKP(PositionFrequency);
             _positionKd = CalculateKD(PositionFrequency, PositionDamping);
 

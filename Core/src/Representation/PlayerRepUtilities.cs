@@ -156,6 +156,7 @@ namespace LabFusion.Representation {
 
             var playerHealth = rigManager.health.TryCast<Player_Health>();
             if (playerHealth != null) {
+                playerHealth.reloadLevelOnDeath = false;
                 playerHealth.healthMode = Health.HealthMode.Invincible;
 
                 var newVignetter = GameObject.Instantiate(playerHealth.Vignetter);

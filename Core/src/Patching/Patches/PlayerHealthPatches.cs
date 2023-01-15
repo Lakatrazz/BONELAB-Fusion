@@ -73,5 +73,12 @@ namespace LabFusion.Patching
                 __instance._rigManager.physicsRig.UnRagdollRig();
             }
         }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(Player_Health.TAKEDAMAGE))]
+        public static void TAKEDAMAGE(Player_Health __instance, float damage) {
+            if (__instance.healthMode == Health.HealthMode.Invincible && __instance._testRagdollOnDeath)
+                __instance._testRagdollOnDeath = false;
+        }
     }
 }

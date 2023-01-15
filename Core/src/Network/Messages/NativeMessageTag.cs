@@ -104,6 +104,9 @@ namespace LabFusion.Network
 
             SpawnableCratePlacer = 60,
 
+            TimeScale = 61,
+            SlowMoButton = 62,
+
             Module = 80,
             ModuleAssignment = 81;
     }

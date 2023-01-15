@@ -204,7 +204,7 @@ namespace LabFusion.Data
 
         // Rigidbody order likes to randomly change on players
         // So we have to disgustingly update it every index call
-        private void GetRigidbodies() {
+        internal void GetRigidbodies() {
             if (RigManager.IsNOC())
                 return;
 
@@ -298,27 +298,13 @@ namespace LabFusion.Data
             RigReferences = new RigReferenceCollection(manager);
             RigReferences.RigManager.bodyVitals.rescaleEvent += (BodyVitals.RescaleUI)OnSendVitals;
 
+            // Add player additions
             if (NetworkInfo.HasServer) {
-                EnableRagdollOnDeath();
-                manager.health.TryCast<Player_Health>().reloadLevelOnDeath = false;
-                PersistentAssetCreator.SetupImpactProperties(manager);
+                PlayerAdditionsHelper.OnEnterServer(manager);
             }
 
             RigSpawn = manager.transform.position;
             RigSpawnRot = manager.transform.rotation;
-        }
-
-        public static void EnableRagdollOnDeath() {
-            if (!RigReferences.RigManager.IsNOC()) {
-                var health = RigReferences.RigManager.health;
-
-                if (health.healthMode != Health.HealthMode.Invincible) {
-                    health._testRagdollOnDeath = true;
-
-                    var playerHealth = health.Cast<Player_Health>();
-                    playerHealth.slowMoOnDeath = false;
-                }
-            }
         }
 
         public static void OnSendVitals() {

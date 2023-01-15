@@ -20,6 +20,9 @@ using MelonLoader;
 using UnityEngine;
 
 using BoneLib;
+using LabFusion.Senders;
+using LabFusion.Patching;
+using SLZ.Marrow.Utilities;
 
 namespace LabFusion
 {
@@ -51,8 +54,9 @@ namespace LabFusion
 
             // Initialize data and hooks
             PersistentData.OnPathInitialize();
-            PDController.OnMelonInitialize();
+            PDController.OnInitializeMelon();
             ModuleHandler.Internal_HookAssemblies();
+            PlayerAdditionsHelper.OnInitializeMelon();
         }
 
         public override void OnInitializeMelon() {
@@ -170,6 +174,55 @@ namespace LabFusion
             // Send gravity every 40 frames
             if (Time.frameCount % 40 == 0) {
                 PhysicsUtilities.OnSendPhysicsInformation();
+            }
+
+            // Update timescale
+            if (NetworkInfo.HasServer) {
+                var mode = FusionPreferences.TimeScaleMode;
+
+                switch (mode) {
+                    default:
+                    case TimeScaleMode.DISABLED:
+                        Time.timeScale = 1f;
+                        break;
+                    case TimeScaleMode.LOW_GRAVITY:
+                        Time.timeScale = 1f;
+
+                        var rm = RigData.RigReferences.RigManager;
+                        if (!rm.IsNOC()) {
+                            var controlTime = RigData.RigReferences.RigManager.openControllerRig.globalTimeControl;
+                            float mult = 1f - (1f / controlTime.cur_intensity);
+                            if (float.IsNaN(mult) || mult == 0f || float.IsPositiveInfinity(mult) || float.IsNegativeInfinity(mult))
+                                break;
+
+                            Vector3 force = -Physics.gravity * mult;
+
+                            if (RigData.RigReferences.RigRigidbodies == null)
+                                RigData.RigReferences.GetRigidbodies();
+
+                            var rbs = RigData.RigReferences.RigRigidbodies;
+
+                            foreach (var rb in rbs) {
+                                if (rb.useGravity) {
+                                    rb.AddForce(force, ForceMode.Acceleration);
+                                }
+                            }
+                        }
+
+                        break;
+                    case TimeScaleMode.HOST_ONLY:
+                    case TimeScaleMode.EVERYONE:
+                        // Update timescale to the target
+                        if (!NetworkInfo.IsServer) {
+                            Time.timeScale = TimeScaleSender.ReceivedTimeScale;
+                        }
+                        // Send timescale every 20 frames
+                        else if (Time.frameCount % 20 == 0)
+                        {
+                            TimeScaleSender.SendTimeScale();
+                        }
+                        break;
+                }
             }
 
             // Update reps

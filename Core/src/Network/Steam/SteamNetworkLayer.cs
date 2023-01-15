@@ -25,6 +25,7 @@ using Color = UnityEngine.Color;
 using MelonLoader;
 
 using System.Windows.Forms;
+using LabFusion.Senders;
 
 namespace LabFusion.Network
 {
@@ -341,6 +342,14 @@ namespace LabFusion.Network
             });
             FusionPreferences.ServerSettings.Privacy.OnValueChanged += (v) => {
                 privacy.SetValue(v);
+            };
+
+            // Time scale mode
+            var timeScale = category.CreateEnumElement<TimeScaleMode>("Time Scale Mode", Color.white, FusionPreferences.ServerSettings.TimeScaleMode, (v) => {
+                FusionPreferences.ServerSettings.TimeScaleMode.SetValue(v);
+            });
+            FusionPreferences.ServerSettings.TimeScaleMode.OnValueChanged += (v) => {
+                timeScale.SetValue(v);
             };
         }
 

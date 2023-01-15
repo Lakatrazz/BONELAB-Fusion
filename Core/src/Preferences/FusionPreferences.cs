@@ -3,7 +3,7 @@ using BoneLib.BoneMenu.Elements;
 using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Representation;
-
+using LabFusion.Senders;
 using MelonLoader;
 
 using System;
@@ -19,6 +19,7 @@ namespace LabFusion.Preferences {
         public struct ServerSettings  {
             public static FusionPref<bool> NametagsEnabled { get; internal set; }
             public static FusionPref<ServerPrivacy> Privacy { get; internal set; }
+            public static FusionPref<TimeScaleMode> TimeScaleMode { get; internal set; }
         }
 
         public struct ClientSettings {
@@ -30,6 +31,7 @@ namespace LabFusion.Preferences {
 
         internal static bool ShowNametags => ReceivedServerSettings != null ? ReceivedServerSettings.nametagsEnabled : ServerSettings.NametagsEnabled 
             && ClientSettings.NametagsEnabled;
+        internal static TimeScaleMode TimeScaleMode => ReceivedServerSettings != null ? ReceivedServerSettings.timeScaleMode : ServerSettings.TimeScaleMode;
 
         internal static MenuCategory fusionCategory;
         internal static MelonPreferences_Category prefCategory;
@@ -92,6 +94,7 @@ namespace LabFusion.Preferences {
             // Server settings
             ServerSettings.NametagsEnabled = new FusionPref<bool>(prefCategory, "Server Nametags Enabled", true, PrefUpdateMode.SERVER_UPDATE);
             ServerSettings.Privacy = new FusionPref<ServerPrivacy>(prefCategory, "Server Privacy", ServerPrivacy.PUBLIC, PrefUpdateMode.LOCAL_UPDATE);
+            ServerSettings.TimeScaleMode = new FusionPref<TimeScaleMode>(prefCategory, "Time Scale Mode", TimeScaleMode.LOW_GRAVITY, PrefUpdateMode.SERVER_UPDATE);
 
             // Client settings
             ClientSettings.NametagsEnabled = new FusionPref<bool>(prefCategory, "Client Nametags Enabled", true, PrefUpdateMode.LOCAL_UPDATE);
