@@ -260,6 +260,7 @@
     <Compile Include="Core\src\Network\Messages\Server\ModuleMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ServerSettingsMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\PlayerSettingsMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Spawning\SpawnableCratePlacerMessage.cs" />
     <Compile Include="Core\src\Patching\Patches\AvatarDicePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\AvatarPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\BonelabHubPatches.cs" />
@@ -276,6 +277,7 @@
     <Compile Include="Core\src\Patching\Patches\PullCordDevicePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ImpactSFXPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PullCordForceChangePatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\SpawnableCratePlacerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\StabSlashPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ZoneEncounterPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\GenGameControl_TriggerPatches.cs" />

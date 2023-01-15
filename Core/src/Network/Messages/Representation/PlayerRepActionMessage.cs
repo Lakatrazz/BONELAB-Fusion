@@ -77,6 +77,7 @@ namespace LabFusion.Network
                                     break;
                                 case PlayerActionType.DEATH:
                                     rm.physicsRig.headSfx.DeathVocal();
+                                    rep.DetachRepGrips();
                                     break;
                                 case PlayerActionType.DYING:
                                     rm.physicsRig.headSfx.DyingVocal();

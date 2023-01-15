@@ -1,4 +1,5 @@
-﻿using LabFusion.Senders;
+﻿using LabFusion.Network;
+using LabFusion.Senders;
 using LabFusion.Utilities;
 
 using SLZ.Bonelab;
@@ -15,16 +16,14 @@ using UnityEngine;
 namespace LabFusion.Data {
     public static class HubData {
         public static GameControl_Hub GameController;
+        public static FunicularController Funicular;
 
         public static void OnCacheInfo() {
             GameController = GameObject.FindObjectOfType<GameControl_Hub>(true);
+            Funicular = GameObject.FindObjectOfType<FunicularController>(true);
 
-            if (GameController != null) {
-                var funicular = GameObject.FindObjectOfType<FunicularController>();
-
-                if (funicular != null) {
-                    PropSender.SendPropCreation(funicular.gameObject);
-                }
+            if (NetworkInfo.IsServer && Funicular != null) {
+                PropSender.SendPropCreation(Funicular.gameObject);
             }
         }
     }

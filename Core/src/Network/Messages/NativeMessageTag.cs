@@ -102,6 +102,8 @@ namespace LabFusion.Network
 
             BodyLogEnable = 59,
 
+            SpawnableCratePlacer = 60,
+
             Module = 80,
             ModuleAssignment = 81;
     }

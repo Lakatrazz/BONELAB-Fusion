@@ -99,6 +99,8 @@ namespace LabFusion.Representation
 
         private bool _hasLockedPosition = false;
 
+        private bool _isBodyLogDirty = false;
+
         private bool _isAvatarDirty = false;
         private bool _isVitalsDirty = false;
 
@@ -372,6 +374,8 @@ namespace LabFusion.Representation
         }
 
         public void MarkDirty() {
+            _isBodyLogDirty = true;
+
             _isAvatarDirty = true;
             _isVitalsDirty = true;
 
@@ -660,12 +664,25 @@ namespace LabFusion.Representation
             }
         }
 
+        public void DetachRepGrips() {
+            foreach (var grip in RigReferences.RigGrips) {
+                foreach (var hand in grip.attachedHands.ToArray()) {
+                    if (hand.manager == RigData.RigReferences.RigManager)
+                        grip.ForceDetach(hand);
+                }
+            }
+        }
+
         private void OnRepLateUpdate() {
             OnUpdateNametags();
 
             // Update the player if its dirty
             var rm = RigReferences.RigManager;
             if (!rm.IsNOC() && !rm._avatar.IsNOC()) {
+                // Disable body log
+                if (_isBodyLogDirty)
+                    SetPullCordActive(false);
+
                 // Swap the avatar
                 if (_isAvatarDirty) {
                     rm.SwapAvatarCrate(avatarId, false, (Action<bool>)OnSwapAvatar);
