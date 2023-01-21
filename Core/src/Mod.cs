@@ -23,6 +23,8 @@ using BoneLib;
 using LabFusion.Senders;
 using LabFusion.Patching;
 using SLZ.Marrow.Utilities;
+using BoneLib.Nullables;
+using SLZ.Marrow.Data;
 
 namespace LabFusion
 {

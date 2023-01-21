@@ -107,6 +107,8 @@ namespace LabFusion.Network
             TimeScale = 61,
             SlowMoButton = 62,
 
+            BehaviourBaseNavLoco = 63,
+
             Module = 80,
             ModuleAssignment = 81;
     }

@@ -244,6 +244,8 @@ namespace LabFusion.Syncables
         public byte? GetOwner() => Owner;
 
         public void SetOwner(byte owner) {
+            byte? prevOwner = Owner;
+
             Owner = owner;
 
             _isLockingDirty = true;
@@ -252,6 +254,12 @@ namespace LabFusion.Syncables
             TimeOfMessage = Time.realtimeSinceStartup;
 
             NullValues();
+
+            // Notify extenders about ownership transfer
+            if (prevOwner != Owner) {
+                foreach (var extender in _extenders)
+                    extender.OnOwnershipTransfer();
+            }
         }
 
         public void NullValues() {
@@ -400,6 +408,9 @@ namespace LabFusion.Syncables
         }
 
         private void OnOwnedUpdate() {
+            foreach (var extender in _extenders)
+                extender.OnOwnedUpdate();
+
             NullValues();
 
             bool hasMovingBody = false;
@@ -442,6 +453,9 @@ namespace LabFusion.Syncables
         private void OnReceivedUpdate() {
             if (!SafetyUtilities.IsValidTime)
                 return;
+
+            foreach (var extender in _extenders)
+                extender.OnReceivedUpdate();
 
             bool isSomethingGrabbed = false;
             foreach (var pair in _grabbedGrips) {

@@ -45,20 +45,6 @@ namespace LabFusion.Patching
     public static class GripPatches
     {
         [HarmonyPrefix]
-        [HarmonyPatch(nameof(Grip.ForceDetach))]
-        [HarmonyPatch(new Type[0])]
-        public static bool ForceDetach(Grip __instance) {
-            if (NetworkInfo.HasServer) {
-                foreach (var hand in __instance.attachedHands) {
-                    if (PlayerRep.Managers.ContainsKey(hand.manager))
-                        return false;
-                }
-            }
-            
-            return true;
-        }
-
-        [HarmonyPrefix]
         [HarmonyPatch(nameof(Grip.OnAttachedToHand))]
         public static void OnAttachedToHand(Grip __instance, Hand hand)
         {

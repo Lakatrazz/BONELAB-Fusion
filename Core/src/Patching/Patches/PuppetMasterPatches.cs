@@ -49,38 +49,13 @@ namespace LabFusion.Patching
 
             return true;
         }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(PuppetMaster.OnLateUpdate))]
-        public static void OnLateUpdatePrefix(PuppetMaster __instance) {
-            if (NetworkInfo.HasServer && PuppetMasterExtender.Cache.TryGet(__instance, out var syncable) && !syncable.IsOwner()) {
-                MusclePatches.CancelAnchorUpdate = true;
-            }
-        }
-
-        [HarmonyPostfix]
-        [HarmonyPatch(nameof(PuppetMaster.OnLateUpdate))]
-        public static void OnLateUpdatePostfix(PuppetMaster __instance) {
-            MusclePatches.CancelAnchorUpdate = false;
-        }
     }
 
     [HarmonyPatch(typeof(Muscle))]
     public static class MusclePatches {
-        public static bool CancelAnchorUpdate = false;
-
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(Muscle.UpdateAnchor))]
-        public static bool UpdateAnchor(Muscle __instance) {
-            if (CancelAnchorUpdate)
-                return false;
-
-            return true;
-        }
-
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Muscle.MusclePdDrive))]
-        public static bool MusclePdDrive(this Muscle __instance, float muscleWeightMaster, float muscleSpring, float muscleDamper)
+        public static bool MusclePdDrive(Muscle __instance, float muscleWeightMaster, float muscleSpring, float muscleDamper)
         {
             try
             {

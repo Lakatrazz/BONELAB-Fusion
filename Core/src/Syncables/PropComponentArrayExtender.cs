@@ -10,6 +10,8 @@ using UnityEngine;
 namespace LabFusion.Syncables
 {
     public abstract class PropComponentArrayExtender<T> : IPropExtender where T : Component {
+        public PropSyncable PropSyncable { get; set; }
+        
         public T[] Components;
 
         public bool ValidateExtender(PropSyncable syncable) {
@@ -19,6 +21,7 @@ namespace LabFusion.Syncables
                 foreach (var comp in Components) {
                     RemoveFromCache(comp);
                     AddToCache(comp, syncable);
+                    PropSyncable = syncable;
                 }
                 return true;
             }
@@ -51,5 +54,11 @@ namespace LabFusion.Syncables
         protected abstract void AddToCache(T component, PropSyncable syncable);
 
         protected abstract void RemoveFromCache(T component);
+
+        public virtual void OnOwnedUpdate() { }
+
+        public virtual void OnReceivedUpdate() { }
+
+        public virtual void OnOwnershipTransfer() { }
     }
 }

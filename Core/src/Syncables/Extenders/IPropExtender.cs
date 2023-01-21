@@ -13,8 +13,16 @@ using System.Threading.Tasks;
 
 namespace LabFusion.Syncables {
     public interface IPropExtender {
-         bool ValidateExtender(PropSyncable syncable);
+        PropSyncable PropSyncable { get; set; }
+
+        bool ValidateExtender(PropSyncable syncable);
         
-         void OnCleanup();
+        void OnCleanup();
+
+        void OnOwnedUpdate();
+
+        void OnReceivedUpdate();
+
+        void OnOwnershipTransfer();
     }
 }

@@ -247,6 +247,7 @@
     <Compile Include="Core\src\Network\Messages\Campaign\HomeMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\KartRaceMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Combat\ZoneEncounterEventMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Entities\BehaviourBaseNavLocoMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Global\SlowMoButtonMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Global\TimeScaleMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\BoardCreateMessage.cs" />
@@ -265,6 +266,9 @@
     <Compile Include="Core\src\Network\Messages\Spawning\SpawnableCratePlacerMessage.cs" />
     <Compile Include="Core\src\Patching\Patches\AvatarDicePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\AvatarPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\BehaviourOmniwheelPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\BehaviourPowerLegsPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\BehaviourBaseNavPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Control_GlobalTimePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\BonelabHubPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\BoardGeneratorPatches.cs" />
@@ -294,6 +298,8 @@
     <Compile Include="Core\src\Senders\ZoneSender.cs" />
     <Compile Include="Core\src\Senders\CampaignSender.cs" />
     <Compile Include="Core\src\Syncables\ConstraintSyncable.cs" />
+    <Compile Include="Core\src\Syncables\Extenders\BehaviourBaseNavExtender.cs" />
+    <Compile Include="Core\src\Syncables\Extenders\BehaviourOmniwheelExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\BehaviourPowerLegsExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\BoardGeneratorExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\ConstrainerExtender.cs" />

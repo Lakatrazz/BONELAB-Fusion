@@ -16,7 +16,7 @@ namespace LabFusion.Data
         private const float PositionDamping = 5f;
 
         private const float RotationFrequency = 500f;
-        private const float RotationDamping = 200f;
+        private const float RotationDamping = 50f;
 
         // Calculated KP and KD values for adding forces. These are only calculated once
         private static float _positionKp;
