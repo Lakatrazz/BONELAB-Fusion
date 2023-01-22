@@ -119,21 +119,7 @@ namespace LabFusion.Syncables
                 grip.detachedHandDelegate += (Grip.HandDelegate)((h) => { OnDetach(h, grip); });
             }
 
-            HostGameObjects = new GameObject[Rigidbodies.Length];
-            HostTransforms = new Transform[Rigidbodies.Length];
-            PDControllers = new PDController[Rigidbodies.Length];
-            LockJoints = new FixedJoint[Rigidbodies.Length];
-
-            for (var i = 0; i < Rigidbodies.Length; i++) {
-                HostGameObjects[i] = Rigidbodies[i].gameObject;
-                HostTransforms[i] = HostGameObjects[i].transform;
-
-                HostCache.Add(HostGameObjects[i], this);
-
-                PDControllers[i] = new PDController();
-                PDControllers[i].OnResetDerivatives(HostTransforms[i]);
-            }
-
+            // Setup target arrays
             InitialPositions = new Vector3?[Rigidbodies.Length];
             InitialRotations = new Quaternion?[Rigidbodies.Length];
             DesiredPositions = new Vector3?[Rigidbodies.Length];
@@ -143,6 +129,23 @@ namespace LabFusion.Syncables
 
             LastSentPositions = new Vector3[Rigidbodies.Length];
             LastSentRotations = new Quaternion[Rigidbodies.Length];
+
+            // Setup gameobject arrays
+            HostGameObjects = new GameObject[Rigidbodies.Length];
+            HostTransforms = new Transform[Rigidbodies.Length];
+            PDControllers = new PDController[Rigidbodies.Length];
+            LockJoints = new FixedJoint[Rigidbodies.Length];
+
+            for (var i = 0; i < Rigidbodies.Length; i++) {
+                // Get the GameObject info
+                HostGameObjects[i] = Rigidbodies[i].gameObject;
+                HostTransforms[i] = HostGameObjects[i].transform;
+
+                HostCache.Add(HostGameObjects[i], this);
+
+                PDControllers[i] = new PDController();
+                PDControllers[i].OnResetDerivatives(HostTransforms[i]);
+            }
 
             HasIgnoreHierarchy = GameObject.GetComponentInParent<IgnoreHierarchy>(true);
 
@@ -253,12 +256,23 @@ namespace LabFusion.Syncables
 
             TimeOfMessage = Time.realtimeSinceStartup;
 
-            NullValues();
+            FreezeValues();
 
             // Notify extenders about ownership transfer
             if (prevOwner != Owner) {
                 foreach (var extender in _extenders)
                     extender.OnOwnershipTransfer();
+            }
+        }
+
+        public void FreezeValues() {
+            for (var i = 0; i < Rigidbodies.Length; i++) {
+                DesiredPositions[i] = HostTransforms[i].position;
+                DesiredRotations[i] = HostTransforms[i].rotation;
+                DesiredVelocities[i] = Vector3.zero;
+                DesiredAngularVelocities[i] = Vector3.zero;
+                InitialPositions[i] = HostTransforms[i].position;
+                InitialRotations[i] = HostTransforms[i].rotation;
             }
         }
 

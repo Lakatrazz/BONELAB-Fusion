@@ -35,21 +35,21 @@ namespace LabFusion.Network {
         public static int GetObjectSendRate(int bytesUp) {
             if (bytesUp <= 700)
                 return 1;
-            else if (bytesUp <= 900)
-                return 2;
-            else if (bytesUp <= 1000)
-                return 3;
-            else if (bytesUp <= 1200)
-                return 4;
             else if (bytesUp <= 1400)
-                return 5;
+                return 2;
             else if (bytesUp <= 1700)
-                return 6;
+                return 3;
             else if (bytesUp <= 2000)
+                return 4;
+            else if (bytesUp <= 2400)
+                return 5;
+            else if (bytesUp <= 2600)
+                return 6;
+            else if (bytesUp <= 2900)
                 return 7;
-            else if (bytesUp <= 2500)
+            else if (bytesUp <= 3000)
                 return 8;
-            else if (bytesUp <= 2700)
+            else if (bytesUp <= 3200)
                 return 9;
             else
                 return 10;
