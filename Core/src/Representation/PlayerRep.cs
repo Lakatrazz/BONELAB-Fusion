@@ -24,6 +24,7 @@ using UnityEngine;
 
 using MelonLoader;
 using LabFusion.Patching;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace LabFusion.Representation
 {
@@ -100,6 +101,7 @@ namespace LabFusion.Representation
         private bool _hasLockedPosition = false;
 
         private bool _isBodyLogDirty = false;
+        private bool _bodyLogState = false;
 
         private bool _isAvatarDirty = false;
         private bool _isVitalsDirty = false;
@@ -280,17 +282,8 @@ namespace LabFusion.Representation
         }
 
         public void SetPullCordActive(bool isEnabled) {
-            if (pullCord.IsNOC())
-                return;
-
-            PullCordDevicePatches.IgnorePatches = true;
-
-            if (isEnabled)
-                pullCord.EnableBall();
-            else
-                pullCord.DisableBall();
-
-            PullCordDevicePatches.IgnorePatches = false;
+            _isBodyLogDirty = true;
+            _bodyLogState = isEnabled;
         }
 
         public void SetVitals(SerializedBodyVitals vitals) {
@@ -375,6 +368,7 @@ namespace LabFusion.Representation
 
         public void MarkDirty() {
             _isBodyLogDirty = true;
+            _bodyLogState = false;
 
             _isAvatarDirty = true;
             _isVitalsDirty = true;
@@ -679,9 +673,17 @@ namespace LabFusion.Representation
             // Update the player if its dirty
             var rm = RigReferences.RigManager;
             if (!rm.IsNOC() && !rm._avatar.IsNOC()) {
-                // Disable body log
+                // Disable/enable body log
                 if (_isBodyLogDirty) {
-                    SetPullCordActive(false);
+                    PullCordDevicePatches.IgnorePatches = true;
+
+                    if (_bodyLogState)
+                        pullCord.EnableBall();
+                    else
+                        pullCord.DisableBall();
+
+                    PullCordDevicePatches.IgnorePatches = false;
+
                     _isBodyLogDirty = false;
                 }
 

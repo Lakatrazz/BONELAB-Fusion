@@ -247,6 +247,12 @@ namespace LabFusion.Syncables
         public byte? GetOwner() => Owner;
 
         public void SetOwner(byte owner) {
+            // Reset position info
+            if (Owner == null)
+                FreezeValues();
+            else
+                NullValues();
+
             byte? prevOwner = Owner;
 
             Owner = owner;
@@ -255,8 +261,6 @@ namespace LabFusion.Syncables
             _lockedState = false;
 
             TimeOfMessage = Time.realtimeSinceStartup;
-
-            FreezeValues();
 
             // Notify extenders about ownership transfer
             if (prevOwner != Owner) {
