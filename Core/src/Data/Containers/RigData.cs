@@ -26,6 +26,7 @@ using SLZ.Combat;
 using SLZ.Data;
 using SLZ.Marrow.Data;
 using SLZ.Marrow.Warehouse;
+using SLZ.AI;
 
 namespace LabFusion.Data
 {
@@ -42,6 +43,8 @@ namespace LabFusion.Data
 
         public Hand LeftHand { get; private set; }
         public Hand RightHand { get; private set; }
+
+        public TriggerRefProxy Proxy { get; private set; }
 
         public BaseController LeftController { get; private set; }
         public BaseController RightController { get; private set; }
@@ -269,6 +272,8 @@ namespace LabFusion.Data
 
             LeftHand = rigManager.physicsRig.m_handLf.GetComponent<Hand>();
             RightHand = rigManager.physicsRig.m_handRt.GetComponent<Hand>();
+
+            Proxy = rigManager.GetComponentInChildren<TriggerRefProxy>(true);
 
             LeftController = rigManager.openControllerRig.leftController;
             RightController = rigManager.openControllerRig.rightController;

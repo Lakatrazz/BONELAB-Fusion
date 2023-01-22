@@ -17,52 +17,35 @@ namespace LabFusion.Syncables {
     public class BehaviourBaseNavExtender : PropComponentExtender<BehaviourBaseNav> {
         public static FusionComponentCache<BehaviourBaseNav, PropSyncable> Cache = new FusionComponentCache<BehaviourBaseNav, PropSyncable>();
 
-        public bool IsValidForOverrides = false;
-
-        private BehaviourBaseNav.LocoState _prevLocoState;
-
         protected override void AddToCache(BehaviourBaseNav behaviour, PropSyncable syncable) {
             Cache.Add(behaviour, syncable);
-
-            if (behaviour.TryCast<BehaviourPowerLegs>() || behaviour.TryCast<BehaviourOmniwheel>())
-                IsValidForOverrides = true;
         }
 
         protected override void RemoveFromCache(BehaviourBaseNav behaviour) {
             Cache.Remove(behaviour);
         }
 
-        public override void OnOwnedUpdate() {
-            // Make sure this is valid
-            if (!IsValidForOverrides)
-                return;
-
-            // Send loco state change
-            var state = Component.locoState;
-
-            if (state != _prevLocoState)
-            {
-                using (var writer = FusionWriter.Create())
-                {
-                    using (var data = BehaviourBaseNavLocoData.Create(PlayerIdManager.LocalSmallId, PropSyncable, Component))
-                    {
-                        writer.Write(data);
-
-                        using (var message = FusionMessage.Create(NativeMessageTag.BehaviourBaseNavLoco, writer))
-                        {
-                            MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
-
-                _prevLocoState = state;
-            }
-        }
-
-        public void SetLocoState(BehaviourBaseNav.LocoState locoState) {
+        public void SwitchLocoState(BehaviourBaseNav.LocoState locoState) {
             BehaviourBaseNavPatches.IgnorePatches = true;
             Component.SwitchLocoState(locoState, 0f, true);
-            _prevLocoState = locoState;
+            BehaviourBaseNavPatches.IgnorePatches = false;
+        }
+
+        public void SwitchMentalState(BehaviourBaseNav.MentalState mentalState, TriggerRefProxy proxy = null) {
+            BehaviourBaseNavPatches.IgnorePatches = true;
+
+            switch (mentalState) {
+                default:
+                    Component.SwitchMentalState(mentalState);
+                    break;
+                case BehaviourBaseNav.MentalState.Agroed:
+                    Component.SetAgro(proxy);
+                    break;
+                case BehaviourBaseNav.MentalState.Engaged:
+                    Component.SetEngaged(proxy);
+                    break;
+            }
+
             BehaviourBaseNavPatches.IgnorePatches = false;
         }
     }

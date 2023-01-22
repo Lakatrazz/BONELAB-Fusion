@@ -108,6 +108,7 @@ namespace LabFusion.Network
             SlowMoButton = 62,
 
             BehaviourBaseNavLoco = 63,
+            BehaviourBaseNavMental = 64,
 
             Module = 80,
             ModuleAssignment = 81;

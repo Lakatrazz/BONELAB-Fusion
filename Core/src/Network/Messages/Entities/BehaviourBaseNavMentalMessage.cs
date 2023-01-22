@@ -14,18 +14,26 @@ using SLZ.AI;
 
 namespace LabFusion.Network
 {
-    public class BehaviourBaseNavLocoData : IFusionSerializable, IDisposable
+    public class BehaviourBaseNavMentalData : IFusionSerializable, IDisposable
     {
         public byte ownerId;
         public ushort syncId;
-        public BehaviourBaseNav.LocoState locoState;
+        public BehaviourBaseNav.MentalState mentalState;
+        public SerializedTriggerRefReference triggerRef;
 
         public void Serialize(FusionWriter writer)
         {
             writer.Write(ownerId);
             writer.Write(syncId);
 
-            writer.Write((byte)locoState);
+            writer.Write((byte)mentalState);
+
+            switch (mentalState) {
+                case BehaviourBaseNav.MentalState.Engaged:
+                case BehaviourBaseNav.MentalState.Agroed:
+                    writer.Write(triggerRef);
+                    break;
+            }
         }
 
         public void Deserialize(FusionReader reader)
@@ -33,7 +41,14 @@ namespace LabFusion.Network
             ownerId = reader.ReadByte();
             syncId = reader.ReadUInt16();
 
-            locoState = (BehaviourBaseNav.LocoState)reader.ReadByte();
+            mentalState = (BehaviourBaseNav.MentalState)reader.ReadByte();
+
+            switch (mentalState) {
+                case BehaviourBaseNav.MentalState.Engaged:
+                case BehaviourBaseNav.MentalState.Agroed:
+                    triggerRef = reader.ReadFusionSerializable<SerializedTriggerRefReference>();
+                    break;
+            }
         }
 
         public PropSyncable GetPropSyncable() {
@@ -47,15 +62,16 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static BehaviourBaseNavLocoData Create(byte ownerId, PropSyncable syncable, BehaviourBaseNav.LocoState locoState)
+        public static BehaviourBaseNavMentalData Create(byte ownerId, PropSyncable syncable, BehaviourBaseNav.MentalState mentalState, TriggerRefProxy proxy)
         {
             var syncId = syncable.GetId();
 
-            var data = new BehaviourBaseNavLocoData
+            var data = new BehaviourBaseNavMentalData
             {
                 ownerId = ownerId,
                 syncId = syncId,
-                locoState = locoState,
+                mentalState = mentalState,
+                triggerRef = new SerializedTriggerRefReference(proxy),
             };
 
             return data;
@@ -63,14 +79,14 @@ namespace LabFusion.Network
     }
 
     [Net.SkipHandleWhileLoading]
-    public class BehaviourBaseNavLocoMessage : FusionMessageHandler
+    public class BehaviourBaseNavMentalMessage : FusionMessageHandler
     {
-        public override byte? Tag => NativeMessageTag.BehaviourBaseNavLoco;
+        public override byte? Tag => NativeMessageTag.BehaviourBaseNavMental;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using (var reader = FusionReader.Create(bytes)) {
-                using (var data = reader.ReadFusionSerializable<BehaviourBaseNavLocoData>()) {
+                using (var data = reader.ReadFusionSerializable<BehaviourBaseNavMentalData>()) {
                     // Send message to other clients if server
                     if (NetworkInfo.IsServer && isServerHandled)
                     {
@@ -80,10 +96,11 @@ namespace LabFusion.Network
                         }
                     }
                     else {
-                        // Find the prop syncable and update its behaviour nav
+                        // Get the prop syncable, check if it has a behaviour
+                        // Then, set the mental state
                         var syncable = data.GetPropSyncable();
                         if (syncable != null && syncable.TryGetExtender<BehaviourBaseNavExtender>(out var extender)) {
-                            extender.SwitchLocoState(data.locoState);
+                            extender.SwitchMentalState(data.mentalState, data.triggerRef?.proxy);
                         }
                     }
                 }
