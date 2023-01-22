@@ -367,7 +367,7 @@ namespace LabFusion.Representation
         }
 
         public void MarkDirty() {
-            _isBodyLogDirty = true;
+            _isBodyLogDirty = false;
             _bodyLogState = false;
 
             _isAvatarDirty = true;
@@ -677,10 +677,14 @@ namespace LabFusion.Representation
                 if (_isBodyLogDirty) {
                     PullCordDevicePatches.IgnorePatches = true;
 
-                    if (_bodyLogState)
-                        pullCord.EnableBall();
-                    else
-                        pullCord.DisableBall();
+                    if (_bodyLogState) {
+                        if (!pullCord.ballJoint)
+                            pullCord.EnableBall();
+                    }
+                    else {
+                        if (pullCord.ballJoint)
+                            pullCord.DisableBall();
+                    }
 
                     PullCordDevicePatches.IgnorePatches = false;
 
