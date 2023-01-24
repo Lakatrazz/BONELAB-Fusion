@@ -352,7 +352,6 @@
     <Compile Include="Core\src\Network\Messages\Server\ConnectionRequestMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\DisconnectMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\LoadingStateMessage.cs" />
-    <Compile Include="Core\src\Network\Messages\SimpleStringMessage.cs" />
     <Compile Include="Core\src\Network\Helpers\NetworkInfo.cs" />
     <Compile Include="Core\src\Network\Internal\InternalServerHelpers.cs" />
     <Compile Include="Core\src\Network\Messages\Spawning\DespawnResponseMessage.cs" />

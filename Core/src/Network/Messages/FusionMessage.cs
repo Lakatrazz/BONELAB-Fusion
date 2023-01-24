@@ -47,6 +47,15 @@ namespace LabFusion.Network
             return message;
         }
 
+        public static FusionMessage ModuleCreate<TMessage>(FusionWriter writer) where TMessage : ModuleMessageHandler {
+            return ModuleCreate(typeof(TMessage), writer);
+        }
+
+        public static FusionMessage ModuleCreate<TMessage>(byte[] buffer) where TMessage : ModuleMessageHandler
+        {
+            return ModuleCreate(typeof(TMessage), buffer);
+        }
+
         public static FusionMessage ModuleCreate(Type type, FusionWriter writer) {
             return ModuleCreate(type, writer.Buffer);
         }
@@ -58,10 +67,14 @@ namespace LabFusion.Network
             message.buffer[0] = NativeMessageTag.Module;
 
             // Assign the module type
-            var typeBytes = new byte[2];
+            byte[] typeBytes;
             var tag = ModuleMessageHandler.GetHandlerTag(type);
+
+            // Make sure the tag is valid, otherwise we dont return a message
             if (tag.HasValue)
                 typeBytes = BitConverter.GetBytes(tag.Value);
+            else
+                return null;
 
             message.Buffer[1] = typeBytes[0];
             message.Buffer[2] = typeBytes[1];

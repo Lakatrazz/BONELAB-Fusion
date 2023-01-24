@@ -9,6 +9,7 @@ using MelonLoader;
 using LabFusion.Data;
 using LabFusion.Utilities;
 using LabFusion.Representation;
+using LabFusion.Network;
 
 namespace LabFusion.SDK.Modules {
     public static class ModuleHandler {
@@ -35,6 +36,8 @@ namespace LabFusion.SDK.Modules {
                 var moduleInfo = moduleAssembly.GetCustomAttribute<ModuleInfo>();
 
                 if (moduleInfo != null && moduleInfo.moduleType != null) {
+                    ModuleMessageHandler.LoadHandlers(moduleAssembly);
+
                     Internal_SetupModule(moduleInfo);
                 }
             }
@@ -42,15 +45,15 @@ namespace LabFusion.SDK.Modules {
 
         private static void Internal_SetupModule(ModuleInfo info) {
             if (Activator.CreateInstance(info.moduleType) is Module module) {
+                Internal_PrintDescription(info);
+
                 _loadedModules.Add(module);
                 module.ModuleLoaded(info);
-
-                Internal_PrintDescription(info);
             }
         }
 
         internal static void Internal_PrintDescription(ModuleInfo info) {
-            FusionLogger.Log("--==== Loaded Fusion Module ====--", ConsoleColor.Magenta);
+            FusionLogger.Log("--==== Loaded Fusion Module ====--", info.color);
 
             FusionLogger.Log($"{info.name} - v{info.version}");
 
@@ -59,7 +62,7 @@ namespace LabFusion.SDK.Modules {
 
             FusionLogger.Log($"by {info.author}");
 
-            FusionLogger.Log("--=============================--", ConsoleColor.Magenta);
+            FusionLogger.Log("--=============================--", info.color);
         }
     }
 }

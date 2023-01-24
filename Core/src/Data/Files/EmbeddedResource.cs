@@ -16,12 +16,6 @@ namespace LabFusion.Data
 {
     public static class EmbeddedResource
     {
-        public static void ListResourcesFromAssembly(Assembly assembly)
-        {
-            foreach (string resource in assembly.GetManifestResourceNames())
-                FusionLogger.Log("Resource: " + resource, ConsoleColor.DarkCyan);
-        }
-
         public static byte[] LoadFromAssembly(Assembly assembly, string name)
         {
             string[] manifestResources = assembly.GetManifestResourceNames();

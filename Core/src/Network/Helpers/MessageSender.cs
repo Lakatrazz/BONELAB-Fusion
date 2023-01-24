@@ -22,6 +22,9 @@ namespace LabFusion.Network
         /// <param name="message"></param>
         public static void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message)
         {
+            if (message == null)
+                return;
+
             if (NetworkInfo.CurrentNetworkLayer != null) {
                 NetworkInfo.BytesUp += message.Buffer.Length;
 
@@ -37,6 +40,9 @@ namespace LabFusion.Network
         /// <param name="message"></param>
         public static void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message)
         {
+            if (message == null)
+                return;
+
             if (NetworkInfo.CurrentNetworkLayer != null) {
                 NetworkInfo.BytesUp += message.Buffer.Length;
 
@@ -50,6 +56,9 @@ namespace LabFusion.Network
         /// <param name="channel"></param>
         /// <param name="message"></param>
         public static void SendToServer(NetworkChannel channel, FusionMessage message) {
+            if (message == null)
+                return;
+
             if (NetworkInfo.CurrentNetworkLayer != null) {
                 NetworkInfo.BytesUp += message.Buffer.Length;
 
@@ -67,6 +76,9 @@ namespace LabFusion.Network
         /// <param name="message"></param>
         public static void BroadcastMessage(NetworkChannel channel, FusionMessage message)
         {
+            if (message == null)
+                return;
+
             if (NetworkInfo.CurrentNetworkLayer != null) {
                 NetworkInfo.BytesUp += message.Buffer.Length;
 
@@ -87,6 +99,9 @@ namespace LabFusion.Network
         /// <param name="message"></param>
         public static void BroadcastMessageExcept(byte userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
         {
+            if (message == null)
+                return;
+
             if (NetworkInfo.CurrentNetworkLayer != null) {
                 NetworkInfo.BytesUp += message.Buffer.Length;
 
@@ -107,6 +122,9 @@ namespace LabFusion.Network
         /// <param name="message"></param>
         public static void BroadcastMessageExcept(ulong userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
         {
+            if (message == null)
+                return;
+
             if (NetworkInfo.CurrentNetworkLayer != null) {
                 NetworkInfo.BytesUp += message.Buffer.Length;
 
@@ -125,6 +143,9 @@ namespace LabFusion.Network
         /// <param name="channel"></param>
         /// <param name="message"></param>
         public static void BroadcastMessageExceptSelf(NetworkChannel channel, FusionMessage message) {
+            if (message == null)
+                return;
+
             if (NetworkInfo.IsServer) {
                 BroadcastMessageExcept(0, channel, message);
             }
