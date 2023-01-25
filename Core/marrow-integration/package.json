@@ -1,0 +1,19 @@
+{
+    "name": "com.bonelabfusion.marrowintegration",
+	"version": "1.0.0",
+    "displayName": "Fusion Marrow Integration",
+    "description": "Fusion integration support for the MarrowSDK, allowing you to implement custom events for multiplayer.",
+	"unity": "2021.3",
+	"dependencies": {
+    },
+	"keywords": [
+		"bonelab",
+		"fusion"
+	],
+	"license": "MIT",
+	"author": {
+		"name": "Lakatrazz"
+	},
+	"unityRelease": "5f1",
+	"hideInEditor": false
+}

@@ -25,6 +25,7 @@ using LabFusion.Patching;
 using SLZ.Marrow.Utilities;
 using BoneLib.Nullables;
 using SLZ.Marrow.Data;
+using LabFusion.MarrowIntegration;
 
 namespace LabFusion
 {

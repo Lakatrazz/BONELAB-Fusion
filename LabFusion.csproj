@@ -178,6 +178,10 @@
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\SteamInterface.cs" />
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utf8String.cs" />
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utility.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\InvokeUltEventIfClient.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\InvokeUltEventIfHost.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\InvokeUltEventInServer.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\AutoSyncOnStart.cs" />
     <Compile Include="Core\src\AssemblyInfo.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -592,6 +596,9 @@
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="UltEvents">
+      <HintPath>Core\managed\UltEvents.dll</HintPath>
+    </Reference>
     <Reference Include="UnhollowerBaseLib, Version=0.4.18.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\UnhollowerBaseLib.dll</HintPath>
