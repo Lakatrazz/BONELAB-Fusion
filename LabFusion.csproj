@@ -280,6 +280,7 @@
     <Compile Include="Core\src\Patching\Patches\BehaviourPowerLegsPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\BehaviourBaseNavPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Control_GlobalTimePatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\GachaPlacerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\BonelabHubPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\BoardGeneratorPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ConstrainerPatches.cs" />
