@@ -138,7 +138,7 @@ namespace LabFusion.Network {
                 }
 
                 // Apply player rep data
-                if (data.smallId != PlayerIdManager.LocalSmallId && PlayerRep.Representations.TryGetValue(data.smallId, out var rep) && rep.IsCreated) {
+                if (data.smallId != PlayerIdManager.LocalSmallId && PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep) && rep.IsCreated) {
                     rep.serializedFeetOffset = data.feetOffset;
                     rep.serializedCrouchTarget = data.crouchTarget;
                     rep.serializedSpineCrouchOff = data.spineCrouchOff;

@@ -21,7 +21,7 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(AlignPlug.OnProxyGrab))]
         [HarmonyPrefix]
         public static bool OnProxyGrab(AlignPlug __instance, Hand hand) {
-            if (__instance.TryCast<AmmoPlug>() && PlayerRep.Managers.ContainsKey(hand.manager))
+            if (__instance.TryCast<AmmoPlug>() && PlayerRepManager.HasPlayerId(hand.manager))
                 return false;
 
             return true;
@@ -30,7 +30,7 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(AlignPlug.OnProxyRelease))]
         [HarmonyPrefix]
         public static bool OnProxyRelease(AlignPlug __instance, Hand hand) {
-            if (__instance.TryCast<AmmoPlug>() && PlayerRep.Managers.ContainsKey(hand.manager))
+            if (__instance.TryCast<AmmoPlug>() && PlayerRepManager.HasPlayerId(hand.manager))
                 return false;
 
             return true;

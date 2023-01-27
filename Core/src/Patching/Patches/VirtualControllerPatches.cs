@@ -59,7 +59,7 @@ namespace LabFusion.Patching
                         var _pair = *(HandGripPair_*)pair;
                         var hand = new Hand(_pair.hand);
 
-                        if (PlayerRep.Managers.ContainsKey(hand.manager))
+                        if (PlayerRepManager.HasPlayerId(hand.manager))
                             return false;
                     }
                 }

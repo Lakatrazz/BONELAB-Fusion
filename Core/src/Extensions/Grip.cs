@@ -10,6 +10,13 @@ using UnityEngine;
 namespace LabFusion.Extensions
 {
     public static class GripExtensions {
+        public static void TryDetach(this Grip grip, Hand hand) {
+            // Make sure the AttachedReceiver matches
+            if (hand.AttachedReceiver == grip) {
+                grip.ForceDetach(hand);
+            }
+        }
+
         public static void FreeJoints(this Grip grip, Hand hand) {
             if (hand.joint)
                 Internal_FreeJoint(hand.joint);

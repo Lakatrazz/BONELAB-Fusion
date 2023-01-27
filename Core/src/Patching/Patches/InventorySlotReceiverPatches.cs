@@ -42,7 +42,7 @@ namespace LabFusion.Patching {
                             smallId = PlayerIdManager.LocalSmallId;
                             references = RigData.RigReferences;
                         }
-                        else if (PlayerRep.Managers.TryGetValue(rigManager, out var rep)) {
+                        else if (PlayerRepManager.TryGetPlayerRep(rigManager, out var rep)) {
                             smallId = rep.PlayerId.SmallId;
                             references = rep.RigReferences;
                         }
@@ -101,7 +101,7 @@ namespace LabFusion.Patching {
                             smallId = PlayerIdManager.LocalSmallId;
                             references = RigData.RigReferences;
                         }
-                        else if (PlayerRep.Managers.TryGetValue(rigManager, out var rep)) {
+                        else if (PlayerRepManager.TryGetPlayerRep(rigManager, out var rep)) {
                             smallId = rep.PlayerId.SmallId;
                             references = rep.RigReferences;
                         }

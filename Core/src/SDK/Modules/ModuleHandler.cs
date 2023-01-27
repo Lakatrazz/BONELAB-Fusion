@@ -6,9 +6,7 @@ using System.Linq;
 
 using MelonLoader;
 
-using LabFusion.Data;
 using LabFusion.Utilities;
-using LabFusion.Representation;
 using LabFusion.Network;
 
 namespace LabFusion.SDK.Modules {

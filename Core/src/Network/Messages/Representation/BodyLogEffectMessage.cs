@@ -49,8 +49,7 @@ namespace LabFusion.Network
                 using (var data = reader.ReadFusionSerializable<BodyLogEffectData>())
                 {
                     // Play the effect
-                    if (PlayerRep.Representations.ContainsKey(data.smallId)) {
-                        var rep = PlayerRep.Representations[data.smallId];
+                    if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep)) {
                         rep.PlayPullCordEffects();
                     }
 

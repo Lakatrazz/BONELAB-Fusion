@@ -25,7 +25,7 @@ namespace LabFusion.Patching
         {
             __state = __instance.pullCoroutine != null;
 
-            if (NetworkInfo.HasServer && PlayerRep.Managers.ContainsKey(hand.manager)) {
+            if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(hand.manager)) {
                 return false;
             } 
 

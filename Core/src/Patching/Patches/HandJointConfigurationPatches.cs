@@ -25,7 +25,7 @@ namespace LabFusion.Patching
             if (NetworkInfo.HasServer) {
                 var hand = Hand.Cache.Get(joint.gameObject);
 
-                if (hand && PlayerRep.Managers.ContainsKey(hand.manager)) {
+                if (hand && PlayerRepManager.HasPlayerId(hand.manager)) {
                     joint.breakForce = float.PositiveInfinity;
                     joint.breakTorque = float.PositiveInfinity;
                 }

@@ -41,7 +41,7 @@ namespace LabFusion.Patching {
                 return true;
 
             if (NetworkInfo.HasServer) {
-                if (PlayerRep.Managers.ContainsKey(__instance.rm))
+                if (PlayerRepManager.HasPlayerId(__instance.rm))
                     return false;
                 else if (__instance.rm == RigData.RigReferences.RigManager) {
                     PlayerSender.SendBodyLogEnable(true);
@@ -63,7 +63,7 @@ namespace LabFusion.Patching {
                 return true;
 
             if (NetworkInfo.HasServer) {
-                if (PlayerRep.Managers.ContainsKey(__instance.rm))
+                if (PlayerRepManager.HasPlayerId(__instance.rm))
                     return false;
                 else if (__instance.rm == RigData.RigReferences.RigManager) {
                     PlayerSender.SendBodyLogEnable(false);
@@ -80,7 +80,7 @@ namespace LabFusion.Patching {
             // If this is a player rep,
             // We need to disable the avatars inside the body log
             // This way, the player reps won't accidentally change their avatar
-            if (NetworkInfo.HasServer && PlayerRep.Managers.ContainsKey(__instance.rm)) {
+            if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(__instance.rm)) {
                 for (var i = 0; i < __instance.avatarCrateRefs.Length; i++) {
                     __instance.avatarCrateRefs[i].Barcode = (Barcode)"";
                 }

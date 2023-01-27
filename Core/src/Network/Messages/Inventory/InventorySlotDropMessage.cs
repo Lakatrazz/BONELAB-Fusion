@@ -80,7 +80,7 @@ namespace LabFusion.Network
                         if (data.smallId == PlayerIdManager.LocalSmallId) {
                             references = RigData.RigReferences;
                         }
-                        else if (PlayerRep.Representations.TryGetValue(data.smallId, out var rep)) {
+                        else if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep)) {
                             references = rep.RigReferences;
                         }
 
@@ -97,7 +97,7 @@ namespace LabFusion.Network
                             slotReceiver.DropWeapon();
                             InventorySlotReceiverGrab.PreventDropCheck = false;
 
-                            if (PlayerRep.Representations.TryGetValue(data.grabber, out var grabber)) {
+                            if (PlayerRepManager.TryGetPlayerRep(data.grabber, out var grabber)) {
                                 if (weaponSlot && weaponSlot.grip)
                                     grabber.AttachObject(data.handedness, weaponSlot.grip);
 

@@ -47,8 +47,7 @@ namespace LabFusion.Network
             using (var reader = FusionReader.Create(bytes)) {
                 using (var data = reader.ReadFusionSerializable<PlayerRepAvatarData>()) {
                     // Swap the avatar for the rep
-                    if (PlayerRep.Representations.ContainsKey(data.smallId)) {
-                        var rep = PlayerRep.Representations[data.smallId];
+                    if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep)) {
                         rep.SwapAvatar(data.stats, data.barcode);
                     }
 

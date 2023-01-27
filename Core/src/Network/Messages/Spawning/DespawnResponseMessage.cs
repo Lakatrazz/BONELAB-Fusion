@@ -79,7 +79,7 @@ namespace LabFusion.Network
                     if (isMag) {
                         AmmoInventory ammoInventory = RigData.RigReferences.RigManager.AmmoInventory;
 
-                        if (PlayerRep.Representations.TryGetValue(despawnerId, out var rep)) {
+                        if (PlayerRepManager.TryGetPlayerRep(despawnerId, out var rep)) {
                             ammoInventory = rep.RigReferences.RigManager.AmmoInventory;
                         }
 

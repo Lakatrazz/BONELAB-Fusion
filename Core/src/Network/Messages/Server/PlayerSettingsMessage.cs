@@ -60,7 +60,7 @@ namespace LabFusion.Network
                         }
                     }
                     else {
-                        if (PlayerRep.Representations.TryGetValue(data.smallId, out var rep)) {
+                        if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep)) {
                             rep.SetSettings(data.settings);
                         }
                     }

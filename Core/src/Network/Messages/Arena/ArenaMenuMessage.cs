@@ -15,6 +15,8 @@ using SLZ;
 using SLZ.Interaction;
 using SLZ.Props.Weapons;
 
+using LabFusion.Exceptions;
+
 namespace LabFusion.Network
 {
     public enum ArenaMenuType {
@@ -73,11 +75,13 @@ namespace LabFusion.Network
                 {
                     var menu = ArenaData.MenuController;
 
-                    ArenaMenuPatches.IgnorePatches = true;
-
                     // We ONLY handle this for clients, this message should only ever be sent by the server!
-                    if (!NetworkInfo.IsServer && menu) {
-                        switch (data.type) {
+                    if (!NetworkInfo.IsServer && menu)
+                    {
+                        ArenaMenuPatches.IgnorePatches = true;
+
+                        switch (data.type)
+                        {
                             default:
                             case ArenaMenuType.UNKNOWN:
                                 break;
@@ -103,9 +107,11 @@ namespace LabFusion.Network
                                 menu.ResumeSurvivalFromRound();
                                 break;
                         }
-                    }
 
-                    ArenaMenuPatches.IgnorePatches = false;
+                        ArenaMenuPatches.IgnorePatches = false;
+                    }
+                    else
+                        throw new ExpectedClientException();
                 }
             }
         }

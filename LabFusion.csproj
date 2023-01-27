@@ -245,8 +245,10 @@
     <Compile Include="Core\src\Grabbables\SerializedGrabHandler.cs" />
     <Compile Include="Core\src\Mod.cs" />
     <Compile Include="Core\src\Network\Debugging\EmptyNetworkLayer.cs" />
+    <Compile Include="Core\src\Network\Helpers\MetadataHelper.cs" />
     <Compile Include="Core\src\Network\Helpers\NetworkVerification.cs" />
     <Compile Include="Core\src\Network\Helpers\SendRateTable.cs" />
+    <Compile Include="Core\src\Network\Messages\Trials\TrialSpawnerEventsMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\BonelabHubMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\DescentIntroMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\HomeMessage.cs" />
@@ -265,6 +267,8 @@
     <Compile Include="Core\src\Network\Messages\Representation\BodyLogEnableMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\BodyLogEffectMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\PlayerRepActionMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Server\PlayerMetadataRequestMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Server\PlayerMetadataResponseMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ModuleAssignMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ModuleMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ServerSettingsMessage.cs" />
@@ -286,6 +290,7 @@
     <Compile Include="Core\src\Patching\Patches\Levels\KartRacePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\KeyRecieverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\HomePatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Levels\Trial_SpawnerEventsPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PropFlashlightPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PullCordDevicePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ImpactSFXPatches.cs" />
@@ -294,6 +299,8 @@
     <Compile Include="Core\src\Patching\Patches\StabSlashPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ZoneEncounterPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\GenGameControl_TriggerPatches.cs" />
+    <Compile Include="Core\src\Representation\PlayerRepManager.cs" />
+    <Compile Include="Core\src\SDK\Gamemodes\Gamemode.cs" />
     <Compile Include="Core\src\SDK\Network\Messages\ModuleMessageHandler.cs" />
     <Compile Include="Core\src\Senders\ArenaSender.cs" />
     <Compile Include="Core\src\Senders\EnemySender.cs" />
@@ -302,6 +309,7 @@
     <Compile Include="Core\src\Senders\PlayerSender.cs" />
     <Compile Include="Core\src\Senders\PropSender.cs" />
     <Compile Include="Core\src\Senders\TimeScaleSender.cs" />
+    <Compile Include="Core\src\Senders\TrialSender.cs" />
     <Compile Include="Core\src\Senders\ZoneSender.cs" />
     <Compile Include="Core\src\Senders\CampaignSender.cs" />
     <Compile Include="Core\src\Syncables\ConstraintSyncable.cs" />
@@ -355,7 +363,6 @@
     <Compile Include="Core\src\Network\Messages\Server\ConnectionResponseMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ConnectionRequestMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\DisconnectMessage.cs" />
-    <Compile Include="Core\src\Network\Messages\Server\LoadingStateMessage.cs" />
     <Compile Include="Core\src\Network\Helpers\NetworkInfo.cs" />
     <Compile Include="Core\src\Network\Internal\InternalServerHelpers.cs" />
     <Compile Include="Core\src\Network\Messages\Spawning\DespawnResponseMessage.cs" />

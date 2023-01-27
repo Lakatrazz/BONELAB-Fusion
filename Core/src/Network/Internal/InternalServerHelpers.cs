@@ -22,8 +22,8 @@ namespace LabFusion.Network {
 
         private static void DisposeUser(PlayerId id) {
             if (id != null) {
-                if (PlayerRep.Representations.ContainsKey(id.SmallId))
-                    PlayerRep.Representations[id.SmallId].Dispose();
+                if (PlayerRepManager.TryGetPlayerRep(id.SmallId, out var rep))
+                    rep.Dispose();
 
                 id.Dispose();
 
@@ -44,7 +44,7 @@ namespace LabFusion.Network {
         /// </summary>
         internal static void OnStartServer() {
             // Create local id
-            var id = new PlayerId(PlayerIdManager.LocalLongId, 0, PlayerIdManager.LocalUsername);
+            var id = new PlayerId(PlayerIdManager.LocalLongId, 0, GetInitialMetadata());
             id.Insert();
             PlayerIdManager.ApplyLocalId();
 
@@ -105,6 +105,20 @@ namespace LabFusion.Network {
         /// <param name="longId"></param>
         internal static void OnUserLeave(ulong longId) {
             DisposeUser(longId);
+        }
+
+        /// <summary>
+        /// Gets the default metadata for the local player.
+        /// </summary>
+        /// <returns></returns>
+        internal static Dictionary<string, string> GetInitialMetadata() {
+            // Create the dict
+            var metadata = new Dictionary<string, string> {
+                // Username
+                { MetadataHelper.UsernameKey, PlayerIdManager.LocalUsername }
+            };
+
+            return metadata;
         }
     }
 }

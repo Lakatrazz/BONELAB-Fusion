@@ -209,7 +209,7 @@ namespace LabFusion.Network
                     if (ammoInventory.ammoReceiver._selectedCartridgeData != null)
                         cart = ammoInventory.ammoReceiver._selectedCartridgeData;
                 }
-                else if (PlayerRep.Representations.TryGetValue(owner, out var rep)) {
+                else if (PlayerRepManager.TryGetPlayerRep(owner, out var rep)) {
                     if (rep.RigReferences.RigManager.AmmoInventory.ammoReceiver._selectedCartridgeData != null) {
                         ammoInventory = rep.RigReferences.RigManager.AmmoInventory;
 
@@ -232,13 +232,13 @@ namespace LabFusion.Network
                         if (found.HasAttachedObject()) {
                             var current = Grip.Cache.Get(found.m_CurrentAttachedGO);
                             if (current)
-                                current.ForceDetach(found);
+                                current.TryDetach(found);
                         }
 
                         MelonCoroutines.Start(Internal_ForceGrabConfirm(found, grip));
                     }
                 }
-                else if (PlayerRep.Representations.TryGetValue(owner, out var rep)) {
+                else if (PlayerRepManager.TryGetPlayerRep(owner, out var rep)) {
                     var hostTransform = grip.Host.GetTransform();
                     var repHand = rep.RigReferences.GetHand(hand);
                     hostTransform.position = repHand.transform.position;

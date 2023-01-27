@@ -63,7 +63,7 @@ namespace LabFusion.Network
                             MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
                         }
                     }
-                    else if (PlayerRep.Representations.TryGetValue(data.smallId, out var rep)) {
+                    else if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep)) {
                         var rm = rep.RigReferences.RigManager;
 
                         // Make sure the rig exists

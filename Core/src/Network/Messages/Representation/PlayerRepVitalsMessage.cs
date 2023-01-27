@@ -157,8 +157,7 @@ namespace LabFusion.Network
             using (var reader = FusionReader.Create(bytes)) {
                 var data = reader.ReadFusionSerializable<PlayerRepVitalsData>();
 
-                if (PlayerRep.Representations.ContainsKey(data.smallId)) {
-                    var rep = PlayerRep.Representations[data.smallId];
+                if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep)) {
                     rep.SetVitals(data.bodyVitals);
                 }
 

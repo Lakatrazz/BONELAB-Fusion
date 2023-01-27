@@ -80,7 +80,7 @@ namespace LabFusion.Network
                             case DescentNooseType.UNKNOWN:
                                 break;
                             case DescentNooseType.ATTACH_NOOSE:
-                                if (PlayerRep.Representations.TryGetValue(data.smallId, out var rep)) {
+                                if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep)) {
                                     DescentData.Noose.rM = rep.RigReferences.RigManager;
                                     DescentData.Noose.AttachNeck();
                                 }

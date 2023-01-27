@@ -89,7 +89,7 @@ namespace LabFusion.Network
 
                                 magSyncable.SetRigidbodiesDirty();
 
-                                if (grabHand && PlayerRep.Representations.TryGetValue(data.smallId, out var rep) && grabHand.manager == rep.RigReferences.RigManager) {
+                                if (grabHand && PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep) && grabHand.manager == rep.RigReferences.RigManager) {
                                     var handedness = grabHand.handedness;
                                     
                                     if (rep.RigReferences.GetHand(handedness).HasAttachedObject())

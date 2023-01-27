@@ -43,8 +43,8 @@ namespace LabFusion.Network
         }
 
         public PlayerRep GetRep() {
-            if (PlayerRep.Representations.ContainsKey(smallId))
-                return PlayerRep.Representations[smallId];
+            if (PlayerRepManager.TryGetPlayerRep(smallId, out var rep))
+                return rep;
             return null;
         }
 

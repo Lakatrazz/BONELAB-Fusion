@@ -74,7 +74,7 @@ namespace LabFusion.Network
                         MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
                     }
                 }
-                else if (PlayerRep.Representations.TryGetValue(data.smallId, out var rep) && SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable seatSyncable && seatSyncable.TryGetExtender<SeatExtender>(out var extender)) {
+                else if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep) && SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable seatSyncable && seatSyncable.TryGetExtender<SeatExtender>(out var extender)) {
                     var seat = extender.GetComponent(data.seatIndex);
 
                     if (seat) {

@@ -21,7 +21,7 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(GameWorldSkeletonRig.OnFixedUpdate))]
         public static void OnFixedUpdate(GameWorldSkeletonRig __instance, float deltaTime) {
             try {
-                if (__instance.manager.activeSeat && PlayerRep.Managers.TryGetValue(__instance.manager, out var rep)) {
+                if (__instance.manager.activeSeat && PlayerRepManager.TryGetPlayerRep(__instance.manager, out var rep)) {
                     rep.OnHeptaBody2Update();
                 }
             }

@@ -119,21 +119,11 @@ namespace LabFusion.Utilities {
         }
 
         internal static void SendLoadingState(bool isLoading) {
-            if (!NetworkInfo.HasServer)
+            if (!NetworkInfo.HasServer || PlayerIdManager.LocalId == null)
                 return;
 
-            using (var writer = FusionWriter.Create())
-            {
-                using (var data = LoadingStateData.Create(PlayerIdManager.LocalSmallId, isLoading))
-                {
-                    writer.Write(data);
-
-                    using (var message = FusionMessage.Create(NativeMessageTag.LoadingState, writer))
-                    {
-                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                    }
-                }
-            }
+            // Set the loading metadata
+            PlayerIdManager.LocalId.TrySetMetadata(MetadataHelper.LoadingKey, MetadataHelper.ParseString(isLoading));
         }
     }
 }

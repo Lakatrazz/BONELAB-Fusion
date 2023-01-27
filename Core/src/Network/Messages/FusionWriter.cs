@@ -203,19 +203,19 @@ namespace LabFusion.Network
             ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
         }
 
-        public void Write(bool[] value)
+        public void Write(ICollection<bool> value)
         {
-            int num = (int)Math.Ceiling((double)value.Length / 8.0);
+            int num = (int)Math.Ceiling((double)value.Count / 8.0);
             ArrayExtensions.EnsureLength(ref buffer, Position + 4 + num);
-            BigEndianHelper.WriteBytes(buffer, Position, value.Length);
+            BigEndianHelper.WriteBytes(buffer, Position, value.Count);
             int num2 = 0;
             for (int i = 0; i < num; i++)
             {
                 byte b = 0;
                 int num3 = 7;
-                while (num3 >= 0 && num2 < value.Length)
+                while (num3 >= 0 && num2 < value.Count)
                 {
-                    if (value[num2])
+                    if (value.ElementAt(num2))
                     {
                         b = (byte)(b | (byte)(1 << num3));
                     }
@@ -228,15 +228,15 @@ namespace LabFusion.Network
             ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
         }
 
-        public void Write(double[] value)
+        public void Write(ICollection<double> value)
         {
-            ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Length * 8);
-            BigEndianHelper.WriteBytes(buffer, Position, value.Length);
+            ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Count * 8);
+            BigEndianHelper.WriteBytes(buffer, Position, value.Count);
             int num = 0;
             int num2 = Position + 4;
-            while (num < value.Length)
+            while (num < value.Count)
             {
-                byte[] bytes = BitConverter.GetBytes(value[num]);
+                byte[] bytes = BitConverter.GetBytes(value.ElementAt(num));
                 if (BitConverter.IsLittleEndian)
                 {
                     System.Array.Reverse(bytes);
@@ -245,55 +245,55 @@ namespace LabFusion.Network
                 num++;
                 num2 += 8;
             }
-            Position += 4 + value.Length * 8;
+            Position += 4 + value.Count * 8;
             ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
         }
 
-        public void Write(short[] value)
+        public void Write(ICollection<short> value)
         {
-            ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Length * 2);
-            BigEndianHelper.WriteBytes(buffer, Position, value.Length);
+            ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Count * 2);
+            BigEndianHelper.WriteBytes(buffer, Position, value.Count);
             int num = 0;
             int num2 = Position + 4;
-            while (num < value.Length)
+            while (num < value.Count)
             {
-                BigEndianHelper.WriteBytes(buffer, num2, value[num]);
+                BigEndianHelper.WriteBytes(buffer, num2, value.ElementAt(num));
                 num++;
                 num2 += 2;
             }
-            Position += 4 + value.Length * 2;
+            Position += 4 + value.Count * 2;
             ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
         }
 
-        public void Write(int[] value)
+        public void Write(ICollection<int> value)
         {
-            ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Length * 4);
-            BigEndianHelper.WriteBytes(buffer, Position, value.Length);
+            ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Count * 4);
+            BigEndianHelper.WriteBytes(buffer, Position, value.Count);
             int num = 0;
             int num2 = Position + 4;
-            while (num < value.Length)
+            while (num < value.Count)
             {
-                BigEndianHelper.WriteBytes(buffer, num2, value[num]);
+                BigEndianHelper.WriteBytes(buffer, num2, value.ElementAt(num));
                 num++;
                 num2 += 4;
             }
-            Position += 4 + value.Length * 4;
+            Position += 4 + value.Count * 4;
             ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
         }
 
-        public void Write(long[] value)
+        public void Write(ICollection<long> value)
         {
-            ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Length * 8);
-            BigEndianHelper.WriteBytes(buffer, Position, value.Length);
+            ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Count * 8);
+            BigEndianHelper.WriteBytes(buffer, Position, value.Count);
             int num = 0;
             int num2 = Position + 4;
-            while (num < value.Length)
+            while (num < value.Count)
             {
-                BigEndianHelper.WriteBytes(buffer, num2, value[num]);
+                BigEndianHelper.WriteBytes(buffer, num2, value.ElementAt(num));
                 num++;
                 num2 += 8;
             }
-            Position += 4 + value.Length * 8;
+            Position += 4 + value.Count * 8;
             ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
         }
 
@@ -306,15 +306,15 @@ namespace LabFusion.Network
             ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
         }
 
-        public void Write(float[] value)
+        public void Write(ICollection<float> value)
         {
-            ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Length * 4);
-            BigEndianHelper.WriteBytes(buffer, Position, value.Length);
+            ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Count * 4);
+            BigEndianHelper.WriteBytes(buffer, Position, value.Count);
             int num = 0;
             int num2 = Position + 4;
-            while (num < value.Length)
+            while (num < value.Count)
             {
-                byte[] bytes = BitConverter.GetBytes(value[num]);
+                byte[] bytes = BitConverter.GetBytes(value.ElementAt(num));
                 if (BitConverter.IsLittleEndian)
                 {
                     System.Array.Reverse(bytes);
@@ -323,14 +323,19 @@ namespace LabFusion.Network
                 num++;
                 num2 += 4;
             }
-            Position += 4 + value.Length * 4;
+            Position += 4 + value.Count * 4;
             ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
         }
 
-        public void Write(string[] value)
+        public void Write(Dictionary<string, string> value) {
+            Write(value.Keys);
+            Write(value.Values);
+        }
+
+        public void Write(ICollection<string> value)
         {
             ArrayExtensions.EnsureLength(ref buffer, Position + 4);
-            BigEndianHelper.WriteBytes(buffer, Position, value.Length);
+            BigEndianHelper.WriteBytes(buffer, Position, value.Count);
             Position += 4;
             ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
             foreach (string value2 in value)
@@ -339,51 +344,51 @@ namespace LabFusion.Network
             }
         }
 
-        public void Write(ushort[] value)
+        public void Write(ICollection<ushort> value)
         {
-            ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Length * 2);
-            BigEndianHelper.WriteBytes(buffer, Position, value.Length);
+            ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Count * 2);
+            BigEndianHelper.WriteBytes(buffer, Position, value.Count);
             int num = 0;
             int num2 = Position + 4;
-            while (num < value.Length)
+            while (num < value.Count)
             {
-                BigEndianHelper.WriteBytes(buffer, num2, value[num]);
+                BigEndianHelper.WriteBytes(buffer, num2, value.ElementAt(num));
                 num++;
                 num2 += 2;
             }
-            Position += 4 + value.Length * 2;
+            Position += 4 + value.Count * 2;
             ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
         }
 
-        public void Write(uint[] value)
+        public void Write(ICollection<uint> value)
         {
-            ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Length * 4);
-            BigEndianHelper.WriteBytes(buffer, Position, value.Length);
+            ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Count * 4);
+            BigEndianHelper.WriteBytes(buffer, Position, value.Count);
             int num = 0;
             int num2 = Position + 4;
-            while (num < value.Length)
+            while (num < value.Count)
             {
-                BigEndianHelper.WriteBytes(buffer, num2, value[num]);
+                BigEndianHelper.WriteBytes(buffer, num2, value.ElementAt(num));
                 num++;
                 num2 += 4;
             }
-            Position += 4 + value.Length * 4;
+            Position += 4 + value.Count * 4;
             ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
         }
 
-        public void Write(ulong[] value)
+        public void Write(ICollection<ulong> value)
         {
-            ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Length * 8);
-            BigEndianHelper.WriteBytes(buffer, Position, value.Length);
+            ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Count * 8);
+            BigEndianHelper.WriteBytes(buffer, Position, value.Count);
             int num = 0;
             int num2 = Position + 4;
-            while (num < value.Length)
+            while (num < value.Count)
             {
-                BigEndianHelper.WriteBytes(buffer, num2, value[num]);
+                BigEndianHelper.WriteBytes(buffer, num2, value.ElementAt(num));
                 num++;
                 num2 += 8;
             }
-            Position += 4 + value.Length * 8;
+            Position += 4 + value.Count * 8;
             ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
         }
 

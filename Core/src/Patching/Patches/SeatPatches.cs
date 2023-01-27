@@ -39,7 +39,7 @@ namespace LabFusion.Patching
             if (NetworkInfo.HasServer) {
                 var grounder = other.GetComponent<PhysGrounder>();
 
-                if (grounder != null && PlayerRep.Managers.ContainsKey(grounder.physRig.manager))
+                if (grounder != null && PlayerRepManager.HasPlayerId(grounder.physRig.manager))
                     return false;
             }
 
@@ -57,7 +57,7 @@ namespace LabFusion.Patching
                     if (rM == RigData.RigReferences.RigManager) {
                         MelonCoroutines.Start(Internal_SyncSeat(__instance));
                     }
-                    else if (PlayerRep.Managers.ContainsKey(rM))
+                    else if (PlayerRepManager.HasPlayerId(rM))
                         return false;
                 }
                 catch (Exception e)

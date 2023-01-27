@@ -67,8 +67,6 @@ namespace LabFusion.Network
             DescentNoose = 39,
             DescentElevator = 40,
 
-            LoadingState = 41,
-
             MagmaGateEvent = 42,
 
             DescentIntro = 43,
@@ -109,6 +107,11 @@ namespace LabFusion.Network
 
             BehaviourBaseNavLoco = 63,
             BehaviourBaseNavMental = 64,
+
+            PlayerMetadataRequest = 65,
+            PlayerMetadataResponse = 66,
+
+            TrialSpawnerEvents = 67,
 
             Module = 80,
             ModuleAssignment = 81;

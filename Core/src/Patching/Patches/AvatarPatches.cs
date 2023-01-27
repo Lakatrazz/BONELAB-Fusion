@@ -29,7 +29,7 @@ namespace LabFusion.Patching {
                     var rm = __instance.GetComponentInParent<RigManager>();
                     
                     // Make sure this isn't the RealHeptaRig avatar! We don't want to scale those values!
-                    if (rm != null && PlayerRep.Managers.TryGetValue(rm, out var rep) && __instance != rm.realHeptaRig.player && rep.avatarStats != null) {
+                    if (rm != null && PlayerRepManager.TryGetPlayerRep(rm, out var rep) && __instance != rm.realHeptaRig.player && rep.avatarStats != null) {
                         // Apply the avatar stats
                         rep.avatarStats.CopyTo(__instance);
 

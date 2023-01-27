@@ -794,6 +794,23 @@ namespace LabFusion.Network
         }
 
         /// <summary>
+        /// Reads a dictionary of strings from the reader.
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string, string> ReadStringDictionary()
+        {
+            var dictionary = new Dictionary<string, string>();
+            var keys = ReadStrings();
+            var values = ReadStrings();
+
+            for (var i = 0; i < keys.Length; i++) {
+                dictionary.Add(keys[i], values[i]);
+            }
+
+            return dictionary;
+        }
+
+        /// <summary>
         ///     Reads an array unsigned 16bit integers from the reader.
         /// </summary>
         /// <returns>The array of unsigned 16bit integers read.</returns>

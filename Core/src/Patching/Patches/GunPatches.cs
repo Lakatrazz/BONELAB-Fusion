@@ -40,7 +40,7 @@ namespace LabFusion.Patching
                  if (hand == null)
                      return true;
 
-                 if (PlayerRep.Managers.ContainsKey(hand.manager))
+                 if (PlayerRepManager.HasPlayerId(hand.manager))
                      return false;
              }
 

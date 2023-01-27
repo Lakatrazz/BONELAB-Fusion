@@ -124,7 +124,7 @@ namespace LabFusion.Patching {
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Constrainer.OnTriggerGripUpdate))]
         public static bool OnTriggerGripUpdate(Hand hand) {
-            if (NetworkInfo.HasServer && PlayerRep.Managers.ContainsKey(hand.manager))
+            if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(hand.manager))
                 return false;
 
             return true;

@@ -79,7 +79,7 @@ namespace LabFusion.Network
                             if (data.smallId == PlayerIdManager.LocalSmallId) {
                                 references = RigData.RigReferences;
                             }
-                            else if (PlayerRep.Representations.TryGetValue(data.smallId, out var rep)) {
+                            else if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep)) {
                                 references = rep.RigReferences;
                             }
 

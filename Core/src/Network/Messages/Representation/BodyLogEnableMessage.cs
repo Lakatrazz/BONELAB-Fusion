@@ -53,7 +53,7 @@ namespace LabFusion.Network
                 using (var data = reader.ReadFusionSerializable<BodyLogEnableData>())
                 {
                     // Enable or disable the body log
-                    if (PlayerRep.Representations.TryGetValue(data.smallId, out var rep)) {
+                    if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep)) {
                         rep.SetPullCordActive(data.isEnabled);
                     }
 

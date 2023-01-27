@@ -55,9 +55,8 @@ namespace LabFusion.Patches
         {
             try
             {
-                if (PlayerRep.Managers.ContainsKey(__instance.manager))
+                if (PlayerRepManager.TryGetPlayerRep(__instance.manager, out var rep))
                 {
-                    var rep = PlayerRep.Managers[__instance.manager];
                     rep.OnControllerRigUpdate();
                 }
             }
@@ -75,7 +74,7 @@ namespace LabFusion.Patches
         [HarmonyPrefix]
         [HarmonyPatch(nameof(OpenControllerRig.OnBeginCameraRendering))]
         public static bool OnBeginCameraRendering(OpenControllerRig __instance, ScriptableRenderContext ctx, Camera cam) {
-            if (PlayerRep.Managers.ContainsKey(__instance.manager)) {
+            if (PlayerRepManager.HasPlayerId(__instance.manager)) {
                 return false;
             }
             

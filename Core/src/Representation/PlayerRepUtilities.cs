@@ -51,7 +51,7 @@ namespace LabFusion.Representation {
                 references = RigData.RigReferences;
                 return true;
             }
-            else if (PlayerRep.Managers.TryGetValue(rig, out var rep)) {
+            else if (PlayerRepManager.TryGetPlayerRep(rig, out var rep)) {
                 smallId = rep.PlayerId.SmallId;
                 references = rep.RigReferences;
                 return true;
@@ -67,7 +67,7 @@ namespace LabFusion.Representation {
                 references = RigData.RigReferences;
                 return true;
             }
-            else if (PlayerRep.Representations.TryGetValue(smallId, out var rep)) {
+            else if (PlayerRepManager.TryGetPlayerRep(smallId, out var rep)) {
                 references = rep.RigReferences;
                 return true;
             }
@@ -94,7 +94,7 @@ namespace LabFusion.Representation {
                     return true;
                 }
                 // Otherwise, check if this is another player
-                else if (PlayerRep.Managers.TryGetValue(rig, out var rep)) {
+                else if (PlayerRepManager.TryGetPlayerRep(rig, out var rep)) {
                     smallId = rep.PlayerId.SmallId;
                     references = rep.RigReferences;
 

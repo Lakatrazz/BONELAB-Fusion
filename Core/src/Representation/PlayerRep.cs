@@ -25,13 +25,11 @@ using UnityEngine;
 using MelonLoader;
 using LabFusion.Patching;
 using System.Windows.Forms.DataVisualization.Charting;
+using BoneLib;
 
 namespace LabFusion.Representation
 {
     public class PlayerRep : IDisposable {
-        public static readonly Dictionary<byte, PlayerRep> Representations = new Dictionary<byte, PlayerRep>();
-        public static readonly Dictionary<RigManager, PlayerRep> Managers = new Dictionary<RigManager, PlayerRep>(new UnityComparer());
-
         public const float NametagHeight = 0.23f;
         public const float NameTagDivider = 250f;
 
@@ -114,11 +112,15 @@ namespace LabFusion.Representation
 
         public PlayerRep(PlayerId playerId)
         {
+            // Store our ID
             PlayerId = playerId;
 
-            Username = playerId.Username;
+            // Hook into metadata changes
+            playerId.OnMetadataChanged += OnMetadataChanged;
+            OnMetadataChanged(playerId);
 
-            Representations.Add(playerId.SmallId, this);
+            // Insert the PlayerRep into the global list
+            PlayerRepManager.Internal_InsertPlayerRep(this);
 
             pelvisPDController = new PDController();
             footPDController = new PDController();
@@ -128,6 +130,14 @@ namespace LabFusion.Representation
             ResetSerializedTransforms();
 
             CreateRep();
+        }
+
+        private void OnMetadataChanged(PlayerId id) {
+            // Read username
+            id.TryGetMetadata(MetadataHelper.UsernameKey, out string username);
+            Username = username;
+
+            UpdateNametagSettings();
         }
 
         public void ResetSerializedTransforms() {
@@ -146,6 +156,11 @@ namespace LabFusion.Representation
                 return;
 
             if (grip) {
+                // Detach existing grip
+                var existing = RigReferences.GetSnatch(handedness);
+                if (existing != null)
+                    existing.TryDetach(hand);
+
                 // Update snatch grip
                 RigReferences.SetSnatch(handedness, grip);
 
@@ -205,7 +220,8 @@ namespace LabFusion.Representation
 
             var grip = RigReferences.GetSnatch(handedness);
             if (grip) {
-                grip.ForceDetach(hand);
+                grip.TryDetach(hand);
+                RigReferences.SetSnatch(handedness, null);
             }
 
             RigReferences.RemoveJoint(handedness);
@@ -341,7 +357,8 @@ namespace LabFusion.Representation
             rig.openControllerRig.rightController.manager = rig.openControllerRig;
             rightHaptor.device_Controller = rig.openControllerRig.rightController;
             rig.openControllerRig.rightController.handedness = Handedness.RIGHT;
-            Managers.Add(rig, this);
+
+            PlayerRepManager.Internal_AddRigManager(rig, this);
 
             repPelvis = rig.physicsRig.m_pelvis.GetComponent<Rigidbody>();
             repPelvis.drag = 0f;
@@ -381,7 +398,7 @@ namespace LabFusion.Representation
         }
 
         public static void OnRecreateReps() {
-            foreach (var rep in Representations.Values) {
+            foreach (var rep in PlayerRepManager.PlayerReps) {
                 rep.StartRepCreation();
             }
         }
@@ -392,7 +409,7 @@ namespace LabFusion.Representation
 
         private IEnumerator Co_DelayCreateRep() {
             // Wait for loading
-            while (LevelWarehouseUtilities.IsDelayedLoading() || PlayerId.IsLoading) {
+            while (LevelWarehouseUtilities.IsDelayedLoading() || MetadataHelper.ParseBool(PlayerId.GetMetadata(MetadataHelper.LoadingKey))) {
                 if (LevelWarehouseUtilities.IsLoading())
                     yield break;
 
@@ -640,13 +657,17 @@ namespace LabFusion.Representation
         }
 
         private void OnRepUpdate() {
-            if (!RigReferences.RigManager.IsNOC()) {
-                OnHandUpdate(RigReferences.LeftHand);
-                OnHandUpdate(RigReferences.RightHand);
-            }
+            if (!IsCreated)
+                return;
+
+            OnHandUpdate(RigReferences.LeftHand);
+            OnHandUpdate(RigReferences.RightHand);
         }
 
         private void OnRepFixedUpdate() {
+            if (!IsCreated)
+                return;
+
             OnPelvisPin();
 
             OnHandFixedUpdate(RigReferences.LeftHand);
@@ -662,12 +683,15 @@ namespace LabFusion.Representation
             foreach (var grip in RigReferences.RigGrips) {
                 foreach (var hand in grip.attachedHands.ToArray()) {
                     if (hand.manager == RigData.RigReferences.RigManager)
-                        grip.ForceDetach(hand);
+                        grip.TryDetach(hand);
                 }
             }
         }
 
         private void OnRepLateUpdate() {
+            if (!IsCreated)
+                return;
+
             OnUpdateNametags();
 
             // Update the player if its dirty
@@ -740,18 +764,18 @@ namespace LabFusion.Representation
         }
 
         public static void OnUpdate() {
-            foreach (var rep in Representations.Values)
+            foreach (var rep in PlayerRepManager.PlayerReps)
                 rep.OnRepUpdate();
         }
 
         public static void OnFixedUpdate() {
-            foreach (var rep in Representations.Values)
+            foreach (var rep in PlayerRepManager.PlayerReps)
                 rep.OnRepFixedUpdate();
         }
 
         public static void OnLateUpdate()
         {
-            foreach (var rep in Representations.Values)
+            foreach (var rep in PlayerRepManager.PlayerReps)
                 rep.OnRepLateUpdate();
         }
 
@@ -759,7 +783,7 @@ namespace LabFusion.Representation
         /// Destroys anything about the PlayerRep and frees it from memory.
         /// </summary>
         public void Dispose() {
-            Representations.Remove(PlayerId.SmallId);
+            PlayerRepManager.Internal_RemovePlayerRep(this);
 
             DestroyRep();
 

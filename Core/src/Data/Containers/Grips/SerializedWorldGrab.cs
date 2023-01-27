@@ -50,9 +50,7 @@ namespace LabFusion.Data
 
         public override Grip GetGrip()
         {
-            if (PlayerRep.Representations.ContainsKey(grabberId)) {
-                var rep = PlayerRep.Representations[grabberId];
-                
+            if (PlayerRepManager.TryGetPlayerRep(grabberId, out var rep)) {
                 if (rep.RigReferences.RigManager) {
                     var worldGrip = rep.RigReferences.RigManager.worldGrip;
                     worldGrip.transform.position = gripTransform.position;

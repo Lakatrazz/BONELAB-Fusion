@@ -58,8 +58,8 @@ namespace LabFusion.Data {
             RigReferenceCollection references = null;
             if (grabbedUser == PlayerIdManager.LocalSmallId)
                 references = RigData.RigReferences;
-            else if (PlayerRep.Representations.ContainsKey(grabbedUser))
-                references = PlayerRep.Representations[grabbedUser].RigReferences;
+            else if (PlayerRepManager.TryGetPlayerRep(grabbedUser, out var rep))
+                references = rep.RigReferences;
 
             return references?.GetGrip(gripIndex);
         }
