@@ -92,6 +92,8 @@ namespace LabFusion.Network
                     }
                 }
 
+                SyncManager.RemoveSyncable(syncable);
+
                 PooleeUtilities.CanDespawn = false;
             }
         }

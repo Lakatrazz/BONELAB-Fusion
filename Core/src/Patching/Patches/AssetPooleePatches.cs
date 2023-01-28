@@ -143,16 +143,16 @@ namespace LabFusion.Patching
         public static bool IgnorePatch = false;
 
         public static bool Prefix(AssetPoolee __instance) {
-            if (PooleeUtilities.IsPlayer(__instance) || IgnorePatch)
+            if (PooleeUtilities.IsPlayer(__instance) || IgnorePatch || __instance.IsNOC())
                 return true;
 
             try {
-                if (NetworkInfo.HasServer && !__instance.IsNOC() && !__instance.gameObject.IsNOC() && PropSyncable.Cache.TryGet(__instance.gameObject, out var syncable)) {
-                    if (!NetworkInfo.IsServer && !PooleeUtilities.CanDespawn) {
+                if (NetworkInfo.HasServer) {
+                    if (!NetworkInfo.IsServer && !PooleeUtilities.CanDespawn && PropSyncable.Cache.TryGet(__instance.gameObject, out var syncable)) {
                         return false;
                     }
                     else if (NetworkInfo.IsServer) {
-                        PooleeUtilities.SendDespawn(syncable.Id);
+                        MelonCoroutines.Start(CoVerifyDespawnCoroutine(__instance));
                     }
                 }
             } 
@@ -164,23 +164,19 @@ namespace LabFusion.Patching
 
             return true;
         }
-    }
 
-    [HarmonyPatch(typeof(AssetPoolee), nameof(AssetPoolee.OnDespawn))]
-    public class PooleeOnDespawnPatch {
-        public static void Postfix(AssetPoolee __instance) {
-            if (PooleeUtilities.IsPlayer(__instance))
-                return;
+        private static IEnumerator CoVerifyDespawnCoroutine(AssetPoolee __instance) {
+            while (LevelWarehouseUtilities.IsLoading()) {
+                yield return null;
+            }
 
-            try {
-                if (NetworkInfo.HasServer && !__instance.IsNOC() && !__instance.gameObject.IsNOC() && PropSyncable.Cache.TryGet(__instance.gameObject, out var syncable)) {
-                    SyncManager.RemoveSyncable(syncable);
-                }
-            } 
-            catch (Exception e) {
-#if DEBUG
-                FusionLogger.LogException("to execute patch AssetPoolee.OnDespawn", e);
-#endif
+            for (var i = 0; i < 5; i++) {
+                yield return null;
+            }
+
+            if (PropSyncable.Cache.TryGet(__instance.gameObject, out var syncable)) {
+                PooleeUtilities.SendDespawn(syncable.Id);
+                SyncManager.RemoveSyncable(syncable);
             }
         }
     }
