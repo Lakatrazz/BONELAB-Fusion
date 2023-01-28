@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using HarmonyLib;
 
 using LabFusion.Data;
+using LabFusion.MarrowIntegration;
 using LabFusion.Network;
 
 using SLZ.Combat;
@@ -29,6 +30,10 @@ namespace LabFusion.Patching {
 
                     // Was a player damaged? Make sure another player is holding the weapon
                     if (physRig != null) {
+                        // Check if we can force enable
+                        if (AlwaysAllowImpactDamage.Cache.ContainsSource(__instance.gameObject))
+                            return true;
+
                         var host = __instance._host;
 
                         foreach (var hand in host._hands) {

@@ -180,6 +180,7 @@
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utility.cs" />
     <Compile Include="Core\marrow-integration\Runtime\InvokeUltEventIfClient.cs" />
     <Compile Include="Core\marrow-integration\Runtime\InvokeUltEventIfHost.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\AlwaysAllowImpactDamage.cs" />
     <Compile Include="Core\marrow-integration\Runtime\InvokeUltEventInServer.cs" />
     <Compile Include="Core\marrow-integration\Runtime\AutoSyncOnStart.cs" />
     <Compile Include="Core\src\AssemblyInfo.cs">
@@ -296,10 +297,10 @@
     <Compile Include="Core\src\Patching\Patches\Levels\Trial_SpawnerEventsPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PropFlashlightPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PullCordDevicePatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\ImpactSFXPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Attacks\ImpactSFXPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PullCordForceChangePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\SpawnableCratePlacerPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\StabSlashPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Attacks\StabSlashPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ZoneEncounterPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\GenGameControl_TriggerPatches.cs" />
     <Compile Include="Core\src\Representation\PlayerRepManager.cs" />
