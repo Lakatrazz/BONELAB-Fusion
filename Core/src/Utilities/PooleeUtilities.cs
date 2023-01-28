@@ -28,6 +28,8 @@ namespace LabFusion.Utilities {
     public static class PooleeUtilities {
         internal static List<AssetPoolee> ForceEnabled = new List<AssetPoolee>();
 
+        internal static List<AssetPoolee> CheckingForSpawn = new List<AssetPoolee>();
+
         internal static List<AssetPoolee> CanSpawnList = new List<AssetPoolee>();
 
         internal static bool CanDespawn = false;
@@ -48,6 +50,41 @@ namespace LabFusion.Utilities {
             newSyncable.SetOwner(0);
 
             SyncManager.RegisterSyncable(newSyncable, syncId);
+        }
+
+        public static void SetCheckingForSpawn(AssetPoolee poolee)
+        {
+            if (!CheckingForSpawn.Has(poolee))
+                CheckingForSpawn.Add(poolee);
+        }
+
+        public static void RemoveCheckingForSpawn(AssetPoolee poolee)
+        {
+            for (var i = 0; i < CheckingForSpawn.Count; i++)
+            {
+                var found = CheckingForSpawn[i];
+
+                if (found == poolee)
+                {
+                    CheckingForSpawn.RemoveAt(i);
+                    return;
+                }
+            }
+        }
+
+        public static bool IsCheckingForSpawn(AssetPoolee poolee)
+        {
+            for (var i = 0; i < CheckingForSpawn.Count; i++)
+            {
+                var found = CheckingForSpawn[i];
+
+                if (found == poolee)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public static void KeepForceEnabled(AssetPoolee poolee)

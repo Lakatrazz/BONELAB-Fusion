@@ -88,6 +88,8 @@ namespace LabFusion.Patching
             for (var i = 0; i < 4; i++)
                 yield return null;
 
+            PooleeUtilities.RemoveCheckingForSpawn(__instance);
+
             try
             {
                 if (PooleeUtilities.CanSendSpawn(__instance) && !PooleeUtilities.DequeueServerSpawned(__instance))
@@ -152,7 +154,8 @@ namespace LabFusion.Patching
                         return false;
                     }
                     else if (NetworkInfo.IsServer) {
-                        MelonCoroutines.Start(CoVerifyDespawnCoroutine(__instance));
+                        if (!CheckPropSyncable(__instance) && PooleeUtilities.IsCheckingForSpawn(__instance))
+                            MelonCoroutines.Start(CoVerifyDespawnCoroutine(__instance));
                     }
                 }
             } 
@@ -165,19 +168,22 @@ namespace LabFusion.Patching
             return true;
         }
 
-        private static IEnumerator CoVerifyDespawnCoroutine(AssetPoolee __instance) {
-            while (LevelWarehouseUtilities.IsLoading()) {
-                yield return null;
-            }
-
-            for (var i = 0; i < 5; i++) {
-                yield return null;
-            }
-
-            if (PropSyncable.Cache.TryGet(__instance.gameObject, out var syncable)) {
+        private static bool CheckPropSyncable(AssetPoolee __instance) {
+            if (PropSyncable.Cache.TryGet(__instance.gameObject, out var syncable))
+            {
                 PooleeUtilities.SendDespawn(syncable.Id);
                 SyncManager.RemoveSyncable(syncable);
+                return true;
             }
+            return false;
+        }
+
+        private static IEnumerator CoVerifyDespawnCoroutine(AssetPoolee __instance) {
+            while (!__instance.IsNOC() && PooleeUtilities.IsCheckingForSpawn(__instance)) {
+                yield return null;
+            }
+
+            CheckPropSyncable(__instance);
         }
     }
 }
