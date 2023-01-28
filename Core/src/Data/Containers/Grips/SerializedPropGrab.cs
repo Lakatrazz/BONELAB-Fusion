@@ -70,19 +70,11 @@ namespace LabFusion.Data
             InteractableHost host;
             syncable = null;
 
-#if DEBUG
-            FusionLogger.Log($"Received prop grip request, id was {id}, valid path is {fullPath != "_"}.");
-#endif
-
             if (SyncManager.TryGetSyncable(id, out var foundSyncable))
             {
 
                 if (foundSyncable is PropSyncable prop) {
                     syncable = prop;
-#if DEBUG
-                    FusionLogger.Log($"Found existing prop grip!");
-#endif
-
                     return syncable.GetGrip(index);
                 }
             }
@@ -91,17 +83,7 @@ namespace LabFusion.Data
                 syncable = new PropSyncable(host);
                 SyncManager.RegisterSyncable(syncable, id);
 
-#if DEBUG
-                FusionLogger.Log($"Creating new prop grip with id {id} at index {index}!");
-#endif
-
                 return syncable.GetGrip(index);
-            }
-            else
-            {
-#if DEBUG
-                FusionLogger.Log($"Failed to find prop grip!");
-#endif
             }
 
             return null;

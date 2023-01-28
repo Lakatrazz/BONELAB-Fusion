@@ -49,11 +49,6 @@ namespace LabFusion.Data
                 var grip = Grip.Cache.Get(go);
                 return grip;
             }
-            else {
-#if DEBUG
-                FusionLogger.Log($"Failed to find static grip!");
-#endif
-            }
 
             return null;
         }

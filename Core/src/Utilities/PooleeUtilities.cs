@@ -26,15 +26,15 @@ using SLZ.Props;
 
 namespace LabFusion.Utilities {
     public static class PooleeUtilities {
-        internal static List<AssetPoolee> ForceEnabled = new List<AssetPoolee>();
+        internal static PooleePusher ForceEnabled = new PooleePusher();
 
-        internal static List<AssetPoolee> CheckingForSpawn = new List<AssetPoolee>();
+        internal static PooleePusher CheckingForSpawn = new PooleePusher();
 
-        internal static List<AssetPoolee> CanSpawnList = new List<AssetPoolee>();
+        internal static PooleePusher CanSpawnList = new PooleePusher();
 
         internal static bool CanDespawn = false;
 
-        internal static List<AssetPoolee> ServerSpawnedList = new List<AssetPoolee>();
+        internal static PooleePusher ServerSpawnedList = new PooleePusher();
 
         public static void OnServerLocalSpawn(ushort syncId, GameObject go) {
             if (!NetworkInfo.IsServer)
@@ -52,120 +52,11 @@ namespace LabFusion.Utilities {
             SyncManager.RegisterSyncable(newSyncable, syncId);
         }
 
-        public static void SetCheckingForSpawn(AssetPoolee poolee)
-        {
-            if (!CheckingForSpawn.Has(poolee))
-                CheckingForSpawn.Add(poolee);
-        }
-
-        public static void RemoveCheckingForSpawn(AssetPoolee poolee)
-        {
-            for (var i = 0; i < CheckingForSpawn.Count; i++)
-            {
-                var found = CheckingForSpawn[i];
-
-                if (found == poolee)
-                {
-                    CheckingForSpawn.RemoveAt(i);
-                    return;
-                }
-            }
-        }
-
-        public static bool IsCheckingForSpawn(AssetPoolee poolee)
-        {
-            for (var i = 0; i < CheckingForSpawn.Count; i++)
-            {
-                var found = CheckingForSpawn[i];
-
-                if (found == poolee)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        public static void KeepForceEnabled(AssetPoolee poolee)
-        {
-            if (!ForceEnabled.Has(poolee))
-                ForceEnabled.Add(poolee);
-        }
-
         public static bool IsPlayer(AssetPoolee poolee) {
             if (poolee.IsNOC())
                 return false;
 
             return poolee.GetComponentInChildren<RigManager>(true);
-        }
-
-        public static bool IsForceEnabled(AssetPoolee poolee)
-        {
-            for (var i = 0; i < ForceEnabled.Count; i++) {
-                var found = ForceEnabled[i];
-
-                if (found == poolee) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        public static void RemoveForceEnabled(AssetPoolee poolee)
-        {
-            for (var i = 0; i < ForceEnabled.Count; i++)
-            {
-                var found = ForceEnabled[i];
-
-                if (found == poolee)
-                {
-                    ForceEnabled.RemoveAt(i);
-                    return;
-                }
-            }
-        }
-
-        public static void AddToServer(AssetPoolee poolee) {
-            if (!ServerSpawnedList.Has(poolee))
-                ServerSpawnedList.Add(poolee);
-        }
-
-        public static bool DequeueServerSpawned(AssetPoolee poolee)
-        {
-            for (var i = 0; i < ServerSpawnedList.Count; i++) {
-                var found = ServerSpawnedList[i];
-
-                if (found == poolee) {
-                    ServerSpawnedList.RemoveAt(i);
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        public static void PermitSpawning(AssetPoolee poolee) {
-            if (!CanSpawnList.Has(poolee))
-                CanSpawnList.Add(poolee);
-        }
-
-        public static bool CanSpawn(AssetPoolee poolee) {
-            return CanSpawnList.Has(poolee);
-        }
-
-        public static bool DequeueSpawning(AssetPoolee poolee) {
-            for (var i = 0; i < CanSpawnList.Count; i++) {
-                var found = CanSpawnList[i];
-
-                if (found == poolee) {
-                    CanSpawnList.RemoveAt(i);
-                    return true;
-                }
-            }
-
-            return false;
         }
 
         public static void SendDespawn(ushort syncId) {
@@ -243,7 +134,7 @@ namespace LabFusion.Utilities {
         }
 
         public static bool CanForceDespawn(AssetPoolee instance) {
-            return !DequeueSpawning(instance) && IsWhitelisted(instance);
+            return !CanSpawnList.Pull(instance) && IsWhitelisted(instance);
         }
 
         public static bool CanSendSpawn(AssetPoolee instance) {

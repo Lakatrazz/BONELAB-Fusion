@@ -80,6 +80,9 @@ namespace LabFusion.Grabbables {
 
                     // Do we already have a synced object?
                     if (PropSyncable.Cache.TryGet(root, out var syncable) || PropSyncable.HostCache.TryGet(host.gameObject, out syncable)) {
+                        while (!syncable.IsRegistered())
+                            yield return null;
+
                         SyncManager.SendOwnershipTransfer(syncable.Id);
                     }
                     // Create a new one

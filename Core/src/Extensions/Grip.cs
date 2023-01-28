@@ -1,15 +1,55 @@
 ﻿using SLZ.Interaction;
+using SLZ.Marrow.Utilities;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using UnityEngine;
 
 namespace LabFusion.Extensions
 {
     public static class GripExtensions {
+        public static void MoveIntoHand(this Grip grip, Hand hand) {
+            var host = grip.Host.GetTransform();
+            var handTarget = grip.SolveHandTarget(hand);
+
+            var localHost = handTarget.InverseTransform(SimpleTransform.Create(host.transform));
+            var worldHost = SimpleTransform.Create(hand.transform).Transform(localHost);
+
+            host.position = worldHost.position;
+            host.rotation = worldHost.rotation;
+
+            if (grip.HasRigidbody) {
+                var rb = grip.Host.Rb;
+
+                rb.velocity = hand.rb.velocity;
+                rb.angularVelocity = hand.rb.angularVelocity;
+            }
+        }
+
+        public static void TryAttach(this Grip grip, Hand hand) {
+            // Detach an existing grip
+            if (hand.m_CurrentAttachedGO != null) {
+                var other = Grip.Cache.Get(hand.m_CurrentAttachedGO);
+
+                if (other != null)
+                    other.TryDetach(hand);
+            }
+
+            // Confirm the grab
+            hand.GrabLock = false;
+
+            var inventoryHand = InventoryHand.Cache.Get(hand.gameObject);
+            if (inventoryHand) {
+                inventoryHand.IgnoreUnlock();
+            }
+
+            grip.OnGrabConfirm(hand, true);
+        }
+
         public static void TryDetach(this Grip grip, Hand hand) {
             // Make sure the hand is attached to this grip
             if (hand.m_CurrentAttachedGO == grip.gameObject || grip._handStates.ContainsKey(hand) || grip.attachedHands.Has(hand)) {

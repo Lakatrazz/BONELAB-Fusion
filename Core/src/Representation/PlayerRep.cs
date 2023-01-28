@@ -197,7 +197,7 @@ namespace LabFusion.Representation
             }
 
             // Actually attach the joints
-            grip.OnGrabConfirm(hand, true);
+            grip.TryAttach(hand);
 
             if (useCustomJoint) {
                 grip.FreeJoints(hand);
@@ -306,6 +306,10 @@ namespace LabFusion.Representation
         }
 
         public void CreateRep() {
+            // Don't do this if we're loading
+            if (LevelWarehouseUtilities.IsLoading())
+                return;
+
             // Make sure we don't have any extra objects
             DestroyRep();
 

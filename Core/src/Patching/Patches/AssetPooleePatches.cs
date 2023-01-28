@@ -16,10 +16,11 @@ using LabFusion.Data;
 using SLZ.Marrow.Pool;
 
 using UnityEngine;
-using static MelonLoader.MelonLogger;
+
 using MelonLoader;
-using SLZ.Marrow.Warehouse;
+
 using SLZ.Zones;
+
 using LabFusion.Extensions;
 
 namespace LabFusion.Patching
@@ -42,7 +43,7 @@ namespace LabFusion.Patching
                         if (hasSyncable || barcode == SpawnableWarehouseUtilities.FADE_OUT_BARCODE) {
                             __instance.gameObject.SetActive(false);
                         }
-                        else if (!PooleeUtilities.IsForceEnabled(__instance) && PooleeUtilities.CanForceDespawn(__instance)) {
+                        else if (!PooleeUtilities.ForceEnabled.Contains(__instance) && PooleeUtilities.CanForceDespawn(__instance)) {
                             __instance.gameObject.SetActive(false);
                             MelonCoroutines.Start(CoForceDespawnRoutine(__instance));
                         }
@@ -50,6 +51,7 @@ namespace LabFusion.Patching
                     else if (!hasSyncable)
                     {
                         if (PooleeUtilities.CanSendSpawn(__instance)) {
+                            PooleeUtilities.CheckingForSpawn.Push(__instance);
                             MelonCoroutines.Start(CoVerifySpawnedRoutine(__instance));
                         }
                     }
@@ -74,7 +76,7 @@ namespace LabFusion.Patching
                     yield break;
                 }
 
-                if (PooleeUtilities.CanSpawn(__instance) || PooleeUtilities.IsForceEnabled(__instance))
+                if (PooleeUtilities.CanSpawnList.Contains(__instance) || PooleeUtilities.ForceEnabled.Contains(__instance))
                     yield break;
 
                 go.SetActive(false);
@@ -88,11 +90,11 @@ namespace LabFusion.Patching
             for (var i = 0; i < 4; i++)
                 yield return null;
 
-            PooleeUtilities.RemoveCheckingForSpawn(__instance);
+            PooleeUtilities.CheckingForSpawn.Pull(__instance);
 
             try
             {
-                if (PooleeUtilities.CanSendSpawn(__instance) && !PooleeUtilities.DequeueServerSpawned(__instance))
+                if (PooleeUtilities.CanSendSpawn(__instance) && !PooleeUtilities.ServerSpawnedList.Pull(__instance))
                 {
                     var barcode = __instance.spawnableCrate.Barcode;
 
@@ -154,7 +156,7 @@ namespace LabFusion.Patching
                         return false;
                     }
                     else if (NetworkInfo.IsServer) {
-                        if (!CheckPropSyncable(__instance) && PooleeUtilities.IsCheckingForSpawn(__instance))
+                        if (!CheckPropSyncable(__instance) && PooleeUtilities.CheckingForSpawn.Contains(__instance))
                             MelonCoroutines.Start(CoVerifyDespawnCoroutine(__instance));
                     }
                 }
@@ -179,7 +181,7 @@ namespace LabFusion.Patching
         }
 
         private static IEnumerator CoVerifyDespawnCoroutine(AssetPoolee __instance) {
-            while (!__instance.IsNOC() && PooleeUtilities.IsCheckingForSpawn(__instance)) {
+            while (!__instance.IsNOC() && PooleeUtilities.CheckingForSpawn.Contains(__instance)) {
                 yield return null;
             }
 

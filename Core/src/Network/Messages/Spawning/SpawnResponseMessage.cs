@@ -29,6 +29,7 @@ using SLZ.Props.Weapons;
 using SLZ;
 
 using LabFusion.Exceptions;
+using SLZ.Marrow.Utilities;
 
 namespace LabFusion.Network
 {
@@ -181,10 +182,12 @@ namespace LabFusion.Network
             }
 
             if (!NetworkInfo.IsServer)
-                PooleeUtilities.PermitSpawning(poolee);
+                PooleeUtilities.CanSpawnList.Push(poolee);
             else {
-                PooleeUtilities.AddToServer(poolee);
+                PooleeUtilities.ServerSpawnedList.Push(poolee);
             }
+
+            PooleeUtilities.CheckingForSpawn.Push(poolee);
 
             PropSyncable newSyncable = new PropSyncable(go.GetComponentInChildren<InteractableHost>(true), go.gameObject);
             newSyncable.SetOwner(owner);
@@ -194,7 +197,7 @@ namespace LabFusion.Network
             // Force the object active
             Grip grip = null;
             go.SetActive(true);
-            PooleeUtilities.KeepForceEnabled(poolee);
+            PooleeUtilities.ForceEnabled.Push(poolee);
 
             // Setup magazine info
             var magazine = go.GetComponent<Magazine>();
@@ -239,10 +242,8 @@ namespace LabFusion.Network
                     }
                 }
                 else if (PlayerRepManager.TryGetPlayerRep(owner, out var rep)) {
-                    var hostTransform = grip.Host.GetTransform();
                     var repHand = rep.RigReferences.GetHand(hand);
-                    hostTransform.position = repHand.transform.position;
-                    hostTransform.rotation = repHand.transform.rotation;
+                    grip.MoveIntoHand(repHand);
 
                     rep.AttachObject(hand, grip);
                 }
@@ -254,11 +255,9 @@ namespace LabFusion.Network
         private static IEnumerator Internal_ForceGrabConfirm(Hand hand, Grip grip) {
             yield return null;
 
-            var hostTransform = grip.Host.GetTransform();
-            hostTransform.position = hand.transform.position;
-            hostTransform.rotation = hand.transform.rotation;
+            grip.MoveIntoHand(hand);
 
-            grip.OnGrabConfirm(hand, true);
+            grip.TryAttach(hand);
         }
 
         private static IEnumerator PostSpawnRoutine(AssetPoolee __instance, byte owner, Grip grip = null, Handedness hand = Handedness.UNDEFINED) {
@@ -266,8 +265,9 @@ namespace LabFusion.Network
                 yield return null;
             }
 
-            PooleeUtilities.DequeueSpawning(__instance);
-            PooleeUtilities.RemoveForceEnabled(__instance);
+            PooleeUtilities.CanSpawnList.Pull(__instance);
+            PooleeUtilities.ForceEnabled.Pull(__instance);
+            PooleeUtilities.CheckingForSpawn.Pull(__instance);
         }
     }
 }
