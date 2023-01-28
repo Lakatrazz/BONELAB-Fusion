@@ -41,9 +41,8 @@ namespace LabFusion.Utilities {
             if (PropSyncable.Cache.TryGet(go, out var syncable))
                 SyncManager.RemoveSyncable(syncable);
 
-            var poolee = AssetPoolee.Cache.Get(go);
-            if (poolee == null)
-                poolee = go.AddComponent<AssetPoolee>();
+            if (!AssetPoolee.Cache.Get(go))
+                go.AddComponent<AssetPoolee>();
 
             PropSyncable newSyncable = new PropSyncable(go.GetComponentInChildren<InteractableHost>(true), go.gameObject);
             newSyncable.SetOwner(0);
@@ -58,6 +57,9 @@ namespace LabFusion.Utilities {
         }
 
         public static bool IsPlayer(AssetPoolee poolee) {
+            if (poolee.IsNOC())
+                return false;
+
             return poolee.GetComponentInChildren<RigManager>(true);
         }
 

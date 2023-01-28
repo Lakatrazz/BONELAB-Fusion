@@ -11,8 +11,8 @@ namespace LabFusion.Extensions
 {
     public static class GripExtensions {
         public static void TryDetach(this Grip grip, Hand hand) {
-            // Make sure the AttachedReceiver matches
-            if (hand.AttachedReceiver == grip) {
+            // Make sure the hand is attached to this grip
+            if (hand.m_CurrentAttachedGO == grip.gameObject || grip._handStates.ContainsKey(hand) || grip.attachedHands.Has(hand)) {
                 grip.ForceDetach(hand);
             }
         }

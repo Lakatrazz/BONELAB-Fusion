@@ -28,7 +28,6 @@ namespace LabFusion.Network {
 
         public SerializedLocalTransform[] serializedLocalTransforms = new SerializedLocalTransform[PlayerRepUtilities.TransformSyncCount];
         public SerializedTransform serializedPelvis;
-        public SerializedTransform serializedFootball;
         public SerializedSmallQuaternion serializedPlayspace;
         public SerializedSmallVector3 predictVelocity;
 
@@ -53,7 +52,6 @@ namespace LabFusion.Network {
                 writer.Write(serializedLocalTransforms[i]);
 
             writer.Write(serializedPelvis);
-            writer.Write(serializedFootball);
             writer.Write(serializedPlayspace);
 
             writer.Write(leftHand);
@@ -77,7 +75,6 @@ namespace LabFusion.Network {
                 serializedLocalTransforms[i] = reader.ReadFusionSerializable<SerializedLocalTransform>();
 
             serializedPelvis = reader.ReadFusionSerializable<SerializedTransform>();
-            serializedFootball = reader.ReadFusionSerializable<SerializedTransform>();
             serializedPlayspace = reader.ReadFusionSerializable<SerializedSmallQuaternion>();
 
             leftHand = reader.ReadFusionSerializable<SerializedHand>();
@@ -88,7 +85,7 @@ namespace LabFusion.Network {
             GC.SuppressFinalize(this);
         }
 
-        public static PlayerRepTransformData Create(byte smallId, Transform[] syncTransforms, Transform syncedPelvis, Transform syncedFootball, Transform syncedPlayspace, BaseController leftHand, BaseController rightHand)
+        public static PlayerRepTransformData Create(byte smallId, Transform[] syncTransforms, Transform syncedPelvis, Transform syncedPlayspace, BaseController leftHand, BaseController rightHand)
         {
             var rm = RigData.RigReferences.RigManager;
             var controllerRig = rm.openControllerRig;
@@ -104,7 +101,6 @@ namespace LabFusion.Network {
                 vrVertState = controllerRig.vrVertState,
 
                 serializedPelvis = new SerializedTransform(syncedPelvis),
-                serializedFootball = new SerializedTransform(syncedFootball),
 
                 serializedPlayspace = SerializedSmallQuaternion.Compress(syncedPlayspace.rotation),
 
@@ -149,7 +145,6 @@ namespace LabFusion.Network {
 
                     rep.serializedLocalTransforms = data.serializedLocalTransforms;
                     rep.serializedPelvis = data.serializedPelvis;
-                    rep.serializedFootball = data.serializedFootball;
                     rep.repPlayspace.rotation = data.serializedPlayspace.Expand();
                     rep.predictVelocity = data.predictVelocity.Expand();
                     rep.timeSincePelvisSent = Time.realtimeSinceStartup;

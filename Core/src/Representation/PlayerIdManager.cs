@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Network;
+using LabFusion.Preferences;
 
 namespace LabFusion.Representation
 {
@@ -15,6 +16,8 @@ namespace LabFusion.Representation
         public static int PlayerCount => PlayerIds.Count;
 
         public static string LocalUsername { get; private set; } = "[unknown]";
+        public static string LocalNickname => FusionPreferences.ClientSettings.Nickname.GetValue();
+
         public static ulong LocalLongId { get; private set; }
         public static byte LocalSmallId { get; private set; }
         public static PlayerId LocalId { get; private set; }

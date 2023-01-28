@@ -25,7 +25,10 @@ namespace LabFusion.Preferences {
         public struct ClientSettings {
             public static FusionPref<bool> NametagsEnabled { get; internal set; }
             public static FusionPref<Color> NametagColor { get; internal set; }
+
+            // Nickname settings
             public static FusionPref<string> Nickname { get; internal set; }
+            public static FusionPref<NicknameVisibility> NicknameVisibility { get; internal set; }
         }
 
         internal static SerializedServerSettings ReceivedServerSettings { get; set; } = null;
@@ -100,7 +103,9 @@ namespace LabFusion.Preferences {
             // Client settings
             ClientSettings.NametagsEnabled = new FusionPref<bool>(prefCategory, "Client Nametags Enabled", true, PrefUpdateMode.LOCAL_UPDATE);
             ClientSettings.NametagColor = new FusionPref<Color>(prefCategory, "Nametag Color", Color.white, PrefUpdateMode.CLIENT_UPDATE);
+
             ClientSettings.Nickname = new FusionPref<string>(prefCategory, "Nickname", "", PrefUpdateMode.IGNORE);
+            ClientSettings.NicknameVisibility = new FusionPref<NicknameVisibility>(prefCategory, "Nickname Visibility", NicknameVisibility.SHOW_WITH_PREFIX, PrefUpdateMode.LOCAL_UPDATE);
 
             // Save category
             prefCategory.SaveToFile(false);

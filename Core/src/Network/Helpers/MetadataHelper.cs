@@ -1,4 +1,7 @@
-﻿using System;
+﻿using LabFusion.Preferences;
+using LabFusion.Representation;
+using LabFusion.Senders;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,10 +11,39 @@ namespace LabFusion.Network {
     public static class MetadataHelper {
         public const string UsernameKey = "Username";
 
+        public const string NicknameKey = "Nickname";
+
         public const string LoadingKey = "IsLoading";
 
         public static bool ParseBool(string value) => value == "True";
 
         public static string ParseString(bool value) => value ? "True" : "False";
+
+        public static bool TryGetDisplayName(this PlayerId id, out string name) {
+            id.TryGetMetadata(UsernameKey, out var username);
+            id.TryGetMetadata(NicknameKey, out var nickname);
+
+            if (!string.IsNullOrWhiteSpace(nickname)) {
+                var visibility = FusionPreferences.ClientSettings.NicknameVisibility.GetValue();
+
+                switch (visibility) {
+                    default:
+                    case NicknameVisibility.SHOW_WITH_PREFIX:
+                        name = $"~{nickname}";
+                        break;
+                    case NicknameVisibility.SHOW:
+                        name = nickname;
+                        break;
+                    case NicknameVisibility.HIDE:
+                        name = username;
+                        break;
+                }
+            }
+            else {
+                name = username;
+            }
+
+            return !string.IsNullOrWhiteSpace(name);
+        }
     }
 }

@@ -18,6 +18,12 @@ namespace LabFusion.Senders {
         RECOVERY = 1 << 4,
     }
 
+    public enum NicknameVisibility {
+        SHOW = 1 << 0,
+        SHOW_WITH_PREFIX = 1 << 1,
+        HIDE = 1 << 2,
+    }
+
     public static class PlayerSender {
         public static void SendPlayerMetadataRequest(byte smallId, string key, string value) {
             using (var writer = FusionWriter.Create())

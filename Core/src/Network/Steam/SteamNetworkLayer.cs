@@ -4,6 +4,7 @@ using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using BoneLib.BoneMenu;
 using BoneLib.BoneMenu.Elements;
 
@@ -26,6 +27,7 @@ using MelonLoader;
 
 using System.Windows.Forms;
 using LabFusion.Senders;
+using LabFusion.BoneMenu;
 
 namespace LabFusion.Network
 {
@@ -290,103 +292,11 @@ namespace LabFusion.Network
 
             // Now for the actual options
             CreateMatchmakingMenu(category);
-            CreateSettingsMenu(category);
+            BoneMenuCreator.CreateSettingsMenu(category);
 
 #if DEBUG
-            CreateDebugMenu(category);
+            BoneMenuCreator.CreateDebugMenu(category);
 #endif
-        }
-
-#if DEBUG
-        private void CreateDebugMenu(MenuCategory category) {
-            var debugCategory = category.CreateCategory("DEBUG", Color.red);
-            debugCategory.CreateFunctionElement("Spawn Player Rep", Color.white, () =>
-            {
-                PlayerRepUtilities.CreateNewRig((rig) =>
-                {
-                    rig.transform.position = RigData.RigReferences.RigManager.physicsRig.feet.transform.position;
-                });
-            });
-        }
-#endif
-
-        // Settings menu
-        private MenuCategory _serverSettingsCategory;
-        private MenuCategory _clientSettingsCategory;
-
-        private void CreateSettingsMenu(MenuCategory category) {
-            // Root settings
-            var settings = category.CreateCategory("Settings", Color.gray);
-
-            // Server settings
-            _serverSettingsCategory = settings.CreateCategory("Server Settings", Color.white);
-            CreateServerSettingsMenu(_serverSettingsCategory);
-
-            // Client settings
-            _clientSettingsCategory = settings.CreateCategory("Client Settings", Color.white);
-            CreateClientSettingsMenu(_clientSettingsCategory);
-        }
-
-        private void CreateServerSettingsMenu(MenuCategory category) {
-            // Nametags enabled
-            var nametags = category.CreateBoolElement("Nametags", Color.white, FusionPreferences.ServerSettings.NametagsEnabled, (v) => {
-                FusionPreferences.ServerSettings.NametagsEnabled.SetValue(v);
-            });
-            FusionPreferences.ServerSettings.NametagsEnabled.OnValueChanged += (v) => {
-                nametags.SetValue(v);
-            };
-
-            // Server privacy
-            var privacy = category.CreateEnumElement<ServerPrivacy>("Server Privacy", Color.white, FusionPreferences.ServerSettings.Privacy, (v) => {
-                FusionPreferences.ServerSettings.Privacy.SetValue(v);
-            });
-            FusionPreferences.ServerSettings.Privacy.OnValueChanged += (v) => {
-                privacy.SetValue(v);
-            };
-
-            // Time scale mode
-            var timeScale = category.CreateEnumElement<TimeScaleMode>("Time Scale Mode", Color.white, FusionPreferences.ServerSettings.TimeScaleMode, (v) => {
-                FusionPreferences.ServerSettings.TimeScaleMode.SetValue(v);
-            });
-            FusionPreferences.ServerSettings.TimeScaleMode.OnValueChanged += (v) => {
-                timeScale.SetValue(v);
-            };
-        }
-
-        private void CreateClientSettingsMenu(MenuCategory category) {
-            // Nametags enabled
-            var nametags = category.CreateBoolElement("Nametags", Color.white, FusionPreferences.ClientSettings.NametagsEnabled, (v) => {
-                FusionPreferences.ClientSettings.NametagsEnabled.SetValue(v);
-            });
-            FusionPreferences.ClientSettings.NametagsEnabled.OnValueChanged += (v) => {
-                nametags.SetValue(v);
-            };
-
-            // Nametag color
-            var currentColor = FusionPreferences.ClientSettings.NametagColor;
-            var colorR = category.CreateFloatElement("Red", Color.red, currentColor.GetValue().r, 0.05f, 0f, 1f, (r) => {
-                var color = currentColor.GetValue();
-                color.r = r;
-                currentColor.SetValue(color);
-            });
-            var colorG = category.CreateFloatElement("Green", Color.green, currentColor.GetValue().g, 0.05f, 0f, 1f, (g) => {
-                var color = currentColor.GetValue();
-                color.g = g;
-                currentColor.SetValue(color);
-            });
-            var colorB = category.CreateFloatElement("Blue", Color.blue, currentColor.GetValue().b, 0.05f, 0f, 1f, (b) => {
-                var color = currentColor.GetValue();
-                color.b = b;
-                currentColor.SetValue(color);
-            });
-            var colorPreview = category.CreateFunctionElement("■■■■■■■■■■■", currentColor, null);
-
-            currentColor.OnValueChanged += (color) => {
-                colorR.SetValue(color.r);
-                colorG.SetValue(color.g);
-                colorB.SetValue(color.b);
-                colorPreview.SetColor(color);
-            };
         }
 
         // Matchmaking menu

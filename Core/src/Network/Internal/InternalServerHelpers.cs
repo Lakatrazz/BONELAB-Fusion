@@ -115,7 +115,10 @@ namespace LabFusion.Network {
             // Create the dict
             var metadata = new Dictionary<string, string> {
                 // Username
-                { MetadataHelper.UsernameKey, PlayerIdManager.LocalUsername }
+                { MetadataHelper.UsernameKey, PlayerIdManager.LocalUsername },
+
+                // Nickname
+                { MetadataHelper.NicknameKey, PlayerIdManager.LocalNickname }
             };
 
             return metadata;

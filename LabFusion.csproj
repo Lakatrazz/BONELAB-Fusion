@@ -187,6 +187,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>AssemblyInfo.tt</DependentUpon>
     </Compile>
+    <Compile Include="Core\src\BoneMenu\DebugCreator.cs" />
+    <Compile Include="Core\src\BoneMenu\SettingsCreator.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\KartRaceData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\ArenaData.cs" />
     <Compile Include="Core\src\Data\Containers\ConfigurableJointDriveData.cs" />
