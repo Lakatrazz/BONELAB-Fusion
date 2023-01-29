@@ -13,6 +13,7 @@ using SLZ;
 using SLZ.Interaction;
 using LabFusion.Syncables;
 using LabFusion.Patching;
+using LabFusion.Extensions;
 
 namespace LabFusion.Network
 {
@@ -84,6 +85,8 @@ namespace LabFusion.Network
                             }
 
                             if (references != null) {
+                                extender.Component.interactableHost.TryDetach();
+
                                 InventorySlotReceiverDrop.PreventInsertCheck = true;
                                 references.GetSlot(data.slotIndex).InsertInSlot(extender.Component.interactableHost);
                                 InventorySlotReceiverDrop.PreventInsertCheck = false;

@@ -30,18 +30,18 @@ namespace LabFusion.Network
     public class ZoneEncounterEventData : IFusionSerializable, IDisposable
     {
         public ZoneEncounterEventType type;
-        public string fullPath;
+        public GameObject gameObject;
 
         public void Serialize(FusionWriter writer)
         {
             writer.Write((byte)type);
-            writer.Write(fullPath);
+            writer.Write(gameObject);
         }
 
         public void Deserialize(FusionReader reader)
         {
             type = (ZoneEncounterEventType)reader.ReadByte();
-            fullPath = reader.ReadString();
+            gameObject = reader.ReadGameObject();
         }
 
         public void Dispose()
@@ -54,7 +54,7 @@ namespace LabFusion.Network
             return new ZoneEncounterEventData()
             {
                 type = type,
-                fullPath = encounter.gameObject.GetFullPath(),
+                gameObject = encounter.gameObject,
             };
         }
     }
@@ -72,10 +72,8 @@ namespace LabFusion.Network
                 {
                     ZoneEncounterPatches.IgnorePatches = true;
 
-                    GameObject go = GameObjectUtilities.GetGameObject(data.fullPath);
-
-                    if (!NetworkInfo.IsServer && go) {
-                        var zoneEncounter = go.GetComponent<ZoneEncounter>();
+                    if (!NetworkInfo.IsServer && data.gameObject) {
+                        var zoneEncounter = data.gameObject.GetComponent<ZoneEncounter>();
 
                         switch (data.type) {
                             case ZoneEncounterEventType.UNKNOWN:

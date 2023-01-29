@@ -124,7 +124,7 @@ namespace LabFusion.Representation
 
             ResetSerializedTransforms();
 
-            CreateRep();
+            StartRepCreation();
         }
 
         private void OnMetadataChanged(PlayerId id) {
@@ -274,13 +274,11 @@ namespace LabFusion.Representation
         }
 
         private void OnSwapAvatar(bool success) {
-            // TODO: implement scaled poly blank if failure
             var rm = RigReferences.RigManager;
 
             if (!success) {
                 rm.SwapAvatarCrate(PlayerRepUtilities.PolyBlankBarcode, false, (Action<bool>)OnSwapFallback);
             }
-            // Update transforms
             else {
                 UpdateNametagSettings();
             }
@@ -305,11 +303,7 @@ namespace LabFusion.Representation
             _isVitalsDirty = true;
         }
 
-        public void CreateRep() {
-            // Don't do this if we're loading
-            if (LevelWarehouseUtilities.IsLoading())
-                return;
-
+        private void CreateRep() {
             // Make sure we don't have any extra objects
             DestroyRep();
 
@@ -407,6 +401,14 @@ namespace LabFusion.Representation
         }
 
         private IEnumerator Co_DelayCreateRep() {
+            // Delay some extra time
+            for (var i = 0; i < 120; i++) {
+                if (LevelWarehouseUtilities.IsLoading())
+                    yield break;
+
+                yield return null;
+            }
+
             // Wait for loading
             while (LevelWarehouseUtilities.IsDelayedLoading() || MetadataHelper.ParseBool(PlayerId.GetMetadata(MetadataHelper.LoadingKey))) {
                 if (LevelWarehouseUtilities.IsLoading())
@@ -502,6 +504,14 @@ namespace LabFusion.Representation
                 if (repPelvis.IsNOC() || serializedPelvis == null)
                     return;
 
+                // Check for seating
+                var rigManager = RigReferences.RigManager;
+
+                if (rigManager.activeSeat) {
+                    pelvisPDController.OnResetDerivatives(repPelvis.transform);
+                    return;
+                }
+
                 // Move position with prediction
                 if (Time.realtimeSinceStartup - timeSincePelvisSent <= 1.5f) {
                     serializedPelvis.position += predictVelocity * Time.fixedDeltaTime;
@@ -516,10 +526,7 @@ namespace LabFusion.Representation
                 }
 
                 // Apply velocity
-                var rigManager = RigReferences.RigManager;
-
-                // Seats will cause issues due to jointing
-                if (SafetyUtilities.IsValidTime && !rigManager.activeSeat)
+                if (SafetyUtilities.IsValidTime)
                 {
                     var pos = serializedPelvis.position;
                     var rot = serializedPelvis.rotation.Expand();

@@ -100,7 +100,8 @@ namespace LabFusion.Network
                                             var host = InteractableHost.Cache.Get(keyExtender.Component.gameObject);
 
                                             // Insert the key and detach grips
-                                            host.ForceDetach();
+                                            host.TryDetach();
+
                                             keyReceiver.OnInteractableHostEnter(host);
                                         }
                                     }

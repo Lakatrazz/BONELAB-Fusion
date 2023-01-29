@@ -15,6 +15,7 @@ using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Grabbables;
 using LabFusion.Network;
+using LabFusion.Extensions;
 
 namespace LabFusion.Patching
 {
@@ -38,6 +39,27 @@ namespace LabFusion.Patching
                 return;
 
             GrabHelper.SendObjectForcePull(hand, __instance._grip);
+        }
+    }
+
+    [HarmonyPatch(typeof(InteractableHost))]
+    public static class InteractableHostPatches {
+        public static bool IgnorePatches = false;
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(InteractableHost.ForceDetach))]
+        public static bool ForceDetach(InteractableHost __instance) {
+            if (IgnorePatches)
+                return true;
+
+            if (NetworkInfo.HasServer) {
+                foreach (var hand in __instance._hands) {
+                    if (PlayerRepManager.HasPlayerId(hand.manager))
+                        return false;
+                }
+            }
+
+            return true;
         }
     }
 

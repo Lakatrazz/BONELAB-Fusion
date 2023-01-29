@@ -13,15 +13,34 @@ using LabFusion.Syncables;
 using LabFusion.Utilities;
 
 using SLZ.Interaction;
+using SLZ.Props.Weapons;
 
 namespace LabFusion.Patching
 {
     [HarmonyPatch(typeof(AlignPlug))]
     public static class AlignPlugPatches {
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(AlignPlug.OnHandAttached))]
+        public static bool OnHandAttached(InteractableHost host, Hand hand) {
+            if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(hand.manager))
+                return false;
+
+            return true;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(AlignPlug.OnHandDetached))]
+        public static bool OnHandDetached(InteractableHost host, Hand hand) {
+            if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(hand.manager))
+                return false;
+
+            return true;
+        }
+
         [HarmonyPatch(nameof(AlignPlug.OnProxyGrab))]
         [HarmonyPrefix]
         public static bool OnProxyGrab(AlignPlug __instance, Hand hand) {
-            if (__instance.TryCast<AmmoPlug>() && PlayerRepManager.HasPlayerId(hand.manager))
+            if (NetworkInfo.HasServer && __instance.TryCast<AmmoPlug>() && PlayerRepManager.HasPlayerId(hand.manager))
                 return false;
 
             return true;
@@ -30,7 +49,7 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(AlignPlug.OnProxyRelease))]
         [HarmonyPrefix]
         public static bool OnProxyRelease(AlignPlug __instance, Hand hand) {
-            if (__instance.TryCast<AmmoPlug>() && PlayerRepManager.HasPlayerId(hand.manager))
+            if (NetworkInfo.HasServer && __instance.TryCast<AmmoPlug>() && PlayerRepManager.HasPlayerId(hand.manager))
                 return false;
 
             return true;

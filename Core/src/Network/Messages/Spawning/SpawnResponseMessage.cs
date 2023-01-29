@@ -137,20 +137,21 @@ namespace LabFusion.Network
                     // Invoke generic parts of the spawner
                     if (spawner != null) {
                         // Add to spawn list
-                        spawner.spawns.Add(go);
+                        if (!spawner.spawns.Has(go))
+                            spawner.spawns.Add(go);
 
                         // Get player object
                         var playerObj = SceneZone.PlayerObject;
 
                         // Pre spawn
-                        spawner.OnPreSpawnDelegate?.Invoke(playerObj, go);
+                        spawner.OnPreSpawnDelegate?.Invoke(go, playerObj);
 
                         // Assign the parent
                         if (spawner.parentOverride != null)
                             go.transform.parent = spawner.parentOverride.transform;
 
                         // Call hooks
-                        spawner.OnSpawnDelegate?.Invoke(playerObj, go);
+                        spawner.OnSpawnDelegate?.Invoke(go, playerObj);
                         spawner.onSpawn?.Invoke();
                     }
                 } 

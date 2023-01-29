@@ -15,6 +15,7 @@ using LabFusion.Syncables;
 using SLZ.SFX;
 using LabFusion.Patching;
 using SLZ.Props.Weapons;
+using LabFusion.Extensions;
 
 namespace LabFusion.Network
 {
@@ -90,7 +91,8 @@ namespace LabFusion.Network
 
                             if (slotReceiver != null && slotReceiver._weaponHost != null) {
                                 weaponSlot = slotReceiver._slottedWeapon;
-                                slotReceiver._weaponHost.ForceDetach();
+
+                                slotReceiver._weaponHost.TryDetach();
                             }
 
                             InventorySlotReceiverGrab.PreventDropCheck = true;
@@ -98,8 +100,10 @@ namespace LabFusion.Network
                             InventorySlotReceiverGrab.PreventDropCheck = false;
 
                             if (PlayerRepManager.TryGetPlayerRep(data.grabber, out var grabber)) {
-                                if (weaponSlot && weaponSlot.grip)
+                                if (weaponSlot && weaponSlot.grip) {
+                                    weaponSlot.grip.MoveIntoHand(grabber.RigReferences.GetHand(data.handedness));
                                     grabber.AttachObject(data.handedness, weaponSlot.grip);
+                                }
 
                                 var hand = grabber.RigReferences.GetHand(data.handedness);
                                 if (hand) {

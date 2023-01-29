@@ -183,6 +183,7 @@
     <Compile Include="Core\marrow-integration\Runtime\AlwaysAllowImpactDamage.cs" />
     <Compile Include="Core\marrow-integration\Runtime\InvokeUltEventInServer.cs" />
     <Compile Include="Core\marrow-integration\Runtime\AutoSyncOnStart.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\OnlyTriggerOnLocalPlayer.cs" />
     <Compile Include="Core\src\AssemblyInfo.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -235,6 +236,7 @@
     <Compile Include="Core\src\Extensions\Chunk.cs" />
     <Compile Include="Core\src\Extensions\Grip.cs" />
     <Compile Include="Core\src\Extensions\IEnumerable.cs" />
+    <Compile Include="Core\src\Extensions\InteractableHost.cs" />
     <Compile Include="Core\src\Extensions\Joint.cs" />
     <Compile Include="Core\src\Extensions\Rigidbody.cs" />
     <Compile Include="Core\src\Extensions\Transform.cs" />
@@ -279,9 +281,9 @@
     <Compile Include="Core\src\Network\Messages\Spawning\SpawnableCratePlacerMessage.cs" />
     <Compile Include="Core\src\Patching\Patches\AvatarDicePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\AvatarPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\BehaviourOmniwheelPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\BehaviourPowerLegsPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\BehaviourBaseNavPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Enemies\BehaviourOmniwheelPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Enemies\BehaviourPowerLegsPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Enemies\BehaviourBaseNavPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Control_GlobalTimePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\GachaPlacerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\BonelabHubPatches.cs" />
@@ -292,7 +294,7 @@
     <Compile Include="Core\src\Patching\Patches\DevManipulatorPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\FlyingGunPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\KartRacePatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\KeyRecieverPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Plugs\KeyRecieverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\HomePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\Trial_SpawnerEventsPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PropFlashlightPatches.cs" />
@@ -398,10 +400,10 @@
     <Compile Include="Core\src\Patching\Patches\Levels\MagmaGatePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ObjectDestructablePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\OpenControllerRigPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\GameworldSkeletonRigPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Player\GameworldSkeletonRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PhysicsRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PlayerHealthPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\PlugPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Plugs\PlugPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PopUpMenuPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PropHealthPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PuppetMasterPatches.cs" />

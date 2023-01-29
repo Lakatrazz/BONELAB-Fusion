@@ -17,6 +17,7 @@ using UnityEngine;
 using LabFusion.Network;
 using SLZ.Marrow.SceneStreaming;
 using MelonLoader;
+using LabFusion.MarrowIntegration;
 
 namespace LabFusion.Utilities {
     public static class TriggerUtilities {
@@ -115,8 +116,13 @@ namespace LabFusion.Utilities {
             // Get transform of trigger
             var transform = trigger.transform;
 
+            // Check if this has a marrow sdk addon
+            if (OnlyTriggerOnLocalPlayer.Cache.ContainsSource(trigger.gameObject)) {
+                runMethod = IsMainRig(other);
+                return true;
+            }
             // Check if this is a lap trigger for Monogon Motorway
-            if (KartRaceData.GameController != null && KartRaceData.GameController.transform == transform.parent) {
+            else if (KartRaceData.GameController != null && KartRaceData.GameController.transform == transform.parent) {
                 runMethod = IsMainRig(other);
                 return true;
             }
@@ -131,8 +137,18 @@ namespace LabFusion.Utilities {
             // Get transform of trigger
             var transform = trigger.transform;
 
+            // Check if this has a marrow sdk addon
+            if (OnlyTriggerOnLocalPlayer.Cache.ContainsSource(trigger.gameObject)) {
+                runMethod = IsMainRig(other);
+                return true;
+            }
+            // Check if this is part of a launch pad/link data
+            else if (transform.GetComponentInParent<LinkData>() != null) {
+                runMethod = IsMainRig(other);
+                return true;
+            }
             // Check if this is a taxi trigger for Home
-            if (HomeData.GameController != null && transform.parent.name.Contains("TaxiSequence_EnableWithTaxiStartChunk"))
+            else if (HomeData.GameController != null && transform.parent.name.Contains("TaxiSequence_EnableWithTaxiStartChunk"))
             {
                 var seat = HomeData.TaxiSeat;
                 if (seat.rigManager != null) {

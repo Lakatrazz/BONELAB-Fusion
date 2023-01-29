@@ -82,7 +82,8 @@ namespace LabFusion.Network
 
                                 if (ammoPlug.magazine.grip) {
                                     grabHand = ammoPlug.magazine.grip.GetHand();
-                                    ammoPlug.magazine.grip.Host.ForceDetach();
+
+                                    ammoPlug.magazine.grip.Host.TryDetach();
                                 }
 
                                 ammoPlug.ForceEject();

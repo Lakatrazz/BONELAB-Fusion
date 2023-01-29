@@ -16,10 +16,6 @@ namespace LabFusion.Extensions {
             // Hook brain events
             brain.onDeathDelegate += (Action)(() => { spawner.OnDeath(); });
             brain.onResurrectDelegate += (Action)(() => { spawner.OnResurrect(); });
-
-            // Update enemy config
-            if (brain.behaviour != null && spawner.currEnemyProfile != null && spawner.currEnemyProfile.baseConfig != null)
-                brain.behaviour.SetBaseConfig(spawner.currEnemyProfile.baseConfig);
         }
     }
 }

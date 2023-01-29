@@ -75,11 +75,11 @@ namespace LabFusion.Network
                 {
                     var menu = ArenaData.MenuController;
 
+                    ArenaMenuPatches.IgnorePatches = true;
+
                     // We ONLY handle this for clients, this message should only ever be sent by the server!
                     if (!NetworkInfo.IsServer && menu)
                     {
-                        ArenaMenuPatches.IgnorePatches = true;
-
                         switch (data.type)
                         {
                             default:
@@ -107,11 +107,9 @@ namespace LabFusion.Network
                                 menu.ResumeSurvivalFromRound();
                                 break;
                         }
-
-                        ArenaMenuPatches.IgnorePatches = false;
                     }
-                    else
-                        throw new ExpectedClientException();
+
+                    ArenaMenuPatches.IgnorePatches = false;
                 }
             }
         }

@@ -94,6 +94,8 @@ namespace LabFusion.Network
                             AmmoSocketPatches.IgnorePatch = true;
                             magExtender.Component.magazinePlug.InsertPlug(socketExtender.Component);
                             AmmoSocketPatches.IgnorePatch = false;
+
+                            magExtender.Component.interactableHost.TryDetach();
                         }
                     }
                 }

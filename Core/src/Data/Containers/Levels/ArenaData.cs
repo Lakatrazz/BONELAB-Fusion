@@ -7,13 +7,8 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 using SLZ.Bonelab;
-using SLZ.Vehicle;
 
 using LabFusion.Extensions;
-using LabFusion.Network;
-using LabFusion.Representation;
-using LabFusion.Syncables;
-using LabFusion.Utilities;
 
 namespace LabFusion.Data {
     public static class ArenaData {
@@ -35,15 +30,6 @@ namespace LabFusion.Data {
         }
 
         public static bool IsInArena => !GameController.IsNOC();
-
-        public static bool HasChallengeSelect(ChallengeSelectMenu menu) {
-            foreach (var otherMenu in ChallengeSelections) {
-                if (otherMenu == menu)
-                    return true;
-            }
-
-            return false;
-        }
 
         public static byte? GetIndex(ChallengeSelectMenu menu) {
             for (byte i = 0; i < ChallengeSelections.Length; i++) {

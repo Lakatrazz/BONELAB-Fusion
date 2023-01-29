@@ -1,4 +1,5 @@
-﻿using SLZ.Interaction;
+﻿using LabFusion.Patching;
+using SLZ.Interaction;
 using SLZ.Marrow.Utilities;
 
 using System;
