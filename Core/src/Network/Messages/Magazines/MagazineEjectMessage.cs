@@ -92,10 +92,7 @@ namespace LabFusion.Network
 
                                 if (grabHand && PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep) && grabHand.manager == rep.RigReferences.RigManager) {
                                     var handedness = grabHand.handedness;
-                                    
-                                    if (rep.RigReferences.GetHand(handedness).HasAttachedObject())
-                                        rep.DetachObject(handedness);
-
+         
                                     rep.AttachObject(handedness, ammoPlug.magazine.grip);
                                 }
                             }
