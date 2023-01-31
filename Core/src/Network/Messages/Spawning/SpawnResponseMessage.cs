@@ -258,7 +258,7 @@ namespace LabFusion.Network
 
             grip.MoveIntoHand(hand);
 
-            grip.TryAttach(hand);
+            grip.TryAttach(hand, true);
         }
 
         private static IEnumerator PostSpawnRoutine(AssetPoolee __instance, byte owner, Grip grip = null, Handedness hand = Handedness.UNDEFINED) {

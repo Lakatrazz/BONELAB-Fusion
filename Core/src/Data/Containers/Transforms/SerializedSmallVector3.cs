@@ -14,6 +14,8 @@ namespace LabFusion.Data
 {
     public class SerializedSmallVector3 : IFusionSerializable
     {
+        public static readonly SerializedSmallVector3 Default = Compress(Vector3.zero);
+
         public ulong value;
 
         public void Serialize(FusionWriter writer)

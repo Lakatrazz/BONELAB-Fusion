@@ -52,120 +52,6 @@ namespace LabFusion.Data
         public Grip LeftSnatchGrip { get; private set; }
         public Grip RightSnatchGrip { get; private set; }
 
-        public SerializedGripAnchor LeftSerializedAnchor { get; private set; }
-        public SerializedGripAnchor RightSerializedAnchor { get; private set; }
-
-        public SerializedTransform LeftGrabPoint { get; private set; }
-        public SerializedTransform RightGrabPoint { get; private set; }
-
-        public ConfigurableJoint LeftClientJoint { get; private set; }
-        public ConfigurableJoint RightClientJoint { get; private set; }
-
-        public SerializedGripAnchor GetSerializedAnchor(Handedness handedness)
-        {
-            switch (handedness)
-            {
-                default:
-                    return null;
-                case Handedness.LEFT:
-                    return LeftSerializedAnchor;
-                case Handedness.RIGHT:
-                    return RightSerializedAnchor;
-            }
-        }
-
-        public void SetSerializedAnchor(Handedness handedness, SerializedGripAnchor anchor)
-        {
-            switch (handedness)
-            {
-                case Handedness.LEFT:
-                    LeftSerializedAnchor = anchor;
-                    break;
-                case Handedness.RIGHT:
-                    RightSerializedAnchor = anchor;
-                    break;
-            }
-        }
-
-        public void SetHandPosition(Handedness handedness, Grip grip)
-        {
-            var point = GetGrabPoint(handedness);
-
-            if (point != null)
-            {
-                var hand = GetHand(handedness);
-
-                hand.transform.position = grip.transform.TransformPoint(point.position);
-                hand.transform.rotation = grip.transform.rotation * point.rotation.Expand();
-            }
-        }
-
-        public SerializedTransform GetGrabPoint(Handedness handedness)
-        {
-            switch (handedness)
-            {
-                default:
-                    return null;
-                case Handedness.LEFT:
-                    return LeftGrabPoint;
-                case Handedness.RIGHT:
-                    return RightGrabPoint;
-            }
-        }
-
-        public void SetGrabPoint(Handedness handedness, SerializedTransform anchor)
-        {
-            switch (handedness)
-            {
-                case Handedness.LEFT:
-                    LeftGrabPoint = anchor;
-                    break;
-                case Handedness.RIGHT:
-                    RightGrabPoint = anchor;
-                    break;
-            }
-        }
-
-        public ConfigurableJoint GetClientJoint(Handedness handedness)
-        {
-            switch (handedness)
-            {
-                default:
-                    return null;
-                case Handedness.LEFT:
-                    return LeftClientJoint;
-                case Handedness.RIGHT:
-                    return RightClientJoint;
-            }
-        }
-
-        public void SetClientJoint(Handedness handedness, ConfigurableJoint joint)
-        {
-            switch (handedness)
-            {
-                case Handedness.LEFT:
-                    LeftClientJoint = joint;
-                    break;
-                case Handedness.RIGHT:
-                    RightClientJoint = joint;
-                    break;
-            }
-        }
-
-        public void RemoveJoint(Handedness handedness) {
-            switch (handedness)
-            {
-                case Handedness.LEFT:
-                    if (LeftClientJoint)
-                        GameObject.Destroy(LeftClientJoint);
-                    break;
-                case Handedness.RIGHT:
-                    if (RightClientJoint)
-                        GameObject.Destroy(RightClientJoint);
-                    break;
-            }
-        }
-
         public Grip GetSnatch(Handedness handedness) {
             switch (handedness)
             {
@@ -327,29 +213,6 @@ namespace LabFusion.Data
             }
         }
 
-        private static void OnRigHandUpdate(Hand hand) {
-            if (!hand.m_CurrentAttachedGO || !hand.joint)
-                return;
-
-            var grip = Grip.Cache.Get(hand.m_CurrentAttachedGO);
-
-            if (NetworkInfo.HasServer)
-            {
-                using (FusionWriter writer = FusionWriter.Create())
-                {
-                    using (PlayerRepAnchorData data = PlayerRepAnchorData.Create(PlayerIdManager.LocalSmallId, new SerializedGripAnchor(hand, grip)))
-                    {
-                        writer.Write(data);
-
-                        using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepAnchors, writer))
-                        {
-                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Unreliable, message);
-                        }
-                    }
-                }
-            }
-        }
-
         public static void OnRigUpdate() {
             var rm = RigReferences.RigManager;
 
@@ -374,9 +237,6 @@ namespace LabFusion.Data
 
                     RigAvatarId = barcode;
                 }
-
-                OnRigHandUpdate(RigReferences.LeftHand);
-                OnRigHandUpdate(RigReferences.RightHand);
             }
         }
 

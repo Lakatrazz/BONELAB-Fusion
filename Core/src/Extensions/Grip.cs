@@ -1,18 +1,40 @@
-﻿using LabFusion.Patching;
+﻿using LabFusion.Data;
+using LabFusion.Patching;
+
 using SLZ.Interaction;
 using SLZ.Marrow.Utilities;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using UnityEngine;
 
 namespace LabFusion.Extensions
 {
     public static class GripExtensions {
+        public static SerializedTransform GetRelativeHand(this GripPair pair) {
+            var handTransform = pair.hand.transform;
+            var gripTransform = pair.grip.Host.GetTransform();
+
+            return new SerializedTransform(gripTransform.InverseTransformPoint(handTransform.position), gripTransform.InverseTransformRotation(handTransform.rotation));
+        }
+
+        public static void SetRelativeHand(this Grip grip, Hand hand, SerializedTransform transform) {
+            // Set the hand position so that the grip is created in the right spot
+            if (transform != null) {
+                var gripTransform = grip.Host.GetTransform();
+
+                hand.transform.SetPositionAndRotation(gripTransform.TransformPoint(transform.position), gripTransform.TransformRotation(transform.rotation.Expand()));
+            }
+        }
+
+        public static void PrepareGrab(this Grip grip, Hand hand) {
+            hand.HoveringReceiver = grip;
+
+            SimpleTransform transform = SimpleTransform.Create(hand.transform);
+
+            for (var i = 0; i < 20; i++) {
+                grip.ValidateGripScore(hand, transform);
+                grip.OnHandHoverUpdate(hand);
+            }
+        }
+
         public static void MoveIntoHand(this Grip grip, Hand hand) {
             var host = grip.Host.GetTransform();
             var handTarget = grip.SolveHandTarget(hand);
@@ -31,7 +53,7 @@ namespace LabFusion.Extensions
             }
         }
 
-        public static void TryAttach(this Grip grip, Hand hand) {
+        public static void TryAttach(this Grip grip, Hand hand, bool isInstant = false) {
             // Detach an existing grip
             if (hand.m_CurrentAttachedGO != null) {
                 var other = Grip.Cache.Get(hand.m_CurrentAttachedGO);
@@ -48,7 +70,9 @@ namespace LabFusion.Extensions
                 inventoryHand.IgnoreUnlock();
             }
 
-            grip.OnGrabConfirm(hand, true);
+            grip.PrepareGrab(hand);
+
+            grip.OnGrabConfirm(hand, isInstant);
         }
 
         public static void TryDetach(this Grip grip, Hand hand) {
@@ -56,30 +80,6 @@ namespace LabFusion.Extensions
             if (hand.m_CurrentAttachedGO == grip.gameObject || grip._handStates.ContainsKey(hand) || grip.attachedHands.Has(hand)) {
                 grip.ForceDetach(hand);
             }
-        }
-
-        public static void FreeJoints(this Grip grip, Hand hand) {
-            if (hand.joint)
-                Internal_FreeJoint(hand.joint);
-
-            // Check cylinder grip
-            var cylinder = grip.TryCast<CylinderGrip>();
-            if (cylinder) {
-                foreach (var pair in cylinder._constraintJoints) {
-                    if (pair.key == hand) {
-                        Internal_FreeJoint(pair.value._joint);
-                    }
-                }
-            }
-        }
-
-        internal static void Internal_FreeJoint(ConfigurableJoint joint) {
-            if (!joint)
-                return;
-
-            joint.xDrive = joint.yDrive = joint.zDrive = joint.angularXDrive = joint.angularYZDrive = joint.slerpDrive = default;
-            joint.xMotion = joint.yMotion = joint.zMotion =
-                joint.angularXMotion = joint.angularYMotion = joint.angularZMotion = ConfigurableJointMotion.Free;
         }
     }
 }

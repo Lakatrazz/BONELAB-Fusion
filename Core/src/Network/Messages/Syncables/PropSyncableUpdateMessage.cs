@@ -114,6 +114,10 @@ namespace LabFusion.Network
                     data.serializedVelocities[i] = SerializedSmallVector3.Compress(rb.velocity * Time.timeScale);
                     data.serializedAngularVelocities[i] = SerializedSmallVector3.Compress(rb.angularVelocity * Time.timeScale);
                 }
+                else {
+                    data.serializedVelocities[i] = SerializedSmallVector3.Default;
+                    data.serializedAngularVelocities[i] = SerializedSmallVector3.Default;
+                }
             }
 
             return data;

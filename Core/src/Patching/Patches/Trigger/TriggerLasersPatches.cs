@@ -71,6 +71,9 @@ namespace LabFusion.Patching
         public static bool Prefix(TriggerLasers __instance, Collider other)
         {
             if (other.CompareTag("Player")) {
+                if (TriggerUtilities.VerifyLevelTrigger(__instance, other, out bool runMethod))
+                    return runMethod;
+
                 TriggerUtilities.Decrement(__instance);
                 bool canExit = TriggerUtilities.CanExit(__instance);
 

@@ -148,7 +148,7 @@ namespace LabFusion.Representation
             OnMetadataChanged(PlayerId);
         }
 
-        public void AttachObject(Handedness handedness, Grip grip, bool useCustomJoint = true) {
+        public void AttachObject(Handedness handedness, Grip grip) {
             var hand = RigReferences.GetHand(handedness);
             if (hand == null)
                 return;
@@ -162,53 +162,15 @@ namespace LabFusion.Representation
                 // Update snatch grip
                 RigReferences.SetSnatch(handedness, grip);
 
-                // Create lock joint
-                var joint = hand.gameObject.AddComponent<ConfigurableJoint>();
-                joint.xMotion = joint.yMotion = joint.zMotion = joint.angularXMotion = joint.angularYMotion = joint.angularZMotion = ConfigurableJointMotion.Locked;
-                joint.projectionMode = JointProjectionMode.PositionAndRotation;
-                joint.projectionAngle = 0f;
-                joint.projectionDistance = 0f;
+                // Check for instantanious grabbing
+                bool isInstant = true;
 
-                if (grip.HasRigidbody)
-                    joint.connectedBody = grip.Host.Rb;
+                if (grip.TryCast<GenericGrip>() || grip.TryCast<BarrelGrip>() || grip.TryCast<BoxGrip>())
+                    isInstant = false;
 
-                // Delay grabbing the object and destroying the joint
-                MelonCoroutines.Start(Internal_DelayedGrab(joint, hand, handedness, grip, useCustomJoint));
+                // Attach the hand
+                grip.TryAttach(hand, isInstant);
             }
-        }
-
-        private IEnumerator Internal_DelayedGrab(Joint joint, Hand hand, Handedness handedness, Grip grip, bool useCustomJoint = true) {
-            // Wait a few frames
-            for (var i = 0; i < 5; i++) {
-                if (RigReferences.GetSnatch(handedness) != null) {
-                    // Update last time grabbed, so that the hovering actually updates properly
-                    hand.Controller._lastTimeGrabbed = Time.realtimeSinceStartup;
-
-                    yield return null;
-                }
-                else
-                {
-                    // Destroy the joint if we are cancelling the grab
-                    if (!joint.IsNOC())
-                        GameObject.Destroy(joint);
-
-                    yield break;
-                }
-            }
-
-            // Actually attach the joints
-            grip.TryAttach(hand);
-
-            if (useCustomJoint) {
-                grip.FreeJoints(hand);
-
-                RigReferences.RemoveJoint(handedness);
-                RigReferences.SetClientJoint(handedness, hand.gameObject.AddComponent<ConfigurableJoint>());
-            }
-
-            // Destroy the temp joint
-            if (!joint.IsNOC())
-                GameObject.Destroy(joint);
         }
 
         public void DetachObject(Handedness handedness) {
@@ -221,9 +183,6 @@ namespace LabFusion.Representation
                 grip.TryDetach(hand);
                 RigReferences.SetSnatch(handedness, null);
             }
-
-            RigReferences.RemoveJoint(handedness);
-            RigReferences.SetGrabPoint(handedness, null);
         }
 
         public void OnHandUpdate(Hand hand) {
@@ -236,24 +195,6 @@ namespace LabFusion.Representation
                     if (serializedLeftHand != null)
                         serializedLeftHand.CopyTo(hand.Controller);
                     break;
-            }
-        }
-
-        public void OnHandFixedUpdate(Hand hand) {
-            var clientJoint = RigReferences.GetClientJoint(hand.handedness);
-
-            if (hand.m_CurrentAttachedGO == null || hand.joint == null) {
-                RigReferences.SetSerializedAnchor(hand.handedness, null);
-            }
-            else {
-                if (clientJoint != null) {
-                    var anchor = RigReferences.GetSerializedAnchor(hand.handedness);
-
-                    if (anchor != null)
-                        anchor.CopyTo(hand, Grip.Cache.Get(hand.m_CurrentAttachedGO), clientJoint);
-                    else
-                        Grip.Cache.Get(hand.m_CurrentAttachedGO).FreeJoints(hand);
-                }
             }
         }
 
@@ -676,9 +617,6 @@ namespace LabFusion.Representation
             }
 
             OnPelvisPin();
-
-            OnHandFixedUpdate(RigReferences.LeftHand);
-            OnHandFixedUpdate(RigReferences.RightHand);
         }
 
         public void DetachRepGrips() {

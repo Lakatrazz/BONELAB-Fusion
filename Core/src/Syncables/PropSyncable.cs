@@ -69,8 +69,6 @@ namespace LabFusion.Syncables
 
         private bool _isIgnoringForces = false;
 
-        private readonly Dictionary<Grip, int> _grabbedGrips = new Dictionary<Grip, int>();
-
         private IReadOnlyList<IPropExtender> _extenders;
 
         public PropSyncable(InteractableHost host = null, GameObject root = null) {
@@ -193,18 +191,10 @@ namespace LabFusion.Syncables
 
         public void OnAttach(Hand hand, Grip grip) {
             OnTransferOwner(hand);
-
-            if (_grabbedGrips.ContainsKey(grip))
-                _grabbedGrips[grip]++;
-            else
-                _grabbedGrips.Add(grip, 1);
         }
 
         public void OnDetach(Hand hand, Grip grip) {
             OnTransferOwner(hand);
-
-            if (_grabbedGrips.ContainsKey(grip))
-                _grabbedGrips[grip]--;
         }
 
         public void Cleanup() {
@@ -250,7 +240,7 @@ namespace LabFusion.Syncables
             // Reset position info
             if (Owner == null)
                 FreezeValues();
-            else
+            else if (Owner != owner)
                 NullValues();
 
             byte? prevOwner = Owner;
@@ -475,15 +465,20 @@ namespace LabFusion.Syncables
             foreach (var extender in _extenders)
                 extender.OnReceivedUpdate();
 
+            // Check if anything is being grabbed
             bool isSomethingGrabbed = false;
-            foreach (var pair in _grabbedGrips) {
-                if (!pair.Key.IsNOC() && pair.Value > 0) {
-                    foreach (var hand in pair.Key.attachedHands) {
+            foreach (var grip in PropGrips) {
+                if (grip.attachedHands.Count > 0) {
+                    foreach (var hand in grip.attachedHands) {
                         if (!hand.manager.activeSeat) {
                             isSomethingGrabbed = true;
                             break;
                         }
                     }
+
+                    // Break out if the previous loop was broken out
+                    if (isSomethingGrabbed)
+                        break;
                 }
             }
 
@@ -519,9 +514,9 @@ namespace LabFusion.Syncables
 
                 bool isGrabbed = false;
 
-                foreach (var pair in _grabbedGrips) {
-                    if (pair.Value > 0 && pair.Key.Host.Rb == rb) {
-                        foreach (var hand in pair.Key.attachedHands) {
+                foreach (var grip in PropGrips) {
+                    if (grip.attachedHands.Count > 0 && grip.Host.Rb == rb) {
+                        foreach (var hand in grip.attachedHands) {
                             if (!hand.manager.activeSeat) {
                                 DesiredPositions[i] = null;
                                 DesiredRotations[i] = null;

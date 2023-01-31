@@ -208,7 +208,6 @@
     <Compile Include="Core\src\Data\Containers\PDController.cs" />
     <Compile Include="Core\src\Data\Containers\RigData.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedGrab.cs" />
-    <Compile Include="Core\src\Data\Containers\Grips\SerializedGripAnchor.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedAvatarStats.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedTriggerRefReference.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedGameObjectReference.cs" />
@@ -304,7 +303,7 @@
     <Compile Include="Core\src\Patching\Patches\SpawnableCratePlacerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Attacks\StabSlashPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ZoneEncounterPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\GenGameControl_TriggerPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Trigger\GenGameControl_TriggerPatches.cs" />
     <Compile Include="Core\src\Representation\PlayerRepManager.cs" />
     <Compile Include="Core\src\SDK\Gamemodes\Gamemode.cs" />
     <Compile Include="Core\src\SDK\Network\Messages\ModuleMessageHandler.cs" />
@@ -353,7 +352,6 @@
     <Compile Include="Core\src\Network\Messages\Interaction\SimpleGripEventMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Inventory\InventorySlotDropMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Inventory\InventorySlotInsertMessage.cs" />
-    <Compile Include="Core\src\Network\Messages\Interaction\PlayerRepAnchorMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\PlayerRepForceGrabMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\PlayerRepGrabMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\PlayerRepReleaseMessage.cs" />
@@ -411,7 +409,7 @@
     <Compile Include="Core\src\Patching\Patches\SeatPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\SimpleGripEventsPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\SubBehaviourHealthPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\TriggerLasersPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Trigger\TriggerLasersPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\UnityPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\VirtualControllerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ZonePatches.cs" />

@@ -92,6 +92,9 @@ namespace LabFusion.Data
 
             // Thumbstick
             controller._thumbstickAxis = thumbstickAxis;
+
+            // Update hovering so that grips solve properly
+            controller._lastTimeGrabbed = Time.realtimeSinceStartup;
         }
 
         public void SolveButtonPress(bool lastValue, bool newValue, ref bool up, ref bool down)
