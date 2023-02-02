@@ -46,7 +46,7 @@ namespace LabFusion.Utilities {
             if (!AssetPoolee.Cache.Get(go))
                 go.AddComponent<AssetPoolee>();
 
-            PropSyncable newSyncable = new PropSyncable(go.GetComponentInChildren<InteractableHost>(true), go.gameObject);
+            PropSyncable newSyncable = new PropSyncable(null, go.gameObject);
             newSyncable.SetOwner(0);
 
             SyncManager.RegisterSyncable(newSyncable, syncId);

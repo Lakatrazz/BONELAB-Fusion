@@ -95,8 +95,7 @@ namespace LabFusion.Syncables
                 tempHost.EnableInteraction();
 
                 // Remove from key lists
-                if (KeyReciever.ClaimedHosts != null)
-                {
+                if (KeyReciever.ClaimedHosts != null) {
                     KeyReciever.ClaimedHosts.Remove(tempHost.TryCast<IGrippable>());
                 }
             }
@@ -111,7 +110,7 @@ namespace LabFusion.Syncables
             else if (GameObject) {
                 AssignInformation(GameObject);
             }
-
+            
             foreach (var grip in PropGrips) {
                 grip.attachedHandDelegate += (Grip.HandDelegate)((h) => { OnAttach(h, grip); });
                 grip.detachedHandDelegate += (Grip.HandDelegate)((h) => { OnDetach(h, grip); });
@@ -541,6 +540,16 @@ namespace LabFusion.Syncables
                 var angVel = DesiredAngularVelocities[i].Value;
 
                 bool allowPosition = !HasIgnoreHierarchy;
+
+                // Check if this is kinematic
+                // If so, just set positions
+                if (rb.isKinematic) {
+                    if (allowPosition)
+                        rb.MovePosition(pos);
+
+                    rb.MoveRotation(rot);
+                    continue;
+                }
 
                 var pdController = PDControllers[i];
                 
