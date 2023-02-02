@@ -55,12 +55,7 @@ namespace LabFusion.Extensions
 
         public static void TryAttach(this Grip grip, Hand hand, bool isInstant = false) {
             // Detach an existing grip
-            if (hand.m_CurrentAttachedGO != null) {
-                var other = Grip.Cache.Get(hand.m_CurrentAttachedGO);
-
-                if (other != null)
-                    other.TryDetach(hand);
-            }
+            hand.TryDetach();
 
             // Confirm the grab
             hand.GrabLock = false;
@@ -77,8 +72,12 @@ namespace LabFusion.Extensions
 
         public static void TryDetach(this Grip grip, Hand hand) {
             // Make sure the hand is attached to this grip
-            if (hand.m_CurrentAttachedGO == grip.gameObject || grip._handStates.ContainsKey(hand) || grip.attachedHands.Has(hand)) {
+            if (hand.m_CurrentAttachedGO == grip.gameObject) {
+                // Begin the initial detach
                 grip.ForceDetach(hand);
+
+                // Instant detach the hand in one frame
+                grip.OnDetachedFromHand(hand);
             }
         }
     }

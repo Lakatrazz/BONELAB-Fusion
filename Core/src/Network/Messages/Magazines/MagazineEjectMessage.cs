@@ -7,14 +7,11 @@ using System.Threading.Tasks;
 
 using LabFusion.Data;
 using LabFusion.Representation;
-using LabFusion.Utilities;
-using LabFusion.Grabbables;
 using LabFusion.Syncables;
 using LabFusion.Patching;
 using LabFusion.Extensions;
 
 using SLZ;
-using SLZ.Interaction;
 
 namespace LabFusion.Network
 {
@@ -23,12 +20,14 @@ namespace LabFusion.Network
         public byte smallId;
         public ushort magazineId;
         public ushort gunId;
+        public Handedness hand;
 
         public void Serialize(FusionWriter writer)
         {
             writer.Write(smallId);
             writer.Write(magazineId);
             writer.Write(gunId);
+            writer.Write((byte)hand);
         }
 
         public void Deserialize(FusionReader reader)
@@ -36,6 +35,7 @@ namespace LabFusion.Network
             smallId = reader.ReadByte();
             magazineId = reader.ReadUInt16();
             gunId = reader.ReadUInt16();
+            hand = (Handedness)reader.ReadByte();
         }
 
         public void Dispose()
@@ -43,13 +43,14 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static MagazineEjectData Create(byte smallId, ushort magazineId, ushort gunId)
+        public static MagazineEjectData Create(byte smallId, ushort magazineId, ushort gunId, Handedness hand)
         {
             return new MagazineEjectData()
             {
                 smallId = smallId,
                 magazineId = magazineId,
                 gunId = gunId,
+                hand = hand,
             };
         }
     }
@@ -78,22 +79,12 @@ namespace LabFusion.Network
 
                             var ammoPlug = extender.Component._magazinePlug;
                             if (ammoPlug.magazine && MagazineExtender.Cache.TryGet(ammoPlug.magazine, out var magSyncable) && magSyncable.Id == data.magazineId) {
-                                Hand grabHand = null;
-
-                                if (ammoPlug.magazine.grip) {
-                                    grabHand = ammoPlug.magazine.grip.GetHand();
-
-                                    ammoPlug.magazine.grip.Host.TryDetach();
-                                }
-
                                 ammoPlug.ForceEject();
 
                                 magSyncable.SetRigidbodiesDirty();
 
-                                if (grabHand && PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep) && grabHand.manager == rep.RigReferences.RigManager) {
-                                    var handedness = grabHand.handedness;
-         
-                                    rep.AttachObject(handedness, ammoPlug.magazine.grip);
+                                if (data.hand != Handedness.UNDEFINED && PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep)) {
+                                    rep.AttachObject(data.hand, ammoPlug.magazine.grip);
                                 }
                             }
 

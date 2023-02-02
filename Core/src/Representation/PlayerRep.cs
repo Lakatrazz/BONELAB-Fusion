@@ -155,12 +155,11 @@ namespace LabFusion.Representation
 
             if (grip) {
                 // Detach existing grip
-                var existing = RigReferences.GetSnatch(handedness);
-                if (existing != null)
-                    existing.TryDetach(hand);
+                hand.TryDetach();
 
-                // Update snatch grip
-                RigReferences.SetSnatch(handedness, grip);
+                // Check if the grip can be interacted with
+                if (grip.IsInteractionDisabled || (grip.HasHost && grip.Host.IsInteractionDisabled))
+                    return;
 
                 // Check for instantanious grabbing
                 bool isInstant = true;
@@ -178,11 +177,7 @@ namespace LabFusion.Representation
             if (hand == null)
                 return;
 
-            var grip = RigReferences.GetSnatch(handedness);
-            if (grip) {
-                grip.TryDetach(hand);
-                RigReferences.SetSnatch(handedness, null);
-            }
+            hand.TryDetach();
         }
 
         public void OnHandUpdate(Hand hand) {
@@ -232,11 +227,6 @@ namespace LabFusion.Representation
         public void PlayPullCordEffects() {
             pullCord.PlayAvatarParticleEffects();
             pullCord.PlayClip(pullCord.switchAvatar, pullCord.ap3, pullCord.switchVolume, 4f, false);
-        }
-
-        public void SetPullCordActive(bool isEnabled) {
-            _isBodyLogDirty = true;
-            _bodyLogState = isEnabled;
         }
 
         public void SetVitals(SerializedBodyVitals vitals) {
@@ -639,24 +629,6 @@ namespace LabFusion.Representation
             // Update the player if its dirty and has an avatar
             var rm = RigReferences.RigManager;
             if (!rm._avatar.IsNOC()) {
-                // Disable/enable body log
-                if (_isBodyLogDirty) {
-                    PullCordDevicePatches.IgnorePatches = true;
-
-                    if (_bodyLogState) {
-                        if (!pullCord.ballJoint)
-                            pullCord.EnableBall();
-                    }
-                    else {
-                        if (pullCord.ballJoint)
-                            pullCord.DisableBall();
-                    }
-
-                    PullCordDevicePatches.IgnorePatches = false;
-
-                    _isBodyLogDirty = false;
-                }
-
                 // Swap the avatar
                 if (_isAvatarDirty) {
                     rm.SwapAvatarCrate(avatarId, false, (Action<bool>)OnSwapAvatar);

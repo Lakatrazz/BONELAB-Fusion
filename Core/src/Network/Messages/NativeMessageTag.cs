@@ -98,8 +98,6 @@ namespace LabFusion.Network
 
             HomeEvent = 58,
 
-            BodyLogEnable = 59,
-
             SpawnableCratePlacer = 60,
 
             TimeScale = 61,

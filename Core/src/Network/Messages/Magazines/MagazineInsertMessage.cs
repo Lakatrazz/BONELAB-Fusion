@@ -91,11 +91,11 @@ namespace LabFusion.Network
                                 }
                             }
 
+                            magExtender.Component.magazinePlug.host.TryDetach();
+
                             AmmoSocketPatches.IgnorePatch = true;
                             magExtender.Component.magazinePlug.InsertPlug(socketExtender.Component);
                             AmmoSocketPatches.IgnorePatch = false;
-
-                            magExtender.Component.interactableHost.TryDetach();
                         }
                     }
                 }

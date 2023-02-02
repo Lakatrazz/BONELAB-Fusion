@@ -49,34 +49,6 @@ namespace LabFusion.Data
         public BaseController LeftController { get; private set; }
         public BaseController RightController { get; private set; }
 
-        public Grip LeftSnatchGrip { get; private set; }
-        public Grip RightSnatchGrip { get; private set; }
-
-        public Grip GetSnatch(Handedness handedness) {
-            switch (handedness)
-            {
-                default:
-                    return null;
-                case Handedness.LEFT:
-                    return LeftSnatchGrip;
-                case Handedness.RIGHT:
-                    return RightSnatchGrip;
-            }
-        } 
-
-        public void SetSnatch(Handedness handedness, Grip grip)
-        {
-            switch (handedness)
-            {
-                case Handedness.LEFT:
-                    LeftSnatchGrip = grip;
-                    break;
-                case Handedness.RIGHT:
-                    RightSnatchGrip = grip;
-                    break;
-            }
-        }
-
         public byte? GetIndex(Grip grip) {
             for (byte i = 0; i < RigGrips.Length; i++) {
                 if (RigGrips[i] == grip)
@@ -163,9 +135,6 @@ namespace LabFusion.Data
 
             LeftController = rigManager.openControllerRig.leftController;
             RightController = rigManager.openControllerRig.rightController;
-
-            LeftSnatchGrip = null;
-            RightSnatchGrip = null;
         }
     }
 

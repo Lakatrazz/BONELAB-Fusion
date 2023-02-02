@@ -50,7 +50,7 @@ namespace LabFusion
         public override void OnEarlyInitializeMelon() {
             Instance = this;
             FusionAssembly = Assembly.GetExecutingAssembly();
-
+            
             // Initialize data and hooks
             PersistentData.OnPathInitialize();
             PDController.OnInitializeMelon();

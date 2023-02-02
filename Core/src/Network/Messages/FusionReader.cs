@@ -69,6 +69,17 @@ namespace LabFusion.Network
         }
 
         /// <summary>
+        /// Reads a version from the reader.
+        /// </summary>
+        /// <returns></returns>
+        public Version ReadVersion() {
+            return new Version(
+                ReadInt32(),
+                ReadInt32(),
+                ReadInt32());
+        }
+
+        /// <summary>
         /// Reads a single color from the reader.
         /// </summary>
         /// <returns></returns>

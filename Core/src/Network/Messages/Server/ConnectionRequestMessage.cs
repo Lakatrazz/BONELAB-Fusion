@@ -12,12 +12,14 @@ namespace LabFusion.Network
 {
     public class ConnectionRequestData : IFusionSerializable, IDisposable {
         public ulong longId;
+        public Version version;
         public string avatarBarcode;
         public SerializedAvatarStats avatarStats;
         public Dictionary<string, string> initialMetadata;
 
         public void Serialize(FusionWriter writer) {
             writer.Write(longId);
+            writer.Write(version);
             writer.Write(avatarBarcode);
             writer.Write(avatarStats);
             writer.Write(initialMetadata);
@@ -25,6 +27,7 @@ namespace LabFusion.Network
         
         public void Deserialize(FusionReader reader) {
             longId = reader.ReadUInt64();
+            version = reader.ReadVersion();
             avatarBarcode = reader.ReadString();
             avatarStats = reader.ReadFusionSerializable<SerializedAvatarStats>();
             initialMetadata = reader.ReadStringDictionary();
@@ -34,9 +37,10 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static ConnectionRequestData Create(ulong longId, string username, string avatarBarcode, SerializedAvatarStats stats) {
+        public static ConnectionRequestData Create(ulong longId, Version version, string avatarBarcode, SerializedAvatarStats stats) {
             return new ConnectionRequestData() {
                 longId = longId,
+                version = version,
                 avatarBarcode = avatarBarcode,
                 avatarStats = stats,
                 initialMetadata = InternalServerHelpers.GetInitialMetadata(),
@@ -60,6 +64,13 @@ namespace LabFusion.Network
 
                         if (!isVerified)
                             return;
+
+                        // Compare versions
+                        VersionResult versionResult = NetworkVerification.CompareVersion(FusionMod.Version, data.version);
+
+                        if (versionResult != VersionResult.Ok) {
+                            return;
+                        }
 
 #if DEBUG
                         FusionLogger.Log($"Server received user with long id {data.longId}. Assigned small id {newSmallId}");

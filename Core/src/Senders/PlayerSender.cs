@@ -57,21 +57,6 @@ namespace LabFusion.Senders {
                 throw new ExpectedClientException();
         }
 
-        public static void SendBodyLogEnable(bool isEnabled) {
-            using (var writer = FusionWriter.Create())
-            {
-                using (var data = BodyLogEnableData.Create(PlayerIdManager.LocalSmallId, isEnabled))
-                {
-                    writer.Write(data);
-
-                    using (var message = FusionMessage.Create(NativeMessageTag.BodyLogEnable, writer))
-                    {
-                        MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-                    }
-                }
-            }
-        }
-
         public static void SendPlayerAction(PlayerActionType type) {
             using (var writer = FusionWriter.Create()) {
                 using (var data = PlayerRepActionData.Create(PlayerIdManager.LocalSmallId, type)) {

@@ -16,64 +16,6 @@ using SLZ.Props;
 namespace LabFusion.Patching {
     [HarmonyPatch(typeof(PullCordDevice))]
     public static class PullCordDevicePatches {
-        public static bool IgnorePatches = false;
-
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(PullCordDevice.Start))]
-        public static void StartPrefix() {
-            IgnorePatches = true;
-        }
-
-        [HarmonyPostfix]
-        [HarmonyPatch(nameof(PullCordDevice.Start))]
-        public static void StartPostfix() {
-            IgnorePatches = false;
-        }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(PullCordDevice.EnableBall))]
-        public static bool EnableBall(PullCordDevice __instance) {
-            // Check the ball joint since SLZ doesn't do this
-            if (__instance.ballJoint)
-                return false;
-
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer) {
-                if (PlayerRepManager.HasPlayerId(__instance.rm))
-                    return false;
-                else if (__instance.rm == RigData.RigReferences.RigManager) {
-                    PlayerSender.SendBodyLogEnable(true);
-                }
-            }
-
-            return true;
-        }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(PullCordDevice.DisableBall))]
-        public static bool DisableBall(PullCordDevice __instance)
-        {
-            // Check the ball joint since SLZ doesn't do this
-            if (!__instance.ballJoint)
-                return false;
-
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer) {
-                if (PlayerRepManager.HasPlayerId(__instance.rm))
-                    return false;
-                else if (__instance.rm == RigData.RigReferences.RigManager) {
-                    PlayerSender.SendBodyLogEnable(false);
-                }
-            }
-
-            return true;
-        }
-
-
         [HarmonyPrefix]
         [HarmonyPatch(nameof(PullCordDevice.Update))]
         public static void Update(PullCordDevice __instance) {

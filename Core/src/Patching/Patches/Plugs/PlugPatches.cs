@@ -6,12 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 using HarmonyLib;
+
 using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Syncables;
 using LabFusion.Utilities;
 
+using SLZ;
 using SLZ.Interaction;
 using SLZ.Props.Weapons;
 
@@ -124,7 +126,10 @@ namespace LabFusion.Patching
 
                         using (var writer = FusionWriter.Create())
                         {
-                            using (var data = MagazineEjectData.Create(PlayerIdManager.LocalSmallId, magSyncable.Id, gunSyncable.Id))
+                            Hand hand = ammoPlug.host.GetHand(0);
+                            Handedness handedness = hand != null ? hand.handedness : Handedness.UNDEFINED;
+
+                            using (var data = MagazineEjectData.Create(PlayerIdManager.LocalSmallId, magSyncable.Id, gunSyncable.Id, handedness))
                             {
                                 writer.Write(data);
 

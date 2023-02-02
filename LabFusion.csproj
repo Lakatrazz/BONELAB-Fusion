@@ -234,9 +234,11 @@
     <Compile Include="Core\src\Extensions\Byte.cs" />
     <Compile Include="Core\src\Extensions\Chunk.cs" />
     <Compile Include="Core\src\Extensions\Grip.cs" />
+    <Compile Include="Core\src\Extensions\Hand.cs" />
     <Compile Include="Core\src\Extensions\IEnumerable.cs" />
     <Compile Include="Core\src\Extensions\InteractableHost.cs" />
     <Compile Include="Core\src\Extensions\Joint.cs" />
+    <Compile Include="Core\src\Extensions\PullCordDevice.cs" />
     <Compile Include="Core\src\Extensions\Rigidbody.cs" />
     <Compile Include="Core\src\Extensions\Transform.cs" />
     <Compile Include="Core\src\Extensions\SyncableComparer.cs" />
@@ -268,7 +270,6 @@
     <Compile Include="Core\src\Network\Messages\Interaction\NimbusGunNoclipMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\FlashlightToggleMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Magazines\KeySlotMessage.cs" />
-    <Compile Include="Core\src\Network\Messages\Representation\BodyLogEnableMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\BodyLogEffectMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\PlayerRepActionMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\PlayerMetadataRequestMessage.cs" />

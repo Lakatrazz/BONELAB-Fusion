@@ -64,6 +64,12 @@ namespace LabFusion.Network
                 Write("null");
         }
 
+        public void Write(Version version) {
+            Write(version.Major);
+            Write(version.Minor);
+            Write(version.Build);
+        }
+
         public void Write(Color color) {
             Write(color.r);
             Write(color.g);
