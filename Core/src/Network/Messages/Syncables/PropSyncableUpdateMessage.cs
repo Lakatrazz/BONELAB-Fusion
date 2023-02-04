@@ -135,7 +135,7 @@ namespace LabFusion.Network
                 using (var data = reader.ReadFusionSerializable<PropSyncableUpdateData>()) {
                     // Find the prop syncable and update its info
                     var syncable = data.GetPropSyncable();
-                    if (syncable != null && syncable.IsRegistered() && syncable.Owner.HasValue && syncable.Owner.Value == data.ownerId) {
+                    if (syncable != null && syncable.IsRegistered() && syncable.Owner.HasValue && syncable.Owner.Value == data.ownerId && syncable.HostGameObjects.Length == data.length) {
                         syncable.TimeOfMessage = Time.realtimeSinceStartup;
                         
                         for (var i = 0; i < data.length; i++) {

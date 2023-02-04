@@ -191,6 +191,7 @@
     </Compile>
     <Compile Include="Core\src\BoneMenu\DebugCreator.cs" />
     <Compile Include="Core\src\BoneMenu\SettingsCreator.cs" />
+    <Compile Include="Core\src\Data\Containers\GrabbedGripList.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\KartRaceData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\ArenaData.cs" />
     <Compile Include="Core\src\Data\Containers\ConfigurableJointDriveData.cs" />
@@ -227,6 +228,7 @@
     <Compile Include="Core\src\Data\Files\PersistentData.cs" />
     <Compile Include="Core\src\Data\Files\ResourcePaths.cs" />
     <Compile Include="Core\src\Data\Interfaces\IFusionSerializable.cs" />
+    <Compile Include="Core\src\Debugging\FusionStopwatch.cs" />
     <Compile Include="Core\src\Exceptions\ExpectedClientException.cs" />
     <Compile Include="Core\src\Exceptions\ExpectedServerException.cs" />
     <Compile Include="Core\src\Extensions\AlignPlug.cs" />
