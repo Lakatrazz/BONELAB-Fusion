@@ -18,7 +18,7 @@ namespace LabFusion.Data {
         }
         
         public void OnGripDetach(Grip grip) {
-            if (grip.attachedHands.Count <= 1)
+            if (grip.attachedHands.Count <= 0)
                 _grips.RemoveInstance(grip);
         }
 
