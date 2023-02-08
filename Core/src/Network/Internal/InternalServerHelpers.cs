@@ -104,7 +104,10 @@ namespace LabFusion.Network {
         /// </summary>
         /// <param name="longId"></param>
         internal static void OnUserLeave(ulong longId) {
-            DisposeUser(longId);
+            var playerId = PlayerIdManager.GetPlayerId(longId);
+            MultiplayerHooking.Internal_OnPlayerLeave(playerId);
+
+            DisposeUser(playerId);
         }
 
         /// <summary>

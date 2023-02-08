@@ -24,7 +24,7 @@ namespace LabFusion.Utilities {
     public static class MultiplayerHooking {
         // Server hooks
         public static event ServerEvent OnStartServer, OnJoinServer, OnDisconnect;
-        public static event PlayerUpdate OnPlayerJoin;
+        public static event PlayerUpdate OnPlayerJoin, OnPlayerLeave;
         public static event PlayerAction OnPlayerAction;
         public static event LobbyMenuAction OnLobbyCategoryCreated;
 
@@ -35,6 +35,8 @@ namespace LabFusion.Utilities {
         internal static void Internal_OnDisconnect() => OnDisconnect.InvokeSafe("executing OnDisconnect hook");
 
         internal static void Internal_OnPlayerJoin(PlayerId id) => OnPlayerJoin.InvokeSafe(id, "executing OnPlayerJoin hook");
+
+        internal static void Internal_OnPlayerLeave(PlayerId id) => OnPlayerLeave.InvokeSafe(id, "executing OnPlayerLeave hook");
 
         internal static void Internal_OnPlayerAction(PlayerId id, PlayerActionType type) => OnPlayerAction.InvokeSafe(id, type, "executing OnPlayerAction hook");
 

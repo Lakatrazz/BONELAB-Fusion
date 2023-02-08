@@ -236,10 +236,16 @@ namespace LabFusion.Network
 
             // Add server hooks
             MultiplayerHooking.OnMainSceneInitialized += OnUpdateSteamLobby;
+            MultiplayerHooking.OnPlayerJoin += OnPlayerCountChange;
+            MultiplayerHooking.OnPlayerLeave += OnPlayerCountChange;
             MultiplayerHooking.OnServerSettingsChanged += OnUpdateSteamLobby;
 
             // Create a local lobby
             AwaitLobbyCreation();
+        }
+
+        private void OnPlayerCountChange(PlayerId id) {
+            OnUpdateSteamLobby();
         }
 
         private void UnHookSteamEvents() {
@@ -248,6 +254,8 @@ namespace LabFusion.Network
             
             // Remove server hooks
             MultiplayerHooking.OnMainSceneInitialized -= OnUpdateSteamLobby;
+            MultiplayerHooking.OnPlayerJoin -= OnPlayerCountChange;
+            MultiplayerHooking.OnPlayerLeave -= OnPlayerCountChange;
             MultiplayerHooking.OnServerSettingsChanged -= OnUpdateSteamLobby;
 
             // Remove the local lobby
