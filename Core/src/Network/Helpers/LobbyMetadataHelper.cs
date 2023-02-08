@@ -31,7 +31,7 @@ namespace LabFusion.Network {
                 // Lobby info
                 LobbyId = PlayerIdManager.LocalLongId,
                 LobbyName = PlayerIdManager.LocalUsername,
-                HasServerOpen = NetworkInfo.HasServer,
+                HasServerOpen = NetworkInfo.IsServer,
                 PlayerCount = PlayerIdManager.PlayerCount,
 
                 // Lobby settings
