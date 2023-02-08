@@ -41,6 +41,9 @@ namespace LabFusion.Network
         internal override bool IsServer => _isServerActive;
         internal override bool IsClient => _isConnectionActive;
 
+        private INetworkLobby _currentLobby;
+        internal override INetworkLobby CurrentLobby => _currentLobby;
+
         public SteamId SteamId;
 
         public static SteamSocketManager SteamSocket;
@@ -254,10 +257,7 @@ namespace LabFusion.Network
         private async void AwaitLobbyCreation() {
             var lobbyTask = await SteamMatchmaking.CreateLobbyAsync();
             _localLobby = lobbyTask.Value;
-            _localLobby.SetData("LobbyId", SteamId.Value.ToString());
-            _localLobby.SetData("LobbyName", PlayerIdManager.LocalUsername);
-            _localLobby.SetData("HasServerOpen", "False");
-            _localLobby.SetData("Privacy", ((int)ServerPrivacy.PUBLIC).ToString());
+            _currentLobby = new SteamLobby(_localLobby);
         }
 
         private void OnGameRichPresenceJoinRequested(Friend friend, string value) {
@@ -266,18 +266,10 @@ namespace LabFusion.Network
         }
 
         private void OnUpdateSteamLobby() {
-            // Update server open status
-            if (_isServerActive) {
-                _localLobby.SetData("HasServerOpen", "True");
-            }
-            else {
-                _localLobby.SetData("HasServerOpen", "False");
-            }
+            // Write active info about the lobby
+            LobbyMetadataHelper.WriteInfo(CurrentLobby);
 
-            // Update info about the lobby
-            var privacy = FusionPreferences.ServerSettings.Privacy.GetValue();
-            _localLobby.SetData("Privacy", ((int)privacy).ToString());
-
+            // Update bonemenu items
             OnUpdateCreateServerText();
         }
 
@@ -333,6 +325,8 @@ namespace LabFusion.Network
         private void CreateServerInfoMenu(MenuCategory category) {
             _createServerElement = category.CreateFunctionElement("Create Server", Color.white, OnClickCreateServer);
             category.CreateFunctionElement("Copy SteamID to Clipboard", Color.white, OnCopySteamID);
+
+            BoneMenuCreator.CreatePlayerListMenu(category);
         }
 
         private void OnClickCreateServer() {
@@ -385,32 +379,22 @@ namespace LabFusion.Network
             MelonCoroutines.Start(CoAwaitLobbyListRoutine());
         }
 
-        private bool Internal_CanShowLobby(Lobby lobby) {
+        private bool Internal_CanShowLobby(LobbyMetadataInfo info) {
             // Make sure the lobby is actually open
-            string isOpen = lobby.GetData("HasServerOpen");
-
-            if (isOpen != "True")
+            if (!info.HasServerOpen)
                 return false;
 
-            // Get privacy
-            if (int.TryParse(lobby.GetData("Privacy"), out var result)) {
-                var privacy = (ServerPrivacy)result;
-
-                // Decide outcome
-                switch (privacy) {
-                    default:
-                    case ServerPrivacy.LOCKED:
-                    case ServerPrivacy.PRIVATE:
-                        return false;
-                    case ServerPrivacy.PUBLIC:
-                        return true;
-                    case ServerPrivacy.FRIENDS_ONLY:
-                        var lobbyId = ulong.Parse(lobby.GetData("LobbyId"));
-                        return IsFriend(lobbyId);
-                }
+            // Decide if this server is too private
+            switch (info.Privacy) {
+                default:
+                case ServerPrivacy.LOCKED:
+                case ServerPrivacy.PRIVATE:
+                    return false;
+                case ServerPrivacy.PUBLIC:
+                    return true;
+                case ServerPrivacy.FRIENDS_ONLY:
+                    return IsFriend(info.LobbyId);
             }
-
-            return false;
         }
 
         private IEnumerator CoAwaitLobbyListRoutine() {
@@ -429,9 +413,12 @@ namespace LabFusion.Network
                 if (lobby.Owner.IsMe)
                     continue;
 
-                if (Internal_CanShowLobby(lobby)) {
+                var networkLobby = new SteamLobby(lobby);
+                var info = LobbyMetadataHelper.ReadInfo(networkLobby);
+
+                if (Internal_CanShowLobby(info)) {
                     // Add to list
-                    Menu_CreateJoinableLobby(_publicLobbiesCategory, lobby);
+                    BoneMenuCreator.CreateLobby(_publicLobbiesCategory, info, networkLobby);
                 }
             }
 
@@ -465,30 +452,20 @@ namespace LabFusion.Network
                 if (lobby.Owner.IsMe)
                     continue;
 
-                var lobbyId = ulong.Parse(lobby.GetData("LobbyId"));
-                if (!new Friend(lobbyId).IsFriend)
+                var networkLobby = new SteamLobby(lobby);
+                var lobbyInfo = LobbyMetadataHelper.ReadInfo(networkLobby);
+
+                if (!IsFriend(lobbyInfo.LobbyId))
                     continue;
 
-                if (Internal_CanShowLobby(lobby)) {
+                if (Internal_CanShowLobby(lobbyInfo)) {
                     // Add to list
-                    Menu_CreateJoinableLobby(_friendsCategory, lobby);
+                    BoneMenuCreator.CreateLobby(_friendsCategory, lobbyInfo, networkLobby);
                 }
             }
 
             // Select the updated category
             MenuManager.SelectCategory(_friendsCategory);
-        }
-
-        private void Menu_CreateJoinableLobby(MenuCategory category, Lobby lobby) {
-            var lobbyId = ulong.Parse(lobby.GetData("LobbyId"));
-            var lobbyName = lobby.GetData("LobbyName");
-
-            var userString = $"{lobbyName}'s Server";
-            
-            var lobbyCategory = category.CreateCategory(userString, Color.white);
-            lobbyCategory.CreateFunctionElement("Join Server", Color.white, () => {
-                JoinServer(lobbyId);
-            });
         }
     }
 }

@@ -54,7 +54,10 @@ namespace LabFusion.Patching {
             try
             {
                 if (NetworkInfo.HasServer && __instance.rigManager == RigData.RigReferences.RigManager && Magazine.Cache.Get(host.GetHostGameObject()) && PropSyncable.Cache.TryGet(host.GetHostGameObject(), out var syncable)) {
-                    PooleeUtilities.RequestDespawn(syncable.Id, true);
+                    // Make sure this magazine isn't currently locked in a socket
+                    // The base game doesn't check for this and bugs occur in the base game, but due to latency said bugs are more common
+                    if (syncable.TryGetExtender<MagazineExtender>(out var extender) && !extender.Component.magazinePlug._isLocked)
+                        PooleeUtilities.RequestDespawn(syncable.Id, true);
 
                     return false;
                 }

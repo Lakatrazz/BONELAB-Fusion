@@ -12,6 +12,12 @@ namespace LabFusion.Network {
         public static NetworkLayer CurrentNetworkLayer => InternalLayerHelpers.CurrentNetworkLayer;
 
         /// <summary>
+        /// The current network lobby. Can be null. Allows you to read/write information from it.
+        /// <para>Note that this will not write info for a lobby you have joined, but only a lobby you are hosting.</para>
+        /// </summary>
+        public static INetworkLobby CurrentLobby => CurrentNetworkLayer.CurrentLobby;
+
+        /// <summary>
         /// Returns true if the user is currently in a server.
         /// </summary>
         public static bool HasServer => CurrentNetworkLayer.IsServer || CurrentNetworkLayer.IsClient;

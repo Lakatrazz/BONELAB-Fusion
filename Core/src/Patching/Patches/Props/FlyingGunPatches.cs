@@ -19,9 +19,27 @@ namespace LabFusion.Patching {
     public static class FlyingGunPatches {
         [HarmonyPrefix]
         [HarmonyPatch(nameof(FlyingGun.OnTriggerGripUpdate))]
-        public static void OnTriggerGripUpdate(FlyingGun __instance, Hand hand, ref bool __state)
-        {
+        public static bool OnTriggerGripUpdate(FlyingGun __instance, Hand hand, ref bool __state) {
+            // In a server, prevent two nimbus guns from sending you flying out of the map
+            // Due to SLZ running these forces on update for whatever reason, the forces are inconsistent
+            if (NetworkInfo.HasServer && hand.handedness == SLZ.Handedness.LEFT) {
+                var otherHand = hand.otherHand;
+                
+                if (otherHand.m_CurrentAttachedGO) {
+                    var otherGrip = Grip.Cache.Get(otherHand.m_CurrentAttachedGO);
+                    
+                    if (otherGrip.HasHost) {
+                        var host = otherGrip.Host.GetHostGameObject();
+
+                        if (host.GetComponent<FlyingGun>() != null)
+                            return false;
+                    }
+                }
+            }
+
             __state = __instance._noClipping;
+
+            return true;
         }
 
         [HarmonyPostfix]

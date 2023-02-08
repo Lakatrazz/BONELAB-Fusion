@@ -14,11 +14,9 @@ namespace LabFusion.Extensions
         /// <param name="obj"></param>
         /// <returns></returns>
         internal static bool IsNOC(this UnityEngine.Object obj) {
-            // Hi extraes!
             try {
                 return obj is null || obj.WasCollected || obj == null;
             }
-            // Just incase Il2 does shenanigans.
             catch { }
 
             return true;

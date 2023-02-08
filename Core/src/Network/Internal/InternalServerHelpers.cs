@@ -118,7 +118,10 @@ namespace LabFusion.Network {
                 { MetadataHelper.UsernameKey, PlayerIdManager.LocalUsername },
 
                 // Nickname
-                { MetadataHelper.NicknameKey, PlayerIdManager.LocalNickname }
+                { MetadataHelper.NicknameKey, PlayerIdManager.LocalNickname },
+
+                // Permission
+                { MetadataHelper.PermissionKey, NetworkInfo.IsServer ? PermissionLevel.OWNER.ToString() : PermissionLevel.DEFAULT.ToString() }
             };
 
             return metadata;

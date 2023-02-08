@@ -190,6 +190,8 @@
       <DependentUpon>AssemblyInfo.tt</DependentUpon>
     </Compile>
     <Compile Include="Core\src\BoneMenu\DebugCreator.cs" />
+    <Compile Include="Core\src\BoneMenu\LobbyCreator.cs" />
+    <Compile Include="Core\src\BoneMenu\PlayerListCreator.cs" />
     <Compile Include="Core\src\BoneMenu\SettingsCreator.cs" />
     <Compile Include="Core\src\Data\Containers\GrabbedGripList.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\KartRaceData.cs" />
@@ -223,6 +225,8 @@
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedSmallVector3.cs" />
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedTransform.cs" />
     <Compile Include="Core\src\Data\Files\EmbeddedAssetBundle.cs" />
+    <Compile Include="Core\src\Data\Files\FusionFileLoader.cs" />
+    <Compile Include="Core\src\Data\Files\PermissionList.cs" />
     <Compile Include="Core\src\Data\Files\SteamAPILoader.cs" />
     <Compile Include="Core\src\Data\Files\EmbeddedResource.cs" />
     <Compile Include="Core\src\Data\Files\PersistentData.cs" />
@@ -247,15 +251,18 @@
     <Compile Include="Core\src\Extensions\UnityComparer.cs" />
     <Compile Include="Core\src\Extensions\UnityObject.cs" />
     <Compile Include="Core\src\Extensions\Vector3.cs" />
+    <Compile Include="Core\src\Extensions\XElement.cs" />
     <Compile Include="Core\src\Extensions\ZoneSpawner.cs" />
     <Compile Include="Core\src\Grabbables\GrabHelper.cs" />
     <Compile Include="Core\src\Grabbables\InteractableHelpers.cs" />
     <Compile Include="Core\src\Grabbables\SerializedGrabHandler.cs" />
     <Compile Include="Core\src\Mod.cs" />
     <Compile Include="Core\src\Network\Debugging\EmptyNetworkLayer.cs" />
+    <Compile Include="Core\src\Network\Helpers\LobbyMetadataHelper.cs" />
     <Compile Include="Core\src\Network\Helpers\MetadataHelper.cs" />
     <Compile Include="Core\src\Network\Helpers\NetworkVerification.cs" />
     <Compile Include="Core\src\Network\Helpers\SendRateTable.cs" />
+    <Compile Include="Core\src\Network\INetworkLobby.cs" />
     <Compile Include="Core\src\Network\Messages\Trials\TrialSpawnerEventsMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\BonelabHubMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\DescentIntroMessage.cs" />
@@ -265,7 +272,6 @@
     <Compile Include="Core\src\Network\Messages\Entities\BehaviourBaseNavMentalMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Entities\BehaviourBaseNavLocoMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Global\SlowMoButtonMessage.cs" />
-    <Compile Include="Core\src\Network\Messages\Global\TimeScaleMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\BoardCreateMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\ConstraintDeleteMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\ConstraintCreateMessage.cs" />
@@ -281,6 +287,7 @@
     <Compile Include="Core\src\Network\Messages\Server\ServerSettingsMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\PlayerSettingsMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Spawning\SpawnableCratePlacerMessage.cs" />
+    <Compile Include="Core\src\Network\Steam\SteamLobby.cs" />
     <Compile Include="Core\src\Patching\Patches\AvatarDicePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\AvatarPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Enemies\BehaviourOmniwheelPatches.cs" />
@@ -294,7 +301,7 @@
     <Compile Include="Core\src\Patching\Patches\BonelabProgressionHelperPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ConstraintTrackerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\DevManipulatorPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\FlyingGunPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Props\FlyingGunPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\KartRacePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Plugs\KeyRecieverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\HomePatches.cs" />
@@ -307,8 +314,10 @@
     <Compile Include="Core\src\Patching\Patches\Attacks\StabSlashPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ZoneEncounterPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Trigger\GenGameControl_TriggerPatches.cs" />
+    <Compile Include="Core\src\Representation\PlayerPermissions.cs" />
     <Compile Include="Core\src\Representation\PlayerRepManager.cs" />
     <Compile Include="Core\src\SDK\Gamemodes\Gamemode.cs" />
+    <Compile Include="Core\src\SDK\Gamemodes\GamemodeManager.cs" />
     <Compile Include="Core\src\SDK\Network\Messages\ModuleMessageHandler.cs" />
     <Compile Include="Core\src\Senders\ArenaSender.cs" />
     <Compile Include="Core\src\Senders\EnemySender.cs" />
@@ -321,6 +330,7 @@
     <Compile Include="Core\src\Senders\ZoneSender.cs" />
     <Compile Include="Core\src\Senders\CampaignSender.cs" />
     <Compile Include="Core\src\Syncables\ConstraintSyncable.cs" />
+    <Compile Include="Core\src\Syncables\Extenders\EscalatorExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\TriggerRefProxyExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\BehaviourBaseNavExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\BehaviourOmniwheelExtender.cs" />
@@ -330,6 +340,7 @@
     <Compile Include="Core\src\Syncables\Extenders\KeyExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\NimbusGunExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\PropFlashlightExtender.cs" />
+    <Compile Include="Core\src\Utilities\BytePool.cs" />
     <Compile Include="Core\src\Utilities\DllTools.cs" />
     <Compile Include="Core\src\Network\Helpers\Net.cs" />
     <Compile Include="Core\src\Network\Helpers\NetworkHelper.cs" />

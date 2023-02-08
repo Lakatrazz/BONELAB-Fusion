@@ -52,6 +52,7 @@ namespace LabFusion
             FusionAssembly = Assembly.GetExecutingAssembly();
             
             // Initialize data and hooks
+            BytePool.PopulateInitial();
             PersistentData.OnPathInitialize();
             PDController.OnInitializeMelon();
             ModuleHandler.Internal_HookAssemblies();
@@ -59,6 +60,9 @@ namespace LabFusion
         }
 
         public override void OnInitializeMelon() {
+            // Pull files
+            FusionFileLoader.OnInitializeMelon();
+
             // Register our base handlers
             FusionMessageHandler.RegisterHandlersFromAssembly(FusionAssembly);
             GrabGroupHandler.RegisterHandlersFromAssembly(FusionAssembly);
@@ -180,7 +184,6 @@ namespace LabFusion
                 var mode = FusionPreferences.TimeScaleMode;
 
                 switch (mode) {
-                    default:
                     case TimeScaleMode.DISABLED:
                         Time.timeScale = 1f;
                         break;
@@ -208,18 +211,6 @@ namespace LabFusion
                             }
                         }
 
-                        break;
-                    case TimeScaleMode.HOST_ONLY:
-                    case TimeScaleMode.EVERYONE:
-                        // Update timescale to the target
-                        if (!NetworkInfo.IsServer) {
-                            Time.timeScale = TimeScaleSender.ReceivedTimeScale;
-                        }
-                        // Send timescale every 20 frames
-                        else if (Time.frameCount % 20 == 0)
-                        {
-                            TimeScaleSender.SendTimeScale();
-                        }
                         break;
                 }
             }

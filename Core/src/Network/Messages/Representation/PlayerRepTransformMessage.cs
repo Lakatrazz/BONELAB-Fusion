@@ -2,6 +2,8 @@
 using LabFusion.Extensions;
 using LabFusion.Representation;
 using LabFusion.Utilities;
+
+using SLZ.Interaction;
 using SLZ.Rig;
 using SLZ.VRMK;
 
@@ -29,7 +31,9 @@ namespace LabFusion.Network {
         public SerializedLocalTransform[] serializedLocalTransforms = new SerializedLocalTransform[PlayerRepUtilities.TransformSyncCount];
         public SerializedTransform serializedPelvis;
         public SerializedSmallQuaternion serializedPlayspace;
+
         public SerializedSmallVector3 predictVelocity;
+        public SerializedSmallVector3 predictAngularVelocity;
 
         public SerializedHand leftHand;
         public SerializedHand rightHand;
@@ -38,7 +42,9 @@ namespace LabFusion.Network {
         public void Serialize(FusionWriter writer)
         {
             writer.Write(smallId);
+
             writer.Write(predictVelocity);
+            writer.Write(predictAngularVelocity);
 
             writer.Write(feetOffset);
             writer.Write(crouchTarget);
@@ -61,7 +67,9 @@ namespace LabFusion.Network {
         public void Deserialize(FusionReader reader)
         {
             smallId = reader.ReadByte();
+
             predictVelocity = reader.ReadFusionSerializable<SerializedSmallVector3>();
+            predictAngularVelocity = reader.ReadFusionSerializable<SerializedSmallVector3>();
 
             feetOffset = reader.ReadSingle();
             crouchTarget = reader.ReadSingle();
@@ -85,14 +93,16 @@ namespace LabFusion.Network {
             GC.SuppressFinalize(this);
         }
 
-        public static PlayerRepTransformData Create(byte smallId, Transform[] syncTransforms, Transform syncedPelvis, Transform syncedPlayspace, BaseController leftHand, BaseController rightHand)
+        public static PlayerRepTransformData Create(byte smallId, Transform[] syncTransforms, Transform syncedPelvis, Transform syncedPlayspace, Hand leftHand, Hand rightHand)
         {
             var rm = RigData.RigReferences.RigManager;
             var controllerRig = rm.openControllerRig;
 
             var data = new PlayerRepTransformData {
                 smallId = smallId,
+
                 predictVelocity = SerializedSmallVector3.Compress(RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.velocity * Time.timeScale),
+                predictAngularVelocity = SerializedSmallVector3.Compress(RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.angularVelocity * Time.timeScale),
 
                 feetOffset = controllerRig.feetOffset,
                 crouchTarget = controllerRig._crouchTarget,
@@ -104,8 +114,8 @@ namespace LabFusion.Network {
 
                 serializedPlayspace = SerializedSmallQuaternion.Compress(syncedPlayspace.rotation),
 
-                leftHand = new SerializedHand(leftHand),
-                rightHand = new SerializedHand(rightHand)
+                leftHand = new SerializedHand(leftHand, leftHand.Controller),
+                rightHand = new SerializedHand(rightHand, rightHand.Controller)
             };
 
             for (var i = 0; i < PlayerRepUtilities.TransformSyncCount; i++) {
@@ -147,6 +157,7 @@ namespace LabFusion.Network {
                     rep.serializedPelvis = data.serializedPelvis;
                     rep.repPlayspace.rotation = data.serializedPlayspace.Expand();
                     rep.predictVelocity = data.predictVelocity.Expand();
+                    rep.predictAngularVelocity = data.predictAngularVelocity.Expand();
                     rep.timeSincePelvisSent = Time.realtimeSinceStartup;
 
                     rep.serializedLeftHand = data.leftHand;

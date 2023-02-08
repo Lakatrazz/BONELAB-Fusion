@@ -24,14 +24,6 @@ namespace LabFusion.Network
 
         private byte[] buffer;
 
-        public int Capacity
-        {
-            get
-            {
-                return buffer.Length;
-            }
-        }
-
         public byte[] Buffer {
             get {
                 return buffer;
@@ -47,7 +39,7 @@ namespace LabFusion.Network
         {
             return new FusionWriter
             {
-                buffer = new byte[initialCapacity],
+                buffer = BytePool.Rent(initialCapacity),
                 Position = 0
             };
         }
@@ -406,8 +398,16 @@ namespace LabFusion.Network
             ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
         }
 
+        public void EnsureLength() {
+            if (buffer.Length != Position) {
+                Array.Resize(ref buffer, Position);
+            }
+        }
+
         public void Dispose() {
             GC.SuppressFinalize(this);
+
+            BytePool.Return(buffer);
         }
     }
 }

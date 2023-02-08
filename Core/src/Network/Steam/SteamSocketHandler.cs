@@ -89,10 +89,12 @@ namespace LabFusion.Network
 
         public static void OnSocketMessageReceived(IntPtr messageIntPtr, int dataBlockSize, bool isServerHandled = false) {
             try {
-                byte[] message = new byte[dataBlockSize];
+                byte[] message = BytePool.Rent(dataBlockSize);
                 Marshal.Copy(messageIntPtr, message, 0, dataBlockSize);
 
                 FusionMessageHandler.ReadMessage(message, isServerHandled);
+
+                BytePool.Return(message);
             }
             catch (Exception e) {
                 FusionLogger.Error($"Failed reading message from socket server with reason: {e.Message}\nTrace:{e.StackTrace}");

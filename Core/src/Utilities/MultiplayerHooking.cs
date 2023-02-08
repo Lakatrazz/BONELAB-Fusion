@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using BoneLib.BoneMenu.Elements;
+
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Senders;
@@ -13,6 +15,7 @@ namespace LabFusion.Utilities {
     public delegate void UpdateEvent();
     public delegate void PlayerUpdate(PlayerId playerId);
     public delegate void PlayerAction(PlayerId playerId, PlayerActionType type);
+    public delegate void LobbyMenuAction(MenuCategory category, INetworkLobby lobby);
 
     /// <summary>
     /// Hooks for getting events from the server, players, etc.
@@ -23,6 +26,7 @@ namespace LabFusion.Utilities {
         public static event ServerEvent OnStartServer, OnJoinServer, OnDisconnect;
         public static event PlayerUpdate OnPlayerJoin;
         public static event PlayerAction OnPlayerAction;
+        public static event LobbyMenuAction OnLobbyCategoryCreated;
 
         internal static void Internal_OnStartServer() => OnStartServer.InvokeSafe("executing OnStartServer hook");
 
@@ -33,6 +37,8 @@ namespace LabFusion.Utilities {
         internal static void Internal_OnPlayerJoin(PlayerId id) => OnPlayerJoin.InvokeSafe(id, "executing OnPlayerJoin hook");
 
         internal static void Internal_OnPlayerAction(PlayerId id, PlayerActionType type) => OnPlayerAction.InvokeSafe(id, type, "executing OnPlayerAction hook");
+
+        internal static void Internal_OnLobbyCategoryCreated(MenuCategory category, INetworkLobby lobby) => OnLobbyCategoryCreated.InvokeSafe(category, lobby, "executing OnLobbyCategoryCreated");
 
         // Settings updates
         public static event ServerEvent OnServerSettingsChanged;

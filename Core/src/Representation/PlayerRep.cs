@@ -47,8 +47,8 @@ namespace LabFusion.Representation
         public static Transform[] gameworldPoints = new Transform[PlayerRepUtilities.GameworldRigTransformCount];
         public static Transform syncedPlayspace;
         public static Transform syncedPelvis;
-        public static BaseController syncedLeftController;
-        public static BaseController syncedRightController;
+        public static Hand syncedLeftHand;
+        public static Hand syncedRightHand;
 
         public SerializedLocalTransform[] serializedLocalTransforms = new SerializedLocalTransform[PlayerRepUtilities.TransformSyncCount];
         public SerializedLocalTransform[] serializedGameworldLocalTransforms = new SerializedLocalTransform[PlayerRepUtilities.GameworldRigTransformCount];
@@ -65,6 +65,8 @@ namespace LabFusion.Representation
         public ControllerRig.VrVertState serializedVrVertState;
 
         public Vector3 predictVelocity;
+        public Vector3 predictAngularVelocity;
+
         public PDController pelvisPDController;
         public float timeSincePelvisSent;
 
@@ -93,9 +95,6 @@ namespace LabFusion.Representation
         public SerializedHand serializedRightHand = null;
 
         private bool _hasLockedPosition = false;
-
-        private bool _isBodyLogDirty = false;
-        private bool _bodyLogState = false;
 
         private bool _isAvatarDirty = false;
         private bool _isVitalsDirty = false;
@@ -184,11 +183,11 @@ namespace LabFusion.Representation
             switch (hand.handedness) {
                 case Handedness.RIGHT:
                     if (serializedRightHand != null)
-                        serializedRightHand.CopyTo(hand.Controller);
+                        serializedRightHand.CopyTo(hand, hand.Controller);
                     break;
                 case Handedness.LEFT:
                     if (serializedLeftHand != null)
-                        serializedLeftHand.CopyTo(hand.Controller);
+                        serializedLeftHand.CopyTo(hand, hand.Controller);
                     break;
             }
         }
@@ -290,7 +289,6 @@ namespace LabFusion.Representation
             repPelvis = rig.physicsRig.m_pelvis.GetComponent<Rigidbody>();
             repPelvis.drag = 0f;
             repPelvis.angularDrag = 0f;
-            pelvisPDController.OnResetDerivatives(repPelvis.transform);
 
             repControllerRig = rig.openControllerRig;
             repPlayspace = rig.openControllerRig.vrRoot.transform;
@@ -308,9 +306,6 @@ namespace LabFusion.Representation
         }
 
         public void MarkDirty() {
-            _isBodyLogDirty = false;
-            _bodyLogState = false;
-
             _isAvatarDirty = true;
             _isVitalsDirty = true;
 
@@ -439,7 +434,6 @@ namespace LabFusion.Representation
                 var rigManager = RigReferences.RigManager;
 
                 if (rigManager.activeSeat) {
-                    pelvisPDController.OnResetDerivatives(repPelvis.transform);
                     return;
                 }
 
@@ -452,6 +446,7 @@ namespace LabFusion.Representation
                 else if (!_hasLockedPosition) {
                     serializedPelvis.position = repPelvis.transform.position;
                     predictVelocity = Vector3.zero;
+                    predictAngularVelocity = Vector3.zero;
 
                     _hasLockedPosition = true;
                 }
@@ -464,17 +459,9 @@ namespace LabFusion.Representation
 
                     repPelvis.AddForce(pelvisPDController.GetForce(repPelvis, repPelvis.transform, pos, predictVelocity), ForceMode.Acceleration);
                     // We only want to apply angular force when ragdolled
-                    if (rigManager.physicsRig.torso.spineInternalMult <= 0f)
-                    {
-                        repPelvis.AddTorque(pelvisPDController.GetTorque(repPelvis, repPelvis.transform, rot), ForceMode.Acceleration);
+                    if (rigManager.physicsRig.torso.spineInternalMult <= 0f) {
+                        repPelvis.AddTorque(pelvisPDController.GetTorque(repPelvis, repPelvis.transform, rot, predictAngularVelocity), ForceMode.Acceleration);
                     }
-                    else
-                    {
-                        pelvisPDController.OnResetRotDerivatives(repPelvis.transform);
-                    }
-                }
-                else {
-                    pelvisPDController.OnResetDerivatives(repPelvis.transform);
                 }
 
                 // Check for stability teleport
@@ -496,8 +483,6 @@ namespace LabFusion.Representation
                             rb.velocity = Vector3.zero;
                             rb.angularVelocity = Vector3.zero;
                         }
-
-                        pelvisPDController.OnResetDerivatives(repPelvis.transform);
 
                         // Reset locosphere and knee pos so the rig doesn't get stuck
                         physRig.knee.transform.position = serializedPelvis.position;
@@ -558,7 +543,7 @@ namespace LabFusion.Representation
                 }
 
                 using (var writer = FusionWriter.Create()) {
-                    using (var data = PlayerRepTransformData.Create(PlayerIdManager.LocalSmallId, syncedPoints, syncedPelvis, syncedPlayspace, syncedLeftController, syncedRightController)) {
+                    using (var data = PlayerRepTransformData.Create(PlayerIdManager.LocalSmallId, syncedPoints, syncedPelvis, syncedPlayspace, syncedLeftHand, syncedRightHand)) {
                         writer.Write(data);
 
                         using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepTransform, writer)) {
@@ -722,8 +707,8 @@ namespace LabFusion.Representation
 
             syncedPelvis = RigData.RigReferences.RigManager.physicsRig.m_pelvis;
             syncedPlayspace = RigData.RigReferences.RigManager.openControllerRig.vrRoot.transform;
-            syncedLeftController = RigData.RigReferences.RigManager.openControllerRig.leftController;
-            syncedRightController = RigData.RigReferences.RigManager.openControllerRig.rightController;
+            syncedLeftHand = RigData.RigReferences.RigManager.physicsRig.leftHand;
+            syncedRightHand = RigData.RigReferences.RigManager.physicsRig.rightHand;
 
             PlayerRepUtilities.FillTransformArray(ref syncedPoints, RigData.RigReferences.RigManager);
             PlayerRepUtilities.FillGameworldArray(ref gameworldPoints, RigData.RigReferences.RigManager);

@@ -11,7 +11,8 @@ using UnityEngine;
 
 namespace LabFusion.Extensions {
     public static class Vector3Extensions {
-        private const float Rad2Deg = 360f / ((float)Math.PI * 2);
+        // Rad2Deg is 360 / (PI * 2) Aka 180 / PI
+        public const float Rad2Deg = 57.2957795131f;
 
         public static bool IsNanOrInf(this Vector3 vector) {
             return Internal_IsNanOrInf(vector.x) || Internal_IsNanOrInf(vector.y) || Internal_IsNanOrInf(vector.z);

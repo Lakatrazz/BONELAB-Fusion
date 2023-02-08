@@ -1,9 +1,9 @@
-﻿using System;
+﻿using LabFusion.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static UnityEngine.RemoteConfigSettingsHelper;
 
 namespace LabFusion.Network
 {
@@ -35,12 +35,14 @@ namespace LabFusion.Network
         }
 
         public static FusionMessage Create(byte tag, FusionWriter writer) {
+            writer.EnsureLength();
+
             return Create(tag, writer.Buffer);
         }
 
         public static FusionMessage Create(byte tag, byte[] buffer) {
             var message = new FusionMessage {
-                buffer = new byte[buffer.Length + 1]
+                buffer = BytePool.Rent(buffer.Length + 1)
             };
             message.buffer[0] = tag;
             buffer.CopyTo(message.buffer, 1);
@@ -57,12 +59,14 @@ namespace LabFusion.Network
         }
 
         public static FusionMessage ModuleCreate(Type type, FusionWriter writer) {
+            writer.EnsureLength();
+
             return ModuleCreate(type, writer.Buffer);
         }
 
         public static FusionMessage ModuleCreate(Type type, byte[] buffer) {
             var message = new FusionMessage {
-                buffer = new byte[buffer.Length + 3]
+                buffer = BytePool.Rent(buffer.Length + 3)
             };
             message.buffer[0] = NativeMessageTag.Module;
 

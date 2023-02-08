@@ -1,4 +1,5 @@
 ﻿using LabFusion.Network;
+using SLZ.Interaction;
 using SLZ.Marrow.Input;
 using SLZ.Rig;
 using System;
@@ -11,6 +12,8 @@ using UnityEngine;
 namespace LabFusion.Data
 {
     public class SerializedHand : IFusionSerializable {
+        public float forceMultiplier;
+
         public float indexCurl;
         public float middleCurl;
         public float ringCurl;
@@ -33,8 +36,10 @@ namespace LabFusion.Data
 
         public SerializedHand() { }
 
-        public SerializedHand(BaseController controller)
+        public SerializedHand(Hand hand, BaseController controller)
         {
+            forceMultiplier = hand.physHand.forceMultiplier;
+
             indexCurl = controller._processedIndex;
             middleCurl = controller._processedMiddle;
             ringCurl = controller._processedRing;
@@ -54,7 +59,9 @@ namespace LabFusion.Data
             thumbstickAxis = controller._thumbstickAxis;
         }
 
-        public void CopyTo(BaseController controller) {
+        public void CopyTo(Hand hand, BaseController controller) {
+            hand.physHand.forceMultiplier = forceMultiplier;
+
             controller._processedIndex = indexCurl;
             controller._processedMiddle = middleCurl;
             controller._processedRing = ringCurl;
@@ -118,6 +125,8 @@ namespace LabFusion.Data
         }
 
         public void Serialize(FusionWriter writer) {
+            writer.Write(forceMultiplier);
+
             writer.Write((byte)(indexCurl * PRECISION_MULTIPLIER));
             writer.Write((byte)(middleCurl * PRECISION_MULTIPLIER));
             writer.Write((byte)(ringCurl * PRECISION_MULTIPLIER));
@@ -138,6 +147,8 @@ namespace LabFusion.Data
         }
 
         public void Deserialize(FusionReader reader) {
+            forceMultiplier = reader.ReadSingle();
+
             indexCurl = ReadCompressedFloat(reader);
             middleCurl = ReadCompressedFloat(reader);
             ringCurl = ReadCompressedFloat(reader);

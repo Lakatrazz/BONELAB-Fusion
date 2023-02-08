@@ -9,11 +9,14 @@ using System.Threading.Tasks;
 
 namespace LabFusion.Network {
     public static class MetadataHelper {
+        // Default keys
         public const string UsernameKey = "Username";
-
         public const string NicknameKey = "Nickname";
-
         public const string LoadingKey = "IsLoading";
+        public const string PermissionKey = "PermissionLevel";
+
+        // Gamemode keys
+        public const string GamemodeDeathCountKey = "GamemodeDeathCount";
 
         public static bool ParseBool(string value) => value == "True";
 

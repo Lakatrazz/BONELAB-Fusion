@@ -13,6 +13,8 @@ using LabFusion.Utilities;
 namespace LabFusion.Representation
 {
     public class PlayerId : IFusionSerializable, IDisposable, IEquatable<PlayerId> {
+        public bool IsSelf => LongId == PlayerIdManager.LocalLongId;
+
         public ulong LongId { get; private set; }
         public byte SmallId { get; private set; }
 

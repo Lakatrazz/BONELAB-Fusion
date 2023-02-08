@@ -11,6 +11,6 @@ namespace LabFusion.Data
 
         public const string PlayerRepName = "[RigManager (PlayerRep)]";
 
-        public const string AppDataSubFolder = "/LabFusion/";
+        public const string AppDataSubFolder = "/Fusion/";
     }
 }

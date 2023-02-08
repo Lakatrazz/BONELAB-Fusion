@@ -298,7 +298,7 @@ namespace LabFusion.Network
             {
                 throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num, Length - Position - 4));
             }
-            byte[] array = new byte[num];
+            byte[] array = BytePool.Rent(num);
             Buffer.BlockCopy(buffer, Offset + Position + 4, array, 0, num);
             Position += 4 + num;
             return array;
@@ -997,7 +997,7 @@ namespace LabFusion.Network
             {
                 throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", length, Length - Position));
             }
-            byte[] result = new byte[length];
+            byte[] result = BytePool.Rent(length);
             ReadRawInto(result, 0, length);
             return result;
         }

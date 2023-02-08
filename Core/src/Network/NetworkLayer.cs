@@ -40,6 +40,11 @@ namespace LabFusion.Network
         internal virtual bool ServerCanSendToHost => true;
 
         /// <summary>
+        /// Returns the current active lobby.
+        /// </summary>
+        internal virtual INetworkLobby CurrentLobby => null;
+
+        /// <summary>
         /// Starts the server.
         /// </summary>
         internal abstract void StartServer();

@@ -36,10 +36,13 @@ namespace LabFusion.Syncables
         public GameObject[] HostGameObjects;
         public Transform[] HostTransforms;
 
+        private bool[] RigidbodyNulls;
+
         public readonly AssetPoolee AssetPoolee;
 
         public readonly GameObject GameObject;
 
+        public bool DisableSyncing = false;
         public readonly bool HasIgnoreHierarchy;
 
         public float TimeOfMessage = 0f;
@@ -88,12 +91,8 @@ namespace LabFusion.Syncables
             Cache.Add(GameObject, this);
 
             // Recreate all rigidbodies incase of them being gone (ascent Amber ball, looking at you)
-            // Make sure the host is active cause otherwise there will be strange artifacts
             var tempHosts = GameObject.GetComponentsInChildren<InteractableHost>(true);
             foreach (var tempHost in tempHosts) {
-                if (!tempHost.gameObject.activeInHierarchy)
-                    continue;
-
                 tempHost.CreateRigidbody();
                 tempHost.EnableInteraction();
 
@@ -104,15 +103,8 @@ namespace LabFusion.Syncables
             }
 
             // Assign grip, rigidbody, etc. info
-            if (host) {
-                if (host.manager)
-                    AssignInformation(host.manager);
-                else
-                    AssignInformation(host);
-            }
-            else if (GameObject) {
+            if (GameObject) 
                 AssignInformation(GameObject);
-            }
             
             foreach (var grip in PropGrips) {
                 grip.attachedHandDelegate += (Grip.HandDelegate)((h) => { OnAttach(h, grip); });
@@ -144,7 +136,6 @@ namespace LabFusion.Syncables
                 HostCache.Add(HostGameObjects[i], this);
 
                 PDControllers[i] = new PDController();
-                PDControllers[i].OnResetDerivatives(HostTransforms[i]);
             }
 
             HasIgnoreHierarchy = GameObject.GetComponentInParent<IgnoreHierarchy>(true);
@@ -164,25 +155,10 @@ namespace LabFusion.Syncables
             return false;
         }
 
-        private void AssignInformation(InteractableHost host) {
-            var root = host.GetSyncRoot();
-
-            PropGrips = root.GetComponentsInChildren<Grip>(true);
-            Rigidbodies = root.GetComponentsInChildren<Rigidbody>(true);
-
-            _grabbedGrips = new GrabbedGripList(PropGrips.Length);
-        }
-
-        private void AssignInformation(InteractableHostManager manager) {
-            PropGrips = manager.GetComponentsInChildren<Grip>(true);
-            Rigidbodies = manager.GetComponentsInChildren<Rigidbody>(true);
-
-            _grabbedGrips = new GrabbedGripList(PropGrips.Length);
-        }
-
         private void AssignInformation(GameObject go) {
             PropGrips = go.GetComponentsInChildren<Grip>(true);
             Rigidbodies = go.GetComponentsInChildren<Rigidbody>(true);
+            RigidbodyNulls = new bool[Rigidbodies.Length];
 
             _grabbedGrips = new GrabbedGripList(PropGrips.Length);
         }
@@ -200,7 +176,7 @@ namespace LabFusion.Syncables
         public void OnAttach(Hand hand, Grip grip) {
             OnTransferOwner(hand);
 
-            _grabbedGrips.OnGripAttach(grip);
+            _grabbedGrips.OnGripAttach(hand, grip);
         }
 
         public void OnDetach(Hand hand, Grip grip) {
@@ -395,7 +371,7 @@ namespace LabFusion.Syncables
 
         public bool IsRegistered() => _hasRegistered;
 
-        private bool HasValidParameters() => _hasRegistered && LevelWarehouseUtilities.IsLoadDone() && !GameObject.IsNOC() && GameObject.activeInHierarchy;
+        private bool HasValidParameters() => !DisableSyncing && _hasRegistered && LevelWarehouseUtilities.IsLoadDone() && !GameObject.IsNOC() && GameObject.activeInHierarchy;
 
         public void OnFixedUpdate() {
             if (!Owner.HasValue || Owner.Value == PlayerIdManager.LocalSmallId || !HasValidParameters())
@@ -408,7 +384,9 @@ namespace LabFusion.Syncables
         {
             if (!HasValidParameters())
                 return;
-            
+
+            CheckNulls();
+
             VerifyOwner();
             VerifyRigidbodies();
             VerifyLocking();
@@ -416,6 +394,16 @@ namespace LabFusion.Syncables
             if (Owner.HasValue && Owner.Value == PlayerIdManager.LocalSmallId) {
                 OnOwnedUpdate();
             }
+        }
+
+        public void CheckNulls() {
+            for (var i = 0; i < Rigidbodies.Length; i++) {
+                RigidbodyNulls[i] = Rigidbodies[i] == null;
+            }
+        }
+
+        public bool IsRigidbodyNull(int index) {
+            return RigidbodyNulls[index];
         }
 
         private bool HasMoved(int index)
@@ -436,11 +424,11 @@ namespace LabFusion.Syncables
             bool hasMovingBody = false;
 
             for (var i = 0; i < Rigidbodies.Length; i++) {
-                var rb = Rigidbodies[i];
-
-                if (rb == null) {
+                if (IsRigidbodyNull(i)) {
                     continue;
                 }
+
+                var rb = Rigidbodies[i];
 
                 if (!hasMovingBody && !rb.IsSleeping() && HasMoved(i)) {
                     hasMovingBody = true;
@@ -456,7 +444,6 @@ namespace LabFusion.Syncables
 
                 LastSentPositions[i] = transform.position;
                 LastSentRotations[i] = transform.rotation;
-                PDControllers[i].OnResetDerivatives(transform);
             }
 
             using (var writer = FusionWriter.Create()) {
@@ -474,25 +461,14 @@ namespace LabFusion.Syncables
             if (!SafetyUtilities.IsValidTime)
                 return;
 
+            float dt = Time.fixedDeltaTime;
+            float timeSinceMessage = Time.realtimeSinceStartup - TimeOfMessage;
+
             foreach (var extender in _extenders)
                 extender.OnReceivedUpdate();
 
             // Check if anything is being grabbed
-            bool isSomethingGrabbed = false;
-            foreach (var grip in _grabbedGrips.GetGrabbedGrips()) {
-                foreach (var hand in grip.attachedHands) {
-                    if (!hand.manager.activeSeat) {
-                        isSomethingGrabbed = true;
-                        break;
-                    }
-                }
-
-                // Break out if the previous loop was broken out
-                if (isSomethingGrabbed)
-                    break;
-            }
-
-            if (!isSomethingGrabbed && Time.realtimeSinceStartup - TimeOfMessage >= 1f) {
+            if (!_grabbedGrips.HasGrabbedGrips && timeSinceMessage >= 1f) {
                 if (!_isIgnoringForces) {
                     // Set all desired values to nothing
                     for (var i = 0; i < Rigidbodies.Length; i++) {
@@ -516,32 +492,26 @@ namespace LabFusion.Syncables
             }
 
             for (var i = 0; i < Rigidbodies.Length; i++) {
+                if (IsRigidbodyNull(i))
+                    continue;
+
                 var rb = Rigidbodies[i];
                 var transform = HostTransforms[i];
 
-                if (rb == null)
-                    continue;
-
                 bool isGrabbed = false;
 
-                foreach (var grip in _grabbedGrips.GetGrabbedGrips()) {
-                    if (grip.Host.Rb == rb) {
-                        foreach (var hand in grip.attachedHands) {
-                            if (!hand.manager.activeSeat) {
-                                DesiredPositions[i] = null;
-                                DesiredRotations[i] = null;
-                                isGrabbed = true;
-                                break;
-                            }
-                        }
-
-                        if (isGrabbed)
+                if (_grabbedGrips.HasGrabbedGrips) {
+                    foreach (var grip in _grabbedGrips.GetGrabbedGrips()) {
+                        if (grip.Host.Rb == rb) {
+                            DesiredPositions[i] = null;
+                            DesiredRotations[i] = null;
+                            isGrabbed = true;
                             break;
+                        }
                     }
                 }
 
                 if (isGrabbed || !DesiredPositions[i].HasValue || !DesiredRotations[i].HasValue) {
-                    PDControllers[i].OnResetDerivatives(transform);
                     continue;
                 }
 
@@ -565,16 +535,16 @@ namespace LabFusion.Syncables
                 var pdController = PDControllers[i];
                 
                 // Don't over predict
-                if (Time.realtimeSinceStartup - TimeOfMessage <= 0.6f) {
+                if (timeSinceMessage <= 0.6f) {
                     // Move position with prediction
                     if (allowPosition)
                     {
-                        pos += vel * Time.fixedDeltaTime;
+                        pos += vel * dt;
                         DesiredPositions[i] = pos;
                     }
 
                     // Move rotation with prediction
-                    rot = (angVel * Time.fixedDeltaTime).GetQuaternionDisplacement() * rot;
+                    rot = (angVel * dt).GetQuaternionDisplacement() * rot;
                     DesiredRotations[i] = rot;
                 }
                 else {
@@ -596,8 +566,6 @@ namespace LabFusion.Syncables
 
                     rb.velocity = Vector3.zero;
                     rb.angularVelocity = Vector3.zero;
-
-                    pdController.OnResetDerivatives(transform);
                 }
                 // Instead calculate velocity stuff
                 else {
@@ -607,7 +575,6 @@ namespace LabFusion.Syncables
                     else {
                         if (rb.useGravity)
                             rb.AddForce(-Physics.gravity, ForceMode.Acceleration);
-                        pdController.OnResetPosDerivatives(transform);
                     }
 
                     rb.AddTorque(pdController.GetTorque(rb, transform, rot, angVel), ForceMode.Acceleration);

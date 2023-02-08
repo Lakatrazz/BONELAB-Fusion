@@ -35,10 +35,6 @@ namespace LabFusion.Data
         // Last frame value
         private static float _lastFixedDelta;
 
-        public Vector3 LastTargetPos { get; private set; }
-
-        public Quaternion LastTargetRot { get; private set; }
-
         public static void OnInitializeMelon() {
             _positionKp = CalculateKP(PositionFrequency);
             _positionKd = CalculateKD(PositionFrequency, PositionDamping);
@@ -75,34 +71,14 @@ namespace LabFusion.Data
             return 4.5f * frequency * damping;
         }
 
-        public void OnResetDerivatives(in Transform transform) {
-            OnResetPosDerivatives(transform);
-            OnResetRotDerivatives(transform);
-        }
-
-        public void OnResetPosDerivatives(in Transform transform) {
-            LastTargetPos = transform.position;
-        }
-
-        public void OnResetRotDerivatives(in Transform transform) {
-            LastTargetRot = transform.rotation;
-        }
-
-        public Vector3 GetForce(in Rigidbody rb, in Transform transform, in Vector3 targetPos, in Vector3? targetVel = null) {
+        public Vector3 GetForce(in Rigidbody rb, in Transform transform, in Vector3 targetPos, in Vector3 targetVel) {
             Vector3 Pt0 = transform.position;
             Vector3 Vt0 = rb.velocity;
 
-            Vector3 Pt1 = LastTargetPos;
-            Vector3 Vt1;
-
-            if (targetVel.HasValue)
-                Vt1 = targetVel.Value;
-            else
-                Vt1 = PhysXUtils.GetLinearVelocity(LastTargetPos, targetPos);
+            Vector3 Pt1 = targetPos;
+            Vector3 Vt1 = targetVel;
 
             var force = (Pt1 - Pt0) * _positionKsg + (Vt1 - Vt0) * _positionKdg - (rb.useGravity ? Physics.gravity : Vector3.zero);
-
-            LastTargetPos = targetPos;
 
             // Safety check
             if (force.IsNanOrInf())
@@ -111,17 +87,12 @@ namespace LabFusion.Data
             return force;
         }
 
-        public Vector3 GetTorque(Rigidbody rb, in Transform transform, in Quaternion targetRot, in Vector3? targetVel = null)
+        public Vector3 GetTorque(Rigidbody rb, in Transform transform, in Quaternion targetRot, in Vector3 targetVel)
         {
             var currentRotation = transform.rotation;
 
-            Quaternion Qt1 = LastTargetRot;
-            Vector3 Vt1;
-
-            if (targetVel.HasValue)
-                Vt1 = targetVel.Value;
-            else
-                Vt1 = PhysXUtils.GetAngularVelocity(LastTargetRot, targetRot);
+            Quaternion Qt1 = targetRot;
+            Vector3 Vt1 = targetVel;
 
             Quaternion q = Qt1 * Quaternion.Inverse(currentRotation);
             if (q.w < 0)
@@ -136,8 +107,6 @@ namespace LabFusion.Data
             
             x *= Deg2Rad;
             var torque = _rotationKsg * x * xMag + _rotationKdg * (Vt1 - rb.angularVelocity);
-
-            LastTargetRot = targetRot;
 
             // Safety check
             if (torque.IsNanOrInf())

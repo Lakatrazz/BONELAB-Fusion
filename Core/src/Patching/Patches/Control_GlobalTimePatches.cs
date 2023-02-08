@@ -17,14 +17,18 @@ namespace LabFusion.Patching {
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Control_GlobalTime.DECREASE_TIMESCALE))]
-        public static void DECREASE_TIMESCALE(Control_GlobalTime __instance) {
+        public static bool DECREASE_TIMESCALE(Control_GlobalTime __instance) {
             if (IgnorePatches)
-                return;
+                return true;
 
             if (NetworkInfo.HasServer) {
                 var mode = FusionPreferences.TimeScaleMode;
 
                 switch (mode) {
+                    case TimeScaleMode.DISABLED:
+                        return false;
+                    case TimeScaleMode.CLIENT_SIDE_UNSTABLE:
+                        return true;
                     case TimeScaleMode.EVERYONE:
                         TimeScaleSender.SendSlowMoButton(true);
                         break;
@@ -34,6 +38,8 @@ namespace LabFusion.Patching {
                         break;
                 }
             }
+
+            return true;
         }
 
         [HarmonyPrefix]
@@ -59,6 +65,7 @@ namespace LabFusion.Patching {
             }
         }
 
+
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Control_GlobalTime.SET_TIMESCALE))]
         public static void SET_TIMESCALE(Control_GlobalTime __instance, ref float intensity)
@@ -75,11 +82,6 @@ namespace LabFusion.Patching {
                     case TimeScaleMode.LOW_GRAVITY:
                     case TimeScaleMode.DISABLED:
                         intensity = 1f;
-                        break;
-                    case TimeScaleMode.HOST_ONLY:
-                    case TimeScaleMode.EVERYONE:
-                        if (!NetworkInfo.IsServer && TimeScaleSender.ReceivedTimeScale > 0f)
-                            intensity = 1f / TimeScaleSender.ReceivedTimeScale;
                         break;
                 }
             }

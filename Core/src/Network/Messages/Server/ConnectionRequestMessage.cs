@@ -72,6 +72,15 @@ namespace LabFusion.Network
                             return;
                         }
 
+                        // Append metadata with info
+                        // Permissions
+                        PlayerPermissions.FetchPermissionLevel(data.longId, out var level, out _);
+
+                        if (!data.initialMetadata.ContainsKey(MetadataHelper.PermissionKey))
+                            data.initialMetadata.Add(MetadataHelper.PermissionKey, level.ToString());
+                        else
+                            data.initialMetadata[MetadataHelper.PermissionKey] = level.ToString();
+
 #if DEBUG
                         FusionLogger.Log($"Server received user with long id {data.longId}. Assigned small id {newSmallId}");
 #endif

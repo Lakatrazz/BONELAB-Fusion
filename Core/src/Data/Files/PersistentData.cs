@@ -11,25 +11,21 @@ using LabFusion.Utilities;
 
 using BoneLib;
 
+using UnityEngine;
+using System.Runtime.InteropServices;
+
 namespace LabFusion.Data
 {
     public static class PersistentData
     {
-        public static string persistentPath { get; private set; }
+        public static string PersistentPath { get; private set; }
 
         public static void OnPathInitialize() {
-            if (HelperMethods.IsAndroid()) {
-#if DEBUG
-                FusionLogger.Log("Ignoring data directories due to running on quest.", ConsoleColor.Blue);
-#endif
-                return;
-            }
+            string appData = Application.persistentDataPath;
+            PersistentPath = appData + ResourcePaths.AppDataSubFolder;
 
-            string appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            persistentPath = appdata + ResourcePaths.AppDataSubFolder;
-
-            FusionLogger.Log($"Data is at {appdata}", ConsoleColor.DarkCyan);
-            ValidateDirectory(persistentPath);
+            FusionLogger.Log($"Data is at {PersistentPath}", ConsoleColor.DarkCyan);
+            ValidateDirectory(PersistentPath);
         }
 
         public static void ValidateDirectory(string path) {
@@ -37,7 +33,7 @@ namespace LabFusion.Data
                 Directory.CreateDirectory(path);
         }
 
-        public static string GetPath(string appended) => persistentPath + appended;
+        public static string GetPath(string appended) => PersistentPath + appended;
     }
 }
 
