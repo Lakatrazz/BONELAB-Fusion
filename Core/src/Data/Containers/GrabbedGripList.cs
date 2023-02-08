@@ -15,6 +15,22 @@ namespace LabFusion.Data {
             _grips = new List<Grip>(count);
         }
 
+        public void OnPushUpdate() {
+            // Check for seats
+            foreach (var grip in _grips.ToArray()) {
+                foreach (var hand in grip.attachedHands) {
+                    if (hand.manager.activeSeat) {
+                        _grips.RemoveInstance(grip);
+                        break;
+                    }
+                }
+            }
+
+            // Update grip info
+            if (_grips.Count <= 0)
+                _hasGrabbedGrips = false;
+        }
+
         public void OnGripAttach(Hand hand, Grip grip) {
             if (!_grips.Has(grip) && !hand.manager.activeSeat) {
                 _grips.Add(grip);

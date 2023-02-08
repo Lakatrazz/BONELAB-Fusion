@@ -396,6 +396,10 @@ namespace LabFusion.Syncables
             }
         }
 
+        public void PushUpdate() {
+            _grabbedGrips.OnPushUpdate();
+        }
+
         public void CheckNulls() {
             for (var i = 0; i < Rigidbodies.Length; i++) {
                 RigidbodyNulls[i] = Rigidbodies[i] == null;

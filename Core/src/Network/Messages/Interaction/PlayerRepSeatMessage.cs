@@ -85,6 +85,8 @@ namespace LabFusion.Network
                         else if (rep.RigReferences.RigManager.activeSeat)
                             rep.RigReferences.RigManager.activeSeat.EgressRig(true);
 
+                        seatSyncable.PushUpdate();
+
                         SeatPatches.IgnorePatches = false;
                     }
                 }
