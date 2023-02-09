@@ -28,7 +28,7 @@ namespace LabFusion.MonoBehaviours
             }
         }
 
-        private IEnumerator CoWaitAndSync(Rigidbody rb) {
+        private static IEnumerator CoWaitAndSync(Rigidbody rb) {
             for (var i = 0; i < 4; i++)
                 yield return null;
 
