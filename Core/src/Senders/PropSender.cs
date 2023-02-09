@@ -17,6 +17,7 @@ using LabFusion.Representation;
 using SLZ.Interaction;
 using LabFusion.Utilities;
 using SLZ.Marrow.Warehouse;
+using SLZ.Rig;
 
 namespace LabFusion.Senders
 {
@@ -48,6 +49,10 @@ namespace LabFusion.Senders
         /// <param name="prop"></param>
         /// <param name="onFinished"></param>
         public static void SendPropCreation(GameObject prop, Action<PropSyncable> onFinished = null, bool waitUntilEnabled = false) {
+            // Make sure this isn't a rig
+            if (prop.GetComponentInParent<RigManager>())
+                return;
+            
             var root = prop.GetSyncRoot();
 
             if (PropSyncable.Cache.TryGet(root, out var syncable) || PropSyncable.HostCache.TryGet(root, out syncable)) {
@@ -103,6 +108,10 @@ namespace LabFusion.Senders
                 while (!root.activeInHierarchy)
                     yield return null;
             }
+
+            // Double check the root doesn't already have a syncable, incase it was synced while we were waiting
+            if (PropSyncable.Cache.ContainsSource(root))
+                yield break;
 
             // Create syncable
             var newSyncable = new PropSyncable(null, root);

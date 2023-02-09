@@ -1,5 +1,7 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.MonoBehaviours;
+using LabFusion.Data;
 using LabFusion.Extensions;
+
 using SLZ.Combat;
 using SLZ.Rig;
 
@@ -33,6 +35,23 @@ namespace LabFusion.Utilities {
             var playerHealth = rig.health.TryCast<Player_Health>();
             playerHealth.reloadLevelOnDeath = false;
             playerHealth.slowMoOnDeath = false;
+
+            // Add syncers for player collision
+            var physRig = rig.physicsRig;
+
+            // Left arm
+            physRig.m_handLf.gameObject.AddComponent<CollisionSyncer>();
+            physRig.m_elbowLf.gameObject.AddComponent<CollisionSyncer>();
+            physRig.m_shoulderLf.gameObject.AddComponent<CollisionSyncer>();
+
+            // Right arm
+            physRig.m_handRt.gameObject.AddComponent<CollisionSyncer>();
+            physRig.m_elbowRt.gameObject.AddComponent<CollisionSyncer>();
+            physRig.m_shoulderRt.gameObject.AddComponent<CollisionSyncer>();
+
+            // Head and feet
+            physRig.feet.gameObject.AddComponent<CollisionSyncer>();
+            physRig.m_head.gameObject.AddComponent<CollisionSyncer>();
         }
 
         public static void OnExitServer(RigManager rig) {
@@ -46,6 +65,11 @@ namespace LabFusion.Utilities {
 
             var impactManager = rig.GetComponentInChildren<ImpactPropertiesManager>(true);
             GameObject.Destroy(impactManager);
+
+            // Remove collision syncers
+            var collisionSyncers = rig.GetComponentsInChildren<CollisionSyncer>(true);
+            foreach (var syncer in collisionSyncers)
+                GameObject.Destroy(syncer);
 
             // Remove ragdoll on death
             rig.health._testRagdollOnDeath = false;

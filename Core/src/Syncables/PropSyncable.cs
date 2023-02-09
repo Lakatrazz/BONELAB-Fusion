@@ -450,7 +450,7 @@ namespace LabFusion.Syncables
                 LastSentRotations[i] = transform.rotation;
             }
 
-            using (var writer = FusionWriter.Create()) {
+            using (var writer = FusionWriter.Create(PropSyncableUpdateData.DefaultSize + (PropSyncableUpdateData.RigidbodySize * Rigidbodies.Length))) {
                 using (var data = PropSyncableUpdateData.Create(PlayerIdManager.LocalSmallId, this)) {
                     writer.Write(data);
 

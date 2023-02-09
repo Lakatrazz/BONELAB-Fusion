@@ -36,9 +36,9 @@ namespace LabFusion.BoneMenu
             // Create a category for settings
             var settingsCategory = lobbyCategory.CreateCategory("Settings", Color.yellow);
 
-            settingsCategory.CreateFunctionElement($"Privacy: {info.Privacy}", Color.white, null);
-            settingsCategory.CreateFunctionElement($"Time Scale Mode: {info.TimeScaleMode}", Color.white, null);
             settingsCategory.CreateFunctionElement($"Nametags: {(info.NametagsEnabled ? "Enabled" : "Disabled")}", Color.white, null);
+            settingsCategory.CreateFunctionElement($"Server Privacy: {info.Privacy}", Color.white, null);
+            settingsCategory.CreateFunctionElement($"Time Scale Mode: {info.TimeScaleMode}", Color.white, null);
 
             // Allow outside mods to add their own lobby information
             MultiplayerHooking.Internal_OnLobbyCategoryCreated(lobbyCategory, lobby);

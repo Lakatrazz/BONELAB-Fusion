@@ -15,7 +15,7 @@ namespace LabFusion.Data
         public short c1, c2, c3;
         public byte loss; // Lost component in compression
 
-        public const ushort size = sizeof(short) * 3 + sizeof(byte);
+        public const ushort Size = sizeof(short) * 3 + sizeof(byte);
 
         // The amount we multiply / divide by to preserve precision when using shorts
         public const float PRECISION_OFFSET = 10000.0f;

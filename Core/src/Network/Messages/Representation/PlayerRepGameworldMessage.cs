@@ -16,6 +16,8 @@ using UnityEngine;
 namespace LabFusion.Network {
     public class PlayerRepGameworldData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) + SerializedLocalTransform.Size * PlayerRepUtilities.GameworldRigTransformCount;
+
         public byte smallId;
         public SerializedLocalTransform[] serializedGameworldLocalTransforms = new SerializedLocalTransform[PlayerRepUtilities.GameworldRigTransformCount];
 

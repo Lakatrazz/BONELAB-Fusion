@@ -18,9 +18,9 @@ namespace LabFusion.Network {
         public int PlayerCount;
 
         // Lobby settings
+        public bool NametagsEnabled;
         public ServerPrivacy Privacy;
         public TimeScaleMode TimeScaleMode;
-        public bool NametagsEnabled;
         public int MaxPlayers;
 
         // Lobby status
@@ -35,9 +35,9 @@ namespace LabFusion.Network {
                 PlayerCount = PlayerIdManager.PlayerCount,
 
                 // Lobby settings
+                NametagsEnabled = FusionPreferences.ServerSettings.NametagsEnabled,
                 Privacy = FusionPreferences.ServerSettings.Privacy,
                 TimeScaleMode = FusionPreferences.ServerSettings.TimeScaleMode,
-                NametagsEnabled = FusionPreferences.ServerSettings.NametagsEnabled,
                 MaxPlayers = 255,
 
                 // Lobby status
@@ -53,9 +53,9 @@ namespace LabFusion.Network {
             lobby.SetMetadata("PlayerCount", PlayerCount.ToString());
 
             // Lobby settings
+            lobby.SetMetadata("NametagsEnabled", NametagsEnabled.ToString());
             lobby.SetMetadata("Privacy", Privacy.ToString());
             lobby.SetMetadata("TimeScaleMode", TimeScaleMode.ToString());
-            lobby.SetMetadata("NametagsEnabled", NametagsEnabled.ToString());
             lobby.SetMetadata("MaxPlayers", MaxPlayers.ToString());
 
             // Lobby status

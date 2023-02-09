@@ -22,14 +22,28 @@ namespace LabFusion.Patching {
     public static class AvatarPatches {
         [HarmonyPatch(nameof(Avatar.RefreshBodyMeasurements))]
         [HarmonyPatch(new Type[0])]
+        [HarmonyPrefix]
+        public static void RefreshBodyMeasurementsPrefix(Avatar __instance) {
+            OverrideBodyMeasurements(__instance);
+        }
+
+        [HarmonyPatch(nameof(Avatar.RefreshBodyMeasurements))]
+        [HarmonyPatch(new Type[0])]
         [HarmonyPostfix]
-        public static void RefreshBodyMeasurements(Avatar __instance) {
-            try {
-                if (NetworkInfo.HasServer) {
+        public static void RefreshBodyMeasurementsPostfix(Avatar __instance) {
+            OverrideBodyMeasurements(__instance);
+        }
+
+        private static void OverrideBodyMeasurements(Avatar __instance) {
+            try
+            {
+                if (NetworkInfo.HasServer)
+                {
                     var rm = __instance.GetComponentInParent<RigManager>();
-                    
+
                     // Make sure this isn't the RealHeptaRig avatar! We don't want to scale those values!
-                    if (rm != null && PlayerRepManager.TryGetPlayerRep(rm, out var rep) && __instance != rm.realHeptaRig.player && rep.avatarStats != null) {
+                    if (rm != null && PlayerRepManager.TryGetPlayerRep(rm, out var rep) && __instance != rm.realHeptaRig.player && rep.avatarStats != null)
+                    {
                         // Apply the avatar stats
                         rep.avatarStats.CopyTo(__instance);
 
@@ -41,7 +55,8 @@ namespace LabFusion.Patching {
                     }
                 }
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 FusionLogger.LogException("patching Avatar.RefreshBodyMeasurements", e);
             }
         }

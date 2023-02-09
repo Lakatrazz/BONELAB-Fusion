@@ -9,17 +9,17 @@ namespace LabFusion.Utilities {
         private const int _warmupSize = 128;
         private const int _poolSize = 1024;
 
-        private const int _defaultSize = 16;
+        public const int DefaultSize = 16;
 
         private static readonly Queue<byte[]> _pool = new Queue<byte[]>(_poolSize);
 
         public static void PopulateInitial() {
             for (var i = 0; i < _warmupSize; i++) {
-                _pool.Enqueue(new byte[_defaultSize]);
+                _pool.Enqueue(new byte[DefaultSize]);
             }
         }
 
-        public static byte[] Rent(int size = _defaultSize) {
+        public static byte[] Rent(int size = DefaultSize) {
             if (_pool.Count <= 0)
                 return new byte[size];
             else {

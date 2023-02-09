@@ -14,14 +14,17 @@ namespace LabFusion.Network
 {
     public class PropSyncableUpdateData : IFusionSerializable, IDisposable
     {
+        public const int DefaultSize = sizeof(byte) * 2 + sizeof(ushort);
+        public const int RigidbodySize = sizeof(float) * 9 + SerializedSmallQuaternion.Size;
+
         public byte ownerId;
         public ushort syncId;
         public byte length;
         public Vector3[] serializedPositions;
         public SerializedSmallQuaternion[] serializedQuaternions;
 
-        public SerializedSmallVector3[] serializedVelocities;
-        public SerializedSmallVector3[] serializedAngularVelocities;
+        public Vector3[] serializedVelocities;
+        public Vector3[] serializedAngularVelocities;
 
         public void Serialize(FusionWriter writer)
         {
@@ -29,20 +32,11 @@ namespace LabFusion.Network
             writer.Write(syncId);
             writer.Write(length);
 
-            for (var i = 0; i < serializedPositions.Length; i++) {
-                var position = serializedPositions[i];
-                writer.Write(position);
-            }
-
-            foreach (var rotation in serializedQuaternions)
-                writer.Write(rotation);
-
-            foreach (var velocity in serializedVelocities) {
-                writer.Write(velocity);
-            }
-
-            foreach (var angularVelocity in serializedAngularVelocities) {
-                writer.Write(angularVelocity);
+            for (var i = 0; i < length; i++) {
+                writer.Write(serializedPositions[i]);
+                writer.Write(serializedQuaternions[i]);
+                writer.Write(serializedVelocities[i]);
+                writer.Write(serializedAngularVelocities[i]);
             }
         }
 
@@ -54,23 +48,14 @@ namespace LabFusion.Network
 
             serializedPositions = new Vector3[length];
             serializedQuaternions = new SerializedSmallQuaternion[length];
-            serializedVelocities = new SerializedSmallVector3[length];
-            serializedAngularVelocities = new SerializedSmallVector3[length];
+            serializedVelocities = new Vector3[length];
+            serializedAngularVelocities = new Vector3[length];
 
             for (var i = 0; i < length; i++) {
                 serializedPositions[i] = reader.ReadVector3();
-            }
-
-            for (var i = 0; i < length; i++) {
                 serializedQuaternions[i] = reader.ReadFusionSerializable<SerializedSmallQuaternion>();
-            }
-
-            for (var i = 0; i < length; i++) {
-                serializedVelocities[i] = reader.ReadFusionSerializable<SerializedSmallVector3>();
-            }
-
-            for (var i = 0; i < length; i++) {
-                serializedAngularVelocities[i] = reader.ReadFusionSerializable<SerializedSmallVector3>();
+                serializedVelocities[i] = reader.ReadVector3();
+                serializedAngularVelocities[i] = reader.ReadVector3();
             }
         }
 
@@ -99,8 +84,8 @@ namespace LabFusion.Network
                 length = (byte)length,
                 serializedPositions = new Vector3[length],
                 serializedQuaternions = new SerializedSmallQuaternion[length],
-                serializedVelocities = new SerializedSmallVector3[length],
-                serializedAngularVelocities = new SerializedSmallVector3[length],
+                serializedVelocities = new Vector3[length],
+                serializedAngularVelocities = new Vector3[length],
             };
 
             for (var i = 0; i < length; i++) {
@@ -109,14 +94,11 @@ namespace LabFusion.Network
                 data.serializedPositions[i] = host.position;
                 data.serializedQuaternions[i] = SerializedSmallQuaternion.Compress(host.rotation);
 
-                var rb = rigidbodies[i];
-                if (rb != null) {
-                    data.serializedVelocities[i] = SerializedSmallVector3.Compress(rb.velocity * Time.timeScale);
-                    data.serializedAngularVelocities[i] = SerializedSmallVector3.Compress(rb.angularVelocity * Time.timeScale);
-                }
-                else {
-                    data.serializedVelocities[i] = SerializedSmallVector3.Default;
-                    data.serializedAngularVelocities[i] = SerializedSmallVector3.Default;
+                if (!syncable.IsRigidbodyNull(i)) {
+                    var rb = rigidbodies[i];
+
+                    data.serializedVelocities[i] = rb.velocity * Time.timeScale;
+                    data.serializedAngularVelocities[i] = rb.angularVelocity * Time.timeScale;
                 }
             }
 
@@ -145,8 +127,8 @@ namespace LabFusion.Network
                             syncable.DesiredPositions[i] = data.serializedPositions[i];
                             syncable.DesiredRotations[i] = data.serializedQuaternions[i].Expand();
 
-                            syncable.DesiredVelocities[i] = data.serializedVelocities[i].Expand();
-                            syncable.DesiredAngularVelocities[i] = data.serializedAngularVelocities[i].Expand();
+                            syncable.DesiredVelocities[i] = data.serializedVelocities[i];
+                            syncable.DesiredAngularVelocities[i] = data.serializedAngularVelocities[i];
                         }
                     }
 

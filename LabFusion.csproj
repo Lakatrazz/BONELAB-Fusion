@@ -212,6 +212,7 @@
     <Compile Include="Core\src\Data\Containers\RigData.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedGrab.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedAvatarStats.cs" />
+    <Compile Include="Core\src\Data\Containers\SerializedSoftEllipse.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedTriggerRefReference.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedGameObjectReference.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedHand.cs" />
@@ -222,7 +223,6 @@
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedQuaternion.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedStaticGrab.cs" />
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedLocalTransform.cs" />
-    <Compile Include="Core\src\Data\Containers\Transforms\SerializedSmallVector3.cs" />
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedTransform.cs" />
     <Compile Include="Core\src\Data\Files\EmbeddedAssetBundle.cs" />
     <Compile Include="Core\src\Data\Files\FusionFileLoader.cs" />
@@ -257,6 +257,7 @@
     <Compile Include="Core\src\Grabbables\InteractableHelpers.cs" />
     <Compile Include="Core\src\Grabbables\SerializedGrabHandler.cs" />
     <Compile Include="Core\src\Mod.cs" />
+    <Compile Include="Core\src\MonoBehaviours\CollisionSyncer.cs" />
     <Compile Include="Core\src\Network\Debugging\EmptyNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Helpers\LobbyMetadataHelper.cs" />
     <Compile Include="Core\src\Network\Helpers\MetadataHelper.cs" />

@@ -13,6 +13,8 @@ namespace LabFusion.Data
 {
     public class SerializedSmallQuaternion : IFusionSerializable
     {
+        public const int Size = sizeof(byte) * 4;
+
         public sbyte c1, c2, c3, c4;
 
         public void Serialize(FusionWriter writer) {

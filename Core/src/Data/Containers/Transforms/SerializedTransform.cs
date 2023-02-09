@@ -11,7 +11,7 @@ namespace LabFusion.Data
 {
     public class SerializedTransform : IFusionSerializable
     {
-        public const ushort size = (sizeof(float) * 3 + SerializedQuaternion.size);
+        public const ushort Size = sizeof(float) * 3 + SerializedQuaternion.Size;
 
         public Vector3 position;
         public SerializedQuaternion rotation;

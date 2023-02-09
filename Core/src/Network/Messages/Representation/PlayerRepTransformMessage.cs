@@ -18,6 +18,9 @@ using UnityEngine;
 namespace LabFusion.Network {
     public class PlayerRepTransformData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) * 4 + sizeof(float) * 9 + SerializedLocalTransform.Size 
+            * PlayerRepUtilities.TransformSyncCount + SerializedTransform.Size + SerializedQuaternion.Size + SerializedHand.Size * 2;
+
         public byte smallId;
 
         public float feetOffset;
@@ -32,8 +35,8 @@ namespace LabFusion.Network {
         public SerializedTransform serializedPelvis;
         public SerializedSmallQuaternion serializedPlayspace;
 
-        public SerializedSmallVector3 predictVelocity;
-        public SerializedSmallVector3 predictAngularVelocity;
+        public Vector3 predictVelocity;
+        public Vector3 predictAngularVelocity;
 
         public SerializedHand leftHand;
         public SerializedHand rightHand;
@@ -68,8 +71,8 @@ namespace LabFusion.Network {
         {
             smallId = reader.ReadByte();
 
-            predictVelocity = reader.ReadFusionSerializable<SerializedSmallVector3>();
-            predictAngularVelocity = reader.ReadFusionSerializable<SerializedSmallVector3>();
+            predictVelocity = reader.ReadVector3();
+            predictAngularVelocity = reader.ReadVector3();
 
             feetOffset = reader.ReadSingle();
             crouchTarget = reader.ReadSingle();
@@ -101,8 +104,8 @@ namespace LabFusion.Network {
             var data = new PlayerRepTransformData {
                 smallId = smallId,
 
-                predictVelocity = SerializedSmallVector3.Compress(RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.velocity * Time.timeScale),
-                predictAngularVelocity = SerializedSmallVector3.Compress(RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.angularVelocity * Time.timeScale),
+                predictVelocity = RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.velocity * Time.timeScale,
+                predictAngularVelocity = RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.angularVelocity * Time.timeScale,
 
                 feetOffset = controllerRig.feetOffset,
                 crouchTarget = controllerRig._crouchTarget,
@@ -156,8 +159,8 @@ namespace LabFusion.Network {
                     rep.serializedLocalTransforms = data.serializedLocalTransforms;
                     rep.serializedPelvis = data.serializedPelvis;
                     rep.repPlayspace.rotation = data.serializedPlayspace.Expand();
-                    rep.predictVelocity = data.predictVelocity.Expand();
-                    rep.predictAngularVelocity = data.predictAngularVelocity.Expand();
+                    rep.predictVelocity = data.predictVelocity;
+                    rep.predictAngularVelocity = data.predictAngularVelocity;
                     rep.timeSincePelvisSent = Time.realtimeSinceStartup;
 
                     rep.serializedLeftHand = data.leftHand;

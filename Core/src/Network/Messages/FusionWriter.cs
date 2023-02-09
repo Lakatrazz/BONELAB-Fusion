@@ -30,11 +30,20 @@ namespace LabFusion.Network
             }
         }
 
+        /// <summary>
+        /// This is not recommended. Use Create(int initialCapacity) as resizing arrays costs performance.
+        /// </summary>
+        /// <returns></returns>
         public static FusionWriter Create()
         {
-            return Create(16);
+            return Create(BytePool.DefaultSize);
         }
 
+        /// <summary>
+        /// This is the recommended version. If you know a minimum size of your message, it can save a lot of performance.
+        /// </summary>
+        /// <param name="initialCapacity"></param>
+        /// <returns></returns>
         public static FusionWriter Create(int initialCapacity)
         {
             return new FusionWriter
@@ -73,7 +82,7 @@ namespace LabFusion.Network
         {
             ArrayExtensions.EnsureLength(ref buffer, Position + 1);
             buffer[Position++] = value;
-            ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+            ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
         public void Write(bool value)
@@ -87,7 +96,7 @@ namespace LabFusion.Network
             ArrayExtensions.EnsureLength(ref buffer, Position + 8);
             BigEndianHelper.WriteBytes(buffer, Position, value);
             Position += 8;
-            ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+            ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
         public void Write(short value)
@@ -95,7 +104,7 @@ namespace LabFusion.Network
             ArrayExtensions.EnsureLength(ref buffer, Position + 2);
             BigEndianHelper.WriteBytes(buffer, Position, value);
             Position += 2;
-            ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+            ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
         public void Write(int value)
@@ -103,7 +112,7 @@ namespace LabFusion.Network
             ArrayExtensions.EnsureLength(ref buffer, Position + 4);
             BigEndianHelper.WriteBytes(buffer, Position, value);
             Position += 4;
-            ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+            ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
         public void Write(long value)
@@ -111,7 +120,7 @@ namespace LabFusion.Network
             ArrayExtensions.EnsureLength(ref buffer, Position + 8);
             BigEndianHelper.WriteBytes(buffer, Position, value);
             Position += 8;
-            ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+            ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
         public void Write(sbyte value)
@@ -124,7 +133,7 @@ namespace LabFusion.Network
             ArrayExtensions.EnsureLength(ref buffer, Position + 4);
             BigEndianHelper.WriteBytes(buffer, Position, value);
             Position += 4;
-            ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+            ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
         public void Write(Vector3 value) {
@@ -143,7 +152,7 @@ namespace LabFusion.Network
             ArrayExtensions.EnsureLength(ref buffer, Position + 2);
             BigEndianHelper.WriteBytes(buffer, Position, value);
             Position += 2;
-            ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+            ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
         public void Write(uint value)
@@ -151,7 +160,7 @@ namespace LabFusion.Network
             ArrayExtensions.EnsureLength(ref buffer, Position + 4);
             BigEndianHelper.WriteBytes(buffer, Position, value);
             Position += 4;
-            ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+            ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
         public void Write(ulong value)
@@ -159,7 +168,7 @@ namespace LabFusion.Network
             ArrayExtensions.EnsureLength(ref buffer, Position + 8);
             BigEndianHelper.WriteBytes(buffer, Position, value);
             Position += 8;
-            ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+            ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
         public void Write(string value)
@@ -174,7 +183,7 @@ namespace LabFusion.Network
             BigEndianHelper.WriteBytes(buffer, Position, byteCount);
             encoding.GetBytes(value, 0, value.Length, buffer, Position + 4);
             Position += 4 + byteCount;
-            ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+            ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
         public void Write(byte[] value)
@@ -183,7 +192,7 @@ namespace LabFusion.Network
             BigEndianHelper.WriteBytes(buffer, Position, value.Length);
             System.Buffer.BlockCopy(value, 0, buffer, Position + 4, value.Length);
             Position += 4 + value.Length;
-            ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+            ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
         public void Write(char[] value)
@@ -198,7 +207,7 @@ namespace LabFusion.Network
             BigEndianHelper.WriteBytes(buffer, Position, byteCount);
             encoding.GetBytes(value, 0, value.Length, buffer, Position + 4);
             Position += 4 + byteCount;
-            ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+            ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
         public void Write(ICollection<bool> value)
@@ -223,7 +232,7 @@ namespace LabFusion.Network
                 buffer[Position + 4 + i] = b;
             }
             Position += 4 + num;
-            ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+            ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
         public void Write(ICollection<double> value)
@@ -244,7 +253,7 @@ namespace LabFusion.Network
                 num2 += 8;
             }
             Position += 4 + value.Count * 8;
-            ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+            ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
         public void Write(ICollection<short> value)
@@ -260,7 +269,7 @@ namespace LabFusion.Network
                 num2 += 2;
             }
             Position += 4 + value.Count * 2;
-            ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+            ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
         public void Write(ICollection<int> value)
@@ -276,7 +285,7 @@ namespace LabFusion.Network
                 num2 += 4;
             }
             Position += 4 + value.Count * 4;
-            ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+            ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
         public void Write(ICollection<long> value)
@@ -292,7 +301,7 @@ namespace LabFusion.Network
                 num2 += 8;
             }
             Position += 4 + value.Count * 8;
-            ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+            ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
         public void Write(sbyte[] value)
@@ -301,7 +310,7 @@ namespace LabFusion.Network
             BigEndianHelper.WriteBytes(buffer, Position, value.Length);
             System.Buffer.BlockCopy(value, 0, buffer, Position + 4, value.Length);
             Position += 4 + value.Length;
-            ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+            ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
         public void Write(ICollection<float> value)
@@ -322,7 +331,7 @@ namespace LabFusion.Network
                 num2 += 4;
             }
             Position += 4 + value.Count * 4;
-            ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+            ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
         public void Write(Dictionary<string, string> value) {
@@ -335,7 +344,7 @@ namespace LabFusion.Network
             ArrayExtensions.EnsureLength(ref buffer, Position + 4);
             BigEndianHelper.WriteBytes(buffer, Position, value.Count);
             Position += 4;
-            ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+            ArrayExtensions.EnsureLength(ref buffer, Position);
             foreach (string value2 in value)
             {
                 Write(value2);
@@ -355,7 +364,7 @@ namespace LabFusion.Network
                 num2 += 2;
             }
             Position += 4 + value.Count * 2;
-            ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+            ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
         public void Write(ICollection<uint> value)
@@ -371,7 +380,7 @@ namespace LabFusion.Network
                 num2 += 4;
             }
             Position += 4 + value.Count * 4;
-            ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+            ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
         public void Write(ICollection<ulong> value)
@@ -387,7 +396,7 @@ namespace LabFusion.Network
                 num2 += 8;
             }
             Position += 4 + value.Count * 8;
-            ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+            ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
         public void WriteRaw(byte[] bytes, int offset, int length)
@@ -395,10 +404,10 @@ namespace LabFusion.Network
             ArrayExtensions.EnsureLength(ref buffer, Position + length);
             System.Buffer.BlockCopy(bytes, offset, buffer, Position, length);
             Position += length;
-            ArrayExtensions.EnsureLength(ref buffer, Math.Max(Length, Position));
+            ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
-        public void EnsureLength() {
+        internal void EnsureLength() {
             if (buffer.Length != Position) {
                 Array.Resize(ref buffer, Position);
             }

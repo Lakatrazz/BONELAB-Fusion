@@ -10,6 +10,8 @@ using LabFusion.Representation;
 namespace LabFusion.Network
 {
     public class PlayerRepAvatarData : IFusionSerializable, IDisposable {
+        public const int DefaultSize = sizeof(byte) + SerializedAvatarStats.Size; 
+
         public byte smallId;
         public SerializedAvatarStats stats;
         public string barcode;

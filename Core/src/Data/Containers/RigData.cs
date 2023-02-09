@@ -193,7 +193,7 @@ namespace LabFusion.Data
 
                     // Send switch message to notify the server
                     if (NetworkInfo.HasServer) {
-                        using (FusionWriter writer = FusionWriter.Create()) {
+                        using (FusionWriter writer = FusionWriter.Create(PlayerRepAvatarData.DefaultSize)) {
                             using (PlayerRepAvatarData data = PlayerRepAvatarData.Create(PlayerIdManager.LocalSmallId, RigAvatarStats, barcode)) {
                                 writer.Write(data);
 

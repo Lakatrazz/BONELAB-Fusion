@@ -16,7 +16,54 @@ using Avatar = SLZ.VRMK.Avatar;
 namespace LabFusion.Data {
     // We manually send proportions, stats, and mass incase of not having an avatar
     // And also stat modifier mods (Quicksilver, StatModifier, Spiderlab)
+    // This has a LOT of data, so this should ONLY be sent when necessary!
     public class SerializedAvatarStats : IFusionSerializable {
+        public const int Size = sizeof(float) * 70 + SerializedSoftEllipse.Size * 8;
+
+        // Ellipse/offset values
+        public float headTop;
+        public float chinY;
+        public float underbustY;
+        public float waistY;
+        public float highHipY;
+        public float crotchBottom;
+
+        public float headEllipseX;
+        public float jawEllipseX;
+        public float neckEllipseX;
+        public float chestEllipseX;
+        public float waistEllipseX;
+        public float highHipsEllipseX;
+        public float hipsEllipseX;
+
+        public float headEllipseZ;
+        public float jawEllipseZ;
+        public float neckEllipseZ;
+        public float sternumEllipseZ;
+        public float chestEllipseZ;
+        public float waistEllipseZ;
+        public float highHipsEllipseZ;
+        public float hipsEllipseZ;
+
+        public float headEllipseNegZ;
+        public float jawEllipseNegZ;
+        public float neckEllipseNegZ;
+        public float sternumEllipseNegZ;
+        public float chestEllipseNegZ;
+        public float waistEllipseNegZ;
+        public float highHipsEllipseNegZ;
+        public float hipsEllipseNegZ;
+
+        // Soft ellipses
+        public SerializedSoftEllipse thighUpperEllipse;
+        public SerializedSoftEllipse kneeEllipse;
+        public SerializedSoftEllipse calfEllipse;
+        public SerializedSoftEllipse ankleEllipse;
+        public SerializedSoftEllipse upperarmEllipse;
+        public SerializedSoftEllipse elbowEllipse;
+        public SerializedSoftEllipse forearmEllipse;
+        public SerializedSoftEllipse wristEllipse;
+
         // Proportions
         public float eyeHeight;
         public float heightPercent;
@@ -65,6 +112,50 @@ namespace LabFusion.Data {
         public SerializedAvatarStats() { }
 
         public SerializedAvatarStats(Avatar avatar) {
+            // Save ellipse/offset values
+            headTop = avatar._headTop;
+            chinY = avatar._chinY;
+            underbustY = avatar._underbustY;
+            waistY = avatar._waistY;
+            highHipY = avatar._highHipY;
+            crotchBottom = avatar._crotchBottom;
+
+            headEllipseX = avatar._headEllipseX;
+            jawEllipseX = avatar._jawEllipseX;
+            neckEllipseX = avatar._neckEllipseX;
+            chestEllipseX = avatar._chestEllipseX;
+            waistEllipseX = avatar._waistEllipseX;
+            highHipsEllipseX = avatar.HighHipsEllipseX;
+            hipsEllipseX = avatar._hipsEllipseX;
+
+            headEllipseZ = avatar._headEllipseZ;
+            jawEllipseZ = avatar._jawEllipseZ;
+            neckEllipseZ = avatar._neckEllipseZ;
+            sternumEllipseZ = avatar._sternumEllipseZ;
+            chestEllipseZ = avatar._chestEllipseZ;
+            waistEllipseZ = avatar._waistEllipseZ;
+            highHipsEllipseZ = avatar._highHipsEllipseZ;
+            hipsEllipseZ = avatar._hipsEllipseZ;
+
+            headEllipseNegZ = avatar._headEllipseNegZ;
+            jawEllipseNegZ = avatar._jawEllipseNegZ;
+            neckEllipseNegZ = avatar._neckEllipseNegZ;
+            sternumEllipseNegZ = avatar._sternumEllipseNegZ;
+            chestEllipseNegZ = avatar._chestEllipseNegZ;
+            waistEllipseNegZ = avatar._waistEllipseNegZ;
+            highHipsEllipseNegZ = avatar._highHipsEllipseNegZ;
+            hipsEllipseNegZ = avatar._hipsEllipseNegZ;
+
+            // Save soft ellipses
+            thighUpperEllipse = avatar._thighUpperEllipse;
+            kneeEllipse = avatar._kneeEllipse;
+            calfEllipse = avatar._calfEllipse;
+            ankleEllipse = avatar._ankleEllipse;
+            upperarmEllipse = avatar._upperarmEllipse;
+            elbowEllipse = avatar._elbowEllipse;
+            forearmEllipse = avatar._forearmEllipse;
+            wristEllipse = avatar._wristEllipse;
+
             // Save proportions
             eyeHeight = avatar._eyeHeight;
             heightPercent = avatar._heightPercent;
@@ -112,6 +203,50 @@ namespace LabFusion.Data {
         }
 
         public void CopyTo(Avatar avatar) {
+            // Copy ellipse/offset values
+            avatar._headTop = headTop;
+            avatar._chinY = chinY;
+            avatar._underbustY = underbustY;
+            avatar._waistY = waistY;
+            avatar._highHipY = highHipY;
+            avatar._crotchBottom = crotchBottom;
+
+            avatar._headEllipseX = headEllipseX;
+            avatar._jawEllipseX = jawEllipseX;
+            avatar._neckEllipseX = neckEllipseX;
+            avatar._chestEllipseX = chestEllipseX;
+            avatar._waistEllipseX = waistEllipseX;
+            avatar._highHipsEllipseX = highHipsEllipseX;
+            avatar._hipsEllipseX = hipsEllipseX;
+
+            avatar._headEllipseZ = headEllipseZ;
+            avatar._jawEllipseZ = jawEllipseZ;
+            avatar._neckEllipseZ = neckEllipseZ;
+            avatar._sternumEllipseZ = sternumEllipseZ;
+            avatar._chestEllipseZ = chestEllipseZ;
+            avatar._waistEllipseZ = waistEllipseZ;
+            avatar._highHipsEllipseZ = highHipsEllipseZ;
+            avatar._hipsEllipseZ = hipsEllipseZ;
+
+            avatar._headEllipseNegZ = headEllipseNegZ;
+            avatar._jawEllipseNegZ = jawEllipseNegZ;
+            avatar._neckEllipseNegZ = neckEllipseNegZ;
+            avatar._sternumEllipseNegZ = sternumEllipseNegZ;
+            avatar._chestEllipseNegZ = chestEllipseNegZ;
+            avatar._waistEllipseNegZ = waistEllipseNegZ;
+            avatar._highHipsEllipseNegZ = highHipsEllipseNegZ;
+            avatar._hipsEllipseNegZ = hipsEllipseNegZ;
+
+            // Copy soft ellipses
+            avatar._thighUpperEllipse = thighUpperEllipse;
+            avatar._kneeEllipse = kneeEllipse;
+            avatar._calfEllipse = calfEllipse;
+            avatar._ankleEllipse = ankleEllipse;
+            avatar._upperarmEllipse = upperarmEllipse;
+            avatar._elbowEllipse = elbowEllipse;
+            avatar._forearmEllipse = forearmEllipse;
+            avatar._wristEllipse = wristEllipse;
+
             // Copy proportions
             avatar._eyeHeight = eyeHeight;
             avatar._heightPercent = heightPercent;
@@ -159,6 +294,50 @@ namespace LabFusion.Data {
         }
 
         public void Serialize(FusionWriter writer) {
+            // Write ellipse/offset values
+            writer.Write(headTop);
+            writer.Write(chinY);
+            writer.Write(underbustY);
+            writer.Write(waistY);
+            writer.Write(highHipY);
+            writer.Write(crotchBottom);
+            
+            writer.Write(headEllipseX);
+            writer.Write(jawEllipseX);
+            writer.Write(neckEllipseX);
+            writer.Write(chestEllipseX);
+            writer.Write(waistEllipseX);
+            writer.Write(highHipsEllipseX);
+            writer.Write(hipsEllipseX);
+            
+            writer.Write(headEllipseZ);
+            writer.Write(jawEllipseZ);
+            writer.Write(neckEllipseZ);
+            writer.Write(sternumEllipseZ);
+            writer.Write(chestEllipseZ);
+            writer.Write(waistEllipseZ);
+            writer.Write(highHipsEllipseZ);
+            writer.Write(hipsEllipseZ);
+
+            writer.Write(headEllipseNegZ);
+            writer.Write(jawEllipseNegZ);
+            writer.Write(neckEllipseNegZ);
+            writer.Write(sternumEllipseNegZ);
+            writer.Write(chestEllipseNegZ);
+            writer.Write(waistEllipseNegZ);
+            writer.Write(highHipsEllipseNegZ);
+            writer.Write(hipsEllipseNegZ);
+
+            // Write soft ellipses
+            writer.Write(thighUpperEllipse);
+            writer.Write(kneeEllipse);
+            writer.Write(calfEllipse);
+            writer.Write(ankleEllipse);
+            writer.Write(upperarmEllipse);
+            writer.Write(elbowEllipse);
+            writer.Write(forearmEllipse);
+            writer.Write(wristEllipse);
+
             // Write proportions
             writer.Write(eyeHeight);
             writer.Write(heightPercent);
@@ -206,6 +385,50 @@ namespace LabFusion.Data {
         }
 
         public void Deserialize(FusionReader reader) {
+            // Read ellipse/offset values
+            headTop = reader.ReadSingle();
+            chinY = reader.ReadSingle();
+            underbustY = reader.ReadSingle();
+            waistY = reader.ReadSingle();
+            highHipY = reader.ReadSingle();
+            crotchBottom = reader.ReadSingle();
+
+            headEllipseX = reader.ReadSingle();
+            jawEllipseX = reader.ReadSingle();
+            neckEllipseX = reader.ReadSingle();
+            chestEllipseX = reader.ReadSingle();
+            waistEllipseX = reader.ReadSingle();
+            highHipsEllipseX = reader.ReadSingle();
+            hipsEllipseX = reader.ReadSingle();
+
+            headEllipseZ = reader.ReadSingle();
+            jawEllipseZ = reader.ReadSingle();
+            neckEllipseZ = reader.ReadSingle();
+            sternumEllipseZ = reader.ReadSingle();
+            chestEllipseZ = reader.ReadSingle();
+            waistEllipseZ = reader.ReadSingle();
+            highHipsEllipseZ = reader.ReadSingle();
+            hipsEllipseZ = reader.ReadSingle();
+
+            headEllipseNegZ = reader.ReadSingle();
+            jawEllipseNegZ = reader.ReadSingle();
+            neckEllipseNegZ = reader.ReadSingle();
+            sternumEllipseNegZ = reader.ReadSingle();
+            chestEllipseNegZ = reader.ReadSingle();
+            waistEllipseNegZ = reader.ReadSingle();
+            highHipsEllipseNegZ = reader.ReadSingle();
+            hipsEllipseNegZ = reader.ReadSingle();
+
+            // Read soft ellipses
+            thighUpperEllipse = reader.ReadFusionSerializable<SerializedSoftEllipse>();
+            kneeEllipse = reader.ReadFusionSerializable<SerializedSoftEllipse>();
+            calfEllipse = reader.ReadFusionSerializable<SerializedSoftEllipse>();
+            ankleEllipse = reader.ReadFusionSerializable<SerializedSoftEllipse>();
+            upperarmEllipse = reader.ReadFusionSerializable<SerializedSoftEllipse>();
+            elbowEllipse = reader.ReadFusionSerializable<SerializedSoftEllipse>();
+            forearmEllipse = reader.ReadFusionSerializable<SerializedSoftEllipse>();
+            wristEllipse = reader.ReadFusionSerializable<SerializedSoftEllipse>();
+
             // Read proportions
             eyeHeight = reader.ReadSingle();
             heightPercent = reader.ReadSingle();

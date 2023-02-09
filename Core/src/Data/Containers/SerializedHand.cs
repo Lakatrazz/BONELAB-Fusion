@@ -12,6 +12,8 @@ using UnityEngine;
 namespace LabFusion.Data
 {
     public class SerializedHand : IFusionSerializable {
+        public const int Size = sizeof(float) * 3 + sizeof(byte) * 12;
+
         public float forceMultiplier;
 
         public float indexCurl;

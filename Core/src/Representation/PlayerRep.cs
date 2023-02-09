@@ -362,7 +362,7 @@ namespace LabFusion.Representation
                     if (serializedGameworldLocalTransforms[i] == null)
                         break;
 
-                    var pos = serializedGameworldLocalTransforms[i].position.Expand();
+                    var pos = serializedGameworldLocalTransforms[i].position;
                     var rot = serializedGameworldLocalTransforms[i].rotation.Expand();
 
                     gameworldRigTransforms[i].localPosition = pos;
@@ -401,7 +401,7 @@ namespace LabFusion.Representation
                     if (repTransforms[i].IsNOC())
                         break;
 
-                    repTransforms[i].localPosition = serializedLocalTransforms[i].position.Expand();
+                    repTransforms[i].localPosition = serializedLocalTransforms[i].position;
                     repTransforms[i].localRotation = serializedLocalTransforms[i].rotation.Expand();
                 }
 
@@ -508,7 +508,7 @@ namespace LabFusion.Representation
                         return false;
                 }
 
-                using (var writer = FusionWriter.Create())
+                using (var writer = FusionWriter.Create(PlayerRepGameworldData.Size))
                 {
                     using (var data = PlayerRepGameworldData.Create(PlayerIdManager.LocalSmallId, gameworldPoints))
                     {
@@ -542,7 +542,7 @@ namespace LabFusion.Representation
                         return false;
                 }
 
-                using (var writer = FusionWriter.Create()) {
+                using (var writer = FusionWriter.Create(PlayerRepTransformData.Size)) {
                     using (var data = PlayerRepTransformData.Create(PlayerIdManager.LocalSmallId, syncedPoints, syncedPelvis, syncedPlayspace, syncedLeftHand, syncedRightHand)) {
                         writer.Write(data);
 
