@@ -30,6 +30,7 @@ using SLZ;
 
 using LabFusion.Exceptions;
 using SLZ.Marrow.Utilities;
+using LabFusion.Senders;
 
 namespace LabFusion.Network
 {
@@ -113,12 +114,13 @@ namespace LabFusion.Network
                         AssetSpawner.Register(spawnable);
 
                         byte owner = data.owner;
+                        string barcode = data.barcode;
                         ushort syncId = data.syncId;
                         string path = data.spawnerPath;
                         var hand = data.hand;
                         
                         NullableMethodExtensions.PoolManager_Spawn(spawnable, data.serializedTransform.position, data.serializedTransform.rotation.Expand(), null,
-                            true, null, (Action<GameObject>)((go) => { OnSpawnFinished(owner, syncId, go, path, hand); }), null);
+                            true, null, (Action<GameObject>)((go) => { OnSpawnFinished(owner, barcode, syncId, go, path, hand); }), null);
                     }
                 }
             }
@@ -126,7 +128,7 @@ namespace LabFusion.Network
                 throw new ExpectedClientException();
         }
 
-        public static void OnSpawnFinished(byte owner, ushort syncId, GameObject go, string spawnerPath = "_", Handedness hand = Handedness.UNDEFINED) {
+        public static void OnSpawnFinished(byte owner, string barcode, ushort syncId, GameObject go, string spawnerPath = "_", Handedness hand = Handedness.UNDEFINED) {
             ZoneSpawner spawner = null;
             if (spawnerPath != "_") {
                 try {
@@ -194,6 +196,12 @@ namespace LabFusion.Network
             newSyncable.SetOwner(owner);
 
             SyncManager.RegisterSyncable(newSyncable, syncId);
+
+            // If we are the server, insert the catchup hook for future users
+            if (NetworkInfo.IsServer)
+                newSyncable.InsertCatchupDelegate((id) => {
+                    SpawnSender.SendCatchupSpawn(owner, barcode, syncId, new SerializedTransform(go.transform), spawner, hand, id);
+                });
 
             // Force the object active
             Grip grip = null;

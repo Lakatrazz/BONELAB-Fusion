@@ -258,6 +258,7 @@
     <Compile Include="Core\src\Grabbables\SerializedGrabHandler.cs" />
     <Compile Include="Core\src\Mod.cs" />
     <Compile Include="Core\src\MonoBehaviours\CollisionSyncer.cs" />
+    <Compile Include="Core\src\MonoBehaviours\TimedDespawner.cs" />
     <Compile Include="Core\src\Network\Debugging\EmptyNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Helpers\LobbyMetadataHelper.cs" />
     <Compile Include="Core\src\Network\Helpers\MetadataHelper.cs" />
@@ -326,11 +327,14 @@
     <Compile Include="Core\src\Senders\LoadSender.cs" />
     <Compile Include="Core\src\Senders\PlayerSender.cs" />
     <Compile Include="Core\src\Senders\PropSender.cs" />
+    <Compile Include="Core\src\Senders\SpawnSender.cs" />
     <Compile Include="Core\src\Senders\TimeScaleSender.cs" />
     <Compile Include="Core\src\Senders\TrialSender.cs" />
     <Compile Include="Core\src\Senders\ZoneSender.cs" />
     <Compile Include="Core\src\Senders\CampaignSender.cs" />
     <Compile Include="Core\src\Syncables\ConstraintSyncable.cs" />
+    <Compile Include="Core\src\Syncables\Extenders\FlyingGunExtender.cs" />
+    <Compile Include="Core\src\Syncables\Extenders\SpawnGunExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\EscalatorExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\TriggerRefProxyExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\BehaviourBaseNavExtender.cs" />

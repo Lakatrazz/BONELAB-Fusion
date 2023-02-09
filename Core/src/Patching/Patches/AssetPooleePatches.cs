@@ -22,6 +22,8 @@ using MelonLoader;
 using SLZ.Zones;
 
 using LabFusion.Extensions;
+using LabFusion.Senders;
+using SLZ;
 
 namespace LabFusion.Patching
 {
@@ -99,7 +101,7 @@ namespace LabFusion.Patching
                     var barcode = __instance.spawnableCrate.Barcode;
 
                     var syncId = SyncManager.AllocateSyncID();
-                    PooleeUtilities.OnServerLocalSpawn(syncId, __instance.gameObject);
+                    PooleeUtilities.OnServerLocalSpawn(syncId, __instance.gameObject, out PropSyncable newSyncable);
 
                     var zoneTracker = ZoneTracker.Cache.Get(__instance.gameObject);
                     ZoneSpawner spawner = null;
@@ -132,6 +134,12 @@ namespace LabFusion.Patching
                     }
 
                     PooleeUtilities.SendSpawn(0, barcode, syncId, new SerializedTransform(__instance.transform), true, spawner);
+
+                    // Insert catchup hook for future users
+                    if (NetworkInfo.IsServer)
+                        newSyncable.InsertCatchupDelegate((id) => {
+                            SpawnSender.SendCatchupSpawn(0, barcode, syncId, new SerializedTransform(__instance.transform), spawner, Handedness.UNDEFINED, id);
+                        });
                 }
             }
             catch (Exception e) {

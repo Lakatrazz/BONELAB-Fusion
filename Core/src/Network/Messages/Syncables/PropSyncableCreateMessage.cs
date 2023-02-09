@@ -11,10 +11,12 @@ using LabFusion.Grabbables;
 
 using SLZ;
 using SLZ.Interaction;
+
 using LabFusion.Patching;
 using LabFusion.Syncables;
 
 using UnityEngine;
+using LabFusion.Senders;
 
 namespace LabFusion.Network
 {
@@ -91,6 +93,12 @@ namespace LabFusion.Network
                             SyncManager.RegisterSyncable(syncable, data.id);
 
                             syncable.SetOwner(data.smallId);
+
+                            // Insert catchup hook for future users
+                            if (NetworkInfo.IsServer)
+                                syncable.InsertCatchupDelegate((id) => {
+                                    PropSender.SendCatchupCreation(syncable, id);
+                                });
                         }
                     }
                 }

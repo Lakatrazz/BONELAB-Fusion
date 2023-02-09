@@ -336,7 +336,7 @@ namespace LabFusion.Representation
             }
 
             // Wait for loading
-            while (LevelWarehouseUtilities.IsDelayedLoading() || MetadataHelper.ParseBool(PlayerId.GetMetadata(MetadataHelper.LoadingKey))) {
+            while (LevelWarehouseUtilities.IsDelayedLoading() || PlayerId.GetMetadata(MetadataHelper.LoadingKey) == bool.TrueString) {
                 if (LevelWarehouseUtilities.IsLoading())
                     yield break;
 

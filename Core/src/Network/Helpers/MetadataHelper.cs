@@ -18,10 +18,6 @@ namespace LabFusion.Network {
         // Gamemode keys
         public const string GamemodeDeathCountKey = "GamemodeDeathCount";
 
-        public static bool ParseBool(string value) => value == "True";
-
-        public static string ParseString(bool value) => value ? "True" : "False";
-
         public static bool TryGetDisplayName(this PlayerId id, out string name) {
             id.TryGetMetadata(UsernameKey, out var username);
             id.TryGetMetadata(NicknameKey, out var nickname);

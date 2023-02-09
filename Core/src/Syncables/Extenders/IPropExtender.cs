@@ -1,8 +1,4 @@
-﻿using LabFusion.Data;
-using LabFusion.Extensions;
-using LabFusion.Grabbables;
-using LabFusion.Network;
-using LabFusion.Utilities;
+﻿using SLZ.Interaction;
 
 using System;
 using System.Collections.Generic;
@@ -24,5 +20,13 @@ namespace LabFusion.Syncables {
         void OnReceivedUpdate();
 
         void OnOwnershipTransfer();
+
+        void OnUpdate();
+
+        void OnAttach(Hand hand, Grip grip);
+
+        void OnDetach(Hand hand, Grip grip);
+
+        void OnHeld();
     }
 }

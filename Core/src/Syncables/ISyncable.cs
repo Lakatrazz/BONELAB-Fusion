@@ -8,6 +8,10 @@ using SLZ.Interaction;
 
 namespace LabFusion.Syncables {
     public interface ISyncable {
+        void InsertCatchupDelegate(Action<ulong> catchup);
+
+        void InvokeCatchup(ulong user);
+
         Grip GetGrip(ushort index);
 
         bool IsGrabbed();

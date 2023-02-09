@@ -6,21 +6,21 @@ using System.Collections.Generic;
 
 namespace LabFusion.Data {
     public class GrabbedGripList {
-        private readonly List<Grip> _grips;
+        private readonly Dictionary<Grip, int> _grips;
 
         private bool _hasGrabbedGrips = false;
         public bool HasGrabbedGrips => _hasGrabbedGrips;
 
         public GrabbedGripList(int count = 32) {
-            _grips = new List<Grip>(count);
+            _grips = new Dictionary<Grip, int>(count, new UnityComparer());
         }
 
         public void OnPushUpdate() {
             // Check for seats
-            foreach (var grip in _grips.ToArray()) {
+            foreach (var grip in _grips.Keys) {
                 foreach (var hand in grip.attachedHands) {
                     if (hand.manager.activeSeat) {
-                        _grips.RemoveInstance(grip);
+                        _grips.Remove(grip);
                         break;
                     }
                 }
@@ -32,20 +32,28 @@ namespace LabFusion.Data {
         }
 
         public void OnGripAttach(Hand hand, Grip grip) {
-            if (!_grips.Has(grip) && !hand.manager.activeSeat) {
-                _grips.Add(grip);
+            if (!hand.manager.activeSeat) {
+                if (!_grips.ContainsKey(grip)) {
+                    _grips.Add(grip, 0);
+                }
+
+                _grips[grip]++;
                 _hasGrabbedGrips = true;
             }
         }
         
         public void OnGripDetach(Grip grip) {
-            if (grip.attachedHands.Count <= 0)
-                _grips.RemoveInstance(grip);
+            if (_grips.ContainsKey(grip)) {
+                _grips[grip]--;
+
+                if (_grips[grip] <= 0)
+                    _grips.Remove(grip);
+            }
 
             if (_grips.Count <= 0)
                 _hasGrabbedGrips = false;
         }
 
-        public IReadOnlyList<Grip> GetGrabbedGrips() => _grips;
+        public IReadOnlyCollection<Grip> GetGrabbedGrips() => _grips.Keys;
     }
 }

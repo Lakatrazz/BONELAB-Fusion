@@ -30,7 +30,7 @@ namespace LabFusion.Senders
             if (NetworkInfo.IsServer) {
                 using (var writer = FusionWriter.Create())
                 {
-                    using (var data = PropSyncableCreateData.Create(PlayerIdManager.LocalSmallId, syncable.GameObject, syncable.Id))
+                    using (var data = PropSyncableCreateData.Create(syncable.GetOwner().Value, syncable.GameObject, syncable.Id))
                     {
                         writer.Write(data);
 

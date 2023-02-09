@@ -123,7 +123,7 @@ namespace LabFusion.Utilities {
                 return;
 
             // Set the loading metadata
-            PlayerIdManager.LocalId.TrySetMetadata(MetadataHelper.LoadingKey, MetadataHelper.ParseString(isLoading));
+            PlayerIdManager.LocalId.TrySetMetadata(MetadataHelper.LoadingKey, isLoading.ToString());
         }
     }
 }

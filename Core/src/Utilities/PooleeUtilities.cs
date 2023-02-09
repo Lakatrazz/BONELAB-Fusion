@@ -23,6 +23,7 @@ using UnityEngine;
 using SLZ.Props.Weapons;
 using SLZ.Rig;
 using SLZ.Props;
+using LabFusion.Senders;
 
 namespace LabFusion.Utilities {
     public static class PooleeUtilities {
@@ -36,7 +37,9 @@ namespace LabFusion.Utilities {
 
         internal static PooleePusher ServerSpawnedList = new PooleePusher();
 
-        public static void OnServerLocalSpawn(ushort syncId, GameObject go) {
+        public static void OnServerLocalSpawn(ushort syncId, GameObject go, out PropSyncable newSyncable) {
+            newSyncable = null;
+            
             if (!NetworkInfo.IsServer)
                 return;
 
@@ -46,7 +49,7 @@ namespace LabFusion.Utilities {
             if (!AssetPoolee.Cache.Get(go))
                 go.AddComponent<AssetPoolee>();
 
-            PropSyncable newSyncable = new PropSyncable(null, go.gameObject);
+            newSyncable = new PropSyncable(null, go.gameObject);
             newSyncable.SetOwner(0);
 
             SyncManager.RegisterSyncable(newSyncable, syncId);

@@ -4,9 +4,12 @@ using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Preferences;
 using LabFusion.Senders;
+using LabFusion.Syncables;
 
 using System;
 using System.Collections.Generic;
+using System.Collections;
+using MelonLoader;
 
 namespace LabFusion.Network
 {
@@ -136,9 +139,35 @@ namespace LabFusion.Network
 
                         // Send the active server settings
                         FusionPreferences.SendServerSettings(data.longId);
+
+                        // Wait to catchup the user
+                        MelonCoroutines.Start(Internal_DelayedCatchup(data.longId));
                     }
                 }
             }
+        }
+
+        private static IEnumerator Internal_DelayedCatchup(ulong user) {
+            // Wait a good amount of time
+            for (var i = 0; i < 120; i++) {
+                yield return null;
+            }
+
+            // Get the player id, check if they're still loading
+            var id = PlayerIdManager.GetPlayerId(user);
+            if (id != null) {
+                while (id.GetMetadata(MetadataHelper.LoadingKey) == bool.TrueString)
+                    yield return null;
+            }
+
+            // Start to catch them up on the server
+            // Catchup the user on synced objects
+            foreach (var syncable in SyncManager.Syncables) {
+                syncable.Value.InvokeCatchup(user);
+            }
+
+            // Catchup hooked events
+            MultiplayerHooking.Internal_OnPlayerCatchup(user);
         }
     }
 }

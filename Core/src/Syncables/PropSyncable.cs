@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using LabFusion.Data;
 using LabFusion.Debugging;
@@ -77,6 +78,8 @@ namespace LabFusion.Syncables
 
         private GrabbedGripList _grabbedGrips;
 
+        private Action<ulong> _catchupDelegate;
+
         public PropSyncable(InteractableHost host = null, GameObject root = null) {
             if (root != null)
                 GameObject = root;
@@ -143,6 +146,17 @@ namespace LabFusion.Syncables
             _extenders = PropExtenderManager.GetPropExtenders(this);
         }
 
+        public void InsertCatchupDelegate(Action<ulong> catchup) {
+            _catchupDelegate += catchup;
+        }
+
+        public void InvokeCatchup(ulong user) {
+            // Make sure this object wasn't destroyed or despawned before catching up
+            if (!GameObject.IsNOC() && GameObject.activeInHierarchy)
+                _catchupDelegate?.InvokeSafe(user, "executing Catchup Delegate");
+        }
+
+
         public bool TryGetExtender<T>(out T extender) where T : IPropExtender {
             foreach (var found in _extenders) {
                 if (found.GetType() == typeof(T)) {
@@ -177,12 +191,18 @@ namespace LabFusion.Syncables
             OnTransferOwner(hand);
 
             _grabbedGrips.OnGripAttach(hand, grip);
+
+            foreach (var extender in _extenders)
+                extender.OnAttach(hand, grip);
         }
 
         public void OnDetach(Hand hand, Grip grip) {
             OnTransferOwner(hand);
 
             _grabbedGrips.OnGripDetach(grip);
+
+            foreach (var extender in _extenders)
+                extender.OnDetach(hand, grip);
         }
 
         public void Cleanup() {
@@ -385,6 +405,15 @@ namespace LabFusion.Syncables
             if (!HasValidParameters())
                 return;
 
+            foreach (var extender in _extenders)
+                extender.OnUpdate();
+
+            // Update grabbing for extenders
+            if (_grabbedGrips.HasGrabbedGrips) {
+                foreach (var extender in _extenders)
+                    extender.OnHeld();
+            }
+
             CheckNulls();
 
             VerifyOwner();
@@ -417,6 +446,15 @@ namespace LabFusion.Syncables
             var lastRotation = LastSentRotations[index];
 
             return (transform.position - lastPosition).sqrMagnitude > 0.01f || Quaternion.Angle(transform.rotation, lastRotation) > 0.15f;
+        }
+
+        public bool IsMissingRigidbodies() {
+            foreach (bool value in RigidbodyNulls) {
+                if (value)
+                    return true;
+            }
+            
+            return false;
         }
 
         private void OnOwnedUpdate() {

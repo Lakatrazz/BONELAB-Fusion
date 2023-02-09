@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SLZ.Interaction;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -39,5 +40,13 @@ namespace LabFusion.Syncables
         public virtual void OnReceivedUpdate() { }
 
         public virtual void OnOwnershipTransfer() { }
+
+        public virtual void OnUpdate() { }
+
+        public virtual void OnAttach(Hand hand, Grip grip) { }
+
+        public virtual void OnDetach(Hand hand, Grip grip) { }
+
+        public virtual void OnHeld() { }
     }
 }
