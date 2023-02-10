@@ -158,6 +158,9 @@ namespace LabFusion
             // Store rig info/update avatars
             RigData.OnRigUpdate();
 
+            // Update notifications
+            FusionNotifier.OnUpdate();
+
             // Send players based on player count
             int playerSendRate = SendRateTable.GetPlayerSendRate();
             if (Time.frameCount % playerSendRate == 0) {

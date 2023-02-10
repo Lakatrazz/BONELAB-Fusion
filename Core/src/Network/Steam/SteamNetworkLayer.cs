@@ -179,28 +179,23 @@ namespace LabFusion.Network
             if (_isConnectionActive || _isServerActive)
                 Disconnect();
 
-            FusionLogger.Log("Joining socket server!");
             SteamConnection = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(serverId, 0);
             
             _isServerActive = false;
             _isConnectionActive = true;
 
-            using (FusionWriter writer = FusionWriter.Create()) {
-                using (ConnectionRequestData data = ConnectionRequestData.Create(SteamId.Value, FusionMod.Version, RigData.GetAvatarBarcode(), RigData.RigAvatarStats)) {
-                    writer.Write(data);
-
-                    using (FusionMessage message = FusionMessage.Create(NativeMessageTag.ConnectionRequest, writer)) {
-                        BroadcastMessage(NetworkChannel.Reliable, message);
-                    }
-                }
-            }
+            ConnectionSender.SendConnectionRequest();
 
             OnUpdateSteamLobby();
             OnUpdateRichPresence();
         }
 
-        internal override void Disconnect()
+        internal override void Disconnect(string reason = "")
         {
+            // Make sure we are currently in a server
+            if (!_isServerActive && !_isConnectionActive)
+                return;
+
             try {
                 if (SteamConnection != null)
                     SteamConnection.Close();
@@ -215,7 +210,7 @@ namespace LabFusion.Network
             _isServerActive = false;
             _isConnectionActive = false;
             
-            InternalServerHelpers.OnDisconnect();
+            InternalServerHelpers.OnDisconnect(reason);
 
             OnUpdateSteamLobby();
             OnUpdateRichPresence();
@@ -293,6 +288,8 @@ namespace LabFusion.Network
             // Now for the actual options
             CreateMatchmakingMenu(category);
             BoneMenuCreator.CreateSettingsMenu(category);
+            BoneMenuCreator.CreateNotificationsMenu(category);
+            BoneMenuCreator.CreateBanListMenu(category);
 
 #if DEBUG
             BoneMenuCreator.CreateDebugMenu(category);

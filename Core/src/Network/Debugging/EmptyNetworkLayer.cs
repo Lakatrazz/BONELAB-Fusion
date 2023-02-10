@@ -14,7 +14,7 @@ namespace LabFusion.Debugging
     /// </summary>
     public class EmptyNetworkLayer : NetworkLayer
     {
-        internal override void Disconnect() { }
+        internal override void Disconnect(string reason = "") { }
 
         internal override void StartServer() { }
 

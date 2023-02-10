@@ -8,6 +8,7 @@ namespace LabFusion.Data {
     public static class FusionFileLoader {
         public static void OnInitializeMelon() {
             PermissionList.PullFromFile();
+            BanList.PullFromFile();
         }
     }
 }

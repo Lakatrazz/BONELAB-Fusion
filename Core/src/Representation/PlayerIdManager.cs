@@ -38,6 +38,10 @@ namespace LabFusion.Representation
             return PlayerIds.FirstOrDefault(x => x.LongId == longId);
         }
 
+        public static bool HasPlayerId(byte smallId) => GetPlayerId(smallId) != null;
+
+        public static bool HasPlayerId(ulong longId) => GetPlayerId(longId) != null;
+
         internal static void ApplyLocalId() {
             var id = GetPlayerId(LocalLongId);
             if (id != null) {

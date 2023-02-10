@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using LabFusion.Extensions;
-using LabFusion.Utilities;
+using LabFusion.Representation;
+using LabFusion.Senders;
 
 using Steamworks;
 using Steamworks.Data;
@@ -30,23 +30,15 @@ namespace LabFusion.Network
             var pair = ConnectedSteamIds.First((p) => p.Value.Id == connection.Id);
             var longId = pair.Key;
 
-#if DEBUG
-            FusionLogger.Log($"Server received disconnect from long id {longId}.");
-#endif
-
             ConnectedSteamIds.Remove(pair.Key);
 
-            InternalServerHelpers.OnUserLeave(pair.Key);
+            // Make sure the user hasn't previously disconnected
+            if (PlayerIdManager.HasPlayerId(longId)) {
+                // Update the mod so it knows this user has left
+                InternalServerHelpers.OnUserLeave(pair.Key);
 
-            // Send disconnect notif to everyone
-            using (FusionWriter writer = FusionWriter.Create()) {
-                using (var disconnect = DisconnectMessageData.Create(longId)) {
-                    writer.Write(disconnect);
-
-                    using (var message = FusionMessage.Create(NativeMessageTag.Disconnect, writer)) {
-                        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                    }
-                }
+                // Send disconnect notif to everyone
+                ConnectionSender.SendDisconnect(longId);
             }
         }
 

@@ -52,7 +52,7 @@ namespace LabFusion.Network
         /// <summary>
         /// Disconnects the client from the connection and/or server.
         /// </summary>
-        internal abstract void Disconnect();
+        internal abstract void Disconnect(string reason = "");
 
         /// <summary>
         /// Returns the username of the player with id userId.

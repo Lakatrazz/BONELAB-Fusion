@@ -26,6 +26,10 @@ using UnityEngine;
 namespace LabFusion.Syncables
 {
     public class PropSyncable : ISyncable {
+        public const float MinMoveMagnitude = 0.005f;
+        public const float MinMoveSqrMagnitude = MinMoveMagnitude * MinMoveMagnitude;
+        public const float MinMoveAngle = 0.15f;
+
         public static readonly FusionComponentCache<GameObject, PropSyncable> Cache = new FusionComponentCache<GameObject, PropSyncable>();
         public static readonly FusionComponentCache<GameObject, PropSyncable> HostCache = new FusionComponentCache<GameObject, PropSyncable>();
 
@@ -445,7 +449,7 @@ namespace LabFusion.Syncables
             var lastPosition = LastSentPositions[index];
             var lastRotation = LastSentRotations[index];
 
-            return (transform.position - lastPosition).sqrMagnitude > 0.01f || Quaternion.Angle(transform.rotation, lastRotation) > 0.15f;
+            return (transform.position - lastPosition).sqrMagnitude > MinMoveSqrMagnitude || Quaternion.Angle(transform.rotation, lastRotation) > MinMoveAngle;
         }
 
         public bool IsMissingRigidbodies() {

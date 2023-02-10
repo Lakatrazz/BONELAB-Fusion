@@ -111,6 +111,8 @@ namespace LabFusion.Network
 
             TrialSpawnerEvents = 67,
 
+            LevelRequest = 68,
+
             Module = 80,
             ModuleAssignment = 81;
     }

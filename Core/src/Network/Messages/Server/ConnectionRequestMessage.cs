@@ -56,7 +56,7 @@ namespace LabFusion.Network
         public override byte? Tag => NativeMessageTag.ConnectionRequest;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
-            if (NetworkInfo.CurrentNetworkLayer.IsServer) {
+            if (NetworkInfo.IsServer) {
                 using (FusionReader reader = FusionReader.Create(bytes)) {
                     var data = reader.ReadFusionSerializable<ConnectionRequestData>();
                     var newSmallId = PlayerIdManager.GetUnusedPlayerId();
@@ -65,39 +65,48 @@ namespace LabFusion.Network
                         // Verify joining
                         bool isVerified = NetworkVerification.IsClientApproved(data.longId);
 
-                        if (!isVerified)
+                        if (!isVerified) {
+                            ConnectionSender.SendConnectionDeny(data.longId, "Server is private.");
                             return;
+                        }
 
                         // Compare versions
                         VersionResult versionResult = NetworkVerification.CompareVersion(FusionMod.Version, data.version);
 
                         if (versionResult != VersionResult.Ok) {
+                            switch (versionResult) {
+                                default:
+                                case VersionResult.Unknown:
+                                    ConnectionSender.SendConnectionDeny(data.longId, "Unknown Version Mismatch");
+                                    break;
+                                case VersionResult.Lower:
+                                    ConnectionSender.SendConnectionDeny(data.longId, "Server is on an older version. Downgrade your version or notify the host.");
+                                    break;
+                                case VersionResult.Higher:
+                                    ConnectionSender.SendConnectionDeny(data.longId, "Server is on a newer version. Update your version.");
+                                    break;
+                            }
+
+                            return;
+                        }
+
+                        // Get the permission level
+                        PlayerPermissions.FetchPermissionLevel(data.longId, out var level, out _);
+
+                        // Check for banning
+                        if (NetworkHelper.IsBanned(data.longId)) {
+                            ConnectionSender.SendConnectionDeny(data.longId, "Banned from Server");
                             return;
                         }
 
                         // Append metadata with info
-                        // Permissions
-                        PlayerPermissions.FetchPermissionLevel(data.longId, out var level, out _);
-
                         if (!data.initialMetadata.ContainsKey(MetadataHelper.PermissionKey))
                             data.initialMetadata.Add(MetadataHelper.PermissionKey, level.ToString());
                         else
                             data.initialMetadata[MetadataHelper.PermissionKey] = level.ToString();
 
-#if DEBUG
-                        FusionLogger.Log($"Server received user with long id {data.longId}. Assigned small id {newSmallId}");
-#endif
-
                         // First we send the new player to all existing players (and the new player so they know they exist)
-                        using (FusionWriter writer = FusionWriter.Create()) {
-                            using (var response = ConnectionResponseData.Create(data.longId, newSmallId.Value, data.avatarBarcode, data.avatarStats, data.initialMetadata)) {
-                                writer.Write(response);
-
-                                using (var message = FusionMessage.Create(NativeMessageTag.ConnectionResponse, writer)) {
-                                    MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-                                }
-                            }
-                        }
+                        ConnectionSender.SendPlayerJoin(new PlayerId(data.longId, newSmallId.Value, data.initialMetadata), data.avatarBarcode, data.avatarStats);
 
                         // Now we send all of our other players to the new player
                         foreach (var id in PlayerIdManager.PlayerIds) {
@@ -112,15 +121,7 @@ namespace LabFusion.Network
                                 stats = rep.avatarStats;
                             }
 
-                            using (FusionWriter writer = FusionWriter.Create()) {
-                                using (var response = ConnectionResponseData.Create(id.LongId, id.SmallId, barcode, stats, id.Metadata)) {
-                                    writer.Write(response);
-
-                                    using (var message = FusionMessage.Create(NativeMessageTag.ConnectionResponse, writer)) {
-                                        MessageSender.SendFromServer(data.longId, NetworkChannel.Reliable, message);
-                                    }
-                                }
-                            }
+                            ConnectionSender.SendPlayerCatchup(data.longId, id, barcode, stats);
                         }
 
                         // Now, make sure the player loads into the scene

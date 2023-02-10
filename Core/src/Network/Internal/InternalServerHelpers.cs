@@ -16,20 +16,12 @@ namespace LabFusion.Network {
     /// Internal class used for cleaning up servers, executing events on disconnect, etc.
     /// </summary>
     internal static class InternalServerHelpers {
-        private static void DisposeUser(ulong longId) => DisposeUser(PlayerIdManager.GetPlayerId(longId));
-
-        private static void DisposeUser(byte smallId) => DisposeUser(PlayerIdManager.GetPlayerId(smallId));
-
         private static void DisposeUser(PlayerId id) {
             if (id != null) {
                 if (PlayerRepManager.TryGetPlayerRep(id.SmallId, out var rep))
                     rep.Dispose();
 
                 id.Dispose();
-
-#if DEBUG
-                FusionLogger.Log($"User with long id {id.LongId} was removed.");
-#endif
             }
         }
 
@@ -54,6 +46,9 @@ namespace LabFusion.Network {
 
             // Update hooks
             MultiplayerHooking.Internal_OnStartServer();
+
+            // Send a notification
+            FusionNotifier.Send("Started Server", "Started a server!", false, true);
         }
 
         /// <summary>
@@ -65,12 +60,15 @@ namespace LabFusion.Network {
 
             // Update hooks
             MultiplayerHooking.Internal_OnJoinServer();
+
+            // Send a notification
+            FusionNotifier.Send("Joined Server", "Joined a server!", false, true);
         }
 
         /// <summary>
         /// Cleans up the scene from all users. ONLY call this from within a network layer!
         /// </summary>
-        internal static void OnDisconnect() {
+        internal static void OnDisconnect(string reason = "") {
             // Cleanup information
             DisposeUsers();
             SyncManager.OnCleanup();
@@ -82,13 +80,21 @@ namespace LabFusion.Network {
 
             // Update hooks
             MultiplayerHooking.Internal_OnDisconnect();
+
+            // Send a notification
+            if (string.IsNullOrWhiteSpace(reason)) {
+                FusionNotifier.Send("Disconnected from Server", "Disconnected from the current server!", false, true);
+            }
+            else {
+                FusionNotifier.Send("Disconnected from Server", $"You were disconnected for reason: {reason}", true, true);
+            }
         }
 
         /// <summary>
         /// Updates information about the new user.
         /// </summary>
         /// <param name="id"></param>
-        internal static void OnUserJoin(PlayerId id) {
+        internal static void OnUserJoin(PlayerId id, bool isInitialJoin) {
             // Send client info
             FusionPreferences.SendClientSettings();
 
@@ -97,6 +103,11 @@ namespace LabFusion.Network {
 
             // Update hooks
             MultiplayerHooking.Internal_OnPlayerJoin(id);
+
+            // Send notification
+            if (isInitialJoin && id.TryGetDisplayName(out var name)) {
+                FusionNotifier.Send($"{name} Join", $"{name} joined the server.", false, true);
+            }
         }
 
         /// <summary>
@@ -105,6 +116,16 @@ namespace LabFusion.Network {
         /// <param name="longId"></param>
         internal static void OnUserLeave(ulong longId) {
             var playerId = PlayerIdManager.GetPlayerId(longId);
+
+            // Make sure the player exists in our game
+            if (playerId == null)
+                return;
+
+            // Send notification
+            if (playerId.TryGetDisplayName(out var name)) {
+                FusionNotifier.Send($"{name} Leave", $"{name} left the server.", false, true);
+            }
+
             MultiplayerHooking.Internal_OnPlayerLeave(playerId);
 
             DisposeUser(playerId);

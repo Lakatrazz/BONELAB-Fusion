@@ -1,14 +1,10 @@
-﻿using BoneLib.BoneMenu.Elements;
+﻿using BoneLib.BoneMenu;
+using BoneLib.BoneMenu.Elements;
+
 using LabFusion.Network;
-using LabFusion.Preferences;
 using LabFusion.Representation;
-using LabFusion.Senders;
-using LabFusion.Utilities;
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using UnityEngine;
@@ -35,6 +31,8 @@ namespace LabFusion.BoneMenu
             foreach (var id in PlayerIdManager.PlayerIds) {
                 CreatePlayer(id);
             }
+
+            MenuManager.SelectCategory(_playerListCategory);
         }
 
         private static void CreatePlayer(PlayerId id) {
@@ -78,6 +76,19 @@ namespace LabFusion.BoneMenu
                         permDisplay.SetName($"Permissions: {rawLevel}");
                     }
                 };
+            }
+
+            // Create moderation options
+            // Note: replace IsServer with permission check
+            if (NetworkInfo.IsServer && !id.IsSelf) {
+                var moderationCategory = category.CreateCategory("Moderation", Color.white);
+                moderationCategory.CreateFunctionElement("Kick", Color.red, () => {
+                    NetworkHelper.KickUser(id);
+                }, "Are you sure?");
+
+                moderationCategory.CreateFunctionElement("Ban", Color.red, () => {
+                    NetworkHelper.BanUser(id);
+                }, "Are you sure?");
             }
 
             category.CreateFunctionElement($"Platform ID: {longId}", Color.yellow, () => {

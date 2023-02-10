@@ -14,43 +14,43 @@ using LabFusion.Network;
 
 namespace LabFusion.Data
 {
-    public static class PermissionList
+    public static class BanList
     {
-        private const string _rootName = "PermissionList";
-        private const string _fileName = "permissionList.xml";
+        private const string _rootName = "BanList";
+        private const string _fileName = "banlist.xml";
 
-        private const string _elementName = "Permission";
+        private const string _elementName = "Ban";
         private const string _idName = "id";
         private const string _userName = "username";
-        private const string _levelName = "level";
+        private const string _reasonName = "reason";
 
-        private static List<Tuple<ulong, string, PermissionLevel>> _permittedUsers = new List<Tuple<ulong, string, PermissionLevel>>();
-        private static string _permissionListPath;
+        private static List<Tuple<ulong, string, string>> _bannedUsers = new List<Tuple<ulong, string, string>>();
+        private static string _banListPath;
 
-        public static IReadOnlyList<Tuple<ulong, string, PermissionLevel>> PermittedUsers => _permittedUsers;
+        public static IReadOnlyList<Tuple<ulong, string, string>> BannedUsers => _bannedUsers;
 
         public static void PullFromFile()
         {
-            _permittedUsers.Clear();
+            _bannedUsers.Clear();
 
             XDocument InstantiateDefault(string verb = "missing")
             {
                 FusionLogger.Log($"{_rootName} was {verb}, created it!", ConsoleColor.DarkCyan);
                 var defaultDocument = CreateDefault();
-                File.WriteAllText(_permissionListPath, defaultDocument.ToString());
+                File.WriteAllText(_banListPath, defaultDocument.ToString());
 
                 return defaultDocument;
             }
 
             XDocument document = null;
-            _permissionListPath = PersistentData.GetPath(_fileName);
+            _banListPath = PersistentData.GetPath(_fileName);
 
             try
             {
-                if (File.Exists(_permissionListPath))
+                if (File.Exists(_banListPath))
                 {
                     FusionLogger.Log($"{_rootName} was found, attempting to read it!", ConsoleColor.DarkCyan);
-                    string raw = File.ReadAllText(_permissionListPath);
+                    string raw = File.ReadAllText(_banListPath);
                     document = XDocument.Parse(raw);
 
                     if (document.Root.Name != _rootName)
@@ -59,7 +59,7 @@ namespace LabFusion.Data
             }
             catch (Exception e)
             {
-                FusionLogger.LogException("parsing PermissionList", e);
+                FusionLogger.LogException("parsing BanList", e);
                 document = InstantiateDefault("malformed");
             }
 
@@ -69,11 +69,11 @@ namespace LabFusion.Data
             if (document != null)
             {
                 document.Descendants(_elementName).ForEach((element) => {
-                    if (element.TryGetAttribute(_idName, out string rawId) && element.TryGetAttribute(_userName, out string rawUser) && element.TryGetAttribute(_levelName, out string rawLevel))
+                    if (element.TryGetAttribute(_idName, out string rawId) && element.TryGetAttribute(_userName, out string rawUser) && element.TryGetAttribute(_reasonName, out string rawReason))
                     {
-                        if (ulong.TryParse(rawId, out ulong id) && Enum.TryParse(rawLevel, out PermissionLevel level))
+                        if (ulong.TryParse(rawId, out ulong id))
                         {
-                            _permittedUsers.Add(new Tuple<ulong, string, PermissionLevel>(id, rawUser, level));
+                            _bannedUsers.Add(new Tuple<ulong, string, string>(id, rawUser, rawReason));
                         }
                     }
                 });
@@ -90,29 +90,40 @@ namespace LabFusion.Data
         private static void PushToFile() {
             var baseDoc = CreateDefault();
 
-            foreach (var tuple in _permittedUsers) {
+            foreach (var tuple in _bannedUsers) {
                 XElement entry = new XElement(_elementName);
                 entry.SetAttributeValue(_idName, tuple.Item1);
                 entry.SetAttributeValue(_userName, tuple.Item2);
-                entry.SetAttributeValue(_levelName, tuple.Item3);
+                entry.SetAttributeValue(_reasonName, tuple.Item3);
 
                 baseDoc.Root.Add(entry);
             }
 
-            File.WriteAllText(_permissionListPath, baseDoc.ToString());
+            File.WriteAllText(_banListPath, baseDoc.ToString());
         }
 
-        public static void SetPermission(ulong longId, string username, PermissionLevel level) {
-            var tuple = new Tuple<ulong, string, PermissionLevel>(longId, username, level);
+        public static void Ban(ulong longId, string username, string reason) {
+            var tuple = new Tuple<ulong, string, string>(longId, username, reason);
 
-            foreach (var user in _permittedUsers.ToArray()) {
+            foreach (var user in _bannedUsers.ToArray()) {
                 if (user.Item1 == longId) {
-                    _permittedUsers.Remove(user);
+                    _bannedUsers.Remove(user);
                     break;
                 }
             }
 
-            _permittedUsers.Add(tuple);
+            _bannedUsers.Add(tuple);
+
+            PushToFile();
+        }
+
+        public static void Pardon(ulong longId) {
+            foreach (var user in _bannedUsers.ToArray()) {
+                if (user.Item1 == longId) {
+                    _bannedUsers.Remove(user);
+                    break;
+                }
+            }
 
             PushToFile();
         }
