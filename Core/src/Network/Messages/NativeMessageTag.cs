@@ -113,6 +113,8 @@ namespace LabFusion.Network
 
             LevelRequest = 68,
 
+            PropSyncableSleep = 69,
+
             Module = 80,
             ModuleAssignment = 81;
     }

@@ -269,6 +269,7 @@
     <Compile Include="Core\src\Network\Helpers\SendRateTable.cs" />
     <Compile Include="Core\src\Network\INetworkLobby.cs" />
     <Compile Include="Core\src\Network\Messages\Levels\LevelRequestMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Syncables\PropSyncableSleepMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Trials\TrialSpawnerEventsMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\BonelabHubMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\DescentIntroMessage.cs" />

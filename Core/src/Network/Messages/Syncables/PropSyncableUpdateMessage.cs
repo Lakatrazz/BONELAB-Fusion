@@ -118,7 +118,7 @@ namespace LabFusion.Network
                     // Find the prop syncable and update its info
                     var syncable = data.GetPropSyncable();
                     if (syncable != null && syncable.IsRegistered() && syncable.Owner.HasValue && syncable.Owner.Value == data.ownerId && syncable.HostGameObjects.Length == data.length) {
-                        syncable.TimeOfMessage = Time.realtimeSinceStartup;
+                        syncable.RefreshMessageTime();
                         
                         for (var i = 0; i < data.length; i++) {
                             syncable.InitialPositions[i] = data.serializedPositions[i];

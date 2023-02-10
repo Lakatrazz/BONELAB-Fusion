@@ -7,25 +7,23 @@ using LabFusion.Extensions;
 using LabFusion.Grabbables;
 using LabFusion.Network;
 using LabFusion.Representation;
+using LabFusion.Senders;
 using LabFusion.Utilities;
 
-using PuppetMasta;
-
-using SLZ;
-using SLZ.AI;
 using SLZ.Interaction;
 using SLZ.Marrow.Pool;
-using SLZ.Marrow.SceneStreaming;
-using SLZ.Props;
-using SLZ.Props.Weapons;
 using SLZ.Utilities;
-using SLZ.Vehicle;
 
 using UnityEngine;
 
 namespace LabFusion.Syncables
 {
     public class PropSyncable : ISyncable {
+        private enum SendState {
+            IDLE = 0,
+            SENDING = 1,
+        }
+
         public const float MinMoveMagnitude = 0.005f;
         public const float MinMoveSqrMagnitude = MinMoveMagnitude * MinMoveMagnitude;
         public const float MinMoveAngle = 0.15f;
@@ -52,6 +50,8 @@ namespace LabFusion.Syncables
 
         public float TimeOfMessage = 0f;
 
+        public bool IsSleeping = false;
+
         public ushort Id;
 
         public byte? Owner = null;
@@ -77,6 +77,9 @@ namespace LabFusion.Syncables
         private bool _lockedState = false;
 
         private bool _isIgnoringForces = false;
+
+        private SendState _sendingState = SendState.IDLE;
+        private float _timeOfLastSend = 0f;
 
         private IReadOnlyList<IPropExtender> _extenders;
 
@@ -262,7 +265,7 @@ namespace LabFusion.Syncables
             _isLockingDirty = true;
             _lockedState = false;
 
-            TimeOfMessage = Time.realtimeSinceStartup;
+            RefreshMessageTime();
 
             // Notify extenders about ownership transfer
             if (prevOwner != Owner) {
@@ -482,8 +485,18 @@ namespace LabFusion.Syncables
                 }
             }
 
-            if (!hasMovingBody)
+            // Update send time
+            if (hasMovingBody)
+                _timeOfLastSend = Time.realtimeSinceStartup;
+
+            // If a rigidbody has not moved within half a second, stop sending
+            if (Time.realtimeSinceStartup - _timeOfLastSend >= 0.5f) {
+                SetSendState(SendState.IDLE);
                 return;
+            }
+            else {
+                SetSendState(SendState.SENDING);
+            }
 
             for (var i = 0; i < HostTransforms.Length; i++) {
                 var transform = HostTransforms[i];
@@ -503,6 +516,27 @@ namespace LabFusion.Syncables
             }
         }
 
+        private void SetSendState(SendState state) {
+            if (_sendingState == state)
+                return;
+
+            switch (state) {
+                default:
+                case SendState.IDLE:
+                    PropSender.SendSleep(this);
+                    break;
+                case SendState.SENDING:
+                    break;
+            }
+
+            _sendingState = state;
+        }
+
+        public void RefreshMessageTime() {
+            TimeOfMessage = Time.realtimeSinceStartup;
+            IsSleeping = false;
+        }
+
         private void OnReceivedUpdate() {
             if (!SafetyUtilities.IsValidTime)
                 return;
@@ -514,7 +548,7 @@ namespace LabFusion.Syncables
                 extender.OnReceivedUpdate();
 
             // Check if anything is being grabbed
-            if (!_grabbedGrips.HasGrabbedGrips && timeSinceMessage >= 1f) {
+            if (IsSleeping || (!_grabbedGrips.HasGrabbedGrips && timeSinceMessage >= 1f)) {
                 if (!_isIgnoringForces) {
                     // Set all desired values to nothing
                     for (var i = 0; i < Rigidbodies.Length; i++) {

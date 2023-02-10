@@ -1,6 +1,4 @@
-﻿using LabFusion.Syncables;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
@@ -10,18 +8,40 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 using LabFusion.Grabbables;
-
-using MelonLoader;
 using LabFusion.Network;
 using LabFusion.Representation;
-using SLZ.Interaction;
 using LabFusion.Utilities;
+using LabFusion.Syncables;
+
+using MelonLoader;
+
 using SLZ.Marrow.Warehouse;
 using SLZ.Rig;
 
 namespace LabFusion.Senders
 {
     public static class PropSender {
+        /// <summary>
+        /// Sends a message notifying others the syncable has fallen asleep/is not syncing.
+        /// </summary>
+        /// <param name="syncable"></param>
+        public static void SendSleep(PropSyncable syncable) {
+            if (NetworkInfo.HasServer) {
+                using (var writer = FusionWriter.Create())
+                {
+                    using (var data = PropSyncableSleepData.Create(syncable.GetOwner().Value, syncable.GetId()))
+                    {
+                        writer.Write(data);
+
+                        using (var message = FusionMessage.Create(NativeMessageTag.PropSyncableSleep, writer))
+                        {
+                            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                        }
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Sends a catchup sync message for a scene object.
         /// </summary>
