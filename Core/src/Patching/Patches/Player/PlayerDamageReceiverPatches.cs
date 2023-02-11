@@ -6,24 +6,24 @@ using HarmonyLib;
 using LabFusion.Network;
 using LabFusion.NativeStructs;
 using LabFusion.Utilities;
+using LabFusion.Data;
+using LabFusion.Senders;
+using LabFusion.Representation;
 
 using MelonLoader;
 
-using SLZ.Combat;
-using SLZ.Marrow.Data;
-using SLZ.AI;
-
 using UnityEngine;
-using LabFusion.Data;
-using LabFusion.Senders;
+
 using System.Collections;
-using LabFusion.Syncables;
-using static UnityEngine.ParticleSystem.PlaybackState;
+
+using SLZ.AI;
+using SLZ.Rig;
+using SLZ.Marrow.Data;
 
 namespace LabFusion.Patching
 {
     // Since some methods here use structs, we native patch thanks to IL2CPP nonsense
-    public static class ImpactPropertiesPatches
+    public static class PlayerDamageReceiverPatches
     {
         public static void Patch() {
             PatchReceiveAttack();
@@ -41,7 +41,7 @@ namespace LabFusion.Patching
             // Mouthful
             string nativeInfoName = "NativeMethodInfoPtr_ReceiveAttack_Public_Virtual_Final_New_Void_Attack_0";
 
-            var tgtPtr = *(IntPtr*)(IntPtr)typeof(ImpactProperties).GetField(nativeInfoName, AccessTools.all).GetValue(null);
+            var tgtPtr = *(IntPtr*)(IntPtr)typeof(PlayerDamageReceiver).GetField(nativeInfoName, AccessTools.all).GetValue(null);
             var dstPtr = patch.Method.MethodHandle.GetFunctionPointer();
 
             MelonUtils.NativeHookAttach((IntPtr)(&tgtPtr), dstPtr);
@@ -56,17 +56,30 @@ namespace LabFusion.Patching
                 {
                     unsafe
                     {
+                        var receiver = new PlayerDamageReceiver(instance);
+                        var rm = receiver.health._rigManager;
+
+                        // Get the attack
                         var _attack = *(Attack_*)attack;
-                        var collider = new Collider(_attack.collider);
                         var triggerRef = new TriggerRefProxy(_attack.proxy);
 
-                        // Check if this was a bullet attack + it was us who shot the bullet
-                        if (triggerRef == RigData.RigReferences.Proxy && _attack.attackType == AttackType.Piercing) {
-                            var rb = collider.attachedRigidbody;
-                            if (!rb)
-                                return;
+                        // Make sure we have a rigmanager and a proxy
+                        if (rm != null && triggerRef != null && _attack.attackType == AttackType.Piercing) {
+                            // Check if this is our rigmanager or another player's
+                            if (rm == RigData.RigReferences.RigManager) {
+                                // Check if a player rep shot the bullet
+                                if (triggerRef.root) {
+                                    var otherRig = RigManager.Cache.Get(triggerRef.root);
 
-                            ImpactUtilities.OnHitRigidbody(rb);
+                                    if (otherRig != null && PlayerRepManager.HasPlayerId(otherRig))
+                                        return;
+                                }
+                            }
+                            // If this is a player rep, check if we shot the bullet
+                            else if (PlayerRepManager.TryGetPlayerRep(rm, out var rep) && triggerRef == RigData.RigReferences.Proxy) {
+                                // Send the damage over the network
+                                PlayerSender.SendPlayerDamage(rep.PlayerId, _attack.damage);
+                            }
                         }
                     }
                 }
@@ -76,7 +89,7 @@ namespace LabFusion.Patching
             catch (Exception e)
             {
 #if DEBUG
-                FusionLogger.LogException("executing native patch ImpactProperties.ReceiveAttack", e);
+                FusionLogger.LogException("executing native patch PlayerDamageReceiver.ReceiveAttack", e);
 #endif
             }
         }

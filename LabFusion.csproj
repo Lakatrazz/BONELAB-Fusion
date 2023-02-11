@@ -270,6 +270,7 @@
     <Compile Include="Core\src\Network\INetworkLobby.cs" />
     <Compile Include="Core\src\Network\Messages\Levels\LevelRequestMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\BodyLogToggleMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Representation\PlayerRepDamageMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Syncables\PropSyncableSleepMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Trials\TrialSpawnerEventsMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\BonelabHubMessage.cs" />
@@ -311,6 +312,7 @@
     <Compile Include="Core\src\Patching\Patches\BonelabProgressionHelperPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ConstraintTrackerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\DevManipulatorPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Player\PlayerDamageReceiverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Props\FlyingGunPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\KartRacePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Plugs\KeyRecieverPatches.cs" />
@@ -427,8 +429,8 @@
     <Compile Include="Core\src\Patching\Patches\ObjectDestructablePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\OpenControllerRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\GameworldSkeletonRigPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\PhysicsRigPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\PlayerHealthPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Player\PhysicsRigPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Player\PlayerHealthPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Plugs\PlugPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PopUpMenuPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PropHealthPatches.cs" />
@@ -467,6 +469,7 @@
     <Compile Include="Core\src\Utilities\FloatingOriginUtilities.cs" />
     <Compile Include="Core\src\Utilities\FusionComponentCache.cs" />
     <Compile Include="Core\src\Utilities\GameObjectUtilities.cs" />
+    <Compile Include="Core\src\Utilities\ImpactUtilities.cs" />
     <Compile Include="Core\src\Utilities\Internal\FusionNotifier.cs" />
     <Compile Include="Core\src\Utilities\Internal\PooleePusher.cs" />
     <Compile Include="Core\src\Utilities\Internal\SafeEvents.cs" />

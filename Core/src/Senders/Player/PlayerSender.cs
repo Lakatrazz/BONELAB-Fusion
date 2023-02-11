@@ -5,6 +5,7 @@ using LabFusion.Utilities;
 
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +26,21 @@ namespace LabFusion.Senders {
     }
 
     public static class PlayerSender {
+        public static void SendPlayerDamage(byte target, float damage) {
+            using (var writer = FusionWriter.Create())
+            {
+                using (var data = PlayerRepDamageData.Create(PlayerIdManager.LocalSmallId, target, damage))
+                {
+                    writer.Write(data);
+
+                    using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepDamage, writer))
+                    {
+                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+                    }
+                }
+            }
+        }
+
         public static void SendPlayerMetadataRequest(byte smallId, string key, string value) {
             using (var writer = FusionWriter.Create())
             {

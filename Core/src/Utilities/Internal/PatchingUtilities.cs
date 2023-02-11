@@ -16,6 +16,7 @@ namespace LabFusion.Utilities {
             VirtualControllerPatches.Patch();
             SubBehaviourHealthPatches.Patch();
             ImpactPropertiesPatches.Patch();
+            PlayerDamageReceiverPatches.Patch();
         }
     }
 }

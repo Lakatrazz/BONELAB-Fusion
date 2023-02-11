@@ -1,6 +1,7 @@
 ﻿using LabFusion.Network;
 using LabFusion.Senders;
 using LabFusion.Syncables;
+using LabFusion.Utilities;
 
 using MelonLoader;
 
@@ -24,24 +25,8 @@ namespace LabFusion.MonoBehaviours
                 if (!rb)
                     return;
 
-                // Already has a syncable?
-                if (PropSyncable.HostCache.TryGet(rb.gameObject, out var syncable)) {
-                    // Only transfer ownership if this is not currently held
-                    if (!syncable.IsHeld)
-                        PropSender.SendOwnershipTransfer(syncable);
-                }
-                // Create a new synced object
-                else {
-                    MelonCoroutines.Start(CoWaitAndSync(rb));
-                }
+                ImpactUtilities.OnHitRigidbody(rb);
             }
-        }
-
-        private static IEnumerator CoWaitAndSync(Rigidbody rb) {
-            for (var i = 0; i < 4; i++)
-                yield return null;
-
-            PropSender.SendPropCreation(rb.gameObject);
         }
     }
 }

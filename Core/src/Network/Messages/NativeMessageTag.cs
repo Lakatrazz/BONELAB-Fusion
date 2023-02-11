@@ -117,6 +117,8 @@ namespace LabFusion.Network
 
             BodyLogToggle = 70,
 
+            PlayerRepDamage = 71,
+
             Module = 80,
             ModuleAssignment = 81;
     }
