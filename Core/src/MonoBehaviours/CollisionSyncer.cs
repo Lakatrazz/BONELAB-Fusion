@@ -21,10 +21,19 @@ namespace LabFusion.MonoBehaviours
         private void OnCollisionEnter(Collision collision) {
             if (NetworkInfo.HasServer) {
                 var rb = collision.rigidbody;
-                if (!rb || PropSyncable.HostCache.ContainsSource(rb.gameObject))
+                if (!rb)
                     return;
 
-                MelonCoroutines.Start(CoWaitAndSync(rb));
+                // Already has a syncable?
+                if (PropSyncable.HostCache.TryGet(rb.gameObject, out var syncable)) {
+                    // Only transfer ownership if this is not currently held
+                    if (!syncable.IsHeld)
+                        PropSender.SendOwnershipTransfer(syncable);
+                }
+                // Create a new synced object
+                else {
+                    MelonCoroutines.Start(CoWaitAndSync(rb));
+                }
             }
         }
 

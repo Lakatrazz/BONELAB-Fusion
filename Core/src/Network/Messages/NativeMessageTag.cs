@@ -115,6 +115,8 @@ namespace LabFusion.Network
 
             PropSyncableSleep = 69,
 
+            BodyLogToggle = 70,
+
             Module = 80,
             ModuleAssignment = 81;
     }

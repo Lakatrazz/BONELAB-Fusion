@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using UnityEngine;
+using SLZ.Marrow.Warehouse;
 
 namespace LabFusion.Network {
     /// <summary>
@@ -48,7 +49,13 @@ namespace LabFusion.Network {
             MultiplayerHooking.Internal_OnStartServer();
 
             // Send a notification
-            FusionNotifier.Send("Started Server", "Started a server!", false, true);
+            FusionNotifier.Send(new FusionNotification()
+            {
+                title = "Started Server",
+                message = "Started a server!",
+                isMenuItem = false,
+                isPopup = true,
+            });
         }
 
         /// <summary>
@@ -62,7 +69,13 @@ namespace LabFusion.Network {
             MultiplayerHooking.Internal_OnJoinServer();
 
             // Send a notification
-            FusionNotifier.Send("Joined Server", "Joined a server!", false, true);
+            FusionNotifier.Send(new FusionNotification()
+            {
+                title = "Joined Server",
+                message = "Joined a server!",
+                isMenuItem = false,
+                isPopup = true,
+            });
         }
 
         /// <summary>
@@ -83,10 +96,22 @@ namespace LabFusion.Network {
 
             // Send a notification
             if (string.IsNullOrWhiteSpace(reason)) {
-                FusionNotifier.Send("Disconnected from Server", "Disconnected from the current server!", false, true);
+                FusionNotifier.Send(new FusionNotification()
+                {
+                    title = "Disconnected from Server",
+                    message = "Disconnected from the current server!",
+                    isMenuItem = false,
+                    isPopup = true,
+                });
             }
             else {
-                FusionNotifier.Send("Disconnected from Server", $"You were disconnected for reason: {reason}", true, true);
+                FusionNotifier.Send(new FusionNotification()
+                {
+                    title = "Disconnected from Server",
+                    message = $"You were disconnected for reason: {reason}",
+                    isMenuItem = true,
+                    isPopup = true,
+                });
             }
         }
 
@@ -106,7 +131,13 @@ namespace LabFusion.Network {
 
             // Send notification
             if (isInitialJoin && id.TryGetDisplayName(out var name)) {
-                FusionNotifier.Send($"{name} Join", $"{name} joined the server.", false, true);
+                FusionNotifier.Send(new FusionNotification()
+                {
+                    title = $"{name} Join",
+                    message = $"{name} joined the server.",
+                    isMenuItem = false,
+                    isPopup = true,
+                });
             }
         }
 
@@ -123,7 +154,13 @@ namespace LabFusion.Network {
 
             // Send notification
             if (playerId.TryGetDisplayName(out var name)) {
-                FusionNotifier.Send($"{name} Leave", $"{name} left the server.", false, true);
+                FusionNotifier.Send(new FusionNotification()
+                {
+                    title = $"{name} Leave",
+                    message = $"{name} left the server.",
+                    isMenuItem = false,
+                    isPopup = true,
+                });
             }
 
             MultiplayerHooking.Internal_OnPlayerLeave(playerId);

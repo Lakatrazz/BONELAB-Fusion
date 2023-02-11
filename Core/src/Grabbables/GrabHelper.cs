@@ -23,6 +23,7 @@ using SLZ;
 using SLZ.Interaction;
 
 using MelonLoader;
+using LabFusion.Senders;
 
 namespace LabFusion.Grabbables {
     public static class GrabHelper {
@@ -83,7 +84,7 @@ namespace LabFusion.Grabbables {
                         while (!syncable.IsRegistered())
                             yield return null;
 
-                        SyncManager.SendOwnershipTransfer(syncable.Id);
+                        PropSender.SendOwnershipTransfer(syncable);
                     }
                     // Create a new one
                     else if (!NetworkInfo.IsServer) {

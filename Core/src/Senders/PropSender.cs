@@ -22,6 +22,64 @@ namespace LabFusion.Senders
 {
     public static class PropSender {
         /// <summary>
+        /// Sends an ownership transfer request for a syncable.
+        /// </summary>
+        /// <param name="syncable"></param>
+        public static void SendOwnershipTransfer(ISyncable syncable)
+        {
+            ushort id = syncable.GetId();
+
+            var owner = PlayerIdManager.LocalSmallId;
+
+            // Broadcast response
+            if (NetworkInfo.IsServer)
+            {
+                syncable.SetOwner(owner);
+
+                using (var writer = FusionWriter.Create())
+                {
+                    using (var response = SyncableOwnershipResponseData.Create(owner, id))
+                    {
+                        writer.Write(response);
+
+                        using (var message = FusionMessage.Create(NativeMessageTag.SyncableOwnershipResponse, writer))
+                        {
+                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+                        }
+                    }
+                }
+            }
+            // Send request to server
+            else
+            {
+                using (var writer = FusionWriter.Create())
+                {
+                    using (var response = SyncableOwnershipRequestData.Create(owner, id))
+                    {
+                        writer.Write(response);
+
+                        using (var message = FusionMessage.Create(NativeMessageTag.SyncableOwnershipRequest, writer))
+                        {
+                            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sends an ownership transfer request for a syncable.
+        /// </summary>
+        /// <param name="syncableId"></param>
+        public static void SendOwnershipTransfer(ushort syncableId)
+        {
+            if (!SyncManager.TryGetSyncable(syncableId, out var syncable))
+                return;
+
+            SendOwnershipTransfer(syncable);
+        }
+
+        /// <summary>
         /// Sends a message notifying others the syncable has fallen asleep/is not syncing.
         /// </summary>
         /// <param name="syncable"></param>

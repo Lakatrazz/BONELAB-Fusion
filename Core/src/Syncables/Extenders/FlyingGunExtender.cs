@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using LabFusion.Extensions;
 using LabFusion.MonoBehaviours;
 using LabFusion.Utilities;
 
@@ -25,7 +26,7 @@ namespace LabFusion.Syncables {
         protected override void RemoveFromCache(FlyingGun gun) {
             Cache.Remove(gun);
 
-            if (Despawner != null)
+            if (!Despawner.IsNOC())
                 GameObject.Destroy(Despawner);
         }
 

@@ -224,8 +224,25 @@ namespace LabFusion.Representation
         }
 
         public void PlayPullCordEffects() {
+            if (pullCord.IsNOC())
+                return;
+
             pullCord.PlayAvatarParticleEffects();
             pullCord.PlayClip(pullCord.switchAvatar, pullCord.ap3, pullCord.switchVolume, 4f, false);
+        }
+
+        public void SetBallEnabled(bool isEnabled) {
+            if (pullCord.IsNOC())
+                return;
+
+            // If the ball should be enabled, make the distance required infinity so it always shows
+            if (isEnabled) {
+                pullCord.handShowDist = float.PositiveInfinity;
+            }
+            // If it should be disabled, make the distance zero so that it disables itself
+            else {
+                pullCord.handShowDist = 0f;
+            }
         }
 
         public void SetVitals(SerializedBodyVitals vitals) {
@@ -270,25 +287,31 @@ namespace LabFusion.Representation
         }
 
         public void OnRigCreated(RigManager rig) {
+            // Get the pull cord and prevent it from enabling
             pullCord = rig.GetComponentInChildren<PullCordDevice>(true);
 
+            SetBallEnabled(false);
+
+            // Swap the open controllers for generic controllers
+            // Left hand
             var leftHaptor = rig.openControllerRig.leftController.haptor;
             rig.openControllerRig.leftController = rig.openControllerRig.leftController.gameObject.AddComponent<Controller>();
             rig.openControllerRig.leftController.manager = rig.openControllerRig;
             leftHaptor.device_Controller = rig.openControllerRig.leftController;
             rig.openControllerRig.leftController.handedness = Handedness.LEFT;
 
+            // Right hand
             var rightHaptor = rig.openControllerRig.rightController.haptor;
             rig.openControllerRig.rightController = rig.openControllerRig.rightController.gameObject.AddComponent<Controller>();
             rig.openControllerRig.rightController.manager = rig.openControllerRig;
             rightHaptor.device_Controller = rig.openControllerRig.rightController;
             rig.openControllerRig.rightController.handedness = Handedness.RIGHT;
 
+            // Insert the connection between the rig manager and player rep so we can find this
             PlayerRepManager.Internal_AddRigManager(rig, this);
 
+            // Store all of the necessary rig references
             repPelvis = rig.physicsRig.m_pelvis.GetComponent<Rigidbody>();
-            repPelvis.drag = 0f;
-            repPelvis.angularDrag = 0f;
 
             repControllerRig = rig.openControllerRig;
             repPlayspace = rig.openControllerRig.vrRoot.transform;
@@ -298,6 +321,7 @@ namespace LabFusion.Representation
 
             RigReferences = new RigReferenceCollection(rig);
 
+            // Get the synced transform arrays so we can set tracked positions later
             PlayerRepUtilities.FillTransformArray(ref repTransforms, rig);
             PlayerRepUtilities.FillGameworldArray(ref gameworldRigTransforms, rig);
 

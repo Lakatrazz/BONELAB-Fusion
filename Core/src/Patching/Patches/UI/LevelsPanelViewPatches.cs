@@ -27,7 +27,13 @@ namespace LabFusion.Patching
                     LoadSender.SendLevelRequest(crate);
 
                     // Notify the user they've requested a level
-                    FusionNotifier.Send("Requested Level", $"Sent a level request for {crate.Title}!", false, true);
+                    FusionNotifier.Send(new FusionNotification()
+                    {
+                        title = "Requested Level",
+                        message = $"Sent a level request for {crate.Title}!",
+                        isMenuItem = false,
+                        isPopup = true,
+                    });
 
                     return false;
                 }

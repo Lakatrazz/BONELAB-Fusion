@@ -45,7 +45,7 @@ namespace LabFusion.Patching {
         [HarmonyPostfix]
         [HarmonyPatch(nameof(FlyingGun.OnTriggerGripUpdate))]
         public static void OnTriggerGripUpdatePostfix(FlyingGun __instance, Hand hand, bool __state) {
-            if (NetworkInfo.HasServer && hand.manager == RigData.RigReferences.RigManager && __state != __instance._noClipping && NimbusGunExtender.Cache.TryGet(__instance, out var syncable)) {
+            if (NetworkInfo.HasServer && hand.manager == RigData.RigReferences.RigManager && __state != __instance._noClipping && FlyingGunExtender.Cache.TryGet(__instance, out var syncable)) {
                 using (var writer = FusionWriter.Create()) {
                     using (var data = NimbusGunNoclipData.Create(PlayerIdManager.LocalSmallId, syncable.GetId(), __instance._noClipping)) {
                         writer.Write(data);

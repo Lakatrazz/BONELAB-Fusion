@@ -28,40 +28,6 @@ namespace LabFusion.Syncables {
         /// </summary>
         public static ushort LastQueueId = 0;
 
-        public static void SendOwnershipTransfer(ushort syncableId) {
-            if (!TryGetSyncable(syncableId, out var syncable))
-                return;
-
-            var owner = PlayerIdManager.LocalSmallId;
-
-            // Broadcast response
-            if (NetworkInfo.IsServer) {
-                syncable.SetOwner(owner);
-
-                using (var writer = FusionWriter.Create()) {
-                    using (var response = SyncableOwnershipResponseData.Create(owner, syncableId)) {
-                        writer.Write(response);
-
-                        using (var message = FusionMessage.Create(NativeMessageTag.SyncableOwnershipResponse, writer)) {
-                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
-            }
-            // Send request to server
-            else {
-                using (var writer = FusionWriter.Create()) {
-                    using (var response = SyncableOwnershipRequestData.Create(owner, syncableId)) {
-                        writer.Write(response);
-
-                        using (var message = FusionMessage.Create(NativeMessageTag.SyncableOwnershipRequest, writer)) {
-                            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
-            }
-        }
-
         public static void RequestSyncableID(ushort queuedId) {
             if (NetworkInfo.HasServer) {
                 if (NetworkInfo.IsServer) {
@@ -114,13 +80,29 @@ namespace LabFusion.Syncables {
         }
 
         public static void OnCleanup() {
-            foreach (var syncable in Syncables.Values)
-                syncable.Cleanup();
+            foreach (var syncable in Syncables.Values) {
+                try {
+                    syncable.Cleanup();
+                }
+                catch (Exception e) {
+#if DEBUG
+                    FusionLogger.LogException("cleaning up Syncable", e);
+#endif
+                }
+            }
 
             Syncables.Clear();
 
-            foreach (var syncable in QueuedSyncables)
-                syncable.Value.Cleanup();
+            foreach (var syncable in QueuedSyncables) {
+                try {
+                    syncable.Value.Cleanup();
+                }
+                catch (Exception e) {
+#if DEBUG
+                    FusionLogger.LogException("cleaning up QueuedSyncable", e);
+#endif
+                }
+            }
 
             QueuedSyncables.Clear();
 

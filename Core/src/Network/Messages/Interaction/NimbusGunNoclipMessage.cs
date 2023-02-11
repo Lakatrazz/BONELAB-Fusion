@@ -64,7 +64,7 @@ namespace LabFusion.Network
                     }
                     else
                     {
-                        if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable && propSyncable.TryGetExtender<NimbusGunExtender>(out var extender)) {
+                        if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable && propSyncable.TryGetExtender<FlyingGunExtender>(out var extender)) {
                             var nimbus = extender.Component;
 
                             if (data.isEnabled) {

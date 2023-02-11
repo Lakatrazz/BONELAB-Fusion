@@ -64,10 +64,19 @@ namespace LabFusion.Network
                         var id = PlayerIdManager.GetPlayerId(data.smallId);
 
                         if (id != null && id.TryGetDisplayName(out var name)) {
-                            FusionNotifier.Send($"{data.title} Load Request", Color.white, $"{name} has requested to load {data.title}.", Color.yellow, true, true, 2f, (c) => {
-                                c.CreateFunctionElement($"Accept", Color.yellow, () => {
-                                    SceneStreamer.Load(data.barcode);
-                                });
+                            FusionNotifier.Send(new FusionNotification() {
+                                title = $"{data.title} Load Request",
+                                message = $"{name} has requested to load {data.title}.",
+                                messageColor = Color.yellow,
+                                isMenuItem = true,
+                                isPopup = true,
+                                onCreateCategory = (c) =>
+                                {
+                                    c.CreateFunctionElement($"Accept", Color.yellow, () =>
+                                    {
+                                        SceneStreamer.Load(data.barcode);
+                                    });
+                                },
                             });
                         }
                     }

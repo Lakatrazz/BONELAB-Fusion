@@ -15,6 +15,7 @@ namespace LabFusion.Utilities {
         internal static void PatchAll() {
             VirtualControllerPatches.Patch();
             SubBehaviourHealthPatches.Patch();
+            ImpactPropertiesPatches.Patch();
         }
     }
 }

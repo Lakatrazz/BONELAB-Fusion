@@ -85,6 +85,8 @@ namespace LabFusion.Syncables
 
         private GrabbedGripList _grabbedGrips;
 
+        public bool IsHeld => _grabbedGrips.HasGrabbedGrips;
+
         private Action<ulong> _catchupDelegate;
 
         public PropSyncable(InteractableHost host = null, GameObject root = null) {
@@ -103,6 +105,9 @@ namespace LabFusion.Syncables
             // Recreate all rigidbodies incase of them being gone (ascent Amber ball, looking at you)
             var tempHosts = GameObject.GetComponentsInChildren<InteractableHost>(true);
             foreach (var tempHost in tempHosts) {
+                if (tempHost.IsStatic)
+                    continue;
+
                 tempHost.CreateRigidbody();
                 tempHost.EnableInteraction();
 
@@ -139,11 +144,16 @@ namespace LabFusion.Syncables
             LockJoints = new FixedJoint[Rigidbodies.Length];
 
             for (var i = 0; i < Rigidbodies.Length; i++) {
-                // Get the GameObject info
-                HostGameObjects[i] = Rigidbodies[i].gameObject;
-                HostTransforms[i] = HostGameObjects[i].transform;
+                // Clear out potential conflicting syncables
+                var go = Rigidbodies[i].gameObject;
+                if (HostCache.TryGet(go, out var conflict) && conflict != this)
+                    SyncManager.RemoveSyncable(conflict);
 
-                HostCache.Add(HostGameObjects[i], this);
+                // Get the GameObject info
+                HostGameObjects[i] = go;
+                HostTransforms[i] = go.transform;
+
+                HostCache.Add(go, this);
 
                 PDControllers[i] = new PDController();
             }
@@ -188,7 +198,7 @@ namespace LabFusion.Syncables
             // Determine the manager
             // Main player
             if (hand.manager == RigData.RigReferences.RigManager) {
-                SyncManager.SendOwnershipTransfer(GetId());
+                PropSender.SendOwnershipTransfer(this);
             }
 
             _verifyRigidbodies = true;

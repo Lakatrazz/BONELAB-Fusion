@@ -30,18 +30,26 @@ namespace LabFusion.Patching {
         }
 
         [HarmonyPrefix]
+        [HarmonyPatch(nameof(PullCordDevice.EnableBall))]
+        public static void EnableBall(PullCordDevice __instance) {
+            if (NetworkInfo.HasServer && __instance.rm == RigData.RigReferences.RigManager) {
+                PullCordSender.SendBodyLogToggle(true);
+            }
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(PullCordDevice.DisableBall))]
+        public static void DisableBall(PullCordDevice __instance) {
+            if (NetworkInfo.HasServer && __instance.rm == RigData.RigReferences.RigManager) {
+                PullCordSender.SendBodyLogToggle(false);
+            }
+        }
+
+        [HarmonyPrefix]
         [HarmonyPatch(nameof(PullCordDevice.PlayAvatarParticleEffects))]
         public static void PlayAvatarParticleEffects(PullCordDevice __instance) {
             if (NetworkInfo.HasServer && __instance.rm == RigData.RigReferences.RigManager) {
-                using (var writer = FusionWriter.Create()) {
-                    using (var data = BodyLogEffectData.Create(PlayerIdManager.LocalSmallId)) {
-                        writer.Write(data);
-
-                        using (var message = FusionMessage.Create(NativeMessageTag.BodyLogEffect, writer)) {
-                            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
+                PullCordSender.SendBodyLogEffect();
             }
         }
     }
