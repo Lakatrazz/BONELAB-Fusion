@@ -52,8 +52,6 @@ namespace LabFusion.Syncables
 
         public bool IsSleeping = false;
 
-        public bool ReceivedMessage = false;
-
         public ushort Id;
 
         public byte? Owner = null;
@@ -265,10 +263,12 @@ namespace LabFusion.Syncables
 
         public void SetOwner(byte owner) {
             // Reset position info
-            if (Owner == null)
+            if (Owner == null) {
                 FreezeValues();
-            else if (Owner != owner)
+            }
+            else if (Owner != owner) {
                 NullValues();
+            }
 
             byte? prevOwner = Owner;
 
@@ -278,7 +278,6 @@ namespace LabFusion.Syncables
             _lockedState = false;
 
             RefreshMessageTime();
-            ReceivedMessage = false;
 
             // Notify extenders about ownership transfer
             if (prevOwner != Owner) {
@@ -561,7 +560,7 @@ namespace LabFusion.Syncables
                 extender.OnReceivedUpdate();
 
             // Check if anything is being grabbed
-            if (ReceivedMessage && (IsSleeping || (!_grabbedGrips.HasGrabbedGrips && timeSinceMessage >= 1f))) {
+            if (IsSleeping || (!_grabbedGrips.HasGrabbedGrips && timeSinceMessage >= 1f)) {
                 if (!_isIgnoringForces) {
                     // Set all desired values to nothing
                     for (var i = 0; i < Rigidbodies.Length; i++) {
@@ -583,9 +582,6 @@ namespace LabFusion.Syncables
                 _lockedState = false;
                 _isIgnoringForces = false;
             }
-
-            if (!ReceivedMessage)
-                return;
 
             for (var i = 0; i < Rigidbodies.Length; i++) {
                 if (IsRigidbodyNull(i))

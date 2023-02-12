@@ -119,8 +119,7 @@ namespace LabFusion.Network
                     var syncable = data.GetPropSyncable();
                     if (syncable != null && syncable.IsRegistered() && syncable.Owner.HasValue && syncable.Owner.Value == data.ownerId && syncable.HostGameObjects.Length == data.length) {
                         syncable.RefreshMessageTime();
-                        syncable.ReceivedMessage = true;
-                        
+
                         for (var i = 0; i < data.length; i++) {
                             syncable.InitialPositions[i] = data.serializedPositions[i];
                             syncable.InitialRotations[i] = data.serializedQuaternions[i].Expand();
