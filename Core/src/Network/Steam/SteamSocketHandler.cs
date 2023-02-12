@@ -24,8 +24,8 @@ namespace LabFusion.Network
                 default:
                     sendType = SendType.Unreliable;
                     break;
-                case NetworkChannel.UnreliableNoDelay:
-                    sendType = SendType.Unreliable | SendType.NoDelay;
+                case NetworkChannel.VoiceChat:
+                    sendType = SendType.Unreliable;
                     break;
                 case NetworkChannel.Reliable:
                     sendType = SendType.Reliable;

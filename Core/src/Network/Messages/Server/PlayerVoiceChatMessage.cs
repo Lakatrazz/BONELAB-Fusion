@@ -62,7 +62,7 @@ namespace LabFusion.Network
                     {
                         using (var message = FusionMessage.Create(Tag.Value, bytes))
                         {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Unreliable, message);
+                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.VoiceChat, message);
                         }
                     }
                 }

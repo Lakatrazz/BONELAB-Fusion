@@ -39,7 +39,7 @@ namespace LabFusion.Senders {
 
                     using (var message = FusionMessage.Create(NativeMessageTag.PlayerVoiceChat, writer))
                     {
-                        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.UnreliableNoDelay, message);
+                        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.VoiceChat, message);
                     }
                 }
             }

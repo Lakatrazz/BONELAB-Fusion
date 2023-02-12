@@ -103,8 +103,7 @@ namespace LabFusion.Representation
         private bool _isServerDirty = false;
 
         // Voice chat integration
-        private const float _voiceUpdateStep = 0.1f;
-        private const int _voiceSampleDataLength = 1024;
+        private const float _voiceUpdateStep = 0.3f;
 
         private AudioSource _voiceSource = null;
 
