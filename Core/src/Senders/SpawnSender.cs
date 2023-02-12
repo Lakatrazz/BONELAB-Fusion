@@ -14,11 +14,76 @@ using LabFusion.Data;
 
 using SLZ.Zones;
 using SLZ;
+using LabFusion.Syncables;
+using LabFusion.Utilities;
+using SLZ.Marrow.Warehouse;
 
 namespace LabFusion.Senders
 {
     public static class SpawnSender
     {
+        /// <summary>
+        /// Sends a catchup for the OnPlaceEvent for a SpawnableCratePlacer.
+        /// </summary>
+        /// <param name="placer"></param>
+        /// <param name="syncable"></param>
+        /// <param name="userId"></param>
+        public static void SendCratePlacerCatchup(SpawnableCratePlacer placer, PropSyncable syncable, ulong userId) {
+            if (NetworkInfo.IsServer) {
+                using (var writer = FusionWriter.Create())
+                {
+                    using (var data = SpawnableCratePlacerData.Create(syncable.GetId(), placer.gameObject))
+                    {
+                        writer.Write(data);
+
+                        using (var message = FusionMessage.Create(NativeMessageTag.SpawnableCratePlacer, writer))
+                        {
+                            MessageSender.SendFromServer(userId, NetworkChannel.Reliable, message);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sends the OnPlaceEvent for a SpawnableCratePlacer.
+        /// </summary>
+        /// <param name="placer"></param>
+        /// <param name="go"></param>
+        public static void SendCratePlacerEvent(SpawnableCratePlacer placer, GameObject go)
+        {
+            if (NetworkInfo.IsServer)
+            {
+                MelonCoroutines.Start(Internal_WaitForCratePlacer(placer, go));
+            }
+        }
+
+        private static IEnumerator Internal_WaitForCratePlacer(SpawnableCratePlacer placer, GameObject go)
+        {
+            while (LevelWarehouseUtilities.IsLoading())
+                yield return null;
+
+            for (var i = 0; i < 5; i++)
+                yield return null;
+
+            if (PropSyncable.Cache.TryGet(go, out var syncable))
+            {
+                using (var writer = FusionWriter.Create())
+                {
+                    using (var data = SpawnableCratePlacerData.Create(syncable.GetId(), placer.gameObject))
+                    {
+                        writer.Write(data);
+
+                        using (var message = FusionMessage.Create(NativeMessageTag.SpawnableCratePlacer, writer))
+                        {
+                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+                        }
+                    }
+                }
+            }
+        }
+
+
         /// <summary>
         /// Sends a catchup sync message for a pool spawned object.
         /// </summary>

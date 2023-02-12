@@ -17,10 +17,15 @@ using SLZ.Interaction;
 using LabFusion.Extensions;
 
 using UnityEngine;
+
 using LabFusion.Exceptions;
 using SLZ.Marrow.Warehouse;
+
 using System.Collections;
+
 using MelonLoader;
+
+using LabFusion.Senders;
 
 namespace LabFusion.Network
 {
@@ -95,6 +100,12 @@ namespace LabFusion.Network
 
             if (cratePlacer)
                 cratePlacer.OnPlaceEvent?.Invoke(cratePlacer, ((PropSyncable)syncable).GameObject);
+
+            // If we are the server, insert the catchup hook for future users
+            if (NetworkInfo.IsServer)
+                syncable.InsertCatchupDelegate((id) => {
+                    SpawnSender.SendCratePlacerCatchup(cratePlacer, (PropSyncable)syncable, id);
+                });
         }
     }
 }

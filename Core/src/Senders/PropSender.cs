@@ -141,41 +141,6 @@ namespace LabFusion.Senders
             }
         }
 
-        /// <summary>
-        /// Sends the OnPlaceEvent for a SpawnableCratePlacer.
-        /// </summary>
-        /// <param name="placer"></param>
-        /// <param name="go"></param>
-        public static void SendCratePlacerEvent(SpawnableCratePlacer placer, GameObject go) {
-            if (NetworkInfo.IsServer) {
-                MelonCoroutines.Start(Internal_WaitForCratePlacer(placer, go));
-            }
-        }
-        
-        private static IEnumerator Internal_WaitForCratePlacer(SpawnableCratePlacer placer, GameObject go) {
-            while (LevelWarehouseUtilities.IsLoading())
-                yield return null;
-
-            for (var i = 0; i < 5; i++)
-                yield return null;
-
-            if (PropSyncable.Cache.TryGet(go, out var syncable))
-            {
-                using (var writer = FusionWriter.Create())
-                {
-                    using (var data = SpawnableCratePlacerData.Create(syncable.GetId(), placer.gameObject))
-                    {
-                        writer.Write(data);
-
-                        using (var message = FusionMessage.Create(NativeMessageTag.SpawnableCratePlacer, writer))
-                        {
-                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
-            }
-        }
-
         private static IEnumerator Internal_InitializePropSyncable(GameObject root, Action<PropSyncable> onFinished, bool waitUntilEnabled) {
             // Wait for level to finish loading
             while (LevelWarehouseUtilities.IsDelayedLoading())
