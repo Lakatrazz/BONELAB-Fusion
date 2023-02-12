@@ -137,24 +137,11 @@ namespace LabFusion.Utilities {
         }
 
         public static bool CanForceDespawn(AssetPoolee instance) {
-            return !CanSpawnList.Pull(instance) && IsWhitelisted(instance);
+            return !CanSpawnList.Pull(instance) && instance.gameObject.IsSyncWhitelisted();
         }
 
         public static bool CanSendSpawn(AssetPoolee instance) {
-            return IsWhitelisted(instance);
-        }
-
-        private static bool IsWhitelisted(AssetPoolee instance) {
-            bool hasRigidbody = instance.GetComponentInChildren<Rigidbody>(true) != null;
-
-            bool hasGunProperties = instance.GetComponentInChildren<FirearmCartridge>(true) == null || instance.GetComponentInChildren<Gun>(true) != null;
-            bool miscProperties = instance.GetComponentInChildren<GetVelocity>(true) == null && instance.GetComponentInChildren<SpawnFragment>(true) == null;
-            bool projectileProperties = instance.GetComponentInChildren<ProjectileBalloon>(true) == null;
-            bool spawnableProperties = instance.spawnableCrate.Barcode != SpawnableWarehouseUtilities.BOARD_BARCODE;
-
-            bool isValid = hasRigidbody && hasGunProperties && miscProperties && projectileProperties && spawnableProperties;
-
-            return isValid;
+            return instance.gameObject.IsSyncWhitelisted();
         }
     }
 }

@@ -127,10 +127,6 @@ namespace LabFusion.Senders
         /// <param name="prop"></param>
         /// <param name="onFinished"></param>
         public static void SendPropCreation(GameObject prop, Action<PropSyncable> onFinished = null, bool waitUntilEnabled = false) {
-            // Make sure this isn't a rig
-            if (prop.GetComponentInParent<RigManager>())
-                return;
-            
             var root = prop.GetSyncRoot();
 
             if (PropSyncable.Cache.TryGet(root, out var syncable) || PropSyncable.HostCache.TryGet(root, out syncable)) {

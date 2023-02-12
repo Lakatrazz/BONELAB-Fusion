@@ -25,6 +25,10 @@ namespace LabFusion.Utilities {
             }
             // Create a new synced object
             else {
+                // Check the blacklist
+                if (!go.IsSyncWhitelisted())
+                    return;
+
                 MelonCoroutines.Start(Internal_WaitAndSync(go));
             }
         }

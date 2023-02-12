@@ -22,6 +22,7 @@ using TMPro;
 using UnityEngine;
 
 using MelonLoader;
+using static SLZ.Interaction.LadderInfo;
 
 namespace LabFusion.Representation
 {
@@ -101,7 +102,16 @@ namespace LabFusion.Representation
         private bool _isSettingsDirty = false;
         private bool _isServerDirty = false;
 
+        // Voice chat integration
+        private const float _voiceUpdateStep = 0.1f;
+        private const int _voiceSampleDataLength = 1024;
+
         private AudioSource _voiceSource = null;
+
+        private float _voiceUpdateTime = 0f;
+
+        private float _voiceLoudness = 0f;
+        private float _targetLoudness = 0f;
 
         public PlayerRep(PlayerId playerId)
         {
@@ -126,6 +136,64 @@ namespace LabFusion.Representation
 
         public void InsertVoiceSource(AudioSource source) {
             _voiceSource = source;
+        }
+
+        public float GetVoiceLoudness() => _voiceLoudness;
+
+        private void OnUpdateVoiceSource() {
+            if (_voiceSource.IsNOC())
+                return;
+
+            // Update the amplitude
+            _voiceUpdateTime += Time.deltaTime;
+            if (_voiceUpdateTime >= _voiceUpdateStep) {
+                _voiceUpdateTime = 0f;
+
+                var spectrum = _voiceSource.GetSpectrumData(256, 0, FFTWindow.Rectangular);
+
+                float gain = 0f;
+                foreach (var value in spectrum) {
+                    gain += Mathf.Abs(value);
+                }
+
+                if (spectrum.Length > 0)
+                    gain /= (float)spectrum.Length;
+
+                _targetLoudness = gain;
+
+                // Add affectors
+                _targetLoudness *= 30f;
+                _targetLoudness = Mathf.Clamp(_targetLoudness, 0f, 1.5f);
+            }
+
+            // Lerp towards the desired value
+            _voiceLoudness = Mathf.Lerp(_voiceLoudness, _targetLoudness, Time.deltaTime * 6f);
+
+            // Modify the source settings
+            var rm = RigReferences.RigManager;
+            if (!rm.IsNOC() && rm._avatar) {
+                float heightMult = rm._avatar.height / 1.76f;
+
+                _voiceSource.spatialBlend = 1f;
+                _voiceSource.minDistance = 0.5f * heightMult;
+                _voiceSource.maxDistance = 30f * heightMult;
+                _voiceSource.reverbZoneMix = Mathf.Clamp(0.35f * heightMult, 0f, 1.02f);
+                _voiceSource.dopplerLevel = 0.5f;
+
+                var mouthSource = rm.physicsRig.headSfx.mouthSrc;
+                _voiceSource.transform.position = mouthSource.transform.position;
+
+                // Set the mixer
+                if (_voiceSource.outputAudioMixerGroup == null && !pullCord.IsNOC())
+                    _voiceSource.outputAudioMixerGroup = pullCord.mixerGroup;
+            }
+            else {
+                _voiceSource.spatialBlend = 0f;
+                _voiceSource.minDistance = 0.5f;
+                _voiceSource.maxDistance = 30f;
+                _voiceSource.reverbZoneMix = 0.35f;
+                _voiceSource.dopplerLevel = 0.5f;
+            }
         }
 
         private void OnMetadataChanged(PlayerId id) {
@@ -413,16 +481,6 @@ namespace LabFusion.Representation
                     repCanvasTransform.rotation = Quaternion.LookRotation(Vector3.Normalize(repCanvasTransform.position - head.position), head.up);
                 }
             }
-            
-            // Update voice source
-            if (!_voiceSource.IsNOC()) {
-                var mouthSource = rm.physicsRig.headSfx.mouthSrc;
-                _voiceSource.transform.position = mouthSource.transform.position;
-
-                // Set the mixer
-                if (_voiceSource.outputAudioMixerGroup == null && !pullCord.IsNOC())
-                    _voiceSource.outputAudioMixerGroup = pullCord.mixerGroup;
-            }
         }
 
         public void OnControllerRigUpdate() {
@@ -616,6 +674,8 @@ namespace LabFusion.Representation
 
             OnHandUpdate(RigReferences.LeftHand);
             OnHandUpdate(RigReferences.RightHand);
+
+            OnUpdateVoiceSource();
         }
 
         private void OnRepFixedUpdate() {

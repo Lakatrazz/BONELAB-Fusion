@@ -82,6 +82,10 @@ namespace LabFusion.Network
                         {
                             var go = data.gameObject;
 
+                            // Check if its blacklisted
+                            if (!go.IsSyncWhitelisted())
+                                return;
+
                             var host = InteractableHost.Cache.Get(go);
                             PropSyncable syncable;
 

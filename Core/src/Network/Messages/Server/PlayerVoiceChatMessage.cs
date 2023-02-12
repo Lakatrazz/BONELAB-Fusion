@@ -41,7 +41,6 @@ namespace LabFusion.Network
         }
     }
 
-    [Net.SkipHandleWhileLoading]
     public class PlayerVoiceChatMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.PlayerVoiceChat;

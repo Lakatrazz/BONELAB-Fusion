@@ -324,6 +324,7 @@
     <Compile Include="Core\src\Patching\Patches\DevManipulatorPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\BaseGameControllerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\TimeTrial_GameControllerPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Player\ArtRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\PlayerDamageReceiverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Props\FlyingGunPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\KartRacePatches.cs" />
@@ -380,6 +381,7 @@
     <Compile Include="Core\src\Syncables\Extenders\KeyExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\PropFlashlightExtender.cs" />
     <Compile Include="Core\src\Syncables\PropCollisionSyncerExtender.cs" />
+    <Compile Include="Core\src\Syncables\SyncBlacklist.cs" />
     <Compile Include="Core\src\Utilities\BytePool.cs" />
     <Compile Include="Core\src\Utilities\DllTools.cs" />
     <Compile Include="Core\src\Network\Helpers\Net.cs" />
