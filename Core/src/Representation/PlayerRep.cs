@@ -418,6 +418,10 @@ namespace LabFusion.Representation
             if (!_voiceSource.IsNOC()) {
                 var mouthSource = rm.physicsRig.headSfx.mouthSrc;
                 _voiceSource.transform.position = mouthSource.transform.position;
+
+                // Set the mixer
+                if (_voiceSource.outputAudioMixerGroup == null && !pullCord.IsNOC())
+                    _voiceSource.outputAudioMixerGroup = pullCord.mixerGroup;
             }
         }
 

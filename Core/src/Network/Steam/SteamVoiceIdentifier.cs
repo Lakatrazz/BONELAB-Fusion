@@ -46,6 +46,8 @@ namespace LabFusion.Network {
             _source.rolloffMode = AudioRolloffMode.Linear;
             _source.minDistance = 0.5f;
             _source.maxDistance = 30f;
+            _source.reverbZoneMix = 0.35f;
+            _source.dopplerLevel = 0.5f;
 
             // Set it to loop and play so its constantly active
             _source.loop = true;
