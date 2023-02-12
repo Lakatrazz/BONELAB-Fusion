@@ -11,6 +11,7 @@ namespace LabFusion.Network
     {
         Reliable,
         Unreliable,
+        UnreliableNoDelay,
     }
 
 

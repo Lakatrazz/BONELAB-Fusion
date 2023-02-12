@@ -2,6 +2,7 @@
 using BoneLib.BoneMenu.Elements;
 
 using LabFusion.Network;
+using LabFusion.Preferences;
 using LabFusion.Representation;
 
 using System;

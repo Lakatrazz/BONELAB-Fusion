@@ -18,7 +18,7 @@ namespace LabFusion.SDK.Gamemodes {
     public class Deathmatch : Gamemode {
         private const int _defaultMinutes = 3;
         private const int _minMinutes = 2;
-        private const int _maxMinutes = 10;
+        private const int _maxMinutes = 60;
 
         // Prefix
         public const string DefaultPrefix = "InternalDeathmatchMetadata";

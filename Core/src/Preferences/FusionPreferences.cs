@@ -29,6 +29,11 @@ namespace LabFusion.Preferences {
             // Nickname settings
             public static FusionPref<string> Nickname { get; internal set; }
             public static FusionPref<NicknameVisibility> NicknameVisibility { get; internal set; }
+
+            // Voicechat settings
+            public static FusionPref<bool> Muted { get; internal set; }
+            public static FusionPref<bool> Deafened { get; internal set; }
+            public static FusionPref<float> GlobalVolume { get; internal set; }
         }
 
         internal static SerializedServerSettings ReceivedServerSettings { get; set; } = null;
@@ -104,8 +109,14 @@ namespace LabFusion.Preferences {
             ClientSettings.NametagsEnabled = new FusionPref<bool>(prefCategory, "Client Nametags Enabled", true, PrefUpdateMode.LOCAL_UPDATE);
             ClientSettings.NametagColor = new FusionPref<Color>(prefCategory, "Nametag Color", Color.white, PrefUpdateMode.CLIENT_UPDATE);
 
+            // Nickname
             ClientSettings.Nickname = new FusionPref<string>(prefCategory, "Nickname", "", PrefUpdateMode.IGNORE);
             ClientSettings.NicknameVisibility = new FusionPref<NicknameVisibility>(prefCategory, "Nickname Visibility", NicknameVisibility.SHOW_WITH_PREFIX, PrefUpdateMode.LOCAL_UPDATE);
+
+            // Voicechat
+            ClientSettings.Muted = new FusionPref<bool>(prefCategory, "Muted", false, PrefUpdateMode.IGNORE);
+            ClientSettings.Deafened = new FusionPref<bool>(prefCategory, "Deafened", false, PrefUpdateMode.IGNORE);
+            ClientSettings.GlobalVolume = new FusionPref<float>(prefCategory, "GlobalMicVolume", 1f, PrefUpdateMode.IGNORE);
 
             // Save category
             prefCategory.SaveToFile(false);

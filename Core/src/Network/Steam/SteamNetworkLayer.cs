@@ -26,8 +26,13 @@ using Color = UnityEngine.Color;
 using MelonLoader;
 
 using System.Windows.Forms;
+
 using LabFusion.Senders;
 using LabFusion.BoneMenu;
+
+using System.IO;
+
+using UnhollowerBaseLib;
 
 namespace LabFusion.Network
 {
@@ -117,6 +122,36 @@ namespace LabFusion.Network
             }
             catch {
                 FusionLogger.Log("Error receiving data on socket/connection!");
+            }
+        }
+
+        internal override void OnVoiceChatUpdate() {
+            if (NetworkInfo.HasServer) {
+                bool voiceEnabled = !FusionPreferences.ClientSettings.Muted;
+
+                // Update voice record
+                if (SteamUser.VoiceRecord != voiceEnabled)
+                    SteamUser.VoiceRecord = voiceEnabled;
+
+                // Read voice data
+                if (voiceEnabled && SteamUser.HasVoiceData) {
+                    byte[] voiceData = SteamUser.ReadVoiceDataBytes();
+
+                    PlayerSender.SendPlayerVoiceChat(voiceData);
+                }
+            }
+        }
+
+        internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes) {
+            // If we are deafened, no need to deal with voice chat
+            bool isDeafened = FusionPreferences.ClientSettings.Deafened;
+            if (isDeafened)
+                return;
+
+            var identifier = SteamVoiceIdentifier.GetVoiceIdentifier(id);
+
+            if (identifier != null) {
+                identifier.OnVoiceBytesReceived(bytes);
             }
         }
 
@@ -231,16 +266,30 @@ namespace LabFusion.Network
 
             // Add server hooks
             MultiplayerHooking.OnMainSceneInitialized += OnUpdateSteamLobby;
-            MultiplayerHooking.OnPlayerJoin += OnPlayerCountChange;
-            MultiplayerHooking.OnPlayerLeave += OnPlayerCountChange;
+            MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
+            MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged += OnUpdateSteamLobby;
+            MultiplayerHooking.OnDisconnect += OnDisconnect;
 
             // Create a local lobby
             AwaitLobbyCreation();
         }
 
-        private void OnPlayerCountChange(PlayerId id) {
+        private void OnPlayerJoin(PlayerId id) {
+            if (!id.IsSelf)
+                SteamVoiceIdentifier.GetVoiceIdentifier(id);
+
             OnUpdateSteamLobby();
+        }
+
+        private void OnPlayerLeave(PlayerId id) {
+            SteamVoiceIdentifier.RemoveVoiceIdentifier(id);
+
+            OnUpdateSteamLobby();
+        }
+
+        private void OnDisconnect() {
+            SteamVoiceIdentifier.CleanupAll();
         }
 
         private void UnHookSteamEvents() {
@@ -249,9 +298,10 @@ namespace LabFusion.Network
             
             // Remove server hooks
             MultiplayerHooking.OnMainSceneInitialized -= OnUpdateSteamLobby;
-            MultiplayerHooking.OnPlayerJoin -= OnPlayerCountChange;
-            MultiplayerHooking.OnPlayerLeave -= OnPlayerCountChange;
+            MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
+            MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged -= OnUpdateSteamLobby;
+            MultiplayerHooking.OnDisconnect -= OnDisconnect;
 
             // Remove the local lobby
             _localLobby.Leave();

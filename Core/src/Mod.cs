@@ -232,6 +232,7 @@ namespace LabFusion
             PlayerRep.OnUpdate();
 
             // Update and push all network messages
+            InternalLayerHelpers.OnVoiceChatUpdate();
             InternalLayerHelpers.OnUpdateLayer();
 
             // Update hooks

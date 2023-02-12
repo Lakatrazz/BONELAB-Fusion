@@ -27,6 +27,24 @@ namespace LabFusion.Senders {
     }
 
     public static class PlayerSender {
+        public static void SendPlayerVoiceChat(byte[] voiceData) {
+            if (!NetworkInfo.HasServer)
+                return;
+
+            using (var writer = FusionWriter.Create())
+            {
+                using (var data = PlayerVoiceChatData.Create(PlayerIdManager.LocalSmallId, voiceData))
+                {
+                    writer.Write(data);
+
+                    using (var message = FusionMessage.Create(NativeMessageTag.PlayerVoiceChat, writer))
+                    {
+                        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.UnreliableNoDelay, message);
+                    }
+                }
+            }
+        }
+
         public static void SendPlayerDamage(byte target, float damage) {
             using (var writer = FusionWriter.Create())
             {

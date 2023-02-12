@@ -126,6 +126,30 @@ namespace LabFusion.BoneMenu
                 if (PlayerIdManager.LocalId != null)
                     PlayerIdManager.LocalId.TrySetMetadata(MetadataHelper.NicknameKey, v);
             };
+
+            // Voice chat
+            var voiceChatCategory = category.CreateCategory("Voice Chat", Color.white);
+
+            var muted = voiceChatCategory.CreateBoolElement("Muted", Color.white, FusionPreferences.ClientSettings.Muted, (v) => {
+                FusionPreferences.ClientSettings.Muted.SetValue(v);
+            });
+            FusionPreferences.ClientSettings.Muted.OnValueChanged += (v) => {
+                muted.SetValue(v);
+            };
+
+            var deafened = voiceChatCategory.CreateBoolElement("Deafened", Color.white, FusionPreferences.ClientSettings.Deafened, (v) => {
+                FusionPreferences.ClientSettings.Deafened.SetValue(v);
+            });
+            FusionPreferences.ClientSettings.Deafened.OnValueChanged += (v) => {
+                deafened.SetValue(v);
+            };
+
+            var globalVolume = voiceChatCategory.CreateFloatElement("Global Volume", Color.white, FusionPreferences.ClientSettings.GlobalVolume, 0.1f, 0f, 5f, (v) => {
+                FusionPreferences.ClientSettings.GlobalVolume.SetValue(v);
+            });
+            FusionPreferences.ClientSettings.GlobalVolume.OnValueChanged += (v) => {
+                globalVolume.SetValue(v);
+            };
         }
 
     }

@@ -122,6 +122,8 @@ namespace LabFusion.Network
             TimeTrial_GameController = 72,
             BaseGameController = 73,
 
+            PlayerVoiceChat = 74,
+
             Module = 80,
             DynamicsAssignment = 81,
 

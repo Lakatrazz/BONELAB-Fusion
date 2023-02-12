@@ -279,6 +279,7 @@
     <Compile Include="Core\src\Network\Messages\Levels\LevelRequestMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\BodyLogToggleMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\PlayerRepDamageMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Server\PlayerVoiceChatMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Syncables\PropSyncableSleepMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Trials\TrialSpawnerEventsMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\BonelabHubMessage.cs" />
@@ -305,6 +306,7 @@
     <Compile Include="Core\src\Network\Messages\Server\PlayerSettingsMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Spawning\SpawnableCratePlacerMessage.cs" />
     <Compile Include="Core\src\Network\Steam\SteamLobby.cs" />
+    <Compile Include="Core\src\Network\Steam\SteamVoiceIdentifier.cs" />
     <Compile Include="Core\src\Patching\NativeStructs\Attack_.cs" />
     <Compile Include="Core\src\Patching\Patches\Attacks\ImpactPropertiesPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\AvatarDicePatches.cs" />

@@ -4,7 +4,6 @@ using LabFusion.Network;
 using LabFusion.Utilities;
 using LabFusion.Preferences;
 
-
 using SLZ;
 using SLZ.Interaction;
 using SLZ.Props;
@@ -23,9 +22,6 @@ using TMPro;
 using UnityEngine;
 
 using MelonLoader;
-using LabFusion.Patching;
-using System.Windows.Forms.DataVisualization.Charting;
-using BoneLib;
 
 namespace LabFusion.Representation
 {
@@ -105,6 +101,8 @@ namespace LabFusion.Representation
         private bool _isSettingsDirty = false;
         private bool _isServerDirty = false;
 
+        private AudioSource _voiceSource = null;
+
         public PlayerRep(PlayerId playerId)
         {
             // Store our ID
@@ -124,6 +122,10 @@ namespace LabFusion.Representation
             ResetSerializedTransforms();
 
             StartRepCreation();
+        }
+
+        public void InsertVoiceSource(AudioSource source) {
+            _voiceSource = source;
         }
 
         private void OnMetadataChanged(PlayerId id) {
@@ -399,8 +401,10 @@ namespace LabFusion.Representation
         }
 
         public void OnUpdateNametags() {
+            // Update nametag
+            var rm = RigReferences.RigManager;
+
             if (!repCanvasTransform.IsNOC()) {
-                var rm = RigReferences.RigManager;
                 var physHead = rm.physicsRig.m_head;
                 repCanvasTransform.position = physHead.position + Vector3.up * NametagHeight * RigReferences.RigManager.avatar.height;
 
@@ -408,6 +412,12 @@ namespace LabFusion.Representation
                     var head = RigData.RigReferences.RigManager.physicsRig.m_head;
                     repCanvasTransform.rotation = Quaternion.LookRotation(Vector3.Normalize(repCanvasTransform.position - head.position), head.up);
                 }
+            }
+            
+            // Update voice source
+            if (!_voiceSource.IsNOC()) {
+                var mouthSource = rm.physicsRig.headSfx.mouthSrc;
+                _voiceSource.transform.position = mouthSource.transform.position;
             }
         }
 
