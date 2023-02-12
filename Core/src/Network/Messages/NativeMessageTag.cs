@@ -119,6 +119,9 @@ namespace LabFusion.Network
 
             PlayerRepDamage = 71,
 
+            TimeTrial_GameController = 72,
+            BaseGameController = 73,
+
             Module = 80,
             ModuleAssignment = 81;
     }
