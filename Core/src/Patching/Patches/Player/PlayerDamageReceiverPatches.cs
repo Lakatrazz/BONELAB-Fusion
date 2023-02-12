@@ -59,24 +59,35 @@ namespace LabFusion.Patching
                         var receiver = new PlayerDamageReceiver(instance);
                         var rm = receiver.health._rigManager;
 
-                        // Get the attack
+                        // Get the attack and its shooter
                         var _attack = *(Attack_*)attack;
                         var triggerRef = new TriggerRefProxy(_attack.proxy);
+                        RigManager shooter = null;
 
-                        // Make sure we have a rigmanager and a proxy
-                        if (rm != null && triggerRef != null && _attack.attackType == AttackType.Piercing) {
-                            // Check if this is our rigmanager or another player's
-                            if (rm == RigData.RigReferences.RigManager) {
-                                // Check if a player rep shot the bullet
-                                if (triggerRef.root) {
-                                    var otherRig = RigManager.Cache.Get(triggerRef.root);
+                        if (triggerRef != null && triggerRef.root != null) {
+                            shooter = RigManager.Cache.Get(triggerRef.root);
+                        }
 
-                                    if (otherRig != null && PlayerRepManager.HasPlayerId(otherRig))
+                        // Make sure we have the attacker and attacked
+                        if (rm != null && shooter != null) {
+                            // Is the attacked person us?
+                            if (rm.IsSelf()) {
+                                // Were we hit by another player?
+                                if (PlayerRepManager.TryGetPlayerRep(shooter, out var rep)) {
+                                    FusionPlayer.LastAttacker = rep.PlayerId;
+
+                                    // Only allow manual bullet damage
+                                    if (_attack.attackType == AttackType.Piercing) {
                                         return;
+                                    }
+                                }
+                                // Were we hit by ourselves?
+                                else {
+                                    FusionPlayer.LastAttacker = null;
                                 }
                             }
-                            // If this is a player rep, check if we shot the bullet
-                            else if (PlayerRepManager.TryGetPlayerRep(rm, out var rep) && triggerRef == RigData.RigReferences.Proxy) {
+                            // Is the attacked person another player? Did we attack them?
+                            else if (PlayerRepManager.TryGetPlayerRep(rm, out var rep) && shooter.IsSelf()) {
                                 // Send the damage over the network
                                 PlayerSender.SendPlayerDamage(rep.PlayerId, _attack.damage);
                             }

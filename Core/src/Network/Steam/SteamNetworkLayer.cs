@@ -287,6 +287,7 @@ namespace LabFusion.Network
 
             // Now for the actual options
             CreateMatchmakingMenu(category);
+            BoneMenuCreator.CreateGamemodesMenu(category);
             BoneMenuCreator.CreateSettingsMenu(category);
             BoneMenuCreator.CreateNotificationsMenu(category);
             BoneMenuCreator.CreateBanListMenu(category);

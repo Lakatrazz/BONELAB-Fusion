@@ -108,6 +108,19 @@ namespace LabFusion.Network
         }
 
         /// <summary>
+        /// Reads a nullable byte from the reader.
+        /// </summary>
+        /// <returns></returns>
+        public byte? ReadByteNullable() {
+            bool hasValue = ReadBoolean();
+
+            if (hasValue)
+                return ReadByte();
+            else
+                return null;
+        }
+
+        /// <summary>
         ///     Reads a single boolean from the reader.
         /// </summary>
         /// <returns>The boolean read.</returns>

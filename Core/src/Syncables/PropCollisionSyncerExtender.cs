@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace LabFusion.Syncables
 {
-    public abstract class PropCollisionSyncerExtender : IPropExtender {
+    public class PropCollisionSyncerExtender : IPropExtender {
         public PropSyncable PropSyncable { get; set; }
 
         public PropCollisionSyncer Component;

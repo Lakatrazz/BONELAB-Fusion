@@ -15,9 +15,6 @@ namespace LabFusion.Network {
         public const string LoadingKey = "IsLoading";
         public const string PermissionKey = "PermissionLevel";
 
-        // Gamemode keys
-        public const string GamemodeDeathCountKey = "GamemodeDeathCount";
-
         public static bool TryGetDisplayName(this PlayerId id, out string name) {
             id.TryGetMetadata(UsernameKey, out var username);
             id.TryGetMetadata(NicknameKey, out var nickname);

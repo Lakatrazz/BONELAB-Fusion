@@ -71,6 +71,9 @@ namespace LabFusion.Network
                         // Get player health
                         var rm = RigData.RigReferences.RigManager;
                         rm.health.TAKEDAMAGE(data.damage);
+
+                        // Track the damager
+                        FusionPlayer.LastAttacker = data.damagerId;
                     }
                 }
             }

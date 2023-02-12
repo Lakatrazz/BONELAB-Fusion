@@ -1,13 +1,70 @@
-﻿using System;
+﻿using LabFusion.BoneMenu;
+using LabFusion.Utilities;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LabFusion.SDK.Gamemodes {
     public static class GamemodeManager {
-        private static Gamemode _activeGamemode;
+        public static event Action<Gamemode> OnGamemodeChanged;
 
-        public static Gamemode ActiveGamemode => _activeGamemode;
+        internal static void Internal_OnFixedUpdate() {
+            if (Gamemode.ActiveGamemode != null)
+                Gamemode.ActiveGamemode.OnFixedUpdate();
+        }
+
+        internal static void Internal_OnUpdate()
+        {
+            if (Gamemode.ActiveGamemode != null)
+                Gamemode.ActiveGamemode.OnUpdate();
+        }
+
+        internal static void Internal_OnLateUpdate()
+        {
+            if (Gamemode.ActiveGamemode != null)
+                Gamemode.ActiveGamemode.OnLateUpdate();
+        }
+
+        internal static void Internal_SetActiveGamemode(Gamemode gamemode) {
+            Gamemode._activeGamemode = gamemode;
+            OnGamemodeChanged.InvokeSafe(gamemode, "executing hook OnGamemodeChanged");
+
+            if (gamemode == null)
+                BoneMenuCreator.SetActiveGamemodeText("No Active Gamemode");
+            else
+                BoneMenuCreator.SetActiveGamemodeText($"Stop {gamemode.GamemodeName}");
+        }
+
+        public static bool TryGetGamemode(ushort tag, out Gamemode gamemode) {
+            // Since gamemodes cannot be assumed to exist for everyone, we need to null check
+            if (Gamemodes.Count > tag && Gamemodes.ElementAt(tag) != null) {
+                gamemode = GamemodeRegistration.Gamemodes[tag];
+                return true;
+            }
+
+            gamemode = null;
+            return false;
+        }
+
+        public static Gamemode GetGamemode(ushort tag) {
+            TryGetGamemode(tag, out var gamemode);
+            return gamemode;
+        }
+
+        public static bool TryGetGamemode<TGamemode>(out TGamemode gamemode) where TGamemode : Gamemode {
+            // Try find the gamemode from the type
+            foreach (var other in Gamemodes) {
+                if (other is TGamemode) {
+                    gamemode = other as TGamemode;
+                    return true;
+                }
+            }
+
+            gamemode = null;
+            return false;
+        }
+
+        public static IReadOnlyCollection<Gamemode> Gamemodes => GamemodeRegistration.Gamemodes;
     }
 }

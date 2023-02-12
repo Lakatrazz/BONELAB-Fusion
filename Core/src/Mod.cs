@@ -22,6 +22,7 @@ using UnityEngine;
 using BoneLib;
 
 using LabFusion.Senders;
+using LabFusion.SDK.Gamemodes;
 
 namespace LabFusion
 {
@@ -56,6 +57,7 @@ namespace LabFusion
             PersistentData.OnPathInitialize();
             PDController.OnInitializeMelon();
             ModuleHandler.Internal_HookAssemblies();
+            GamemodeRegistration.Internal_HookAssemblies();
             PlayerAdditionsHelper.OnInitializeMelon();
         }
 
@@ -67,6 +69,7 @@ namespace LabFusion
             FusionMessageHandler.RegisterHandlersFromAssembly(FusionAssembly);
             GrabGroupHandler.RegisterHandlersFromAssembly(FusionAssembly);
             PropExtenderManager.RegisterExtendersFromAssembly(FusionAssembly);
+            GamemodeRegistration.LoadGamemodes(FusionAssembly);
 
             // Finally, initialize the network layer
             OnInitializeNetworking();
@@ -108,6 +111,7 @@ namespace LabFusion
         public override void OnDeinitializeMelon() {
             InternalLayerHelpers.OnCleanupLayer();
             ModuleHandler.Internal_UnhookAssemblies();
+            GamemodeRegistration.Internal_UnhookAssemblies();
         }
 
         public override void OnPreferencesLoaded() {
@@ -135,6 +139,12 @@ namespace LabFusion
 
             // Update hooks
             MultiplayerHooking.Internal_OnMainSceneInitialized();
+
+            FusionPlayer.OnMainSceneInitialized();
+
+            // Stop the current gamemode
+            if (NetworkInfo.IsServer && Gamemode.ActiveGamemode != null && Gamemode.ActiveGamemode.AutoStopOnSceneLoad)
+                Gamemode.ActiveGamemode.StopGamemode();
         }
 
         public static void OnMainSceneInitializeDelayed() {
@@ -226,6 +236,9 @@ namespace LabFusion
 
             // Update hooks
             MultiplayerHooking.Internal_OnUpdate();
+
+            // Update gamemodes
+            GamemodeManager.Internal_OnUpdate();
         }
 
         public override void OnFixedUpdate() {
@@ -235,6 +248,9 @@ namespace LabFusion
 
             // Update hooks
             MultiplayerHooking.Internal_OnFixedUpdate();
+
+            // Update gamemodes
+            GamemodeManager.Internal_OnFixedUpdate();
         }
 
         public override void OnLateUpdate() {
@@ -246,6 +262,9 @@ namespace LabFusion
 
             // Update hooks
             MultiplayerHooking.Internal_OnLateUpdate();
+
+            // Update gamemodes
+            GamemodeManager.Internal_OnLateUpdate();
         }
 
         public override void OnGUI() {

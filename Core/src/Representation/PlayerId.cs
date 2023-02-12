@@ -18,7 +18,16 @@ namespace LabFusion.Representation
         public ulong LongId { get; private set; }
         public byte SmallId { get; private set; }
 
+        /// <summary>
+        /// When the metadata of the ID is changed.
+        /// </summary>
         public event Action<PlayerId> OnMetadataChanged;
+
+        /// <summary>
+        /// When a specific key and value pair of metadata is changed.
+        /// <para>The second argument is the key, and the third argument is the value.</para>
+        /// </summary>
+        public event Action<PlayerId, string, string> OnMetadataPairChanged;
 
         private readonly Dictionary<string, string> _internalMetadata = new Dictionary<string, string>();
         public Dictionary<string, string> Metadata => _internalMetadata;
@@ -70,6 +79,7 @@ namespace LabFusion.Representation
             else
                 _internalMetadata.Add(key, value);
 
+            OnMetadataPairChanged.InvokeSafe(this, key, value, $"invoking OnMetadataPairChanged for player {SmallId}");
             OnMetadataChanged.InvokeSafe(this, $"invoking OnMetadataChanged hook for player {SmallId}");
         }
 

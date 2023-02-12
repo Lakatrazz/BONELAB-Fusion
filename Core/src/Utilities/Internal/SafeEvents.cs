@@ -68,5 +68,26 @@ namespace LabFusion.Utilities {
                 }
             }
         }
+
+        internal static void InvokeSafe<T, T1, T2, T3>(this T action, T1 param1, T2 param2, T3 param3, string task) where T : Delegate
+        {
+            if (action == null)
+            {
+                return;
+            }
+
+            Delegate[] invocationList = action.GetInvocationList();
+            foreach (Delegate del in invocationList)
+            {
+                try
+                {
+                    del.DynamicInvoke(param1, param2, param3);
+                }
+                catch (Exception e)
+                {
+                    FusionLogger.LogException(task, e);
+                }
+            }
+        }
     }
 }

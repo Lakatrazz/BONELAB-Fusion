@@ -42,7 +42,7 @@ namespace LabFusion.Patching {
                     var pool = barcodeToPool[crate.Barcode];
 
                     var lastSpawned = pool.spawned[pool.spawned.Count - 1];
-                    PropSender.SendCratePlacerEvent(scp, lastSpawned.gameObject);
+                    SpawnSender.SendCratePlacerEvent(scp, lastSpawned.gameObject);
                 }
             }
         }

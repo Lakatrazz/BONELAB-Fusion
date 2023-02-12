@@ -58,6 +58,10 @@ namespace LabFusion.Patching
 
                 // Notify the server about the death
                 PlayerSender.SendPlayerAction(PlayerActionType.DEATH);
+
+                // If another player killed us, notify the server about that
+                if (FusionPlayer.LastAttacker.HasValue)
+                    PlayerSender.SendPlayerAction(PlayerActionType.DEATH_BY_OTHER_PLAYER, FusionPlayer.LastAttacker.Value);
             }
         }
     }

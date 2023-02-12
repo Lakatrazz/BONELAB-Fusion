@@ -85,6 +85,13 @@ namespace LabFusion.Network
             ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
+        public void Write(byte? value) {
+            Write(value.HasValue);
+
+            if (value.HasValue)
+                Write(value.Value);
+        }
+
         public void Write(bool value)
         {
             ArrayExtensions.EnsureLength(ref buffer, Position + 1);

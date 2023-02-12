@@ -190,12 +190,15 @@
       <DependentUpon>AssemblyInfo.tt</DependentUpon>
     </Compile>
     <Compile Include="Core\src\BoneMenu\DebugCreator.cs" />
+    <Compile Include="Core\src\BoneMenu\GamemodesCreator.cs" />
     <Compile Include="Core\src\BoneMenu\LobbyCreator.cs" />
     <Compile Include="Core\src\BoneMenu\NotificationCreator.cs" />
     <Compile Include="Core\src\BoneMenu\BanListCreator.cs" />
     <Compile Include="Core\src\BoneMenu\PlayerListCreator.cs" />
     <Compile Include="Core\src\BoneMenu\SettingsCreator.cs" />
     <Compile Include="Core\src\Data\Containers\GrabbedGripList.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\GameControllerData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\TimeTrialData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\KartRaceData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\ArenaData.cs" />
     <Compile Include="Core\src\Data\Containers\ConfigurableJointDriveData.cs" />
@@ -260,6 +263,7 @@
     <Compile Include="Core\src\Grabbables\InteractableHelpers.cs" />
     <Compile Include="Core\src\Grabbables\SerializedGrabHandler.cs" />
     <Compile Include="Core\src\Mod.cs" />
+    <Compile Include="Core\src\MonoBehaviours\PropCollisionSyncer.cs" />
     <Compile Include="Core\src\MonoBehaviours\CollisionSyncer.cs" />
     <Compile Include="Core\src\MonoBehaviours\TimedDespawner.cs" />
     <Compile Include="Core\src\Network\Debugging\EmptyNetworkLayer.cs" />
@@ -268,6 +272,10 @@
     <Compile Include="Core\src\Network\Helpers\NetworkVerification.cs" />
     <Compile Include="Core\src\Network\Helpers\SendRateTable.cs" />
     <Compile Include="Core\src\Network\INetworkLobby.cs" />
+    <Compile Include="Core\src\Network\Messages\Arena\BaseGameControllerMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Arena\TimeTrialGameControllerMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Gamemodes\GamemodeTriggerResponseMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Gamemodes\GamemodeMetadataResponseMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Levels\LevelRequestMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\BodyLogToggleMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\PlayerRepDamageMessage.cs" />
@@ -291,7 +299,7 @@
     <Compile Include="Core\src\Network\Messages\Representation\PlayerRepActionMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\PlayerMetadataRequestMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\PlayerMetadataResponseMessage.cs" />
-    <Compile Include="Core\src\Network\Messages\Server\ModuleAssignMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Server\DynamicsAssignMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ModuleMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ServerSettingsMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\PlayerSettingsMessage.cs" />
@@ -312,6 +320,8 @@
     <Compile Include="Core\src\Patching\Patches\BonelabProgressionHelperPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ConstraintTrackerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\DevManipulatorPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Levels\BaseGameControllerPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Levels\TimeTrial_GameControllerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\PlayerDamageReceiverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Props\FlyingGunPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\KartRacePatches.cs" />
@@ -328,16 +338,27 @@
     <Compile Include="Core\src\Patching\Patches\Trigger\GenGameControl_TriggerPatches.cs" />
     <Compile Include="Core\src\Representation\PlayerPermissions.cs" />
     <Compile Include="Core\src\Representation\PlayerRepManager.cs" />
+    <Compile Include="Core\src\SDK\Gamemodes\Built In\TugOWar.cs" />
+    <Compile Include="Core\src\SDK\Gamemodes\Built In\Entangled.cs" />
+    <Compile Include="Core\src\SDK\Gamemodes\Built In\BoneBall.cs" />
+    <Compile Include="Core\src\SDK\Gamemodes\Built In\KartRace.cs" />
+    <Compile Include="Core\src\SDK\Gamemodes\Built In\SuperSmashBoners.cs" />
+    <Compile Include="Core\src\SDK\Gamemodes\Built In\TeamDeathmatch.cs" />
+    <Compile Include="Core\src\SDK\Gamemodes\Built In\Deathmatch.cs" />
     <Compile Include="Core\src\SDK\Gamemodes\Gamemode.cs" />
+    <Compile Include="Core\src\SDK\Gamemodes\GamemodeHelper.cs" />
     <Compile Include="Core\src\SDK\Gamemodes\GamemodeManager.cs" />
+    <Compile Include="Core\src\SDK\Gamemodes\GamemodeRegistration.cs" />
     <Compile Include="Core\src\SDK\Network\Messages\ModuleMessageHandler.cs" />
+    <Compile Include="Core\src\Senders\Player\PlayerSender.cs" />
     <Compile Include="Core\src\Senders\Level\ArenaSender.cs" />
     <Compile Include="Core\src\Senders\ConnectionSender.cs" />
     <Compile Include="Core\src\Senders\EnemySender.cs" />
     <Compile Include="Core\src\Senders\KeySender.cs" />
+    <Compile Include="Core\src\Senders\Level\GameControllerSender.cs" />
     <Compile Include="Core\src\Senders\LoadSender.cs" />
     <Compile Include="Core\src\Senders\Player\PullCordSender.cs" />
-    <Compile Include="Core\src\Senders\Player\PlayerSender.cs" />
+    <Compile Include="Core\src\Senders\Gamemode\GamemodeSender.cs" />
     <Compile Include="Core\src\Senders\PropSender.cs" />
     <Compile Include="Core\src\Senders\SpawnSender.cs" />
     <Compile Include="Core\src\Senders\TimeScaleSender.cs" />
@@ -356,6 +377,7 @@
     <Compile Include="Core\src\Syncables\Extenders\ConstrainerExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\KeyExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\PropFlashlightExtender.cs" />
+    <Compile Include="Core\src\Syncables\PropCollisionSyncerExtender.cs" />
     <Compile Include="Core\src\Utilities\BytePool.cs" />
     <Compile Include="Core\src\Utilities\DllTools.cs" />
     <Compile Include="Core\src\Network\Helpers\Net.cs" />
@@ -468,6 +490,7 @@
     <Compile Include="Core\src\Syncables\Extenders\PropExtenderManager.cs" />
     <Compile Include="Core\src\Utilities\FloatingOriginUtilities.cs" />
     <Compile Include="Core\src\Utilities\FusionComponentCache.cs" />
+    <Compile Include="Core\src\Utilities\FusionPlayer.cs" />
     <Compile Include="Core\src\Utilities\GameObjectUtilities.cs" />
     <Compile Include="Core\src\Utilities\ImpactUtilities.cs" />
     <Compile Include="Core\src\Utilities\Internal\FusionNotifier.cs" />

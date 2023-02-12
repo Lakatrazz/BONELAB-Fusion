@@ -2,6 +2,7 @@
 using LabFusion.Syncables;
 using LabFusion.Utilities;
 using LabFusion.Preferences;
+using LabFusion.BoneMenu;
 
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 using UnityEngine;
-using SLZ.Marrow.Warehouse;
+
+using LabFusion.SDK.Gamemodes;
 
 namespace LabFusion.Network {
     /// <summary>
@@ -44,6 +46,10 @@ namespace LabFusion.Network {
             // Register module message handlers so they can send messages
             var names = ModuleMessageHandler.GetExistingTypeNames();
             ModuleMessageHandler.PopulateHandlerTable(names);
+
+            // Register gamemodes
+            var gamemodeNames = GamemodeRegistration.GetExistingTypeNames();
+            GamemodeRegistration.PopulateGamemodeTable(gamemodeNames);
 
             // Update hooks
             MultiplayerHooking.Internal_OnStartServer();
@@ -86,6 +92,7 @@ namespace LabFusion.Network {
             DisposeUsers();
             SyncManager.OnCleanup();
             ModuleMessageHandler.ClearHandlerTable();
+            GamemodeRegistration.ClearGamemodeTable();
             Physics.autoSimulation = true;
 
             // Cleanup prefs

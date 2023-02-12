@@ -99,6 +99,12 @@ namespace LabFusion.Network
                             return;
                         }
 
+                        // Finally, check for dynamic connection disallowing
+                        if (!MultiplayerHooking.Internal_OnShouldAllowConnection(data.longId, out string reason)) {
+                            ConnectionSender.SendConnectionDeny(data.longId, reason);
+                            return;
+                        }
+
                         // Append metadata with info
                         if (!data.initialMetadata.ContainsKey(MetadataHelper.PermissionKey))
                             data.initialMetadata.Add(MetadataHelper.PermissionKey, level.ToString());
@@ -127,12 +133,12 @@ namespace LabFusion.Network
                         // Now, make sure the player loads into the scene
                         LoadSender.SendLevelLoad(LevelWarehouseUtilities.GetCurrentLevel().Barcode, data.longId);
 
-                        // Send the module list
+                        // Send the dynamics list
                         using (var writer = FusionWriter.Create()) {
-                            using (var assignData = ModuleAssignData.Create()) {
+                            using (var assignData = DynamicsAssignData.Create()) {
                                 writer.Write(assignData);
 
-                                using (var message = FusionMessage.Create(NativeMessageTag.ModuleAssignment, writer)) {
+                                using (var message = FusionMessage.Create(NativeMessageTag.DynamicsAssignment, writer)) {
                                     MessageSender.SendFromServer(data.longId, NetworkChannel.Reliable, message);
                                 }
                             }

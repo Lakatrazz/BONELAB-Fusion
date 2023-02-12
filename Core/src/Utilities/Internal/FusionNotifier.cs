@@ -16,6 +16,7 @@ namespace LabFusion.Utilities
     {
         public string title = "";
         public Color titleColor = Color.white;
+        public bool showTitleOnPopup = false;
 
         public string message = "";
         public Color messageColor = Color.white;
@@ -79,6 +80,10 @@ namespace LabFusion.Utilities
                 EnableTutorialRig();
 
                 string incomingTitle = "New Notification";
+
+                if (notification.showTitleOnPopup)
+                    incomingTitle = notification.title;
+
                 string incomingSubTitle = notification.message;
                 float holdTime = notification.popupLength;
 

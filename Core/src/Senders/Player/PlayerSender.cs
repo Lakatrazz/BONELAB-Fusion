@@ -17,6 +17,7 @@ namespace LabFusion.Senders {
         DEATH = 1 << 2,
         DYING = 1 << 3,
         RECOVERY = 1 << 4,
+        DEATH_BY_OTHER_PLAYER = 1 << 5,
     }
 
     public enum NicknameVisibility {
@@ -73,9 +74,9 @@ namespace LabFusion.Senders {
                 throw new ExpectedClientException();
         }
 
-        public static void SendPlayerAction(PlayerActionType type) {
+        public static void SendPlayerAction(PlayerActionType type, byte? otherPlayer = null) {
             using (var writer = FusionWriter.Create()) {
-                using (var data = PlayerRepActionData.Create(PlayerIdManager.LocalSmallId, type)) {
+                using (var data = PlayerRepActionData.Create(PlayerIdManager.LocalSmallId, type, otherPlayer)) {
                     writer.Write(data);
 
                     using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepAction, writer)) {

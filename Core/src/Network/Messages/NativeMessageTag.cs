@@ -123,7 +123,10 @@ namespace LabFusion.Network
             BaseGameController = 73,
 
             Module = 80,
-            ModuleAssignment = 81;
+            DynamicsAssignment = 81,
+
+            GamemodeMetadataResponse = 82,
+            GamemodeTriggerResponse = 83;
     }
 
 }

@@ -20,17 +20,20 @@ namespace LabFusion.Network
     {
         public byte smallId;
         public PlayerActionType type;
+        public byte? otherPlayer;
 
         public void Serialize(FusionWriter writer)
         {
             writer.Write(smallId);
             writer.Write((byte)type);
+            writer.Write(otherPlayer);
         }
 
         public void Deserialize(FusionReader reader)
         {
             smallId = reader.ReadByte();
             type = (PlayerActionType)reader.ReadByte();
+            otherPlayer = reader.ReadByteNullable();
         }
 
         public void Dispose()
@@ -38,12 +41,13 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static PlayerRepActionData Create(byte smallId, PlayerActionType type)
+        public static PlayerRepActionData Create(byte smallId, PlayerActionType type, byte? otherPlayer = null)
         {
             return new PlayerRepActionData
             {
                 smallId = smallId,
                 type = type,
+                otherPlayer = otherPlayer,
             };
         }
     }
@@ -60,11 +64,13 @@ namespace LabFusion.Network
                     // Send message to other clients if server
                     if (NetworkInfo.IsServer && isServerHandled) {
                         using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+                            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
                         }
                     }
                     else if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep)) {
                         var rm = rep.RigReferences.RigManager;
+
+                        PlayerId otherPlayer = data.otherPlayer.HasValue ? PlayerIdManager.GetPlayerId(data.otherPlayer.Value) : null;
 
                         // Make sure the rig exists
                         if (!rm.IsNOC()) {
@@ -96,7 +102,15 @@ namespace LabFusion.Network
                         }
 
                         // Inform the hooks
-                        MultiplayerHooking.Internal_OnPlayerAction(rep.PlayerId, data.type);
+                        MultiplayerHooking.Internal_OnPlayerAction(rep.PlayerId, data.type, otherPlayer);
+                    }
+                    else if (data.smallId == PlayerIdManager.LocalSmallId) {
+                        // Get ids
+                        PlayerId playerId = PlayerIdManager.LocalId;
+                        PlayerId otherPlayer = data.otherPlayer.HasValue ? PlayerIdManager.GetPlayerId(data.otherPlayer.Value) : null;
+
+                        // Inform the hooks
+                        MultiplayerHooking.Internal_OnPlayerAction(playerId, data.type, otherPlayer);
                     }
                 }
             }
