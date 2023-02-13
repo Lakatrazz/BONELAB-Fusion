@@ -65,7 +65,6 @@ namespace LabFusion.Network {
         public static LobbyMetadataInfo Read(INetworkLobby lobby) {
             var info = new LobbyMetadataInfo() {
                 // Lobby info
-                LobbyId = ulong.Parse(lobby.GetMetadata("LobbyId")),
                 LobbyName = lobby.GetMetadata("LobbyName"),
                 HasServerOpen = lobby.GetMetadata("HasServerOpen") == bool.TrueString,
 
@@ -75,6 +74,10 @@ namespace LabFusion.Network {
                 // Lobby status
                 LevelName = lobby.GetMetadata("LevelName"),
             };
+            // Get longs
+            if (ulong.TryParse(lobby.GetMetadata("LobbyId"), out var lobbyId))
+                info.LobbyId = lobbyId;
+
             // Get integers
             if (int.TryParse(lobby.GetMetadata("PlayerCount"), out int playerCount))
                 info.PlayerCount = playerCount;

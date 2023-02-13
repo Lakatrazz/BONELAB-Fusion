@@ -44,8 +44,13 @@ namespace LabFusion.Network
                     yield return null;
             }
 
-            // Now handle the message info
-            HandleMessage(bytes, isServerHandled);
+            try {
+                // Now handle the message info
+                HandleMessage(bytes, isServerHandled);
+            }
+            catch (Exception e) {
+                FusionLogger.LogException("handling message", e);
+            }
 
             // Return the buffer
             BytePool.Return(bytes);

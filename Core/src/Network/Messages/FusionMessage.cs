@@ -90,6 +90,8 @@ namespace LabFusion.Network
 
         public void Dispose() {
             GC.SuppressFinalize(this);
+
+            BytePool.Return(buffer);
         }
     }
 }

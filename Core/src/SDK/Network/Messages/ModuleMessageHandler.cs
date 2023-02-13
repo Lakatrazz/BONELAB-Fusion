@@ -51,8 +51,13 @@ namespace LabFusion.Network
                     yield return null;
             }
 
-            // Now handle the message info
-            HandleMessage(bytes, isServerHandled);
+            try {
+                // Now handle the message info
+                HandleMessage(bytes, isServerHandled);
+            } 
+            catch (Exception e) {
+                FusionLogger.LogException("handling module message", e);
+            }
 
             // Return the byte pool
             BytePool.Return(bytes);
