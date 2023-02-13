@@ -21,5 +21,8 @@ namespace LabFusion.Data
 
         public const string SabrelakeLogo = "tex_sabreLakeLogo";
         public const string LavaGangLogo = "tex_lavaGangLogo";
+
+        public const string SyntheticCavernsRemix = "music_SyntheticCavernsRemix";
+        public const string WWWWonderLan = "music_WWWonderlan";
     }
 }

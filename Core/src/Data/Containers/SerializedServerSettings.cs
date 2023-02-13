@@ -29,6 +29,8 @@ namespace LabFusion.Data {
         }
 
         public void Deserialize(FusionReader reader) {
+            settings = new FusionPreferences.ServerSettings();
+
             settings.NametagsEnabled = new ReadonlyFusionPrev<bool>(reader.ReadBoolean());
             settings.Privacy = new ReadonlyFusionPrev<ServerPrivacy>((ServerPrivacy)reader.ReadByte());
             settings.TimeScaleMode = new ReadonlyFusionPrev<TimeScaleMode>((TimeScaleMode)reader.ReadByte());

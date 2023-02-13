@@ -36,12 +36,63 @@ namespace LabFusion.SDK.Gamemodes {
         private readonly Dictionary<string, string> _internalMetadata = new Dictionary<string, string>();
         public Dictionary<string, string> Metadata => _internalMetadata;
 
+        // Music
+        public virtual bool MusicEnabled => _musicEnabled;
+        public virtual bool ManualPlaylist { get; } = false;
+
+        protected GamemodePlaylist _playlist = null;
+
+        protected bool _musicEnabled = true;
+
         internal void GamemodeRegistered() {
+            MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
+
             OnGamemodeRegistered();
         }
 
         internal void GamemodeUnregistered() {
+            MultiplayerHooking.OnMainSceneInitialized -= OnMainSceneInitialized;
+
             OnGamemodeUnregistered();
+        }
+
+        public void SetPlaylist(float volume = 1f, params AudioClip[] clips) {
+            bool wasPlaying = false;
+
+            if (_playlist != null) {
+                wasPlaying = _playlist.IsPlaying;
+                _playlist.Dispose();
+                _playlist = null;
+            }
+
+            _playlist = new GamemodePlaylist(this, volume, clips);
+
+            if (wasPlaying && !ManualPlaylist)
+                PlayPlaylist();
+        }
+
+        public void PlayPlaylist() {
+            if (_playlist != null)
+                _playlist.Play();
+        }
+
+        public void StopPlaylist() {
+            if (_playlist != null) {
+                _playlist.Stop();
+            }
+        }
+
+        public void DisposePlaylist() {
+            if (_playlist != null) {
+                _playlist.Dispose();
+                _playlist = null;
+            }
+        }
+
+
+        public void UpdatePlaylist() {
+            if (_playlist != null)
+                _playlist.Update();
         }
 
         public bool IsActive() => ActiveGamemode == this;
@@ -49,6 +100,8 @@ namespace LabFusion.SDK.Gamemodes {
         public virtual void OnGamemodeRegistered() { }
 
         public virtual void OnGamemodeUnregistered() { }
+
+        public virtual void OnMainSceneInitialized() { }
 
         protected FunctionElement _gamemodeToggleElement = null;
 
@@ -61,6 +114,11 @@ namespace LabFusion.SDK.Gamemodes {
                 else {
                     StopGamemode();
                 }
+            });
+
+            category.CreateBoolElement("Music", Color.white, _musicEnabled, (v) =>
+            {
+                _musicEnabled = v;
             });
         }
 
@@ -109,6 +167,9 @@ namespace LabFusion.SDK.Gamemodes {
                 GamemodeManager.Internal_SetActiveGamemode(this);
                 IsStarted = true;
                 OnStartGamemode();
+
+                if (!ManualPlaylist)
+                    PlayPlaylist();
             }
             else {
                 MultiplayerHooking.OnShouldAllowConnection -= Internal_UserJoinCheck;
@@ -116,6 +177,9 @@ namespace LabFusion.SDK.Gamemodes {
                 IsStarted = false;
                 OnStopGamemode();
                 GamemodeManager.Internal_SetActiveGamemode(null);
+
+                if (!ManualPlaylist)
+                    StopPlaylist();
             }
         }
 
@@ -145,9 +209,21 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         // Update methods
-        public virtual void OnFixedUpdate() { }
-        public virtual void OnUpdate() { }
-        public virtual void OnLateUpdate() { }
+        public void FixedUpdate() {
+            OnFixedUpdate();
+        }
+        protected virtual void OnFixedUpdate() { }
+
+        public void Update() {
+            UpdatePlaylist();
+            OnUpdate();
+        }
+        protected virtual void OnUpdate() { }
+
+        public void LateUpdate() {
+            OnLateUpdate();
+        }
+        protected virtual void OnLateUpdate() { }
 
         public bool TrySetMetadata(string key, string value)
         {

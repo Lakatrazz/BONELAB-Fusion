@@ -22,7 +22,6 @@ using TMPro;
 using UnityEngine;
 
 using MelonLoader;
-using static SLZ.Interaction.LadderInfo;
 
 namespace LabFusion.Representation
 {
@@ -345,6 +344,16 @@ namespace LabFusion.Representation
             repNameText.font = PersistentAssetCreator.Font;
         }
 
+        public float GetNametagOffset() {
+            float offset = NametagHeight;
+
+            var rm = RigReferences.RigManager;
+            if (!rm.IsNOC() && rm._avatar)
+                offset *= rm._avatar.height;
+
+            return offset;
+        }
+
         private void UpdateNametagSettings() {
             var rm = RigReferences.RigManager;
             if (!rm.IsNOC() && rm.avatar) {
@@ -473,12 +482,8 @@ namespace LabFusion.Representation
 
             if (!repCanvasTransform.IsNOC()) {
                 var physHead = rm.physicsRig.m_head;
-                repCanvasTransform.position = physHead.position + Vector3.up * NametagHeight * RigReferences.RigManager.avatar.height;
-
-                if (!RigData.RigReferences.RigManager.IsNOC()) {
-                    var head = RigData.RigReferences.RigManager.physicsRig.m_head;
-                    repCanvasTransform.rotation = Quaternion.LookRotation(Vector3.Normalize(repCanvasTransform.position - head.position), head.up);
-                }
+                repCanvasTransform.position = physHead.position + Vector3.up * GetNametagOffset();
+                repCanvasTransform.LookAtPlayer();
             }
         }
 

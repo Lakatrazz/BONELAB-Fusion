@@ -1,4 +1,5 @@
-﻿using LabFusion.Utilities;
+﻿using LabFusion.Data;
+using LabFusion.Utilities;
 
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,19 @@ namespace LabFusion.Extensions {
         public static Quaternion TransformRotation(this Transform transform, Quaternion rotation) => transform.rotation * rotation;
 
         public static Quaternion InverseTransformRotation(this Transform transform, Quaternion rotation) => Quaternion.Inverse(transform.rotation) * rotation;
+
+        /// <summary>
+        /// Causes a transform to look at the player.
+        /// </summary>
+        /// <param name="transform"></param>
+        public static void LookAtPlayer(this Transform transform) {
+            var rm = RigData.RigReferences.RigManager;
+
+            if (!rm.IsNOC()) {
+                var head = rm.physicsRig.m_head;
+                transform.rotation = Quaternion.LookRotation(Vector3.Normalize(transform.position - head.position), head.up);
+            }
+        }
 
         internal static string GetBasePath(this Transform transform) {
             if (transform.parent == null)

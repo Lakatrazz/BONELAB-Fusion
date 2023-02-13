@@ -22,6 +22,11 @@ namespace LabFusion.Representation {
         }
 
         public static bool TryGetPlayerRep(RigManager manager, out PlayerRep playerRep) {
+            if (manager == null) {
+                playerRep = null;
+                return false;
+            }
+
             return ManagerLookup.TryGetValue(manager, out playerRep);
         }
 

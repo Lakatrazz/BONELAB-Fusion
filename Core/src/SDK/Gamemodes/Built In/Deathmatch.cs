@@ -41,7 +41,17 @@ namespace LabFusion.SDK.Gamemodes {
         public override void OnBoneMenuCreated(MenuCategory category) {
             base.OnBoneMenuCreated(category);
 
-            category.CreateIntElement("Round Minutes", Color.white, _totalMinutes, 1, _minMinutes, _maxMinutes);
+            category.CreateIntElement("Round Minutes", Color.white, _totalMinutes, 1, _minMinutes, _maxMinutes, (v) => {
+                _totalMinutes = v;
+            });
+        }
+
+        public override void OnMainSceneInitialized() {
+            DefaultPlaylist();
+        }
+
+        private void DefaultPlaylist() {
+            SetPlaylist(0.7f, FusionBundleLoader.SyntheticCavernsRemix, FusionBundleLoader.WWWWonderLan);
         }
 
         public IReadOnlyList<PlayerId> GetPlayersByScore() {
@@ -78,6 +88,8 @@ namespace LabFusion.SDK.Gamemodes {
         public override void OnGamemodeRegistered() {
             // Add hooks
             MultiplayerHooking.OnPlayerAction += OnPlayerAction;
+
+            DefaultPlaylist();
         }
 
         public override void OnGamemodeUnregistered() {
@@ -182,7 +194,7 @@ namespace LabFusion.SDK.Gamemodes {
             return _totalMinutes - (elapsed / 60f);
         }
 
-        public override void OnUpdate() {
+        protected override void OnUpdate() {
             // Active update
             if (IsActive() && NetworkInfo.IsServer) {
                 // Get time left

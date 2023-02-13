@@ -11,19 +11,19 @@ namespace LabFusion.SDK.Gamemodes {
 
         internal static void Internal_OnFixedUpdate() {
             if (Gamemode.ActiveGamemode != null)
-                Gamemode.ActiveGamemode.OnFixedUpdate();
+                Gamemode.ActiveGamemode.FixedUpdate();
         }
 
         internal static void Internal_OnUpdate()
         {
             if (Gamemode.ActiveGamemode != null)
-                Gamemode.ActiveGamemode.OnUpdate();
+                Gamemode.ActiveGamemode.Update();
         }
 
         internal static void Internal_OnLateUpdate()
         {
             if (Gamemode.ActiveGamemode != null)
-                Gamemode.ActiveGamemode.OnLateUpdate();
+                Gamemode.ActiveGamemode.LateUpdate();
         }
 
         internal static void Internal_SetActiveGamemode(Gamemode gamemode) {
@@ -37,6 +37,13 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         public static bool TryGetGamemode(ushort tag, out Gamemode gamemode) {
+            // Gamemodes are null?
+            if (Gamemodes == null) {
+                FusionLogger.Error("While trying to find a Gamemode, the gamemode array was null!");
+                gamemode = null;
+                return false;
+            }
+
             // Since gamemodes cannot be assumed to exist for everyone, we need to null check
             if (Gamemodes.Count > tag && Gamemodes.ElementAt(tag) != null) {
                 gamemode = GamemodeRegistration.Gamemodes[tag];
