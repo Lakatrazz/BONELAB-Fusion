@@ -1,8 +1,11 @@
 ﻿using BoneLib.BoneMenu.Elements;
+
 using LabFusion.Network;
 using LabFusion.Preferences;
 using LabFusion.Representation;
+using LabFusion.SDK.Gamemodes;
 using LabFusion.Senders;
+using LabFusion.Utilities;
 
 using System;
 using System.Collections.Generic;
@@ -50,6 +53,11 @@ namespace LabFusion.BoneMenu
 
             // Server mortality
             CreateBoolPermission(category, "Server Mortality", FusionPreferences.LocalServerSettings.ServerMortality);
+            MultiplayerHooking.OnServerSettingsChanged += () => {
+                // Update mortality
+                if (Gamemode.ActiveGamemode == null)
+                    FusionPlayer.ResetMortality();
+            };
 
             // Permissions
             var permissionCategory = category.CreateCategory("Permission Settings", Color.white);

@@ -45,7 +45,7 @@ namespace LabFusion.Patching
                     // Check if we can ragdoll
                     var playerHealth = __instance.manager.health.TryCast<Player_Health>();
 
-                    if (!playerHealth.alive) {
+                    if (!playerHealth.deathIsImminent && !playerHealth.alive) {
                         return false;
                     }
 

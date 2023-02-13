@@ -61,11 +61,15 @@ namespace LabFusion.Patching
 
                         // Get the attack and its shooter
                         var _attack = *(Attack_*)attack;
-                        var triggerRef = new TriggerRefProxy(_attack.proxy);
+                        TriggerRefProxy proxy = null;
+
+                        if (_attack.proxy != IntPtr.Zero)
+                            proxy = new TriggerRefProxy(_attack.proxy);
+
                         RigManager shooter = null;
 
-                        if (triggerRef != null && triggerRef.root != null) {
-                            shooter = RigManager.Cache.Get(triggerRef.root);
+                        if (proxy != null && proxy.root != null) {
+                            shooter = RigManager.Cache.Get(proxy.root);
                         }
 
                         // Make sure we have the attacker and attacked

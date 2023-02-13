@@ -30,6 +30,7 @@ namespace LabFusion.Network {
         private AudioSource _source;
         private PlayerId _id;
         private PlayerRep _rep;
+        private bool _hasRep;
 
         public SteamVoiceIdentifier(PlayerId id) {
             // Create the audio source and clip
@@ -50,10 +51,7 @@ namespace LabFusion.Network {
 
             // Save values
             _id = id;
-            PlayerRepManager.TryGetPlayerRep(id, out _rep);
-
-            if (_rep != null)
-                _rep.InsertVoiceSource(_source);
+            VerifyPlayerRep();
 
             // Add to list
             VoiceIdentifiers.Add(this);
@@ -98,14 +96,19 @@ namespace LabFusion.Network {
             return newIdentifier;
         }
 
-        public void OnVoiceBytesReceived(byte[] bytes) {
-            // Null check the player rep
-            if (_id != null && _rep == null) {
+        private void VerifyPlayerRep() {
+            if (_id != null && !_hasRep) {
                 PlayerRepManager.TryGetPlayerRep(_id, out _rep);
 
-                if (_rep != null)
+                if (_rep != null) {
                     _rep.InsertVoiceSource(_source);
+                    _hasRep = true;
+                }
             }
+        }
+
+        public void OnVoiceBytesReceived(byte[] bytes) {
+            VerifyPlayerRep();
 
             // Decompress the voice data
             _compressedVoiceStream.Position = 0;

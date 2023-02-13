@@ -57,9 +57,12 @@ namespace LabFusion.Patching
                     unsafe
                     {
                         var _pair = *(HandGripPair_*)pair;
-                        var hand = new Hand(_pair.hand);
+                        Hand hand = null;
 
-                        if (PlayerRepManager.HasPlayerId(hand.manager))
+                        if (_pair.hand != IntPtr.Zero)
+                            hand = new Hand(_pair.hand);
+
+                        if (hand != null && PlayerRepManager.HasPlayerId(hand.manager))
                             return false;
                     }
                 }

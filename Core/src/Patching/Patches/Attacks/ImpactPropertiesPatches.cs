@@ -57,11 +57,18 @@ namespace LabFusion.Patching
                     unsafe
                     {
                         var _attack = *(Attack_*)attack;
-                        var collider = new Collider(_attack.collider);
-                        var triggerRef = new TriggerRefProxy(_attack.proxy);
+
+                        Collider collider = null;
+                        TriggerRefProxy proxy = null;
+
+                        if (_attack.collider != IntPtr.Zero)
+                            collider = new Collider(_attack.collider);
+
+                        if (_attack.proxy != IntPtr.Zero)
+                            proxy = new TriggerRefProxy(_attack.proxy);
 
                         // Check if this was a bullet attack + it was us who shot the bullet
-                        if (triggerRef == RigData.RigReferences.Proxy && _attack.attackType == AttackType.Piercing) {
+                        if (proxy == RigData.RigReferences.Proxy && _attack.attackType == AttackType.Piercing) {
                             var rb = collider.attachedRigidbody;
                             if (!rb)
                                 return;
