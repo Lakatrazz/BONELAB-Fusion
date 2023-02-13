@@ -88,11 +88,13 @@ namespace LabFusion.Network {
         /// Cleans up the scene from all users. ONLY call this from within a network layer!
         /// </summary>
         internal static void OnDisconnect(string reason = "") {
+            // Cleanup gamemodes
+            GamemodeRegistration.ClearGamemodeTable();
+            ModuleMessageHandler.ClearHandlerTable();
+
             // Cleanup information
             DisposeUsers();
             SyncManager.OnCleanup();
-            ModuleMessageHandler.ClearHandlerTable();
-            GamemodeRegistration.ClearGamemodeTable();
             Physics.autoSimulation = true;
 
             // Cleanup prefs

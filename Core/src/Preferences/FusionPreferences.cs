@@ -16,10 +16,44 @@ using UnityEngine;
 
 namespace LabFusion.Preferences {
     public static class FusionPreferences {
-        public struct ServerSettings  {
-            public static FusionPref<bool> NametagsEnabled { get; internal set; }
-            public static FusionPref<ServerPrivacy> Privacy { get; internal set; }
-            public static FusionPref<TimeScaleMode> TimeScaleMode { get; internal set; }
+        public class ServerSettings {
+            // General settings
+            public IFusionPref<bool> NametagsEnabled;
+            public IFusionPref<ServerPrivacy> Privacy;
+            public IFusionPref<TimeScaleMode> TimeScaleMode;
+
+            // Mortality
+            public IFusionPref<bool> ServerMortality;
+
+            // Permissions
+            public IFusionPref<PermissionLevel> DevToolsAllowed;
+            public IFusionPref<PermissionLevel> KickingAllowed;
+            public IFusionPref<PermissionLevel> BanningAllowed;
+
+            public IFusionPref<PermissionLevel> Teleportation;
+
+            public static ServerSettings CreateMelonPrefs() {
+                // Server settings
+                var settings = new ServerSettings
+                {
+                    // General settings
+                    NametagsEnabled = new FusionPref<bool>(prefCategory, "Server Nametags Enabled", true, PrefUpdateMode.SERVER_UPDATE),
+                    Privacy = new FusionPref<ServerPrivacy>(prefCategory, "Server Privacy", ServerPrivacy.PUBLIC, PrefUpdateMode.LOCAL_UPDATE),
+                    TimeScaleMode = new FusionPref<TimeScaleMode>(prefCategory, "Time Scale Mode", Senders.TimeScaleMode.LOW_GRAVITY, PrefUpdateMode.SERVER_UPDATE),
+                    
+                    // Mortality
+                    ServerMortality = new FusionPref<bool>(prefCategory, "Server Mortality", true, PrefUpdateMode.SERVER_UPDATE),
+
+                    // Server permissions
+                    DevToolsAllowed = new FusionPref<PermissionLevel>(prefCategory, "Dev Tools Allowed", PermissionLevel.DEFAULT, PrefUpdateMode.SERVER_UPDATE),
+                    KickingAllowed = new FusionPref<PermissionLevel>(prefCategory, "Kicking Allowed", PermissionLevel.OPERATOR, PrefUpdateMode.SERVER_UPDATE),
+                    BanningAllowed = new FusionPref<PermissionLevel>(prefCategory, "Banning Allowed", PermissionLevel.OPERATOR, PrefUpdateMode.SERVER_UPDATE),
+
+                    Teleportation = new FusionPref<PermissionLevel>(prefCategory, "Teleportation", PermissionLevel.OPERATOR, PrefUpdateMode.SERVER_UPDATE),
+                };
+
+                return settings;
+            }
         }
 
         public struct ClientSettings {
@@ -36,11 +70,13 @@ namespace LabFusion.Preferences {
             public static FusionPref<float> GlobalVolume { get; internal set; }
         }
 
-        internal static SerializedServerSettings ReceivedServerSettings { get; set; } = null;
+        internal static ServerSettings LocalServerSettings;
+        internal static ServerSettings ReceivedServerSettings { get; set; } = null;
+        internal static ServerSettings ActiveServerSettings => ReceivedServerSettings ?? LocalServerSettings;
 
-        internal static bool ShowNametags => ReceivedServerSettings != null ? ReceivedServerSettings.nametagsEnabled : ServerSettings.NametagsEnabled 
-            && ClientSettings.NametagsEnabled;
-        internal static TimeScaleMode TimeScaleMode => ReceivedServerSettings != null ? ReceivedServerSettings.timeScaleMode : ServerSettings.TimeScaleMode;
+        internal static bool NametagsEnabled => ActiveServerSettings.NametagsEnabled.GetValue() && ClientSettings.NametagsEnabled;
+        internal static bool IsMortal => ActiveServerSettings.ServerMortality.GetValue();
+        internal static TimeScaleMode TimeScaleMode => ActiveServerSettings.TimeScaleMode.GetValue();
 
         internal static MenuCategory fusionCategory;
         internal static MelonPreferences_Category prefCategory;
@@ -101,9 +137,7 @@ namespace LabFusion.Preferences {
             prefCategory = MelonPreferences.CreateCategory("BONELAB Fusion");
 
             // Server settings
-            ServerSettings.NametagsEnabled = new FusionPref<bool>(prefCategory, "Server Nametags Enabled", true, PrefUpdateMode.SERVER_UPDATE);
-            ServerSettings.Privacy = new FusionPref<ServerPrivacy>(prefCategory, "Server Privacy", ServerPrivacy.PUBLIC, PrefUpdateMode.LOCAL_UPDATE);
-            ServerSettings.TimeScaleMode = new FusionPref<TimeScaleMode>(prefCategory, "Time Scale Mode", TimeScaleMode.LOW_GRAVITY, PrefUpdateMode.SERVER_UPDATE);
+            LocalServerSettings = ServerSettings.CreateMelonPrefs();
 
             // Client settings
             ClientSettings.NametagsEnabled = new FusionPref<bool>(prefCategory, "Client Nametags Enabled", true, PrefUpdateMode.LOCAL_UPDATE);

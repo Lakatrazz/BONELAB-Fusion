@@ -9,6 +9,7 @@ using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace LabFusion.Senders {
     public enum PlayerActionType {
@@ -40,6 +41,25 @@ namespace LabFusion.Senders {
                     using (var message = FusionMessage.Create(NativeMessageTag.PlayerVoiceChat, writer))
                     {
                         MessageSender.BroadcastMessageExceptSelf(NetworkChannel.VoiceChat, message);
+                    }
+                }
+            }
+        }
+
+        public static void SendPlayerTeleport(byte target, Vector3 position)
+        {
+            if (!NetworkInfo.IsServer)
+                return;
+
+            using (var writer = FusionWriter.Create())
+            {
+                using (var data = PlayerRepTeleportData.Create(target, position))
+                {
+                    writer.Write(data);
+
+                    using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepTeleport, writer))
+                    {
+                        MessageSender.SendFromServer(target, NetworkChannel.Reliable, message);
                     }
                 }
             }

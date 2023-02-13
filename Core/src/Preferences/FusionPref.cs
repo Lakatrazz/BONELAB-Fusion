@@ -16,12 +16,33 @@ namespace LabFusion.Preferences {
         LOCAL_UPDATE = 3,
     }
 
-    public class FusionPref<T> {
+    public interface IFusionPref<T> {
+        Action<T> OnValueChanged { get; set; }
+
+        void SetValue(T value);
+        T GetValue();
+    }
+
+    public class ReadonlyFusionPrev<T> : IFusionPref<T> {
+        private readonly T _value;
+
+        public Action<T> OnValueChanged { get; set; }
+
+        public ReadonlyFusionPrev(T value) {
+            _value = value;
+        }
+
+        public void SetValue(T value) { }
+
+        public T GetValue() => _value;
+    }
+
+    public class FusionPref<T> : IFusionPref<T> {
         private readonly MelonPreferences_Category _category;
         private readonly MelonPreferences_Entry<T> _entry;
         private readonly PrefUpdateMode _mode;
 
-        public Action<T> OnValueChanged;
+        public Action<T> OnValueChanged { get; set; }
 
         public FusionPref(MelonPreferences_Category category, string name, T defaultValue, PrefUpdateMode mode = PrefUpdateMode.IGNORE) {
             _category = category;

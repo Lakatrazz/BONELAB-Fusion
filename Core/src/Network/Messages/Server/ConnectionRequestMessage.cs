@@ -91,7 +91,7 @@ namespace LabFusion.Network
                         }
 
                         // Get the permission level
-                        PlayerPermissions.FetchPermissionLevel(data.longId, out var level, out _);
+                        FusionPermissions.FetchPermissionLevel(data.longId, out var level, out _);
 
                         // Check for banning
                         if (NetworkHelper.IsBanned(data.longId)) {

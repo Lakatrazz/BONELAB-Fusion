@@ -61,6 +61,13 @@ namespace LabFusion.Network
                 using (var reader = FusionReader.Create(bytes)) {
                     using (var data = reader.ReadFusionSerializable<SpawnRequestData>())
                     {
+                        var playerId = PlayerIdManager.GetPlayerId(data.owner);
+
+                        // Check if we should ignore the spawn gun request
+                        if (data.hand == Handedness.UNDEFINED && playerId != null && !playerId.IsSelf && FusionDevTools.PreventSpawnGun(playerId)) {
+                            return;
+                        }
+
                         var syncId = SyncManager.AllocateSyncID();
 
                         PooleeUtilities.SendSpawn(data.owner, data.barcode, syncId, data.serializedTransform, false, null, data.hand);

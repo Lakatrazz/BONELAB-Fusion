@@ -113,6 +113,7 @@ namespace LabFusion.SDK.Gamemodes {
                 gamemode.GamemodeUnregistered();
             }
 
+            GamemodeManager.Internal_SetActiveGamemode(null);
             BoneMenuCreator.ClearGamemodes();
             
             Gamemodes = null;

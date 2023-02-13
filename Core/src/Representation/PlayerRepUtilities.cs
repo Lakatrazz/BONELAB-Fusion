@@ -83,30 +83,7 @@ namespace LabFusion.Representation {
                 return false;
 
             var rig = grip.GetComponentInParent<RigManager>();
-
-            // If we have a RigManager, we can get our player info
-            if (rig) {
-                // Check if this is the main player
-                if (rig == RigData.RigReferences.RigManager) {
-                    smallId = PlayerIdManager.LocalSmallId;
-                    references = RigData.RigReferences;
-
-                    return true;
-                }
-                // Otherwise, check if this is another player
-                else if (PlayerRepManager.TryGetPlayerRep(rig, out var rep)) {
-                    smallId = rep.PlayerId.SmallId;
-                    references = rep.RigReferences;
-
-                    return true;
-                }
-                // This isn't a rig that is part of our mod, so we can ignore it
-                else
-                    return false;
-            }
-            else {
-                return false;
-            }
+            return TryGetRigInfo(rig, out smallId, out references);
         }
 
         public static void CreateNewRig(Action<RigManager> onRigCreated) {

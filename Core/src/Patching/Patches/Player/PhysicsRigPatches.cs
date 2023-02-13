@@ -35,6 +35,8 @@ namespace LabFusion.Patching
 
     [HarmonyPatch(typeof(PhysicsRig))]
     public static class PhysicsRigPatches {
+        public static bool ForceAllowUnragdoll = false;
+
         [HarmonyPrefix]
         [HarmonyPatch(nameof(PhysicsRig.RagdollRig))]
         public static void RagdollRig(PhysicsRig __instance) {
@@ -58,10 +60,17 @@ namespace LabFusion.Patching
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(PhysicsRig.UnRagdollRig))]
-        public static void UnRagdollRig(PhysicsRig __instance) {
+        public static bool UnRagdollRig(PhysicsRig __instance) {
             try {
                 if (NetworkInfo.HasServer && __instance.manager == RigData.RigReferences.RigManager)
                 {
+                    // Check if we can unragdoll
+                    var playerHealth = __instance.manager.health.TryCast<Player_Health>();
+
+                    if (!ForceAllowUnragdoll && (playerHealth.deathIsImminent || !playerHealth.alive) && !FusionPlayer.CanUnragdoll()) {
+                        return false;
+                    }
+
                     using (var writer = FusionWriter.Create())
                     {
                         using (var data = PlayerRepRagdollData.Create(PlayerIdManager.LocalSmallId, false))
@@ -79,6 +88,8 @@ namespace LabFusion.Patching
             catch (Exception e) {
                 FusionLogger.LogException("patching PhysicsRig.UnRagdollRig", e);
             }
+
+            return true;
         }
     }
 }

@@ -124,6 +124,10 @@ namespace LabFusion.Network
 
             PlayerVoiceChat = 74,
 
+            PermissionCommandRequest = 75,
+
+            PlayerRepTeleport = 76,
+
             Module = 80,
             DynamicsAssignment = 81,
 

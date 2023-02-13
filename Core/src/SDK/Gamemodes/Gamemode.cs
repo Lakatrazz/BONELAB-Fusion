@@ -28,6 +28,11 @@ namespace LabFusion.SDK.Gamemodes {
         public virtual bool PreventNewJoins { get; } = false;
         public virtual bool AutoStopOnSceneLoad { get; } = true;
 
+        // Cheats
+        public virtual bool DisableDevTools { get; } = false;
+        public virtual bool DisableSpawnGun { get; } = false;
+        public virtual bool DisableManualUnragdoll { get; } = false;
+
         private readonly Dictionary<string, string> _internalMetadata = new Dictionary<string, string>();
         public Dictionary<string, string> Metadata => _internalMetadata;
 

@@ -42,7 +42,7 @@ namespace LabFusion.Network {
         /// <param name="userId"></param>
         /// <returns></returns>
         public static bool IsClientApproved(ulong userId) {
-            var privacy = FusionPreferences.ServerSettings.Privacy.GetValue();
+            var privacy = FusionPreferences.LocalServerSettings.Privacy.GetValue();
 
             switch (privacy) {
                 default:

@@ -4,6 +4,7 @@ using BoneLib.BoneMenu.Elements;
 using LabFusion.Network;
 using LabFusion.Preferences;
 using LabFusion.Representation;
+using LabFusion.Senders;
 
 using System;
 using System.Windows.Forms;
@@ -49,7 +50,7 @@ namespace LabFusion.BoneMenu
                 display = $"{nickname} ({username})";
 
             // Get the current permission
-            PlayerPermissions.FetchPermissionLevel(id.LongId, out var level, out Color color);
+            FusionPermissions.FetchPermissionLevel(id.LongId, out var level, out Color color);
 
             // Create the category and setup its options
             var category = _playerListCategory.CreateCategory(display, color);
@@ -60,7 +61,7 @@ namespace LabFusion.BoneMenu
             // Set permission display
             if (NetworkInfo.IsServer && !id.IsSelf) {
                 var permSetter = category.CreateEnumElement($"Permissions", Color.yellow, level, (v) => {
-                    PlayerPermissions.TrySetPermission(longId, username, v);
+                    FusionPermissions.TrySetPermission(longId, username, v);
                 });
 
                 id.OnMetadataChanged += (player) => {
@@ -79,17 +80,43 @@ namespace LabFusion.BoneMenu
                 };
             }
 
-            // Create moderation options
-            // Note: replace IsServer with permission check
-            if (NetworkInfo.IsServer && !id.IsSelf) {
-                var moderationCategory = category.CreateCategory("Moderation", Color.white);
-                moderationCategory.CreateFunctionElement("Kick", Color.red, () => {
-                    NetworkHelper.KickUser(id);
-                }, "Are you sure?");
+            // Get self permissions
+            FusionPermissions.FetchPermissionLevel(PlayerIdManager.LocalLongId, out var selfLevel, out _);
 
-                moderationCategory.CreateFunctionElement("Ban", Color.red, () => {
-                    NetworkHelper.BanUser(id);
-                }, "Are you sure?");
+            // Create moderation options
+            if (!id.IsSelf && FusionPermissions.HasHigherPermissions(selfLevel, level)) {
+                var serverSettings = FusionPreferences.ActiveServerSettings;
+
+                var moderationCategory = category.CreateCategory("Moderation", Color.white);
+
+                // Kick button
+                if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.KickingAllowed.GetValue())) {
+                    moderationCategory.CreateFunctionElement("Kick", Color.red, () => {
+                        PermissionSender.SendPermissionRequest(PermissionCommandType.KICK, id);
+                    }, "Are you sure?");
+                }
+
+                // Ban button
+                if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.BanningAllowed.GetValue())) {
+                    moderationCategory.CreateFunctionElement("Ban", Color.red, () =>
+                    {
+                        PermissionSender.SendPermissionRequest(PermissionCommandType.BAN, id);
+                    }, "Are you sure?");
+                }
+
+                // Teleport buttons
+                if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.Teleportation.GetValue()))
+                {
+                    moderationCategory.CreateFunctionElement("Teleport To Them", Color.red, () =>
+                    {
+                        PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_THEM, id);
+                    }, "Are you sure?");
+
+                    moderationCategory.CreateFunctionElement("Teleport To Us", Color.red, () =>
+                    {
+                        PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_US, id);
+                    }, "Are you sure?");
+                }
             }
 
             category.CreateFunctionElement($"Platform ID: {longId}", Color.yellow, () => {

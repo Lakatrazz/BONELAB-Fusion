@@ -12,5 +12,14 @@ namespace LabFusion.Data
         public const string PlayerRepName = "[RigManager (PlayerRep)]";
 
         public const string AppDataSubFolder = "/Fusion/";
+
+        public const string WindowsBundlePrefix = "LabFusion.Core.resources.bundles.StandaloneWindows64.";
+        public const string AndroidBundlePrefix = "LabFusion.Core.resources.bundles.Android.";
+
+        // Content bundle
+        public const string ContentBundle = "content_bundle.fusion";
+
+        public const string SabrelakeLogo = "tex_sabreLakeLogo";
+        public const string LavaGangLogo = "tex_lavaGangLogo";
     }
 }

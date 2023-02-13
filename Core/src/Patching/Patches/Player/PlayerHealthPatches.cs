@@ -51,9 +51,11 @@ namespace LabFusion.Patching
                 // If the player is ragdoll on death, reset them
                 // This prevents them spawning in the ground
                 if (rm.health._testRagdollOnDeath) {
+                    PhysicsRigPatches.ForceAllowUnragdoll = true;
                     rm.physicsRig.UnRagdollRig();
                     rm.physicsRig.ResetHands(Handedness.BOTH);
                     rm.physicsRig.TeleportToPose();
+                    PhysicsRigPatches.ForceAllowUnragdoll = false;
                 }
 
                 // Notify the server about the death
@@ -74,7 +76,9 @@ namespace LabFusion.Patching
         public static void LifeSavingDamgeDealt(Player_Health __instance)
         {
             if (__instance._testRagdollOnDeath) {
+                PhysicsRigPatches.ForceAllowUnragdoll = true;
                 __instance._rigManager.physicsRig.UnRagdollRig();
+                PhysicsRigPatches.ForceAllowUnragdoll = false;
             }
         }
 

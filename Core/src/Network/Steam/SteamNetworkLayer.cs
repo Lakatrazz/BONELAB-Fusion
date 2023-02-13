@@ -127,7 +127,7 @@ namespace LabFusion.Network
 
         internal override void OnVoiceChatUpdate() {
             if (NetworkInfo.HasServer) {
-                bool voiceEnabled = !FusionPreferences.ClientSettings.Muted;
+                bool voiceEnabled = !FusionPreferences.ClientSettings.Muted && !FusionPreferences.ClientSettings.Deafened;
 
                 // Update voice record
                 if (SteamUser.VoiceRecord != voiceEnabled)

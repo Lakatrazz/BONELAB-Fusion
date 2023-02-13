@@ -29,6 +29,10 @@ namespace LabFusion.SDK.Gamemodes {
         public override string GamemodeCategory => "Fusion";
         public override string GamemodeName => "Deathmatch";
 
+        public override bool DisableDevTools => true;
+        public override bool DisableSpawnGun => true;
+        public override bool DisableManualUnragdoll => true;
+
         private float _timeOfStart;
         private bool _oneMinuteLeft;
 
@@ -111,6 +115,12 @@ namespace LabFusion.SDK.Gamemodes {
 
             _timeOfStart = Time.realtimeSinceStartup;
             _oneMinuteLeft = false;
+
+            // Force mortality
+            FusionPlayer.SetMortality(true);
+
+            // Setup ammo
+            FusionPlayer.SetAmmo(1000);
         }
 
         protected override void OnStopGamemode() {
@@ -158,6 +168,12 @@ namespace LabFusion.SDK.Gamemodes {
 
             _timeOfStart = 0f;
             _oneMinuteLeft = false;
+
+            // Reset mortality
+            FusionPlayer.ResetMortality();
+
+            // Remove ammo
+            FusionPlayer.SetAmmo(0);
         }
 
         public float GetTimeElapsed() => Time.realtimeSinceStartup - _timeOfStart;
@@ -232,10 +248,16 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         protected string GetScoreKey(PlayerId id) {
+            if (id == null)
+                return "";
+
             return $"{PlayerScoreKey}.{id.LongId}";
         }
 
         protected int GetScore(PlayerId id) {
+            if (id == null)
+                return 0;
+
             if (TryGetMetadata(GetScoreKey(id), out var value) && int.TryParse(value, out var score)) {
                 return score;
             }

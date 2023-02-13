@@ -37,28 +37,23 @@ namespace LabFusion.BoneMenu
         private static void CreateServerSettingsMenu(MenuCategory category)
         {
             // Nametags enabled
-            var nametags = category.CreateBoolElement("Nametags", Color.white, FusionPreferences.ServerSettings.NametagsEnabled, (v) => {
-                FusionPreferences.ServerSettings.NametagsEnabled.SetValue(v);
-            });
-            FusionPreferences.ServerSettings.NametagsEnabled.OnValueChanged += (v) => {
-                nametags.SetValue(v);
-            };
+            CreateBoolPermission(category, "Nametags", FusionPreferences.LocalServerSettings.NametagsEnabled);
 
             // Server privacy
-            var privacy = category.CreateEnumElement<ServerPrivacy>("Server Privacy", Color.white, FusionPreferences.ServerSettings.Privacy, (v) => {
-                FusionPreferences.ServerSettings.Privacy.SetValue(v);
-            });
-            FusionPreferences.ServerSettings.Privacy.OnValueChanged += (v) => {
-                privacy.SetValue(v);
-            };
+            CreateEnumPermission(category, "Server Privacy", FusionPreferences.LocalServerSettings.Privacy);
 
             // Time scale mode
-            var timeScale = category.CreateEnumElement<TimeScaleMode>("Time Scale Mode", Color.white, FusionPreferences.ServerSettings.TimeScaleMode, (v) => {
-                FusionPreferences.ServerSettings.TimeScaleMode.SetValue(v);
-            });
-            FusionPreferences.ServerSettings.TimeScaleMode.OnValueChanged += (v) => {
-                timeScale.SetValue(v);
-            };
+            CreateEnumPermission(category, "Time Scale Mode", FusionPreferences.LocalServerSettings.TimeScaleMode);
+
+            // Server mortality
+            CreateBoolPermission(category, "Server Mortality", FusionPreferences.LocalServerSettings.ServerMortality);
+
+            // Permissions
+            var permissionCategory = category.CreateCategory("Permission Settings", Color.white);
+            CreateEnumPermission(permissionCategory, "Dev Tools Allowed", FusionPreferences.LocalServerSettings.DevToolsAllowed);
+            CreateEnumPermission(permissionCategory, "Kicking Allowed", FusionPreferences.LocalServerSettings.KickingAllowed);
+            CreateEnumPermission(permissionCategory, "Banning Allowed", FusionPreferences.LocalServerSettings.BanningAllowed);
+            CreateEnumPermission(permissionCategory, "Teleporation Allowed", FusionPreferences.LocalServerSettings.Teleportation);
         }
 
         private static void CreateClientSettingsMenu(MenuCategory category)
@@ -66,49 +61,15 @@ namespace LabFusion.BoneMenu
             // Nametags enabled
             var nametagCategory = category.CreateCategory("Nametag Settings", Color.white);
 
-            var nametags = nametagCategory.CreateBoolElement("Nametags", Color.white, FusionPreferences.ClientSettings.NametagsEnabled, (v) => {
-                FusionPreferences.ClientSettings.NametagsEnabled.SetValue(v);
-            });
-            FusionPreferences.ClientSettings.NametagsEnabled.OnValueChanged += (v) => {
-                nametags.SetValue(v);
-            };
+            CreateBoolPermission(nametagCategory, "Nametags", FusionPreferences.ClientSettings.NametagsEnabled);
 
             // Nametag color
-            var currentColor = FusionPreferences.ClientSettings.NametagColor;
-            var colorR = nametagCategory.CreateFloatElement("Red", Color.red, currentColor.GetValue().r, 0.05f, 0f, 1f, (r) => {
-                var color = currentColor.GetValue();
-                color.r = r;
-                currentColor.SetValue(color);
-            });
-            var colorG = nametagCategory.CreateFloatElement("Green", Color.green, currentColor.GetValue().g, 0.05f, 0f, 1f, (g) => {
-                var color = currentColor.GetValue();
-                color.g = g;
-                currentColor.SetValue(color);
-            });
-            var colorB = nametagCategory.CreateFloatElement("Blue", Color.blue, currentColor.GetValue().b, 0.05f, 0f, 1f, (b) => {
-                var color = currentColor.GetValue();
-                color.b = b;
-                currentColor.SetValue(color);
-            });
-            var colorPreview = nametagCategory.CreateFunctionElement("■■■■■■■■■■■", currentColor, null);
-
-            currentColor.OnValueChanged += (color) => {
-                colorR.SetValue(color.r);
-                colorG.SetValue(color.g);
-                colorB.SetValue(color.b);
-                colorPreview.SetColor(color);
-            };
+            CreateColorPermission(nametagCategory, FusionPreferences.ClientSettings.NametagColor);
 
             // Nickname
             var nicknameCategory = category.CreateCategory("Nickname Settings", Color.white);
 
-            var visibility = nicknameCategory.CreateEnumElement<NicknameVisibility>("Nickname Visibility", Color.white, FusionPreferences.ClientSettings.NicknameVisibility, (v) => {
-                FusionPreferences.ClientSettings.NicknameVisibility.SetValue(v);
-            });
-            FusionPreferences.ClientSettings.NicknameVisibility.OnValueChanged += (v) =>
-            {
-                visibility.SetValue(v);
-            };
+            CreateEnumPermission(nicknameCategory, "Nickname Visibility", FusionPreferences.ClientSettings.NicknameVisibility);
 
             string currentNickname = PlayerIdManager.LocalNickname;
             var nickname = nicknameCategory.CreateFunctionElement(string.IsNullOrWhiteSpace(currentNickname) ? "No Nickname" : $"Nickname: {currentNickname}", Color.white, null);
@@ -130,26 +91,9 @@ namespace LabFusion.BoneMenu
             // Voice chat
             var voiceChatCategory = category.CreateCategory("Voice Chat", Color.white);
 
-            var muted = voiceChatCategory.CreateBoolElement("Muted", Color.white, FusionPreferences.ClientSettings.Muted, (v) => {
-                FusionPreferences.ClientSettings.Muted.SetValue(v);
-            });
-            FusionPreferences.ClientSettings.Muted.OnValueChanged += (v) => {
-                muted.SetValue(v);
-            };
-
-            var deafened = voiceChatCategory.CreateBoolElement("Deafened", Color.white, FusionPreferences.ClientSettings.Deafened, (v) => {
-                FusionPreferences.ClientSettings.Deafened.SetValue(v);
-            });
-            FusionPreferences.ClientSettings.Deafened.OnValueChanged += (v) => {
-                deafened.SetValue(v);
-            };
-
-            var globalVolume = voiceChatCategory.CreateFloatElement("Global Volume", Color.white, FusionPreferences.ClientSettings.GlobalVolume, 0.1f, 0f, 5f, (v) => {
-                FusionPreferences.ClientSettings.GlobalVolume.SetValue(v);
-            });
-            FusionPreferences.ClientSettings.GlobalVolume.OnValueChanged += (v) => {
-                globalVolume.SetValue(v);
-            };
+            CreateBoolPermission(voiceChatCategory, "Muted", FusionPreferences.ClientSettings.Muted);
+            CreateBoolPermission(voiceChatCategory, "Deafened", FusionPreferences.ClientSettings.Deafened);
+            CreateFloatPermission(voiceChatCategory, "Global Volume", 0.1f, 0f, 10f, FusionPreferences.ClientSettings.GlobalVolume);
         }
 
     }

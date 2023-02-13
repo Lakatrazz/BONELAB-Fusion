@@ -189,6 +189,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>AssemblyInfo.tt</DependentUpon>
     </Compile>
+    <Compile Include="Core\src\BoneMenu\BoneMenuCreator.cs" />
     <Compile Include="Core\src\BoneMenu\DebugCreator.cs" />
     <Compile Include="Core\src\BoneMenu\GamemodesCreator.cs" />
     <Compile Include="Core\src\BoneMenu\LobbyCreator.cs" />
@@ -278,7 +279,9 @@
     <Compile Include="Core\src\Network\Messages\Gamemodes\GamemodeMetadataResponseMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Levels\LevelRequestMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\BodyLogToggleMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Representation\PlayerRepTeleportMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\PlayerRepDamageMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Server\PermissionCommandRequestMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\PlayerVoiceChatMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Syncables\PropSyncableSleepMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Trials\TrialSpawnerEventsMessage.cs" />
@@ -339,7 +342,7 @@
     <Compile Include="Core\src\Patching\Patches\Attacks\StabSlashPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ZoneEncounterPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Trigger\GenGameControl_TriggerPatches.cs" />
-    <Compile Include="Core\src\Representation\PlayerPermissions.cs" />
+    <Compile Include="Core\src\Representation\FusionPermissions.cs" />
     <Compile Include="Core\src\Representation\PlayerRepManager.cs" />
     <Compile Include="Core\src\SDK\Gamemodes\Built In\TugOWar.cs" />
     <Compile Include="Core\src\SDK\Gamemodes\Built In\Entangled.cs" />
@@ -353,6 +356,7 @@
     <Compile Include="Core\src\SDK\Gamemodes\GamemodeManager.cs" />
     <Compile Include="Core\src\SDK\Gamemodes\GamemodeRegistration.cs" />
     <Compile Include="Core\src\SDK\Network\Messages\ModuleMessageHandler.cs" />
+    <Compile Include="Core\src\Senders\PermissionSender.cs" />
     <Compile Include="Core\src\Senders\Player\PlayerSender.cs" />
     <Compile Include="Core\src\Senders\Level\ArenaSender.cs" />
     <Compile Include="Core\src\Senders\ConnectionSender.cs" />
@@ -494,9 +498,11 @@
     <Compile Include="Core\src\Syncables\Extenders\PropExtenderManager.cs" />
     <Compile Include="Core\src\Utilities\FloatingOriginUtilities.cs" />
     <Compile Include="Core\src\Utilities\FusionComponentCache.cs" />
+    <Compile Include="Core\src\Utilities\FusionDevTools.cs" />
     <Compile Include="Core\src\Utilities\FusionPlayer.cs" />
     <Compile Include="Core\src\Utilities\GameObjectUtilities.cs" />
     <Compile Include="Core\src\Utilities\ImpactUtilities.cs" />
+    <Compile Include="Core\src\Utilities\Internal\FusionBundleLoader.cs" />
     <Compile Include="Core\src\Utilities\Internal\FusionNotifier.cs" />
     <Compile Include="Core\src\Utilities\Internal\PooleePusher.cs" />
     <Compile Include="Core\src\Utilities\Internal\SafeEvents.cs" />
@@ -1122,6 +1128,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".editorconfig" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -16,7 +16,7 @@ namespace LabFusion.Representation {
         OWNER = 2,
     }
 
-    public static class PlayerPermissions {
+    public static class FusionPermissions {
         public static void FetchPermissionLevel(ulong longId, out PermissionLevel level, out Color color) {
             level = PermissionLevel.DEFAULT;
             color = Color.white;
@@ -57,6 +57,10 @@ namespace LabFusion.Representation {
 
         public static bool HasSufficientPermissions(PermissionLevel level, PermissionLevel requirement) {
             return level >= requirement;
+        }
+
+        public static bool HasHigherPermissions(PermissionLevel level, PermissionLevel requirement) {
+            return level > requirement;
         }
     }
 }

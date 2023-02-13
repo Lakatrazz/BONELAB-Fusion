@@ -747,7 +747,7 @@ namespace LabFusion.Representation
                 
                 // Update server side settings
                 if (_isServerDirty) {
-                    repCanvas.gameObject.SetActive(FusionPreferences.ShowNametags);
+                    repCanvas.gameObject.SetActive(FusionPreferences.NametagsEnabled);
 
                     _isServerDirty = false;
                 }

@@ -11,11 +11,12 @@ using UnityEngine;
 using LabFusion.Extensions;
 
 using MelonLoader;
+
 using LabFusion.Utilities;
 
 namespace LabFusion.Data
 {
-    public static class EmebeddedAssetBundle
+    public static class EmbeddedAssetBundle
     {
         public static AssetBundle LoadFromAssembly(Assembly assembly, string name)
         {

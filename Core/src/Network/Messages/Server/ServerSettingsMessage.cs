@@ -53,7 +53,7 @@ namespace LabFusion.Network
                 {
                     // ONLY clients should receive this!
                     if (!NetworkInfo.IsServer) {
-                        FusionPreferences.ReceivedServerSettings = data.settings;
+                        FusionPreferences.ReceivedServerSettings = data.settings.settings;
                         MultiplayerHooking.Internal_OnServerSettingsChanged();
                     }
                     else

@@ -65,6 +65,9 @@ namespace LabFusion
             // Pull files
             FusionFileLoader.OnInitializeMelon();
 
+            // Load assetbundles
+            FusionBundleLoader.OnBundleLoad();
+
             // Register our base handlers
             FusionMessageHandler.RegisterHandlersFromAssembly(FusionAssembly);
             GrabGroupHandler.RegisterHandlersFromAssembly(FusionAssembly);
@@ -109,9 +112,15 @@ namespace LabFusion
         }
 
         public override void OnDeinitializeMelon() {
+            // Cleanup networking
             InternalLayerHelpers.OnCleanupLayer();
+            
+            // Unhook assembly loads
             ModuleHandler.Internal_UnhookAssemblies();
             GamemodeRegistration.Internal_UnhookAssemblies();
+
+            // Unload assetbundles
+            FusionBundleLoader.OnBundleLoad();
         }
 
         public override void OnPreferencesLoaded() {

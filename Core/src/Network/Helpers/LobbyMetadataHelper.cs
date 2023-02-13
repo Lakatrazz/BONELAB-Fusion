@@ -35,9 +35,9 @@ namespace LabFusion.Network {
                 PlayerCount = PlayerIdManager.PlayerCount,
 
                 // Lobby settings
-                NametagsEnabled = FusionPreferences.ServerSettings.NametagsEnabled,
-                Privacy = FusionPreferences.ServerSettings.Privacy,
-                TimeScaleMode = FusionPreferences.ServerSettings.TimeScaleMode,
+                NametagsEnabled = FusionPreferences.LocalServerSettings.NametagsEnabled.GetValue(),
+                Privacy = FusionPreferences.LocalServerSettings.Privacy.GetValue(),
+                TimeScaleMode = FusionPreferences.LocalServerSettings.TimeScaleMode.GetValue(),
                 MaxPlayers = 255,
 
                 // Lobby status
