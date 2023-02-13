@@ -127,7 +127,7 @@ namespace LabFusion.Network
 
         internal override void OnVoiceChatUpdate() {
             if (NetworkInfo.HasServer) {
-                bool voiceEnabled = !FusionPreferences.ClientSettings.Muted && !FusionPreferences.ClientSettings.Deafened;
+                bool voiceEnabled = FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue() && !FusionPreferences.ClientSettings.Muted && !FusionPreferences.ClientSettings.Deafened;
 
                 // Update voice record
                 if (SteamUser.VoiceRecord != voiceEnabled)
@@ -140,11 +140,16 @@ namespace LabFusion.Network
                     PlayerSender.SendPlayerVoiceChat(voiceData);
                 }
             }
+            else {
+                // Disable voice recording
+                if (SteamUser.VoiceRecord)
+                    SteamUser.VoiceRecord = false;
+            }
         }
 
         internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes) {
             // If we are deafened, no need to deal with voice chat
-            bool isDeafened = FusionPreferences.ClientSettings.Deafened;
+            bool isDeafened = !FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue() || FusionPreferences.ClientSettings.Deafened;
             if (isDeafened)
                 return;
 

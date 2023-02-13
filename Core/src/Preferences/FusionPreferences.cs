@@ -19,6 +19,7 @@ namespace LabFusion.Preferences {
         public class ServerSettings {
             // General settings
             public IFusionPref<bool> NametagsEnabled;
+            public IFusionPref<bool> VoicechatEnabled;
             public IFusionPref<ServerPrivacy> Privacy;
             public IFusionPref<TimeScaleMode> TimeScaleMode;
 
@@ -38,6 +39,7 @@ namespace LabFusion.Preferences {
                 {
                     // General settings
                     NametagsEnabled = new FusionPref<bool>(prefCategory, "Server Nametags Enabled", true, PrefUpdateMode.SERVER_UPDATE),
+                    VoicechatEnabled = new FusionPref<bool>(prefCategory, "Server Voicechat Enabled", true, PrefUpdateMode.SERVER_UPDATE),
                     Privacy = new FusionPref<ServerPrivacy>(prefCategory, "Server Privacy", ServerPrivacy.PUBLIC, PrefUpdateMode.LOCAL_UPDATE),
                     TimeScaleMode = new FusionPref<TimeScaleMode>(prefCategory, "Time Scale Mode", Senders.TimeScaleMode.LOW_GRAVITY, PrefUpdateMode.SERVER_UPDATE),
                     

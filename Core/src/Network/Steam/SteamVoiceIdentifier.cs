@@ -132,11 +132,13 @@ namespace LabFusion.Network {
 
         private void PcmReaderCallback(Il2CppStructArray<float> data)
         {
+            float mult = _defaultVolumeMultiplier * FusionPreferences.ClientSettings.GlobalVolume;
+
             for (int i = 0; i < data.Length; i++)
             {
                 if (_streamingReadQueue.Count > 0)
                 {
-                    data[i] = _streamingReadQueue.Dequeue() * _defaultVolumeMultiplier * FusionPreferences.ClientSettings.GlobalVolume;
+                    data[i] = _streamingReadQueue.Dequeue() * mult;
                 }
                 else
                 {

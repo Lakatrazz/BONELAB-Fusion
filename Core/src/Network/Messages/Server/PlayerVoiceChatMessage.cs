@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using LabFusion.Data;
+using LabFusion.Preferences;
 using LabFusion.Representation;
 
 namespace LabFusion.Network
@@ -51,6 +52,10 @@ namespace LabFusion.Network
             {
                 using (var data = reader.ReadFusionSerializable<PlayerVoiceChatData>())
                 {
+                    // Check if voice chat is active
+                    if (!FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue())
+                        return;
+
                     // Read the voice chat
                     var id = PlayerIdManager.GetPlayerId(data.smallId);
 

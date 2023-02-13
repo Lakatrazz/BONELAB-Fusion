@@ -18,6 +18,7 @@ namespace LabFusion.Data {
 
         public void Serialize(FusionWriter writer) {
             writer.Write(settings.NametagsEnabled.GetValue());
+            writer.Write(settings.VoicechatEnabled.GetValue());
             writer.Write((byte)settings.Privacy.GetValue());
             writer.Write((byte)settings.TimeScaleMode.GetValue());
             writer.Write(settings.ServerMortality.GetValue());
@@ -29,17 +30,19 @@ namespace LabFusion.Data {
         }
 
         public void Deserialize(FusionReader reader) {
-            settings = new FusionPreferences.ServerSettings();
+            settings = new FusionPreferences.ServerSettings
+            {
+                NametagsEnabled = new ReadonlyFusionPrev<bool>(reader.ReadBoolean()),
+                VoicechatEnabled = new ReadonlyFusionPrev<bool>(reader.ReadBoolean()),
+                Privacy = new ReadonlyFusionPrev<ServerPrivacy>((ServerPrivacy)reader.ReadByte()),
+                TimeScaleMode = new ReadonlyFusionPrev<TimeScaleMode>((TimeScaleMode)reader.ReadByte()),
+                ServerMortality = new ReadonlyFusionPrev<bool>(reader.ReadBoolean()),
 
-            settings.NametagsEnabled = new ReadonlyFusionPrev<bool>(reader.ReadBoolean());
-            settings.Privacy = new ReadonlyFusionPrev<ServerPrivacy>((ServerPrivacy)reader.ReadByte());
-            settings.TimeScaleMode = new ReadonlyFusionPrev<TimeScaleMode>((TimeScaleMode)reader.ReadByte());
-            settings.ServerMortality = new ReadonlyFusionPrev<bool>(reader.ReadBoolean());
-
-            settings.DevToolsAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadByte());
-            settings.KickingAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadByte());
-            settings.BanningAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadByte());
-            settings.Teleportation = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadByte());
+                DevToolsAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadByte()),
+                KickingAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadByte()),
+                BanningAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadByte()),
+                Teleportation = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadByte()),
+            };
         }
 
         public static SerializedServerSettings Create() {

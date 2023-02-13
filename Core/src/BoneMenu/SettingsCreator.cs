@@ -39,6 +39,9 @@ namespace LabFusion.BoneMenu
             // Nametags enabled
             CreateBoolPermission(category, "Nametags", FusionPreferences.LocalServerSettings.NametagsEnabled);
 
+            // Voice chat
+            CreateBoolPermission(category, "Voicechat", FusionPreferences.LocalServerSettings.VoicechatEnabled);
+
             // Server privacy
             CreateEnumPermission(category, "Server Privacy", FusionPreferences.LocalServerSettings.Privacy);
 
