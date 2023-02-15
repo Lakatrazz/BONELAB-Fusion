@@ -1,0 +1,128 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!47 &1
+QualitySettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 5
+  m_CurrentQuality: 2
+  m_QualitySettings:
+  - serializedVersion: 2
+    name: PC Low
+    pixelLightCount: 99
+    shadows: 0
+    shadowResolution: 2
+    shadowProjection: 1
+    shadowCascades: 1
+    shadowDistance: 150
+    shadowNearPlaneOffset: 3
+    shadowCascade2Split: 0.33333334
+    shadowCascade4Split: {x: 0.06666667, y: 0.2, z: 0.46666667}
+    shadowmaskMode: 1
+    skinWeights: 2
+    textureQuality: 0
+    anisotropicTextures: 1
+    antiAliasing: 0
+    softParticles: 0
+    softVegetation: 1
+    realtimeReflectionProbes: 0
+    billboardsFaceCameraPosition: 1
+    vSyncCount: 0
+    lodBias: 1
+    maximumLODLevel: 0
+    streamingMipmapsActive: 1
+    streamingMipmapsAddAllCameras: 0
+    streamingMipmapsMemoryBudget: 3072
+    streamingMipmapsRenderersPerFrame: 512
+    streamingMipmapsMaxLevelReduction: 5
+    streamingMipmapsMaxFileIORequests: 1024
+    particleRaycastBudget: 1024
+    asyncUploadTimeSlice: 1
+    asyncUploadBufferSize: 128
+    asyncUploadPersistentBuffer: 1
+    resolutionScalingFixedDPIFactor: 1
+    customRenderPipeline: {fileID: 11400000, guid: 82c7789d8dd90a5479b116e685fd66a2, type: 2}
+    excludedTargetPlatforms:
+    - Android
+    - Server
+  - serializedVersion: 2
+    name: PC Mid
+    pixelLightCount: 99
+    shadows: 0
+    shadowResolution: 2
+    shadowProjection: 1
+    shadowCascades: 1
+    shadowDistance: 150
+    shadowNearPlaneOffset: 3
+    shadowCascade2Split: 0.33333334
+    shadowCascade4Split: {x: 0.06666667, y: 0.2, z: 0.46666667}
+    shadowmaskMode: 1
+    skinWeights: 4
+    textureQuality: 0
+    anisotropicTextures: 2
+    antiAliasing: 2
+    softParticles: 0
+    softVegetation: 1
+    realtimeReflectionProbes: 1
+    billboardsFaceCameraPosition: 1
+    vSyncCount: 0
+    lodBias: 1.5
+    maximumLODLevel: 0
+    streamingMipmapsActive: 1
+    streamingMipmapsAddAllCameras: 0
+    streamingMipmapsMemoryBudget: 3072
+    streamingMipmapsRenderersPerFrame: 512
+    streamingMipmapsMaxLevelReduction: 5
+    streamingMipmapsMaxFileIORequests: 1024
+    particleRaycastBudget: 2048
+    asyncUploadTimeSlice: 1
+    asyncUploadBufferSize: 128
+    asyncUploadPersistentBuffer: 1
+    resolutionScalingFixedDPIFactor: 1
+    customRenderPipeline: {fileID: 11400000, guid: 0510cd85a6f18ee40809b6b3d9d65b6e, type: 2}
+    excludedTargetPlatforms:
+    - Android
+    - Server
+  - serializedVersion: 2
+    name: PC High
+    pixelLightCount: 99
+    shadows: 0
+    shadowResolution: 2
+    shadowProjection: 1
+    shadowCascades: 1
+    shadowDistance: 150
+    shadowNearPlaneOffset: 3
+    shadowCascade2Split: 0.33333334
+    shadowCascade4Split: {x: 0.06666667, y: 0.2, z: 0.46666667}
+    shadowmaskMode: 1
+    skinWeights: 255
+    textureQuality: 0
+    anisotropicTextures: 2
+    antiAliasing: 4
+    softParticles: 0
+    softVegetation: 1
+    realtimeReflectionProbes: 1
+    billboardsFaceCameraPosition: 1
+    vSyncCount: 0
+    lodBias: 2
+    maximumLODLevel: 0
+    streamingMipmapsActive: 1
+    streamingMipmapsAddAllCameras: 0
+    streamingMipmapsMemoryBudget: 3072
+    streamingMipmapsRenderersPerFrame: 512
+    streamingMipmapsMaxLevelReduction: 5
+    streamingMipmapsMaxFileIORequests: 1024
+    particleRaycastBudget: 4096
+    asyncUploadTimeSlice: 2
+    asyncUploadBufferSize: 128
+    asyncUploadPersistentBuffer: 1
+    resolutionScalingFixedDPIFactor: 1
+    customRenderPipeline: {fileID: 11400000, guid: 76660153bd1a8a446b3397129e5fa87c, type: 2}
+    excludedTargetPlatforms:
+    - Android
+    - Server
+  m_PerPlatformDefaultQuality:
+    Android: 3
+    PS5: 2
+    Server: 0
+    Standalone: 2
+    Windows Store Apps: 0

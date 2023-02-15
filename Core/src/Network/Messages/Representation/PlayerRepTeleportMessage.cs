@@ -62,7 +62,7 @@ namespace LabFusion.Network
                     if (!isServerHandled && data.teleportedUser == PlayerIdManager.LocalSmallId)
                     {
                         // Teleport the player
-                        FusionPlayer.Teleport(data.position);
+                        FusionPlayer.Teleport(data.position, Vector3.forward);
                     }
                     else
                         throw new ExpectedClientException();

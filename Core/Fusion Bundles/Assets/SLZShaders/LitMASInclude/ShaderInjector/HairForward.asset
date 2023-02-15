@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd7d1f8f9838c1541abbb5c264b254f6, type: 3}
+  m_Name: HairForward
+  m_EditorClassIdentifier: 
+  outputInclude: {fileID: 10900000, guid: cab23ba3fdfef5540b01c70cc8831341, type: 3}
+  baseInclude: {fileID: 10900000, guid: d5426963259cc9a41b440011880b9fc2, type: 3}
+  injectableIncludes:
+  - {fileID: 10900000, guid: 16380cd34ea8abf41b69d1f248057b10, type: 3}
+  - {fileID: 10900000, guid: 86d5c622b75cede49857fef3a19dae5a, type: 3}
+  - {fileID: 10900000, guid: c9f32b72f4bfe074d93a952773a7fedb, type: 3}
+  - {fileID: 10900000, guid: 29eeba4104ff52b40abd7219004294ce, type: 3}

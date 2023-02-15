@@ -162,6 +162,14 @@ namespace LabFusion.Network
             ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
+        public void Write(ushort? value)
+        {
+            Write(value.HasValue);
+
+            if (value.HasValue)
+                Write(value.Value);
+        }
+
         public void Write(uint value)
         {
             ArrayExtensions.EnsureLength(ref buffer, Position + 4);

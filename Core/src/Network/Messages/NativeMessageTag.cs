@@ -8,7 +8,7 @@ namespace LabFusion.Network
 {
     public static class NativeMessageTag
     {
-        public static byte
+        public static readonly byte
             Unknown = 0,
 
             ConnectionRequest = 1,
@@ -128,11 +128,17 @@ namespace LabFusion.Network
 
             PlayerRepTeleport = 76,
 
+            // SDK messages
+            // Module setup
             Module = 80,
             DynamicsAssignment = 81,
 
+            // Gamemodes
             GamemodeMetadataResponse = 82,
-            GamemodeTriggerResponse = 83;
+            GamemodeTriggerResponse = 83,
+
+            // SDK scripts
+            GameObjectActive = 84;
     }
 
 }

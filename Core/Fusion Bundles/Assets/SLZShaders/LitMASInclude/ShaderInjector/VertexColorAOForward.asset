@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd7d1f8f9838c1541abbb5c264b254f6, type: 3}
+  m_Name: VertexColorAOForward
+  m_EditorClassIdentifier: 
+  outputInclude: {fileID: 10900000, guid: 3c49c71a767d95a419ae10da8412d099, type: 3}
+  baseInclude: {fileID: 10900000, guid: d5426963259cc9a41b440011880b9fc2, type: 3}
+  injectableIncludes:
+  - {fileID: 10900000, guid: 16380cd34ea8abf41b69d1f248057b10, type: 3}
+  - {fileID: 10900000, guid: 86d5c622b75cede49857fef3a19dae5a, type: 3}
+  - {fileID: 10900000, guid: 06b5d3c20722dff4785f46b9abafe74c, type: 3}
+  - {fileID: 10900000, guid: 6a4eb4ff6d4178b4ca27eca657516d0d, type: 3}
+  - {fileID: 10900000, guid: edf866d9d0f87324485d1946e3e8565e, type: 3}
+  - {fileID: 10900000, guid: c193f170f74737442894aba8b7266927, type: 3}

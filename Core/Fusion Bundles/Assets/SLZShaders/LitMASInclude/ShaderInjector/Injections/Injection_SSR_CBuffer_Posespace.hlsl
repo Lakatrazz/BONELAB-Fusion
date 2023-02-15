@@ -1,0 +1,3 @@
+//#!INJECT_BEGIN UNIVERSAL_DEFINES 0
+#define _SSRTemporalMul 0
+//#!INJECT_END

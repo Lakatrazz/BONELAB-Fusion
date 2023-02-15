@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LabFusion.Points;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +11,7 @@ namespace LabFusion.Data {
         public static void OnInitializeMelon() {
             PermissionList.PullFromFile();
             BanList.PullFromFile();
+            PointSaveManager.ReadFromFile();
         }
     }
 }

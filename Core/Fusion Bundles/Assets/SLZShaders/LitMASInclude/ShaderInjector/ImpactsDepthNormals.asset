@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd7d1f8f9838c1541abbb5c264b254f6, type: 3}
+  m_Name: ImpactsDepthNormals
+  m_EditorClassIdentifier: 
+  outputInclude: {fileID: 10900000, guid: ffd03d2f28569364682ffdb41a66076f, type: 3}
+  baseInclude: {fileID: 10900000, guid: 227ad5177db854e49a271b6143aa789f, type: 3}
+  injectableIncludes:
+  - {fileID: 10900000, guid: 86d5c622b75cede49857fef3a19dae5a, type: 3}
+  - {fileID: 10900000, guid: 305e5c81201b17d488f864cfb70943a1, type: 3}
+  - {fileID: 10900000, guid: 37d63b61721eb5d4987f1255f95280fd, type: 3}
+  - {fileID: 10900000, guid: e9c4013a5ab6b0b4f8f10326087f2fbb, type: 3}
+  - {fileID: 10900000, guid: bae3419c672853f49a5835566fa8d1df, type: 3}

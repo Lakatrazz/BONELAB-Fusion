@@ -2,6 +2,7 @@
 using BoneLib.BoneMenu.Elements;
 
 using LabFusion.Extensions;
+using LabFusion.MarrowIntegration;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Senders;
@@ -18,11 +19,24 @@ using UnityEngine.UI;
 
 namespace LabFusion.SDK.Gamemodes {
     public class TeamDeathmatch : Gamemode {
+        public static TeamDeathmatch Instance { get; private set; }
+
         protected enum Team {
             NO_TEAM = 0,
             SABRELAKE = 1,
             LAVA_GANG = 2,
         }
+
+        public string LavaGangName => !string.IsNullOrWhiteSpace(_lavaGangOverride) ? _lavaGangOverride : "Lava Gang";
+        public string SabrelakeName => !string.IsNullOrWhiteSpace(_sabrelakeOverride) ? _sabrelakeOverride : "Sabrelake";
+        public Texture2D LavaGangLogo => _lavaGangLogoOverride != null ? _lavaGangLogoOverride : FusionBundleLoader.LavaGangLogo;
+        public Texture2D SabrelakeLogo => _sabrelakeLogoOverride != null ? _sabrelakeLogoOverride : FusionBundleLoader.SabrelakeLogo;
+
+        protected string _lavaGangOverride = null;
+        protected string _sabrelakeOverride = null;
+
+        protected Texture2D _lavaGangLogoOverride = null;
+        protected Texture2D _sabrelakeLogoOverride = null;
 
         protected string ParseTeam(Team team) {
             switch (team) {
@@ -30,14 +44,16 @@ namespace LabFusion.SDK.Gamemodes {
                 case Team.NO_TEAM:
                     return "Invalid Team";
                 case Team.LAVA_GANG:
-                    return "Lava Gang";
+                    return LavaGangName;
                 case Team.SABRELAKE:
-                    return "Sabrelake";
+                    return SabrelakeName;
             }
         }
 
         protected class TeamLogoInstance {
             protected const float LogoDivider = 270f;
+
+            public TeamDeathmatch deathmatch;
 
             public GameObject go;
             public Canvas canvas;
@@ -48,7 +64,9 @@ namespace LabFusion.SDK.Gamemodes {
 
             public Team team;
 
-            public TeamLogoInstance(PlayerId id, Team team) {
+            public TeamLogoInstance(TeamDeathmatch deathmatch, PlayerId id, Team team) {
+                this.deathmatch = deathmatch;
+
                 go = new GameObject($"{id.SmallId} Team Logo");
 
                 canvas = go.AddComponent<Canvas>();
@@ -61,38 +79,27 @@ namespace LabFusion.SDK.Gamemodes {
                 GameObject.DontDestroyOnLoad(go);
                 go.hideFlags = HideFlags.DontUnloadUnusedAsset;
 
-                switch (team) {
-                    case Team.LAVA_GANG:
-                        image.texture = FusionBundleLoader.LavaGangLogo;
-                        break;
-                    case Team.SABRELAKE:
-                        image.texture = FusionBundleLoader.SabrelakeLogo;
-                        break;
-                }
-
                 this.id = id;
                 PlayerRepManager.TryGetPlayerRep(id, out rep);
 
                 this.team = team;
+
+                UpdateLogo();
             }
 
             public void Toggle(bool value) {
                 go.SetActive(value);
             }
 
-            public void Show(Team team) {
+            public void UpdateLogo() {
                 switch (team) {
                     case Team.LAVA_GANG:
-                        image.texture = FusionBundleLoader.LavaGangLogo;
+                        image.texture = deathmatch.LavaGangLogo;
                         break;
                     case Team.SABRELAKE:
-                        image.texture = FusionBundleLoader.SabrelakeLogo;
+                        image.texture = deathmatch.SabrelakeLogo;
                         break;
                 }
-
-                go.SetActive(true);
-
-                this.team = team;
             }
 
             public void Cleanup() {
@@ -111,6 +118,8 @@ namespace LabFusion.SDK.Gamemodes {
 
                         go.transform.position = head.position + Vector3.up * rep.GetNametagOffset();
                         go.transform.LookAtPlayer();
+
+                        UpdateLogo();
                     }
                 }
             }
@@ -142,6 +151,8 @@ namespace LabFusion.SDK.Gamemodes {
         private Team _lastTeam = Team.NO_TEAM;
         private Team _localTeam = Team.NO_TEAM;
 
+        private bool _hasOverridenValues = false;
+
         private readonly Dictionary<PlayerId, TeamLogoInstance> _logoInstances = new Dictionary<PlayerId, TeamLogoInstance>();
 
         public override void OnBoneMenuCreated(MenuCategory category) {
@@ -157,18 +168,41 @@ namespace LabFusion.SDK.Gamemodes {
             _totalMinutes = minutes;
         }
 
+        public void SetLavaGangName(string name) {
+            _lavaGangOverride = name;
+        }
+
+        public void SetSabrelakeName(string name) {
+            _sabrelakeOverride = name;
+        }
+
+        public void SetLavaGangLogo(Texture2D logo)
+        {
+            _lavaGangLogoOverride = logo;
+        }
+
+        public void SetSabrelakeLogo(Texture2D logo)
+        {
+            _sabrelakeLogoOverride = logo;
+        }
+
         public override void OnGamemodeRegistered() {
             base.OnGamemodeRegistered();
+
+            Instance = this;
 
             MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
             MultiplayerHooking.OnPlayerAction += OnPlayerAction;
 
-            DefaultPlaylist();
+            SetDefaultValues();
         }
 
         public override void OnGamemodeUnregistered() {
             base.OnGamemodeUnregistered();
+
+            if (Instance == this)
+                Instance = null;
 
             MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
             MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
@@ -176,12 +210,34 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         public override void OnMainSceneInitialized() {
-            DefaultPlaylist();
+            if (!_hasOverridenValues) {
+                SetDefaultValues();
+            }
+            else {
+                _hasOverridenValues = false;
+            }
         }
 
-        private void DefaultPlaylist()
+        public override void OnLoadingBegin() {
+            _hasOverridenValues = false;
+        }
+
+        public void SetDefaultValues()
         {
-            SetPlaylist(0.7f, FusionBundleLoader.SyntheticCavernsRemix, FusionBundleLoader.WWWWonderLan);
+            _totalMinutes = _defaultMinutes;
+            SetPlaylist(0.7f, FusionBundleLoader.CombatPlaylist);
+
+            _lavaGangOverride = null;
+            _sabrelakeOverride = null;
+
+            _lavaGangLogoOverride = null;
+            _sabrelakeLogoOverride = null;
+        }
+
+        public void SetOverriden() {
+            if (LevelWarehouseUtilities.IsLoading()) {
+                _hasOverridenValues = true;
+            }
         }
 
         protected void OnPlayerAction(PlayerId player, PlayerActionType type, PlayerId otherPlayer = null)
@@ -244,19 +300,21 @@ namespace LabFusion.SDK.Gamemodes {
             string message;
 
             if (lavaGang > sabrelake) {
-                message = $"WINNER: Lava Gang! (Score: {lavaGang})\n" +
-    $"Loser: Sabrelake (Score: {sabrelake})\n";
+                message = $"WINNER: {ParseTeam(Team.LAVA_GANG)}! (Score: {lavaGang})\n" +
+    $"Loser: {ParseTeam(Team.SABRELAKE)} (Score: {sabrelake})\n";
 
-                message += _localTeam == Team.LAVA_GANG ? "You Won!" : "You Lost...";
+                message += GetTeamStatus(Team.LAVA_GANG); ;
             }
             else if (sabrelake > lavaGang) {
-                message = $"WINNER: Sabrelake! (Score: {sabrelake})\n" +
-                    $"Loser: Lava Gang (Score: {lavaGang})\n";
+                message = $"WINNER: {ParseTeam(Team.SABRELAKE)}! (Score: {sabrelake})\n" +
+                    $"Loser: {ParseTeam(Team.LAVA_GANG)} (Score: {lavaGang})\n";
 
-                message += _localTeam == Team.SABRELAKE ? "You Won!" : "You Lost...";
+                message += GetTeamStatus(Team.SABRELAKE); ;
             }
             else {
                 message = $"Tie! (Both Scores: ({lavaGang}))";
+
+                OnTeamTied();
             }
 
             // Show the winners in a notification
@@ -346,7 +404,7 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         protected void AddLogo(PlayerId id, Team team) {
-            var logo = new TeamLogoInstance(id, team);
+            var logo = new TeamLogoInstance(this, id, team);
             _logoInstances.Add(id, logo);
         }
 
@@ -371,6 +429,79 @@ namespace LabFusion.SDK.Gamemodes {
                     isMenuItem = false,
                     isPopup = true,
                 });
+            }
+        }
+
+        protected string GetTeamStatus(Team winner) {
+            if (_localTeam == winner) {
+                OnTeamVictory(_localTeam);
+                return "You Won!";
+            }
+            else {
+                OnTeamLost(_localTeam);
+                return "You Lost...";
+            }
+        }
+
+        protected void OnTeamVictory(Team team) {
+            switch (team) {
+                case Team.LAVA_GANG:
+                    FusionAudio.Play2D(FusionBundleLoader.LavaGangVictory, 0.7f);
+                    break;
+                case Team.SABRELAKE:
+                    FusionAudio.Play2D(FusionBundleLoader.SabrelakeVictory, 0.7f);
+                    break;
+            }
+        }
+
+        protected void OnTeamLost(Team team) {
+            switch (team)
+            {
+                case Team.LAVA_GANG:
+                    FusionAudio.Play2D(FusionBundleLoader.LavaGangFailure, 0.7f);
+                    break;
+                case Team.SABRELAKE:
+                    FusionAudio.Play2D(FusionBundleLoader.SabrelakeFailure, 0.7f);
+                    break;
+            }
+        }
+
+        protected void OnTeamTied() {
+
+        }
+
+        protected void OnTeamReceived(Team team) {
+            FusionNotifier.Send(new FusionNotification()
+            {
+                title = "Team Deathmatch Assignment",
+                showTitleOnPopup = true,
+                message = $"Your team is: {ParseTeam(team)}",
+                isMenuItem = false,
+                isPopup = true,
+                popupLength = 5f,
+            });
+
+            _localTeam = team;
+
+            // Get all spawn points
+            List<Transform> transforms = new List<Transform>();
+
+            if (team == Team.SABRELAKE) {
+                foreach (var point in SabrelakeSpawnpoint.Cache.Components) {
+                    transforms.Add(point.transform);
+                }
+            }
+            else {
+                foreach (var point in LavaGangSpawnpoint.Cache.Components) {
+                    transforms.Add(point.transform);
+                }
+            }
+
+            FusionPlayer.SetSpawnPoints(transforms.ToArray());
+
+            // Teleport to a random spawn point
+            if (FusionPlayer.TryGetSpawnPoint(out var spawn)) {
+                FusionPlayer.Teleport(spawn.position, spawn.forward);
             }
         }
 
@@ -405,17 +536,7 @@ namespace LabFusion.SDK.Gamemodes {
                     if (playerKey == key) {
                         // Check who this is
                         if (playerId.IsSelf) {
-                            FusionNotifier.Send(new FusionNotification()
-                            {
-                                title = "Team Deathmatch Assignment",
-                                showTitleOnPopup = true,
-                                message = $"Your team is: {ParseTeam(team)}",
-                                isMenuItem = false,
-                                isPopup = true,
-                                popupLength = 5f,
-                            });
-
-                            _localTeam = team;
+                            OnTeamReceived(team);
                         }
                         else {
                             AddLogo(playerId, team);

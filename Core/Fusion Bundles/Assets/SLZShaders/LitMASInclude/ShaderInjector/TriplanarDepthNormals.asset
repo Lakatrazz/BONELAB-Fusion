@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd7d1f8f9838c1541abbb5c264b254f6, type: 3}
+  m_Name: TriplanarDepthNormals
+  m_EditorClassIdentifier: 
+  outputInclude: {fileID: 10900000, guid: cb8f73a5be082fb4ea6a79fb8b7ff2a2, type: 3}
+  baseInclude: {fileID: 10900000, guid: 227ad5177db854e49a271b6143aa789f, type: 3}
+  injectableIncludes:
+  - {fileID: 10900000, guid: 62e7edc4426a6494ca9425c59f95f43e, type: 3}
+  - {fileID: 10900000, guid: 6a4eb4ff6d4178b4ca27eca657516d0d, type: 3}

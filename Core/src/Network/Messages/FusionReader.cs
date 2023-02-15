@@ -121,6 +121,19 @@ namespace LabFusion.Network
         }
 
         /// <summary>
+        /// Reads a nullable unsigned 16 bit integer from the reader.
+        /// </summary>
+        /// <returns></returns>
+        public ushort? ReadUInt16Nullable() {
+            bool hasValue = ReadBoolean();
+
+            if (hasValue)
+                return ReadUInt16();
+            else
+                return null;
+        }
+
+        /// <summary>
         ///     Reads a single boolean from the reader.
         /// </summary>
         /// <returns>The boolean read.</returns>

@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd7d1f8f9838c1541abbb5c264b254f6, type: 3}
+  m_Name: WhiteBoardMeta
+  m_EditorClassIdentifier: 
+  outputInclude: {fileID: 10900000, guid: f04c56e0e8f38664cabad79bbd7b5985, type: 3}
+  baseInclude: {fileID: 10900000, guid: 5e4c2db9537ee1d48be13dcc77c3a6cb, type: 3}
+  injectableIncludes:
+  - {fileID: 10900000, guid: 86d5c622b75cede49857fef3a19dae5a, type: 3}
+  - {fileID: 10900000, guid: 167bcaa96ee6fdd409eddf6b178d88d4, type: 3}

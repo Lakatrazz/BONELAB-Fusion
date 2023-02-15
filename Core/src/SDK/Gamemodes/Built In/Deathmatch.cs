@@ -1,6 +1,6 @@
 ﻿using BoneLib;
 using BoneLib.BoneMenu.Elements;
-
+using LabFusion.MarrowIntegration;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Senders;
@@ -16,6 +16,8 @@ using UnityEngine;
 
 namespace LabFusion.SDK.Gamemodes {
     public class Deathmatch : Gamemode {
+        public static Deathmatch Instance { get; private set; }
+
         private const int _defaultMinutes = 3;
         private const int _minMinutes = 2;
         private const int _maxMinutes = 60;
@@ -38,6 +40,8 @@ namespace LabFusion.SDK.Gamemodes {
 
         private int _totalMinutes = _defaultMinutes;
 
+        private bool _hasOverridenValues = false;
+
         public override void OnBoneMenuCreated(MenuCategory category) {
             base.OnBoneMenuCreated(category);
 
@@ -47,11 +51,31 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         public override void OnMainSceneInitialized() {
-            DefaultPlaylist();
+            if (!_hasOverridenValues) {
+                SetDefaultValues();
+            }
+            else {
+                _hasOverridenValues = false;
+            }
         }
 
-        private void DefaultPlaylist() {
-            SetPlaylist(0.7f, FusionBundleLoader.SyntheticCavernsRemix, FusionBundleLoader.WWWWonderLan);
+        public override void OnLoadingBegin() {
+            _hasOverridenValues = false;
+        }
+
+        public void SetDefaultValues() {
+            _totalMinutes = _defaultMinutes;
+            SetPlaylist(0.7f, FusionBundleLoader.CombatPlaylist);
+        }
+
+        public void SetOverriden() {
+            if (LevelWarehouseUtilities.IsLoading()) {
+                _hasOverridenValues = true;
+            }
+        }
+
+        public void SetRoundLength(int minutes) {
+            _totalMinutes = minutes;
         }
 
         public IReadOnlyList<PlayerId> GetPlayersByScore() {
@@ -86,13 +110,18 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         public override void OnGamemodeRegistered() {
+            Instance = this;
+
             // Add hooks
             MultiplayerHooking.OnPlayerAction += OnPlayerAction;
 
-            DefaultPlaylist();
+            SetDefaultValues();
         }
 
         public override void OnGamemodeUnregistered() {
+            if (Instance == this)
+                Instance = null;
+
             // Remove hooks
             MultiplayerHooking.OnPlayerAction -= OnPlayerAction;
         }
@@ -133,6 +162,19 @@ namespace LabFusion.SDK.Gamemodes {
 
             // Setup ammo
             FusionPlayer.SetAmmo(1000);
+
+            // Get all spawn points
+            List<Transform> transforms = new List<Transform>();
+            foreach (var point in DeathmatchSpawnpoint.Cache.Components) {
+                transforms.Add(point.transform);
+            }
+
+            FusionPlayer.SetSpawnPoints(transforms.ToArray());
+
+            // Teleport to a random spawn point
+            if (FusionPlayer.TryGetSpawnPoint(out var spawn)) {
+                FusionPlayer.Teleport(spawn.position, spawn.forward);
+            }
         }
 
         protected override void OnStopGamemode() {
@@ -186,6 +228,9 @@ namespace LabFusion.SDK.Gamemodes {
 
             // Remove ammo
             FusionPlayer.SetAmmo(0);
+
+            // Remove spawn points
+            FusionPlayer.ResetSpawnPoints();
         }
 
         public float GetTimeElapsed() => Time.realtimeSinceStartup - _timeOfStart;

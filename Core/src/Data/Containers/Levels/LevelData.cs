@@ -21,6 +21,7 @@ namespace LabFusion.Data {
             SprintBridgeData.OnCacheInfo();
             TimeTrialData.OnCacheInfo();
             GameControllerData.OnCacheInfo();
+            VoidG114Data.OnCacheInfo();
         }
     }
 }

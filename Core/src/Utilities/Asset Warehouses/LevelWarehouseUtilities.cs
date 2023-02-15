@@ -89,6 +89,8 @@ namespace LabFusion.Utilities {
                     // Send level load
                     if (NetworkInfo.IsServer)
                         LoadSender.SendLevelLoad(GetCurrentLevel().Barcode);
+
+                    MultiplayerHooking.Internal_OnLoadingBegin();
                 }
             }
             else if (_prevLevelBarcode == null) {

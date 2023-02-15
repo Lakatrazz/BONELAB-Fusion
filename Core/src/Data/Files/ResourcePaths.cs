@@ -19,10 +19,26 @@ namespace LabFusion.Data
         // Content bundle
         public const string ContentBundle = "content_bundle.fusion";
 
+        public const string PointShopPrefab = "machine_PointShop";
+
         public const string SabrelakeLogo = "tex_sabreLakeLogo";
         public const string LavaGangLogo = "tex_lavaGangLogo";
 
         public const string SyntheticCavernsRemix = "music_SyntheticCavernsRemix";
         public const string WWWWonderLan = "music_WWWonderlan";
+        public const string SicklyBugInitiative = "music_SicklyBugInitiative";
+
+        public const string LavaGangVictory = "sting_LavaGangVictory";
+        public const string SabrelakeVictory = "sting_sabrelakeVictory";
+
+        public const string LavaGangFailure = "sting_LavaGangFailure";
+        public const string SabrelakeFailure = "sting_sabrelakeFailure";
+
+        public const string UISelect = "UI_Beep_Bend_Short_stereo";
+        public const string UIDeny = "UI_Error_Double_Note_Down_Notch_stereo";
+        public const string UIConfirm = "UI_SCI-FI_Confirm_Dry_stereo";
+
+        public const string PurchaseFailure = "stinger_FailPurchase";
+        public const string PurchaseSuccess = "stinger_SuccessPurchase";
     }
 }

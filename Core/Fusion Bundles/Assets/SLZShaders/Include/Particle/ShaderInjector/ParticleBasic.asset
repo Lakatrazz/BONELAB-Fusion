@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd7d1f8f9838c1541abbb5c264b254f6, type: 3}
+  m_Name: ParticleBasic
+  m_EditorClassIdentifier: 
+  outputInclude: {fileID: 10900000, guid: c156fe6f1c50d864f8ceb85b935236f7, type: 3}
+  baseInclude: {fileID: 10900000, guid: 2df13d630bf74324fbefa9003b6544b3, type: 3}
+  injectableIncludes: []

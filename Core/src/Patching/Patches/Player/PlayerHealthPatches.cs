@@ -58,6 +58,12 @@ namespace LabFusion.Patching
                     PhysicsRigPatches.ForceAllowUnragdoll = false;
                 }
 
+                // Update the spawn point
+                if (FusionPlayer.TryGetSpawnPoint(out var point)) {
+                    rm.bodyVitals.checkpointPosition = point.position;
+                    rm.bodyVitals.checkpointFwd = point.forward;
+                }
+
                 // Notify the server about the death
                 PlayerSender.SendPlayerAction(PlayerActionType.DEATH);
 

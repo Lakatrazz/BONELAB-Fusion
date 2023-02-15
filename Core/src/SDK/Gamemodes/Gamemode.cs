@@ -46,12 +46,14 @@ namespace LabFusion.SDK.Gamemodes {
 
         internal void GamemodeRegistered() {
             MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
+            MultiplayerHooking.OnLoadingBegin += OnLoadingBegin;
 
             OnGamemodeRegistered();
         }
 
         internal void GamemodeUnregistered() {
             MultiplayerHooking.OnMainSceneInitialized -= OnMainSceneInitialized;
+            MultiplayerHooking.OnLoadingBegin -= OnLoadingBegin;
 
             OnGamemodeUnregistered();
         }
@@ -102,6 +104,8 @@ namespace LabFusion.SDK.Gamemodes {
         public virtual void OnGamemodeUnregistered() { }
 
         public virtual void OnMainSceneInitialized() { }
+
+        public virtual void OnLoadingBegin() { }
 
         protected FunctionElement _gamemodeToggleElement = null;
 

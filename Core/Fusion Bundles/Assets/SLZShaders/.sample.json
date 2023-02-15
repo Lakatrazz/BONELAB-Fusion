@@ -1,0 +1,5 @@
+{
+    "displayName":"SLZ Bonelab Shaders",
+    "description": "A collection of shaders that are found in Bonelab",
+    "createSeparatePackage": false
+}

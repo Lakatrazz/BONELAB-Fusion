@@ -23,6 +23,7 @@ using BoneLib;
 
 using LabFusion.Senders;
 using LabFusion.SDK.Gamemodes;
+using LabFusion.Points;
 
 namespace LabFusion
 {
@@ -58,6 +59,8 @@ namespace LabFusion
             PDController.OnInitializeMelon();
             ModuleHandler.Internal_HookAssemblies();
             GamemodeRegistration.Internal_HookAssemblies();
+            PointItemManager.Internal_HookAssemblies();
+
             PlayerAdditionsHelper.OnInitializeMelon();
         }
 
@@ -73,6 +76,7 @@ namespace LabFusion
             GrabGroupHandler.RegisterHandlersFromAssembly(FusionAssembly);
             PropExtenderManager.RegisterExtendersFromAssembly(FusionAssembly);
             GamemodeRegistration.LoadGamemodes(FusionAssembly);
+            PointItemManager.LoadItems(FusionAssembly);
 
             // Finally, initialize the network layer
             OnInitializeNetworking();
@@ -118,6 +122,7 @@ namespace LabFusion
             // Unhook assembly loads
             ModuleHandler.Internal_UnhookAssemblies();
             GamemodeRegistration.Internal_UnhookAssemblies();
+            PointItemManager.Internal_UnhookAssemblies();
 
             // Unload assetbundles
             FusionBundleLoader.OnBundleLoad();
