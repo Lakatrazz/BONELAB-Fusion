@@ -118,7 +118,10 @@ namespace LabFusion
         public override void OnDeinitializeMelon() {
             // Cleanup networking
             InternalLayerHelpers.OnCleanupLayer();
-            
+
+            // Backup files
+            FusionFileLoader.OnDeinitializeMelon();
+
             // Unhook assembly loads
             ModuleHandler.Internal_UnhookAssemblies();
             GamemodeRegistration.Internal_UnhookAssemblies();

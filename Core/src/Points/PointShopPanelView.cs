@@ -10,13 +10,12 @@ using UnityEngine.Events;
 using UnityEngine;
 using UnityEngine.UI;
 
-using LabFusion.Points;
-
 using TMPro;
 
 using UnhollowerBaseLib.Attributes;
-using SLZ.UI;
+
 using LabFusion.Utilities;
+
 
 namespace LabFusion.Points
 {
@@ -39,11 +38,16 @@ namespace LabFusion.Points
         private Transform _arrowButtonsRoot;
         private TMP_Text _pageCountText;
 
+        private Button _catalogButton;
+        private Button _ownedButton;
+
         private Transform _groupInformationRoot;
         private TMP_Text _infoTitle;
         private TMP_Text _infoDescription;
         private TMP_Text _infoPrice;
         private TMP_Text _infoAuthor;
+        private TMP_Text _infoVersion;
+        private TMP_Text _infoTags;
         private Button _infoBuyConfirm;
         private Button _infoAlreadyOwned;
         private Button _infoGoBack;
@@ -55,11 +59,19 @@ namespace LabFusion.Points
 
         private TMP_Text _bitCountText;
 
+        private Button _toggleButton;
+        private TMP_Text _toggleText;
+
+        private Button _sortButton;
+        private TMP_Text _sortText;
+
         private int _currentPageIndex = 0;
         private int _catalogPageCount = 0;
         private int _ownedPageCount = 0;
         private ActivePanel _panel = ActivePanel.CATALOG;
         private ActivePanel _lastCatalogPanel = ActivePanel.CATALOG;
+
+        private SortMode _sortMode = SortMode.PRICE;
 
         private PointItem _targetInfoItem;
 
@@ -68,10 +80,10 @@ namespace LabFusion.Points
         public ActivePanel Panel => _panel;
 
         [HideFromIl2Cpp]
-        public IReadOnlyList<PointItem> CatalogItems => PointItemManager.GetLockedItems();
+        public IReadOnlyList<PointItem> CatalogItems => PointItemManager.GetLockedItems(_sortMode);
 
         [HideFromIl2Cpp]
-        public IReadOnlyList<PointItem> OwnedItems => PointItemManager.GetUnlockedItems();
+        public IReadOnlyList<PointItem> OwnedItems => PointItemManager.GetUnlockedItems(_sortMode);
 
         [HideFromIl2Cpp]
         public IReadOnlyList<PointItem> PanelItems => _panel == ActivePanel.CATALOG ? CatalogItems : OwnedItems;
@@ -85,6 +97,7 @@ namespace LabFusion.Points
             SetupInfoPage();
 
             // Load the first page
+            UpdateSortModeText();
             SelectPanel(ActivePanel.CATALOG);
             LoadCatalogPage();
         }
@@ -103,13 +116,27 @@ namespace LabFusion.Points
             _infoDescription = _groupInformationRoot.Find("button_Description").GetComponentInChildren<TMP_Text>(true);
             _infoPrice = _groupInformationRoot.Find("button_Price").GetComponentInChildren<TMP_Text>(true);
             _infoAuthor = _groupInformationRoot.Find("button_Author").GetComponentInChildren<TMP_Text>(true);
+            _infoVersion = _groupInformationRoot.Find("button_Version").GetComponentInChildren<TMP_Text>(true);
+            _infoTags = _groupInformationRoot.Find("button_Tags").GetComponentInChildren<TMP_Text>(true);
             _infoBuyConfirm = _groupInformationRoot.Find("button_BuyConfirm").GetComponentInChildren<Button>(true);
             _infoAlreadyOwned = _groupInformationRoot.Find("button_AlreadyOwned").GetComponentInChildren<Button>(true);
             _infoGoBack = _groupInformationRoot.Find("button_goBack").GetComponentInChildren<Button>(true);
             _infoPreviewImage = _groupInformationRoot.Find("image_IconPreview").GetComponentInChildren<RawImage>(true);
             _defaultPreview = _infoPreviewImage.texture;
 
-            _bitCountText = _canvas.Find("button_bitCount").GetComponentInChildren<TMP_Text>();
+            _toggleButton = _groupInformationRoot.Find("button_Toggle").GetComponent<Button>();
+            _toggleButton.onClick.AddListener((UnityAction)(() => {
+                ConfirmToggle();
+            }));
+            _toggleText = _toggleButton.GetComponentInChildren<TMP_Text>(true);
+
+            _sortButton = _canvas.Find("button_SortBy").GetComponent<Button>();
+            _sortButton.onClick.AddListener((UnityAction)(() => {
+                SelectSort();
+            }));
+            _sortText = _sortButton.GetComponentInChildren<TMP_Text>(true);
+
+            _bitCountText = _canvas.Find("button_bitCount").GetComponentInChildren<TMP_Text>(true);
         }
 
         private void SetupText() {
@@ -120,15 +147,15 @@ namespace LabFusion.Points
 
         private void SetupButtons() {
             // Get the panel buttons
-            var catalogButton = _categorySelectionRoot.Find("button_catalog").GetComponent<Button>();
-            catalogButton.onClick.AddListener((UnityAction)(() => {
+            _catalogButton = _categorySelectionRoot.Find("button_catalog").GetComponent<Button>();
+            _catalogButton.onClick.AddListener((UnityAction)(() => {
                 _currentPageIndex = 0;
                 SelectPanel(ActivePanel.CATALOG);
                 LoadCatalogPage();
             }));
 
-            var ownedButton = _categorySelectionRoot.Find("button_owned").GetComponent<Button>();
-            ownedButton.onClick.AddListener((UnityAction)(() => {
+            _ownedButton = _categorySelectionRoot.Find("button_owned").GetComponent<Button>();
+            _ownedButton.onClick.AddListener((UnityAction)(() => {
                 _currentPageIndex = 0;
                 SelectPanel(ActivePanel.OWNED);
                 LoadCatalogPage();
@@ -268,16 +295,25 @@ namespace LabFusion.Points
             _bitCountText.text = PointItemManager.GetBitCount().ToString();
         }
 
-        private void LoadCatalogPage() {
-            PointItemManager.SortItems();
+        [HideFromIl2Cpp]
+        private void UpdateToggleText(PointItem item) {
+            _toggleText.text = item.IsEquipped ? "Unequip" : "Equip";
+        }
 
+        private void LoadCatalogPage() {
             // Push updates
             switch (_panel) {
                 case ActivePanel.CATALOG:
                     PushCatalogUpdate();
+
+                    _catalogButton.gameObject.SetActive(false);
+                    _ownedButton.gameObject.SetActive(true);
                     break;
                 case ActivePanel.OWNED:
                     PushOwnedUpdate();
+
+                    _catalogButton.gameObject.SetActive(true);
+                    _ownedButton.gameObject.SetActive(false);
                     break;
             }
 
@@ -306,11 +342,12 @@ namespace LabFusion.Points
         [HideFromIl2Cpp]
         private void LoadItem(Button button, PointItem item) {
             var text = button.GetComponentInChildren<TMP_Text>(true);
+            string tag = item.MainTag;
 
             if (Panel == ActivePanel.CATALOG)
-                text.text = $"{item.Title} - {item.Price} Bits";
+                text.text = $"{item.Title} - {item.Price} Bits ({tag})";
             else
-                text.text = item.Title;
+                text.text = $"{item.Title} ({tag})";
 
             text.color = PointItemManager.ParseColor(item.Rarity);
         }
@@ -322,6 +359,25 @@ namespace LabFusion.Points
             _infoDescription.text = item.Description;
             _infoPrice.text = $"{item.Price} Bits";
             _infoAuthor.text = item.Author;
+            _infoVersion.text = item.Version;
+
+            if (item.Tags == null || item.Tags.Length <= 0)
+                _infoTags.text = "Misc";
+            else {
+                string tags = "";
+                bool isFirst = true;
+
+                foreach (var tag in item.Tags) {
+                    if (isFirst)
+                        tags = tag;
+                    else
+                        tags += $", {tag}";
+
+                    isFirst = false;
+                }
+
+                _infoTags.text = tags;
+            }
             
             if (item.PreviewImage != null) {
                 _infoPreviewImage.texture = item.PreviewImage;
@@ -338,10 +394,20 @@ namespace LabFusion.Points
                 case ActivePanel.INFORMATION:
                     _infoBuyConfirm.gameObject.SetActive(false);
                     _infoAlreadyOwned.gameObject.SetActive(true);
+
+                    if (item.CanEquip) {
+                        _toggleButton.gameObject.SetActive(true);
+                        UpdateToggleText(item);
+                    }
+                    else {
+                        _toggleButton.gameObject.SetActive(false);
+                    }
                     break;
                 case ActivePanel.CONFIRMATION:
                     _infoBuyConfirm.gameObject.SetActive(true);
                     _infoAlreadyOwned.gameObject.SetActive(false);
+
+                    _toggleButton.gameObject.SetActive(false);
                     break;
             }
 
@@ -349,6 +415,47 @@ namespace LabFusion.Points
             UpdateBitCountText();
         }
         
+        private void SelectSort() {
+            int currentSort = (int)_sortMode;
+            currentSort++;
+
+            if (currentSort >= (int)SortMode.LAST_SORT)
+                currentSort = 0;
+
+            _sortMode = (SortMode)currentSort;
+            UpdateSortModeText();
+
+            if (_panel == ActivePanel.CATALOG || _panel == ActivePanel.OWNED) {
+                _currentPageIndex = 0;
+                LoadCatalogPage();
+            }
+        }
+
+        private void UpdateSortModeText() {
+            _sortText.text = $"Sort By: {_sortMode}";
+        }
+
+        private void ConfirmToggle() {
+            // Make sure we have a target
+            if (_targetInfoItem == null)
+                return;
+
+            // Check the current state
+            // Unequip
+            if (_targetInfoItem.IsEquipped) {
+                PointItemManager.SetEquipped(_targetInfoItem, false);
+            }
+            // Equip
+            else {
+                PointItemManager.SetEquipped(_targetInfoItem, true);
+
+                FusionAudio.Play3D(transform.position, FusionBundleLoader.EquipItem);
+            }
+
+            // Update text
+            UpdateToggleText(_targetInfoItem);
+        }
+
         private void ConfirmBuy() {
             // Make sure we have a target
             if (_targetInfoItem == null)

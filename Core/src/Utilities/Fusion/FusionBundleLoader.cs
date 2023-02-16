@@ -37,6 +37,8 @@ namespace LabFusion.Utilities {
         public static AudioClip PurchaseFailure { get; private set; }
         public static AudioClip PurchaseSuccess { get; private set; }
 
+        public static AudioClip EquipItem { get; private set; }
+
         public static AudioClip[] CombatPlaylist => new AudioClip[3]
         {
             SyntheticCavernsRemix,
@@ -89,6 +91,8 @@ namespace LabFusion.Utilities {
 
                 PurchaseFailure = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.PurchaseFailure);
                 PurchaseSuccess = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.PurchaseSuccess);
+
+                EquipItem = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.EquipItem);
             }
             else
                 FusionLogger.Error("Content Bundle failed to load!");

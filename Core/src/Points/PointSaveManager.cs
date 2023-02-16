@@ -1,7 +1,8 @@
 ﻿using LabFusion.Data;
-
+using SLZ.Bonelab;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,31 +13,51 @@ namespace LabFusion.Points {
         [Serializable]
         public class PointSaveData {
             public string[] _boughtItems;
+            public string[] _enabledItems;
             public int _bitCount;
 
             public PointSaveData() {
                 _boughtItems = _unlockedItems.ToArray();
+                _enabledItems = _equippedItems.ToArray();
                 _bitCount = _totalBits;
             }
         }
 
         private const string _filePath = "point_shop.dat";
+        private const string _backupPath = "point_shop.dat.bak";
 
         public static void WriteToFile() {
             DataSaver.WriteBinary(_filePath, new PointSaveData());
+        }
+
+        public static void WriteBackup() {
+            string filePath = PersistentData.GetPath(_filePath);
+            string backupPath = PersistentData.GetPath(_backupPath);
+
+            if (File.Exists(filePath))
+                File.Copy(filePath, backupPath, true);
         }
 
         public static void ReadFromFile() {
             var data = DataSaver.ReadBinary<PointSaveData>(_filePath);
 
             if (data != null) {
-                _unlockedItems = data._boughtItems.ToList();
+                if (data._boughtItems != null)
+                    _unlockedItems = data._boughtItems.ToList();
+
+                if (data._enabledItems != null)
+                    _equippedItems = data._enabledItems.ToList();
+
                 _totalBits = data._bitCount;
             }
         }
 
         public static bool IsUnlocked(string barcode) {
             return _unlockedItems.Contains(barcode);
+        }
+
+        public static bool IsEquipped(string barcode) {
+            return _equippedItems.Contains(barcode);
         }
 
         public static void UnlockItem(string barcode) {
@@ -52,6 +73,17 @@ namespace LabFusion.Points {
             WriteToFile();
         }
 
+        public static void SetEquipped(string barcode, bool isEquipped) {
+            if (isEquipped) {
+                if (!_equippedItems.Contains(barcode))
+                    _equippedItems.Add(barcode);
+            }
+            else
+                _equippedItems.Remove(barcode);
+
+            WriteToFile();
+        }
+
         public static int GetBitCount() => _totalBits;
 
         public static void SetBitCount(int count) {
@@ -60,6 +92,7 @@ namespace LabFusion.Points {
         }
 
         private static List<string> _unlockedItems = new List<string>();
+        private static List<string> _equippedItems = new List<string>();
         private static int _totalBits;
     }
 }

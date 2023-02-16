@@ -13,5 +13,9 @@ namespace LabFusion.Data {
             BanList.PullFromFile();
             PointSaveManager.ReadFromFile();
         }
+
+        public static void OnDeinitializeMelon() {
+            PointSaveManager.WriteBackup();
+        }
     }
 }

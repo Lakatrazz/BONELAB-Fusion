@@ -29,6 +29,17 @@ namespace LabFusion.Points {
         Purple = 11,
     }
 
+    public enum SortMode {
+        PRICE,
+        NAME,
+        TAG,
+        AUTHOR,
+        RARITY,
+        EQUIPPED,
+        UNEQUIPPED,
+        LAST_SORT,
+    }
+
     public static class PointItemManager {
         public static Color ParseColor(RarityLevel level) {
             switch (level) {
@@ -118,10 +129,6 @@ namespace LabFusion.Points {
             return PointItemLookup.TryGetValue(barcode, out item);
         }
 
-        public static void SortItems() {
-            PointItems.Sort((x, y) => x.Price - y.Price);
-        }
-
         public static int GetBitCount() {
             return PointSaveManager.GetBitCount();
         }
@@ -158,26 +165,65 @@ namespace LabFusion.Points {
             return true;
         }
 
-        public static IReadOnlyList<PointItem> GetLockedItems() {
+        public static void SetEquipped(PointItem item, bool isEquipped) {
+            if (item == null || !item.IsUnlocked)
+                return;
+
+            PointSaveManager.SetEquipped(item.Barcode, isEquipped);
+        }
+
+        public static IReadOnlyList<PointItem> GetLockedItems(SortMode sort = SortMode.PRICE) {
             List<PointItem> items = new List<PointItem>(LoadedItems.Count);
 
             foreach (var item in LoadedItems) {
+                if ((sort == SortMode.EQUIPPED && !item.IsEquipped) || (sort == SortMode.UNEQUIPPED && item.IsEquipped))
+                    continue;
+
                 if (!item.IsUnlocked)
                     items.Add(item);
             }
 
+            SortBy(ref items, sort);
+
             return items;
         }
 
-        public static IReadOnlyList<PointItem> GetUnlockedItems() {
+        public static IReadOnlyList<PointItem> GetUnlockedItems(SortMode sort = SortMode.PRICE) {
             List<PointItem> items = new List<PointItem>(LoadedItems.Count);
 
             foreach (var item in LoadedItems) {
+                if ((sort == SortMode.EQUIPPED && !item.IsEquipped) || (sort == SortMode.UNEQUIPPED && item.IsEquipped))
+                    continue;
+
                 if (item.IsUnlocked)
                     items.Add(item);
             }
 
+            SortBy(ref items, sort);
+
             return items;
+        }
+
+        private static void SortBy(ref List<PointItem> items, SortMode sort)
+        {
+            switch (sort)
+            {
+                case SortMode.PRICE:
+                    items.Sort((x, y) => x.Price - y.Price);
+                    break;
+                case SortMode.TAG:
+                    items.Sort((x, y) => x.MainTag.CompareTo(y.MainTag));
+                    break;
+                case SortMode.NAME:
+                    items.Sort((x, y) => x.Title.CompareTo(y.Title));
+                    break;
+                case SortMode.AUTHOR:
+                    items.Sort((x, y) => x.Author.CompareTo(y.Author));
+                    break;
+                case SortMode.RARITY:
+                    items.Sort((x, y) => (int)x.Rarity - (int)y.Rarity);
+                    break;
+            }
         }
 
         public static IReadOnlyList<PointItem> LoadedItems => PointItems;
