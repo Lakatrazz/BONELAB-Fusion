@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 
 namespace LabFusion.SDK.Points {
     public static class BitEconomy {
-        public const double BitsToPennyRatio = 0;
-        public const int DefaultMaxBitsPerRound = (int)(100d * BitsToPennyRatio);
+        public const double BitsToPennyRatio = 1;
 
-        public const string InternalAuthor = "BONELAB Fusion";
         public const string BaBaAuthor = "BaBaCorp";
 
-        public static int GetCost(int pennies) {
+        public static int ConvertPrice(int pennies) {
             return (int)(BitsToPennyRatio * (double)pennies);
         }
     }

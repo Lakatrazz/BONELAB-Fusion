@@ -16,7 +16,7 @@ namespace LabFusion.SDK.Points {
 
         public override string Description => "A place to store all the bloat! ready for transportation via flushed recycling co.";
 
-        public override int Price => BitEconomy.GetCost(200);
+        public override int Price => BitEconomy.ConvertPrice(200);
 
         public override RarityLevel Rarity => RarityLevel.Gray;
 

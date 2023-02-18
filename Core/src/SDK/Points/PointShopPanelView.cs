@@ -30,6 +30,8 @@ namespace LabFusion.SDK.Points
 
         public PointShopPanelView(IntPtr intPtr) : base(intPtr) { }
 
+        private Rigidbody _doorRigidbody;
+
         private Transform _canvas;
 
         private Transform _groupItemsRoot;
@@ -64,6 +66,8 @@ namespace LabFusion.SDK.Points
 
         private Button _sortButton;
         private TMP_Text _sortText;
+
+        private Button _unequipAllButton;
 
         private int _currentPageIndex = 0;
         private int _catalogPageCount = 0;
@@ -103,6 +107,8 @@ namespace LabFusion.SDK.Points
         }
 
         private void SetupReferences() {
+            _doorRigidbody = transform.parent.Find("Art/Offset/VendorAtlas/Door Pivot").GetComponent<Rigidbody>();
+
             _canvas = transform.Find("CANVAS");
 
             _groupItemsRoot = _canvas.Find("group_Items");
@@ -135,6 +141,15 @@ namespace LabFusion.SDK.Points
                 SelectSort();
             }));
             _sortText = _sortButton.GetComponentInChildren<TMP_Text>(true);
+
+            _unequipAllButton = _canvas.Find("button_UnequipAll").GetComponent<Button>();
+            _unequipAllButton.onClick.AddListener((UnityAction)(() => {
+                PointItemManager.UnequipAll();
+
+                _currentPageIndex = 0;
+                SelectPanel(ActivePanel.OWNED);
+                LoadCatalogPage();
+            }));
 
             _bitCountText = _canvas.Find("button_bitCount").GetComponentInChildren<TMP_Text>(true);
         }
@@ -450,6 +465,8 @@ namespace LabFusion.SDK.Points
                 PointItemManager.SetEquipped(_targetInfoItem, true);
 
                 FusionAudio.Play3D(transform.position, FusionContentLoader.EquipItem);
+
+                _doorRigidbody.AddRelativeTorque(Vector3.left * 30f, ForceMode.Impulse);
             }
 
             // Update text

@@ -287,6 +287,12 @@ namespace LabFusion.SDK.Points {
             PointItemSender.SendPointItemEquip(item.Barcode, isEquipped);
         }
 
+        public static void UnequipAll() {
+            foreach (var item in LoadedItems) {
+                SetEquipped(item, false);
+            }
+        }
+
         public static IReadOnlyList<PointItem> GetLockedItems(SortMode sort = SortMode.PRICE) {
             List<PointItem> items = new List<PointItem>(LoadedItems.Count);
 

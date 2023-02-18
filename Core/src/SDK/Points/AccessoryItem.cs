@@ -44,12 +44,16 @@ namespace LabFusion.SDK.Points
                 transform = accessory.transform;
             }
             
-            public void Update(AccessoryPoint itemPoint) {
+            public void Update(AccessoryPoint itemPoint, bool scale) {
                 Vector3 position;
                 Quaternion rotation;
                 Transform head;
 
                 var avatar = rigManager._avatar;
+
+                if (scale) {
+                    transform.localScale = Vector3.one * (avatar.height / 1.76f);
+                }
 
                 switch (itemPoint) {
                     default:
@@ -104,6 +108,9 @@ namespace LabFusion.SDK.Points
         // Required getter for the instantiated accessory prefab.
         public abstract GameObject AccessoryPrefab { get; }
 
+        // Should the accessory scale with the player height? Ford's height is 1, 1, 1 scale
+        public virtual bool ScaleWithHeight => true;
+
         protected Dictionary<RigManager, AccessoryInstance> _accessoryInstances = new Dictionary<RigManager, AccessoryInstance>(new UnityComparer());
 
         public override void OnUpdateObjects(PointItemPayload payload, bool isVisible) {
@@ -141,7 +148,7 @@ namespace LabFusion.SDK.Points
                     continue;
                 }
 
-                instance.Value.Update(ItemPoint);
+                instance.Value.Update(ItemPoint, ScaleWithHeight);
             }
         }
     }

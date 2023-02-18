@@ -16,7 +16,7 @@ namespace LabFusion.SDK.Points {
 
         public override string Description => "From a deep dark cavern...";
 
-        public override int Price => BitEconomy.GetCost(1500);
+        public override int Price => BitEconomy.ConvertPrice(1500);
 
         public override RarityLevel Rarity => RarityLevel.Orange;
 

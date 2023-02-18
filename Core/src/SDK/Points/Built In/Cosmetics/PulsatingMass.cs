@@ -16,7 +16,7 @@ namespace LabFusion.SDK.Points {
 
         public override string Description => "A strangely pungent hat for your head...";
 
-        public override int Price => BitEconomy.GetCost(1700);
+        public override int Price => BitEconomy.ConvertPrice(1700);
 
         public override RarityLevel Rarity => RarityLevel.Pink;
 
