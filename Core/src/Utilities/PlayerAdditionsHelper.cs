@@ -10,7 +10,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using UnityEngine;
+
+using LabFusion.Network;
 
 namespace LabFusion.Utilities {
     public static class PlayerAdditionsHelper {
@@ -19,6 +22,11 @@ namespace LabFusion.Utilities {
             MultiplayerHooking.OnJoinServer += () => { OnEnterServer(RigData.RigReferences.RigManager); };
             MultiplayerHooking.OnStartServer += () => { OnEnterServer(RigData.RigReferences.RigManager); };
             MultiplayerHooking.OnDisconnect += () => { OnExitServer(RigData.RigReferences.RigManager); };
+            MultiplayerHooking.OnLocalPlayerCreated += (rig) => {
+                if (NetworkInfo.HasServer) {
+                    OnEnterServer(rig);
+                }
+            };
         }
 
         public static void OnEnterServer(RigManager rig) {

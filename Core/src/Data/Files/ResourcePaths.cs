@@ -16,6 +16,12 @@ namespace LabFusion.Data
         public const string WindowsBundlePrefix = "LabFusion.Core.resources.bundles.StandaloneWindows64.";
         public const string AndroidBundlePrefix = "LabFusion.Core.resources.bundles.Android.";
 
+        // Item bundle
+        public const string ItemBundle = "item_bundle.fusion";
+
+        public const string ItemPrefix = "item_";
+        public const string PreviewPrefix = "preview_";
+
         // Content bundle
         public const string ContentBundle = "content_bundle.fusion";
 

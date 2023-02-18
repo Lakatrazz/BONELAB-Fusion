@@ -287,6 +287,9 @@
     <Compile Include="Core\src\Network\Messages\Gamemodes\GamemodeTriggerResponseMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Gamemodes\GamemodeMetadataResponseMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Levels\LevelRequestMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\PointShop\PointItemTriggerValueMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\PointShop\PointItemTriggerMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\PointShop\PointItemEquipStateMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\BodyLogToggleMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\PlayerRepTeleportMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\PlayerRepDamageMessage.cs" />
@@ -339,6 +342,7 @@
     <Compile Include="Core\src\Patching\Patches\Levels\TimeTrial_GameControllerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\ArtRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\PlayerDamageReceiverPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Player\RemapRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Props\FlyingGunPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\KartRacePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Plugs\KeyRecieverPatches.cs" />
@@ -352,23 +356,21 @@
     <Compile Include="Core\src\Patching\Patches\Attacks\StabSlashPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ZoneEncounterPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Trigger\GenGameControl_TriggerPatches.cs" />
-    <Compile Include="Core\src\Points\BitEconomy.cs" />
-    <Compile Include="Core\src\Points\Built In\CardboardHat.cs" />
-    <Compile Include="Core\src\Points\Built In\OrangeMastersTreasure.cs" />
-    <Compile Include="Core\src\Points\Built In\WalkieTalkie.cs" />
-    <Compile Include="Core\src\Points\Built In\ScratchUlrich.cs" />
-    <Compile Include="Core\src\Points\Built In\AncientGem.cs" />
-    <Compile Include="Core\src\Points\Built In\RubiksCube.cs" />
-    <Compile Include="Core\src\Points\Built In\PulsatingMass.cs" />
-    <Compile Include="Core\src\Points\Built In\LodsOfBits.cs" />
-    <Compile Include="Core\src\Points\Built In\TestItem.cs" />
-    <Compile Include="Core\src\Points\PointItem.cs" />
-    <Compile Include="Core\src\Points\PointItemManager.cs" />
-    <Compile Include="Core\src\Points\PointSaveManager.cs" />
-    <Compile Include="Core\src\Points\PointShop.cs" />
-    <Compile Include="Core\src\Points\PointShopPanelView.cs" />
+    <Compile Include="Core\src\SDK\Points\AccessoryItem.cs" />
+    <Compile Include="Core\src\SDK\Points\BitEconomy.cs" />
+    <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\RubixCube.cs" />
+    <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\PulsatingMass.cs" />
+    <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\Junktion.cs" />
+    <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\GloopTrail.cs" />
+    <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\Gemstone.cs" />
+    <Compile Include="Core\src\SDK\Points\PointItem.cs" />
+    <Compile Include="Core\src\SDK\Points\PointItemManager.cs" />
+    <Compile Include="Core\src\SDK\Points\PointSaveManager.cs" />
+    <Compile Include="Core\src\SDK\Points\PointShop.cs" />
+    <Compile Include="Core\src\SDK\Points\PointShopPanelView.cs" />
     <Compile Include="Core\src\Representation\FusionPermissions.cs" />
     <Compile Include="Core\src\Representation\PlayerRepManager.cs" />
+    <Compile Include="Core\src\Representation\RigAbstractor.cs" />
     <Compile Include="Core\src\SDK\Gamemodes\Built In\TeamDeathmatch.cs" />
     <Compile Include="Core\src\SDK\Gamemodes\Built In\TugOWar.cs" />
     <Compile Include="Core\src\SDK\Gamemodes\Built In\Entangled.cs" />
@@ -382,6 +384,7 @@
     <Compile Include="Core\src\SDK\Gamemodes\GamemodePlaylist.cs" />
     <Compile Include="Core\src\SDK\Gamemodes\GamemodeRegistration.cs" />
     <Compile Include="Core\src\SDK\Network\Messages\ModuleMessageHandler.cs" />
+    <Compile Include="Core\src\Senders\PointItemSender.cs" />
     <Compile Include="Core\src\Senders\SDKSender.cs" />
     <Compile Include="Core\src\Senders\PermissionSender.cs" />
     <Compile Include="Core\src\Senders\Player\PlayerSender.cs" />
@@ -525,11 +528,13 @@
     <Compile Include="Core\src\Syncables\PropComponentExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\PropExtenderManager.cs" />
     <Compile Include="Core\src\Utilities\FloatingOriginUtilities.cs" />
+    <Compile Include="Core\src\Utilities\Fusion\FusionPointItemLoader.cs" />
+    <Compile Include="Core\src\Utilities\Fusion\FusionContentLoader.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionComponentCache.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionDevTools.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionAudio.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionPlayer.cs" />
-    <Compile Include="Core\src\Points\PointShopHelper.cs" />
+    <Compile Include="Core\src\SDK\Points\PointShopHelper.cs" />
     <Compile Include="Core\src\Utilities\GameObjectUtilities.cs" />
     <Compile Include="Core\src\Utilities\ImpactUtilities.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionBundleLoader.cs" />
@@ -1163,6 +1168,7 @@
   <ItemGroup>
     <None Include=".editorconfig" />
     <EmbeddedResource Include="Core\resources\bundles\StandaloneWindows64\content_bundle.fusion" />
+    <EmbeddedResource Include="Core\resources\bundles\StandaloneWindows64\item_bundle.fusion" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

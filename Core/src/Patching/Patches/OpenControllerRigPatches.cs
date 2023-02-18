@@ -36,20 +36,6 @@ namespace LabFusion.Patches
     [HarmonyPatch(typeof(ControllerRig))]
     public static class ControllerRigPatches {
         [HarmonyPrefix]
-        [HarmonyPatch(nameof(ControllerRig.JumpCharge))]
-        public static void JumpChargePrefix(ControllerRig __instance, float deltaTime, bool chargeInput, ref bool __state) {
-            __state = __instance._chargeInput;
-        }
-
-        [HarmonyPostfix]
-        [HarmonyPatch(nameof(ControllerRig.JumpCharge))]
-        public static void JumpChargePostfix(ControllerRig __instance, float deltaTime, bool chargeInput, bool __state) {
-            if (NetworkInfo.HasServer && __instance.manager == RigData.RigReferences.RigManager && __state && !__instance._chargeInput) {
-                PlayerSender.SendPlayerAction(PlayerActionType.JUMP);
-            }
-        }
-
-        [HarmonyPrefix]
         [HarmonyPatch(nameof(ControllerRig.OnFixedUpdate))]
         public static void OnFixedUpdate(ControllerRig __instance, float deltaTime)
         {

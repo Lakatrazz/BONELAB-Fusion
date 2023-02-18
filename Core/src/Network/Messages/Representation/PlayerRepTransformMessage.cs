@@ -19,7 +19,7 @@ namespace LabFusion.Network {
     public class PlayerRepTransformData : IFusionSerializable, IDisposable
     {
         public const int Size = sizeof(byte) * 4 + sizeof(float) * 9 + SerializedLocalTransform.Size 
-            * PlayerRepUtilities.TransformSyncCount + SerializedTransform.Size + SerializedQuaternion.Size + SerializedHand.Size * 2;
+            * RigAbstractor.TransformSyncCount + SerializedTransform.Size + SerializedQuaternion.Size + SerializedHand.Size * 2;
 
         public byte smallId;
 
@@ -31,7 +31,7 @@ namespace LabFusion.Network {
         public ControllerRig.VertState vertState;
         public ControllerRig.VrVertState vrVertState;
 
-        public SerializedLocalTransform[] serializedLocalTransforms = new SerializedLocalTransform[PlayerRepUtilities.TransformSyncCount];
+        public SerializedLocalTransform[] serializedLocalTransforms = new SerializedLocalTransform[RigAbstractor.TransformSyncCount];
         public SerializedTransform serializedPelvis;
         public SerializedSmallQuaternion serializedPlayspace;
 
@@ -57,7 +57,7 @@ namespace LabFusion.Network {
             writer.Write((byte)vertState);
             writer.Write((byte)vrVertState);
 
-            for (var i = 0; i < PlayerRepUtilities.TransformSyncCount; i++)
+            for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
                 writer.Write(serializedLocalTransforms[i]);
 
             writer.Write(serializedPelvis);
@@ -82,7 +82,7 @@ namespace LabFusion.Network {
             vertState = (ControllerRig.VertState)reader.ReadByte();
             vrVertState = (ControllerRig.VrVertState)reader.ReadByte();
 
-            for (var i = 0; i < PlayerRepUtilities.TransformSyncCount; i++)
+            for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
                 serializedLocalTransforms[i] = reader.ReadFusionSerializable<SerializedLocalTransform>();
 
             serializedPelvis = reader.ReadFusionSerializable<SerializedTransform>();
@@ -121,7 +121,7 @@ namespace LabFusion.Network {
                 rightHand = new SerializedHand(rightHand, rightHand.Controller)
             };
 
-            for (var i = 0; i < PlayerRepUtilities.TransformSyncCount; i++) {
+            for (var i = 0; i < RigAbstractor.TransformSyncCount; i++) {
                 data.serializedLocalTransforms[i] = new SerializedLocalTransform(syncTransforms[i]);
             }
 

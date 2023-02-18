@@ -7,8 +7,11 @@ using System.Threading.Tasks;
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Network;
+using LabFusion.SDK.Points;
 using LabFusion.Senders;
 using LabFusion.Utilities;
+
+using SLZ.Rig;
 
 namespace LabFusion.Representation
 {
@@ -32,12 +35,16 @@ namespace LabFusion.Representation
         private readonly Dictionary<string, string> _internalMetadata = new Dictionary<string, string>();
         public Dictionary<string, string> Metadata => _internalMetadata;
 
+        private List<string> _internalEquippedItems = new List<string>();
+        public List<string> EquippedItems => _internalEquippedItems;
+
         public PlayerId() { }
 
-        public PlayerId(ulong longId, byte smallId, Dictionary<string, string> metadata) {
+        public PlayerId(ulong longId, byte smallId, Dictionary<string, string> metadata, List<string> equippedItems) {
             LongId = longId;
             SmallId = smallId;
             _internalMetadata = metadata;
+            _internalEquippedItems = equippedItems;
         }
 
         public bool Equals(PlayerId other) {
@@ -83,6 +90,17 @@ namespace LabFusion.Representation
             OnMetadataChanged.InvokeSafe(this, $"invoking OnMetadataChanged hook for player {SmallId}");
         }
 
+        internal void Internal_ForceSetEquipped(string barcode, bool value) {
+            // Remove/add to the list
+            if (value && !_internalEquippedItems.Contains(barcode))
+                _internalEquippedItems.Add(barcode);
+            else if (!value && _internalEquippedItems.Contains(barcode))
+                _internalEquippedItems.Remove(barcode);
+
+            // Invoke the events on the item
+            PointItemManager.Internal_OnEquipChange(this, barcode, value);
+        }
+
         public void Insert() {
             if (PlayerIdManager.PlayerIds.Any((id) => id.SmallId == SmallId)) {
                 var list = PlayerIdManager.PlayerIds.FindAll((id) => id.SmallId == SmallId);
@@ -107,6 +125,8 @@ namespace LabFusion.Representation
 
             // Write the player metadata
             writer.Write(_internalMetadata);
+
+            writer.Write(_internalEquippedItems);
         }
         
         public void Deserialize(FusionReader reader) {
@@ -117,6 +137,12 @@ namespace LabFusion.Representation
             var metaData = reader.ReadStringDictionary();
             foreach (var pair in metaData) {
                 Internal_ForceSetMetadata(pair.Key, pair.Value);
+            }
+
+            var equippedItems = reader.ReadStrings();
+
+            foreach (var item in equippedItems) {
+                Internal_ForceSetEquipped(item, true);
             }
         }
     }

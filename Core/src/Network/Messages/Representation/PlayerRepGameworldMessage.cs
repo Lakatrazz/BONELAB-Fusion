@@ -16,23 +16,23 @@ using UnityEngine;
 namespace LabFusion.Network {
     public class PlayerRepGameworldData : IFusionSerializable, IDisposable
     {
-        public const int Size = sizeof(byte) + SerializedLocalTransform.Size * PlayerRepUtilities.GameworldRigTransformCount;
+        public const int Size = sizeof(byte) + SerializedLocalTransform.Size * RigAbstractor.GameworldRigTransformCount;
 
         public byte smallId;
-        public SerializedLocalTransform[] serializedGameworldLocalTransforms = new SerializedLocalTransform[PlayerRepUtilities.GameworldRigTransformCount];
+        public SerializedLocalTransform[] serializedGameworldLocalTransforms = new SerializedLocalTransform[RigAbstractor.GameworldRigTransformCount];
 
 
         public void Serialize(FusionWriter writer)
         {
             writer.Write(smallId);
-            for (var i = 0; i < PlayerRepUtilities.GameworldRigTransformCount; i++)
+            for (var i = 0; i < RigAbstractor.GameworldRigTransformCount; i++)
                 writer.Write(serializedGameworldLocalTransforms[i]);
         }
 
         public void Deserialize(FusionReader reader)
         {
             smallId = reader.ReadByte();
-            for (var i = 0; i < PlayerRepUtilities.GameworldRigTransformCount; i++)
+            for (var i = 0; i < RigAbstractor.GameworldRigTransformCount; i++)
                 serializedGameworldLocalTransforms[i] = reader.ReadFusionSerializable<SerializedLocalTransform>();
         }
 
@@ -47,7 +47,7 @@ namespace LabFusion.Network {
                 smallId = smallId,
             };
 
-            for (var i = 0; i < PlayerRepUtilities.GameworldRigTransformCount; i++) {
+            for (var i = 0; i < RigAbstractor.GameworldRigTransformCount; i++) {
                 data.serializedGameworldLocalTransforms[i] = new SerializedLocalTransform(syncTransforms[i]);
             }
 

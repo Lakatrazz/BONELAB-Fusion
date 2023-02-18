@@ -39,15 +39,15 @@ namespace LabFusion.Representation
         /// </summary>
         public bool IsCreated => !RigReferences.RigManager.IsNOC();
 
-        public static Transform[] syncedPoints = new Transform[PlayerRepUtilities.TransformSyncCount];
-        public static Transform[] gameworldPoints = new Transform[PlayerRepUtilities.GameworldRigTransformCount];
+        public static Transform[] syncedPoints = new Transform[RigAbstractor.TransformSyncCount];
+        public static Transform[] gameworldPoints = new Transform[RigAbstractor.GameworldRigTransformCount];
         public static Transform syncedPlayspace;
         public static Transform syncedPelvis;
         public static Hand syncedLeftHand;
         public static Hand syncedRightHand;
 
-        public SerializedLocalTransform[] serializedLocalTransforms = new SerializedLocalTransform[PlayerRepUtilities.TransformSyncCount];
-        public SerializedLocalTransform[] serializedGameworldLocalTransforms = new SerializedLocalTransform[PlayerRepUtilities.GameworldRigTransformCount];
+        public SerializedLocalTransform[] serializedLocalTransforms = new SerializedLocalTransform[RigAbstractor.TransformSyncCount];
+        public SerializedLocalTransform[] serializedGameworldLocalTransforms = new SerializedLocalTransform[RigAbstractor.GameworldRigTransformCount];
         public SerializedTransform serializedPelvis;
 
         public float serializedFeetOffset;
@@ -66,8 +66,8 @@ namespace LabFusion.Representation
         public PDController pelvisPDController;
         public float timeSincePelvisSent;
 
-        public Transform[] repTransforms = new Transform[PlayerRepUtilities.TransformSyncCount];
-        public Transform[] gameworldRigTransforms = new Transform[PlayerRepUtilities.GameworldRigTransformCount];
+        public Transform[] repTransforms = new Transform[RigAbstractor.TransformSyncCount];
+        public Transform[] gameworldRigTransforms = new Transform[RigAbstractor.GameworldRigTransformCount];
 
         public OpenControllerRig repControllerRig;
         public Transform repPlayspace;
@@ -204,7 +204,7 @@ namespace LabFusion.Representation
         }
 
         public void ResetSerializedTransforms() {
-            for (var i = 0; i < PlayerRepUtilities.TransformSyncCount; i++) {
+            for (var i = 0; i < RigAbstractor.TransformSyncCount; i++) {
                 serializedLocalTransforms[i] = new SerializedLocalTransform(Vector3.zero, Quaternion.identity);
             }
         }
@@ -392,7 +392,7 @@ namespace LabFusion.Representation
             repPelvis = rig.physicsRig.m_pelvis.GetComponent<Rigidbody>();
 
             repControllerRig = rig.openControllerRig;
-            repPlayspace = rig.openControllerRig.vrRoot.transform;
+            repPlayspace = rig.GetSmoothTurnTransform();
 
             repLeftController = repControllerRig.leftController;
             repRightController = repControllerRig.rightController;
@@ -400,11 +400,14 @@ namespace LabFusion.Representation
             RigReferences = new RigReferenceCollection(rig);
 
             // Get the synced transform arrays so we can set tracked positions later
-            PlayerRepUtilities.FillTransformArray(ref repTransforms, rig);
-            PlayerRepUtilities.FillGameworldArray(ref gameworldRigTransforms, rig);
+            RigAbstractor.FillTransformArray(ref repTransforms, rig);
+            RigAbstractor.FillGameworldArray(ref gameworldRigTransforms, rig);
 
             // Make sure the rig gets its initial avatar and settings
             MarkDirty();
+
+            // Invoke the hook
+            MultiplayerHooking.Internal_OnPlayerRepCreated(rig);
         }
 
         public void MarkDirty() {
@@ -456,7 +459,7 @@ namespace LabFusion.Representation
                 if (serializedGameworldLocalTransforms == null)
                     return;
 
-                for (var i = 0; i < PlayerRepUtilities.GameworldRigTransformCount; i++)
+                for (var i = 0; i < RigAbstractor.GameworldRigTransformCount; i++)
                 {
                     if (gameworldRigTransforms[i].IsNOC())
                         break;
@@ -496,7 +499,7 @@ namespace LabFusion.Representation
                 if (serializedLocalTransforms == null)
                     return;
 
-                for (var i = 0; i < PlayerRepUtilities.TransformSyncCount; i++)
+                for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
                 {
                     if (repTransforms[i].IsNOC())
                         break;
@@ -808,12 +811,12 @@ namespace LabFusion.Representation
                 return;
 
             syncedPelvis = RigData.RigReferences.RigManager.physicsRig.m_pelvis;
-            syncedPlayspace = RigData.RigReferences.RigManager.openControllerRig.vrRoot.transform;
+            syncedPlayspace = RigData.RigReferences.RigManager.GetSmoothTurnTransform();
             syncedLeftHand = RigData.RigReferences.RigManager.physicsRig.leftHand;
             syncedRightHand = RigData.RigReferences.RigManager.physicsRig.rightHand;
 
-            PlayerRepUtilities.FillTransformArray(ref syncedPoints, RigData.RigReferences.RigManager);
-            PlayerRepUtilities.FillGameworldArray(ref gameworldPoints, RigData.RigReferences.RigManager);
+            RigAbstractor.FillTransformArray(ref syncedPoints, RigData.RigReferences.RigManager);
+            RigAbstractor.FillGameworldArray(ref gameworldPoints, RigData.RigReferences.RigManager);
         }
     }
 }

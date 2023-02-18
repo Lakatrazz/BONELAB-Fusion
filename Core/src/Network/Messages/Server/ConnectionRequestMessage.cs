@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections;
 using MelonLoader;
+using System.Linq;
 
 namespace LabFusion.Network
 {
@@ -19,6 +20,7 @@ namespace LabFusion.Network
         public string avatarBarcode;
         public SerializedAvatarStats avatarStats;
         public Dictionary<string, string> initialMetadata;
+        public List<string> initialEquippedItems;
 
         public void Serialize(FusionWriter writer) {
             writer.Write(longId);
@@ -26,6 +28,7 @@ namespace LabFusion.Network
             writer.Write(avatarBarcode);
             writer.Write(avatarStats);
             writer.Write(initialMetadata);
+            writer.Write(initialEquippedItems);
         }
         
         public void Deserialize(FusionReader reader) {
@@ -34,6 +37,7 @@ namespace LabFusion.Network
             avatarBarcode = reader.ReadString();
             avatarStats = reader.ReadFusionSerializable<SerializedAvatarStats>();
             initialMetadata = reader.ReadStringDictionary();
+            initialEquippedItems = reader.ReadStrings().ToList();
         }
 
         public void Dispose() {
@@ -47,6 +51,7 @@ namespace LabFusion.Network
                 avatarBarcode = avatarBarcode,
                 avatarStats = stats,
                 initialMetadata = InternalServerHelpers.GetInitialMetadata(),
+                initialEquippedItems = InternalServerHelpers.GetInitialEquippedItems(),
             };
         }
     }
@@ -112,7 +117,7 @@ namespace LabFusion.Network
                             data.initialMetadata[MetadataHelper.PermissionKey] = level.ToString();
 
                         // First we send the new player to all existing players (and the new player so they know they exist)
-                        ConnectionSender.SendPlayerJoin(new PlayerId(data.longId, newSmallId.Value, data.initialMetadata), data.avatarBarcode, data.avatarStats);
+                        ConnectionSender.SendPlayerJoin(new PlayerId(data.longId, newSmallId.Value, data.initialMetadata, data.initialEquippedItems), data.avatarBarcode, data.avatarStats);
 
                         // Now we send all of our other players to the new player
                         foreach (var id in PlayerIdManager.PlayerIds) {

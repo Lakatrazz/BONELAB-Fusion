@@ -2044,11 +2044,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4297493394544356893, guid: 6ff6beb7234682541972998a1b52056d, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 269.8
+      value: 361.6
       objectReference: {fileID: 0}
     - target: {fileID: 4297493394544356893, guid: 6ff6beb7234682541972998a1b52056d, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0.219
+      value: 0.302
       objectReference: {fileID: 0}
     - target: {fileID: 5475420951490461705, guid: 6ff6beb7234682541972998a1b52056d, type: 3}
       propertyPath: m_Name
@@ -2310,7 +2310,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 124816089154228769, guid: 6ff6beb7234682541972998a1b52056d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.296
+      value: -0.35
       objectReference: {fileID: 0}
     - target: {fileID: 124816089154228769, guid: 6ff6beb7234682541972998a1b52056d, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2354,7 +2354,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7721088330569829692, guid: 6ff6beb7234682541972998a1b52056d, type: 3}
       propertyPath: m_text
-      value: Catalog
+      value: Shop
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6ff6beb7234682541972998a1b52056d, type: 3}
@@ -3384,7 +3384,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 124816089154228769, guid: 6ff6beb7234682541972998a1b52056d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.296
+      value: 0.35
       objectReference: {fileID: 0}
     - target: {fileID: 124816089154228769, guid: 6ff6beb7234682541972998a1b52056d, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3428,7 +3428,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7721088330569829692, guid: 6ff6beb7234682541972998a1b52056d, type: 3}
       propertyPath: m_text
-      value: Owned
+      value: Inventory
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6ff6beb7234682541972998a1b52056d, type: 3}

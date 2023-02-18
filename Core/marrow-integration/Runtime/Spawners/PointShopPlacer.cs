@@ -5,7 +5,7 @@ using UnityEngine;
 #if !ENABLE_MONO && !ENABLE_IL2CPP
 using MelonLoader;
 
-using LabFusion.Points;
+using LabFusion.SDK.Points;
 #endif
 
 namespace LabFusion.MarrowIntegration {

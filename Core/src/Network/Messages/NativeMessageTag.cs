@@ -138,7 +138,12 @@ namespace LabFusion.Network
             GamemodeTriggerResponse = 83,
 
             // SDK scripts
-            GameObjectActive = 84;
+            GameObjectActive = 84,
+
+            // Point items
+            PointItemEquipState = 85,
+            PointItemTrigger = 86,
+            PointItemTriggerValue = 87;
     }
 
 }

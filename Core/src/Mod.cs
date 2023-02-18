@@ -23,7 +23,7 @@ using BoneLib;
 
 using LabFusion.Senders;
 using LabFusion.SDK.Gamemodes;
-using LabFusion.Points;
+using LabFusion.SDK.Points;
 
 namespace LabFusion
 {

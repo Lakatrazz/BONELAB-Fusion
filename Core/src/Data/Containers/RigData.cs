@@ -165,6 +165,8 @@ namespace LabFusion.Data
 
             RigSpawn = manager.transform.position;
             RigSpawnRot = manager.transform.rotation;
+
+            MultiplayerHooking.Internal_OnLocalPlayerCreated(manager);
         }
 
         public static void OnSendVitals() {

@@ -10,12 +10,15 @@ using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Senders;
 
+using SLZ.Rig;
+
 namespace LabFusion.Utilities {
     public delegate bool UserAccessEvent(ulong userId, out string reason);
     public delegate void ServerEvent();
     public delegate void UpdateEvent();
     public delegate void PlayerUpdate(PlayerId playerId);
     public delegate void PlayerAction(PlayerId playerId, PlayerActionType type, PlayerId otherPlayer = null);
+    public delegate void RigManagerEvent(RigManager rig);
     public delegate void CatchupAction(ulong longId);
     public delegate void LobbyMenuAction(MenuCategory category, INetworkLobby lobby);
 
@@ -33,6 +36,7 @@ namespace LabFusion.Utilities {
         public static event PlayerAction OnPlayerAction;
         public static event CatchupAction OnPlayerCatchup;
         public static event LobbyMenuAction OnLobbyCategoryCreated;
+        public static event RigManagerEvent OnLocalPlayerCreated, OnPlayerRepCreated;
 
         internal static bool Internal_OnShouldAllowConnection(ulong userId, out string reason) {
             reason = "";
@@ -65,6 +69,10 @@ namespace LabFusion.Utilities {
         internal static void Internal_OnPlayerCatchup(ulong longId) => OnPlayerCatchup.InvokeSafe(longId, "executing OnPlayerCatchup hook");
 
         internal static void Internal_OnLobbyCategoryCreated(MenuCategory category, INetworkLobby lobby) => OnLobbyCategoryCreated.InvokeSafe(category, lobby, "executing OnLobbyCategoryCreated");
+
+        internal static void Internal_OnLocalPlayerCreated(RigManager rig) => OnLocalPlayerCreated.InvokeSafe(rig, "executing OnLocalPlayerCreated hook");
+
+        internal static void Internal_OnPlayerRepCreated(RigManager rig) => OnPlayerRepCreated.InvokeSafe(rig, "executing OnPlayerRepCreated hook");
 
         // Settings updates
         public static event ServerEvent OnServerSettingsChanged;

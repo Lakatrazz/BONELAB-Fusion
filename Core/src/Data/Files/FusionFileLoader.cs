@@ -1,4 +1,4 @@
-﻿using LabFusion.Points;
+﻿using LabFusion.SDK.Points;
 
 using System;
 using System.Collections.Generic;

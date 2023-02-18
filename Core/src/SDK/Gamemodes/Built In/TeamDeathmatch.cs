@@ -29,8 +29,8 @@ namespace LabFusion.SDK.Gamemodes {
 
         public string LavaGangName => !string.IsNullOrWhiteSpace(_lavaGangOverride) ? _lavaGangOverride : "Lava Gang";
         public string SabrelakeName => !string.IsNullOrWhiteSpace(_sabrelakeOverride) ? _sabrelakeOverride : "Sabrelake";
-        public Texture2D LavaGangLogo => _lavaGangLogoOverride != null ? _lavaGangLogoOverride : FusionBundleLoader.LavaGangLogo;
-        public Texture2D SabrelakeLogo => _sabrelakeLogoOverride != null ? _sabrelakeLogoOverride : FusionBundleLoader.SabrelakeLogo;
+        public Texture2D LavaGangLogo => _lavaGangLogoOverride != null ? _lavaGangLogoOverride : FusionContentLoader.LavaGangLogo;
+        public Texture2D SabrelakeLogo => _sabrelakeLogoOverride != null ? _sabrelakeLogoOverride : FusionContentLoader.SabrelakeLogo;
 
         protected string _lavaGangOverride = null;
         protected string _sabrelakeOverride = null;
@@ -225,7 +225,7 @@ namespace LabFusion.SDK.Gamemodes {
         public void SetDefaultValues()
         {
             _totalMinutes = _defaultMinutes;
-            SetPlaylist(0.7f, FusionBundleLoader.CombatPlaylist);
+            SetPlaylist(0.7f, FusionContentLoader.CombatPlaylist);
 
             _lavaGangOverride = null;
             _sabrelakeOverride = null;
@@ -446,10 +446,10 @@ namespace LabFusion.SDK.Gamemodes {
         protected void OnTeamVictory(Team team) {
             switch (team) {
                 case Team.LAVA_GANG:
-                    FusionAudio.Play2D(FusionBundleLoader.LavaGangVictory, 0.7f);
+                    FusionAudio.Play2D(FusionContentLoader.LavaGangVictory, 0.7f);
                     break;
                 case Team.SABRELAKE:
-                    FusionAudio.Play2D(FusionBundleLoader.SabrelakeVictory, 0.7f);
+                    FusionAudio.Play2D(FusionContentLoader.SabrelakeVictory, 0.7f);
                     break;
             }
         }
@@ -458,10 +458,10 @@ namespace LabFusion.SDK.Gamemodes {
             switch (team)
             {
                 case Team.LAVA_GANG:
-                    FusionAudio.Play2D(FusionBundleLoader.LavaGangFailure, 0.7f);
+                    FusionAudio.Play2D(FusionContentLoader.LavaGangFailure, 0.7f);
                     break;
                 case Team.SABRELAKE:
-                    FusionAudio.Play2D(FusionBundleLoader.SabrelakeFailure, 0.7f);
+                    FusionAudio.Play2D(FusionContentLoader.SabrelakeFailure, 0.7f);
                     break;
             }
         }

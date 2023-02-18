@@ -37,9 +37,6 @@ using SLZ.Player;
 
 namespace LabFusion.Representation {
     public static class PlayerRepUtilities {
-        public const int TransformSyncCount = 5;
-        public const int GameworldRigTransformCount = 10;
-
         public const string PolyBlankBarcode = "c3534c5a-94b2-40a4-912a-24a8506f6c79";
 
         public static bool TryGetRigInfo(RigManager rig, out byte smallId, out RigReferenceCollection references) {
@@ -296,32 +293,6 @@ namespace LabFusion.Representation {
 
             if (!sfx.IsNOC() && sfx._buffetSrc)
                 sfx._buffetSrc.spatialBlend = 1f;
-        }
-
-        public static void FillTransformArray(ref Transform[] array, RigManager manager) {
-            var rig = manager.openControllerRig;
-
-            array[0] = rig.m_head;
-            array[1] = rig.m_handLf;
-            array[2] = rig.m_handRt;
-            array[3] = rig.leftController.transform;
-            array[4] = rig.rightController.transform;
-        }
-
-        public static void FillGameworldArray(ref Transform[] array, RigManager manager)
-        {
-            var rig = manager.virtualHeptaRig;
-
-            array[0] = rig.m_head;
-            array[1] = rig.m_chest;
-            array[2] = rig.m_spine;
-            array[3] = rig.m_pelvis;
-            array[4] = rig.m_shoulderLf;
-            array[5] = rig.m_elbowLf;
-            array[6] = rig.m_handLf;
-            array[7] = rig.m_shoulderRt;
-            array[8] = rig.m_elbowRt;
-            array[9] = rig.m_handRt;
         }
     }
 }

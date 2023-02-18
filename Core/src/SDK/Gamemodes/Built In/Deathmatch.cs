@@ -65,7 +65,7 @@ namespace LabFusion.SDK.Gamemodes {
 
         public void SetDefaultValues() {
             _totalMinutes = _defaultMinutes;
-            SetPlaylist(0.7f, FusionBundleLoader.CombatPlaylist);
+            SetPlaylist(0.7f, FusionContentLoader.CombatPlaylist);
         }
 
         public void SetOverriden() {

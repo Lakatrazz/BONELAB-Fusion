@@ -79,14 +79,14 @@ namespace LabFusion.Network
                                 case PlayerActionType.UNKNOWN:
                                     break;
                                 case PlayerActionType.JUMP:
-                                    Il2CppSystem.Action<float> onJump = null;
-                                    onJump = (Il2CppSystem.Action<float>)Il2CppSystem.Delegate.Combine(onJump, ControllerRig.onPlayerJump);
+                                    Il2CppSystem.Action onJump = null;
+                                    onJump = (Il2CppSystem.Action)Il2CppSystem.Delegate.Combine(onJump, RemapRig.onPlayerJump);
 
-                                    ControllerRig.onPlayerJump = null;
+                                    RemapRig.onPlayerJump = null;
 
-                                    rm.openControllerRig.Jump();
+                                    rm.remapHeptaRig.Jump();
 
-                                    ControllerRig.onPlayerJump = onJump;
+                                    RemapRig.onPlayerJump = onJump;
                                     break;
                                 case PlayerActionType.DEATH:
                                     rm.physicsRig.headSfx.DeathVocal();

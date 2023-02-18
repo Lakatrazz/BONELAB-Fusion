@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 using LabFusion.SDK.Gamemodes;
+using LabFusion.SDK.Points;
 
 namespace LabFusion.Network {
     /// <summary>
@@ -39,7 +40,7 @@ namespace LabFusion.Network {
         /// </summary>
         internal static void OnStartServer() {
             // Create local id
-            var id = new PlayerId(PlayerIdManager.LocalLongId, 0, GetInitialMetadata());
+            var id = new PlayerId(PlayerIdManager.LocalLongId, 0, GetInitialMetadata(), GetInitialEquippedItems());
             id.Insert();
             PlayerIdManager.ApplyLocalId();
 
@@ -195,6 +196,21 @@ namespace LabFusion.Network {
             };
 
             return metadata;
+        }
+
+        /// <summary>
+        /// Gets the default list of equipped items.
+        /// </summary>
+        /// <returns></returns>
+        internal static List<string> GetInitialEquippedItems() {
+            List<string> list = new List<string>();
+
+            foreach (var item in PointItemManager.LoadedItems) {
+                if (item.IsEquipped)
+                    list.Add(item.Barcode);
+            }
+
+            return list;
         }
     }
 }

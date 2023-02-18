@@ -314,6 +314,10 @@ namespace LabFusion.Network
 
         private async void AwaitLobbyCreation() {
             var lobbyTask = await SteamMatchmaking.CreateLobbyAsync();
+
+            if (!lobbyTask.HasValue)
+                return;
+
             _localLobby = lobbyTask.Value;
             _currentLobby = new SteamLobby(_localLobby);
         }

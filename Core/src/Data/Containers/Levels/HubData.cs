@@ -1,6 +1,6 @@
 ﻿using LabFusion.Network;
 using LabFusion.Senders;
-using LabFusion.Points;
+using LabFusion.SDK.Points;
 
 using SLZ.Bonelab;
 using SLZ.UI;
