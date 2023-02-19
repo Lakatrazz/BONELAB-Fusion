@@ -27,7 +27,16 @@ namespace LabFusion.SDK.Points {
                     rotation = artRig.m_head.rotation;
                     break;
                 case AccessoryPoint.HEAD_TOP:
-                    position = artRig.m_head.position + artRig.m_head.up * (avatar._chinY * avatar.height);
+                    Vector3 eyeCenter = (artRig.eyeLf.position + artRig.eyeRt.position) * 0.5f;
+                    eyeCenter += artRig.m_head.up * (avatar._headTop * avatar.height);
+                    eyeCenter = artRig.m_head.InverseTransformPoint(eyeCenter);
+
+                    position = artRig.m_head.position;
+                    position = artRig.m_head.InverseTransformPoint(position);
+
+                    position.y = eyeCenter.y;
+                    position = artRig.m_head.TransformPoint(position);
+
                     rotation = artRig.m_head.rotation;
                     break;
                 case AccessoryPoint.EYE_LEFT:
