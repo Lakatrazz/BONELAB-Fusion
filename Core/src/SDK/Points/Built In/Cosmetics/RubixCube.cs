@@ -16,13 +16,17 @@ namespace LabFusion.SDK.Points {
 
         public override string Description => "Hmmmm... how peculiar.";
 
-        public override int Price => BitEconomy.ConvertPrice(1000);
+        public override int Price => 1000;
 
         public override RarityLevel Rarity => RarityLevel.Green;
 
         public override Texture2D PreviewImage => FusionPointItemLoader.GetPair(nameof(RubixCube)).Preview;
 
         public override GameObject AccessoryPrefab => FusionPointItemLoader.GetPair(nameof(RubixCube)).GameObject;
+
+        public override AccessoryScaleMode ScaleMode => AccessoryScaleMode.HEAD;
+
+        public override bool IsHiddenInView => true;
 
         public override string[] Tags => new string[3] {
             "Hat",

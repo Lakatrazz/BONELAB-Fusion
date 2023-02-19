@@ -16,13 +16,17 @@ namespace LabFusion.SDK.Points {
 
         public override string Description => "A place to store all the bloat! ready for transportation via flushed recycling co.";
 
-        public override int Price => BitEconomy.ConvertPrice(200);
+        public override int Price => 200;
 
         public override RarityLevel Rarity => RarityLevel.Gray;
 
         public override Texture2D PreviewImage => FusionPointItemLoader.GetPair(nameof(Junktion)).Preview;
 
         public override GameObject AccessoryPrefab => FusionPointItemLoader.GetPair(nameof(Junktion)).GameObject;
+
+        public override AccessoryScaleMode ScaleMode => AccessoryScaleMode.HEAD;
+
+        public override bool IsHiddenInView => true;
 
         public override string[] Tags => new string[3] {
             "Hat",

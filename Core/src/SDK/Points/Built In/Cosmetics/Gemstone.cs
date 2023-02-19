@@ -16,13 +16,17 @@ namespace LabFusion.SDK.Points {
 
         public override string Description => "From a deep dark cavern...";
 
-        public override int Price => BitEconomy.ConvertPrice(1500);
+        public override int Price => 1500;
 
         public override RarityLevel Rarity => RarityLevel.Orange;
 
         public override Texture2D PreviewImage => FusionPointItemLoader.GetPair(nameof(Gemstone)).Preview;
 
         public override GameObject AccessoryPrefab => FusionPointItemLoader.GetPair(nameof(Gemstone)).GameObject;
+
+        public override AccessoryScaleMode ScaleMode => AccessoryScaleMode.HEAD;
+
+        public override bool IsHiddenInView => true;
 
         public override string[] Tags => new string[3] {
             "Hat",

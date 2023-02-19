@@ -27,12 +27,47 @@ namespace LabFusion.Utilities {
     internal static class FusionPointItemLoader {
         public static AssetBundle ItemBundle { get; private set; }
 
-        private static readonly string[] _itemNames = new string[5] {
+        private static readonly string[] _itemNames = new string[39] {
+            // BaBa Corp Cosmetics
             nameof(Gemstone),
             nameof(GloopTrail),
             nameof(Junktion),
             nameof(PulsatingMass),
             nameof(RubixCube),
+            nameof(BitsTrail),
+            nameof(CardboardTophat),
+            nameof(Glasses3D),
+            nameof(AdventureHat),
+            nameof(WaistRing),
+            nameof(BodyPillow),
+            nameof(BritishHelm),
+            nameof(CardboardDisguise),
+            nameof(CatBeanie),
+            nameof(CheeseHat),
+            nameof(ConstructionHat),
+            nameof(Cooler),
+            nameof(EltonGlasses),
+            nameof(EnaHat),
+            nameof(Fez),
+            nameof(Firework),
+            nameof(Fren),
+            nameof(FryCookHat),
+            nameof(Gearhead),
+            nameof(GuardHelmet),
+            nameof(KickMeSign),
+            nameof(KnollHat),
+            nameof(LaytonHat),
+            nameof(LegoHead),
+            nameof(LightningHead),
+            nameof(Monocle),
+            nameof(NyanTrail),
+            nameof(PartyHat),
+            nameof(PieceOfResistance),
+            nameof(SorcererHat),
+            nameof(StormyHead),
+            nameof(TestItem),
+            nameof(TheBeacon),
+            nameof(WeirdShades),
         };
 
         private static readonly Dictionary<string, ItemPair> _itemPairs = new Dictionary<string, ItemPair>();

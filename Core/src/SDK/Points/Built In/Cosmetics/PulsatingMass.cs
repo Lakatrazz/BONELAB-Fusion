@@ -16,7 +16,7 @@ namespace LabFusion.SDK.Points {
 
         public override string Description => "A strangely pungent hat for your head...";
 
-        public override int Price => BitEconomy.ConvertPrice(1700);
+        public override int Price => 1700;
 
         public override RarityLevel Rarity => RarityLevel.Pink;
 
@@ -25,6 +25,10 @@ namespace LabFusion.SDK.Points {
         public override Texture2D PreviewImage => FusionPointItemLoader.GetPair(nameof(PulsatingMass)).Preview;
 
         public override GameObject AccessoryPrefab => FusionPointItemLoader.GetPair(nameof(PulsatingMass)).GameObject;
+
+        public override AccessoryScaleMode ScaleMode => AccessoryScaleMode.HEAD;
+
+        public override bool IsHiddenInView => true;
 
         public override string[] Tags => new string[3] {
             "Hat",

@@ -30,10 +30,6 @@ namespace LabFusion.Data
         public const string SabrelakeLogo = "tex_sabreLakeLogo";
         public const string LavaGangLogo = "tex_lavaGangLogo";
 
-        public const string SyntheticCavernsRemix = "music_SyntheticCavernsRemix";
-        public const string WWWWonderLan = "music_WWWonderlan";
-        public const string SicklyBugInitiative = "music_SicklyBugInitiative";
-
         public const string LavaGangVictory = "sting_LavaGangVictory";
         public const string SabrelakeVictory = "sting_sabrelakeVictory";
 

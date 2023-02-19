@@ -15,15 +15,36 @@ using SLZ.Rig;
 using SLZ.Zones;
 using SLZ.Bonelab;
 
+using LabFusion.SDK.Points;
+using LabFusion.Representation;
+
 namespace LabFusion.Patching
 {
     [HarmonyPatch(typeof(Mirror))]
     public static class MirrorPatches {
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Mirror.OnTriggerEnter))]
-        public static bool OnTriggerEnter(Collider c) {
+        public static bool OnTriggerEnter(Mirror __instance, Collider c) {
             if (c.CompareTag("Player")) {
-                return TriggerUtilities.IsMainRig(c);
+                bool isMainRig = TriggerUtilities.IsMainRig(c);
+
+                if (isMainRig) {
+                    var rigManager = RigManager.Cache.Get(TriggerRefProxy.Cache.Get(c.gameObject).root);
+
+                    foreach (var item in PointItemManager.LoadedItems) {
+                        if (item.IsEquipped) {
+                            item.OnUpdateObjects(new PointItemPayload()
+                            {
+                                type = PointItemPayloadType.MIRROR,
+                                rigManager = rigManager,
+                                mirror = __instance,
+                                playerId = PlayerIdManager.LocalId,
+                            }, true);
+                        }
+                    }
+                }
+
+                return isMainRig;
             }
 
             return true;
@@ -31,9 +52,27 @@ namespace LabFusion.Patching
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Mirror.OnTriggerExit))]
-        public static bool OnTriggerExit(Collider c) {
+        public static bool OnTriggerExit(Mirror __instance, Collider c) {
             if (c.CompareTag("Player")) {
-                return TriggerUtilities.IsMainRig(c);
+                bool isMainRig = TriggerUtilities.IsMainRig(c);
+
+                if (isMainRig) {
+                    var rigManager = RigManager.Cache.Get(TriggerRefProxy.Cache.Get(c.gameObject).root);
+
+                    foreach (var item in PointItemManager.LoadedItems) {
+                        if (item.IsEquipped) {
+                            item.OnUpdateObjects(new PointItemPayload()
+                            {
+                                type = PointItemPayloadType.MIRROR,
+                                rigManager = rigManager,
+                                mirror = __instance,
+                                playerId = PlayerIdManager.LocalId,
+                            }, false);
+                        }
+                    }
+                }
+
+                return isMainRig;
             }
 
 

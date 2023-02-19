@@ -38,12 +38,15 @@ namespace LabFusion.Utilities {
 
         public static AudioClip EquipItem { get; private set; }
 
-        public static AudioClip[] CombatPlaylist => new AudioClip[3]
-        {
-            SyntheticCavernsRemix,
-            WWWWonderLan,
-            SicklyBugInitiative
+        private static readonly string[] _combatSongNames = new string[4] {
+            "music_FreqCreepInModulationBuggyPhysics",
+            "music_SicklyBugInitiative",
+            "music_SyntheticCavernsRemix",
+            "music_WWWonderlan",
         };
+
+        private static readonly List<AudioClip> _combatPlaylist = new List<AudioClip>();
+        public static AudioClip[] CombatPlaylist => _combatPlaylist.ToArray();
 
         public static void OnBundleLoad() {
             ContentBundle = FusionBundleLoader.LoadAssetBundle(ResourcePaths.ContentBundle);
@@ -54,9 +57,9 @@ namespace LabFusion.Utilities {
                 SabrelakeLogo = ContentBundle.LoadPersistentAsset<Texture2D>(ResourcePaths.SabrelakeLogo); 
                 LavaGangLogo = ContentBundle.LoadPersistentAsset<Texture2D>(ResourcePaths.LavaGangLogo);
 
-                SyntheticCavernsRemix = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.SyntheticCavernsRemix);
-                WWWWonderLan = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.WWWWonderLan);
-                SicklyBugInitiative = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.SicklyBugInitiative);
+                foreach (var song in _combatSongNames) {
+                    _combatPlaylist.Add(ContentBundle.LoadPersistentAsset<AudioClip>(song));
+                }
 
                 LavaGangVictory = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.LavaGangVictory);
                 SabrelakeVictory = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.SabrelakeVictory);

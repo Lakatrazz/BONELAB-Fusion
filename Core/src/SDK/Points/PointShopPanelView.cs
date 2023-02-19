@@ -146,7 +146,6 @@ namespace LabFusion.SDK.Points
             _unequipAllButton.onClick.AddListener((UnityAction)(() => {
                 PointItemManager.UnequipAll();
 
-                _currentPageIndex = 0;
                 SelectPanel(ActivePanel.OWNED);
                 LoadCatalogPage();
             }));
@@ -360,7 +359,7 @@ namespace LabFusion.SDK.Points
             string tag = item.MainTag;
 
             if (Panel == ActivePanel.CATALOG)
-                text.text = $"{item.Title} - {item.Price} Bits ({tag})";
+                text.text = $"{item.Title} - {item.AdjustedPrice} Bits ({tag})";
             else
                 text.text = $"{item.Title} ({tag})";
 
@@ -372,7 +371,7 @@ namespace LabFusion.SDK.Points
             _infoTitle.text = item.Title;
             _infoTitle.color = PointItemManager.ParseColor(item.Rarity);
             _infoDescription.text = item.Description;
-            _infoPrice.text = $"{item.Price} Bits";
+            _infoPrice.text = $"{item.AdjustedPrice} Bits";
             _infoAuthor.text = item.Author;
             _infoVersion.text = item.Version;
 

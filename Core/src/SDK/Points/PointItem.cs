@@ -45,8 +45,14 @@ namespace LabFusion.SDK.Points {
         // The barcode pointing to the item
         public virtual string Barcode => $"{Author}.{Title}.Item";
 
+        // Should this item be hidden in the point shop?
+        public virtual bool Redacted => false;
+
         // The price of the item in bits (currency)
         public abstract int Price { get; }
+
+        // The adjusted price based on the economy. This cannot be overriden.
+        public int AdjustedPrice => BitEconomy.ConvertPrice(Price);
 
         // The rarity level of the item.
         public virtual RarityLevel Rarity => RarityLevel.White;

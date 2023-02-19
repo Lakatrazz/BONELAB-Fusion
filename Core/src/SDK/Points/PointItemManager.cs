@@ -196,7 +196,7 @@ namespace LabFusion.SDK.Points {
             if (unlockedItems.Contains(item))
                 return false;
 
-            int price = item.Price;
+            int price = item.AdjustedPrice;
             int bits = GetBitCount();
 
             if (price < 0)
@@ -297,6 +297,9 @@ namespace LabFusion.SDK.Points {
             List<PointItem> items = new List<PointItem>(LoadedItems.Count);
 
             foreach (var item in LoadedItems) {
+                if (item.Redacted)
+                    continue;
+
                 if ((sort == SortMode.EQUIPPED && !item.IsEquipped) || (sort == SortMode.UNEQUIPPED && item.IsEquipped))
                     continue;
 
@@ -330,7 +333,7 @@ namespace LabFusion.SDK.Points {
             switch (sort)
             {
                 case SortMode.PRICE:
-                    items.Sort((x, y) => x.Price - y.Price);
+                    items.Sort((x, y) => x.AdjustedPrice - y.AdjustedPrice);
                     break;
                 case SortMode.TAG:
                     items.Sort((x, y) => x.MainTag.CompareTo(y.MainTag));
