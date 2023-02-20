@@ -66,8 +66,10 @@ namespace LabFusion.Extensions
                 inventoryHand.IgnoreUnlock();
             }
 
+            // Prepare the grip
             grip.PrepareGrab(hand);
-
+            
+            // Begin grabbing
             grip.OnGrabConfirm(hand, isInstant);
         }
 
