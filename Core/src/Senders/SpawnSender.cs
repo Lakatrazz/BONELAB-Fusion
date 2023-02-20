@@ -80,6 +80,11 @@ namespace LabFusion.Senders
                         }
                     }
                 }
+
+                // Insert the catchup hook for future users
+                syncable.InsertCatchupDelegate((id) => {
+                    SendCratePlacerCatchup(placer, syncable, id);
+                });
             }
         }
 

@@ -100,12 +100,6 @@ namespace LabFusion.Network
 
             if (cratePlacer)
                 cratePlacer.OnPlaceEvent?.Invoke(cratePlacer, ((PropSyncable)syncable).GameObject);
-
-            // If we are the server, insert the catchup hook for future users
-            if (NetworkInfo.IsServer)
-                syncable.InsertCatchupDelegate((id) => {
-                    SpawnSender.SendCratePlacerCatchup(cratePlacer, (PropSyncable)syncable, id);
-                });
         }
     }
 }
