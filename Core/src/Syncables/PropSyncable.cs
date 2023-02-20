@@ -416,6 +416,8 @@ namespace LabFusion.Syncables
             if (!Owner.HasValue || Owner.Value == PlayerIdManager.LocalSmallId || !HasValidParameters())
                 return;
 
+            CheckNulls();
+
             OnReceivedUpdate();
         }
 
