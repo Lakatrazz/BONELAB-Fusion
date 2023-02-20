@@ -37,7 +37,9 @@ using UnhollowerBaseLib;
 namespace LabFusion.Network
 {
     public class SteamNetworkLayer : NetworkLayer {
-        public const uint ApplicationID = 1592190;
+        public const uint BonelabId = 1592190;
+
+        public virtual uint ApplicationID => BonelabId;
 
         public const int ReceiveBufferSize = 32;
 
@@ -67,11 +69,28 @@ namespace LabFusion.Network
         // This isn't actually used for joining servers, just for matchmaking
         protected Lobby _localLobby;
 
-        internal override void OnInitializeLayer() {
-            SteamAPILoader.OnLoadSteamAPI();
+        // Verification method to see if our game can actually run this layer
+        public static bool VerifyLayer() {
+            // Make sure the API actually loaded
+            if (!SteamAPILoader.HasSteamAPI)
+                return false;
 
             try {
-                SteamClient.Init(ApplicationID, AsyncCallbacks);
+                // Try loading the steam client
+                if (!SteamClient.IsValid)
+                    SteamClient.Init(BonelabId, AsyncCallbacks);
+
+                return true;
+            }
+            catch {
+                return false;
+            }
+        }
+
+        internal override void OnInitializeLayer() {
+            try {
+                if (!SteamClient.IsValid)
+                    SteamClient.Init(ApplicationID, AsyncCallbacks);
             } 
             catch (Exception e) {
                 FusionLogger.Error($"Failed to initialize Steamworks! \n{e}");
@@ -79,12 +98,12 @@ namespace LabFusion.Network
         }
 
         internal override void OnLateInitializeLayer() { 
-            if (SteamClient.IsLoggedOn) {
+            if (SteamClient.IsValid) {
                 SteamId = SteamClient.SteamId;
                 PlayerIdManager.SetLongId(SteamId.Value);
                 PlayerIdManager.SetUsername(GetUsername(SteamId.Value));
 
-                FusionLogger.Log($"Steamworks initialized with SteamID {SteamId}!");
+                FusionLogger.Log($"Steamworks initialized with SteamID {SteamId} and ApplicationID {ApplicationID}!");
 
                 SteamNetworkingUtils.InitRelayNetworkAccess();
 
@@ -99,8 +118,6 @@ namespace LabFusion.Network
 
         internal override void OnCleanupLayer() {
             Disconnect();
-
-            SteamAPILoader.OnFreeSteamAPI();
 
             UnHookSteamEvents();
         }
@@ -340,11 +357,7 @@ namespace LabFusion.Network
         }
 
         internal override void OnSetupBoneMenu(MenuCategory category) {
-            // This element does nothing
-            // Just informs what networking is being used
-            category.CreateFunctionElement("Powered by Facepunch.Steamworks", Color.yellow, null);
-
-            // Now for the actual options
+            // Create the basic options
             CreateMatchmakingMenu(category);
             BoneMenuCreator.CreateGamemodesMenu(category);
             BoneMenuCreator.CreateSettingsMenu(category);
@@ -352,6 +365,7 @@ namespace LabFusion.Network
             BoneMenuCreator.CreateBanListMenu(category);
 
 #if DEBUG
+            // Debug only (dev tools)
             BoneMenuCreator.CreateDebugMenu(category);
 #endif
         }

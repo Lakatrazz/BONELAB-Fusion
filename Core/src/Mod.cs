@@ -42,7 +42,7 @@ namespace LabFusion
         /// <summary>
         /// The desired networking layer. Swap this out to change the networking system.
         /// </summary>
-        public static Type ActiveNetworkingType { get; private set; } = typeof(SteamNetworkLayer);
+        public static Type ActiveNetworkingType { get; private set; }
 
         public static FusionMod Instance { get; private set; }
         public static Assembly FusionAssembly { get; private set; }
@@ -52,7 +52,10 @@ namespace LabFusion
         public override void OnEarlyInitializeMelon() {
             Instance = this;
             FusionAssembly = Assembly.GetExecutingAssembly();
-            
+
+            // Load APIs
+            SteamAPILoader.OnLoadSteamAPI();
+
             // Initialize data and hooks
             BytePool.PopulateInitial();
             PersistentData.OnPathInitialize();
@@ -78,6 +81,12 @@ namespace LabFusion
             GamemodeRegistration.LoadGamemodes(FusionAssembly);
             PointItemManager.LoadItems(FusionAssembly);
 
+            // Create prefs
+            FusionPreferences.OnInitializePreferences();
+
+            // Load network layer type
+            ActiveNetworkingType = NetworkLayerDeterminer.GetLoadedType();
+
             // Finally, initialize the network layer
             OnInitializeNetworking();
         }
@@ -87,7 +96,7 @@ namespace LabFusion
             InternalLayerHelpers.OnLateInitializeLayer();
             PersistentAssetCreator.OnMelonInitialize();
 
-            FusionPreferences.OnInitializePreferences();
+            FusionPreferences.OnCreateBoneMenu();
 
             Hooking.OnLevelInitialized += OnBonelibLevelLoaded;
         }
@@ -129,6 +138,9 @@ namespace LabFusion
 
             // Unload assetbundles
             FusionBundleLoader.OnBundleLoad();
+
+            // Free APIs
+            SteamAPILoader.OnFreeSteamAPI();
         }
 
         public override void OnPreferencesLoaded() {

@@ -1,5 +1,6 @@
 ﻿using BoneLib.BoneMenu;
 using BoneLib.BoneMenu.Elements;
+using LabFusion.BoneMenu;
 using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Representation;
@@ -61,6 +62,10 @@ namespace LabFusion.Preferences {
         }
 
         public struct ClientSettings {
+            // Selected network layer
+            public static FusionPref<NetworkLayerType> NetworkLayerType { get; internal set; }
+            
+            // Nametag settings
             public static FusionPref<bool> NametagsEnabled { get; internal set; }
             public static FusionPref<Color> NametagColor { get; internal set; }
 
@@ -144,6 +149,9 @@ namespace LabFusion.Preferences {
             LocalServerSettings = ServerSettings.CreateMelonPrefs();
 
             // Client settings
+            ClientSettings.NetworkLayerType = new FusionPref<NetworkLayerType>(prefCategory, "Network Layer Type", NetworkLayerDeterminer.GetDefaultType(), PrefUpdateMode.IGNORE);
+
+            // Nametag
             ClientSettings.NametagsEnabled = new FusionPref<bool>(prefCategory, "Client Nametags Enabled", true, PrefUpdateMode.LOCAL_UPDATE);
             ClientSettings.NametagColor = new FusionPref<Color>(prefCategory, "Nametag Color", Color.white, PrefUpdateMode.CLIENT_UPDATE);
 
@@ -158,10 +166,18 @@ namespace LabFusion.Preferences {
 
             // Save category
             prefCategory.SaveToFile(false);
+        }
 
+        internal static void OnCreateBoneMenu() {
             // Create BoneMenu
             fusionCategory = MenuManager.CreateCategory("BONELAB Fusion", Color.white);
 
+            // Create category for changing network layer
+            var networkLayerManager = fusionCategory.CreateCategory("Network Layer Manager", Color.yellow);
+            BoneMenuCreator.CreateEnumPermission(networkLayerManager, "Selected Network Type", ClientSettings.NetworkLayerType);
+            networkLayerManager.CreateFunctionElement("Changing this setting requires a game restart!", Color.red, null);
+
+            // Setup bonemenu for the network layer
             InternalLayerHelpers.OnSetupBoneMenuLayer(fusionCategory);
         }
 
