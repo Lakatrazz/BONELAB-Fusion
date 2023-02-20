@@ -18,6 +18,9 @@ using UnityEngine;
 
 namespace LabFusion.SDK.Gamemodes {
     public class Deathmatch : Gamemode {
+        private const int _minPlayerBits = 30;
+        private const int _maxPlayerBits = 250;
+
         public static Deathmatch Instance { get; private set; }
 
         private const int _defaultMinutes = 3;
@@ -127,7 +130,7 @@ namespace LabFusion.SDK.Gamemodes {
 
             // 10 and 100 are the min and max values for the max bit count
             float playerPercent = (float)playerCount / 3f;
-            int maxBits = Mathf.FloorToInt(Mathf.Lerp(10f, 100f, playerPercent));
+            int maxBits = Mathf.FloorToInt(Mathf.Lerp(_minPlayerBits, _maxPlayerBits, playerPercent));
             int maxRand = maxBits / 10;
 
             // Get the scores

@@ -21,6 +21,8 @@ namespace LabFusion.Data {
             writer.Write(settings.VoicechatEnabled.GetValue());
             writer.Write((byte)settings.Privacy.GetValue());
             writer.Write((byte)settings.TimeScaleMode.GetValue());
+            writer.Write(settings.MaxPlayers.GetValue()); 
+
             writer.Write(settings.ServerMortality.GetValue());
 
             writer.Write((byte)settings.DevToolsAllowed.GetValue());
@@ -36,6 +38,8 @@ namespace LabFusion.Data {
                 VoicechatEnabled = new ReadonlyFusionPrev<bool>(reader.ReadBoolean()),
                 Privacy = new ReadonlyFusionPrev<ServerPrivacy>((ServerPrivacy)reader.ReadByte()),
                 TimeScaleMode = new ReadonlyFusionPrev<TimeScaleMode>((TimeScaleMode)reader.ReadByte()),
+                MaxPlayers = new ReadonlyFusionPrev<byte>(reader.ReadByte()),
+
                 ServerMortality = new ReadonlyFusionPrev<bool>(reader.ReadBoolean()),
 
                 DevToolsAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadByte()),

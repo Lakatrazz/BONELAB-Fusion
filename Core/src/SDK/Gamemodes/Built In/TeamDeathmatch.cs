@@ -20,6 +20,9 @@ using UnityEngine.UI;
 
 namespace LabFusion.SDK.Gamemodes {
     public class TeamDeathmatch : Gamemode {
+        private const int _minPlayerBits = 30;
+        private const int _maxPlayerBits = 250;
+
         public static TeamDeathmatch Instance { get; private set; }
 
         protected enum Team {
@@ -252,7 +255,7 @@ namespace LabFusion.SDK.Gamemodes {
 
             // 10 and 100 are the min and max values for the max bit count
             float playerPercent = (float)playerCount / 4f;
-            int maxBits = Mathf.FloorToInt(Mathf.Lerp(10f, 100f, playerPercent));
+            int maxBits = Mathf.FloorToInt(Mathf.Lerp(_minPlayerBits, _maxPlayerBits, playerPercent));
             int maxRand = maxBits / 10;
 
             // Get the scores

@@ -44,5 +44,6 @@ namespace LabFusion.Data
         public const string PurchaseSuccess = "stinger_SuccessPurchase";
 
         public const string EquipItem = "ui_EquipItem";
+        public const string UnequipItem = "ui_UnequipItem";
     }
 }

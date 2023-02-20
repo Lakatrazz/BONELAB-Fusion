@@ -59,6 +59,9 @@ namespace LabFusion.BoneMenu
                     FusionPlayer.ResetMortality();
             };
 
+            // Max players
+            CreateBytePermission(category, "Max Players", 1, 2, 255, FusionPreferences.LocalServerSettings.MaxPlayers);
+
             // Permissions
             var permissionCategory = category.CreateCategory("Permission Settings", Color.white);
             CreateEnumPermission(permissionCategory, "Dev Tools Allowed", FusionPreferences.LocalServerSettings.DevToolsAllowed);

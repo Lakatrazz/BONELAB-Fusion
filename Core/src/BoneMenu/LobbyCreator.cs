@@ -17,18 +17,44 @@ using UnityEngine;
 
 namespace LabFusion.BoneMenu
 {
+    public enum LobbySortMode {
+        NONE = 0,
+        GAMEMODE = 1,
+        LEVEL = 2,
+    }
+
     internal static partial class BoneMenuCreator
     {
-        public static void CreateLobby(MenuCategory category, LobbyMetadataInfo info, INetworkLobby lobby)
+        private static ulong _lobbyIndex = 0;
+
+        public static void CreateLobby(MenuCategory category, LobbyMetadataInfo info, INetworkLobby lobby, LobbySortMode sortMode = LobbySortMode.NONE)
         {
+            // Create the root category if necessary
+            MenuCategory rootCategory = category;
+
+            switch (sortMode) {
+                case LobbySortMode.GAMEMODE:
+                    rootCategory = category.CreateCategory(info.GamemodeName, Color.white);
+                    break;
+                case LobbySortMode.LEVEL:
+                    rootCategory = category.CreateCategory(info.LevelName, Color.white);
+                    break;
+            }
+
+            // Get the username/title of the lobby
             var userString = $"{info.LobbyName}'s Server ({info.PlayerCount}/{info.MaxPlayers})";
 
             // Create the category and get the default lobby info
-            var lobbyCategory = category.CreateCategory(userString, Color.white);
+            var lobbyCategory = rootCategory.CreateCategory($"INTERNAL_LOBBY_{_lobbyIndex++}", Color.white);
+            lobbyCategory.SetName(userString);
+
             lobbyCategory.CreateFunctionElement("Join Server", Color.white, lobby.CreateJoinDelegate(info));
 
             // Show their active level
             lobbyCategory.CreateFunctionElement($"Level: {info.LevelName}", Color.white, null);
+
+            // Show their active gamemode
+            lobbyCategory.CreateFunctionElement($"Gamemode: {info.GamemodeName}", Color.white, null);
 
             // Show the player count
             lobbyCategory.CreateFunctionElement($"{info.PlayerCount} out of {info.MaxPlayers} Players", new Color(0.68f, 0.85f, 0.9f), null);

@@ -1,11 +1,15 @@
 ﻿using LabFusion.Data;
+using LabFusion.Debugging;
+
 using SLZ.Bonelab;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using UnityEngine;
 
 namespace LabFusion.SDK.Points {
@@ -53,7 +57,14 @@ namespace LabFusion.SDK.Points {
         }
 
         public static bool IsUnlocked(string barcode) {
+#if DEBUG
+            if (FusionDevMode.UnlockEverything)
+                return true;
+#endif
+
+#pragma warning disable CS0162 // Unreachable code detected
             return _unlockedItems.Contains(barcode);
+#pragma warning restore CS0162 // Unreachable code detected
         }
 
         public static bool IsEquipped(string barcode) {

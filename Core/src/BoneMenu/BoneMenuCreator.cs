@@ -45,6 +45,17 @@ namespace LabFusion.BoneMenu
             };
         }
 
+        public static void CreateBytePermission(MenuCategory category, string name, byte increment, byte minValue, byte maxValue, IFusionPref<byte> pref)
+        {
+            var element = category.CreateIntElement(name, Color.white, pref.GetValue(), increment, minValue, maxValue, (v) => {
+                pref.SetValue((byte)v);
+            });
+
+            pref.OnValueChanged += (v) => {
+                element.SetValue(v);
+            };
+        }
+
         public static void CreateFloatPermission(MenuCategory category, string name, float increment, float minValue, float maxValue, IFusionPref<float> pref)
         {
             var element = category.CreateFloatElement(name, Color.white, pref.GetValue(), increment, minValue, maxValue, (v) => {

@@ -1,5 +1,6 @@
 ﻿using LabFusion.Preferences;
 using LabFusion.Representation;
+using LabFusion.SDK.Gamemodes;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 
@@ -25,6 +26,7 @@ namespace LabFusion.Network {
 
         // Lobby status
         public string LevelName;
+        public string GamemodeName;
 
         public static LobbyMetadataInfo Create() {
             return new LobbyMetadataInfo() {
@@ -38,10 +40,11 @@ namespace LabFusion.Network {
                 NametagsEnabled = FusionPreferences.LocalServerSettings.NametagsEnabled.GetValue(),
                 Privacy = FusionPreferences.LocalServerSettings.Privacy.GetValue(),
                 TimeScaleMode = FusionPreferences.LocalServerSettings.TimeScaleMode.GetValue(),
-                MaxPlayers = 255,
+                MaxPlayers = FusionPreferences.LocalServerSettings.MaxPlayers.GetValue(),
 
                 // Lobby status
                 LevelName = LevelWarehouseUtilities.GetCurrentLevel().Title,
+                GamemodeName = Gamemode.ActiveGamemode != null ? Gamemode.ActiveGamemode.GamemodeName : "No Gamemode",
             };
         }
 
@@ -60,6 +63,7 @@ namespace LabFusion.Network {
 
             // Lobby status
             lobby.SetMetadata("LevelName", LevelName);
+            lobby.SetMetadata("GamemodeName", GamemodeName);
         }
 
         public static LobbyMetadataInfo Read(INetworkLobby lobby) {
@@ -73,6 +77,7 @@ namespace LabFusion.Network {
 
                 // Lobby status
                 LevelName = lobby.GetMetadata("LevelName"),
+                GamemodeName = lobby.GetMetadata("GamemodeName"),
             };
             // Get longs
             if (ulong.TryParse(lobby.GetMetadata("LobbyId"), out var lobbyId))

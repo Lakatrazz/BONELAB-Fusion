@@ -37,6 +37,7 @@ namespace LabFusion.Utilities {
         public static AudioClip PurchaseSuccess { get; private set; }
 
         public static AudioClip EquipItem { get; private set; }
+        public static AudioClip UnequipItem { get; private set; }
 
         private static readonly string[] _combatSongNames = new string[4] {
             "music_FreqCreepInModulationBuggyPhysics",
@@ -75,6 +76,7 @@ namespace LabFusion.Utilities {
                 PurchaseSuccess = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.PurchaseSuccess);
 
                 EquipItem = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.EquipItem);
+                UnequipItem = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.UnequipItem);
             }
             else
                 FusionLogger.Error("Content Bundle failed to load!");

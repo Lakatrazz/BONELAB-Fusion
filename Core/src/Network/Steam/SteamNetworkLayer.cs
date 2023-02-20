@@ -436,10 +436,16 @@ namespace LabFusion.Network
             }
         }
 
+        private LobbySortMode _publicLobbySortMode = LobbySortMode.NONE;
+
         private void Menu_RefreshPublicLobbies() {
             // Clear existing lobbies
             _publicLobbiesCategory.Elements.Clear();
             _publicLobbiesCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshPublicLobbies);
+            _publicLobbiesCategory.CreateEnumElement("Sort By", Color.white, _publicLobbySortMode, (v) => {
+                _publicLobbySortMode = v;
+                Menu_RefreshPublicLobbies();
+            });
 
             MelonCoroutines.Start(CoAwaitLobbyListRoutine());
         }
@@ -483,7 +489,7 @@ namespace LabFusion.Network
 
                 if (Internal_CanShowLobby(info)) {
                     // Add to list
-                    BoneMenuCreator.CreateLobby(_publicLobbiesCategory, info, networkLobby);
+                    BoneMenuCreator.CreateLobby(_publicLobbiesCategory, info, networkLobby, _publicLobbySortMode);
                 }
             }
 

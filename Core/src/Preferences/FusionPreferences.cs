@@ -22,6 +22,7 @@ namespace LabFusion.Preferences {
             public IFusionPref<bool> VoicechatEnabled;
             public IFusionPref<ServerPrivacy> Privacy;
             public IFusionPref<TimeScaleMode> TimeScaleMode;
+            public IFusionPref<byte> MaxPlayers;
 
             // Mortality
             public IFusionPref<bool> ServerMortality;
@@ -42,7 +43,8 @@ namespace LabFusion.Preferences {
                     VoicechatEnabled = new FusionPref<bool>(prefCategory, "Server Voicechat Enabled", true, PrefUpdateMode.SERVER_UPDATE),
                     Privacy = new FusionPref<ServerPrivacy>(prefCategory, "Server Privacy", ServerPrivacy.PUBLIC, PrefUpdateMode.LOCAL_UPDATE),
                     TimeScaleMode = new FusionPref<TimeScaleMode>(prefCategory, "Time Scale Mode", Senders.TimeScaleMode.LOW_GRAVITY, PrefUpdateMode.SERVER_UPDATE),
-                    
+                    MaxPlayers = new FusionPref<byte>(prefCategory, "Max Players", 10, PrefUpdateMode.SERVER_UPDATE),
+
                     // Mortality
                     ServerMortality = new FusionPref<bool>(prefCategory, "Server Mortality", true, PrefUpdateMode.SERVER_UPDATE),
 

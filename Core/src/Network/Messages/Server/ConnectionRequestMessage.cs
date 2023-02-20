@@ -9,8 +9,9 @@ using LabFusion.Syncables;
 using System;
 using System.Collections.Generic;
 using System.Collections;
-using MelonLoader;
 using System.Linq;
+
+using MelonLoader;
 
 namespace LabFusion.Network
 {
@@ -67,6 +68,18 @@ namespace LabFusion.Network
                     var newSmallId = PlayerIdManager.GetUnusedPlayerId();
 
                     if (PlayerIdManager.GetPlayerId(data.longId) == null && newSmallId.HasValue) {
+                        // Check if theres too many players
+                        if (PlayerIdManager.PlayerCount >= FusionPreferences.LocalServerSettings.MaxPlayers.GetValue()) {
+                            ConnectionSender.SendConnectionDeny(data.longId, "Server is full! Wait for someone to leave.");
+                            return;
+                        }
+
+                        // Make sure we aren't loading
+                        if (LevelWarehouseUtilities.IsLoading()) {
+                            ConnectionSender.SendConnectionDeny(data.longId, "Host is loading.");
+                            return;
+                        }
+
                         // Verify joining
                         bool isVerified = NetworkVerification.IsClientApproved(data.longId);
 

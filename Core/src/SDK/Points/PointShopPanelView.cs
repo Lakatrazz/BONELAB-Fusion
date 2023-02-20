@@ -26,6 +26,7 @@ namespace LabFusion.SDK.Points
             OWNED = 1,
             CONFIRMATION = 2,
             INFORMATION = 3,
+            HELP = 4,
         }
 
         public PointShopPanelView(IntPtr intPtr) : base(intPtr) { }
@@ -55,6 +56,8 @@ namespace LabFusion.SDK.Points
         private Button _infoGoBack;
         private RawImage _infoPreviewImage;
         private Texture _defaultPreview;
+
+        private Transform _groupWhatIsThisRoot;
 
         private Button[] _itemButtons;
         private int _itemButtonCount;
@@ -159,6 +162,21 @@ namespace LabFusion.SDK.Points
             }));
 
             _bitCountText = _canvas.Find("button_bitCount").GetComponentInChildren<TMP_Text>(true);
+
+            _groupWhatIsThisRoot = _canvas.Find("group_WhatIsThis");
+
+            var helpButton = _canvas.Find("button_Help").GetComponent<Button>();
+            helpButton.onClick.AddListener((UnityAction)(() =>
+            {
+                SelectPanel(ActivePanel.HELP);
+            }));
+
+            var helpGoBack = _groupWhatIsThisRoot.Find("button_goBack").GetComponent<Button>();
+            helpGoBack.onClick.AddListener((UnityAction)(() =>
+            {
+                SelectPanel(_lastCatalogPanel);
+                LoadCatalogPage();
+            }));
         }
 
         private void SetupText() {
@@ -280,6 +298,7 @@ namespace LabFusion.SDK.Points
                 case ActivePanel.OWNED:
                     _groupItemsRoot.gameObject.SetActive(true);
                     _groupInformationRoot.gameObject.SetActive(false);
+                    _groupWhatIsThisRoot.gameObject.SetActive(false);
 
                     _lastCatalogPanel = panel;
                     break;
@@ -287,6 +306,12 @@ namespace LabFusion.SDK.Points
                 case ActivePanel.INFORMATION:
                     _groupItemsRoot.gameObject.SetActive(false);
                     _groupInformationRoot.gameObject.SetActive(true);
+                    _groupWhatIsThisRoot.gameObject.SetActive(false);
+                    break;
+                case ActivePanel.HELP:
+                    _groupItemsRoot.gameObject.SetActive(false);
+                    _groupInformationRoot.gameObject.SetActive(false);
+                    _groupWhatIsThisRoot.gameObject.SetActive(true);
                     break;
             }
         }
@@ -466,6 +491,10 @@ namespace LabFusion.SDK.Points
             // Unequip
             if (_targetInfoItem.IsEquipped) {
                 PointItemManager.SetEquipped(_targetInfoItem, false);
+
+                FusionAudio.Play3D(transform.position, FusionContentLoader.UnequipItem);
+
+                _doorRigidbody.AddRelativeTorque(Vector3.right * 30f, ForceMode.Impulse);
             }
             // Equip
             else {

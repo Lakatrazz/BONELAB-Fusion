@@ -3,6 +3,8 @@ using LabFusion.Syncables;
 using LabFusion.Utilities;
 using LabFusion.Preferences;
 using LabFusion.BoneMenu;
+using LabFusion.SDK.Gamemodes;
+using LabFusion.SDK.Points;
 
 using System;
 using System.Collections.Generic;
@@ -12,8 +14,7 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-using LabFusion.SDK.Gamemodes;
-using LabFusion.SDK.Points;
+using SLZ.Marrow.SceneStreaming;
 
 namespace LabFusion.Network {
     /// <summary>
@@ -63,6 +64,9 @@ namespace LabFusion.Network {
                 isMenuItem = false,
                 isPopup = true,
             });
+
+            // Reload the scene
+            SceneStreamer.Reload();
         }
 
         /// <summary>
