@@ -92,7 +92,7 @@ namespace LabFusion.SDK.Points
         [HideFromIl2Cpp]
         public IReadOnlyList<PointItem> PanelItems => _panel == ActivePanel.CATALOG ? CatalogItems : OwnedItems;
 
-        public void Awake() {
+        private void Awake() {
             // Setup the menu
             SetupReferences();
             SetupText();
@@ -104,6 +104,14 @@ namespace LabFusion.SDK.Points
             UpdateSortModeText();
             SelectPanel(ActivePanel.CATALOG);
             LoadCatalogPage();
+
+            // Hook into bit update
+            PointItemManager.OnBitCountChanged += UpdateBitCountText;
+        }
+
+        private void OnDestroy() {
+            // Unhook from bit update
+            PointItemManager.OnBitCountChanged -= UpdateBitCountText;
         }
 
         private void SetupReferences() {

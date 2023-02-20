@@ -46,6 +46,8 @@ namespace LabFusion.SDK.Points {
     }
 
     public static class PointItemManager {
+        public static event Action OnBitCountChanged = null;
+
         public static Color ParseColor(RarityLevel level) {
             switch (level) {
                 case RarityLevel.Gray:
@@ -183,11 +185,15 @@ namespace LabFusion.SDK.Points {
         public static void RewardBits(int bits) {
             var currentBits = GetBitCount();
             PointSaveManager.SetBitCount(currentBits + bits);
+
+            OnBitCountChanged.InvokeSafe("executing OnBitCountChanged");
         }
 
         public static void DecrementBits(int bits) {
             var currentBits = GetBitCount();
             PointSaveManager.SetBitCount(currentBits - bits);
+
+            OnBitCountChanged.InvokeSafe("executing OnBitCountChanged");
         }
 
         public static bool TryBuyItem(PointItem item) {

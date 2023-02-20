@@ -405,6 +405,7 @@ namespace LabFusion.SDK.Gamemodes {
                     if (minutesLeft <= 0f)
                     {
                         StopGamemode();
+                        TryInvokeTrigger("NaturalEnd");
                     }
                 }
             }
