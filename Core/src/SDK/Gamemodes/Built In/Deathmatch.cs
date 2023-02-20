@@ -1,8 +1,10 @@
 ﻿using BoneLib;
 using BoneLib.BoneMenu.Elements;
+
 using LabFusion.MarrowIntegration;
 using LabFusion.Network;
 using LabFusion.Representation;
+using LabFusion.SDK.Points;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 
@@ -107,6 +109,38 @@ namespace LabFusion.SDK.Gamemodes {
             }
 
             return -1;
+        }
+
+        public int GetTotalScore() {
+            int score = 0;
+
+            foreach (var player in PlayerIdManager.PlayerIds) {
+                score += GetScore(player);
+            }
+
+            return score;
+        }
+
+        private int GetRewardedBits() {
+            // Change the max bit count based on player count
+            int playerCount = PlayerIdManager.PlayerCount - 1;
+
+            // 10 and 100 are the min and max values for the max bit count
+            float playerPercent = (float)playerCount / 3f;
+            int maxBits = Mathf.FloorToInt(Mathf.Lerp(10f, 100f, playerPercent));
+            int maxRand = maxBits / 10;
+
+            // Get the scores
+            int score = GetScore(PlayerIdManager.LocalId);
+            int totalScore = GetTotalScore();
+
+            float percent = Mathf.Clamp01((float)score / (float)totalScore);
+            int reward = Mathf.FloorToInt((float)maxBits * percent);
+
+            // Add randomness
+            reward += UnityEngine.Random.Range(-maxRand, maxRand);
+
+            return reward;
         }
 
         public override void OnGamemodeRegistered() {
@@ -256,21 +290,43 @@ namespace LabFusion.SDK.Gamemodes {
                 // Should the gamemode end?
                 if (minutesLeft <= 0f) {
                     StopGamemode();
+                    TryInvokeTrigger("NaturalEnd");
                 }
             }
         }
 
         protected override void OnEventTriggered(string value) {
             // Check event
-            if (value == "OneMinuteLeft") {
-                FusionNotifier.Send(new FusionNotification()
-                {
-                    title = "Deathmatch Timer",
-                    showTitleOnPopup = true,
-                    message = "One minute left!",
-                    isMenuItem = false,
-                    isPopup = true,
-                });
+            switch (value) {
+                case "OneMinuteLeft":
+                    FusionNotifier.Send(new FusionNotification()
+                    {
+                        title = "Deathmatch Timer",
+                        showTitleOnPopup = true,
+                        message = "One minute left!",
+                        isMenuItem = false,
+                        isPopup = true,
+                    });
+                    break;
+                case "NaturalEnd":
+                    int bitReward = GetRewardedBits();
+
+                    if (bitReward > 0) {
+                        FusionNotifier.Send(new FusionNotification() {
+                            title = "Bits Rewarded",
+                            showTitleOnPopup = true,
+
+                            message = $"You Won {bitReward} Bits",
+
+                            popupLength = 3f,
+
+                            isMenuItem = false,
+                            isPopup = true,
+                        });
+
+                        PointItemManager.RewardBits(bitReward);
+                    }
+                    break;
             }
         }
 

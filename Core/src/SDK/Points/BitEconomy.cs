@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LabFusion.SDK.Points {
     public static class BitEconomy {
-        public const double BitsToPennyRatio = 0;
+        public const double BitsToPennyRatio = 1;
 
         public const string BaBaAuthor = "BaBaCorp";
 

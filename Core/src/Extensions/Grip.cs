@@ -29,9 +29,10 @@ namespace LabFusion.Extensions
 
             SimpleTransform transform = SimpleTransform.Create(hand.transform);
 
+            // ValidateGripScore usually calculates targets on a grip
+            // I originally also had OnHandHoverUpdate here, but that checks for grabbing (I think) and can cause players to turn into spaghetti!
             for (var i = 0; i < 20; i++) {
                 grip.ValidateGripScore(hand, transform);
-                grip.OnHandHoverUpdate(hand);
             }
         }
 

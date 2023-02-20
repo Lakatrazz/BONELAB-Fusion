@@ -14,24 +14,6 @@ using UnityEngine.Rendering.Universal;
 
 namespace LabFusion.SDK.Points
 {
-    public enum AccessoryPoint {
-        HEAD,
-        HEAD_TOP,
-        EYE_LEFT,
-        EYE_RIGHT,
-        EYE_CENTER,
-        CHEST,
-        CHEST_BACK,
-        HIPS,
-        LOCOSPHERE,
-    }
-
-    public enum AccessoryScaleMode {
-        NONE,
-        HEIGHT,
-        HEAD,
-    }
-
     public abstract class AccessoryItem : PointItem {
         protected class AccessoryInstance {
             public RigManager rigManager;
@@ -104,16 +86,10 @@ namespace LabFusion.SDK.Points
 
                             Quaternion rotation = Quaternion.LookRotation(forward, up);
 
-                            Vector3 right = rotation * Vector3.right;
-
                             // Get position
                             Vector3 position = transform.position - reflectTran.position;
                             position = Vector3.Reflect(position, reflectTran.forward);
                             position += reflectTran.position;
-
-                            // Offset slightly
-                            // For some reason just reflecting it doesn't make it match up perfectly?
-                            position += forward * 0.035f - up * 0.002f - right * 0.002f;
 
                             // Set position, rotation, and scale
                             accessory.SetPositionAndRotation(position, rotation);

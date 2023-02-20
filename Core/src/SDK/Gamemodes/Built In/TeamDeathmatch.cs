@@ -5,6 +5,7 @@ using LabFusion.Extensions;
 using LabFusion.MarrowIntegration;
 using LabFusion.Network;
 using LabFusion.Representation;
+using LabFusion.SDK.Points;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 
@@ -240,6 +241,33 @@ namespace LabFusion.SDK.Gamemodes {
             }
         }
 
+        public int GetTotalScore() {
+            return GetScore(Team.LAVA_GANG) + GetScore(Team.SABRELAKE);
+        }
+
+        private int GetRewardedBits()
+        {
+            // Change the max bit count based on player count
+            int playerCount = PlayerIdManager.PlayerCount - 1;
+
+            // 10 and 100 are the min and max values for the max bit count
+            float playerPercent = (float)playerCount / 4f;
+            int maxBits = Mathf.FloorToInt(Mathf.Lerp(10f, 100f, playerPercent));
+            int maxRand = maxBits / 10;
+
+            // Get the scores
+            int score = GetScore(_localTeam);
+            int totalScore = GetTotalScore();
+
+            float percent = Mathf.Clamp01((float)score / (float)totalScore);
+            int reward = Mathf.FloorToInt((float)maxBits * percent);
+
+            // Add randomness
+            reward += UnityEngine.Random.Range(-maxRand, maxRand);
+
+            return reward;
+        }
+
         protected void OnPlayerAction(PlayerId player, PlayerActionType type, PlayerId otherPlayer = null)
         {
             if (IsActive() && NetworkInfo.IsServer)
@@ -277,6 +305,7 @@ namespace LabFusion.SDK.Gamemodes {
             base.OnStartGamemode();
 
             if (NetworkInfo.IsServer) {
+                ResetTeams();
                 SetTeams();
             }
 
@@ -340,14 +369,8 @@ namespace LabFusion.SDK.Gamemodes {
             // Remove ammo
             FusionPlayer.SetAmmo(0);
 
-            // Reset all values
-            if (NetworkInfo.IsServer) {
-                ResetTeams();
-            }
-
+            // Remove all team logos
             RemoveLogos();
-
-            _localTeam = Team.NO_TEAM;
         }
 
         public float GetTimeElapsed() => Time.realtimeSinceStartup - _timeOfStart;
@@ -419,16 +442,36 @@ namespace LabFusion.SDK.Gamemodes {
         protected override void OnEventTriggered(string value)
         {
             // Check event
-            if (value == "OneMinuteLeft")
-            {
-                FusionNotifier.Send(new FusionNotification()
-                {
-                    title = "Team Deathmatch Timer",
-                    showTitleOnPopup = true,
-                    message = "One minute left!",
-                    isMenuItem = false,
-                    isPopup = true,
-                });
+            switch (value) {
+                case "OneMinuteLeft":
+                    FusionNotifier.Send(new FusionNotification()
+                    {
+                        title = "Team Deathmatch Timer",
+                        showTitleOnPopup = true,
+                        message = "One minute left!",
+                        isMenuItem = false,
+                        isPopup = true,
+                    });
+                    break;
+                case "NaturalEnd":
+                    int bitReward = GetRewardedBits();
+
+                    if (bitReward > 0) {
+                        FusionNotifier.Send(new FusionNotification() {
+                            title = "Bits Rewarded",
+                            showTitleOnPopup = true,
+
+                            message = $"You Won {bitReward} Bits",
+
+                            popupLength = 3f,
+
+                            isMenuItem = false,
+                            isPopup = true,
+                        });
+
+                        PointItemManager.RewardBits(bitReward);
+                    }
+                    break;
             }
         }
 
@@ -471,6 +514,11 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         protected void OnTeamReceived(Team team) {
+            if (team == Team.NO_TEAM) {
+                _localTeam = team;
+                return;
+            }
+
             FusionNotifier.Send(new FusionNotification()
             {
                 title = "Team Deathmatch Assignment",
@@ -526,9 +574,6 @@ namespace LabFusion.SDK.Gamemodes {
             }
             // Check if this is a team change
             else if (key.StartsWith(PlayerTeamKey) && Enum.TryParse<Team>(value, out var team)) {
-                if (team == Team.NO_TEAM)
-                    return;
-
                 // Find the player that changed
                 foreach (var playerId in PlayerIdManager.PlayerIds) {
                     var playerKey = GetTeamKey(playerId);
@@ -538,7 +583,7 @@ namespace LabFusion.SDK.Gamemodes {
                         if (playerId.IsSelf) {
                             OnTeamReceived(team);
                         }
-                        else {
+                        else if (team != Team.NO_TEAM) {
                             AddLogo(playerId, team);
                         }
 

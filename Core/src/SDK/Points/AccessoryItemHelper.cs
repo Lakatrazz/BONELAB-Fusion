@@ -12,6 +12,27 @@ using UnityEngine;
 using Avatar = SLZ.VRMK.Avatar;
 
 namespace LabFusion.SDK.Points {
+    public enum AccessoryPoint
+    {
+        HEAD,
+        HEAD_TOP,
+        EYE_LEFT,
+        EYE_RIGHT,
+        EYE_CENTER,
+        NOSE,
+        CHEST,
+        CHEST_BACK,
+        HIPS,
+        LOCOSPHERE,
+    }
+
+    public enum AccessoryScaleMode
+    {
+        NONE,
+        HEIGHT,
+        HEAD,
+    }
+
     public static class AccessoryItemHelper {
         public static void GetTransform(AccessoryPoint itemPoint, AccessoryScaleMode mode, RigManager rig, out Vector3 position, out Quaternion rotation, out Vector3 scale) {
             ArtRig artRig = rig.artOutputRig;
@@ -45,6 +66,19 @@ namespace LabFusion.SDK.Points {
                     break;
                 case AccessoryPoint.EYE_CENTER:
                     position = (artRig.eyeLf.position + artRig.eyeRt.position) * 0.5f;
+                    rotation = artRig.m_head.rotation;
+                    break;
+                case AccessoryPoint.NOSE:
+                    Vector3 noseCenter = (artRig.eyeLf.position + artRig.eyeRt.position) * 0.5f;
+                    position = artRig.m_head.position + artRig.m_head.forward * (avatar.ForeheadEllipseZ * avatar.height);
+
+                    noseCenter = artRig.m_head.InverseTransformPoint(noseCenter);
+                    position = artRig.m_head.InverseTransformPoint(position);
+
+                    position.y = noseCenter.y;
+
+                    position = artRig.m_head.TransformPoint(position);
+
                     rotation = artRig.m_head.rotation;
                     break;
                 case AccessoryPoint.EYE_RIGHT:

@@ -24,7 +24,7 @@ namespace LabFusion.SDK.Points {
 
         public override GameObject AccessoryPrefab => FusionPointItemLoader.GetPair(nameof(WeirdShades)).GameObject;
 
-        public override AccessoryPoint ItemPoint => AccessoryPoint.EYE_CENTER;
+        public override AccessoryPoint ItemPoint => AccessoryPoint.NOSE;
 
         public override AccessoryScaleMode ScaleMode => AccessoryScaleMode.HEAD;
 

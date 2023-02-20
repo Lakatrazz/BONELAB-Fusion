@@ -104,6 +104,19 @@ namespace LabFusion.Utilities
             }
         }
 
+        internal static bool IsPlayingNotification() {
+            var rm = RigData.RigReferences.RigManager;
+
+            if (!rm.IsNOC()) {
+                var tutorialRig = rm.tutorialRig;
+                var headTitles = tutorialRig.headTitles;
+
+                return headTitles.headFollower.gameObject.activeInHierarchy;
+            }
+
+            return false;
+        }
+
         internal static void OnUpdate() {
             // Make sure we aren't loading so we can dequeue existing notifications
             if (_queuedNotifications.Count > 0 && !LevelWarehouseUtilities.IsLoading()) {
@@ -114,8 +127,7 @@ namespace LabFusion.Utilities
                 }
                 else {
                     // Dequeue notifications
-                    int count = _queuedNotifications.Count;
-                    for (var i = 0; i < count; i++) {
+                    if (_queuedNotifications.Count > 0 && !IsPlayingNotification()) {
                         DequeueNotification();
                     }
                 }
