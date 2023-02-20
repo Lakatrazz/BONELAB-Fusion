@@ -80,7 +80,7 @@ namespace LabFusion.Grabbables {
                     GameObject root = host.GetSyncRoot();
 
                     // Do we already have a synced object?
-                    if (PropSyncable.Cache.TryGet(root, out var syncable) || PropSyncable.HostCache.TryGet(host.gameObject, out syncable)) {
+                    if (GripExtender.Cache.TryGet(grip, out var syncable) || PropSyncable.HostCache.TryGet(host.gameObject, out syncable) || PropSyncable.Cache.TryGet(root, out syncable)) {
                         while (!syncable.IsRegistered())
                             yield return null;
 
@@ -203,7 +203,7 @@ namespace LabFusion.Grabbables {
                         GameObject root = host.GetSyncRoot();
 
                         // Do we already have a synced object?
-                        if (PropSyncable.Cache.TryGet(root, out var syncable) || PropSyncable.HostCache.TryGet(host.gameObject, out syncable))
+                        if (GripExtender.Cache.TryGet(grip, out var syncable) || PropSyncable.HostCache.TryGet(host.gameObject, out syncable) || PropSyncable.Cache.TryGet(root, out syncable))
                         {
                             serializedGrab = new SerializedPropGrab("_", syncable.GetIndex(grip).Value, syncable.GetId(), new GripPair(hand, grip));
                             validGrip = true;

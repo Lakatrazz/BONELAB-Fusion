@@ -303,7 +303,6 @@
     <Compile Include="Core\src\Network\Messages\Campaign\DescentIntroMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\HomeMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\KartRaceMessage.cs" />
-    <Compile Include="Core\src\Network\Messages\Combat\ZoneEncounterEventMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Entities\BehaviourBaseNavMentalMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Entities\BehaviourBaseNavLocoMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Global\SlowMoButtonMessage.cs" />
@@ -355,7 +354,6 @@
     <Compile Include="Core\src\Patching\Patches\PullCordForceChangePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\SpawnableCratePlacerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Attacks\StabSlashPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\ZoneEncounterPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Trigger\GenGameControl_TriggerPatches.cs" />
     <Compile Include="Core\src\SDK\Points\AccessoryItem.cs" />
     <Compile Include="Core\src\SDK\Points\AccessoryItemHelper.cs" />
@@ -436,10 +434,11 @@
     <Compile Include="Core\src\Senders\SpawnSender.cs" />
     <Compile Include="Core\src\Senders\TimeScaleSender.cs" />
     <Compile Include="Core\src\Senders\Level\TrialSender.cs" />
-    <Compile Include="Core\src\Senders\Level\ZoneSender.cs" />
     <Compile Include="Core\src\Senders\Level\CampaignSender.cs" />
     <Compile Include="Core\src\Syncables\ConstraintSyncable.cs" />
     <Compile Include="Core\src\Syncables\Extenders\FlyingGunExtender.cs" />
+    <Compile Include="Core\src\Syncables\Extenders\GripExtender.cs" />
+    <Compile Include="Core\src\Syncables\Extenders\KeyRecieverExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\SyncGameObjectEnabledExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\SpawnGunExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\EscalatorExtender.cs" />

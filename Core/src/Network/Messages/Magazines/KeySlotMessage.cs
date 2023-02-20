@@ -31,14 +31,24 @@ namespace LabFusion.Network
         public byte smallId;
         public KeySlotType type;
         public ushort keyId;
+
+        // Static receiver
         public GameObject receiver;
+
+        // Prop receiver
+        public ushort? receiverId;
+        public byte? receiverIndex;
 
         public void Serialize(FusionWriter writer)
         {
             writer.Write(smallId);
             writer.Write((byte)type);
             writer.Write(keyId);
+
             writer.Write(receiver);
+
+            writer.Write(receiverId);
+            writer.Write(receiverIndex);
         }
 
         public void Deserialize(FusionReader reader)
@@ -46,7 +56,11 @@ namespace LabFusion.Network
             smallId = reader.ReadByte();
             type = (KeySlotType)reader.ReadByte();
             keyId = reader.ReadUInt16();
+
             receiver = reader.ReadGameObject();
+
+            receiverId = reader.ReadUInt16Nullable();
+            receiverIndex = reader.ReadByteNullable();
         }
 
         public void Dispose()
@@ -54,14 +68,18 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static KeySlotData Create(byte smallId, KeySlotType type, ushort keyId, GameObject receiver)
+        public static KeySlotData Create(byte smallId, KeySlotType type, ushort keyId, GameObject receiver = null, ushort? receiverId = null, byte? receiverIndex = null)
         {
             return new KeySlotData()
             {
                 smallId = smallId,
                 type = type,
                 keyId = keyId,
+
                 receiver = receiver,
+
+                receiverId = receiverId,
+                receiverIndex = receiverIndex,
             };
         }
     }
@@ -106,8 +124,21 @@ namespace LabFusion.Network
                                         }
                                     }
                                     break;
-                                // TODO: Implement
                                 case KeySlotType.INSERT_PROP:
+                                    if (SyncManager.TryGetSyncable(data.receiverId.Value, out var receiverSyncable) && receiverSyncable is PropSyncable receiverProp) {
+                                        if (receiverProp.TryGetExtender<KeyRecieverExtender>(out var receiverExtender)) {
+                                            var keyReceiver = receiverExtender.GetComponent(data.receiverIndex.Value);
+
+                                            if (keyReceiver != null) {
+                                                var host = InteractableHost.Cache.Get(keyExtender.Component.gameObject);
+
+                                                // Insert the key and detach grips
+                                                host.TryDetach();
+
+                                                keyReceiver.OnInteractableHostEnter(host);
+                                            }
+                                        }
+                                    }
                                     break;
                             }
 

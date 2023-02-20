@@ -82,8 +82,6 @@ namespace LabFusion.Network
 
             FlashlightToggle = 49,
 
-            ZoneEncounterEvent = 50,
-
             KeySlot = 51,
 
             NimbusGunNoclip = 52,

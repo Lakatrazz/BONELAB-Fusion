@@ -31,8 +31,13 @@ namespace LabFusion.Patching
             if (NetworkInfo.HasServer && key && KeyExtender.Cache.TryGet(key, out var syncable)) {
                 // Make sure the key is inserting
                 if (__instance._State == KeyReciever._States.HOVERING && __instance._keyHost == host) {
-                    // Send the insert request
-                    KeySender.SendStaticKeySlot(syncable.GetId(), __instance.gameObject);
+                    // Check if this is static or synced
+                    if (KeyRecieverExtender.Cache.TryGet(__instance, out var receiverSyncable) && receiverSyncable.TryGetExtender<KeyRecieverExtender>(out var receiverExtender)) {
+                        KeySender.SendPropKeySlot(syncable.GetId(), receiverSyncable.GetId(), receiverExtender.GetIndex(__instance).Value);
+                    }
+                    else {
+                        KeySender.SendStaticKeySlot(syncable.GetId(), __instance.gameObject);
+                    }
                 }
             }
         }
