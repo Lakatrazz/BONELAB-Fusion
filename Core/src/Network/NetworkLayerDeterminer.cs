@@ -12,10 +12,13 @@ using System.Threading.Tasks;
 namespace LabFusion.Network {
     public enum NetworkLayerType {
         STEAM = 0,
-        SPACEWAR = 1,
+        STEAM_VR = 1,
+        SPACEWAR = 2,
     }
 
     public static class NetworkLayerDeterminer {
+        public static NetworkLayerType LoadedType { get; private set; }
+
         public static NetworkLayerType GetDefaultType() {
             return NetworkLayerType.STEAM;
         }
@@ -25,9 +28,14 @@ namespace LabFusion.Network {
                 default:
                 case NetworkLayerType.STEAM:
                     if (!SteamNetworkLayer.VerifyLayer())
-                        return NetworkLayerType.SPACEWAR;
+                        return VerifyType(NetworkLayerType.STEAM_VR);
                     else
                         return NetworkLayerType.STEAM;
+                case NetworkLayerType.STEAM_VR:
+                    if (!SteamVRNetworkLayer.VerifyLayer())
+                        return VerifyType(NetworkLayerType.SPACEWAR);
+                    else
+                        return NetworkLayerType.STEAM_VR;
                 case NetworkLayerType.SPACEWAR:
                     return NetworkLayerType.SPACEWAR;
             }
@@ -37,10 +45,14 @@ namespace LabFusion.Network {
             var type = FusionPreferences.ClientSettings.NetworkLayerType.GetValue();
             type = VerifyType(type);
 
+            LoadedType = type;
+
             switch (type) {
                 default:
                 case NetworkLayerType.STEAM:
                     return typeof(SteamNetworkLayer);
+                case NetworkLayerType.STEAM_VR:
+                    return typeof(SteamVRNetworkLayer);
                 case NetworkLayerType.SPACEWAR:
                     return typeof(SpacewarNetworkLayer);
             }

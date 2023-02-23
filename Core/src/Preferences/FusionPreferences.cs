@@ -174,7 +174,10 @@ namespace LabFusion.Preferences {
 
             // Create category for changing network layer
             var networkLayerManager = fusionCategory.CreateCategory("Network Layer Manager", Color.yellow);
-            BoneMenuCreator.CreateEnumPermission(networkLayerManager, "Selected Network Type", ClientSettings.NetworkLayerType);
+            networkLayerManager.CreateFunctionElement("Players need to be on the same layer!", Color.yellow, null);
+
+            networkLayerManager.CreateFunctionElement($"Active Layer: {NetworkLayerDeterminer.LoadedType}", Color.white, null);
+            BoneMenuCreator.CreateEnumPermission(networkLayerManager, "Target Layer", ClientSettings.NetworkLayerType);
             networkLayerManager.CreateFunctionElement("Changing this setting requires a game restart!", Color.red, null);
 
             // Setup bonemenu for the network layer

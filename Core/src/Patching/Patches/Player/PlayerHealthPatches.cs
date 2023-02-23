@@ -90,9 +90,17 @@ namespace LabFusion.Patching
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Player_Health.TAKEDAMAGE))]
-        public static void TAKEDAMAGE(Player_Health __instance, float damage) {
+        public static void TAKEDAMAGEPrefix(Player_Health __instance, float damage) {
             if (__instance.healthMode == Health.HealthMode.Invincible && __instance._testRagdollOnDeath)
                 __instance._testRagdollOnDeath = false;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(Player_Health.TAKEDAMAGE))]
+        public static void TAKEDAMAGEPostfix(Player_Health __instance, float damage) {
+            if (__instance._testRagdollOnDeath && !__instance.alive) {
+                __instance._rigManager.physicsRig.UnRagdollRig();
+            }
         }
     }
 }

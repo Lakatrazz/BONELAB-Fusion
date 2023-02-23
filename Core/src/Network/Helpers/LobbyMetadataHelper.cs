@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 
 namespace LabFusion.Network {
     public struct LobbyMetadataInfo {
+        private const string _internalPrefix = "BONELAB_FUSION_";
+
         // Lobby info
         public ulong LobbyId;
         public string LobbyName;
@@ -52,7 +54,7 @@ namespace LabFusion.Network {
             // Lobby info
             lobby.SetMetadata("LobbyId", LobbyId.ToString());
             lobby.SetMetadata("LobbyName", LobbyName);
-            lobby.SetMetadata("HasServerOpen", HasServerOpen.ToString());
+            lobby.SetMetadata($"{_internalPrefix}HasServerOpen", HasServerOpen.ToString());
             lobby.SetMetadata("PlayerCount", PlayerCount.ToString());
 
             // Lobby settings
@@ -70,7 +72,7 @@ namespace LabFusion.Network {
             var info = new LobbyMetadataInfo() {
                 // Lobby info
                 LobbyName = lobby.GetMetadata("LobbyName"),
-                HasServerOpen = lobby.GetMetadata("HasServerOpen") == bool.TrueString,
+                HasServerOpen = lobby.GetMetadata($"{_internalPrefix}HasServerOpen") == bool.TrueString,
 
                 // Lobby settings
                 NametagsEnabled = lobby.GetMetadata("NametagsEnabled") == bool.TrueString,

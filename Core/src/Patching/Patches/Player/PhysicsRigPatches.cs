@@ -42,13 +42,6 @@ namespace LabFusion.Patching
         public static bool RagdollRig(PhysicsRig __instance) {
             try {
                 if (NetworkInfo.HasServer && __instance.manager == RigData.RigReferences.RigManager) {
-                    // Check if we can ragdoll
-                    var playerHealth = __instance.manager.health.TryCast<Player_Health>();
-
-                    if (!playerHealth.deathIsImminent && !playerHealth.alive) {
-                        return false;
-                    }
-
                     using (var writer = FusionWriter.Create()) {
                         using (var data = PlayerRepRagdollData.Create(PlayerIdManager.LocalSmallId, true)) {
                             writer.Write(data);

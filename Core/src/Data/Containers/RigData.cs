@@ -148,6 +148,8 @@ namespace LabFusion.Data
         public static Vector3 RigSpawn { get; private set; }
         public static Quaternion RigSpawnRot { get; private set; }
 
+        private static bool _wasPaused = false;
+
         public static void OnCacheRigInfo() {
             var manager = Player.rigManager;
 
@@ -208,6 +210,13 @@ namespace LabFusion.Data
 
                     RigAvatarId = barcode;
                 }
+
+                // Pause check incase the rigs decide to behave strangely
+                if (!rm.openControllerRig.IsPaused && _wasPaused) {
+                    rm.bodyVitals.CalibratePlayerBodyScale();
+                }
+
+                _wasPaused = rm.openControllerRig.IsPaused;
             }
         }
 

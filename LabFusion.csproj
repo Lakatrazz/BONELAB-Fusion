@@ -322,7 +322,8 @@
     <Compile Include="Core\src\Network\Messages\Server\PlayerSettingsMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Spawning\SpawnableCratePlacerMessage.cs" />
     <Compile Include="Core\src\Network\NetworkLayerDeterminer.cs" />
-    <Compile Include="Core\src\Network\Spacewar\SpacewarNetworkLayer.cs" />
+    <Compile Include="Core\src\Network\Steam\SpacewarNetworkLayer.cs" />
+    <Compile Include="Core\src\Network\Steam\SteamVRNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Steam\SteamLobby.cs" />
     <Compile Include="Core\src\Network\Steam\SteamVoiceIdentifier.cs" />
     <Compile Include="Core\src\Patching\NativeStructs\Attack_.cs" />
