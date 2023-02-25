@@ -228,14 +228,8 @@ namespace LabFusion.Representation
                 if (grip.IsInteractionDisabled || (grip.HasHost && grip.Host.IsInteractionDisabled))
                     return;
 
-                // Check for instantanious grabbing
-                bool isInstant = true;
-
-                if (grip.IsStatic || grip.TryCast<WorldGrip>() || grip.TryCast<GenericGrip>() || grip.TryCast<BarrelGrip>() || grip.TryCast<BoxGrip>())
-                    isInstant = false;
-
                 // Attach the hand
-                grip.TryAttach(hand, isInstant);
+                grip.TryAttach(hand, grip.CheckInstantAttach());
             }
         }
 
