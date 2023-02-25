@@ -11,17 +11,30 @@ using LabFusion.Utilities;
 
 using SLZ;
 using SLZ.Interaction;
+using SLZ.Marrow.Utilities;
 
 namespace LabFusion.Data {
     public abstract class SerializedGrab : IFusionSerializable {
         public bool isGrabbed;
+        public SerializedTransform targetInBase;
+
+        public void WriteDefaultGrip(Hand hand, Grip grip) {
+            // Check if this is actually grabbed
+            isGrabbed = hand.m_CurrentAttachedGO == grip.gameObject;
+
+            // Store the target
+            var target = grip.GetTargetInBase(hand);
+            targetInBase = new SerializedTransform(target.position, target.rotation);
+        }
 
         public virtual void Serialize(FusionWriter writer) {
             writer.Write(isGrabbed);
+            writer.Write(targetInBase);
         }
 
         public virtual void Deserialize(FusionReader reader) {
             isGrabbed = reader.ReadBoolean();
+            targetInBase = reader.ReadFusionSerializable<SerializedTransform>();
         }
 
         public abstract Grip GetGrip();
@@ -31,7 +44,7 @@ namespace LabFusion.Data {
             if (!isGrabbed)
                 return;
 
-            rep.AttachObject(handedness, grip);
+            rep.AttachObject(handedness, grip, SimpleTransform.Create(targetInBase.position, targetInBase.rotation.Expand()));
         }
     }
 }

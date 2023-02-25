@@ -215,7 +215,7 @@ namespace LabFusion.Representation
             OnMetadataChanged(PlayerId);
         }
 
-        public void AttachObject(Handedness handedness, Grip grip) {
+        public void AttachObject(Handedness handedness, Grip grip, SimpleTransform? targetInBase = null) {
             var hand = RigReferences.GetHand(handedness);
             if (hand == null)
                 return;
@@ -229,7 +229,7 @@ namespace LabFusion.Representation
                     return;
 
                 // Attach the hand
-                grip.TryAttach(hand, grip.CheckInstantAttach());
+                grip.TryAttach(hand, grip.CheckInstantAttach(), targetInBase);
             }
         }
 

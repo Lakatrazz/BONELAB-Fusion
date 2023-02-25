@@ -1,4 +1,5 @@
-﻿using LabFusion.Data;
+﻿using Il2CppSystem.Reflection;
+using LabFusion.Data;
 using LabFusion.Patching;
 
 using SLZ.Interaction;
@@ -13,27 +14,6 @@ namespace LabFusion.Extensions
             var gripTransform = pair.grip.Host.GetTransform();
 
             return new SerializedTransform(gripTransform.InverseTransformPoint(handTransform.position), gripTransform.InverseTransformRotation(handTransform.rotation));
-        }
-
-        public static void SetRelativeHand(this Grip grip, Hand hand, SerializedTransform transform) {
-            // Set the hand position so that the grip is created in the right spot
-            if (transform != null) {
-                var gripTransform = grip.Host.GetTransform();
-
-                hand.transform.SetPositionAndRotation(gripTransform.TransformPoint(transform.position), gripTransform.TransformRotation(transform.rotation.Expand()));
-            }
-        }
-
-        public static void PrepareGrab(this Grip grip, Hand hand) {
-            hand.HoveringReceiver = grip;
-
-            SimpleTransform transform = SimpleTransform.Create(hand.transform);
-
-            // ValidateGripScore usually calculates targets on a grip
-            // I originally also had OnHandHoverUpdate here, but that checks for grabbing (I think) and can cause players to turn into spaghetti!
-            for (var i = 0; i < 20; i++) {
-                grip.ValidateGripScore(hand, transform);
-            }
         }
 
         public static void MoveIntoHand(this Grip grip, Hand hand) {
@@ -63,7 +43,7 @@ namespace LabFusion.Extensions
             return isInstant;
         }
 
-        public static void TryAttach(this Grip grip, Hand hand, bool isInstant = false) {
+        public static void TryAttach(this Grip grip, Hand hand, bool isInstant = false, SimpleTransform? targetInBase = null) {
             // Detach an existing grip
             hand.TryDetach();
 
@@ -75,11 +55,20 @@ namespace LabFusion.Extensions
                 inventoryHand.IgnoreUnlock();
             }
 
-            // Prepare the grip
-            grip.PrepareGrab(hand);
-            
-            // Begin grabbing
+            // Prevent other hovers
+            hand.HoverLock();
+
+            // Start the hover
+            grip.OnHandHoverBegin(hand, true);
+
+            // Modify the target grab point
+            if (targetInBase.HasValue) {
+                grip.SetTargetInBase(hand, targetInBase.Value.position, targetInBase.Value.rotation);
+            }
+
+            // Confirm the grab and end the hover
             grip.OnGrabConfirm(hand, isInstant);
+            grip.OnHandHoverEnd(hand);
         }
 
         public static void TryDetach(this Grip grip, Hand hand) {

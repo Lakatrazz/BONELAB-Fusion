@@ -24,13 +24,9 @@ namespace LabFusion.Data {
         public byte grabbedUser;
         public byte gripIndex;
 
-        public SerializedTransform relativeHand = null;
-
-        public SerializedPlayerBodyGrab(byte grabbedUser, byte gripIndex, GripPair pair) {
+        public SerializedPlayerBodyGrab(byte grabbedUser, byte gripIndex) {
             this.grabbedUser = grabbedUser;
             this.gripIndex = gripIndex;
-
-            relativeHand = pair.GetRelativeHand();
         }
 
         public SerializedPlayerBodyGrab() { }
@@ -40,7 +36,6 @@ namespace LabFusion.Data {
 
             writer.Write(grabbedUser);
             writer.Write(gripIndex);
-            writer.Write(relativeHand);
         }
 
         public override void Deserialize(FusionReader reader) {
@@ -48,7 +43,6 @@ namespace LabFusion.Data {
 
             grabbedUser = reader.ReadByte();
             gripIndex = reader.ReadByte();
-            relativeHand = reader.ReadFusionSerializable<SerializedTransform>();
         }
 
         public override Grip GetGrip() {
@@ -59,29 +53,6 @@ namespace LabFusion.Data {
                 references = rep.RigReferences;
 
             return references?.GetGrip(gripIndex);
-        }
-
-        public override void RequestGrab(PlayerRep rep, Handedness handedness, Grip grip)
-        {
-            // Don't do anything if this isn't grabbed anymore
-            if (!isGrabbed)
-                return;
-
-            // Get the hand and its starting values
-            Hand hand = rep.RigReferences.GetHand(handedness);
-
-            Transform handTransform = hand.transform;
-            Vector3 position = handTransform.position;
-            Quaternion rotation = handTransform.rotation;
-
-            // Move the hand into its relative position
-            grip.SetRelativeHand(hand, relativeHand);
-
-            // Apply the grab
-            base.RequestGrab(rep, handedness, grip);
-
-            // Reset the hand position
-            handTransform.SetPositionAndRotation(position, rotation);
         }
     }
 }

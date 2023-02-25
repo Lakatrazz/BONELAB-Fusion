@@ -111,7 +111,7 @@ namespace LabFusion.Grabbables {
                         yield return null;
 
                         // Send force grab message
-                        var grab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id, new GripPair(hand, grip));
+                        var grab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id);
 
                         using (var writer = FusionWriter.Create()) {
                             using (var data = PlayerRepForceGrabData.Create(smallId, grab)) {
@@ -128,7 +128,7 @@ namespace LabFusion.Grabbables {
                         // Add new syncable and send force grab message
                         syncable = new PropSyncable(host);
                         SyncManager.RegisterSyncable(syncable, SyncManager.AllocateSyncID());
-                        var grab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id, new GripPair(hand, grip));
+                        var grab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id);
 
                         using (var writer = FusionWriter.Create()) {
                             using (var data = PlayerRepForceGrabData.Create(smallId, grab)) {
@@ -175,7 +175,7 @@ namespace LabFusion.Grabbables {
                     if (PlayerRepUtilities.FindAttachedPlayer(grip, out var repId, out var repReferences))
                     {
                         group = GrabGroup.PLAYER_BODY;
-                        serializedGrab = new SerializedPlayerBodyGrab(repId, repReferences.GetIndex(grip).Value, new GripPair(hand, grip));
+                        serializedGrab = new SerializedPlayerBodyGrab(repId, repReferences.GetIndex(grip).Value);
                         validGrip = true;
                     }
                     // Check for static grips
@@ -205,7 +205,7 @@ namespace LabFusion.Grabbables {
                         // Do we already have a synced object?
                         if (GripExtender.Cache.TryGet(grip, out var syncable) || PropSyncable.HostCache.TryGet(host.gameObject, out syncable) || PropSyncable.Cache.TryGet(root, out syncable))
                         {
-                            serializedGrab = new SerializedPropGrab("_", syncable.GetIndex(grip).Value, syncable.GetId(), new GripPair(hand, grip));
+                            serializedGrab = new SerializedPropGrab("_", syncable.GetIndex(grip).Value, syncable.GetId());
                             validGrip = true;
                         }
                         // Create a new one
@@ -233,14 +233,14 @@ namespace LabFusion.Grabbables {
 
                             yield return null;
 
-                            serializedGrab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id, new GripPair(hand, grip));
+                            serializedGrab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id);
                             validGrip = true;
                         }
                         else if (NetworkInfo.IsServer)
                         {
                             syncable = new PropSyncable(host);
                             SyncManager.RegisterSyncable(syncable, SyncManager.AllocateSyncID());
-                            serializedGrab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id, new GripPair(hand, grip));
+                            serializedGrab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id);
 
                             validGrip = true;
                         }
@@ -249,8 +249,8 @@ namespace LabFusion.Grabbables {
 
                 // Now, send the message
                 if (validGrip) {
-                    // Set whether or not this is still currently grabbed
-                    serializedGrab.isGrabbed = hand.m_CurrentAttachedGO == grip.gameObject;
+                    // Write the default grip values
+                    serializedGrab.WriteDefaultGrip(hand, grip);
 
                     using (var writer = FusionWriter.Create())
                     {
