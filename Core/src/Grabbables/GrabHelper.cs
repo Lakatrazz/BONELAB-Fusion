@@ -184,7 +184,7 @@ namespace LabFusion.Grabbables {
                         if (grip.TryCast<WorldGrip>() != null)
                         {
                             group = GrabGroup.WORLD_GRIP;
-                            serializedGrab = new SerializedWorldGrab(smallId, new SerializedTransform(grip.transform));
+                            serializedGrab = new SerializedWorldGrab(smallId);
                             validGrip = true;
                         }
                         else

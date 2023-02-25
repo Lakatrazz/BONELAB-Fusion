@@ -22,14 +22,12 @@ namespace LabFusion.Data
     public class SerializedWorldGrab : SerializedGrab
     {
         public byte grabberId;
-        public SerializedTransform gripTransform;
 
         public SerializedWorldGrab() { }
 
-        public SerializedWorldGrab(byte grabberId, SerializedTransform gripTransform)
+        public SerializedWorldGrab(byte grabberId)
         {
             this.grabberId = grabberId;
-            this.gripTransform = gripTransform;
         }
 
         public override void Serialize(FusionWriter writer)
@@ -37,7 +35,6 @@ namespace LabFusion.Data
             base.Serialize(writer);
 
             writer.Write(grabberId);
-            writer.Write(gripTransform);
         }
 
         public override void Deserialize(FusionReader reader)
@@ -45,7 +42,6 @@ namespace LabFusion.Data
             base.Deserialize(reader);
 
             grabberId = reader.ReadByte();
-            gripTransform = reader.ReadFusionSerializable<SerializedTransform>();
         }
 
         public override Grip GetGrip()
@@ -53,8 +49,6 @@ namespace LabFusion.Data
             if (PlayerRepManager.TryGetPlayerRep(grabberId, out var rep)) {
                 if (rep.RigReferences.RigManager) {
                     var worldGrip = rep.RigReferences.RigManager.worldGrip;
-                    worldGrip.transform.position = gripTransform.position;
-                    worldGrip.transform.rotation = gripTransform.rotation.Expand();
                     return worldGrip;
                 }
             }

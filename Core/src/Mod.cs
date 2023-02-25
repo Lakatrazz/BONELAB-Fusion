@@ -139,6 +139,9 @@ namespace LabFusion
             // Unload assetbundles
             FusionBundleLoader.OnBundleLoad();
 
+            // Undo game changes
+            PlayerAdditionsHelper.OnDeinitializeMelon();
+
             // Free APIs
             SteamAPILoader.OnFreeSteamAPI();
         }

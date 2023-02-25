@@ -6,7 +6,7 @@ using LabFusion.Network;
 using LabFusion.Preferences;
 using LabFusion.Representation;
 using LabFusion.SDK.Gamemodes;
-
+using SLZ;
 using SLZ.Rig;
 
 using System;
@@ -120,8 +120,10 @@ namespace LabFusion.Utilities {
         public static void Teleport(Vector3 position, Vector3 fwdSnap, bool zeroVelocity = true) {
             var rm = RigData.RigReferences.RigManager;
 
-            if (!rm.IsNOC())
+            if (!rm.IsNOC()) {
                 rm.Teleport(position, fwdSnap, zeroVelocity);
+                rm.physicsRig.ResetHands(Handedness.BOTH);
+            }
         }
 
         /// <summary>

@@ -32,6 +32,9 @@ namespace LabFusion.Network
         public SerializedGameObjectReference tracker1;
         public SerializedGameObjectReference tracker2;
 
+        public SerializedTransform tracker1Transform;
+        public SerializedTransform tracker2Transform;
+
         public Vector3 point1;
         public Vector3 point2;
 
@@ -51,6 +54,9 @@ namespace LabFusion.Network
 
             writer.Write(tracker1);
             writer.Write(tracker2);
+
+            writer.Write(tracker1Transform);
+            writer.Write(tracker2Transform);
 
             writer.Write(point1);
             writer.Write(point2);
@@ -72,6 +78,9 @@ namespace LabFusion.Network
 
             tracker1 = reader.ReadFusionSerializable<SerializedGameObjectReference>();
             tracker2 = reader.ReadFusionSerializable<SerializedGameObjectReference>();
+
+            tracker1Transform = reader.ReadFusionSerializable<SerializedTransform>();
+            tracker2Transform = reader.ReadFusionSerializable<SerializedTransform>();
 
             point1 = reader.ReadVector3();
             point2 = reader.ReadVector3();
@@ -97,6 +106,8 @@ namespace LabFusion.Network
                 mode = pair.mode,
                 tracker1 = new SerializedGameObjectReference(pair.go1),
                 tracker2 = new SerializedGameObjectReference(pair.go2),
+                tracker1Transform = new SerializedTransform(pair.go1.transform),
+                tracker2Transform = new SerializedTransform(pair.go2.transform),
                 point1 = pair.point1,
                 point2 = pair.point2,
                 normal1 = pair.normal1,
@@ -144,7 +155,21 @@ namespace LabFusion.Network
                             comp._gO2 = data.tracker2.gameObject;
                             comp._rb1 = comp._gO1.GetComponentInChildren<Rigidbody>(true);
                             comp._rb2 = comp._gO2.GetComponentInChildren<Rigidbody>(true);
-                            
+
+                            // Store positions
+                            Transform tran1 = comp._gO1.transform;
+                            Transform tran2 = comp._gO2.transform;
+
+                            Vector3 go1Pos = tran1.position;
+                            Quaternion go1Rot = tran1.rotation;
+
+                            Vector3 go2Pos = tran2.position;
+                            Quaternion go2Rot = tran2.rotation;
+
+                            // Force positions
+                            tran1.SetPositionAndRotation(data.tracker1Transform.position, data.tracker1Transform.rotation.Expand());
+                            tran2.SetPositionAndRotation(data.tracker2Transform.position, data.tracker2Transform.rotation.Expand());
+
                             // Create the constraint
                             ConstrainerPatches.IsReceivingConstraints = true;
                             ConstrainerPatches.FirstId = data.point1Id;
@@ -155,6 +180,10 @@ namespace LabFusion.Network
                             ConstrainerPatches.FirstId = 0;
                             ConstrainerPatches.SecondId = 0;
                             ConstrainerPatches.IsReceivingConstraints = false;
+
+                            // Reset positions
+                            tran1.SetPositionAndRotation(go1Pos, go1Rot);
+                            tran2.SetPositionAndRotation(go2Pos, go2Rot);
                         }
                     }
                 }

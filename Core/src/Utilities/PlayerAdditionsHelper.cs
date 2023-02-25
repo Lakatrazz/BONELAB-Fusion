@@ -15,8 +15,17 @@ using UnityEngine;
 
 using LabFusion.Network;
 
+using SLZ.Interaction;
+
+using UnhollowerBaseLib;
+
+using SLZ.Marrow.Data;
+
 namespace LabFusion.Utilities {
     public static class PlayerAdditionsHelper {
+        private static int _feetLayer;
+        private static int _playerLayer;
+
         public static void OnInitializeMelon() {
             // Hook multiplayer events
             MultiplayerHooking.OnJoinServer += () => { OnEnterServer(RigData.RigReferences.RigManager); };
@@ -27,25 +36,57 @@ namespace LabFusion.Utilities {
                     OnEnterServer(rig);
                 }
             };
+
+            // Setup layers
+            _feetLayer = LayerMask.NameToLayer("Feet");
+            _playerLayer = LayerMask.NameToLayer("Player");
+
+            Physics.IgnoreLayerCollision(_feetLayer, _playerLayer, false);
         }
 
-        public static void OnEnterServer(RigManager rig) {
-            if (rig.IsNOC())
+        public static void OnDeinitializeMelon() {
+            // Undo layer changes
+            Physics.IgnoreLayerCollision(_feetLayer, _playerLayer, true);
+        }
+
+        public static void OnCreatedRig(RigManager manager) {
+            var physRig = manager.physicsRig;
+
+            // Ignore collisions between the player and its locosphere/knee due to our layer changes
+            var kneeColliders = physRig.knee.GetComponentsInChildren<Collider>();
+            var feetColliders = physRig.feet.GetComponentsInChildren<Collider>();
+
+            var playerColliders = physRig.GetComponentsInChildren<Collider>();
+
+            Internal_IgnoreCollisions(kneeColliders, playerColliders);
+            Internal_IgnoreCollisions(feetColliders, playerColliders);
+        }
+
+        private static void Internal_IgnoreCollisions(Collider[] first, Collider[] second) {
+            foreach (var col1 in first) {
+                foreach (var col2 in second) {
+                    Physics.IgnoreCollision(col1, col2, true);
+                }
+            }
+        }
+
+        public static void OnEnterServer(RigManager manager) {
+            if (manager.IsNOC())
                 return;
 
             // Setup impact properties
-            PersistentAssetCreator.SetupImpactProperties(rig);
+            PersistentAssetCreator.SetupImpactProperties(manager);
 
             // Setup ragdoll on death
-            rig.health._testRagdollOnDeath = true;
+            manager.health._testRagdollOnDeath = true;
 
             // Remove level reloading on death
-            var playerHealth = rig.health.TryCast<Player_Health>();
+            var playerHealth = manager.health.TryCast<Player_Health>();
             playerHealth.reloadLevelOnDeath = false;
             playerHealth.slowMoOnDeath = false;
 
             // Add syncers for player collision
-            var physRig = rig.physicsRig;
+            var physRig = manager.physicsRig;
 
             // Left arm
             physRig.m_handLf.gameObject.AddComponent<CollisionSyncer>();
@@ -65,28 +106,28 @@ namespace LabFusion.Utilities {
             FusionPlayer.ResetMortality();
         }
 
-        public static void OnExitServer(RigManager rig) {
-            if (rig.IsNOC())
+        public static void OnExitServer(RigManager manager) {
+            if (manager.IsNOC())
                 return;
 
             // Remove impact properties
-            var impactProperties = rig.GetComponentsInChildren<ImpactProperties>(true);
+            var impactProperties = manager.GetComponentsInChildren<ImpactProperties>(true);
             foreach (var properties in impactProperties)
                 GameObject.Destroy(properties);
 
-            var impactManager = rig.GetComponentInChildren<ImpactPropertiesManager>(true);
+            var impactManager = manager.GetComponentInChildren<ImpactPropertiesManager>(true);
             GameObject.Destroy(impactManager);
 
             // Remove collision syncers
-            var collisionSyncers = rig.GetComponentsInChildren<CollisionSyncer>(true);
+            var collisionSyncers = manager.GetComponentsInChildren<CollisionSyncer>(true);
             foreach (var syncer in collisionSyncers)
                 GameObject.Destroy(syncer);
 
             // Remove ragdoll on death
-            rig.health._testRagdollOnDeath = false;
+            manager.health._testRagdollOnDeath = false;
 
             // Add back slowmo on death
-            var playerHealth = rig.health.TryCast<Player_Health>();
+            var playerHealth = manager.health.TryCast<Player_Health>();
             playerHealth.slowMoOnDeath = true;
         }
     }

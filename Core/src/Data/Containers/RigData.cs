@@ -157,17 +157,22 @@ namespace LabFusion.Data
                 return;
             }
             
-            RigReferences = new RigReferenceCollection(manager);
-            RigReferences.RigManager.bodyVitals.rescaleEvent += (BodyVitals.RescaleUI)OnSendVitals;
-
             // Add player additions
+            PlayerAdditionsHelper.OnCreatedRig(manager);
+
             if (NetworkInfo.HasServer) {
                 PlayerAdditionsHelper.OnEnterServer(manager);
             }
 
+            // Store spawn values
             RigSpawn = manager.transform.position;
             RigSpawnRot = manager.transform.rotation;
 
+            // Store the references
+            RigReferences = new RigReferenceCollection(manager);
+            RigReferences.RigManager.bodyVitals.rescaleEvent += (BodyVitals.RescaleUI)OnSendVitals;
+
+            // Notify hooks
             MultiplayerHooking.Internal_OnLocalPlayerCreated(manager);
         }
 

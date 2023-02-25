@@ -234,6 +234,9 @@ namespace LabFusion.Representation {
             // Add impact properties for blunt + stabbing
             PersistentAssetCreator.SetupImpactProperties(rigManager);
 
+            // Apply additions
+            PlayerAdditionsHelper.OnCreatedRig(rigManager);
+
             // Add ammo to the other categories
             MelonCoroutines.Start(Internal_DelayAddAmmo(ammoInventory));
 
