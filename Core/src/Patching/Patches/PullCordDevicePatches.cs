@@ -10,6 +10,7 @@ using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Senders;
+using SLZ.Interaction;
 using SLZ.Marrow.Warehouse;
 using SLZ.Props;
 
@@ -50,6 +51,23 @@ namespace LabFusion.Patching {
         public static void PlayAvatarParticleEffects(PullCordDevice __instance) {
             if (NetworkInfo.HasServer && __instance.rm == RigData.RigReferences.RigManager) {
                 PullCordSender.SendBodyLogEffect();
+            }
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(PullCordDevice.OnBallGripDetached))]
+        public static void OnBallGripDetached(PullCordDevice __instance, Hand hand) {
+            // Prevent player rep body logs from inserting into the body mall
+            if (NetworkInfo.HasServer && __instance.rm != RigData.RigReferences.RigManager) {
+                var apv = __instance.apv;
+
+                if (apv != null && apv.bodyLog == __instance) {
+                    apv.bodyLog = null;
+                }
+
+                __instance.apv = null;
+                __instance.isHandleInReceiver = false;
+                __instance.isBallInReceiver = false;
             }
         }
     }
