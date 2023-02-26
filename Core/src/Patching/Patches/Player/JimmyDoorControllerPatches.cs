@@ -20,8 +20,7 @@ namespace LabFusion.Patching {
         public static void OnTriggerEnter(JimmyDoorController __instance, Collider other) {
             if (NetworkInfo.HasServer) {
                 // Make sure the rigmanager is ours so we get yoinked by jimmy
-                if (__instance.rM != null && __instance.rM != RigData.RigReferences.RigManager)
-                    __instance.rM = RigData.RigReferences.RigManager;
+                __instance.rM = RigData.RigReferences.RigManager;
             }
         }
     }
