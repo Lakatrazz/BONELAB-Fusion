@@ -19,6 +19,7 @@ using SLZ.Interaction;
 using SLZ.Player;
 using SLZ.Props.Weapons;
 using SLZ.Rig;
+using SLZ.VRMK;
 
 namespace LabFusion.Patching {
     [HarmonyPatch(typeof(InventorySlotReceiver), nameof(InventorySlotReceiver.OnHandGrab))]
@@ -35,6 +36,8 @@ namespace LabFusion.Patching {
                     var rigManager = __instance.GetComponentInParent<RigManager>();
 
                     if (rigManager != null) {
+                        bool isAvatarSlot = __instance.GetComponentInParent<Avatar>() != null;
+
                         byte? smallId = null;
                         RigReferenceCollection references = null;
 
@@ -50,14 +53,14 @@ namespace LabFusion.Patching {
                         if (!smallId.HasValue)
                             return;
 
-                        byte? index = references.GetIndex(__instance);
+                        byte? index = references.GetIndex(__instance, isAvatarSlot);
 
                         if (!index.HasValue)
                             return;
                         
                         using (var writer = FusionWriter.Create())
                         {
-                            using (var data = InventorySlotDropData.Create(smallId.Value, PlayerIdManager.LocalSmallId, index.Value, hand.handedness))
+                            using (var data = InventorySlotDropData.Create(smallId.Value, PlayerIdManager.LocalSmallId, index.Value, hand.handedness, isAvatarSlot))
                             {
                                 writer.Write(data);
 
@@ -94,6 +97,8 @@ namespace LabFusion.Patching {
                     var rigManager = __instance.GetComponentInParent<RigManager>();
 
                     if (rigManager != null) {
+                        bool isAvatarSlot = __instance.GetComponentInParent<Avatar>() != null;
+
                         byte? smallId = null;
                         RigReferenceCollection references = null;
 
@@ -109,7 +114,7 @@ namespace LabFusion.Patching {
                         if (!smallId.HasValue)
                             return; 
 
-                        byte? index = references.GetIndex(__instance);
+                        byte? index = references.GetIndex(__instance, isAvatarSlot);
 
                         if (!index.HasValue)
                             return;
@@ -117,7 +122,7 @@ namespace LabFusion.Patching {
 
                         using (var writer = FusionWriter.Create())
                         {
-                            using (var data = InventorySlotInsertData.Create(smallId.Value, PlayerIdManager.LocalSmallId, syncable.Id, index.Value))
+                            using (var data = InventorySlotInsertData.Create(smallId.Value, PlayerIdManager.LocalSmallId, syncable.Id, index.Value, isAvatarSlot))
                             {
                                 writer.Write(data);
 

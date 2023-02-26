@@ -28,6 +28,7 @@ namespace LabFusion.Data
         public string fullPath;
         public ushort index;
         public ushort id;
+        public SerializedTransform relativeHand = null;
 
         public SerializedPropGrab() { }
 
@@ -38,6 +39,13 @@ namespace LabFusion.Data
             this.id = id;
         }
 
+        public override void WriteDefaultGrip(Hand hand, Grip grip)
+        {
+            base.WriteDefaultGrip(hand, grip);
+
+            relativeHand = gripPair.GetRelativeHand();
+        }
+
         public override void Serialize(FusionWriter writer)
         {
             base.Serialize(writer);
@@ -45,6 +53,7 @@ namespace LabFusion.Data
             writer.Write(fullPath);
             writer.Write(index);
             writer.Write(id);
+            writer.Write(relativeHand);
         }
 
         public override void Deserialize(FusionReader reader)
@@ -54,6 +63,7 @@ namespace LabFusion.Data
             fullPath = reader.ReadString();
             index = reader.ReadUInt16();
             id = reader.ReadUInt16();
+            relativeHand = reader.ReadFusionSerializable<SerializedTransform>();
         }
 
         public Grip GetGrip(out PropSyncable syncable) {
@@ -83,5 +93,29 @@ namespace LabFusion.Data
         public override Grip GetGrip() {
             return GetGrip(out _);
         }
+
+        public override void RequestGrab(PlayerRep rep, Handedness handedness, Grip grip)
+        {
+            // Don't do anything if this isn't grabbed anymore
+            if (!isGrabbed)
+                return;
+
+            // Get the hand and its starting values
+            Hand hand = rep.RigReferences.GetHand(handedness);
+
+            Transform handTransform = hand.transform;
+            Vector3 position = handTransform.position;
+            Quaternion rotation = handTransform.rotation;
+
+            // Move the hand into its relative position
+            grip.SetRelativeHand(hand, relativeHand);
+
+            // Apply the grab
+            base.RequestGrab(rep, handedness, grip);
+
+            // Reset the hand position
+            handTransform.SetPositionAndRotation(position, rotation);
+        }
+
     }
 }

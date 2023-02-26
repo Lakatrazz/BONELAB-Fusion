@@ -77,6 +77,10 @@ namespace LabFusion.Data
             return RigManager._avatar.GetComponentsInChildren<Grip>();
         }
 
+        internal InventorySlotReceiver[] GetAvatarSlots() {
+            return RigManager._avatar.GetComponentsInChildren<InventorySlotReceiver>();
+        }
+
         // Rigidbody order likes to randomly change on players
         // So we have to disgustingly update it every index call
         internal void GetRigidbodies() {
@@ -107,19 +111,29 @@ namespace LabFusion.Data
             return null;
         }
 
-        public byte? GetIndex(InventorySlotReceiver slot)
+        public byte? GetIndex(InventorySlotReceiver slot, bool isAvatarSlot = false)
         {
-            for (byte i = 0; i < RigSlots.Length; i++)
+            var slotArray = RigSlots;
+
+            if (isAvatarSlot)
+                slotArray = GetAvatarSlots();
+
+            for (byte i = 0; i < slotArray.Length; i++)
             {
-                if (RigSlots[i] == slot)
+                if (slotArray[i] == slot)
                     return i;
             }
             return null;
         }
 
-        public InventorySlotReceiver GetSlot(byte index) {
-            if (RigSlots != null && RigSlots.Length > index)
-                return RigSlots[index];
+        public InventorySlotReceiver GetSlot(byte index, bool isAvatarSlot = false) {
+            var slotArray = RigSlots;
+
+            if (isAvatarSlot)
+                slotArray = GetAvatarSlots();
+
+            if (slotArray != null && slotArray.Length > index)
+                return slotArray[index];
             return null;
         }
 

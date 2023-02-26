@@ -26,12 +26,16 @@ namespace LabFusion.Network
         public byte slotIndex;
         public Handedness handedness;
 
+        public bool isAvatarSlot;
+
         public void Serialize(FusionWriter writer)
         {
             writer.Write(smallId);
             writer.Write(grabber);
             writer.Write(slotIndex);
             writer.Write((byte)handedness);
+
+            writer.Write(isAvatarSlot);
         }
 
         public void Deserialize(FusionReader reader)
@@ -40,6 +44,8 @@ namespace LabFusion.Network
             grabber = reader.ReadByte();
             slotIndex = reader.ReadByte();
             handedness = (Handedness)reader.ReadByte();
+
+            isAvatarSlot = reader.ReadBoolean();
         }
 
         public void Dispose()
@@ -47,7 +53,7 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static InventorySlotDropData Create(byte smallId, byte grabber, byte slotIndex, Handedness handedness)
+        public static InventorySlotDropData Create(byte smallId, byte grabber, byte slotIndex, Handedness handedness, bool isAvatarSlot = false)
         {
             return new InventorySlotDropData()
             {
@@ -55,6 +61,8 @@ namespace LabFusion.Network
                 grabber = grabber,
                 slotIndex = slotIndex,
                 handedness = handedness,
+
+                isAvatarSlot = isAvatarSlot,
             };
         }
     }
@@ -86,7 +94,7 @@ namespace LabFusion.Network
                         }
 
                         if (references != null) {
-                            var slotReceiver = references.GetSlot(data.slotIndex);
+                            var slotReceiver = references.GetSlot(data.slotIndex, data.isAvatarSlot);
                             WeaponSlot weaponSlot = null;
 
                             if (slotReceiver != null && slotReceiver._weaponHost != null) {

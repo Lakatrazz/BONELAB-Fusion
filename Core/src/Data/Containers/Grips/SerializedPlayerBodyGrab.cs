@@ -24,6 +24,7 @@ namespace LabFusion.Data {
         public byte grabbedUser;
         public byte gripIndex;
         public bool isAvatarGrip;
+        public SerializedTransform relativeHand = null;
 
         public SerializedPlayerBodyGrab(byte grabbedUser, byte gripIndex, bool isAvatarGrip) {
             this.grabbedUser = grabbedUser;
@@ -33,12 +34,19 @@ namespace LabFusion.Data {
 
         public SerializedPlayerBodyGrab() { }
 
+        public override void WriteDefaultGrip(Hand hand, Grip grip) {
+            base.WriteDefaultGrip(hand, grip);
+
+            relativeHand = gripPair.GetRelativeHand();
+        }
+
         public override void Serialize(FusionWriter writer) {
             base.Serialize(writer);
 
             writer.Write(grabbedUser);
             writer.Write(gripIndex);
             writer.Write(isAvatarGrip);
+            writer.Write(relativeHand);
         }
 
         public override void Deserialize(FusionReader reader) {
@@ -47,6 +55,7 @@ namespace LabFusion.Data {
             grabbedUser = reader.ReadByte();
             gripIndex = reader.ReadByte();
             isAvatarGrip = reader.ReadBoolean();
+            relativeHand = reader.ReadFusionSerializable<SerializedTransform>();
         }
 
         public override Grip GetGrip() {
@@ -57,6 +66,29 @@ namespace LabFusion.Data {
                 references = rep.RigReferences;
 
             return references?.GetGrip(gripIndex, isAvatarGrip);
+        }
+
+        public override void RequestGrab(PlayerRep rep, Handedness handedness, Grip grip)
+        {
+            // Don't do anything if this isn't grabbed anymore
+            if (!isGrabbed)
+                return;
+
+            // Get the hand and its starting values
+            Hand hand = rep.RigReferences.GetHand(handedness);
+
+            Transform handTransform = hand.transform;
+            Vector3 position = handTransform.position;
+            Quaternion rotation = handTransform.rotation;
+
+            // Move the hand into its relative position
+            grip.SetRelativeHand(hand, relativeHand);
+
+            // Apply the grab
+            base.RequestGrab(rep, handedness, grip);
+
+            // Reset the hand position
+            handTransform.SetPositionAndRotation(position, rotation);
         }
     }
 }

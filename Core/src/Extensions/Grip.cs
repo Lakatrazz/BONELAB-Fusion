@@ -16,6 +16,17 @@ namespace LabFusion.Extensions
             return new SerializedTransform(gripTransform.InverseTransformPoint(handTransform.position), gripTransform.InverseTransformRotation(handTransform.rotation));
         }
 
+        public static void SetRelativeHand(this Grip grip, Hand hand, SerializedTransform transform)
+        {
+            // Set the hand position so that the grip is created in the right spot
+            if (transform != null)
+            {
+                var gripTransform = grip.Host.GetTransform();
+
+                hand.transform.SetPositionAndRotation(gripTransform.TransformPoint(transform.position), gripTransform.TransformRotation(transform.rotation.Expand()));
+            }
+        }
+
         public static void MoveIntoHand(this Grip grip, Hand hand) {
             var host = grip.Host.GetTransform();
             var handTarget = grip.SolveHandTarget(hand);
@@ -59,7 +70,10 @@ namespace LabFusion.Extensions
             hand.HoverLock();
 
             // Start the hover
+            SimpleTransform handTransform = SimpleTransform.Create(hand.transform);
+            grip.ValidateGripScore(hand, handTransform);
             grip.OnHandHoverBegin(hand, true);
+            grip.ValidateGripScore(hand, handTransform);
 
             // Modify the target grab point
             if (targetInBase.HasValue) {

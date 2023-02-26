@@ -24,12 +24,16 @@ namespace LabFusion.Network
         public ushort syncId;
         public byte slotIndex;
 
+        public bool isAvatarSlot;
+
         public void Serialize(FusionWriter writer)
         {
             writer.Write(smallId);
             writer.Write(inserter);
             writer.Write(syncId);
             writer.Write(slotIndex);
+
+            writer.Write(isAvatarSlot);
         }
 
         public void Deserialize(FusionReader reader)
@@ -38,6 +42,8 @@ namespace LabFusion.Network
             inserter = reader.ReadByte();
             syncId = reader.ReadUInt16();
             slotIndex = reader.ReadByte();
+
+            isAvatarSlot = reader.ReadBoolean();
         }
 
         public void Dispose()
@@ -45,7 +51,7 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static InventorySlotInsertData Create(byte smallId, byte inserter, ushort syncId, byte slotIndex)
+        public static InventorySlotInsertData Create(byte smallId, byte inserter, ushort syncId, byte slotIndex, bool isAvatarSlot = false)
         {
             return new InventorySlotInsertData()
             {
@@ -53,6 +59,8 @@ namespace LabFusion.Network
                 inserter = inserter,
                 syncId = syncId,
                 slotIndex = slotIndex,
+
+                isAvatarSlot = isAvatarSlot,
             };
         }
     }
@@ -88,7 +96,7 @@ namespace LabFusion.Network
                                 extender.Component.interactableHost.TryDetach();
 
                                 InventorySlotReceiverDrop.PreventInsertCheck = true;
-                                references.GetSlot(data.slotIndex).InsertInSlot(extender.Component.interactableHost);
+                                references.GetSlot(data.slotIndex, data.isAvatarSlot).InsertInSlot(extender.Component.interactableHost);
                                 InventorySlotReceiverDrop.PreventInsertCheck = false;
                             }
                         }

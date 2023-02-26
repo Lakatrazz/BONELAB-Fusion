@@ -493,7 +493,9 @@ namespace LabFusion.Syncables
 
                 var rb = Rigidbodies[i];
 
-                if (!hasMovingBody && !rb.IsSleeping() && HasMoved(i)) {
+                bool sleepCheck = !rb.IsSleeping() || rb.isKinematic;
+
+                if (!hasMovingBody && sleepCheck && HasMoved(i)) {
                     hasMovingBody = true;
                     break;
                 }
