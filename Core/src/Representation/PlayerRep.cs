@@ -398,6 +398,15 @@ namespace LabFusion.Representation
 
             RigReferences = new RigReferenceCollection(rig);
 
+            // Shrink holster hitboxes for easier grabbing
+            foreach (var slot in RigReferences.RigSlots) {
+                foreach (var box in slot.GetComponentsInChildren<BoxCollider>()) {
+                    // Only affect trigger colliders just incase
+                    if (box.isTrigger)
+                        box.size *= 0.3f;
+                }
+            }
+
             // Get the synced transform arrays so we can set tracked positions later
             RigAbstractor.FillTransformArray(ref repTransforms, rig);
             RigAbstractor.FillGameworldArray(ref gameworldRigTransforms, rig);
