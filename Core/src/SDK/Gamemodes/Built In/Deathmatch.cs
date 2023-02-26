@@ -214,6 +214,15 @@ namespace LabFusion.SDK.Gamemodes {
             }
         }
 
+        protected void OnVictoryStatus(bool isVictory = false) {
+            if (isVictory) {
+                FusionAudio.Play2D(FusionContentLoader.LavaGangVictory, 0.7f);
+            }
+            else {
+                FusionAudio.Play2D(FusionContentLoader.LavaGangFailure, 0.7f);
+            }
+        }
+
         protected override void OnStopGamemode() {
             base.OnStopGamemode();
 
@@ -241,6 +250,18 @@ namespace LabFusion.SDK.Gamemodes {
 
             if (selfPlace != -1 && selfPlace > 3) {
                 message += $"Your Place: {selfPlace} (Score: {selfScore})";
+            }
+
+            // Play victory/failure sounds
+            int playerCount = PlayerIdManager.PlayerCount;
+
+            if (playerCount > 1) {
+                bool isVictory = false;
+
+                if (selfPlace + 1 < Mathf.Min(playerCount, 4))
+                    isVictory = true;
+
+                OnVictoryStatus(isVictory);
             }
 
             // Show the winners in a notification

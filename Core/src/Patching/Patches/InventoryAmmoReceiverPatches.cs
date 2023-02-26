@@ -20,20 +20,26 @@ namespace LabFusion.Patching {
     public class InventoryAmmoReceiverGrab {
         public static bool Prefix(InventoryAmmoReceiver __instance, Hand hand) {
             try {
-                if (NetworkInfo.HasServer && __instance.rigManager == RigData.RigReferences.RigManager && __instance._selectedMagazineData != null && __instance._selectedMagazineData.spawnable != null) {
-                    var cartridgeData = __instance._selectedCartridgeData;
+                if (NetworkInfo.HasServer && __instance.rigManager == RigData.RigReferences.RigManager) {
+                    var magazineData = __instance._selectedMagazineData;
 
-                    if (__instance._AmmoInventory.GetCartridgeCount(cartridgeData) > 0) {
-                        var inventoryHand = InventoryHand.Cache.Get(hand.gameObject);
-                        if (inventoryHand) {
-                            inventoryHand.IgnoreUnlock();
-                        }
-                        
-                        hand.SetGrabLock();
-                        PooleeUtilities.RequestSpawn(__instance._selectedMagazineData.spawnable.crateRef.Barcode, new SerializedTransform(__instance.transform), null, hand.handedness);
-
+                    if (magazineData == null)
                         return false;
+                    
+                    var cartridgeData = __instance._selectedCartridgeData;
+                    
+                    if (cartridgeData == null || __instance._AmmoInventory.GetCartridgeCount(cartridgeData) <= 0)
+                        return false;
+
+                    var inventoryHand = InventoryHand.Cache.Get(hand.gameObject);
+                    if (inventoryHand) {
+                        inventoryHand.IgnoreUnlock();
                     }
+
+                    hand.SetGrabLock();
+                    PooleeUtilities.RequestSpawn(magazineData.spawnable.crateRef.Barcode, new SerializedTransform(__instance.transform), null, hand.handedness);
+
+                    return false;
                 }
             }
             catch (Exception e) {
