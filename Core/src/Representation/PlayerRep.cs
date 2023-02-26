@@ -126,6 +126,7 @@ namespace LabFusion.Representation
             pelvisPDController = new PDController();
 
             MultiplayerHooking.OnServerSettingsChanged += OnServerSettingsChanged;
+            FusionOverrides.OnOverridesChanged += OnOverridesChanged;
 
             ResetSerializedTransforms();
 
@@ -201,6 +202,10 @@ namespace LabFusion.Representation
             }
 
             UpdateNametagSettings();
+        }
+
+        private void OnOverridesChanged() {
+            _isServerDirty = true;
         }
 
         public void ResetSerializedTransforms() {
@@ -749,7 +754,7 @@ namespace LabFusion.Representation
                 
                 // Update server side settings
                 if (_isServerDirty) {
-                    repCanvas.gameObject.SetActive(FusionPreferences.NametagsEnabled);
+                    repCanvas.gameObject.SetActive(FusionPreferences.NametagsEnabled && FusionOverrides.ValidateNametag(PlayerId));
 
                     _isServerDirty = false;
                 }

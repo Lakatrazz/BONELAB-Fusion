@@ -126,22 +126,27 @@ namespace LabFusion.Network
 
             PlayerRepTeleport = 76,
 
+            ZoneEncounterEvent = 77,
+
+            HolodeckEvent = 78,
+
             // SDK messages
             // Module setup
             Module = 80,
             DynamicsAssignment = 81,
 
             // Gamemodes
-            GamemodeMetadataResponse = 82,
-            GamemodeTriggerResponse = 83,
+            GamemodeMetadataSet = 82,
+            GamemodeMetadataRemove = 83,
+            GamemodeTriggerResponse = 84,
 
             // SDK scripts
-            GameObjectActive = 84,
+            GameObjectActive = 85,
 
             // Point items
-            PointItemEquipState = 85,
-            PointItemTrigger = 86,
-            PointItemTriggerValue = 87;
+            PointItemEquipState = 86,
+            PointItemTrigger = 87,
+            PointItemTriggerValue = 88;
     }
 
 }

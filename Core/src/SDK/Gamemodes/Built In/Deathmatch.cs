@@ -151,6 +151,7 @@ namespace LabFusion.SDK.Gamemodes {
 
             // Add hooks
             MultiplayerHooking.OnPlayerAction += OnPlayerAction;
+            FusionOverrides.OnValidateNametag += OnValidateNametag;
 
             SetDefaultValues();
         }
@@ -161,6 +162,14 @@ namespace LabFusion.SDK.Gamemodes {
 
             // Remove hooks
             MultiplayerHooking.OnPlayerAction -= OnPlayerAction;
+            FusionOverrides.OnValidateNametag -= OnValidateNametag;
+        }
+
+        protected bool OnValidateNametag(PlayerId id) {
+            if (!IsActive())
+                return true;
+
+            return false;
         }
 
         protected void OnPlayerAction(PlayerId player, PlayerActionType type, PlayerId otherPlayer = null) {
@@ -212,6 +221,9 @@ namespace LabFusion.SDK.Gamemodes {
             if (FusionPlayer.TryGetSpawnPoint(out var spawn)) {
                 FusionPlayer.Teleport(spawn.position, spawn.forward);
             }
+
+            // Push nametag updates
+            FusionOverrides.ForceUpdateOverrides();
         }
 
         protected void OnVictoryStatus(bool isVictory = false) {
@@ -289,6 +301,9 @@ namespace LabFusion.SDK.Gamemodes {
 
             // Remove spawn points
             FusionPlayer.ResetSpawnPoints();
+
+            // Push nametag updates
+            FusionOverrides.ForceUpdateOverrides();
         }
 
         public float GetTimeElapsed() => Time.realtimeSinceStartup - _timeOfStart;

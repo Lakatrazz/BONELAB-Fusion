@@ -178,9 +178,9 @@ namespace LabFusion.SDK.Gamemodes {
             else {
                 MultiplayerHooking.OnShouldAllowConnection -= Internal_UserJoinCheck;
 
+                GamemodeManager.Internal_SetActiveGamemode(null);
                 IsStarted = false;
                 OnStopGamemode();
-                GamemodeManager.Internal_SetActiveGamemode(null);
 
                 if (!ManualPlaylist)
                     StopPlaylist();
@@ -233,7 +233,17 @@ namespace LabFusion.SDK.Gamemodes {
         {
             // We can only change metadata as the server!
             if (NetworkInfo.IsServer) {
-                GamemodeSender.SendGamemodeMetadataResponse(Tag.Value, key, value);
+                GamemodeSender.SendGamemodeMetadataSet(Tag.Value, key, value);
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool TryRemoveMetadata(string key) {
+            // We can only remove metadata as the server!
+            if (NetworkInfo.IsServer && _internalMetadata.ContainsKey(key)) {
+                GamemodeSender.SendGamemodeMetadataRemove(Tag.Value, key);
                 return true;
             }
 
@@ -274,6 +284,14 @@ namespace LabFusion.SDK.Gamemodes {
             OnInternalMetadataChanged(key, value);
         }
 
+        internal void Internal_ForceRemoveMetadata(string key) {
+            if (_internalMetadata.ContainsKey(key)) {
+                OnMetadataRemoved(key);
+
+                _internalMetadata.Remove(key);
+            }
+        }
+
         internal void Internal_TriggerEvent(string value) {
             OnEventTriggered(value);
         }
@@ -287,6 +305,8 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         protected virtual void OnMetadataChanged(string key, string value) { }
+
+        protected virtual void OnMetadataRemoved(string key) { }
 
         protected virtual void OnEventTriggered(string value) { }
     }

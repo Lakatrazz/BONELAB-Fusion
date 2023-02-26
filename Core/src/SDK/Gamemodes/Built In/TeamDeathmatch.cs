@@ -198,6 +198,7 @@ namespace LabFusion.SDK.Gamemodes {
             MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
             MultiplayerHooking.OnPlayerAction += OnPlayerAction;
+            FusionOverrides.OnValidateNametag += OnValidateNametag;
 
             SetDefaultValues();
         }
@@ -211,7 +212,17 @@ namespace LabFusion.SDK.Gamemodes {
             MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
             MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
             MultiplayerHooking.OnPlayerAction -= OnPlayerAction;
+            FusionOverrides.OnValidateNametag -= OnValidateNametag;
         }
+
+        protected bool OnValidateNametag(PlayerId id)
+        {
+            if (!IsActive())
+                return true;
+
+            return GetTeam(id) == _localTeam;
+        }
+
 
         public override void OnMainSceneInitialized() {
             if (!_hasOverridenValues) {
@@ -320,6 +331,9 @@ namespace LabFusion.SDK.Gamemodes {
 
             // Setup ammo
             FusionPlayer.SetAmmo(1000);
+
+            // Push nametag updates
+            FusionOverrides.ForceUpdateOverrides();
         }
 
         protected override void OnStopGamemode() {
@@ -374,6 +388,9 @@ namespace LabFusion.SDK.Gamemodes {
 
             // Remove all team logos
             RemoveLogos();
+
+            // Push nametag updates
+            FusionOverrides.ForceUpdateOverrides();
         }
 
         public float GetTimeElapsed() => Time.realtimeSinceStartup - _timeOfStart;
@@ -590,6 +607,9 @@ namespace LabFusion.SDK.Gamemodes {
                         else if (team != Team.NO_TEAM) {
                             AddLogo(playerId, team);
                         }
+
+                        // Push nametag updates
+                        FusionOverrides.ForceUpdateOverrides();
 
                         break;
                     }

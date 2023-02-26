@@ -17,6 +17,7 @@ namespace LabFusion.Representation
 {
     public class PlayerId : IFusionSerializable, IDisposable, IEquatable<PlayerId> {
         public bool IsSelf => LongId == PlayerIdManager.LocalLongId;
+        public bool IsValid => PlayerIdManager.PlayerIds.Contains(this);
 
         public ulong LongId { get; private set; }
         public byte SmallId { get; private set; }

@@ -22,6 +22,7 @@ namespace LabFusion.Data {
             TimeTrialData.OnCacheInfo();
             GameControllerData.OnCacheInfo();
             VoidG114Data.OnCacheInfo();
+            HolodeckData.OnCacheInfo();
         }
     }
 }

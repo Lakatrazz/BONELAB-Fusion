@@ -206,6 +206,7 @@
     <Compile Include="Core\src\BoneMenu\SettingsCreator.cs" />
     <Compile Include="Core\src\Data\Containers\GrabbedGripList.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\GameControllerData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\HolodeckData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\VoidG114Data.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\TimeTrialData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\KartRaceData.cs" />
@@ -285,8 +286,11 @@
     <Compile Include="Core\src\Network\INetworkLobby.cs" />
     <Compile Include="Core\src\Network\Messages\Arena\BaseGameControllerMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Arena\TimeTrialGameControllerMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Gamemodes\GamemodeMetadataRemoveMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Gamemodes\GamemodeTriggerResponseMessage.cs" />
-    <Compile Include="Core\src\Network\Messages\Gamemodes\GamemodeMetadataResponseMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Gamemodes\GamemodeMetadataSetMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Levels\HolodeckEventMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Levels\ZoneEncounterEventMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Levels\LevelRequestMessage.cs" />
     <Compile Include="Core\src\Network\Messages\PointShop\PointItemTriggerValueMessage.cs" />
     <Compile Include="Core\src\Network\Messages\PointShop\PointItemTriggerMessage.cs" />
@@ -342,7 +346,9 @@
     <Compile Include="Core\src\Patching\Patches\ConstraintTrackerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\DevManipulatorPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\BaseGameControllerPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Levels\GameControl_HolodeckPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\TimeTrial_GameControllerPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Levels\ZoneEncounterPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\ArtRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\PlayerDamageReceiverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\RemapRigPatches.cs" />
@@ -421,6 +427,8 @@
     <Compile Include="Core\src\SDK\Gamemodes\GamemodePlaylist.cs" />
     <Compile Include="Core\src\SDK\Gamemodes\GamemodeRegistration.cs" />
     <Compile Include="Core\src\SDK\Network\Messages\ModuleMessageHandler.cs" />
+    <Compile Include="Core\src\Senders\Level\HolodeckSender.cs" />
+    <Compile Include="Core\src\Senders\Level\ZoneSender.cs" />
     <Compile Include="Core\src\Senders\PointItemSender.cs" />
     <Compile Include="Core\src\Senders\SDKSender.cs" />
     <Compile Include="Core\src\Senders\PermissionSender.cs" />
@@ -566,6 +574,7 @@
     <Compile Include="Core\src\Syncables\PropComponentExtender.cs" />
     <Compile Include="Core\src\Syncables\Extenders\PropExtenderManager.cs" />
     <Compile Include="Core\src\Utilities\FloatingOriginUtilities.cs" />
+    <Compile Include="Core\src\Utilities\Fusion\FusionOverrides.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionPointItemLoader.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionContentLoader.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionComponentCache.cs" />

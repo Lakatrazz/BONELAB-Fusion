@@ -25,14 +25,36 @@ namespace LabFusion.Senders {
                 throw new ExpectedClientException();
         }
 
-        public static void SendGamemodeMetadataResponse(ushort gamemodeId, string key, string value) {
+        public static void SendGamemodeMetadataSet(ushort gamemodeId, string key, string value) {
             // Make sure this is the server
             if (NetworkInfo.IsServer) {
                 using (var writer = FusionWriter.Create()) {
-                    using (var data = GamemodeMetadataResponseData.Create(gamemodeId, key, value)) {
+                    using (var data = GamemodeMetadataSetData.Create(gamemodeId, key, value)) {
                         writer.Write(data);
 
-                        using (var message = FusionMessage.Create(NativeMessageTag.GamemodeMetadataResponse, writer)) {
+                        using (var message = FusionMessage.Create(NativeMessageTag.GamemodeMetadataSet, writer)) {
+                            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                        }
+                    }
+                }
+            }
+            else
+                throw new ExpectedClientException();
+        }
+
+        public static void SendGamemodeMetadataRemove(ushort gamemodeId, string key)
+        {
+            // Make sure this is the server
+            if (NetworkInfo.IsServer)
+            {
+                using (var writer = FusionWriter.Create())
+                {
+                    using (var data = GamemodeMetadataRemoveData.Create(gamemodeId, key))
+                    {
+                        writer.Write(data);
+
+                        using (var message = FusionMessage.Create(NativeMessageTag.GamemodeMetadataRemove, writer))
+                        {
                             MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
                         }
                     }
