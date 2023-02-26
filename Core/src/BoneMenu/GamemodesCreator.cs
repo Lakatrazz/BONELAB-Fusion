@@ -1,6 +1,6 @@
 ﻿using BoneLib.BoneMenu;
 using BoneLib.BoneMenu.Elements;
-
+using LabFusion.Preferences;
 using LabFusion.SDK.Gamemodes;
 
 using UnityEngine;
@@ -15,6 +15,13 @@ namespace LabFusion.BoneMenu
         public static void CreateGamemodesMenu(MenuCategory category) {
             // Root category
             _gamemodesCategory = category.CreateCategory("Gamemodes", Color.cyan);
+
+            // Hook music enabled change
+            FusionPreferences.ClientSettings.GamemodeMusic.OnValueChanged += (v) => {
+                Gamemode.MusicToggled = v;
+            };
+
+            Gamemode.MusicToggled = FusionPreferences.ClientSettings.GamemodeMusic.GetValue();
         }
 
         public static void SetActiveGamemodeText(string text) {
@@ -32,6 +39,9 @@ namespace LabFusion.BoneMenu
                 if (Gamemode.ActiveGamemode != null)
                     Gamemode.ActiveGamemode.StopGamemode();
             });
+
+            // Add music toggle button
+            CreateBoolPermission(_gamemodesCategory, "Music", FusionPreferences.ClientSettings.GamemodeMusic);
 
             // Add necessary gamemodes
             foreach (var gamemode in GamemodeManager.Gamemodes) {

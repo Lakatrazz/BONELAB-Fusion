@@ -403,7 +403,7 @@ namespace LabFusion.Representation
                 foreach (var box in slot.GetComponentsInChildren<BoxCollider>()) {
                     // Only affect trigger colliders just incase
                     if (box.isTrigger)
-                        box.size *= 0.3f;
+                        box.size *= 0.4f;
                 }
             }
 

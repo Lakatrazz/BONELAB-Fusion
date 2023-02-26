@@ -14,6 +14,8 @@ namespace LabFusion.SDK.Gamemodes {
         internal static Gamemode _activeGamemode = null;
         public static Gamemode ActiveGamemode => _activeGamemode;
 
+        public static bool MusicToggled { get; internal set; } = true;
+
         internal ushort? _tag = null;
         public ushort? Tag => _tag;
 
@@ -37,12 +39,10 @@ namespace LabFusion.SDK.Gamemodes {
         public Dictionary<string, string> Metadata => _internalMetadata;
 
         // Music
-        public virtual bool MusicEnabled => _musicEnabled;
+        public virtual bool MusicEnabled => MusicToggled;
         public virtual bool ManualPlaylist { get; } = false;
 
         protected GamemodePlaylist _playlist = null;
-
-        protected bool _musicEnabled = true;
 
         internal void GamemodeRegistered() {
             MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
@@ -118,11 +118,6 @@ namespace LabFusion.SDK.Gamemodes {
                 else {
                     StopGamemode();
                 }
-            });
-
-            category.CreateBoolElement("Music", Color.white, _musicEnabled, (v) =>
-            {
-                _musicEnabled = v;
             });
         }
 

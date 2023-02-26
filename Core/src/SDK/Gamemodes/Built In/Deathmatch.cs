@@ -105,6 +105,9 @@ namespace LabFusion.SDK.Gamemodes {
         public int GetPlace(PlayerId id) {
             var players = GetPlayersByScore();
 
+            if (players == null)
+                return -1;
+
             for (var i = 0; i < players.Count; i++) {
                 if (players[i] == id) {
                     return i + 1;

@@ -25,6 +25,7 @@ namespace LabFusion.Network {
         public ServerPrivacy Privacy;
         public TimeScaleMode TimeScaleMode;
         public int MaxPlayers;
+        public bool VoicechatEnabled;
 
         // Lobby status
         public string LevelName;
@@ -43,6 +44,7 @@ namespace LabFusion.Network {
                 Privacy = FusionPreferences.LocalServerSettings.Privacy.GetValue(),
                 TimeScaleMode = FusionPreferences.LocalServerSettings.TimeScaleMode.GetValue(),
                 MaxPlayers = FusionPreferences.LocalServerSettings.MaxPlayers.GetValue(),
+                VoicechatEnabled = FusionPreferences.LocalServerSettings.VoicechatEnabled.GetValue(),
 
                 // Lobby status
                 LevelName = LevelWarehouseUtilities.GetCurrentLevel().Title,
@@ -62,6 +64,7 @@ namespace LabFusion.Network {
             lobby.SetMetadata("Privacy", Privacy.ToString());
             lobby.SetMetadata("TimeScaleMode", TimeScaleMode.ToString());
             lobby.SetMetadata("MaxPlayers", MaxPlayers.ToString());
+            lobby.SetMetadata("VoicechatEnabled", VoicechatEnabled.ToString());
 
             // Lobby status
             lobby.SetMetadata("LevelName", LevelName);
@@ -76,6 +79,7 @@ namespace LabFusion.Network {
 
                 // Lobby settings
                 NametagsEnabled = lobby.GetMetadata("NametagsEnabled") == bool.TrueString,
+                VoicechatEnabled = lobby.GetMetadata("VoicechatEnabled") == bool.TrueString,
 
                 // Lobby status
                 LevelName = lobby.GetMetadata("LevelName"),

@@ -16,12 +16,12 @@ namespace LabFusion.Utilities {
 
         public static GameObject PointShopPrefab { get; private set; }
 
+        public static GameObject EntangledLinePrefab { get; private set; }
+
         public static Texture2D SabrelakeLogo { get; private set; }
         public static Texture2D LavaGangLogo { get; private set; }
 
-        public static AudioClip SyntheticCavernsRemix { get; private set; }
-        public static AudioClip WWWWonderLan { get; private set; }
-        public static AudioClip SicklyBugInitiative { get; private set; }
+        public static AudioClip GeoGrpFellDownTheStairs { get; private set; }
 
         public static AudioClip LavaGangVictory { get; private set; }
         public static AudioClip SabrelakeVictory { get; private set; }
@@ -55,12 +55,16 @@ namespace LabFusion.Utilities {
             if (ContentBundle != null) {
                 PointShopPrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.PointShopPrefab);
 
+                EntangledLinePrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.EntangledLinePrefab);
+
                 SabrelakeLogo = ContentBundle.LoadPersistentAsset<Texture2D>(ResourcePaths.SabrelakeLogo); 
                 LavaGangLogo = ContentBundle.LoadPersistentAsset<Texture2D>(ResourcePaths.LavaGangLogo);
 
                 foreach (var song in _combatSongNames) {
                     _combatPlaylist.Add(ContentBundle.LoadPersistentAsset<AudioClip>(song));
                 }
+
+                GeoGrpFellDownTheStairs = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.GeoGrpFellDownTheStairs);
 
                 LavaGangVictory = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.LavaGangVictory);
                 SabrelakeVictory = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.SabrelakeVictory);

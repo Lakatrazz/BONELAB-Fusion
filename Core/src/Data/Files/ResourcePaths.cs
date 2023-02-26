@@ -27,6 +27,8 @@ namespace LabFusion.Data
 
         public const string PointShopPrefab = "machine_PointShop";
 
+        public const string EntangledLinePrefab = "renderer_EntangledLine";
+
         public const string SabrelakeLogo = "tex_sabreLakeLogo";
         public const string LavaGangLogo = "tex_lavaGangLogo";
 
@@ -35,6 +37,8 @@ namespace LabFusion.Data
 
         public const string LavaGangFailure = "sting_LavaGangFailure";
         public const string SabrelakeFailure = "sting_sabrelakeFailure";
+
+        public const string GeoGrpFellDownTheStairs = "music_GeoGrpFellDownTheStairs";
 
         public const string UISelect = "UI_Beep_Bend_Short_stereo";
         public const string UIDeny = "UI_Error_Double_Note_Down_Notch_stereo";

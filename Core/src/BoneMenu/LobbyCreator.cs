@@ -65,6 +65,7 @@ namespace LabFusion.BoneMenu
             settingsCategory.CreateFunctionElement($"Nametags: {(info.NametagsEnabled ? "Enabled" : "Disabled")}", Color.white, null);
             settingsCategory.CreateFunctionElement($"Server Privacy: {info.Privacy}", Color.white, null);
             settingsCategory.CreateFunctionElement($"Time Scale Mode: {info.TimeScaleMode}", Color.white, null);
+            settingsCategory.CreateFunctionElement($"Voicechat: {(info.VoicechatEnabled ? "Enabled" : "Disabled")}", Color.white, null);
 
             // Allow outside mods to add their own lobby information
             MultiplayerHooking.Internal_OnLobbyCategoryCreated(lobbyCategory, lobby);

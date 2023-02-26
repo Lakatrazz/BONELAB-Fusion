@@ -19,7 +19,7 @@ using SLZ.Marrow.Input;
 using LabFusion.Senders;
 using UnityEngine.Rendering;
 
-namespace LabFusion.Patches
+namespace LabFusion.Patching
 {
     // Disables game pausing completely while in a server
     [HarmonyPatch(typeof(XRHMD))]
