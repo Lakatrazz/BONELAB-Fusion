@@ -41,7 +41,7 @@ namespace LabFusion.Data {
 
         public virtual void RequestGrab(PlayerRep rep, Handedness handedness, Grip grip) {
             // Don't do anything if this isn't grabbed anymore
-            if (!isGrabbed)
+            if (!isGrabbed || grip == null)
                 return;
 
             rep.AttachObject(handedness, grip, SimpleTransform.Create(targetInBase.position, targetInBase.rotation.Expand()));

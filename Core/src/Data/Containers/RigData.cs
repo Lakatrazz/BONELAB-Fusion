@@ -49,18 +49,32 @@ namespace LabFusion.Data
         public BaseController LeftController { get; private set; }
         public BaseController RightController { get; private set; }
 
-        public byte? GetIndex(Grip grip) {
-            for (byte i = 0; i < RigGrips.Length; i++) {
-                if (RigGrips[i] == grip)
+        public byte? GetIndex(Grip grip, bool isAvatarGrip = false) {
+            var gripArray = RigGrips;
+
+            if (isAvatarGrip)
+                gripArray = GetAvatarGrips();
+
+            for (byte i = 0; i < gripArray.Length; i++) {
+                if (gripArray[i] == grip)
                     return i;
             }
             return null;
         }
 
-        public Grip GetGrip(byte index) {
-            if (RigGrips != null && RigGrips.Length > index)
-                return RigGrips[index];
+        public Grip GetGrip(byte index, bool isAvatarGrip = false) {
+            var gripArray = RigGrips;
+
+            if (isAvatarGrip)
+                gripArray = GetAvatarGrips();
+
+            if (gripArray != null && gripArray.Length > index)
+                return gripArray[index];
             return null;
+        }
+
+        internal Grip[] GetAvatarGrips() {
+            return RigManager._avatar.GetComponentsInChildren<Grip>();
         }
 
         // Rigidbody order likes to randomly change on players

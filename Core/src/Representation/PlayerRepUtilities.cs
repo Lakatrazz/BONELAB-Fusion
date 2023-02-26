@@ -72,14 +72,18 @@ namespace LabFusion.Representation {
             return false;
         }
 
-        public static bool FindAttachedPlayer(Grip grip, out byte smallId, out RigReferenceCollection references) {
+        public static bool FindAttachedPlayer(Grip grip, out byte smallId, out RigReferenceCollection references, out bool isAvatarGrip) {
             smallId = 0;
             references = null;
+            isAvatarGrip = false;
 
             if (grip == null)
                 return false;
 
             var rig = grip.GetComponentInParent<RigManager>();
+            if (rig != null)
+                isAvatarGrip = grip.GetComponentInParent<SLZ.VRMK.Avatar>();
+
             return TryGetRigInfo(rig, out smallId, out references);
         }
 

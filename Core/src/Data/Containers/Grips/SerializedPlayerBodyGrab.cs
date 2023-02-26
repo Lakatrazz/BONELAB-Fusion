@@ -23,10 +23,12 @@ namespace LabFusion.Data {
     public class SerializedPlayerBodyGrab : SerializedGrab {
         public byte grabbedUser;
         public byte gripIndex;
+        public bool isAvatarGrip;
 
-        public SerializedPlayerBodyGrab(byte grabbedUser, byte gripIndex) {
+        public SerializedPlayerBodyGrab(byte grabbedUser, byte gripIndex, bool isAvatarGrip) {
             this.grabbedUser = grabbedUser;
             this.gripIndex = gripIndex;
+            this.isAvatarGrip = isAvatarGrip;
         }
 
         public SerializedPlayerBodyGrab() { }
@@ -36,6 +38,7 @@ namespace LabFusion.Data {
 
             writer.Write(grabbedUser);
             writer.Write(gripIndex);
+            writer.Write(isAvatarGrip);
         }
 
         public override void Deserialize(FusionReader reader) {
@@ -43,6 +46,7 @@ namespace LabFusion.Data {
 
             grabbedUser = reader.ReadByte();
             gripIndex = reader.ReadByte();
+            isAvatarGrip = reader.ReadBoolean();
         }
 
         public override Grip GetGrip() {
@@ -52,7 +56,7 @@ namespace LabFusion.Data {
             else if (PlayerRepManager.TryGetPlayerRep(grabbedUser, out var rep))
                 references = rep.RigReferences;
 
-            return references?.GetGrip(gripIndex);
+            return references?.GetGrip(gripIndex, isAvatarGrip);
         }
     }
 }

@@ -172,10 +172,10 @@ namespace LabFusion.Grabbables {
                 if (grip != null)
                 {
                     // Check for player body grab
-                    if (PlayerRepUtilities.FindAttachedPlayer(grip, out var repId, out var repReferences))
+                    if (PlayerRepUtilities.FindAttachedPlayer(grip, out var repId, out var repReferences, out var isAvatarGrip))
                     {
                         group = GrabGroup.PLAYER_BODY;
-                        serializedGrab = new SerializedPlayerBodyGrab(repId, repReferences.GetIndex(grip).Value);
+                        serializedGrab = new SerializedPlayerBodyGrab(repId, repReferences.GetIndex(grip, isAvatarGrip).Value, isAvatarGrip);
                         validGrip = true;
                     }
                     // Check for static grips
