@@ -137,7 +137,7 @@ namespace LabFusion
             PointItemManager.Internal_UnhookAssemblies();
 
             // Unload assetbundles
-            FusionBundleLoader.OnBundleLoad();
+            FusionBundleLoader.OnBundleUnloaded();
 
             // Undo game changes
             PlayerAdditionsHelper.OnDeinitializeMelon();
