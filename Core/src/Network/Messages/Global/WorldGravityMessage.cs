@@ -15,6 +15,8 @@ namespace LabFusion.Network
 {
     public class WorldGravityMessageData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(float) * 3;
+
         public Vector3 gravity;
 
         public static WorldGravityMessageData Create(Vector3 gravity) {

@@ -10,6 +10,8 @@ namespace LabFusion.Network
 {
     public class DespawnRequestData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(ushort) + sizeof(byte) * 2;
+
         public ushort syncId;
         public byte despawnerId;
         public bool isMag;
@@ -54,7 +56,7 @@ namespace LabFusion.Network
             if (isServerHandled) {
                 using (var reader = FusionReader.Create(bytes)) {
                     using (var readData = reader.ReadFusionSerializable<DespawnRequestData>()) {
-                        using (var writer = FusionWriter.Create()) {
+                        using (var writer = FusionWriter.Create(DespawnResponseData.Size)) {
                             using (var data = DespawnResponseData.Create(readData.syncId, readData.despawnerId, readData.isMag)) {
                                 writer.Write(data);
 

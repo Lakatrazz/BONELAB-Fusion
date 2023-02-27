@@ -15,7 +15,7 @@ namespace LabFusion.Senders {
     public static class EnemySender {
         public static void SendLocoState(PropSyncable syncable, BehaviourBaseNav.LocoState locoState)
         {
-            using (var writer = FusionWriter.Create())
+            using (var writer = FusionWriter.Create(BehaviourBaseNavLocoData.Size))
             {
                 using (var data = BehaviourBaseNavLocoData.Create(PlayerIdManager.LocalSmallId, syncable, locoState))
                 {
@@ -30,7 +30,7 @@ namespace LabFusion.Senders {
         }
 
         public static void SendMentalState(PropSyncable syncable, BehaviourBaseNav.MentalState mentalState, TriggerRefProxy proxy = null) {
-            using (var writer = FusionWriter.Create())
+            using (var writer = FusionWriter.Create(BehaviourBaseNavMentalData.Size))
             {
                 using (var data = BehaviourBaseNavMentalData.Create(PlayerIdManager.LocalSmallId, syncable, mentalState, proxy))
                 {

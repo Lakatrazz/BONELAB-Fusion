@@ -23,6 +23,8 @@ namespace LabFusion.Network
 {
     public class ConstraintCreateData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) * 2 + sizeof(ushort) * 3 + sizeof(float) * 12;
+
         public byte smallId;
 
         public ushort constrainerId;

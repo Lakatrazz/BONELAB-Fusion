@@ -17,6 +17,8 @@ namespace LabFusion.Network
 {
     public class PlayerRepDamageData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) * 2 + sizeof(float);
+
         public byte damagerId;
         public byte damagedId;
         public float damage;

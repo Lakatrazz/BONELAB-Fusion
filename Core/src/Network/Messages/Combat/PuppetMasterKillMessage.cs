@@ -19,6 +19,8 @@ namespace LabFusion.Network
 {
     public class PuppetMasterKillData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) + sizeof(ushort);
+
         public byte smallId;
         public ushort puppetId;
 

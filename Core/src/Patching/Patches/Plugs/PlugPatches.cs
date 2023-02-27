@@ -91,7 +91,7 @@ namespace LabFusion.Patching
 
                     if (ammoPlug != null && ammoPlug.magazine && MagazineExtender.Cache.TryGet(ammoPlug.magazine, out var magSyncable)) {
                         
-                        using (var writer = FusionWriter.Create()) {
+                        using (var writer = FusionWriter.Create(MagazineInsertData.Size)) {
                             using (var data = MagazineInsertData.Create(PlayerIdManager.LocalSmallId, magSyncable.Id, gunSyncable.Id)) {
                                 writer.Write(data);
 
@@ -124,7 +124,7 @@ namespace LabFusion.Patching
                     if (ammoPlug && ammoPlug.magazine && MagazineExtender.Cache.TryGet(ammoPlug.magazine, out var magSyncable)) {
                         magSyncable.SetRigidbodiesDirty();
 
-                        using (var writer = FusionWriter.Create())
+                        using (var writer = FusionWriter.Create(MagazineEjectData.Size))
                         {
                             Hand hand = ammoPlug.host.GetHand(0);
                             Handedness handedness = hand != null ? hand.handedness : Handedness.UNDEFINED;

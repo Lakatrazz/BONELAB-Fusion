@@ -16,7 +16,7 @@ namespace LabFusion.Senders {
             if (!NetworkInfo.HasServer)
                 return;
 
-            using (var writer = FusionWriter.Create())
+            using (var writer = FusionWriter.Create(BodyLogToggleData.Size))
             {
                 using (var data = BodyLogToggleData.Create(PlayerIdManager.LocalSmallId, isEnabled))
                 {
@@ -34,7 +34,7 @@ namespace LabFusion.Senders {
             if (!NetworkInfo.HasServer)
                 return;
 
-            using (var writer = FusionWriter.Create()) {
+            using (var writer = FusionWriter.Create(BodyLogEffectData.Size)) {
                 using (var data = BodyLogEffectData.Create(PlayerIdManager.LocalSmallId)) {
                     writer.Write(data);
 

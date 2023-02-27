@@ -25,7 +25,7 @@ namespace LabFusion.Patching
                 return;
             
             if (NetworkInfo.HasServer && ConstraintSyncable.Cache.TryGet(__instance, out var syncable)) {
-                using (var writer = FusionWriter.Create()) {
+                using (var writer = FusionWriter.Create(ConstraintDeleteData.Size)) {
                     using (var data = ConstraintDeleteData.Create(PlayerIdManager.LocalSmallId, syncable.GetId()))
                     {
                         writer.Write(data);

@@ -11,6 +11,8 @@ namespace LabFusion.Network
 {
     public class NimbusGunNoclipData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) * 2 + sizeof(ushort);
+
         public byte smallId;
         public ushort syncId;
         public bool isEnabled;

@@ -45,7 +45,7 @@ namespace LabFusion.Patching {
             if (NetworkInfo.HasServer && ObjectDestructableExtender.Cache.TryGet(__instance, out var syncable) && syncable.TryGetExtender<ObjectDestructableExtender>(out var extender)) {
                 // Send object destroy
                 if (syncable.IsOwner() && !__state && __instance._isDead) {
-                    using (var writer = FusionWriter.Create())
+                    using (var writer = FusionWriter.Create(ObjectDestructableDestroyData.Size))
                     {
                         using (var data = ObjectDestructableDestroyData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value))
                         {

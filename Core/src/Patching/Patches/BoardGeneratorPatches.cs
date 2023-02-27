@@ -40,7 +40,7 @@ namespace LabFusion.Patching {
                 if (BoardGeneratorExtender.Cache.TryGet(__instance, out var syncable)) {
                     if (syncable.IsOwner()) {
                         // Send board create message
-                        using (var writer = FusionWriter.Create())
+                        using (var writer = FusionWriter.Create(BoardCreateData.Size))
                         {
                             using (var data = BoardCreateData.Create(PlayerIdManager.LocalSmallId, syncable.GetId(), __instance, idx, mass))
                             {

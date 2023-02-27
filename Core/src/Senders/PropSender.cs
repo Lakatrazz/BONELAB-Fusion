@@ -36,7 +36,7 @@ namespace LabFusion.Senders
             {
                 syncable.SetOwner(owner);
 
-                using (var writer = FusionWriter.Create())
+                using (var writer = FusionWriter.Create(SyncableOwnershipResponseData.Size))
                 {
                     using (var response = SyncableOwnershipResponseData.Create(owner, id))
                     {
@@ -52,7 +52,7 @@ namespace LabFusion.Senders
             // Send request to server
             else
             {
-                using (var writer = FusionWriter.Create())
+                using (var writer = FusionWriter.Create(SyncableOwnershipRequestData.Size))
                 {
                     using (var response = SyncableOwnershipRequestData.Create(owner, id))
                     {
@@ -85,7 +85,7 @@ namespace LabFusion.Senders
         /// <param name="syncable"></param>
         public static void SendSleep(PropSyncable syncable) {
             if (NetworkInfo.HasServer) {
-                using (var writer = FusionWriter.Create())
+                using (var writer = FusionWriter.Create(PropSyncableSleepData.Size))
                 {
                     using (var data = PropSyncableSleepData.Create(syncable.GetOwner().Value, syncable.GetId()))
                     {
@@ -106,7 +106,7 @@ namespace LabFusion.Senders
         /// <param name="syncable"></param>
         public static void SendCatchupCreation(PropSyncable syncable, ulong userId) {
             if (NetworkInfo.IsServer) {
-                using (var writer = FusionWriter.Create())
+                using (var writer = FusionWriter.Create(PropSyncableCreateData.Size))
                 {
                     using (var data = PropSyncableCreateData.Create(syncable.GetOwner().Value, syncable.GameObject, syncable.Id))
                     {
@@ -165,7 +165,7 @@ namespace LabFusion.Senders
 
                 yield return null;
 
-                using (var writer = FusionWriter.Create())
+                using (var writer = FusionWriter.Create(PropSyncableCreateData.Size))
                 {
                     using (var data = PropSyncableCreateData.Create(PlayerIdManager.LocalSmallId, newSyncable.GameObject, newSyncable.Id))
                     {
@@ -184,7 +184,7 @@ namespace LabFusion.Senders
             else if (NetworkInfo.IsServer) {
                 SyncManager.RegisterSyncable(newSyncable, SyncManager.AllocateSyncID());
 
-                using (var writer = FusionWriter.Create())
+                using (var writer = FusionWriter.Create(PropSyncableCreateData.Size))
                 {
                     using (var data = PropSyncableCreateData.Create(PlayerIdManager.LocalSmallId, newSyncable.GameObject, newSyncable.Id))
                     {

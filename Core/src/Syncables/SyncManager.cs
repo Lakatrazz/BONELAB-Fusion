@@ -35,7 +35,7 @@ namespace LabFusion.Syncables {
                 }
                 else
                 {
-                    using (var writer = FusionWriter.Create())
+                    using (var writer = FusionWriter.Create(SyncableIDRequestData.Size))
                     {
                         using (var data = SyncableIDRequestData.Create(PlayerIdManager.LocalSmallId, queuedId))
                         {

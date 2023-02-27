@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 namespace LabFusion.Network {
     public class SyncableIDResponseData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(ushort) * 2;
+
         public ushort queuedId;
         public ushort newId;
 

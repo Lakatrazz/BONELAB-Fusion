@@ -95,7 +95,7 @@ namespace LabFusion.Grabbables {
                         // Add it to the queue and get a unique id
                         ushort queuedId = SyncManager.QueueSyncable(syncable);
 
-                        using (var writer = FusionWriter.Create()) {
+                        using (var writer = FusionWriter.Create(SyncableIDRequestData.Size)) {
                             using (var data = SyncableIDRequestData.Create(smallId, queuedId)) {
                                 writer.Write(data);
 
@@ -113,7 +113,7 @@ namespace LabFusion.Grabbables {
                         // Send force grab message
                         var grab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id);
 
-                        using (var writer = FusionWriter.Create()) {
+                        using (var writer = FusionWriter.Create(PlayerRepForceGrabData.Size)) {
                             using (var data = PlayerRepForceGrabData.Create(smallId, grab)) {
                                 writer.Write(data);
 
@@ -130,7 +130,7 @@ namespace LabFusion.Grabbables {
                         SyncManager.RegisterSyncable(syncable, SyncManager.AllocateSyncID());
                         var grab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id);
 
-                        using (var writer = FusionWriter.Create()) {
+                        using (var writer = FusionWriter.Create(PlayerRepForceGrabData.Size)) {
                             using (var data = PlayerRepForceGrabData.Create(smallId, grab)) {
                                 writer.Write(data);
 
@@ -215,7 +215,7 @@ namespace LabFusion.Grabbables {
 
                             ushort queuedId = SyncManager.QueueSyncable(syncable);
 
-                            using (var writer = FusionWriter.Create())
+                            using (var writer = FusionWriter.Create(SyncableIDRequestData.Size))
                             {
                                 using (var data = SyncableIDRequestData.Create(smallId, queuedId))
                                 {
@@ -252,7 +252,7 @@ namespace LabFusion.Grabbables {
                     // Write the default grip values
                     serializedGrab.WriteDefaultGrip(hand, grip);
 
-                    using (var writer = FusionWriter.Create())
+                    using (var writer = FusionWriter.Create(PlayerRepGrabData.Size))
                     {
                         using (var data = PlayerRepGrabData.Create(smallId, handedness, group, serializedGrab))
                         {
@@ -285,7 +285,7 @@ namespace LabFusion.Grabbables {
 
             if (NetworkInfo.HasServer)
             {
-                using (var writer = FusionWriter.Create())
+                using (var writer = FusionWriter.Create(PlayerRepReleaseData.Size))
                 {
                     using (var data = PlayerRepReleaseData.Create(PlayerIdManager.LocalSmallId, handedness))
                     {

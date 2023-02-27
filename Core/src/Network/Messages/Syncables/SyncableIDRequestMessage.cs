@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 namespace LabFusion.Network {
     public class SyncableIDRequestData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) + sizeof(ushort);
+
         public byte smallId;
         public ushort queuedId;
 
@@ -47,7 +49,7 @@ namespace LabFusion.Network {
                 using (var reader = FusionReader.Create(bytes)) {
                     using (var data = reader.ReadFusionSerializable<SyncableIDRequestData>()) {
 
-                        using (var writer = FusionWriter.Create()) {
+                        using (var writer = FusionWriter.Create(SyncableIDResponseData.Size)) {
                             using (var response = SyncableIDResponseData.Create(data.queuedId, SyncManager.AllocateSyncID())) {
                                 writer.Write(response);
 

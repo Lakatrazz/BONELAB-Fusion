@@ -12,6 +12,8 @@ namespace LabFusion.Network
 {
     public class PlayerVoiceChatData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte);
+
         public byte smallId;
         public byte[] bytes;
 

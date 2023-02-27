@@ -12,6 +12,8 @@ namespace LabFusion.Network
 {
     public class SyncableOwnershipRequestData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) + sizeof(ushort);
+
         public byte smallId;
         public ushort syncId;
 
@@ -51,7 +53,7 @@ namespace LabFusion.Network
             if (NetworkInfo.IsServer && isServerHandled) {
                 using (var reader = FusionReader.Create(bytes)) {
                     using (var data = reader.ReadFusionSerializable<SyncableOwnershipRequestData>()) {
-                        using (var writer = FusionWriter.Create()) {
+                        using (var writer = FusionWriter.Create(SyncableOwnershipResponseData.Size)) {
                             using (var response = SyncableOwnershipResponseData.Create(data.smallId, data.syncId)) {
                                 writer.Write(response);
 

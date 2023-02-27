@@ -59,7 +59,9 @@ namespace LabFusion.SDK.Points {
         public static bool IsUnlocked(string barcode) {
 #if DEBUG
             if (FusionDevMode.UnlockEverything)
+#pragma warning disable CS0162 // Unreachable code detected
                 return true;
+#pragma warning restore CS0162 // Unreachable code detected
 #endif
 
 #pragma warning disable CS0162 // Unreachable code detected

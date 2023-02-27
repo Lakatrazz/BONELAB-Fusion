@@ -42,7 +42,7 @@ namespace LabFusion.Patching {
                     return false;
                 // Send object destroy
                 else {
-                    using (var writer = FusionWriter.Create()) {
+                    using (var writer = FusionWriter.Create(PropHealthDestroyData.Size)) {
                         using (var data = PropHealthDestroyData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value)) {
                             writer.Write(data);
 

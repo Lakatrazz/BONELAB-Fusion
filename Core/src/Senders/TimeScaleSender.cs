@@ -19,7 +19,7 @@ namespace LabFusion.Senders {
     public static class TimeScaleSender {
         public static void SendSlowMoButton(bool isDecrease)
         {
-            using (var writer = FusionWriter.Create())
+            using (var writer = FusionWriter.Create(SlowMoButtonMessageData.Size))
             {
                 using (var data = SlowMoButtonMessageData.Create(PlayerIdManager.LocalSmallId, isDecrease))
                 {

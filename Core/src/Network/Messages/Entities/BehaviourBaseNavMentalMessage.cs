@@ -16,6 +16,8 @@ namespace LabFusion.Network
 {
     public class BehaviourBaseNavMentalData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) * 2 + sizeof(ushort);
+
         public byte ownerId;
         public ushort syncId;
         public BehaviourBaseNav.MentalState mentalState;

@@ -64,8 +64,15 @@ namespace LabFusion.Extensions {
 
         internal static Transform GetTransformByIndex(this Transform parent, int index, string name)
         {
+            // Get matching siblings
             var matching = FindSiblingsWithName(parent, name);
+            if (matching.Count <= 0)
+                return null;
+
+            // Check if we can actually grab a transform with the index
             if (matching.Count <= index)
+                return matching[matching.Count - 1];
+            else if (index < 0)
                 return matching[matching.Count - 1];
             else
                 return matching[index];

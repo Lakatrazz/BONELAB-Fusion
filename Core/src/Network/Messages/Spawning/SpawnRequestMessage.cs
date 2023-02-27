@@ -13,6 +13,8 @@ namespace LabFusion.Network
 {
     public class SpawnRequestData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) * 2 + SerializedTransform.Size;
+
         public byte owner;
         public string barcode;
         public SerializedTransform serializedTransform;

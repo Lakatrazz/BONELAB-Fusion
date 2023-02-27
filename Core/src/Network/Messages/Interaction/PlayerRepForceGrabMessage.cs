@@ -17,6 +17,8 @@ namespace LabFusion.Network
 {
     public class PlayerRepForceGrabData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) + SerializedPropGrab.Size;
+
         public byte smallId;
         public SerializedPropGrab propGrab;
 

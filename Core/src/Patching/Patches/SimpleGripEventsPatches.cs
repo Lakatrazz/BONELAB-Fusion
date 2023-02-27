@@ -31,7 +31,7 @@ namespace LabFusion.Patching {
         }
 
         private static void SendGripEvent(ushort syncId, byte gripEventIndex, SimpleGripEventType type) {
-            using (var writer = FusionWriter.Create())
+            using (var writer = FusionWriter.Create(SimpleGripEventData.Size))
             {
                 using (var data = SimpleGripEventData.Create(PlayerIdManager.LocalSmallId, syncId, gripEventIndex, type))
                 {

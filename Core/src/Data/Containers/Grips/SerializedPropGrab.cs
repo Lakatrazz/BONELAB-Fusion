@@ -25,6 +25,8 @@ namespace LabFusion.Data
     }
 
     public class SerializedPropGrab : SerializedGrab {
+        public new const int Size = SerializedGrab.Size + sizeof(ushort) * 2 + SerializedTransform.Size;
+
         public string fullPath;
         public ushort index;
         public ushort id;

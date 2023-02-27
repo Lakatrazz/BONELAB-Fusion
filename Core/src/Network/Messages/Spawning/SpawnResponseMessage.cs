@@ -36,6 +36,8 @@ namespace LabFusion.Network
 {
     public class SpawnResponseData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) * 2 + sizeof(ushort) + SerializedTransform.Size;
+
         public byte owner;
         public string barcode;
         public ushort syncId;

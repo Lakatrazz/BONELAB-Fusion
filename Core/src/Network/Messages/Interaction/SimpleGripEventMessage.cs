@@ -24,6 +24,8 @@ namespace LabFusion.Network
 
     public class SimpleGripEventData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) * 3 + sizeof(ushort);
+
         public byte smallId;
         public ushort syncId;
         public byte gripEventIndex;

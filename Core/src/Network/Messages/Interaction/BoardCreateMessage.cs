@@ -24,6 +24,8 @@ namespace LabFusion.Network
 {
     public class BoardCreateData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) + sizeof(ushort) + sizeof(int) + sizeof(float) * 7;
+
         public byte smallId;
 
         public ushort boardGunId;

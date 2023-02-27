@@ -14,7 +14,7 @@ namespace LabFusion.Utilities {
 
         internal static void OnSendPhysicsInformation() {
             if (NetworkInfo.IsServer) {
-                using (var writer = FusionWriter.Create()) {
+                using (var writer = FusionWriter.Create(WorldGravityMessageData.Size)) {
                     using (var data = WorldGravityMessageData.Create(Physics.gravity)) {
                         writer.Write(data);
 

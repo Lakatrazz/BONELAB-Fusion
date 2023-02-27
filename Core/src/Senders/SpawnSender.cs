@@ -30,7 +30,7 @@ namespace LabFusion.Senders
         /// <param name="userId"></param>
         public static void SendCratePlacerCatchup(SpawnableCratePlacer placer, PropSyncable syncable, ulong userId) {
             if (NetworkInfo.IsServer) {
-                using (var writer = FusionWriter.Create())
+                using (var writer = FusionWriter.Create(SpawnableCratePlacerData.Size))
                 {
                     using (var data = SpawnableCratePlacerData.Create(syncable.GetId(), placer.gameObject))
                     {
@@ -68,7 +68,7 @@ namespace LabFusion.Senders
 
             if (PropSyncable.Cache.TryGet(go, out var syncable))
             {
-                using (var writer = FusionWriter.Create())
+                using (var writer = FusionWriter.Create(SpawnableCratePlacerData.Size))
                 {
                     using (var data = SpawnableCratePlacerData.Create(syncable.GetId(), placer.gameObject))
                     {
@@ -97,7 +97,7 @@ namespace LabFusion.Senders
         {
             if (NetworkInfo.IsServer)
             {
-                using (var writer = FusionWriter.Create())
+                using (var writer = FusionWriter.Create(SpawnResponseData.Size))
                 {
                     using (var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, spawner, hand))
                     {

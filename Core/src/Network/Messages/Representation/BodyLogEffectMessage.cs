@@ -11,6 +11,8 @@ namespace LabFusion.Network
 {
     public class BodyLogEffectData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte);
+
         public byte smallId;
 
         public void Serialize(FusionWriter writer)

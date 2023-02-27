@@ -13,7 +13,7 @@ namespace LabFusion.Senders {
     public static class KeySender {
         public static void SendStaticKeySlot(ushort keyId, GameObject receiver)
         {
-            using (var writer = FusionWriter.Create())
+            using (var writer = FusionWriter.Create(KeySlotData.Size))
             {
                 using (var data = KeySlotData.Create(PlayerIdManager.LocalSmallId, KeySlotType.INSERT_STATIC, keyId, receiver))
                 {
@@ -29,7 +29,7 @@ namespace LabFusion.Senders {
 
         public static void SendPropKeySlot(ushort keyId, ushort receiverId, byte receiverIndex)
         {
-            using (var writer = FusionWriter.Create())
+            using (var writer = FusionWriter.Create(KeySlotData.Size))
             {
                 using (var data = KeySlotData.Create(PlayerIdManager.LocalSmallId, KeySlotType.INSERT_PROP, keyId, null, receiverId, receiverIndex))
                 {

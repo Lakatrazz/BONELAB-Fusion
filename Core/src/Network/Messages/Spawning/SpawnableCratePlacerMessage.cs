@@ -31,6 +31,8 @@ namespace LabFusion.Network
 {
     public class SpawnableCratePlacerData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(ushort);
+
         public ushort spawnId;
         public GameObject placer;
 

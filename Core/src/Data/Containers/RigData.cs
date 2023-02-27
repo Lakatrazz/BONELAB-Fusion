@@ -27,6 +27,7 @@ using SLZ.Data;
 using SLZ.Marrow.Data;
 using SLZ.Marrow.Warehouse;
 using SLZ.AI;
+using SLZ.UI;
 
 namespace LabFusion.Data
 {
@@ -207,7 +208,7 @@ namespace LabFusion.Data
         public static void OnSendVitals() {
             // Send body vitals to network
             if (NetworkInfo.HasServer) {
-                using (FusionWriter writer = FusionWriter.Create()) {
+                using (FusionWriter writer = FusionWriter.Create(PlayerRepVitalsData.Size)) {
                     using (PlayerRepVitalsData data = PlayerRepVitalsData.Create(PlayerIdManager.LocalSmallId, RigReferences.RigManager.bodyVitals)) {
                         writer.Write(data);
 
@@ -250,6 +251,25 @@ namespace LabFusion.Data
                 }
 
                 _wasPaused = rm.openControllerRig.IsPaused;
+
+                // Update hands
+                OnHandUpdate(RigReferences.LeftHand);
+                OnHandUpdate(RigReferences.RightHand);
+            }
+        }
+
+        public static void OnHandUpdate(Hand hand) {
+            // Try fixing UI every once in a while
+            if (NetworkInfo.HasServer && Time.frameCount % 720 == 0) {
+                var uiInput = UIControllerInput.Cache.Get(hand.Controller.gameObject);
+
+                // If the cursor target is disabled or doesn't exist then clear the list
+                if (uiInput != null) {
+                    var target = uiInput.CursorTarget;
+
+                    if (target == null || !target.gameObject.activeInHierarchy)
+                        uiInput._cursorTargetOverrides.Clear();
+                }
             }
         }
 

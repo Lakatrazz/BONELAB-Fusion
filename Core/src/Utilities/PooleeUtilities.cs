@@ -65,7 +65,7 @@ namespace LabFusion.Utilities {
         public static void SendDespawn(ushort syncId) {
             // Send response
             if (NetworkInfo.IsServer) {
-                using (var writer = FusionWriter.Create()) {
+                using (var writer = FusionWriter.Create(DespawnResponseData.Size)) {
                     using (var data = DespawnResponseData.Create(syncId, PlayerIdManager.LocalSmallId)) {
                         writer.Write(data);
 
@@ -77,7 +77,7 @@ namespace LabFusion.Utilities {
             }
             // Send request
             else {
-                using (var writer = FusionWriter.Create())
+                using (var writer = FusionWriter.Create(DespawnRequestData.Size))
                 {
                     using (var data = DespawnRequestData.Create(syncId, PlayerIdManager.LocalSmallId))
                     {
@@ -93,7 +93,7 @@ namespace LabFusion.Utilities {
         }
 
         public static void RequestDespawn(ushort syncId, bool isMag = false) {
-            using (var writer = FusionWriter.Create())
+            using (var writer = FusionWriter.Create(DespawnRequestData.Size))
             {
                 using (var data = DespawnRequestData.Create(syncId, PlayerIdManager.LocalSmallId, isMag))
                 {
@@ -108,7 +108,7 @@ namespace LabFusion.Utilities {
         }
 
         public static void RequestSpawn(string barcode, SerializedTransform serializedTransform, byte? owner = null, Handedness hand = Handedness.UNDEFINED) {
-            using (var writer = FusionWriter.Create())
+            using (var writer = FusionWriter.Create(SpawnRequestData.Size))
             {
                 using (var data = SpawnRequestData.Create(owner.HasValue ? owner.Value : PlayerIdManager.LocalSmallId, barcode, serializedTransform, hand))
                 {
@@ -122,7 +122,7 @@ namespace LabFusion.Utilities {
         }
 
         public static void SendSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, bool ignoreSelf = false, ZoneSpawner spawner = null, Handedness hand = Handedness.UNDEFINED) {
-            using (var writer = FusionWriter.Create()) {
+            using (var writer = FusionWriter.Create(SpawnResponseData.Size)) {
                 using (var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, spawner, hand)) {
                     writer.Write(data);
 

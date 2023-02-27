@@ -19,6 +19,8 @@ namespace LabFusion.Network
 {
     public class GunShotData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) * 2 + sizeof(ushort);
+
         public byte smallId;
         public byte ammoCount;
         public ushort gunId;

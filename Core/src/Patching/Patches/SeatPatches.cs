@@ -86,7 +86,7 @@ namespace LabFusion.Patching
             // Send seat request
             if (__instance.rigManager == RigData.RigReferences.RigManager && SeatExtender.Cache.TryGet(__instance, out var syncable) && syncable.TryGetExtender<SeatExtender>(out var extender))
             {
-                using (var writer = FusionWriter.Create())
+                using (var writer = FusionWriter.Create(PlayerRepSeatData.Size))
                 {
                     using (var data = PlayerRepSeatData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value, true))
                     {
@@ -109,7 +109,7 @@ namespace LabFusion.Patching
             {
                 if (NetworkInfo.HasServer && __instance._rig == RigData.RigReferences.RigManager && SeatExtender.Cache.TryGet(__instance, out var syncable) && syncable.TryGetExtender<SeatExtender>(out var extender))
                 {
-                    using (var writer = FusionWriter.Create())
+                    using (var writer = FusionWriter.Create(PlayerRepSeatData.Size))
                     {
                         using (var data = PlayerRepSeatData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value, false))
                         {

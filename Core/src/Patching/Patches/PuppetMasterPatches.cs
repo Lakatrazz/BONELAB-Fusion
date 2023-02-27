@@ -30,7 +30,7 @@ namespace LabFusion.Patching
                 if (!syncable.IsOwner())
                     return false;
                 else {
-                    using (var writer = FusionWriter.Create())
+                    using (var writer = FusionWriter.Create(PuppetMasterKillData.Size))
                     {
                         using (var data = PuppetMasterKillData.Create(PlayerIdManager.LocalSmallId, syncable.Id))
                         {

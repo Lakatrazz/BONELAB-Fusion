@@ -107,7 +107,7 @@ namespace LabFusion.Patching {
                 yield return null;
 
             // Send create message
-            using (var writer = FusionWriter.Create())
+            using (var writer = FusionWriter.Create(ConstraintCreateData.Size))
             {
                 using (var data = ConstraintCreateData.Create(PlayerIdManager.LocalSmallId, constrainerId, pair, first, other))
                 {

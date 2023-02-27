@@ -19,6 +19,8 @@ namespace LabFusion.Network
 {
     public class InventorySlotInsertData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) * 4 + sizeof(ushort);
+
         public byte smallId;
         public byte inserter;
         public ushort syncId;

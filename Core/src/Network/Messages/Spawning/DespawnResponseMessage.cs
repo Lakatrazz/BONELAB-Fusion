@@ -13,6 +13,8 @@ namespace LabFusion.Network
 {
     public class DespawnResponseData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(ushort) + sizeof(byte) * 2;
+
         public ushort syncId;
         public byte despawnerId;
         public bool isMag;

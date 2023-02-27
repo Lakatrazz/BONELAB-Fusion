@@ -18,6 +18,8 @@ namespace LabFusion.Network
 {
     public class SlowMoButtonMessageData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) * 2;
+
         public byte smallId;
         public bool isDecrease;
 

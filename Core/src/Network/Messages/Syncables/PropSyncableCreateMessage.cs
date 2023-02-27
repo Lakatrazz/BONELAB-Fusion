@@ -22,6 +22,8 @@ namespace LabFusion.Network
 {
     public class PropSyncableCreateData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) + sizeof(ushort);
+
         public byte smallId;
         public GameObject gameObject;
         public ushort id;

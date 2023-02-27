@@ -32,7 +32,7 @@ namespace LabFusion.Senders {
             if (!NetworkInfo.HasServer)
                 return;
 
-            using (var writer = FusionWriter.Create())
+            using (var writer = FusionWriter.Create(PlayerVoiceChatData.Size + voiceData.Length))
             {
                 using (var data = PlayerVoiceChatData.Create(PlayerIdManager.LocalSmallId, voiceData))
                 {
@@ -51,7 +51,7 @@ namespace LabFusion.Senders {
             if (!NetworkInfo.IsServer)
                 return;
 
-            using (var writer = FusionWriter.Create())
+            using (var writer = FusionWriter.Create(PlayerRepTeleportData.Size))
             {
                 using (var data = PlayerRepTeleportData.Create(target, position))
                 {
@@ -66,7 +66,7 @@ namespace LabFusion.Senders {
         }
 
         public static void SendPlayerDamage(byte target, float damage) {
-            using (var writer = FusionWriter.Create())
+            using (var writer = FusionWriter.Create(PlayerRepDamageData.Size))
             {
                 using (var data = PlayerRepDamageData.Create(PlayerIdManager.LocalSmallId, target, damage))
                 {

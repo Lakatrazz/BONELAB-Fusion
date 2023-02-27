@@ -16,6 +16,8 @@ namespace LabFusion.Network
 {
     public class BehaviourBaseNavLocoData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) * 2 + sizeof(ushort);
+
         public byte ownerId;
         public ushort syncId;
         public BehaviourBaseNav.LocoState locoState;

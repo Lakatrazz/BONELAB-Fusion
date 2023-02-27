@@ -15,6 +15,8 @@ namespace LabFusion.Network
 {
     public class PlayerRepReleaseData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) * 2;
+
         public byte smallId;
         public Handedness handedness;
 

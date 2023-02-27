@@ -15,6 +15,8 @@ using SLZ.Marrow.Utilities;
 
 namespace LabFusion.Data {
     public abstract class SerializedGrab : IFusionSerializable {
+        public const int Size = sizeof(byte) + SerializedTransform.Size;
+
         public bool isGrabbed;
         public SerializedTransform targetInBase;
         public GripPair gripPair;

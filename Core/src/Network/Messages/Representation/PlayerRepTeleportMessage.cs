@@ -19,6 +19,8 @@ namespace LabFusion.Network
 {
     public class PlayerRepTeleportData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) + sizeof(float) * 3;
+
         public byte teleportedUser;
         public Vector3 position;
 

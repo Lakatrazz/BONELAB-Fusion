@@ -21,6 +21,8 @@ namespace LabFusion.Network
 {
     public class InventorySlotDropData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) * 5;
+
         public byte smallId;
         public byte grabber;
         public byte slotIndex;

@@ -19,6 +19,8 @@ namespace LabFusion.Network
 {
     public class MagazineInsertData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) + sizeof(ushort) * 2;
+
         public byte smallId;
         public ushort magazineId;
         public ushort gunId;

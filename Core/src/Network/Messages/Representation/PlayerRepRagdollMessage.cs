@@ -17,9 +17,10 @@ namespace LabFusion.Network
 {
     public class PlayerRepRagdollData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) * 2;
+
         public byte smallId;
         public bool isRagdoll;
-
 
         public void Serialize(FusionWriter writer)
         {

@@ -42,7 +42,7 @@ namespace LabFusion.Patching
         public static bool RagdollRig(PhysicsRig __instance) {
             try {
                 if (NetworkInfo.HasServer && __instance.manager == RigData.RigReferences.RigManager) {
-                    using (var writer = FusionWriter.Create()) {
+                    using (var writer = FusionWriter.Create(PlayerRepRagdollData.Size)) {
                         using (var data = PlayerRepRagdollData.Create(PlayerIdManager.LocalSmallId, true)) {
                             writer.Write(data);
 
@@ -73,7 +73,7 @@ namespace LabFusion.Patching
                         return false;
                     }
 
-                    using (var writer = FusionWriter.Create())
+                    using (var writer = FusionWriter.Create(PlayerRepRagdollData.Size))
                     {
                         using (var data = PlayerRepRagdollData.Create(PlayerIdManager.LocalSmallId, false))
                         {
