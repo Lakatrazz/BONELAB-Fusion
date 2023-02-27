@@ -259,8 +259,8 @@ namespace LabFusion.Data
         }
 
         public static void OnHandUpdate(Hand hand) {
-            // Try fixing UI every once in a while
-            if (NetworkInfo.HasServer && Time.frameCount % 720 == 0) {
+            // Try fixing UI every 30 frames
+            if (NetworkInfo.HasServer && Time.frameCount % 30 == 0) {
                 var uiInput = UIControllerInput.Cache.Get(hand.Controller.gameObject);
 
                 // If the cursor target is disabled or doesn't exist then clear the list
