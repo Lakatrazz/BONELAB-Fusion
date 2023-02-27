@@ -108,9 +108,14 @@ namespace LabFusion.SDK.Gamemodes {
         public static void ClearGamemodeTable()
         {
             // Force stop gamemodes
-            foreach (var gamemode in Gamemodes) {
-                gamemode.Internal_SetGamemodeState(false);
-                gamemode.GamemodeUnregistered();
+            if (Gamemodes != null && Gamemodes.Length > 0) {
+                foreach (var gamemode in Gamemodes) {
+                    if (gamemode == null)
+                        continue;
+
+                    gamemode.Internal_SetGamemodeState(false);
+                    gamemode.GamemodeUnregistered();
+                }
             }
 
             GamemodeManager.Internal_SetActiveGamemode(null);
