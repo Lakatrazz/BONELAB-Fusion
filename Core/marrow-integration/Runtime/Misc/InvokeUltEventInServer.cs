@@ -4,13 +4,13 @@ using UnityEngine;
 
 using UltEvents;
 
-#if !ENABLE_MONO && !ENABLE_IL2CPP
+#if MELONLOADER
 using MelonLoader;
 using LabFusion.Network;
 #endif
 
 namespace LabFusion.MarrowIntegration {
-#if !ENABLE_MONO && !ENABLE_IL2CPP
+#if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
     [AddComponentMenu("BONELAB Fusion/Misc/Invoke Ult Event In Server")]
@@ -18,7 +18,7 @@ namespace LabFusion.MarrowIntegration {
     [RequireComponent(typeof(UltEventHolder))]
 #endif
     public sealed class InvokeUltEventInServer : MonoBehaviour {
-#if !ENABLE_MONO && !ENABLE_IL2CPP
+#if MELONLOADER
         public InvokeUltEventInServer(IntPtr intPtr) : base(intPtr) { }
         
         private void Start() {

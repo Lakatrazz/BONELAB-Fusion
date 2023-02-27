@@ -2,7 +2,7 @@
 
 using UnityEngine;
 
-#if !ENABLE_MONO && !ENABLE_IL2CPP
+#if MELONLOADER
 using MelonLoader;
 
 using LabFusion.SDK.Gamemodes;
@@ -10,14 +10,14 @@ using UnhollowerBaseLib.Attributes;
 #endif
 
 namespace LabFusion.MarrowIntegration {
-#if !ENABLE_MONO && !ENABLE_IL2CPP
+#if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
     [AddComponentMenu("BONELAB Fusion/Gamemodes/Team Deathmatch Proxy")]
     [DisallowMultipleComponent]
 #endif
     public sealed class TeamDeathmatchProxy : MonoBehaviour {
-#if !ENABLE_MONO && !ENABLE_IL2CPP
+#if MELONLOADER
         public TeamDeathmatchProxy(IntPtr intPtr) : base(intPtr) { }
 
         public void StartGamemode() {

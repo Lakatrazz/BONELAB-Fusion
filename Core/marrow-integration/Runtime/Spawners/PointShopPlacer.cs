@@ -2,21 +2,21 @@
 
 using UnityEngine;
 
-#if !ENABLE_MONO && !ENABLE_IL2CPP
+#if MELONLOADER
 using MelonLoader;
 
 using LabFusion.SDK.Points;
 #endif
 
 namespace LabFusion.MarrowIntegration {
-#if !ENABLE_MONO && !ENABLE_IL2CPP
+#if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
     [AddComponentMenu("BONELAB Fusion/Spawners/Point Shop Placer")]
     [DisallowMultipleComponent]
 #endif
     public sealed class PointShopPlacer : MonoBehaviour {
-#if !ENABLE_MONO && !ENABLE_IL2CPP
+#if MELONLOADER
         public PointShopPlacer(IntPtr intPtr) : base(intPtr) { }
 
         public void Start() {

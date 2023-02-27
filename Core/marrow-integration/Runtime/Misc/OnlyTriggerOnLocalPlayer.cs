@@ -2,7 +2,7 @@
 
 using UnityEngine;
 
-#if !ENABLE_MONO && !ENABLE_IL2CPP
+#if MELONLOADER
 using MelonLoader;
 
 using LabFusion.Utilities;
@@ -10,7 +10,7 @@ using LabFusion.Utilities;
 
 namespace LabFusion.MarrowIntegration
 {
-#if !ENABLE_MONO && !ENABLE_IL2CPP
+#if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
     [AddComponentMenu("BONELAB Fusion/Misc/Only Trigger On Local Player")]
@@ -18,7 +18,7 @@ namespace LabFusion.MarrowIntegration
 #endif
     public sealed class OnlyTriggerOnLocalPlayer : MonoBehaviour
     {
-#if !ENABLE_MONO && !ENABLE_IL2CPP
+#if MELONLOADER
         public OnlyTriggerOnLocalPlayer(IntPtr intPtr) : base(intPtr) { }
 
         public static readonly FusionComponentCache<GameObject, OnlyTriggerOnLocalPlayer> Cache = new FusionComponentCache<GameObject, OnlyTriggerOnLocalPlayer>();

@@ -2,7 +2,7 @@
 
 using UnityEngine;
 
-#if !ENABLE_MONO && !ENABLE_IL2CPP
+#if MELONLOADER
 using MelonLoader;
 
 using LabFusion.Syncables;
@@ -12,14 +12,14 @@ using LabFusion.Utilities;
 #endif
 
 namespace LabFusion.MarrowIntegration {
-#if !ENABLE_MONO && !ENABLE_IL2CPP
+#if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
     [AddComponentMenu("BONELAB Fusion/Misc/Sync GameObject Enabled")]
     [DisallowMultipleComponent]
 #endif
     public sealed class SyncGameObjectEnabled : MonoBehaviour {
-#if !ENABLE_MONO && !ENABLE_IL2CPP
+#if MELONLOADER
         public SyncGameObjectEnabled(IntPtr intPtr) : base(intPtr) { }
 
         public static readonly FusionComponentCache<GameObject, SyncGameObjectEnabled> Cache = new FusionComponentCache<GameObject, SyncGameObjectEnabled>();

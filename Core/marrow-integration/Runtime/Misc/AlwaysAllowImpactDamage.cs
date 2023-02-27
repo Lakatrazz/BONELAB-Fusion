@@ -2,21 +2,21 @@
 
 using UnityEngine;
 
-#if !ENABLE_MONO && !ENABLE_IL2CPP
+#if MELONLOADER
 using MelonLoader;
 
 using LabFusion.Utilities;
 #endif
 
 namespace LabFusion.MarrowIntegration {
-#if !ENABLE_MONO && !ENABLE_IL2CPP
+#if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
     [AddComponentMenu("BONELAB Fusion/Misc/Always Allow Impact Damage")]
     [DisallowMultipleComponent]
 #endif
     public sealed class AlwaysAllowImpactDamage : MonoBehaviour {
-#if !ENABLE_MONO && !ENABLE_IL2CPP
+#if MELONLOADER
         public AlwaysAllowImpactDamage(IntPtr intPtr) : base(intPtr) { }
 
         public static readonly FusionComponentCache<GameObject, AlwaysAllowImpactDamage> Cache = new FusionComponentCache<GameObject, AlwaysAllowImpactDamage>();

@@ -2,21 +2,21 @@
 
 using UnityEngine;
 
-#if !ENABLE_MONO && !ENABLE_IL2CPP
+#if MELONLOADER
 using MelonLoader;
 
 using LabFusion.Utilities;
 #endif
 
 namespace LabFusion.MarrowIntegration {
-#if !ENABLE_MONO && !ENABLE_IL2CPP
+#if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
     [AddComponentMenu("BONELAB Fusion/Gamemodes/Deathmatch Spawnpoint")]
     [DisallowMultipleComponent]
 #endif
     public sealed class DeathmatchSpawnpoint : MonoBehaviour {
-#if !ENABLE_MONO && !ENABLE_IL2CPP
+#if MELONLOADER
         public DeathmatchSpawnpoint(IntPtr intPtr) : base(intPtr) { }
 
         public static readonly FusionComponentCache<GameObject, DeathmatchSpawnpoint> Cache = new FusionComponentCache<GameObject, DeathmatchSpawnpoint>();
