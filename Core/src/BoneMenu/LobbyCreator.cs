@@ -44,11 +44,20 @@ namespace LabFusion.BoneMenu
             // Get the username/title of the lobby
             var userString = $"{info.LobbyName}'s Server ({info.PlayerCount}/{info.MaxPlayers})";
 
+            // Change color based on version matching
+            Color lobbyColor = Color.white;
+
+            if (NetworkVerification.CompareVersion(info.LobbyVersion, FusionMod.Version) != VersionResult.Ok)
+                lobbyColor = Color.red;
+
             // Create the category and get the default lobby info
-            var lobbyCategory = rootCategory.CreateCategory($"INTERNAL_LOBBY_{_lobbyIndex++}", Color.white);
+            var lobbyCategory = rootCategory.CreateCategory($"INTERNAL_LOBBY_{_lobbyIndex++}", lobbyColor);
             lobbyCategory.SetName(userString);
 
             lobbyCategory.CreateFunctionElement("Join Server", Color.white, lobby.CreateJoinDelegate(info));
+
+            // Show their version
+            lobbyCategory.CreateFunctionElement($"Version: {info.LobbyVersion}", lobbyColor, null);
 
             // Show their active level
             lobbyCategory.CreateFunctionElement($"Level: {info.LevelName}", Color.white, null);

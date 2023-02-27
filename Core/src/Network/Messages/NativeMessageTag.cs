@@ -130,6 +130,8 @@ namespace LabFusion.Network
 
             HolodeckEvent = 78,
 
+            SpawnGunPreviewMesh = 79,
+
             // SDK messages
             // Module setup
             Module = 80,

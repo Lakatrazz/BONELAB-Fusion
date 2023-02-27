@@ -17,6 +17,7 @@ namespace LabFusion.Network {
         // Lobby info
         public ulong LobbyId;
         public string LobbyName;
+        public Version LobbyVersion;
         public bool HasServerOpen;
         public int PlayerCount;
 
@@ -36,6 +37,7 @@ namespace LabFusion.Network {
                 // Lobby info
                 LobbyId = PlayerIdManager.LocalLongId,
                 LobbyName = PlayerIdManager.LocalUsername,
+                LobbyVersion = FusionMod.Version,
                 HasServerOpen = NetworkInfo.IsServer,
                 PlayerCount = PlayerIdManager.PlayerCount,
 
@@ -56,6 +58,7 @@ namespace LabFusion.Network {
             // Lobby info
             lobby.SetMetadata("LobbyId", LobbyId.ToString());
             lobby.SetMetadata("LobbyName", LobbyName);
+            lobby.SetMetadata("LobbyVersion", LobbyVersion.ToString());
             lobby.SetMetadata($"{_internalPrefix}HasServerOpen", HasServerOpen.ToString());
             lobby.SetMetadata("PlayerCount", PlayerCount.ToString());
 
@@ -85,6 +88,12 @@ namespace LabFusion.Network {
                 LevelName = lobby.GetMetadata("LevelName"),
                 GamemodeName = lobby.GetMetadata("GamemodeName"),
             };
+            // Get version
+            if (Version.TryParse(lobby.GetMetadata("LobbyVersion"), out var version))
+                info.LobbyVersion = version;
+            else
+                info.LobbyVersion = new Version(0, 0, 0);
+
             // Get longs
             if (ulong.TryParse(lobby.GetMetadata("LobbyId"), out var lobbyId))
                 info.LobbyId = lobbyId;

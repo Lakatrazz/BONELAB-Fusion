@@ -77,9 +77,35 @@ namespace LabFusion.Patching
         }
     }
 
-    [HarmonyPatch(typeof(SpawnGun), nameof(SpawnGun.OnFire))]
-    public static class SpawnGunOnFirePatch {
-        public static void Postfix(SpawnGun __instance) {
+    [HarmonyPatch(typeof(SpawnGun))]
+    public static class SpawnGunPatches {
+        public static bool IgnorePatches = false;
+
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(SpawnGun.SetPreviewMesh))]
+        public static void SetPreviewMesh(SpawnGun __instance) {
+            if (IgnorePatches)
+                return;
+
+            if (__instance._selectedCrate != null && NetworkInfo.HasServer && SpawnGunExtender.Cache.TryGet(__instance, out var syncable)) {
+                using (var writer = FusionWriter.Create())
+                {
+                    using (var data = SpawnGunPreviewMeshData.Create(PlayerIdManager.LocalSmallId, syncable.GetId(), __instance._selectedCrate.Barcode))
+                    {
+                        writer.Write(data);
+
+                        using (var message = FusionMessage.Create(NativeMessageTag.SpawnGunPreviewMesh, writer))
+                        {
+                            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+                        }
+                    }
+                }
+            }
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(SpawnGun.OnFire))]
+        public static void OnFire(SpawnGun __instance) {
             if (NetworkInfo.HasServer && !NetworkInfo.IsServer) {
                 if (__instance._selectedMode == UtilityModes.SPAWNER && __instance._selectedCrate != null) {
                     var crate = __instance._selectedCrate;

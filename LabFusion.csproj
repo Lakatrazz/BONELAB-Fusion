@@ -289,6 +289,7 @@
     <Compile Include="Core\src\Network\Messages\Gamemodes\GamemodeMetadataRemoveMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Gamemodes\GamemodeTriggerResponseMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Gamemodes\GamemodeMetadataSetMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Interaction\SpawnGunPreviewMeshMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Levels\HolodeckEventMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Levels\ZoneEncounterEventMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Levels\LevelRequestMessage.cs" />
