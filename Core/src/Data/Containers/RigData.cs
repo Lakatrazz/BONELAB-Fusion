@@ -35,6 +35,8 @@ namespace LabFusion.Data
     /// A collection of basic rig information for use across PlayerReps and the Main RigManager.
     /// </summary>
     public class RigReferenceCollection {
+        public bool IsValid => !RigManager.IsNOC();
+
         public RigManager RigManager { get; private set; }
 
         public Grip[] RigGrips { get; private set; }

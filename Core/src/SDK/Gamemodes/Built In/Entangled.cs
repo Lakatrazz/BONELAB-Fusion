@@ -16,13 +16,19 @@ using UnityEngine;
 namespace LabFusion.SDK.Gamemodes {
     public class Entangled : Gamemode {
         public class EntangledTether {
+            public PlayerId player1;
+            public PlayerId player2;
+
             public Rigidbody selfPelvis;
             public Rigidbody otherPelvis;
             public ConfigurableJoint joint;
 
             public GameObject lineInstance;
 
-            public EntangledTether() {
+            public EntangledTether(PlayerId player1, PlayerId player2) {
+                this.player1 = player1;
+                this.player2 = player2;
+
                 lineInstance = GameObject.Instantiate(FusionContentLoader.EntangledLinePrefab);
                 GameObject.DontDestroyOnLoad(lineInstance);
                 lineInstance.hideFlags = HideFlags.DontUnloadUnusedAsset;
@@ -36,17 +42,21 @@ namespace LabFusion.SDK.Gamemodes {
                     GameObject.Destroy(lineInstance);
             }
 
-            public void OnUpdate(PlayerId partner) {
+            public bool IsValid() {
+                return !PlayerId.IsNullOrInvalid(player1) && !PlayerId.IsNullOrInvalid(player2);
+            }
+
+            public void OnUpdate() {
                 // Make sure we aren't loading
-                if (LevelWarehouseUtilities.IsLoading())
+                if (LevelWarehouseUtilities.IsLoading() || !IsValid())
                     return;
 
                 // Validate pelvis rigidbodies
-                if (selfPelvis.IsNOC() && RigData.RigReferences.RigManager != null)
-                    selfPelvis = RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb;
+                if (selfPelvis.IsNOC() && PlayerRepUtilities.TryGetReferences(player1, out var ref1) && ref1.IsValid)
+                    selfPelvis = ref1.RigManager.physicsRig.torso._pelvisRb;
 
-                if (otherPelvis.IsNOC() && PlayerRepManager.TryGetPlayerRep(partner, out var rep))
-                    otherPelvis = rep.RigReferences.RigManager.physicsRig.torso._pelvisRb;
+                if (otherPelvis.IsNOC() && PlayerRepUtilities.TryGetReferences(player2, out var ref2) && ref2.IsValid)
+                    otherPelvis = ref2.RigManager.physicsRig.torso._pelvisRb;
 
                 // If we have both pelvises, update them
                 if (selfPelvis != null && otherPelvis != null) {
@@ -77,6 +87,7 @@ namespace LabFusion.SDK.Gamemodes {
 
                 joint.xMotion = joint.yMotion = joint.zMotion = ConfigurableJointMotion.Limited;
                 joint.linearLimit = new SoftJointLimit() { limit = 3f };
+                joint.linearLimitSpring = new SoftJointLimitSpring() { spring = 7000f };
 
                 joint.autoConfigureConnectedAnchor = false;
                 joint.anchor = Vector3.zero;
@@ -103,8 +114,8 @@ namespace LabFusion.SDK.Gamemodes {
         // Keys
         public const string PlayerPartnerKey = DefaultPrefix + ".Partner";
 
-        protected PlayerId _partner;
-        protected EntangledTether _localTether = null;
+        protected PlayerId _partner = null;
+        protected List<EntangledTether> _tethers = new List<EntangledTether>();
 
         public override void OnGamemodeRegistered() {
             // Add hooks
@@ -126,10 +137,11 @@ namespace LabFusion.SDK.Gamemodes {
             // Cleanup partner
             _partner = null;
 
-            if (_localTether != null)
-                _localTether.Dispose();
+            foreach (var tether in _tethers) {
+                tether.Dispose();
+            }
 
-            _localTether = null;
+            _tethers.Clear();
 
             // Remove hooks
             MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
@@ -137,12 +149,11 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         protected override void OnUpdate() {
-            // Update our self tether
-            if (_localTether != null) {
-                if (_partner != null && _partner.IsValid)
-                    _localTether.OnUpdate(_partner);
-                else
-                    _localTether.Dispose();
+            // Update all tethers
+            if (IsActive()) {
+                foreach (var tether in _tethers) {
+                    tether.OnUpdate();
+                }
             }
         }
 
@@ -213,10 +224,11 @@ namespace LabFusion.SDK.Gamemodes {
             // Remove self partner
             _partner = null;
 
-            if (_localTether != null)
-                _localTether.Dispose();
+            foreach (var tether in _tethers) {
+                tether.Dispose();
+            }
 
-            _localTether = null;
+            _tethers.Clear();
         }
 
         protected List<PlayerId> GetUnassignedPlayers() {
@@ -281,15 +293,19 @@ namespace LabFusion.SDK.Gamemodes {
                 });
 
                 _partner = null;
-                if (_localTether != null)
-                    _localTether.Dispose();
-                _localTether = null;
+
+                EntangledTether localTether = GetTether(PlayerIdManager.LocalId);
+
+                if (localTether != null) {
+                    localTether.Dispose();
+                    _tethers.RemoveInstance(localTether);
+                }
 
                 return;
             }
 
             _partner = id;
-            _localTether = new EntangledTether();
+            _tethers.Add(new EntangledTether(PlayerIdManager.LocalId, id));
 
             id.TryGetDisplayName(out var name);
 
@@ -314,17 +330,56 @@ namespace LabFusion.SDK.Gamemodes {
                     OnReceivePartner(PlayerIdManager.GetPlayerId(partnerId));
                 }
             }
+            else if (value != "-1" && key.StartsWith(PlayerPartnerKey)) {
+                var id = GetPlayerId(key);
+
+                if (id != null && ulong.TryParse(value, out var partnerId)) {
+                    _tethers.Add(new EntangledTether(id, PlayerIdManager.GetPlayerId(partnerId)));
+                }
+            }
         }
 
         protected override void OnMetadataRemoved(string key) {
             if (GetPartnerKey(PlayerIdManager.LocalId) == key) {
                 _partner = null;
+                var localTether = GetTether(PlayerIdManager.LocalId);
 
-                if (_localTether != null)
-                    _localTether.Dispose();
-
-                _localTether = null;
+                if (localTether != null) {
+                    localTether.Dispose();
+                    _tethers.RemoveInstance(localTether);
+                }
             }
+            else if (key.StartsWith(PlayerPartnerKey)) {
+                var id = GetPlayerId(key);
+
+                if (id != null) {
+                    var tether = GetTether(id);
+
+                    if (tether != null) {
+                        tether.Dispose();
+                        _tethers.RemoveInstance(tether);
+                    }
+                }
+            }
+        }
+
+        protected PlayerId GetPlayerId(string partnerKey) {
+            foreach (var id in PlayerIdManager.PlayerIds) {
+                if (GetPartnerKey(id) == partnerKey) {
+                    return id;
+                }
+            }
+
+            return null;
+        }
+
+        protected EntangledTether GetTether(PlayerId id) {
+            foreach (var tether in _tethers) {
+                if (tether.player1 == id || tether.player2 == id)
+                    return tether;
+            }
+
+            return null;
         }
     }
 }

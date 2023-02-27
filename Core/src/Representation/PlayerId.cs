@@ -59,6 +59,10 @@ namespace LabFusion.Representation
 
         public static implicit operator ulong(PlayerId id) => id.LongId;
 
+        public static bool IsNullOrInvalid(PlayerId id) {
+            return id == null || !id.IsValid;
+        }
+
         public bool TrySetMetadata(string key, string value) {
             // If we are the server, we just accept the request
             // Otherwise, we make sure this is our PlayerId
