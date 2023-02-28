@@ -270,7 +270,7 @@ namespace LabFusion.SDK.Gamemodes {
             if (playerCount > 1) {
                 bool isVictory = false;
 
-                if (selfPlace + 1 < Mathf.Min(playerCount, 4))
+                if (selfPlace < Mathf.Min(playerCount, 3))
                     isVictory = true;
 
                 OnVictoryStatus(isVictory);
