@@ -731,6 +731,8 @@ namespace LabFusion.Representation
                 if (_isAvatarDirty) {
                     rm.SwapAvatarCrate(avatarId, false, (Action<bool>)OnSwapAvatar);
                     _isAvatarDirty = false;
+
+                    PlayerAdditionsHelper.OnChangeAvatar(rm);
                 }
 
                 // Change body vitals

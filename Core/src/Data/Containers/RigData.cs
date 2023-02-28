@@ -245,6 +245,8 @@ namespace LabFusion.Data
                     }
 
                     RigAvatarId = barcode;
+
+                    PlayerAdditionsHelper.OnChangeAvatar(rm);
                 }
 
                 // Pause check incase the rigs decide to behave strangely

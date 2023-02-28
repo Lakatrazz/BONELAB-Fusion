@@ -42,6 +42,12 @@ namespace LabFusion.Patching
         public static bool RagdollRig(PhysicsRig __instance) {
             try {
                 if (NetworkInfo.HasServer && __instance.manager == RigData.RigReferences.RigManager) {
+                    var health = __instance.manager.health;
+
+                    // Prevent re-ragdolling when dead/respawning
+                    if (!health.alive)
+                        return false;
+
                     using (var writer = FusionWriter.Create(PlayerRepRagdollData.Size)) {
                         using (var data = PlayerRepRagdollData.Create(PlayerIdManager.LocalSmallId, true)) {
                             writer.Write(data);
@@ -67,9 +73,7 @@ namespace LabFusion.Patching
                 if (NetworkInfo.HasServer && __instance.manager == RigData.RigReferences.RigManager)
                 {
                     // Check if we can unragdoll
-                    var playerHealth = __instance.manager.health.TryCast<Player_Health>();
-
-                    if (!ForceAllowUnragdoll && (playerHealth.deathIsImminent || !playerHealth.alive) && !FusionPlayer.CanUnragdoll()) {
+                    if (!ForceAllowUnragdoll && !FusionPlayer.CanUnragdoll()) {
                         return false;
                     }
 

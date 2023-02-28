@@ -125,6 +125,7 @@ namespace LabFusion.Network {
                     message = $"You were disconnected for reason: {reason}",
                     isMenuItem = true,
                     isPopup = true,
+                    popupLength = 10f,
                 });
             }
         }

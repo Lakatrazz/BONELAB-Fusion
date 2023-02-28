@@ -99,7 +99,9 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(Player_Health.TAKEDAMAGE))]
         public static void TAKEDAMAGEPostfix(Player_Health __instance, float damage) {
             if (__instance._testRagdollOnDeath && !__instance.alive) {
+                PhysicsRigPatches.ForceAllowUnragdoll = true;
                 __instance._rigManager.physicsRig.UnRagdollRig();
+                PhysicsRigPatches.ForceAllowUnragdoll = false;
             }
         }
     }
