@@ -81,7 +81,7 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(Player_Health.LifeSavingDamgeDealt))]
         public static void LifeSavingDamgeDealt(Player_Health __instance)
         {
-            if (__instance._testRagdollOnDeath) {
+            if (__instance._rigManager == RigData.RigReferences.RigManager && __instance._testRagdollOnDeath) {
                 PhysicsRigPatches.ForceAllowUnragdoll = true;
                 __instance._rigManager.physicsRig.UnRagdollRig();
                 PhysicsRigPatches.ForceAllowUnragdoll = false;
@@ -98,7 +98,7 @@ namespace LabFusion.Patching
         [HarmonyPostfix]
         [HarmonyPatch(nameof(Player_Health.TAKEDAMAGE))]
         public static void TAKEDAMAGEPostfix(Player_Health __instance, float damage) {
-            if (__instance._testRagdollOnDeath && !__instance.alive) {
+            if (__instance._rigManager == RigData.RigReferences.RigManager && __instance._testRagdollOnDeath && !__instance.alive) {
                 PhysicsRigPatches.ForceAllowUnragdoll = true;
                 __instance._rigManager.physicsRig.UnRagdollRig();
                 PhysicsRigPatches.ForceAllowUnragdoll = false;

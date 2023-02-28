@@ -84,9 +84,6 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         public IReadOnlyList<PlayerId> GetPlayersByScore() {
-            if (!IsActive())
-                return null;
-
             List<PlayerId> leaders = new List<PlayerId>(PlayerIdManager.PlayerIds);
             leaders = leaders.OrderBy(id => GetScore(id)).ToList();
             leaders.Reverse();
