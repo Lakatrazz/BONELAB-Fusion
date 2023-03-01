@@ -73,7 +73,9 @@ namespace LabFusion.Patching
                 if (NetworkInfo.HasServer && __instance.manager == RigData.RigReferences.RigManager)
                 {
                     // Check if we can unragdoll
-                    if (!ForceAllowUnragdoll && !FusionPlayer.CanUnragdoll()) {
+                    var playerHealth = __instance.manager.health.TryCast<Player_Health>();
+
+                    if (!ForceAllowUnragdoll && playerHealth.deathIsImminent && !FusionPlayer.CanUnragdoll()) {
                         return false;
                     }
 
