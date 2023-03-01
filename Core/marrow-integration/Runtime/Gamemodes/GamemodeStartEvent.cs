@@ -7,6 +7,7 @@ using UltEvents;
 using MelonLoader;
 
 using LabFusion.SDK.Gamemodes;
+using UnhollowerBaseLib.Attributes;
 #endif
 
 namespace LabFusion.MarrowIntegration {
@@ -29,6 +30,7 @@ namespace LabFusion.MarrowIntegration {
             GamemodeManager.OnGamemodeChanged -= OnGamemodeChanged;
         }
 
+        [HideFromIl2Cpp]
         private void OnGamemodeChanged(Gamemode gamemode) {
             if (gamemode != null) {
                 var holder = GetComponent<UltEventHolder>();
