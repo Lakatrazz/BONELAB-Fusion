@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace LabFusion.MarrowIntegration {
-    public class FusionMarrowBehaviour : MonoBehaviour {
+    public abstract class FusionMarrowBehaviour : MonoBehaviour {
 #if MELONLOADER
         public FusionMarrowBehaviour(IntPtr intPtr) : base(intPtr) { }
 #else
