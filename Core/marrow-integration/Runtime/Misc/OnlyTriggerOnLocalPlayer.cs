@@ -16,7 +16,7 @@ namespace LabFusion.MarrowIntegration
     [AddComponentMenu("BONELAB Fusion/Misc/Only Trigger On Local Player")]
     [DisallowMultipleComponent]
 #endif
-    public sealed class OnlyTriggerOnLocalPlayer : MonoBehaviour
+    public sealed class OnlyTriggerOnLocalPlayer : FusionMarrowBehaviour
     {
 #if MELONLOADER
         public OnlyTriggerOnLocalPlayer(IntPtr intPtr) : base(intPtr) { }
@@ -32,6 +32,9 @@ namespace LabFusion.MarrowIntegration
         {
             Cache.Remove(gameObject);
         }
+#else
+        public override string Comment => "This script will prevent a TriggerLasers component from triggering from other players.\n" +
+            "Useful when you need to detect when the local player specifically enters an area.";
 #endif
     }
 }

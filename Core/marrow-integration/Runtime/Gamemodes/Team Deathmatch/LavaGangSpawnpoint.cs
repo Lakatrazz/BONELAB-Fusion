@@ -15,7 +15,7 @@ namespace LabFusion.MarrowIntegration {
     [AddComponentMenu("BONELAB Fusion/Gamemodes/Lava Gang Spawnpoint")]
     [DisallowMultipleComponent]
 #endif
-    public sealed class LavaGangSpawnpoint : MonoBehaviour {
+    public sealed class LavaGangSpawnpoint : FusionMarrowBehaviour {
 #if MELONLOADER
         public LavaGangSpawnpoint(IntPtr intPtr) : base(intPtr) { }
 
@@ -28,6 +28,9 @@ namespace LabFusion.MarrowIntegration {
         private void OnDestroy() {
             Cache.Remove(gameObject);
         }
+#else
+        public override string Comment => "Creates a spawn point for players on the Lava Gang team during Team Deathmatch.\n" +
+            "You can have as many of these in your scene as you want, and it will become a random spawn.";
 #endif
     }
 }

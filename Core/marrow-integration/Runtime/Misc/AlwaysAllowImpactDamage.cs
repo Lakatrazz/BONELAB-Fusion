@@ -15,7 +15,7 @@ namespace LabFusion.MarrowIntegration {
     [AddComponentMenu("BONELAB Fusion/Misc/Always Allow Impact Damage")]
     [DisallowMultipleComponent]
 #endif
-    public sealed class AlwaysAllowImpactDamage : MonoBehaviour {
+    public sealed class AlwaysAllowImpactDamage : FusionMarrowBehaviour {
 #if MELONLOADER
         public AlwaysAllowImpactDamage(IntPtr intPtr) : base(intPtr) { }
 
@@ -28,6 +28,8 @@ namespace LabFusion.MarrowIntegration {
         private void OnDestroy() {
             Cache.Remove(gameObject);
         }
+#else
+        public override string Comment => "Placing this onto a GameObject with a script that causes blunt or stab damage will allow it to always damage players without needing to be held.";
 #endif
     }
 }

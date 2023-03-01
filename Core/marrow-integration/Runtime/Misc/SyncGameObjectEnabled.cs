@@ -18,7 +18,7 @@ namespace LabFusion.MarrowIntegration {
     [AddComponentMenu("BONELAB Fusion/Misc/Sync GameObject Enabled")]
     [DisallowMultipleComponent]
 #endif
-    public sealed class SyncGameObjectEnabled : MonoBehaviour {
+    public sealed class SyncGameObjectEnabled : FusionMarrowBehaviour {
 #if MELONLOADER
         public SyncGameObjectEnabled(IntPtr intPtr) : base(intPtr) { }
 
@@ -60,6 +60,8 @@ namespace LabFusion.MarrowIntegration {
                 }
             }
         }
+#else
+        public override string Comment => "Attempts to sync when this GameObject is enabled and disabled.";
 #endif
     }
 }

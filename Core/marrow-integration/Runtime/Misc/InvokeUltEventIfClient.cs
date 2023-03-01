@@ -17,7 +17,7 @@ namespace LabFusion.MarrowIntegration {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(UltEventHolder))]
 #endif
-    public sealed class InvokeUltEventIfClient : MonoBehaviour {
+    public sealed class InvokeUltEventIfClient : FusionMarrowBehaviour {
 #if MELONLOADER
         public InvokeUltEventIfClient(IntPtr intPtr) : base(intPtr) { }
         
@@ -27,6 +27,8 @@ namespace LabFusion.MarrowIntegration {
             if (NetworkInfo.IsClient && holder != null)
                 holder.Invoke();
         }
+#else
+        public override string Comment => "The UltEventHolder attached to this GameObject will be executed on level load if the player is a client and not a server.";
 #endif
     }
 }

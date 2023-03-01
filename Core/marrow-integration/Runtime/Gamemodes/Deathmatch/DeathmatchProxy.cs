@@ -16,7 +16,7 @@ namespace LabFusion.MarrowIntegration {
     [AddComponentMenu("BONELAB Fusion/Gamemodes/Deathmatch Proxy")]
     [DisallowMultipleComponent]
 #endif
-    public sealed class DeathmatchProxy : MonoBehaviour {
+    public sealed class DeathmatchProxy : FusionMarrowBehaviour {
 #if MELONLOADER
         public DeathmatchProxy(IntPtr intPtr) : base(intPtr) { }
 
@@ -58,6 +58,11 @@ namespace LabFusion.MarrowIntegration {
             }
         }
 #else
+        public override string Comment => "A proxy script for triggering and configuring Deathmatch in your map.\n" +
+    "You can use UltEvents or UnityEvents to trigger these functions. (ex. LifeCycleEvent that calls SetRoundLength).\n" +
+    "Most settings can be configured, such as round length, music, etc.\n" +
+    "The gamemode can also be started and stopped from here.";
+
         public void StartGamemode() { }
 
         public void StopGamemode() { }

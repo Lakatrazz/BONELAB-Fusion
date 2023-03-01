@@ -15,7 +15,7 @@ namespace LabFusion.MarrowIntegration {
     [AddComponentMenu("BONELAB Fusion/Gamemodes/Sabrelake Spawnpoint")]
     [DisallowMultipleComponent]
 #endif
-    public sealed class SabrelakeSpawnpoint : MonoBehaviour {
+    public sealed class SabrelakeSpawnpoint : FusionMarrowBehaviour {
 #if MELONLOADER
         public SabrelakeSpawnpoint(IntPtr intPtr) : base(intPtr) { }
 
@@ -28,6 +28,9 @@ namespace LabFusion.MarrowIntegration {
         private void OnDestroy() {
             Cache.Remove(gameObject);
         }
+#else
+        public override string Comment => "Creates a spawn point for players on the Sabrelake team during Team Deathmatch.\n" +
+            "You can have as many of these in your scene as you want, and it will become a random spawn.";
 #endif
     }
 }

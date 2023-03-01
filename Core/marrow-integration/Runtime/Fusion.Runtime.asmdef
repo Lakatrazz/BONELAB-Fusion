@@ -1,0 +1,16 @@
+{
+    "name": "FusionRuntime",
+    "rootNamespace": "",
+    "references": [
+        "GUID:57a6d82589ae03c4cabdc058f719f231"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

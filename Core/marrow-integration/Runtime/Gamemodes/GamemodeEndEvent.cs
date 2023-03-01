@@ -19,7 +19,7 @@ namespace LabFusion.MarrowIntegration {
     [RequireComponent(typeof(UltEventHolder))]
     [DisallowMultipleComponent]
 #endif
-    public sealed class GamemodeEndEvent : MonoBehaviour {
+    public sealed class GamemodeEndEvent : FusionMarrowBehaviour {
 #if MELONLOADER
         public GamemodeEndEvent(IntPtr intPtr) : base(intPtr) { }
 
@@ -40,6 +40,8 @@ namespace LabFusion.MarrowIntegration {
                     holder.Invoke();
             }
         }
+#else
+        public override string Comment => "Executes the UltEventHolder attached to this GameObject when a gamemode ends.";
 #endif
     }
 }
