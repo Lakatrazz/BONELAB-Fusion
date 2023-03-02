@@ -622,9 +622,9 @@ namespace LabFusion.Syncables
                 // If so, just set positions
                 if (rb.isKinematic) {
                     if (allowPosition)
-                        rb.MovePosition(pos);
+                        transform.position = pos;
 
-                    rb.MoveRotation(rot);
+                    transform.rotation = rot;
                     continue;
                 }
 
