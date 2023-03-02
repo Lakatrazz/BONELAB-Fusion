@@ -493,9 +493,11 @@ namespace LabFusion.Syncables
 
                 var rb = Rigidbodies[i];
 
-                bool sleepCheck = !rb.IsSleeping() || rb.isKinematic;
+                // Don't sync kinematic rigidbodies
+                if (rb.isKinematic)
+                    continue;
 
-                if (!hasMovingBody && sleepCheck && HasMoved(i)) {
+                if (!hasMovingBody && !rb.IsSleeping() && HasMoved(i)) {
                     hasMovingBody = true;
                     break;
                 }
@@ -619,12 +621,8 @@ namespace LabFusion.Syncables
                 bool allowPosition = !HasIgnoreHierarchy;
 
                 // Check if this is kinematic
-                // If so, just set positions
+                // If so, just ignore values
                 if (rb.isKinematic) {
-                    if (allowPosition)
-                        transform.position = pos;
-
-                    transform.rotation = rot;
                     continue;
                 }
 
