@@ -16,9 +16,20 @@ using SLZ.Interaction;
 namespace LabFusion.Patching {
     [HarmonyPatch(typeof(SimpleGripEvents))]
     public static class SimpleGripEventsPatches {
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(SimpleGripEvents.OnAttachedUpdateDelegate))]
+        public static bool OnAttachedUpdateDelegatePrefix(SimpleGripEvents __instance, Hand hand)
+        {
+            if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(hand.manager)) {
+                return false;
+            }
+
+            return true;
+        }
+
         [HarmonyPostfix]
         [HarmonyPatch(nameof(SimpleGripEvents.OnAttachedUpdateDelegate))]
-        public static void OnAttachedUpdateDelegate(SimpleGripEvents __instance, Hand hand) {
+        public static void OnAttachedUpdateDelegatePostfix(SimpleGripEvents __instance, Hand hand) {
             if (NetworkInfo.HasServer && hand.manager == RigData.RigReferences.RigManager && SimpleGripEventsExtender.Cache.TryGet(__instance, out var syncable) && syncable.TryGetExtender<SimpleGripEventsExtender>(out var extender)) {
                 if (hand._indexButtonDown) {
                     SendGripEvent(syncable.Id, extender.GetIndex(__instance).Value, SimpleGripEventType.TRIGGER_DOWN);
