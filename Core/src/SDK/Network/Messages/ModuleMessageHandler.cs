@@ -60,7 +60,7 @@ namespace LabFusion.Network
             }
 
             // Return the byte pool
-            BytePool.Return(bytes);
+            ByteRetriever.Return(bytes);
         }
 
         public abstract void HandleMessage(byte[] bytes, bool isServerHandled = false);
@@ -140,7 +140,7 @@ namespace LabFusion.Network
             try
             {
                 ushort tag = BitConverter.ToUInt16(bytes, 0);
-                byte[] buffer = BytePool.Rent(bytes.Length - 2);
+                byte[] buffer = ByteRetriever.Rent(bytes.Length - 2);
 
                 for (var i = 0; i < buffer.Length; i++)
                     buffer[i] = bytes[i + 2];
