@@ -45,6 +45,10 @@ namespace LabFusion.Syncables
 
         public readonly GameObject GameObject;
 
+        public bool IsRootEnabled;
+
+        public PropLifeCycleEvents LifeCycleEvents;
+
         public bool DisableSyncing = false;
         public readonly bool HasIgnoreHierarchy;
 
@@ -101,6 +105,10 @@ namespace LabFusion.Syncables
                 SyncManager.RemoveSyncable(syncable);
 
             Cache.Add(GameObject, this);
+
+            LifeCycleEvents = GameObject.AddComponent<PropLifeCycleEvents>();
+            LifeCycleEvents.Syncable = this;
+            IsRootEnabled = GameObject.activeInHierarchy;
 
             // Recreate all rigidbodies incase of them being gone (ascent Amber ball, looking at you)
             var tempHosts = GameObject.GetComponentsInChildren<InteractableHost>(true);
@@ -225,6 +233,10 @@ namespace LabFusion.Syncables
         public void Cleanup() {
             if (!GameObject.IsNOC()) {
                 Cache.Remove(GameObject);
+            }
+
+            if (!LifeCycleEvents.IsNOC()) {
+                GameObject.Destroy(LifeCycleEvents);
             }
 
             foreach (var host in HostGameObjects) {
@@ -410,7 +422,7 @@ namespace LabFusion.Syncables
 
         public bool IsRegistered() => _hasRegistered;
 
-        private bool HasValidParameters() => !DisableSyncing && _hasRegistered && LevelWarehouseUtilities.IsLoadDone() && !GameObject.IsNOC() && GameObject.activeInHierarchy;
+        private bool HasValidParameters() => !DisableSyncing && _hasRegistered && LevelWarehouseUtilities.IsLoadDone() && IsRootEnabled;
 
         public void OnFixedUpdate() {
             if (!Owner.HasValue || Owner.Value == PlayerIdManager.LocalSmallId || !HasValidParameters())
