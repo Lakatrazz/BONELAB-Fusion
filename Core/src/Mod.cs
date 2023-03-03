@@ -57,7 +57,7 @@ namespace LabFusion
             SteamAPILoader.OnLoadSteamAPI();
 
             // Initialize data and hooks
-            BytePool.PopulateInitial();
+            ByteRetriever.PopulateInitial();
             PersistentData.OnPathInitialize();
             PDController.OnInitializeMelon();
             ModuleHandler.Internal_HookAssemblies();

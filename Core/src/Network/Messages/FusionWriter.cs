@@ -36,7 +36,7 @@ namespace LabFusion.Network
         /// <returns></returns>
         public static FusionWriter Create()
         {
-            return Create(BytePool.DefaultSize);
+            return Create(ByteRetriever.DefaultSize);
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace LabFusion.Network
         {
             return new FusionWriter
             {
-                buffer = BytePool.Rent(initialCapacity),
+                buffer = ByteRetriever.Rent(initialCapacity),
                 Position = 0
             };
         }
@@ -431,7 +431,7 @@ namespace LabFusion.Network
         public void Dispose() {
             GC.SuppressFinalize(this);
 
-            BytePool.Return(buffer);
+            ByteRetriever.Return(buffer);
         }
     }
 }

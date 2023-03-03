@@ -43,7 +43,7 @@ namespace LabFusion.Network
 
         public static FusionMessage Create(byte tag, byte[] buffer) {
             var message = new FusionMessage {
-                buffer = BytePool.Rent(buffer.Length + 1)
+                buffer = ByteRetriever.Rent(buffer.Length + 1)
             };
             message.buffer[0] = tag;
             buffer.CopyTo(message.buffer, 1);
@@ -67,7 +67,7 @@ namespace LabFusion.Network
 
         public static FusionMessage ModuleCreate(Type type, byte[] buffer) {
             var message = new FusionMessage {
-                buffer = BytePool.Rent(buffer.Length + 3)
+                buffer = ByteRetriever.Rent(buffer.Length + 3)
             };
             message.buffer[0] = NativeMessageTag.Module;
 
@@ -91,7 +91,7 @@ namespace LabFusion.Network
         public void Dispose() {
             GC.SuppressFinalize(this);
 
-            BytePool.Return(buffer);
+            ByteRetriever.Return(buffer);
         }
     }
 }
