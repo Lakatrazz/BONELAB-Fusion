@@ -21,6 +21,10 @@ namespace LabFusion.Data {
         public SerializedTransform targetInBase;
         public GripPair gripPair;
 
+#if DEBUG
+        private bool _hasWrittenDefaultGrip = false;
+#endif
+
         public virtual void WriteDefaultGrip(Hand hand, Grip grip) {
             // Check if this is actually grabbed
             isGrabbed = hand.m_CurrentAttachedGO == grip.gameObject;
@@ -30,9 +34,18 @@ namespace LabFusion.Data {
             targetInBase = new SerializedTransform(target.position, target.rotation);
 
             gripPair = new GripPair(hand, grip);
+
+#if DEBUG
+            _hasWrittenDefaultGrip = true;
+#endif
         }
 
         public virtual void Serialize(FusionWriter writer) {
+#if DEBUG
+            if (!_hasWrittenDefaultGrip)
+                FusionLogger.Warn("Serializing a grab but the default grip values weren't written!");
+#endif
+
             writer.Write(isGrabbed);
             writer.Write(targetInBase);
         }

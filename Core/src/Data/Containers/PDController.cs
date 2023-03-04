@@ -71,9 +71,9 @@ namespace LabFusion.Data
             return 4.5f * frequency * damping;
         }
 
-        public Vector3 GetForce(in Rigidbody rb, in Transform transform, in Vector3 targetPos, in Vector3 targetVel) {
-            Vector3 Pt0 = transform.position;
-            Vector3 Vt0 = rb.velocity;
+        public Vector3 GetForce(in Rigidbody rb, in Vector3 position, in Vector3 velocity, in Vector3 targetPos, in Vector3 targetVel) {
+            Vector3 Pt0 = position;
+            Vector3 Vt0 = velocity;
 
             Vector3 Pt1 = targetPos;
             Vector3 Vt1 = targetVel;
@@ -87,14 +87,12 @@ namespace LabFusion.Data
             return force;
         }
 
-        public Vector3 GetTorque(Rigidbody rb, in Transform transform, in Quaternion targetRot, in Vector3 targetVel)
+        public Vector3 GetTorque(Rigidbody rb, in Quaternion rotation, in Vector3 angularVelocity, in Quaternion targetRot, in Vector3 targetVel)
         {
-            var currentRotation = transform.rotation;
-
             Quaternion Qt1 = targetRot;
             Vector3 Vt1 = targetVel;
 
-            Quaternion q = Qt1 * Quaternion.Inverse(currentRotation);
+            Quaternion q = Qt1 * Quaternion.Inverse(rotation);
             if (q.w < 0)
             {
                 q.x = -q.x;
@@ -106,7 +104,7 @@ namespace LabFusion.Data
             x.Normalize();
             
             x *= Deg2Rad;
-            var torque = _rotationKsg * x * xMag + _rotationKdg * (Vt1 - rb.angularVelocity);
+            var torque = _rotationKsg * x * xMag + _rotationKdg * (Vt1 - angularVelocity);
 
             // Safety check
             if (torque.IsNanOrInf())

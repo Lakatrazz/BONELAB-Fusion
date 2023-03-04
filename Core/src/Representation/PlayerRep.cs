@@ -548,6 +548,10 @@ namespace LabFusion.Representation
                     return;
                 }
 
+                Transform pelvisTransform = repPelvis.transform;
+                Vector3 pelvisPosition = pelvisTransform.position;
+                Quaternion pelvisRotation = pelvisTransform.rotation;
+
                 // Move position with prediction
                 if (Time.realtimeSinceStartup - timeSincePelvisSent <= 1.5f) {
                     serializedPelvis.position += predictVelocity * Time.fixedDeltaTime;
@@ -555,7 +559,7 @@ namespace LabFusion.Representation
                     _hasLockedPosition = false;
                 }
                 else if (!_hasLockedPosition) {
-                    serializedPelvis.position = repPelvis.transform.position;
+                    serializedPelvis.position = pelvisPosition;
                     predictVelocity = Vector3.zero;
                     predictAngularVelocity = Vector3.zero;
 
@@ -568,37 +572,35 @@ namespace LabFusion.Representation
                     var pos = serializedPelvis.position;
                     var rot = serializedPelvis.rotation.Expand();
 
-                    repPelvis.AddForce(pelvisPDController.GetForce(repPelvis, repPelvis.transform, pos, predictVelocity), ForceMode.Acceleration);
+                    repPelvis.AddForce(pelvisPDController.GetForce(repPelvis, pelvisPosition, repPelvis.velocity, pos, predictVelocity), ForceMode.Acceleration);
                     // We only want to apply angular force when ragdolled
                     if (rigManager.physicsRig.torso.spineInternalMult <= 0f) {
-                        repPelvis.AddTorque(pelvisPDController.GetTorque(repPelvis, repPelvis.transform, rot, predictAngularVelocity), ForceMode.Acceleration);
+                        repPelvis.AddTorque(pelvisPDController.GetTorque(repPelvis, pelvisRotation, repPelvis.angularVelocity, rot, predictAngularVelocity), ForceMode.Acceleration);
                     }
                 }
 
                 // Check for stability teleport
-                if (!RigReferences.RigManager.IsNOC()) {
-                    float distSqr = (repPelvis.transform.position - serializedPelvis.position).sqrMagnitude;
-                    if (distSqr > (2f * (predictVelocity.magnitude + 1f))) {
-                        // Get teleport position
-                        var pos = serializedPelvis.position;
-                        var physRig = RigReferences.RigManager.physicsRig;
+                float distSqr = (pelvisPosition - serializedPelvis.position).sqrMagnitude;
+                if (distSqr > (2f * (predictVelocity.magnitude + 1f))) {
+                    // Get teleport position
+                    var pos = serializedPelvis.position;
+                    var physRig = RigReferences.RigManager.physicsRig;
 
-                        // Offset
-                        pos += physRig.feet.transform.position - physRig.m_pelvis.position;
-                        pos += physRig.footballRadius * -physRig.m_pelvis.up;
+                    // Offset
+                    pos += physRig.feet.transform.position - physRig.m_pelvis.position;
+                    pos += physRig.footballRadius * -physRig.m_pelvis.up;
 
-                        RigReferences.RigManager.Teleport(pos);
+                    RigReferences.RigManager.Teleport(pos);
 
-                        // Zero our teleport velocity, cause the rig doesn't seem to do that on its own?
-                        foreach (var rb in RigReferences.RigManager.physicsRig.GetComponentsInChildren<Rigidbody>()) {
-                            rb.velocity = Vector3.zero;
-                            rb.angularVelocity = Vector3.zero;
-                        }
-
-                        // Reset locosphere and knee pos so the rig doesn't get stuck
-                        physRig.knee.transform.position = serializedPelvis.position;
-                        physRig.feet.transform.position = serializedPelvis.position;
+                    // Zero our teleport velocity, cause the rig doesn't seem to do that on its own?
+                    foreach (var rb in RigReferences.RigManager.physicsRig.GetComponentsInChildren<Rigidbody>()) {
+                        rb.velocity = Vector3.zero;
+                        rb.angularVelocity = Vector3.zero;
                     }
+
+                    // Reset locosphere and knee pos so the rig doesn't get stuck
+                    physRig.knee.transform.position = serializedPelvis.position;
+                    physRig.feet.transform.position = serializedPelvis.position;
                 }
             }
             catch {

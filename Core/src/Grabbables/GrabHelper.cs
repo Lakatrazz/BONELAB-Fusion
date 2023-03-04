@@ -112,6 +112,7 @@ namespace LabFusion.Grabbables {
 
                         // Send force grab message
                         var grab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id);
+                        grab.WriteDefaultGrip(hand, grip);
 
                         using (var writer = FusionWriter.Create(PlayerRepForceGrabData.Size)) {
                             using (var data = PlayerRepForceGrabData.Create(smallId, grab)) {
@@ -129,6 +130,7 @@ namespace LabFusion.Grabbables {
                         syncable = new PropSyncable(host);
                         SyncManager.RegisterSyncable(syncable, SyncManager.AllocateSyncID());
                         var grab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id);
+                        grab.WriteDefaultGrip(hand, grip);
 
                         using (var writer = FusionWriter.Create(PlayerRepForceGrabData.Size)) {
                             using (var data = PlayerRepForceGrabData.Create(smallId, grab)) {

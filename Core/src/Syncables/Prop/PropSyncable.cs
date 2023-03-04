@@ -38,6 +38,8 @@ namespace LabFusion.Syncables
 
         public GameObject[] HostGameObjects;
         public Transform[] HostTransforms;
+        public TransformCache[] TransformCaches;
+        public RigidbodyCache[] RigidbodyCaches;
 
         private bool[] RigidbodyNulls;
 
@@ -107,8 +109,9 @@ namespace LabFusion.Syncables
             Cache.Add(GameObject, this);
 
             LifeCycleEvents = GameObject.AddComponent<PropLifeCycleEvents>();
+            LifeCycleEvents.enabled = false;
             LifeCycleEvents.Syncable = this;
-            IsRootEnabled = GameObject.activeInHierarchy;
+            LifeCycleEvents.enabled = true;
 
             // Recreate all rigidbodies incase of them being gone (ascent Amber ball, looking at you)
             var tempHosts = GameObject.GetComponentsInChildren<InteractableHost>(true);
@@ -148,10 +151,16 @@ namespace LabFusion.Syncables
             // Setup gameobject arrays
             HostGameObjects = new GameObject[Rigidbodies.Length];
             HostTransforms = new Transform[Rigidbodies.Length];
+            TransformCaches = new TransformCache[Rigidbodies.Length];
+            RigidbodyCaches = new RigidbodyCache[Rigidbodies.Length];
             PDControllers = new PDController[Rigidbodies.Length];
             LockJoints = new FixedJoint[Rigidbodies.Length];
 
             for (var i = 0; i < Rigidbodies.Length; i++) {
+                // Initialize transform caches
+                TransformCaches[i] = new TransformCache();
+                RigidbodyCaches[i] = new RigidbodyCache();
+
                 // Clear out potential conflicting syncables
                 var go = Rigidbodies[i].gameObject;
                 if (HostCache.TryGet(go, out var conflict) && conflict != this)
@@ -425,12 +434,27 @@ namespace LabFusion.Syncables
         private bool HasValidParameters() => !DisableSyncing && _hasRegistered && LevelWarehouseUtilities.IsLoadDone() && IsRootEnabled;
 
         public void OnFixedUpdate() {
-            if (!Owner.HasValue || Owner.Value == PlayerIdManager.LocalSmallId || !HasValidParameters())
+            if (!HasValidParameters())
+                return;
+
+            OnUpdateCache();
+
+            if (!Owner.HasValue || Owner.Value == PlayerIdManager.LocalSmallId)
                 return;
 
             CheckNulls();
 
             OnReceivedUpdate();
+        }
+
+        private void OnUpdateCache() {
+            for (var i = 0; i < TransformCaches.Length; i++) {
+                TransformCaches[i].Update(HostTransforms[i]);
+
+                if (!IsRigidbodyNull(i)) {
+                    RigidbodyCaches[i].Update(Rigidbodies[i]);
+                }
+            }
         }
 
         public void OnUpdate()
@@ -474,11 +498,11 @@ namespace LabFusion.Syncables
 
         private bool HasMoved(int index)
         {
-            var transform = HostTransforms[index];
+            var cache = TransformCaches[index];
             var lastPosition = LastSentPositions[index];
             var lastRotation = LastSentRotations[index];
 
-            return (transform.position - lastPosition).sqrMagnitude > MinMoveSqrMagnitude || Quaternion.Angle(transform.rotation, lastRotation) > MinMoveAngle;
+            return (cache.Position - lastPosition).sqrMagnitude > MinMoveSqrMagnitude || Quaternion.Angle(cache.Rotation, lastRotation) > MinMoveAngle;
         }
 
         public bool IsMissingRigidbodies() {
@@ -504,12 +528,13 @@ namespace LabFusion.Syncables
                 }
 
                 var rb = Rigidbodies[i];
+                var cache = RigidbodyCaches[i];
 
                 // Don't sync kinematic rigidbodies
                 if (rb.isKinematic)
                     continue;
 
-                if (!hasMovingBody && !rb.IsSleeping() && HasMoved(i)) {
+                if (!hasMovingBody && !cache.IsSleeping && HasMoved(i)) {
                     hasMovingBody = true;
                     break;
                 }
@@ -528,11 +553,11 @@ namespace LabFusion.Syncables
                 SetSendState(SendState.SENDING);
             }
 
-            for (var i = 0; i < HostTransforms.Length; i++) {
-                var transform = HostTransforms[i];
+            for (var i = 0; i < TransformCaches.Length; i++) {
+                var cache = TransformCaches[i];
 
-                LastSentPositions[i] = transform.position;
-                LastSentRotations[i] = transform.rotation;
+                LastSentPositions[i] = cache.Position;
+                LastSentRotations[i] = cache.Rotation;
             }
 
             using (var writer = FusionWriter.Create(PropSyncableUpdateData.DefaultSize + (PropSyncableUpdateData.RigidbodySize * Rigidbodies.Length))) {
@@ -607,6 +632,8 @@ namespace LabFusion.Syncables
 
                 var rb = Rigidbodies[i];
                 var transform = HostTransforms[i];
+                var cache = TransformCaches[i];
+                var rbCache = RigidbodyCaches[i];
 
                 bool isGrabbed = false;
 
@@ -665,7 +692,7 @@ namespace LabFusion.Syncables
                 }
 
                 // Teleport check
-                float distSqr = (transform.position - pos).sqrMagnitude;
+                float distSqr = (cache.Position - pos).sqrMagnitude;
                 if (distSqr > (2f * (vel.sqrMagnitude + 1f)) && allowPosition) {
                     transform.position = pos;
                     transform.rotation = rot;
@@ -676,14 +703,14 @@ namespace LabFusion.Syncables
                 // Instead calculate velocity stuff
                 else {
                     if (allowPosition) {
-                        rb.AddForce(pdController.GetForce(rb, transform, pos, vel), ForceMode.Acceleration);
+                        rb.AddForce(pdController.GetForce(rb, cache.Position, rbCache.Velocity, pos, vel), ForceMode.Acceleration);
                     }
                     else {
                         if (rb.useGravity)
                             rb.AddForce(-Physics.gravity, ForceMode.Acceleration);
                     }
 
-                    rb.AddTorque(pdController.GetTorque(rb, transform, rot, angVel), ForceMode.Acceleration);
+                    rb.AddTorque(pdController.GetTorque(rb, cache.Rotation, rbCache.AngularVelocity, rot, angVel), ForceMode.Acceleration);
                 }
             }
         }

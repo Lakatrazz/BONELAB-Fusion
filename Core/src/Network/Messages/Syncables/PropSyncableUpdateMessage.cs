@@ -73,10 +73,10 @@ namespace LabFusion.Network
         public static PropSyncableUpdateData Create(byte ownerId, PropSyncable syncable)
         {
             var syncId = syncable.GetId();
-            var hosts = syncable.HostTransforms;
-            var rigidbodies = syncable.Rigidbodies;
+            var transformCaches = syncable.TransformCaches;
+            var rigidbodyCaches = syncable.RigidbodyCaches;
 
-            int length = rigidbodies.Length;
+            int length = transformCaches.Length;
 
             var data = new PropSyncableUpdateData {
                 ownerId = ownerId,
@@ -89,16 +89,16 @@ namespace LabFusion.Network
             };
 
             for (var i = 0; i < length; i++) {
-                var host = hosts[i];
+                var transform = transformCaches[i];
 
-                data.serializedPositions[i] = host.position;
-                data.serializedQuaternions[i] = SerializedSmallQuaternion.Compress(host.rotation);
+                data.serializedPositions[i] = transform.Position;
+                data.serializedQuaternions[i] = SerializedSmallQuaternion.Compress(transform.Rotation);
 
                 if (!syncable.IsRigidbodyNull(i)) {
-                    var rb = rigidbodies[i];
+                    var rb = rigidbodyCaches[i];
 
-                    data.serializedVelocities[i] = rb.velocity * Time.timeScale;
-                    data.serializedAngularVelocities[i] = rb.angularVelocity * Time.timeScale;
+                    data.serializedVelocities[i] = rb.Velocity * Time.timeScale;
+                    data.serializedAngularVelocities[i] = rb.AngularVelocity * Time.timeScale;
                 }
             }
 

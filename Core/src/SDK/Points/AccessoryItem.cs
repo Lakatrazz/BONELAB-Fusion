@@ -62,8 +62,20 @@ namespace LabFusion.SDK.Points
             }
 
             public void UpdateMirrors() {
+                List<Mirror> mirrorsToRemove = null;
+
+                // Update all mirrors
                 foreach (var mirror in mirrors) {
                     if (mirror.Key && mirror.Value) {
+                        // Remove the mirror if its disabled
+                        if (!mirror.Key.isActiveAndEnabled) {
+                            if (mirrorsToRemove == null)
+                                mirrorsToRemove = new List<Mirror>();
+
+                            mirrorsToRemove.Add(mirror.Key);
+                            continue;
+                        }
+
                         // Set the mirror accessory active or inactive
                         if (mirror.Key.rigManager != rigManager){
                             mirror.Value.SetActive(false);
@@ -96,6 +108,12 @@ namespace LabFusion.SDK.Points
                             accessory.localScale = transform.localScale;
                         }
                     }
+                }
+
+                // Remove necessary mirrors
+                if (mirrorsToRemove != null) {
+                    foreach (var mirror in mirrorsToRemove)
+                        RemoveMirror(mirror);
                 }
             }
 

@@ -238,6 +238,8 @@
     <Compile Include="Core\src\Data\Containers\Grips\SerializedPlayerBodyGrab.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedServerSettings.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedPlayerSettings.cs" />
+    <Compile Include="Core\src\Data\Containers\RigidbodyCache.cs" />
+    <Compile Include="Core\src\Data\Containers\TransformCache.cs" />
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedSmallQuaternion.cs" />
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedQuaternion.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedStaticGrab.cs" />
@@ -267,7 +269,6 @@
     <Compile Include="Core\src\Extensions\InteractableHost.cs" />
     <Compile Include="Core\src\Extensions\Joint.cs" />
     <Compile Include="Core\src\Extensions\PullCordDevice.cs" />
-    <Compile Include="Core\src\Extensions\Rigidbody.cs" />
     <Compile Include="Core\src\Extensions\Transform.cs" />
     <Compile Include="Core\src\Extensions\SyncableComparer.cs" />
     <Compile Include="Core\src\Extensions\UnityComparer.cs" />
