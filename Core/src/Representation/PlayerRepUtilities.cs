@@ -88,7 +88,14 @@ namespace LabFusion.Representation {
         }
 
         public static void CreateNewRig(Action<RigManager> onRigCreated) {
-            MarrowSettings.RuntimeInstance.DefaultPlayerRig.Crate.LoadAsset((Action<GameObject>)((go) => Internal_OnLoadPlayer(go, onRigCreated)));
+            if (MarrowSettings.RuntimeInstance == null)
+                return;
+
+            var crate = MarrowSettings.RuntimeInstance.DefaultPlayerRig.Crate;
+            if (crate == null)
+                return;
+
+            crate.LoadAsset((Action<GameObject>)((go) => Internal_OnLoadPlayer(go, onRigCreated)));
         }
 
         private static void Internal_OnLoadPlayer(GameObject asset, Action<RigManager> onRigCreated) {
@@ -173,8 +180,6 @@ namespace LabFusion.Representation {
             rigManager.uiRig.gameObject.SetActive(false);
             rigManager.uiRig.Start();
             rigManager.uiRig.popUpMenu.radialPageView.Start();
-
-            rigManager.uiRig.popUpMenu.Awake();
 
             try {
                 rigManager.uiRig.popUpMenu.Start();

@@ -14,6 +14,8 @@ namespace LabFusion.Syncables {
 
         protected override void AddToCache(Seat seat, PropSyncable syncable) {
             Cache.Add(seat, syncable);
+
+            syncable.IsVehicle = true;
         }
 
         protected override void RemoveFromCache(Seat seat) {

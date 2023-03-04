@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LabFusion.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,19 +12,34 @@ namespace LabFusion.Data {
         private Vector3 _velocity;
         private Vector3 _angularVelocity;
         private bool _isSleeping;
+        private bool _isNull;
 
         public Vector3 Velocity => _velocity;
         public Vector3 AngularVelocity => _angularVelocity;
         public bool IsSleeping => _isSleeping;
+        public bool IsNull => _isNull;
 
         public void Update(Rigidbody rigidbody) {
+            _isNull = rigidbody == null;
+        }
+
+        public void FixedUpdate(Rigidbody rigidbody) {
+            _isNull = rigidbody == null;
+
+            if (_isNull) {
+                _isSleeping = true;
+                return;
+            }
+
             _isSleeping = rigidbody.IsSleeping();
 
-            if (_isSleeping) {
+            if (_isSleeping)
+            {
                 _velocity = Vector3.zero;
                 _angularVelocity = Vector3.zero;
             }
-            else {
+            else
+            {
                 _velocity = rigidbody.velocity;
                 _angularVelocity = rigidbody.angularVelocity;
             }

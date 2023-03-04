@@ -90,13 +90,12 @@ namespace LabFusion.Network
 
             for (var i = 0; i < length; i++) {
                 var transform = transformCaches[i];
+                var rb = rigidbodyCaches[i];
 
                 data.serializedPositions[i] = transform.Position;
                 data.serializedQuaternions[i] = SerializedSmallQuaternion.Compress(transform.Rotation);
 
-                if (!syncable.IsRigidbodyNull(i)) {
-                    var rb = rigidbodyCaches[i];
-
+                if (!rb.IsNull) {
                     data.serializedVelocities[i] = rb.Velocity * Time.timeScale;
                     data.serializedAngularVelocities[i] = rb.AngularVelocity * Time.timeScale;
                 }

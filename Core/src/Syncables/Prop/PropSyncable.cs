@@ -31,6 +31,8 @@ namespace LabFusion.Syncables
         public static readonly FusionComponentCache<GameObject, PropSyncable> Cache = new FusionComponentCache<GameObject, PropSyncable>();
         public static readonly FusionComponentCache<GameObject, PropSyncable> HostCache = new FusionComponentCache<GameObject, PropSyncable>();
 
+        public bool IsVehicle = false;
+
         public Grip[] PropGrips;
         public Rigidbody[] Rigidbodies;
         public FixedJoint[] LockJoints;
@@ -174,8 +176,9 @@ namespace LabFusion.Syncables
                 TransformCaches[i] = new TransformCache();
                 RigidbodyCaches[i] = new RigidbodyCache();
 
-                TransformCaches[i].Update(HostTransforms[i]);
+                TransformCaches[i].FixedUpdate(HostTransforms[i]);
                 RigidbodyCaches[i].Update(Rigidbodies[i]);
+                RigidbodyCaches[i].FixedUpdate(Rigidbodies[i]);
             }
 
             HasIgnoreHierarchy = GameObject.GetComponentInParent<IgnoreHierarchy>(true);
@@ -192,7 +195,6 @@ namespace LabFusion.Syncables
             if (!GameObject.IsNOC() && GameObject.activeInHierarchy)
                 _catchupDelegate?.InvokeSafe(user, "executing Catchup Delegate");
         }
-
 
         public bool TryGetExtender<T>(out T extender) where T : IPropExtender {
             foreach (var found in _extenders) {
@@ -287,12 +289,8 @@ namespace LabFusion.Syncables
 
         public void SetOwner(byte owner) {
             // Reset position info
-            if (Owner == null) {
+            if (Owner == null)
                 FreezeValues();
-            }
-            else if (Owner != owner) {
-                NullValues();
-            }
 
             byte? prevOwner = Owner;
 
@@ -312,12 +310,14 @@ namespace LabFusion.Syncables
 
         public void FreezeValues() {
             for (var i = 0; i < Rigidbodies.Length; i++) {
-                DesiredPositions[i] = HostTransforms[i].position;
-                DesiredRotations[i] = HostTransforms[i].rotation;
+                var transform = TransformCaches[i];
+
+                DesiredPositions[i] = transform.Position;
+                DesiredRotations[i] = transform.Rotation;
                 DesiredVelocities[i] = Vector3.zero;
                 DesiredAngularVelocities[i] = Vector3.zero;
-                InitialPositions[i] = HostTransforms[i].position;
-                InitialRotations[i] = HostTransforms[i].rotation;
+                InitialPositions[i] = transform.Position;
+                InitialRotations[i] = transform.Rotation;
             }
         }
 
@@ -440,23 +440,24 @@ namespace LabFusion.Syncables
             if (!HasValidParameters())
                 return;
 
-            OnUpdateCache();
+            OnFixedUpdateCache();
 
             if (!Owner.HasValue || Owner.Value == PlayerIdManager.LocalSmallId)
                 return;
-
-            CheckNulls();
 
             OnReceivedUpdate();
         }
 
         private void OnUpdateCache() {
             for (var i = 0; i < TransformCaches.Length; i++) {
-                TransformCaches[i].Update(HostTransforms[i]);
+                RigidbodyCaches[i].Update(Rigidbodies[i]);
+            }
+        }
 
-                if (!IsRigidbodyNull(i)) {
-                    RigidbodyCaches[i].Update(Rigidbodies[i]);
-                }
+        private void OnFixedUpdateCache() {
+            for (var i = 0; i < TransformCaches.Length; i++) {
+                TransformCaches[i].FixedUpdate(HostTransforms[i]);
+                RigidbodyCaches[i].FixedUpdate(Rigidbodies[i]);
             }
         }
 
@@ -464,6 +465,8 @@ namespace LabFusion.Syncables
         {
             if (!HasValidParameters())
                 return;
+
+            OnUpdateCache();
 
             foreach (var extender in _extenders)
                 extender.OnUpdate();
@@ -473,8 +476,6 @@ namespace LabFusion.Syncables
                 foreach (var extender in _extenders)
                     extender.OnHeld();
             }
-
-            CheckNulls();
 
             VerifyOwner();
             VerifyRigidbodies();
@@ -487,16 +488,6 @@ namespace LabFusion.Syncables
 
         public void PushUpdate() {
             _grabbedGrips.OnPushUpdate();
-        }
-
-        public void CheckNulls() {
-            for (var i = 0; i < Rigidbodies.Length; i++) {
-                RigidbodyNulls[i] = Rigidbodies[i] == null;
-            }
-        }
-
-        public bool IsRigidbodyNull(int index) {
-            return RigidbodyNulls[index];
         }
 
         private bool HasMoved(int index)
@@ -526,12 +517,13 @@ namespace LabFusion.Syncables
             bool hasMovingBody = false;
 
             for (var i = 0; i < Rigidbodies.Length; i++) {
-                if (IsRigidbodyNull(i)) {
+                var cache = RigidbodyCaches[i];
+
+                if (cache.IsNull) {
                     continue;
                 }
 
                 var rb = Rigidbodies[i];
-                var cache = RigidbodyCaches[i];
 
                 // Don't sync kinematic rigidbodies
                 if (rb.isKinematic)
@@ -630,13 +622,14 @@ namespace LabFusion.Syncables
             }
 
             for (var i = 0; i < Rigidbodies.Length; i++) {
-                if (IsRigidbodyNull(i))
+                var rbCache = RigidbodyCaches[i];
+
+                if (rbCache.IsNull)
                     continue;
 
                 var rb = Rigidbodies[i];
                 var transform = HostTransforms[i];
                 var cache = TransformCaches[i];
-                var rbCache = RigidbodyCaches[i];
 
                 bool isGrabbed = false;
 

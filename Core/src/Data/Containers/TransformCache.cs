@@ -14,7 +14,7 @@ namespace LabFusion.Data {
         public Vector3 Position => _position;
         public Quaternion Rotation => _rotation;
 
-        public void Update(Transform transform) {
+        public void FixedUpdate(Transform transform) {
             _position = transform.position;
             _rotation = transform.rotation;
         }

@@ -441,7 +441,7 @@ namespace LabFusion.Representation
 
         private IEnumerator Co_DelayCreateRep() {
             // Delay some extra time
-            for (var i = 0; i < 120; i++) {
+            for (var i = 0; i < 360; i++) {
                 if (LevelWarehouseUtilities.IsLoading())
                     yield break;
 

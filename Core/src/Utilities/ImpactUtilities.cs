@@ -19,8 +19,8 @@ namespace LabFusion.Utilities {
 
             // Already has a syncable?
             if (PropSyncable.HostCache.TryGet(go, out var syncable)) {
-                // Only transfer ownership if this is not currently held
-                if (!syncable.IsHeld)
+                // Only transfer ownership if this is not currently held and not a vehicle
+                if (!syncable.IsHeld && !syncable.IsVehicle)
                     PropSender.SendOwnershipTransfer(syncable);
             }
             // Create a new synced object
