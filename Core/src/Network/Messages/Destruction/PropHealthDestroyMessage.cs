@@ -83,6 +83,7 @@ namespace LabFusion.Network
                             propHealth.bloodied = true;
 
                             propHealth.TIMEDKILL();
+                            propHealth.SETPROP();
 
                             PropHealthPatches.IgnorePatches = false;
                         }

@@ -24,6 +24,7 @@ namespace LabFusion.Syncables {
         protected override void AddToCache(SpawnGun gun, PropSyncable syncable) {
             Cache.Add(gun, syncable);
             Despawner = gun.gameObject.AddComponent<TimedDespawner>();
+            Despawner.syncable = syncable;
         }
 
         protected override void RemoveFromCache(SpawnGun gun) {

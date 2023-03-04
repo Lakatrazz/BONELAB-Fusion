@@ -36,7 +36,7 @@ namespace LabFusion.Syncables {
             if (Syncable == null)
                 return;
 
-            // If the GameObject is destroyed, we might as well just remove the syncable
+            // If the GameObject is disabled or destroyed, we might as well just remove the syncable
             SyncManager.RemoveSyncable(Syncable);
         }
     }

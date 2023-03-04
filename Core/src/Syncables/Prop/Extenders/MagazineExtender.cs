@@ -23,6 +23,7 @@ namespace LabFusion.Syncables {
         protected override void AddToCache(Magazine mag, PropSyncable syncable) {
             Cache.Add(mag, syncable);
             Despawner = mag.gameObject.AddComponent<TimedDespawner>();
+            Despawner.syncable = syncable;
         }
 
         protected override void RemoveFromCache(Magazine mag) {

@@ -157,10 +157,6 @@ namespace LabFusion.Syncables
             LockJoints = new FixedJoint[Rigidbodies.Length];
 
             for (var i = 0; i < Rigidbodies.Length; i++) {
-                // Initialize transform caches
-                TransformCaches[i] = new TransformCache();
-                RigidbodyCaches[i] = new RigidbodyCache();
-
                 // Clear out potential conflicting syncables
                 var go = Rigidbodies[i].gameObject;
                 if (HostCache.TryGet(go, out var conflict) && conflict != this)
@@ -173,6 +169,13 @@ namespace LabFusion.Syncables
                 HostCache.Add(go, this);
 
                 PDControllers[i] = new PDController();
+
+                // Initialize transform caches
+                TransformCaches[i] = new TransformCache();
+                RigidbodyCaches[i] = new RigidbodyCache();
+
+                TransformCaches[i].Update(HostTransforms[i]);
+                RigidbodyCaches[i].Update(Rigidbodies[i]);
             }
 
             HasIgnoreHierarchy = GameObject.GetComponentInParent<IgnoreHierarchy>(true);

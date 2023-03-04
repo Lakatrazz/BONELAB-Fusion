@@ -23,9 +23,11 @@ namespace LabFusion.MonoBehaviours
         public TimedDespawner(IntPtr intPtr) : base(intPtr) { }
 
         public AssetPoolee poolee;
+        public PropSyncable syncable;
 
         private float _timeOfRefresh;
         private bool _hasPoolee;
+        private bool _hasSyncable;
 
         private void Awake() {
             poolee = GetComponentInParent<AssetPoolee>();
@@ -38,6 +40,16 @@ namespace LabFusion.MonoBehaviours
         }
 
         public void LateUpdate() {
+            // If we had a syncable and it became null, destroy this
+            if (_hasSyncable && syncable == null) {
+                GameObject.Destroy(this);
+            }
+
+            // Store when we get a syncable
+            if (!_hasSyncable) {
+                _hasSyncable = syncable != null;
+            }
+
             if (NetworkInfo.IsServer && _hasPoolee && Time.realtimeSinceStartup - _timeOfRefresh >= DespawnTime) {
                 poolee.Despawn();
             }

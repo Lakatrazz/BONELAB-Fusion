@@ -37,12 +37,10 @@ namespace LabFusion.Patching
                 if (NetworkInfo.HasServer && __instance.spawnableCrate)
                 {
                     var barcode = __instance.spawnableCrate.Barcode;
-                    bool hasSyncable = PropSyncable.Cache.ContainsSource(__instance.gameObject);
-
                     if (!NetworkInfo.IsServer)
                     {
                         // Check if we should prevent this object from spawning
-                        if (hasSyncable || barcode == SpawnableWarehouseUtilities.FADE_OUT_BARCODE) {
+                        if (barcode == SpawnableWarehouseUtilities.FADE_OUT_BARCODE) {
                             __instance.gameObject.SetActive(false);
                         }
                         else if (!PooleeUtilities.ForceEnabled.Contains(__instance) && PooleeUtilities.CanForceDespawn(__instance)) {
@@ -50,7 +48,7 @@ namespace LabFusion.Patching
                             MelonCoroutines.Start(CoForceDespawnRoutine(__instance));
                         }
                     }
-                    else if (!hasSyncable)
+                    else
                     {
                         if (PooleeUtilities.CanSendSpawn(__instance)) {
                             PooleeUtilities.CheckingForSpawn.Push(__instance);
