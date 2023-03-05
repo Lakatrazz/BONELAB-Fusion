@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.DirectoryServices.Protocols;
 using LabFusion.Data;
 using LabFusion.Debugging;
 using LabFusion.Extensions;
@@ -93,7 +93,7 @@ namespace LabFusion.Syncables
 
         private GrabbedGripList _grabbedGrips;
 
-        public bool IsHeld => _grabbedGrips.HasGrabbedGrips;
+        public bool IsHeld = false;
 
         private Action<ulong> _catchupDelegate;
 
@@ -177,7 +177,6 @@ namespace LabFusion.Syncables
                 RigidbodyCaches[i] = new RigidbodyCache();
 
                 TransformCaches[i].FixedUpdate(HostTransforms[i]);
-                RigidbodyCaches[i].Update(Rigidbodies[i]);
                 RigidbodyCaches[i].FixedUpdate(Rigidbodies[i]);
             }
 
@@ -213,7 +212,7 @@ namespace LabFusion.Syncables
             Rigidbodies = go.GetComponentsInChildren<Rigidbody>(true);
             RigidbodyNulls = new bool[Rigidbodies.Length];
 
-            _grabbedGrips = new GrabbedGripList(PropGrips.Length);
+            _grabbedGrips = new GrabbedGripList(this, PropGrips.Length);
         }
 
         public void OnTransferOwner(Hand hand) {
@@ -308,6 +307,10 @@ namespace LabFusion.Syncables
             }
         }
 
+        public void RemoveOwner() {
+            Owner = null;
+        }
+
         public void FreezeValues() {
             for (var i = 0; i < Rigidbodies.Length; i++) {
                 var transform = TransformCaches[i];
@@ -334,11 +337,6 @@ namespace LabFusion.Syncables
 
         public bool IsOwner() => Owner.HasValue && Owner.Value == PlayerIdManager.LocalSmallId;
 
-        public void VerifyOwner() {
-            if (Owner.HasValue && PlayerIdManager.GetPlayerId(Owner.Value) == null)
-                Owner = null;
-        }
-
         public void SetRigidbodiesDirty() {
             _verifyRigidbodies = true;
         }
@@ -361,6 +359,8 @@ namespace LabFusion.Syncables
 
                         if (!host.IsNOC())
                             Rigidbodies[i] = host.GetComponent<Rigidbody>();
+
+                        RigidbodyCaches[i].VerifyNull(Rigidbodies[i]);
                     }
                 }
 
@@ -437,20 +437,29 @@ namespace LabFusion.Syncables
         private bool HasValidParameters() => !DisableSyncing && _hasRegistered && LevelWarehouseUtilities.IsLoadDone() && IsRootEnabled;
 
         public void OnFixedUpdate() {
-            if (!HasValidParameters())
-                return;
+            try {
+                if (!HasValidParameters())
+                    return;
 
-            OnFixedUpdateCache();
+                OnFixedUpdateCache();
 
-            if (!Owner.HasValue || Owner.Value == PlayerIdManager.LocalSmallId)
-                return;
+                if (!Owner.HasValue || Owner.Value == PlayerIdManager.LocalSmallId)
+                    return;
 
-            OnReceivedUpdate();
+                OnReceivedUpdate();
+            }
+            catch (Exception e) {
+                if (e is NullReferenceException)
+                    OnExceptionThrown();
+                else {
+                    throw e;
+                }
+            }
         }
 
-        private void OnUpdateCache() {
-            for (var i = 0; i < TransformCaches.Length; i++) {
-                RigidbodyCaches[i].Update(Rigidbodies[i]);
+        private void OnExceptionThrown() {
+            for (var i = 0; i < RigidbodyCaches.Length; i++) {
+                RigidbodyCaches[i].VerifyNull(Rigidbodies[i]);
             }
         }
 
@@ -466,23 +475,29 @@ namespace LabFusion.Syncables
             if (!HasValidParameters())
                 return;
 
-            OnUpdateCache();
-
             foreach (var extender in _extenders)
                 extender.OnUpdate();
 
             // Update grabbing for extenders
-            if (_grabbedGrips.HasGrabbedGrips) {
+            if (IsHeld) {
                 foreach (var extender in _extenders)
                     extender.OnHeld();
             }
 
-            VerifyOwner();
             VerifyRigidbodies();
             VerifyLocking();
 
-            if (Owner.HasValue && Owner.Value == PlayerIdManager.LocalSmallId) {
-                OnOwnedUpdate();
+            if (IsOwner()) {
+                try {
+                    OnOwnedUpdate();
+                }
+                catch (Exception e) {
+                    if (e is NullReferenceException)
+                        OnExceptionThrown();
+                    else {
+                        throw e;
+                    }
+                }
             }
         }
 
@@ -598,7 +613,7 @@ namespace LabFusion.Syncables
                 extender.OnReceivedUpdate();
 
             // Check if anything is being grabbed
-            if (IsSleeping || (!_grabbedGrips.HasGrabbedGrips && timeSinceMessage >= 1f)) {
+            if (IsSleeping || (!IsHeld && timeSinceMessage >= 1f)) {
                 if (!_isIgnoringForces) {
                     // Set all desired values to nothing
                     for (var i = 0; i < Rigidbodies.Length; i++) {
@@ -633,7 +648,7 @@ namespace LabFusion.Syncables
 
                 bool isGrabbed = false;
 
-                if (_grabbedGrips.HasGrabbedGrips) {
+                if (IsHeld) {
                     foreach (var grip in _grabbedGrips.GetGrabbedGrips()) {
                         if (grip.Host.Rb == rb) {
                             DesiredPositions[i] = null;

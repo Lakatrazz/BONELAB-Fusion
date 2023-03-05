@@ -51,6 +51,20 @@ namespace LabFusion.Syncables {
             }
         }
 
+        internal static void OnInitializeMelon() {
+            MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
+        }
+
+        internal static void OnPlayerLeave(PlayerId id) {
+            // Loop through every syncable and see if we need to remove the owner
+            foreach (var syncable in Syncables.Values) {
+                var owner = syncable.GetOwner();
+
+                if (owner.HasValue && PlayerIdManager.GetPlayerId(owner.Value) == null)
+                    syncable.RemoveOwner();
+            }
+        }
+
         internal static void OnUpdate() {
             // Here we send over position information/etc of our syncables
             foreach (var syncable in Syncables.Values) {

@@ -1,4 +1,5 @@
 ﻿using LabFusion.Extensions;
+using LabFusion.Syncables;
 
 using SLZ.Interaction;
 
@@ -8,10 +9,10 @@ namespace LabFusion.Data {
     public class GrabbedGripList {
         private readonly Dictionary<Grip, int> _grips;
 
-        private bool _hasGrabbedGrips = false;
-        public bool HasGrabbedGrips => _hasGrabbedGrips;
+        private PropSyncable _syncable;
 
-        public GrabbedGripList(int count = 32) {
+        public GrabbedGripList(PropSyncable syncable, int count = 32) {
+            _syncable = syncable;
             _grips = new Dictionary<Grip, int>(count, new UnityComparer());
         }
 
@@ -28,7 +29,7 @@ namespace LabFusion.Data {
 
             // Update grip info
             if (_grips.Count <= 0)
-                _hasGrabbedGrips = false;
+                _syncable.IsHeld = false;
         }
 
         public void OnGripAttach(Hand hand, Grip grip) {
@@ -38,7 +39,7 @@ namespace LabFusion.Data {
                 }
 
                 _grips[grip]++;
-                _hasGrabbedGrips = true;
+                _syncable.IsHeld = true;
             }
         }
         
@@ -51,7 +52,7 @@ namespace LabFusion.Data {
             }
 
             if (_grips.Count <= 0)
-                _hasGrabbedGrips = false;
+                _syncable.IsHeld = false;
         }
 
         public IReadOnlyCollection<Grip> GetGrabbedGrips() => _grips.Keys;

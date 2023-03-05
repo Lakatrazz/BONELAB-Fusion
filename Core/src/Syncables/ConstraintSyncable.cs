@@ -66,5 +66,7 @@ namespace LabFusion.Syncables
         void ISyncable.OnUpdate() { }
 
         void ISyncable.SetOwner(byte owner) => throw new NotImplementedException();
+
+        void ISyncable.RemoveOwner() => throw new NotImplementedException();
     }
 }

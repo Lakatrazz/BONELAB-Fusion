@@ -667,10 +667,10 @@ namespace LabFusion.Representation
         }
 
         public static void OnSyncRep() {
-            if (NetworkInfo.HasServer) {
+            if (NetworkInfo.HasServer && RigData.HasPlayer) {
                 if (!TrySendRep())
                     OnCachePlayerTransforms();
-                else if (!RigData.RigReferences.RigManager.IsNOC() && RigData.RigReferences.RigManager.activeSeat) {
+                else if (RigData.RigReferences.RigManager.activeSeat) {
                     TrySendGameworldRep();
                 }
             }
@@ -802,7 +802,7 @@ namespace LabFusion.Representation
         /// Destroys the GameObjects of the PlayerRep. Does not free it from memory or remove it from its slots. Use Dispose for that.
         /// </summary>
         public void DestroyRep() {
-            if (!RigReferences.RigManager.IsNOC())
+            if (IsCreated)
                 GameObject.Destroy(RigReferences.RigManager.gameObject);
 
             if (!repCanvas.IsNOC())
@@ -813,13 +813,14 @@ namespace LabFusion.Representation
             if (!RigData.HasPlayer)
                 return;
 
-            syncedPelvis = RigData.RigReferences.RigManager.physicsRig.m_pelvis;
-            syncedPlayspace = RigData.RigReferences.RigManager.GetSmoothTurnTransform();
-            syncedLeftHand = RigData.RigReferences.RigManager.physicsRig.leftHand;
-            syncedRightHand = RigData.RigReferences.RigManager.physicsRig.rightHand;
+            var rm = RigData.RigReferences.RigManager;
+            syncedPelvis = rm.physicsRig.m_pelvis;
+            syncedPlayspace = rm.GetSmoothTurnTransform();
+            syncedLeftHand = rm.physicsRig.leftHand;
+            syncedRightHand = rm.physicsRig.rightHand;
 
-            RigAbstractor.FillTransformArray(ref syncedPoints, RigData.RigReferences.RigManager);
-            RigAbstractor.FillGameworldArray(ref gameworldPoints, RigData.RigReferences.RigManager);
+            RigAbstractor.FillTransformArray(ref syncedPoints, rm);
+            RigAbstractor.FillGameworldArray(ref gameworldPoints, rm);
         }
     }
 }

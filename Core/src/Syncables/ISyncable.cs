@@ -20,6 +20,8 @@ namespace LabFusion.Syncables {
 
         byte? GetOwner();
 
+        void RemoveOwner();
+
         bool IsOwner();
 
         bool IsQueued();

@@ -19,7 +19,7 @@ namespace LabFusion.Data {
         public bool IsSleeping => _isSleeping;
         public bool IsNull => _isNull;
 
-        public void Update(Rigidbody rigidbody) {
+        public void VerifyNull(Rigidbody rigidbody) {
             _isNull = rigidbody == null;
         }
 

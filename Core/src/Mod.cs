@@ -81,6 +81,8 @@ namespace LabFusion
             GamemodeRegistration.LoadGamemodes(FusionAssembly);
             PointItemManager.LoadItems(FusionAssembly);
 
+            SyncManager.OnInitializeMelon();
+
             // Create prefs
             FusionPreferences.OnInitializePreferences();
 
