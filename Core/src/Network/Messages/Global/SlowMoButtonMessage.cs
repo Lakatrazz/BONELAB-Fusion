@@ -64,8 +64,8 @@ namespace LabFusion.Network
                     else {
                         Control_GlobalTimePatches.IgnorePatches = true;
 
-                        var rm = RigData.RigReferences.RigManager;
-                        if (!rm.IsNOC()) {
+                        if (RigData.HasPlayer) {
+                            var rm = RigData.RigReferences.RigManager;
                             var controlTime = rm.openControllerRig.globalTimeControl;
 
                             if (controlTime != null) {

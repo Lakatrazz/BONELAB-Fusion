@@ -228,8 +228,9 @@
     <Compile Include="Core\src\Data\Containers\Levels\MineDiveData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\SprintBridgeData.cs" />
     <Compile Include="Core\src\Data\Containers\PDController.cs" />
-    <Compile Include="Core\src\Data\Containers\RigData.cs" />
+    <Compile Include="Core\src\Data\Containers\Player\RigData.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedGrab.cs" />
+    <Compile Include="Core\src\Data\Containers\Player\RigLifeCycleEvents.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedAvatarStats.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedSoftEllipse.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedTriggerRefReference.cs" />

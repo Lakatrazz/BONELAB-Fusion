@@ -28,6 +28,7 @@ using SLZ.Marrow.Data;
 using SLZ.Marrow.Warehouse;
 using SLZ.AI;
 using SLZ.UI;
+using LabFusion.Debugging;
 
 namespace LabFusion.Data
 {
@@ -35,9 +36,10 @@ namespace LabFusion.Data
     /// A collection of basic rig information for use across PlayerReps and the Main RigManager.
     /// </summary>
     public class RigReferenceCollection {
-        public bool IsValid => !RigManager.IsNOC();
+        public bool IsValid { get; private set; } = false;
 
         public RigManager RigManager { get; private set; }
+        public OpenControllerRig ControllerRig { get; private set; }
 
         public Grip[] RigGrips { get; private set; }
         public Rigidbody[] RigRigidbodies { get; private set; }
@@ -47,10 +49,17 @@ namespace LabFusion.Data
         public Hand LeftHand { get; private set; }
         public Hand RightHand { get; private set; }
 
+        public UIControllerInput LeftUIInput { get; private set; }
+        public UIControllerInput RightUIInput { get; private set; }
+
         public TriggerRefProxy Proxy { get; private set; }
 
         public BaseController LeftController { get; private set; }
         public BaseController RightController { get; private set; }
+
+        public void OnDestroy() {
+            IsValid = false;
+        }
 
         public byte? GetIndex(Grip grip, bool isAvatarGrip = false) {
             var gripArray = RigGrips;
@@ -87,7 +96,7 @@ namespace LabFusion.Data
         // Rigidbody order likes to randomly change on players
         // So we have to disgustingly update it every index call
         internal void GetRigidbodies() {
-            if (RigManager.IsNOC())
+            if (!IsValid)
                 return;
 
             RigRigidbodies = RigManager.physicsRig.GetComponentsInChildren<Rigidbody>(true);
@@ -151,16 +160,41 @@ namespace LabFusion.Data
             }
         }
 
+        public UIControllerInput GetUIInput(Handedness handedness)
+        {
+            switch (handedness)
+            {
+                default:
+                    return null;
+                case Handedness.LEFT:
+                    return LeftUIInput;
+                case Handedness.RIGHT:
+                    return RightUIInput;
+            }
+        }
+
         public RigReferenceCollection() { }
 
         public RigReferenceCollection(RigManager rigManager) {
+            // Get the rig manager and hook when its destroyed
             RigManager = rigManager;
+            IsValid = true;
+
+            var lifeCycle = rigManager.gameObject.AddComponent<RigLifeCycleEvents>();
+            lifeCycle.Collection = this;
+
+            // Assign values
+            ControllerRig = rigManager.openControllerRig;
+
             RigGrips = rigManager.physicsRig.GetComponentsInChildren<Grip>(true);
 
             RigSlots = rigManager.GetComponentsInChildren<InventorySlotReceiver>(true);
 
             LeftHand = rigManager.physicsRig.m_handLf.GetComponent<Hand>();
             RightHand = rigManager.physicsRig.m_handRt.GetComponent<Hand>();
+
+            LeftUIInput = LeftHand.Controller.GetComponent<UIControllerInput>();
+            RightUIInput = LeftHand.Controller.GetComponent<UIControllerInput>();
 
             Proxy = rigManager.GetComponentInChildren<TriggerRefProxy>(true);
 
@@ -172,6 +206,7 @@ namespace LabFusion.Data
     public static class RigData
     {
         public static RigReferenceCollection RigReferences { get; private set; } = new RigReferenceCollection();
+        public static bool HasPlayer => RigReferences.IsValid;
 
         public static string RigAvatarId { get; private set; } = AvatarWarehouseUtilities.INVALID_AVATAR_BARCODE;
         public static SerializedAvatarStats RigAvatarStats { get; private set; } = null;
@@ -223,10 +258,10 @@ namespace LabFusion.Data
         }
 
         public static void OnRigUpdate() {
-            var rm = RigReferences.RigManager;
-
-            if (!rm.IsNOC()) {
+            if (HasPlayer) {
+                var rm = RigReferences.RigManager;
                 var barcode = rm.AvatarCrate.Barcode;
+
                 if (barcode != RigAvatarId) {
                     // Save the stats
                     RigAvatarStats = new SerializedAvatarStats(rm.avatar);
@@ -250,11 +285,11 @@ namespace LabFusion.Data
                 }
 
                 // Pause check incase the rigs decide to behave strangely
-                if (!rm.openControllerRig.IsPaused && _wasPaused) {
+                if (!RigReferences.ControllerRig.IsPaused && _wasPaused) {
                     rm.bodyVitals.CalibratePlayerBodyScale();
                 }
 
-                _wasPaused = rm.openControllerRig.IsPaused;
+                _wasPaused = RigReferences.ControllerRig.IsPaused;
 
                 // Update hands
                 OnHandUpdate(RigReferences.LeftHand);
@@ -265,15 +300,13 @@ namespace LabFusion.Data
         public static void OnHandUpdate(Hand hand) {
             // Try fixing UI every 30 frames
             if (NetworkInfo.HasServer && Time.frameCount % 30 == 0) {
-                var uiInput = UIControllerInput.Cache.Get(hand.Controller.gameObject);
+                var uiInput = RigReferences.GetUIInput(hand.handedness);
 
-                // If the cursor target is disabled or doesn't exist then clear the list
-                if (uiInput != null) {
-                    var target = uiInput.CursorTarget;
+                // If the cursor target is disabled clear the list
+                var target = uiInput.CursorTarget;
 
-                    if (target == null || !target.gameObject.activeInHierarchy)
-                        uiInput._cursorTargetOverrides.Clear();
-                }
+                if (!target.gameObject.activeInHierarchy)
+                    uiInput._cursorTargetOverrides.Clear();
             }
         }
 

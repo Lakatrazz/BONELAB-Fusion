@@ -92,7 +92,7 @@ namespace LabFusion.Network
                                 if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, FusionPreferences.ActiveServerSettings.Teleportation.GetValue())) {
                                     PlayerRepUtilities.TryGetReferences(otherPlayer, out var references);
 
-                                    if (references != null && !references.RigManager.IsNOC())
+                                    if (references != null && references.IsValid)
                                         PlayerSender.SendPlayerTeleport(playerId, references.RigManager.physicsRig.feet.transform.position);
                                 }
                                 break;
@@ -100,7 +100,7 @@ namespace LabFusion.Network
                                 if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, FusionPreferences.ActiveServerSettings.Teleportation.GetValue())) {
                                     PlayerRepUtilities.TryGetReferences(playerId, out var references);
 
-                                    if (references != null && !references.RigManager.IsNOC())
+                                    if (references != null && references.IsValid)
                                         PlayerSender.SendPlayerTeleport(otherPlayer, references.RigManager.physicsRig.feet.transform.position);
                                 }
                                 break;

@@ -63,6 +63,11 @@ namespace LabFusion.SDK.Points {
         // Can the item be equipped?
         public virtual bool CanEquip => true;
 
+        // Hook implementations
+        public virtual bool ImplementUpdate => false;
+        public virtual bool ImplementFixedUpdate => false;
+        public virtual bool ImplementLateUpdate => false;
+
         public bool IsUnlocked => PointSaveManager.IsUnlocked(Barcode);
 
         public bool IsEquipped => PointSaveManager.IsEquipped(Barcode);
@@ -73,9 +78,14 @@ namespace LabFusion.SDK.Points {
         public IReadOnlyList<ulong> ShownPlayers => _shownPlayers;
 
         internal void Register() {
-            MultiplayerHooking.OnFixedUpdate += OnFixedUpdate;
-            MultiplayerHooking.OnUpdate += OnUpdate;
-            MultiplayerHooking.OnLateUpdate += OnLateUpdate;
+            if (ImplementFixedUpdate)
+                MultiplayerHooking.OnFixedUpdate += OnFixedUpdate;
+
+            if (ImplementUpdate)
+                MultiplayerHooking.OnUpdate += OnUpdate;
+
+            if (ImplementLateUpdate)
+                MultiplayerHooking.OnLateUpdate += OnLateUpdate;
 
             OnRegistered();
         }
@@ -83,9 +93,14 @@ namespace LabFusion.SDK.Points {
         public virtual void OnRegistered() { }
 
         internal void Unregister() {
-            MultiplayerHooking.OnFixedUpdate -= OnFixedUpdate;
-            MultiplayerHooking.OnUpdate -= OnUpdate;
-            MultiplayerHooking.OnLateUpdate -= OnLateUpdate;
+            if (ImplementFixedUpdate)
+                MultiplayerHooking.OnFixedUpdate -= OnFixedUpdate;
+
+            if (ImplementUpdate)
+                MultiplayerHooking.OnUpdate -= OnUpdate;
+
+            if (ImplementLateUpdate)
+                MultiplayerHooking.OnLateUpdate -= OnLateUpdate;
 
             OnUnregistered();
         }

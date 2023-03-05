@@ -181,7 +181,7 @@ namespace LabFusion
 
         public static void OnMainSceneInitializeDelayed() {
             // Make sure the rig exists
-            if (RigData.RigReferences.RigManager.IsNOC())
+            if (!RigData.HasPlayer)
                 return;
 
             // Force enable radial menu
@@ -223,7 +223,6 @@ namespace LabFusion
             if (Time.frameCount % 40 == 0) {
                 PhysicsUtilities.OnSendPhysicsInformation();
             }
-
             // Update timescale
             if (NetworkInfo.HasServer) {
                 var mode = FusionPreferences.TimeScaleMode;
@@ -235,8 +234,7 @@ namespace LabFusion
                     case TimeScaleMode.LOW_GRAVITY:
                         Time.timeScale = 1f;
 
-                        var rm = RigData.RigReferences.RigManager;
-                        if (!rm.IsNOC()) {
+                        if (RigData.HasPlayer) {
                             var controlTime = RigData.RigReferences.RigManager.openControllerRig.globalTimeControl;
                             float mult = 1f - (1f / controlTime.cur_intensity);
                             if (float.IsNaN(mult) || mult == 0f || float.IsPositiveInfinity(mult) || float.IsNegativeInfinity(mult))

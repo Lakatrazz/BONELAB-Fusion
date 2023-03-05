@@ -68,12 +68,12 @@ namespace LabFusion.Network
                         }
                     }
                     else if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep)) {
-                        var rm = rep.RigReferences.RigManager;
-
                         PlayerId otherPlayer = data.otherPlayer.HasValue ? PlayerIdManager.GetPlayerId(data.otherPlayer.Value) : null;
 
                         // Make sure the rig exists
-                        if (!rm.IsNOC()) {
+                        if (rep.IsCreated) {
+                            var rm = rep.RigReferences.RigManager;
+
                             switch (data.type) {
                                 default:
                                 case PlayerActionType.UNKNOWN:

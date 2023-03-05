@@ -20,9 +20,8 @@ namespace LabFusion.Extensions {
         /// </summary>
         /// <param name="transform"></param>
         public static void LookAtPlayer(this Transform transform) {
-            var rm = RigData.RigReferences.RigManager;
-
-            if (!rm.IsNOC()) {
+            if (RigData.HasPlayer) {
+                var rm = RigData.RigReferences.RigManager;
                 var head = rm.physicsRig.m_head;
                 transform.rotation = Quaternion.LookRotation(Vector3.Normalize(transform.position - head.position), head.up);
             }

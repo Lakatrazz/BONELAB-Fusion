@@ -37,7 +37,7 @@ namespace LabFusion.Representation
         /// <summary>
         /// Returns true if the transforms of the rep have been created yet.
         /// </summary>
-        public bool IsCreated => !RigReferences.RigManager.IsNOC();
+        public bool IsCreated => RigReferences.IsValid;
 
         public static Transform[] syncedPoints = new Transform[RigAbstractor.TransformSyncCount];
         public static Transform[] gameworldPoints = new Transform[RigAbstractor.GameworldRigTransformCount];
@@ -170,7 +170,7 @@ namespace LabFusion.Representation
 
             // Modify the source settings
             var rm = RigReferences.RigManager;
-            if (!rm.IsNOC() && rm._avatar) {
+            if (IsCreated && rm._avatar) {
                 float heightMult = rm._avatar.height / 1.76f;
 
                 _voiceSource.spatialBlend = 1f;
@@ -291,7 +291,7 @@ namespace LabFusion.Representation
         }
 
         public void PlayPullCordEffects() {
-            if (pullCord.IsNOC())
+            if (!IsCreated)
                 return;
 
             pullCord.PlayAvatarParticleEffects();
@@ -299,7 +299,7 @@ namespace LabFusion.Representation
         }
 
         public void SetBallEnabled(bool isEnabled) {
-            if (pullCord.IsNOC())
+            if (!IsCreated)
                 return;
 
             // If the ball should be enabled, make the distance required infinity so it always shows
@@ -347,7 +347,7 @@ namespace LabFusion.Representation
             float offset = NametagHeight;
 
             var rm = RigReferences.RigManager;
-            if (!rm.IsNOC() && rm._avatar)
+            if (IsCreated && rm._avatar)
                 offset *= rm._avatar.height;
 
             return offset;
@@ -355,7 +355,7 @@ namespace LabFusion.Representation
 
         private void UpdateNametagSettings() {
             var rm = RigReferences.RigManager;
-            if (!rm.IsNOC() && rm.avatar) {
+            if (IsCreated && rm.avatar) {
                 float height = rm.avatar.height / 1.76f;
                 repCanvasTransform.localScale = Vector3.one / NameTagDivider * height;
 
@@ -461,17 +461,11 @@ namespace LabFusion.Representation
 
         public void OnHeptaBody2Update() {
             try {
-                if (gameworldRigTransforms == null)
-                    return;
-
-                if (serializedGameworldLocalTransforms == null)
+                if (!IsCreated)
                     return;
 
                 for (var i = 0; i < RigAbstractor.GameworldRigTransformCount; i++)
                 {
-                    if (gameworldRigTransforms[i].IsNOC())
-                        break;
-
                     if (serializedGameworldLocalTransforms[i] == null)
                         break;
 
@@ -491,7 +485,7 @@ namespace LabFusion.Representation
             // Update nametag
             var rm = RigReferences.RigManager;
 
-            if (!repCanvasTransform.IsNOC()) {
+            if (IsCreated) {
                 var physHead = rm.physicsRig.m_head;
                 repCanvasTransform.position = physHead.position + Vector3.up * GetNametagOffset();
                 repCanvasTransform.LookAtPlayer();
@@ -501,7 +495,7 @@ namespace LabFusion.Representation
         public void OnControllerRigUpdate() {
             try
             {
-                if (repTransforms == null)
+                if (!IsCreated)
                     return;
 
                 if (serializedLocalTransforms == null)
@@ -509,9 +503,6 @@ namespace LabFusion.Representation
 
                 for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
                 {
-                    if (repTransforms[i].IsNOC())
-                        break;
-
                     repTransforms[i].localPosition = serializedLocalTransforms[i].position;
                     repTransforms[i].localRotation = serializedLocalTransforms[i].rotation.Expand();
                 }
@@ -538,7 +529,7 @@ namespace LabFusion.Representation
         public void OnPelvisPin() {
             try {
                 // Stop pelvis
-                if (repPelvis.IsNOC() || serializedPelvis == null)
+                if (!IsCreated || serializedPelvis == null)
                     return;
 
                 // Check for seating
@@ -819,7 +810,7 @@ namespace LabFusion.Representation
         }
 
         public static void OnCachePlayerTransforms() {
-            if (RigData.RigReferences.RigManager.IsNOC())
+            if (!RigData.HasPlayer)
                 return;
 
             syncedPelvis = RigData.RigReferences.RigManager.physicsRig.m_pelvis;

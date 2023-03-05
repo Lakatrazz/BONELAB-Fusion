@@ -146,6 +146,9 @@ namespace LabFusion.SDK.Points
         // Is the accessory hidden from the local view?
         public virtual bool IsHiddenInView => false;
 
+        // We use LateUpdate to update object positions, so it should be hooked
+        public override bool ImplementLateUpdate => true;
+
         protected Dictionary<RigManager, AccessoryInstance> _accessoryInstances = new Dictionary<RigManager, AccessoryInstance>(new UnityComparer());
 
         public override void OnUpdateObjects(PointItemPayload payload, bool isVisible) {

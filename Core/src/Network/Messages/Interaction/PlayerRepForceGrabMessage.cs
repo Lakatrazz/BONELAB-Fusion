@@ -62,7 +62,7 @@ namespace LabFusion.Network
                 {
                     data.propGrab.GetGrip(out var syncable);
 
-                    if (syncable != null && !syncable.GameObject.IsNOC()) {
+                    if (syncable != null) {
                         syncable.SetOwner(data.smallId);
                     }
 
