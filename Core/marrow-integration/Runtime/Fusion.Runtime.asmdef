@@ -2,7 +2,8 @@
     "name": "FusionRuntime",
     "rootNamespace": "",
     "references": [
-        "GUID:57a6d82589ae03c4cabdc058f719f231"
+        "GUID:57a6d82589ae03c4cabdc058f719f231",
+        "GUID:0f1592fa51dcfa2409e363a478116206"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -11,6 +12,12 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.stresslevelzero.marrow.sdk",
+            "expression": "0",
+            "define": "MARROW"
+        }
+    ],
     "noEngineReferences": false
 }

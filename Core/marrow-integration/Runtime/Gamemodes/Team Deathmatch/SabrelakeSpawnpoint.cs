@@ -8,6 +8,15 @@ using MelonLoader;
 using LabFusion.Utilities;
 #endif
 
+#if MARROW
+using SLZ.Marrow.Utilities;
+using SLZ.Marrow;
+#endif
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace LabFusion.MarrowIntegration {
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
@@ -31,6 +40,27 @@ namespace LabFusion.MarrowIntegration {
 #else
         public override string Comment => "Creates a spawn point for players on the Sabrelake team during Team Deathmatch.\n" +
             "You can have as many of these in your scene as you want, and it will become a random spawn.";
+#endif
+
+#if MARROW && UNITY_EDITOR                       
+        [DrawGizmo(GizmoType.Active | GizmoType.Selected | GizmoType.NonSelected)]
+        private static void DrawPreviewGizmo(SabrelakeSpawnpoint spawnpoint, GizmoType gizmoType)
+        {
+            if (!Application.isPlaying && spawnpoint.gameObject.scene != default)
+            {
+                EditorMeshGizmo.Draw("Sabrelake Spawnpoint Preview", spawnpoint.gameObject, MarrowSDK.GenericHumanMesh, MarrowSDK.VoidMaterial, MarrowSDK.GenericHumanMesh.bounds);
+            }
+        }
+
+        [MenuItem("GameObject/BONELAB Fusion/Gamemodes/Sabrelake Spawnpoint", priority = 1)]
+        private static void MenuCreatePlacer(MenuCommand menuCommand)
+        {
+            GameObject go = new GameObject("Sabrelake Spawnpoint", typeof(SabrelakeSpawnpoint));
+            go.transform.localScale = Vector3.one;
+
+            GameObjectUtility.SetParentAndAlign(go, menuCommand.context as GameObject);
+            Selection.activeObject = go;
+        }
 #endif
     }
 }
