@@ -24,6 +24,7 @@ namespace LabFusion.Syncables {
             Cache.Add(mag, syncable);
             Despawner = mag.gameObject.AddComponent<TimedDespawner>();
             Despawner.syncable = syncable;
+            Despawner.totalTime = 20f;
         }
 
         protected override void RemoveFromCache(Magazine mag) {
@@ -40,7 +41,7 @@ namespace LabFusion.Syncables {
 
         public override void OnUpdate()
         {
-            if (PropSyncable.IsMissingRigidbodies())
+            if (PropSyncable.IsMissingRigidbodies() || Component.magazinePlug._isLocked)
                 Despawner.Refresh();
         }
     }

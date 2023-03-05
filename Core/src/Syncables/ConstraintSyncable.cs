@@ -23,10 +23,14 @@ namespace LabFusion.Syncables
 
         private bool _hasRegistered = false;
 
+        private bool _wasDisposed = false;
+
         public ConstraintSyncable(ConstraintTracker tracker) {
             Tracker = tracker;
             Cache.Add(tracker, this);
         }
+
+        public bool IsDestroyed() => _wasDisposed;
 
         // Catchup not implemented yet
         public void InsertCatchupDelegate(Action<ulong> catchup) { }
@@ -36,6 +40,8 @@ namespace LabFusion.Syncables
         public void Cleanup() {
             if (!Tracker.IsNOC())
                 Cache.Remove(Tracker);
+
+            _wasDisposed = true;
         }
 
         Grip ISyncable.GetGrip(ushort index) => throw new NotImplementedException();

@@ -1,9 +1,18 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace LabFusion.Utilities
 {
     internal static class FusionLogger
     {
+        internal static void LogLine([CallerLineNumber] int lineNumber = default) {
+#if DEBUG
+            Log($"DEBUG: Line {lineNumber}", ConsoleColor.Cyan);
+#else
+            Log($"FusionLogger.LogLine is only for debugging! Please remove from line {lineNumber}", ConsoleColor.Red);
+#endif
+        }
+
         internal static void Log(string txt, ConsoleColor txt_color = ConsoleColor.White)
         {
             FusionMod.Instance.LoggerInstance.Msg(txt_color, txt);

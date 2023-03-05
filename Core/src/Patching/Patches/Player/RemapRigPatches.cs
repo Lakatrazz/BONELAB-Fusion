@@ -8,8 +8,10 @@ using HarmonyLib;
 
 using LabFusion.Data;
 using LabFusion.Network;
+using LabFusion.Representation;
 using LabFusion.Senders;
 using LabFusion.Utilities;
+
 using SLZ.Rig;
 
 namespace LabFusion.Patching {
@@ -21,7 +23,7 @@ namespace LabFusion.Patching {
         [HarmonyPatch(nameof(RemapRig.JumpCharge))]
         public static void JumpCharge(RemapRig __instance, float deltaTime, bool chargeInput, bool __state)
         {
-            if (NetworkInfo.HasServer && __instance.manager == RigData.RigReferences.RigManager) {
+            if (NetworkInfo.HasServer && __instance.manager.IsLocalPlayer()) {
                 if (_wasChargingInput && !chargeInput) {
                     PlayerSender.SendPlayerAction(PlayerActionType.JUMP);
                 }

@@ -258,6 +258,7 @@
     <Compile Include="Core\src\Data\Interfaces\IFusionSerializable.cs" />
     <Compile Include="Core\src\Debugging\FusionDevMode.cs" />
     <Compile Include="Core\src\Debugging\FusionStopwatch.cs" />
+    <Compile Include="Core\src\Debugging\FusionUnityLogger.cs" />
     <Compile Include="Core\src\Exceptions\ExpectedClientException.cs" />
     <Compile Include="Core\src\Exceptions\ExpectedServerException.cs" />
     <Compile Include="Core\src\Extensions\AlignPlug.cs" />

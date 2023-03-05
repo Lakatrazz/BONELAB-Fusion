@@ -91,6 +91,10 @@ namespace LabFusion
 
             // Finally, initialize the network layer
             OnInitializeNetworking();
+
+#if DEBUG
+            FusionUnityLogger.OnInitializeMelon();
+#endif
         }
 
         public override void OnLateInitializeMelon() {

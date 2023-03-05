@@ -39,5 +39,7 @@ namespace LabFusion.Syncables {
         void OnFixedUpdate();
 
         void OnUpdate();
+
+        bool IsDestroyed();
     }
 }

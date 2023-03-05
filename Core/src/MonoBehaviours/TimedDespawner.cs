@@ -18,12 +18,13 @@ namespace LabFusion.MonoBehaviours
 {
     [RegisterTypeInIl2Cpp]
     public class TimedDespawner : MonoBehaviour {
-        public const float DespawnTime = 60f;
+        public const float DefaultDespawnTime = 60f;
 
         public TimedDespawner(IntPtr intPtr) : base(intPtr) { }
 
         public AssetPoolee poolee;
         public PropSyncable syncable;
+        public float totalTime = DefaultDespawnTime;
 
         private float _timeOfRefresh;
         private bool _hasPoolee;
@@ -41,8 +42,9 @@ namespace LabFusion.MonoBehaviours
 
         public void LateUpdate() {
             // If we had a syncable and it became null, destroy this
-            if (_hasSyncable && syncable == null) {
+            if (_hasSyncable && (syncable == null || syncable.IsDestroyed())) {
                 GameObject.Destroy(this);
+                return;
             }
 
             // Store when we get a syncable
@@ -50,7 +52,7 @@ namespace LabFusion.MonoBehaviours
                 _hasSyncable = syncable != null;
             }
 
-            if (NetworkInfo.IsServer && _hasPoolee && Time.realtimeSinceStartup - _timeOfRefresh >= DespawnTime) {
+            if (NetworkInfo.IsServer && _hasPoolee && Time.realtimeSinceStartup - _timeOfRefresh >= totalTime) {
                 poolee.Despawn();
             }
         }

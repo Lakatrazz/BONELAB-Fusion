@@ -43,8 +43,6 @@ namespace LabFusion.Syncables
         public TransformCache[] TransformCaches;
         public RigidbodyCache[] RigidbodyCaches;
 
-        private bool[] RigidbodyNulls;
-
         public readonly AssetPoolee AssetPoolee;
 
         public readonly GameObject GameObject;
@@ -96,6 +94,8 @@ namespace LabFusion.Syncables
         public bool IsHeld = false;
 
         private Action<ulong> _catchupDelegate;
+
+        private bool _wasDisposed = false;
 
         public PropSyncable(InteractableHost host = null, GameObject root = null) {
             if (root != null)
@@ -185,6 +185,8 @@ namespace LabFusion.Syncables
             _extenders = PropExtenderManager.GetPropExtenders(this);
         }
 
+        public bool IsDestroyed() => _wasDisposed;
+
         public void InsertCatchupDelegate(Action<ulong> catchup) {
             _catchupDelegate += catchup;
         }
@@ -210,7 +212,6 @@ namespace LabFusion.Syncables
         private void AssignInformation(GameObject go) {
             PropGrips = go.GetComponentsInChildren<Grip>(true);
             Rigidbodies = go.GetComponentsInChildren<Rigidbody>(true);
-            RigidbodyNulls = new bool[Rigidbodies.Length];
 
             _grabbedGrips = new GrabbedGripList(this, PropGrips.Length);
         }
@@ -267,6 +268,8 @@ namespace LabFusion.Syncables
                 if (joint != null)
                     GameObject.Destroy(joint);
             }
+
+            _wasDisposed = true;
         }
 
         public Grip GetGrip(ushort index) {
@@ -472,31 +475,31 @@ namespace LabFusion.Syncables
 
         public void OnUpdate()
         {
-            if (!HasValidParameters())
-                return;
+            try {
+                if (!HasValidParameters())
+                    return;
 
-            foreach (var extender in _extenders)
-                extender.OnUpdate();
-
-            // Update grabbing for extenders
-            if (IsHeld) {
                 foreach (var extender in _extenders)
-                    extender.OnHeld();
-            }
+                    extender.OnUpdate();
 
-            VerifyRigidbodies();
-            VerifyLocking();
+                // Update grabbing for extenders
+                if (IsHeld) {
+                    foreach (var extender in _extenders)
+                        extender.OnHeld();
+                }
 
-            if (IsOwner()) {
-                try {
+                VerifyRigidbodies();
+                VerifyLocking();
+
+                if (IsOwner()) {
                     OnOwnedUpdate();
                 }
-                catch (Exception e) {
-                    if (e is NullReferenceException)
-                        OnExceptionThrown();
-                    else {
-                        throw e;
-                    }
+            }
+            catch (Exception e) {
+                if (e is NullReferenceException)
+                    OnExceptionThrown();
+                else {
+                    throw e;
                 }
             }
         }
@@ -515,8 +518,8 @@ namespace LabFusion.Syncables
         }
 
         public bool IsMissingRigidbodies() {
-            foreach (bool value in RigidbodyNulls) {
-                if (value)
+            foreach (var cache in RigidbodyCaches) {
+                if (cache.IsNull)
                     return true;
             }
             

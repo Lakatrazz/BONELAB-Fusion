@@ -345,6 +345,10 @@ namespace LabFusion.Network
         }
 
         private void OnUpdateSteamLobby() {
+            // Make sure the lobby exists
+            if (CurrentLobby == null)
+                return;
+
             // Write active info about the lobby
             LobbyMetadataHelper.WriteInfo(CurrentLobby);
 
@@ -424,6 +428,9 @@ namespace LabFusion.Network
         }
 
         private void OnUpdateCreateServerText() {
+            if (LevelWarehouseUtilities.IsDelayedLoading())
+                return;
+
             if (_isConnectionActive)
                 _createServerElement.SetName("Disconnect from Server");
             else

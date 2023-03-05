@@ -77,7 +77,7 @@ namespace LabFusion.Patching
             try
             {
                 // Check to make sure this isn't the main rig
-                if (__instance.manager != RigData.RigReferences.RigManager)
+                if (!__instance.manager.IsLocalPlayer())
                 {
                     // Update the time controller to prevent errors
                     if (!__instance.globalTimeControl && RigData.RigReferences.RigManager)
