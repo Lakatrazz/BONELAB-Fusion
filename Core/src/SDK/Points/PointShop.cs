@@ -71,6 +71,14 @@ namespace LabFusion.SDK.Points
             // Add the panel view
             Transform panel = transform.Find("PANELVIEW");
             _panelView = panel.gameObject.AddComponent<PointShopPanelView>();
+
+            // Setup audio
+            AudioSource[] sources = gameObject.GetComponentsInChildren<AudioSource>(true);
+
+            foreach (var source in sources) {
+                source.outputAudioMixerGroup = PersistentAssetCreator.SFXMixer;
+                source.volume *= 0.8f;
+            }
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿using LabFusion.Extensions;
+using LabFusion.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace LabFusion.SDK.Gamemodes {
 
         private int _currentClip = -1;
         private bool _playing = false;
+        private bool _wasEnabled = true;
 
         public bool IsPlaying => _playing;
 
@@ -30,6 +32,7 @@ namespace LabFusion.SDK.Gamemodes {
             // Setup audio settings
             source.spatialBlend = 0f;
             source.volume = volume;
+            source.outputAudioMixerGroup = PersistentAssetCreator.MusicMixer;
 
             // Store the clips
             clips.Shuffle();
@@ -64,10 +67,11 @@ namespace LabFusion.SDK.Gamemodes {
         public void Update() {
             if (!source.IsNOC() && _playing) {
                 // Update volume
-                if (gamemode.MusicEnabled)
-                    source.volume = volume;
-                else
-                    source.volume = 0f;
+                if (gamemode.MusicEnabled != _wasEnabled) {
+                    source.volume = gamemode.MusicEnabled ? volume : 0f;
+                }
+
+                _wasEnabled = gamemode.MusicEnabled;
 
                 // Change song?
                 if (!source.isPlaying) {

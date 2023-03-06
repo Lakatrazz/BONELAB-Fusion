@@ -14,6 +14,7 @@ namespace LabFusion.Utilities {
             source.volume = volume;
             source.clip = clip;
             source.spatialBlend = 0f;
+            source.outputAudioMixerGroup = PersistentAssetCreator.SFXMixer;
 
             source.Play();
 
@@ -29,6 +30,7 @@ namespace LabFusion.Utilities {
             source.clip = clip;
             source.spatialBlend = 1f;
             source.loop = loop;
+            source.outputAudioMixerGroup = PersistentAssetCreator.SFXMixer;
 
             source.Play();
 

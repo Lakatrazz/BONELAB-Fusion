@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using TMPro;
 
 using UnityEngine;
+using UnityEngine.Audio;
 
 namespace LabFusion.Utilities {
     internal static class PersistentAssetCreator {
@@ -22,10 +23,26 @@ namespace LabFusion.Utilities {
         internal static SurfaceData BloodSurfaceData { get; private set; }
         internal static TMP_FontAsset Font { get; private set; }
 
-        internal static void OnMelonInitialize() {
+        internal static AudioMixerGroup MusicMixer { get; private set; }
+        internal static AudioMixerGroup SFXMixer { get; private set; }
+
+        internal static void OnLateInitializeMelon() {
             CreateSurfaceData();
             CreateTextFont();
         }
+
+        internal static void OnMainSceneInitialized() {
+            GetAllMixers();
+        }
+
+        // Thanks to https://bonelab.thunderstore.io/package/Maranara/Mixer_Fixer/
+        private static void GetAllMixers() {
+            AudioMixerGroup[] groups = Resources.FindObjectsOfTypeAll<AudioMixerGroup>();
+
+            MusicMixer = groups.Where((AudioMixerGroup x) => x.name == "Music").First();
+            SFXMixer = groups.Where((AudioMixerGroup x) => x.name == "SFX").First();
+        }
+
 
         private static void CreateTextFont() {
             // I don't want to use asset bundles in this mod.

@@ -100,7 +100,7 @@ namespace LabFusion
         public override void OnLateInitializeMelon() {
             PatchingUtilities.PatchAll();
             InternalLayerHelpers.OnLateInitializeLayer();
-            PersistentAssetCreator.OnMelonInitialize();
+            PersistentAssetCreator.OnLateInitializeMelon();
 
             FusionPreferences.OnCreateBoneMenu();
 
@@ -109,6 +109,7 @@ namespace LabFusion
 
         public void OnBonelibLevelLoaded(LevelInfo info) {
             LevelData.OnSceneAwake();
+            PersistentAssetCreator.OnMainSceneInitialized();
         }
 
         protected void OnInitializeNetworking() {
