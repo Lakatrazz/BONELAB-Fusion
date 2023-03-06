@@ -29,6 +29,11 @@ namespace LabFusion.Patching
 {
     [HarmonyPatch(typeof(AssetPoolee), nameof(AssetPoolee.OnSpawn))]
     public class PooleeOnSpawnPatch {
+        private static void CheckRemoveSyncable(AssetPoolee __instance) {
+            if (PropSyncable.Cache.TryGet(__instance.gameObject, out var syncable))
+                SyncManager.RemoveSyncable(syncable);
+        }
+
         public static void Postfix(AssetPoolee __instance, ulong spawnId) {
             if (PooleeUtilities.IsPlayer(__instance))
                 return;
@@ -37,6 +42,7 @@ namespace LabFusion.Patching
                 if (NetworkInfo.HasServer && __instance.spawnableCrate)
                 {
                     var barcode = __instance.spawnableCrate.Barcode;
+
                     if (!NetworkInfo.IsServer)
                     {
                         // Check if we should prevent this object from spawning
@@ -44,6 +50,8 @@ namespace LabFusion.Patching
                             __instance.gameObject.SetActive(false);
                         }
                         else if (!PooleeUtilities.ForceEnabled.Contains(__instance) && PooleeUtilities.CanForceDespawn(__instance)) {
+                            CheckRemoveSyncable(__instance);
+
                             __instance.gameObject.SetActive(false);
                             MelonCoroutines.Start(CoForceDespawnRoutine(__instance));
                         }
@@ -51,6 +59,8 @@ namespace LabFusion.Patching
                     else
                     {
                         if (PooleeUtilities.CanSendSpawn(__instance)) {
+                            CheckRemoveSyncable(__instance);
+
                             PooleeUtilities.CheckingForSpawn.Push(__instance);
                             MelonCoroutines.Start(CoVerifySpawnedRoutine(__instance));
                         }
@@ -144,6 +154,18 @@ namespace LabFusion.Patching
 #if DEBUG
                 FusionLogger.LogException("to execute WaitForVerify", e);
 #endif
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(AssetPoolee), nameof(AssetPoolee.OnDespawn))]
+    public class PooleeOnDespawnPatch {
+        public static void Postfix(AssetPoolee __instance) {
+            if (PooleeUtilities.IsPlayer(__instance) || __instance.IsNOC())
+                return;
+
+            if (NetworkInfo.HasServer && PropSyncable.Cache.TryGet(__instance.gameObject, out var syncable)) {
+                SyncManager.RemoveSyncable(syncable);
             }
         }
     }
