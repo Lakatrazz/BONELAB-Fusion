@@ -30,6 +30,8 @@ using SLZ.AI;
 using SLZ.UI;
 using LabFusion.Debugging;
 
+using Avatar = SLZ.VRMK.Avatar;
+
 namespace LabFusion.Data
 {
     /// <summary>
@@ -208,8 +210,8 @@ namespace LabFusion.Data
         public static RigReferenceCollection RigReferences { get; private set; } = new RigReferenceCollection();
         public static bool HasPlayer => RigReferences.IsValid;
 
-        public static string RigAvatarId { get; private set; } = AvatarWarehouseUtilities.INVALID_AVATAR_BARCODE;
-        public static SerializedAvatarStats RigAvatarStats { get; private set; } = null;
+        public static string RigAvatarId { get; internal set; } = AvatarWarehouseUtilities.INVALID_AVATAR_BARCODE;
+        public static SerializedAvatarStats RigAvatarStats { get; internal set; } = null;
 
         public static Vector3 RigSpawn { get; private set; }
         public static Quaternion RigSpawnRot { get; private set; }
@@ -260,29 +262,6 @@ namespace LabFusion.Data
         public static void OnRigUpdate() {
             if (HasPlayer) {
                 var rm = RigReferences.RigManager;
-                var barcode = rm.AvatarCrate.Barcode;
-
-                if (barcode != RigAvatarId) {
-                    // Save the stats
-                    RigAvatarStats = new SerializedAvatarStats(rm.avatar);
-
-                    // Send switch message to notify the server
-                    if (NetworkInfo.HasServer) {
-                        using (FusionWriter writer = FusionWriter.Create(PlayerRepAvatarData.DefaultSize)) {
-                            using (PlayerRepAvatarData data = PlayerRepAvatarData.Create(PlayerIdManager.LocalSmallId, RigAvatarStats, barcode)) {
-                                writer.Write(data);
-
-                                using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepAvatar, writer)) {
-                                    MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                                }
-                            }
-                        }
-                    }
-
-                    RigAvatarId = barcode;
-
-                    PlayerAdditionsHelper.OnChangeAvatar(rm);
-                }
 
                 // Pause check incase the rigs decide to behave strangely
                 if (!RigReferences.ControllerRig.IsPaused && _wasPaused) {

@@ -77,13 +77,14 @@ namespace LabFusion.SDK.Points
 
             foreach (var source in sources) {
                 source.outputAudioMixerGroup = PersistentAssetCreator.SFXMixer;
-                source.volume *= 0.8f;
             }
         }
     }
 
     [RegisterTypeInIl2Cpp]
     public sealed class PointShopUITrigger : MonoBehaviour {
+        public const float UIClickVolume = 0.4f;
+
         public static PointShopUITrigger Selected { get; private set; }
 
         public PointShopUITrigger(IntPtr intPtr) : base(intPtr) { }
@@ -144,7 +145,7 @@ namespace LabFusion.SDK.Points
         private void Click() {
             button.OnSubmit(null);
 
-            FusionAudio.Play3D(transform.position, FusionContentLoader.UIConfirm, 0.7f);
+            FusionAudio.Play3D(transform.position, FusionContentLoader.UIConfirm, UIClickVolume);
         }
 
         private void Select(Hand hand) {
@@ -154,7 +155,7 @@ namespace LabFusion.SDK.Points
             button.OnSelect(null);
             button.StartColorTween(button.colors.selectedColor, false);
 
-            FusionAudio.Play3D(transform.position, FusionContentLoader.UISelect, 0.7f);
+            FusionAudio.Play3D(transform.position, FusionContentLoader.UISelect, UIClickVolume);
         }
 
         private void Deselect() {

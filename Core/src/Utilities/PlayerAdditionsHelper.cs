@@ -49,7 +49,7 @@ namespace LabFusion.Utilities {
             Physics.IgnoreLayerCollision(_feetLayer, _playerLayer, true);
         }
 
-        public static void OnChangeAvatar(RigManager manager) {
+        public static void OnAvatarChanged(RigManager manager) {
             // Ignore collisions between the player and its locosphere/knee due to our layer changes
             var physRig = manager.physicsRig;
 
@@ -63,7 +63,7 @@ namespace LabFusion.Utilities {
         }
 
         public static void OnCreatedRig(RigManager manager) {
-            OnChangeAvatar(manager);
+            OnAvatarChanged(manager);
         }
 
         private static void Internal_IgnoreCollisions(Collider[] first, Collider[] second) {

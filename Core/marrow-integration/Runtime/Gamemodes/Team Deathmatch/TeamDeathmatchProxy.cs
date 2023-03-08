@@ -73,7 +73,7 @@ namespace LabFusion.MarrowIntegration {
         [HideFromIl2Cpp]
         private void Internal_SetPlaylist(params AudioClip[] clips) {
             if (TeamDeathmatch.Instance != null) {
-                TeamDeathmatch.Instance.SetPlaylist(0.7f, clips);
+                TeamDeathmatch.Instance.SetPlaylist(Gamemode.DefaultMusicVolume, clips);
                 TeamDeathmatch.Instance.SetOverriden();
             }
         }

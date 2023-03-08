@@ -80,6 +80,7 @@ namespace LabFusion.Preferences {
 
             // Gamemode settings
             public static FusionPref<bool> GamemodeMusic { get; internal set; }
+            public static FusionPref<bool> GamemodeLateJoining { get; internal set; }
         }
 
         internal static ServerSettings LocalServerSettings;
@@ -169,6 +170,7 @@ namespace LabFusion.Preferences {
 
             // Gamemodes
             ClientSettings.GamemodeMusic = new FusionPref<bool>(prefCategory, "Gamemode Music", true, PrefUpdateMode.IGNORE);
+            ClientSettings.GamemodeLateJoining = new FusionPref<bool>(prefCategory, "Gamemode Late Joining", false, PrefUpdateMode.IGNORE);
 
             // Save category
             prefCategory.SaveToFile(false);
@@ -183,7 +185,7 @@ namespace LabFusion.Preferences {
             networkLayerManager.CreateFunctionElement("Players need to be on the same layer!", Color.yellow, null);
 
             networkLayerManager.CreateFunctionElement($"Active Layer: {NetworkLayerDeterminer.LoadedType}", Color.white, null);
-            BoneMenuCreator.CreateEnumPermission(networkLayerManager, "Target Layer", ClientSettings.NetworkLayerType);
+            BoneMenuCreator.CreateEnumPreference(networkLayerManager, "Target Layer", ClientSettings.NetworkLayerType);
             networkLayerManager.CreateFunctionElement("Changing this setting requires a game restart!", Color.red, null);
 
             // Setup bonemenu for the network layer

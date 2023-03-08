@@ -178,6 +178,7 @@
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\SteamInterface.cs" />
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utf8String.cs" />
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utility.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\Gamemodes\Entangled\EntangledProxy.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Gamemodes\GamemodeEndEvent.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Gamemodes\GamemodeStartEvent.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Gamemodes\Team Deathmatch\SabrelakeSpawnpoint.cs" />
@@ -268,6 +269,7 @@
     <Compile Include="Core\src\Extensions\Grip.cs" />
     <Compile Include="Core\src\Extensions\Hand.cs" />
     <Compile Include="Core\src\Extensions\IEnumerable.cs" />
+    <Compile Include="Core\src\Extensions\Int32.cs" />
     <Compile Include="Core\src\Extensions\InteractableHost.cs" />
     <Compile Include="Core\src\Extensions\Joint.cs" />
     <Compile Include="Core\src\Extensions\PullCordDevice.cs" />
@@ -359,6 +361,7 @@
     <Compile Include="Core\src\Patching\Patches\Levels\ZoneEncounterPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\ArtRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\JimmyDoorControllerPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Player\RigManagerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\PlayerDamageReceiverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\RemapRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Props\FlyingGunPatches.cs" />

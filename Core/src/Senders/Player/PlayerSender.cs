@@ -1,4 +1,5 @@
-﻿using LabFusion.Exceptions;
+﻿using LabFusion.Data;
+using LabFusion.Exceptions;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Utilities;
@@ -9,6 +10,7 @@ using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using UnityEngine;
 
 namespace LabFusion.Senders {
@@ -28,6 +30,21 @@ namespace LabFusion.Senders {
     }
 
     public static class PlayerSender {
+        public static void SendPlayerAvatar(SerializedAvatarStats stats, string barcode) {
+            if (!NetworkInfo.HasServer)
+                return;
+
+            using (FusionWriter writer = FusionWriter.Create(PlayerRepAvatarData.DefaultSize)) {
+                using (PlayerRepAvatarData data = PlayerRepAvatarData.Create(PlayerIdManager.LocalSmallId, stats, barcode)) {
+                    writer.Write(data);
+
+                    using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepAvatar, writer)) {
+                        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+                    }
+                }
+            }
+        }
+
         public static void SendPlayerVoiceChat(byte[] voiceData) {
             if (!NetworkInfo.HasServer)
                 return;

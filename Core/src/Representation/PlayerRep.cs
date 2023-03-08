@@ -279,7 +279,7 @@ namespace LabFusion.Representation
             var rm = RigReferences.RigManager;
 
             if (!success) {
-                rm.SwapAvatarCrate(PlayerRepUtilities.PolyBlankBarcode, false, (Action<bool>)OnSwapFallback);
+                rm.SwapAvatarCrate(PlayerRepUtilities.PolyBlankBarcode, true, (Action<bool>)OnSwapFallback);
             }
             else {
                 UpdateNametagSettings();
@@ -455,6 +455,10 @@ namespace LabFusion.Representation
 
                 yield return null;
             }
+
+            // Make sure the rep still exists
+            if (PlayerId == null || !PlayerId.IsValid)
+                yield break;
 
             CreateRep();
         }
@@ -722,10 +726,10 @@ namespace LabFusion.Representation
             if (!rm._avatar.IsNOC()) {
                 // Swap the avatar
                 if (_isAvatarDirty) {
-                    rm.SwapAvatarCrate(avatarId, false, (Action<bool>)OnSwapAvatar);
+                    rm.SwapAvatarCrate(avatarId, true, (Action<bool>)OnSwapAvatar);
                     _isAvatarDirty = false;
 
-                    PlayerAdditionsHelper.OnChangeAvatar(rm);
+                    PlayerAdditionsHelper.OnAvatarChanged(rm);
                 }
 
                 // Change body vitals

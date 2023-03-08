@@ -1,6 +1,6 @@
 ﻿using BoneLib;
 using BoneLib.BoneMenu.Elements;
-
+using LabFusion.Extensions;
 using LabFusion.MarrowIntegration;
 using LabFusion.Network;
 using LabFusion.Representation;
@@ -70,7 +70,7 @@ namespace LabFusion.SDK.Gamemodes {
 
         public void SetDefaultValues() {
             _totalMinutes = _defaultMinutes;
-            SetPlaylist(0.7f, FusionContentLoader.CombatPlaylist);
+            SetPlaylist(DefaultMusicVolume, FusionContentLoader.CombatPlaylist);
         }
 
         public void SetOverriden() {
@@ -137,11 +137,21 @@ namespace LabFusion.SDK.Gamemodes {
             int score = GetScore(PlayerIdManager.LocalId);
             int totalScore = GetTotalScore();
 
+            // Prevent divide by 0
+            if (totalScore <= 0)
+                return 0;
+
             float percent = Mathf.Clamp01((float)score / (float)totalScore);
             int reward = Mathf.FloorToInt((float)maxBits * percent);
 
             // Add randomness
             reward += UnityEngine.Random.Range(-maxRand, maxRand);
+
+            // Make sure the reward isn't invalid
+            if (reward.IsNaN()) {
+                FusionLogger.ErrorLine("Prevented attempt to give invalid bit reward. Please notify a Fusion developer and send them your log.");
+                return 0;
+            }
 
             return reward;
         }
@@ -228,10 +238,10 @@ namespace LabFusion.SDK.Gamemodes {
 
         protected void OnVictoryStatus(bool isVictory = false) {
             if (isVictory) {
-                FusionAudio.Play2D(FusionContentLoader.LavaGangVictory, 0.7f);
+                FusionAudio.Play2D(FusionContentLoader.LavaGangVictory, DefaultMusicVolume);
             }
             else {
-                FusionAudio.Play2D(FusionContentLoader.LavaGangFailure, 0.7f);
+                FusionAudio.Play2D(FusionContentLoader.LavaGangFailure, DefaultMusicVolume);
             }
         }
 

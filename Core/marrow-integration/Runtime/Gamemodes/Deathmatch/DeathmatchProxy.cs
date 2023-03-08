@@ -53,7 +53,7 @@ namespace LabFusion.MarrowIntegration {
         [HideFromIl2Cpp]
         private void Internal_SetPlaylist(params AudioClip[] clips) {
             if (Deathmatch.Instance != null) {
-                Deathmatch.Instance.SetPlaylist(0.7f, clips);
+                Deathmatch.Instance.SetPlaylist(Gamemode.DefaultMusicVolume, clips);
                 Deathmatch.Instance.SetOverriden();
             }
         }

@@ -240,7 +240,7 @@ namespace LabFusion.SDK.Gamemodes {
         public void SetDefaultValues()
         {
             _totalMinutes = _defaultMinutes;
-            SetPlaylist(0.7f, FusionContentLoader.CombatPlaylist);
+            SetPlaylist(DefaultMusicVolume, FusionContentLoader.CombatPlaylist);
 
             _lavaGangOverride = null;
             _sabrelakeOverride = null;
@@ -273,11 +273,21 @@ namespace LabFusion.SDK.Gamemodes {
             int score = GetScore(_localTeam);
             int totalScore = GetTotalScore();
 
+            // Prevent divide by 0
+            if (totalScore <= 0)
+                return 0;
+
             float percent = Mathf.Clamp01((float)score / (float)totalScore);
             int reward = Mathf.FloorToInt((float)maxBits * percent);
 
             // Add randomness
             reward += UnityEngine.Random.Range(-maxRand, maxRand);
+
+            // Make sure the reward isn't invalid
+            if (reward.IsNaN()) {
+                FusionLogger.ErrorLine("Prevented attempt to give invalid bit reward. Please notify a Fusion developer and send them your log.");
+                return 0;
+            }
 
             return reward;
         }
@@ -510,10 +520,10 @@ namespace LabFusion.SDK.Gamemodes {
         protected void OnTeamVictory(Team team) {
             switch (team) {
                 case Team.LAVA_GANG:
-                    FusionAudio.Play2D(FusionContentLoader.LavaGangVictory, 0.7f);
+                    FusionAudio.Play2D(FusionContentLoader.LavaGangVictory, DefaultMusicVolume);
                     break;
                 case Team.SABRELAKE:
-                    FusionAudio.Play2D(FusionContentLoader.SabrelakeVictory, 0.7f);
+                    FusionAudio.Play2D(FusionContentLoader.SabrelakeVictory, DefaultMusicVolume);
                     break;
             }
         }
@@ -522,10 +532,10 @@ namespace LabFusion.SDK.Gamemodes {
             switch (team)
             {
                 case Team.LAVA_GANG:
-                    FusionAudio.Play2D(FusionContentLoader.LavaGangFailure, 0.7f);
+                    FusionAudio.Play2D(FusionContentLoader.LavaGangFailure, DefaultMusicVolume);
                     break;
                 case Team.SABRELAKE:
-                    FusionAudio.Play2D(FusionContentLoader.SabrelakeFailure, 0.7f);
+                    FusionAudio.Play2D(FusionContentLoader.SabrelakeFailure, DefaultMusicVolume);
                     break;
             }
         }

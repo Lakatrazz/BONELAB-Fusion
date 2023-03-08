@@ -6,7 +6,9 @@ using LabFusion.Network;
 using LabFusion.Preferences;
 using LabFusion.Representation;
 using LabFusion.SDK.Gamemodes;
+using LabFusion.Senders;
 using SLZ;
+using SLZ.Marrow.Warehouse;
 using SLZ.Rig;
 
 using System;
@@ -17,13 +19,39 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
+using Avatar = SLZ.VRMK.Avatar;
+
 namespace LabFusion.Utilities {
     public static class FusionPlayer {
         public static byte? LastAttacker { get; internal set; }
         public static readonly List<Transform> SpawnPoints = new List<Transform>();
 
+        public static float? VitalityOverride { get; internal set; } = null;
+        public static string AvatarOverride { get; internal set; } = null;
+
         internal static void OnMainSceneInitialized() {
             LastAttacker = null;
+        }
+
+        internal static void Internal_OnAvatarChanged(RigManager rigManager, Avatar avatar, string barcode) {
+            // Save the stats
+            RigData.RigAvatarStats = new SerializedAvatarStats(avatar);
+            RigData.RigAvatarId = barcode;
+
+            // Send avatar change
+            PlayerSender.SendPlayerAvatar(RigData.RigAvatarStats, barcode);
+
+            // Update player values
+            // Check player health
+            if (VitalityOverride.HasValue)
+                Internal_ChangePlayerHealth();
+
+            // Check player avatar
+            if (AvatarOverride != null && barcode != AvatarOverride)
+                Internal_ChangeAvatar();
+
+            // Invoke hooks and other events
+            PlayerAdditionsHelper.OnAvatarChanged(rigManager);
         }
 
         /// <summary>
@@ -140,6 +168,53 @@ namespace LabFusion.Utilities {
         /// </summary>
         public static void ResetSpawnPoints() {
             SpawnPoints.Clear();
+        }
+
+        public static void SetAvatarOverride(string barcode) {
+            AvatarOverride = barcode;
+            Internal_ChangeAvatar();
+        }
+
+        public static void ClearAvatarOverride() {
+            AvatarOverride = null;
+        }
+
+        public static void SetPlayerVitality(float vitality) {
+            VitalityOverride = vitality;
+            Internal_ChangePlayerHealth();
+        }
+
+        public static void ClearPlayerVitality() {
+            VitalityOverride = null;
+            Internal_ChangePlayerHealth();
+        }
+
+        private static void Internal_ChangeAvatar() {
+            // Check avatar override
+            if (RigData.HasPlayer && AssetWarehouse.ready && AvatarOverride != null) {
+                var avatarCrate = AssetWarehouse.Instance.GetCrate<AvatarCrate>(AvatarOverride);
+
+                if (avatarCrate != null) {
+                    var rm = RigData.RigReferences.RigManager;
+                    rm.SwapAvatarCrate(AvatarOverride, true);
+                }
+            }
+        }
+
+        private static void Internal_ChangePlayerHealth() {
+            if (RigData.HasPlayer) {
+                var rm = RigData.RigReferences.RigManager;
+                var avatar = rm._avatar;
+
+                if (VitalityOverride.HasValue) {
+                    avatar._vitality = VitalityOverride.Value;
+                    rm.health.SetAvatar(avatar);
+                }
+                else {
+                    avatar.RefreshBodyMeasurements();
+                    rm.health.SetAvatar(avatar);
+                }
+            }
         }
 
         /// <summary>

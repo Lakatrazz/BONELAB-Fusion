@@ -38,6 +38,11 @@ namespace LabFusion.Utilities
             FusionMod.Instance.LoggerInstance.Error(txt);
         }
 
+        internal static void ErrorLine(string txt, [CallerLineNumber] int lineNumber = default)
+        {
+            FusionMod.Instance.LoggerInstance.Error($"{txt} - Line: {lineNumber}");
+        }
+
         internal static void Error(object obj)
         {
             FusionMod.Instance.LoggerInstance.Error(obj);

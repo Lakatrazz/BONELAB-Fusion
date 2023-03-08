@@ -11,10 +11,13 @@ using UnityEngine;
 
 namespace LabFusion.SDK.Gamemodes {
     public abstract class Gamemode {
+        public const float DefaultMusicVolume = 0.4f;
+
         internal static Gamemode _activeGamemode = null;
         public static Gamemode ActiveGamemode => _activeGamemode;
 
         public static bool MusicToggled { get; internal set; } = true;
+        public static bool LateJoining { get; internal set; } = false;
 
         internal ushort? _tag = null;
         public ushort? Tag => _tag;
@@ -183,7 +186,7 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         private bool Internal_UserJoinCheck(ulong userId, out string reason) {
-            if (ActiveGamemode == this && PreventNewJoins) {
+            if (ActiveGamemode == this && (PreventNewJoins || !LateJoining)) {
                 reason = $"Gamemode {GamemodeName} is currently running!";
                 return false;
             }

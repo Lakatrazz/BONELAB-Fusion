@@ -40,19 +40,19 @@ namespace LabFusion.BoneMenu
         private static void CreateServerSettingsMenu(MenuCategory category)
         {
             // Nametags enabled
-            CreateBoolPermission(category, "Nametags", FusionPreferences.LocalServerSettings.NametagsEnabled);
+            CreateBoolPreference(category, "Nametags", FusionPreferences.LocalServerSettings.NametagsEnabled);
 
             // Voice chat
-            CreateBoolPermission(category, "Voicechat", FusionPreferences.LocalServerSettings.VoicechatEnabled);
+            CreateBoolPreference(category, "Voicechat", FusionPreferences.LocalServerSettings.VoicechatEnabled);
 
             // Server privacy
-            CreateEnumPermission(category, "Server Privacy", FusionPreferences.LocalServerSettings.Privacy);
+            CreateEnumPreference(category, "Server Privacy", FusionPreferences.LocalServerSettings.Privacy);
 
             // Time scale mode
-            CreateEnumPermission(category, "Time Scale Mode", FusionPreferences.LocalServerSettings.TimeScaleMode);
+            CreateEnumPreference(category, "Time Scale Mode", FusionPreferences.LocalServerSettings.TimeScaleMode);
 
             // Server mortality
-            CreateBoolPermission(category, "Server Mortality", FusionPreferences.LocalServerSettings.ServerMortality);
+            CreateBoolPreference(category, "Server Mortality", FusionPreferences.LocalServerSettings.ServerMortality);
             MultiplayerHooking.OnServerSettingsChanged += () => {
                 // Update mortality
                 if (Gamemode.ActiveGamemode == null)
@@ -60,14 +60,14 @@ namespace LabFusion.BoneMenu
             };
 
             // Max players
-            CreateBytePermission(category, "Max Players", 1, 2, 255, FusionPreferences.LocalServerSettings.MaxPlayers);
+            CreateBytePreference(category, "Max Players", 1, 2, 255, FusionPreferences.LocalServerSettings.MaxPlayers);
 
             // Permissions
             var permissionCategory = category.CreateCategory("Permission Settings", Color.white);
-            CreateEnumPermission(permissionCategory, "Dev Tools Allowed", FusionPreferences.LocalServerSettings.DevToolsAllowed);
-            CreateEnumPermission(permissionCategory, "Kicking Allowed", FusionPreferences.LocalServerSettings.KickingAllowed);
-            CreateEnumPermission(permissionCategory, "Banning Allowed", FusionPreferences.LocalServerSettings.BanningAllowed);
-            CreateEnumPermission(permissionCategory, "Teleporation Allowed", FusionPreferences.LocalServerSettings.Teleportation);
+            CreateEnumPreference(permissionCategory, "Dev Tools Allowed", FusionPreferences.LocalServerSettings.DevToolsAllowed);
+            CreateEnumPreference(permissionCategory, "Kicking Allowed", FusionPreferences.LocalServerSettings.KickingAllowed);
+            CreateEnumPreference(permissionCategory, "Banning Allowed", FusionPreferences.LocalServerSettings.BanningAllowed);
+            CreateEnumPreference(permissionCategory, "Teleporation Allowed", FusionPreferences.LocalServerSettings.Teleportation);
         }
 
         private static void CreateClientSettingsMenu(MenuCategory category)
@@ -75,15 +75,15 @@ namespace LabFusion.BoneMenu
             // Nametags enabled
             var nametagCategory = category.CreateCategory("Nametag Settings", Color.white);
 
-            CreateBoolPermission(nametagCategory, "Nametags", FusionPreferences.ClientSettings.NametagsEnabled);
+            CreateBoolPreference(nametagCategory, "Nametags", FusionPreferences.ClientSettings.NametagsEnabled);
 
             // Nametag color
-            CreateColorPermission(nametagCategory, FusionPreferences.ClientSettings.NametagColor);
+            CreateColorPreference(nametagCategory, FusionPreferences.ClientSettings.NametagColor);
 
             // Nickname
             var nicknameCategory = category.CreateCategory("Nickname Settings", Color.white);
 
-            CreateEnumPermission(nicknameCategory, "Nickname Visibility", FusionPreferences.ClientSettings.NicknameVisibility);
+            CreateEnumPreference(nicknameCategory, "Nickname Visibility", FusionPreferences.ClientSettings.NicknameVisibility);
 
             string currentNickname = PlayerIdManager.LocalNickname;
             var nickname = nicknameCategory.CreateFunctionElement(string.IsNullOrWhiteSpace(currentNickname) ? "No Nickname" : $"Nickname: {currentNickname}", Color.white, null);
@@ -105,9 +105,9 @@ namespace LabFusion.BoneMenu
             // Voice chat
             var voiceChatCategory = category.CreateCategory("Voice Chat", Color.white);
 
-            CreateBoolPermission(voiceChatCategory, "Muted", FusionPreferences.ClientSettings.Muted);
-            CreateBoolPermission(voiceChatCategory, "Deafened", FusionPreferences.ClientSettings.Deafened);
-            CreateFloatPermission(voiceChatCategory, "Global Volume", 0.1f, 0f, 10f, FusionPreferences.ClientSettings.GlobalVolume);
+            CreateBoolPreference(voiceChatCategory, "Muted", FusionPreferences.ClientSettings.Muted);
+            CreateBoolPreference(voiceChatCategory, "Deafened", FusionPreferences.ClientSettings.Deafened);
+            CreateFloatPreference(voiceChatCategory, "Global Volume", 0.1f, 0f, 10f, FusionPreferences.ClientSettings.GlobalVolume);
         }
 
     }

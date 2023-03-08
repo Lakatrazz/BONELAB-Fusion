@@ -97,6 +97,8 @@ namespace LabFusion.SDK.Gamemodes {
             }
         }
 
+        public static Entangled Instance { get; private set; }
+
         // Set info for the gamemode
         public override string GamemodeCategory => "Fusion";
         public override string GamemodeName => "Entangled";
@@ -117,7 +119,11 @@ namespace LabFusion.SDK.Gamemodes {
         protected PlayerId _partner = null;
         protected List<EntangledTether> _tethers = new List<EntangledTether>();
 
+        private bool _hasOverridenValues = false;
+
         public override void OnGamemodeRegistered() {
+            Instance = this;
+
             // Add hooks
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
             MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
@@ -126,14 +132,32 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         public override void OnMainSceneInitialized() {
-            SetDefaultValues();
+            if (!_hasOverridenValues) {
+                SetDefaultValues();
+            }
+            else {
+                _hasOverridenValues = false;
+            }
         }
 
         public void SetDefaultValues() {
-            SetPlaylist(0.7f, FusionContentLoader.GeoGrpFellDownTheStairs);
+            SetPlaylist(DefaultMusicVolume, FusionContentLoader.GeoGrpFellDownTheStairs);
+        }
+
+        public void SetOverriden() {
+            if (LevelWarehouseUtilities.IsLoading()) {
+                _hasOverridenValues = true;
+            }
+        }
+
+        public override void OnLoadingBegin() {
+            _hasOverridenValues = false;
         }
 
         public override void OnGamemodeUnregistered() {
+            if (Instance == this)
+                Instance = null;
+
             // Cleanup partner
             _partner = null;
 

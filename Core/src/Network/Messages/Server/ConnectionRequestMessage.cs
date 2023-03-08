@@ -69,7 +69,7 @@ namespace LabFusion.Network
 
                     if (PlayerIdManager.GetPlayerId(data.longId) == null && newSmallId.HasValue) {
                         // Check if theres too many players
-                        if (PlayerIdManager.PlayerCount >= FusionPreferences.LocalServerSettings.MaxPlayers.GetValue()) {
+                        if (PlayerIdManager.PlayerCount >= byte.MaxValue || PlayerIdManager.PlayerCount >= FusionPreferences.LocalServerSettings.MaxPlayers.GetValue()) {
                             ConnectionSender.SendConnectionDeny(data.longId, "Server is full! Wait for someone to leave.");
                             return;
                         }

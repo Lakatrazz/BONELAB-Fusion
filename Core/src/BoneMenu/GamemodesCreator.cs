@@ -22,6 +22,13 @@ namespace LabFusion.BoneMenu
             };
 
             Gamemode.MusicToggled = FusionPreferences.ClientSettings.GamemodeMusic.GetValue();
+
+            // Hook late joining change
+            FusionPreferences.ClientSettings.GamemodeLateJoining.OnValueChanged += (v) => {
+                Gamemode.LateJoining = v;
+            };
+
+            Gamemode.LateJoining = FusionPreferences.ClientSettings.GamemodeLateJoining.GetValue();
         }
 
         public static void SetActiveGamemodeText(string text) {
@@ -40,8 +47,9 @@ namespace LabFusion.BoneMenu
                     Gamemode.ActiveGamemode.StopGamemode();
             });
 
-            // Add music toggle button
-            CreateBoolPermission(_gamemodesCategory, "Music", FusionPreferences.ClientSettings.GamemodeMusic);
+            // Add toggle buttons
+            CreateBoolPreference(_gamemodesCategory, "Music", FusionPreferences.ClientSettings.GamemodeMusic);
+            CreateBoolPreference(_gamemodesCategory, "Late Joining", FusionPreferences.ClientSettings.GamemodeLateJoining);
 
             // Add necessary gamemodes
             foreach (var gamemode in GamemodeManager.Gamemodes) {

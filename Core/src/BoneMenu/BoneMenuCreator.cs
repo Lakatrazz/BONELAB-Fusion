@@ -17,7 +17,7 @@ namespace LabFusion.BoneMenu
 {
     internal static partial class BoneMenuCreator
     {
-        public static void CreateColorPermission(MenuCategory category, IFusionPref<Color> pref)
+        public static void CreateColorPreference(MenuCategory category, IFusionPref<Color> pref)
         {
             var currentColor = pref;
             var colorR = category.CreateFloatElement("Red", Color.red, currentColor.GetValue().r, 0.05f, 0f, 1f, (r) => {
@@ -45,7 +45,7 @@ namespace LabFusion.BoneMenu
             };
         }
 
-        public static void CreateBytePermission(MenuCategory category, string name, byte increment, byte minValue, byte maxValue, IFusionPref<byte> pref)
+        public static void CreateBytePreference(MenuCategory category, string name, byte increment, byte minValue, byte maxValue, IFusionPref<byte> pref)
         {
             var element = category.CreateIntElement(name, Color.white, pref.GetValue(), increment, minValue, maxValue, (v) => {
                 pref.SetValue((byte)v);
@@ -56,7 +56,7 @@ namespace LabFusion.BoneMenu
             };
         }
 
-        public static void CreateFloatPermission(MenuCategory category, string name, float increment, float minValue, float maxValue, IFusionPref<float> pref)
+        public static void CreateFloatPreference(MenuCategory category, string name, float increment, float minValue, float maxValue, IFusionPref<float> pref)
         {
             var element = category.CreateFloatElement(name, Color.white, pref.GetValue(), increment, minValue, maxValue, (v) => {
                 pref.SetValue(v);
@@ -67,7 +67,7 @@ namespace LabFusion.BoneMenu
             };
         }
 
-        public static void CreateBoolPermission(MenuCategory category, string name, IFusionPref<bool> pref)
+        public static void CreateBoolPreference(MenuCategory category, string name, IFusionPref<bool> pref)
         {
             var element = category.CreateBoolElement(name, Color.white, pref.GetValue(), (v) => {
                 pref.SetValue(v);
@@ -78,7 +78,7 @@ namespace LabFusion.BoneMenu
             };
         }
 
-        public static void CreateEnumPermission<TEnum>(MenuCategory category, string name, IFusionPref<TEnum> pref) where TEnum : Enum {
+        public static void CreateEnumPreference<TEnum>(MenuCategory category, string name, IFusionPref<TEnum> pref) where TEnum : Enum {
             var element = category.CreateEnumElement(name, Color.white, pref.GetValue(), (v) => {
                 pref.SetValue(v);
             });
