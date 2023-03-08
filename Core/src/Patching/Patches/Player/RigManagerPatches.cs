@@ -34,9 +34,16 @@ namespace LabFusion.Patching
         }
 
         private static IEnumerator Internal_WaitForBarcode(RigManager __instance, Avatar newAvatar) {
-            yield return null;
+            // Wait a few frames to ensure the barcode reference has updated
+            for (var i = 0; i < 2; i++)
+                yield return null;
 
+            // First make sure our player hasn't been destroyed (ex. loading new scene)
             if (__instance.IsNOC())
+                yield break;
+
+            // Next check the avatar hasn't changed
+            if (__instance._avatar != newAvatar)
                 yield break;
 
             // Is this our local player? If so, sync the avatar change
