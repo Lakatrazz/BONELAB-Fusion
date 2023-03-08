@@ -65,6 +65,24 @@ namespace LabFusion.MarrowIntegration {
             TeamDeathmatch.Instance?.SetOverriden();
         }
 
+        public void SetAvatarOverride(string barcode)
+        {
+            if (TeamDeathmatch.Instance != null)
+            {
+                TeamDeathmatch.Instance.SetAvatarOverride(barcode);
+                TeamDeathmatch.Instance.SetOverriden();
+            }
+        }
+
+        public void SetPlayerVitality(float vitality)
+        {
+            if (TeamDeathmatch.Instance != null)
+            {
+                TeamDeathmatch.Instance.SetPlayerVitality(vitality);
+                TeamDeathmatch.Instance.SetOverriden();
+            }
+        }
+
         public void SetPlaylist(AudioClip clip) => Internal_SetPlaylist(clip);
         public void SetPlaylist(AudioClip clip1, AudioClip clip2) => Internal_SetPlaylist(clip1, clip2);
         public void SetPlaylist(AudioClip clip1, AudioClip clip2, AudioClip clip3) => Internal_SetPlaylist(clip1, clip2, clip3);
@@ -88,6 +106,10 @@ namespace LabFusion.MarrowIntegration {
         public void StopGamemode() { }
 
         public void SetDefaultValues() { }
+
+        public void SetAvatarOverride(string barcode) { }
+
+        public void SetPlayerVitality(float vitality) { }
 
         public void SetRoundLength(int minutes) { }
 

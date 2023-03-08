@@ -159,6 +159,9 @@ namespace LabFusion.SDK.Gamemodes {
 
         private readonly Dictionary<PlayerId, TeamLogoInstance> _logoInstances = new Dictionary<PlayerId, TeamLogoInstance>();
 
+        private string _avatarOverride = null;
+        private float? _vitalityOverride = null;
+
         public override void OnBoneMenuCreated(MenuCategory category) {
             base.OnBoneMenuCreated(category);
 
@@ -170,6 +173,22 @@ namespace LabFusion.SDK.Gamemodes {
 
         public void SetRoundLength(int minutes) {
             _totalMinutes = minutes;
+        }
+
+        public void SetAvatarOverride(string barcode)
+        {
+            _avatarOverride = barcode;
+
+            if (IsActive())
+                FusionPlayer.SetAvatarOverride(barcode);
+        }
+
+        public void SetPlayerVitality(float vitality)
+        {
+            _vitalityOverride = vitality;
+
+            if (IsActive())
+                FusionPlayer.SetPlayerVitality(vitality);
         }
 
         public void SetLavaGangName(string name) {
@@ -247,6 +266,9 @@ namespace LabFusion.SDK.Gamemodes {
 
             _lavaGangLogoOverride = null;
             _sabrelakeLogoOverride = null;
+
+            _avatarOverride = null;
+            _vitalityOverride = null;
         }
 
         public void SetOverriden() {
@@ -344,6 +366,13 @@ namespace LabFusion.SDK.Gamemodes {
 
             // Push nametag updates
             FusionOverrides.ForceUpdateOverrides();
+
+            // Apply vitality and avatar overrides
+            if (_avatarOverride != null)
+                FusionPlayer.SetAvatarOverride(_avatarOverride);
+
+            if (_vitalityOverride.HasValue)
+                FusionPlayer.SetPlayerVitality(_vitalityOverride.Value);
         }
 
         protected override void OnStopGamemode() {
@@ -401,6 +430,10 @@ namespace LabFusion.SDK.Gamemodes {
 
             // Push nametag updates
             FusionOverrides.ForceUpdateOverrides();
+
+            // Reset overrides
+            FusionPlayer.ClearAvatarOverride();
+            FusionPlayer.ClearPlayerVitality();
         }
 
         public float GetTimeElapsed() => Time.realtimeSinceStartup - _timeOfStart;
