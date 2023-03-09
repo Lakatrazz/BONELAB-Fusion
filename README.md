@@ -10,11 +10,11 @@ Fusion also has an SDK for integrating features into Marrow™ SDK items, maps, 
 
 ## Marrow SDK Integration
 You can import the marrow sdk integration through the Unity Package Manager using this link:
-https://gitlab.com/Lakatrazz/bonelab-fusion/-/tree/main/Core/marrow-integration.git
+https://github.com/Lakatrazz/BONELAB-Fusion/tree/main/Core/marrow-integration.git
 
 ## Module Example
 The module example can be found here:
-https://gitlab.com/Lakatrazz/fusion-module-example
+https://github.com/Lakatrazz/Fusion-Module-Example
 
 ## Disclaimer
 
