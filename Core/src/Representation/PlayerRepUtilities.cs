@@ -113,7 +113,7 @@ namespace LabFusion.Representation {
             var rigAsset = asset.GetComponentInChildren<RigManager>().gameObject;
 
             var go = GameObject.Instantiate(rigAsset, tempParent.transform);
-            go.name = ResourcePaths.PlayerRepName;
+            go.name = PlayerRepManager.PlayerRepName;
             go.SetActive(false);
             
             if (RigData.RigReferences.RigManager)
