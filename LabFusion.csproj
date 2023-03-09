@@ -188,6 +188,7 @@
     <Compile Include="Core\marrow-integration\Runtime\Gamemodes\Deathmatch\DeathmatchProxy.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Internal\FusionMarrowBehaviour.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\CrateSpawnerProxy.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\Spawners\InfoBoxPlacer.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Spawners\PointShopPlacer.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\SyncGameObjectEnabled.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\InvokeUltEventIfClient.cs" />
@@ -476,6 +477,8 @@
     <Compile Include="Core\src\Syncables\Prop\PropCollisionSyncerExtender.cs" />
     <Compile Include="Core\src\Syncables\Prop\PropLifeCycleEvents.cs" />
     <Compile Include="Core\src\Syncables\SyncBlacklist.cs" />
+    <Compile Include="Core\src\UI\FusionUITrigger.cs" />
+    <Compile Include="Core\src\UI\InfoBoxPanelView.cs" />
     <Compile Include="Core\src\Utilities\ByteRetriever.cs" />
     <Compile Include="Core\src\Utilities\DllTools.cs" />
     <Compile Include="Core\src\Network\Helpers\Net.cs" />
@@ -595,6 +598,8 @@
     <Compile Include="Core\src\Utilities\Fusion\FusionAudio.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionPlayer.cs" />
     <Compile Include="Core\src\SDK\Points\PointShopHelper.cs" />
+    <Compile Include="Core\src\UI\InfoBox.cs" />
+    <Compile Include="Core\src\UI\InfoBoxHelper.cs" />
     <Compile Include="Core\src\Utilities\GameObjectUtilities.cs" />
     <Compile Include="Core\src\Utilities\ImpactUtilities.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionBundleLoader.cs" />

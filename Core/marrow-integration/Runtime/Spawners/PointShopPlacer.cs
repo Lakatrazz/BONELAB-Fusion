@@ -66,15 +66,6 @@ namespace LabFusion.MarrowIntegration {
             GameObjectUtility.SetParentAndAlign(go, menuCommand.context as GameObject);
             Selection.activeObject = go;
         }
-#elif UNITY_EDITOR
-        private void OnDrawGizmos() {
-            // Draw a bitmart representation
-            Gizmos.color = Color.cyan;
-            Gizmos.matrix = transform.localToWorldMatrix;
-
-            Gizmos.DrawWireCube(new Vector3(0.09725136f, 1.511268f, 0f), new Vector3(1.875499f, 3.000952f, 1f));
-            Gizmos.DrawWireCube(new Vector3(-1.115174f, 0.6044478f, 0.001287244f), new Vector3(0.5468338f, 1.187312f, 0.3292807f));
-        }
 #endif
     }
 }

@@ -15,7 +15,7 @@ using TMPro;
 using UnhollowerBaseLib.Attributes;
 
 using LabFusion.Utilities;
-
+using LabFusion.UI;
 
 namespace LabFusion.SDK.Points
 {
@@ -219,7 +219,7 @@ namespace LabFusion.SDK.Points
                 var collider = button.GetComponentInChildren<Collider>(true);
                 if (collider != null)
                 {
-                    var interactor = collider.gameObject.AddComponent<PointShopUITrigger>();
+                    var interactor = collider.gameObject.AddComponent<FusionUITrigger>();
                     interactor.button = button;
                 }
             }
