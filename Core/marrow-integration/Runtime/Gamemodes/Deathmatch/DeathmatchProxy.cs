@@ -7,6 +7,8 @@ using MelonLoader;
 
 using LabFusion.SDK.Gamemodes;
 using UnhollowerBaseLib.Attributes;
+using LabFusion.Utilities;
+using SLZ.Marrow.Warehouse;
 #endif
 
 namespace LabFusion.MarrowIntegration {
@@ -49,6 +51,10 @@ namespace LabFusion.MarrowIntegration {
             if (Deathmatch.Instance != null) {
                 Deathmatch.Instance.SetAvatarOverride(barcode);
                 Deathmatch.Instance.SetOverriden();
+
+#if DEBUG
+                FusionLogger.Log($"Setting avatar override to {barcode}");
+#endif
             }
         }
 
@@ -58,6 +64,10 @@ namespace LabFusion.MarrowIntegration {
             {
                 Deathmatch.Instance.SetPlayerVitality(vitality);
                 Deathmatch.Instance.SetOverriden();
+
+#if DEBUG
+                FusionLogger.Log($"Setting vitality override to {vitality}");
+#endif
             }
         }
 
