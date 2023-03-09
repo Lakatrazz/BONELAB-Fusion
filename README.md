@@ -9,8 +9,9 @@ Fusion supports a system called "Modules". This allows other code mods to addon 
 Fusion also has an SDK for integrating features into Marrow™ SDK items, maps, and more.
 
 ## Marrow SDK Integration
-You can import the marrow sdk integration through the Unity Package Manager using this link:
-https://github.com/Lakatrazz/BONELAB-Fusion/tree/main/Core/marrow-integration.git
+You can download the integration unity package from the Releases tab of this repository.
+Alternatively, you can download the files raw at this link:
+https://github.com/Lakatrazz/BONELAB-Fusion/tree/main/Core/marrow-integration
 
 ## Module Example
 The module example can be found here:
