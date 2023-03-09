@@ -38,8 +38,13 @@ namespace LabFusion
         public const string Name = "LabFusion";
         public const string Author = "Lakatrazz";
         public static readonly Version Version = new Version(FusionVersion.versionMajor, FusionVersion.versionMinor, FusionVersion.versionPatch);
+
+#if DEBUG
+        public const string Changelog = "- Debug build. Changelog will show in the release build.";
+#else
         public const string Changelog =
             "- Launch build. Enjoy the mod!";
+#endif
 
         /// <summary>
         /// The desired networking layer. Swap this out to change the networking system.
