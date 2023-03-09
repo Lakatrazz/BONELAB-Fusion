@@ -32,10 +32,6 @@ namespace LabFusion.MarrowIntegration {
 
         public void Start()
         {
-#if DEBUG
-            FusionLogger.Log("Placing Bitmart in Custom Map");
-#endif
-
             PointShopHelper.SetupPointShop(transform.position, transform.rotation, transform.lossyScale);
         }
 #else

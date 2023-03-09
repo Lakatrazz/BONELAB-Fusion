@@ -35,8 +35,8 @@ namespace LabFusion.MarrowIntegration {
 
         public void SetRoundLength(int minutes) {
             if (TeamDeathmatch.Instance != null) {
-                TeamDeathmatch.Instance.SetRoundLength(minutes);
                 TeamDeathmatch.Instance.SetOverriden();
+                TeamDeathmatch.Instance.SetRoundLength(minutes);
             }
         }
 
@@ -47,35 +47,31 @@ namespace LabFusion.MarrowIntegration {
         }
 
         public void SetLavaGangName(string name) {
-            TeamDeathmatch.Instance?.SetLavaGangName(name);
             TeamDeathmatch.Instance?.SetOverriden();
+            TeamDeathmatch.Instance?.SetLavaGangName(name);
         }
 
         public void SetSabrelakeName(string name) {
-            TeamDeathmatch.Instance?.SetSabrelakeName(name);
             TeamDeathmatch.Instance?.SetOverriden();
+            TeamDeathmatch.Instance?.SetSabrelakeName(name);
         }
 
         public void SetLavaGangLogo(Texture2D logo) {
-            TeamDeathmatch.Instance?.SetLavaGangLogo(logo);
             TeamDeathmatch.Instance?.SetOverriden();
+            TeamDeathmatch.Instance?.SetLavaGangLogo(logo);
         }
 
         public void SetSabrelakeLogo(Texture2D logo) {
-            TeamDeathmatch.Instance?.SetSabrelakeLogo(logo);
             TeamDeathmatch.Instance?.SetOverriden();
+            TeamDeathmatch.Instance?.SetSabrelakeLogo(logo);
         }
 
         public void SetAvatarOverride(string barcode)
         {
             if (TeamDeathmatch.Instance != null)
             {
+                TeamDeathmatch.Instance?.SetOverriden();
                 TeamDeathmatch.Instance.SetAvatarOverride(barcode);
-                TeamDeathmatch.Instance.SetOverriden();
-
-#if DEBUG
-                FusionLogger.Log($"Setting avatar override to {barcode}");
-#endif
             }
         }
 
@@ -83,12 +79,8 @@ namespace LabFusion.MarrowIntegration {
         {
             if (TeamDeathmatch.Instance != null)
             {
+                TeamDeathmatch.Instance?.SetOverriden();
                 TeamDeathmatch.Instance.SetPlayerVitality(vitality);
-                TeamDeathmatch.Instance.SetOverriden();
-
-#if DEBUG
-                FusionLogger.Log($"Setting vitality override to {vitality}");
-#endif
             }
         }
 
@@ -100,8 +92,8 @@ namespace LabFusion.MarrowIntegration {
         [HideFromIl2Cpp]
         private void Internal_SetPlaylist(params AudioClip[] clips) {
             if (TeamDeathmatch.Instance != null) {
-                TeamDeathmatch.Instance.SetPlaylist(Gamemode.DefaultMusicVolume, clips);
                 TeamDeathmatch.Instance.SetOverriden();
+                TeamDeathmatch.Instance.SetPlaylist(Gamemode.DefaultMusicVolume, clips);
             }
         }
 #else

@@ -273,6 +273,9 @@ namespace LabFusion.SDK.Gamemodes {
 
         public void SetOverriden() {
             if (LevelWarehouseUtilities.IsLoading()) {
+                if (!_hasOverridenValues)
+                    SetDefaultValues();
+
                 _hasOverridenValues = true;
             }
         }

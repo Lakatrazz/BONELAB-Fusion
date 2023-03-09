@@ -36,8 +36,8 @@ namespace LabFusion.MarrowIntegration {
 
         public void SetRoundLength(int minutes) {
             if (Deathmatch.Instance != null) {
-                Deathmatch.Instance.SetRoundLength(minutes);
                 Deathmatch.Instance.SetOverriden();
+                Deathmatch.Instance.SetRoundLength(minutes);
             }
         }
 
@@ -49,12 +49,8 @@ namespace LabFusion.MarrowIntegration {
 
         public void SetAvatarOverride(string barcode) {
             if (Deathmatch.Instance != null) {
-                Deathmatch.Instance.SetAvatarOverride(barcode);
                 Deathmatch.Instance.SetOverriden();
-
-#if DEBUG
-                FusionLogger.Log($"Setting avatar override to {barcode}");
-#endif
+                Deathmatch.Instance.SetAvatarOverride(barcode);
             }
         }
 
@@ -62,12 +58,8 @@ namespace LabFusion.MarrowIntegration {
         {
             if (Deathmatch.Instance != null)
             {
-                Deathmatch.Instance.SetPlayerVitality(vitality);
                 Deathmatch.Instance.SetOverriden();
-
-#if DEBUG
-                FusionLogger.Log($"Setting vitality override to {vitality}");
-#endif
+                Deathmatch.Instance.SetPlayerVitality(vitality);
             }
         }
 
@@ -79,8 +71,8 @@ namespace LabFusion.MarrowIntegration {
         [HideFromIl2Cpp]
         private void Internal_SetPlaylist(params AudioClip[] clips) {
             if (Deathmatch.Instance != null) {
-                Deathmatch.Instance.SetPlaylist(Gamemode.DefaultMusicVolume, clips);
                 Deathmatch.Instance.SetOverriden();
+                Deathmatch.Instance.SetPlaylist(Gamemode.DefaultMusicVolume, clips);
             }
         }
 #else

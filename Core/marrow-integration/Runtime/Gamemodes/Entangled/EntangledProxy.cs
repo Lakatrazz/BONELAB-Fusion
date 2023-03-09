@@ -46,8 +46,8 @@ namespace LabFusion.MarrowIntegration {
         [HideFromIl2Cpp]
         private void Internal_SetPlaylist(params AudioClip[] clips) {
             if (Entangled.Instance != null) {
-                Entangled.Instance.SetPlaylist(Gamemode.DefaultMusicVolume, clips);
                 Entangled.Instance.SetOverriden();
+                Entangled.Instance.SetPlaylist(Gamemode.DefaultMusicVolume, clips);
             }
         }
 #else

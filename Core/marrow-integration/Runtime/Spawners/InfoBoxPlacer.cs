@@ -32,10 +32,6 @@ namespace LabFusion.MarrowIntegration {
 
         public void Start()
         {
-#if DEBUG
-            FusionLogger.Log("Placing Info Box in Custom Map");
-#endif
-
             InfoBoxHelper.SetupInfoBox(transform.position, transform.rotation, transform.lossyScale);
         }
 #else
