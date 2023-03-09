@@ -196,7 +196,12 @@ namespace LabFusion.Utilities {
 
                 if (avatarCrate != null) {
                     var rm = RigData.RigReferences.RigManager;
-                    rm.SwapAvatarCrate(AvatarOverride, true);
+                    rm.SwapAvatarCrate(AvatarOverride, true, (Action<bool>)((success) => {
+                        // If the avatar forcing doesn't work, change into polyblank
+                        if (!success) {
+                            rm.SwapAvatarCrate(PlayerRepUtilities.PolyBlankBarcode, true);
+                        }
+                    }));
                 }
             }
         }

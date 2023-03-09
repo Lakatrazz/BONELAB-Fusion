@@ -187,6 +187,8 @@
     <Compile Include="Core\marrow-integration\Runtime\Gamemodes\Team Deathmatch\TeamDeathmatchProxy.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Gamemodes\Deathmatch\DeathmatchProxy.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Internal\FusionMarrowBehaviour.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\Misc\NotificationProxy.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\Misc\BitRewardProxy.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\CrateSpawnerProxy.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Spawners\InfoBoxPlacer.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Spawners\PointShopPlacer.cs" />
