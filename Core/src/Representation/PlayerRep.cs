@@ -111,6 +111,9 @@ namespace LabFusion.Representation
         private float _voiceLoudness = 0f;
         private float _targetLoudness = 0f;
 
+        private const float _sinAmplitude = 5f;
+        private const float _sinOmega = 10f;
+
         public PlayerRep(PlayerId playerId)
         {
             // Store our ID
@@ -161,12 +164,15 @@ namespace LabFusion.Representation
                 _targetLoudness = gain;
 
                 // Add affectors
-                _targetLoudness *= 30f;
-                _targetLoudness = Mathf.Clamp(_targetLoudness, 0f, 1.5f);
+                _targetLoudness *= 100f;
+                _targetLoudness = Mathf.Clamp(_targetLoudness, 0f, 2f);
             }
 
             // Lerp towards the desired value
-            _voiceLoudness = Mathf.Lerp(_voiceLoudness, _targetLoudness, Time.deltaTime * 6f);
+            float sin = Mathf.Abs(_sinAmplitude * Mathf.Sin(_sinOmega * Time.timeSinceLevelLoad));
+            sin = Mathf.Clamp01(sin);
+
+            _voiceLoudness = Mathf.Lerp(_voiceLoudness * sin, _targetLoudness, Time.deltaTime * 12f);
 
             // Modify the source settings
             var rm = RigReferences.RigManager;

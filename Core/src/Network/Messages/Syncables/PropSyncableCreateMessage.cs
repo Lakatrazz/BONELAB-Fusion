@@ -73,6 +73,11 @@ namespace LabFusion.Network
                     // Send message to other clients if server
                     if (NetworkInfo.IsServer && isServerHandled)
                     {
+                        // If the object is blacklisted, don't bother sending the message to others
+                        if (data.gameObject != null && !data.gameObject.IsSyncWhitelisted()) {
+                            return;
+                        }
+
                         using (var message = FusionMessage.Create(Tag.Value, bytes))
                         {
                             MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);

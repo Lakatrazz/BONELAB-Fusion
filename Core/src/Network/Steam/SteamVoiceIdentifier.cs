@@ -32,6 +32,8 @@ namespace LabFusion.Network {
         private PlayerRep _rep;
         private bool _hasRep;
 
+        private float _lastClearTime;
+
         public SteamVoiceIdentifier(PlayerId id) {
             // Create the audio source and clip
             _source = new GameObject($"{id.SmallId} Voice Source").AddComponent<AudioSource>();
@@ -69,6 +71,28 @@ namespace LabFusion.Network {
 
             // Remove from list
             VoiceIdentifiers.Remove(this);
+        }
+
+        public void Update() {
+            float time = Time.realtimeSinceStartup;
+
+            if (time - _lastClearTime >= 10f) {
+                // Clear audio data
+                var clip = _source.clip;
+                float[] samples = new float[clip.samples * clip.channels];
+                _source.clip.SetData(samples, 0);
+
+                // Clear the queue
+                _streamingReadQueue.Clear();
+
+                // Reset time
+                _lastClearTime = time;
+            }
+        }
+
+        public static void OnUpdate() {
+            foreach (var identifier in VoiceIdentifiers)
+                identifier.Update();
         }
 
         public static void RemoveVoiceIdentifier(PlayerId id) {

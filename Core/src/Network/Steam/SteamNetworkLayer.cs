@@ -152,10 +152,15 @@ namespace LabFusion.Network
 
                 // Read voice data
                 if (voiceEnabled && SteamUser.HasVoiceData) {
+                    // yea yea creates a new array every call.
+                    // if you find this and are bothered to replace it with the mem stream version then go ahead
                     byte[] voiceData = SteamUser.ReadVoiceDataBytes();
 
                     PlayerSender.SendPlayerVoiceChat(voiceData);
                 }
+
+                // Update identifiers
+                SteamVoiceIdentifier.OnUpdate();
             }
             else {
                 // Disable voice recording
