@@ -31,7 +31,7 @@ namespace LabFusion.SDK.Points {
         public override bool IsHiddenInView => true;
 
         public override string[] Tags => new string[3] {
-            "Hat",
+            "Mask",
             "Cosmetic",
             "Builder",
         };
