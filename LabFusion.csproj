@@ -287,6 +287,8 @@
     <Compile Include="Core\src\Grabbables\InteractableHelpers.cs" />
     <Compile Include="Core\src\Grabbables\SerializedGrabHandler.cs" />
     <Compile Include="Core\src\Mod.cs" />
+    <Compile Include="Core\src\MonoBehaviours\DestroyOnDisconnect.cs" />
+    <Compile Include="Core\src\MonoBehaviours\MirrorIdentifier.cs" />
     <Compile Include="Core\src\MonoBehaviours\PropCollisionSyncer.cs" />
     <Compile Include="Core\src\MonoBehaviours\CollisionSyncer.cs" />
     <Compile Include="Core\src\MonoBehaviours\TimedDespawner.cs" />
@@ -379,6 +381,7 @@
     <Compile Include="Core\src\Patching\Patches\SpawnableCratePlacerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Attacks\StabSlashPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Trigger\GenGameControl_TriggerPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Trigger\MirrorPatches.cs" />
     <Compile Include="Core\src\SDK\Points\AccessoryItem.cs" />
     <Compile Include="Core\src\SDK\Points\AccessoryItemHelper.cs" />
     <Compile Include="Core\src\SDK\Points\BitEconomy.cs" />

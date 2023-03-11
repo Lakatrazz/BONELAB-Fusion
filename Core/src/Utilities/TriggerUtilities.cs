@@ -165,15 +165,19 @@ namespace LabFusion.Utilities {
             return false;
         }
 
-        public static bool IsMainRig(Collider other) {
+        public static bool IsMainRig(Collider other) => IsMatchingRig(other, RigData.RigReferences.RigManager);
+
+        public static bool IsMatchingRig(Collider other, RigManager rig)
+        {
             if (!NetworkInfo.HasServer || RigData.RigReferences.RigManager.IsNOC())
                 return true;
 
             var trigger = TriggerRefProxy.Cache.Get(other.gameObject);
-            RigManager rig;
+            RigManager found;
 
-            if (trigger && trigger.root && (rig = RigManager.Cache.Get(trigger.root))) {
-                return rig == RigData.RigReferences.RigManager;
+            if (trigger && trigger.root && (found = RigManager.Cache.Get(trigger.root)))
+            {
+                return found == rig;
             }
 
             return false;

@@ -157,7 +157,11 @@ namespace LabFusion.SDK.Points
                 return;
 
             // Check if this is a mirror payload
-            if (payload.mirror != null && payload.rigManager != null) {
+            if (payload.type == PointItemPayloadType.MIRROR) {
+                // Make sure we have an accessory instance of this
+                if (!_accessoryInstances.ContainsKey(payload.rigManager))
+                    return;
+
                 if (isVisible) {
                     Transform tempParent = new GameObject("Temp Parent").transform;
                     tempParent.gameObject.SetActive(false);
