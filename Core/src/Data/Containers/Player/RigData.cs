@@ -180,6 +180,7 @@ namespace LabFusion.Data
         public RigReferenceCollection(RigManager rigManager) {
             // Get the rig manager and hook when its destroyed
             RigManager = rigManager;
+            RigRigidbodies = null;
             IsValid = true;
 
             var lifeCycle = rigManager.gameObject.AddComponent<RigLifeCycleEvents>();

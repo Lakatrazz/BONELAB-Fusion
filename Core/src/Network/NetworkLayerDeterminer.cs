@@ -1,4 +1,7 @@
-﻿using LabFusion.Data;
+﻿using BoneLib;
+
+using LabFusion.Data;
+using LabFusion.Debugging;
 using LabFusion.Preferences;
 
 using Steamworks;
@@ -14,12 +17,16 @@ namespace LabFusion.Network {
         STEAM = 0,
         STEAM_VR = 1,
         SPACEWAR = 2,
+        EMPTY = 3,
     }
 
     public static class NetworkLayerDeterminer {
         public static NetworkLayerType LoadedType { get; private set; }
 
         public static NetworkLayerType GetDefaultType() {
+            if (HelperMethods.IsAndroid())
+                return NetworkLayerType.EMPTY;
+
             return NetworkLayerType.STEAM;
         }
 
@@ -37,7 +44,12 @@ namespace LabFusion.Network {
                     else
                         return NetworkLayerType.STEAM_VR;
                 case NetworkLayerType.SPACEWAR:
-                    return NetworkLayerType.SPACEWAR;
+                    if (!SpacewarNetworkLayer.VerifyLayer())
+                        return VerifyType(NetworkLayerType.EMPTY);
+                    else
+                        return NetworkLayerType.SPACEWAR;
+                case NetworkLayerType.EMPTY:
+                    return NetworkLayerType.EMPTY;
             }
         }
 
@@ -55,6 +67,8 @@ namespace LabFusion.Network {
                     return typeof(SteamVRNetworkLayer);
                 case NetworkLayerType.SPACEWAR:
                     return typeof(SpacewarNetworkLayer);
+                case NetworkLayerType.EMPTY:
+                    return typeof(EmptyNetworkLayer);
             }
         }
     }

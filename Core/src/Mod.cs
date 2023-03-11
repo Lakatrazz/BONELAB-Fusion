@@ -237,40 +237,6 @@ namespace LabFusion
             if (Time.frameCount % 40 == 0) {
                 PhysicsUtilities.OnSendPhysicsInformation();
             }
-            // Update timescale
-            if (NetworkInfo.HasServer) {
-                var mode = FusionPreferences.TimeScaleMode;
-
-                switch (mode) {
-                    case TimeScaleMode.DISABLED:
-                        Time.timeScale = 1f;
-                        break;
-                    case TimeScaleMode.LOW_GRAVITY:
-                        Time.timeScale = 1f;
-
-                        if (RigData.HasPlayer) {
-                            var controlTime = RigData.RigReferences.RigManager.openControllerRig.globalTimeControl;
-                            float mult = 1f - (1f / controlTime.cur_intensity);
-                            if (float.IsNaN(mult) || mult == 0f || float.IsPositiveInfinity(mult) || float.IsNegativeInfinity(mult))
-                                break;
-
-                            Vector3 force = -Physics.gravity * mult;
-
-                            if (RigData.RigReferences.RigRigidbodies == null)
-                                RigData.RigReferences.GetRigidbodies();
-
-                            var rbs = RigData.RigReferences.RigRigidbodies;
-
-                            foreach (var rb in rbs) {
-                                if (rb.useGravity) {
-                                    rb.AddForce(force, ForceMode.Acceleration);
-                                }
-                            }
-                        }
-
-                        break;
-                }
-            }
 
             // Update reps
             PlayerRep.OnUpdate();
@@ -287,6 +253,8 @@ namespace LabFusion
         }
 
         public override void OnFixedUpdate() {
+            PhysicsUtilities.OnUpdateTimescale();
+
             PDController.OnFixedUpdate();
             PlayerRep.OnFixedUpdate();
             SyncManager.OnFixedUpdate();

@@ -42,12 +42,13 @@ namespace LabFusion.Utilities {
         public static AudioClip EquipItem { get; private set; }
         public static AudioClip UnequipItem { get; private set; }
 
-        private static readonly string[] _combatSongNames = new string[5] {
+        private static readonly string[] _combatSongNames = new string[6] {
             "music_FreqCreepInModulationBuggyPhysics",
             "music_SicklyBugInitiative",
             "music_SyntheticCavernsRemix",
             "music_WWWonderlan",
             "music_SmigglesInDespair",
+            "music_AppenBeyuge",
         };
 
         private static readonly List<AudioClip> _combatPlaylist = new List<AudioClip>();
