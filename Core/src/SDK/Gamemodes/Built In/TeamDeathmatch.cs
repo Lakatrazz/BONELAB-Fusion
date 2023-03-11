@@ -577,7 +577,7 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         protected void OnTeamTied() {
-
+            FusionAudio.Play2D(FusionContentLoader.DMTie, DefaultMusicVolume);
         }
 
         protected void OnTeamReceived(Team team) {

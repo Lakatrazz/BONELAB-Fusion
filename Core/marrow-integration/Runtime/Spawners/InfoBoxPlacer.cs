@@ -9,13 +9,10 @@ using LabFusion.UI;
 using LabFusion.Utilities;
 #endif
 
-#if MARROW
-using SLZ.Marrow.Utilities;
-using SLZ.Marrow;
-#endif
-
 #if UNITY_EDITOR
 using UnityEditor;
+using SLZ.Marrow.Utilities;
+using SLZ.Marrow;
 #endif
 
 namespace LabFusion.MarrowIntegration {
@@ -41,7 +38,7 @@ namespace LabFusion.MarrowIntegration {
             "The Info Box will be created when the scene loads, and you do not have to do anything extra.";
 #endif
 
-#if MARROW && UNITY_EDITOR
+#if UNITY_EDITOR
         [DrawGizmo(GizmoType.Active | GizmoType.Selected | GizmoType.NonSelected)]
         private static void DrawPreviewGizmo(InfoBoxPlacer placer, GizmoType gizmoType)
         {

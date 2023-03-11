@@ -8,13 +8,10 @@ using MelonLoader;
 using LabFusion.Utilities;
 #endif
 
-#if MARROW
-using SLZ.Marrow.Utilities;
-using SLZ.Marrow;
-#endif
-
 #if UNITY_EDITOR
 using UnityEditor;
+using SLZ.Marrow.Utilities;
+using SLZ.Marrow;
 #endif
 
 namespace LabFusion.MarrowIntegration {
@@ -42,7 +39,7 @@ namespace LabFusion.MarrowIntegration {
             "You can have as many of these in your scene as you want, and it will become a random spawn.";
 #endif
 
-#if MARROW && UNITY_EDITOR
+#if UNITY_EDITOR
         [DrawGizmo(GizmoType.Active | GizmoType.Selected | GizmoType.NonSelected)]
         private static void DrawPreviewGizmo(DeathmatchSpawnpoint spawnpoint, GizmoType gizmoType)
         {

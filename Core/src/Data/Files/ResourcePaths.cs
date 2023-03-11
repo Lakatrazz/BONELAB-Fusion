@@ -37,6 +37,8 @@ namespace LabFusion.Data
         public const string LavaGangFailure = "sting_LavaGangFailure";
         public const string SabrelakeFailure = "sting_sabrelakeFailure";
 
+        public const string DMTie = "sting_DMTie";
+
         public const string GeoGrpFellDownTheStairs = "music_GeoGrpFellDownTheStairs";
 
         public const string UISelect = "UI_Beep_Bend_Short_stereo";

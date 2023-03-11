@@ -25,7 +25,7 @@ namespace LabFusion.Network
                     sendType = SendType.Unreliable;
                     break;
                 case NetworkChannel.VoiceChat:
-                    sendType = SendType.Unreliable | SendType.NoDelay | SendType.NoNagle;
+                    sendType = SendType.Unreliable | SendType.NoDelay;
                     break;
                 case NetworkChannel.Reliable:
                     sendType = SendType.Reliable;
