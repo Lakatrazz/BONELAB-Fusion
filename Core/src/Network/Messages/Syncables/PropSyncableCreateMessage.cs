@@ -74,7 +74,9 @@ namespace LabFusion.Network
                     if (NetworkInfo.IsServer && isServerHandled)
                     {
                         // If the object is blacklisted, don't bother sending the message to others
-                        if (data.gameObject != null && !data.gameObject.IsSyncWhitelisted()) {
+                        var go = data.gameObject;
+
+                        if (go != null && (go.IsAlreadySynced() || !go.IsSyncWhitelisted())) {
                             return;
                         }
 

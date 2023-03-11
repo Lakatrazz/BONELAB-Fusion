@@ -32,6 +32,10 @@ namespace LabFusion.Syncables {
             Il2CppType.Of<RigManager>(),
         };
 
+        public static bool IsAlreadySynced(this GameObject go) {
+            return PropSyncable.Cache.ContainsSource(go) || PropSyncable.HostCache.ContainsSource(go);
+        }
+
         public static bool IsSyncWhitelisted(this GameObject go)
         {
             // Check children components
