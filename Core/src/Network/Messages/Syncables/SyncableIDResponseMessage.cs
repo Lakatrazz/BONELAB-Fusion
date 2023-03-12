@@ -50,10 +50,11 @@ namespace LabFusion.Network {
                 {
                     using (var data = reader.ReadFusionSerializable<SyncableIDResponseData>())
                     {
-                        SyncManager.UnqueueSyncable(data.queuedId, data.newId, out var syncable);
+                        var result = SyncManager.UnqueueSyncable(data.queuedId, data.newId, out var syncable);
 
 #if DEBUG
-                        FusionLogger.Log($"Unqueued syncable with new id {syncable.GetId()}");
+                        if (result)
+                            FusionLogger.Log($"Unqueued syncable with new id {syncable.GetId()}");
 #endif
                     }
                 }

@@ -245,6 +245,13 @@ namespace LabFusion.Syncables
         }
 
         public void Cleanup() {
+            if (IsDestroyed()) {
+#if DEBUG
+                FusionLogger.Warn("Tried destroying a PropSyncable, but it was already destroyed!");
+#endif
+                return;
+            }
+
             if (!GameObject.IsNOC()) {
                 Cache.Remove(GameObject);
             }
@@ -290,6 +297,14 @@ namespace LabFusion.Syncables
         public byte? GetOwner() => Owner;
 
         public void SetOwner(byte owner) {
+            // Make sure this isn't destroyed
+            if (IsDestroyed()) {
+#if DEBUG
+                FusionLogger.Warn("Tried setting the owner of a PropSyncable, but it was destroyed!");
+#endif
+                return;
+            }
+
             // Reset position info
             if (Owner == null)
                 FreezeValues();
@@ -431,7 +446,7 @@ namespace LabFusion.Syncables
             return null;
         }
 
-        public bool IsQueued() => !_hasRegistered;
+        public bool IsQueued() => SyncManager.QueuedSyncables.ContainsValue(this) && !IsDestroyed();
         public bool IsRegistered() => _hasRegistered;
 
         private bool HasValidParameters() => !DisableSyncing && _hasRegistered && LevelWarehouseUtilities.IsLoadDone() && IsRootEnabled;

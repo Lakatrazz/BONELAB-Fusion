@@ -165,6 +165,9 @@ namespace LabFusion.Senders
 
                 yield return null;
 
+                if (newSyncable.IsDestroyed())
+                    yield break;
+
                 using (var writer = FusionWriter.Create(PropSyncableCreateData.Size))
                 {
                     using (var data = PropSyncableCreateData.Create(PlayerIdManager.LocalSmallId, newSyncable.GameObject, newSyncable.Id))
@@ -199,6 +202,9 @@ namespace LabFusion.Senders
 
                 yield return null;
             }
+
+            if (newSyncable.IsDestroyed())
+                yield break;
 
             newSyncable.SetOwner(PlayerIdManager.LocalSmallId);
             onFinished?.Invoke(newSyncable);

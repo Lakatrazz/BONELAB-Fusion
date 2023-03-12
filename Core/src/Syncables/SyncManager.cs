@@ -157,6 +157,11 @@ namespace LabFusion.Syncables {
         }
 
         public static void RegisterSyncable(ISyncable syncable, ushort id) {
+            if (syncable.IsDestroyed()) {
+                FusionLogger.Warn("Tried registering a destroyed syncable!");
+                return;
+            }
+
             RemoveSyncable(id);
 
             syncable.OnRegister(id);
@@ -207,6 +212,12 @@ namespace LabFusion.Syncables {
             if (QueuedSyncables.ContainsKey(queuedId)) {
                 syncable = QueuedSyncables[queuedId];
                 QueuedSyncables.Remove(queuedId);
+
+                if (syncable.IsDestroyed()) {
+                    FusionLogger.Warn("Tried unqueuing a destroyed syncable!");
+                    return false;
+                }
+
                 RegisterSyncable(syncable, newId);
 
                 return true;
