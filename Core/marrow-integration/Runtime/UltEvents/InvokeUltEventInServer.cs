@@ -13,7 +13,7 @@ namespace LabFusion.MarrowIntegration {
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
-    [AddComponentMenu("BONELAB Fusion/Misc/Invoke Ult Event In Server")]
+    [AddComponentMenu("BONELAB Fusion/UltEvents/Invoke Ult Event In Server")]
     [DisallowMultipleComponent]
     [RequireComponent(typeof(UltEventHolder))]
 #endif

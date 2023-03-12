@@ -13,22 +13,22 @@ namespace LabFusion.MarrowIntegration {
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
-    [AddComponentMenu("BONELAB Fusion/Misc/Invoke Ult Event If Client")]
+    [AddComponentMenu("BONELAB Fusion/UltEvents/Invoke Ult Event If Host")]
     [DisallowMultipleComponent]
     [RequireComponent(typeof(UltEventHolder))]
 #endif
-    public sealed class InvokeUltEventIfClient : FusionMarrowBehaviour {
+    public sealed class InvokeUltEventIfHost : FusionMarrowBehaviour {
 #if MELONLOADER
-        public InvokeUltEventIfClient(IntPtr intPtr) : base(intPtr) { }
+        public InvokeUltEventIfHost(IntPtr intPtr) : base(intPtr) { }
         
         private void Start() {
             var holder = GetComponent<UltEventHolder>();
 
-            if (NetworkInfo.IsClient && holder != null)
+            if (NetworkInfo.IsServer && holder != null)
                 holder.Invoke();
         }
 #else
-        public override string Comment => "The UltEventHolder attached to this GameObject will be executed on level load if the player is a client and not a server.";
+        public override string Comment => "The UltEventHolder attached to this GameObject will be executed on level load if the player is the host and not a client.";
 #endif
     }
 }
