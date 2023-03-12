@@ -18,19 +18,7 @@ namespace LabFusion.Syncables
 
             FusionLogger.Log($"Populating PropExtender list from {targetAssembly.GetName().Name}!");
 
-            // I am aware LINQ is kinda gross but this is works!
-            targetAssembly.GetTypes()
-                .Where(type => typeof(IPropExtender).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface)
-                .ForEach(type => {
-                    try
-                    {
-                        RegisterExtender(type);
-                    }
-                    catch (Exception e)
-                    {
-                        FusionLogger.Error(e.Message);
-                    }
-                });
+            AssemblyUtilities.LoadAllValid<IPropExtender>(targetAssembly, RegisterExtender);
         }
 
         public static void RegisterExtender<T>() where T : IPropExtender => RegisterExtender(typeof(T));

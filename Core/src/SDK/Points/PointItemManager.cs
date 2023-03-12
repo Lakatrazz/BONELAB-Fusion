@@ -136,18 +136,7 @@ namespace LabFusion.SDK.Points {
             if (assembly == null)
                 throw new NullReferenceException("Tried loading point items from a null assembly!");
 
-            assembly.GetTypes()
-                .Where(type => typeof(PointItem).IsAssignableFrom(type) && !type.IsAbstract)
-                .ForEach(type => {
-                    try
-                    {
-                        RegisterPointItem(type);
-                    }
-                    catch (Exception e)
-                    {
-                        FusionLogger.LogException("loading point items", e);
-                    }
-                });
+            AssemblyUtilities.LoadAllValid<PointItem>(assembly, RegisterPointItem);
         }
 
         public static void RegisterPointItem<T>() where T : PointItem => RegisterPointItem(typeof(T));
