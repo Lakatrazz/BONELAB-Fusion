@@ -18,6 +18,16 @@ using UnityEngine;
 
 namespace LabFusion.Syncables
 {
+    public static class PropSyncableExtensions {
+        public static bool TryGetPropSyncable(this GameObject go, out PropSyncable syncable) {
+            return PropSyncable.HostCache.TryGet(go, out syncable) || PropSyncable.Cache.TryGet(go, out syncable);
+        }
+
+        public static bool HasPropSyncable(this GameObject go) {
+            return PropSyncable.HostCache.ContainsSource(go) || PropSyncable.Cache.ContainsSource(go);
+        }
+    }
+
     public class PropSyncable : ISyncable {
         private enum SendState {
             IDLE = 0,

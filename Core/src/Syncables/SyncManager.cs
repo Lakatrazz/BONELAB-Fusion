@@ -10,12 +10,18 @@ using LabFusion.Network;
 using LabFusion.Extensions;
 using LabFusion.Utilities;
 using LabFusion.Representation;
-using System.IdentityModel.Tokens;
 
 namespace LabFusion.Syncables {
     public static class SyncManager {
+        /// <summary>
+        /// The list of syncables currently active.
+        /// </summary>
         public static readonly Dictionary<ushort, ISyncable> Syncables = new Dictionary<ushort, ISyncable>(new SyncableComparer());
 
+        /// <summary>
+        /// The list of syncables currently queued while waiting for an ID response from the server.
+        /// <para>Make sure when adding or removing syncables from this list you are NOT using Syncable.GetId! That is for the permanent Syncables list!</para>
+        /// </summary>
         public static readonly Dictionary<ushort, ISyncable> QueuedSyncables = new Dictionary<ushort, ISyncable>(new SyncableComparer());
 
         /// <summary>
@@ -159,13 +165,24 @@ namespace LabFusion.Syncables {
         }
 
         public static void RemoveSyncable(ISyncable syncable) {
-            if (Syncables.ContainsValue(syncable))
-                Syncables.Remove(syncable.GetId());
-
-            if (QueuedSyncables.ContainsValue(syncable))
-                QueuedSyncables.Remove(syncable.GetId());
+            Internal_RemoveFromList(syncable);
+            Internal_RemoveFromQueue(syncable);
 
             syncable.Cleanup();
+        }
+
+        private static void Internal_RemoveFromList(ISyncable syncable) {
+            if (Syncables.ContainsValue(syncable)) {
+                var pair = Syncables.First(o => o.Value == syncable);
+                Syncables.Remove(pair.Key);
+            }
+        }
+
+        private static void Internal_RemoveFromQueue(ISyncable syncable) {
+            if (QueuedSyncables.ContainsValue(syncable)) {
+                var pair = QueuedSyncables.First(o => o.Value == syncable);
+                QueuedSyncables.Remove(pair.Key);
+            }
         }
 
         public static void RemoveSyncable(ushort id) {
@@ -177,10 +194,7 @@ namespace LabFusion.Syncables {
         }
 
         public static ushort QueueSyncable(ISyncable syncable) {
-            if (QueuedSyncables.ContainsValue(syncable)) {
-                var pair = QueuedSyncables.First(o => o.Value == syncable);
-                QueuedSyncables.Remove(pair.Key);
-            }
+            Internal_RemoveFromQueue(syncable);
 
             var id = AllocateQueueID();
             QueuedSyncables.Add(id, syncable);

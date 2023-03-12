@@ -76,7 +76,7 @@ namespace LabFusion.Network
                         // If the object is blacklisted, don't bother sending the message to others
                         var go = data.gameObject;
 
-                        if (go != null && (go.IsAlreadySynced() || !go.IsSyncWhitelisted())) {
+                        if (go != null && (go.HasPropSyncable() || !go.IsSyncWhitelisted())) {
                             return;
                         }
 
