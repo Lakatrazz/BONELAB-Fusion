@@ -132,7 +132,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6996262758013860276
 RectTransform:
   m_ObjectHideFlags: 0
@@ -580,27 +580,25 @@ MonoBehaviour:
     - Lakatrazz
 
 
+    CONTRIBUTORS
+
+    - trevtv
+
+
     TESTERS
 
-    - Alfi
+    -
+    Alfi
 
     - Ethi
 
-    -
-    AlexTheBaba
+    - AlexTheBaba
 
     - nptnk
 
     - Mr. Gaming
 
-    - Riggle
-
-    - zz0000
-
-    -
-    Brwok
-
-    - 172/tarf'
+    - Riggle'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9d0dad972feb99f488ec25db7a69e7b1, type: 2}
   m_sharedMaterial: {fileID: 7078131235166814271, guid: 9d0dad972feb99f488ec25db7a69e7b1, type: 2}
@@ -989,9 +987,15 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'YOU
+  m_text: 'THE GAME
 
-    - Thank you for playing my mod!'
+    - SLZ. Thank you!
+
+
+    YOU
+
+    - Thank you for playing
+    my mod!'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9d0dad972feb99f488ec25db7a69e7b1, type: 2}
   m_sharedMaterial: {fileID: 7078131235166814271, guid: 9d0dad972feb99f488ec25db7a69e7b1, type: 2}
@@ -1078,7 +1082,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6138642255008361936
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1339,30 +1343,31 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '- DrewMileham
+  m_text: '- zz0000
+
+    - Brwok
+
+    - 172/tarf
+
+    - DrewMileham
 
     - alecpizz
 
-    - Maranara
+    -
+    Maranara
 
     - TabloidA
 
 
     MODELS
 
-    -
-    AlexTheBaba
+    - AlexTheBaba
 
 
     SOUNDTRACK
 
-    - 172/tarf
-
-
-    THE GAME
-
-    - SLZ. Thank
-    you!'
+    -
+    172/tarf'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9d0dad972feb99f488ec25db7a69e7b1, type: 2}
   m_sharedMaterial: {fileID: 7078131235166814271, guid: 9d0dad972feb99f488ec25db7a69e7b1, type: 2}
