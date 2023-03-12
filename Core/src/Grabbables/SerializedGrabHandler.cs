@@ -38,19 +38,7 @@ namespace LabFusion.Grabbables {
 
             FusionLogger.Log($"Populating GrabHandler list from {targetAssembly.GetName().Name}!");
 
-            // I am aware LINQ is kinda gross but this is works!
-            targetAssembly.GetTypes()
-                .Where(type => typeof(GrabGroupHandler).IsAssignableFrom(type) && !type.IsAbstract)
-                .ForEach(type => {
-                    try
-                    {
-                        RegisterHandler(type);
-                    }
-                    catch (Exception e)
-                    {
-                        FusionLogger.Error(e.Message);
-                    }
-                });
+            AssemblyUtilities.LoadAllValid<GrabGroupHandler>(targetAssembly, RegisterHandler);
         }
 
         public static void RegisterHandler<T>() where T : FusionMessageHandler => RegisterHandler(typeof(T));

@@ -30,18 +30,7 @@ namespace LabFusion.SDK.Gamemodes {
             if (assembly == null)
                 throw new NullReferenceException("Tried loading gamemodes from a null assembly!");
 
-            assembly.GetTypes()
-                .Where(type => typeof(Gamemode).IsAssignableFrom(type) && !type.IsAbstract)
-                .ForEach(type => {
-                    try
-                    {
-                        RegisterGamemode(type);
-                    }
-                    catch (Exception e)
-                    {
-                        FusionLogger.LogException("loading gamemodes", e);
-                    }
-                });
+            AssemblyUtilities.LoadAllValid<Gamemode>(assembly, RegisterGamemode);
         }
 
         public static void RegisterGamemode<T>() where T : Gamemode => RegisterGamemode(typeof(T));

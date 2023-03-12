@@ -484,6 +484,7 @@
     <Compile Include="Core\src\Syncables\SyncBlacklist.cs" />
     <Compile Include="Core\src\UI\FusionUITrigger.cs" />
     <Compile Include="Core\src\UI\InfoBoxPanelView.cs" />
+    <Compile Include="Core\src\Utilities\AssemblyUtilities.cs" />
     <Compile Include="Core\src\Utilities\ByteRetriever.cs" />
     <Compile Include="Core\src\Utilities\DllTools.cs" />
     <Compile Include="Core\src\Network\Helpers\Net.cs" />

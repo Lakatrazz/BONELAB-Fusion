@@ -69,18 +69,7 @@ namespace LabFusion.Network
             if (assembly == null) 
                 throw new NullReferenceException("Tried loading handlers from a null module assembly!");
 
-            assembly.GetTypes()
-                .Where(type => typeof(ModuleMessageHandler).IsAssignableFrom(type) && !type.IsAbstract)
-                .ForEach(type => {
-                    try
-                    {
-                        RegisterHandler(type);
-                    }
-                    catch (Exception e)
-                    {
-                        FusionLogger.Error(e.Message);
-                    }
-                });
+            AssemblyUtilities.LoadAllValid<ModuleMessageHandler>(assembly, RegisterHandler);
         }
 
         public static void RegisterHandler<T>() where T : ModuleMessageHandler => RegisterHandler(typeof(T));
