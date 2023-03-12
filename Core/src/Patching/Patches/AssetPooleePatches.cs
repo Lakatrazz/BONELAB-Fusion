@@ -158,9 +158,28 @@ namespace LabFusion.Patching
         }
     }
 
-    [HarmonyPatch(typeof(AssetPoolee), nameof(AssetPoolee.OnDespawn))]
-    public class PooleeOnDespawnPatch {
-        public static void Postfix(AssetPoolee __instance) {
+    [HarmonyPatch(typeof(AssetPoolee))]
+    public static class AssetPooleePatches {
+        public static bool IgnorePatches = false;
+
+        public static void Patch() {
+            var harmonyInstance = FusionMod.Instance.HarmonyInstance;
+
+            // Get poolee method info
+            var onDespawnMethod = typeof(AssetPoolee).GetMethod(nameof(AssetPoolee.OnDespawn), AccessTools.all);
+            var despawnMethod = typeof(AssetPoolee).GetMethod(nameof(AssetPoolee.Despawn), AccessTools.all);
+
+            // Get patches
+            var onDespawnPostfix = new HarmonyMethod(typeof(AssetPooleePatches).GetMethod(nameof(OnDespawnPostfix), AccessTools.all));
+            var despawnPrefix = new HarmonyMethod(typeof(AssetPooleePatches).GetMethod(nameof(DespawnPrefix), AccessTools.all));
+
+            // Now actually patch the methods
+            harmonyInstance.Patch(onDespawnMethod, null, onDespawnPostfix);
+            harmonyInstance.Patch(despawnMethod, despawnPrefix, null);
+        }
+
+        // OnDespawn patches
+        private static void OnDespawnPostfix(AssetPoolee __instance) {
             if (PooleeUtilities.IsPlayer(__instance) || __instance.IsNOC())
                 return;
 
@@ -168,28 +187,30 @@ namespace LabFusion.Patching
                 SyncManager.RemoveSyncable(syncable);
             }
         }
-    }
 
-    [HarmonyPatch(typeof(AssetPoolee), nameof(AssetPoolee.Despawn))]
-    public class PooleeDespawnPatch {
-        public static bool IgnorePatch = false;
-
-        public static bool Prefix(AssetPoolee __instance) {
-            if (PooleeUtilities.IsPlayer(__instance) || IgnorePatch || __instance.IsNOC())
+        // Despawn patches
+        private static bool DespawnPrefix(AssetPoolee __instance)
+        {
+            if (PooleeUtilities.IsPlayer(__instance) || IgnorePatches || __instance.IsNOC())
                 return true;
 
-            try {
-                if (NetworkInfo.HasServer) {
-                    if (!NetworkInfo.IsServer && !PooleeUtilities.CanDespawn && PropSyncable.Cache.TryGet(__instance.gameObject, out var syncable)) {
+            try
+            {
+                if (NetworkInfo.HasServer)
+                {
+                    if (!NetworkInfo.IsServer && !PooleeUtilities.CanDespawn && PropSyncable.Cache.TryGet(__instance.gameObject, out var syncable))
+                    {
                         return false;
                     }
-                    else if (NetworkInfo.IsServer) {
+                    else if (NetworkInfo.IsServer)
+                    {
                         if (!CheckPropSyncable(__instance) && PooleeUtilities.CheckingForSpawn.Contains(__instance))
                             MelonCoroutines.Start(CoVerifyDespawnCoroutine(__instance));
                     }
                 }
-            } 
-            catch (Exception e) {
+            }
+            catch (Exception e)
+            {
 #if DEBUG
                 FusionLogger.LogException("to execute patch AssetPoolee.Despawn", e);
 #endif
@@ -198,7 +219,8 @@ namespace LabFusion.Patching
             return true;
         }
 
-        private static bool CheckPropSyncable(AssetPoolee __instance) {
+        private static bool CheckPropSyncable(AssetPoolee __instance)
+        {
             if (PropSyncable.Cache.TryGet(__instance.gameObject, out var syncable))
             {
                 PooleeUtilities.SendDespawn(syncable.Id);
@@ -208,8 +230,10 @@ namespace LabFusion.Patching
             return false;
         }
 
-        private static IEnumerator CoVerifyDespawnCoroutine(AssetPoolee __instance) {
-            while (!__instance.IsNOC() && PooleeUtilities.CheckingForSpawn.Contains(__instance)) {
+        private static IEnumerator CoVerifyDespawnCoroutine(AssetPoolee __instance)
+        {
+            while (!__instance.IsNOC() && PooleeUtilities.CheckingForSpawn.Contains(__instance))
+            {
                 yield return null;
             }
 
