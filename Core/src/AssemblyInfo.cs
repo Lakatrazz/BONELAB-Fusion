@@ -17,4 +17,5 @@ using LabFusion;
 [assembly: MelonInfo(typeof(FusionMod), "LabFusion", "0.0.1", "Lakatrazz")]
 [assembly: MelonGame("Stress Level Zero", "BONELAB")]
 [assembly: MelonPriority(-10000)]
+[assembly: MelonOptionalDependencies("System.Windows.Forms")]
 
