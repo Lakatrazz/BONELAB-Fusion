@@ -87,60 +87,8 @@ namespace LabFusion.Grabbables {
                         PropSender.SendOwnershipTransfer(syncable);
                     }
                     // Create a new one
-                    else if (!NetworkInfo.IsServer) {
-                        // Create this as a syncable
-                        syncable = new PropSyncable(host);
-                        syncable.SetOwner(PlayerIdManager.LocalSmallId);
-
-                        // Add it to the queue and get a unique id
-                        ushort queuedId = SyncManager.QueueSyncable(syncable);
-
-                        using (var writer = FusionWriter.Create(SyncableIDRequestData.Size)) {
-                            using (var data = SyncableIDRequestData.Create(smallId, queuedId)) {
-                                writer.Write(data);
-
-                                using (var message = FusionMessage.Create(NativeMessageTag.SyncableIDRequest, writer)) {
-                                    MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                                }
-                            }
-                        }
-
-                        while (syncable.IsQueued())
-                            yield return null;
-
-                        yield return null;
-
-                        // Send force grab message
-                        var grab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id);
-                        grab.WriteDefaultGrip(hand, grip);
-
-                        using (var writer = FusionWriter.Create(PlayerRepForceGrabData.Size)) {
-                            using (var data = PlayerRepForceGrabData.Create(smallId, grab)) {
-                                writer.Write(data);
-
-                                using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepForceGrab, writer)) {
-                                    MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                                }
-                            }
-                        }
-                    }
-                    else if (NetworkInfo.IsServer)
-                    {
-                        // Add new syncable and send force grab message
-                        syncable = new PropSyncable(host);
-                        SyncManager.RegisterSyncable(syncable, SyncManager.AllocateSyncID());
-                        var grab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id);
-                        grab.WriteDefaultGrip(hand, grip);
-
-                        using (var writer = FusionWriter.Create(PlayerRepForceGrabData.Size)) {
-                            using (var data = PlayerRepForceGrabData.Create(smallId, grab)) {
-                                writer.Write(data);
-
-                                using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepForceGrab, writer)) {
-                                    MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                                }
-                            }
-                        }
+                    else {
+                        PropSender.SendPropCreation(root, null, false);
                     }
                 }
             }
