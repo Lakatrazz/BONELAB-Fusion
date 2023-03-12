@@ -25,15 +25,17 @@ namespace LabFusion.MarrowIntegration {
         public void DespawnAll(string barcode) { 
             if (!NetworkInfo.HasServer || NetworkInfo.IsServer) {
                 var barcodeToPool = AssetSpawner._instance._barcodeToPool;
-                var newBarcode = new Barcode(barcode);
+                foreach (var pair in barcodeToPool) {
+                    if (pair.key.ToString() == barcode) {
+                        var spawnedObjects = pair.value.spawned.ToArray();
 
-                if (barcodeToPool.TryGetValue(newBarcode, out var pool)) {
-                    var spawnedObjects = pool.spawned.ToArray();
+                        foreach (var spawned in spawnedObjects) {
+                            spawned.Despawn();
+                        }
 
-                    foreach (var spawned in spawnedObjects) {
-                        spawned.Despawn();
+                        break;
                     }
-                } 
+                }
             }
         }
 
