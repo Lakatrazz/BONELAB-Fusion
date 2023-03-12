@@ -187,18 +187,21 @@
     <Compile Include="Core\marrow-integration\Runtime\Gamemodes\Team Deathmatch\TeamDeathmatchProxy.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Gamemodes\Deathmatch\DeathmatchProxy.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Internal\FusionMarrowBehaviour.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\Misc\DisableSyncing.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\NotificationProxy.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\BitRewardProxy.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\CrateSpawnerProxy.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Spawners\InfoBoxPlacer.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Spawners\PointShopPlacer.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\SyncGameObjectEnabled.cs" />
-    <Compile Include="Core\marrow-integration\Runtime\Misc\InvokeUltEventIfClient.cs" />
-    <Compile Include="Core\marrow-integration\Runtime\Misc\InvokeUltEventIfHost.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\AlwaysAllowImpactDamage.cs" />
-    <Compile Include="Core\marrow-integration\Runtime\Misc\InvokeUltEventInServer.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\AutoSyncOnStart.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\OnlyTriggerOnLocalPlayer.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\UltEvents\InvokeUltEventIfClient.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\UltEvents\InvokeUltEventIfHost.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\UltEvents\InvokeUltEventInServer.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\UltEvents\InvokeUltEventOnLocalOwnership.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\UltEvents\InvokeUltEventOnOtherOwnership.cs" />
     <Compile Include="Core\src\AssemblyInfo.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -238,7 +238,7 @@ namespace LabFusion.Syncables
         public void OnDetach(Hand hand, Grip grip) {
             OnTransferOwner(hand);
 
-            _grabbedGrips.OnGripDetach(grip);
+            _grabbedGrips.OnGripDetach(hand, grip);
 
             foreach (var extender in _extenders)
                 extender.OnDetach(hand, grip);

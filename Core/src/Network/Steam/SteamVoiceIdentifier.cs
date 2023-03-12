@@ -76,7 +76,8 @@ namespace LabFusion.Network {
         public void Update() {
             float time = Time.realtimeSinceStartup;
 
-            if (time - _lastClearTime >= 10f) {
+            // Every five seconds of no audio, clear the buffer
+            if (time - _lastClearTime >= 5f) {
                 // Clear audio data
                 var clip = _source.clip;
                 float[] samples = new float[clip.samples * clip.channels];
@@ -155,6 +156,9 @@ namespace LabFusion.Network {
 
                 _streamingReadQueue.Enqueue(pcmFloat);
             }
+
+            // Reset clear time since we received a message
+            _lastClearTime = Time.realtimeSinceStartup;
         }
 
         private void PcmReaderCallback(Il2CppStructArray<float> data)

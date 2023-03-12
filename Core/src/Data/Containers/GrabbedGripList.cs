@@ -1,6 +1,6 @@
 ﻿using LabFusion.Extensions;
 using LabFusion.Syncables;
-
+using LabFusion.Utilities;
 using SLZ.Interaction;
 
 using System.Collections.Generic;
@@ -33,6 +33,10 @@ namespace LabFusion.Data {
         }
 
         public void OnGripAttach(Hand hand, Grip grip) {
+            // Make sure the hand wasn't already attached
+            if (grip.attachedHands.Has(hand))
+                return;
+
             if (!hand.manager.activeSeat) {
                 if (!_grips.ContainsKey(grip)) {
                     _grips.Add(grip, 0);
@@ -43,7 +47,11 @@ namespace LabFusion.Data {
             }
         }
         
-        public void OnGripDetach(Grip grip) {
+        public void OnGripDetach(Hand hand, Grip grip) {
+            // Make sure the hand was actually attached when detaching
+            if (!grip.attachedHands.Has(hand))
+                return;
+
             if (_grips.ContainsKey(grip)) {
                 _grips[grip]--;
 
