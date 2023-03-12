@@ -9,13 +9,13 @@ namespace LabFusion.Utilities
         public static void LoadAllValid<T>(Assembly assembly, Action<Type> runOnValid)
         {
             string asmName = assembly.FullName;
-            if (asmName.Contains("System") || asmName.Contains("Mono"))
+            if (asmName.Contains("System"))
                 return;
 
             foreach (Type type in assembly.GetTypes())
             {
                 // Mono types can cause a "System.TypeLoadException: Recursive type definition detected" error from IsAssignableFrom, this bypasses it
-                if (type.Name.Contains("Mono"))
+                if (type.Name.Contains("Mono") && type.Name.Contains("Security"))
                     continue;
 
                 if (typeof(T).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface)
