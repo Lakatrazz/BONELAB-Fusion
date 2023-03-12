@@ -32,7 +32,11 @@ namespace LabFusion.SDK.Gamemodes {
             // Setup audio settings
             source.spatialBlend = 0f;
             source.volume = volume;
-            source.outputAudioMixerGroup = PersistentAssetCreator.MusicMixer;
+
+            PersistentAssetCreator.HookOnMusicMixerLoaded((m) => {
+                if (source != null)
+                    source.outputAudioMixerGroup = m;
+            });
 
             // Store the clips
             clips.Shuffle();

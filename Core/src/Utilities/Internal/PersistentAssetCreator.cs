@@ -23,8 +23,22 @@ namespace LabFusion.Utilities {
         internal static SurfaceData BloodSurfaceData { get; private set; }
         internal static TMP_FontAsset Font { get; private set; }
 
-        internal static AudioMixerGroup MusicMixer { get; private set; }
-        internal static AudioMixerGroup SFXMixer { get; private set; }
+        private static AudioMixerGroup _musicMixer;
+        private static AudioMixerGroup _sfxMixer;
+
+        internal static AudioMixerGroup MusicMixer {
+            get {
+                return _musicMixer;
+            }
+        }
+        internal static AudioMixerGroup SFXMixer {
+            get {
+                return _sfxMixer;
+            }
+        }
+
+        private static Action<AudioMixerGroup> _onMusicMixerLoaded = null;
+        private static Action<AudioMixerGroup> _onSFXMixerLoaded = null;
 
         internal static void OnLateInitializeMelon() {
             CreateSurfaceData();
@@ -37,12 +51,50 @@ namespace LabFusion.Utilities {
 
         // Thanks to https://bonelab.thunderstore.io/package/Maranara/Mixer_Fixer/
         private static void GetAllMixers() {
+            if (_sfxMixer != null && _musicMixer != null)
+                return;
+
             AudioMixerGroup[] groups = Resources.FindObjectsOfTypeAll<AudioMixerGroup>();
 
-            MusicMixer = groups.Where((AudioMixerGroup x) => x.name == "Music").First();
-            SFXMixer = groups.Where((AudioMixerGroup x) => x.name == "SFX").First();
+            foreach (var group in groups) {
+                switch (group.name) {
+                    case "Music":
+                        _musicMixer = group;
+                        break;
+                    case "SFX":
+                        _sfxMixer = group;
+                        break;
+                }
+            }
+
+            if (_musicMixer != null)
+                _onMusicMixerLoaded?.Invoke(_musicMixer);
+
+            if (_sfxMixer != null)
+                _onSFXMixerLoaded?.Invoke(_sfxMixer);
+
+            _onMusicMixerLoaded = null;
+            _onSFXMixerLoaded = null;
         }
 
+        public static void HookOnMusicMixerLoaded(Action<AudioMixerGroup> action) {
+            if (_musicMixer != null) {
+                action?.Invoke(_musicMixer);
+            }
+            else {
+                _onMusicMixerLoaded += action;
+            }
+        }
+
+        public static void HookOnSFXMixerLoaded(Action<AudioMixerGroup> action)
+        {
+            if (_sfxMixer != null) {
+                action?.Invoke(_sfxMixer);
+            }
+            else {
+                _onSFXMixerLoaded += action;
+            }
+        }
 
         private static void CreateTextFont() {
             // I don't want to use asset bundles in this mod.

@@ -18,6 +18,7 @@ using LabFusion.Utilities;
 using SLZ.Marrow.Data;
 
 using UnhollowerBaseLib;
+using static SLZ.Interaction.LadderInfo;
 
 namespace LabFusion.SDK.Points
 {
@@ -73,11 +74,15 @@ namespace LabFusion.SDK.Points
             _panelView = panel.gameObject.AddComponent<PointShopPanelView>();
 
             // Setup audio
-            AudioSource[] sources = gameObject.GetComponentsInChildren<AudioSource>(true);
+            PersistentAssetCreator.HookOnSFXMixerLoaded((m) => {
+                if (gameObject != null) {
+                    AudioSource[] sources = gameObject.GetComponentsInChildren<AudioSource>(true);
 
-            foreach (var source in sources) {
-                source.outputAudioMixerGroup = PersistentAssetCreator.SFXMixer;
-            }
+                    foreach (var source in sources) {
+                        source.outputAudioMixerGroup = m;
+                    }
+                }
+            });
         }
     }
 }

@@ -116,7 +116,6 @@ namespace LabFusion
 
         public void OnBonelibLevelLoaded(LevelInfo info) {
             LevelData.OnSceneAwake();
-            PersistentAssetCreator.OnMainSceneInitialized();
         }
 
         protected void OnInitializeNetworking() {
@@ -176,6 +175,7 @@ namespace LabFusion
             // Cache info
             SyncManager.OnCleanup();
             RigData.OnCacheRigInfo();
+            PersistentAssetCreator.OnMainSceneInitialized();
 
             // Create player reps
             PlayerRep.OnRecreateReps();
