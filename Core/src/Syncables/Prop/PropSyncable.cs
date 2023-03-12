@@ -18,16 +18,6 @@ using UnityEngine;
 
 namespace LabFusion.Syncables
 {
-    public static class PropSyncableExtensions {
-        public static bool TryGetPropSyncable(this GameObject go, out PropSyncable syncable) {
-            return PropSyncable.HostCache.TryGet(go, out syncable) || PropSyncable.Cache.TryGet(go, out syncable);
-        }
-
-        public static bool HasPropSyncable(this GameObject go) {
-            return PropSyncable.HostCache.ContainsSource(go) || PropSyncable.Cache.ContainsSource(go);
-        }
-    }
-
     public class PropSyncable : ISyncable {
         private enum SendState {
             IDLE = 0,
@@ -441,10 +431,7 @@ namespace LabFusion.Syncables
             return null;
         }
 
-        public bool IsQueued() {
-            return SyncManager.QueuedSyncables.ContainsValue(this);
-        }
-
+        public bool IsQueued() => !_hasRegistered;
         public bool IsRegistered() => _hasRegistered;
 
         private bool HasValidParameters() => !DisableSyncing && _hasRegistered && LevelWarehouseUtilities.IsLoadDone() && IsRootEnabled;
