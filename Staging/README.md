@@ -34,6 +34,11 @@ Finally, Fusion has built in cosmetics. Winning gamemodes will earn you Bits to 
 # Credits
 You can view the most recent changes and credits in the in game info box in VoidG114.
 
+# Soundtrack
+You can listen to the Fusion official soundtrack here:
+
+[![Soundtrack](https://i.imgur.com/ppUtaMd.png)](https://www.youtube.com/playlist?list=PLNifPIaAecBKTMlKSBYfeW81UZgNNfYe0)
+
 # Footage
 
 [![Launch Trailer](https://i.imgur.com/9qAdvsc.png)](https://www.youtube.com/watch?v=pVavphtfTd4)
