@@ -628,7 +628,7 @@ namespace LabFusion.Syncables
                 extender.OnReceivedUpdate();
 
             // Check if anything is being grabbed
-            if (IsSleeping || (!IsHeld && timeSinceMessage >= 1f)) {
+            if (!IsHeld && (IsSleeping || timeSinceMessage >= 1f)) {
                 if (!_isIgnoringForces) {
                     // Set all desired values to nothing
                     for (var i = 0; i < Rigidbodies.Length; i++) {

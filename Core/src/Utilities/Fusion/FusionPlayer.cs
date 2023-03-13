@@ -146,12 +146,13 @@ namespace LabFusion.Utilities {
         /// <param name="position"></param>
         /// <param name=""></param>
         public static void Teleport(Vector3 position, Vector3 fwdSnap, bool zeroVelocity = true) {
+            if (!RigData.HasPlayer)
+                return;
+
             var rm = RigData.RigReferences.RigManager;
 
-            if (!rm.IsNOC()) {
-                rm.Teleport(position, fwdSnap, zeroVelocity);
-                rm.physicsRig.ResetHands(Handedness.BOTH);
-            }
+            rm.Teleport(position, fwdSnap, zeroVelocity);
+            rm.physicsRig.ResetHands(Handedness.BOTH);
         }
 
         /// <summary>

@@ -77,12 +77,25 @@ namespace LabFusion.Extensions
 
             // Modify the target grab point
             if (targetInBase.HasValue) {
-                grip.SetTargetInBase(hand, targetInBase.Value.position, targetInBase.Value.rotation);
+                SetTargetInBase(grip, hand, targetInBase.Value.position, targetInBase.Value.rotation);
             }
 
             // Confirm the grab and end the hover
+            hand._mHoveringReceiver = grip;
             grip.OnGrabConfirm(hand, isInstant);
-            grip.OnHandHoverEnd(hand);
+
+            // Re-apply the target grab point
+            if (targetInBase.HasValue) {
+                SetTargetInBase(grip, hand, targetInBase.Value.position, targetInBase.Value.rotation);
+            }
+        }
+
+        private static void SetTargetInBase(Grip grip, Hand hand, Vector3 position, Quaternion rotation) {
+            grip.SetTargetInBase(hand, position, rotation);
+
+            var handState = grip.GetHandState(hand);
+            handState.amplifyRotationInBase = rotation;
+            handState.targetRotationInBase = rotation;
         }
 
         public static void TryDetach(this Grip grip, Hand hand) {
