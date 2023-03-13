@@ -28,6 +28,8 @@ namespace LabFusion.Network
 
     public class FunicularControllerEventData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) + sizeof(ushort);
+
         public ushort syncId;
         public FunicularControllerEventType type;
 

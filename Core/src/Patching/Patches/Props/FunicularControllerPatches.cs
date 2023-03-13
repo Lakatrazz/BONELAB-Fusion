@@ -25,7 +25,7 @@ namespace LabFusion.Patching {
                 syncId = syncable.GetId();
 
             return QuickSender.SendServerMessage(() => {
-                FunicularSender.SendFunicularControllerEvent(syncId, type);
+                PowerableSender.SendFunicularControllerEvent(syncId, type);
             });
         }
 

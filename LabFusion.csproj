@@ -306,6 +306,8 @@
     <Compile Include="Core\src\Network\Messages\Gamemodes\GamemodeMetadataRemoveMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Gamemodes\GamemodeTriggerResponseMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Gamemodes\GamemodeMetadataSetMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Interaction\PowerableJointVoltageMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Interaction\TwoButtonRemoteControllerEventMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\FunicularControllerEventMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\SpawnGunPreviewMeshMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Levels\HolodeckEventMessage.cs" />
@@ -380,6 +382,8 @@
     <Compile Include="Core\src\Patching\Patches\Levels\Trial_SpawnerEventsPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PropFlashlightPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Props\FunicularControllerPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Props\PowerableJointPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Props\TwoButtonRemoteControllerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PullCordDevicePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Attacks\ImpactSFXPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PullCordForceChangePatches.cs" />
@@ -450,7 +454,7 @@
     <Compile Include="Core\src\SDK\Gamemodes\GamemodePlaylist.cs" />
     <Compile Include="Core\src\SDK\Gamemodes\GamemodeRegistration.cs" />
     <Compile Include="Core\src\SDK\Network\Messages\ModuleMessageHandler.cs" />
-    <Compile Include="Core\src\Senders\Props\FunicularSender.cs" />
+    <Compile Include="Core\src\Senders\Props\PowerableSender.cs" />
     <Compile Include="Core\src\Senders\Level\HolodeckSender.cs" />
     <Compile Include="Core\src\Senders\Level\ZoneSender.cs" />
     <Compile Include="Core\src\Senders\Misc\PointItemSender.cs" />
@@ -472,6 +476,8 @@
     <Compile Include="Core\src\Senders\Level\TrialSender.cs" />
     <Compile Include="Core\src\Senders\Level\CampaignSender.cs" />
     <Compile Include="Core\src\Syncables\ConstraintSyncable.cs" />
+    <Compile Include="Core\src\Syncables\Prop\Extenders\PowerableJointExtender.cs" />
+    <Compile Include="Core\src\Syncables\Prop\Extenders\TwoButtonRemoteControllerExtender.cs" />
     <Compile Include="Core\src\Syncables\Prop\Extenders\FunicularControllerExtender.cs" />
     <Compile Include="Core\src\Syncables\Prop\Extenders\FlyingGunExtender.cs" />
     <Compile Include="Core\src\Syncables\Prop\Extenders\GripExtender.cs" />

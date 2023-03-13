@@ -84,6 +84,8 @@ namespace LabFusion.Network
 
             FlashlightToggle = 49,
 
+            TwoButtonRemoteControllerEvent = 50,
+
             KeySlot = 51,
 
             NimbusGunNoclip = 52,
@@ -97,6 +99,8 @@ namespace LabFusion.Network
             BoardCreate = 57,
 
             HomeEvent = 58,
+
+            PowerableJointVoltage = 59,
 
             SpawnableCratePlacer = 60,
 
