@@ -609,7 +609,6 @@
     <Compile Include="Core\src\Syncables\Prop\PropComponentArrayExtender.cs" />
     <Compile Include="Core\src\Syncables\Prop\PropComponentExtender.cs" />
     <Compile Include="Core\src\Syncables\Prop\Extenders\PropExtenderManager.cs" />
-    <Compile Include="Core\src\Utilities\FloatingOriginUtilities.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionOverrides.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionPointItemLoader.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionContentLoader.cs" />
