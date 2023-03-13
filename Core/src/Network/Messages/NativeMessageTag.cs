@@ -67,6 +67,8 @@ namespace LabFusion.Network
             DescentNoose = 39,
             DescentElevator = 40,
 
+            FunicularControllerEvent = 41,
+
             MagmaGateEvent = 42,
 
             DescentIntro = 43,
@@ -134,21 +136,21 @@ namespace LabFusion.Network
 
             // SDK messages
             // Module setup
-            Module = 80,
-            DynamicsAssignment = 81,
+            Module = 200,
+            DynamicsAssignment = 201,
 
             // Gamemodes
-            GamemodeMetadataSet = 82,
-            GamemodeMetadataRemove = 83,
-            GamemodeTriggerResponse = 84,
+            GamemodeMetadataSet = 202,
+            GamemodeMetadataRemove = 203,
+            GamemodeTriggerResponse = 204,
 
             // SDK scripts
-            GameObjectActive = 85,
+            GameObjectActive = 205,
 
             // Point items
-            PointItemEquipState = 86,
-            PointItemTrigger = 87,
-            PointItemTriggerValue = 88;
+            PointItemEquipState = 206,
+            PointItemTrigger = 207,
+            PointItemTriggerValue = 208;
     }
 
 }

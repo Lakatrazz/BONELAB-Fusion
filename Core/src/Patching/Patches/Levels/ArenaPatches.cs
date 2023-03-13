@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using HarmonyLib;
 using Il2CppSystem;
+using Il2CppSystem.Linq;
 using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Senders;
@@ -21,20 +22,9 @@ namespace LabFusion.Patching {
         [HarmonyPrefix]
         [HarmonyPatch(nameof(GeoManager.ToggleGeo))]
         public static bool ToggleGeo(GeoManager __instance, int index) {
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer)
-            {
-                if (!NetworkInfo.IsServer)
-                    return false;
-                else
-                {
-                    ArenaSender.SendGeometryChange((byte)index);
-                }
-            }
-
-            return true;
+            return IgnorePatches || QuickSender.SendServerMessage(() => {
+                ArenaSender.SendGeometryChange((byte)index);
+            });
         }
 
         [HarmonyPrefix]
@@ -59,140 +49,63 @@ namespace LabFusion.Patching {
         [HarmonyPatch(nameof(ArenaMenuController.ChallengeSelect))]
         public static bool ChallengeSelect(ArenaMenuController __instance, int sel)
         {
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer)
-            {
-                if (!NetworkInfo.IsServer)
-                    return false;
-                else
-                {
-                    ArenaSender.SendMenuSelection((byte)sel, ArenaMenuType.CHALLENGE_SELECT);
-                }
-            }
-
-            return true;
+            return IgnorePatches || QuickSender.SendServerMessage(() => {
+                ArenaSender.SendMenuSelection((byte)sel, ArenaMenuType.CHALLENGE_SELECT);
+            });
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(ArenaMenuController.TrialSelect))]
         public static bool TrialSelect(ArenaMenuController __instance, int sel)
         {
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer)
-            {
-                if (!NetworkInfo.IsServer)
-                    return false;
-                else
-                {
-                    ArenaSender.SendMenuSelection((byte)sel, ArenaMenuType.TRIAL_SELECT);
-                }
-            }
-
-            return true;
+            return IgnorePatches || QuickSender.SendServerMessage(() => {
+                ArenaSender.SendMenuSelection((byte)sel, ArenaMenuType.TRIAL_SELECT);
+            });
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(ArenaMenuController.SurvivalSelect))]
         public static bool SurvivalSelect(ArenaMenuController __instance)
         {
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer)
-            {
-                if (!NetworkInfo.IsServer)
-                    return false;
-                else
-                {
-                    ArenaSender.SendMenuSelection(0, ArenaMenuType.SURVIVAL_SELECT);
-                }
-            }
-
-            return true;
+            return IgnorePatches || QuickSender.SendServerMessage(() => {
+                ArenaSender.SendMenuSelection(0, ArenaMenuType.SURVIVAL_SELECT);
+            });
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(ArenaMenuController.ToggleDifficulty))]
         public static bool ToggleDifficulty(ArenaMenuController __instance, int diff)
         {
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer)
-            {
-                if (!NetworkInfo.IsServer)
-                    return false;
-                else
-                {
-                    ArenaSender.SendMenuSelection((byte)diff, ArenaMenuType.TOGGLE_DIFFICULTY);
-                }
-            }
-
-            return true;
+            return IgnorePatches || QuickSender.SendServerMessage(() => {
+                ArenaSender.SendMenuSelection((byte)diff, ArenaMenuType.TOGGLE_DIFFICULTY);
+            });
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(ArenaMenuController.ToggleEnemyProfile))]
         public static bool ToggleEnemyProfile(ArenaMenuController __instance, int profileIndex)
         {
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer)
-            {
-                if (!NetworkInfo.IsServer)
-                    return false;
-                else
-                {
-                    ArenaSender.SendMenuSelection((byte)profileIndex, ArenaMenuType.TOGGLE_ENEMY_PROFILE);
-                }
-            }
-
-            return true;
+            return IgnorePatches || QuickSender.SendServerMessage(() => {
+                ArenaSender.SendMenuSelection((byte)profileIndex, ArenaMenuType.TOGGLE_ENEMY_PROFILE);
+            });
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(ArenaMenuController.CreateCustomGameAndStart))]
         public static bool CreateCustomGameAndStart(ArenaMenuController __instance)
         {
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer)
-            {
-                if (!NetworkInfo.IsServer)
-                    return false;
-                else
-                {
-                    ArenaSender.SendMenuSelection(0, ArenaMenuType.CREATE_CUSTOM_GAME_AND_START);
-                }
-            }
-
-            return true;
+            return IgnorePatches || QuickSender.SendServerMessage(() => {
+                ArenaSender.SendMenuSelection(0, ArenaMenuType.CREATE_CUSTOM_GAME_AND_START);
+            });
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(ArenaMenuController.ResumeSurvivalFromRound))]
         public static bool ResumeSurvivalFromRound(ArenaMenuController __instance)
         {
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer)
-            {
-                if (!NetworkInfo.IsServer)
-                    return false;
-                else
-                {
-                    ArenaSender.SendMenuSelection(0, ArenaMenuType.RESUME_SURVIVAL_FROM_ROUND);
-                }
-            }
-
-            return true;
+            return IgnorePatches || QuickSender.SendServerMessage(() => {
+                ArenaSender.SendMenuSelection(0, ArenaMenuType.RESUME_SURVIVAL_FROM_ROUND);
+            });
         }
     }
 
@@ -204,38 +117,17 @@ namespace LabFusion.Patching {
         [HarmonyPatch(nameof(ChallengeSelectMenu.OnChallengeSelect))]
         public static bool OnChallengeSelect(ChallengeSelectMenu __instance)
         {
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer)
-            {
-                if (!NetworkInfo.IsServer)
-                    return false;
-                else
-                {
-                    ArenaSender.SendChallengeSelect(ArenaData.GetIndex(__instance).Value, 0, ChallengeSelectType.ON_CHALLENGE_SELECT);
-                }
-            }
-
-            return true;
+            return IgnorePatches || QuickSender.SendServerMessage(() => {
+                ArenaSender.SendChallengeSelect(ArenaData.GetIndex(__instance).Value, 0, ChallengeSelectType.ON_CHALLENGE_SELECT);
+            });
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(ChallengeSelectMenu.SelectChallenge))]
         public static bool SelectChallenge(ChallengeSelectMenu __instance, int idx) {
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer) {
-                if (!NetworkInfo.IsServer)
-                    return false;
-                else
-                {
-                    ArenaSender.SendChallengeSelect(ArenaData.GetIndex(__instance).Value, (byte)idx, ChallengeSelectType.SELECT_CHALLENGE);
-                }
-            }
-
-            return true;
+            return IgnorePatches || QuickSender.SendServerMessage(() => {
+                ArenaSender.SendChallengeSelect(ArenaData.GetIndex(__instance).Value, (byte)idx, ChallengeSelectType.SELECT_CHALLENGE);
+            });
         }
     }
 
@@ -247,197 +139,89 @@ namespace LabFusion.Patching {
         [HarmonyPatch(nameof(Arena_GameController.ARENA_PlayerEnter))]
         public static bool ARENA_PlayerEnter()
         {
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer)
-            {
-                if (!NetworkInfo.IsServer)
-                    return false;
-                else
-                {
-                    ArenaSender.SendArenaTransition(ArenaTransitionType.ARENA_PLAYER_ENTER);
-                }
-            }
-
-            return true;
+            return IgnorePatches || QuickSender.SendServerMessage(() => {
+                ArenaSender.SendArenaTransition(ArenaTransitionType.ARENA_PLAYER_ENTER);
+            });
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Arena_GameController.InitObjectiveContainer))]
         public static bool InitObjectiveContainer()
         {
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer)
-            {
-                if (!NetworkInfo.IsServer)
-                    return false;
-                else
-                {
-                    ArenaSender.SendArenaTransition(ArenaTransitionType.INIT_OBJECTIVE_CONTAINER);
-                }
-            }
-
-            return true;
+            return IgnorePatches || QuickSender.SendServerMessage(() => {
+                ArenaSender.SendArenaTransition(ArenaTransitionType.INIT_OBJECTIVE_CONTAINER);
+            });
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Arena_GameController.ARENA_StartMatch))]
         public static bool ARENA_StartMatch()
         {
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer)
-            {
-                if (!NetworkInfo.IsServer)
-                    return false;
-                else
-                {
-                    ArenaSender.SendArenaTransition(ArenaTransitionType.ARENA_START_MATCH);
-                }
-            }
-
-            return true;
+            return IgnorePatches || QuickSender.SendServerMessage(() => {
+                ArenaSender.SendArenaTransition(ArenaTransitionType.ARENA_START_MATCH);
+            });
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Arena_GameController.StartNextWave))]
         public static bool StartNextWave() {
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer) {
-                if (!NetworkInfo.IsServer)
-                    return false;
-                else {
-                    ArenaSender.SendArenaTransition(ArenaTransitionType.START_NEXT_WAVE);
-                }
-            }
-            
-            return true;
+            return IgnorePatches || QuickSender.SendServerMessage(() => {
+                ArenaSender.SendArenaTransition(ArenaTransitionType.START_NEXT_WAVE);
+            });
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Arena_GameController.ARENA_QuitChallenge))]
         public static bool ARENA_QuitChallenge()
         {
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer)
-            {
-                if (!NetworkInfo.IsServer)
-                    return false;
-                else
-                {
-                    ArenaSender.SendArenaTransition(ArenaTransitionType.ARENA_QUIT_CHALLENGE);
-                }
-            }
-
-            return true;
+            return IgnorePatches || QuickSender.SendServerMessage(() => {
+                ArenaSender.SendArenaTransition(ArenaTransitionType.ARENA_QUIT_CHALLENGE);
+            });
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Arena_GameController.ARENA_CancelMatch))]
         public static bool ARENA_CancelMatch()
         {
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer)
-            {
-                if (!NetworkInfo.IsServer)
-                    return false;
-                else
-                {
-                    ArenaSender.SendArenaTransition(ArenaTransitionType.ARENA_CANCEL_MATCH);
-                }
-            }
-
-            return true;
+            return IgnorePatches || QuickSender.SendServerMessage(() => {
+                ArenaSender.SendArenaTransition(ArenaTransitionType.ARENA_CANCEL_MATCH);
+            });
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Arena_GameController.ARENA_ResetTheBell))]
         public static bool ARENA_ResetTheBell()
         {
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer)
-            {
-                if (!NetworkInfo.IsServer)
-                    return false;
-                else
-                {
-                    ArenaSender.SendArenaTransition(ArenaTransitionType.ARENA_RESET_THE_BELL);
-                }
-            }
-
-            return true;
+            return IgnorePatches || QuickSender.SendServerMessage(() => {
+                ArenaSender.SendArenaTransition(ArenaTransitionType.ARENA_RESET_THE_BELL);
+            });
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Arena_GameController.ARENA_RingTheBell))]
         public static bool ARENA_RingTheBell()
         {
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer)
-            {
-                if (!NetworkInfo.IsServer)
-                    return false;
-                else
-                {
-                    ArenaSender.SendArenaTransition(ArenaTransitionType.ARENA_RING_THE_BELL);
-                }
-            }
-
-            return true;
+            return IgnorePatches || QuickSender.SendServerMessage(() => {
+                ArenaSender.SendArenaTransition(ArenaTransitionType.ARENA_RING_THE_BELL);
+            });
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Arena_GameController.FailObjectiveMode))]
         public static bool FailObjectiveMode()
         {
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer)
-            {
-                if (!NetworkInfo.IsServer)
-                    return false;
-                else
-                {
-                    ArenaSender.SendArenaTransition(ArenaTransitionType.FAIL_OBJECTIVE_MODE);
-                }
-            }
-
-            return true;
+            return IgnorePatches || QuickSender.SendServerMessage(() => {
+                ArenaSender.SendArenaTransition(ArenaTransitionType.FAIL_OBJECTIVE_MODE);
+            });
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Arena_GameController.FailEscapeMode))]
         public static bool FailEscapeMode()
         {
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer)
-            {
-                if (!NetworkInfo.IsServer)
-                    return false;
-                else
-                {
-                    ArenaSender.SendArenaTransition(ArenaTransitionType.FAIL_ESCAPE_MODE);
-                }
-            }
-
-            return true;
+            return IgnorePatches || QuickSender.SendServerMessage(() => {
+                ArenaSender.SendArenaTransition(ArenaTransitionType.FAIL_ESCAPE_MODE);
+            });
         }
     }
 }

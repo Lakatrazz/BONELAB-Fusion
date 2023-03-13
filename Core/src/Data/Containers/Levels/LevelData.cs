@@ -1,8 +1,10 @@
-﻿using System;
+﻿using LabFusion.Network;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace LabFusion.Data {
     public static class LevelData {
@@ -11,6 +13,7 @@ namespace LabFusion.Data {
         }
 
         public static void OnMainSceneInitialized() {
+            // Check info for every level
             MineDiveData.OnCacheInfo();
             MagmaGateData.OnCacheInfo();
             HubData.OnCacheInfo();
@@ -23,6 +26,21 @@ namespace LabFusion.Data {
             GameControllerData.OnCacheInfo();
             VoidG114Data.OnCacheInfo();
             HolodeckData.OnCacheInfo();
+
+            // Apply universal scene changes
+            if (NetworkInfo.HasServer) {
+                // Get all scene gameobjects
+                var gameObjects = GameObject.FindObjectsOfType<GameObject>();
+
+                foreach (var go in gameObjects) {
+                    // Get name
+                    string name = go.name;
+
+                    // Reload scene/hub buttons
+                    if (name.Contains("prop_bigButton_LOADHUB") || name.Contains("prop_bigButton_RESET"))
+                        go.SetActive(false);
+                }
+            }
         }
     }
 }

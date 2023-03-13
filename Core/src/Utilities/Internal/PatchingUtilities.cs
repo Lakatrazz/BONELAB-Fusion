@@ -19,17 +19,12 @@ namespace LabFusion.Utilities {
             ImpactPropertiesPatches.Patch();
             PlayerDamageReceiverPatches.Patch();
 
-            // Run manual patches if on PC
-            if (HelperMethods.IsAndroid()) {
-                FusionLogger.Warn("Skipping specific harmony patches! " +
-                    "Please note that these are important for some functions of the mod and need to be fixed in the future!");
-            }
-            else {
-                Internal_PatchManuals();
-            }
+            // Run our manual patches
+            Internal_PatchManuals();
         }
 
         private static void Internal_PatchManuals() {
+            // These patches used to break on android, but trev figured out how to make them work
             AssetPooleePatches.Patch();
             ChunkTriggerPatches.Patch();
         }
