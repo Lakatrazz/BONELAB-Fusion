@@ -3,6 +3,17 @@ Having been in development for 5 months, the long awaited multiplayer mod FUSION
 
 ![](https://i.imgur.com/1ZpMfei.png)
 
+# How To Install (PCVR)
+1. Make sure you are on BONELAB Patch 3.
+2. Install Melonloader.
+3. Install Bonelib.
+4. Download Fusion and drag the .dll file into your Melonloader Mods folder. This is not to be confused with the SLZ official mods folder.
+5. Make sure you have Steam installed (though I'm sure you do).
+6. You're done!
+
+# How to Use the Mod
+All of the functions of the mod can be found in BONEMENU under the tab "BONELAB Fusion". In order to make and join servers, use the Matchmaking tab. Starting or disconnecting from a server can be found in the "Server Info" tab.
+
 # Physical Interactions
 Instead of players and synced props being kinematic, non-physics objects, all interactions are solved using physical forces.<br>
 This means you can pickup your friends, throw them, stand on them, push them, and more.
