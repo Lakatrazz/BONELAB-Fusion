@@ -1,4 +1,5 @@
-﻿using LabFusion.Network;
+﻿using BoneLib.BoneMenu.Elements;
+using LabFusion.Network;
 using LabFusion.Utilities;
 
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace LabFusion.Network
 {
@@ -27,6 +29,15 @@ namespace LabFusion.Network
 #else
             FusionLogger.Log("This usually means all other network layers failed to initialize, or you selected Empty in the settings.", ConsoleColor.Magenta);
 #endif
+        }
+
+        internal override void OnSetupBoneMenu(MenuCategory category) {
+            base.OnSetupBoneMenu(category);
+
+            // Info for people incase this layer ends up being selected
+            category.CreateFunctionElement("You currently have no networking selected.", Color.white, null);
+            category.CreateFunctionElement("This means you likely do not have Steam open.", Color.white, null);
+            category.CreateFunctionElement("Please install and open Steam.", Color.white, null);
         }
     }
 }

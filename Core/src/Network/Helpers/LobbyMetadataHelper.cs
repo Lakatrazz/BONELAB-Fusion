@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 namespace LabFusion.Network {
     public struct LobbyMetadataInfo {
         private const string _internalPrefix = "BONELAB_FUSION_";
+        public const string HasServerOpenKey = _internalPrefix + "HasServerOpen";
 
         // Lobby info
         public ulong LobbyId;
@@ -59,7 +60,7 @@ namespace LabFusion.Network {
             lobby.SetMetadata("LobbyId", LobbyId.ToString());
             lobby.SetMetadata("LobbyName", LobbyName);
             lobby.SetMetadata("LobbyVersion", LobbyVersion.ToString());
-            lobby.SetMetadata($"{_internalPrefix}HasServerOpen", HasServerOpen.ToString());
+            lobby.SetMetadata(HasServerOpenKey, HasServerOpen.ToString());
             lobby.SetMetadata("PlayerCount", PlayerCount.ToString());
 
             // Lobby settings

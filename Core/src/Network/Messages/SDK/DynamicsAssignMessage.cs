@@ -21,10 +21,15 @@ namespace LabFusion.Network
 
         public void Serialize(FusionWriter writer)
         {
+            // Write module and gamemode names
             writer.Write(moduleHandlerNames);
             writer.Write(gamemodeNames);
 
+            // Write the length of metadata
             int length = gamemodeMetadatas.Length;
+            writer.Write(length);
+
+            // Write all metadata
             for (var i = 0; i < length; i++) {
                 writer.Write(gamemodeMetadatas[i]);
             }
@@ -32,12 +37,15 @@ namespace LabFusion.Network
 
         public void Deserialize(FusionReader reader)
         {
+            // Read the module and gamemode names
             moduleHandlerNames = reader.ReadStrings();
             gamemodeNames = reader.ReadStrings();
 
+            // Read the length of metadata
             int length = reader.ReadInt32();
-            gamemodeMetadatas = new Dictionary<string, string>[length]; 
 
+            // Read all active metadata info
+            gamemodeMetadatas = new Dictionary<string, string>[length];
             for (var i = 0; i < length; i++) {
                 gamemodeMetadatas[i] = reader.ReadStringDictionary();
             }

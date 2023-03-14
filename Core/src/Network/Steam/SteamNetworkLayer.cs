@@ -187,7 +187,7 @@ namespace LabFusion.Network
         }
 
         internal override bool IsFriend(ulong userId) {
-            return new Friend(userId).IsFriend;
+            return userId == PlayerIdManager.LocalLongId || new Friend(userId).IsFriend;
         }
 
         internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message) {
@@ -337,8 +337,12 @@ namespace LabFusion.Network
         private async void AwaitLobbyCreation() {
             var lobbyTask = await SteamMatchmaking.CreateLobbyAsync();
 
-            if (!lobbyTask.HasValue)
+            if (!lobbyTask.HasValue) {
+#if DEBUG
+                FusionLogger.Log("Failed to create a steam lobby!");
+#endif
                 return;
+            }
 
             _localLobby = lobbyTask.Value;
             _currentLobby = new SteamLobby(_localLobby);
@@ -351,18 +355,18 @@ namespace LabFusion.Network
 
         private void OnUpdateSteamLobby() {
             // Make sure the lobby exists
-            if (CurrentLobby == null)
+            if (CurrentLobby == null) {
+#if DEBUG
+                FusionLogger.Warn("Tried updating the steam lobby, but it was null!");
+#endif
                 return;
+            }
 
             // Write active info about the lobby
             LobbyMetadataHelper.WriteInfo(CurrentLobby);
 
             // Update bonemenu items
             OnUpdateCreateServerText();
-        }
-
-        internal void OnRigCreated(RigManager rig) {
-            rig.Teleport(RigData.RigReferences.RigManager.physicsRig.feet.transform.position, true);
         }
 
         internal override void OnSetupBoneMenu(MenuCategory category) {
@@ -462,7 +466,7 @@ namespace LabFusion.Network
             }
         }
 
-        private LobbySortMode _publicLobbySortMode = LobbySortMode.NONE;
+        private LobbySortMode _publicLobbySortMode = LobbySortMode.LEVEL;
 
         private void Menu_RefreshPublicLobbies() {
             // Clear existing lobbies
@@ -494,11 +498,18 @@ namespace LabFusion.Network
             }
         }
 
-        private IEnumerator CoAwaitLobbyListRoutine() {
-            // Fetch lobbies
+        private Task<Lobby[]> FetchLobbies() {
             var list = SteamMatchmaking.LobbyList;
             list.FilterDistanceWorldwide();
-            var task = list.RequestAsync();
+            list.WithMaxResults(int.MaxValue);
+            list.WithSlotsAvailable(int.MaxValue);
+            list.WithKeyValue(LobbyMetadataInfo.HasServerOpenKey, bool.TrueString);
+            return list.RequestAsync();
+        }
+
+        private IEnumerator CoAwaitLobbyListRoutine() {
+            // Fetch lobbies
+            var task = FetchLobbies();
 
             while (!task.IsCompleted)
                 yield return null;
@@ -507,8 +518,9 @@ namespace LabFusion.Network
 
             foreach (var lobby in lobbies) {
                 // Make sure this is not us
-                if (lobby.Owner.IsMe)
+                if (lobby.Owner.IsMe) {
                     continue;
+                }
 
                 var networkLobby = new SteamLobby(lobby);
                 var info = LobbyMetadataHelper.ReadInfo(networkLobby);
@@ -534,9 +546,7 @@ namespace LabFusion.Network
         private IEnumerator CoAwaitFriendListRoutine()
         {
             // Fetch lobbies
-            var list = SteamMatchmaking.LobbyList;
-            list.FilterDistanceWorldwide();
-            var task = list.RequestAsync();
+            var task = FetchLobbies();
 
             while (!task.IsCompleted)
                 yield return null;

@@ -31,7 +31,7 @@ namespace LabFusion
     {
         public const byte versionMajor = 1;
         public const byte versionMinor = 0;
-        public const short versionPatch = 0;
+        public const short versionPatch = 1;
     }
 
     public class FusionMod : MelonMod {
@@ -43,7 +43,10 @@ namespace LabFusion
         public const string Changelog = "- Debug build. Changelog will show in the release build.";
 #else
         public const string Changelog =
-            "- Launch build. Enjoy the mod!";
+            "- Made public lobbies default to sorting by level\n" +
+            "- Fixed gamemodes sometimes not functioning after joining a server\n" +
+            "- Improved the amount of lobbies that can be searched\n" +
+            "- Added notice when an empty networking layer is selected";
 #endif
 
         /// <summary>
