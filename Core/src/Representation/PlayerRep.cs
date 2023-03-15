@@ -85,7 +85,7 @@ namespace LabFusion.Representation
         public SerializedBodyVitals vitals = null;
         public SerializedAvatarStats avatarStats = null;
         public SerializedPlayerSettings playerSettings = null;
-        public string avatarId = AvatarWarehouseUtilities.INVALID_AVATAR_BARCODE;
+        public string avatarId = CommonBarcodes.INVALID_AVATAR_BARCODE;
 
         public SerializedHand serializedLeftHand = null;
         public SerializedHand serializedRightHand = null;
@@ -448,15 +448,15 @@ namespace LabFusion.Representation
         private IEnumerator Co_DelayCreateRep() {
             // Delay some extra time
             for (var i = 0; i < 120; i++) {
-                if (LevelWarehouseUtilities.IsLoading())
+                if (FusionSceneManager.IsLoading())
                     yield break;
 
                 yield return null;
             }
 
             // Wait for loading
-            while (LevelWarehouseUtilities.IsDelayedLoading() || PlayerId.GetMetadata(MetadataHelper.LoadingKey) == bool.TrueString) {
-                if (LevelWarehouseUtilities.IsLoading())
+            while (FusionSceneManager.IsDelayedLoading() || PlayerId.GetMetadata(MetadataHelper.LoadingKey) == bool.TrueString) {
+                if (FusionSceneManager.IsLoading())
                     yield break;
 
                 yield return null;

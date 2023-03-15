@@ -50,7 +50,7 @@ namespace LabFusion.Network
         }
     }
 
-    [Net.DelayWhileLoading]
+    [Net.DelayWhileTargetLoading]
     public class SpawnGunPreviewMeshMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.SpawnGunPreviewMesh;

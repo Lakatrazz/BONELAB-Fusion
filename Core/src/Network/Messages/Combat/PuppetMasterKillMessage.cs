@@ -51,7 +51,7 @@ namespace LabFusion.Network
         }
     }
 
-    [Net.DelayWhileLoading]
+    [Net.DelayWhileTargetLoading]
     public class PuppetMasterKillMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.PuppetMasterKill;

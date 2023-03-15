@@ -60,7 +60,7 @@ namespace LabFusion.Senders
 
         private static IEnumerator Internal_WaitForCratePlacer(SpawnableCratePlacer placer, GameObject go)
         {
-            while (LevelWarehouseUtilities.IsLoading())
+            while (FusionSceneManager.IsLoading())
                 yield return null;
 
             for (var i = 0; i < 5; i++)

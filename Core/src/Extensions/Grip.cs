@@ -4,11 +4,33 @@ using LabFusion.Patching;
 
 using SLZ.Interaction;
 using SLZ.Marrow.Utilities;
+using SLZ.Props.Weapons;
 using UnityEngine;
 
 namespace LabFusion.Extensions
 {
     public static class GripExtensions {
+        public static void TryAutoHolster(this Grip grip, RigReferenceCollection collection) {
+            if (!grip.HasHost)
+                return;
+
+            var host = grip.Host;
+            var weaponSlot = WeaponSlot.Cache.Get(host.GetHostGameObject());
+
+            if (!weaponSlot)
+                return;
+
+            foreach (var slot in collection.RigSlots) {
+                if (slot._slottedWeapon != null)
+                    continue;
+
+                if ((slot.slotType & weaponSlot.slotType) != 0) {
+                    slot.OnHandDrop(host);
+                    break;
+                }
+            }
+        }
+
         public static SerializedTransform GetRelativeHand(this GripPair pair) {
             var handTransform = pair.hand.transform;
             var gripTransform = pair.grip.Host.GetTransform();

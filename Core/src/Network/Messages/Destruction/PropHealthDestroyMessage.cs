@@ -55,7 +55,7 @@ namespace LabFusion.Network
         }
     }
 
-    [Net.DelayWhileLoading]
+    [Net.DelayWhileTargetLoading]
     public class PropHealthDestroyMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.PropHealthDestroy;

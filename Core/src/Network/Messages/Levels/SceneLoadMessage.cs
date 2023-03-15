@@ -47,7 +47,7 @@ namespace LabFusion.Network
                         FusionLogger.Log($"Received level load for {data.levelBarcode}!");
 #endif
 
-                        LevelWarehouseUtilities.LoadClientLevel(data.levelBarcode);
+                        FusionSceneManager.SetTargetScene(data.levelBarcode);
                     }
                 }
             }

@@ -1,7 +1,7 @@
 ﻿using LabFusion.Extensions;
 using LabFusion.Preferences;
 using LabFusion.Representation;
-
+using LabFusion.Utilities;
 using Steamworks;
 
 using System;
@@ -161,9 +161,20 @@ namespace LabFusion.Network {
             _lastClearTime = Time.realtimeSinceStartup;
         }
 
+        private float GetVoiceMultiplier() {
+            float mult = _defaultVolumeMultiplier * FusionPreferences.ClientSettings.GlobalVolume;
+
+            // If we are loading, half the volume
+            if (FusionSceneManager.IsLoading()) {
+                mult *= 0.5f;
+            }
+
+            return mult;
+        }
+
         private void PcmReaderCallback(Il2CppStructArray<float> data)
         {
-            float mult = _defaultVolumeMultiplier * FusionPreferences.ClientSettings.GlobalVolume;
+            float mult = GetVoiceMultiplier();
 
             for (int i = 0; i < data.Length; i++)
             {

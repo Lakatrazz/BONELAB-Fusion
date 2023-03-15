@@ -86,7 +86,7 @@ namespace LabFusion.Network
         }
     }
 
-    [Net.DelayWhileLoading]
+    [Net.DelayWhileTargetLoading]
     public class KeySlotMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.KeySlot;

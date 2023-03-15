@@ -75,7 +75,7 @@ namespace LabFusion.Network
                         }
 
                         // Make sure we aren't loading
-                        if (LevelWarehouseUtilities.IsLoading()) {
+                        if (FusionSceneManager.IsLoading()) {
                             ConnectionSender.SendConnectionDeny(data.longId, "Host is loading.");
                             return;
                         }
@@ -134,7 +134,7 @@ namespace LabFusion.Network
 
                         // Now we send all of our other players to the new player
                         foreach (var id in PlayerIdManager.PlayerIds) {
-                            var barcode = AvatarWarehouseUtilities.INVALID_AVATAR_BARCODE;
+                            var barcode = CommonBarcodes.INVALID_AVATAR_BARCODE;
                             SerializedAvatarStats stats = new SerializedAvatarStats();
                             if (id.SmallId == 0) {
                                 barcode = RigData.RigAvatarId;
@@ -149,7 +149,7 @@ namespace LabFusion.Network
                         }
 
                         // Now, make sure the player loads into the scene
-                        LoadSender.SendLevelLoad(LevelWarehouseUtilities.GetCurrentLevel().Barcode, data.longId);
+                        LoadSender.SendLevelLoad(FusionSceneManager.Barcode, data.longId);
 
                         // Send the dynamics list
                         using (var writer = FusionWriter.Create()) {
@@ -165,34 +165,23 @@ namespace LabFusion.Network
                         // Send the active server settings
                         FusionPreferences.SendServerSettings(data.longId);
 
-                        // Wait to catchup the user
-                        MelonCoroutines.Start(Internal_DelayedCatchup(data.longId));
+                        // SERVER CATCHUP
+                        // Start to catch them up on the server
+                        // Catchup the user on synced objects
+                        foreach (var syncable in SyncManager.Syncables) {
+                            try {
+                                syncable.Value.InvokeCatchup(data.longId);
+                            }
+                            catch (Exception e) {
+                                FusionLogger.LogException("sending catchup for syncable", e);
+                            }
+                        }
+
+                        // Catchup hooked events
+                        MultiplayerHooking.Internal_OnPlayerCatchup(data.longId);
                     }
                 }
             }
-        }
-
-        private static IEnumerator Internal_DelayedCatchup(ulong user) {
-            // Wait a good amount of time
-            for (var i = 0; i < 120; i++) {
-                yield return null;
-            }
-
-            // Get the player id, check if they're still loading
-            var id = PlayerIdManager.GetPlayerId(user);
-            if (id != null) {
-                while (id.GetMetadata(MetadataHelper.LoadingKey) == bool.TrueString)
-                    yield return null;
-            }
-
-            // Start to catch them up on the server
-            // Catchup the user on synced objects
-            foreach (var syncable in SyncManager.Syncables) {
-                syncable.Value.InvokeCatchup(user);
-            }
-
-            // Catchup hooked events
-            MultiplayerHooking.Internal_OnPlayerCatchup(user);
         }
     }
 }

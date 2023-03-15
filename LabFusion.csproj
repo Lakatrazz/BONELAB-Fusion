@@ -375,6 +375,7 @@
     <Compile Include="Core\src\Patching\Patches\Player\RigManagerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\PlayerDamageReceiverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\RemapRigPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Props\AmmoPickupPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Props\FlyingGunPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\KartRacePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Plugs\KeyRecieverPatches.cs" />
@@ -383,6 +384,7 @@
     <Compile Include="Core\src\Patching\Patches\PropFlashlightPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Props\FunicularControllerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Props\PowerableJointPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Props\SpawnEventsPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Props\TwoButtonRemoteControllerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PullCordDevicePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Attacks\ImpactSFXPatches.cs" />
@@ -500,6 +502,7 @@
     <Compile Include="Core\src\UI\InfoBoxPanelView.cs" />
     <Compile Include="Core\src\Utilities\AssemblyUtilities.cs" />
     <Compile Include="Core\src\Utilities\ByteRetriever.cs" />
+    <Compile Include="Core\src\Utilities\CommonBarcodes.cs" />
     <Compile Include="Core\src\Utilities\DllTools.cs" />
     <Compile Include="Core\src\Network\Helpers\Net.cs" />
     <Compile Include="Core\src\Network\Helpers\NetworkHelper.cs" />
@@ -619,6 +622,9 @@
     <Compile Include="Core\src\SDK\Points\PointShopHelper.cs" />
     <Compile Include="Core\src\UI\InfoBox.cs" />
     <Compile Include="Core\src\UI\InfoBoxHelper.cs" />
+    <Compile Include="Core\src\Utilities\Fusion\Scene\FusionSceneManager.cs" />
+    <Compile Include="Core\src\Utilities\Fusion\Scene\FusionSceneHooks.cs" />
+    <Compile Include="Core\src\Utilities\Fusion\Scene\FusionSceneStatus.cs" />
     <Compile Include="Core\src\Utilities\GameObjectUtilities.cs" />
     <Compile Include="Core\src\Utilities\ImpactUtilities.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionBundleLoader.cs" />
@@ -628,11 +634,8 @@
     <Compile Include="Core\src\Utilities\Fusion\MultiplayerHooking.cs" />
     <Compile Include="Core\src\Preferences\FusionPref.cs" />
     <Compile Include="Core\src\Utilities\Internal\PatchingUtilities.cs" />
-    <Compile Include="Core\src\Utilities\Asset Warehouses\SpawnableWarehouseUtilities.cs" />
-    <Compile Include="Core\src\Utilities\Asset Warehouses\AvatarWarehouseUtilities.cs" />
     <Compile Include="Core\src\Utilities\Internal\BigEndianHelper.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionLogger.cs" />
-    <Compile Include="Core\src\Utilities\Asset Warehouses\LevelWarehouseUtilities.cs" />
     <Compile Include="Core\src\Syncables\ISyncable.cs" />
     <Compile Include="Core\src\Syncables\Prop\PropSyncable.cs" />
     <Compile Include="Core\src\Syncables\SyncManager.cs" />

@@ -60,7 +60,7 @@ namespace LabFusion.Network
         }
     }
 
-    [Net.DelayWhileLoading]
+    [Net.DelayWhileTargetLoading]
     public class DescentIntroMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.DescentIntro;

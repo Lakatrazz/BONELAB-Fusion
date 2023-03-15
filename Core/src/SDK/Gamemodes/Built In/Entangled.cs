@@ -48,7 +48,7 @@ namespace LabFusion.SDK.Gamemodes {
 
             public void OnUpdate() {
                 // Make sure we aren't loading
-                if (LevelWarehouseUtilities.IsLoading() || !IsValid())
+                if (FusionSceneManager.IsLoading() || !IsValid())
                     return;
 
                 // Validate pelvis rigidbodies
@@ -145,7 +145,7 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         public void SetOverriden() {
-            if (LevelWarehouseUtilities.IsLoading()) {
+            if (FusionSceneManager.IsLoading()) {
                 if (!_hasOverridenValues)
                     SetDefaultValues();
 

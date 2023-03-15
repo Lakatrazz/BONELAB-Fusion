@@ -62,7 +62,7 @@ namespace LabFusion.Network
         }
     }
 
-    [Net.DelayWhileLoading]
+    [Net.DelayWhileTargetLoading]
     public class ArenaMenuMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.ArenaMenu;

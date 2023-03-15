@@ -31,6 +31,8 @@ namespace LabFusion.Network {
         public ControllerRig.VertState vertState;
         public ControllerRig.VrVertState vrVertState;
 
+        public float curr_Health;
+
         public SerializedLocalTransform[] serializedLocalTransforms = new SerializedLocalTransform[RigAbstractor.TransformSyncCount];
         public SerializedTransform serializedPelvis;
         public SerializedSmallQuaternion serializedPlayspace;
@@ -57,6 +59,8 @@ namespace LabFusion.Network {
             writer.Write((byte)vertState);
             writer.Write((byte)vrVertState);
 
+            writer.Write(curr_Health);
+
             for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
                 writer.Write(serializedLocalTransforms[i]);
 
@@ -82,6 +86,8 @@ namespace LabFusion.Network {
             vertState = (ControllerRig.VertState)reader.ReadByte();
             vrVertState = (ControllerRig.VrVertState)reader.ReadByte();
 
+            curr_Health = reader.ReadSingle();
+
             for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
                 serializedLocalTransforms[i] = reader.ReadFusionSerializable<SerializedLocalTransform>();
 
@@ -99,6 +105,7 @@ namespace LabFusion.Network {
         public static PlayerRepTransformData Create(byte smallId, Transform[] syncTransforms, Transform syncedPelvis, Transform syncedPlayspace, Hand leftHand, Hand rightHand)
         {
             var rm = RigData.RigReferences.RigManager;
+            var health = RigData.RigReferences.Health;
             var controllerRig = rm.openControllerRig;
 
             var data = new PlayerRepTransformData {
@@ -112,6 +119,8 @@ namespace LabFusion.Network {
                 travState = controllerRig.travState,
                 vertState = controllerRig.vertState,
                 vrVertState = controllerRig.vrVertState,
+
+                curr_Health = health.curr_Health,
 
                 serializedPelvis = new SerializedTransform(syncedPelvis),
 
@@ -165,6 +174,12 @@ namespace LabFusion.Network {
 
                     rep.serializedLeftHand = data.leftHand;
                     rep.serializedRightHand = data.rightHand;
+
+                    // Apply changes to the RigManager
+                    if (rep.IsCreated) {
+                        var health = rep.RigReferences.Health;
+                        health.curr_Health = data.curr_Health;
+                    }
                 }
             }
         }

@@ -69,7 +69,7 @@ namespace LabFusion.Network
         }
     }
 
-    [Net.DelayWhileLoading]
+    [Net.DelayWhileTargetLoading]
     public class InventorySlotDropMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.InventorySlotDrop;

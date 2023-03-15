@@ -272,7 +272,7 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         public void SetOverriden() {
-            if (LevelWarehouseUtilities.IsLoading()) {
+            if (FusionSceneManager.IsLoading()) {
                 if (!_hasOverridenValues)
                     SetDefaultValues();
 
@@ -361,21 +361,25 @@ namespace LabFusion.SDK.Gamemodes {
             _timeOfStart = Time.realtimeSinceStartup;
             _oneMinuteLeft = false;
 
-            // Force mortality
-            FusionPlayer.SetMortality(true);
+            // Invoke player changes on level load
+            FusionSceneManager.HookOnLevelLoad(() =>
+            {
+                // Force mortality
+                FusionPlayer.SetMortality(true);
 
-            // Setup ammo
-            FusionPlayer.SetAmmo(1000);
+                // Setup ammo
+                FusionPlayer.SetAmmo(1000);
 
-            // Push nametag updates
-            FusionOverrides.ForceUpdateOverrides();
+                // Push nametag updates
+                FusionOverrides.ForceUpdateOverrides();
 
-            // Apply vitality and avatar overrides
-            if (_avatarOverride != null)
-                FusionPlayer.SetAvatarOverride(_avatarOverride);
+                // Apply vitality and avatar overrides
+                if (_avatarOverride != null)
+                    FusionPlayer.SetAvatarOverride(_avatarOverride);
 
-            if (_vitalityOverride.HasValue)
-                FusionPlayer.SetPlayerVitality(_vitalityOverride.Value);
+                if (_vitalityOverride.HasValue)
+                    FusionPlayer.SetPlayerVitality(_vitalityOverride.Value);
+            });
         }
 
         protected override void OnStopGamemode() {
@@ -598,26 +602,35 @@ namespace LabFusion.SDK.Gamemodes {
 
             _localTeam = team;
 
-            // Get all spawn points
-            List<Transform> transforms = new List<Transform>();
+            // Invoke spawn point changes on level load
+            FusionSceneManager.HookOnLevelLoad(() =>
+            {
+                // Get all spawn points
+                List<Transform> transforms = new List<Transform>();
 
-            if (team == Team.SABRELAKE) {
-                foreach (var point in SabrelakeSpawnpoint.Cache.Components) {
-                    transforms.Add(point.transform);
+                if (team == Team.SABRELAKE)
+                {
+                    foreach (var point in SabrelakeSpawnpoint.Cache.Components)
+                    {
+                        transforms.Add(point.transform);
+                    }
                 }
-            }
-            else {
-                foreach (var point in LavaGangSpawnpoint.Cache.Components) {
-                    transforms.Add(point.transform);
+                else
+                {
+                    foreach (var point in LavaGangSpawnpoint.Cache.Components)
+                    {
+                        transforms.Add(point.transform);
+                    }
                 }
-            }
 
-            FusionPlayer.SetSpawnPoints(transforms.ToArray());
+                FusionPlayer.SetSpawnPoints(transforms.ToArray());
 
-            // Teleport to a random spawn point
-            if (FusionPlayer.TryGetSpawnPoint(out var spawn)) {
-                FusionPlayer.Teleport(spawn.position, spawn.forward);
-            }
+                // Teleport to a random spawn point
+                if (FusionPlayer.TryGetSpawnPoint(out var spawn))
+                {
+                    FusionPlayer.Teleport(spawn.position, spawn.forward);
+                }
+            });
         }
 
         protected override void OnMetadataChanged(string key, string value) {

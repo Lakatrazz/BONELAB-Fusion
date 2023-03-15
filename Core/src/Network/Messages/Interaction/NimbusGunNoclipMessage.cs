@@ -47,7 +47,7 @@ namespace LabFusion.Network
         }
     }
 
-    [Net.DelayWhileLoading]
+    [Net.DelayWhileTargetLoading]
     public class NimbusGunNoclipMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.NimbusGunNoclip;

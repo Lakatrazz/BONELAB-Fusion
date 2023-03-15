@@ -55,7 +55,7 @@ namespace LabFusion.Network
         }
     }
 
-    [Net.DelayWhileLoading]
+    [Net.DelayWhileTargetLoading]
     public class DescentNooseMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.DescentNoose;
@@ -81,11 +81,18 @@ namespace LabFusion.Network
                                 break;
                             case DescentNooseType.ATTACH_NOOSE:
                                 if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep)) {
+                                    // Assign the RigManager and Health to the noose
+                                    // We assign the rigmanager so the noose knows what neck to joint to
+                                    // The player health is also assigned so it doesn't damage the local player
                                     DescentData.Noose.rM = rep.RigReferences.RigManager;
+                                    DescentData.Noose.pH = rep.RigReferences.Health;
+
+                                    // Now we actually attach the neck of the player
                                     DescentData.Noose.AttachNeck();
                                 }
                                 break;
                             case DescentNooseType.CUT_NOOSE:
+                                // This function is called to cut the noose as if a knife cut it
                                 DescentData.Noose.NooseCut();
                                 break;
                         }

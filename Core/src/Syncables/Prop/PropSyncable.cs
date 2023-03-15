@@ -449,7 +449,7 @@ namespace LabFusion.Syncables
         public bool IsQueued() => SyncManager.QueuedSyncables.ContainsValue(this) && !IsDestroyed();
         public bool IsRegistered() => _hasRegistered;
 
-        private bool HasValidParameters() => !DisableSyncing && _hasRegistered && LevelWarehouseUtilities.IsLoadDone() && IsRootEnabled;
+        private bool HasValidParameters() => !DisableSyncing && _hasRegistered && FusionSceneManager.IsLoadDone() && IsRootEnabled;
 
         public void OnFixedUpdate() {
             try {

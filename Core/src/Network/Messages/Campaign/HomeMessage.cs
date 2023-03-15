@@ -56,7 +56,7 @@ namespace LabFusion.Network
         }
     }
 
-    [Net.DelayWhileLoading]
+    [Net.DelayWhileTargetLoading]
     public class HomeEventMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.HomeEvent;

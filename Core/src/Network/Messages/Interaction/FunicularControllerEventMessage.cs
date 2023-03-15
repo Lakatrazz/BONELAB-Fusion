@@ -60,7 +60,7 @@ namespace LabFusion.Network
         }
     }
 
-    [Net.DelayWhileLoading]
+    [Net.DelayWhileTargetLoading]
     public class FunicularControllerEventMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.FunicularControllerEvent;

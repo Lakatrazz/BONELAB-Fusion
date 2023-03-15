@@ -80,7 +80,7 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         public void SetOverriden() {
-            if (LevelWarehouseUtilities.IsLoading()) {
+            if (FusionSceneManager.IsLoading()) {
                 if (!_hasOverridenValues)
                     SetDefaultValues();
 
@@ -236,34 +236,37 @@ namespace LabFusion.SDK.Gamemodes {
             _timeOfStart = Time.realtimeSinceStartup;
             _oneMinuteLeft = false;
 
-            // Force mortality
-            FusionPlayer.SetMortality(true);
+            // Invoke player changes on level load
+            FusionSceneManager.HookOnLevelLoad(() => {
+                // Force mortality
+                FusionPlayer.SetMortality(true);
 
-            // Setup ammo
-            FusionPlayer.SetAmmo(1000);
+                // Setup ammo
+                FusionPlayer.SetAmmo(1000);
 
-            // Get all spawn points
-            List<Transform> transforms = new List<Transform>();
-            foreach (var point in DeathmatchSpawnpoint.Cache.Components) {
-                transforms.Add(point.transform);
-            }
+                // Get all spawn points
+                List<Transform> transforms = new List<Transform>();
+                foreach (var point in DeathmatchSpawnpoint.Cache.Components) {
+                    transforms.Add(point.transform);
+                }
 
-            FusionPlayer.SetSpawnPoints(transforms.ToArray());
+                FusionPlayer.SetSpawnPoints(transforms.ToArray());
 
-            // Teleport to a random spawn point
-            if (FusionPlayer.TryGetSpawnPoint(out var spawn)) {
-                FusionPlayer.Teleport(spawn.position, spawn.forward);
-            }
+                // Teleport to a random spawn point
+                if (FusionPlayer.TryGetSpawnPoint(out var spawn)) {
+                    FusionPlayer.Teleport(spawn.position, spawn.forward);
+                }
 
-            // Push nametag updates
-            FusionOverrides.ForceUpdateOverrides();
+                // Push nametag updates
+                FusionOverrides.ForceUpdateOverrides();
 
-            // Apply vitality and avatar overrides
-            if (_avatarOverride != null)
-                FusionPlayer.SetAvatarOverride(_avatarOverride);
+                // Apply vitality and avatar overrides
+                if (_avatarOverride != null)
+                    FusionPlayer.SetAvatarOverride(_avatarOverride);
 
-            if (_vitalityOverride.HasValue)
-                FusionPlayer.SetPlayerVitality(_vitalityOverride.Value);
+                if (_vitalityOverride.HasValue)
+                    FusionPlayer.SetPlayerVitality(_vitalityOverride.Value);
+            });
         }
 
         protected void OnVictoryStatus(bool isVictory = false) {

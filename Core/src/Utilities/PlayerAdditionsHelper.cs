@@ -20,6 +20,8 @@ using SLZ.Interaction;
 using UnhollowerBaseLib;
 
 using SLZ.Marrow.Data;
+using SLZ.UI;
+using LabFusion.Preferences;
 
 namespace LabFusion.Utilities {
     public static class PlayerAdditionsHelper {
@@ -32,6 +34,8 @@ namespace LabFusion.Utilities {
             MultiplayerHooking.OnStartServer += () => { OnEnterServer(RigData.RigReferences.RigManager); };
             MultiplayerHooking.OnDisconnect += () => { OnExitServer(RigData.RigReferences.RigManager); };
             MultiplayerHooking.OnLocalPlayerCreated += (rig) => {
+                OnCreatedLocalPlayer(rig);
+
                 if (NetworkInfo.HasServer) {
                     OnEnterServer(rig);
                 }
@@ -60,6 +64,28 @@ namespace LabFusion.Utilities {
 
             Internal_IgnoreCollisions(kneeColliders, playerColliders);
             Internal_IgnoreCollisions(feetColliders, playerColliders);
+        }
+
+        public static void OnCreatedLocalPlayer(RigManager manager) {
+            // Insert quick mute button
+            var popUpMenu = manager.uiRig.popUpMenu;
+            var homePage = popUpMenu.radialPageView.m_HomePage;
+            var mutedPref = FusionPreferences.ClientSettings.Muted;
+
+            string name = mutedPref.GetValue() ? "Quick Unmute" : "Quick Mute";
+
+            var mutePage = new PageItem(name, PageItem.Directions.SOUTHEAST, (Action)(() => {
+                mutedPref.SetValue(!mutedPref.GetValue());
+                popUpMenu.Deactivate();
+            }));
+
+            mutedPref.OnValueChanged += (v) => {
+                if (mutePage != null) {
+                    mutePage.name = mutedPref.GetValue() ? "Quick Unmute" : "Quick Mute";
+                }
+            };
+
+            homePage.items.Add(mutePage);
         }
 
         public static void OnCreatedRig(RigManager manager) {

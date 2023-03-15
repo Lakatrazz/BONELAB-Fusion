@@ -22,31 +22,39 @@ using SLZ.Rig;
 
 namespace LabFusion.Syncables {
     public static class SyncBlacklist {
-        private static readonly Il2Type[] BlacklistedChildComponents = new Il2Type[3] {
+        private static readonly Il2Type[] BlacklistedChildComponents = new Il2Type[4] {
             Il2CppType.Of<GetVelocity>(),
             Il2CppType.Of<SpawnFragment>(),
             Il2CppType.Of<ProjectileBalloon>(),
+            Il2CppType.Of<AmmoPickup>(),
         };
 
         private static readonly Il2Type[] BlacklistedParentComponents = new Il2Type[1] {
             Il2CppType.Of<RigManager>(),
         };
 
-        public static bool IsSyncWhitelisted(this GameObject go)
-        {
+        public static bool HasBlacklistedComponents(this GameObject go) {
             // Check children components
             foreach (var type in BlacklistedChildComponents) {
                 if (go.GetComponentInChildren(type, true) != null) {
-                    return false;
-                } 
+                    return true;
+                }
             }
 
             // Check parent components
             foreach (var type in BlacklistedParentComponents) {
                 if (go.GetComponentInParent(type, true) != null) {
-                    return false;
+                    return true;
                 }
             }
+
+            return false;
+        }
+
+        public static bool IsSyncWhitelisted(this GameObject go)
+        {
+            if (HasBlacklistedComponents(go))
+                return false;
 
             // Other hardcoded stuff (probably cleanup later)
             bool hasRigidbody = go.GetComponentInChildren<Rigidbody>(true) != null;
@@ -57,7 +65,7 @@ namespace LabFusion.Syncables {
 
             var assetPoolee = go.GetComponentInChildren<AssetPoolee>();
             if (assetPoolee)
-                spawnableProperties = assetPoolee.spawnableCrate.Barcode != SpawnableWarehouseUtilities.BOARD_BARCODE;
+                spawnableProperties = assetPoolee.spawnableCrate.Barcode != CommonBarcodes.BOARD_BARCODE;
 
             bool isValid = hasRigidbody && hasGunProperties && spawnableProperties;
 

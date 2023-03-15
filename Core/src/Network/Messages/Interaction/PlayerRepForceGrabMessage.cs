@@ -49,7 +49,7 @@ namespace LabFusion.Network
         }
     }
 
-    [Net.DelayWhileLoading]
+    [Net.DelayWhileTargetLoading]
     public class PlayerRepForceGrabMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.PlayerRepForceGrab;

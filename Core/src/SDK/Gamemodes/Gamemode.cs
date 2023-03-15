@@ -32,6 +32,7 @@ namespace LabFusion.SDK.Gamemodes {
         public virtual bool VisibleInBonemenu { get; } = true;
         public virtual bool PreventNewJoins { get; } = false;
         public virtual bool AutoStopOnSceneLoad { get; } = true;
+        public virtual bool AutoHolsterOnDeath { get; } = true;
 
         // Cheats
         public virtual bool DisableDevTools { get; } = false;

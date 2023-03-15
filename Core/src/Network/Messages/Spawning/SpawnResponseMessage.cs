@@ -93,7 +93,7 @@ namespace LabFusion.Network
         }
     }
 
-    [Net.DelayWhileLoading]
+    [Net.DelayWhileTargetLoading]
     public class SpawnResponseMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.SpawnResponse;
@@ -131,6 +131,12 @@ namespace LabFusion.Network
         }
 
         public static void OnSpawnFinished(byte owner, string barcode, ushort syncId, GameObject go, string spawnerPath = "_", Handedness hand = Handedness.UNDEFINED) {
+            // Make sure this has no blacklisted components
+            if (go.HasBlacklistedComponents()) {
+                go.SetActive(false);
+                return;
+            }
+            
             ZoneSpawner spawner = null;
             if (spawnerPath != "_") {
                 try {

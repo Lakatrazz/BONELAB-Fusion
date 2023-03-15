@@ -46,7 +46,7 @@ namespace LabFusion.Patching
                     if (!NetworkInfo.IsServer)
                     {
                         // Check if we should prevent this object from spawning
-                        if (barcode == SpawnableWarehouseUtilities.FADE_OUT_BARCODE) {
+                        if (barcode == CommonBarcodes.FADE_OUT_BARCODE) {
                             __instance.gameObject.SetActive(false);
                         }
                         else if (!PooleeUtilities.ForceEnabled.Contains(__instance) && PooleeUtilities.CanForceDespawn(__instance)) {
@@ -94,7 +94,7 @@ namespace LabFusion.Patching
         }
 
         private static IEnumerator CoVerifySpawnedRoutine(AssetPoolee __instance) {
-            while (LevelWarehouseUtilities.IsLoading())
+            while (FusionSceneManager.IsLoading())
                 yield return null;
 
             for (var i = 0; i < 4; i++)
@@ -194,12 +194,9 @@ namespace LabFusion.Patching
             if (PooleeUtilities.IsPlayer(__instance) || IgnorePatches || __instance.IsNOC())
                 return true;
 
-            try
-            {
-                if (NetworkInfo.HasServer)
-                {
-                    if (!NetworkInfo.IsServer && !PooleeUtilities.CanDespawn && PropSyncable.Cache.TryGet(__instance.gameObject, out var syncable))
-                    {
+            try {
+                if (NetworkInfo.HasServer) {
+                    if (!NetworkInfo.IsServer && !PooleeUtilities.CanDespawn && PropSyncable.Cache.TryGet(__instance.gameObject, out var syncable)) {
                         return false;
                     }
                     else if (NetworkInfo.IsServer)

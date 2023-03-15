@@ -437,7 +437,7 @@ namespace LabFusion.Network
         }
 
         private void OnUpdateCreateServerText() {
-            if (LevelWarehouseUtilities.IsDelayedLoading())
+            if (FusionSceneManager.IsDelayedLoading())
                 return;
 
             if (_isConnectionActive)
@@ -467,8 +467,16 @@ namespace LabFusion.Network
         }
 
         private LobbySortMode _publicLobbySortMode = LobbySortMode.LEVEL;
+        private bool _isPublicLobbySearching = false;
+
+        private const int _maxLobbiesInOneFrame = 2;
+        private const int _lobbyFrameDelay = 10;
 
         private void Menu_RefreshPublicLobbies() {
+            // Make sure we arent already searching
+            if (_isPublicLobbySearching)
+                return;
+
             // Clear existing lobbies
             _publicLobbiesCategory.Elements.Clear();
             _publicLobbiesCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshPublicLobbies);
@@ -508,6 +516,8 @@ namespace LabFusion.Network
         }
 
         private IEnumerator CoAwaitLobbyListRoutine() {
+            _isPublicLobbySearching = true;
+
             // Fetch lobbies
             var task = FetchLobbies();
 
@@ -515,6 +525,8 @@ namespace LabFusion.Network
                 yield return null;
 
             var lobbies = task.Result;
+
+            int lobbyCount = 0;
 
             foreach (var lobby in lobbies) {
                 // Make sure this is not us
@@ -529,13 +541,31 @@ namespace LabFusion.Network
                     // Add to list
                     BoneMenuCreator.CreateLobby(_publicLobbiesCategory, info, networkLobby, _publicLobbySortMode);
                 }
+
+                lobbyCount++;
+
+                if (lobbyCount >= _maxLobbiesInOneFrame) {
+                    lobbyCount = 0;
+
+                    for (var i = 0; i < _lobbyFrameDelay; i++) {
+                        yield return null;
+                    }
+                }
             }
 
             // Select the updated category
             MenuManager.SelectCategory(_publicLobbiesCategory);
+
+            _isPublicLobbySearching = false;
         }
 
+        private bool _isFriendLobbySearching = false;
+
         private void Menu_RefreshFriendLobbies() {
+            // Make sure we arent searching for lobbies already
+            if (_isFriendLobbySearching)
+                return;
+
             // Clear existing lobbies
             _friendsCategory.Elements.Clear();
             _friendsCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshFriendLobbies);
@@ -545,6 +575,8 @@ namespace LabFusion.Network
 
         private IEnumerator CoAwaitFriendListRoutine()
         {
+            _isFriendLobbySearching = true;
+
             // Fetch lobbies
             var task = FetchLobbies();
 
@@ -552,6 +584,8 @@ namespace LabFusion.Network
                 yield return null;
 
             var lobbies = task.Result;
+
+            int lobbyCount = 0;
 
             foreach (var lobby in lobbies)
             {
@@ -569,10 +603,22 @@ namespace LabFusion.Network
                     // Add to list
                     BoneMenuCreator.CreateLobby(_friendsCategory, lobbyInfo, networkLobby);
                 }
+
+                lobbyCount++;
+
+                if (lobbyCount >= _maxLobbiesInOneFrame) {
+                    lobbyCount = 0;
+
+                    for (var i = 0; i < _lobbyFrameDelay; i++) {
+                        yield return null;
+                    }
+                }
             }
 
             // Select the updated category
             MenuManager.SelectCategory(_friendsCategory);
+
+            _isFriendLobbySearching = false;
         }
     }
 }

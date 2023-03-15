@@ -57,7 +57,7 @@ namespace LabFusion.Network
         }
     }
 
-    [Net.DelayWhileLoading]
+    [Net.DelayWhileTargetLoading]
     public class MagazineEjectMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.MagazineEject;

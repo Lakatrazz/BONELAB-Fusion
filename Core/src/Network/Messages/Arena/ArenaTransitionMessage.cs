@@ -29,6 +29,7 @@ namespace LabFusion.Network
         ARENA_RING_THE_BELL = 8,
         FAIL_OBJECTIVE_MODE = 9,
         FAIL_ESCAPE_MODE = 10,
+        SPAWN_LOOT = 11,
     }
 
     public class ArenaTransitionData : IFusionSerializable, IDisposable
@@ -59,7 +60,7 @@ namespace LabFusion.Network
         }
     }
 
-    [Net.DelayWhileLoading]
+    [Net.DelayWhileTargetLoading]
     public class ArenaTransitionMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.ArenaTransition;
@@ -110,6 +111,9 @@ namespace LabFusion.Network
                                 break;
                             case ArenaTransitionType.FAIL_ESCAPE_MODE:
                                 ArenaData.GameController.FailEscapeMode();
+                                break;
+                            case ArenaTransitionType.SPAWN_LOOT:
+                                ArenaData.GameController.SpawnLoot();
                                 break;
                         }
                     }

@@ -15,6 +15,7 @@ namespace LabFusion.BoneMenu
         public static void CreateGamemodesMenu(MenuCategory category) {
             // Root category
             _gamemodesCategory = category.CreateCategory("Gamemodes", Color.cyan);
+            ClearGamemodes();
 
             // Hook music enabled change
             FusionPreferences.ClientSettings.GamemodeMusic.OnValueChanged += (v) => {
@@ -38,7 +39,7 @@ namespace LabFusion.BoneMenu
 
         public static void RefreshGamemodes() {
             // Clear existing gamemodes just incase
-            ClearGamemodes();
+            ClearGamemodes(false);
 
             // Add stop button
             _gamemodeElement = _gamemodesCategory.CreateFunctionElement("No Active Gamemode", Color.white, () =>
@@ -66,9 +67,16 @@ namespace LabFusion.BoneMenu
             }
         }
 
-        public static void ClearGamemodes() {
+        public static void ClearGamemodes(bool showText = true) {
             // Clear all gamemodes from the list
             _gamemodesCategory.Elements.Clear();
+
+            // Don't show the text if disabled
+            if (!showText)
+                return;
+
+            // Add text for joining a server
+            _gamemodesCategory.CreateFunctionElement("Gamemodes will show when in a server!", Color.yellow, null);
         }
     }
 }

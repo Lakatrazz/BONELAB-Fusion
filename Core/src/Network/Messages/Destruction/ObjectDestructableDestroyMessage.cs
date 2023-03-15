@@ -57,7 +57,7 @@ namespace LabFusion.Network
         }
     }
 
-    [Net.DelayWhileLoading]
+    [Net.DelayWhileTargetLoading]
     public class ObjectDestructableDestroyMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.ObjectDestructableDestroy;

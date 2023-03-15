@@ -170,7 +170,7 @@ namespace LabFusion.Preferences {
 
             // Gamemodes
             ClientSettings.GamemodeMusic = new FusionPref<bool>(prefCategory, "Gamemode Music", true, PrefUpdateMode.IGNORE);
-            ClientSettings.GamemodeLateJoining = new FusionPref<bool>(prefCategory, "Gamemode Late Joining", false, PrefUpdateMode.IGNORE);
+            ClientSettings.GamemodeLateJoining = new FusionPref<bool>(prefCategory, "Gamemode Late Joining", true, PrefUpdateMode.IGNORE);
 
             // Save category
             prefCategory.SaveToFile(false);

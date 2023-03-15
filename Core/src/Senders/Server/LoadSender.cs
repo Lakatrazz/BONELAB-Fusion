@@ -42,6 +42,14 @@ namespace LabFusion.Senders {
             }
         }
 
+        public static void SendLoadingState(bool isLoading) {
+            if (!NetworkInfo.HasServer || PlayerIdManager.LocalId == null)
+                return;
+
+            // Set the loading metadata
+            PlayerIdManager.LocalId.TrySetMetadata(MetadataHelper.LoadingKey, isLoading.ToString());
+        }
+
         public static void SendLevelLoad(string barcode) {
             if (!NetworkInfo.IsServer)
                 return;

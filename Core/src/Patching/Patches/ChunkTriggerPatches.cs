@@ -98,7 +98,7 @@ namespace LabFusion.Patching
         [HarmonyPrefix]
         [HarmonyPatch(nameof(ChunkTrigger.OnUnload))]
         public static bool OnUnload(ChunkTrigger __instance) {
-            if (!LevelWarehouseUtilities.IsDelayedLoadDone())
+            if (!FusionSceneManager.IsDelayedLoadDone())
                 return true;
 
             if (NetworkInfo.HasServer) {

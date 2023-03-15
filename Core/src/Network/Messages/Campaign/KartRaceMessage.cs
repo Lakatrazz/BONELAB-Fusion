@@ -58,7 +58,7 @@ namespace LabFusion.Network
         }
     }
 
-    [Net.DelayWhileLoading]
+    [Net.DelayWhileTargetLoading]
     public class KartRaceEventMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.KartRaceEvent;

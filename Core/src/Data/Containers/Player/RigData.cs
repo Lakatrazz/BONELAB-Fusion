@@ -43,6 +43,8 @@ namespace LabFusion.Data
         public RigManager RigManager { get; private set; }
         public OpenControllerRig ControllerRig { get; private set; }
 
+        public Player_Health Health { get; private set; }
+
         public Grip[] RigGrips { get; private set; }
         public Rigidbody[] RigRigidbodies { get; private set; }
 
@@ -189,6 +191,8 @@ namespace LabFusion.Data
             // Assign values
             ControllerRig = rigManager.openControllerRig;
 
+            Health = RigManager.health.Cast<Player_Health>();
+
             RigGrips = rigManager.physicsRig.GetComponentsInChildren<Grip>(true);
 
             RigSlots = rigManager.GetComponentsInChildren<InventorySlotReceiver>(true);
@@ -197,7 +201,7 @@ namespace LabFusion.Data
             RightHand = rigManager.physicsRig.m_handRt.GetComponent<Hand>();
 
             LeftUIInput = LeftHand.Controller.GetComponent<UIControllerInput>();
-            RightUIInput = LeftHand.Controller.GetComponent<UIControllerInput>();
+            RightUIInput = RightHand.Controller.GetComponent<UIControllerInput>();
 
             Proxy = rigManager.GetComponentInChildren<TriggerRefProxy>(true);
 
@@ -211,7 +215,7 @@ namespace LabFusion.Data
         public static RigReferenceCollection RigReferences { get; private set; } = new RigReferenceCollection();
         public static bool HasPlayer => RigReferences.IsValid;
 
-        public static string RigAvatarId { get; internal set; } = AvatarWarehouseUtilities.INVALID_AVATAR_BARCODE;
+        public static string RigAvatarId { get; internal set; } = CommonBarcodes.INVALID_AVATAR_BARCODE;
         public static SerializedAvatarStats RigAvatarStats { get; internal set; } = null;
 
         public static Vector3 RigSpawn { get; private set; }
@@ -283,14 +287,10 @@ namespace LabFusion.Data
 
         public static void OnHandUpdate(Hand hand) {
             // Try fixing UI every 30 frames
-            if (NetworkInfo.HasServer && Time.frameCount % 30 == 0) {
+            // If the hand is not holding anything, clear the list
+            if (NetworkInfo.HasServer && Time.frameCount % 60 == 0 && !hand.HasAttachedObject()) {
                 var uiInput = RigReferences.GetUIInput(hand.handedness);
-
-                // If the cursor target is disabled clear the list
-                var target = uiInput.CursorTarget;
-
-                if (!target.gameObject.activeInHierarchy)
-                    uiInput._cursorTargetOverrides.Clear();
+                uiInput._cursorTargetOverrides.Clear();
             }
         }
 
@@ -299,7 +299,7 @@ namespace LabFusion.Data
 
             if (rm)
                 return rm.AvatarCrate.Barcode;
-            return AvatarWarehouseUtilities.INVALID_AVATAR_BARCODE;
+            return CommonBarcodes.INVALID_AVATAR_BARCODE;
         }
     }
 }

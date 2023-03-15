@@ -15,6 +15,9 @@ using SLZ;
 
 using UnityEngine;
 using LabFusion.Senders;
+using LabFusion.Representation;
+using LabFusion.SDK.Gamemodes;
+using LabFusion.Extensions;
 
 namespace LabFusion.Patching
 {
@@ -47,7 +50,13 @@ namespace LabFusion.Patching
         public static void DeathVocal(HeadSFX __instance) {
             // Is this our player? Did they actually die?
             var rm = __instance.physRig.manager;
-            if (NetworkInfo.HasServer && rm == RigData.RigReferences.RigManager && !rm.health.alive) {
+            if (NetworkInfo.HasServer && rm.IsLocalPlayer() && !rm.health.alive) {
+                // If in a gamemode with auto holstering, then do it
+                if (Gamemode.ActiveGamemode != null && Gamemode.ActiveGamemode.AutoHolsterOnDeath) {
+                    rm.physicsRig.leftHand.TryAutoHolsterGrip(RigData.RigReferences);
+                    rm.physicsRig.rightHand.TryAutoHolsterGrip(RigData.RigReferences);
+                }
+
                 // If the player is ragdoll on death, reset them
                 // This prevents them spawning in the ground
                 if (rm.health._testRagdollOnDeath) {

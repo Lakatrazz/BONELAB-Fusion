@@ -58,7 +58,7 @@ namespace LabFusion.Network
         }
     }
 
-    [Net.DelayWhileLoading]
+    [Net.DelayWhileTargetLoading]
     public class PropSyncableCreateMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.PropSyncableCreate;

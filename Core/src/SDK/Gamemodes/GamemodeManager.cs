@@ -27,8 +27,10 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         internal static void Internal_SetActiveGamemode(Gamemode gamemode) {
-            Gamemode._activeGamemode = gamemode;
-            OnGamemodeChanged.InvokeSafe(gamemode, "executing hook OnGamemodeChanged");
+            if (Gamemode._activeGamemode != gamemode) {
+                Gamemode._activeGamemode = gamemode;
+                OnGamemodeChanged.InvokeSafe(gamemode, "executing hook OnGamemodeChanged");
+            }
 
             if (gamemode == null)
                 BoneMenuCreator.SetActiveGamemodeText("No Active Gamemode");

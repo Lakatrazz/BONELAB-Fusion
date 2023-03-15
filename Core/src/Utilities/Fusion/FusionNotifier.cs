@@ -119,7 +119,7 @@ namespace LabFusion.Utilities
 
         internal static void OnUpdate() {
             // Make sure we aren't loading so we can dequeue existing notifications
-            if (_queuedNotifications.Count > 0 && !LevelWarehouseUtilities.IsLoading()) {
+            if (_queuedNotifications.Count > 0 && !FusionSceneManager.IsLoading()) {
                 // Enable the tutorial rig a frame before showing notifs
                 if (!_hasEnabledTutorialRig) {
                     EnableTutorialRig();

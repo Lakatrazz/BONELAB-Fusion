@@ -158,41 +158,47 @@ namespace LabFusion.Grabbables {
                             serializedGrab = new SerializedPropGrab("_", syncable.GetIndex(grip).Value, syncable.GetId());
                             validGrip = true;
                         }
-                        // Create a new one
-                        else if (!NetworkInfo.IsServer)
-                        {
-                            syncable = new PropSyncable(host);
+                        else {
+                            // Make sure the GameObject is whitelisted before syncing
+                            if (!root.IsSyncWhitelisted())
+                                yield break;
 
-                            ushort queuedId = SyncManager.QueueSyncable(syncable);
-
-                            using (var writer = FusionWriter.Create(SyncableIDRequestData.Size))
+                            // Create a new one
+                            if (!NetworkInfo.IsServer)
                             {
-                                using (var data = SyncableIDRequestData.Create(smallId, queuedId))
+                                syncable = new PropSyncable(host);
+    
+                                ushort queuedId = SyncManager.QueueSyncable(syncable);
+    
+                                using (var writer = FusionWriter.Create(SyncableIDRequestData.Size))
                                 {
-                                    writer.Write(data);
-
-                                    using (var message = FusionMessage.Create(NativeMessageTag.SyncableIDRequest, writer))
+                                    using (var data = SyncableIDRequestData.Create(smallId, queuedId))
                                     {
-                                        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+                                        writer.Write(data);
+    
+                                        using (var message = FusionMessage.Create(NativeMessageTag.SyncableIDRequest, writer))
+                                        {
+                                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+                                        }
                                     }
                                 }
-                            }
-
-                            while (syncable.IsQueued())
+    
+                                while (syncable.IsQueued())
+                                    yield return null;
+    
                                 yield return null;
-
-                            yield return null;
-
-                            serializedGrab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id);
-                            validGrip = true;
-                        }
-                        else if (NetworkInfo.IsServer)
-                        {
-                            syncable = new PropSyncable(host);
-                            SyncManager.RegisterSyncable(syncable, SyncManager.AllocateSyncID());
-                            serializedGrab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id);
-
-                            validGrip = true;
+    
+                                serializedGrab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id);
+                                validGrip = true;
+                            }
+                            else if (NetworkInfo.IsServer)
+                            {
+                                syncable = new PropSyncable(host);
+                                SyncManager.RegisterSyncable(syncable, SyncManager.AllocateSyncID());
+                                serializedGrab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id);
+    
+                                validGrip = true;
+                            }
                         }
                     }
                 }

@@ -104,7 +104,7 @@ namespace LabFusion.Network
         }
     }
 
-    [Net.DelayWhileLoading]
+    [Net.DelayWhileTargetLoading]
     public class BoardCreateMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.BoardCreate;

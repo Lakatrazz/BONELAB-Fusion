@@ -63,7 +63,7 @@ namespace LabFusion.Network
         }
     }
 
-    [Net.DelayWhileLoading]
+    [Net.DelayWhileTargetLoading]
     public class SpawnableCratePlacerMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.SpawnableCratePlacer;

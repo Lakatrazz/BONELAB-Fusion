@@ -44,10 +44,21 @@ namespace LabFusion.Network {
             public override bool IsAwaitable() => true;
 
             public override bool CanContinue() {
-                return !LevelWarehouseUtilities.IsLoading();
+                return !FusionSceneManager.IsLoading();
             }
         }
 
+        /// <summary>
+        /// Waits to handle any recieved messages until the server's target scene has finished loading.
+        /// </summary>
+        [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
+        public class DelayWhileTargetLoading : NetAttribute {
+            public override bool IsAwaitable() => true;
+
+            public override bool CanContinue() {
+                return FusionSceneManager.HasTargetLoaded();
+            }
+        }
 
         /// <summary>
         /// Skips handling a message if the game is currently loading.
@@ -55,7 +66,7 @@ namespace LabFusion.Network {
         [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
         public class SkipHandleWhileLoading : NetAttribute {
             public override bool StopHandling() {
-                return LevelWarehouseUtilities.IsLoading();
+                return FusionSceneManager.IsLoading();
             }
         }
     }

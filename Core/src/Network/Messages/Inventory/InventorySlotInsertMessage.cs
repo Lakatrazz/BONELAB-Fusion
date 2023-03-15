@@ -67,7 +67,7 @@ namespace LabFusion.Network
         }
     }
 
-    [Net.DelayWhileLoading]
+    [Net.DelayWhileTargetLoading]
     public class InventorySlotInsertMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.InventorySlotInsert;

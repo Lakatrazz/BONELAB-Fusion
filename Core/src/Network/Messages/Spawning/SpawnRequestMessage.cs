@@ -53,7 +53,7 @@ namespace LabFusion.Network
         }
     }
 
-    [Net.DelayWhileLoading]
+    [Net.DelayWhileTargetLoading]
     public class SpawnRequestMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.SpawnRequest;

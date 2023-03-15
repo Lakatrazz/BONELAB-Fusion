@@ -223,5 +223,14 @@ namespace LabFusion.Patching {
                 ArenaSender.SendArenaTransition(ArenaTransitionType.FAIL_ESCAPE_MODE);
             });
         }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(Arena_GameController.SpawnLoot))]
+        public static bool SpawnLoot()
+        {
+            return IgnorePatches || QuickSender.SendServerMessage(() => {
+                ArenaSender.SendArenaTransition(ArenaTransitionType.SPAWN_LOOT);
+            });
+        }
     }
 }

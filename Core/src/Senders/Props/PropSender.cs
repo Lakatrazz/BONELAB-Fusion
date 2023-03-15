@@ -139,7 +139,7 @@ namespace LabFusion.Senders
 
         private static IEnumerator Internal_InitializePropSyncable(GameObject root, Action<PropSyncable> onFinished, bool waitUntilEnabled) {
             // Wait for level to finish loading
-            while (LevelWarehouseUtilities.IsDelayedLoading())
+            while (FusionSceneManager.IsDelayedLoading())
                 yield return null;
             
             // Wait for the gameObject to be enabled, if you are expecting it to be disabled

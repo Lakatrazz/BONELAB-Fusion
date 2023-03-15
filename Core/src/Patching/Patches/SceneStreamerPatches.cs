@@ -30,11 +30,13 @@ namespace LabFusion.Patching
 
     [HarmonyPatch(typeof(SceneStreamer))]
     public class SceneLoadPatch {
+        public static bool IgnorePatches = false;
+
         [HarmonyPatch(nameof(SceneStreamer.Reload))]
         [HarmonyPrefix]
         public static bool Reload() {
             // Check if we need to exit early
-            if (!LevelWarehouseUtilities.IsLoadingAllowed && NetworkInfo.HasServer && !NetworkInfo.IsServer) {
+            if (!IgnorePatches && NetworkInfo.HasServer && !NetworkInfo.IsServer) {
                 return false;
             }
 
@@ -45,7 +47,7 @@ namespace LabFusion.Patching
         [HarmonyPrefix]
         public static bool StringLoad(string levelBarcode, string loadLevelBarcode = "") {
             // Check if we need to exit early
-            if (!LevelWarehouseUtilities.IsLoadingAllowed && NetworkInfo.HasServer && !NetworkInfo.IsServer) {
+            if (!IgnorePatches && NetworkInfo.HasServer && !NetworkInfo.IsServer) {
                 return false;
             }
 
@@ -57,7 +59,7 @@ namespace LabFusion.Patching
         public static bool CrateLoad(LevelCrateReference level, LevelCrateReference loadLevel) {
             try {
                 // Check if we need to exit early
-                if (!LevelWarehouseUtilities.IsLoadingAllowed && NetworkInfo.HasServer && !NetworkInfo.IsServer) {
+                if (!IgnorePatches && NetworkInfo.HasServer && !NetworkInfo.IsServer) {
                     return false;
                 }
             }

@@ -30,8 +30,8 @@ namespace LabFusion
     public struct FusionVersion
     {
         public const byte versionMajor = 1;
-        public const byte versionMinor = 0;
-        public const short versionPatch = 1;
+        public const byte versionMinor = 1;
+        public const short versionPatch = 0;
     }
 
     public class FusionMod : MelonMod {
@@ -43,10 +43,18 @@ namespace LabFusion
         public const string Changelog = "- Debug build. Changelog will show in the release build.";
 #else
         public const string Changelog =
-            "- Made public lobbies default to sorting by level\n" +
-            "- Fixed gamemodes sometimes not functioning after joining a server\n" +
-            "- Improved the amount of lobbies that can be searched\n" +
-            "- Added notice when an empty networking layer is selected";
+            "- Fixed joining in progress gamemodes not giving you ammo or setting spawns\n" +
+            "- Fixed descent noose damaging everyone\n" +
+            "- Improved catchup spawns for campaign levels\n" +
+            "- Fixed deleting guns in your hand causing UI to break\n" +
+            "- Synced curr_Health value for mod creators\n" +
+            "- Added quick mute button in radial menu\n" +
+            "- Added info in gamemodes tab when not in a server\n" +
+            "- Changed gamemode late joining to be on by default\n" +
+            "- Made ammo box collection client side\n" +
+            "- Made public lobby refreshing happen over a few frames so you can see progress\n" +
+            "- Halved voice volume in loading screens\n" +
+            "- Made weapons auto holster in gamemodes";
 #endif
 
         /// <summary>
@@ -95,6 +103,9 @@ namespace LabFusion
 
             // Create prefs
             FusionPreferences.OnInitializePreferences();
+
+            // Initialize level loading
+            FusionSceneManager.Internal_OnInitializeMelon();
 
             // Load network layer type
             ActiveNetworkingType = NetworkLayerDeterminer.GetLoadedType();
@@ -167,7 +178,7 @@ namespace LabFusion
         }
 
         public static void OnMainSceneInitialized() {
-            string sceneName = LevelWarehouseUtilities.GetCurrentLevel().Title;
+            string sceneName = FusionSceneManager.Level.Title;
             
 #if DEBUG
             FusionLogger.Log($"Main scene {sceneName} was initialized.");
@@ -211,8 +222,8 @@ namespace LabFusion
             NetworkInfo.BytesDown = 0;
             NetworkInfo.BytesUp = 0;
 
-            // Update the jank level loading check
-            LevelWarehouseUtilities.OnUpdateLevelLoading();
+            // Update the level loading checks
+            FusionSceneManager.Internal_UpdateScene();
 
             // Store rig info/update avatars
             RigData.OnRigUpdate();
