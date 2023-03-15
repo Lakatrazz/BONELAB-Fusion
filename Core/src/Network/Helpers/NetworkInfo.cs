@@ -18,24 +18,29 @@ namespace LabFusion.Network {
         public static INetworkLobby CurrentLobby => CurrentNetworkLayer.CurrentLobby;
 
         /// <summary>
+        /// Returns true if a network layer has been established.
+        /// </summary>
+        public static bool HasLayer => CurrentNetworkLayer != null;
+
+        /// <summary>
         /// Returns true if the user is currently in a server.
         /// </summary>
-        public static bool HasServer => CurrentNetworkLayer.IsServer || CurrentNetworkLayer.IsClient;
+        public static bool HasServer => HasLayer && (CurrentNetworkLayer.IsServer || CurrentNetworkLayer.IsClient);
 
         /// <summary>
         /// Returns true if this user is the host or server.
         /// </summary>
-        public static bool IsServer => CurrentNetworkLayer.IsServer;
+        public static bool IsServer => HasLayer && CurrentNetworkLayer.IsServer;
 
         /// <summary>
         /// Returns true if this user is a client and not the server or host.
         /// </summary>
-        public static bool IsClient => CurrentNetworkLayer.IsClient && !CurrentNetworkLayer.IsServer;
+        public static bool IsClient => HasLayer && CurrentNetworkLayer.IsClient && !CurrentNetworkLayer.IsServer;
 
         /// <summary>
         /// Returns true if the networking solution allows the server to send messages to the host (Actual Server Logic vs P2P).
         /// </summary>
-        public static bool ServerCanSendToHost => CurrentNetworkLayer.ServerCanSendToHost;
+        public static bool ServerCanSendToHost => HasLayer && CurrentNetworkLayer.ServerCanSendToHost;
 
         /// <summary>
         /// The amount of bytes downloaded this frame.

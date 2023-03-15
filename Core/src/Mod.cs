@@ -31,7 +31,7 @@ namespace LabFusion
     {
         public const byte versionMajor = 1;
         public const byte versionMinor = 1;
-        public const short versionPatch = 0;
+        public const short versionPatch = 1;
     }
 
     public class FusionMod : MelonMod {
@@ -43,18 +43,8 @@ namespace LabFusion
         public const string Changelog = "- Debug build. Changelog will show in the release build.";
 #else
         public const string Changelog =
-            "- Fixed joining in progress gamemodes not giving you ammo or setting spawns\n" +
-            "- Fixed descent noose damaging everyone\n" +
-            "- Improved catchup spawns for campaign levels\n" +
-            "- Fixed deleting guns in your hand causing UI to break\n" +
-            "- Synced curr_Health value for mod creators\n" +
-            "- Added quick mute button in radial menu\n" +
-            "- Added info in gamemodes tab when not in a server\n" +
-            "- Changed gamemode late joining to be on by default\n" +
-            "- Made ammo box collection client side\n" +
-            "- Made public lobby refreshing happen over a few frames so you can see progress\n" +
-            "- Halved voice volume in loading screens\n" +
-            "- Made weapons auto holster in gamemodes";
+            "- Removed Wacky Willy\n" +
+            "- Fixed changing sort mode while refreshing lobbies causing issues";
 #endif
 
         /// <summary>

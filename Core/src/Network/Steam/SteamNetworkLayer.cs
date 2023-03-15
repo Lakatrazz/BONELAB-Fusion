@@ -517,6 +517,7 @@ namespace LabFusion.Network
 
         private IEnumerator CoAwaitLobbyListRoutine() {
             _isPublicLobbySearching = true;
+            LobbySortMode sortMode = _publicLobbySortMode;
 
             // Fetch lobbies
             var task = FetchLobbies();
@@ -539,7 +540,7 @@ namespace LabFusion.Network
 
                 if (Internal_CanShowLobby(info)) {
                     // Add to list
-                    BoneMenuCreator.CreateLobby(_publicLobbiesCategory, info, networkLobby, _publicLobbySortMode);
+                    BoneMenuCreator.CreateLobby(_publicLobbiesCategory, info, networkLobby, sortMode);
                 }
 
                 lobbyCount++;
