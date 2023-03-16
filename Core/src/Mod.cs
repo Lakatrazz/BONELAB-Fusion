@@ -205,8 +205,6 @@ namespace LabFusion
             RigData.RigReferences.RigManager.openControllerRig.quickmenuEnabled = true;
         }
 
-        public static float totalMs;
-
         public override void OnUpdate() {
             // Reset byte counts
             NetworkInfo.BytesDown = 0;
