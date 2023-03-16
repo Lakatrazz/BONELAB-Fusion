@@ -206,16 +206,28 @@ namespace LabFusion.SDK.Points
             if (_accessoryInstances.Count <= 0)
                 return;
 
-            foreach (var instance in _accessoryInstances.ToArray()) {
+            List<AccessoryInstance> accessoriesToRemove = null;
+
+            foreach (var instance in _accessoryInstances) {
                 if (!instance.Value.IsValid()) {
-                    instance.Value.Cleanup();
-                    _accessoryInstances.Remove(instance.Key);
+                    if (accessoriesToRemove == null)
+                        accessoriesToRemove = new List<AccessoryInstance>();
+
+                    accessoriesToRemove.Add(instance.Value);
                     continue;
                 }
 
                 instance.Value.Update(ItemPoint, ScaleMode);
 
                 instance.Value.UpdateMirrors();
+            }
+
+            if (accessoriesToRemove != null) {
+                for (var i = 0; i < accessoriesToRemove.Count; i++) {
+                    var instance = accessoriesToRemove[i];
+                    instance.Cleanup();
+                    _accessoryInstances.Remove(instance.rigManager);
+                }
             }
         }
     }

@@ -26,14 +26,17 @@ namespace LabFusion.Extensions {
         
         public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
         {
-            foreach (T iterator in enumerable)
-                action(iterator);
+            for (var i = 0; i < enumerable.Count(); i++) {
+                action(enumerable.ElementAt(i));
+            }
         }
 
         public static bool Has<T>(this IEnumerable<T> list, T obj) where T : UnityEngine.Object => list.Any(o => o == obj);
 
         public static bool Has<T>(this Il2CppSystem.Collections.Generic.List<T> list, T obj) where T : UnityEngine.Object {
-            foreach (var other in list) {
+            for (var i = 0; i < list.Count; i++) {
+                var other = list[i];
+
                 if (other == obj)
                     return true;
             }

@@ -105,7 +105,9 @@ namespace LabFusion.Network
         /// <param name="channel"></param>
         /// <param name="message"></param>
         internal virtual void BroadcastMessageExcept(byte userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true) {
-            foreach (var id in PlayerIdManager.PlayerIds) {
+            for (var i = 0; i < PlayerIdManager.PlayerIds.Count; i++) {
+                var id = PlayerIdManager.PlayerIds[i];
+
                 if (id.SmallId != userId && (id.SmallId != 0 || !ignoreHost))
                     SendFromServer(id.SmallId, channel, message);
             }
@@ -119,7 +121,8 @@ namespace LabFusion.Network
         /// <param name="message"></param>
         internal virtual void BroadcastMessageExcept(ulong userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
         {
-            foreach (var id in PlayerIdManager.PlayerIds) {
+            for (var i = 0; i < PlayerIdManager.PlayerIds.Count; i++) {
+                var id = PlayerIdManager.PlayerIds[i];
                 if (id.LongId != userId && (id.SmallId != 0 || !ignoreHost))
                     SendFromServer(id.SmallId, channel, message);
             }

@@ -43,7 +43,8 @@ namespace LabFusion.Network
 
         public const int ReceiveBufferSize = 32;
 
-        public const bool AsyncCallbacks = false;
+        // AsyncCallbacks improves performance quite a bit
+        public const bool AsyncCallbacks = true;
 
         internal override bool IsServer => _isServerActive;
         internal override bool IsClient => _isConnectionActive;
@@ -125,7 +126,9 @@ namespace LabFusion.Network
         internal override void OnUpdateLayer() {
             // Run callbacks for our client
             if (!AsyncCallbacks) {
+#pragma warning disable CS0162 // Unreachable code detected
                 SteamClient.RunCallbacks();
+#pragma warning restore CS0162 // Unreachable code detected
             }
 
             // Receive any needed messages
@@ -137,8 +140,8 @@ namespace LabFusion.Network
                     SteamConnection.Receive(ReceiveBufferSize);
                 }
             }
-            catch {
-                FusionLogger.Log("Error receiving data on socket/connection!");
+            catch (Exception e) {
+                FusionLogger.LogException("receiving data on Socket and Connection", e);
             }
         }
 

@@ -41,7 +41,7 @@ namespace LabFusion.Network
             int sizeOfMessage = message.Length;
             IntPtr intPtrMessage = Marshal.AllocHGlobal(sizeOfMessage);
             Marshal.Copy(message.Buffer, 0, intPtrMessage, sizeOfMessage);
-
+            
             connection.SendMessage(intPtrMessage, sizeOfMessage, sendType);
 
             Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
@@ -55,7 +55,8 @@ namespace LabFusion.Network
             IntPtr intPtrMessage = Marshal.AllocHGlobal(sizeOfMessage);
             Marshal.Copy(message.Buffer, 0, intPtrMessage, sizeOfMessage);
 
-            foreach (var connection in socketManager.Connected) {
+            for (var i = 0; i < socketManager.Connected.Count; i++) {
+                var connection = socketManager.Connected[i];
                 connection.SendMessage(intPtrMessage, sizeOfMessage, sendType);
             }
 

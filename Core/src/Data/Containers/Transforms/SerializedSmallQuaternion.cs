@@ -14,6 +14,7 @@ namespace LabFusion.Data
     public class SerializedSmallQuaternion : IFusionSerializable
     {
         public const int Size = sizeof(byte) * 4;
+        public static readonly SerializedSmallQuaternion Default = SerializedSmallQuaternion.Compress(Quaternion.identity);
 
         public sbyte c1, c2, c3, c4;
 

@@ -12,6 +12,7 @@ namespace LabFusion.Data
     public class SerializedLocalTransform : IFusionSerializable
     {
         public const int Size = sizeof(float) * 3 + SerializedSmallQuaternion.Size;
+        public static readonly SerializedLocalTransform Default = new SerializedLocalTransform(Vector3.zero, Quaternion.identity);
 
         public Vector3 position;
         public SerializedSmallQuaternion rotation;

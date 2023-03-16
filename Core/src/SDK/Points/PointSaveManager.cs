@@ -22,41 +22,12 @@ namespace LabFusion.SDK.Points {
             public string[] _enabledItems = null;
             public int _bitCount = 0;
 
-            public string _machineName = null;
-
-            public bool VerifyIntegrity() {
-                try {
-                    // If the machine name is null, this save was generated on an older version.
-                    // We just check if the bit count is absurd then
-                    if (_machineName == null && _bitCount >= 9999) {
-                        return false;
-                    }
-                    // Otherwise, check if the machine name matches
-                    else if (_machineName != null)
-                    {
-                        var localMachine = Environment.MachineName;
-                        return localMachine == _machineName;
-                    }
-                }
-                catch { }
-
-                return true;
-            }
-
             public static PointSaveData CreateCurrent() {
-                string machineName = null;
-
-                try {
-                    machineName = Environment.MachineName;
-                }
-                catch { }
-
                 var data = new PointSaveData
                 {
                     _boughtItems = _unlockedItems.ToArray(),
                     _enabledItems = _equippedItems.ToArray(),
                     _bitCount = _totalBits,
-                    _machineName = machineName,
                 };
                 return data;
             }
@@ -81,62 +52,6 @@ namespace LabFusion.SDK.Points {
             var data = DataSaver.ReadBinary<PointSaveData>(_filePath);
 
             if (data != null) {
-                // Make sure this save is legitimate
-                bool integrity = data.VerifyIntegrity();
-                if (!integrity) {
-                    // He appears on open.
-                    FusionSceneManager.HookOnLevelLoad(() => {
-                        // He is always watching.
-                        FusionNotifier.Send(new FusionNotification()
-                        {
-                            title = "Started Server",
-                            message = "Started a server!",
-                            isMenuItem = false,
-                            isPopup = true,
-                        });
-
-                        string name = "Wacky Willy";
-
-                        FusionNotifier.Send(new FusionNotification()
-                        {
-                            title = $"{name} Join",
-                            message = $"{name} joined the server.",
-                            isMenuItem = false,
-                            isPopup = true,
-                        });
-
-                        FusionNotifier.Send(new FusionNotification()
-                        {
-                            title = $"Willy's Warning",
-                            message = $"Your inventory has been stolen!",
-                            isMenuItem = false,
-                            isPopup = true,
-                            showTitleOnPopup = true,
-                        });
-
-                        FusionNotifier.Send(new FusionNotification()
-                        {
-                            title = $"{name} Leave",
-                            message = $"{name} left the server.",
-                            isMenuItem = false,
-                            isPopup = true,
-                        });
-
-                        // Wacky Willy's grab bag theme
-                        FusionAudio.Play2D(FusionContentLoader.DMTie, Gamemode.DefaultMusicVolume);
-
-                        // Wacky Willy's wacky adventure
-                        Physics.gravity = Vector3.up * 0.2f;
-                    });
-
-                    // He takes them.
-                    _unlockedItems = new List<string>();
-                    _equippedItems = new List<string>();
-                    _totalBits = -Mathf.Abs(data._bitCount); // Willy's Debt!
-                    WriteToFile();
-                    return;
-                }
-
                 if (data._boughtItems != null)
                     _unlockedItems = data._boughtItems.ToList();
 

@@ -19,12 +19,15 @@ namespace LabFusion.Network
 
         private IEnumerator HandleMessage_Internal(byte[] bytes, bool isServerHandled = false) {
             // Initialize the attribute info
-            foreach (var attribute in NetAttributes) {
+            for (var i = 0; i < NetAttributes.Length; i++) {
+                var attribute = NetAttributes[i];
                 attribute.OnHandleBegin();
             }
 
             // Check if we should already stop handling
-            foreach (var attribute in NetAttributes) {
+            for (var i = 0; i < NetAttributes.Length; i++) {
+                var attribute = NetAttributes[i];
+
                 if (attribute.StopHandling())
                     yield break;
             }
@@ -32,7 +35,9 @@ namespace LabFusion.Network
             // Check for any awaitable attributes
             Net.NetAttribute awaitable = null;
 
-            foreach (var attribute in NetAttributes) {
+            for (var i = 0; i < NetAttributes.Length; i++) {
+                var attribute = NetAttributes[i];
+
                 if (attribute.IsAwaitable()) {
                     awaitable = attribute;
                     break;

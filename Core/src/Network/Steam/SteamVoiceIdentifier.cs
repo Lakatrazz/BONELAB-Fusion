@@ -92,8 +92,8 @@ namespace LabFusion.Network {
         }
 
         public static void OnUpdate() {
-            foreach (var identifier in VoiceIdentifiers)
-                identifier.Update();
+            for (var i = 0; i < VoiceIdentifiers.Count; i++)
+                VoiceIdentifiers[i].Update();
         }
 
         public static void RemoveVoiceIdentifier(PlayerId id) {
@@ -112,7 +112,9 @@ namespace LabFusion.Network {
         }
 
         public static SteamVoiceIdentifier GetVoiceIdentifier(PlayerId id) {
-            foreach (var identifier in VoiceIdentifiers) {
+            for (var i = 0; i < VoiceIdentifiers.Count; i++) {
+                var identifier = VoiceIdentifiers[i];
+
                 if (identifier._id == id)
                     return identifier;
             }

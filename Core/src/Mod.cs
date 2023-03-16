@@ -30,8 +30,8 @@ namespace LabFusion
     public struct FusionVersion
     {
         public const byte versionMajor = 1;
-        public const byte versionMinor = 1;
-        public const short versionPatch = 1;
+        public const byte versionMinor = 2;
+        public const short versionPatch = 0;
     }
 
     public class FusionMod : MelonMod {
@@ -42,9 +42,7 @@ namespace LabFusion
 #if DEBUG
         public const string Changelog = "- Debug build. Changelog will show in the release build.";
 #else
-        public const string Changelog =
-            "- Removed Wacky Willy\n" +
-            "- Fixed changing sort mode while refreshing lobbies causing issues";
+        public const string Changelog = "No changelog set.";
 #endif
 
         /// <summary>
@@ -207,6 +205,8 @@ namespace LabFusion
             RigData.RigReferences.RigManager.openControllerRig.quickmenuEnabled = true;
         }
 
+        public static float totalMs;
+
         public override void OnUpdate() {
             // Reset byte counts
             NetworkInfo.BytesDown = 0;
@@ -237,10 +237,8 @@ namespace LabFusion
                 _nextSyncableSendRate = SendRateTable.GetObjectSendRate(byteDifference);
             }
 
-            // Send gravity every 40 frames
-            if (Time.frameCount % 40 == 0) {
-                PhysicsUtilities.OnSendPhysicsInformation();
-            }
+            // Send physics updates
+            PhysicsUtilities.OnSendPhysicsInformation();
 
             // Update reps
             PlayerRep.OnUpdate();

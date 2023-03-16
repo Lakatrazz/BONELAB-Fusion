@@ -56,6 +56,10 @@ namespace LabFusion.Utilities {
         }
 
         internal static void OnSendPhysicsInformation() {
+            // Only run every 40 frames
+            if (Time.frameCount % 40 != 0)
+                return;
+
             if (NetworkInfo.IsServer) {
                 using (var writer = FusionWriter.Create(WorldGravityMessageData.Size)) {
                     using (var data = WorldGravityMessageData.Create(Physics.gravity)) {

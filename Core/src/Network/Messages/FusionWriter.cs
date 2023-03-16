@@ -7,7 +7,12 @@ using System.Threading.Tasks;
 using LabFusion.Extensions;
 using LabFusion.Utilities;
 using LabFusion.Data;
+
 using UnityEngine;
+
+#if DEBUG
+using LabFusion.Debugging;
+#endif
 
 namespace LabFusion.Network
 {
@@ -360,9 +365,8 @@ namespace LabFusion.Network
             BigEndianHelper.WriteBytes(buffer, Position, value.Count);
             Position += 4;
             ArrayExtensions.EnsureLength(ref buffer, Position);
-            foreach (string value2 in value)
-            {
-                Write(value2);
+            for (var i = 0; i < value.Count; i++) {
+                Write(value.ElementAt(i));
             }
         }
 
@@ -425,6 +429,13 @@ namespace LabFusion.Network
         internal void EnsureLength() {
             if (buffer.Length != Position) {
                 Array.Resize(ref buffer, Position);
+
+#if DEBUG
+                if (FusionUnityLogger.EnableArrayResizeLogs)
+#pragma warning disable CS0162 // Unreachable code detected
+                    FusionLogger.Warn("A message's buffer length was not its position, causing a resize!");
+#pragma warning restore CS0162 // Unreachable code detected
+#endif
             }
         }
 

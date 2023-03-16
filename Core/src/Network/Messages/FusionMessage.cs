@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine.UIElements;
 
 namespace LabFusion.Network
 {
@@ -42,11 +43,15 @@ namespace LabFusion.Network
         }
 
         public static FusionMessage Create(byte tag, byte[] buffer) {
+            int length = buffer.Length;
+
             var message = new FusionMessage {
-                buffer = ByteRetriever.Rent(buffer.Length + 1)
+                buffer = ByteRetriever.Rent(length + 1)
             };
             message.buffer[0] = tag;
-            buffer.CopyTo(message.buffer, 1);
+
+            System.Buffer.BlockCopy(buffer, 0, message.buffer, 1, length);
+
             return message;
         }
 
@@ -66,8 +71,10 @@ namespace LabFusion.Network
         }
 
         public static FusionMessage ModuleCreate(Type type, byte[] buffer) {
+            int length = buffer.Length;
+
             var message = new FusionMessage {
-                buffer = ByteRetriever.Rent(buffer.Length + 3)
+                buffer = ByteRetriever.Rent(length + 3)
             };
             message.buffer[0] = NativeMessageTag.Module;
 
@@ -84,7 +91,8 @@ namespace LabFusion.Network
             message.Buffer[1] = typeBytes[0];
             message.Buffer[2] = typeBytes[1];
 
-            buffer.CopyTo(message.buffer, 3);
+            System.Buffer.BlockCopy(buffer, 0, message.buffer, 3, length);
+
             return message;
         }
 

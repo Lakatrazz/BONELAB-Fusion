@@ -39,8 +39,8 @@ namespace LabFusion.Representation
         /// </summary>
         public bool IsCreated => RigReferences.IsValid;
 
-        public static Transform[] syncedPoints = new Transform[RigAbstractor.TransformSyncCount];
-        public static Transform[] gameworldPoints = new Transform[RigAbstractor.GameworldRigTransformCount];
+        public static Transform[] syncedPoints = null;
+        public static Transform[] gameworldPoints = null;
         public static Transform syncedPlayspace;
         public static Transform syncedPelvis;
         public static Hand syncedLeftHand;
@@ -154,8 +154,8 @@ namespace LabFusion.Representation
                 var spectrum = _voiceSource.GetSpectrumData(256, 0, FFTWindow.Rectangular);
 
                 float gain = 0f;
-                foreach (var value in spectrum) {
-                    gain += Mathf.Abs(value);
+                for (var i = 0; i < spectrum.Length; i++) {
+                    gain += Mathf.Abs(spectrum[i]);
                 }
 
                 if (spectrum.Length > 0)
@@ -436,8 +436,8 @@ namespace LabFusion.Representation
         }
 
         public static void OnRecreateReps() {
-            foreach (var rep in PlayerRepManager.PlayerReps) {
-                rep.StartRepCreation();
+            for (var i = 0; i < PlayerRepManager.PlayerReps.Count; i++) {
+                PlayerRepManager.PlayerReps[i].StartRepCreation();
             }
         }
 
@@ -616,12 +616,6 @@ namespace LabFusion.Representation
                 if (gameworldPoints == null || PlayerIdManager.LocalId == null)
                     return false;
 
-                for (var i = 0; i < gameworldPoints.Length; i++)
-                {
-                    if (gameworldPoints[i].IsNOC())
-                        return false;
-                }
-
                 using (var writer = FusionWriter.Create(PlayerRepGameworldData.Size))
                 {
                     using (var data = PlayerRepGameworldData.Create(PlayerIdManager.LocalSmallId, gameworldPoints))
@@ -651,11 +645,6 @@ namespace LabFusion.Representation
                 if (syncedPoints == null || PlayerIdManager.LocalId == null)
                     return false;
 
-                for (var i = 0; i < syncedPoints.Length; i++) {
-                    if (syncedPoints[i].IsNOC())
-                        return false;
-                }
-
                 using (var writer = FusionWriter.Create(PlayerRepTransformData.Size)) {
                     using (var data = PlayerRepTransformData.Create(PlayerIdManager.LocalSmallId, syncedPoints, syncedPelvis, syncedPlayspace, syncedLeftHand, syncedRightHand)) {
                         writer.Write(data);
@@ -683,6 +672,10 @@ namespace LabFusion.Representation
                 else if (RigData.RigReferences.RigManager.activeSeat) {
                     TrySendGameworldRep();
                 }
+            }
+            else {
+                syncedPoints = null;
+                gameworldPoints = null;
             }
         }
 
@@ -776,19 +769,19 @@ namespace LabFusion.Representation
         }
 
         public static void OnUpdate() {
-            foreach (var rep in PlayerRepManager.PlayerReps)
-                rep.OnRepUpdate();
+            for (var i = 0; i < PlayerRepManager.PlayerReps.Count; i++)
+                PlayerRepManager.PlayerReps[i].OnRepUpdate();
         }
 
         public static void OnFixedUpdate() {
-            foreach (var rep in PlayerRepManager.PlayerReps)
-                rep.OnRepFixedUpdate();
+            for (var i = 0; i < PlayerRepManager.PlayerReps.Count; i++)
+                PlayerRepManager.PlayerReps[i].OnRepFixedUpdate();
         }
 
         public static void OnLateUpdate()
         {
-            foreach (var rep in PlayerRepManager.PlayerReps)
-                rep.OnRepLateUpdate();
+            for (var i = 0; i < PlayerRepManager.PlayerReps.Count; i++)
+                PlayerRepManager.PlayerReps[i].OnRepLateUpdate();
         }
 
         /// <summary>

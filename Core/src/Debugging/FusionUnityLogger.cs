@@ -10,6 +10,7 @@ namespace LabFusion.Debugging
 {
     public class FusionUnityLogger {
         public const bool EnableUnityLogs = false;
+        public const bool EnableArrayResizeLogs = false;
 
         public static void OnInitializeMelon() {
             if (EnableUnityLogs) {

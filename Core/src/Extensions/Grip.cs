@@ -20,7 +20,9 @@ namespace LabFusion.Extensions
             if (!weaponSlot)
                 return;
 
-            foreach (var slot in collection.RigSlots) {
+            for (var i = 0; i < collection.RigSlots.Length; i++) {
+                var slot = collection.RigSlots[i];
+
                 if (slot._slottedWeapon != null)
                     continue;
 

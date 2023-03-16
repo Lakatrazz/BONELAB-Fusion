@@ -32,7 +32,9 @@ namespace LabFusion.Data {
                 // Get all scene gameobjects
                 var gameObjects = GameObject.FindObjectsOfType<GameObject>();
 
-                foreach (var go in gameObjects) {
+                for (var i = 0; i < gameObjects.Length; i++) {
+                    var go = gameObjects[i];
+
                     // Get name
                     string name = go.name;
 

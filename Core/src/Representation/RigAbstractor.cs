@@ -23,6 +23,8 @@ namespace LabFusion.Representation {
 
         public static void FillTransformArray(ref Transform[] array, RigManager manager)
         {
+            array = new Transform[TransformSyncCount];
+
             var rig = manager.openControllerRig;
 
             array[0] = rig.m_head;
@@ -34,6 +36,8 @@ namespace LabFusion.Representation {
 
         public static void FillGameworldArray(ref Transform[] array, RigManager manager)
         {
+            array = new Transform[GameworldRigTransformCount];
+
             var rig = manager.virtualHeptaRig;
 
             array[0] = rig.m_head;

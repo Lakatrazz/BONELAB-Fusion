@@ -18,12 +18,27 @@ namespace LabFusion.Data {
 
         public void OnPushUpdate() {
             // Check for seats
+            List<Grip> gripsToRemove = null;
+
             foreach (var grip in _grips.Keys) {
-                foreach (var hand in grip.attachedHands) {
+                var hands = grip.attachedHands;
+                for (var i = 0; i < hands.Count; i++) {
+                    var hand = hands[i];
+
                     if (hand.manager.activeSeat) {
-                        _grips.Remove(grip);
+                        if (gripsToRemove == null)
+                            gripsToRemove = new List<Grip>();
+
+                        gripsToRemove.Add(grip);
                         break;
                     }
+                }
+            }
+
+            // Remove all grips
+            if (gripsToRemove != null) {
+                for (var i = 0; i < gripsToRemove.Count; i++) {
+                    _grips.Remove(gripsToRemove[i]);
                 }
             }
 

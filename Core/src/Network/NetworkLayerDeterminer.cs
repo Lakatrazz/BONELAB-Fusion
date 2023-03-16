@@ -14,10 +14,9 @@ using System.Threading.Tasks;
 
 namespace LabFusion.Network {
     public enum NetworkLayerType {
-        STEAM = 0,
-        STEAM_VR = 1,
-        SPACEWAR = 2,
-        EMPTY = 3,
+        STEAM_VR = 0,
+        SPACEWAR = 1,
+        EMPTY = 2,
     }
 
     public static class NetworkLayerDeterminer {
@@ -27,17 +26,12 @@ namespace LabFusion.Network {
             if (HelperMethods.IsAndroid())
                 return NetworkLayerType.EMPTY;
 
-            return NetworkLayerType.STEAM;
+            return NetworkLayerType.STEAM_VR;
         }
 
         public static NetworkLayerType VerifyType(NetworkLayerType type) {
             switch (type) {
                 default:
-                case NetworkLayerType.STEAM:
-                    if (!SteamNetworkLayer.VerifyLayer())
-                        return VerifyType(NetworkLayerType.STEAM_VR);
-                    else
-                        return NetworkLayerType.STEAM;
                 case NetworkLayerType.STEAM_VR:
                     if (!SteamVRNetworkLayer.VerifyLayer())
                         return VerifyType(NetworkLayerType.SPACEWAR);
@@ -61,8 +55,6 @@ namespace LabFusion.Network {
 
             switch (type) {
                 default:
-                case NetworkLayerType.STEAM:
-                    return typeof(SteamNetworkLayer);
                 case NetworkLayerType.STEAM_VR:
                     return typeof(SteamVRNetworkLayer);
                 case NetworkLayerType.SPACEWAR:
