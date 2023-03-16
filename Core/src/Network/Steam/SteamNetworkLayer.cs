@@ -36,10 +36,8 @@ using UnhollowerBaseLib;
 
 namespace LabFusion.Network
 {
-    public class SteamNetworkLayer : NetworkLayer {
-        public const uint BonelabId = 1592190;
-
-        public virtual uint ApplicationID => BonelabId;
+    public abstract class SteamNetworkLayer : NetworkLayer {
+        public abstract uint ApplicationID { get; }
 
         public const int ReceiveBufferSize = 32;
 
@@ -69,24 +67,6 @@ namespace LabFusion.Network
         // A local reference to a lobby
         // This isn't actually used for joining servers, just for matchmaking
         protected Lobby _localLobby;
-
-        // Verification method to see if our game can actually run this layer
-        public static bool VerifyLayer() {
-            // Make sure the API actually loaded
-            if (!SteamAPILoader.HasSteamAPI)
-                return false;
-
-            try {
-                // Try loading the steam client
-                if (!SteamClient.IsValid)
-                    SteamClient.Init(BonelabId, AsyncCallbacks);
-
-                return true;
-            }
-            catch {
-                return false;
-            }
-        }
 
         internal override void OnInitializeLayer() {
             try {

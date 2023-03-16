@@ -12,7 +12,7 @@ namespace LabFusion.Network
         public override uint ApplicationID => SteamVRId;
 
         // Verification method to see if our game can actually run this layer
-        public static new bool VerifyLayer()
+        public static bool VerifyLayer()
         {
             // Make sure the API actually loaded
             if (!SteamAPILoader.HasSteamAPI)
