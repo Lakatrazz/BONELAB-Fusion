@@ -132,7 +132,7 @@ namespace LabFusion.SDK.Points {
                     // He takes them.
                     _unlockedItems = new List<string>();
                     _equippedItems = new List<string>();
-                    _totalBits = -data._bitCount; // Willy's Debt!
+                    _totalBits = -Mathf.Abs(data._bitCount); // Willy's Debt!
                     WriteToFile();
                     return;
                 }
