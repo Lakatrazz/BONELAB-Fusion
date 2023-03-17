@@ -15,9 +15,17 @@ namespace LabFusion.Utilities {
     internal static class PhysicsUtilities {
         internal static bool CanModifyGravity = false;
 
+        public static Vector3 Gravity;
+
+        internal static void OnCacheValues() {
+            Gravity = Physics.gravity;
+        }
+
         internal static void OnUpdateTimescale() {
             if (NetworkInfo.HasServer) {
                 var mode = FusionPreferences.TimeScaleMode;
+                var references = RigData.RigReferences;
+                var rm = references.RigManager;
 
                 switch (mode)
                 {
@@ -27,24 +35,26 @@ namespace LabFusion.Utilities {
                     case TimeScaleMode.LOW_GRAVITY:
                         Time.timeScale = 1f;
 
-                        if (RigData.HasPlayer)
-                        {
-                            var controlTime = RigData.RigReferences.RigManager.openControllerRig.globalTimeControl;
-                            float mult = 1f - (1f / controlTime.cur_intensity);
-                            if (float.IsNaN(mult) || mult == 0f || float.IsPositiveInfinity(mult) || float.IsNegativeInfinity(mult))
+                        if (RigData.HasPlayer) {
+                            var controlTime = rm.openControllerRig.globalTimeControl;
+                            float intensity = controlTime.cur_intensity;
+                            if (intensity <= 0f)
                                 break;
 
-                            Vector3 force = -Physics.gravity * mult;
+                            float mult = 1f - (1f / controlTime.cur_intensity);
 
-                            if (RigData.RigReferences.RigRigidbodies == null)
-                                RigData.RigReferences.GetRigidbodies();
+                            Vector3 force = -PhysicsUtilities.Gravity * mult;
 
-                            var rbs = RigData.RigReferences.RigRigidbodies;
+                            if (references.RigRigidbodies == null)
+                                references.GetRigidbodies();
 
-                            foreach (var rb in rbs)
-                            {
-                                if (rb.useGravity)
-                                {
+                            var rbs = references.RigRigidbodies;
+
+                            foreach (var rb in rbs) {
+                                if (rb == null)
+                                    continue;
+
+                                if (rb.useGravity) {
                                     rb.AddForce(force, ForceMode.Acceleration);
                                 }
                             }
@@ -62,7 +72,7 @@ namespace LabFusion.Utilities {
 
             if (NetworkInfo.IsServer) {
                 using (var writer = FusionWriter.Create(WorldGravityMessageData.Size)) {
-                    using (var data = WorldGravityMessageData.Create(Physics.gravity)) {
+                    using (var data = WorldGravityMessageData.Create(PhysicsUtilities.Gravity)) {
                         writer.Write(data);
 
                         using (var message = FusionMessage.Create(NativeMessageTag.WorldGravity, writer)) {

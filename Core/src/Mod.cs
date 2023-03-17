@@ -210,6 +210,9 @@ namespace LabFusion
             NetworkInfo.BytesDown = 0;
             NetworkInfo.BytesUp = 0;
 
+            // Cache physics values
+            PhysicsUtilities.OnCacheValues();
+
             // Update the level loading checks
             FusionSceneManager.Internal_UpdateScene();
 

@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using UnityEngine;
+using LabFusion.Extensions;
 
 namespace LabFusion.Data {
     public static class HubData {
@@ -26,7 +27,7 @@ namespace LabFusion.Data {
             Funicular = GameObject.FindObjectOfType<FunicularController>(true);
 
             if (GameController != null) {
-                PointShopHelper.SetupPointShop(PointShopPosition, PointShopRotation, Vector3.one * 0.8f);
+                PointShopHelper.SetupPointShop(PointShopPosition, PointShopRotation, Vector3Extensions.one * 0.8f);
             }
 
             if (NetworkInfo.IsServer && Funicular != null) {

@@ -16,6 +16,7 @@ using UnhollowerBaseLib.Attributes;
 
 using LabFusion.Utilities;
 using LabFusion.UI;
+using LabFusion.Extensions;
 
 namespace LabFusion.SDK.Points
 {
@@ -494,7 +495,7 @@ namespace LabFusion.SDK.Points
 
                 FusionAudio.Play3D(transform.position, FusionContentLoader.UnequipItem);
 
-                _doorRigidbody.AddRelativeTorque(Vector3.right * 30f, ForceMode.Impulse);
+                _doorRigidbody.AddRelativeTorque(Vector3Extensions.right * 30f, ForceMode.Impulse);
             }
             // Equip
             else {
@@ -502,7 +503,7 @@ namespace LabFusion.SDK.Points
 
                 FusionAudio.Play3D(transform.position, FusionContentLoader.EquipItem);
 
-                _doorRigidbody.AddRelativeTorque(Vector3.left * 30f, ForceMode.Impulse);
+                _doorRigidbody.AddRelativeTorque(Vector3Extensions.left * 30f, ForceMode.Impulse);
             }
 
             // Update text

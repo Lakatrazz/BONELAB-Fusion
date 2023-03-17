@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using HarmonyLib;
-
+using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Utilities;
@@ -50,7 +50,7 @@ namespace LabFusion.Patching {
                         // Scale the mesh if its poly blank
                         var go = __instance.gameObject;
                         if (go.name.Contains("char_marrow1_polyBlank")) {
-                            go.transform.localScale = Vector3.one * (__instance._height / 1.76f);
+                            go.transform.localScale = Vector3Extensions.one * (__instance._height / 1.76f);
                         }
                     }
                 }

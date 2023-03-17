@@ -44,7 +44,7 @@ namespace LabFusion.Data
         }
 
         public Quaternion Expand() {
-            return new Quaternion(c1.ToSingle(), c2.ToSingle(), c3.ToSingle(), c4.ToSingle()).normalized;
+            return QuaternionExtensions.Normalize(new Quaternion(c1.ToSingle(), c2.ToSingle(), c3.ToSingle(), c4.ToSingle()));
         }
     }
 }

@@ -70,10 +70,10 @@ namespace LabFusion.SDK.Gamemodes {
                     lineInstance.transform.position = selfPelvis.position;
 
                     Vector3 fromTo = otherPelvis.position - selfPelvis.position;
-                    lineInstance.transform.rotation = Quaternion.LookRotation(fromTo.normalized);
+                    lineInstance.transform.rotation = Quaternion.LookRotation(Vector3Extensions.Normalize(fromTo));
 
                     Vector3 scale = lineInstance.transform.localScale;
-                    scale.z = fromTo.magnitude;
+                    scale.z = Vector3Extensions.GetMagnitude(fromTo);
                     lineInstance.transform.localScale = scale;
                 }
                 // Otherwise, hide the line
@@ -90,8 +90,8 @@ namespace LabFusion.SDK.Gamemodes {
                 joint.linearLimitSpring = new SoftJointLimitSpring() { spring = 7000f };
 
                 joint.autoConfigureConnectedAnchor = false;
-                joint.anchor = Vector3.zero;
-                joint.connectedAnchor = Vector3.zero;
+                joint.anchor = Vector3Extensions.zero;
+                joint.connectedAnchor = Vector3Extensions.zero;
 
                 joint.connectedBody = otherPelvis;
             }

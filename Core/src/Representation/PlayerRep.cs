@@ -216,7 +216,7 @@ namespace LabFusion.Representation
 
         public void ResetSerializedTransforms() {
             for (var i = 0; i < RigAbstractor.TransformSyncCount; i++) {
-                serializedLocalTransforms[i] = new SerializedLocalTransform(Vector3.zero, Quaternion.identity);
+                serializedLocalTransforms[i] = new SerializedLocalTransform(Vector3Extensions.zero, Quaternion.identity);
             }
         }
 
@@ -338,7 +338,7 @@ namespace LabFusion.Representation
 
             repCanvasComponent.renderMode = RenderMode.WorldSpace;
             repCanvasTransform = repCanvas.transform;
-            repCanvasTransform.localScale = Vector3.one / NameTagDivider;
+            repCanvasTransform.localScale = Vector3Extensions.one / NameTagDivider;
 
             repNameText = repCanvas.AddComponent<TextMeshProUGUI>();
 
@@ -363,7 +363,7 @@ namespace LabFusion.Representation
             var rm = RigReferences.RigManager;
             if (IsCreated && rm.avatar) {
                 float height = rm.avatar.height / 1.76f;
-                repCanvasTransform.localScale = Vector3.one / NameTagDivider * height;
+                repCanvasTransform.localScale = Vector3Extensions.one / NameTagDivider * height;
 
                 repNameText.text = Username;
             }
@@ -497,7 +497,7 @@ namespace LabFusion.Representation
 
             if (IsCreated) {
                 var physHead = rm.physicsRig.m_head;
-                repCanvasTransform.position = physHead.position + Vector3.up * GetNametagOffset();
+                repCanvasTransform.position = physHead.position + Vector3Extensions.up * GetNametagOffset();
                 repCanvasTransform.LookAtPlayer();
             }
         }
@@ -561,8 +561,8 @@ namespace LabFusion.Representation
                 }
                 else if (!_hasLockedPosition) {
                     serializedPelvis.position = pelvisPosition;
-                    predictVelocity = Vector3.zero;
-                    predictAngularVelocity = Vector3.zero;
+                    predictVelocity = Vector3Extensions.zero;
+                    predictAngularVelocity = Vector3Extensions.zero;
 
                     _hasLockedPosition = true;
                 }
@@ -582,7 +582,7 @@ namespace LabFusion.Representation
 
                 // Check for stability teleport
                 float distSqr = (pelvisPosition - serializedPelvis.position).sqrMagnitude;
-                if (distSqr > (2f * (predictVelocity.magnitude + 1f))) {
+                if (distSqr > (2f * (Vector3Extensions.GetMagnitude(predictVelocity) + 1f))) {
                     // Get teleport position
                     var pos = serializedPelvis.position;
                     var physRig = RigReferences.RigManager.physicsRig;
@@ -595,8 +595,8 @@ namespace LabFusion.Representation
 
                     // Zero our teleport velocity, cause the rig doesn't seem to do that on its own?
                     foreach (var rb in RigReferences.RigManager.physicsRig.GetComponentsInChildren<Rigidbody>()) {
-                        rb.velocity = Vector3.zero;
-                        rb.angularVelocity = Vector3.zero;
+                        rb.velocity = Vector3Extensions.zero;
+                        rb.angularVelocity = Vector3Extensions.zero;
                     }
 
                     // Reset locosphere and knee pos so the rig doesn't get stuck

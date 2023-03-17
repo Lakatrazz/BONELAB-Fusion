@@ -30,8 +30,6 @@ using SLZ.AI;
 using SLZ.UI;
 using LabFusion.Debugging;
 
-using Avatar = SLZ.VRMK.Avatar;
-
 namespace LabFusion.Data
 {
     /// <summary>
@@ -63,6 +61,7 @@ namespace LabFusion.Data
 
         public void OnDestroy() {
             IsValid = false;
+            RigRigidbodies = null;
         }
 
         public byte? GetIndex(Grip grip, bool isAvatarGrip = false) {

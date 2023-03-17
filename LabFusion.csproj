@@ -215,6 +215,7 @@
     <Compile Include="Core\src\BoneMenu\BanListCreator.cs" />
     <Compile Include="Core\src\BoneMenu\PlayerListCreator.cs" />
     <Compile Include="Core\src\BoneMenu\SettingsCreator.cs" />
+    <Compile Include="Core\src\Data\Containers\FrameSkipper.cs" />
     <Compile Include="Core\src\Data\Containers\GrabbedGripList.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\GameControllerData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\HolodeckData.cs" />
@@ -278,7 +279,9 @@
     <Compile Include="Core\src\Extensions\Int32.cs" />
     <Compile Include="Core\src\Extensions\InteractableHost.cs" />
     <Compile Include="Core\src\Extensions\Joint.cs" />
+    <Compile Include="Core\src\Extensions\Math.cs" />
     <Compile Include="Core\src\Extensions\PullCordDevice.cs" />
+    <Compile Include="Core\src\Extensions\Quaternion.cs" />
     <Compile Include="Core\src\Extensions\Transform.cs" />
     <Compile Include="Core\src\Extensions\SyncableComparer.cs" />
     <Compile Include="Core\src\Extensions\UnityComparer.cs" />

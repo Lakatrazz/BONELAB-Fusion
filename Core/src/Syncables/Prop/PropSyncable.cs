@@ -97,6 +97,9 @@ namespace LabFusion.Syncables
 
         private bool _wasDisposed = false;
 
+        private const int _targetFrame = 3;
+        private readonly FrameSkipper _predictionSkipper = new FrameSkipper(_targetFrame);
+
         public PropSyncable(InteractableHost host = null, GameObject root = null) {
             if (root != null)
                 GameObject = root;
@@ -335,8 +338,8 @@ namespace LabFusion.Syncables
 
                 DesiredPositions[i] = transform.Position;
                 DesiredRotations[i] = transform.Rotation;
-                DesiredVelocities[i] = Vector3.zero;
-                DesiredAngularVelocities[i] = Vector3.zero;
+                DesiredVelocities[i] = Vector3Extensions.zero;
+                DesiredAngularVelocities[i] = Vector3Extensions.zero;
                 InitialPositions[i] = transform.Position;
                 InitialRotations[i] = transform.Rotation;
             }
@@ -696,15 +699,17 @@ namespace LabFusion.Syncables
                 // Don't over predict
                 if (timeSinceMessage <= 0.6f) {
                     // Move position with prediction
-                    if (allowPosition)
-                    {
+                    if (allowPosition) {
                         pos += vel * dt;
                         DesiredPositions[i] = pos;
                     }
 
-                    // Move rotation with prediction
-                    rot = (angVel * dt).GetQuaternionDisplacement() * rot;
-                    DesiredRotations[i] = rot;
+                    // Only predict rotation every so often
+                    if (_predictionSkipper.IsMatchingFrame()) {
+                        // Move rotation with prediction
+                        rot = (angVel * dt * _targetFrame).GetQuaternionDisplacement() * rot;
+                        DesiredRotations[i] = rot;
+                    }
                 }
                 else {
                     // Reset transform values
@@ -723,8 +728,8 @@ namespace LabFusion.Syncables
                     transform.position = pos;
                     transform.rotation = rot;
 
-                    rb.velocity = Vector3.zero;
-                    rb.angularVelocity = Vector3.zero;
+                    rb.velocity = Vector3Extensions.zero;
+                    rb.angularVelocity = Vector3Extensions.zero;
                 }
                 // Instead calculate velocity stuff
                 else {
@@ -733,7 +738,7 @@ namespace LabFusion.Syncables
                     }
                     else {
                         if (rb.useGravity)
-                            rb.AddForce(-Physics.gravity, ForceMode.Acceleration);
+                            rb.AddForce(-PhysicsUtilities.Gravity, ForceMode.Acceleration);
                     }
 
                     rb.AddTorque(pdController.GetTorque(rb, cache.Rotation, rbCache.AngularVelocity, rot, angVel), ForceMode.Acceleration);

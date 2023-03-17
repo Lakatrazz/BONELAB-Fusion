@@ -32,7 +32,7 @@ namespace LabFusion.Data
             if (GameController != null) {
                 // In a server, teleport the player to the top of the lift so they don't spawn underneath it if its synced
                 if (NetworkInfo.HasServer) {
-                    FusionPlayer.Teleport(new Vector3(-9.030009f, -5.142975f, -71.18999f), Vector3.forward, true);
+                    FusionPlayer.Teleport(new Vector3(-9.030009f, -5.142975f, -71.18999f), Vector3Extensions.forward, true);
                 }
 
                 TaxiController = GameObject.FindObjectOfType<TaxiController>(true);
@@ -42,15 +42,15 @@ namespace LabFusion.Data
 
                 // Add extra seats
                 // Inside seat
-                Internal_CreateSeat(2, new Vector3(-0.326f, 0.441f, -1.125f), Vector3.zero);
+                Internal_CreateSeat(2, new Vector3(-0.326f, 0.441f, -1.125f), Vector3Extensions.zero);
 
                 // Trunk seats
-                Internal_CreateSeat(3, new Vector3(0.48f, 0.928f, -2.138f), Vector3.up * -180f);
-                Internal_CreateSeat(4, new Vector3(-0.48f, 0.928f, -2.138f), Vector3.up * -180f);
+                Internal_CreateSeat(3, new Vector3(0.48f, 0.928f, -2.138f), Vector3Extensions.up * -180f);
+                Internal_CreateSeat(4, new Vector3(-0.48f, 0.928f, -2.138f), Vector3Extensions.up * -180f);
 
                 // Hood seats
-                Internal_CreateSeat(5, new Vector3(0.48f, 0.928f, 1.998f), Vector3.zero);
-                Internal_CreateSeat(6, new Vector3(-0.48f, 0.928f, 1.998f), Vector3.zero);
+                Internal_CreateSeat(5, new Vector3(0.48f, 0.928f, 1.998f), Vector3Extensions.zero);
+                Internal_CreateSeat(6, new Vector3(-0.48f, 0.928f, 1.998f), Vector3Extensions.zero);
 
                 // Send the taxi, windmill, and lift to sync
                 if (NetworkInfo.IsServer) {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using HarmonyLib;
-
+using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Representation;
 
@@ -30,7 +30,7 @@ namespace LabFusion.Patching {
                 }
 
                 var jaw = __instance.m_jaw;
-                jaw.localRotation = Quaternion.AngleAxis(20f * rep.GetVoiceLoudness(), Vector3.right);
+                jaw.localRotation = Quaternion.AngleAxis(20f * rep.GetVoiceLoudness(), Vector3Extensions.right);
 
                 var animatorJaw = avatar.animator.GetBoneTransform(HumanBodyBones.Jaw);
 

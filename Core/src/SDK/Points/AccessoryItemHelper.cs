@@ -1,4 +1,5 @@
-﻿using SLZ.Rig;
+﻿using LabFusion.Extensions;
+using SLZ.Rig;
 using SLZ.VRMK;
 
 using System;
@@ -111,11 +112,11 @@ namespace LabFusion.SDK.Points {
             {
                 default:
                 case AccessoryScaleMode.NONE:
-                    return Vector3.one;
+                    return Vector3Extensions.one;
                 case AccessoryScaleMode.HEIGHT:
-                    return Vector3.one * (avatar.height / 1.76f);
+                    return Vector3Extensions.one * (avatar.height / 1.76f);
                 case AccessoryScaleMode.HEAD:
-                    return Vector3.one * (avatar.ForeheadEllipseX / 0.044f * avatar.height) / 1.76f;
+                    return Vector3Extensions.one * (avatar.ForeheadEllipseX / 0.044f * avatar.height) / 1.76f;
             }
         }
     }

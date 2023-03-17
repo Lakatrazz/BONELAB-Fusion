@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 using LabFusion.UI;
+using LabFusion.Extensions;
 
 namespace LabFusion.Data {
     public static class VoidG114Data {
@@ -35,7 +36,7 @@ namespace LabFusion.Data {
 
             if (GameController != null) {
                 // Point shop
-                PointShopHelper.SetupPointShop(PointShopPosition, PointShopRotation, Vector3.one * 0.8f);
+                PointShopHelper.SetupPointShop(PointShopPosition, PointShopRotation, Vector3Extensions.one * 0.8f);
 
                 GameObject supportCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 supportCube.name = "Point Shop Support Cube";
@@ -49,7 +50,7 @@ namespace LabFusion.Data {
                 meshRenderer.material = planeRenderer.material;
 
                 // Info box
-                InfoBoxHelper.SetupInfoBox(InfoBoxPosition, InfoBoxRotation, Vector3.one);
+                InfoBoxHelper.SetupInfoBox(InfoBoxPosition, InfoBoxRotation, Vector3Extensions.one);
             }
         }
     }

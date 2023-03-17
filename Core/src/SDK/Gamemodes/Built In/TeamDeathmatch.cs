@@ -76,7 +76,7 @@ namespace LabFusion.SDK.Gamemodes {
                 canvas = go.AddComponent<Canvas>();
                 canvas.renderMode = RenderMode.WorldSpace;
                 canvas.sortingOrder = 100000;
-                go.transform.localScale = Vector3.one / LogoDivider;
+                go.transform.localScale = Vector3Extensions.one / LogoDivider;
 
                 image = go.AddComponent<RawImage>();
 
@@ -120,7 +120,7 @@ namespace LabFusion.SDK.Gamemodes {
                     if (!rm.IsNOC()) {
                         var head = rm.physicsRig.m_head;
 
-                        go.transform.position = head.position + Vector3.up * rep.GetNametagOffset();
+                        go.transform.position = head.position + Vector3Extensions.up * rep.GetNametagOffset();
                         go.transform.LookAtPlayer();
 
                         UpdateLogo();

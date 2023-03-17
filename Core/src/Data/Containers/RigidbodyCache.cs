@@ -35,8 +35,8 @@ namespace LabFusion.Data {
 
             if (_isSleeping)
             {
-                _velocity = Vector3.zero;
-                _angularVelocity = Vector3.zero;
+                _velocity = Vector3Extensions.zero;
+                _angularVelocity = Vector3Extensions.zero;
             }
             else
             {

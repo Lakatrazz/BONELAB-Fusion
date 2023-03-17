@@ -16,6 +16,7 @@ using SLZ.Interaction;
 using SLZ.Props.Weapons;
 using UnityEngine;
 using SLZ.Marrow.Data;
+using LabFusion.Extensions;
 
 namespace LabFusion.Network
 {
@@ -83,7 +84,7 @@ namespace LabFusion.Network
                             AssetPooleePatches.IgnorePatches = true;
 
                             objectDestructable._hits = objectDestructable.reqHitCount + 1;
-                            objectDestructable.TakeDamage(Vector3.up, objectDestructable._health + 1f, false, AttackType.Blunt);
+                            objectDestructable.TakeDamage(Vector3Extensions.up, objectDestructable._health + 1f, false, AttackType.Blunt);
                             
                             ObjectDestructablePatches.IgnorePatches = false;
                             AssetPooleePatches.IgnorePatches = false;
