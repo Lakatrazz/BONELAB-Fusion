@@ -29,7 +29,7 @@ namespace LabFusion.Utilities
         public Action<MenuCategory> onCreateCategory = null;
     }
 
-    internal static class FusionNotifier
+    public static class FusionNotifier
     {
         public const float DefaultDuration = 2f;
 
