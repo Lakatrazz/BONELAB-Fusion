@@ -34,5 +34,7 @@ namespace LabFusion.Data {
                 PropSender.SendPropCreation(Funicular.gameObject);
             }
         }
+
+        public static bool IsInHub() => GameController != null;
     }
 }

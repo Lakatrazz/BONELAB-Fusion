@@ -71,10 +71,18 @@ namespace LabFusion.Patching
         {
             if (other.CompareTag("Player") && NetworkInfo.HasServer)
             {
-                TriggerUtilities.SetChunk(other, __instance.chunk);
+                if (HubData.IsInHub())
+                    TriggerUtilities.AddChunk(other, __instance.chunk);
+                else
+                    TriggerUtilities.SetChunk(other, __instance.chunk);
 
                 var loader = SceneStreamer.Session.ChunkLoader;
                 __state = loader._occupiedChunks;
+
+                var playerChunks = TriggerUtilities.GetChunks(other);
+                foreach (var playerChunk in playerChunks)
+                    __state.Add(playerChunk);
+
                 loader._occupiedChunks.Clear();
             }
 

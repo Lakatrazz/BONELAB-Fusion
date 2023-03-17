@@ -69,6 +69,36 @@ namespace LabFusion.Utilities {
             PlayerChunks[proxy] = chunk.GetChunks();
         }
 
+        internal static void AddChunk(Collider other, Chunk chunk) {
+            var proxy = TriggerRefProxy.Cache.Get(other.gameObject);
+            if (!proxy)
+                return;
+
+            if (!PlayerChunks.ContainsKey(proxy)) {
+                PlayerChunks.Add(proxy, new List<Chunk>());
+            }
+
+            var chunks = chunk.GetChunks();
+            for (var i = 0; i < chunks.Count; i++) {
+                var found = chunks[i];
+
+                if (!PlayerChunks[proxy].Has(found))
+                    PlayerChunks[proxy].Add(found);
+            }
+        }
+
+        internal static List<Chunk> GetChunks(Collider other) {
+            var proxy = TriggerRefProxy.Cache.Get(other.gameObject);
+            if (!proxy)
+                return new List<Chunk>();
+
+            if (!PlayerChunks.ContainsKey(proxy)) {
+                PlayerChunks.Add(proxy, new List<Chunk>());
+            }
+
+            return PlayerChunks[proxy];
+        }
+
         internal static bool CanUnload(Chunk chunk) {
             foreach (var pair in PlayerChunks) {
                 if (pair.Value.Has(chunk))
