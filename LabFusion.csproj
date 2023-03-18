@@ -178,6 +178,7 @@
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\SteamInterface.cs" />
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utf8String.cs" />
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utility.cs" />
+    <Compile Include="Core\FusionHelper\Network\MessageTypes.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Gamemodes\Entangled\EntangledProxy.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Gamemodes\GamemodeEndEvent.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Gamemodes\GamemodeStartEvent.cs" />
@@ -1271,4 +1272,8 @@
     <EmbeddedResource Include="Core\resources\bundles\StandaloneWindows64\item_bundle.fusion" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>COPY "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\BONELAB\Mods"
+adb push "$(TargetPath)" /sdcard/Android/data/com.StressLevelZero.BONELAB/files/Mods</PostBuildEvent>
+  </PropertyGroup>
 </Project>
