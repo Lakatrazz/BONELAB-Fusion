@@ -1,4 +1,5 @@
-﻿using LabFusion.Network;
+﻿using LabFusion.Data;
+using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Utilities;
 using System;
@@ -41,46 +42,55 @@ namespace LabFusion.Senders {
             }
         }
 
-        public static void SendDescentIntro(int selectionNumber, DescentIntroType type)
+        public static void SendDescentIntro(DescentIntroEvent introEvent, ulong? target = null)
         {
             using (var writer = FusionWriter.Create())
             {
-                using (var data = DescentIntroData.Create(PlayerIdManager.LocalSmallId, (byte)selectionNumber, type)) {
+                using (var data = DescentIntroData.Create(PlayerIdManager.LocalSmallId, (byte)introEvent.selectionNumber, introEvent.type)) {
                     writer.Write(data);
 
                     using (var message = FusionMessage.Create(NativeMessageTag.DescentIntro, writer)) {
-                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+                        if (target.HasValue)
+                            MessageSender.SendFromServer(target.Value, NetworkChannel.Reliable, message);
+                        else
+                            MessageSender.SendToServer(NetworkChannel.Reliable, message);
                     }
                 }
             }
         }
 
-        public static void SendDescentNoose(DescentNooseType type) {
+        public static void SendDescentNoose(DescentNooseEvent nooseEvent, ulong? target = null) {
             using (var writer = FusionWriter.Create())
             {
-                using (var data = DescentNooseData.Create(PlayerIdManager.LocalSmallId, type))
+                using (var data = DescentNooseData.Create(nooseEvent.smallId, nooseEvent.type))
                 {
                     writer.Write(data);
 
                     using (var message = FusionMessage.Create(NativeMessageTag.DescentNoose, writer))
                     {
-                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+                        if (target.HasValue)
+                            MessageSender.SendFromServer(target.Value, NetworkChannel.Reliable, message);
+                        else
+                            MessageSender.SendToServer(NetworkChannel.Reliable, message);
                     }
                 }
             }
         }
 
-        public static void SendDescentElevator(DescentElevatorType type)
+        public static void SendDescentElevator(DescentElevatorEvent elevatorEvent, ulong? target = null)
         {
             using (var writer = FusionWriter.Create())
             {
-                using (var data = DescentElevatorData.Create(PlayerIdManager.LocalSmallId, type))
+                using (var data = DescentElevatorData.Create(PlayerIdManager.LocalSmallId, elevatorEvent.type))
                 {
                     writer.Write(data);
 
                     using (var message = FusionMessage.Create(NativeMessageTag.DescentElevator, writer))
                     {
-                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+                        if (target.HasValue)
+                            MessageSender.SendFromServer(target.Value, NetworkChannel.Reliable, message);
+                        else
+                            MessageSender.SendToServer(NetworkChannel.Reliable, message);
                     }
                 }
             }

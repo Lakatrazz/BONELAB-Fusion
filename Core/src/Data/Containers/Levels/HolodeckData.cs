@@ -14,9 +14,10 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace LabFusion.Data {
-    public static class HolodeckData {
+    public class HolodeckData : LevelDataHandler
+    {
         public static GameControl_Holodeck GameController;
-        public static void OnCacheInfo() {
+        protected override void MainSceneInitialized() {
             GameController = GameObject.FindObjectOfType<GameControl_Holodeck>(true);
         }
     }

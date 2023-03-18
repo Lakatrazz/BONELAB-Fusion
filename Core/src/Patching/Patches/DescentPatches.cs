@@ -24,12 +24,13 @@ namespace LabFusion.Patching {
         [HarmonyPatch(nameof(Control_UI_BodyMeasurements.BUTTON_CONFIRM))]
         public static void BUTTON_CONFIRM()
         {
+            var introEvent = DescentData.CreateIntroEvent(0, DescentIntroType.BUTTON_CONFIRM);
+
             if (IgnorePatches)
                 return;
 
-            if (NetworkInfo.HasServer)
-            {
-                CampaignSender.SendDescentIntro(0, DescentIntroType.BUTTON_CONFIRM);
+            if (NetworkInfo.HasServer) {
+                CampaignSender.SendDescentIntro(introEvent);
             }
         }
     }
@@ -42,11 +43,13 @@ namespace LabFusion.Patching {
         [HarmonyPatch(nameof(GameControl_Descent.SEQUENCE))]
         public static void SEQUENCE(int gate_index)
         {
+            var introEvent = DescentData.CreateIntroEvent(gate_index, DescentIntroType.SEQUENCE);
+
             if (IgnorePatches)
                 return;
 
             if (NetworkInfo.HasServer) {
-                CampaignSender.SendDescentIntro(gate_index, DescentIntroType.SEQUENCE);
+                CampaignSender.SendDescentIntro(introEvent);
             }
         }
 
@@ -54,12 +57,14 @@ namespace LabFusion.Patching {
         [HarmonyPatch(nameof(GameControl_Descent.CONFIRMFORCEGRAB))]
         public static void CONFIRMFORCEGRAB()
         {
+            var introEvent = DescentData.CreateIntroEvent(0, DescentIntroType.CONFIRM_FORCE_GRAB);
+
             if (IgnorePatches)
                 return;
 
             if (NetworkInfo.HasServer)
             {
-                CampaignSender.SendDescentIntro(0, DescentIntroType.CONFIRM_FORCE_GRAB);
+                CampaignSender.SendDescentIntro(introEvent);
             }
         }
     }
@@ -71,12 +76,14 @@ namespace LabFusion.Patching {
         [HarmonyPrefix]
         [HarmonyPatch(nameof(TutorialElevator.StartElevator))]
         public static bool StartElevator() {
+            var elevatorEvent = DescentData.CreateElevatorEvent(DescentElevatorType.START_ELEVATOR);
+
             if (IgnorePatches)
                 return true;
 
             if (NetworkInfo.HasServer) {
                 if (NetworkInfo.IsServer) {
-                    CampaignSender.SendDescentElevator(DescentElevatorType.START_ELEVATOR);
+                    CampaignSender.SendDescentElevator(elevatorEvent);
                     return true;
                 }
                 else
@@ -90,6 +97,8 @@ namespace LabFusion.Patching {
         [HarmonyPatch(nameof(TutorialElevator.StopDoorRoutine))]
         public static bool StopDoorRoutine()
         {
+            var elevatorEvent = DescentData.CreateElevatorEvent(DescentElevatorType.STOP_ELEVATOR);
+
             if (IgnorePatches)
                 return true;
 
@@ -97,7 +106,7 @@ namespace LabFusion.Patching {
             {
                 if (NetworkInfo.IsServer)
                 {
-                    CampaignSender.SendDescentElevator(DescentElevatorType.STOP_ELEVATOR);
+                    CampaignSender.SendDescentElevator(elevatorEvent);
                     return true;
                 }
                 else
@@ -111,6 +120,8 @@ namespace LabFusion.Patching {
         [HarmonyPatch(nameof(TutorialElevator.SealDoors))]
         public static bool SealDoors()
         {
+            var elevatorEvent = DescentData.CreateElevatorEvent(DescentElevatorType.SEAL_DOORS);
+
             if (IgnorePatches)
                 return true;
 
@@ -118,7 +129,7 @@ namespace LabFusion.Patching {
             {
                 if (NetworkInfo.IsServer)
                 {
-                    CampaignSender.SendDescentElevator(DescentElevatorType.SEAL_DOORS);
+                    CampaignSender.SendDescentElevator(elevatorEvent);
                     return true;
                 }
                 else
@@ -132,6 +143,8 @@ namespace LabFusion.Patching {
         [HarmonyPatch(nameof(TutorialElevator.StartMoveUpward))]
         public static bool StartMoveUpward()
         {
+            var elevatorEvent = DescentData.CreateElevatorEvent(DescentElevatorType.START_MOVE_UPWARD);
+
             if (IgnorePatches)
                 return true;
 
@@ -139,7 +152,7 @@ namespace LabFusion.Patching {
             {
                 if (NetworkInfo.IsServer)
                 {
-                    CampaignSender.SendDescentElevator(DescentElevatorType.START_MOVE_UPWARD);
+                    CampaignSender.SendDescentElevator(elevatorEvent);
                     return true;
                 }
                 else
@@ -153,6 +166,8 @@ namespace LabFusion.Patching {
         [HarmonyPatch(nameof(TutorialElevator.SlowUpwardMovement))]
         public static bool SlowUpwardMovement()
         {
+            var elevatorEvent = DescentData.CreateElevatorEvent(DescentElevatorType.SLOW_UPWARD_MOVEMENT);
+
             if (IgnorePatches)
                 return true;
 
@@ -160,7 +175,7 @@ namespace LabFusion.Patching {
             {
                 if (NetworkInfo.IsServer)
                 {
-                    CampaignSender.SendDescentElevator(DescentElevatorType.SLOW_UPWARD_MOVEMENT);
+                    CampaignSender.SendDescentElevator(elevatorEvent);
                     return true;
                 }
                 else
@@ -174,6 +189,8 @@ namespace LabFusion.Patching {
         [HarmonyPatch(nameof(TutorialElevator.OpenDoors))]
         public static bool OpenDoors()
         {
+            var elevatorEvent = DescentData.CreateElevatorEvent(DescentElevatorType.OPEN_DOORS);
+
             if (IgnorePatches)
                 return true;
 
@@ -181,7 +198,7 @@ namespace LabFusion.Patching {
             {
                 if (NetworkInfo.IsServer)
                 {
-                    CampaignSender.SendDescentElevator(DescentElevatorType.OPEN_DOORS);
+                    CampaignSender.SendDescentElevator(elevatorEvent);
                     return true;
                 }
                 else
@@ -195,6 +212,8 @@ namespace LabFusion.Patching {
         [HarmonyPatch(nameof(TutorialElevator.CloseDoors))]
         public static bool CloseDoors()
         {
+            var elevatorEvent = DescentData.CreateElevatorEvent(DescentElevatorType.CLOSE_DOORS);
+
             if (IgnorePatches)
                 return true;
 
@@ -202,7 +221,7 @@ namespace LabFusion.Patching {
             {
                 if (NetworkInfo.IsServer)
                 {
-                    CampaignSender.SendDescentElevator(DescentElevatorType.CLOSE_DOORS);
+                    CampaignSender.SendDescentElevator(elevatorEvent);
                     return true;
                 }
                 else
@@ -224,7 +243,8 @@ namespace LabFusion.Patching {
                 return;
 
             if (NetworkInfo.HasServer) {
-                CampaignSender.SendDescentNoose(DescentNooseType.ATTACH_NOOSE);
+                var nooseEvent = DescentData.CreateNooseEvent(PlayerIdManager.LocalSmallId, DescentNooseType.ATTACH_NOOSE);
+                CampaignSender.SendDescentNoose(nooseEvent);
             }
         }
 
@@ -235,7 +255,8 @@ namespace LabFusion.Patching {
                 return;
 
             if (NetworkInfo.HasServer) {
-                CampaignSender.SendDescentNoose(DescentNooseType.CUT_NOOSE);
+                var nooseEvent = DescentData.CreateNooseEvent(PlayerIdManager.LocalSmallId, DescentNooseType.CUT_NOOSE);
+                CampaignSender.SendDescentNoose(nooseEvent);
             }
         }
     }

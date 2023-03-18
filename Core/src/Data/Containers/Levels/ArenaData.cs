@@ -11,14 +11,14 @@ using SLZ.Bonelab;
 using LabFusion.Extensions;
 
 namespace LabFusion.Data {
-    public static class ArenaData {
+    public class ArenaData : LevelDataHandler {
         public static Arena_GameController GameController;
         public static GenGameControl_Display GameControlDisplay;
         public static ArenaMenuController MenuController;
         public static GeoManager GeoManager;
         public static ChallengeSelectMenu[] ChallengeSelections;
 
-        public static void OnCacheInfo() {
+        protected override void MainSceneInitialized() {
             GameController = GameObject.FindObjectOfType<Arena_GameController>();
 
             if (GameController != null) {

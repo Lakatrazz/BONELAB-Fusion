@@ -18,7 +18,7 @@ using LabFusion.Senders;
 
 namespace LabFusion.Data
 {
-    public static class HomeData
+    public class HomeData : LevelDataHandler
     {
         public static GameControl_Outro GameController;
         public static TaxiController TaxiController;
@@ -26,7 +26,7 @@ namespace LabFusion.Data
         public static ArticulatedArmController ArmController;
         public static ArmFinale ArmFinale;
 
-        public static void OnCacheInfo()
+        protected override void MainSceneInitialized()
         {
             GameController = GameObject.FindObjectOfType<GameControl_Outro>(true);
             if (GameController != null) {

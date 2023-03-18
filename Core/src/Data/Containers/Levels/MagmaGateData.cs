@@ -17,11 +17,11 @@ using LabFusion.Utilities;
 
 namespace LabFusion.Data
 {
-    public static class MagmaGateData
+    public class MagmaGateData : LevelDataHandler
     {
         public static GameControl_MagmaGate GameController;
 
-        public static void OnCacheInfo()
+        protected override void MainSceneInitialized()
         {
             GameController = GameObject.FindObjectOfType<GameControl_MagmaGate>(true);
         }

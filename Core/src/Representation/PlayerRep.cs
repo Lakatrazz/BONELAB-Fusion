@@ -703,15 +703,6 @@ namespace LabFusion.Representation
             OnPelvisPin();
         }
 
-        public void DetachRepGrips() {
-            foreach (var grip in RigReferences.RigGrips) {
-                foreach (var hand in grip.attachedHands.ToArray()) {
-                    if (hand.manager == RigData.RigReferences.RigManager)
-                        grip.TryDetach(hand);
-                }
-            }
-        }
-
         private void OnRepLateUpdate() {
             if (!IsCreated) {
                 serializedPelvis = null;

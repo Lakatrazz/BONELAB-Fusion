@@ -176,6 +176,34 @@ namespace LabFusion.Data
             }
         }
 
+        public void DisableInteraction() {
+            if (RigGrips == null)
+                return;
+
+            foreach (var grip in RigGrips) {
+                foreach (var hand in grip.attachedHands.ToArray()) {
+                    if (hand.manager.IsLocalPlayer())
+                        grip.TryDetach(hand);
+                }
+
+                grip.DisableInteraction();
+            }
+
+            MelonCoroutines.Start(Internal_DelayedEnableInteraction());
+        }
+
+        private IEnumerator Internal_DelayedEnableInteraction() {
+            for (var i = 0; i < 300; i++)
+                yield return null;
+
+            if (RigGrips == null)
+                yield break;
+
+            foreach (var grip in RigGrips) {
+                grip.EnableInteraction();
+            }
+        }
+
         public RigReferenceCollection() { }
 
         public RigReferenceCollection(RigManager rigManager) {

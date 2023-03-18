@@ -10,7 +10,7 @@ using UnityEngine.Events;
 
 namespace LabFusion.Data
 {
-    public static class MineDiveData
+    public class MineDiveData : LevelDataHandler
     {
         public static GameObject Minecart;
         public static GameObject AvatarCart;
@@ -20,7 +20,7 @@ namespace LabFusion.Data
         private static readonly Vector3 JointAnchor = new Vector3(0f, 0.283f, 0.795f);
         const int MaxExtraCarts = 7;
 
-        public static void OnSceneAwake() {
+        protected override void SceneAwake() {
             Minecart = GameObject.Find("Minecart Gun Variant");
             AvatarCart = GameObject.Find("Avatar-Gun Variant (1)");
 
@@ -37,7 +37,7 @@ namespace LabFusion.Data
             }
         }
 
-        public static void OnCacheInfo() {
+        protected override void MainSceneInitialized() {
             CreateExtraCarts();
         }
 

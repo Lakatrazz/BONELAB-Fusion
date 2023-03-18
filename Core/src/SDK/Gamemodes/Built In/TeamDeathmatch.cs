@@ -25,7 +25,7 @@ namespace LabFusion.SDK.Gamemodes {
 
         public static TeamDeathmatch Instance { get; private set; }
 
-        protected enum Team {
+        public enum Team {
             NO_TEAM = 0,
             SABRELAKE = 1,
             LAVA_GANG = 2,
@@ -721,7 +721,7 @@ namespace LabFusion.SDK.Gamemodes {
             SetScore(team, currentScore + 1);
         }
 
-        protected void SetScore(Team team, int score) {
+        public void SetScore(Team team, int score) {
             TrySetMetadata(GetScoreKey(team), score.ToString());
         }
 
@@ -729,7 +729,7 @@ namespace LabFusion.SDK.Gamemodes {
             TrySetMetadata(GetTeamKey(id), team.ToString());
         }
 
-        protected int GetScore(Team team) {
+        public int GetScore(Team team) {
             if (TryGetMetadata(GetScoreKey(team), out var value) && int.TryParse(value, out var score)) {
                 return score;
             }

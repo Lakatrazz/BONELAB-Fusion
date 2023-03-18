@@ -11,10 +11,11 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace LabFusion.Data {
-    public static class SprintBridgeData {
+    public class SprintBridgeData : LevelDataHandler
+    {
         public static GameControl_SprintBridge04 GameController;
 
-        public static void OnCacheInfo() {
+        protected override void MainSceneInitialized() {
             GameController = GameObject.FindObjectOfType<GameControl_SprintBridge04>();
 
             if (GameController != null) {

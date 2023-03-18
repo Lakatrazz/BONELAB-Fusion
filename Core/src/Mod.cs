@@ -81,6 +81,7 @@ namespace LabFusion
             FusionBundleLoader.OnBundleLoad();
 
             // Register our base handlers
+            LevelDataHandler.OnInitializeMelon();
             FusionMessageHandler.RegisterHandlersFromAssembly(FusionAssembly);
             GrabGroupHandler.RegisterHandlersFromAssembly(FusionAssembly);
             PropExtenderManager.RegisterExtendersFromAssembly(FusionAssembly);
@@ -112,12 +113,6 @@ namespace LabFusion
             PersistentAssetCreator.OnLateInitializeMelon();
 
             FusionPreferences.OnCreateBoneMenu();
-
-            Hooking.OnLevelInitialized += OnBonelibLevelLoaded;
-        }
-
-        public void OnBonelibLevelLoaded(LevelInfo info) {
-            LevelData.OnSceneAwake();
         }
 
         protected void OnInitializeNetworking() {
@@ -181,9 +176,6 @@ namespace LabFusion
 
             // Create player reps
             PlayerRep.OnRecreateReps();
-
-            // Update level data
-            LevelData.OnMainSceneInitialized();
 
             // Update hooks
             MultiplayerHooking.Internal_OnMainSceneInitialized();

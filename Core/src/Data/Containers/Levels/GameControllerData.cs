@@ -11,10 +11,11 @@ using SLZ.Bonelab;
 using LabFusion.Extensions;
 
 namespace LabFusion.Data {
-    public static class GameControllerData {
+    public class GameControllerData : LevelDataHandler
+    {
         public static BaseGameController GameController;
 
-        public static void OnCacheInfo() {
+        protected override void MainSceneInitialized() {
             GameController = GameObject.FindObjectOfType<BaseGameController>();
         }
 

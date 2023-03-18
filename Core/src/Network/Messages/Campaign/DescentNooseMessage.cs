@@ -75,6 +75,9 @@ namespace LabFusion.Network
                     else {
                         NoosePatches.IgnorePatches = true;
 
+                        // Register a noose event for catchup
+                        _ = DescentData.CreateNooseEvent(data.smallId, data.type);
+
                         switch (data.type) {
                             default:
                             case DescentNooseType.UNKNOWN:

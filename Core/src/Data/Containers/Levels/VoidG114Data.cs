@@ -16,7 +16,7 @@ using LabFusion.UI;
 using LabFusion.Extensions;
 
 namespace LabFusion.Data {
-    public static class VoidG114Data {
+    public class VoidG114Data : LevelDataHandler {
         public static GameControl_MenuVoidG114 GameController;
 
         // Point shop setup
@@ -31,7 +31,7 @@ namespace LabFusion.Data {
         public static readonly Vector3 InfoBoxPosition = new Vector3(29.0255f, -2.01f, 11.9655f);
         public static readonly Quaternion InfoBoxRotation = Quaternion.Euler(0f, 180f, 0f);
 
-        public static void OnCacheInfo() {
+        protected override void MainSceneInitialized() {
             GameController = GameObject.FindObjectOfType<GameControl_MenuVoidG114>(true);
 
             if (GameController != null) {

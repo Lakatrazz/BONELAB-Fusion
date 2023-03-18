@@ -22,7 +22,8 @@ using LabFusion.Utilities;
 using MelonLoader;
 
 namespace LabFusion.Data {
-    public static class KartRaceData {
+    public class KartRaceData : LevelDataHandler
+    {
         private static readonly Vector3[] ExtraKartPositions = new Vector3[5]
         {
             new Vector3(-3.62f, -5.222564f, 6.46f),
@@ -34,7 +35,7 @@ namespace LabFusion.Data {
 
         public static GameControl_KartRace GameController;
 
-        public static void OnCacheInfo() {
+        protected override void MainSceneInitialized() {
             GameController = GameObject.FindObjectOfType<GameControl_KartRace>();
             SpawnExtraKarts();
         }

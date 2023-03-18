@@ -218,7 +218,10 @@
     <Compile Include="Core\src\Data\Containers\FrameSkipper.cs" />
     <Compile Include="Core\src\Data\Containers\GrabbedGripList.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\GameControllerData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\HalfwayParkData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\HolodeckData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\LevelDataHandler.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\ResetButtonRemover.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\VoidG114Data.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\TimeTrialData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\KartRaceData.cs" />
@@ -231,7 +234,6 @@
     <Compile Include="Core\src\Data\Containers\Grips\SerializedWorldGrab.cs" />
     <Compile Include="Core\src\Data\Containers\GripPair.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\HomeData.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\LevelData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\MagmaGateData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\MineDiveData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\SprintBridgeData.cs" />

@@ -195,9 +195,8 @@ namespace LabFusion.Syncables
         }
 
         public void InvokeCatchup(ulong user) {
-            // Make sure this object wasn't destroyed or despawned before catching up
-            if (!GameObject.IsNOC() && GameObject.activeInHierarchy)
-                _catchupDelegate?.InvokeSafe(user, "executing Catchup Delegate");
+            // Send any stored catchup info for our object
+            _catchupDelegate?.InvokeSafe(user, "executing Catchup Delegate");
         }
 
         public bool TryGetExtender<T>(out T extender) where T : IPropExtender {

@@ -79,7 +79,7 @@ namespace LabFusion.Network
                     }
                     else {
                         if (!DescentData.Elevator)
-                            DescentData.OnCacheInfo();
+                            DescentData.Instance.CacheValues();
 
                         ElevatorPatches.IgnorePatches = true;
 

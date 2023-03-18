@@ -79,8 +79,25 @@ namespace LabFusion.MarrowIntegration {
         {
             if (TeamDeathmatch.Instance != null)
             {
-                TeamDeathmatch.Instance?.SetOverriden();
+                TeamDeathmatch.Instance.SetOverriden();
                 TeamDeathmatch.Instance.SetPlayerVitality(vitality);
+            }
+        }
+
+        public void SetSabrelakeScore(int score) => Internal_SetTeamScore(TeamDeathmatch.Team.SABRELAKE, score);
+        public void SetLavaGangScore(int score) => Internal_SetTeamScore(TeamDeathmatch.Team.LAVA_GANG, score);
+        public void IncrementSabrelakeScore(int amount) => Internal_IncrementTeamScore(TeamDeathmatch.Team.SABRELAKE, amount);
+        public void IncrementLavaGangScore(int amount) => Internal_IncrementTeamScore(TeamDeathmatch.Team.LAVA_GANG, amount);
+
+        private void Internal_SetTeamScore(TeamDeathmatch.Team team, int score) {
+            if (TeamDeathmatch.Instance != null && TeamDeathmatch.Instance.IsActive()) {
+                TeamDeathmatch.Instance.SetScore(team, score);
+            }
+        }
+
+        private void Internal_IncrementTeamScore(TeamDeathmatch.Team team, int amount) {
+            if (TeamDeathmatch.Instance != null && TeamDeathmatch.Instance.IsActive()) {
+                TeamDeathmatch.Instance.SetScore(team, TeamDeathmatch.Instance.GetScore(team) + amount);
             }
         }
 
@@ -121,6 +138,11 @@ namespace LabFusion.MarrowIntegration {
         public void SetLavaGangLogo(Texture2D logo) { }
 
         public void SetSabrelakeLogo(Texture2D logo) { }
+
+        public void SetSabrelakeScore(int score) { }
+        public void SetLavaGangScore(int score) {  }
+        public void IncrementSabrelakeScore(int amount) { }
+        public void IncrementLavaGangScore(int amount) { }
 
         public void SetPlaylist(AudioClip clip) { }
         public void SetPlaylist(AudioClip clip1, AudioClip clip2) { }
