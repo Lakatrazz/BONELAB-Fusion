@@ -35,6 +35,8 @@ using Ruffles.Core;
 
 using UnhollowerBaseLib;
 using System.Net;
+using Ruffles.Connections;
+using Steamworks;
 
 namespace LabFusion.Network
 {
@@ -72,7 +74,7 @@ namespace LabFusion.Network
 
         // A local reference to a lobby
         // This isn't actually used for joining servers, just for matchmaking
-        protected Lobby _localLobby;
+        //protected Lobby _localLobby;
 
         internal override void OnInitializeLayer()
         {
@@ -89,6 +91,7 @@ namespace LabFusion.Network
 
         internal override void OnLateInitializeLayer()
         {
+            // TODO: replace
             if (SteamClient.IsValid)
             {
                 SteamId = SteamClient.SteamId;
@@ -163,7 +166,7 @@ namespace LabFusion.Network
 
         internal override void OnVoiceChatUpdate()
         {
-            if (NetworkInfo.HasServer)
+            /*if (NetworkInfo.HasServer)
             {
                 bool voiceEnabled = FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue() && !FusionPreferences.ClientSettings.Muted && !FusionPreferences.ClientSettings.Deafened;
 
@@ -189,13 +192,13 @@ namespace LabFusion.Network
                 // Disable voice recording
                 if (SteamUser.VoiceRecord)
                     SteamUser.VoiceRecord = false;
-            }
+            }*/
         }
 
         internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes)
         {
             // If we are deafened, no need to deal with voice chat
-            bool isDeafened = !FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue() || FusionPreferences.ClientSettings.Deafened;
+            /*bool isDeafened = !FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue() || FusionPreferences.ClientSettings.Deafened;
             if (isDeafened)
                 return;
 
@@ -204,18 +207,22 @@ namespace LabFusion.Network
             if (identifier != null)
             {
                 identifier.OnVoiceBytesReceived(bytes);
-            }
+            }*/
         }
 
         internal override string GetUsername(ulong userId)
         {
-            return new Friend(userId).Name;
+            // TODO: Username
+            return "UNKNOWN"/*new Friend(userId).Name*/;
         }
 
         internal override bool IsFriend(ulong userId)
         {
-            return userId == PlayerIdManager.LocalLongId || new Friend(userId).IsFriend;
+            return false;
+            //return userId == PlayerIdManager.LocalLongId || new Friend(userId).IsFriend;
         }
+
+        /* TODO: CONNECTION GARBO */
 
         internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message)
         {
@@ -314,16 +321,18 @@ namespace LabFusion.Network
             OnUpdateRichPresence();
         }
 
+        /* END CONNECTION GARBO */
+
         private void OnUpdateRichPresence()
         {
-            if (_isConnectionActive)
+           /* if (_isConnectionActive)
             {
                 SteamFriends.SetRichPresence("connect", "true");
             }
             else
             {
                 SteamFriends.SetRichPresence("connect", null);
-            }
+            }*/
         }
 
         private void HookSteamEvents()
@@ -339,7 +348,7 @@ namespace LabFusion.Network
             MultiplayerHooking.OnDisconnect += OnDisconnect;
 
             // Create a local lobby
-            AwaitLobbyCreation();
+            //AwaitLobbyCreation();
         }
 
         private void OnPlayerJoin(PlayerId id)
@@ -352,20 +361,20 @@ namespace LabFusion.Network
 
         private void OnPlayerLeave(PlayerId id)
         {
-            SteamVoiceIdentifier.RemoveVoiceIdentifier(id);
+            //SteamVoiceIdentifier.RemoveVoiceIdentifier(id);
 
             OnUpdateSteamLobby();
         }
 
         private void OnDisconnect()
         {
-            SteamVoiceIdentifier.CleanupAll();
+            //SteamVoiceIdentifier.CleanupAll();
         }
 
         private void UnHookSteamEvents()
         {
             // Remove steam hooks
-            SteamFriends.OnGameRichPresenceJoinRequested -= OnGameRichPresenceJoinRequested;
+            //SteamFriends.OnGameRichPresenceJoinRequested -= OnGameRichPresenceJoinRequested;
 
             // Remove server hooks
             MultiplayerHooking.OnMainSceneInitialized -= OnUpdateSteamLobby;
@@ -375,10 +384,10 @@ namespace LabFusion.Network
             MultiplayerHooking.OnDisconnect -= OnDisconnect;
 
             // Remove the local lobby
-            _localLobby.Leave();
+            //_localLobby.Leave();
         }
 
-        private async void AwaitLobbyCreation()
+        /*private async void AwaitLobbyCreation()
         {
             var lobbyTask = await SteamMatchmaking.CreateLobbyAsync();
 
@@ -392,13 +401,13 @@ namespace LabFusion.Network
 
             _localLobby = lobbyTask.Value;
             _currentLobby = new SteamLobby(_localLobby);
-        }
+        }*/
 
-        private void OnGameRichPresenceJoinRequested(Friend friend, string value)
+        /*private void OnGameRichPresenceJoinRequested(Friend friend, string value)
         {
             // Forward this to joining a server from the friend
             JoinServer(friend.Id);
-        }
+        }*/
 
         private void OnUpdateSteamLobby()
         {
@@ -415,10 +424,10 @@ namespace LabFusion.Network
             LobbyMetadataHelper.WriteInfo(CurrentLobby);
 
             // Update bonemenu items
-            OnUpdateCreateServerText();
+            //OnUpdateCreateServerText();
         }
 
-        internal override void OnSetupBoneMenu(MenuCategory category)
+        /*internal override void OnSetupBoneMenu(MenuCategory category)
         {
             // Create the basic options
             CreateMatchmakingMenu(category);
@@ -695,6 +704,6 @@ namespace LabFusion.Network
             MenuManager.SelectCategory(_friendsCategory);
 
             _isFriendLobbySearching = false;
-        }
+        }*/
     }
 }
