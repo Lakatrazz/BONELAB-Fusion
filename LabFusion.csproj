@@ -359,6 +359,7 @@
     <Compile Include="Core\src\Network\Steam\SteamVRNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Steam\SteamLobby.cs" />
     <Compile Include="Core\src\Network\Steam\SteamVoiceIdentifier.cs" />
+    <Compile Include="Core\src\Network\WebSocket\WebSocketNetworkLayer.cs" />
     <Compile Include="Core\src\Patching\NativeStructs\Attack_.cs" />
     <Compile Include="Core\src\Patching\Patches\Attacks\ImpactPropertiesPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\AvatarDicePatches.cs" />
@@ -1246,6 +1247,10 @@
     <Reference Include="UnityEngine.XRModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\UnityEngine.XRModule.dll</HintPath>
+    </Reference>
+    <Reference Include="websocket-sharp, Version=1.0.2.27113, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Users\trevo\Desktop\websocket-sharp-master\websocket-sharp\bin\Debug\websocket-sharp.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
