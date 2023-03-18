@@ -22,6 +22,10 @@ https://github.com/Lakatrazz/BONELAB-Fusion/tree/main/Core/marrow-integration
 The module example can be found here:
 https://github.com/Lakatrazz/Fusion-Module-Example
 
+## Credits
+- BoneLib AutoUpdater: https://github.com/yowchap/BoneLib
+- Testing/Development Credits In Game
+
 ## Disclaimer
 
 #### THIS PROJECT IS NOT AFFILIATED WITH ANY OTHER MULTIPLAYER MODS OR STRESS LEVEL ZERO! This is its own standalone mod and shares no code with others, any similarities are coincidental!

@@ -25,12 +25,9 @@ namespace LabFusion.Network {
         /// <param name="user"></param>
         /// <returns></returns>
         public static VersionResult CompareVersion(Version server, Version user) {
-            int serverSum = int.Parse($"{server.Major}{server.Minor}");
-            int userSum = int.Parse($"{user.Major}{user.Minor}");
-
-            if (serverSum < userSum)
+            if (server < user)
                 return VersionResult.Lower;
-            else if (serverSum > userSum)
+            else if (server > user)
                 return VersionResult.Higher;
             
             return VersionResult.Ok;

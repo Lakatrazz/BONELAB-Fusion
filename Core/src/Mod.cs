@@ -8,7 +8,6 @@ using LabFusion.Utilities;
 using LabFusion.Syncables;
 using LabFusion.Grabbables;
 using LabFusion.SDK.Modules;
-using LabFusion.Extensions;
 using LabFusion.Preferences;
 
 #if DEBUG
@@ -19,9 +18,6 @@ using MelonLoader;
 
 using UnityEngine;
 
-using BoneLib;
-
-using LabFusion.Senders;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Points;
 

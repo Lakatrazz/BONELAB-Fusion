@@ -23,6 +23,8 @@ namespace LabFusion.Network
         public Dictionary<string, string> initialMetadata;
         public List<string> initialEquippedItems;
 
+        public bool IsValid { get; private set; } = true;
+
         public void Serialize(FusionWriter writer) {
             writer.Write(longId);
             writer.Write(version);
@@ -33,12 +35,17 @@ namespace LabFusion.Network
         }
         
         public void Deserialize(FusionReader reader) {
-            longId = reader.ReadUInt64();
-            version = reader.ReadVersion();
-            avatarBarcode = reader.ReadString();
-            avatarStats = reader.ReadFusionSerializable<SerializedAvatarStats>();
-            initialMetadata = reader.ReadStringDictionary();
-            initialEquippedItems = reader.ReadStrings().ToList();
+            try {
+                longId = reader.ReadUInt64();
+                version = reader.ReadVersion();
+                avatarBarcode = reader.ReadString();
+                avatarStats = reader.ReadFusionSerializable<SerializedAvatarStats>();
+                initialMetadata = reader.ReadStringDictionary();
+                initialEquippedItems = reader.ReadStrings().ToList();
+            }
+            catch {
+                IsValid = false;
+            }
         }
 
         public void Dispose() {
@@ -68,6 +75,12 @@ namespace LabFusion.Network
                     var newSmallId = PlayerIdManager.GetUnusedPlayerId();
 
                     if (PlayerIdManager.GetPlayerId(data.longId) == null && newSmallId.HasValue) {
+                        // If the connection request is invalid, deny it
+                        if (!data.IsValid) {
+                            ConnectionSender.SendConnectionDeny(data.longId, "Connection request was invalid. You are likely on mismatching versions.");
+                            return;
+                        }
+
                         // Check if theres too many players
                         if (PlayerIdManager.PlayerCount >= byte.MaxValue || PlayerIdManager.PlayerCount >= FusionPreferences.LocalServerSettings.MaxPlayers.GetValue()) {
                             ConnectionSender.SendConnectionDeny(data.longId, "Server is full! Wait for someone to leave.");
