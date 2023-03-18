@@ -63,6 +63,14 @@ namespace LabFusion.MarrowIntegration {
             }
         }
 
+        public void SetLateJoining(bool enabled) {
+            if (Deathmatch.Instance != null)
+            {
+                Deathmatch.Instance.SetOverriden();
+                Deathmatch.Instance.SetLateJoining(enabled);
+            }
+        }
+
         public void SetPlaylist(AudioClip clip) => Internal_SetPlaylist(clip);
         public void SetPlaylist(AudioClip clip1, AudioClip clip2) => Internal_SetPlaylist(clip1, clip2);
         public void SetPlaylist(AudioClip clip1, AudioClip clip2, AudioClip clip3) => Internal_SetPlaylist(clip1, clip2, clip3);
@@ -92,6 +100,8 @@ namespace LabFusion.MarrowIntegration {
         public void SetPlayerVitality(float vitality) { }
 
         public void SetRoundLength(int minutes) { }
+
+        public void SetLateJoining(bool enabled) { }
 
         public void SetPlaylist(AudioClip clip) { }
         public void SetPlaylist(AudioClip clip1, AudioClip clip2) { }

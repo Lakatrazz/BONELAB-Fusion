@@ -147,9 +147,12 @@ namespace LabFusion.SDK.Gamemodes {
         public override bool DisableSpawnGun => true;
         public override bool DisableManualUnragdoll => true;
 
+        public override bool PreventNewJoins => !_enabledLateJoining;
+
         private float _timeOfStart;
         private bool _oneMinuteLeft;
 
+        private int _savedMinutes = _defaultMinutes;
         private int _totalMinutes = _defaultMinutes;
 
         private Team _lastTeam = Team.NO_TEAM;
@@ -162,13 +165,20 @@ namespace LabFusion.SDK.Gamemodes {
         private string _avatarOverride = null;
         private float? _vitalityOverride = null;
 
+        private bool _enabledLateJoining = true;
+
         public override void OnBoneMenuCreated(MenuCategory category) {
             base.OnBoneMenuCreated(category);
 
             category.CreateIntElement("Round Minutes", Color.white, _totalMinutes, 1, _minMinutes, _maxMinutes, (v) =>
             {
                 _totalMinutes = v;
+                _savedMinutes = v;
             });
+        }
+
+        public void SetLateJoining(bool enabled) {
+            _enabledLateJoining = enabled;
         }
 
         public void SetRoundLength(int minutes) {
@@ -258,7 +268,7 @@ namespace LabFusion.SDK.Gamemodes {
 
         public void SetDefaultValues()
         {
-            _totalMinutes = _defaultMinutes;
+            _totalMinutes = _savedMinutes;
             SetPlaylist(DefaultMusicVolume, FusionContentLoader.CombatPlaylist);
 
             _lavaGangOverride = null;
@@ -269,6 +279,8 @@ namespace LabFusion.SDK.Gamemodes {
 
             _avatarOverride = null;
             _vitalityOverride = null;
+
+            _enabledLateJoining = true;
         }
 
         public void SetOverriden() {

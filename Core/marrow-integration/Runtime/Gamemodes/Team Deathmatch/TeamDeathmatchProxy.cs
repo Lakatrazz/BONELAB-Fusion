@@ -84,6 +84,15 @@ namespace LabFusion.MarrowIntegration {
             }
         }
 
+        public void SetLateJoining(bool enabled)
+        {
+            if (TeamDeathmatch.Instance != null)
+            {
+                TeamDeathmatch.Instance.SetOverriden();
+                TeamDeathmatch.Instance.SetLateJoining(enabled);
+            }
+        }
+
         public void SetSabrelakeScore(int score) => Internal_SetTeamScore(TeamDeathmatch.Team.SABRELAKE, score);
         public void SetLavaGangScore(int score) => Internal_SetTeamScore(TeamDeathmatch.Team.LAVA_GANG, score);
         public void IncrementSabrelakeScore(int amount) => Internal_IncrementTeamScore(TeamDeathmatch.Team.SABRELAKE, amount);
@@ -143,6 +152,8 @@ namespace LabFusion.MarrowIntegration {
         public void SetLavaGangScore(int score) {  }
         public void IncrementSabrelakeScore(int amount) { }
         public void IncrementLavaGangScore(int amount) { }
+
+        public void SetLateJoining(bool enabled) { }
 
         public void SetPlaylist(AudioClip clip) { }
         public void SetPlaylist(AudioClip clip1, AudioClip clip2) { }
