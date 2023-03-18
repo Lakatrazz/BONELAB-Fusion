@@ -42,7 +42,23 @@ namespace LabFusion
 #if DEBUG
         public const string Changelog = "- Debug build. Changelog will show in the release build.";
 #else
-        public const string Changelog = "No changelog set.";
+        public const string Changelog = "- Marked other multiplayer mods as incompatible\n" +
+            "- Actually removed wacky willy\n" +
+            "- Removed STEAM network layer and made SteamVR the default\n" +
+            "- Improved performance in a few areas\n" +
+            "- Fixed BONELAB Hub unloading parts of the level when rapidly moving through chunks\n" +
+            "- Added SDK functions for altering team scores\n" +
+            "- Added catchup for descent events\n" +
+            "- Actually fixed spawned objects in campaign levels not being caught up\n" +
+            "- Disabled grips on players after death for a few seconds to prevent flinging\n" +
+            "- Added Deathmatch and Team Deathmatch spawnpoints to Halfway Park\n" +
+            "- Added SDK option to force disable late joining\n" +
+            "- Added SDK proxy script to clear the player's inventory\n" +
+            "- Added checks for the player rep's avatars becoming the incorrect avatar\n" +
+            "- Added SDK ult events for when the player becomes part of a team\n" +
+            "- Added notification when quick muting/unmuting\n" +
+            "- Publicized Fusion asset classes for modders to use\n" +
+            "- Added server setting to set required permission for constrainer";
 #endif
 
         /// <summary>
