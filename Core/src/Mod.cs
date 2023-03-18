@@ -54,7 +54,9 @@ namespace LabFusion
             "- Added SDK ult events for when the player becomes part of a team\n" +
             "- Added notification when quick muting/unmuting\n" +
             "- Publicized Fusion asset classes for modders to use\n" +
-            "- Added server setting to set required permission for constrainer";
+            "- Added server setting to set required permission for constrainer\n" +
+            "- Added Auto-Updater\n" +
+            "- Increased text capacity of changelog";
 #endif
 
         /// <summary>

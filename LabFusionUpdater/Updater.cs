@@ -13,8 +13,8 @@ namespace LabFusionUpdater
 {
     internal static class Updater
     {
-        private static readonly string dataDir = Path.Combine(MelonUtils.UserDataDirectory, $"{FusionUpdaterPlugin.PluginName}{FusionUpdaterPlugin.FileExtension}");
-        private static readonly string updaterAppName = "updater.exe";
+        private static readonly string _dataDir = Path.Combine(MelonUtils.UserDataDirectory, $"{FusionUpdaterPlugin.PluginName}");
+        private static readonly string _updaterAppName = "updater.exe";
 
         private static bool pluginNeedsUpdating = false;
 
@@ -31,11 +31,11 @@ namespace LabFusionUpdater
 
             try
             {
-                Directory.CreateDirectory(dataDir);
-                string updaterScriptPath = Path.Combine(dataDir, updaterAppName);
+                Directory.CreateDirectory(_dataDir);
+                string updaterScriptPath = Path.Combine(_dataDir, _updaterAppName);
 
                 Assembly assembly = FusionUpdaterPlugin.UpdaterAssembly;
-                string resourceName = assembly.GetManifestResourceNames().First(x => x.Contains(updaterAppName));
+                string resourceName = assembly.GetManifestResourceNames().First(x => x.Contains(_updaterAppName));
                 using (Stream stream = assembly.GetManifestResourceStream(resourceName))
                 {
                     using (FileStream fileStream = File.Create(updaterScriptPath))
@@ -74,11 +74,11 @@ namespace LabFusionUpdater
         {
             if (pluginNeedsUpdating)
             {
-                Directory.CreateDirectory(dataDir);
-                string updaterScriptPath = Path.Combine(dataDir, updaterAppName);
+                Directory.CreateDirectory(_dataDir);
+                string updaterScriptPath = Path.Combine(_dataDir, _updaterAppName);
 
                 Assembly assembly = Assembly.GetExecutingAssembly();
-                string resourceName = assembly.GetManifestResourceNames().First(x => x.Contains(updaterAppName));
+                string resourceName = assembly.GetManifestResourceNames().First(x => x.Contains(_updaterAppName));
                 using (Stream stream = assembly.GetManifestResourceStream(resourceName))
                 {
                     using (FileStream fileStream = File.Create(updaterScriptPath))
