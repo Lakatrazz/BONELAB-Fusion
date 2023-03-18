@@ -30,14 +30,14 @@ namespace LabFusion.Patching {
 
             __state = __instance._isDead;
 
-            AssetPooleePatches.IgnorePatches = true;
+            PooleeDespawnPatch.IgnorePatch = true;
             return true;
         }
 
         [HarmonyPatch(nameof(ObjectDestructable.TakeDamage))]
         [HarmonyPostfix]
         public static void TakeDamagePostfix(ObjectDestructable __instance, Vector3 normal, float damage, bool crit, AttackType attackType, ref bool __state) {
-            AssetPooleePatches.IgnorePatches = false;
+            PooleeDespawnPatch.IgnorePatch = false;
 
             if (IgnorePatches)
                 return;

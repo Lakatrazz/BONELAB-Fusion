@@ -16,7 +16,7 @@ namespace LabFusion.Patching {
         [HarmonyPatch(nameof(SpawnEvents.Despawn))]
         public static void DespawnPrefix(SpawnEvents __instance, ref bool __state) {
             if (NetworkInfo.HasServer && __instance.TryCast<AmmoPickup>()) {
-                AssetPooleePatches.IgnorePatches = true;
+                PooleeDespawnPatch.IgnorePatch = true;
                 __state = true;
             }
         }
@@ -25,7 +25,7 @@ namespace LabFusion.Patching {
         [HarmonyPatch(nameof(SpawnEvents.Despawn))]
         public static void DespawnPostfix(SpawnEvents __instance, bool __state) {
             if (__state) {
-                AssetPooleePatches.IgnorePatches = false;
+                PooleeDespawnPatch.IgnorePatch = false;
             }
         }
     }
