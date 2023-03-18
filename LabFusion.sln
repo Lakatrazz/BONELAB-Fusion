@@ -5,6 +5,10 @@ VisualStudioVersion = 17.3.32811.315
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LabFusion", "LabFusion.csproj", "{945622A5-4786-4C52-87F3-624BC6542A09}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LabFusionUpdater", "LabFusionUpdater\LabFusionUpdater.csproj", "{F95D874D-964D-476F-8641-FD55AD88EF07}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdaterApp", "UpdaterApp\UpdaterApp.csproj", "{368C8264-42C6-4AFB-B9EE-0A9F90C1F3BE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{945622A5-4786-4C52-87F3-624BC6542A09}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{945622A5-4786-4C52-87F3-624BC6542A09}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{945622A5-4786-4C52-87F3-624BC6542A09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F95D874D-964D-476F-8641-FD55AD88EF07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F95D874D-964D-476F-8641-FD55AD88EF07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F95D874D-964D-476F-8641-FD55AD88EF07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F95D874D-964D-476F-8641-FD55AD88EF07}.Release|Any CPU.Build.0 = Release|Any CPU
+		{368C8264-42C6-4AFB-B9EE-0A9F90C1F3BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{368C8264-42C6-4AFB-B9EE-0A9F90C1F3BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{368C8264-42C6-4AFB-B9EE-0A9F90C1F3BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{368C8264-42C6-4AFB-B9EE-0A9F90C1F3BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -83,8 +83,6 @@ namespace LabFusion.Utilities {
                     isPopup = true,
                     isMenuItem = false,
                     message = mutedPref.GetValue() ? "Muted" : "Unmuted",
-                    showTitleOnPopup = true,
-                    title = "Changed Mute",
                 });
             }));
 

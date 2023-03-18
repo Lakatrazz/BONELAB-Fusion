@@ -8,7 +8,6 @@ using LabFusion.Utilities;
 using LabFusion.Syncables;
 using LabFusion.Grabbables;
 using LabFusion.SDK.Modules;
-using LabFusion.Extensions;
 using LabFusion.Preferences;
 
 #if DEBUG
@@ -19,9 +18,6 @@ using MelonLoader;
 
 using UnityEngine;
 
-using BoneLib;
-
-using LabFusion.Senders;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Points;
 
@@ -31,7 +27,7 @@ namespace LabFusion
     {
         public const byte versionMajor = 1;
         public const byte versionMinor = 2;
-        public const short versionPatch = 0;
+        public const short versionPatch = 1;
     }
 
     public class FusionMod : MelonMod {
@@ -42,23 +38,10 @@ namespace LabFusion
 #if DEBUG
         public const string Changelog = "- Debug build. Changelog will show in the release build.";
 #else
-        public const string Changelog = "- Marked other multiplayer mods as incompatible\n" +
-            "- Actually removed wacky willy\n" +
-            "- Removed STEAM network layer and made SteamVR the default\n" +
-            "- Improved performance in a few areas\n" +
-            "- Fixed BONELAB Hub unloading parts of the level when rapidly moving through chunks\n" +
-            "- Added SDK functions for altering team scores\n" +
-            "- Added catchup for descent events\n" +
-            "- Actually fixed spawned objects in campaign levels not being caught up\n" +
-            "- Disabled grips on players after death for a few seconds to prevent flinging\n" +
-            "- Added Deathmatch and Team Deathmatch spawnpoints to Halfway Park\n" +
-            "- Added SDK option to force disable late joining\n" +
-            "- Added SDK proxy script to clear the player's inventory\n" +
-            "- Added checks for the player rep's avatars becoming the incorrect avatar\n" +
-            "- Added SDK ult events for when the player becomes part of a team\n" +
-            "- Added notification when quick muting/unmuting\n" +
-            "- Publicized Fusion asset classes for modders to use\n" +
-            "- Added server setting to set required permission for constrainer";
+        public const string Changelog = "- Made lobby metadata update on a timer\n" +
+            "- Made lobby metadata update when gamemodes are changed\n" +
+            "- Fixed steam_api_64.dll writing into the incorrect folder\n" +
+            "- Fixed version comparison requiring the patch number to be the same";
 #endif
 
         /// <summary>
@@ -75,12 +58,14 @@ namespace LabFusion
             Instance = this;
             FusionAssembly = Assembly.GetExecutingAssembly();
 
+            // Prepare the data path for writing files
+            PersistentData.OnPathInitialize();
+
             // Load APIs
             SteamAPILoader.OnLoadSteamAPI();
 
             // Initialize data and hooks
             ByteRetriever.PopulateInitial();
-            PersistentData.OnPathInitialize();
             PDController.OnInitializeMelon();
             ModuleHandler.Internal_HookAssemblies();
             GamemodeRegistration.Internal_HookAssemblies();
