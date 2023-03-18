@@ -13,11 +13,14 @@ namespace FusionHelper.WebSocket
 {
     internal static class NetworkHandler
     {
-        private static RuffleSocket server;
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        public static RuffleSocket Server { get; private set; }
+        public static Connection ClientConnection { get; private set; }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public static void Init()
         {
-            server = new RuffleSocket(new SocketConfig()
+            Server = new RuffleSocket(new SocketConfig()
             {
                 ChallengeDifficulty = 20, // Difficulty 20 is fairly hard
                 ChannelTypes = new ChannelType[]
@@ -27,9 +30,31 @@ namespace FusionHelper.WebSocket
                 },
                 DualListenPort = 9000,
             });
-            server.Start();
+            Server.Start();
 
             Console.WriteLine("Initialized UDP socket at localhost:9000");
+        }
+
+        public static void PollEvents()
+        {
+            NetworkEvent serverEvent = Server.Poll();
+
+            if (serverEvent.Type != NetworkEventType.Nothing)
+            {
+                Console.WriteLine("ServerEvent: " + serverEvent.Type);
+
+                if (serverEvent.Type == NetworkEventType.Connect)
+                {
+                    ClientConnection = serverEvent.Connection;
+                }
+
+                if (serverEvent.Type == NetworkEventType.AckNotification)
+                {
+                    Console.WriteLine("The remote acked message id: " + serverEvent.NotificationKey);
+                }
+            }
+
+            serverEvent.Recycle();
         }
     }
 }
