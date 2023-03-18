@@ -38,6 +38,7 @@ using System.Net;
 using Ruffles.Connections;
 using Steamworks;
 using FusionHelper.Network;
+using BoneLib;
 
 namespace LabFusion.Network
 {
@@ -79,18 +80,21 @@ namespace LabFusion.Network
 
         internal override void OnInitializeLayer()
         {
-            Ruffles.Utils.Logging.OnInfoLog += s =>
+            if (HelperMethods.IsAndroid())
             {
-                FusionLogger.Log(s);
-            };
-            Ruffles.Utils.Logging.OnWarningLog += s =>
-            {
-                FusionLogger.Warn(s);
-            };
-            Ruffles.Utils.Logging.OnErrorLog += s =>
-            {
-                FusionLogger.Error(s);
-            };
+                Ruffles.Utils.Logging.OnInfoLog += s =>
+                {
+                    FusionLogger.Log(s);
+                };
+                Ruffles.Utils.Logging.OnWarningLog += s =>
+                {
+                    FusionLogger.Warn(s);
+                };
+                Ruffles.Utils.Logging.OnErrorLog += s =>
+                {
+                    FusionLogger.Error(s);
+                };
+            }
 
             client = new RuffleSocket(new Ruffles.Configuration.SocketConfig()
             {
@@ -131,7 +135,6 @@ namespace LabFusion.Network
                 {
                     ulong id = clientEvent.Data.Last();
                     byte[] data = clientEvent.Data.SkipLast().ToArray();
-                    //FusionLogger.Log("Got message: \"" + Encoding.ASCII.GetString(clientEvent.Data.Array, clientEvent.Data.Offset, clientEvent.Data.Count) + "\"");
                     switch (id)
                     {
                         case (ulong)MessageTypes.SteamID:
@@ -150,8 +153,6 @@ namespace LabFusion.Network
                             SendToServer(BitConverter.GetBytes(SteamId.Value), MessageTypes.Username);
 
                             FusionLogger.Log($"Steamworks initialized with SteamID {SteamId}!");
-
-                            //SteamNetworkingUtils.InitRelayNetworkAccess();
 
                             HookSteamEvents();
 
@@ -173,7 +174,6 @@ namespace LabFusion.Network
         {
             var a = data.ToList();
             a.Add((byte)message);
-            //FusionLogger.Log("sending id " + notif + " from " + message.ToString());
             serverConnection.Send(new ArraySegment<byte>(a.ToArray()), 1, false, 0);
         }
 
