@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <Reference Include="Ruffles">
-      <HintPath>..\dependencies\Ruffles-netstandard20.dll</HintPath>
+      <HintPath>..\dependencies\Ruffles\netstandard20\Ruffles.dll</HintPath>
     </Reference>
   </ItemGroup>
 

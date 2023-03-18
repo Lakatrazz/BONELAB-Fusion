@@ -46,11 +46,12 @@ namespace FusionHelper.WebSocket
                 if (serverEvent.Type == NetworkEventType.Connect)
                 {
                     ClientConnection = serverEvent.Connection;
+                    Console.WriteLine("Client was connected");
                 }
 
-                if (serverEvent.Type == NetworkEventType.AckNotification)
+                if (serverEvent.Type == NetworkEventType.Data)
                 {
-                    Console.WriteLine("The remote acked message id: " + serverEvent.NotificationKey);
+                    Console.WriteLine("Got message: \"" + Encoding.ASCII.GetString(serverEvent.Data.Array, serverEvent.Data.Offset, serverEvent.Data.Count) + "\"");
                 }
             }
 

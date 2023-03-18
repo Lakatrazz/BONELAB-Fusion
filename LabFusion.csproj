@@ -694,8 +694,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\MelonLoader.dll</HintPath>
     </Reference>
-    <Reference Include="Ruffles-net471">
-      <HintPath>Core\dependencies\Ruffles-net471.dll</HintPath>
+    <Reference Include="Ruffles">
+      <HintPath>Core\dependencies\Ruffles\net471\Ruffles.dll</HintPath>
     </Reference>
     <Reference Include="SLZ.Algorithms, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
