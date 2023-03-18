@@ -31,8 +31,10 @@ using LabFusion.Senders;
 using LabFusion.BoneMenu;
 
 using System.IO;
+using Ruffles.Core;
 
 using UnhollowerBaseLib;
+using System.Net;
 
 namespace LabFusion.Network
 {
@@ -65,7 +67,7 @@ namespace LabFusion.Network
 
         protected bool _isInitialized = false;
 
-        WebSocketSharp.WebSocket serverSocket;
+        private RuffleSocket client;
 
         // A local reference to a lobby
         // This isn't actually used for joining servers, just for matchmaking
@@ -73,8 +75,15 @@ namespace LabFusion.Network
 
         internal override void OnInitializeLayer()
         {
-            serverSocket = new WebSocketSharp.WebSocket("localhost:9000");
-            serverSocket.Connect();
+            client = new RuffleSocket(new Ruffles.Configuration.SocketConfig()
+            {
+                ChallengeDifficulty = 20,
+                DualListenPort = 0, // gets port from os
+            });
+
+            client.Start();
+            // TODO: hardcoded ip:port
+            client.Connect(new IPEndPoint(IPAddress.Parse("192.168.12.143"), 9000));
         }
 
         internal override void OnLateInitializeLayer()

@@ -694,6 +694,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\MelonLoader.dll</HintPath>
     </Reference>
+    <Reference Include="Ruffles-net471">
+      <HintPath>Core\dependencies\Ruffles-net471.dll</HintPath>
+    </Reference>
     <Reference Include="SLZ.Algorithms, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\SLZ.Algorithms.dll</HintPath>
@@ -1247,10 +1250,6 @@
     <Reference Include="UnityEngine.XRModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\UnityEngine.XRModule.dll</HintPath>
-    </Reference>
-    <Reference Include="websocket-sharp, Version=1.0.2.27113, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Users\trevo\Desktop\websocket-sharp-master\websocket-sharp\bin\Debug\websocket-sharp.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

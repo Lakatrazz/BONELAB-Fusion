@@ -9,7 +9,12 @@
 
   <ItemGroup>
     <PackageReference Include="Facepunch.Steamworks" Version="2.3.3" />
-    <PackageReference Include="Watson" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Ruffles">
+      <HintPath>..\dependencies\Ruffles-netstandard20.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
