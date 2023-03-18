@@ -32,15 +32,16 @@ namespace FusionHelper.Steamworks
 
             ConnectedSteamIds.Remove(longId);
 
+            // TODO: this
             // Make sure the user hasn't previously disconnected
-            if (PlayerIdManager.HasPlayerId(longId))
+            /*if (PlayerIdManager.HasPlayerId(longId))
             {
                 // Update the mod so it knows this user has left
                 InternalServerHelpers.OnUserLeave(longId);
 
                 // Send disconnect notif to everyone
                 ConnectionSender.SendDisconnect(longId);
-            }
+            }*/
         }
 
         public override void OnMessage(Connection connection, NetIdentity identity, IntPtr data, int size, long messageNum, long recvTime, int channel)
@@ -50,7 +51,7 @@ namespace FusionHelper.Steamworks
             if (!ConnectedSteamIds.ContainsKey(identity.SteamId))
                 ConnectedSteamIds.Add(identity.SteamId, connection);
 
-            SteamSocketHandler.OnSocketMessageReceived(data, size, true);
+            //SteamSocketHandler.OnSocketMessageReceived(data, size, true);
         }
     }
 }
