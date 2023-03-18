@@ -25,6 +25,10 @@ namespace LabFusion.Network {
         /// <param name="user"></param>
         /// <returns></returns>
         public static VersionResult CompareVersion(Version server, Version user) {
+            // We don't care about the patch/build number
+            server = new Version(server.Major, server.Minor, 0);
+            user = new Version(user.Major, user.Minor, 0);
+
             if (server < user)
                 return VersionResult.Lower;
             else if (server > user)

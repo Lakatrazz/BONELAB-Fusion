@@ -33,6 +33,7 @@ using LabFusion.BoneMenu;
 using System.IO;
 
 using UnhollowerBaseLib;
+using LabFusion.SDK.Gamemodes;
 
 namespace LabFusion.Network
 {
@@ -67,6 +68,10 @@ namespace LabFusion.Network
         // A local reference to a lobby
         // This isn't actually used for joining servers, just for matchmaking
         protected Lobby _localLobby;
+
+        // The stored time of the last lobby update
+        // We automatically push lobby metadata updates every 30 seconds
+        protected float _lastLobbyUpdate = 0f;
 
         internal override void OnInitializeLayer() {
             try {
@@ -104,6 +109,11 @@ namespace LabFusion.Network
         }
 
         internal override void OnUpdateLayer() {
+            // Push lobby updates
+            if (Time.realtimeSinceStartup - _lastLobbyUpdate >= 30f) {
+                OnUpdateSteamLobby();
+            }
+
             // Run callbacks for our client
             if (!AsyncCallbacks) {
 #pragma warning disable CS0162 // Unreachable code detected
@@ -276,6 +286,7 @@ namespace LabFusion.Network
 
             // Add server hooks
             MultiplayerHooking.OnMainSceneInitialized += OnUpdateSteamLobby;
+            GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
             MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged += OnUpdateSteamLobby;
@@ -283,6 +294,10 @@ namespace LabFusion.Network
 
             // Create a local lobby
             AwaitLobbyCreation();
+        }
+
+        private void OnGamemodeChanged(Gamemode gamemode) {
+            OnUpdateSteamLobby();
         }
 
         private void OnPlayerJoin(PlayerId id) {
@@ -308,6 +323,7 @@ namespace LabFusion.Network
             
             // Remove server hooks
             MultiplayerHooking.OnMainSceneInitialized -= OnUpdateSteamLobby;
+            GamemodeManager.OnGamemodeChanged -= OnGamemodeChanged;
             MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
             MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged -= OnUpdateSteamLobby;
@@ -350,6 +366,9 @@ namespace LabFusion.Network
 
             // Update bonemenu items
             OnUpdateCreateServerText();
+
+            // Save current time
+            _lastLobbyUpdate = Time.realtimeSinceStartup;
         }
 
         internal override void OnSetupBoneMenu(MenuCategory category) {
