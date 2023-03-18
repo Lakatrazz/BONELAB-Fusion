@@ -12,7 +12,7 @@ using LabFusion.SDK.Points;
 using UnityEngine;
 
 namespace LabFusion.Utilities {
-    internal class ItemPair {
+    public class ItemPair {
         public GameObject GameObject { get; private set; }
         public Texture2D Preview { get; private set; }
 

@@ -191,12 +191,15 @@
     <Compile Include="Core\marrow-integration\Runtime\Misc\NotificationProxy.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\BitRewardProxy.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\CrateSpawnerProxy.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\Misc\PlayerProxy.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Spawners\InfoBoxPlacer.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Spawners\PointShopPlacer.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\SyncGameObjectEnabled.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\AlwaysAllowImpactDamage.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\AutoSyncOnStart.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\OnlyTriggerOnLocalPlayer.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\UltEvents\InvokeUltEventIfTeamLavaGang.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\UltEvents\InvokeUltEventIfTeamSabrelake.cs" />
     <Compile Include="Core\marrow-integration\Runtime\UltEvents\InvokeUltEventIfClient.cs" />
     <Compile Include="Core\marrow-integration\Runtime\UltEvents\InvokeUltEventIfHost.cs" />
     <Compile Include="Core\marrow-integration\Runtime\UltEvents\InvokeUltEventInServer.cs" />
@@ -617,6 +620,7 @@
     <Compile Include="Core\src\Syncables\Prop\PropComponentArrayExtender.cs" />
     <Compile Include="Core\src\Syncables\Prop\PropComponentExtender.cs" />
     <Compile Include="Core\src\Syncables\Prop\Extenders\PropExtenderManager.cs" />
+    <Compile Include="Core\src\Utilities\Fusion\FusionAvatar.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionOverrides.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionPointItemLoader.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionContentLoader.cs" />
