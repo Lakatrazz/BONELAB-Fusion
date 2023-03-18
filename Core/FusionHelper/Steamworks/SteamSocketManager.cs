@@ -5,10 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FusionHelper.WebSocket;
+using System.Runtime.InteropServices;
 
 namespace FusionHelper.Steamworks
 {
-    internal class SteamSocketManager : SocketManager
+    public class SteamSocketManager : SocketManager
     {
         public Dictionary<ulong, Connection> ConnectedSteamIds = new Dictionary<ulong, Connection>();
 
@@ -32,16 +34,7 @@ namespace FusionHelper.Steamworks
 
             ConnectedSteamIds.Remove(longId);
 
-            // TODO: this
-            // Make sure the user hasn't previously disconnected
-            /*if (PlayerIdManager.HasPlayerId(longId))
-            {
-                // Update the mod so it knows this user has left
-                InternalServerHelpers.OnUserLeave(longId);
-
-                // Send disconnect notif to everyone
-                ConnectionSender.SendDisconnect(longId);
-            }*/
+            NetworkHandler.SendToClient(BitConverter.GetBytes(longId), Network.MessageTypes.OnDisconnected);
         }
 
         public override void OnMessage(Connection connection, NetIdentity identity, IntPtr data, int size, long messageNum, long recvTime, int channel)
@@ -51,7 +44,10 @@ namespace FusionHelper.Steamworks
             if (!ConnectedSteamIds.ContainsKey(identity.SteamId))
                 ConnectedSteamIds.Add(identity.SteamId, connection);
 
-            //SteamSocketHandler.OnSocketMessageReceived(data, size, true);
+            byte[] message = new byte[size];
+            Marshal.Copy(data, message, 0, size);
+
+            NetworkHandler.SendToClient(message, Network.MessageTypes.OnMessage);
         }
     }
 }

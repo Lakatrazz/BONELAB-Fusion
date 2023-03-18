@@ -9,9 +9,8 @@ namespace FusionHelper.Network
     internal enum MessageTypes
     {
         SteamID = 0,
-        // TODO: part of SteamSocketManager
-        //OnDisconnected = 1,
-        //OnMessage = 2,
+        OnDisconnected = 1,
+        OnMessage = 2,
         GetUsername = 3,
     }
 }

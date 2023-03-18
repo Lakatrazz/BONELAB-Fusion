@@ -74,7 +74,7 @@ namespace FusionHelper.WebSocket
             serverEvent.Recycle();
         }
 
-        private static void SendToClient(byte[] data, MessageTypes message)
+        public static void SendToClient(byte[] data, MessageTypes message)
         {
             var a = data.ToList();
             a.Add((byte)message);

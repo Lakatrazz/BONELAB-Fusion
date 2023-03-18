@@ -123,7 +123,7 @@ namespace LabFusion.Network
             NetworkEvent clientEvent = client.Poll();
             if (clientEvent.Type != NetworkEventType.Nothing)
             {
-                FusionLogger.Log("ClientEvent: " + clientEvent.Type);
+                //FusionLogger.Log("ClientEvent: " + clientEvent.Type);
 
                 if (clientEvent.Type == NetworkEventType.Connect)
                 {
@@ -160,8 +160,21 @@ namespace LabFusion.Network
                             break;
                         case (ulong)MessageTypes.GetUsername:
                             string username = Encoding.UTF8.GetString(data);
-                            FusionLogger.Log("Got username " + username);
                             PlayerIdManager.SetUsername(username);
+                            break;
+                        case (ulong)MessageTypes.OnDisconnected:
+                            ulong longId = BitConverter.ToUInt64(data, 0);
+                            if (PlayerIdManager.HasPlayerId(longId))
+                            {
+                                // Update the mod so it knows this user has left
+                                InternalServerHelpers.OnUserLeave(longId);
+
+                                // Send disconnect notif to everyone
+                                ConnectionSender.SendDisconnect(longId);
+                            }
+                            break;
+                        case (ulong)MessageTypes.OnMessage:
+                            ProxySocketHandler.OnSocketMessageReceived(data, true);
                             break;
                     }
                 }
