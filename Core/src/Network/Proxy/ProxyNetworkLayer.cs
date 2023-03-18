@@ -150,7 +150,7 @@ namespace LabFusion.Network
                             }
 
                             PlayerIdManager.SetLongId(SteamId.Value);
-                            SendToServer(BitConverter.GetBytes(SteamId.Value), MessageTypes.Username);
+                            SendToServer(BitConverter.GetBytes(SteamId.Value), MessageTypes.GetUsername);
 
                             FusionLogger.Log($"Steamworks initialized with SteamID {SteamId}!");
 
@@ -158,7 +158,7 @@ namespace LabFusion.Network
 
                             _isInitialized = true;
                             break;
-                        case (ulong)MessageTypes.Username:
+                        case (ulong)MessageTypes.GetUsername:
                             string username = Encoding.UTF8.GetString(data);
                             FusionLogger.Log("Got username " + username);
                             PlayerIdManager.SetUsername(username);

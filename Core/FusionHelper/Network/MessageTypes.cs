@@ -12,6 +12,6 @@ namespace FusionHelper.Network
         // TODO: part of SteamSocketManager
         //OnDisconnected = 1,
         //OnMessage = 2,
-        Username = 3,
+        GetUsername = 3,
     }
 }

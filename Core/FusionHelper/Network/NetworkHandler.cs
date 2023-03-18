@@ -64,8 +64,8 @@ namespace FusionHelper.WebSocket
                             SendToClient(BitConverter.GetBytes(steamID), (ulong)MessageTypes.SteamID);
                             break;
 
-                        case (ulong)MessageTypes.Username:
-                            SendToClient(Encoding.UTF8.GetBytes(new Friend(BitConverter.ToUInt64(data)).Name), MessageTypes.Username);
+                        case (ulong)MessageTypes.GetUsername:
+                            SendToClient(Encoding.UTF8.GetBytes(new Friend(BitConverter.ToUInt64(data)).Name), MessageTypes.GetUsername);
                             break;
                     }
                 }
