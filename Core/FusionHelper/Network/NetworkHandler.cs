@@ -8,6 +8,7 @@ using Ruffles.Channeling;
 using Ruffles.Configuration;
 using Ruffles.Connections;
 using Ruffles.Core;
+using FusionHelper.Network;
 
 namespace FusionHelper.WebSocket
 {
@@ -51,11 +52,27 @@ namespace FusionHelper.WebSocket
 
                 if (serverEvent.Type == NetworkEventType.Data)
                 {
-                    Console.WriteLine("Got message: \"" + Encoding.ASCII.GetString(serverEvent.Data.Array, serverEvent.Data.Offset, serverEvent.Data.Count) + "\"");
+                    //Console.WriteLine("Got message: \"" + Encoding.ASCII.GetString(serverEvent.Data.Array, serverEvent.Data.Offset, serverEvent.Data.Count) + "\"");
+                    switch (serverEvent.NotificationKey)
+                    {
+                        case (ulong)MessageTypes.SteamID:
+                            ulong steamID = SteamClient.IsValid ? SteamClient.SteamId : 0;
+                            SendToClient(BitConverter.GetBytes(steamID), (ulong)MessageTypes.SteamID);
+                            break;
+
+                        case (ulong)MessageTypes.Username:
+                            SendToClient(Encoding.UTF8.GetBytes(new Friend(BitConverter.ToUInt64(serverEvent.Data.Array)).Name), MessageTypes.Username);
+                            break;
+                    }
                 }
             }
 
             serverEvent.Recycle();
+        }
+
+        private static void SendToClient(byte[] data, MessageTypes message)
+        {
+            ClientConnection.Send(new ArraySegment<byte>(data), 1, false, (ulong)message);
         }
     }
 }

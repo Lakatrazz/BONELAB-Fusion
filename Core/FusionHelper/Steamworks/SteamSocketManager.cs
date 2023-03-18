@@ -1,15 +1,14 @@
-﻿/*using System;
+﻿using Steamworks.Data;
+using Steamworks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Steamworks;
-using Steamworks.Data;
-
-namespace LabFusion.Network
+namespace FusionHelper.Steamworks
 {
-    public class SteamSocketManager : SocketManager
+    internal class SteamSocketManager : SocketManager
     {
         public Dictionary<ulong, Connection> ConnectedSteamIds = new Dictionary<ulong, Connection>();
 
@@ -31,7 +30,7 @@ namespace LabFusion.Network
             var pair = ConnectedSteamIds.First((p) => p.Value.Id == connection.Id);
             var longId = pair.Key;
 
-            ConnectedSteamIds.Remove(pair.Key);
+            ConnectedSteamIds.Remove(longId);
 
             // Make sure the user hasn't previously disconnected
             if (PlayerIdManager.HasPlayerId(longId))
@@ -55,4 +54,3 @@ namespace LabFusion.Network
         }
     }
 }
-*/

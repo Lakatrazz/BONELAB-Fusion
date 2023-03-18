@@ -17,16 +17,18 @@ namespace LabFusion.Network {
         STEAM_VR = 0,
         SPACEWAR = 1,
         EMPTY = 2,
+        PROXY = 3,
     }
 
     public static class NetworkLayerDeterminer {
         public static NetworkLayerType LoadedType { get; private set; }
 
         public static NetworkLayerType GetDefaultType() {
-            if (HelperMethods.IsAndroid())
+            /*if (HelperMethods.IsAndroid())
                 return NetworkLayerType.EMPTY;
 
-            return NetworkLayerType.STEAM_VR;
+            return NetworkLayerType.STEAM_VR;*/
+            return NetworkLayerType.PROXY;
         }
 
         public static NetworkLayerType VerifyType(NetworkLayerType type) {
@@ -44,6 +46,8 @@ namespace LabFusion.Network {
                         return NetworkLayerType.SPACEWAR;
                 case NetworkLayerType.EMPTY:
                     return NetworkLayerType.EMPTY;
+                case NetworkLayerType.PROXY:
+                    return NetworkLayerType.PROXY;
             }
         }
 
@@ -61,6 +65,8 @@ namespace LabFusion.Network {
                     return typeof(SpacewarNetworkLayer);
                 case NetworkLayerType.EMPTY:
                     return typeof(EmptyNetworkLayer);
+                case NetworkLayerType.PROXY:
+                    return typeof(ProxyNetworkLayer);
             }
         }
     }

@@ -1,14 +1,29 @@
 ﻿using FusionHelper.Steamworks;
 using FusionHelper.WebSocket;
-using Ruffles.Core;
 
 SteamHandler.Init();
 NetworkHandler.Init();
 
-while (true)
+Thread tickThread = new(() =>
 {
-    NetworkHandler.PollEvents();
-    // TODO: commands
-}
+    while (true)
+    {
+        NetworkHandler.PollEvents();
+        SteamHandler.Tick();
+    }
+});
 
-//Console.ReadLine();
+Thread commandThread = new(() =>
+{
+    while (true)
+    {
+        string? command = Console.ReadLine();
+        if (command != null)
+        {
+            Console.WriteLine("command: " + command);
+        }
+    }
+});
+
+tickThread.Start();
+commandThread.Start();

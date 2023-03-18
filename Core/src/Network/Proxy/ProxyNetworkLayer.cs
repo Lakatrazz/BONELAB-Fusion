@@ -37,6 +37,7 @@ using UnhollowerBaseLib;
 using System.Net;
 using Ruffles.Connections;
 using Steamworks;
+using FusionHelper.Network;
 
 namespace LabFusion.Network
 {
@@ -78,6 +79,19 @@ namespace LabFusion.Network
 
         internal override void OnInitializeLayer()
         {
+            Ruffles.Utils.Logging.OnInfoLog += s =>
+            {
+                FusionLogger.Log(s);
+            };
+            Ruffles.Utils.Logging.OnWarningLog += s =>
+            {
+                FusionLogger.Warn(s);
+            };
+            Ruffles.Utils.Logging.OnErrorLog += s =>
+            {
+                FusionLogger.Error(s);
+            };
+
             client = new RuffleSocket(new Ruffles.Configuration.SocketConfig()
             {
                 ChallengeDifficulty = 20,
@@ -91,25 +105,6 @@ namespace LabFusion.Network
 
         internal override void OnLateInitializeLayer()
         {
-            // TODO: replace
-            if (SteamClient.IsValid)
-            {
-                SteamId = SteamClient.SteamId;
-                PlayerIdManager.SetLongId(SteamId.Value);
-                PlayerIdManager.SetUsername(GetUsername(SteamId.Value));
-
-                FusionLogger.Log($"Steamworks initialized with SteamID {SteamId}!");
-
-                //SteamNetworkingUtils.InitRelayNetworkAccess();
-
-                HookSteamEvents();
-
-                _isInitialized = true;
-            }
-            else
-            {
-                FusionLogger.Log("Steamworks failed to initialize!");
-            }
         }
 
         internal override void OnCleanupLayer()
@@ -129,39 +124,51 @@ namespace LabFusion.Network
                 if (clientEvent.Type == NetworkEventType.Connect)
                 {
                     serverConnection = clientEvent.Connection;
+                    SendToServer(new byte[0], MessageTypes.SteamID);
                 }
 
                 if (clientEvent.Type == NetworkEventType.Data)
                 {
-                    FusionLogger.Log("Got message: \"" + Encoding.ASCII.GetString(clientEvent.Data.Array, clientEvent.Data.Offset, clientEvent.Data.Count) + "\"");
+                    //FusionLogger.Log("Got message: \"" + Encoding.ASCII.GetString(clientEvent.Data.Array, clientEvent.Data.Offset, clientEvent.Data.Count) + "\"");
+                    switch (clientEvent.NotificationKey)
+                    {
+                        case (ulong)MessageTypes.SteamID:
+                            SteamId = new SteamId()
+                            {
+                                Value = BitConverter.ToUInt64(clientEvent.Data.Array, clientEvent.Data.Offset),
+                            };
+
+                            if (SteamId.Value == 0)
+                            {
+                                FusionLogger.Error("Steamworks failed to initialize!");
+                                break;
+                            }
+
+                            PlayerIdManager.SetLongId(SteamId.Value);
+                            //PlayerIdManager.SetUsername(GetUsername(SteamId.Value));
+                            SendToServer(BitConverter.GetBytes(SteamId.Value), MessageTypes.Username);
+
+                            FusionLogger.Log($"Steamworks initialized with SteamID {SteamId}!");
+
+                            //SteamNetworkingUtils.InitRelayNetworkAccess();
+
+                            HookSteamEvents();
+
+                            _isInitialized = true;
+                            break;
+                        case (ulong)MessageTypes.Username:
+                            PlayerIdManager.SetUsername(Encoding.UTF8.GetString(clientEvent.Data.Array));
+                            break;
+                    }
                 }
             }
 
             clientEvent.Recycle();
-            // Run callbacks for our client
-            /*if (!AsyncCallbacks)
-            {
-#pragma warning disable CS0162 // Unreachable code detected
-                SteamClient.RunCallbacks();
-#pragma warning restore CS0162 // Unreachable code detected
-            }
+        }
 
-            // Receive any needed messages
-            try
-            {
-                if (SteamSocket != null)
-                {
-                    SteamSocket.Receive(ReceiveBufferSize);
-                }
-                if (SteamConnection != null)
-                {
-                    SteamConnection.Receive(ReceiveBufferSize);
-                }
-            }
-            catch (Exception e)
-            {
-                FusionLogger.LogException("receiving data on Socket and Connection", e);
-            }*/
+        private void SendToServer(byte[] data, MessageTypes message)
+        {
+            serverConnection.Send(new ArraySegment<byte>(data), 1, false, (ulong)message);
         }
 
         internal override void OnVoiceChatUpdate()
@@ -208,12 +215,6 @@ namespace LabFusion.Network
             {
                 identifier.OnVoiceBytesReceived(bytes);
             }*/
-        }
-
-        internal override string GetUsername(ulong userId)
-        {
-            // TODO: Username
-            return "UNKNOWN"/*new Friend(userId).Name*/;
         }
 
         internal override bool IsFriend(ulong userId)
