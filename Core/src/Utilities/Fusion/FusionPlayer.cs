@@ -47,7 +47,7 @@ namespace LabFusion.Utilities {
                 Internal_ChangePlayerHealth();
 
             // Check player avatar
-            if (AvatarOverride != null && barcode != AvatarOverride)
+            if (AvatarOverride != null && !FusionAvatar.IsMatchingAvatar(barcode, AvatarOverride))
                 Internal_ChangeAvatar();
 
             // Invoke hooks and other events
@@ -200,7 +200,7 @@ namespace LabFusion.Utilities {
                     rm.SwapAvatarCrate(AvatarOverride, true, (Action<bool>)((success) => {
                         // If the avatar forcing doesn't work, change into polyblank
                         if (!success) {
-                            rm.SwapAvatarCrate(PlayerRepUtilities.PolyBlankBarcode, true);
+                            rm.SwapAvatarCrate(FusionAvatar.POLY_BLANK_BARCODE, true);
                         }
                     }));
                 }

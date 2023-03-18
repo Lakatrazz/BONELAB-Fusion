@@ -105,9 +105,12 @@ namespace LabFusion.Network
                                 slotReceiver._weaponHost.TryDetach();
                             }
 
-                            InventorySlotReceiverGrab.PreventDropCheck = true;
+                            InventorySlotReceiverPatches.IgnorePatches = true;
                             slotReceiver.DropWeapon();
-                            InventorySlotReceiverGrab.PreventDropCheck = false;
+                            InventorySlotReceiverPatches.IgnorePatches = false;
+
+                            if (data.handedness == Handedness.UNDEFINED)
+                                return;
 
                             if (PlayerRepManager.TryGetPlayerRep(data.grabber, out var grabber)) {
                                 if (weaponSlot && weaponSlot.grip) {

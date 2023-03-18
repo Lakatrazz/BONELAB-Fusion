@@ -285,7 +285,7 @@ namespace LabFusion.Representation
             var rm = RigReferences.RigManager;
 
             if (!success) {
-                rm.SwapAvatarCrate(PlayerRepUtilities.PolyBlankBarcode, true, (Action<bool>)OnSwapFallback);
+                rm.SwapAvatarCrate(FusionAvatar.POLY_BLANK_BARCODE, true, (Action<bool>)OnSwapFallback);
             }
             else {
                 UpdateNametagSettings();
@@ -294,6 +294,11 @@ namespace LabFusion.Representation
 
         private void OnSwapFallback(bool success) {
             UpdateNametagSettings();
+        }
+
+        internal void Internal_OnAvatarChanged(string barcode) {
+            if (!FusionAvatar.IsMatchingAvatar(barcode, avatarId))
+                _isAvatarDirty = true;
         }
 
         public void PlayPullCordEffects() {

@@ -24,7 +24,7 @@ namespace LabFusion.Utilities {
         }
     }
 
-    internal static class FusionPointItemLoader {
+    public static class FusionPointItemLoader {
         public static AssetBundle ItemBundle { get; private set; }
 
         private static readonly string[] _itemNames = new string[39] {

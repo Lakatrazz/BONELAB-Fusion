@@ -50,6 +50,9 @@ namespace LabFusion.Patching
             if (__instance.IsLocalPlayer()) {
                 FusionPlayer.Internal_OnAvatarChanged(__instance, newAvatar, __instance.AvatarCrate.Barcode);
             }
+            else if (PlayerRepManager.TryGetPlayerRep(__instance, out var rep)) {
+                rep.Internal_OnAvatarChanged(__instance.AvatarCrate.Barcode);
+            }
         }
     }
 }

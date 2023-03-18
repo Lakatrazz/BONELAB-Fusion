@@ -11,7 +11,7 @@ using LabFusion.Data;
 using UnityEngine;
 
 namespace LabFusion.Utilities {
-    internal static class FusionContentLoader {
+    public static class FusionContentLoader {
         public static AssetBundle ContentBundle { get; private set; }
 
         public static GameObject PointShopPrefab { get; private set; }

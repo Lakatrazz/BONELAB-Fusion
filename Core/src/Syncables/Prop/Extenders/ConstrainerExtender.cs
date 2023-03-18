@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using LabFusion.Network;
+using LabFusion.Representation;
 using LabFusion.Utilities;
 
 using SLZ.Interaction;
@@ -20,6 +21,15 @@ namespace LabFusion.Syncables {
 
         protected override void RemoveFromCache(Constrainer constrainer) {
             Cache.Remove(constrainer);
+        }
+
+        public override void OnAttach(Hand hand, Grip grip) {
+            var rm = hand.manager;
+
+            if (NetworkInfo.IsServer && PlayerRepManager.TryGetPlayerRep(rm, out var rep) && FusionDevTools.DespawnConstrainer(rep.PlayerId)) {
+                if (PropSyncable.AssetPoolee != null)
+                    PropSyncable.AssetPoolee.Despawn();
+            }
         }
     }
 }

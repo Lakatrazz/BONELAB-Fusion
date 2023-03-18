@@ -37,8 +37,6 @@ using SLZ.Player;
 
 namespace LabFusion.Representation {
     public static class PlayerRepUtilities {
-        public const string PolyBlankBarcode = "c3534c5a-94b2-40a4-912a-24a8506f6c79";
-
         public static bool IsLocalPlayer(this RigManager rig) {
             if (!RigData.HasPlayer)
                 return true;

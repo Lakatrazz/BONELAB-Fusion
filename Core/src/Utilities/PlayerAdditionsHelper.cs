@@ -77,6 +77,15 @@ namespace LabFusion.Utilities {
             var mutePage = new PageItem(name, PageItem.Directions.SOUTHEAST, (Action)(() => {
                 mutedPref.SetValue(!mutedPref.GetValue());
                 popUpMenu.Deactivate();
+
+                FusionNotifier.Send(new FusionNotification()
+                {
+                    isPopup = true,
+                    isMenuItem = false,
+                    message = mutedPref.GetValue() ? "Muted" : "Unmuted",
+                    showTitleOnPopup = true,
+                    title = "Changed Mute",
+                });
             }));
 
             mutedPref.OnValueChanged += (v) => {

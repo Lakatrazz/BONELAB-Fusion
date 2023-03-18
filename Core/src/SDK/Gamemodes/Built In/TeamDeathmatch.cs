@@ -614,6 +614,16 @@ namespace LabFusion.SDK.Gamemodes {
 
             _localTeam = team;
 
+            // Invoke ult events
+            if (team == Team.SABRELAKE) {
+                foreach (var ultEvent in InvokeUltEventIfTeamSabrelake.Cache.Components)
+                    ultEvent.Invoke();
+            }
+            else {
+                foreach (var ultEvent in InvokeUltEventIfTeamLavaGang.Cache.Components)
+                    ultEvent.Invoke();
+            }
+
             // Invoke spawn point changes on level load
             FusionSceneManager.HookOnLevelLoad(() =>
             {

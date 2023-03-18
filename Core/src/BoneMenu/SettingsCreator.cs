@@ -65,6 +65,7 @@ namespace LabFusion.BoneMenu
             // Permissions
             var permissionCategory = category.CreateCategory("Permission Settings", Color.white);
             CreateEnumPreference(permissionCategory, "Dev Tools Allowed", FusionPreferences.LocalServerSettings.DevToolsAllowed);
+            CreateEnumPreference(permissionCategory, "Constrainer Allowed", FusionPreferences.LocalServerSettings.ConstrainerAllowed);
             CreateEnumPreference(permissionCategory, "Kicking Allowed", FusionPreferences.LocalServerSettings.KickingAllowed);
             CreateEnumPreference(permissionCategory, "Banning Allowed", FusionPreferences.LocalServerSettings.BanningAllowed);
             CreateEnumPreference(permissionCategory, "Teleporation Allowed", FusionPreferences.LocalServerSettings.Teleportation);
