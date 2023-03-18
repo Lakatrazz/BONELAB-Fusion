@@ -52,8 +52,12 @@ namespace FusionHelper.WebSocket
 
                 if (serverEvent.Type == NetworkEventType.Data)
                 {
+                    ulong id = serverEvent.Data.Last();
+                    byte[] data = serverEvent.Data.SkipLast(1).ToArray();
+
                     //Console.WriteLine("Got message: \"" + Encoding.ASCII.GetString(serverEvent.Data.Array, serverEvent.Data.Offset, serverEvent.Data.Count) + "\"");
-                    switch (serverEvent.NotificationKey)
+                    //Console.WriteLine("received notif key " + serverEvent.NotificationKey);
+                    switch (id)
                     {
                         case (ulong)MessageTypes.SteamID:
                             ulong steamID = SteamClient.IsValid ? SteamClient.SteamId : 0;
@@ -61,7 +65,7 @@ namespace FusionHelper.WebSocket
                             break;
 
                         case (ulong)MessageTypes.Username:
-                            SendToClient(Encoding.UTF8.GetBytes(new Friend(BitConverter.ToUInt64(serverEvent.Data.Array)).Name), MessageTypes.Username);
+                            SendToClient(Encoding.UTF8.GetBytes(new Friend(BitConverter.ToUInt64(data)).Name), MessageTypes.Username);
                             break;
                     }
                 }
@@ -72,7 +76,9 @@ namespace FusionHelper.WebSocket
 
         private static void SendToClient(byte[] data, MessageTypes message)
         {
-            ClientConnection.Send(new ArraySegment<byte>(data), 1, false, (ulong)message);
+            var a = data.ToList();
+            a.Add((byte)message);
+            ClientConnection.Send(new ArraySegment<byte>(a.ToArray()), 1, false, 0);
         }
     }
 }

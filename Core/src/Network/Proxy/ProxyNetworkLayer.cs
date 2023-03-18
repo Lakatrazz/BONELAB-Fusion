@@ -95,7 +95,7 @@ namespace LabFusion.Network
             client = new RuffleSocket(new Ruffles.Configuration.SocketConfig()
             {
                 ChallengeDifficulty = 20,
-                DualListenPort = 0, // gets port from os
+                DualListenPort = 9001, // gets port from os
             });
 
             client.Start();
@@ -129,13 +129,15 @@ namespace LabFusion.Network
 
                 if (clientEvent.Type == NetworkEventType.Data)
                 {
+                    ulong id = clientEvent.Data.Last();
+                    byte[] data = clientEvent.Data.SkipLast().ToArray();
                     //FusionLogger.Log("Got message: \"" + Encoding.ASCII.GetString(clientEvent.Data.Array, clientEvent.Data.Offset, clientEvent.Data.Count) + "\"");
-                    switch (clientEvent.NotificationKey)
+                    switch (id)
                     {
                         case (ulong)MessageTypes.SteamID:
                             SteamId = new SteamId()
                             {
-                                Value = BitConverter.ToUInt64(clientEvent.Data.Array, clientEvent.Data.Offset),
+                                Value = BitConverter.ToUInt64(data, clientEvent.Data.Offset),
                             };
 
                             if (SteamId.Value == 0)
@@ -145,7 +147,6 @@ namespace LabFusion.Network
                             }
 
                             PlayerIdManager.SetLongId(SteamId.Value);
-                            //PlayerIdManager.SetUsername(GetUsername(SteamId.Value));
                             SendToServer(BitConverter.GetBytes(SteamId.Value), MessageTypes.Username);
 
                             FusionLogger.Log($"Steamworks initialized with SteamID {SteamId}!");
@@ -157,7 +158,9 @@ namespace LabFusion.Network
                             _isInitialized = true;
                             break;
                         case (ulong)MessageTypes.Username:
-                            PlayerIdManager.SetUsername(Encoding.UTF8.GetString(clientEvent.Data.Array));
+                            string username = Encoding.UTF8.GetString(data);
+                            FusionLogger.Log("Got username " + username);
+                            PlayerIdManager.SetUsername(username);
                             break;
                     }
                 }
@@ -168,7 +171,10 @@ namespace LabFusion.Network
 
         private void SendToServer(byte[] data, MessageTypes message)
         {
-            serverConnection.Send(new ArraySegment<byte>(data), 1, false, (ulong)message);
+            var a = data.ToList();
+            a.Add((byte)message);
+            //FusionLogger.Log("sending id " + notif + " from " + message.ToString());
+            serverConnection.Send(new ArraySegment<byte>(a.ToArray()), 1, false, 0);
         }
 
         internal override void OnVoiceChatUpdate()
