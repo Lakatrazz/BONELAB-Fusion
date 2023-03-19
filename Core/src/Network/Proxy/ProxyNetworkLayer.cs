@@ -126,7 +126,7 @@ namespace LabFusion.Network
                 if (clientEvent.Type == NetworkEventType.Connect)
                 {
                     serverConnection = clientEvent.Connection;
-                    SendToServer(new byte[0], MessageTypes.SteamID);
+                    SendToProxyServer(new byte[0], MessageTypes.SteamID);
                 }
 
                 if (clientEvent.Type == NetworkEventType.Data)
@@ -148,7 +148,7 @@ namespace LabFusion.Network
                             }
 
                             PlayerIdManager.SetLongId(SteamId.Value);
-                            SendToServer(BitConverter.GetBytes(SteamId.Value), MessageTypes.GetUsername);
+                            SendToProxyServer(BitConverter.GetBytes(SteamId.Value), MessageTypes.GetUsername);
 
                             FusionLogger.Log($"Steamworks initialized with SteamID {SteamId}!");
 
@@ -181,7 +181,7 @@ namespace LabFusion.Network
             clientEvent.Recycle();
         }
 
-        private void SendToServer(byte[] data, MessageTypes message)
+        internal void SendToProxyServer(byte[] data, MessageTypes message)
         {
             var a = data.ToList();
             a.Add((byte)message);
