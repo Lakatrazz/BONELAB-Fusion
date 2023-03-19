@@ -20,7 +20,18 @@ Thread commandThread = new(() =>
         string? command = Console.ReadLine();
         if (command != null)
         {
-            Console.WriteLine("command: " + command);
+            //Console.WriteLine("command: " + command);
+            switch (command)
+            {
+                case string s when s.StartsWith("connect"):
+                    ulong serverId = ulong.Parse(command.Split(' ')[1]);
+                    Console.WriteLine("Attempting server connection to " + serverId);
+                    NetworkHandler.SendToClient(BitConverter.GetBytes(serverId), FusionHelper.Network.MessageTypes.JoinServer);
+                    break;
+                default:
+                    Console.WriteLine("Unknown command.");
+                    break;
+            }
         }
     }
 });
