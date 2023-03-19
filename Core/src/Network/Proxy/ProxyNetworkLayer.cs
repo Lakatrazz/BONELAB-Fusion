@@ -467,10 +467,10 @@ namespace LabFusion.Network
             LobbyMetadataHelper.WriteInfo(CurrentLobby);
 
             // Update bonemenu items
-            //OnUpdateCreateServerText();
+            OnUpdateCreateServerText();
         }
 
-        /*internal override void OnSetupBoneMenu(MenuCategory category)
+        internal override void OnSetupBoneMenu(MenuCategory category)
         {
             // Create the basic options
             CreateMatchmakingMenu(category);
@@ -504,7 +504,7 @@ namespace LabFusion.Network
             _manualJoiningCategory = matchmaking.CreateCategory("Manual Joining", Color.white);
             CreateManualJoiningMenu(_manualJoiningCategory);
 
-            // Public lobbies list
+            /*// Public lobbies list
             _publicLobbiesCategory = matchmaking.CreateCategory("Public Lobbies", Color.white);
             _publicLobbiesCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshPublicLobbies);
             _publicLobbiesCategory.CreateFunctionElement("Select Refresh to load servers!", Color.yellow, null);
@@ -512,7 +512,7 @@ namespace LabFusion.Network
             // Steam friends list
             _friendsCategory = matchmaking.CreateCategory("Steam Friends", Color.white);
             _friendsCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshFriendLobbies);
-            _friendsCategory.CreateFunctionElement("Select Refresh to load servers!", Color.yellow, null);
+            _friendsCategory.CreateFunctionElement("Select Refresh to load servers!", Color.yellow, null);*/
         }
 
         private FunctionElement _createServerElement;
@@ -579,7 +579,7 @@ namespace LabFusion.Network
             }
         }
 
-        private LobbySortMode _publicLobbySortMode = LobbySortMode.LEVEL;
+        /*private LobbySortMode _publicLobbySortMode = LobbySortMode.LEVEL;
         private bool _isPublicLobbySearching = false;
 
         private const int _maxLobbiesInOneFrame = 2;
@@ -594,7 +594,8 @@ namespace LabFusion.Network
             // Clear existing lobbies
             _publicLobbiesCategory.Elements.Clear();
             _publicLobbiesCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshPublicLobbies);
-            _publicLobbiesCategory.CreateEnumElement("Sort By", Color.white, _publicLobbySortMode, (v) => {
+            _publicLobbiesCategory.CreateEnumElement("Sort By", Color.white, _publicLobbySortMode, (v) =>
+            {
                 _publicLobbySortMode = v;
                 Menu_RefreshPublicLobbies();
             });
