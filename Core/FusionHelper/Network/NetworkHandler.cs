@@ -42,8 +42,6 @@ namespace FusionHelper.WebSocket
 
             if (serverEvent.Type != NetworkEventType.Nothing)
             {
-                Console.WriteLine("ServerEvent: " + serverEvent.Type);
-
                 if (serverEvent.Type == NetworkEventType.Connect)
                 {
                     ClientConnection = serverEvent.Connection;
@@ -55,8 +53,6 @@ namespace FusionHelper.WebSocket
                     ulong id = serverEvent.Data.Last();
                     byte[] data = serverEvent.Data.SkipLast(1).ToArray();
 
-                    //Console.WriteLine("Got message: \"" + Encoding.ASCII.GetString(serverEvent.Data.Array, serverEvent.Data.Offset, serverEvent.Data.Count) + "\"");
-                    //Console.WriteLine("received notif key " + serverEvent.NotificationKey);
                     switch (id)
                     {
                         case (ulong)MessageTypes.SteamID:

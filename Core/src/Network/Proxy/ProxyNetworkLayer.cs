@@ -123,8 +123,6 @@ namespace LabFusion.Network
             NetworkEvent clientEvent = client.Poll();
             if (clientEvent.Type != NetworkEventType.Nothing)
             {
-                //FusionLogger.Log("ClientEvent: " + clientEvent.Type);
-
                 if (clientEvent.Type == NetworkEventType.Connect)
                 {
                     serverConnection = clientEvent.Connection;
