@@ -31,14 +31,14 @@ using LabFusion.Senders;
 using LabFusion.BoneMenu;
 
 using System.IO;
-using Ruffles.Core;
 
 using UnhollowerBaseLib;
 using System.Net;
-using Ruffles.Connections;
 using Steamworks;
 using FusionHelper.Network;
 using BoneLib;
+using LiteNetLib;
+using LiteNetLib.Utils;
 
 namespace LabFusion.Network
 {
@@ -73,8 +73,8 @@ namespace LabFusion.Network
 
         protected bool _isInitialized = false;
 
-        private RuffleSocket client;
-        private Connection serverConnection;
+        private NetManager client;
+        private NetPeer serverConnection;
 
         // A local reference to a lobby
         // This isn't actually used for joining servers, just for matchmaking
@@ -84,31 +84,88 @@ namespace LabFusion.Network
         {
             Instance = this;
 
-            if (HelperMethods.IsAndroid())
+            EventBasedNetListener listener = new EventBasedNetListener();
+            client = new NetManager(listener);
+            listener.NetworkReceiveEvent += EvaluateMessage;
+            listener.PeerConnectedEvent += (peer) =>
             {
-                Ruffles.Utils.Logging.OnInfoLog += s =>
-                {
-                    FusionLogger.Log(s);
-                };
-                Ruffles.Utils.Logging.OnWarningLog += s =>
-                {
-                    FusionLogger.Warn(s);
-                };
-                Ruffles.Utils.Logging.OnErrorLog += s =>
-                {
-                    FusionLogger.Error(s);
-                };
-            }
-
-            client = new RuffleSocket(new Ruffles.Configuration.SocketConfig()
-            {
-                ChallengeDifficulty = 20,
-                DualListenPort = 9001, // gets port from os
-            });
-
+                serverConnection = peer;
+                SendToProxyServer(new byte[0], MessageTypes.SteamID);
+            };
             client.Start();
             // TODO: hardcoded ip:port
-            client.Connect(new IPEndPoint(IPAddress.Parse("192.168.12.143"), 9000));
+            client.Connect("192.168.12.143", 9000, "ProxyConnection");
+        }
+
+        internal void EvaluateMessage(NetPeer fromPeer, NetPacketReader dataReader, byte channel, DeliveryMethod deliveryMethod)
+        {
+            MelonLogger.Msg("1. " + dataReader.AvailableBytes);
+            ulong id = dataReader.GetByte();
+            MelonLogger.Msg("2. " + dataReader.AvailableBytes);
+            byte[] data = dataReader.GetRemainingBytes();
+            switch (id)
+            {
+                case (ulong)MessageTypes.Ping:
+                    double theTime = BitConverter.ToDouble(data, 0);
+                    double curTime = DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
+                    FusionLogger.Log("Server -> Client = " + (curTime - theTime) + " ms.");
+                    SendToProxyServer(BitConverter.GetBytes(curTime), MessageTypes.Ping);
+                    break;
+                case (ulong)MessageTypes.SteamID:
+                    SteamId = new SteamId()
+                    {
+                        Value = BitConverter.ToUInt64(data, 0),
+                    };
+
+                    if (SteamId.Value == 0)
+                    {
+                        FusionLogger.Error("Steamworks failed to initialize!");
+                        break;
+                    }
+
+                    PlayerIdManager.SetLongId(SteamId.Value);
+                    SendToProxyServer(BitConverter.GetBytes(SteamId.Value), MessageTypes.GetUsername);
+
+                    FusionLogger.Log($"Steamworks initialized with SteamID {SteamId}!");
+
+                    HookSteamEvents();
+
+                    _isInitialized = true;
+                    break;
+                case (ulong)MessageTypes.GetUsername:
+                    string username = Encoding.UTF8.GetString(data);
+                    PlayerIdManager.SetUsername(username);
+                    break;
+                case (ulong)MessageTypes.OnDisconnected:
+                    ulong longId = BitConverter.ToUInt64(data, 0);
+                    if (PlayerIdManager.HasPlayerId(longId))
+                    {
+                        // Update the mod so it knows this user has left
+                        InternalServerHelpers.OnUserLeave(longId);
+
+                        // Send disconnect notif to everyone
+                        ConnectionSender.SendDisconnect(longId);
+                    }
+                    break;
+                case (ulong)MessageTypes.OnMessage:
+                    ProxySocketHandler.OnSocketMessageReceived(data, true);
+                    break;
+                case (ulong)MessageTypes.OnConnectionDisconnected:
+                    NetworkHelper.Disconnect();
+                    break;
+                case (ulong)MessageTypes.OnConnectionMessage:
+                    ProxySocketHandler.OnSocketMessageReceived(data, false);
+                    break;
+                case (ulong)MessageTypes.JoinServer:
+                    ulong serverId = BitConverter.ToUInt64(data, 0);
+                    JoinServer(new SteamId()
+                    {
+                        Value = serverId
+                    });
+                    break;
+            }
+
+            dataReader.Recycle();
         }
 
         internal override void OnLateInitializeLayer()
@@ -124,91 +181,15 @@ namespace LabFusion.Network
 
         internal override void OnUpdateLayer()
         {
-            NetworkEvent clientEvent = client.Poll();
-            if (clientEvent.Type != NetworkEventType.Nothing)
-            {
-                if (clientEvent.Type == NetworkEventType.Connect)
-                {
-                    serverConnection = clientEvent.Connection;
-                    SendToProxyServer(new byte[0], MessageTypes.SteamID);
-                }
-
-                if (clientEvent.Type == NetworkEventType.Data)
-                {
-                    ulong id = clientEvent.Data.Last();
-                    byte[] data = clientEvent.Data.SkipLast().ToArray();
-                    switch (id)
-                    {
-                        case (ulong)MessageTypes.Ping:
-                            double theTime = BitConverter.ToDouble(data, 0);
-                            double curTime = DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
-                            FusionLogger.Log("Server -> Client = " + (curTime - theTime) + " ms.");
-                            SendToProxyServer(BitConverter.GetBytes(curTime), MessageTypes.Ping);
-                            break;
-                        case (ulong)MessageTypes.SteamID:
-                            SteamId = new SteamId()
-                            {
-                                Value = BitConverter.ToUInt64(data, clientEvent.Data.Offset),
-                            };
-
-                            if (SteamId.Value == 0)
-                            {
-                                FusionLogger.Error("Steamworks failed to initialize!");
-                                break;
-                            }
-
-                            PlayerIdManager.SetLongId(SteamId.Value);
-                            SendToProxyServer(BitConverter.GetBytes(SteamId.Value), MessageTypes.GetUsername);
-
-                            FusionLogger.Log($"Steamworks initialized with SteamID {SteamId}!");
-
-                            HookSteamEvents();
-
-                            _isInitialized = true;
-                            break;
-                        case (ulong)MessageTypes.GetUsername:
-                            string username = Encoding.UTF8.GetString(data);
-                            PlayerIdManager.SetUsername(username);
-                            break;
-                        case (ulong)MessageTypes.OnDisconnected:
-                            ulong longId = BitConverter.ToUInt64(data, 0);
-                            if (PlayerIdManager.HasPlayerId(longId))
-                            {
-                                // Update the mod so it knows this user has left
-                                InternalServerHelpers.OnUserLeave(longId);
-
-                                // Send disconnect notif to everyone
-                                ConnectionSender.SendDisconnect(longId);
-                            }
-                            break;
-                        case (ulong)MessageTypes.OnMessage:
-                            ProxySocketHandler.OnSocketMessageReceived(data, true);
-                            break;
-                        case (ulong)MessageTypes.OnConnectionDisconnected:
-                            NetworkHelper.Disconnect();
-                            break;
-                        case (ulong)MessageTypes.OnConnectionMessage:
-                            ProxySocketHandler.OnSocketMessageReceived(data, false);
-                            break;
-                        case (ulong)MessageTypes.JoinServer:
-                            ulong serverId = BitConverter.ToUInt64(data, 0);
-                            JoinServer(new SteamId()
-                            {
-                                Value = serverId
-                            });
-                            break;
-                    }
-                }
-            }
-
-            clientEvent.Recycle();
+            client.PollEvents();
         }
 
         internal void SendToProxyServer(byte[] data, MessageTypes message)
         {
-            var a = data.ToList();
-            a.Add((byte)message);
-            serverConnection.Send(new ArraySegment<byte>(a.ToArray()), 1, false, 0);
+            NetDataWriter writer = new NetDataWriter();
+            writer.Put((byte)message);
+            writer.PutArray(data, data.Length);
+            serverConnection.Send(writer, DeliveryMethod.Unreliable);
         }
 
         internal override void OnVoiceChatUpdate()

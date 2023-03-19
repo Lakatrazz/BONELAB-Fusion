@@ -692,12 +692,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\Il2CppSystem.Core.dll</HintPath>
     </Reference>
+    <Reference Include="LiteNetLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Core\dependencies\LiteNetLib\net471\LiteNetLib.dll</HintPath>
+    </Reference>
     <Reference Include="MelonLoader, Version=0.5.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\MelonLoader.dll</HintPath>
-    </Reference>
-    <Reference Include="Ruffles">
-      <HintPath>Core\dependencies\Ruffles\net471\Ruffles.dll</HintPath>
     </Reference>
     <Reference Include="SLZ.Algorithms, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
