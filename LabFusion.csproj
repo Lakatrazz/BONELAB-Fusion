@@ -290,7 +290,6 @@
     <Compile Include="Core\src\Extensions\Math.cs" />
     <Compile Include="Core\src\Extensions\PullCordDevice.cs" />
     <Compile Include="Core\src\Extensions\Quaternion.cs" />
-    <Compile Include="Core\src\Extensions\Rigidbody.cs" />
     <Compile Include="Core\src\Extensions\Transform.cs" />
     <Compile Include="Core\src\Extensions\SyncableComparer.cs" />
     <Compile Include="Core\src\Extensions\UnityComparer.cs" />
