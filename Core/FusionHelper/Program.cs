@@ -1,6 +1,5 @@
 ﻿using FusionHelper.Network;
 using FusionHelper.Steamworks;
-using FusionHelper.WebSocket;
 using LiteNetLib.Utils;
 
 SteamHandler.Init();

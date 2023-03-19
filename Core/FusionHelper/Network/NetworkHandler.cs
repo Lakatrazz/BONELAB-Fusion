@@ -4,14 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FusionHelper.Network;
 using FusionHelper.Steamworks;
 using System.Runtime.InteropServices;
 using Steamworks.Data;
 using LiteNetLib;
 using LiteNetLib.Utils;
 
-namespace FusionHelper.WebSocket
+namespace FusionHelper.Network
 {
     public enum ServerPrivacy
     {
