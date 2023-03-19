@@ -12,8 +12,10 @@ namespace FusionHelper.Steamworks
         const int RECEIVE_BUFFER_SIZE = 32;
 
         // TODO: enable hosting servers
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public static SteamSocketManager SocketManager { get; private set; }
         public static SteamConnectionManager ConnectionManager { get; private set; }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public static void Init()
         {
@@ -41,18 +43,12 @@ namespace FusionHelper.Steamworks
 
             try
             {
-                if (SocketManager != null)
-                {
-                    SocketManager.Receive(RECEIVE_BUFFER_SIZE);
-                }
-                if (ConnectionManager != null)
-                {
-                    ConnectionManager.Receive(RECEIVE_BUFFER_SIZE);
-                }
+                SocketManager?.Receive(RECEIVE_BUFFER_SIZE);
+                ConnectionManager?.Receive(RECEIVE_BUFFER_SIZE);
             }
             catch (Exception e)
             {
-                Console.WriteLine("Failed when receiving data on Socket and Connection", e);
+                Console.WriteLine("Failed when receiving data on Socket and Connection: {0}", e);
             }
         }
 
