@@ -25,7 +25,7 @@ namespace FusionHelper.WebSocket
             EventBasedNetListener listener = new();
             Server = new(listener);
             // TODO: disconnect timeout doesn't work?
-            Server.DisconnectTimeout = 10;
+            //Server.DisconnectTimeout = 10;
             listener.ConnectionRequestEvent += request =>
             {
                 if (Server.ConnectedPeersCount < 1)

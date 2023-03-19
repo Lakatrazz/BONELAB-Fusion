@@ -90,7 +90,7 @@ namespace LabFusion.Network
             listener.PeerConnectedEvent += (peer) =>
             {
                 serverConnection = peer;
-                SendToProxyServer(new byte[0], MessageTypes.SteamID);
+                SendToProxyServer(Array.Empty<byte>(), MessageTypes.SteamID);
             };
             client.Start();
             // TODO: hardcoded ip:port
