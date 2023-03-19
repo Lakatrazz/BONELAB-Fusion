@@ -54,7 +54,7 @@ namespace FusionHelper.WebSocket
         private static void EvaluateMessage(NetPeer fromPeer, NetPacketReader dataReader, byte channel, DeliveryMethod deliveryMethod)
         {
             ulong id = dataReader.GetByte();
-            byte[] data = dataReader.GetRemainingBytes();
+             byte[] data = dataReader.GetBytesWithLength();
             switch (id)
             {
                 case (ulong)MessageTypes.Ping:
