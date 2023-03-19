@@ -11,7 +11,6 @@ namespace FusionHelper.Steamworks
         const int APPLICATION_ID = 250820;
         const int RECEIVE_BUFFER_SIZE = 32;
 
-        // TODO: enable hosting servers
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public static SteamSocketManager SocketManager { get; private set; }
         public static SteamConnectionManager ConnectionManager { get; private set; }

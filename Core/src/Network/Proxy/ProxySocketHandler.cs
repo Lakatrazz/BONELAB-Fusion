@@ -19,39 +19,6 @@ using LiteNetLib.Utils;
 namespace LabFusion.Network
 {
     public static class ProxySocketHandler {
-        /*public static SendType ConvertToSendType(NetworkChannel channel)
-        {
-            SendType sendType;
-            switch (channel)
-            {
-                case NetworkChannel.Unreliable:
-                default:
-                    sendType = SendType.Unreliable;
-                    break;
-                case NetworkChannel.VoiceChat:
-                    sendType = SendType.Unreliable | SendType.NoDelay;
-                    break;
-                case NetworkChannel.Reliable:
-                    sendType = SendType.Reliable;
-                    break;
-            }
-            return sendType;
-        }*/
-
-        /*public static void SendToClient(Connection connection, NetworkChannel channel, FusionMessage message)
-        {
-            SendType sendType = ConvertToSendType(channel);
-
-            // Convert string/byte[] message into IntPtr data type for efficient message send / garbage management
-            int sizeOfMessage = message.Length;
-            IntPtr intPtrMessage = Marshal.AllocHGlobal(sizeOfMessage);
-            Marshal.Copy(message.Buffer, 0, intPtrMessage, sizeOfMessage);
-
-            connection.SendMessage(intPtrMessage, sizeOfMessage, sendType);
-
-            Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
-        }*/
-
         public static void BroadcastToClients(NetworkChannel channel, FusionMessage message)
         {
             MessageTypes type = channel == NetworkChannel.Reliable ? MessageTypes.ReliableBroadcastToClients : MessageTypes.UnreliableBroadcastToClients;

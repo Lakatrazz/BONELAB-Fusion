@@ -329,7 +329,6 @@ namespace LabFusion.Network
             if (_isConnectionActive || _isServerActive)
                 Disconnect();
 
-            //SteamConnection = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(serverId, 0);
             NetDataWriter writer = NewWriter(MessageTypes.JoinServer);
             writer.Put(serverId);
             SendToProxyServer(writer);
