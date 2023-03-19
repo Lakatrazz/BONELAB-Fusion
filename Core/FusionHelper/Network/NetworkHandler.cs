@@ -58,6 +58,11 @@ namespace FusionHelper.WebSocket
 
                     switch (id)
                     {
+                        case (ulong)MessageTypes.Ping:
+                            double theTime = BitConverter.ToDouble(data, 0);
+                            double curTime = DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
+                            Console.WriteLine("Client -> Server = " + (curTime - theTime) + " ms.");
+                            break;
                         case (ulong)MessageTypes.SteamID:
                             ulong steamID = SteamClient.IsValid ? SteamClient.SteamId : 0;
                             SendToClient(BitConverter.GetBytes(steamID), (ulong)MessageTypes.SteamID);

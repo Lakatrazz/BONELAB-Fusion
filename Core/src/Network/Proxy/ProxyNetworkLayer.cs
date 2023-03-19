@@ -139,6 +139,12 @@ namespace LabFusion.Network
                     byte[] data = clientEvent.Data.SkipLast().ToArray();
                     switch (id)
                     {
+                        case (ulong)MessageTypes.Ping:
+                            double theTime = BitConverter.ToDouble(data, 0);
+                            double curTime = DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
+                            FusionLogger.Log("Server -> Client = " + (curTime - theTime) + " ms.");
+                            SendToProxyServer(BitConverter.GetBytes(curTime), MessageTypes.Ping);
+                            break;
                         case (ulong)MessageTypes.SteamID:
                             SteamId = new SteamId()
                             {

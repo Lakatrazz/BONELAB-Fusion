@@ -20,5 +20,6 @@ namespace FusionHelper.Network
         OnConnectionMessage = 9,
         JoinServer = 10,
         Disconnect = 11,
+        Ping = 12,
     }
 }

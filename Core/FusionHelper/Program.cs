@@ -1,4 +1,5 @@
-﻿using FusionHelper.Steamworks;
+﻿using FusionHelper.Network;
+using FusionHelper.Steamworks;
 using FusionHelper.WebSocket;
 
 SteamHandler.Init();
@@ -26,7 +27,11 @@ Thread commandThread = new(() =>
                 case string s when s.StartsWith("connect"):
                     ulong serverId = ulong.Parse(command.Split(' ')[1]);
                     Console.WriteLine("Attempting server connection to " + serverId);
-                    NetworkHandler.SendToClient(BitConverter.GetBytes(serverId), FusionHelper.Network.MessageTypes.JoinServer);
+                    NetworkHandler.SendToClient(BitConverter.GetBytes(serverId), MessageTypes.JoinServer);
+                    break;
+                case "ping":
+                    double curTime = DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
+                    NetworkHandler.SendToClient(BitConverter.GetBytes(curTime), MessageTypes.Ping);
                     break;
                 default:
                     Console.WriteLine("Unknown command.");
