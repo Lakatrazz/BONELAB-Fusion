@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FusionHelper.WebSocket;
 using System.Runtime.InteropServices;
+using LiteNetLib.Utils;
 
 namespace FusionHelper.Steamworks
 {
@@ -34,7 +35,9 @@ namespace FusionHelper.Steamworks
 
             ConnectedSteamIds.Remove(longId);
 
-            NetworkHandler.SendToClient(BitConverter.GetBytes(longId), Network.MessageTypes.OnDisconnected);
+            NetDataWriter writer = NetworkHandler.NewWriter(Network.MessageTypes.OnDisconnected);
+            writer.Put(longId);
+            NetworkHandler.SendToClient(writer);
         }
 
         public override void OnMessage(Connection connection, NetIdentity identity, IntPtr data, int size, long messageNum, long recvTime, int channel)
@@ -47,7 +50,9 @@ namespace FusionHelper.Steamworks
             byte[] message = new byte[size];
             Marshal.Copy(data, message, 0, size);
 
-            NetworkHandler.SendToClient(message, Network.MessageTypes.OnMessage);
+            NetDataWriter writer = NetworkHandler.NewWriter(Network.MessageTypes.OnMessage);
+            writer.PutBytesWithLength(message);
+            NetworkHandler.SendToClient(writer);
         }
     }
 }

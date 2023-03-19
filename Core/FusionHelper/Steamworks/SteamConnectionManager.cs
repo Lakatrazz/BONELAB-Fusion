@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FusionHelper.WebSocket;
 using System.Runtime.InteropServices;
+using LiteNetLib.Utils;
 
 namespace FusionHelper.Steamworks
 {
@@ -26,7 +27,7 @@ namespace FusionHelper.Steamworks
         {
             base.OnDisconnected(info);
 
-            NetworkHandler.SendToClient(Array.Empty<byte>(), Network.MessageTypes.OnConnectionDisconnected);
+            NetworkHandler.SendToClient(Network.MessageTypes.OnConnectionDisconnected);
 
 #if DEBUG
             Console.WriteLine("Client was disconnected.");
@@ -39,7 +40,9 @@ namespace FusionHelper.Steamworks
             byte[] message = new byte[size];
             Marshal.Copy(data, message, 0, size);
 
-            NetworkHandler.SendToClient(message, Network.MessageTypes.OnConnectionMessage);
+            NetDataWriter writer = NetworkHandler.NewWriter(Network.MessageTypes.OnConnectionMessage);
+            writer.PutBytesWithLength(message);
+            NetworkHandler.SendToClient(writer);
         }
     }
 }
