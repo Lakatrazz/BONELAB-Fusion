@@ -2,6 +2,9 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <LangVersion>9.0</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{945622A5-4786-4C52-87F3-624BC6542A09}</ProjectGuid>
@@ -287,6 +290,7 @@
     <Compile Include="Core\src\Extensions\Math.cs" />
     <Compile Include="Core\src\Extensions\PullCordDevice.cs" />
     <Compile Include="Core\src\Extensions\Quaternion.cs" />
+    <Compile Include="Core\src\Extensions\Rigidbody.cs" />
     <Compile Include="Core\src\Extensions\Transform.cs" />
     <Compile Include="Core\src\Extensions\SyncableComparer.cs" />
     <Compile Include="Core\src\Extensions\UnityComparer.cs" />
@@ -638,6 +642,7 @@
     <Compile Include="Core\src\Utilities\ImpactUtilities.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionBundleLoader.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionNotifier.cs" />
+    <Compile Include="Core\src\Utilities\Internal\NativeUtilities.cs" />
     <Compile Include="Core\src\Utilities\Internal\PooleePusher.cs" />
     <Compile Include="Core\src\Utilities\Internal\SafeEvents.cs" />
     <Compile Include="Core\src\Utilities\Fusion\MultiplayerHooking.cs" />
