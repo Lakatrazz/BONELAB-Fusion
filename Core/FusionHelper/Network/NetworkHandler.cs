@@ -54,7 +54,7 @@ namespace FusionHelper.WebSocket
         private static void EvaluateMessage(NetPeer fromPeer, NetPacketReader dataReader, byte channel, DeliveryMethod deliveryMethod)
         {
             ulong id = dataReader.GetByte();
-             byte[] data = dataReader.GetBytesWithLength();
+            byte[] data = dataReader.GetBytesWithLength();
             switch (id)
             {
                 case (ulong)MessageTypes.Ping:
@@ -119,6 +119,18 @@ namespace FusionHelper.WebSocket
                         }
                         break;
                     }
+                case (ulong)MessageTypes.UnreliableSendFromServer:
+                case (ulong)MessageTypes.ReliableSendFromServer:
+                    /* TODO: DataReader things for this */
+                    ulong userId = dataReader.GetULong();
+                    byte[] message = null;
+                    bool reliable = id != (ulong)MessageTypes.UnreliableSendFromServer;
+
+                    if (SteamHandler.SocketManager.ConnectedSteamIds.ContainsKey(userId))
+                        SteamHandler.SendToClient(SteamHandler.SocketManager.ConnectedSteamIds[userId], message, reliable);
+                    else if (userId == SteamClient.SteamId)
+                        SteamHandler.SendToClient(SteamHandler.ConnectionManager.Connection, message, reliable);
+                    break;
                 case (ulong)MessageTypes.JoinServer:
                     ulong serverId = BitConverter.ToUInt64(data, 0);
                     SteamHandler.ConnectRelay(serverId);

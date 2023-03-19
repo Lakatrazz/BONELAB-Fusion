@@ -1,4 +1,7 @@
 ﻿using Steamworks;
+using Steamworks.Data;
+using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
 
 namespace FusionHelper.Steamworks
 {
@@ -56,6 +59,26 @@ namespace FusionHelper.Steamworks
         public static void ConnectRelay(ulong serverId)
         {
             ConnectionManager = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(serverId, 0);
+        }
+
+        public static void CreateRelay()
+        {
+            SocketManager = SteamNetworkingSockets.CreateRelaySocket<SteamSocketManager>(0);
+            ConnectionManager = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(SteamClient.SteamId);
+        }
+
+        public static void SendToClient(Connection connection, byte[] message, bool reliable)
+        {
+            SendType sendType = reliable ? SendType.Reliable : SendType.Unreliable;
+
+            // Convert string/byte[] message into IntPtr data type for efficient message send / garbage management
+            int sizeOfMessage = message.Length;
+            IntPtr intPtrMessage = Marshal.AllocHGlobal(sizeOfMessage);
+            Marshal.Copy(message, 0, intPtrMessage, sizeOfMessage);
+
+            connection.SendMessage(intPtrMessage, sizeOfMessage, sendType);
+
+            Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
         }
 
         public static void KillConnection()

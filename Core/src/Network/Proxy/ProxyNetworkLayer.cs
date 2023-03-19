@@ -270,10 +270,11 @@ namespace LabFusion.Network
         {
             if (IsServer)
             {
-                /*if (SteamSocket.ConnectedSteamIds.ContainsKey(userId))
-                    SteamSocket.SendToClient(SteamSocket.ConnectedSteamIds[userId], channel, message);
-                else if (userId == PlayerIdManager.LocalLongId)
-                    SteamSocket.SendToClient(SteamConnection.Connection, channel, message);*/
+                MessageTypes type = channel == NetworkChannel.Unreliable ? MessageTypes.UnreliableSendFromServer : MessageTypes.ReliableSendFromServer;
+                NetDataWriter writer = new NetDataWriter();
+                writer.PutBytesWithLength(BitConverter.GetBytes(userId));
+                writer.PutBytesWithLength(message.Buffer);
+                SendToProxyServer(writer.Data, type);
             }
         }
 
