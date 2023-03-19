@@ -44,6 +44,8 @@ namespace LabFusion.Network
 {
     public class ProxyNetworkLayer : NetworkLayer
     {
+        internal static ProxyNetworkLayer Instance { get; private set; }
+
         public const uint ApplicationID = 32;
 
         public const int ReceiveBufferSize = 32;
@@ -59,8 +61,8 @@ namespace LabFusion.Network
 
         public SteamId SteamId;
 
-        public static SteamSocketManager SteamSocket;
-        public static SteamConnectionManager SteamConnection;
+        //public static SteamSocketManager SteamSocket;
+        //public static SteamConnectionManager SteamConnection;
 
         protected bool _isServerActive = false;
         protected bool _isConnectionActive = false;
@@ -80,6 +82,8 @@ namespace LabFusion.Network
 
         internal override void OnInitializeLayer()
         {
+            Instance = this;
+
             if (HelperMethods.IsAndroid())
             {
                 Ruffles.Utils.Logging.OnInfoLog += s =>
@@ -174,6 +178,19 @@ namespace LabFusion.Network
                         case (ulong)MessageTypes.OnMessage:
                             ProxySocketHandler.OnSocketMessageReceived(data, true);
                             break;
+                        case (ulong)MessageTypes.OnConnectionDisconnected:
+                            NetworkHelper.Disconnect();
+                            break;
+                        case (ulong)MessageTypes.OnConnectionMessage:
+                            ProxySocketHandler.OnSocketMessageReceived(data, false);
+                            break;
+                        case (ulong)MessageTypes.JoinServer:
+                            ulong serverId = BitConverter.ToUInt64(data, 0);
+                            JoinServer(new SteamId()
+                            {
+                                Value = serverId
+                            });
+                            break;
                     }
                 }
             }
@@ -246,17 +263,17 @@ namespace LabFusion.Network
         {
             if (IsServer)
             {
-                SteamSocketHandler.BroadcastToClients(SteamSocket, channel, message);
+                ProxySocketHandler.BroadcastToClients(channel, message);
             }
             else
             {
-                SteamSocketHandler.BroadcastToServer(channel, message);
+                ProxySocketHandler.BroadcastToServer(channel, message);
             }
         }
 
         internal override void SendToServer(NetworkChannel channel, FusionMessage message)
         {
-            SteamSocketHandler.BroadcastToServer(channel, message);
+            ProxySocketHandler.BroadcastToServer(channel, message);
         }
 
         internal override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message)
@@ -270,16 +287,16 @@ namespace LabFusion.Network
         {
             if (IsServer)
             {
-                if (SteamSocket.ConnectedSteamIds.ContainsKey(userId))
+                /*if (SteamSocket.ConnectedSteamIds.ContainsKey(userId))
                     SteamSocket.SendToClient(SteamSocket.ConnectedSteamIds[userId], channel, message);
                 else if (userId == PlayerIdManager.LocalLongId)
-                    SteamSocket.SendToClient(SteamConnection.Connection, channel, message);
+                    SteamSocket.SendToClient(SteamConnection.Connection, channel, message);*/
             }
         }
 
         internal override void StartServer()
         {
-            SteamSocket = SteamNetworkingSockets.CreateRelaySocket<SteamSocketManager>(0);
+            /*SteamSocket = SteamNetworkingSockets.CreateRelaySocket<SteamSocketManager>(0);
 
             // Host needs to connect to own socket server with a ConnectionManager to send/receive messages
             // Relay Socket servers are created/connected to through SteamIds rather than "Normal" Socket Servers which take IP addresses
@@ -291,7 +308,7 @@ namespace LabFusion.Network
             InternalServerHelpers.OnStartServer();
 
             OnUpdateSteamLobby();
-            OnUpdateRichPresence();
+            OnUpdateRichPresence();*/
         }
 
         public void JoinServer(SteamId serverId)
@@ -300,7 +317,8 @@ namespace LabFusion.Network
             if (_isConnectionActive || _isServerActive)
                 Disconnect();
 
-            SteamConnection = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(serverId, 0);
+            //SteamConnection = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(serverId, 0);
+            SendToProxyServer(BitConverter.GetBytes(serverId), MessageTypes.JoinServer);
 
             _isServerActive = false;
             _isConnectionActive = true;
@@ -319,11 +337,7 @@ namespace LabFusion.Network
 
             try
             {
-                if (SteamConnection != null)
-                    SteamConnection.Close();
-
-                if (SteamSocket != null)
-                    SteamSocket.Close();
+                SendToProxyServer(Array.Empty<byte>(), MessageTypes.Disconnect);
             }
             catch
             {

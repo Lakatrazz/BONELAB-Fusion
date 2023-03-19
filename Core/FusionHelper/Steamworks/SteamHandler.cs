@@ -2,10 +2,15 @@
 
 namespace FusionHelper.Steamworks
 {
-    internal class SteamHandler
+    internal static class SteamHandler
     {
         const bool ASYNC_CALLBACKS = true;
         const int APPLICATION_ID = 250820;
+        const int RECEIVE_BUFFER_SIZE = 32;
+
+        // TODO: enable hosting servers
+        public static SteamSocketManager SocketManager { get; private set; }
+        public static SteamConnectionManager ConnectionManager { get; private set; }
 
         public static void Init()
         {
@@ -31,21 +36,32 @@ namespace FusionHelper.Steamworks
 #pragma warning restore CS0162 // Unreachable code detected
             }
 
-            /*try
+            try
             {
-                if (SteamSocket != null)
+                if (SocketManager != null)
                 {
-                    SteamSocket.Receive(ReceiveBufferSize);
+                    SocketManager.Receive(RECEIVE_BUFFER_SIZE);
                 }
-                if (SteamConnection != null)
+                if (ConnectionManager != null)
                 {
-                    SteamConnection.Receive(ReceiveBufferSize);
+                    ConnectionManager.Receive(RECEIVE_BUFFER_SIZE);
                 }
             }
             catch (Exception e)
             {
-                FusionLogger.LogException("receiving data on Socket and Connection", e);
-            }*/
+                Console.WriteLine("Failed when receiving data on Socket and Connection", e);
+            }
+        }
+
+        public static void ConnectRelay(ulong serverId)
+        {
+            ConnectionManager = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(serverId, 0);
+        }
+
+        public static void KillConnection()
+        {
+            ConnectionManager?.Close();
+            SocketManager?.Close();
         }
     }
 }
