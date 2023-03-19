@@ -142,49 +142,37 @@ namespace FusionHelper.WebSocket
         {
             ulong id = dataReader.GetByte();
 
-            if (id == (ulong)MessageTypes.LobbyMetadata)
-            {
-                RespondWithLobbyMetadata(dataReader.GetULong());
-                dataReader.Recycle();
-                return;
-            }
-
-            if (id == (ulong)MessageTypes.LobbyOwner)
-            {
-                ulong lobbyId = dataReader.GetULong();
-                Lobby lobby = new(lobbyId);
-
-                NetDataWriter writer = new();
-                writer.Put((byte)MessageTypes.LobbyOwner);
-                writer.Put(lobbyId);
-                writer.Put(lobby.Owner.Id.Value);
-
-                Console.WriteLine($"Owner of {lobbyId} is {lobby.Owner.Id.Value}");
-                ClientConnection.Send(writer, DeliveryMethod.ReliableUnordered);
-                dataReader.Recycle();
-                return;
-            }
-
-            byte[] data = dataReader.GetBytesWithLength();
             switch (id)
             {
                 case (ulong)MessageTypes.Ping:
-                    double theTime = BitConverter.ToDouble(data, 0);
+                    double theTime = dataReader.GetDouble();
                     double curTime = DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
                     Console.WriteLine("Client -> Server = " + (curTime - theTime) + " ms.");
                     break;
                 case (ulong)MessageTypes.SteamID:
-                    ulong steamID = SteamClient.IsValid ? SteamClient.SteamId : 0;
-                    SendToClient(BitConverter.GetBytes(steamID), (ulong)MessageTypes.SteamID);
-                    break;
+                    {                     
+                        ulong steamID = SteamClient.IsValid ? SteamClient.SteamId : 0;
+                        NetDataWriter writer = NewWriter(MessageTypes.SteamID);
+                        writer.Put(steamID);
+                        SendToClient(writer);
+                        break;
+                    }
 
                 case (ulong)MessageTypes.GetUsername:
-                    SendToClient(Encoding.UTF8.GetBytes(new Friend(BitConverter.ToUInt64(data)).Name), MessageTypes.GetUsername);
+                    {
+                        ulong userId = dataReader.GetULong();
+                        string name = new Friend(userId).Name;
+                        NetDataWriter writer = NewWriter(MessageTypes.GetUsername);
+                        writer.Put(name);
+                        SendToClient(writer);
+                    }
                     break;
 
                 case (ulong)MessageTypes.ReliableBroadcastToClients:
                 case (ulong)MessageTypes.UnreliableBroadcastToClients:
                     {
+                        byte[] data = dataReader.GetBytesWithLength();
+
                         // Convert string/byte[] message into IntPtr data type for efficient message send / garbage management
                         int sizeOfMessage = data.Length;
                         IntPtr intPtrMessage = Marshal.AllocHGlobal(sizeOfMessage);
@@ -205,6 +193,8 @@ namespace FusionHelper.WebSocket
                 case (ulong)MessageTypes.ReliableBroadcastToServer:
                 case (ulong)MessageTypes.UnreliableBroadcastToServer:
                     {
+                        byte[] data = dataReader.GetBytesWithLength();
+
                         // Convert string/byte[] message into IntPtr data type for efficient message send / garbage management
                         int sizeOfMessage = data.Length;
                         IntPtr intPtrMessage = Marshal.AllocHGlobal(sizeOfMessage);
@@ -230,15 +220,38 @@ namespace FusionHelper.WebSocket
                         }
                         break;
                     }
+                case (ulong)MessageTypes.UnreliableSendFromServer:
+                case (ulong)MessageTypes.ReliableSendFromServer:
+                    {
+                        ulong userId = dataReader.GetULong();
+                        byte[] message = dataReader.GetBytesWithLength();
+                        bool reliable = id != (ulong)MessageTypes.UnreliableSendFromServer;
+
+                        if (SteamHandler.SocketManager.ConnectedSteamIds.ContainsKey(userId))
+                            SteamHandler.SendToClient(SteamHandler.SocketManager.ConnectedSteamIds[userId], message, reliable);
+                        else if (userId == SteamClient.SteamId)
+                            SteamHandler.SendToClient(SteamHandler.ConnectionManager.Connection, message, reliable);
+
+                        break;
+                    }
                 case (ulong)MessageTypes.JoinServer:
-                    ulong serverId = BitConverter.ToUInt64(data, 0);
-                    SteamHandler.ConnectRelay(serverId);
+                    {
+                        ulong serverId = dataReader.GetULong();
+                        SteamHandler.ConnectRelay(serverId);
+                    }
+                    break;
+                case (ulong)MessageTypes.StartServer:
+                    SteamHandler.CreateRelay();
+                    SendToClient(MessageTypes.StartServer);
                     break;
                 case (ulong)MessageTypes.Disconnect:
                     SteamHandler.KillConnection();
                     break;
                 case (ulong)MessageTypes.LobbyIds:
                     RespondWithLobbyIds();
+                    break;
+                case (ulong)MessageTypes.LobbyMetadata:
+                    RespondWithLobbyMetadata(dataReader.GetULong());
                     break;
             }
 
@@ -250,12 +263,22 @@ namespace FusionHelper.WebSocket
             Server.PollEvents();
         }
 
-        public static void SendToClient(byte[] data, MessageTypes message)
+        public static NetDataWriter NewWriter(MessageTypes type)
         {
             NetDataWriter writer = new();
-            writer.Put((byte)message);
-            writer.PutBytesWithLength(data, 0, (ushort)data.Length);
-            ClientConnection.Send(writer, DeliveryMethod.ReliableOrdered);
+            writer.Put((byte)type);
+            return writer;
+        }
+
+        public static void SendToClient(NetDataWriter writer)
+        {
+            ClientConnection.Send(writer, DeliveryMethod.Unreliable);
+        }
+
+        public static void SendToClient(MessageTypes type)
+        {
+            NetDataWriter writer = NewWriter(type);
+            ClientConnection.Send(writer, DeliveryMethod.Unreliable);
         }
     }
 }

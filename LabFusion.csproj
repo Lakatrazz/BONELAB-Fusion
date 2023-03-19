@@ -356,7 +356,6 @@
     <Compile Include="Core\src\Network\Messages\Server\PlayerSettingsMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Spawning\SpawnableCratePlacerMessage.cs" />
     <Compile Include="Core\src\Network\NetworkLayerDeterminer.cs" />
-    <Compile Include="Core\src\Network\Proxy\ProxyLobbyData.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxyLobbyManager.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxyNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxySocketHandler.cs" />

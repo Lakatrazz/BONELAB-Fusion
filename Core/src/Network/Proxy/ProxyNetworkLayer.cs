@@ -39,6 +39,7 @@ using FusionHelper.Network;
 using BoneLib;
 using LiteNetLib;
 using LiteNetLib.Utils;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace LabFusion.Network
 {
@@ -74,7 +75,7 @@ namespace LabFusion.Network
         protected bool _isInitialized = false;
 
         private NetManager client;
-        public NetPeer serverConnection;
+        private NetPeer serverConnection;
         private ProxyLobbyManager _lobbyManager;
 
         // A local reference to a lobby
@@ -91,7 +92,7 @@ namespace LabFusion.Network
             listener.PeerConnectedEvent += (peer) =>
             {
                 serverConnection = peer;
-                SendToProxyServer(Array.Empty<byte>(), MessageTypes.SteamID);
+                SendToProxyServer(MessageTypes.SteamID);
             };
             client.Start();
             // TODO: hardcoded ip:port
@@ -102,50 +103,51 @@ namespace LabFusion.Network
         internal void EvaluateMessage(NetPeer fromPeer, NetPacketReader dataReader, byte channel, DeliveryMethod deliveryMethod)
         {
             ulong id = dataReader.GetByte();
-
-            if (id == (ulong)MessageTypes.LobbyIds || id == (ulong)MessageTypes.LobbyMetadata || id == (ulong)MessageTypes.LobbyOwner)
-            {
-                _lobbyManager.HandleLobbyMessage((MessageTypes)id, dataReader);
-                dataReader.Recycle();
-                return;
-            }
-
-            byte[] data = dataReader.GetBytesWithLength();
             switch (id)
             {
                 case (ulong)MessageTypes.Ping:
-                    double theTime = BitConverter.ToDouble(data, 0);
-                    double curTime = DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
-                    FusionLogger.Log("Server -> Client = " + (curTime - theTime) + " ms.");
-                    SendToProxyServer(BitConverter.GetBytes(curTime), MessageTypes.Ping);
-                    break;
-                case (ulong)MessageTypes.SteamID:
-                    SteamId = new SteamId()
                     {
-                        Value = BitConverter.ToUInt64(data, 0),
-                    };
-
-                    if (SteamId.Value == 0)
-                    {
-                        FusionLogger.Error("Steamworks failed to initialize!");
+                        double theTime = dataReader.GetDouble();
+                        double curTime = DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
+                        FusionLogger.Log("Server -> Client = " + (curTime - theTime) + " ms.");
+                        NetDataWriter writer = NewWriter(MessageTypes.Ping);
+                        writer.Put(curTime);
+                        SendToProxyServer(writer);
                         break;
                     }
+                case (ulong)MessageTypes.SteamID:
+                    {
+                        SteamId = new SteamId()
+                        {
+                            Value = dataReader.GetULong()
+                        };
 
-                    PlayerIdManager.SetLongId(SteamId.Value);
-                    SendToProxyServer(BitConverter.GetBytes(SteamId.Value), MessageTypes.GetUsername);
+                        if (SteamId.Value == 0)
+                        {
+                            FusionLogger.Error("Steamworks failed to initialize!");
+                            break;
+                        }
 
-                    FusionLogger.Log($"Steamworks initialized with SteamID {SteamId}!");
+                        PlayerIdManager.SetLongId(SteamId.Value);
+                        NetDataWriter writer = NewWriter(MessageTypes.GetUsername);
+                        writer.Put(SteamId.Value);
+                        SendToProxyServer(writer);
 
-                    HookSteamEvents();
+                        FusionLogger.Log($"Steamworks initialized with SteamID {SteamId}!");
 
-                    _isInitialized = true;
-                    break;
+                        HookSteamEvents();
+
+                        _isInitialized = true;
+                        break;
+                    }
                 case (ulong)MessageTypes.GetUsername:
-                    string username = Encoding.UTF8.GetString(data);
-                    PlayerIdManager.SetUsername(username);
+                    {
+                        string username = dataReader.GetString();
+                        PlayerIdManager.SetUsername(username);
+                    }
                     break;
                 case (ulong)MessageTypes.OnDisconnected:
-                    ulong longId = BitConverter.ToUInt64(data, 0);
+                    ulong longId = dataReader.GetULong();
                     if (PlayerIdManager.HasPlayerId(longId))
                     {
                         // Update the mod so it knows this user has left
@@ -156,21 +158,47 @@ namespace LabFusion.Network
                     }
                     break;
                 case (ulong)MessageTypes.OnMessage:
-                    ProxySocketHandler.OnSocketMessageReceived(data, true);
-                    break;
+                    {
+                        byte[] data = dataReader.GetBytesWithLength();
+                        ProxySocketHandler.OnSocketMessageReceived(data, true);
+                        break;
+                    }
                 case (ulong)MessageTypes.OnConnectionDisconnected:
                     NetworkHelper.Disconnect();
                     break;
                 case (ulong)MessageTypes.OnConnectionMessage:
-                    ProxySocketHandler.OnSocketMessageReceived(data, false);
-                    break;
-                case (ulong)MessageTypes.JoinServer:
-                    ulong serverId = BitConverter.ToUInt64(data, 0);
-                    JoinServer(new SteamId()
                     {
-                        Value = serverId
-                    });
+                        byte[] data = dataReader.GetBytesWithLength();
+                        ProxySocketHandler.OnSocketMessageReceived(data, false);
+                        break;
+                    }
+                case (ulong)MessageTypes.JoinServer:
+                    {
+                        ulong serverId = dataReader.GetULong();
+                        JoinServer(new SteamId()
+                        {
+                            Value = serverId
+                        });
+                    }
                     break;
+                case (ulong)MessageTypes.StartServer:
+                    {
+                        _isServerActive = true;
+                        _isConnectionActive = true;
+
+                        // Call server setup
+                        InternalServerHelpers.OnStartServer();
+
+                        OnUpdateSteamLobby();
+                        OnUpdateRichPresence();
+                        break;
+                    }
+                case (ulong)MessageTypes.LobbyIds:
+                case (ulong)MessageTypes.LobbyMetadata:
+                    {
+                        _lobbyManager.HandleLobbyMessage((MessageTypes)id, dataReader);
+                        break;
+                    }
             }
 
             dataReader.Recycle();
@@ -192,12 +220,22 @@ namespace LabFusion.Network
             client.PollEvents();
         }
 
-        internal void SendToProxyServer(byte[] data, MessageTypes message)
+        internal static NetDataWriter NewWriter(MessageTypes type)
         {
             NetDataWriter writer = new NetDataWriter();
-            writer.Put((byte)message);
-            writer.PutBytesWithLength(data, 0, (ushort)data.Length);
-            serverConnection.Send(writer, DeliveryMethod.ReliableOrdered);
+            writer.Put((ulong)type);
+            return writer;
+        }
+
+        internal void SendToProxyServer(NetDataWriter writer)
+        {
+            serverConnection.Send(writer, DeliveryMethod.Unreliable);
+        }
+
+        internal void SendToProxyServer(MessageTypes type)
+        {
+            NetDataWriter writer = NewWriter(type);
+            serverConnection.Send(writer, DeliveryMethod.Unreliable);
         }
 
         internal override void OnVoiceChatUpdate()
@@ -280,28 +318,17 @@ namespace LabFusion.Network
         {
             if (IsServer)
             {
-                /*if (SteamSocket.ConnectedSteamIds.ContainsKey(userId))
-                    SteamSocket.SendToClient(SteamSocket.ConnectedSteamIds[userId], channel, message);
-                else if (userId == PlayerIdManager.LocalLongId)
-                    SteamSocket.SendToClient(SteamConnection.Connection, channel, message);*/
+                MessageTypes type = channel == NetworkChannel.Unreliable ? MessageTypes.UnreliableSendFromServer : MessageTypes.ReliableSendFromServer;
+                NetDataWriter writer = NewWriter(type);
+                writer.PutBytesWithLength(BitConverter.GetBytes(userId));
+                writer.PutBytesWithLength(message.Buffer);
+                SendToProxyServer(writer);
             }
         }
 
         internal override void StartServer()
         {
-            /*SteamSocket = SteamNetworkingSockets.CreateRelaySocket<SteamSocketManager>(0);
-
-            // Host needs to connect to own socket server with a ConnectionManager to send/receive messages
-            // Relay Socket servers are created/connected to through SteamIds rather than "Normal" Socket Servers which take IP addresses
-            SteamConnection = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(SteamId);
-            _isServerActive = true;
-            _isConnectionActive = true;
-
-            // Call server setup
-            InternalServerHelpers.OnStartServer();
-
-            OnUpdateSteamLobby();
-            OnUpdateRichPresence();*/
+            SendToProxyServer(MessageTypes.StartServer);
         }
 
         public void JoinServer(SteamId serverId)
@@ -310,8 +337,9 @@ namespace LabFusion.Network
             if (_isConnectionActive || _isServerActive)
                 Disconnect();
 
-            //SteamConnection = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(serverId, 0);
-            SendToProxyServer(BitConverter.GetBytes(serverId), MessageTypes.JoinServer);
+            NetDataWriter writer = NewWriter(MessageTypes.JoinServer);
+            writer.Put(serverId);
+            SendToProxyServer(writer);
 
             _isServerActive = false;
             _isConnectionActive = true;
@@ -330,7 +358,7 @@ namespace LabFusion.Network
 
             try
             {
-                SendToProxyServer(Array.Empty<byte>(), MessageTypes.Disconnect);
+                SendToProxyServer(MessageTypes.Disconnect);
             }
             catch
             {
@@ -574,7 +602,8 @@ namespace LabFusion.Network
             // Clear existing lobbies
             _publicLobbiesCategory.Elements.Clear();
             _publicLobbiesCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshPublicLobbies);
-            _publicLobbiesCategory.CreateEnumElement("Sort By", Color.white, _publicLobbySortMode, (v) => {
+            _publicLobbiesCategory.CreateEnumElement("Sort By", Color.white, _publicLobbySortMode, (v) =>
+            {
                 _publicLobbySortMode = v;
                 Menu_RefreshPublicLobbies();
             });

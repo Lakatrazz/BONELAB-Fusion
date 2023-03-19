@@ -16,7 +16,6 @@ namespace LabFusion.Network
         private TaskCompletionSource<ulong[]> _lobbyIdSource = null;
         private readonly ProxyNetworkLayer _networkLayer;
         private Dictionary<ulong, TaskCompletionSource<LobbyMetadataInfo>> _metadataInfoRequests = new Dictionary<ulong, TaskCompletionSource<LobbyMetadataInfo>>();
-        private Dictionary<ulong, TaskCompletionSource<ulong>> _ownerRequests = new Dictionary<ulong, TaskCompletionSource<ulong>>();
 
         internal ProxyLobbyManager(ProxyNetworkLayer networkLayer)
         {
@@ -90,31 +89,12 @@ namespace LabFusion.Network
                 tcs.SetResult(metadataInfo);
                 _metadataInfoRequests.Remove(lobbyId);
             }
-
-            if (messageType == MessageTypes.LobbyOwner)
-            {
-                ulong lobbyId = packetReader.GetULong();
-                MelonLogger.Msg($"Got owner for {lobbyId}");
-
-                if (!_ownerRequests.ContainsKey(lobbyId))
-                {
-                    MelonLogger.Error("Got extraneous LobbyOwner response?");
-                    return;
-                }
-
-                var tcs = _ownerRequests[lobbyId];
-
-                ulong ownerId = packetReader.GetULong();
-                MelonLogger.Msg($"Owner of lobby {lobbyId} is {ownerId}");
-                tcs.SetResult(ownerId);
-                _ownerRequests.Remove(lobbyId);
-            }
         }
 
         public Task<ulong[]> RequestLobbyIds()
         {
             _lobbyIdSource = new TaskCompletionSource<ulong[]>();
-            _networkLayer.SendToProxyServer(new byte[1], MessageTypes.LobbyIds);
+            _networkLayer.SendToProxyServer(MessageTypes.LobbyIds);
 
             return _lobbyIdSource.Task;
         }
@@ -123,22 +103,9 @@ namespace LabFusion.Network
         {
             var tcs = new TaskCompletionSource<LobbyMetadataInfo>();
             _metadataInfoRequests.Add(lobbyId, tcs);
-            NetDataWriter writer = new NetDataWriter();
-            writer.Put((byte)MessageTypes.LobbyMetadata);
+            NetDataWriter writer = ProxyNetworkLayer.NewWriter(MessageTypes.LobbyMetadata);
             writer.Put(lobbyId);
-            _networkLayer.serverConnection.Send(writer, DeliveryMethod.ReliableOrdered);
-
-            return tcs.Task;
-        }
-
-        public Task<ulong> RequestLobbyOwner(ulong lobbyId)
-        {
-            var tcs = new TaskCompletionSource<ulong>();
-            _ownerRequests.Add(lobbyId, tcs);
-            NetDataWriter writer = new NetDataWriter();
-            writer.Put((byte)MessageTypes.LobbyOwner);
-            writer.Put(lobbyId);
-            _networkLayer.serverConnection.Send(writer, DeliveryMethod.ReliableOrdered);
+            _networkLayer.SendToProxyServer(writer);
 
             return tcs.Task;
         }

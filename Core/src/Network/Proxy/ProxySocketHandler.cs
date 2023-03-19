@@ -14,47 +14,17 @@ using Steamworks.Data;
 
 using UnityEngine;
 using FusionHelper.Network;
+using LiteNetLib.Utils;
 
 namespace LabFusion.Network
 {
     public static class ProxySocketHandler {
-        /*public static SendType ConvertToSendType(NetworkChannel channel)
-        {
-            SendType sendType;
-            switch (channel)
-            {
-                case NetworkChannel.Unreliable:
-                default:
-                    sendType = SendType.Unreliable;
-                    break;
-                case NetworkChannel.VoiceChat:
-                    sendType = SendType.Unreliable | SendType.NoDelay;
-                    break;
-                case NetworkChannel.Reliable:
-                    sendType = SendType.Reliable;
-                    break;
-            }
-            return sendType;
-        }*/
-
-        /*public static void SendToClient(Connection connection, NetworkChannel channel, FusionMessage message)
-        {
-            SendType sendType = ConvertToSendType(channel);
-
-            // Convert string/byte[] message into IntPtr data type for efficient message send / garbage management
-            int sizeOfMessage = message.Length;
-            IntPtr intPtrMessage = Marshal.AllocHGlobal(sizeOfMessage);
-            Marshal.Copy(message.Buffer, 0, intPtrMessage, sizeOfMessage);
-
-            connection.SendMessage(intPtrMessage, sizeOfMessage, sendType);
-
-            Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
-        }*/
-
         public static void BroadcastToClients(NetworkChannel channel, FusionMessage message)
         {
             MessageTypes type = channel == NetworkChannel.Reliable ? MessageTypes.ReliableBroadcastToClients : MessageTypes.UnreliableBroadcastToClients;
-            ProxyNetworkLayer.Instance.SendToProxyServer(message.Buffer, type);
+            NetDataWriter writer = ProxyNetworkLayer.NewWriter(type);
+            writer.PutBytesWithLength(message.Buffer);
+            ProxyNetworkLayer.Instance.SendToProxyServer(writer);
         }
 
         public static void BroadcastToServer(NetworkChannel channel, FusionMessage message)
@@ -62,7 +32,9 @@ namespace LabFusion.Network
             try
             {
                 MessageTypes type = channel == NetworkChannel.Reliable ? MessageTypes.ReliableBroadcastToServer : MessageTypes.UnreliableBroadcastToServer;
-                ProxyNetworkLayer.Instance.SendToProxyServer(message.Buffer, type);
+                NetDataWriter writer = ProxyNetworkLayer.NewWriter(type);
+                writer.PutBytesWithLength(message.Buffer);
+                ProxyNetworkLayer.Instance.SendToProxyServer(writer);
             }
             catch (Exception e)
             {
