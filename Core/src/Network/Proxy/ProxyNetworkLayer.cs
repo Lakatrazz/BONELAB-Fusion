@@ -39,6 +39,7 @@ using FusionHelper.Network;
 using BoneLib;
 using LiteNetLib;
 using LiteNetLib.Utils;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace LabFusion.Network
 {
@@ -178,6 +179,18 @@ namespace LabFusion.Network
                         });
                     }
                     break;
+                case (ulong)MessageTypes.StartServer:
+                    {
+                        _isServerActive = true;
+                        _isConnectionActive = true;
+
+                        // Call server setup
+                        InternalServerHelpers.OnStartServer();
+
+                        OnUpdateSteamLobby();
+                        OnUpdateRichPresence();
+                        break;
+                    }
             }
 
             dataReader.Recycle();
@@ -307,19 +320,7 @@ namespace LabFusion.Network
 
         internal override void StartServer()
         {
-            /*SteamSocket = SteamNetworkingSockets.CreateRelaySocket<SteamSocketManager>(0);
-
-            // Host needs to connect to own socket server with a ConnectionManager to send/receive messages
-            // Relay Socket servers are created/connected to through SteamIds rather than "Normal" Socket Servers which take IP addresses
-            SteamConnection = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(SteamId);
-            _isServerActive = true;
-            _isConnectionActive = true;
-
-            // Call server setup
-            InternalServerHelpers.OnStartServer();
-
-            OnUpdateSteamLobby();
-            OnUpdateRichPresence();*/
+            SendToProxyServer(MessageTypes.StartServer);
         }
 
         public void JoinServer(SteamId serverId)

@@ -143,6 +143,7 @@ namespace FusionHelper.WebSocket
                             SteamHandler.SendToClient(SteamHandler.SocketManager.ConnectedSteamIds[userId], message, reliable);
                         else if (userId == SteamClient.SteamId)
                             SteamHandler.SendToClient(SteamHandler.ConnectionManager.Connection, message, reliable);
+
                         break;
                     }
                 case (ulong)MessageTypes.JoinServer:
@@ -150,6 +151,10 @@ namespace FusionHelper.WebSocket
                         ulong serverId = dataReader.GetULong();
                         SteamHandler.ConnectRelay(serverId);
                     }
+                    break;
+                case (ulong)MessageTypes.StartServer:
+                    SteamHandler.CreateRelay();
+                    SendToClient(MessageTypes.StartServer);
                     break;
                 case (ulong)MessageTypes.Disconnect:
                     SteamHandler.KillConnection();

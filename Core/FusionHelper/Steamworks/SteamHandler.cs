@@ -60,6 +60,9 @@ namespace FusionHelper.Steamworks
         public static void CreateRelay()
         {
             SocketManager = SteamNetworkingSockets.CreateRelaySocket<SteamSocketManager>(0);
+
+            // Host needs to connect to own socket server with a ConnectionManager to send/receive messages
+            // Relay Socket servers are created/connected to through SteamIds rather than "Normal" Socket Servers which take IP addresses
             ConnectionManager = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(SteamClient.SteamId);
         }
 
