@@ -138,8 +138,10 @@ namespace LabFusion.Network
                         break;
                     }
                 case (ulong)MessageTypes.GetUsername:
-                    string username = dataReader.GetString();
-                    PlayerIdManager.SetUsername(username);
+                    {
+                        string username = dataReader.GetString();
+                        PlayerIdManager.SetUsername(username);
+                    }
                     break;
                 case (ulong)MessageTypes.OnDisconnected:
                     ulong longId = dataReader.GetULong();
@@ -168,11 +170,13 @@ namespace LabFusion.Network
                         break;
                     }
                 case (ulong)MessageTypes.JoinServer:
-                    ulong serverId = dataReader.GetULong();
-                    JoinServer(new SteamId()
                     {
-                        Value = serverId
-                    });
+                        ulong serverId = dataReader.GetULong();
+                        JoinServer(new SteamId()
+                        {
+                            Value = serverId
+                        });
+                    }
                     break;
             }
 

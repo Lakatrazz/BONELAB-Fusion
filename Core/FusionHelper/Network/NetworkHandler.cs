@@ -146,8 +146,10 @@ namespace FusionHelper.WebSocket
                         break;
                     }
                 case (ulong)MessageTypes.JoinServer:
-                    ulong serverId = dataReader.GetULong();
-                    SteamHandler.ConnectRelay(serverId);
+                    {
+                        ulong serverId = dataReader.GetULong();
+                        SteamHandler.ConnectRelay(serverId);
+                    }
                     break;
                 case (ulong)MessageTypes.Disconnect:
                     SteamHandler.KillConnection();
