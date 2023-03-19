@@ -24,12 +24,25 @@ namespace FusionHelper.WebSocket
         {
             EventBasedNetListener listener = new();
             Server = new(listener);
+            // TODO: disconnect timeout doesn't work?
+            Server.DisconnectTimeout = 10;
             listener.ConnectionRequestEvent += request =>
             {
                 if (Server.ConnectedPeersCount < 1)
                     request.AcceptIfKey("ProxyConnection");
                 else
                     request.Reject();
+            };
+            listener.PeerConnectedEvent += peer =>
+            {
+                Console.WriteLine("New connected peer: {0}", peer.EndPoint);
+                ClientConnection = peer;
+            };
+            listener.PeerDisconnectedEvent += (peer, disconnectInfo) => {
+                Thread.CurrentThread.Join();
+                Console.WriteLine("Client disconnected, press any key to exit.");
+                Console.ReadKey();
+                Environment.Exit(0);
             };
             listener.NetworkReceiveEvent += EvaluateMessage;
 
@@ -40,9 +53,7 @@ namespace FusionHelper.WebSocket
 
         private static void EvaluateMessage(NetPeer fromPeer, NetPacketReader dataReader, byte channel, DeliveryMethod deliveryMethod)
         {
-            Console.WriteLine("1. " + dataReader.AvailableBytes);
             ulong id = dataReader.GetByte();
-            Console.WriteLine("2. " + dataReader.AvailableBytes);
             byte[] data = dataReader.GetRemainingBytes();
             switch (id)
             {
@@ -129,7 +140,7 @@ namespace FusionHelper.WebSocket
         {
             NetDataWriter writer = new();
             writer.Put((byte)message);
-            writer.PutArray(data, data.Length);
+            writer.PutBytesWithLength(data, 0, (ushort)data.Length);
             ClientConnection.Send(writer, DeliveryMethod.Unreliable);
         }
     }

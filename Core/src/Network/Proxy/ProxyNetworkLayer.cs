@@ -99,9 +99,7 @@ namespace LabFusion.Network
 
         internal void EvaluateMessage(NetPeer fromPeer, NetPacketReader dataReader, byte channel, DeliveryMethod deliveryMethod)
         {
-            MelonLogger.Msg("1. " + dataReader.AvailableBytes);
             ulong id = dataReader.GetByte();
-            MelonLogger.Msg("2. " + dataReader.AvailableBytes);
             byte[] data = dataReader.GetRemainingBytes();
             switch (id)
             {
@@ -188,7 +186,7 @@ namespace LabFusion.Network
         {
             NetDataWriter writer = new NetDataWriter();
             writer.Put((byte)message);
-            writer.PutArray(data, data.Length);
+            writer.PutBytesWithLength(data, 0, (ushort)data.Length);
             serverConnection.Send(writer, DeliveryMethod.Unreliable);
         }
 
@@ -243,8 +241,6 @@ namespace LabFusion.Network
             return false;
             //return userId == PlayerIdManager.LocalLongId || new Friend(userId).IsFriend;
         }
-
-        /* TODO: CONNECTION GARBO */
 
         internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message)
         {
@@ -339,8 +335,6 @@ namespace LabFusion.Network
             OnUpdateSteamLobby();
             OnUpdateRichPresence();
         }
-
-        /* END CONNECTION GARBO */
 
         private void OnUpdateRichPresence()
         {
