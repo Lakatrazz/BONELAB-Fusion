@@ -223,7 +223,7 @@ namespace LabFusion.Network
         internal static NetDataWriter NewWriter(MessageTypes type)
         {
             NetDataWriter writer = new NetDataWriter();
-            writer.Put((ulong)type);
+            writer.Put((byte)type);
             return writer;
         }
 
