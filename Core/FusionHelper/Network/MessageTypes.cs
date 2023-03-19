@@ -21,5 +21,8 @@ namespace FusionHelper.Network
         JoinServer = 10,
         Disconnect = 11,
         Ping = 12,
+        LobbyIds = 13,
+        LobbyMetadata = 14,
+        LobbyOwner = 15
     }
 }

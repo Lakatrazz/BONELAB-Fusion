@@ -1,6 +1,8 @@
 ﻿using FusionHelper.Network;
 using FusionHelper.Steamworks;
 using FusionHelper.WebSocket;
+using Steamworks;
+using Steamworks.Data;
 
 SteamHandler.Init();
 NetworkHandler.Init();
@@ -11,6 +13,8 @@ Thread tickThread = new(() =>
     {
         NetworkHandler.PollEvents();
         SteamHandler.Tick();
+        // Throttle a little bit to not burn 100% CPU
+        Thread.Sleep(8);
     }
 });
 

@@ -13,6 +13,23 @@ using LiteNetLib.Utils;
 
 namespace FusionHelper.WebSocket
 {
+    public enum ServerPrivacy
+    {
+        PUBLIC = 0,
+        PRIVATE = 1,
+        FRIENDS_ONLY = 2,
+        LOCKED = 3,
+    }
+
+    public enum TimeScaleMode
+    {
+        DISABLED = 0,
+        LOW_GRAVITY = 1,
+        HOST_ONLY = 2,
+        EVERYONE = 3,
+        CLIENT_SIDE_UNSTABLE = 4,
+    }
+
     internal static class NetworkHandler
     {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -51,10 +68,104 @@ namespace FusionHelper.WebSocket
             Console.WriteLine("Initialized UDP socket at localhost:9000");
         }
 
+        private static Task<Lobby[]> FetchLobbies()
+        {
+            var list = SteamMatchmaking.LobbyList;
+            list.FilterDistanceWorldwide();
+            list.WithMaxResults(int.MaxValue);
+            list.WithSlotsAvailable(int.MaxValue);
+            list.WithKeyValue("BONELAB_FUSION_HasServerOpen", bool.TrueString);
+            return list.RequestAsync();
+        }
+
+        private static async void RespondWithLobbyIds()
+        {
+            Lobby[] lobbies = await FetchLobbies();
+            NetDataWriter writer = new();
+            writer.Put((byte)MessageTypes.LobbyIds);
+            writer.Put((uint)lobbies.Length);
+            
+            foreach (Lobby l in lobbies)
+            {
+                writer.Put(l.Id.Value);
+            }
+
+            ClientConnection.Send(writer, DeliveryMethod.ReliableUnordered);
+        }
+
+        private static void RespondWithLobbyMetadata(ulong lobbyId)
+        {
+            Lobby lobby = new(lobbyId);
+
+            // oh dear.
+            NetDataWriter writer = new();
+            writer.Put((byte)MessageTypes.LobbyMetadata);
+            writer.Put(lobbyId);
+            ulong.TryParse(lobby.GetData("LobbyId"), out ulong metaLobbyId);
+
+            writer.Put(metaLobbyId);
+            string name = lobby.GetData("LobbyName");
+            Console.WriteLine($"Writing metadata for {name} (id {lobbyId})");
+            writer.Put(name);
+
+            bool hasServerOpen = lobby.GetData("BONELAB_FUSION_HasServerOpen") == bool.TrueString;
+            Console.WriteLine($"Has Server Open: {hasServerOpen}");
+            writer.Put(hasServerOpen);
+
+            int.TryParse(lobby.GetData("PlayerCount"), out int playerCount);
+
+            writer.Put(playerCount);
+
+            writer.Put(lobby.GetData("NametagsEnabled") == bool.TrueString);
+
+            Enum.TryParse(lobby.GetData("Privacy"), out ServerPrivacy privacy);
+            writer.Put((int)privacy);
+
+            Enum.TryParse(lobby.GetData("TimeScaleMode"), out TimeScaleMode tsMode);
+            writer.Put((int)tsMode);
+
+            int.TryParse(lobby.GetData("MaxPlayers"), out int maxPlayers);
+            writer.Put(maxPlayers);
+
+            writer.Put(lobby.GetData("VoicechatEnabled") == bool.TrueString);
+
+            writer.Put(lobby.GetData("LevelName"));
+            writer.Put(lobby.GetData("GamemodeName"));
+
+            // Put LobbyVersion at the end because of weird stuff in the deserialisation code
+            writer.Put(lobby.GetData("LobbyVersion"));
+
+            ClientConnection.Send(writer, DeliveryMethod.ReliableUnordered);
+        }
+
         private static void EvaluateMessage(NetPeer fromPeer, NetPacketReader dataReader, byte channel, DeliveryMethod deliveryMethod)
         {
             ulong id = dataReader.GetByte();
-             byte[] data = dataReader.GetBytesWithLength();
+
+            if (id == (ulong)MessageTypes.LobbyMetadata)
+            {
+                RespondWithLobbyMetadata(dataReader.GetULong());
+                dataReader.Recycle();
+                return;
+            }
+
+            if (id == (ulong)MessageTypes.LobbyOwner)
+            {
+                ulong lobbyId = dataReader.GetULong();
+                Lobby lobby = new(lobbyId);
+
+                NetDataWriter writer = new();
+                writer.Put((byte)MessageTypes.LobbyOwner);
+                writer.Put(lobbyId);
+                writer.Put(lobby.Owner.Id.Value);
+
+                Console.WriteLine($"Owner of {lobbyId} is {lobby.Owner.Id.Value}");
+                ClientConnection.Send(writer, DeliveryMethod.ReliableUnordered);
+                dataReader.Recycle();
+                return;
+            }
+
+            byte[] data = dataReader.GetBytesWithLength();
             switch (id)
             {
                 case (ulong)MessageTypes.Ping:
@@ -126,6 +237,9 @@ namespace FusionHelper.WebSocket
                 case (ulong)MessageTypes.Disconnect:
                     SteamHandler.KillConnection();
                     break;
+                case (ulong)MessageTypes.LobbyIds:
+                    RespondWithLobbyIds();
+                    break;
             }
 
             dataReader.Recycle();
@@ -141,7 +255,7 @@ namespace FusionHelper.WebSocket
             NetDataWriter writer = new();
             writer.Put((byte)message);
             writer.PutBytesWithLength(data, 0, (ushort)data.Length);
-            ClientConnection.Send(writer, DeliveryMethod.Unreliable);
+            ClientConnection.Send(writer, DeliveryMethod.ReliableOrdered);
         }
     }
 }

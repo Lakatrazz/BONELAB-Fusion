@@ -74,7 +74,8 @@ namespace LabFusion.Network
         protected bool _isInitialized = false;
 
         private NetManager client;
-        private NetPeer serverConnection;
+        public NetPeer serverConnection;
+        private ProxyLobbyManager _lobbyManager;
 
         // A local reference to a lobby
         // This isn't actually used for joining servers, just for matchmaking
@@ -95,11 +96,20 @@ namespace LabFusion.Network
             client.Start();
             // TODO: hardcoded ip:port
             client.Connect("192.168.12.143", 9000, "ProxyConnection");
+            _lobbyManager = new ProxyLobbyManager(this);
         }
 
         internal void EvaluateMessage(NetPeer fromPeer, NetPacketReader dataReader, byte channel, DeliveryMethod deliveryMethod)
         {
             ulong id = dataReader.GetByte();
+
+            if (id == (ulong)MessageTypes.LobbyIds || id == (ulong)MessageTypes.LobbyMetadata || id == (ulong)MessageTypes.LobbyOwner)
+            {
+                _lobbyManager.HandleLobbyMessage((MessageTypes)id, dataReader);
+                dataReader.Recycle();
+                return;
+            }
+
             byte[] data = dataReader.GetBytesWithLength();
             switch (id)
             {
@@ -187,7 +197,7 @@ namespace LabFusion.Network
             NetDataWriter writer = new NetDataWriter();
             writer.Put((byte)message);
             writer.PutBytesWithLength(data, 0, (ushort)data.Length);
-            serverConnection.Send(writer, DeliveryMethod.Unreliable);
+            serverConnection.Send(writer, DeliveryMethod.ReliableOrdered);
         }
 
         internal override void OnVoiceChatUpdate()
@@ -437,10 +447,10 @@ namespace LabFusion.Network
             LobbyMetadataHelper.WriteInfo(CurrentLobby);
 
             // Update bonemenu items
-            //OnUpdateCreateServerText();
+            OnUpdateCreateServerText();
         }
 
-        /*internal override void OnSetupBoneMenu(MenuCategory category)
+        internal override void OnSetupBoneMenu(MenuCategory category)
         {
             // Create the basic options
             CreateMatchmakingMenu(category);
@@ -459,7 +469,7 @@ namespace LabFusion.Network
         private MenuCategory _serverInfoCategory;
         private MenuCategory _manualJoiningCategory;
         private MenuCategory _publicLobbiesCategory;
-        private MenuCategory _friendsCategory;
+        //private MenuCategory _friendsCategory;
 
         private void CreateMatchmakingMenu(MenuCategory category)
         {
@@ -480,9 +490,9 @@ namespace LabFusion.Network
             _publicLobbiesCategory.CreateFunctionElement("Select Refresh to load servers!", Color.yellow, null);
 
             // Steam friends list
-            _friendsCategory = matchmaking.CreateCategory("Steam Friends", Color.white);
-            _friendsCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshFriendLobbies);
-            _friendsCategory.CreateFunctionElement("Select Refresh to load servers!", Color.yellow, null);
+            //_friendsCategory = matchmaking.CreateCategory("Steam Friends", Color.white);
+            //_friendsCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshFriendLobbies);
+            //_friendsCategory.CreateFunctionElement("Select Refresh to load servers!", Color.yellow, null);
         }
 
         private FunctionElement _createServerElement;
@@ -552,7 +562,7 @@ namespace LabFusion.Network
         private LobbySortMode _publicLobbySortMode = LobbySortMode.LEVEL;
         private bool _isPublicLobbySearching = false;
 
-        private const int _maxLobbiesInOneFrame = 2;
+        private const int _maxLobbiesInOneFrame = 1;
         private const int _lobbyFrameDelay = 10;
 
         private void Menu_RefreshPublicLobbies()
@@ -579,6 +589,7 @@ namespace LabFusion.Network
                 return false;
 
             // Decide if this server is too private
+
             switch (info.Privacy)
             {
                 default:
@@ -592,14 +603,35 @@ namespace LabFusion.Network
             }
         }
 
-        private Task<Lobby[]> FetchLobbies()
+        class ProxyNetworkLobby : INetworkLobby
         {
-            var list = SteamMatchmaking.LobbyList;
-            list.FilterDistanceWorldwide();
-            list.WithMaxResults(int.MaxValue);
-            list.WithSlotsAvailable(int.MaxValue);
-            list.WithKeyValue(LobbyMetadataInfo.HasServerOpenKey, bool.TrueString);
-            return list.RequestAsync();
+            public LobbyMetadataInfo info;
+
+            public string GetMetadata(string key)
+        {
+                throw new NotImplementedException();
+            }
+
+            public void SetMetadata(string key, string value)
+            {
+                throw new NotImplementedException();
+                }
+
+            public bool TryGetMetadata(string key, out string value)
+                {
+                throw new NotImplementedException();
+                }
+
+            public Action CreateJoinDelegate(LobbyMetadataInfo info)
+                {
+                if (NetworkInfo.CurrentNetworkLayer is ProxyNetworkLayer proxyLayer) {
+                    return () => {
+                        proxyLayer.JoinServer(info.LobbyId);
+                    };
+                    }
+
+                return null;
+        }
         }
 
         private IEnumerator CoAwaitLobbyListRoutine()
@@ -608,43 +640,46 @@ namespace LabFusion.Network
             LobbySortMode sortMode = _publicLobbySortMode;
 
             // Fetch lobbies
-            var task = FetchLobbies();
+            var task = _lobbyManager.RequestLobbyIds();
 
             while (!task.IsCompleted)
                 yield return null;
-
+;
             var lobbies = task.Result;
-
             int lobbyCount = 0;
 
             foreach (var lobby in lobbies)
             {
-                // Make sure this is not us
-                if (lobby.Owner.IsMe)
-                {
-                    continue;
-                }
+                // TODO: Make sure this is not us
 
-                var networkLobby = new SteamLobby(lobby);
-                var info = LobbyMetadataHelper.ReadInfo(networkLobby);
+                var metadataTask = _lobbyManager.RequestLobbyMetadataInfo(lobby);
+
+                while (!metadataTask.IsCompleted)
+                    yield return null;
+
+
+                LobbyMetadataInfo info = metadataTask.Result;
 
                 if (Internal_CanShowLobby(info))
                 {
                     // Add to list
+                    ProxyNetworkLobby networkLobby = new ProxyNetworkLobby()
+                    {
+                        info = info
+                    };
                     BoneMenuCreator.CreateLobby(_publicLobbiesCategory, info, networkLobby, sortMode);
                 }
 
                 lobbyCount++;
 
-                if (lobbyCount >= _maxLobbiesInOneFrame)
-                {
+                if (lobbyCount >= _maxLobbiesInOneFrame) {
                     lobbyCount = 0;
 
-                    for (var i = 0; i < _lobbyFrameDelay; i++)
-                    {
+                    for (var i = 0; i < _lobbyFrameDelay; i++) {
                         yield return null;
                     }
                 }
+
             }
 
             // Select the updated category
@@ -652,71 +687,5 @@ namespace LabFusion.Network
 
             _isPublicLobbySearching = false;
         }
-
-        private bool _isFriendLobbySearching = false;
-
-        private void Menu_RefreshFriendLobbies()
-        {
-            // Make sure we arent searching for lobbies already
-            if (_isFriendLobbySearching)
-                return;
-
-            // Clear existing lobbies
-            _friendsCategory.Elements.Clear();
-            _friendsCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshFriendLobbies);
-
-            MelonCoroutines.Start(CoAwaitFriendListRoutine());
-        }
-
-        private IEnumerator CoAwaitFriendListRoutine()
-        {
-            _isFriendLobbySearching = true;
-
-            // Fetch lobbies
-            var task = FetchLobbies();
-
-            while (!task.IsCompleted)
-                yield return null;
-
-            var lobbies = task.Result;
-
-            int lobbyCount = 0;
-
-            foreach (var lobby in lobbies)
-            {
-                // Make sure this is not us but is also a friend
-                if (lobby.Owner.IsMe)
-                    continue;
-
-                var networkLobby = new SteamLobby(lobby);
-                var lobbyInfo = LobbyMetadataHelper.ReadInfo(networkLobby);
-
-                if (!IsFriend(lobbyInfo.LobbyId))
-                    continue;
-
-                if (Internal_CanShowLobby(lobbyInfo))
-                {
-                    // Add to list
-                    BoneMenuCreator.CreateLobby(_friendsCategory, lobbyInfo, networkLobby);
-                }
-
-                lobbyCount++;
-
-                if (lobbyCount >= _maxLobbiesInOneFrame)
-                {
-                    lobbyCount = 0;
-
-                    for (var i = 0; i < _lobbyFrameDelay; i++)
-                    {
-                        yield return null;
-                    }
-                }
-            }
-
-            // Select the updated category
-            MenuManager.SelectCategory(_friendsCategory);
-
-            _isFriendLobbySearching = false;
-        }*/
     }
 }
