@@ -79,17 +79,14 @@ namespace LabFusion.Network
             message.buffer[0] = NativeMessageTag.Module;
 
             // Assign the module type
-            byte[] typeBytes;
             var tag = ModuleMessageHandler.GetHandlerTag(type);
 
             // Make sure the tag is valid, otherwise we dont return a message
-            if (tag.HasValue)
-                typeBytes = BitConverter.GetBytes(tag.Value);
+            if (tag.HasValue) {
+                BigEndianHelper.WriteBytes(message.buffer, 1, tag.Value);
+            }
             else
                 return null;
-
-            message.Buffer[1] = typeBytes[0];
-            message.Buffer[2] = typeBytes[1];
 
             System.Buffer.BlockCopy(buffer, 0, message.buffer, 3, length);
 

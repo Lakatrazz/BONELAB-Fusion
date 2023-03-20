@@ -13,11 +13,11 @@ namespace LabFusion.Utilities {
         private static GameObject[] _rootObjectBuffer;
 
         internal static List<GameObject> FindRootsWithName(string scene, string name) {
-            var gameObjects = new List<GameObject>();
-
             var sceneAsset = SceneManager.GetSceneByName(scene);
             if (!sceneAsset.IsValid())
-                return gameObjects;
+                return null;
+
+            var gameObjects = new List<GameObject>();
 
             _rootObjectBuffer = sceneAsset.GetRootGameObjects();
 
@@ -47,7 +47,7 @@ namespace LabFusion.Utilities {
         {
             var matching = FindRootsWithName(scene, name);
 
-            if (matching.Count == 0) {
+            if (matching == null || matching.Count == 0) {
 #if DEBUG
                 FusionLogger.Warn("Failed to find a list of matching root GameObjects! Searching for root by name!");
 #endif

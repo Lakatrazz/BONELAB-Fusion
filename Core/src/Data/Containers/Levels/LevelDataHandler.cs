@@ -61,6 +61,8 @@ namespace LabFusion.Data {
             // Create the handler
             LevelDataHandler handler = Activator.CreateInstance(type) as LevelDataHandler;
             Handlers.Add(handler);
+
+            FusionLogger.Log($"Registered {type.Name}");
         }
 
         public static readonly List<LevelDataHandler> Handlers = new List<LevelDataHandler>();
