@@ -26,7 +26,6 @@ namespace LabFusion.Network
             }
         }
 
-
         private byte[] buffer;
 
         public byte[] Buffer {

@@ -28,8 +28,8 @@ namespace LabFusion.Utilities
         private static bool _hasEnteredTargetLoadingScreen = false;
 
         public static LevelCrate Level => SceneStreamer.Session.Level;
-        public static string Barcode => Level.Barcode;
-        public static string Title => Level.Title;
+        public static string Barcode => Level != null ? Level.Barcode : "";
+        public static string Title => Level != null ? Level.Title : "";
 
         public static bool IsLoading() => _isLoading;
 
