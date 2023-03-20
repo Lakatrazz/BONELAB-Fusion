@@ -387,7 +387,6 @@
     <Compile Include="Core\src\Patching\Patches\Levels\ZoneEncounterPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\ArtRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\JimmyDoorControllerPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\Player\RigManagerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\PlayerDamageReceiverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\RemapRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Props\AmmoPickupPatches.cs" />

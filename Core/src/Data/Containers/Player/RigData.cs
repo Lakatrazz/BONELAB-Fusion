@@ -274,10 +274,6 @@ namespace LabFusion.Data
 
             // Notify hooks
             MultiplayerHooking.Internal_OnLocalPlayerCreated(manager);
-
-            // Update avatar
-            if (manager._avatar != null)
-                FusionPlayer.Internal_OnAvatarChanged(manager, manager._avatar, manager.AvatarCrate.Barcode);
         }
 
         public static void OnSendVitals() {
