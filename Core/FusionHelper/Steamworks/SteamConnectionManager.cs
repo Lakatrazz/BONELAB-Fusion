@@ -27,7 +27,7 @@ namespace FusionHelper.Steamworks
         {
             base.OnDisconnected(info);
 
-            NetworkHandler.SendToClient(Network.MessageTypes.OnConnectionDisconnected);
+            NetworkHandler.SendToClient(MessageTypes.OnConnectionDisconnected);
 
 #if DEBUG
             Console.WriteLine("Client was disconnected.");
@@ -40,7 +40,7 @@ namespace FusionHelper.Steamworks
             byte[] message = new byte[size];
             Marshal.Copy(data, message, 0, size);
 
-            NetDataWriter writer = NetworkHandler.NewWriter(Network.MessageTypes.OnConnectionMessage);
+            NetDataWriter writer = NetworkHandler.NewWriter(MessageTypes.OnConnectionMessage);
             writer.PutBytesWithLength(message);
             NetworkHandler.SendToClient(writer);
         }

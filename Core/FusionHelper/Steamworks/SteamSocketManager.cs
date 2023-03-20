@@ -30,12 +30,12 @@ namespace FusionHelper.Steamworks
         {
             base.OnDisconnected(connection, data);
 
-            var pair = ConnectedSteamIds.First((p) => p.Value.Id == connection.Id);
+            var pair = ConnectedSteamIds.FirstOrDefault((p) => p.Value.Id == connection.Id);
             var longId = pair.Key;
 
             ConnectedSteamIds.Remove(longId);
 
-            NetDataWriter writer = NetworkHandler.NewWriter(Network.MessageTypes.OnDisconnected);
+            NetDataWriter writer = NetworkHandler.NewWriter(MessageTypes.OnDisconnected);
             writer.Put(longId);
             NetworkHandler.SendToClient(writer);
         }
@@ -50,7 +50,7 @@ namespace FusionHelper.Steamworks
             byte[] message = new byte[size];
             Marshal.Copy(data, message, 0, size);
 
-            NetDataWriter writer = NetworkHandler.NewWriter(Network.MessageTypes.OnMessage);
+            NetDataWriter writer = NetworkHandler.NewWriter(MessageTypes.OnMessage);
             writer.PutBytesWithLength(message);
             NetworkHandler.SendToClient(writer);
         }

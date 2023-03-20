@@ -320,8 +320,8 @@ namespace LabFusion.Network
             {
                 MessageTypes type = channel == NetworkChannel.Unreliable ? MessageTypes.UnreliableSendFromServer : MessageTypes.ReliableSendFromServer;
                 NetDataWriter writer = NewWriter(type);
-                writer.PutBytesWithLength(BitConverter.GetBytes(userId));
-                writer.PutBytesWithLength(message.Buffer);
+                writer.Put(userId);
+                writer.PutBytesWithLength(message.Buffer, 0, (ushort)message.Buffer.Length);
                 SendToProxyServer(writer);
             }
         }
