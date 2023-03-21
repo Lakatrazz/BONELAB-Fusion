@@ -47,23 +47,10 @@ namespace LabFusion.Network
     {
         internal static ProxyNetworkLayer Instance { get; private set; }
 
-        public const uint ApplicationID = 32;
-
-        public const int ReceiveBufferSize = 32;
-
-        // AsyncCallbacks improves performance quite a bit
-        public const bool AsyncCallbacks = true;
-
         internal override bool IsServer => _isServerActive;
         internal override bool IsClient => _isConnectionActive;
 
-        private INetworkLobby _currentLobby;
-        internal override INetworkLobby CurrentLobby => _currentLobby;
-
         public SteamId SteamId;
-
-        //public static SteamSocketManager SteamSocket;
-        //public static SteamConnectionManager SteamConnection;
 
         protected bool _isServerActive = false;
         protected bool _isConnectionActive = false;
@@ -397,9 +384,6 @@ namespace LabFusion.Network
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged += OnUpdateSteamLobby;
             MultiplayerHooking.OnDisconnect += OnDisconnect;
-
-            // Create a local lobby
-            //AwaitLobbyCreation();
         }
 
         private void OnPlayerJoin(PlayerId id)
@@ -433,26 +417,7 @@ namespace LabFusion.Network
             MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged -= OnUpdateSteamLobby;
             MultiplayerHooking.OnDisconnect -= OnDisconnect;
-
-            // Remove the local lobby
-            //_localLobby.Leave();
         }
-
-        /*private async void AwaitLobbyCreation()
-        {
-            var lobbyTask = await SteamMatchmaking.CreateLobbyAsync();
-
-            if (!lobbyTask.HasValue)
-            {
-#if DEBUG
-                FusionLogger.Log("Failed to create a steam lobby!");
-#endif
-                return;
-            }
-
-            _localLobby = lobbyTask.Value;
-            _currentLobby = new SteamLobby(_localLobby);
-        }*/
 
         /*private void OnGameRichPresenceJoinRequested(Friend friend, string value)
         {
@@ -637,30 +602,28 @@ namespace LabFusion.Network
             public LobbyMetadataInfo info;
 
             public string GetMetadata(string key)
-        {
+            {
                 throw new NotImplementedException();
             }
 
             public void SetMetadata(string key, string value)
             {
                 throw new NotImplementedException();
-                }
+            }
 
             public bool TryGetMetadata(string key, out string value)
-                {
+            {
                 throw new NotImplementedException();
-                }
+            }
 
             public Action CreateJoinDelegate(LobbyMetadataInfo info)
-                {
+            {
                 if (NetworkInfo.CurrentNetworkLayer is ProxyNetworkLayer proxyLayer) {
-                    return () => {
-                        proxyLayer.JoinServer(info.LobbyId);
-                    };
-                    }
+                    return () => proxyLayer.JoinServer(info.LobbyId);
+                }
 
                 return null;
-        }
+            }
         }
 
         private IEnumerator CoAwaitLobbyListRoutine()
