@@ -30,7 +30,7 @@ namespace LabFusion.Network
         public static NetworkLayerType GetDefaultType()
         {
             if (HelperMethods.IsAndroid())
-                return NetworkLayerType.EMPTY;
+                return NetworkLayerType.PROXY_STEAM_VR;
 
             return NetworkLayerType.STEAM_VR;
         }
