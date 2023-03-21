@@ -501,7 +501,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6033626742230453415}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.000000011175871}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.033439998, y: 0.033440005, z: 0.033440005}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -510,7 +510,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.0049999934, y: -0.08699992}
+  m_AnchoredPosition: {x: -0.0049999934, y: -0.11200023}
   m_SizeDelta: {x: 20, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &4371562579983060615
@@ -584,13 +584,11 @@ MonoBehaviour:
 
     - trevtv
 
-    - Someone
-    Somewhere
-
 
     TESTERS
 
-    - Alfi
+    -
+    Alfi
 
     - Ethi
 
@@ -598,8 +596,7 @@ MonoBehaviour:
 
     - nptnk
 
-    -
-    Mr. Gaming
+    - Mr. Gaming
 
     - Riggle'
   m_isRightToLeft: 0
@@ -916,7 +913,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6719054343961556323}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.000000011175871}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.033439998, y: 0.033440005, z: 0.033440005}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -925,7 +922,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.0049999934, y: -0.08699992}
+  m_AnchoredPosition: {x: -0.0049999934, y: -0.11200023}
   m_SizeDelta: {x: 20, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &2861098732669892379
@@ -1281,7 +1278,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.0049999934, y: -0.087}
+  m_AnchoredPosition: {x: -0.0049999934, y: -0.11200023}
   m_SizeDelta: {x: 20, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &9150861679389533994
@@ -1360,8 +1357,6 @@ MonoBehaviour:
     Maranara
 
     - TabloidA
-
-    - Bread Soup
 
 
     MODELS

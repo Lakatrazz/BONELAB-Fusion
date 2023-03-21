@@ -1269,14 +1269,13 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Core\resources\bundles\Android\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
     <EmbeddedResource Include="Core\resources\bundles\StandaloneWindows64\content_bundle.fusion" />
     <EmbeddedResource Include="Core\resources\bundles\StandaloneWindows64\item_bundle.fusion" />
-    <EmbeddedResource Include="Core\resources\bundles\Android\content_bundle.fusion" />
-    <EmbeddedResource Include="Core\resources\bundles\Android\item_bundle.fusion" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
