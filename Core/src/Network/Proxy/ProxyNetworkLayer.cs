@@ -65,10 +65,6 @@ namespace LabFusion.Network
         private NetPeer serverConnection;
         private ProxyLobbyManager _lobbyManager;
 
-        // A local reference to a lobby
-        // This isn't actually used for joining servers, just for matchmaking
-        //protected Lobby _localLobby;
-
         internal override void OnInitializeLayer()
         {
             Instance = this;
