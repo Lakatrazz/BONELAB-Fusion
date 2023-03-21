@@ -40,6 +40,7 @@ using BoneLib;
 using LiteNetLib;
 using LiteNetLib.Utils;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.Threading;
 
 namespace LabFusion.Network
 {
@@ -70,7 +71,14 @@ namespace LabFusion.Network
             Instance = this;
 
             EventBasedNetListener listener = new EventBasedNetListener();
-            client = new NetManager(listener);
+            client = new NetManager(listener)
+            {
+                UnconnectedMessagesEnabled = true,
+                BroadcastReceiveEnabled = true,
+                DisconnectOnUnreachable = true,
+                DisconnectTimeout = 10000,
+                PingInterval = 5000,
+            };
             listener.NetworkReceiveEvent += EvaluateMessage;
             listener.PeerConnectedEvent += (peer) =>
             {
@@ -92,14 +100,52 @@ namespace LabFusion.Network
                         appId = 0;
                         break;
                 }
+                listener.PeerDisconnectedEvent += (peer, disconnectInfo) => {
+                    FusionLogger.Error("Proxy has disconnected, restarting server discovery!");
+                    serverConnection = null;
+                    MelonCoroutines.Start(DiscoverServer());
+                };
 
                 writer.Put(appId);
                 SendToProxyServer(writer);
             };
+
+            listener.NetworkReceiveUnconnectedEvent += (endPoint, reader, messageType) =>
+            {
+                if (reader.TryGetString(out string data) && data == "YOU_FOUND_ME")
+                {
+                    FusionLogger.Log("Found the proxy server!");
+                    client.Connect(endPoint, "ProxyConnection");
+                }
+
+                reader.Recycle();
+            };
+
             client.Start();
-            // TODO: hardcoded ip:port
-            client.Connect("192.168.12.143", 9000, "ProxyConnection");
+            FusionLogger.Log("Beginning proxy discovery...");
+            MelonCoroutines.Start(DiscoverServer());
+
             _lobbyManager = new ProxyLobbyManager(this);
+        }
+
+        internal IEnumerator DiscoverServer()
+        {
+            float timeElapsed;
+
+            NetDataWriter writer = new NetDataWriter();
+            writer.Put("FUSION_SERVER_DISCOVERY");
+
+            while (serverConnection == null)
+            {
+                timeElapsed = 0;
+                client.SendBroadcast(writer, 28340);
+
+                while (timeElapsed < 5)
+                {
+                    timeElapsed += Time.deltaTime;
+                    yield return null;
+                }
+            }
         }
 
         internal void EvaluateMessage(NetPeer fromPeer, NetPacketReader dataReader, byte channel, DeliveryMethod deliveryMethod)
@@ -212,6 +258,8 @@ namespace LabFusion.Network
 
         internal override void OnCleanupLayer()
         {
+            client.Stop();
+            
             Disconnect();
 
             UnHookSteamEvents();

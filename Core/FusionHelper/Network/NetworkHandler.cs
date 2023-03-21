@@ -36,12 +36,17 @@ namespace FusionHelper.Network
         public static NetPeer ClientConnection { get; private set; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
+        private static bool _hasBeenDiscovered;
+
         public static void Init()
         {
             EventBasedNetListener listener = new();
-            Server = new(listener);
-            // TODO: disconnect timeout doesn't work?
-            //Server.DisconnectTimeout = 10;
+            Server = new(listener)
+            {
+                UnconnectedMessagesEnabled = true,
+                BroadcastReceiveEnabled = true,
+                PingInterval = 1000,
+            };
             listener.ConnectionRequestEvent += request =>
             {
                 if (Server.ConnectedPeersCount < 1)
@@ -55,16 +60,28 @@ namespace FusionHelper.Network
                 ClientConnection = peer;
             };
             listener.PeerDisconnectedEvent += (peer, disconnectInfo) => {
-                Thread.CurrentThread.Join();
-                Console.WriteLine("Client disconnected, press any key to exit.");
-                Console.ReadKey();
-                Environment.Exit(0);
+                Console.WriteLine("Client disconnected, resetting for reuse.");
+                Server.DisconnectPeerForce(peer);
+                _hasBeenDiscovered = false;
             };
             listener.NetworkReceiveEvent += EvaluateMessage;
+            listener.NetworkReceiveUnconnectedEvent += (endPoint, reader, messageType) =>
+            {
+                if (_hasBeenDiscovered) return;
 
-            Server.Start(9000);
+                if (reader.TryGetString(out string data) && data == "FUSION_SERVER_DISCOVERY")
+                {
+                    Console.WriteLine("Client has found the server, letting it know.");
+                    NetDataWriter writer = new();
+                    writer.Put("YOU_FOUND_ME");
+                    Server.SendUnconnectedMessage(writer, endPoint);
+                    _hasBeenDiscovered = true;
+                }
+            };
 
-            Console.WriteLine("Initialized UDP socket at localhost:9000");
+            Server.Start(28340);
+
+            Console.WriteLine("Initialized UDP socket on port " + Server.LocalPort);
         }
 
         private static Task<Lobby[]> FetchLobbies()
