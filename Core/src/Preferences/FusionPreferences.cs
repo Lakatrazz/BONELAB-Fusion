@@ -64,9 +64,10 @@ namespace LabFusion.Preferences {
         }
 
         public struct ClientSettings {
-            // Selected network layer
+            // Selected network layer and settings
             public static FusionPref<NetworkLayerType> NetworkLayerType { get; internal set; }
-            
+            public static FusionPref<int> ProxyPort { get; internal set; }
+
             // Nametag settings
             public static FusionPref<bool> NametagsEnabled { get; internal set; }
             public static FusionPref<Color> NametagColor { get; internal set; }
@@ -156,6 +157,7 @@ namespace LabFusion.Preferences {
 
             // Client settings
             ClientSettings.NetworkLayerType = new FusionPref<NetworkLayerType>(prefCategory, "Network Layer Type", NetworkLayerDeterminer.GetDefaultType(), PrefUpdateMode.IGNORE);
+            ClientSettings.ProxyPort = new FusionPref<int>(prefCategory, "Proxy Port", 28340, PrefUpdateMode.IGNORE);
 
             // Nametag
             ClientSettings.NametagsEnabled = new FusionPref<bool>(prefCategory, "Client Nametags Enabled", true, PrefUpdateMode.LOCAL_UPDATE);

@@ -130,6 +130,13 @@ namespace LabFusion.Network
 
         internal IEnumerator DiscoverServer()
         {
+            int port = FusionPreferences.ClientSettings.ProxyPort.GetValue();
+            if (!(port >= 1024 && port <= 65535))
+            {
+                FusionLogger.Error("Custom port is invalid, using default! (28430)");
+                port = 28430;
+            }
+
             float timeElapsed;
 
             NetDataWriter writer = new NetDataWriter();
@@ -138,7 +145,7 @@ namespace LabFusion.Network
             while (serverConnection == null)
             {
                 timeElapsed = 0;
-                client.SendBroadcast(writer, 28340);
+                client.SendBroadcast(writer, port);
 
                 while (timeElapsed < 5)
                 {

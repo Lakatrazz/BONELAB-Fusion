@@ -79,9 +79,24 @@ namespace FusionHelper.Network
                 }
             };
 
-            Server.Start(28340);
+            Server.Start(ReadPort());
 
             Console.WriteLine("Initialized UDP socket on port " + Server.LocalPort);
+        }
+
+        private static int ReadPort()
+        {
+            string path = Path.Combine(Directory.GetCurrentDirectory(), "port.txt");
+            if (File.Exists(path))
+            {
+                string data = File.ReadAllText(path);
+                if (int.TryParse(data, out int port) && port >= 1024 && port <= 65535)
+                    return port;
+                else
+                    Console.WriteLine("Custom port is invalid, using default!");
+            }
+
+            return 28340;
         }
 
         private static Task<Lobby[]> FetchLobbies()
