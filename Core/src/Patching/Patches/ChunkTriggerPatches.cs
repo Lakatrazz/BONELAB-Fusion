@@ -22,7 +22,6 @@ using LabFusion.Data;
 using SLZ.Marrow.SceneStreaming;
 
 using IL2ChunkList = Il2CppSystem.Collections.Generic.List<SLZ.Marrow.SceneStreaming.Chunk>;
-using SLZ.Marrow.Pool;
 
 namespace LabFusion.Patching
 {
@@ -52,57 +51,6 @@ namespace LabFusion.Patching
 
     [HarmonyPatch(typeof(ChunkTrigger))]
     public static class ChunkTriggerPatches {
-        public static void Patch() {
-            var harmonyInstance = FusionMod.Instance.HarmonyInstance;
-
-            // Get chunk trigger method info
-            var triggerEnterMethod = typeof(ChunkTrigger).GetMethod(nameof(ChunkTrigger.OnTriggerEnter), AccessTools.all);
-
-            // Get patches
-            var triggerEnterPrefix = new HarmonyMethod(typeof(ChunkTriggerPatches).GetMethod(nameof(OnTriggerEnterPrefix), AccessTools.all));
-            var triggerEnterPostfix = new HarmonyMethod(typeof(ChunkTriggerPatches).GetMethod(nameof(OnTriggerEnterPostfix), AccessTools.all));
-
-            // Now actually patch the methods
-            harmonyInstance.Patch(triggerEnterMethod, triggerEnterPrefix, triggerEnterPostfix);
-        }
-
-        // ChunkEnter patches
-        private static bool OnTriggerEnterPrefix(ChunkTrigger __instance, Collider other, ref IL2ChunkList __state)
-        {
-            if (other.CompareTag("Player") && NetworkInfo.HasServer)
-            {
-                if (HubData.IsInHub())
-                    TriggerUtilities.AddChunk(other, __instance.chunk);
-                else
-                    TriggerUtilities.SetChunk(other, __instance.chunk);
-
-                var loader = SceneStreamer.Session.ChunkLoader;
-                __state = loader._occupiedChunks;
-
-                var playerChunks = TriggerUtilities.GetChunks(other);
-                foreach (var playerChunk in playerChunks)
-                    __state.Add(playerChunk);
-
-                loader._occupiedChunks.Clear();
-            }
-
-            return true;
-        }
-
-        private static void OnTriggerEnterPostfix(ChunkTrigger __instance, Collider other, IL2ChunkList __state)
-        {
-            if (__state == null)
-                return;
-
-            var loader = SceneStreamer.Session.ChunkLoader;
-            foreach (var chunk in __state)
-            {
-                if (!loader._occupiedChunks.Has(chunk))
-                    loader._occupiedChunks.Add(chunk);
-            }
-        }
-
-        // Automatic patches
         [HarmonyPrefix]
         [HarmonyPatch(nameof(ChunkTrigger.OnUnload))]
         public static bool OnUnload(ChunkTrigger __instance) {
@@ -128,6 +76,44 @@ namespace LabFusion.Patching
             }
 
             return true;
+        }
+    }
+
+    [HarmonyPatch(typeof(ChunkTrigger), "OnTriggerEnter")]
+    public static class ChunkEnterPatch
+    {
+        public static bool Prefix(ChunkTrigger __instance, Collider other, ref IL2ChunkList __state)
+        {
+            if (other.CompareTag("Player") && NetworkInfo.HasServer)
+            {
+                if (HubData.IsInHub())
+                    TriggerUtilities.AddChunk(other, __instance.chunk);
+                else
+                    TriggerUtilities.SetChunk(other, __instance.chunk);
+
+                var loader = SceneStreamer.Session.ChunkLoader;
+                __state = loader._occupiedChunks;
+
+                var playerChunks = TriggerUtilities.GetChunks(other);
+                foreach (var playerChunk in playerChunks)
+                    __state.Add(playerChunk);
+
+                loader._occupiedChunks.Clear();
+            }
+
+            return true;
+        }
+
+        public static void Postfix(ChunkTrigger __instance, Collider other, IL2ChunkList __state) {
+            if (__state == null)
+                return;
+
+            var loader = SceneStreamer.Session.ChunkLoader;
+            foreach (var chunk in __state)
+            {
+                if (!loader._occupiedChunks.Has(chunk))
+                    loader._occupiedChunks.Add(chunk);
+            }
         }
     }
 }

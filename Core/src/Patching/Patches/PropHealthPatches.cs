@@ -55,14 +55,14 @@ namespace LabFusion.Patching {
                 }
             }
 
-            AssetPooleePatches.IgnorePatches = true;
+            PooleeDespawnPatch.IgnorePatch = true;
             return true;
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(Prop_Health.DESTROYED))]
         public static void DESTROYEDPostfix(Prop_Health __instance) {
-            AssetPooleePatches.IgnorePatches = false;
+            PooleeDespawnPatch.IgnorePatch = false;
         }
     }
 }
