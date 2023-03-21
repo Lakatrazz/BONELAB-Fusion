@@ -149,7 +149,12 @@ namespace FusionHelper.Network
                     Console.WriteLine("Client -> Server = " + (curTime - theTime) + " ms.");
                     break;
                 case (ulong)MessageTypes.SteamID:
-                    {                     
+                    {
+                        // Initialize networking
+                        int appId = dataReader.GetInt();
+                        SteamHandler.Init(appId);
+
+                        // Actually send back SteamID
                         ulong steamID = SteamClient.IsValid ? SteamClient.SteamId : 0;
                         NetDataWriter writer = NewWriter(MessageTypes.SteamID);
                         writer.Put(steamID);

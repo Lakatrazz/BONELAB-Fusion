@@ -75,7 +75,26 @@ namespace LabFusion.Network
             listener.PeerConnectedEvent += (peer) =>
             {
                 serverConnection = peer;
-                SendToProxyServer(MessageTypes.SteamID);
+                NetDataWriter writer = NewWriter(MessageTypes.SteamID);
+                NetworkLayerType layer = FusionPreferences.ClientSettings.NetworkLayerType.GetValue();
+
+                int appId;
+                switch (layer)
+                {
+                    case NetworkLayerType.PROXY_STEAM_VR:
+                        appId = SteamVRNetworkLayer.SteamVRId;
+                        break;
+                    case NetworkLayerType.PROXY_SPACEWAR:
+                        appId = SpacewarNetworkLayer.SpacewarId;
+                        break;
+                    default:
+                        FusionLogger.Error("Attempted to initialize ProxyNetworkLayer without a known ApplicationID!");
+                        appId = 0;
+                        break;
+                }
+
+                writer.Put(appId);
+                SendToProxyServer(writer);
             };
             client.Start();
             // TODO: hardcoded ip:port

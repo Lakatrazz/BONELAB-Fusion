@@ -2,7 +2,6 @@
 using FusionHelper.Steamworks;
 using LiteNetLib.Utils;
 
-SteamHandler.Init();
 NetworkHandler.Init();
 
 Thread tickThread = new(() =>

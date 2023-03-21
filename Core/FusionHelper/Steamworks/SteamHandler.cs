@@ -8,7 +8,6 @@ namespace FusionHelper.Steamworks
     internal static class SteamHandler
     {
         const bool ASYNC_CALLBACKS = true;
-        const int APPLICATION_ID = 250820;
         const int RECEIVE_BUFFER_SIZE = 32;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -16,14 +15,13 @@ namespace FusionHelper.Steamworks
         public static SteamConnectionManager ConnectionManager { get; private set; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-        public static void Init()
+        public static void Init(int appId)
         {
             try
             {
                 if (!SteamClient.IsValid)
-                    SteamClient.Init(APPLICATION_ID, ASYNC_CALLBACKS);
+                    SteamClient.Init((uint)appId, ASYNC_CALLBACKS);
                 SteamNetworkingUtils.InitRelayNetworkAccess();
-                Console.WriteLine("-------------------------------------");
             }
             catch (Exception e)
             {
