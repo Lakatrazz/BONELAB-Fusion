@@ -19,7 +19,7 @@ namespace LabFusion.Network {
     public class PlayerRepTransformData : IFusionSerializable, IDisposable
     {
         public const int Size = sizeof(byte) * 4 + sizeof(float) * 10 + SerializedLocalTransform.Size 
-            * RigAbstractor.TransformSyncCount + SerializedTransform.Size + SerializedQuaternion.Size + SerializedHand.Size * 2;
+            * RigAbstractor.TransformSyncCount + SerializedTransform.Size + SerializedSmallQuaternion.Size + SerializedHand.Size * 2;
 
         public byte smallId;
 
