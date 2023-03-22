@@ -47,8 +47,21 @@ namespace LabFusion.Utilities {
                 Internal_ChangePlayerHealth();
 
             // Check player avatar
+            var crate = rigManager.AvatarCrate.Crate;
+
             if (AvatarOverride != null && !FusionAvatar.IsMatchingAvatar(barcode, AvatarOverride))
                 Internal_ChangeAvatar();
+            // If we don't have an avatar override set, check if we are allowed to use custom avatars
+            else if (crate != null && !crate.Pallet.Internal) {
+                if (PlayerIdManager.LocalId != null && PlayerIdManager.LocalId.TryGetPermissionLevel(out var level)) {
+                    var requirement = FusionPreferences.ActiveServerSettings.CustomAvatarsAllowed.GetValue();
+
+                    if (!FusionPermissions.HasSufficientPermissions(level, requirement)) {
+                        // Change to polyblank, we don't have permission
+                        rigManager.SwapAvatarCrate(FusionAvatar.POLY_BLANK_BARCODE, true);
+                    }
+                }
+            }
 
             // Invoke hooks and other events
             PlayerAdditionsHelper.OnAvatarChanged(rigManager);

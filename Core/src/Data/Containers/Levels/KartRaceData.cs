@@ -47,9 +47,19 @@ namespace LabFusion.Data {
             if (GameController != null && NetworkInfo.HasServer)
             {
                 var extraPlayers = PlayerIdManager.PlayerCount - 1;
-                GameObject gokartPlacer = GameObject.Find("Spawnable Placer (Gokart)");
-                var resetButton = GameObject.Find("prop_bigButton_RESETRACE").GetComponent<ButtonToggle>();
 
+                // Get the go kart placer
+                GameObject gokartPlacer = GameObject.Find("Spawnable Placer (Gokart)");
+
+                // Get the reset button
+                var resetButtonGo = GameObject.Find("prop_bigButton_RESETRACE");
+
+                ButtonToggle resetButton = null;
+                if (resetButtonGo != null) {
+                    resetButton = resetButtonGo.GetComponent<ButtonToggle>();
+                }
+
+                // Now actually create each go kart
                 if (gokartPlacer)
                 {
                     for (var i = 0; i < extraPlayers && i < ExtraKartPositions.Length; i++)

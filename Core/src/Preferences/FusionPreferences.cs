@@ -31,6 +31,7 @@ namespace LabFusion.Preferences {
             // Permissions
             public IFusionPref<PermissionLevel> DevToolsAllowed;
             public IFusionPref<PermissionLevel> ConstrainerAllowed;
+            public IFusionPref<PermissionLevel> CustomAvatarsAllowed;
             public IFusionPref<PermissionLevel> KickingAllowed;
             public IFusionPref<PermissionLevel> BanningAllowed;
 
@@ -53,6 +54,7 @@ namespace LabFusion.Preferences {
                     // Server permissions
                     DevToolsAllowed = new FusionPref<PermissionLevel>(prefCategory, "Dev Tools Allowed", PermissionLevel.DEFAULT, PrefUpdateMode.SERVER_UPDATE),
                     ConstrainerAllowed = new FusionPref<PermissionLevel>(prefCategory, "Constrainer Allowed", PermissionLevel.DEFAULT, PrefUpdateMode.SERVER_UPDATE),
+                    CustomAvatarsAllowed = new FusionPref<PermissionLevel>(prefCategory, "Custom Avatars Allowed", PermissionLevel.DEFAULT, PrefUpdateMode.SERVER_UPDATE),
                     KickingAllowed = new FusionPref<PermissionLevel>(prefCategory, "Kicking Allowed", PermissionLevel.OPERATOR, PrefUpdateMode.SERVER_UPDATE),
                     BanningAllowed = new FusionPref<PermissionLevel>(prefCategory, "Banning Allowed", PermissionLevel.OPERATOR, PrefUpdateMode.SERVER_UPDATE),
 
