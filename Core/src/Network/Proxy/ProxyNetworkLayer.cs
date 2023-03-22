@@ -353,12 +353,6 @@ namespace LabFusion.Network
             }*/
         }
 
-        internal override bool IsFriend(ulong userId)
-        {
-            return false;
-            //return userId == PlayerIdManager.LocalLongId || new Friend(userId).IsFriend;
-        }
-
         internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message)
         {
             if (IsServer)
