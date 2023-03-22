@@ -40,6 +40,10 @@ namespace LabFusion.Data {
 #endif
         }
 
+        public virtual int GetSize() {
+            return Size;
+        }
+
         public virtual void Serialize(FusionWriter writer) {
 #if DEBUG
             if (!_hasWrittenDefaultGrip)

@@ -208,7 +208,7 @@ namespace LabFusion.Grabbables {
                     // Write the default grip values
                     serializedGrab.WriteDefaultGrip(hand, grip);
 
-                    using (var writer = FusionWriter.Create(PlayerRepGrabData.Size))
+                    using (var writer = FusionWriter.Create(PlayerRepGrabData.Size + serializedGrab.GetSize()))
                     {
                         using (var data = PlayerRepGrabData.Create(smallId, handedness, group, serializedGrab))
                         {

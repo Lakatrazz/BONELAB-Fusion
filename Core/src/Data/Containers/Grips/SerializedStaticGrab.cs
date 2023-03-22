@@ -24,6 +24,8 @@ namespace LabFusion.Data
 
     public class SerializedStaticGrab : SerializedGrab
     {
+        public new const int Size = SerializedGrab.Size + SerializedTransform.Size;
+
         public string fullPath;
         public SerializedTransform worldHand = null;
 
@@ -31,6 +33,10 @@ namespace LabFusion.Data
 
         public SerializedStaticGrab(string fullPath) {
             this.fullPath = fullPath;
+        }
+
+        public override int GetSize() {
+            return Size + fullPath.GetSize();
         }
 
         public override void WriteDefaultGrip(Hand hand, Grip grip) {

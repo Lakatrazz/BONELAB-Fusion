@@ -22,7 +22,7 @@ namespace LabFusion.Network
 
         public int Length {
             get {
-                return buffer.Length;
+                return Position;
             }
         }
 
@@ -423,19 +423,6 @@ namespace LabFusion.Network
             System.Buffer.BlockCopy(bytes, offset, buffer, Position, length);
             Position += length;
             ArrayExtensions.EnsureLength(ref buffer, Position);
-        }
-
-        internal void EnsureLength() {
-            if (buffer.Length != Position) {
-                Array.Resize(ref buffer, Position);
-
-#if DEBUG
-                if (FusionUnityLogger.EnableArrayResizeLogs)
-#pragma warning disable CS0162 // Unreachable code detected
-                    FusionLogger.Warn("A message's buffer length was not its position, causing a resize!");
-#pragma warning restore CS0162 // Unreachable code detected
-#endif
-            }
         }
 
         public void Dispose() {

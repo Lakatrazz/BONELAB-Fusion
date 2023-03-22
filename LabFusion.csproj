@@ -223,6 +223,7 @@
     <Compile Include="Core\src\BoneMenu\PlayerListCreator.cs" />
     <Compile Include="Core\src\BoneMenu\SettingsCreator.cs" />
     <Compile Include="Core\src\Data\Containers\FrameSkipper.cs" />
+    <Compile Include="Core\src\Data\Containers\FusionArrayPool.cs" />
     <Compile Include="Core\src\Data\Containers\GrabbedGripList.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\GameControllerData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\HalfwayParkData.cs" />
@@ -291,6 +292,7 @@
     <Compile Include="Core\src\Extensions\Math.cs" />
     <Compile Include="Core\src\Extensions\PullCordDevice.cs" />
     <Compile Include="Core\src\Extensions\Quaternion.cs" />
+    <Compile Include="Core\src\Extensions\String.cs" />
     <Compile Include="Core\src\Extensions\Transform.cs" />
     <Compile Include="Core\src\Extensions\SyncableComparer.cs" />
     <Compile Include="Core\src\Extensions\UnityComparer.cs" />
@@ -542,7 +544,6 @@
     <Compile Include="Core\src\Network\Messages\Interaction\SimpleGripEventMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Inventory\InventorySlotDropMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Inventory\InventorySlotInsertMessage.cs" />
-    <Compile Include="Core\src\Network\Messages\Interaction\PlayerRepForceGrabMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\PlayerRepGrabMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\PlayerRepReleaseMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Levels\SceneLoadMessage.cs" />

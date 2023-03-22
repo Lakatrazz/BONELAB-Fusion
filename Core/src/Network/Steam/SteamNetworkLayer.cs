@@ -42,8 +42,9 @@ namespace LabFusion.Network
 
         public const int ReceiveBufferSize = 32;
 
-        // AsyncCallbacks improves performance quite a bit
-        public const bool AsyncCallbacks = true;
+        // AsyncCallbacks are bad!
+        // In Unity/Melonloader, they can cause random crashes, especially when making a lot of calls
+        public const bool AsyncCallbacks = false;
 
         internal override bool IsServer => _isServerActive;
         internal override bool IsClient => _isConnectionActive;

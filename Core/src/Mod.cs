@@ -26,8 +26,8 @@ namespace LabFusion
     public struct FusionVersion
     {
         public const byte versionMajor = 1;
-        public const byte versionMinor = 2;
-        public const short versionPatch = 1;
+        public const byte versionMinor = 3;
+        public const short versionPatch = 0;
     }
 
     public class FusionMod : MelonMod {
@@ -38,10 +38,7 @@ namespace LabFusion
 #if DEBUG
         public const string Changelog = "- Debug build. Changelog will show in the release build.";
 #else
-        public const string Changelog = "- Made lobby metadata update on a timer\n" +
-            "- Made lobby metadata update when gamemodes are changed\n" +
-            "- Fixed steam_api_64.dll writing into the incorrect folder\n" +
-            "- Fixed version comparison requiring the patch number to be the same";
+        public const string Changelog = "- No changelog.";
 #endif
 
         /// <summary>
