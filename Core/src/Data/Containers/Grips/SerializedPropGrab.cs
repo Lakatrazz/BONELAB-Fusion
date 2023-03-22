@@ -41,6 +41,10 @@ namespace LabFusion.Data
             this.id = id;
         }
 
+        public override int GetSize() {
+            return Size + fullPath.GetSize();
+        }
+
         public override void WriteDefaultGrip(Hand hand, Grip grip)
         {
             base.WriteDefaultGrip(hand, grip);

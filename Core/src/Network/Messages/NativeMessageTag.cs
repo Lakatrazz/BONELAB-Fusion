@@ -23,7 +23,6 @@ namespace LabFusion.Network
             PlayerRepSeat = 9,
 
             PlayerRepGrab = 10,
-            PlayerRepForceGrab = 11,
             PlayerRepRelease = 12,
             PlayerRepAnchors = 13,
 
