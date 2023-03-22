@@ -286,11 +286,23 @@ namespace LabFusion.Network
 
         internal void SendToProxyServer(NetDataWriter writer)
         {
+            if (serverConnection == null)
+            {
+                FusionLogger.Warn("Attempting to send data to a null server peer! Is the proxy active?");
+                return;
+            }
+
             serverConnection.Send(writer, DeliveryMethod.Unreliable);
         }
 
         internal void SendToProxyServer(MessageTypes type)
         {
+            if (serverConnection == null)
+            {
+                FusionLogger.Warn("Attempting to send data to a null server peer! Is the proxy active?");
+                return;
+            }
+
             NetDataWriter writer = NewWriter(type);
             serverConnection.Send(writer, DeliveryMethod.Unreliable);
         }
