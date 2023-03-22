@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using LabFusion.Data;
+using LabFusion.Extensions;
 using LabFusion.Patching;
 using LabFusion.Syncables;
 
@@ -19,6 +20,10 @@ namespace LabFusion.Network
         public byte smallId;
         public ushort syncId;
         public string barcode;
+
+        public static int GetSize(string barcode) {
+            return Size + barcode.GetSize();
+        }
 
         public void Serialize(FusionWriter writer)
         {

@@ -6,14 +6,21 @@ using System.Threading.Tasks;
 
 using LabFusion.Data;
 using LabFusion.Exceptions;
+using LabFusion.Extensions;
 using LabFusion.Representation;
 
 namespace LabFusion.Network
 {
     public class PlayerMetadataResponseData : IFusionSerializable, IDisposable {
+        public const int DefaultSize = sizeof(byte);
+
         public byte smallId;
         public string key;
         public string value;
+
+        public static int GetSize(string key, string value) {
+            return DefaultSize + key.GetSize() + value.GetSize();
+        }
 
         public void Serialize(FusionWriter writer) {
             writer.Write(smallId);

@@ -115,7 +115,7 @@ namespace LabFusion.Preferences {
 
         internal static void SendServerSettings(ulong longId) {
             if (NetworkInfo.HasServer && NetworkInfo.IsServer) {
-                using (var writer = FusionWriter.Create())
+                using (var writer = FusionWriter.Create(ServerSettingsData.Size))
                 {
                     using (var data = ServerSettingsData.Create(SerializedServerSettings.Create()))
                     {
@@ -132,7 +132,7 @@ namespace LabFusion.Preferences {
 
         internal static void SendClientSettings() {
             if (NetworkInfo.HasServer) {
-                using (var writer = FusionWriter.Create())
+                using (var writer = FusionWriter.Create(PlayerSettingsData.Size))
                 {
                     using (var data = PlayerSettingsData.Create(PlayerIdManager.LocalSmallId, SerializedPlayerSettings.Create()))
                     {

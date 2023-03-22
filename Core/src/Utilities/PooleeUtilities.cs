@@ -122,8 +122,12 @@ namespace LabFusion.Utilities {
         }
 
         public static void SendSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, bool ignoreSelf = false, ZoneSpawner spawner = null, Handedness hand = Handedness.UNDEFINED) {
-            using (var writer = FusionWriter.Create(SpawnResponseData.Size)) {
-                using (var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, spawner, hand)) {
+            string spawnerPath = "_";
+            if (spawner != null)
+                spawnerPath = spawner.gameObject.GetFullPath();
+            
+            using (var writer = FusionWriter.Create(SpawnResponseData.GetSize(barcode, spawnerPath))) {
+                using (var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, spawnerPath, hand)) {
                     writer.Write(data);
 
                     using (var message = FusionMessage.Create(NativeMessageTag.SpawnResponse, writer)) {

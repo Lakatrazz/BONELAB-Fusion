@@ -14,6 +14,8 @@ using UnityEngine;
 
 namespace LabFusion.Data {
     public class SerializedServerSettings : IFusionSerializable {
+        public const int Size = sizeof(byte) * 11;
+
         public FusionPreferences.ServerSettings settings;
 
         public void Serialize(FusionWriter writer) {

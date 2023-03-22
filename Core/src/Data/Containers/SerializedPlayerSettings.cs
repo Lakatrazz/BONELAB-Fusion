@@ -12,6 +12,8 @@ using UnityEngine;
 
 namespace LabFusion.Data {
     public class SerializedPlayerSettings : IFusionSerializable {
+        public const int Size = sizeof(float) * 4;
+
         public Color nametagColor;
 
         public void Serialize(FusionWriter writer) {
