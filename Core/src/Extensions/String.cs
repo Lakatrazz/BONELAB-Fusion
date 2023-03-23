@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace LabFusion.Extensions {
@@ -10,11 +11,23 @@ namespace LabFusion.Extensions {
             if (string.IsNullOrEmpty(str))
                 return str;
 
-            if (str.Length <= maxLength) {
+            // Get a version of the string without rich text tags 
+            Regex rich = new Regex(@"<[^>]*>");
+            string plainText = str;
+
+            if (rich.IsMatch(plainText)) {
+                plainText = rich.Replace(plainText, string.Empty);
+            }
+
+            int plainLength = plainText.Length;
+
+            if (plainLength <= maxLength) {
                 return str;
             }
 
-            return str.Substring(0, maxLength);
+            int offset = str.Length - plainLength;
+
+            return str.Substring(0, maxLength + offset);
         }
 
         public static int GetSize(this string str) {
