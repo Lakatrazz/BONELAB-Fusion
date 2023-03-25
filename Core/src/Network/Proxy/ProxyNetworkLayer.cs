@@ -341,7 +341,7 @@ namespace LabFusion.Network
         internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes)
         {
             // If we are deafened, no need to deal with voice chat
-            /*bool isDeafened = !FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue() || FusionPreferences.ClientSettings.Deafened;
+            bool isDeafened = !FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue() || FusionPreferences.ClientSettings.Deafened;
             if (isDeafened)
                 return;
 
@@ -350,7 +350,7 @@ namespace LabFusion.Network
             if (identifier != null)
             {
                 identifier.OnVoiceBytesReceived(bytes);
-            }*/
+            }
         }
 
         internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message)
