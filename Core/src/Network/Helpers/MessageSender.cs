@@ -26,7 +26,7 @@ namespace LabFusion.Network
                 return;
 
             if (NetworkInfo.CurrentNetworkLayer != null) {
-                NetworkInfo.BytesUp += message.Buffer.Length;
+                NetworkInfo.BytesUp += message.Length;
 
                 NetworkInfo.CurrentNetworkLayer.SendFromServer(userId, channel, message);
             }
@@ -44,7 +44,7 @@ namespace LabFusion.Network
                 return;
 
             if (NetworkInfo.CurrentNetworkLayer != null) {
-                NetworkInfo.BytesUp += message.Buffer.Length;
+                NetworkInfo.BytesUp += message.Length;
 
                 NetworkInfo.CurrentNetworkLayer.SendFromServer(userId, channel, message);
             }
@@ -60,12 +60,15 @@ namespace LabFusion.Network
                 return;
 
             if (NetworkInfo.CurrentNetworkLayer != null) {
-                NetworkInfo.BytesUp += message.Buffer.Length;
+                NetworkInfo.BytesUp += message.Length;
 
                 if (!NetworkInfo.IsServer)
                     NetworkInfo.CurrentNetworkLayer.SendToServer(channel, message);
-                else
-                    FusionMessageHandler.ReadMessage(message.Buffer, true);
+                else {
+                    unsafe {
+                        FusionMessageHandler.ReadMessage(message.Buffer, message.Length, true);
+                    }
+                }
             }
         }
 
@@ -80,13 +83,15 @@ namespace LabFusion.Network
                 return;
 
             if (NetworkInfo.CurrentNetworkLayer != null) {
-                NetworkInfo.BytesUp += message.Buffer.Length;
+                NetworkInfo.BytesUp += message.Length;
 
                 NetworkInfo.CurrentNetworkLayer.BroadcastMessage(channel, message);
 
                 // Backup incase the message cannot be sent to the host, which this targets.
                 if (!NetworkInfo.ServerCanSendToHost && NetworkInfo.IsServer) {
-                    FusionMessageHandler.ReadMessage(message.Buffer, false);
+                    unsafe {
+                        FusionMessageHandler.ReadMessage(message.Buffer, message.Length, false);
+                    }
                 }
             }
         }
@@ -103,13 +108,15 @@ namespace LabFusion.Network
                 return;
 
             if (NetworkInfo.CurrentNetworkLayer != null) {
-                NetworkInfo.BytesUp += message.Buffer.Length;
+                NetworkInfo.BytesUp += message.Length;
 
                 NetworkInfo.CurrentNetworkLayer.BroadcastMessageExcept(userId, channel, message, ignoreHost);
 
                 // Backup incase the message cannot be sent to the host, which this targets.
                 if (!ignoreHost && userId != PlayerIdManager.LocalSmallId && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsServer) {
-                    FusionMessageHandler.ReadMessage(message.Buffer, false);
+                    unsafe {
+                        FusionMessageHandler.ReadMessage(message.Buffer, message.Length, false);
+                    }
                 }
             }
         }
@@ -126,13 +133,15 @@ namespace LabFusion.Network
                 return;
 
             if (NetworkInfo.CurrentNetworkLayer != null) {
-                NetworkInfo.BytesUp += message.Buffer.Length;
+                NetworkInfo.BytesUp += message.Length;
 
                 NetworkInfo.CurrentNetworkLayer.BroadcastMessageExcept(userId, channel, message, ignoreHost);
 
                 // Backup incase the message cannot be sent to the host, which this targets.
                 if (!ignoreHost && userId != PlayerIdManager.LocalLongId && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsServer) {
-                    FusionMessageHandler.ReadMessage(message.Buffer, false);
+                    unsafe {
+                        FusionMessageHandler.ReadMessage(message.Buffer, message.Length, false);
+                    }
                 }
             }
         }

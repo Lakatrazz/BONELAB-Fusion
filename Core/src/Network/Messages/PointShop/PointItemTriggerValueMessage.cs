@@ -7,13 +7,20 @@ using System.Threading.Tasks;
 using LabFusion.Data;
 using LabFusion.SDK.Points;
 using LabFusion.Representation;
+using LabFusion.Extensions;
 
 namespace LabFusion.Network
 {
     public class PointItemTriggerValueData : IFusionSerializable, IDisposable {
+        public const int DefaultSize = sizeof(byte);
+
         public byte smallId;
         public string barcode;
         public string value;
+
+        public static int GetSize(string barcode, string value) {
+            return DefaultSize + barcode.GetSize() + value.GetSize();
+        }
 
         public void Serialize(FusionWriter writer) {
             writer.Write(smallId);

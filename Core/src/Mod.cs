@@ -26,8 +26,8 @@ namespace LabFusion
     public struct FusionVersion
     {
         public const byte versionMajor = 1;
-        public const byte versionMinor = 2;
-        public const short versionPatch = 1;
+        public const byte versionMinor = 3;
+        public const short versionPatch = 0;
     }
 
     public class FusionMod : MelonMod {
@@ -38,10 +38,15 @@ namespace LabFusion
 #if DEBUG
         public const string Changelog = "- Debug build. Changelog will show in the release build.";
 #else
-        public const string Changelog = "- Made lobby metadata update on a timer\n" +
-            "- Made lobby metadata update when gamemodes are changed\n" +
-            "- Fixed steam_api_64.dll writing into the incorrect folder\n" +
-            "- Fixed version comparison requiring the patch number to be the same";
+        public const string Changelog = "- Made player voicechat quarter volume when its 2D\n" +
+            "- Fixed the multiple go-karts in Monogon Motorway not spawning\n" +
+            "- Fixed spamming join in BoneMenu crashing your game\n" +
+            "- Fixed many causes of crashes by disabling AsyncCallbacks\n" +
+            "- Made the body log disable on players if they haven't unlocked it\n" +
+            "- Added character limit to usernames and nicknames\n" +
+            "- Added server option to force base game avatars\n" +
+            "- Implemented Array Pooling (better memory usage, more performance)\n" +
+            "- Implemented fixed pointer buffers (better memory usage, more performance)";
 #endif
 
         /// <summary>

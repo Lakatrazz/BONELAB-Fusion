@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LabFusion.Data;
 using LabFusion.Preferences;
 using LabFusion.Representation;
+using LabFusion.Utilities;
 
 namespace LabFusion.Network
 {
@@ -32,6 +33,7 @@ namespace LabFusion.Network
         public void Dispose()
         {
             GC.SuppressFinalize(this);
+            ByteRetriever.Return(bytes);
         }
 
         public static PlayerVoiceChatData Create(byte smallId, byte[] voiceData)

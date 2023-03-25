@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: b2e867ce46fe95046aaceb0155a651ad
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures:
+  - _BaseMap: {fileID: 2800000, guid: e298abdcd2d10894fba4930f7890c1fc, type: 3}
+  - _WireColor: {fileID: 2800000, guid: 07e40fb4bdc07784493f741d9447821a, type: 3}
+  nonModifiableTextures: []
+  preprocessorOverride: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

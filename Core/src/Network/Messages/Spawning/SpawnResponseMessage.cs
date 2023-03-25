@@ -36,7 +36,7 @@ namespace LabFusion.Network
 {
     public class SpawnResponseData : IFusionSerializable, IDisposable
     {
-        public const int Size = sizeof(byte) * 2 + sizeof(ushort) + SerializedTransform.Size;
+        public const int DefaultSize = sizeof(byte) * 2 + sizeof(ushort) + SerializedTransform.Size;
 
         public byte owner;
         public string barcode;
@@ -47,6 +47,10 @@ namespace LabFusion.Network
         public string spawnerPath;
 
         public Handedness hand;
+
+        public static int GetSize(string barcode, string spawnerPath) {
+            return DefaultSize + barcode.GetSize() + spawnerPath.GetSize();
+        }
 
         public void Serialize(FusionWriter writer)
         {
@@ -73,21 +77,15 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static SpawnResponseData Create(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, ZoneSpawner spawner = null, Handedness hand = Handedness.UNDEFINED)
+        public static SpawnResponseData Create(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, string spawnerPath = "_", Handedness hand = Handedness.UNDEFINED)
         {
-            string path = "_";
-
-            if (spawner != null) {
-                path = spawner.gameObject.GetFullPath();
-            }
-
             return new SpawnResponseData()
             {
                 owner = owner,
                 barcode = barcode,
                 syncId = syncId,
                 serializedTransform = serializedTransform,
-                spawnerPath = path,
+                spawnerPath = spawnerPath,
                 hand = hand,
             };
         }

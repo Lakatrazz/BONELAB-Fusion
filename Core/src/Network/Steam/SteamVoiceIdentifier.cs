@@ -166,9 +166,9 @@ namespace LabFusion.Network {
         private float GetVoiceMultiplier() {
             float mult = _defaultVolumeMultiplier * FusionPreferences.ClientSettings.GlobalVolume;
 
-            // If we are loading, half the volume
-            if (FusionSceneManager.IsLoading()) {
-                mult *= 0.5f;
+            // If we are loading or the audio is 2D, lower the volume
+            if (FusionSceneManager.IsLoading() || _source.spatialBlend <= 0f) {
+                mult *= 0.25f;
             }
 
             return mult;

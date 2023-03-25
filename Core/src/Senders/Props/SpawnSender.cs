@@ -97,9 +97,13 @@ namespace LabFusion.Senders
         {
             if (NetworkInfo.IsServer)
             {
-                using (var writer = FusionWriter.Create(SpawnResponseData.Size))
+                string spawnerPath = "_";
+                if (spawner != null)
+                    spawnerPath = spawner.gameObject.GetFullPath();
+
+                using (var writer = FusionWriter.Create(SpawnResponseData.GetSize(barcode, spawnerPath)))
                 {
-                    using (var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, spawner, hand))
+                    using (var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, spawnerPath, hand))
                     {
                         writer.Write(data);
 

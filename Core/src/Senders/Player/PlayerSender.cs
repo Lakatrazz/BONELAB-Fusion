@@ -1,5 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Exceptions;
+using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Utilities;
@@ -34,7 +35,7 @@ namespace LabFusion.Senders {
             if (!NetworkInfo.HasServer)
                 return;
 
-            using (FusionWriter writer = FusionWriter.Create(PlayerRepAvatarData.DefaultSize)) {
+            using (FusionWriter writer = FusionWriter.Create(PlayerRepAvatarData.DefaultSize + barcode.GetSize())) {
                 using (PlayerRepAvatarData data = PlayerRepAvatarData.Create(PlayerIdManager.LocalSmallId, stats, barcode)) {
                     writer.Write(data);
 
@@ -98,7 +99,7 @@ namespace LabFusion.Senders {
         }
 
         public static void SendPlayerMetadataRequest(byte smallId, string key, string value) {
-            using (var writer = FusionWriter.Create())
+            using (var writer = FusionWriter.Create(PlayerMetadataRequestData.GetSize(key, value)))
             {
                 using (var data = PlayerMetadataRequestData.Create(smallId, key, value))
                 {
@@ -115,7 +116,7 @@ namespace LabFusion.Senders {
         public static void SendPlayerMetadataResponse(byte smallId, string key, string value) {
             // Make sure this is the server
             if (NetworkInfo.IsServer) {
-                using (var writer = FusionWriter.Create()) {
+                using (var writer = FusionWriter.Create(PlayerMetadataResponseData.GetSize(key, value))) {
                     using (var data = PlayerMetadataResponseData.Create(smallId, key, value)) {
                         writer.Write(data);
 
@@ -130,7 +131,7 @@ namespace LabFusion.Senders {
         }
 
         public static void SendPlayerAction(PlayerActionType type, byte? otherPlayer = null) {
-            using (var writer = FusionWriter.Create()) {
+            using (var writer = FusionWriter.Create(PlayerRepActionData.Size)) {
                 using (var data = PlayerRepActionData.Create(PlayerIdManager.LocalSmallId, type, otherPlayer)) {
                     writer.Write(data);
 

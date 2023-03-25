@@ -15,6 +15,8 @@ namespace LabFusion.Network
 {
     public class ServerSettingsData : IFusionSerializable, IDisposable
     {
+        public const int Size = SerializedServerSettings.Size;
+
         public SerializedServerSettings settings;
 
         public void Serialize(FusionWriter writer)

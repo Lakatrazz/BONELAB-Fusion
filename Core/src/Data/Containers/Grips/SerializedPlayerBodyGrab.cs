@@ -21,6 +21,8 @@ namespace LabFusion.Data {
     }
 
     public class SerializedPlayerBodyGrab : SerializedGrab {
+        public new const int Size = SerializedGrab.Size + sizeof(byte) * 3 + SerializedTransform.Size;
+
         public byte grabbedUser;
         public byte gripIndex;
         public bool isAvatarGrip;
@@ -33,6 +35,10 @@ namespace LabFusion.Data {
         }
 
         public SerializedPlayerBodyGrab() { }
+
+        public override int GetSize() {
+            return Size;
+        }
 
         public override void WriteDefaultGrip(Hand hand, Grip grip) {
             base.WriteDefaultGrip(hand, grip);

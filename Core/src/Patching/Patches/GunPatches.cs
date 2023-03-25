@@ -88,9 +88,11 @@ namespace LabFusion.Patching
                 return;
 
             if (__instance._selectedCrate != null && NetworkInfo.HasServer && SpawnGunExtender.Cache.TryGet(__instance, out var syncable)) {
-                using (var writer = FusionWriter.Create(SpawnGunPreviewMeshData.Size))
+                string barcode = __instance._selectedCrate.Barcode;
+
+                using (var writer = FusionWriter.Create(SpawnGunPreviewMeshData.GetSize(barcode)))
                 {
-                    using (var data = SpawnGunPreviewMeshData.Create(PlayerIdManager.LocalSmallId, syncable.GetId(), __instance._selectedCrate.Barcode))
+                    using (var data = SpawnGunPreviewMeshData.Create(PlayerIdManager.LocalSmallId, syncable.GetId(), barcode))
                     {
                         writer.Write(data);
 

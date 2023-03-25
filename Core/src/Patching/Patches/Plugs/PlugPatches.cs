@@ -63,14 +63,14 @@ namespace LabFusion.Patching
         [HarmonyPrefix]
         [HarmonyPatch(nameof(AmmoPlug.OnPlugInsertComplete))]
         public static void OnPlugInsertCompletePrefix() {
-            AssetPooleePatches.IgnorePatches = true;
+            PooleeDespawnPatch.IgnorePatch = true;
             AmmoSocketPatches.IgnorePatch = true;
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(AmmoPlug.OnPlugInsertComplete))]
         public static void OnPlugInsertCompletePostfix() {
-            AssetPooleePatches.IgnorePatches = false;
+            PooleeDespawnPatch.IgnorePatch = false;
             AmmoSocketPatches.IgnorePatch = false;
         }
     }

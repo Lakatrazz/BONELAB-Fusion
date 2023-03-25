@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Extensions;
 using LabFusion.Patching;
 using LabFusion.Representation;
 using LabFusion.Utilities;
@@ -12,6 +13,10 @@ namespace LabFusion.Network
     public class SceneLoadData : IFusionSerializable, IDisposable
     {
         public string levelBarcode;
+
+        public static int GetSize(string barcode) {
+            return barcode.GetSize();
+        }
 
         public void Serialize(FusionWriter writer)
         {

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine.UIElements;
@@ -16,41 +17,52 @@ namespace LabFusion.Network
     }
 
 
-    public class FusionMessage : IDisposable
+    public unsafe class FusionMessage : IDisposable
     {
-        private byte[] buffer;
+        private byte* _buffer;
+        private int _size;
+
+        private bool _disposed;
 
         public int Length
         {
             get
             {
-                return buffer.Length;
+                return _size;
             }
         }
 
-        public byte[] Buffer
+        public byte* Buffer
         {
             get
             {
-                return buffer;
+                return _buffer;
             }
         }
 
-        public static FusionMessage Create(byte tag, FusionWriter writer) {
-            writer.EnsureLength();
-
-            return Create(tag, writer.Buffer);
+        internal static FusionMessage Internal_Create(int size) {
+            return new FusionMessage() {
+                _buffer = (byte*)Marshal.AllocHGlobal(size),
+                _size = size,
+                _disposed = false,
+            };
         }
 
-        public static FusionMessage Create(byte tag, byte[] buffer) {
-            int length = buffer.Length;
+        public static FusionMessage Create(byte tag, FusionWriter writer) {
+            return Create(tag, writer.Buffer, writer.Length);
+        }
 
-            var message = new FusionMessage {
-                buffer = ByteRetriever.Rent(length + 1)
-            };
-            message.buffer[0] = tag;
+        public static FusionMessage Create(byte tag, byte[] buffer, int length = -1) {
+            if (length <= 0)
+                length = buffer.Length;
 
-            System.Buffer.BlockCopy(buffer, 0, message.buffer, 1, length);
+            int size = length + 1;
+            var message = Internal_Create(size);
+
+            message._buffer[0] = tag;
+            for (var i = 0; i < length; i++) {
+                message._buffer[i + 1] = buffer[i];
+            }
 
             return message;
         }
@@ -65,41 +77,45 @@ namespace LabFusion.Network
         }
 
         public static FusionMessage ModuleCreate(Type type, FusionWriter writer) {
-            writer.EnsureLength();
-
-            return ModuleCreate(type, writer.Buffer);
+            return ModuleCreate(type, writer.Buffer, writer.Length);
         }
 
-        public static FusionMessage ModuleCreate(Type type, byte[] buffer) {
-            int length = buffer.Length;
+        public static FusionMessage ModuleCreate(Type type, byte[] buffer, int length = -1) {
+            if (length <= 0)
+                length = buffer.Length;
 
-            var message = new FusionMessage {
-                buffer = ByteRetriever.Rent(length + 3)
-            };
-            message.buffer[0] = NativeMessageTag.Module;
+            int size = length + 3;
 
             // Assign the module type
-            byte[] typeBytes;
             var tag = ModuleMessageHandler.GetHandlerTag(type);
 
             // Make sure the tag is valid, otherwise we dont return a message
-            if (tag.HasValue)
-                typeBytes = BitConverter.GetBytes(tag.Value);
+            if (tag.HasValue) {
+                var value = tag.Value;
+
+                var message = Internal_Create(size);
+                message._buffer[0] = NativeMessageTag.Module;
+                message._buffer[1] = (byte)(value >> 8);
+                message._buffer[2] = (byte)value;
+
+                for (var i = 0; i < length; i++) {
+                    message._buffer[i + 3] = buffer[i];
+                }
+
+                return message;
+            }
             else
                 return null;
-
-            message.Buffer[1] = typeBytes[0];
-            message.Buffer[2] = typeBytes[1];
-
-            System.Buffer.BlockCopy(buffer, 0, message.buffer, 3, length);
-
-            return message;
         }
 
         public void Dispose() {
-            GC.SuppressFinalize(this);
+            if (_disposed)
+                return;
 
-            ByteRetriever.Return(buffer);
+            GC.SuppressFinalize(this);
+            Marshal.FreeHGlobal((IntPtr)_buffer);
+
+            _disposed = true;
         }
     }
 }

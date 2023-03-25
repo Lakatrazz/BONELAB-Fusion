@@ -1,4 +1,6 @@
-﻿using LabFusion.Preferences;
+﻿using BoneLib;
+using LabFusion.Extensions;
+using LabFusion.Preferences;
 using LabFusion.Representation;
 using LabFusion.Senders;
 using System;
@@ -14,6 +16,16 @@ namespace LabFusion.Network {
         public const string NicknameKey = "Nickname";
         public const string LoadingKey = "IsLoading";
         public const string PermissionKey = "PermissionLevel";
+
+        public static bool TryGetPermissionLevel(this PlayerId id, out PermissionLevel level) {
+            if (id.TryGetMetadata(PermissionKey, out string rawLevel) && Enum.TryParse(rawLevel, out PermissionLevel newLevel)) {
+                level = newLevel;
+                return true;
+            }
+
+            level = PermissionLevel.DEFAULT;
+            return false;
+        }
 
         public static bool TryGetDisplayName(this PlayerId id, out string name) {
             id.TryGetMetadata(UsernameKey, out var username);
@@ -38,6 +50,8 @@ namespace LabFusion.Network {
             else {
                 name = username;
             }
+
+            name = name.LimitLength(PlayerIdManager.MaxNameLength);
 
             return !string.IsNullOrWhiteSpace(name);
         }

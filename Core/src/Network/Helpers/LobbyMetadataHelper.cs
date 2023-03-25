@@ -50,7 +50,7 @@ namespace LabFusion.Network {
                 VoicechatEnabled = FusionPreferences.LocalServerSettings.VoicechatEnabled.GetValue(),
 
                 // Lobby status
-                LevelName = FusionSceneManager.Level.Title,
+                LevelName = FusionSceneManager.Title,
                 GamemodeName = Gamemode.ActiveGamemode != null ? Gamemode.ActiveGamemode.GamemodeName : "No Gamemode",
             };
         }

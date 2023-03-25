@@ -14,7 +14,7 @@ namespace LabFusion.Network
 {
     public class SerializedBodyVitals : IFusionSerializable
     {
-        public const int Size = sizeof(float) * 9 + sizeof(byte) * 4 + sizeof(int) * 2;
+        public const int Size = sizeof(float) * 9 + sizeof(byte) * 5 + sizeof(int) * 2;
 
         public float height;
         public BodyVitals.MeasurementState measurement;
@@ -26,8 +26,10 @@ namespace LabFusion.Network
         public float inseam;
         public float sittingOffset;
         public float floorOffset;
+
         public bool bodyLogFlipped;
         public bool bodyLogEnabled;
+        public bool hasBodyLog;
 
         public bool isRightHanded;
 
@@ -50,6 +52,7 @@ namespace LabFusion.Network
 
             bodyLogFlipped = vitals.bodyLogFlipped;
             bodyLogEnabled = vitals.bodyLogEnabled;
+            hasBodyLog = vitals.hasBodyLog;
 
             isRightHanded = vitals.isRightHanded;
 
@@ -71,6 +74,7 @@ namespace LabFusion.Network
 
             writer.Write(bodyLogFlipped);
             writer.Write(bodyLogEnabled);
+            writer.Write(hasBodyLog);
 
             writer.Write(isRightHanded);
 
@@ -92,6 +96,7 @@ namespace LabFusion.Network
 
             bodyLogFlipped = reader.ReadBoolean();
             bodyLogEnabled = reader.ReadBoolean();
+            hasBodyLog = reader.ReadBoolean();
 
             isRightHanded = reader.ReadBoolean();
 
@@ -113,6 +118,7 @@ namespace LabFusion.Network
 
             vitals.bodyLogFlipped = bodyLogFlipped;
             vitals.bodyLogEnabled = bodyLogEnabled;
+            vitals.hasBodyLog = hasBodyLog;
 
             vitals.isRightHanded = isRightHanded;
 

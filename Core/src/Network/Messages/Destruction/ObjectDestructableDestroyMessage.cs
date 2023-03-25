@@ -81,13 +81,13 @@ namespace LabFusion.Network
                         {
                             var objectDestructable = extender.GetComponent(data.destructableIndex);
                             ObjectDestructablePatches.IgnorePatches = true;
-                            AssetPooleePatches.IgnorePatches = true;
+                            PooleeDespawnPatch.IgnorePatch = true;
 
                             objectDestructable._hits = objectDestructable.reqHitCount + 1;
                             objectDestructable.TakeDamage(Vector3Extensions.up, objectDestructable._health + 1f, false, AttackType.Blunt);
                             
                             ObjectDestructablePatches.IgnorePatches = false;
-                            AssetPooleePatches.IgnorePatches = false;
+                            PooleeDespawnPatch.IgnorePatch = false;
                         }
                     }
                 }

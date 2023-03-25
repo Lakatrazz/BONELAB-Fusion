@@ -26,6 +26,13 @@ https://github.com/Lakatrazz/Fusion-Module-Example
 - BoneLib AutoUpdater: https://github.com/yowchap/BoneLib
 - Testing/Development Credits In Game
 
+## Setting up the Source Code
+1. Clone the git repo into a folder
+2. Setup a "managed" folder in the "Core" folder.
+3. Drag the dlls from Melonloader/Managed into the managed folder.
+4. Drag MelonLoader.dll and 0Harmony.dll into the managed folder.
+5. You're done!
+
 ## Disclaimer
 
 #### THIS PROJECT IS NOT AFFILIATED WITH ANY OTHER MULTIPLAYER MODS OR STRESS LEVEL ZERO! This is its own standalone mod and shares no code with others, any similarities are coincidental!

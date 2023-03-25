@@ -18,7 +18,7 @@ using MelonLoader;
 namespace LabFusion.Network
 {
     public class PlayerRepGrabData : IFusionSerializable, IDisposable {
-        public const int Size = sizeof(byte) * 3 + SerializedGrab.Size;
+        public const int Size = sizeof(byte) * 3;
 
         public byte smallId;
         public Handedness handedness;
