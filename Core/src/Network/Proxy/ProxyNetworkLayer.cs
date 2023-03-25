@@ -134,7 +134,7 @@ namespace LabFusion.Network
             if (!(port >= 1024 && port <= 65535))
             {
                 FusionLogger.Error("Custom port is invalid, using default! (28430)");
-                port = 28430;
+                port = 28340;
             }
 
             float timeElapsed;
