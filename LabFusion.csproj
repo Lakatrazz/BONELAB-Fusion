@@ -660,6 +660,7 @@
     <Compile Include="Core\src\Utilities\PlayerAdditionsHelper.cs" />
     <Compile Include="Core\src\Utilities\PooleeUtilities.cs" />
     <Compile Include="Core\src\Utilities\SafetyUtilities.cs" />
+    <Compile Include="Core\src\Utilities\ThreadingUtilities.cs" />
     <Compile Include="Core\src\Utilities\TriggerUtilities.cs" />
   </ItemGroup>
   <ItemGroup>

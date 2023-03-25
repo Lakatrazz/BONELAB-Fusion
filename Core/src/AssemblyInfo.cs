@@ -11,10 +11,10 @@ using LabFusion;
 
 [assembly: Guid("490e160d-251d-4ab4-a3bb-f473961ff8a1")]
 [assembly: AssemblyTitle("LabFusion")]
-[assembly: AssemblyVersion("1.3.0")]
-[assembly: AssemblyFileVersion("1.3.0")]
+[assembly: AssemblyVersion("1.3.1")]
+[assembly: AssemblyFileVersion("1.3.1")]
 
-[assembly: MelonInfo(typeof(FusionMod), "LabFusion", "1.3.0", "Lakatrazz")]
+[assembly: MelonInfo(typeof(FusionMod), "LabFusion", "1.3.1", "Lakatrazz")]
 [assembly: MelonGame("Stress Level Zero", "BONELAB")]
 [assembly: MelonPriority(-10000)]
 [assembly: MelonOptionalDependencies("System.Windows.Forms")]
