@@ -31,8 +31,6 @@ namespace LabFusion.SDK.Gamemodes {
             LAVA_GANG = 2,
         }
 
-        public string LavaGangName => !string.IsNullOrWhiteSpace(_lavaGangOverride) ? _lavaGangOverride : "Lava Gang";
-        public string SabrelakeName => !string.IsNullOrWhiteSpace(_sabrelakeOverride) ? _sabrelakeOverride : "Sabrelake";
         public Texture2D LavaGangLogo => _lavaGangLogoOverride != null ? _lavaGangLogoOverride : FusionContentLoader.LavaGangLogo;
         public Texture2D SabrelakeLogo => _sabrelakeLogoOverride != null ? _sabrelakeLogoOverride : FusionContentLoader.SabrelakeLogo;
 
@@ -41,18 +39,6 @@ namespace LabFusion.SDK.Gamemodes {
 
         protected Texture2D _lavaGangLogoOverride = null;
         protected Texture2D _sabrelakeLogoOverride = null;
-
-        protected string ParseTeam(Team team) {
-            switch (team) {
-                default:
-                case Team.NO_TEAM:
-                    return "Invalid Team";
-                case Team.LAVA_GANG:
-                    return LavaGangName;
-                case Team.SABRELAKE:
-                    return SabrelakeName;
-            }
-        }
 
         protected class TeamLogoInstance {
             protected const float LogoDivider = 270f;
