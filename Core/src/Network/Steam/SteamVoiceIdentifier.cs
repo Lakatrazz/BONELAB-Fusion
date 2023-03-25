@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using UnhollowerBaseLib;
 
 using UnityEngine;
+using BoneLib;
 
 using PCMReaderCallback = UnityEngine.AudioClip.PCMReaderCallback;
 
@@ -21,6 +22,7 @@ namespace LabFusion.Network {
     public class SteamVoiceIdentifier {
         public static List<SteamVoiceIdentifier> VoiceIdentifiers = new List<SteamVoiceIdentifier>();
 
+        private const uint _androidSampleRate = 48000;
         private const float _defaultVolumeMultiplier = 10f;
 
         private readonly MemoryStream _compressedVoiceStream = new MemoryStream();
@@ -41,8 +43,9 @@ namespace LabFusion.Network {
             GameObject.DontDestroyOnLoad(_source.gameObject);
             _source.gameObject.hideFlags = HideFlags.DontUnloadUnusedAsset;
 
-            _source.clip = AudioClip.Create("SteamVoice", Convert.ToInt32(SteamUser.SampleRate),
-                        1, Convert.ToInt32(SteamUser.SampleRate), true, (PCMReaderCallback)PcmReaderCallback);
+            uint sampleRate = HelperMethods.IsAndroid() ? _androidSampleRate : SteamUser.SampleRate;
+            _source.clip = AudioClip.Create("SteamVoice", Convert.ToInt32(sampleRate),
+                        1, Convert.ToInt32(sampleRate), true, (PCMReaderCallback)PcmReaderCallback);
 
             // Setup the mixing settings
             _source.rolloffMode = AudioRolloffMode.Linear;
