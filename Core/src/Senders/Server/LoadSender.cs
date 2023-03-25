@@ -28,7 +28,7 @@ namespace LabFusion.Senders {
             if (!NetworkInfo.IsServer)
                 return;
 
-            using (FusionWriter writer = FusionWriter.Create())
+            using (FusionWriter writer = FusionWriter.Create(SceneLoadData.GetSize(barcode)))
             {
                 using (var data = SceneLoadData.Create(barcode))
                 {
@@ -54,7 +54,7 @@ namespace LabFusion.Senders {
             if (!NetworkInfo.IsServer)
                 return;
 
-            using (FusionWriter writer = FusionWriter.Create())
+            using (FusionWriter writer = FusionWriter.Create(SceneLoadData.GetSize(barcode)))
             {
                 using (var data = SceneLoadData.Create(barcode))
                 {

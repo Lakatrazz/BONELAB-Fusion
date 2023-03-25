@@ -22,6 +22,8 @@ namespace LabFusion.Data
 
     public class SerializedWorldGrab : SerializedGrab
     {
+        public new const int Size = SerializedGrab.Size + sizeof(byte) + SerializedTransform.Size;
+
         public byte grabberId;
         public SerializedTransform worldHand = null;
 
@@ -30,6 +32,10 @@ namespace LabFusion.Data
         public SerializedWorldGrab(byte grabberId)
         {
             this.grabberId = grabberId;
+        }
+
+        public override int GetSize() {
+            return Size;
         }
 
         public override void WriteDefaultGrip(Hand hand, Grip grip)

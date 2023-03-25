@@ -1,5 +1,5 @@
 ﻿using BoneLib.BoneMenu.Elements;
-
+using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Preferences;
 using LabFusion.Representation;
@@ -66,6 +66,7 @@ namespace LabFusion.BoneMenu
             var permissionCategory = category.CreateCategory("Permission Settings", Color.white);
             CreateEnumPreference(permissionCategory, "Dev Tools Allowed", FusionPreferences.LocalServerSettings.DevToolsAllowed);
             CreateEnumPreference(permissionCategory, "Constrainer Allowed", FusionPreferences.LocalServerSettings.ConstrainerAllowed);
+            CreateEnumPreference(permissionCategory, "Custom Avatars Allowed", FusionPreferences.LocalServerSettings.CustomAvatarsAllowed);
             CreateEnumPreference(permissionCategory, "Kicking Allowed", FusionPreferences.LocalServerSettings.KickingAllowed);
             CreateEnumPreference(permissionCategory, "Banning Allowed", FusionPreferences.LocalServerSettings.BanningAllowed);
             CreateEnumPreference(permissionCategory, "Teleporation Allowed", FusionPreferences.LocalServerSettings.Teleportation);
@@ -90,6 +91,7 @@ namespace LabFusion.BoneMenu
             var nickname = nicknameCategory.CreateFunctionElement(string.IsNullOrWhiteSpace(currentNickname) ? "No Nickname" : $"Nickname: {currentNickname}", Color.white, null);
             var pasteNickname = nicknameCategory.CreateFunctionElement("Paste Nickname", Color.white, () => {
                 var text = Clipboard.GetText();
+                text = text.LimitLength(PlayerIdManager.MaxNameLength);
                 FusionPreferences.ClientSettings.Nickname.SetValue(text);
             });
             var resetNickname = nicknameCategory.CreateFunctionElement("Reset Nickname", Color.white, () => {

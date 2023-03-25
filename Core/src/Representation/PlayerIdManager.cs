@@ -12,6 +12,8 @@ using LabFusion.Preferences;
 namespace LabFusion.Representation
 {
     public static class PlayerIdManager {
+        public const int MaxNameLength = 32;
+
         public static readonly List<PlayerId> PlayerIds = new List<PlayerId>();
         public static int PlayerCount => PlayerIds.Count;
 

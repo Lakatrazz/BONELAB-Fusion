@@ -47,7 +47,7 @@ namespace LabFusion.Senders
             if (!NetworkInfo.HasServer)
                 return;
 
-            using (var writer = FusionWriter.Create())
+            using (var writer = FusionWriter.Create(PointItemTriggerValueData.GetSize(barcode, value)))
             {
                 using (var data = PointItemTriggerValueData.Create(PlayerIdManager.LocalSmallId, barcode, value))
                 {
