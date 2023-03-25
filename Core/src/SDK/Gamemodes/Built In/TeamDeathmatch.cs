@@ -30,8 +30,8 @@ namespace LabFusion.SDK.Gamemodes {
 
         public List<Team> teams;
 
-        public Team teamLavaGang;
-        public Team teamSabrelake;
+        public Team teamLavaGang = new Team("LavaGang", Color.magenta);
+        public Team teamSabrelake = new Team("Sabrelake", Color.yellow);
 
         protected string _lavaGangOverride = null;
         protected string _sabrelakeOverride = null;
@@ -129,10 +129,25 @@ namespace LabFusion.SDK.Gamemodes {
             _sabrelakeLogoOverride = logo;
         }
 
+        public Team GetTeam(string teamName)
+        {
+            foreach(var team in teams)
+            {
+                if(team.TeamName == teamName)
+                {
+                    return team;
+                }
+            }
+
+            return null;
+        }
+
         public override void OnGamemodeRegistered() {
             base.OnGamemodeRegistered();
 
             Instance = this;
+
+            teams = new List<Team>();
 
             MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;

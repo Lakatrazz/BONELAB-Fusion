@@ -93,18 +93,18 @@ namespace LabFusion.MarrowIntegration {
             }
         }
 
-        public void SetSabrelakeScore(int score) => Internal_SetTeamScore(TeamDeathmatch.Team.SABRELAKE, score);
-        public void SetLavaGangScore(int score) => Internal_SetTeamScore(TeamDeathmatch.Team.LAVA_GANG, score);
-        public void IncrementSabrelakeScore(int amount) => Internal_IncrementTeamScore(TeamDeathmatch.Team.SABRELAKE, amount);
-        public void IncrementLavaGangScore(int amount) => Internal_IncrementTeamScore(TeamDeathmatch.Team.LAVA_GANG, amount);
+        public void SetSabrelakeScore(int score) => Internal_SetTeamScore(TeamDeathmatch.Instance.GetTeam("Sabrelake"), score);
+        public void SetLavaGangScore(int score) => Internal_SetTeamScore(TeamDeathmatch.Instance.GetTeam("LavaGang"), score);
+        public void IncrementSabrelakeScore(int amount) => Internal_IncrementTeamScore(TeamDeathmatch.Instance.GetTeam("Sabrelake"), amount);
+        public void IncrementLavaGangScore(int amount) => Internal_IncrementTeamScore(TeamDeathmatch.Instance.GetTeam("LavaGang"), amount);
 
-        private void Internal_SetTeamScore(TeamDeathmatch.Team team, int score) {
+        private void Internal_SetTeamScore(Team team, int score) {
             if (TeamDeathmatch.Instance != null && TeamDeathmatch.Instance.IsActive()) {
                 TeamDeathmatch.Instance.SetScore(team, score);
             }
         }
 
-        private void Internal_IncrementTeamScore(TeamDeathmatch.Team team, int amount) {
+        private void Internal_IncrementTeamScore(Team team, int amount) {
             if (TeamDeathmatch.Instance != null && TeamDeathmatch.Instance.IsActive()) {
                 TeamDeathmatch.Instance.SetScore(team, TeamDeathmatch.Instance.GetScore(team) + amount);
             }
