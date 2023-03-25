@@ -14,7 +14,7 @@ namespace LabFusion.Network
 {
     public class SerializedBodyVitals : IFusionSerializable
     {
-        public const int Size = sizeof(float) * 9 + sizeof(byte) * 4 + sizeof(int) * 2;
+        public const int Size = sizeof(float) * 9 + sizeof(byte) * 5 + sizeof(int) * 2;
 
         public float height;
         public BodyVitals.MeasurementState measurement;

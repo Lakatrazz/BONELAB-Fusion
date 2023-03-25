@@ -7,13 +7,20 @@ using LabFusion.Preferences;
 using System;
 using LabFusion.Senders;
 using LabFusion.Exceptions;
+using LabFusion.Extensions;
 
 namespace LabFusion.Network
 {
     public class PlayerMetadataRequestData : IFusionSerializable, IDisposable {
+        public const int DefaultSize = sizeof(byte);
+
         public byte smallId;
         public string key;
         public string value;
+
+        public static int GetSize(string key, string value) {
+            return DefaultSize + key.GetSize() + value.GetSize();
+        }
 
         public void Serialize(FusionWriter writer) {
             writer.Write(smallId);

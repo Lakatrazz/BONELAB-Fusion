@@ -14,6 +14,8 @@ using UnityEngine;
 
 namespace LabFusion.Data {
     public class SerializedServerSettings : IFusionSerializable {
+        public const int Size = sizeof(byte) * 11;
+
         public FusionPreferences.ServerSettings settings;
 
         public void Serialize(FusionWriter writer) {
@@ -27,6 +29,7 @@ namespace LabFusion.Data {
 
             writer.Write((byte)settings.DevToolsAllowed.GetValue());
             writer.Write((byte)settings.ConstrainerAllowed.GetValue());
+            writer.Write((byte)settings.CustomAvatarsAllowed.GetValue());
             writer.Write((byte)settings.KickingAllowed.GetValue());
             writer.Write((byte)settings.BanningAllowed.GetValue());
             writer.Write((byte)settings.Teleportation.GetValue());
@@ -45,6 +48,7 @@ namespace LabFusion.Data {
 
                 DevToolsAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadByte()),
                 ConstrainerAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadByte()),
+                CustomAvatarsAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadByte()),
                 KickingAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadByte()),
                 BanningAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadByte()),
                 Teleportation = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadByte()),

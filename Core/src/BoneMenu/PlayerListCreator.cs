@@ -1,6 +1,6 @@
 ﻿using BoneLib.BoneMenu;
 using BoneLib.BoneMenu.Elements;
-
+using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Preferences;
 using LabFusion.Representation;
@@ -41,6 +41,9 @@ namespace LabFusion.BoneMenu
             // Get the name for the category
             string username = id.GetMetadata(MetadataHelper.UsernameKey);
             string nickname = id.GetMetadata(MetadataHelper.NicknameKey);
+
+            username = username.LimitLength(PlayerIdManager.MaxNameLength);
+            nickname = nickname.LimitLength(PlayerIdManager.MaxNameLength);
 
             string display;
 

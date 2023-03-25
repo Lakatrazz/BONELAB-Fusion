@@ -18,6 +18,8 @@ namespace LabFusion.Network
 {
     public class PlayerRepActionData : IFusionSerializable, IDisposable
     {
+        public const int Size = sizeof(byte) * 3;
+
         public byte smallId;
         public PlayerActionType type;
         public byte? otherPlayer;
