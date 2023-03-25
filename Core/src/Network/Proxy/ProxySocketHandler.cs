@@ -15,6 +15,7 @@ using Steamworks.Data;
 using UnityEngine;
 using FusionHelper.Network;
 using LiteNetLib.Utils;
+using UnityEngine.UIElements;
 
 namespace LabFusion.Network
 {
@@ -23,7 +24,8 @@ namespace LabFusion.Network
         {
             MessageTypes type = channel == NetworkChannel.Reliable ? MessageTypes.ReliableBroadcastToClients : MessageTypes.UnreliableBroadcastToClients;
             NetDataWriter writer = ProxyNetworkLayer.NewWriter(type);
-            writer.PutBytesWithLength(message.Buffer);
+            byte[] data = message.ToByteArray();
+            writer.PutBytesWithLength(data);
             ProxyNetworkLayer.Instance.SendToProxyServer(writer);
         }
 
@@ -33,7 +35,8 @@ namespace LabFusion.Network
             {
                 MessageTypes type = channel == NetworkChannel.Reliable ? MessageTypes.ReliableBroadcastToServer : MessageTypes.UnreliableBroadcastToServer;
                 NetDataWriter writer = ProxyNetworkLayer.NewWriter(type);
-                writer.PutBytesWithLength(message.Buffer);
+                byte[] data = message.ToByteArray();
+                writer.PutBytesWithLength(data);
                 ProxyNetworkLayer.Instance.SendToProxyServer(writer);
             }
             catch (Exception e)

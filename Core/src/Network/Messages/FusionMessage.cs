@@ -108,6 +108,17 @@ namespace LabFusion.Network
                 return null;
         }
 
+        public byte[] ToByteArray()
+        {
+            byte* source = _buffer;
+            int size = source[0]; // first byte is size;
+            byte[] target = new byte[size];
+            for (int i = 0; i < size; ++i)
+                target[i] = source[i + 1];
+
+            return target;
+        }
+
         public void Dispose() {
             if (_disposed)
                 return;

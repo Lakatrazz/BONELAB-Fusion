@@ -117,6 +117,21 @@ namespace LabFusion.Network
             }
         }
 
+        public static unsafe void ReadMessage(byte[] message, bool isServerHandled = false)
+        {
+            NetworkInfo.BytesDown += message.Length;
+
+            try
+            {
+                byte tag = message[0];
+                MelonCoroutines.Start(Handlers[tag].HandleMessage_Internal(message, isServerHandled));
+            }
+            catch (Exception e)
+            {
+                FusionLogger.Error($"Failed handling network message with reason: {e.Message}\nTrace:{e.StackTrace}");
+            }
+        }
+
 
         public static readonly FusionMessageHandler[] Handlers = new FusionMessageHandler[byte.MaxValue];
     }
