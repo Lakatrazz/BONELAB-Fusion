@@ -25,95 +25,19 @@ namespace LabFusion.SDK.Gamemodes {
 
         public static TeamDeathmatch Instance { get; private set; }
 
-        public enum Team {
-            NO_TEAM = 0,
-            SABRELAKE = 1,
-            LAVA_GANG = 2,
-        }
-
         public Texture2D LavaGangLogo => _lavaGangLogoOverride != null ? _lavaGangLogoOverride : FusionContentLoader.LavaGangLogo;
         public Texture2D SabrelakeLogo => _sabrelakeLogoOverride != null ? _sabrelakeLogoOverride : FusionContentLoader.SabrelakeLogo;
+
+        public List<Team> teams;
+
+        public Team teamLavaGang;
+        public Team teamSabrelake;
 
         protected string _lavaGangOverride = null;
         protected string _sabrelakeOverride = null;
 
         protected Texture2D _lavaGangLogoOverride = null;
         protected Texture2D _sabrelakeLogoOverride = null;
-
-        protected class TeamLogoInstance {
-            protected const float LogoDivider = 270f;
-
-            public TeamDeathmatch deathmatch;
-
-            public GameObject go;
-            public Canvas canvas;
-            public RawImage image;
-
-            public PlayerId id;
-            public PlayerRep rep;
-
-            public Team team;
-
-            public TeamLogoInstance(TeamDeathmatch deathmatch, PlayerId id, Team team) {
-                this.deathmatch = deathmatch;
-
-                go = new GameObject($"{id.SmallId} Team Logo");
-
-                canvas = go.AddComponent<Canvas>();
-                canvas.renderMode = RenderMode.WorldSpace;
-                canvas.sortingOrder = 100000;
-                go.transform.localScale = Vector3Extensions.one / LogoDivider;
-
-                image = go.AddComponent<RawImage>();
-
-                GameObject.DontDestroyOnLoad(go);
-                go.hideFlags = HideFlags.DontUnloadUnusedAsset;
-
-                this.id = id;
-                PlayerRepManager.TryGetPlayerRep(id, out rep);
-
-                this.team = team;
-
-                UpdateLogo();
-            }
-
-            public void Toggle(bool value) {
-                go.SetActive(value);
-            }
-
-            public void UpdateLogo() {
-                switch (team) {
-                    case Team.LAVA_GANG:
-                        image.texture = deathmatch.LavaGangLogo;
-                        break;
-                    case Team.SABRELAKE:
-                        image.texture = deathmatch.SabrelakeLogo;
-                        break;
-                }
-            }
-
-            public void Cleanup() {
-                if (!go.IsNOC())
-                    GameObject.Destroy(go);
-            }
-
-            public bool IsShown() => go.activeSelf;
-
-            public void Update() {
-                if (rep != null) {
-                    var rm = rep.RigReferences.RigManager;
-
-                    if (!rm.IsNOC()) {
-                        var head = rm.physicsRig.m_head;
-
-                        go.transform.position = head.position + Vector3Extensions.up * rep.GetNametagOffset();
-                        go.transform.LookAtPlayer();
-
-                        UpdateLogo();
-                    }
-                }
-            }
-        }
 
         private const int _defaultMinutes = 3;
         private const int _minMinutes = 2;
@@ -141,12 +65,12 @@ namespace LabFusion.SDK.Gamemodes {
         private int _savedMinutes = _defaultMinutes;
         private int _totalMinutes = _defaultMinutes;
 
-        private Team _lastTeam = Team.NO_TEAM;
-        private Team _localTeam = Team.NO_TEAM;
+        private Team _lastTeam = null;
+        private Team _localTeam = null;
 
         private bool _hasOverridenValues = false;
 
-        private readonly Dictionary<PlayerId, TeamLogoInstance> _logoInstances = new Dictionary<PlayerId, TeamLogoInstance>();
+        private readonly Dictionary<PlayerId, TeamLogo> _logoInstances = new Dictionary<PlayerId, TeamLogo>();
 
         private string _avatarOverride = null;
         private float? _vitalityOverride = null;
@@ -279,7 +203,14 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         public int GetTotalScore() {
-            return GetScore(Team.LAVA_GANG) + GetScore(Team.SABRELAKE);
+            int accumulatedScore = 0;
+
+            foreach(var team in teams)
+            {
+                accumulatedScore += team.TeamScore;
+            }
+
+            return accumulatedScore;
         }
 
         private int GetRewardedBits()
@@ -384,27 +315,35 @@ namespace LabFusion.SDK.Gamemodes {
             base.OnStopGamemode();
 
             // Get the winner and loser
-            var lavaGang = GetScore(Team.LAVA_GANG);
-            var sabrelake = GetScore(Team.SABRELAKE);
+            var lavaGang = GetScore(teamLavaGang);
+            var sabrelake = GetScore(teamSabrelake);
 
-            string message;
+            List<Team> scoreboard = teams;
 
-            if (lavaGang > sabrelake) {
-                message = $"WINNER: {ParseTeam(Team.LAVA_GANG)}! (Score: {lavaGang})\n" +
-    $"Loser: {ParseTeam(Team.SABRELAKE)} (Score: {sabrelake})\n";
+            string message = "";
 
-                message += GetTeamStatus(Team.LAVA_GANG); ;
-            }
-            else if (sabrelake > lavaGang) {
-                message = $"WINNER: {ParseTeam(Team.SABRELAKE)}! (Score: {sabrelake})\n" +
-                    $"Loser: {ParseTeam(Team.LAVA_GANG)} (Score: {lavaGang})\n";
+            scoreboard.Sort();
 
-                message += GetTeamStatus(Team.SABRELAKE); ;
-            }
-            else {
-                message = $"Tie! (Both Scores: ({lavaGang}))";
+            for(int i = 0; i < scoreboard.Count; i++)
+            {
+                if(i == 0)
+                {
+                    message =
+                        $"WINNER: {scoreboard[i].TeamName}! " +
+                        $"(Score: {scoreboard[i].TeamScore})\n" +
+                        "Loser(s): ";
 
-                OnTeamTied();
+                    message += GetTeamStatus(scoreboard[i]);
+                }
+                else
+                {
+                    var loserTeam = scoreboard[i];
+
+                    message +=
+                        loserTeam.TeamName + $" (Score: {loserTeam.TeamScore})\n";
+
+                    message += GetTeamStatus(scoreboard[i]);
+                }
             }
 
             // Show the winners in a notification
@@ -496,7 +435,7 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         protected void AddLogo(PlayerId id, Team team) {
-            var logo = new TeamLogoInstance(this, id, team);
+            var logo = new TeamLogo(id, team);
             _logoInstances.Add(id, logo);
         }
 
@@ -556,26 +495,11 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         protected void OnTeamVictory(Team team) {
-            switch (team) {
-                case Team.LAVA_GANG:
-                    FusionAudio.Play2D(FusionContentLoader.LavaGangVictory, DefaultMusicVolume);
-                    break;
-                case Team.SABRELAKE:
-                    FusionAudio.Play2D(FusionContentLoader.SabrelakeVictory, DefaultMusicVolume);
-                    break;
-            }
+            FusionAudio.Play2D(team.WinMusic, DefaultMusicVolume);
         }
 
         protected void OnTeamLost(Team team) {
-            switch (team)
-            {
-                case Team.LAVA_GANG:
-                    FusionAudio.Play2D(FusionContentLoader.LavaGangFailure, DefaultMusicVolume);
-                    break;
-                case Team.SABRELAKE:
-                    FusionAudio.Play2D(FusionContentLoader.SabrelakeFailure, DefaultMusicVolume);
-                    break;
-            }
+            FusionAudio.Play2D(team.LossMusic, DefaultMusicVolume);
         }
 
         protected void OnTeamTied() {
@@ -583,7 +507,7 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         protected void OnTeamReceived(Team team) {
-            if (team == Team.NO_TEAM) {
+            if (team == null) {
                 _localTeam = team;
                 return;
             }
@@ -592,7 +516,7 @@ namespace LabFusion.SDK.Gamemodes {
             {
                 title = "Team Deathmatch Assignment",
                 showTitleOnPopup = true,
-                message = $"Your team is: {ParseTeam(team)}",
+                message = $"Your team is: {team.TeamName}",
                 isMenuItem = false,
                 isPopup = true,
                 popupLength = 5f,
@@ -601,7 +525,8 @@ namespace LabFusion.SDK.Gamemodes {
             _localTeam = team;
 
             // Invoke ult events
-            if (team == Team.SABRELAKE) {
+            // I will change this in the future so it's more universal - adamdev
+            if (team.TeamName == "Sabrelake") {
                 foreach (var ultEvent in InvokeUltEventIfTeamSabrelake.Cache.Components)
                     ultEvent.Invoke();
             }
@@ -616,7 +541,7 @@ namespace LabFusion.SDK.Gamemodes {
                 // Get all spawn points
                 List<Transform> transforms = new List<Transform>();
 
-                if (team == Team.SABRELAKE)
+                if (team.TeamName == "Sabrelake")
                 {
                     foreach (var point in SabrelakeSpawnpoint.Cache.Components)
                     {
@@ -653,7 +578,7 @@ namespace LabFusion.SDK.Gamemodes {
                     {
                         title = "Team Deathmatch Point",
                         showTitleOnPopup = true,
-                        message = $"{ParseTeam(_localTeam)}'s score is {value}!",
+                        message = $"{_localTeam.TeamName}'s score is {value}!",
                         isMenuItem = false,
                         isPopup = true,
                         popupLength = 0.7f,
@@ -661,19 +586,20 @@ namespace LabFusion.SDK.Gamemodes {
                 }
             }
             // Check if this is a team change
-            else if (key.StartsWith(PlayerTeamKey) && Enum.TryParse<Team>(value, out var team)) {
+            else if (key.StartsWith(PlayerTeamKey)) {
                 // Find the player that changed
                 foreach (var playerId in PlayerIdManager.PlayerIds) {
                     var playerKey = GetTeamKey(playerId);
 
                     if (playerKey == key) {
                         // Check who this is
-                        if (playerId.IsSelf) {
+                        // TODO (adamdev): get the metadata value to align with a team choice!
+                        /*if (playerId.IsSelf) {
                             OnTeamReceived(team);
                         }
-                        else if (team != Team.NO_TEAM) {
+                        else if (team != null) {
                             AddLogo(playerId, team);
-                        }
+                        }*/
 
                         // Push nametag updates
                         FusionOverrides.ForceUpdateOverrides();
@@ -697,25 +623,25 @@ namespace LabFusion.SDK.Gamemodes {
 
         protected void ResetTeams() {
             // Reset the last team
-            _lastTeam = Team.NO_TEAM;
+            _lastTeam = null;
 
             // Set every team to none
             foreach (var player in PlayerIdManager.PlayerIds) {
-                SetTeam(player, Team.NO_TEAM);
+                SetTeam(player, null);
             }
 
             // Set every score to 0
-            SetScore(Team.LAVA_GANG, 0);
-            SetScore(Team.SABRELAKE, 0);
+            SetScore(teamLavaGang, 0);
+            SetScore(teamSabrelake, 0);
         }
 
         protected void AssignTeam(PlayerId id) {
             // Get the opposite team of the last
             Team newTeam = _lastTeam;
-            if (newTeam == Team.SABRELAKE)
-                newTeam = Team.LAVA_GANG;
+            if (newTeam == teamSabrelake)
+                newTeam = teamLavaGang;
             else
-                newTeam = Team.SABRELAKE;
+                newTeam = teamSabrelake;
 
             // Assign it
             SetTeam(id, newTeam);
@@ -746,11 +672,12 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         protected Team GetTeam(PlayerId id) {
-            if (TryGetMetadata(GetTeamKey(id), out var value) && Enum.TryParse<Team>(value, out var team)) {
-                return team;
+            // TODO (adamdev): replace the enum check with something else that aligns with any team [&& Enum.TryParse<Team>(value, out var team)]
+            if (TryGetMetadata(GetTeamKey(id), out var value) ) {
+                return null;
             }
 
-            return Team.NO_TEAM;
+            return null;
         }
 
         protected string GetScoreKey(Team team) {
