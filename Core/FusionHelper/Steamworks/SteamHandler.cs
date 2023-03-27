@@ -1,6 +1,7 @@
-﻿using Steamworks;
+﻿using FusionHelper.Network;
+using LiteNetLib.Utils;
+using Steamworks;
 using Steamworks.Data;
-using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 
 namespace FusionHelper.Steamworks
@@ -22,6 +23,7 @@ namespace FusionHelper.Steamworks
                 if (!SteamClient.IsValid)
                     SteamClient.Init((uint)appId, ASYNC_CALLBACKS);
                 SteamNetworkingUtils.InitRelayNetworkAccess();
+                SteamFriends.OnGameRichPresenceJoinRequested += OnGameRichPresenceJoinRequested;
             }
             catch (Exception e)
             {
@@ -61,6 +63,14 @@ namespace FusionHelper.Steamworks
             // Host needs to connect to own socket server with a ConnectionManager to send/receive messages
             // Relay Socket servers are created/connected to through SteamIds rather than "Normal" Socket Servers which take IP addresses
             ConnectionManager = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(SteamClient.SteamId);
+        }
+
+        private static void OnGameRichPresenceJoinRequested(Friend friend, string value)
+        {
+            // Forward this to joining a server from the friend
+            NetDataWriter writer = NetworkHandler.NewWriter(MessageTypes.JoinServer);
+            writer.Put(friend.Id);
+            NetworkHandler.SendToClient(writer);
         }
 
         public static void SendToClient(Connection connection, byte[] message, bool reliable)

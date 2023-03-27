@@ -450,9 +450,6 @@ namespace LabFusion.Network
 
         private void HookSteamEvents()
         {
-            // Add steam hooks
-            //SteamFriends.OnGameRichPresenceJoinRequested += OnGameRichPresenceJoinRequested;
-
             // Add server hooks
             MultiplayerHooking.OnMainSceneInitialized += OnUpdateSteamLobby;
             MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
@@ -493,12 +490,6 @@ namespace LabFusion.Network
             MultiplayerHooking.OnServerSettingsChanged -= OnUpdateSteamLobby;
             MultiplayerHooking.OnDisconnect -= OnDisconnect;
         }
-
-        /*private void OnGameRichPresenceJoinRequested(Friend friend, string value)
-        {
-            // Forward this to joining a server from the friend
-            JoinServer(friend.Id);
-        }*/
 
         private void OnUpdateSteamLobby()
         {
