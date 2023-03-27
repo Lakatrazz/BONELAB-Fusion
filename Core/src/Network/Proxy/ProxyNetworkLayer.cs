@@ -309,7 +309,8 @@ namespace LabFusion.Network
 
         internal override void OnVoiceChatUpdate()
         {
-            SteamVoiceIdentifier.OnUpdate();
+            if (NetworkInfo.HasServer)
+                SteamVoiceIdentifier.OnUpdate();
 
             /*if (NetworkInfo.HasServer)
             {
