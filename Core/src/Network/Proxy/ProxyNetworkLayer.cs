@@ -309,6 +309,8 @@ namespace LabFusion.Network
 
         internal override void OnVoiceChatUpdate()
         {
+            SteamVoiceIdentifier.OnUpdate();
+
             /*if (NetworkInfo.HasServer)
             {
                 bool voiceEnabled = FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue() && !FusionPreferences.ClientSettings.Muted && !FusionPreferences.ClientSettings.Deafened;
@@ -465,22 +467,22 @@ namespace LabFusion.Network
 
         private void OnPlayerJoin(PlayerId id)
         {
-            //if (!id.IsSelf)
-            //    SteamVoiceIdentifier.GetVoiceIdentifier(id);
+            if (!id.IsSelf)
+                SteamVoiceIdentifier.GetVoiceIdentifier(id);
 
             OnUpdateSteamLobby();
         }
 
         private void OnPlayerLeave(PlayerId id)
         {
-            //SteamVoiceIdentifier.RemoveVoiceIdentifier(id);
+            SteamVoiceIdentifier.RemoveVoiceIdentifier(id);
 
             OnUpdateSteamLobby();
         }
 
         private void OnDisconnect()
         {
-            //SteamVoiceIdentifier.CleanupAll();
+            SteamVoiceIdentifier.CleanupAll();
         }
 
         private void UnHookSteamEvents()
