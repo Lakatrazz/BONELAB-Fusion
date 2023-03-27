@@ -289,6 +289,12 @@ namespace FusionHelper.Network
                 case (ulong)MessageTypes.LobbyMetadata:
                     RespondWithLobbyMetadata(dataReader.GetULong());
                     break;
+                case (ulong)MessageTypes.UpdateConnectPresence:
+                    {
+                        string? data = dataReader.GetString() == "true" ? "true" : null;
+                        SteamFriends.SetRichPresence("connect", data);
+                        break;
+                    }
             }
 
             dataReader.Recycle();

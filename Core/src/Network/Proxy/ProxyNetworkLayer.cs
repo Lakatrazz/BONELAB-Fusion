@@ -442,14 +442,10 @@ namespace LabFusion.Network
 
         private void OnUpdateRichPresence()
         {
-           /* if (_isConnectionActive)
-            {
-                SteamFriends.SetRichPresence("connect", "true");
-            }
-            else
-            {
-                SteamFriends.SetRichPresence("connect", null);
-            }*/
+            string data = _isConnectionActive ? "true" : "null";
+            NetDataWriter writer = NewWriter(MessageTypes.UpdateConnectPresence);
+            writer.Put(data);
+            SendToProxyServer(writer);
         }
 
         private void HookSteamEvents()

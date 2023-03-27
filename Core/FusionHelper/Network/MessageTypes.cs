@@ -25,6 +25,7 @@ namespace FusionHelper.Network
         UnreliableSendFromServer = 14,
         ReliableSendFromServer = 15,
         LobbyIds = 16,
-        LobbyMetadata = 17
+        LobbyMetadata = 17,
+        UpdateConnectPresence = 18,
     }
 }
