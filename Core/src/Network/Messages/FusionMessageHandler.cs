@@ -117,14 +117,19 @@ namespace LabFusion.Network
             }
         }
 
-        public static unsafe void ReadMessage(byte[] message, bool isServerHandled = false)
+        public static unsafe void ReadMessage(byte[] bytes, bool isServerHandled = false)
         {
-            NetworkInfo.BytesDown += message.Length;
+            NetworkInfo.BytesDown += bytes.Length;
 
             try
             {
-                byte tag = message[0];
-                MelonCoroutines.Start(Handlers[tag].HandleMessage_Internal(message, isServerHandled));
+                byte tag = bytes[0];
+                byte[] buffer = ByteRetriever.Rent(bytes.Length - 1);
+
+                for (var i = 0; i < buffer.Length; i++)
+                    buffer[i] = bytes[i + 1];
+
+                MelonCoroutines.Start(Handlers[tag].HandleMessage_Internal(buffer, isServerHandled));
             }
             catch (Exception e)
             {
