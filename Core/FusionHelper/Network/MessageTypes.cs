@@ -27,5 +27,6 @@ namespace FusionHelper.Network
         LobbyIds = 16,
         LobbyMetadata = 17,
         UpdateConnectPresence = 18,
+        DecompressVoice = 19,
     }
 }

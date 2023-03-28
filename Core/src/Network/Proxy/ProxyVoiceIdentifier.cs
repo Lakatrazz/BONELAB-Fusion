@@ -17,6 +17,7 @@ using UnityEngine;
 using BoneLib;
 
 using PCMReaderCallback = UnityEngine.AudioClip.PCMReaderCallback;
+using LiteNetLib.Utils;
 
 namespace LabFusion.Network {
     public class ProxyVoiceIdentifier
@@ -44,9 +45,8 @@ namespace LabFusion.Network {
             GameObject.DontDestroyOnLoad(_source.gameObject);
             _source.gameObject.hideFlags = HideFlags.DontUnloadUnusedAsset;
 
-            uint sampleRate = HelperMethods.IsAndroid() ? _androidSampleRate : SteamUser.SampleRate;
-            _source.clip = AudioClip.Create("SteamVoice", Convert.ToInt32(sampleRate),
-                        1, Convert.ToInt32(sampleRate), true, (PCMReaderCallback)PcmReaderCallback);
+            _source.clip = AudioClip.Create("SteamVoice", Convert.ToInt32(_androidSampleRate),
+                        1, Convert.ToInt32(_androidSampleRate), true, (PCMReaderCallback)PcmReaderCallback);
 
             // Setup the mixing settings
             _source.rolloffMode = AudioRolloffMode.Linear;
@@ -139,20 +139,24 @@ namespace LabFusion.Network {
         }
 
         public void OnVoiceBytesReceived(byte[] bytes) {
+            NetDataWriter writer = ProxyNetworkLayer.NewWriter(FusionHelper.Network.MessageTypes.DecompressVoice);
+            writer.Put(_id.LongId);
+            writer.PutBytesWithLength(bytes);
+            ProxyNetworkLayer.Instance.SendToProxyServer(writer);
+        }
+
+        public void OnDecompressedVoiceBytesReceived(byte[] bytes)
+        {
             VerifyPlayerRep();
 
-            // Decompress the voice data
-            _compressedVoiceStream.Position = 0;
-            _compressedVoiceStream.Write(bytes, 0, bytes.Length);
-
-            _compressedVoiceStream.Position = 0;
             _decompressedVoiceStream.Position = 0;
 
-            int numBytesWritten = SteamUser.DecompressVoice(_compressedVoiceStream, bytes.Length, _decompressedVoiceStream);
+            int length = bytes.Length;
+            _decompressedVoiceStream.Write(bytes, 0, length);
 
             _decompressedVoiceStream.Position = 0;
 
-            while (_decompressedVoiceStream.Position < numBytesWritten)
+            while (_decompressedVoiceStream.Position < length)
             {
                 byte byte1 = (byte)_decompressedVoiceStream.ReadByte();
                 byte byte2 = (byte)_decompressedVoiceStream.ReadByte();

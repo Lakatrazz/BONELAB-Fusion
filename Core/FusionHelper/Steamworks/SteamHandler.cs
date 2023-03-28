@@ -2,6 +2,7 @@
 using LiteNetLib.Utils;
 using Steamworks;
 using Steamworks.Data;
+using Steamworks.ServerList;
 using System.Runtime.InteropServices;
 
 namespace FusionHelper.Steamworks
@@ -85,6 +86,28 @@ namespace FusionHelper.Steamworks
             connection.SendMessage(intPtrMessage, sizeOfMessage, sendType);
 
             Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
+        }
+
+        public static byte[] DecompressVoice(byte[] from)
+        {
+            unsafe
+            {
+                var to = new byte[1024 * 64];
+
+                uint szWritten = 0;
+
+                fixed (byte* frm = from)
+                fixed (byte* dst = to)
+                {
+                    if (SteamUser.Internal.DecompressVoice((IntPtr)frm, (uint)from.Length, (IntPtr)dst, (uint)to.Length, ref szWritten, SteamUser.SampleRate) != VoiceResult.OK)
+                        return Array.Empty<byte>();
+                }
+
+                if (szWritten == 0)
+                    return Array.Empty<byte>();
+
+                return to;
+            }
         }
 
         public static void KillConnection()

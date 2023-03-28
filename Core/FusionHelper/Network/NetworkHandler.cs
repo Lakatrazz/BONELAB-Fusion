@@ -295,6 +295,17 @@ namespace FusionHelper.Network
                         SteamFriends.SetRichPresence("connect", data);
                         break;
                     }
+                case (ulong)MessageTypes.DecompressVoice:
+                    {
+                        ulong playerId = dataReader.GetULong();
+                        byte[] audioData = dataReader.GetBytesWithLength();
+                        byte[] decompressed = SteamHandler.DecompressVoice(audioData);
+                        NetDataWriter writer = NewWriter(MessageTypes.DecompressVoice);
+                        writer.Put(playerId);
+                        writer.PutBytesWithLength(decompressed);
+                        SendToClient(writer);
+                        break;
+                    }
             }
 
             dataReader.Recycle();
