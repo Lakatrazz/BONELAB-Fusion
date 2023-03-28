@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Facepunch.Steamworks" Version="2.3.3" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="LiteNetLib">
       <HintPath>..\dependencies\LiteNetLib\netstandard20\LiteNetLib.dll</HintPath>
     </Reference>
