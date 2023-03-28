@@ -310,7 +310,7 @@ namespace LabFusion.Network
         internal override void OnVoiceChatUpdate()
         {
             if (NetworkInfo.HasServer)
-                SteamVoiceIdentifier.OnUpdate();
+                ProxyVoiceIdentifier.OnUpdate();
 
             /*if (NetworkInfo.HasServer)
             {
@@ -331,7 +331,7 @@ namespace LabFusion.Network
                 }
 
                 // Update identifiers
-                SteamVoiceIdentifier.OnUpdate();
+                ProxyVoiceIdentifier.OnUpdate();
             }
             else
             {
@@ -348,7 +348,7 @@ namespace LabFusion.Network
             if (isDeafened)
                 return;
 
-            var identifier = SteamVoiceIdentifier.GetVoiceIdentifier(id);
+            var identifier = ProxyVoiceIdentifier.GetVoiceIdentifier(id);
 
             if (identifier != null)
             {
@@ -462,21 +462,21 @@ namespace LabFusion.Network
         private void OnPlayerJoin(PlayerId id)
         {
             if (!id.IsSelf)
-                SteamVoiceIdentifier.GetVoiceIdentifier(id);
+                ProxyVoiceIdentifier.GetVoiceIdentifier(id);
 
             OnUpdateSteamLobby();
         }
 
         private void OnPlayerLeave(PlayerId id)
         {
-            SteamVoiceIdentifier.RemoveVoiceIdentifier(id);
+            ProxyVoiceIdentifier.RemoveVoiceIdentifier(id);
 
             OnUpdateSteamLobby();
         }
 
         private void OnDisconnect()
         {
-            SteamVoiceIdentifier.CleanupAll();
+            ProxyVoiceIdentifier.CleanupAll();
         }
 
         private void UnHookSteamEvents()
