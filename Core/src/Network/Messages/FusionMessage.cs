@@ -110,13 +110,10 @@ namespace LabFusion.Network
 
         public byte[] ToByteArray()
         {
-            byte* source = _buffer;
-            int size = source[0]; // first byte is size;
-            byte[] target = new byte[size];
-            for (int i = 0; i < size; ++i)
-                target[i] = source[i + 1];
+            byte[] bytes = ByteRetriever.Rent(Length);
+            Marshal.Copy((IntPtr)_buffer, bytes, 0, Length);
 
-            return target;
+            return bytes;
         }
 
         public void Dispose() {
