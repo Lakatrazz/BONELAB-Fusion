@@ -9,9 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="LiteNetLib">
-      <HintPath>..\dependencies\LiteNetLib\netstandard20\LiteNetLib.dll</HintPath>
-    </Reference>
+    <PackageReference Include="LiteNetLib" Version="1.0.0-rc.3" />
   </ItemGroup>
 
   <ItemGroup>

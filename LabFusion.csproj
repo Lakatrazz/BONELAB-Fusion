@@ -181,6 +181,37 @@
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\SteamInterface.cs" />
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utf8String.cs" />
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utility.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\BaseChannel.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\ConnectionRequest.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\INetEventListener.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\InternalPackets.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\Layers\Crc32cLayer.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\Layers\PacketLayerBase.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\Layers\XorEncryptLayer.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\NativeSocket.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\NatPunchModule.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\NetConstants.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\NetDebug.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\NetManager.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\NetManager.PacketPool.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\NetManager.Socket.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\NetPacket.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\NetPeer.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\NetStatistics.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\NetUtils.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\PausedSocketFix.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\PooledPacket.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\ReliableChannel.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\SequencedChannel.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\Utils\CRC32C.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\Utils\FastBitConverter.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\Utils\INetSerializable.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\Utils\NetDataReader.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\Utils\NetDataWriter.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\Utils\NetPacketProcessor.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\Utils\NetSerializer.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\Utils\NtpPacket.cs" />
+    <Compile Include="Core\dependencies\LiteNetLib\Utils\NtpRequest.cs" />
     <Compile Include="Core\FusionHelper\Network\MessageTypes.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Gamemodes\Entangled\EntangledProxy.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Gamemodes\GamemodeEndEvent.cs" />
@@ -697,10 +728,6 @@
     <Reference Include="Il2CppSystem.Core, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\Il2CppSystem.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="LiteNetLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\dependencies\LiteNetLib\net471\LiteNetLib.dll</HintPath>
     </Reference>
     <Reference Include="MelonLoader, Version=0.5.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
