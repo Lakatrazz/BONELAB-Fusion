@@ -12,26 +12,14 @@ namespace LiteNetLib.Utils
         private const int InitialSize = 64;
         private readonly bool _autoResize;
 
-        public int Capacity
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _data.Length;
-        }
-        public byte[] Data
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _data;
-        }
-        public int Length
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _position;
-        }
+        public int Capacity => _data.Length;
+        public byte[] Data => _data;
+        public int Length => _position;
 
         // Cache encoding instead of creating it with BinaryWriter each time
         // 1000 readers before: 1MB GC, 30ms
         // 1000 readers after: .8MB GC, 18ms
-        public static readonly UTF8Encoding uTF8Encoding = new UTF8Encoding(false, true);
+        private static readonly UTF8Encoding _uTF8Encoding = new UTF8Encoding(false, true);
         public const int StringBufferMaxLength = 1024 * 32; // <- short.MaxValue + 1
         private readonly byte[] _stringBuffer = new byte[StringBufferMaxLength];
 
@@ -234,32 +222,40 @@ namespace LiteNetLib.Utils
             _position += data.Length;
         }
 
-        public void PutSBytesWithLength(sbyte[] data, int offset, ushort length)
+        public void PutSBytesWithLength(sbyte[] data, int offset, int length)
         {
             if (_autoResize)
-                ResizeIfNeed(_position + 2 + length);
+                ResizeIfNeed(_position + length + 4);
             FastBitConverter.GetBytes(_data, _position, length);
-            Buffer.BlockCopy(data, offset, _data, _position + 2, length);
-            _position += 2 + length;
+            Buffer.BlockCopy(data, offset, _data, _position + 4, length);
+            _position += length + 4;
         }
 
         public void PutSBytesWithLength(sbyte[] data)
         {
-            PutArray(data, 1);
+            if (_autoResize)
+                ResizeIfNeed(_position + data.Length + 4);
+            FastBitConverter.GetBytes(_data, _position, data.Length);
+            Buffer.BlockCopy(data, 0, _data, _position + 4, data.Length);
+            _position += data.Length + 4;
         }
 
-        public void PutBytesWithLength(byte[] data, int offset, ushort length)
+        public void PutBytesWithLength(byte[] data, int offset, int length)
         {
             if (_autoResize)
-                ResizeIfNeed(_position + 2 + length);
+                ResizeIfNeed(_position + length + 4);
             FastBitConverter.GetBytes(_data, _position, length);
-            Buffer.BlockCopy(data, offset, _data, _position + 2, length);
-            _position += 2 + length;
+            Buffer.BlockCopy(data, offset, _data, _position + 4, length);
+            _position += length + 4;
         }
 
         public void PutBytesWithLength(byte[] data)
         {
-            PutArray(data, 1);
+            if (_autoResize)
+                ResizeIfNeed(_position + data.Length + 4);
+            FastBitConverter.GetBytes(_data, _position, data.Length);
+            Buffer.BlockCopy(data, 0, _data, _position + 4, data.Length);
+            _position += data.Length + 4;
         }
 
         public void Put(bool value)
@@ -267,7 +263,7 @@ namespace LiteNetLib.Utils
             Put((byte)(value ? 1 : 0));
         }
 
-        public void PutArray(Array arr, int sz)
+        private void PutArray(Array arr, int sz)
         {
             ushort length = arr == null ? (ushort) 0 : (ushort)arr.Length;
             sz *= length;
@@ -363,7 +359,7 @@ namespace LiteNetLib.Utils
             }
 
             int length = maxLength > 0 && value.Length > maxLength ? maxLength : value.Length;
-            int size = uTF8Encoding.GetBytes(value, 0, length, _stringBuffer, 0);
+            int size = _uTF8Encoding.GetBytes(value, 0, length, _stringBuffer, 0);
 
             if (size >= StringBufferMaxLength)
             {

@@ -69,8 +69,7 @@ namespace LiteNetLib
             ConnectionLatencyUpdated,
             Broadcast,
             ConnectionRequest,
-            MessageDelivered,
-            PeerAddressChanged
+            MessageDelivered
         }
         public EType Type;
 
@@ -163,7 +162,6 @@ namespace LiteNetLib
         private readonly INetEventListener _netEventListener;
         private readonly IDeliveryEventListener _deliveryEventListener;
         private readonly INtpEventListener _ntpEventListener;
-        private readonly IPeerAddressChangedListener _peerAddressChangedListener;
 
         private readonly Dictionary<IPEndPoint, NetPeer> _peersDict = new Dictionary<IPEndPoint, NetPeer>(new IPEndPointComparer());
         private readonly Dictionary<IPEndPoint, ConnectionRequest> _requestsDict = new Dictionary<IPEndPoint, ConnectionRequest>(new IPEndPointComparer());
@@ -460,7 +458,6 @@ namespace LiteNetLib
             _netEventListener = listener;
             _deliveryEventListener = listener as IDeliveryEventListener;
             _ntpEventListener = listener as INtpEventListener;
-            _peerAddressChangedListener = listener as IPeerAddressChangedListener;
             NatPunchModule = new NatPunchModule(this);
             _extraPacketLayer = extraPacketLayer;
         }
@@ -599,22 +596,6 @@ namespace LiteNetLib
                 case NetEvent.EType.MessageDelivered:
                     _deliveryEventListener.OnMessageDelivered(evt.Peer, evt.UserData);
                     break;
-                case NetEvent.EType.PeerAddressChanged:
-                    _peersLock.EnterUpgradeableReadLock();
-                    IPEndPoint previousAddress = null;
-                    if (_peersDict.ContainsKey(evt.Peer.EndPoint))
-                    {
-                        _peersLock.EnterWriteLock();
-                        _peersDict.Remove(evt.Peer.EndPoint);
-                        previousAddress = evt.Peer.EndPoint;
-                        evt.Peer.FinishEndPointChange(evt.RemoteEndPoint);
-                        _peersDict.Add(evt.Peer.EndPoint, evt.Peer);
-                        _peersLock.ExitWriteLock();
-                    }
-                    _peersLock.ExitUpgradeableReadLock();
-                    if(previousAddress != null)
-                        _peerAddressChangedListener.OnPeerAddressChanged(evt.Peer, previousAddress);
-                    break;
             }
             //Recycle if not message
             if (emptyData)
@@ -648,7 +629,7 @@ namespace LiteNetLib
                 try
                 {
                     ProcessDelayedPackets();
-                    int elapsed = (int)stopwatch.ElapsedMilliseconds;
+                    int elapsed = (int) stopwatch.ElapsedMilliseconds;
                     elapsed = elapsed <= 0 ? 1 : elapsed;
                     stopwatch.Restart();
 
@@ -676,13 +657,9 @@ namespace LiteNetLib
 
                     ProcessNtpRequests(elapsed);
 
-                    int sleepTime = UpdateTime - (int)stopwatch.ElapsedMilliseconds;
+                    int sleepTime = UpdateTime - (int) stopwatch.ElapsedMilliseconds;
                     if (sleepTime > 0)
                         _updateTriggerEvent.WaitOne(sleepTime);
-                }
-                catch (ThreadAbortException)
-                {
-                    return;
                 }
                 catch (Exception e)
                 {
@@ -803,7 +780,8 @@ namespace LiteNetLib
                     AddPeer(netPeer);
                     _peersLock.ExitUpgradeableReadLock();
                     CreateEvent(NetEvent.EType.Connect, netPeer);
-                    NetDebug.Write(NetLogLevel.Trace, $"[NM] Received peer connection Id: {netPeer.ConnectTime}, EP: {netPeer.EndPoint}");
+                    NetDebug.Write(NetLogLevel.Trace, "[NM] Received peer connection Id: {0}, EP: {1}",
+                        netPeer.ConnectTime, netPeer.EndPoint);
                 }
             }
 
@@ -827,7 +805,11 @@ namespace LiteNetLib
             if (netPeer != null)
             {
                 var processResult = netPeer.ProcessConnectRequest(connRequest);
-                NetDebug.Write($"ConnectRequest LastId: {netPeer.ConnectTime}, NewId: {connRequest.ConnectionTime}, EP: {remoteEndPoint}, Result: {processResult}");
+                NetDebug.Write("ConnectRequest LastId: {0}, NewId: {1}, EP: {2}, Result: {3}",
+                    netPeer.ConnectTime,
+                    connRequest.ConnectionTime,
+                    remoteEndPoint,
+                    processResult);
 
                 switch (processResult)
                 {
@@ -857,7 +839,7 @@ namespace LiteNetLib
             }
             else
             {
-                NetDebug.Write($"ConnectRequest Id: {connRequest.ConnectionTime}, EP: {remoteEndPoint}");
+                NetDebug.Write("ConnectRequest Id: {0}, EP: {1}", connRequest.ConnectionTime, remoteEndPoint);
             }
 
             ConnectionRequest req;
@@ -871,7 +853,7 @@ namespace LiteNetLib
                 req = new ConnectionRequest(remoteEndPoint, connRequest, this);
                 _requestsDict.Add(remoteEndPoint, req);
             }
-            NetDebug.Write($"[NM] Creating request event: {connRequest.ConnectionTime}");
+            NetDebug.Write("[NM] Creating request event: " + connRequest.ConnectionTime);
             CreateEvent(NetEvent.EType.ConnectionRequest, connectionRequest: req);
         }
 
@@ -909,11 +891,10 @@ namespace LiteNetLib
         private void DebugMessageReceived(NetPacket packet, IPEndPoint remoteEndPoint)
         {
 #endif
-            var originalPacketSize = packet.Size;
             if (EnableStatistics)
             {
                 Statistics.IncrementPacketsReceived();
-                Statistics.AddBytesReceived(originalPacketSize);
+                Statistics.AddBytesReceived(packet.Size);
             }
 
             if (_ntpRequests.Count > 0)
@@ -922,7 +903,7 @@ namespace LiteNetLib
                 {
                     if (packet.Size < 48)
                     {
-                        NetDebug.Write(NetLogLevel.Trace, $"NTP response too short: {packet.Size}");
+                        NetDebug.Write(NetLogLevel.Trace, "NTP response too short: {}", packet.Size);
                         return;
                     }
 
@@ -935,7 +916,7 @@ namespace LiteNetLib
                     }
                     catch (InvalidOperationException ex)
                     {
-                        NetDebug.Write(NetLogLevel.Trace, $"NTP response error: {ex.Message}");
+                        NetDebug.Write(NetLogLevel.Trace, "NTP response error: {}", ex.Message);
                         ntpPacket = null;
                     }
 
@@ -995,12 +976,6 @@ namespace LiteNetLib
             bool peerFound = _peersDict.TryGetValue(remoteEndPoint, out var netPeer);
             _peersLock.ExitReadLock();
 
-            if (peerFound && EnableStatistics)
-            {
-                netPeer.Statistics.IncrementPacketsReceived();
-                netPeer.Statistics.AddBytesReceived(originalPacketSize);
-            }
-
             switch (packet.Property)
             {
                 case PacketProperty.ConnectRequest:
@@ -1017,7 +992,6 @@ namespace LiteNetLib
                         {
                             //first reply
                             //send NetworkChanged packet
-                            netPeer.ResetMtu();
                             SendRaw(NetConnectAcceptPacket.MakeNetworkChanged(netPeer), remoteEndPoint);
                             NetDebug.Write($"PeerNotFound sending connection info: {remoteEndPoint}");
                         }
@@ -1046,15 +1020,12 @@ namespace LiteNetLib
                                     peer.ConnectTime == remoteData.ConnectionTime &&
                                     peer.ConnectionNum == remoteData.ConnectionNumber)
                                 {
-                                    if (peer.ConnectionState == ConnectionState.Connected)
-                                    {
-                                        peer.InitiateEndPointChange();
-                                        if (_peerAddressChangedListener != null)
-                                        {
-                                            CreateEvent(NetEvent.EType.PeerAddressChanged, peer, remoteEndPoint);
-                                        }
-                                        NetDebug.Write("[NM] PeerNotFound change address of remote peer");
-                                    }
+                                    _peersLock.EnterWriteLock();
+                                    _peersDict.Remove(peer.EndPoint);
+                                    peer.EndPoint = remoteEndPoint;
+                                    _peersDict.Add(remoteEndPoint, peer);
+                                    _peersLock.ExitWriteLock();
+                                    NetDebug.Write("[NM] PeerNotFound change address of remote peer");
                                     isOldPeer = true;
                                 }
                                 _peersLock.ExitUpgradeableReadLock();
@@ -1583,11 +1554,6 @@ namespace LiteNetLib
             if (!IsRunning)
                 return;
             NetDebug.Write("[NM] Stop");
-
-#if UNITY_2018_3_OR_NEWER
-            _pausedSocketFix.Deinitialize();
-            _pausedSocketFix = null;
-#endif
 
             //Send last disconnect
             for(var netPeer = _headPeer; netPeer != null; netPeer = netPeer.NextPeer)

@@ -33,7 +33,7 @@ namespace LiteNetLib
                     double packetHoldTime = currentTime - _timeStamp;
                     if (packetHoldTime < resendDelay)
                         return true;
-                    NetDebug.Write($"[RC]Resend: {packetHoldTime} > {resendDelay}");
+                    NetDebug.Write("[RC]Resend: {0} > {1}", (int)packetHoldTime, resendDelay);
                 }
                 _timeStamp = currentTime;
                 _isSent = true;
@@ -148,7 +148,7 @@ namespace LiteNetLib
                         }
 
                         //Skip false ack
-                        NetDebug.Write($"[PA]False ack: {pendingSeq}");
+                        NetDebug.Write("[PA]False ack: {0}", pendingSeq);
                         continue;
                     }
 
@@ -160,7 +160,7 @@ namespace LiteNetLib
 
                     //clear packet
                     if (_pendingPackets[pendingIdx].Clear(Peer))
-                        NetDebug.Write($"[PA]Removing reliableInOrder ack: {pendingSeq} - true");
+                        NetDebug.Write("[PA]Removing reliableInOrder ack: {0} - true", pendingSeq);
                 }
             }
         }

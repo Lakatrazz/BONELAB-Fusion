@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Net;
-using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace LiteNetLib.Utils
 {
@@ -11,46 +11,19 @@ namespace LiteNetLib.Utils
         protected int _dataSize;
         private int _offset;
 
-        public byte[] RawData
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _data;
-        }
-        public int RawDataSize
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _dataSize;
-        }
-        public int UserDataOffset
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _offset;
-        }
-        public int UserDataSize
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _dataSize - _offset;
-        }
-        public bool IsNull
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _data == null;
-        }
-        public int Position
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _position;
-        }
-        public bool EndOfData
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _position == _dataSize;
-        }
-        public int AvailableBytes
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _dataSize - _position;
-        }
+        public byte[] RawData => _data;
+        public int RawDataSize => _dataSize;
+        public int UserDataOffset => _offset;
+        public int UserDataSize => _dataSize - _offset;
+        public bool IsNull => _data == null;
+        public int Position => _position;
+        public bool EndOfData => _position == _dataSize;
+        public int AvailableBytes => _dataSize - _position;
+
+        // Cache encoding instead of creating it with BinaryWriter each time
+        // 1000 readers before: 1MB GC, 30ms
+        // 1000 readers after: .8MB GC, 18ms
+        private static readonly UTF8Encoding _uTF8Encoding = new UTF8Encoding(false, true);
 
         public void SkipBytes(int count)
         {
@@ -117,91 +90,123 @@ namespace LiteNetLib.Utils
         public byte GetByte()
         {
             byte res = _data[_position];
-            _position++;
+            _position += 1;
             return res;
         }
 
         public sbyte GetSByte()
         {
-            return (sbyte)GetByte();
-        }
-
-        public T[] GetArray<T>(ushort size)
-        {
-            ushort length = BitConverter.ToUInt16(_data, _position);
-            _position += 2;
-            T[] result = new T[length];
-            length *= size;
-            Buffer.BlockCopy(_data, _position, result, 0, length);
-            _position += length;
-            return result;
+            var b = (sbyte)_data[_position];
+            _position++;
+            return b;
         }
 
         public bool[] GetBoolArray()
         {
-            return GetArray<bool>(1);
+            ushort size = BitConverter.ToUInt16(_data, _position);
+            _position += 2;
+            var arr = new bool[size];
+            Buffer.BlockCopy(_data, _position, arr, 0, size);
+            _position += size;
+            return arr;
         }
 
         public ushort[] GetUShortArray()
         {
-            return GetArray<ushort>(2);
+            ushort size = BitConverter.ToUInt16(_data, _position);
+            _position += 2;
+            var arr = new ushort[size];
+            Buffer.BlockCopy(_data, _position, arr, 0, size * 2);
+            _position += size * 2;
+            return arr;
         }
 
         public short[] GetShortArray()
         {
-            return GetArray<short>(2);
-        }
-
-        public int[] GetIntArray()
-        {
-            return GetArray<int>(4);
-        }
-
-        public uint[] GetUIntArray()
-        {
-            return GetArray<uint>(4);
-        }
-
-        public float[] GetFloatArray()
-        {
-            return GetArray<float>(4);
-        }
-
-        public double[] GetDoubleArray()
-        {
-            return GetArray<double>(8);
+            ushort size = BitConverter.ToUInt16(_data, _position);
+            _position += 2;
+            var arr = new short[size];
+            Buffer.BlockCopy(_data, _position, arr, 0, size * 2);
+            _position += size * 2;
+            return arr;
         }
 
         public long[] GetLongArray()
         {
-            return GetArray<long>(8);
+            ushort size = BitConverter.ToUInt16(_data, _position);
+            _position += 2;
+            var arr = new long[size];
+            Buffer.BlockCopy(_data, _position, arr, 0, size * 8);
+            _position += size * 8;
+            return arr;
         }
 
         public ulong[] GetULongArray()
         {
-            return GetArray<ulong>(8);
+            ushort size = BitConverter.ToUInt16(_data, _position);
+            _position += 2;
+            var arr = new ulong[size];
+            Buffer.BlockCopy(_data, _position, arr, 0, size * 8);
+            _position += size * 8;
+            return arr;
+        }
+
+        public int[] GetIntArray()
+        {
+            ushort size = BitConverter.ToUInt16(_data, _position);
+            _position += 2;
+            var arr = new int[size];
+            Buffer.BlockCopy(_data, _position, arr, 0, size * 4);
+            _position += size * 4;
+            return arr;
+        }
+
+        public uint[] GetUIntArray()
+        {
+            ushort size = BitConverter.ToUInt16(_data, _position);
+            _position += 2;
+            var arr = new uint[size];
+            Buffer.BlockCopy(_data, _position, arr, 0, size * 4);
+            _position += size * 4;
+            return arr;
+        }
+
+        public float[] GetFloatArray()
+        {
+            ushort size = BitConverter.ToUInt16(_data, _position);
+            _position += 2;
+            var arr = new float[size];
+            Buffer.BlockCopy(_data, _position, arr, 0, size * 4);
+            _position += size * 4;
+            return arr;
+        }
+
+        public double[] GetDoubleArray()
+        {
+            ushort size = BitConverter.ToUInt16(_data, _position);
+            _position += 2;
+            var arr = new double[size];
+            Buffer.BlockCopy(_data, _position, arr, 0, size * 8);
+            _position += size * 8;
+            return arr;
         }
 
         public string[] GetStringArray()
         {
-            ushort length = GetUShort();
-            string[] arr = new string[length];
-            for (int i = 0; i < length; i++)
+            ushort arraySize = GetUShort();
+            var arr = new string[arraySize];
+            for (int i = 0; i < arraySize; i++)
             {
                 arr[i] = GetString();
             }
             return arr;
         }
 
-        /// <summary>
-        /// Note that "maxStringLength" only limits the number of characters in a string, not its size in bytes.
-        /// Strings that exceed this parameter are returned as empty
-        /// </summary>
         public string[] GetStringArray(int maxStringLength)
         {
-            ushort length = GetUShort();
-            string[] arr = new string[length];
-            for (int i = 0; i < length; i++)
+            ushort arraySize = GetUShort();
+            var arr = new string[arraySize];
+            for (int i = 0; i < arraySize; i++)
             {
                 arr[i] = GetString(maxStringLength);
             }
@@ -210,7 +215,9 @@ namespace LiteNetLib.Utils
 
         public bool GetBool()
         {
-            return GetByte() == 1;
+            bool res = _data[_position] > 0;
+            _position += 1;
+            return res;
         }
 
         public char GetChar()
@@ -294,9 +301,9 @@ namespace LiteNetLib.Utils
 
             ArraySegment<byte> data = GetBytesSegment(actualSize);
 
-            return (maxLength > 0 && NetDataWriter.uTF8Encoding.GetCharCount(data.Array, data.Offset, data.Count) > maxLength) ?
+            return (maxLength > 0 && _uTF8Encoding.GetCharCount(data.Array, data.Offset, data.Count) > maxLength) ?
                 string.Empty :
-                NetDataWriter.uTF8Encoding.GetString(data.Array, data.Offset, data.Count);
+                _uTF8Encoding.GetString(data.Array, data.Offset, data.Count);
         }
 
         public string GetString()
@@ -315,7 +322,7 @@ namespace LiteNetLib.Utils
 
             ArraySegment<byte> data = GetBytesSegment(actualSize);
 
-            return NetDataWriter.uTF8Encoding.GetString(data.Array, data.Offset, data.Count);
+            return _uTF8Encoding.GetString(data.Array, data.Offset, data.Count);
         }
 
         public ArraySegment<byte> GetBytesSegment(int count)
@@ -361,12 +368,20 @@ namespace LiteNetLib.Utils
 
         public sbyte[] GetSBytesWithLength()
         {
-            return GetArray<sbyte>(1);
+            int length = GetInt();
+            sbyte[] outgoingData = new sbyte[length];
+            Buffer.BlockCopy(_data, _position, outgoingData, 0, length);
+            _position += length;
+            return outgoingData;
         }
 
         public byte[] GetBytesWithLength()
         {
-            return GetArray<byte>(1);
+            int length = GetInt();
+            byte[] outgoingData = new byte[length];
+            Buffer.BlockCopy(_data, _position, outgoingData, 0, length);
+            _position += length;
+            return outgoingData;
         }
         #endregion
 
@@ -384,7 +399,7 @@ namespace LiteNetLib.Utils
 
         public bool PeekBool()
         {
-            return _data[_position] == 1;
+            return _data[_position] > 0;
         }
 
         public char PeekChar()
@@ -432,9 +447,6 @@ namespace LiteNetLib.Utils
             return BitConverter.ToDouble(_data, _position);
         }
 
-        /// <summary>
-        /// Note that "maxLength" only limits the number of characters in a string, not its size in bytes.
-        /// </summary>
         public string PeekString(int maxLength)
         {
             ushort size = PeekUShort();
@@ -449,9 +461,9 @@ namespace LiteNetLib.Utils
                 return null;
             }
 
-            return (maxLength > 0 && NetDataWriter.uTF8Encoding.GetCharCount(_data, _position + 2, actualSize) > maxLength) ?
+            return (maxLength > 0 && _uTF8Encoding.GetCharCount(_data, _position + 2, actualSize) > maxLength) ?
                 string.Empty :
-                NetDataWriter.uTF8Encoding.GetString(_data, _position + 2, actualSize);
+                _uTF8Encoding.GetString(_data, _position + 2, actualSize);
         }
 
         public string PeekString()
@@ -468,7 +480,7 @@ namespace LiteNetLib.Utils
                 return null;
             }
 
-            return NetDataWriter.uTF8Encoding.GetString(_data, _position + 2, actualSize);
+            return _uTF8Encoding.GetString(_data, _position + 2, actualSize);
         }
         #endregion
 
@@ -622,7 +634,9 @@ namespace LiteNetLib.Utils
 
         public bool TryGetStringArray(out string[] result)
         {
-            if (!TryGetUShort(out ushort strArrayLength)) {
+            ushort strArrayLength;
+            if (!TryGetUShort(out strArrayLength))
+            {
                 result = null;
                 return false;
             }
@@ -642,10 +656,10 @@ namespace LiteNetLib.Utils
 
         public bool TryGetBytesWithLength(out byte[] result)
         {
-            if (AvailableBytes >= 2)
+            if (AvailableBytes >= 4)
             {
-                ushort length = PeekUShort();
-                if (length >= 0 && AvailableBytes >= 2 + length)
+                var length = PeekInt();
+                if (length >= 0 && AvailableBytes >= length + 4)
                 {
                     result = GetBytesWithLength();
                     return true;
