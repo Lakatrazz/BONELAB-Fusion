@@ -300,7 +300,7 @@ namespace LabFusion.Network
                 return;
             }
 
-            serverConnection.Send(writer, DeliveryMethod.Unreliable);
+            serverConnection.Send(writer, DeliveryMethod.ReliableOrdered);
         }
 
         internal void SendToProxyServer(MessageTypes type)
@@ -312,7 +312,7 @@ namespace LabFusion.Network
             }
 
             NetDataWriter writer = NewWriter(type);
-            serverConnection.Send(writer, DeliveryMethod.Unreliable);
+            serverConnection.Send(writer, DeliveryMethod.ReliableOrdered);
         }
 
         internal override void OnVoiceChatUpdate()
@@ -396,7 +396,7 @@ namespace LabFusion.Network
                 NetDataWriter writer = NewWriter(type);
                 writer.Put(userId);
                 byte[] data = message.ToByteArray();
-                writer.PutBytesWithLength(data, 0, (ushort)data.Length);
+                writer.PutBytesWithLength(data);
                 SendToProxyServer(writer);
             }
         }

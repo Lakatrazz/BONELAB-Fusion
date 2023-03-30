@@ -325,13 +325,13 @@ namespace FusionHelper.Network
 
         public static void SendToClient(NetDataWriter writer)
         {
-            ClientConnection.Send(writer, DeliveryMethod.Unreliable);
+            ClientConnection.Send(writer, DeliveryMethod.ReliableOrdered);
         }
 
         public static void SendToClient(MessageTypes type)
         {
             NetDataWriter writer = NewWriter(type);
-            ClientConnection.Send(writer, DeliveryMethod.Unreliable);
+            ClientConnection.Send(writer, DeliveryMethod.ReliableOrdered);
         }
     }
 }
