@@ -109,7 +109,13 @@ namespace LabFusion.Network
                 for (var i = 0; i < message.Length; i++)
                     message[i] = buffer[i + 1];
 
-                MelonCoroutines.Start(Handlers[tag].HandleMessage_Internal(message, isServerHandled));
+                if (Handlers[tag] != null)
+                    MelonCoroutines.Start(Handlers[tag].HandleMessage_Internal(message, isServerHandled));
+#if DEBUG
+                else {
+                    FusionLogger.Warn($"Received message with invalid tag {tag}!");
+                }
+#endif
             }
             catch (Exception e)
             {
