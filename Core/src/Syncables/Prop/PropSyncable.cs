@@ -124,12 +124,15 @@ namespace LabFusion.Syncables
                 if (tempHost.IsStatic)
                     continue;
 
-                tempHost.CreateRigidbody();
-                tempHost.EnableInteraction();
-
                 // Remove from key lists
                 if (KeyReciever.ClaimedHosts != null) {
-                    KeyReciever.ClaimedHosts.Remove(tempHost.TryCast<IGrippable>());
+                    bool removed = KeyReciever.ClaimedHosts.Remove(tempHost.TryCast<IGrippable>());
+
+                    // If this was in a socket and we just removed it, recreate the rigidbody
+                    if (removed) {
+                        tempHost.CreateRigidbody();
+                        tempHost.EnableInteraction();
+                    }
                 }
             }
 
