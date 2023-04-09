@@ -106,6 +106,8 @@ namespace FusionHelper.Steamworks
                 if (szWritten == 0)
                     return Array.Empty<byte>();
 
+                Array.Resize(ref to, (int)szWritten);
+
                 return to;
             }
         }
