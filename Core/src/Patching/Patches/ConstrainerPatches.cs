@@ -38,8 +38,8 @@ namespace LabFusion.Patching {
             normal1 = constrainer._normal1;
             normal2 = constrainer._normal2;
 
-            go1 = constrainer._rb1 ? constrainer._rb1.gameObject : constrainer._gO1;
-            go2 = constrainer._rb2 ? constrainer._rb2.gameObject : constrainer._gO2;
+            go1 = constrainer._rb1.gameObject ?? constrainer._gO1;
+            go2 = constrainer._rb2.gameObject ?? constrainer._gO2;
         }
     }
 
