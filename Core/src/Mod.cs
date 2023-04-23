@@ -27,13 +27,13 @@ namespace LabFusion
     {
         public const byte versionMajor = 1;
         public const byte versionMinor = 3;
-        public const short versionPatch = 1;
+        public const short versionPatch = 2;
     }
 
     public class FusionMod : MelonMod {
         public const string Name = "LabFusion";
         public const string Author = "Lakatrazz";
-        public static readonly Version Version = new Version(FusionVersion.versionMajor, FusionVersion.versionMinor, FusionVersion.versionPatch);
+        public static readonly Version Version = new(FusionVersion.versionMajor, FusionVersion.versionMinor, FusionVersion.versionPatch);
 
         public static string Changelog { get; internal set; } = null;
 

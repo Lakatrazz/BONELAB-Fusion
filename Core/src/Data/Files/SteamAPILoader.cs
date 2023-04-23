@@ -17,6 +17,10 @@ namespace LabFusion.Data
         private static IntPtr _libraryPtr;
 
         public static void OnLoadSteamAPI() {
+            // If it's already loaded, don't load it again
+            if (HasSteamAPI)
+                return;
+
             // Don't extract this for android
             if (HelperMethods.IsAndroid()) {
                 HasSteamAPI = false;
@@ -29,7 +33,14 @@ namespace LabFusion.Data
 
             _libraryPtr = DllTools.LoadLibrary(sdkPath);
 
-            HasSteamAPI = true;
+            if (_libraryPtr != IntPtr.Zero) {
+                FusionLogger.Log("Successfully loaded steam_api64.dll into the application!");
+                HasSteamAPI = true;
+            }
+            else {
+                uint errorCode = DllTools.GetLastError();
+                FusionLogger.Error($"Failed to load steam_api64.dll into the application.\nError Code: {errorCode}");
+            }
         }
 
         public static void OnFreeSteamAPI() {

@@ -1,11 +1,1 @@
-- Fixed static grip events not syncing
-- Fixed custom gun UIs falling out of the world
-- Fixed grips breaking when a player who's holding them disconnects
-- Optimized GameObject finding and path getting
-- Made GameObject finding and path getting use tasks
-- Make errors from failed network layers log why they failed
-- Added checks to pasting text to make sure you aren't pasting a file
-- Added point shop item for passive income (see BitMiner)
-- Added LoDs to point shop items to make them disappear
-- Added SteamID checking for important users to prevent impersonation
-- Prevented users from joining a server if they don't have the custom map
+- Fixed steam_api64.dll not loading correctly on some computers
