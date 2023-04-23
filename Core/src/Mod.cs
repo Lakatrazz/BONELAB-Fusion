@@ -35,11 +35,7 @@ namespace LabFusion
         public const string Author = "Lakatrazz";
         public static readonly Version Version = new Version(FusionVersion.versionMajor, FusionVersion.versionMinor, FusionVersion.versionPatch);
 
-#if DEBUG
-        public const string Changelog = "- Debug build. Changelog will show in the release build.";
-#else
-        public const string Changelog = "- No changelog.";
-#endif
+        public static string Changelog { get; internal set; } = null;
 
         /// <summary>
         /// The desired networking layer. Swap this out to change the networking system.
