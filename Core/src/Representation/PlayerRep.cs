@@ -801,8 +801,12 @@ namespace LabFusion.Representation
         /// Destroys the GameObjects of the PlayerRep. Does not free it from memory or remove it from its slots. Use Dispose for that.
         /// </summary>
         public void DestroyRep() {
-            if (IsCreated)
+            if (IsCreated) {
+                RigReferences.LeftHand.TryDetach();
+                RigReferences.RightHand.TryDetach();
+
                 GameObject.Destroy(RigReferences.RigManager.gameObject);
+            }
 
             if (!repCanvas.IsNOC())
                 GameObject.Destroy(repCanvas.gameObject);

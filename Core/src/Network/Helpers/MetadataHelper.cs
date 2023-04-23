@@ -31,6 +31,16 @@ namespace LabFusion.Network {
             id.TryGetMetadata(UsernameKey, out var username);
             id.TryGetMetadata(NicknameKey, out var nickname);
 
+            // Check validity
+            if (FusionMasterList.VerifyPlayer(id.LongId, username) == FusionMasterResult.IMPERSONATOR) {
+                username = $"{username} (FAKE)";
+            }
+
+            if (FusionMasterList.VerifyPlayer(id.LongId, nickname) == FusionMasterResult.IMPERSONATOR) {
+                nickname = $"{nickname} (FAKE)";
+            }
+
+            // Convert how the nickname is displayed
             if (!string.IsNullOrWhiteSpace(nickname)) {
                 var visibility = FusionPreferences.ClientSettings.NicknameVisibility.GetValue();
 

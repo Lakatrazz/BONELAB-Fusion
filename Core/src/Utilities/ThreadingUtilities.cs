@@ -9,11 +9,11 @@ using UnhollowerBaseLib;
 
 namespace LabFusion.Utilities {
     public static class ThreadingUtilities {
-        public static readonly ConcurrentQueue<Action> CompleteEvents = new();
+        public static readonly ConcurrentQueue<Action> SynchronousEvents = new();
 
         internal static void Internal_OnUpdate() {
-            if (CompleteEvents.Count > 0) {
-                while (CompleteEvents.TryDequeue(out Action action)) {
+            if (SynchronousEvents.Count > 0) {
+                while (SynchronousEvents.TryDequeue(out Action action)) {
                     try {
                         action();
                     }
@@ -28,9 +28,9 @@ namespace LabFusion.Utilities {
         /// Enqueues a complete event for a thread to be ran synchronously.
         /// </summary>
         /// <param name="action"></param>
-        public static void RunCompleteEvent(Action action) {
+        public static void RunSynchronously(Action action) {
             if (action != null)
-                CompleteEvents.Enqueue(action);
+                SynchronousEvents.Enqueue(action);
         }
 
         /// <summary>
@@ -39,6 +39,15 @@ namespace LabFusion.Utilities {
         /// </summary>
         public static void IL2PrepareThread(out IntPtr thread) {
             thread = IL2CPP.il2cpp_thread_attach(IL2CPP.il2cpp_domain_get());
+        }
+
+        /// <summary>
+        /// Registers the active domain in il2cpp in order to prevent GC errors.
+        /// <para>This should be called when the current thread is changed and you want to use IL2 objects.</para>
+        /// </summary>
+        public static void IL2PrepareThread()
+        {
+            IL2CPP.il2cpp_thread_attach(IL2CPP.il2cpp_domain_get());
         }
 
         /// <summary>

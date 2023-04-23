@@ -46,9 +46,14 @@ namespace LabFusion.BoneMenu
 
             // Change color based on version matching
             Color lobbyColor = Color.white;
+            Color versionColor = Color.white;
 
-            if (NetworkVerification.CompareVersion(info.LobbyVersion, FusionMod.Version) != VersionResult.Ok)
+            if (NetworkVerification.CompareVersion(info.LobbyVersion, FusionMod.Version) != VersionResult.Ok) {
                 lobbyColor = Color.red;
+                versionColor = Color.red;
+            }
+            else if (!info.ClientHasLevel)
+                lobbyColor = Color.yellow;
 
             // Create the category and get the default lobby info
             var lobbyCategory = rootCategory.CreateCategory($"INTERNAL_LOBBY_{_lobbyIndex++}", lobbyColor);
@@ -57,10 +62,12 @@ namespace LabFusion.BoneMenu
             lobbyCategory.CreateFunctionElement("Join Server", Color.white, lobby.CreateJoinDelegate(info));
 
             // Show their version
-            lobbyCategory.CreateFunctionElement($"Version: {info.LobbyVersion}", lobbyColor, null);
+            lobbyCategory.CreateFunctionElement($"Version: {info.LobbyVersion}", versionColor, null);
 
             // Show their active level
-            lobbyCategory.CreateFunctionElement($"Level: {info.LevelName}", Color.white, null);
+            Color levelColor = info.ClientHasLevel ? Color.white : Color.red;
+
+            lobbyCategory.CreateFunctionElement($"Level: {info.LevelName}", levelColor, null);
 
             // Show their active gamemode
             lobbyCategory.CreateFunctionElement($"Gamemode: {info.GamemodeName}", Color.white, null);
