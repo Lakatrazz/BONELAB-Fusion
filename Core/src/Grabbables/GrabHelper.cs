@@ -140,7 +140,12 @@ namespace LabFusion.Grabbables {
                         else
                         {
                             group = GrabGroup.STATIC;
-                            serializedGrab = new SerializedStaticGrab(grip.gameObject.GetFullPath());
+
+                            var pathTask = grip.gameObject.GetFullPathAsync();
+                            while (!pathTask.IsCompleted)
+                                yield return null;
+
+                            serializedGrab = new SerializedStaticGrab(pathTask.Result);
                             validGrip = true;
                         }
                     }
@@ -187,15 +192,24 @@ namespace LabFusion.Grabbables {
                                     yield return null;
     
                                 yield return null;
-    
-                                serializedGrab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id);
+
+                                var pathTask = host.gameObject.GetFullPathAsync();
+                                while (!pathTask.IsCompleted)
+                                    yield return null;
+
+                                serializedGrab = new SerializedPropGrab(pathTask.Result, syncable.GetIndex(grip).Value, syncable.Id);
                                 validGrip = true;
                             }
                             else if (NetworkInfo.IsServer)
                             {
                                 syncable = new PropSyncable(host);
                                 SyncManager.RegisterSyncable(syncable, SyncManager.AllocateSyncID());
-                                serializedGrab = new SerializedPropGrab(host.gameObject.GetFullPath(), syncable.GetIndex(grip).Value, syncable.Id);
+
+                                var pathTask = host.gameObject.GetFullPathAsync();
+                                while (!pathTask.IsCompleted)
+                                    yield return null;
+
+                                serializedGrab = new SerializedPropGrab(pathTask.Result, syncable.GetIndex(grip).Value, syncable.Id);
     
                                 validGrip = true;
                             }

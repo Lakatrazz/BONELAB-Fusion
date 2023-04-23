@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Utilities;
 using Steamworks;
 using System;
 using System.Collections.Generic;
@@ -25,8 +26,9 @@ namespace LabFusion.Network
 
                 return true;
             }
-            catch
+            catch (Exception e)
             {
+                FusionLogger.LogException("initializing Spacewar layer", e);
                 return false;
             }
         }

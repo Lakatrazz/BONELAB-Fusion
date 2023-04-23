@@ -27,27 +27,15 @@ namespace LabFusion
     {
         public const byte versionMajor = 1;
         public const byte versionMinor = 3;
-        public const short versionPatch = 0;
+        public const short versionPatch = 2;
     }
 
     public class FusionMod : MelonMod {
         public const string Name = "LabFusion";
         public const string Author = "Lakatrazz";
-        public static readonly Version Version = new Version(FusionVersion.versionMajor, FusionVersion.versionMinor, FusionVersion.versionPatch);
+        public static readonly Version Version = new(FusionVersion.versionMajor, FusionVersion.versionMinor, FusionVersion.versionPatch);
 
-#if DEBUG
-        public const string Changelog = "- Debug build. Changelog will show in the release build.";
-#else
-        public const string Changelog = "- Made player voicechat quarter volume when its 2D\n" +
-            "- Fixed the multiple go-karts in Monogon Motorway not spawning\n" +
-            "- Fixed spamming join in BoneMenu crashing your game\n" +
-            "- Fixed many causes of crashes by disabling AsyncCallbacks\n" +
-            "- Made the body log disable on players if they haven't unlocked it\n" +
-            "- Added character limit to usernames and nicknames\n" +
-            "- Added server option to force base game avatars\n" +
-            "- Implemented Array Pooling (better memory usage, more performance)\n" +
-            "- Implemented fixed pointer buffers (better memory usage, more performance)";
-#endif
+        public static string Changelog { get; internal set; } = null;
 
         /// <summary>
         /// The desired networking layer. Swap this out to change the networking system.
@@ -207,6 +195,9 @@ namespace LabFusion
             // Reset byte counts
             NetworkInfo.BytesDown = 0;
             NetworkInfo.BytesUp = 0;
+
+            // Update threaded events
+            ThreadingUtilities.Internal_OnUpdate();
 
             // Cache physics values
             PhysicsUtilities.OnCacheValues();

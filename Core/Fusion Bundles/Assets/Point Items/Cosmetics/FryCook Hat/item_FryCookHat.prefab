@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9050017612854913155}
+  - component: {fileID: 5887372454330457396}
   m_Layer: 0
   m_Name: item_FryCookHat
   m_TagString: Untagged
@@ -32,6 +33,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &5887372454330457396
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 265620266402266445}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0.000000007450581, y: 0.11041716, z: 0.031910077}
+  m_Size: 0.27564162
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.010133538
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 8699279188802646521}
+  m_Enabled: 1
 --- !u!1001 &5168531212268398390
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -120,5 +140,10 @@ PrefabInstance:
 --- !u!4 &4625468111527313629 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9ec2140d260f47c4991b48c41ab10956, type: 3}
+  m_PrefabInstance: {fileID: 5168531212268398390}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &8699279188802646521 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -4683669308469848369, guid: 9ec2140d260f47c4991b48c41ab10956, type: 3}
   m_PrefabInstance: {fileID: 5168531212268398390}
   m_PrefabAsset: {fileID: 0}

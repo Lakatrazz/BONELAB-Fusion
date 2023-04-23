@@ -31,7 +31,10 @@ namespace LabFusion.Network {
 
         // Lobby status
         public string LevelName;
+        public string LevelBarcode;
         public string GamemodeName;
+
+        public bool ClientHasLevel;
 
         public static LobbyMetadataInfo Create() {
             return new LobbyMetadataInfo() {
@@ -51,6 +54,7 @@ namespace LabFusion.Network {
 
                 // Lobby status
                 LevelName = FusionSceneManager.Title,
+                LevelBarcode = FusionSceneManager.Barcode,
                 GamemodeName = Gamemode.ActiveGamemode != null ? Gamemode.ActiveGamemode.GamemodeName : "No Gamemode",
             };
         }
@@ -72,6 +76,7 @@ namespace LabFusion.Network {
 
             // Lobby status
             lobby.SetMetadata("LevelName", LevelName);
+            lobby.SetMetadata("LevelBarcode", LevelBarcode);
             lobby.SetMetadata("GamemodeName", GamemodeName);
         }
 
@@ -89,6 +94,16 @@ namespace LabFusion.Network {
                 LevelName = lobby.GetMetadata("LevelName"),
                 GamemodeName = lobby.GetMetadata("GamemodeName"),
             };
+            // Check if we have the level the host has
+            if (lobby.TryGetMetadata("LevelBarcode", out var barcode)) {
+                info.LevelBarcode = barcode;
+                info.ClientHasLevel = FusionSceneManager.HasLevel(barcode);
+            }
+            else {
+                // Incase the server is on a slightly older version without this feature, we just return true
+                info.ClientHasLevel = true;
+            }
+
             // Get version
             if (Version.TryParse(lobby.GetMetadata("LobbyVersion"), out var version))
                 info.LobbyVersion = version;
@@ -123,7 +138,12 @@ namespace LabFusion.Network {
         }
 
         public static LobbyMetadataInfo ReadInfo(INetworkLobby lobby) {
-            return LobbyMetadataInfo.Read(lobby);
+            try {
+                return LobbyMetadataInfo.Read(lobby);
+            }
+            catch {
+                return new LobbyMetadataInfo() { HasServerOpen = false };
+            }
         }
     }
 }

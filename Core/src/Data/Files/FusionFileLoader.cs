@@ -12,6 +12,7 @@ namespace LabFusion.Data {
             PermissionList.PullFromFile();
             BanList.PullFromFile();
             PointSaveManager.ReadFromFile();
+            ChangelogLoader.ReadFromFile();
         }
 
         public static void OnDeinitializeMelon() {

@@ -20,7 +20,7 @@ namespace LabFusion.Patching {
         [HarmonyPatch(nameof(SimpleGripEvents.OnAttachedUpdateDelegate))]
         public static bool OnAttachedUpdateDelegatePrefix(SimpleGripEvents __instance, Hand hand)
         {
-            if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(hand.manager)) {
+            if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(hand.manager) && SimpleGripEventsExtender.Cache.ContainsSource(__instance)) {
                 return false;
             }
 

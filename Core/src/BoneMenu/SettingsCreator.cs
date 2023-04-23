@@ -90,6 +90,9 @@ namespace LabFusion.BoneMenu
             string currentNickname = PlayerIdManager.LocalNickname;
             var nickname = nicknameCategory.CreateFunctionElement(string.IsNullOrWhiteSpace(currentNickname) ? "No Nickname" : $"Nickname: {currentNickname}", Color.white, null);
             var pasteNickname = nicknameCategory.CreateFunctionElement("Paste Nickname", Color.white, () => {
+                if (!Clipboard.ContainsText())
+                    return;
+
                 var text = Clipboard.GetText();
                 text = text.LimitLength(PlayerIdManager.MaxNameLength);
                 FusionPreferences.ClientSettings.Nickname.SetValue(text);

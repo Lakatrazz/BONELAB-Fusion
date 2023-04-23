@@ -1,0 +1,1 @@
+- Fixed steam_api64.dll not loading correctly on some computers

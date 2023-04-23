@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2273752375499138665}
+  - component: {fileID: 6847688590504199097}
   m_Layer: 0
   m_Name: item_CatBeanie
   m_TagString: Untagged
@@ -32,6 +33,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &6847688590504199097
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7042027370846385063}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0, y: -0.039324455, z: 0.018999979}
+  m_Size: 0.21955007
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.006044724
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 5313480193170290815}
+  m_Enabled: 1
 --- !u!1001 &6808549509818197243
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -105,6 +125,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3058122a82676ff449443db003501371, type: 3}
+--- !u!23 &5313480193170290815 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 3058122a82676ff449443db003501371, type: 3}
+  m_PrefabInstance: {fileID: 6808549509818197243}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6482486128504128272 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 3058122a82676ff449443db003501371, type: 3}

@@ -263,6 +263,7 @@
     <Compile Include="Core\src\Data\Containers\Grips\SerializedStaticGrab.cs" />
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedLocalTransform.cs" />
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedTransform.cs" />
+    <Compile Include="Core\src\Data\Files\ChangelogLoader.cs" />
     <Compile Include="Core\src\Data\Files\DataSaver.cs" />
     <Compile Include="Core\src\Data\Files\EmbeddedAssetBundle.cs" />
     <Compile Include="Core\src\Data\Files\FusionFileLoader.cs" />
@@ -406,6 +407,7 @@
     <Compile Include="Core\src\Patching\Patches\Attacks\StabSlashPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Trigger\GenGameControl_TriggerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Trigger\MirrorPatches.cs" />
+    <Compile Include="Core\src\Representation\FusionMasterList.cs" />
     <Compile Include="Core\src\SDK\Points\AccessoryItem.cs" />
     <Compile Include="Core\src\SDK\Points\AccessoryItemHelper.cs" />
     <Compile Include="Core\src\SDK\Points\BitEconomy.cs" />
@@ -448,6 +450,7 @@
     <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\Junktion.cs" />
     <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\GloopTrail.cs" />
     <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\Gemstone.cs" />
+    <Compile Include="Core\src\SDK\Points\Built In\Passive\BitMiner.cs" />
     <Compile Include="Core\src\SDK\Points\PointItem.cs" />
     <Compile Include="Core\src\SDK\Points\PointItemManager.cs" />
     <Compile Include="Core\src\SDK\Points\PointSaveManager.cs" />
@@ -639,6 +642,7 @@
     <Compile Include="Core\src\Utilities\Fusion\Scene\FusionSceneHooks.cs" />
     <Compile Include="Core\src\Utilities\Fusion\Scene\FusionSceneStatus.cs" />
     <Compile Include="Core\src\Utilities\GameObjectUtilities.cs" />
+    <Compile Include="Core\src\Utilities\GameObjectUtilitiesAsync.cs" />
     <Compile Include="Core\src\Utilities\ImpactUtilities.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionBundleLoader.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionNotifier.cs" />
@@ -660,6 +664,7 @@
     <Compile Include="Core\src\Utilities\PlayerAdditionsHelper.cs" />
     <Compile Include="Core\src\Utilities\PooleeUtilities.cs" />
     <Compile Include="Core\src\Utilities\SafetyUtilities.cs" />
+    <Compile Include="Core\src\Utilities\ThreadingUtilities.cs" />
     <Compile Include="Core\src\Utilities\TriggerUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -1254,6 +1259,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Core\resources\raw_changelog.txt" />
     <Content Include="Core\src\AssemblyInfo.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>AssemblyInfo.cs</LastGenOutput>

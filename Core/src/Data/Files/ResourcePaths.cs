@@ -9,6 +9,8 @@ namespace LabFusion.Data
     public static class ResourcePaths {
         public const string SteamAPIPath = "LabFusion.Core.resources.lib.x86_64.steam_api64.dll";
 
+        public const string RawChangelogPath = "LabFusion.Core.resources.raw_changelog.txt";
+
         public const string AppDataSubFolder = "/Fusion/";
 
         public const string WindowsBundlePrefix = "LabFusion.Core.resources.bundles.StandaloneWindows64.";

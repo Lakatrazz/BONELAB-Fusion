@@ -462,7 +462,11 @@ namespace LabFusion.Network
         }
 
         private void OnPasteServerID() {
+            if (!Clipboard.ContainsText())
+                return;
+
             var text = Clipboard.GetText();
+
             if (!string.IsNullOrWhiteSpace(text) && ulong.TryParse(text, out var result)) {
                 _targetServerId = result;
                 _targetServerElement.SetName($"Server ID: {_targetServerId}");

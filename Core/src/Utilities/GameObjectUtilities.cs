@@ -6,41 +6,31 @@ using UnityEngine.SceneManagement;
 
 using LabFusion.Extensions;
 
+using IL2GoList = Il2CppSystem.Collections.Generic.List<UnityEngine.GameObject>;
+
 namespace LabFusion.Utilities {
-    public static class GameObjectUtilities {
+    public static partial class GameObjectUtilities {
         public const char PathSeparator = '¬';
 
-        private static GameObject[] _rootObjectBuffer;
+        private static readonly IL2GoList _rootObjectBuffer = new();
 
-        internal static List<GameObject> FindRootsWithName(string scene, string name) {
+        internal static IL2GoList FindRootsWithName(string scene, string name) {
             var sceneAsset = SceneManager.GetSceneByName(scene);
             if (!sceneAsset.IsValid())
                 return null;
 
-            var gameObjects = new List<GameObject>();
+            _rootObjectBuffer.Capacity = sceneAsset.rootCount;
+            sceneAsset.GetRootGameObjects(_rootObjectBuffer);
 
-            _rootObjectBuffer = sceneAsset.GetRootGameObjects();
+            _rootObjectBuffer.RemoveAll((Il2CppSystem.Predicate<GameObject>)(g => g.name != name));
 
-            for (var i = 0; i < sceneAsset.rootCount; i++) {
-                var go = _rootObjectBuffer[i];
-                if (go != null && go.name == name)
-                    gameObjects.Add(go);
-            }
-
-            _rootObjectBuffer = null;
-
-            return gameObjects;
+            return _rootObjectBuffer;
         }
 
         internal static int GetRootIndex(this GameObject go)
         {
             var objects = FindRootsWithName(go.scene.name, go.name);
-            for (var i = 0; i < objects.Count; i++)
-            {
-                if (objects[i] == go)
-                    return i;
-            }
-            return -1;
+            return objects.FindIndex((Il2CppSystem.Predicate<GameObject>)(g => g == go));
         }
 
         internal static GameObject GetRootByIndex(string scene, int index, string name)
@@ -60,11 +50,20 @@ namespace LabFusion.Utilities {
                 return matching[index];
         }
 
-        public static string GetFullPath(this GameObject go) {
+        public static string GetFullPath(this GameObject go)
+        {
             try {
                 return $"{go.scene.name}{PathSeparator}{go.transform.root.gameObject.GetRootIndex()}{go.transform.GetBasePath()}";
             }
-            catch { }
+            catch
+#if DEBUG
+            (Exception e)
+#endif
+            {
+#if DEBUG
+                FusionLogger.LogException("getting path of GameObject", e);
+#endif
+            }
 
             return "INVALID_PATH";
         }

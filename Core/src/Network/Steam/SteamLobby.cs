@@ -1,4 +1,5 @@
-﻿using Steamworks.Data;
+﻿using LabFusion.Utilities;
+using Steamworks.Data;
 
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,19 @@ namespace LabFusion.Network {
         }
 
         public Action CreateJoinDelegate(LobbyMetadataInfo info) {
+            if (!info.ClientHasLevel) {
+                return () => {
+                    FusionNotifier.Send(new FusionNotification() {
+                        title = "Failed to Join",
+                        showTitleOnPopup = true,
+                        isMenuItem = false,
+                        isPopup = true,
+                        message = $"You do not have the map {info.LevelName} installed!",
+                        popupLength = 6f,
+                    });
+                };
+            }
+
             if (NetworkInfo.CurrentNetworkLayer is SteamNetworkLayer steamLayer) {
                 return () => {
                     steamLayer.JoinServer(info.LobbyId);

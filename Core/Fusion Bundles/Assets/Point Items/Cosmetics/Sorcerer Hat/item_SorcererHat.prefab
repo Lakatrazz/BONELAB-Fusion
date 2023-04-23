@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2582174784420883940}
+  - component: {fileID: 307466301044333633}
   m_Layer: 0
   m_Name: item_SorcererHat
   m_TagString: Untagged
@@ -32,6 +33,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &307466301044333633
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6764979904297793578}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0, y: 0.05622107, z: 0.019999988}
+  m_Size: 0.27676928
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.009144402
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 3685293090966913216}
+  m_Enabled: 1
 --- !u!1001 &2658635796523408452
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -108,5 +128,10 @@ PrefabInstance:
 --- !u!4 &2553512774010878895 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5b46840eb19755441af31874606bc0e1, type: 3}
+  m_PrefabInstance: {fileID: 2658635796523408452}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &3685293090966913216 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 5b46840eb19755441af31874606bc0e1, type: 3}
   m_PrefabInstance: {fileID: 2658635796523408452}
   m_PrefabAsset: {fileID: 0}
