@@ -1,5 +1,4 @@
-﻿using BoneLib;
-using BoneLib.BoneMenu.Elements;
+﻿using BoneLib.BoneMenu.Elements;
 
 using LabFusion.Extensions;
 using LabFusion.MarrowIntegration;
@@ -12,32 +11,35 @@ using LabFusion.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.Rendering.Universal.LibTessDotNet;
 
-namespace LabFusion.SDK.Gamemodes {
-    public class TeamDeathmatch : Gamemode {
+namespace LabFusion.SDK.Gamemodes
+{
+    public class TeamDeathmatch : Gamemode
+    {
         private const int _minPlayerBits = 30;
         private const int _maxPlayerBits = 250;
 
         public static TeamDeathmatch Instance { get; private set; }
 
-        public Texture2D LavaGangLogo => _lavaGangLogoOverride != null ? _lavaGangLogoOverride : FusionContentLoader.LavaGangLogo;
-        public Texture2D SabrelakeLogo => _sabrelakeLogoOverride != null ? _sabrelakeLogoOverride : FusionContentLoader.SabrelakeLogo;
-
         public List<Team> teams;
 
-        public Team teamLavaGang = new Team("LavaGang", Color.magenta);
-        public Team teamSabrelake = new Team("Sabrelake", Color.yellow);
+        public string LavaGangName => !string.IsNullOrWhiteSpace(_lavaGangOverride) ? _lavaGangOverride : "Lava Gang";
+        public string SabrelakeName => !string.IsNullOrWhiteSpace(_sabrelakeOverride) ? _sabrelakeOverride : "Sabrelake";
+        public Texture2D LavaGangLogo => _lavaGangLogoOverride != null ? _lavaGangLogoOverride : FusionContentLoader.LavaGangLogo;
+        public Texture2D SabrelakeLogo => _sabrelakeLogoOverride != null ? _sabrelakeLogoOverride : FusionContentLoader.SabrelakeLogo;
 
         protected string _lavaGangOverride = null;
         protected string _sabrelakeOverride = null;
 
         protected Texture2D _lavaGangLogoOverride = null;
         protected Texture2D _sabrelakeLogoOverride = null;
+
+        protected string ParseTeam(Team team)
+        {
+            return team.TeamName;
+        }
 
         private const int _defaultMinutes = 3;
         private const int _minMinutes = 2;
@@ -70,14 +72,15 @@ namespace LabFusion.SDK.Gamemodes {
 
         private bool _hasOverridenValues = false;
 
-        private readonly Dictionary<PlayerId, TeamLogo> _logoInstances = new Dictionary<PlayerId, TeamLogo>();
+        private readonly Dictionary<PlayerId, TeamLogoInstance> _logoInstances = new Dictionary<PlayerId, TeamLogoInstance>();
 
         private string _avatarOverride = null;
         private float? _vitalityOverride = null;
 
         private bool _enabledLateJoining = true;
 
-        public override void OnBoneMenuCreated(MenuCategory category) {
+        public override void OnBoneMenuCreated(MenuCategory category)
+        {
             base.OnBoneMenuCreated(category);
 
             category.CreateIntElement("Round Minutes", Color.white, _totalMinutes, 1, _minMinutes, _maxMinutes, (v) =>
@@ -87,11 +90,13 @@ namespace LabFusion.SDK.Gamemodes {
             });
         }
 
-        public void SetLateJoining(bool enabled) {
+        public void SetLateJoining(bool enabled)
+        {
             _enabledLateJoining = enabled;
         }
 
-        public void SetRoundLength(int minutes) {
+        public void SetRoundLength(int minutes)
+        {
             _totalMinutes = minutes;
         }
 
@@ -100,7 +105,9 @@ namespace LabFusion.SDK.Gamemodes {
             _avatarOverride = barcode;
 
             if (IsActive())
+            {
                 FusionPlayer.SetAvatarOverride(barcode);
+            }
         }
 
         public void SetPlayerVitality(float vitality)
@@ -108,14 +115,18 @@ namespace LabFusion.SDK.Gamemodes {
             _vitalityOverride = vitality;
 
             if (IsActive())
+            {
                 FusionPlayer.SetPlayerVitality(vitality);
+            }
         }
 
-        public void SetLavaGangName(string name) {
+        public void SetLavaGangName(string name)
+        {
             _lavaGangOverride = name;
         }
 
-        public void SetSabrelakeName(string name) {
+        public void SetSabrelakeName(string name)
+        {
             _sabrelakeOverride = name;
         }
 
@@ -129,39 +140,30 @@ namespace LabFusion.SDK.Gamemodes {
             _sabrelakeLogoOverride = logo;
         }
 
-        public Team GetTeam(string teamName)
+        public override void OnGamemodeRegistered()
         {
-            foreach(var team in teams)
-            {
-                if(team.TeamName == teamName)
-                {
-                    return team;
-                }
-            }
-
-            return null;
-        }
-
-        public override void OnGamemodeRegistered() {
             base.OnGamemodeRegistered();
 
             Instance = this;
-
-            teams = new List<Team>();
 
             MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
             MultiplayerHooking.OnPlayerAction += OnPlayerAction;
             FusionOverrides.OnValidateNametag += OnValidateNametag;
 
+            teams = new List<Team>();
+
             SetDefaultValues();
         }
 
-        public override void OnGamemodeUnregistered() {
+        public override void OnGamemodeUnregistered()
+        {
             base.OnGamemodeUnregistered();
 
             if (Instance == this)
+            {
                 Instance = null;
+            }
 
             MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
             MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
@@ -172,22 +174,27 @@ namespace LabFusion.SDK.Gamemodes {
         protected bool OnValidateNametag(PlayerId id)
         {
             if (!IsActive())
+            {
                 return true;
+            }
 
             return GetTeam(id) == _localTeam;
         }
 
-
-        public override void OnMainSceneInitialized() {
-            if (!_hasOverridenValues) {
+        public override void OnMainSceneInitialized()
+        {
+            if (!_hasOverridenValues)
+            {
                 SetDefaultValues();
             }
-            else {
+            else
+            {
                 _hasOverridenValues = false;
             }
         }
 
-        public override void OnLoadingBegin() {
+        public override void OnLoadingBegin()
+        {
             _hasOverridenValues = false;
         }
 
@@ -208,21 +215,26 @@ namespace LabFusion.SDK.Gamemodes {
             _enabledLateJoining = true;
         }
 
-        public void SetOverriden() {
-            if (FusionSceneManager.IsLoading()) {
+        public void SetOverriden()
+        {
+            if (FusionSceneManager.IsLoading())
+            {
                 if (!_hasOverridenValues)
+                {
                     SetDefaultValues();
+                }
 
                 _hasOverridenValues = true;
             }
         }
 
-        public int GetTotalScore() {
+        public int GetTotalScore()
+        {
             int accumulatedScore = 0;
 
-            foreach(var team in teams)
+            for(int i = 0; i < teams.Count; i++)
             {
-                accumulatedScore += team.TeamScore;
+                accumulatedScore = accumulatedScore + teams[i].TeamScore;
             }
 
             return accumulatedScore;
@@ -253,7 +265,8 @@ namespace LabFusion.SDK.Gamemodes {
             reward += UnityEngine.Random.Range(-maxRand, maxRand);
 
             // Make sure the reward isn't invalid
-            if (reward.IsNaN()) {
+            if (reward.IsNaN())
+            {
                 FusionLogger.ErrorLine("Prevented attempt to give invalid bit reward. Please notify a Fusion developer and send them your log.");
                 return 0;
             }
@@ -265,39 +278,54 @@ namespace LabFusion.SDK.Gamemodes {
         {
             if (IsActive() && NetworkInfo.IsServer)
             {
-                switch (type)
+                if (type != PlayerActionType.DEATH_BY_OTHER_PLAYER)
                 {
-                    case PlayerActionType.DEATH_BY_OTHER_PLAYER:
-                        if (otherPlayer != null && otherPlayer != player) {
-                            var killerTeam = GetTeam(otherPlayer);
-                            var killedTeam = GetTeam(player);
+                    return;
+                }
 
-                            if (killerTeam != killedTeam) {
-                                IncrementScore(killerTeam);
-                            }
-                        }
-                        break;
+                if(otherPlayer == null)
+                {
+                    return;
+                }
+
+                if(otherPlayer == player)
+                {
+                    return;
+                }
+
+                var killerTeam = GetTeam(otherPlayer);
+                var killedTeam = GetTeam(player);
+
+                if (killerTeam != killedTeam)
+                {
+                    IncrementScore(killerTeam);
                 }
             }
         }
 
-        protected void OnPlayerJoin(PlayerId id) {
-            if (NetworkInfo.IsServer && IsActive()) {
+        protected void OnPlayerJoin(PlayerId id)
+        {
+            if (NetworkInfo.IsServer && IsActive())
+            {
                 AssignTeam(id);
             }
         }
 
-        protected void OnPlayerLeave(PlayerId id) {
-            if (_logoInstances.TryGetValue(id, out var instance)) {
+        protected void OnPlayerLeave(PlayerId id)
+        {
+            if (_logoInstances.TryGetValue(id, out var instance))
+            {
                 instance.Cleanup();
                 _logoInstances.Remove(id);
             }
         }
 
-        protected override void OnStartGamemode() {
+        protected override void OnStartGamemode()
+        {
             base.OnStartGamemode();
 
-            if (NetworkInfo.IsServer) {
+            if (NetworkInfo.IsServer)
+            {
                 ResetTeams();
                 SetTeams();
             }
@@ -319,46 +347,54 @@ namespace LabFusion.SDK.Gamemodes {
 
                 // Apply vitality and avatar overrides
                 if (_avatarOverride != null)
+                {
                     FusionPlayer.SetAvatarOverride(_avatarOverride);
+                }
 
                 if (_vitalityOverride.HasValue)
+                {
                     FusionPlayer.SetPlayerVitality(_vitalityOverride.Value);
+                }
             });
         }
 
-        protected override void OnStopGamemode() {
+        protected override void OnStopGamemode()
+        {
             base.OnStopGamemode();
 
-            // Get the winner and loser
-            var lavaGang = GetScore(teamLavaGang);
-            var sabrelake = GetScore(teamSabrelake);
+            List<Team> leaders = teams;
+            leaders.OrderBy(team => GetScore(team)).Reverse();
 
-            List<Team> scoreboard = teams;
+            Team winningTeam = leaders.First();
+            Team secondPlaceTeam = leaders[1];
+            Team thirdPlaceTeam = leaders[2];
 
+            bool tied = leaders.All((team) => team.TeamScore == GetScore(winningTeam));
             string message = "";
 
-            scoreboard.Sort();
-
-            for(int i = 0; i < scoreboard.Count; i++)
+            if(winningTeam != null)
             {
-                if(i == 0)
-                {
-                    message =
-                        $"WINNER: {scoreboard[i].TeamName}! " +
-                        $"(Score: {scoreboard[i].TeamScore})\n" +
-                        "Loser(s): ";
+                message = $"First Place: {winningTeam.TeamName} (Score: {GetScore(winningTeam)}) \n";
+            }
 
-                    message += GetTeamStatus(scoreboard[i]);
-                }
-                else
-                {
-                    var loserTeam = scoreboard[i];
+            if(secondPlaceTeam != null)
+            {
+                message += $"Second Place: {secondPlaceTeam.TeamName} (Score: {GetScore(secondPlaceTeam)}) \n";
+            }
 
-                    message +=
-                        loserTeam.TeamName + $" (Score: {loserTeam.TeamScore})\n";
+            if(thirdPlaceTeam != null)
+            {
+                message += $"Third Place: {thirdPlaceTeam.TeamName} (Score: {GetScore(thirdPlaceTeam)}) \n";
+            }
 
-                    message += GetTeamStatus(scoreboard[i]);
-                }
+            if (tied)
+            {
+                message += "Tie! (All teams scored the same score!)";
+                OnTeamTied();
+            }
+            else
+            {
+                message += GetTeamStatus(winningTeam);
             }
 
             // Show the winners in a notification
@@ -395,45 +431,51 @@ namespace LabFusion.SDK.Gamemodes {
             FusionPlayer.ClearPlayerVitality();
         }
 
-        public float GetTimeElapsed() => Time.realtimeSinceStartup - _timeOfStart;
+        public float GetTimeElapsed()
+        {
+            return Time.realtimeSinceStartup - _timeOfStart;
+        }
+
         public float GetMinutesLeft()
         {
             float elapsed = GetTimeElapsed();
             return _totalMinutes - (elapsed / 60f);
         }
 
-        protected override void OnUpdate() {
+        protected override void OnUpdate()
+        {
             base.OnUpdate();
 
-            if (IsActive()) {
-                UpdateLogos();
+            if (!IsActive() || !NetworkInfo.IsServer)
+            {
+                return;
+            }
 
-                // Update minute check/game end
-                if (NetworkInfo.IsServer) {
-                    // Get time left
-                    float minutesLeft = GetMinutesLeft();
+            UpdateLogos();
 
-                    // Check for minute barrier
-                    if (!_oneMinuteLeft)
-                    {
-                        if (minutesLeft <= 1f)
-                        {
-                            TryInvokeTrigger("OneMinuteLeft");
-                            _oneMinuteLeft = true;
-                        }
-                    }
+            // Get time left
+            float minutesLeft = GetMinutesLeft();
 
-                    // Should the gamemode end?
-                    if (minutesLeft <= 0f)
-                    {
-                        StopGamemode();
-                        TryInvokeTrigger("NaturalEnd");
-                    }
+            // Check for minute barrier
+            if (!_oneMinuteLeft)
+            {
+                if (minutesLeft <= 1f)
+                {
+                    TryInvokeTrigger("OneMinuteLeft");
+                    _oneMinuteLeft = true;
                 }
+            }
+
+            // Should the gamemode end?
+            if (minutesLeft <= 0f)
+            {
+                StopGamemode();
+                TryInvokeTrigger("NaturalEnd");
             }
         }
 
-        protected void UpdateLogos() {
+        protected void UpdateLogos()
+        {
             // Update logos
             foreach (var logo in _logoInstances.Values)
             {
@@ -449,13 +491,16 @@ namespace LabFusion.SDK.Gamemodes {
             }
         }
 
-        protected void AddLogo(PlayerId id, Team team) {
-            var logo = new TeamLogo(id, team);
+        protected void AddLogo(PlayerId id, Team team)
+        {
+            var logo = new TeamLogoInstance(this, id, team);
             _logoInstances.Add(id, logo);
         }
 
-        protected void RemoveLogos() {
-            foreach (var logo in _logoInstances.Values) {
+        protected void RemoveLogos()
+        {
+            foreach (var logo in _logoInstances.Values)
+            {
                 logo.Cleanup();
             }
 
@@ -464,90 +509,108 @@ namespace LabFusion.SDK.Gamemodes {
 
         protected override void OnEventTriggered(string value)
         {
-            // Check event
-            switch (value) {
-                case "OneMinuteLeft":
-                    FusionNotifier.Send(new FusionNotification()
-                    {
-                        title = "Team Deathmatch Timer",
-                        showTitleOnPopup = true,
-                        message = "One minute left!",
-                        isMenuItem = false,
-                        isPopup = true,
-                    });
-                    break;
-                case "NaturalEnd":
-                    int bitReward = GetRewardedBits();
+            FusionNotification oneMinuteNotification = new FusionNotification()
+            {
+                title = "Team Deathmatch Timer",
+                showTitleOnPopup = true,
+                message = "One minute left!",
+                isMenuItem = false,
+                isPopup = true,
+            };
 
-                    if (bitReward > 0) {
-                        FusionNotifier.Send(new FusionNotification() {
-                            title = "Bits Rewarded",
-                            showTitleOnPopup = true,
+            FusionNotification bitRewardNotification = new FusionNotification()
+            {
+                title = "Bits Rewarded",
+                showTitleOnPopup = true,
+                popupLength = 3f,
+                isMenuItem = false,
+                isPopup = true,
+            };
 
-                            message = $"You Won {bitReward} Bits",
+            if (value == "OneMinuteLeft")
+            {
+                FusionNotifier.Send(oneMinuteNotification);
+            }
 
-                            popupLength = 3f,
+            if(value == "NaturalEnd")
+            {
+                int bitReward = GetRewardedBits();
+                string message = bitReward == 1 ? "Bit" : "Bits";
 
-                            isMenuItem = false,
-                            isPopup = true,
-                        });
-
-                        PointItemManager.RewardBits(bitReward);
-                    }
-                    break;
+                bitRewardNotification.message = $"You Won {bitReward}" + message;
+                PointItemManager.RewardBits(bitReward);
             }
         }
 
-        protected string GetTeamStatus(Team winner) {
-            if (_localTeam == winner) {
+        protected string GetTeamStatus(Team winner)
+        {
+            if (_localTeam == winner)
+            {
                 OnTeamVictory(_localTeam);
                 return "You Won!";
             }
-            else {
+            else
+            {
                 OnTeamLost(_localTeam);
                 return "You Lost...";
             }
         }
 
-        protected void OnTeamVictory(Team team) {
+        protected void OnTeamVictory(Team team)
+        {
             FusionAudio.Play2D(team.WinMusic, DefaultMusicVolume);
         }
 
-        protected void OnTeamLost(Team team) {
+        protected void OnTeamLost(Team team)
+        {
             FusionAudio.Play2D(team.LossMusic, DefaultMusicVolume);
         }
 
-        protected void OnTeamTied() {
+        protected void OnTeamTied()
+        {
             FusionAudio.Play2D(FusionContentLoader.DMTie, DefaultMusicVolume);
         }
 
-        protected void OnTeamReceived(Team team) {
-            if (team == null) {
-                _localTeam = team;
+        protected void OnTeamReceived(Team team)
+        {
+            if (team == null)
+            {
+                _localTeam = null;
                 return;
             }
 
-            FusionNotifier.Send(new FusionNotification()
+            FusionNotification assignmentNotification = new FusionNotification()
             {
                 title = "Team Deathmatch Assignment",
                 showTitleOnPopup = true,
-                message = $"Your team is: {team.TeamName}",
+                message = $"Your team is: {ParseTeam(team)}",
                 isMenuItem = false,
                 isPopup = true,
                 popupLength = 5f,
-            });
+            };
+
+            FusionNotifier.Send(assignmentNotification);
 
             _localTeam = team;
 
             // Invoke ult events
-            // I will change this in the future so it's more universal - adamdev
-            if (team.TeamName == "Sabrelake") {
+            if (team.TeamName == "Sabrelake")
+            {
                 foreach (var ultEvent in InvokeUltEventIfTeamSabrelake.Cache.Components)
+                {
                     ultEvent.Invoke();
+                }
             }
-            else {
+            else if(team.TeamName == "Lava Gang")
+            {
                 foreach (var ultEvent in InvokeUltEventIfTeamLavaGang.Cache.Components)
+                {
                     ultEvent.Invoke();
+                }
+            }
+            else
+            {
+
             }
 
             // Invoke spawn point changes on level load
@@ -556,7 +619,7 @@ namespace LabFusion.SDK.Gamemodes {
                 // Get all spawn points
                 List<Transform> transforms = new List<Transform>();
 
-                if (team.TeamName == "Sabrelake")
+                if (team == Team.SABRELAKE)
                 {
                     foreach (var point in SabrelakeSpawnpoint.Cache.Components)
                     {
@@ -581,19 +644,22 @@ namespace LabFusion.SDK.Gamemodes {
             });
         }
 
-        protected override void OnMetadataChanged(string key, string value) {
+        protected override void OnMetadataChanged(string key, string value)
+        {
             base.OnMetadataChanged(key, value);
 
             // Check if this is a point
-            if (key.StartsWith(TeamScoreKey) && int.TryParse(value, out var score)) {
+            if (key.StartsWith(TeamScoreKey) && int.TryParse(value, out var score))
+            {
                 var ourKey = GetScoreKey(_localTeam);
 
-                if (ourKey == key && score != 0) {
+                if (ourKey == key && score != 0)
+                {
                     FusionNotifier.Send(new FusionNotification()
                     {
                         title = "Team Deathmatch Point",
                         showTitleOnPopup = true,
-                        message = $"{_localTeam.TeamName}'s score is {value}!",
+                        message = $"{ParseTeam(_localTeam)}'s score is {value}!",
                         isMenuItem = false,
                         isPopup = true,
                         popupLength = 0.7f,
@@ -601,20 +667,24 @@ namespace LabFusion.SDK.Gamemodes {
                 }
             }
             // Check if this is a team change
-            else if (key.StartsWith(PlayerTeamKey)) {
+            else if (key.StartsWith(PlayerTeamKey) && Enum.TryParse<Team>(value, out var team))
+            {
                 // Find the player that changed
-                foreach (var playerId in PlayerIdManager.PlayerIds) {
+                foreach (var playerId in PlayerIdManager.PlayerIds)
+                {
                     var playerKey = GetTeamKey(playerId);
 
-                    if (playerKey == key) {
+                    if (playerKey == key)
+                    {
                         // Check who this is
-                        // TODO (adamdev): get the metadata value to align with a team choice!
-                        /*if (playerId.IsSelf) {
+                        if (playerId.IsSelf)
+                        {
                             OnTeamReceived(team);
                         }
-                        else if (team != null) {
+                        else if (team != Team.NO_TEAM)
+                        {
                             AddLogo(playerId, team);
-                        }*/
+                        }
 
                         // Push nametag updates
                         FusionOverrides.ForceUpdateOverrides();
@@ -625,38 +695,43 @@ namespace LabFusion.SDK.Gamemodes {
             }
         }
 
-        protected void SetTeams() {
+        protected void SetTeams()
+        {
             // Shuffle the player teams
             var players = new List<PlayerId>(PlayerIdManager.PlayerIds);
             players.Shuffle();
 
             // Assign every team
-            foreach (var player in players) {
+            foreach (var player in players)
+            {
                 AssignTeam(player);
             }
         }
 
-        protected void ResetTeams() {
+        protected void ResetTeams()
+        {
             // Reset the last team
-            _lastTeam = null;
+            _lastTeam = Team.NO_TEAM;
 
             // Set every team to none
-            foreach (var player in PlayerIdManager.PlayerIds) {
-                SetTeam(player, null);
+            foreach (var player in PlayerIdManager.PlayerIds)
+            {
+                SetTeam(player, Team.NO_TEAM);
             }
 
             // Set every score to 0
-            SetScore(teamLavaGang, 0);
-            SetScore(teamSabrelake, 0);
+            SetScore(Team.LAVA_GANG, 0);
+            SetScore(Team.SABRELAKE, 0);
         }
 
-        protected void AssignTeam(PlayerId id) {
+        protected void AssignTeam(PlayerId id)
+        {
             // Get the opposite team of the last
             Team newTeam = _lastTeam;
-            if (newTeam == teamSabrelake)
-                newTeam = teamLavaGang;
+            if (newTeam == Team.SABRELAKE)
+                newTeam = Team.LAVA_GANG;
             else
-                newTeam = teamSabrelake;
+                newTeam = Team.SABRELAKE;
 
             // Assign it
             SetTeam(id, newTeam);
@@ -665,41 +740,50 @@ namespace LabFusion.SDK.Gamemodes {
             _lastTeam = newTeam;
         }
 
-        protected void IncrementScore(Team team) {
+        protected void IncrementScore(Team team)
+        {
             var currentScore = GetScore(team);
             SetScore(team, currentScore + 1);
         }
 
-        public void SetScore(Team team, int score) {
+        public void SetScore(Team team, int score)
+        {
             TrySetMetadata(GetScoreKey(team), score.ToString());
         }
 
-        protected void SetTeam(PlayerId id, Team team) {
-            TrySetMetadata(GetTeamKey(id), team.ToString());
+        protected void SetTeam(PlayerId id, Team team)
+        {
+            TrySetMetadata(GetTeamKey(id), team.TeamName);
         }
 
-        public int GetScore(Team team) {
-            if (TryGetMetadata(GetScoreKey(team), out var value) && int.TryParse(value, out var score)) {
-                return score;
+        public int GetScore(Team team)
+        {
+            TryGetMetadata(GetScoreKey(team), out string teamKey);
+            int score = int.Parse(teamKey);
+
+            return score;
+        }
+
+        protected Team GetTeam(PlayerId id)
+        {
+            Team team = null;
+            TryGetMetadata(GetTeamKey(id), out string teamNameKey);
+
+            if (Enum.TryParse<Team>(value, out var team))
+            {
+                return team;
             }
 
-            return 0;
+            return team;
         }
 
-        protected Team GetTeam(PlayerId id) {
-            // TODO (adamdev): replace the enum check with something else that aligns with any team [&& Enum.TryParse<Team>(value, out var team)]
-            if (TryGetMetadata(GetTeamKey(id), out var value) ) {
-                return null;
-            }
-
-            return null;
+        protected string GetScoreKey(Team team)
+        {
+            return $"{TeamScoreKey}.{team.TeamName}";
         }
-
-        protected string GetScoreKey(Team team) {
-            return $"{TeamScoreKey}.{team}";
-        }
-
-        protected string GetTeamKey(PlayerId id) {
+        
+        protected string GetTeamKey(PlayerId id)
+        {
             return $"{PlayerTeamKey}.{id.LongId}";
         }
     }

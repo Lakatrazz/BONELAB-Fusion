@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
+using LabFusion.Representation;
 
 namespace LabFusion.SDK.Gamemodes
 {
@@ -9,6 +11,8 @@ namespace LabFusion.SDK.Gamemodes
             TeamName = teamName;
             TeamColor = Color.white;
             MaxPlayers = maxPlayers;
+
+            Players = new List<PlayerRep>(MaxPlayers);
         }
 
         public Team(string teamName, Color teamColor, int maxPlayers = 6)
@@ -16,6 +20,8 @@ namespace LabFusion.SDK.Gamemodes
             TeamName = teamName;
             TeamColor = teamColor;
             MaxPlayers = maxPlayers;
+
+            Players = new List<PlayerRep>(MaxPlayers);
         }
 
         public string TeamName { get; }
@@ -25,6 +31,8 @@ namespace LabFusion.SDK.Gamemodes
         public TeamLogo TeamLogo { get; }
 
         public int TeamScore { get; }
+
+        public List<PlayerRep> Players { get; }
 
         public int PlayerCount { get; }
         public int MaxPlayers { get; }

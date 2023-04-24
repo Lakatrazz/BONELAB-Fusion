@@ -10,58 +10,82 @@ using UnhollowerBaseLib.Attributes;
 using LabFusion.Utilities;
 #endif
 
-namespace LabFusion.MarrowIntegration {
+namespace LabFusion.MarrowIntegration
+{
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
     [AddComponentMenu("BONELAB Fusion/Gamemodes/Team Deathmatch Proxy")]
     [DisallowMultipleComponent]
 #endif
-    public sealed class TeamDeathmatchProxy : FusionMarrowBehaviour {
+    public sealed class TeamDeathmatchProxy : FusionMarrowBehaviour
+    {
 #if MELONLOADER
         public TeamDeathmatchProxy(IntPtr intPtr) : base(intPtr) { }
 
-        public void StartGamemode() {
-            if (TeamDeathmatch.Instance != null) {
+        public void StartGamemode()
+        {
+            if (TeamDeathmatch.Instance != null)
+            {
                 TeamDeathmatch.Instance.StartGamemode(true);
             }
         }
 
-        public void StopGamemode() {
-            if (TeamDeathmatch.Instance != null) {
+        public void StopGamemode()
+        {
+            if (TeamDeathmatch.Instance != null)
+            {
                 TeamDeathmatch.Instance.StopGamemode();
             }
         }
 
-        public void SetRoundLength(int minutes) {
-            if (TeamDeathmatch.Instance != null) {
+        public void SetRoundLength(int minutes)
+        {
+            if (TeamDeathmatch.Instance != null)
+            {
                 TeamDeathmatch.Instance.SetOverriden();
                 TeamDeathmatch.Instance.SetRoundLength(minutes);
             }
         }
 
-        public void SetDefaultValues() {
-            if (TeamDeathmatch.Instance != null) {
+        public void SetDefaultValues()
+        {
+            if (TeamDeathmatch.Instance != null)
+            {
                 TeamDeathmatch.Instance.SetDefaultValues();
             }
         }
 
-        public void SetLavaGangName(string name) {
+        public void SetTeamName(string name)
+        {
+            TeamDeathmatch.Instance?.SetOverriden();
+        }
+
+        public void SetTeamLogo(Texture2D logo)
+        {
+
+        }
+
+        public void SetLavaGangName(string name)
+        {
             TeamDeathmatch.Instance?.SetOverriden();
             TeamDeathmatch.Instance?.SetLavaGangName(name);
         }
 
-        public void SetSabrelakeName(string name) {
+        public void SetSabrelakeName(string name)
+        {
             TeamDeathmatch.Instance?.SetOverriden();
             TeamDeathmatch.Instance?.SetSabrelakeName(name);
         }
 
-        public void SetLavaGangLogo(Texture2D logo) {
+        public void SetLavaGangLogo(Texture2D logo)
+        {
             TeamDeathmatch.Instance?.SetOverriden();
             TeamDeathmatch.Instance?.SetLavaGangLogo(logo);
         }
 
-        public void SetSabrelakeLogo(Texture2D logo) {
+        public void SetSabrelakeLogo(Texture2D logo)
+        {
             TeamDeathmatch.Instance?.SetOverriden();
             TeamDeathmatch.Instance?.SetSabrelakeLogo(logo);
         }
@@ -93,19 +117,26 @@ namespace LabFusion.MarrowIntegration {
             }
         }
 
-        public void SetSabrelakeScore(int score) => Internal_SetTeamScore(TeamDeathmatch.Instance.GetTeam("Sabrelake"), score);
-        public void SetLavaGangScore(int score) => Internal_SetTeamScore(TeamDeathmatch.Instance.GetTeam("LavaGang"), score);
-        public void IncrementSabrelakeScore(int amount) => Internal_IncrementTeamScore(TeamDeathmatch.Instance.GetTeam("Sabrelake"), amount);
-        public void IncrementLavaGangScore(int amount) => Internal_IncrementTeamScore(TeamDeathmatch.Instance.GetTeam("LavaGang"), amount);
+        public void SetTeamScore(int score) => Internal_SetTeamScore(null, score);
+        public void IncrementTeamScore(int amount) => Internal_IncrementTeamScore(null, amount);
 
-        private void Internal_SetTeamScore(Team team, int score) {
-            if (TeamDeathmatch.Instance != null && TeamDeathmatch.Instance.IsActive()) {
+        public void SetSabrelakeScore(int score) => Internal_SetTeamScore(null, score);
+        public void SetLavaGangScore(int score) => Internal_SetTeamScore(null, score);
+        public void IncrementSabrelakeScore(int amount) => Internal_IncrementTeamScore(null, amount);
+        public void IncrementLavaGangScore(int amount) => Internal_IncrementTeamScore(null, amount);
+
+        private void Internal_SetTeamScore(Team team, int score)
+        {
+            if (TeamDeathmatch.Instance != null && TeamDeathmatch.Instance.IsActive())
+            {
                 TeamDeathmatch.Instance.SetScore(team, score);
             }
         }
 
-        private void Internal_IncrementTeamScore(Team team, int amount) {
-            if (TeamDeathmatch.Instance != null && TeamDeathmatch.Instance.IsActive()) {
+        private void Internal_IncrementTeamScore(Team team, int amount)
+        {
+            if (TeamDeathmatch.Instance != null && TeamDeathmatch.Instance.IsActive())
+            {
                 TeamDeathmatch.Instance.SetScore(team, TeamDeathmatch.Instance.GetScore(team) + amount);
             }
         }
@@ -116,8 +147,10 @@ namespace LabFusion.MarrowIntegration {
         public void SetPlaylist(AudioClip clip1, AudioClip clip2, AudioClip clip3, AudioClip clip4) => Internal_SetPlaylist(clip1, clip2, clip3, clip4);
 
         [HideFromIl2Cpp]
-        private void Internal_SetPlaylist(params AudioClip[] clips) {
-            if (TeamDeathmatch.Instance != null) {
+        private void Internal_SetPlaylist(params AudioClip[] clips)
+        {
+            if (TeamDeathmatch.Instance != null)
+            {
                 TeamDeathmatch.Instance.SetOverriden();
                 TeamDeathmatch.Instance.SetPlaylist(Gamemode.DefaultMusicVolume, clips);
             }
