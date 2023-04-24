@@ -27,7 +27,7 @@ namespace LabFusion
     {
         public const byte versionMajor = 1;
         public const byte versionMinor = 3;
-        public const short versionPatch = 2;
+        public const short versionPatch = 3;
     }
 
     public class FusionMod : MelonMod {

@@ -219,6 +219,7 @@
     <Compile Include="Core\src\BoneMenu\LobbyCreator.cs" />
     <Compile Include="Core\src\BoneMenu\NotificationCreator.cs" />
     <Compile Include="Core\src\BoneMenu\BanListCreator.cs" />
+    <Compile Include="Core\src\BoneMenu\AdminActionsCreator.cs" />
     <Compile Include="Core\src\BoneMenu\PlayerListCreator.cs" />
     <Compile Include="Core\src\BoneMenu\SettingsCreator.cs" />
     <Compile Include="Core\src\Data\Containers\FrameSkipper.cs" />
@@ -407,6 +408,7 @@
     <Compile Include="Core\src\Patching\Patches\Attacks\StabSlashPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Trigger\GenGameControl_TriggerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Trigger\MirrorPatches.cs" />
+    <Compile Include="Core\src\Representation\FusionBlessings.cs" />
     <Compile Include="Core\src\Representation\FusionMasterList.cs" />
     <Compile Include="Core\src\SDK\Points\AccessoryItem.cs" />
     <Compile Include="Core\src\SDK\Points\AccessoryItemHelper.cs" />
