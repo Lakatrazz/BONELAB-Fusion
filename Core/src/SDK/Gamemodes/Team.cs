@@ -12,7 +12,7 @@ namespace LabFusion.SDK.Gamemodes
             TeamColor = Color.white;
             MaxPlayers = maxPlayers;
 
-            Players = new List<PlayerRep>(MaxPlayers);
+            Players = new List<PlayerId>();
         }
 
         public Team(string teamName, Color teamColor, int maxPlayers = 6)
@@ -21,7 +21,7 @@ namespace LabFusion.SDK.Gamemodes
             TeamColor = teamColor;
             MaxPlayers = maxPlayers;
 
-            Players = new List<PlayerRep>(MaxPlayers);
+            Players = new List<PlayerId>();
         }
 
         public string TeamName { get; }
@@ -32,12 +32,33 @@ namespace LabFusion.SDK.Gamemodes
 
         public int TeamScore { get; }
 
-        public List<PlayerRep> Players { get; }
+        public List<PlayerId> Players { get; }
 
-        public int PlayerCount { get; }
+        public int PlayerCount { get; private set; }
         public int MaxPlayers { get; }
 
         public AudioClip WinMusic { get; private set; }
         public AudioClip LossMusic { get; private set; }
+
+        public void AddPlayer(PlayerId playerId)
+        {
+            if(PlayerCount > MaxPlayers)
+            {
+                return;
+            }
+
+            Players.Add(playerId);
+        }
+
+        public void RemovePlayer(PlayerId playerId)
+        {
+            if(PlayerCount <= 0)
+            {
+                return;
+            }
+
+            Players.Remove(playerId);
+            PlayerCount--;
+        }
     }
 }

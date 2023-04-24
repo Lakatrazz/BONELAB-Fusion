@@ -15,7 +15,6 @@ namespace LabFusion.SDK.Gamemodes
         private Canvas canvas;
         private RawImage image;
 
-        private PlayerId id;
         private PlayerRep rep;
 
         public TeamLogo(PlayerId id, Team team)
@@ -32,7 +31,6 @@ namespace LabFusion.SDK.Gamemodes
             GameObject.DontDestroyOnLoad(go);
             go.hideFlags = HideFlags.DontUnloadUnusedAsset;
 
-            this.id = id;
             PlayerRepManager.TryGetPlayerRep(id, out rep);
 
             this.team = team;

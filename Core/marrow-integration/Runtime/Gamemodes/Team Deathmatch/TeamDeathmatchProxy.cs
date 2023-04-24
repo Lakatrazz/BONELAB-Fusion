@@ -137,7 +137,7 @@ namespace LabFusion.MarrowIntegration
         {
             if (TeamDeathmatch.Instance != null && TeamDeathmatch.Instance.IsActive())
             {
-                TeamDeathmatch.Instance.SetScore(team, TeamDeathmatch.Instance.GetScore(team) + amount);
+                TeamDeathmatch.Instance.SetScore(team, TeamDeathmatch.Instance.GetScoreFromTeam(team) + amount);
             }
         }
 
