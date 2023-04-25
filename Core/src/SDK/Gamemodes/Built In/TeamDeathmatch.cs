@@ -52,12 +52,13 @@ namespace LabFusion.SDK.Gamemodes
         public const string DefaultPrefix = "FusionTDM";
 
         // Default metadata keys
-        public const string TeamKey = DefaultPrefix + ".Team";
         public const string TeamScoreKey = TeamKey + ".Score";
-        public const string TeamMemberKey = TeamKey + ".Player";
+        public const string TeamKey = DefaultPrefix + ".Team";
 
         public override string GamemodeCategory => "Fusion";
         public override string GamemodeName => "Team Deathmatch";
+
+        public virtual bool EnableFriendlyFire => false;
 
         public override bool DisableDevTools => true;
         public override bool DisableSpawnGun => true;
@@ -142,6 +143,11 @@ namespace LabFusion.SDK.Gamemodes
         public void SetSabrelakeLogo(Texture2D logo)
         {
             _sabrelakeLogoOverride = logo;
+        }
+
+        public void AddTeam(Team team)
+        {
+            teams.Add(team);
         }
 
         public override void OnGamemodeRegistered()
@@ -387,25 +393,19 @@ namespace LabFusion.SDK.Gamemodes
 
             Team winningTeam = leaders.First();
             Team secondPlaceTeam = leaders[1];
-            Team thirdPlaceTeam = leaders[2];
 
-            bool tied = leaders.All((team) => team.TeamScore == GetScoreFromTeam(winningTeam));
             string message = "";
 
-            if(winningTeam != null)
-            {
-                message = $"First Place: {winningTeam.TeamName} (Score: {GetScoreFromTeam(winningTeam)}) \n";
-            }
+            message = $"First Place: {winningTeam.TeamName} (Score: {GetScoreFromTeam(winningTeam)}) \n";
+            message += $"Second Place: {secondPlaceTeam.TeamName} (Score: {GetScoreFromTeam(secondPlaceTeam)}) \n";
 
-            if(secondPlaceTeam != null)
+            if (leaders.Count > 2)
             {
-                message += $"Second Place: {secondPlaceTeam.TeamName} (Score: {GetScoreFromTeam(secondPlaceTeam)}) \n";
-            }
-
-            if(thirdPlaceTeam != null)
-            {
+                Team thirdPlaceTeam = leaders[2];
                 message += $"Third Place: {thirdPlaceTeam.TeamName} (Score: {GetScoreFromTeam(thirdPlaceTeam)}) \n";
             }
+
+            bool tied = leaders.All((team) => team.TeamScore == GetScoreFromTeam(winningTeam));
 
             if (tied)
             {
@@ -587,12 +587,18 @@ namespace LabFusion.SDK.Gamemodes
 
         protected void OnTeamVictory(Team team)
         {
-            FusionAudio.Play2D(team?.WinMusic, DefaultMusicVolume);
+            AudioClip randomChoice = UnityEngine.Random.Range(0, 4) % 2 == 0 ? FusionContentLoader.LavaGangVictory : FusionContentLoader.SabrelakeVictory;
+
+            AudioClip winMusic = team.WinMusic != null ? team.WinMusic : randomChoice;
+            FusionAudio.Play2D(winMusic, DefaultMusicVolume);
         }
 
         protected void OnTeamLost(Team team)
         {
-            FusionAudio.Play2D(team?.LossMusic, DefaultMusicVolume);
+            AudioClip randomChoice = UnityEngine.Random.Range(0, 4) % 2 == 0 ? FusionContentLoader.LavaGangFailure : FusionContentLoader.SabrelakeFailure;
+
+            AudioClip lossMusic = team.LossMusic != null ? team.LossMusic : randomChoice;
+            FusionAudio.Play2D(lossMusic, DefaultMusicVolume);
         }
 
         protected void OnTeamTied()
@@ -616,7 +622,7 @@ namespace LabFusion.SDK.Gamemodes
             {
                 title = "Team Deathmatch Assignment",
                 showTitleOnPopup = true,
-                message = $"Your team is: {ParseTeam(team)}",
+                message = $"Your team is: {team.TeamName}",
                 isMenuItem = false,
                 isPopup = true,
                 popupLength = 5f,
@@ -658,7 +664,7 @@ namespace LabFusion.SDK.Gamemodes
                     transforms.Add(point.transform);
                 }
             }
-            else if(team.TeamName == "Lava Gang" || team.TeamName == "LavaGang")
+            else if(team.TeamName == "Lava Gang")
             {
                 foreach (var point in LavaGangSpawnpoint.Cache.Components)
                 {
@@ -678,7 +684,7 @@ namespace LabFusion.SDK.Gamemodes
         /// <summary>
         /// Method for handling changes in gamemode metadata.
         /// Metadata is broken up into key value pairs to group requests and events when other players request them.
-        /// Things like team changes, point changes, wins,d and losses, get handled here.
+        /// Things like team changes, point changes, wins, and losses, get handled here.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -686,17 +692,20 @@ namespace LabFusion.SDK.Gamemodes
         {
             base.OnMetadataChanged(key, value);
 
+            MelonLoader.MelonLogger.Msg("Metadata Key: " + key);
+            MelonLoader.MelonLogger.Msg("Metadata Value: " + value);
+
             bool isScoreRequest = key.StartsWith(TeamScoreKey);
-            bool isTeamRequest = key.StartsWith(TeamMemberKey);
+            bool isTeamRequest = key.StartsWith(TeamKey);
 
             if (isScoreRequest)
             {
                 OnRequestTeamPoint(key, value, int.Parse(value));
             }
 
-            if (isTeamRequest)
+            if (isTeamRequest) 
             {
-                Team team = GetTeamFromKey(value);
+                Team team = GetTeamFromValue(value);
                 OnRequestTeamChanged(key, value, team);
             }
         }
@@ -711,7 +720,7 @@ namespace LabFusion.SDK.Gamemodes
                 {
                     title = "Team Deathmatch Point",
                     showTitleOnPopup = true,
-                    message = $"{ParseTeam(_localTeam)}'s score is {value}!",
+                    message = $"{_localTeam.TeamName}'s score is {value}!",
                     isMenuItem = false,
                     isPopup = true,
                     popupLength = 0.7f,
@@ -781,30 +790,17 @@ namespace LabFusion.SDK.Gamemodes
         {
             Team newTeam = _lastTeam;
 
-            // If we just have two teams
-            if(teams.Count <= 2)
-            {
-                // SWAP!
-                if(_lastTeam == teams[0])
-                {
-                    newTeam = teams[1];
-                }
-                else
-                {
-                    newTeam = teams[0];
-                }
-            }
-            else
-            {
-                // Assign a random team
-                newTeam = teams[UnityEngine.Random.Range(0, teams.Count)];
-            }
+            // Assign a random team
+            newTeam = teams[UnityEngine.Random.Range(0, teams.Count)];
 
             // Assign it
             SetTeam(id, newTeam);
 
             // Save the team
             _lastTeam = newTeam;
+
+            // Add the player to the team members list
+            newTeam.AddPlayer(id);
         }
 
         protected void IncrementScore(Team team)
@@ -836,12 +832,11 @@ namespace LabFusion.SDK.Gamemodes
             return score;
         }
 
-        protected Team GetTeamFromKey(string key)
+        protected Team GetTeamFromValue(string nameValue)
         {
-            TryGetMetadata(GetTeamKey(key), out string name);
             foreach(Team team in teams)
             {
-                if(team.TeamName == name)
+                if(team.TeamName == nameValue)
                 {
                     return team;
                 }
@@ -852,11 +847,11 @@ namespace LabFusion.SDK.Gamemodes
 
         protected Team GetTeamFromMember(PlayerId id)
         {
-            TryGetMetadata(GetTeamMemberKey(id), out string teamNameKey);
+            TryGetMetadata(GetTeamMemberKey(id), out string teamName);
 
             foreach(Team team in teams)
             {
-                if(team.TeamName == teamNameKey)
+                if(team.TeamName == teamName)
                 {
                     return team;
                 }
@@ -868,30 +863,20 @@ namespace LabFusion.SDK.Gamemodes
         /// <summary>
         /// Returns a string key that contains the referenced team's score.
         /// </summary>
-        /// <returns>"FusionTDM.Team.Score.Sabrelake",
+        /// <returns>"FusionTDM.Team.Sabrelake",
         /// which can be used to get or set the score of the target team.</returns>
         protected string GetScoreKey(Team team)
         {
-            return $"{TeamScoreKey}.{team.TeamName}";
+            return $"{TeamScoreKey}.{team?.TeamName}";
         }
 
         /// <summary>
         /// Returns a string key that contains the team member of a team.
         /// </summary>
-        /// <returns>FusionTDM.Team.Sabrelake.PlayerID</returns>
+        /// <returns>FusionTDM.Team.76561197960287930</returns>
         protected string GetTeamMemberKey(PlayerId id)
         {
-            return $"{TeamMemberKey}.{id.LongId}";
-        }
-
-        /// <summary>
-        /// Returns a string key that contains the name of a team.
-        /// </summary>
-        /// <param name="teamName"></param>
-        /// <returns>FusionTDM.Team.Sabrelake</returns>
-        protected string GetTeamKey(string teamName)
-        {
-            return $"{TeamKey}.{teamName}";
+            return $"{TeamKey}.{id.LongId}";
         }
     }
 }

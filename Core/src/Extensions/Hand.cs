@@ -16,7 +16,9 @@ namespace LabFusion.Extensions {
             var grip = Grip.Cache.Get(hand.m_CurrentAttachedGO);
 
             if (grip != null)
+            {
                 grip.TryAutoHolster(collection);
+            }
         }
 
         public static void TryDetach(this Hand hand) {

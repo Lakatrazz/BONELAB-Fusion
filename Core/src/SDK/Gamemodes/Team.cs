@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using LabFusion.Representation;
+using SLZ.VRMK;
+using Avatar = SLZ.VRMK.Avatar;
 
 namespace LabFusion.SDK.Gamemodes
 {
@@ -13,6 +15,7 @@ namespace LabFusion.SDK.Gamemodes
             MaxPlayers = maxPlayers;
 
             Players = new List<PlayerId>();
+            TeamAvatars = new List<Avatar>();
         }
 
         public Team(string teamName, Color teamColor, int maxPlayers = 6)
@@ -22,6 +25,7 @@ namespace LabFusion.SDK.Gamemodes
             MaxPlayers = maxPlayers;
 
             Players = new List<PlayerId>();
+            TeamAvatars = new List<Avatar>();
         }
 
         public string TeamName { get; }
@@ -39,6 +43,8 @@ namespace LabFusion.SDK.Gamemodes
 
         public AudioClip WinMusic { get; private set; }
         public AudioClip LossMusic { get; private set; }
+
+        public List<Avatar> TeamAvatars { get; private set; }
 
         public void AddPlayer(PlayerId playerId)
         {

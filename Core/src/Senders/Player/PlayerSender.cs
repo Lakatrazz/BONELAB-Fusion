@@ -22,6 +22,8 @@ namespace LabFusion.Senders {
         DYING = 1 << 3,
         RECOVERY = 1 << 4,
         DEATH_BY_OTHER_PLAYER = 1 << 5,
+        DEALT_DAMAGE = 1 << 6,
+        DAMAGE_BY_OTHER_PLAYER = 1 << 7
     }
 
     public enum NicknameVisibility {
