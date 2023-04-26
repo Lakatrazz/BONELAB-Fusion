@@ -9,7 +9,7 @@ using LabFusion.Utilities;
 using SLZ.Props.Weapons;
 
 namespace LabFusion.Syncables {
-    public class GunExtender : PropComponentExtender<Gun> {
+    public class GunExtender : PropComponentArrayExtender<Gun> {
         public static FusionComponentCache<Gun, PropSyncable> Cache = new FusionComponentCache<Gun, PropSyncable>();
 
         protected override void AddToCache(Gun gun, PropSyncable syncable) {

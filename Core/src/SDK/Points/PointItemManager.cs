@@ -197,6 +197,31 @@ namespace LabFusion.SDK.Points {
             OnBitCountChanged.InvokeSafe("executing OnBitCountChanged");
         }
 
+        public static bool TryUpgradeItem(PointItem item) {
+            var unlockedItems = GetUnlockedItems();
+
+            if (!unlockedItems.Contains(item))
+                return false;
+
+            if (item.IsMaxUpgrade)
+                return false;
+
+            int price = item.ActivePrice;
+            int bits = GetBitCount();
+
+            if (price < 0)
+                return false;
+
+            if (price > bits)
+                return false;
+
+            PointSaveManager.UpgradeItem(item.Barcode);
+            int newBits = bits - price;
+            PointSaveManager.SetBitCount(newBits);
+
+            return true;
+        }
+
         public static bool TryBuyItem(PointItem item) {
             var unlockedItems = GetUnlockedItems();
 

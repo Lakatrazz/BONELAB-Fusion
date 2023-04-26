@@ -18,6 +18,8 @@ using SLZ.Props.Weapons;
 using UnityEngine;
 
 using SLZ.Props;
+using LabFusion.Preferences;
+using SLZ.Rig;
 
 namespace LabFusion.Network
 {
@@ -140,6 +142,12 @@ namespace LabFusion.Network
                     else {
                         if (!data.tracker1.gameObject || !data.tracker2.gameObject)
                             return;
+
+                        // Check if player constraining is disabled and if this is attempting to constrain a player
+                        if (!FusionPreferences.ActiveServerSettings.PlayerConstrainingEnabled.GetValue()) {
+                            if (data.tracker1.gameObject.GetComponentInParent<RigManager>() || data.tracker2.gameObject.GetComponentInParent<RigManager>())
+                                return;
+                        }
 
                         if (SyncManager.TryGetSyncable(data.constrainerId, out var syncable) && syncable is PropSyncable constrainer && constrainer.TryGetExtender<ConstrainerExtender>(out var extender)) {
                             var comp = extender.Component;

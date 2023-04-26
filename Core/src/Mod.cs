@@ -26,8 +26,8 @@ namespace LabFusion
     public struct FusionVersion
     {
         public const byte versionMajor = 1;
-        public const byte versionMinor = 3;
-        public const short versionPatch = 3;
+        public const byte versionMinor = 4;
+        public const short versionPatch = 0;
     }
 
     public class FusionMod : MelonMod {

@@ -43,7 +43,7 @@ namespace LabFusion.Syncables
         public TransformCache[] TransformCaches;
         public RigidbodyCache[] RigidbodyCaches;
 
-        public readonly AssetPoolee AssetPoolee;
+        public AssetPoolee AssetPoolee;
 
         public readonly GameObject GameObject;
 
@@ -52,7 +52,7 @@ namespace LabFusion.Syncables
         public PropLifeCycleEvents LifeCycleEvents;
 
         public bool DisableSyncing = false;
-        public readonly bool HasIgnoreHierarchy;
+        public bool HasIgnoreHierarchy;
 
         public float TimeOfMessage = 0f;
 
@@ -97,21 +97,31 @@ namespace LabFusion.Syncables
 
         private bool _wasDisposed = false;
 
+        private bool _initialized = false;
+
         private const int _targetFrame = 3;
         private readonly FrameSkipper _predictionSkipper = new FrameSkipper(_targetFrame);
 
-        public PropSyncable(InteractableHost host = null, GameObject root = null) {
+        public PropSyncable(InteractableHost host = null, GameObject root = null, bool init = true) {
             if (root != null)
                 GameObject = root;
             else if (host != null)
                 GameObject = host.GetSyncRoot();
 
-            AssetPoolee = AssetPoolee.Cache.Get(GameObject);
-
             if (Cache.TryGet(GameObject, out var syncable))
                 SyncManager.RemoveSyncable(syncable);
 
             Cache.Add(GameObject, this);
+
+            if (init)
+                Init();
+        }
+
+        public void Init() {
+            if (_initialized || _wasDisposed)
+                return;
+
+            AssetPoolee = AssetPoolee.Cache.Get(GameObject);
 
             LifeCycleEvents = GameObject.AddComponent<PropLifeCycleEvents>();
             LifeCycleEvents.enabled = false;
@@ -120,16 +130,19 @@ namespace LabFusion.Syncables
 
             // Recreate all rigidbodies incase of them being gone (ascent Amber ball, looking at you)
             var tempHosts = GameObject.GetComponentsInChildren<InteractableHost>(true);
-            foreach (var tempHost in tempHosts) {
+            foreach (var tempHost in tempHosts)
+            {
                 if (tempHost.IsStatic)
                     continue;
 
                 // Remove from key lists
-                if (KeyReciever.ClaimedHosts != null) {
+                if (KeyReciever.ClaimedHosts != null)
+                {
                     bool removed = KeyReciever.ClaimedHosts.Remove(tempHost.TryCast<IGrippable>());
 
                     // If this was in a socket and we just removed it, recreate the rigidbody
-                    if (removed) {
+                    if (removed)
+                    {
                         tempHost.CreateRigidbody();
                         tempHost.EnableInteraction();
                     }
@@ -137,10 +150,11 @@ namespace LabFusion.Syncables
             }
 
             // Assign grip, rigidbody, etc. info
-            if (GameObject) 
+            if (GameObject)
                 AssignInformation(GameObject);
-            
-            foreach (var grip in PropGrips) {
+
+            foreach (var grip in PropGrips)
+            {
                 grip.attachedHandDelegate += (Grip.HandDelegate)((h) => { OnAttach(h, grip); });
                 grip.detachedHandDelegate += (Grip.HandDelegate)((h) => { OnDetach(h, grip); });
             }
@@ -164,7 +178,8 @@ namespace LabFusion.Syncables
             PDControllers = new PDController[Rigidbodies.Length];
             LockJoints = new FixedJoint[Rigidbodies.Length];
 
-            for (var i = 0; i < Rigidbodies.Length; i++) {
+            for (var i = 0; i < Rigidbodies.Length; i++)
+            {
                 // Clear out potential conflicting syncables
                 var go = Rigidbodies[i].gameObject;
                 if (HostCache.TryGet(go, out var conflict) && conflict != this)
@@ -189,6 +204,8 @@ namespace LabFusion.Syncables
             HasIgnoreHierarchy = GameObject.GetComponentInParent<IgnoreHierarchy>(true);
 
             _extenders = PropExtenderManager.GetPropExtenders(this);
+
+            _initialized = true;
         }
 
         public bool IsDestroyed() => _wasDisposed;
@@ -302,6 +319,15 @@ namespace LabFusion.Syncables
         public byte? GetOwner() => Owner;
 
         public void SetOwner(byte owner) {
+            // Make sure this has been initialized
+            if (!_initialized)
+            {
+#if DEBUG
+                FusionLogger.Warn("Tried setting the owner of a PropSyncable, but it wasn't initialized!");
+#endif
+                return;
+            }
+
             // Make sure this isn't destroyed
             if (IsDestroyed()) {
 #if DEBUG
@@ -457,6 +483,9 @@ namespace LabFusion.Syncables
         private bool HasValidParameters() => !DisableSyncing && _hasRegistered && FusionSceneManager.IsLoadDone() && IsRootEnabled;
 
         public void OnFixedUpdate() {
+            if (!_initialized)
+                return;
+
             try {
                 if (!HasValidParameters())
                     return;
@@ -492,6 +521,9 @@ namespace LabFusion.Syncables
 
         public void OnUpdate()
         {
+            if (!_initialized)
+                return;
+
             try {
                 if (!HasValidParameters())
                     return;

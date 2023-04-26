@@ -54,6 +54,7 @@ namespace LabFusion.SDK.Points
         private TMP_Text _infoTags;
         private Button _infoBuyConfirm;
         private Button _infoAlreadyOwned;
+        private Button _infoUpgradeToLevel;
         private Button _infoGoBack;
         private RawImage _infoPreviewImage;
         private Texture _defaultPreview;
@@ -62,6 +63,8 @@ namespace LabFusion.SDK.Points
 
         private Button[] _itemButtons;
         private int _itemButtonCount;
+
+        private TMP_Text _upgradeText;
 
         private TMP_Text _bitCountText;
 
@@ -138,9 +141,12 @@ namespace LabFusion.SDK.Points
             _infoTags = _groupInformationRoot.Find("button_Tags").GetComponentInChildren<TMP_Text>(true);
             _infoBuyConfirm = _groupInformationRoot.Find("button_BuyConfirm").GetComponentInChildren<Button>(true);
             _infoAlreadyOwned = _groupInformationRoot.Find("button_AlreadyOwned").GetComponentInChildren<Button>(true);
+            _infoUpgradeToLevel = _groupInformationRoot.Find("button_UpgradeToLevel").GetComponentInChildren<Button>(true);
             _infoGoBack = _groupInformationRoot.Find("button_goBack").GetComponentInChildren<Button>(true);
             _infoPreviewImage = _groupInformationRoot.Find("image_IconPreview").GetComponentInChildren<RawImage>(true);
             _defaultPreview = _infoPreviewImage.texture;
+
+            _upgradeText = _infoUpgradeToLevel.GetComponentInChildren<TMP_Text>();
 
             _toggleButton = _groupInformationRoot.Find("button_Toggle").GetComponent<Button>();
             _toggleButton.onClick.AddListener((UnityAction)(() => {
@@ -245,6 +251,10 @@ namespace LabFusion.SDK.Points
             }));
             _infoBuyConfirm.onClick.AddListener((UnityAction)(() => {
                 ConfirmBuy();
+            }));
+
+            _infoUpgradeToLevel.onClick.AddListener((UnityAction)(() => {
+                ConfirmUpgrade();
             }));
         }
 
@@ -404,8 +414,8 @@ namespace LabFusion.SDK.Points
         private void LoadInfoPage(PointItem item) {
             _infoTitle.text = item.Title;
             _infoTitle.color = PointItemManager.ParseColor(item.Rarity);
-            _infoDescription.text = item.Description;
-            _infoPrice.text = $"{item.AdjustedPrice} Bits";
+            _infoDescription.text = item.ActiveDescription;
+            _infoPrice.text = $"{item.ActivePrice} Bits";
             _infoAuthor.text = item.Author;
             _infoVersion.text = item.Version;
 
@@ -441,7 +451,17 @@ namespace LabFusion.SDK.Points
             switch (Panel) {
                 case ActivePanel.INFORMATION:
                     _infoBuyConfirm.gameObject.SetActive(false);
-                    _infoAlreadyOwned.gameObject.SetActive(true);
+
+                    if (_targetInfoItem.IsMaxUpgrade) {
+                        _infoAlreadyOwned.gameObject.SetActive(true);
+                        _infoUpgradeToLevel.gameObject.SetActive(false);
+                    }
+                    else {
+                        _infoAlreadyOwned.gameObject.SetActive(false);
+                        _infoUpgradeToLevel.gameObject.SetActive(true);
+
+                        _upgradeText.text = $"Upgrade to Level {_targetInfoItem.UpgradeLevel + 2}";
+                    }
 
                     if (item.CanEquip) {
                         _toggleButton.gameObject.SetActive(true);
@@ -454,6 +474,7 @@ namespace LabFusion.SDK.Points
                 case ActivePanel.CONFIRMATION:
                     _infoBuyConfirm.gameObject.SetActive(true);
                     _infoAlreadyOwned.gameObject.SetActive(false);
+                    _infoUpgradeToLevel.gameObject.SetActive(false);
 
                     _toggleButton.gameObject.SetActive(false);
                     break;
@@ -508,6 +529,27 @@ namespace LabFusion.SDK.Points
 
             // Update text
             UpdateToggleText(_targetInfoItem);
+        }
+
+        private void ConfirmUpgrade() {
+            // Make sure we have a target
+            if (_targetInfoItem == null)
+                return;
+
+            // Try upgrading the item
+            // Check for success
+            if (PointItemManager.TryUpgradeItem(_targetInfoItem))
+            {
+                SelectPanel(_lastCatalogPanel);
+                LoadCatalogPage();
+
+                FusionAudio.Play3D(transform.position, FusionContentLoader.PurchaseSuccess, 1f);
+            }
+            // Failure
+            else
+            {
+                FusionAudio.Play3D(transform.position, FusionContentLoader.PurchaseFailure, 1f);
+            }
         }
 
         private void ConfirmBuy() {
