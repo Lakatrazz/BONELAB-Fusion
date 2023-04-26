@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SLZ.Marrow.Warehouse;
+using System;
 
 using UnityEngine;
 
@@ -56,38 +57,12 @@ namespace LabFusion.MarrowIntegration
             }
         }
 
-        public void SetTeamName(string name)
+        public void AddTeam(string Name, Color Color, Texture2D Logo, AvatarCrate Avatar)
         {
-            TeamDeathmatch.Instance?.SetOverriden();
-        }
-
-        public void SetTeamLogo(Texture2D logo)
-        {
-
-        }
-
-        public void SetLavaGangName(string name)
-        {
-            TeamDeathmatch.Instance?.SetOverriden();
-            TeamDeathmatch.Instance?.SetLavaGangName(name);
-        }
-
-        public void SetSabrelakeName(string name)
-        {
-            TeamDeathmatch.Instance?.SetOverriden();
-            TeamDeathmatch.Instance?.SetSabrelakeName(name);
-        }
-
-        public void SetLavaGangLogo(Texture2D logo)
-        {
-            TeamDeathmatch.Instance?.SetOverriden();
-            TeamDeathmatch.Instance?.SetLavaGangLogo(logo);
-        }
-
-        public void SetSabrelakeLogo(Texture2D logo)
-        {
-            TeamDeathmatch.Instance?.SetOverriden();
-            TeamDeathmatch.Instance?.SetSabrelakeLogo(logo);
+            TeamDeathmatch.Instance.SetOverriden();
+            Team team = new Team(Name, Color);
+            team.SetLogo(Logo);
+            TeamDeathmatch.Instance.AddTeam(team);
         }
 
         public void SetAvatarOverride(string barcode)
@@ -173,6 +148,8 @@ namespace LabFusion.MarrowIntegration
 
         public void SetRoundLength(int minutes) { }
 
+        public void AddTeam(string Name, Color Color, Texture2D Logo, AvatarCrate Avatar) { }
+
         public void SetLavaGangName(string name) { }
 
         public void SetSabrelakeName(string name) { }
@@ -180,6 +157,7 @@ namespace LabFusion.MarrowIntegration
         public void SetLavaGangLogo(Texture2D logo) { }
 
         public void SetSabrelakeLogo(Texture2D logo) { }
+
 
         public void SetSabrelakeScore(int score) { }
         public void SetLavaGangScore(int score) {  }

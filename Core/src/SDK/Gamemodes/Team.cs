@@ -3,11 +3,17 @@ using System.Collections.Generic;
 using LabFusion.Representation;
 using SLZ.VRMK;
 using Avatar = SLZ.VRMK.Avatar;
+using BoneLib;
 
 namespace LabFusion.SDK.Gamemodes
 {
     public class Team
     {
+        public Team()
+        {
+
+        }
+
         public Team(string teamName, int maxPlayers = 6)
         {
             TeamName = teamName;
@@ -31,8 +37,8 @@ namespace LabFusion.SDK.Gamemodes
         public string TeamName { get; }
         public Color TeamColor { get; }
 
-        public Texture2D Logo { get; }
-        public TeamLogo TeamLogo { get; }
+        public Texture2D Logo { get; private set; }
+        public List<TeamLogoInstance> LogoInstances { get; private set; }
 
         public int TeamScore { get; }
 
@@ -54,6 +60,8 @@ namespace LabFusion.SDK.Gamemodes
             }
 
             Players.Add(playerId);
+
+            ConstructLogoInstance(playerId);
         }
 
         public void RemovePlayer(PlayerId playerId)
@@ -65,6 +73,31 @@ namespace LabFusion.SDK.Gamemodes
 
             Players.Remove(playerId);
             PlayerCount--;
+
+            TeamLogoInstance playerLogo = LogoInstances.Find((logo) => logo.playerId == playerId);
+            LogoInstances.Remove(playerLogo);
+        }
+
+        public void SetLogo(Texture2D logo)
+        {
+            this.Logo = logo;
+        }
+
+        public void SetMusic(AudioClip winMusic = null, AudioClip lossMusic = null)
+        {
+            WinMusic = winMusic;
+            LossMusic = lossMusic;
+        }
+
+        private void ConstructLogoInstance(PlayerId playerId)
+        {
+            if (LogoInstances == null)
+            {
+                LogoInstances = new List<TeamLogoInstance>();
+            }
+
+            TeamLogoInstance logoInstance = new TeamLogoInstance(playerId, this);
+            LogoInstances.Add(logoInstance);
         }
     }
 }

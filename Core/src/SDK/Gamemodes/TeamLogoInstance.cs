@@ -5,11 +5,12 @@ using UnityEngine;
 
 namespace LabFusion.SDK.Gamemodes
 {
-    public class TeamLogo
+    public class TeamLogoInstance
     {
         protected const float LogoDivider = 270f;
 
         public Team team;
+        public PlayerId playerId;
 
         private GameObject go;
         private Canvas canvas;
@@ -17,7 +18,7 @@ namespace LabFusion.SDK.Gamemodes
 
         private PlayerRep rep;
 
-        public TeamLogo(PlayerId id, Team team)
+        public TeamLogoInstance(PlayerId id, Team team)
         {
             go = new GameObject($"{id.SmallId} Team Logo");
 
@@ -31,6 +32,7 @@ namespace LabFusion.SDK.Gamemodes
             GameObject.DontDestroyOnLoad(go);
             go.hideFlags = HideFlags.DontUnloadUnusedAsset;
 
+            playerId = id;
             PlayerRepManager.TryGetPlayerRep(id, out rep);
 
             this.team = team;

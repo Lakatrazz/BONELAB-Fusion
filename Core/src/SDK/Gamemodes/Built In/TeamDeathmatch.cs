@@ -26,23 +26,13 @@ namespace LabFusion.SDK.Gamemodes
 
         public List<Team> teams;
 
-        public string LavaGangName => !string.IsNullOrWhiteSpace(_lavaGangOverride) ? _lavaGangOverride : "Lava Gang";
-        public string SabrelakeName => !string.IsNullOrWhiteSpace(_sabrelakeOverride) ? _sabrelakeOverride : "Sabrelake";
-        public Texture2D LavaGangLogo => _lavaGangLogoOverride != null ? _lavaGangLogoOverride : FusionContentLoader.LavaGangLogo;
-        public Texture2D SabrelakeLogo => _sabrelakeLogoOverride != null ? _sabrelakeLogoOverride : FusionContentLoader.SabrelakeLogo;
+        public bool OverrideValues { get => _overrideValues; }
 
         protected string _lavaGangOverride = null;
         protected string _sabrelakeOverride = null;
 
         protected Texture2D _lavaGangLogoOverride = null;
         protected Texture2D _sabrelakeLogoOverride = null;
-
-        protected Dictionary<string, Team> _teamDictionary = new Dictionary<string, Team>();
-
-        protected string ParseTeam(Team team)
-        {
-            return team.TeamName;
-        }
 
         private const int _defaultMinutes = 3;
         private const int _minMinutes = 2;
@@ -58,8 +48,6 @@ namespace LabFusion.SDK.Gamemodes
         public override string GamemodeCategory => "Fusion";
         public override string GamemodeName => "Team Deathmatch";
 
-        public virtual bool EnableFriendlyFire => false;
-
         public override bool DisableDevTools => true;
         public override bool DisableSpawnGun => true;
         public override bool DisableManualUnragdoll => true;
@@ -69,15 +57,15 @@ namespace LabFusion.SDK.Gamemodes
         private float _timeOfStart;
         private bool _oneMinuteLeft;
 
+        private bool _overrideValues;
+
         private int _savedMinutes = _defaultMinutes;
         private int _totalMinutes = _defaultMinutes;
 
         private Team _lastTeam = null;
         private Team _localTeam = null;
 
-        private bool _hasOverridenValues = false;
-
-        private readonly Dictionary<PlayerId, TeamLogo> _logoInstances = new Dictionary<PlayerId, TeamLogo>();
+        private readonly Dictionary<PlayerId, TeamLogoInstance> _logoInstances = new Dictionary<PlayerId, TeamLogoInstance>();
 
         private string _avatarOverride = null;
         private float? _vitalityOverride = null;
@@ -125,29 +113,43 @@ namespace LabFusion.SDK.Gamemodes
             }
         }
 
-        public void SetLavaGangName(string name)
-        {
-            _lavaGangOverride = name;
-        }
-
-        public void SetSabrelakeName(string name)
-        {
-            _sabrelakeOverride = name;
-        }
-
-        public void SetLavaGangLogo(Texture2D logo)
-        {
-            _lavaGangLogoOverride = logo;
-        }
-
-        public void SetSabrelakeLogo(Texture2D logo)
-        {
-            _sabrelakeLogoOverride = logo;
-        }
-
         public void AddTeam(Team team)
         {
             teams.Add(team);
+        }
+
+        public void AddDefaultTeams()
+        {
+            Team sabrelake = new Team("Sabrelake", Color.yellow);
+            Team lavaGang = new Team("Lava Gang", Color.magenta);
+
+            sabrelake.SetMusic(FusionContentLoader.SabrelakeVictory, FusionContentLoader.SabrelakeFailure);
+            lavaGang.SetMusic(FusionContentLoader.LavaGangVictory, FusionContentLoader.LavaGangFailure);
+
+            sabrelake.SetLogo(FusionContentLoader.SabrelakeLogo);
+            lavaGang.SetLogo(FusionContentLoader.LavaGangLogo);
+
+            if(!teams.Exists((team) => team.TeamName == sabrelake.TeamName))
+            {
+                AddTeam(sabrelake);
+            }
+            else if(!teams.Exists((team) => team.TeamName == lavaGang.TeamName))
+            {
+                AddTeam(lavaGang);
+            }
+        }
+
+        public Team GetTeam(string teamName)
+        {
+            foreach(Team team in teams)
+            {
+                if(team.TeamName == teamName)
+                {
+                    return team;
+                }
+            }
+
+            return null;
         }
 
         public override void OnGamemodeRegistered()
@@ -193,19 +195,19 @@ namespace LabFusion.SDK.Gamemodes
 
         public override void OnMainSceneInitialized()
         {
-            if (!_hasOverridenValues)
+            if (!_overrideValues)
             {
                 SetDefaultValues();
             }
             else
             {
-                _hasOverridenValues = false;
+                _overrideValues = false;
             }
         }
 
         public override void OnLoadingBegin()
         {
-            _hasOverridenValues = false;
+            _overrideValues = false;
         }
 
         public void SetDefaultValues()
@@ -213,11 +215,7 @@ namespace LabFusion.SDK.Gamemodes
             _totalMinutes = _savedMinutes;
             SetPlaylist(DefaultMusicVolume, FusionContentLoader.CombatPlaylist);
 
-            _lavaGangOverride = null;
-            _sabrelakeOverride = null;
-
-            _lavaGangLogoOverride = null;
-            _sabrelakeLogoOverride = null;
+            AddDefaultTeams();
 
             _avatarOverride = null;
             _vitalityOverride = null;
@@ -229,12 +227,12 @@ namespace LabFusion.SDK.Gamemodes
         {
             if (FusionSceneManager.IsLoading())
             {
-                if (!_hasOverridenValues)
+                if (!_overrideValues)
                 {
                     SetDefaultValues();
                 }
 
-                _hasOverridenValues = true;
+                _overrideValues = true;
             }
         }
 
@@ -294,7 +292,7 @@ namespace LabFusion.SDK.Gamemodes
         {
             if (IsActive() && NetworkInfo.IsServer)
             {
-                if (type != PlayerActionType.DEATH_BY_OTHER_PLAYER)
+                if (type != PlayerActionType.DYING_BY_OTHER_PLAYER)
                 {
                     return;
                 }
@@ -513,7 +511,7 @@ namespace LabFusion.SDK.Gamemodes
 
         protected void AddLogo(PlayerId id, Team team)
         {
-            var logo = new TeamLogo(id, team);
+            var logo = new TeamLogoInstance(id, team);
             _logoInstances.Add(id, logo);
         }
 

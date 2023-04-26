@@ -411,7 +411,7 @@
     <Compile Include="Core\src\Patching\Patches\Trigger\MirrorPatches.cs" />
     <Compile Include="Core\src\Representation\FusionMasterList.cs" />
     <Compile Include="Core\src\SDK\Gamemodes\Team.cs" />
-    <Compile Include="Core\src\SDK\Gamemodes\TeamLogo.cs" />
+    <Compile Include="Core\src\SDK\Gamemodes\TeamLogoInstance.cs" />
     <Compile Include="Core\src\SDK\Points\AccessoryItem.cs" />
     <Compile Include="Core\src\SDK\Points\AccessoryItemHelper.cs" />
     <Compile Include="Core\src\SDK\Points\BitEconomy.cs" />
