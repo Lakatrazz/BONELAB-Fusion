@@ -1,4 +1,5 @@
 ﻿using LabFusion.Network;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,16 +17,24 @@ namespace LabFusion.Representation {
         public struct MasterPlayer {
             public ulong id;
             public string name;
+            public bool unique;
 
-            public MasterPlayer(ulong id, string name) {
+            public MasterPlayer(ulong id, string name, bool unique = true) {
                 this.id = id;
                 this.name = name;
+                this.unique = unique;
             }
         }
 
         private static readonly MasterPlayer[] _steamPlayers = new MasterPlayer[] {
             new MasterPlayer(76561198198752494, "Lakatrazz"),
             new MasterPlayer(76561198097630377, "AlexTheBaBa"),
+            new MasterPlayer(76561198222917852, "Mr.Gaming"),
+            new MasterPlayer(76561198096586464, "brwok"),
+            new MasterPlayer(76561198143565238, "Riggle"),
+            new MasterPlayer(76561198233973112, "Alfie"),
+            new MasterPlayer(76561198061847729, "zz0000"),
+            new MasterPlayer(76561198837064193, "172", false),
         };
 
         public static FusionMasterResult VerifyPlayer(ulong id, string name) {
@@ -45,7 +54,7 @@ namespace LabFusion.Representation {
                 }
 
                 // The name matches, but the id didn't
-                if (player.name == name) {
+                if (player.name == name && player.unique) {
                     return FusionMasterResult.IMPERSONATOR;
                 }
             }

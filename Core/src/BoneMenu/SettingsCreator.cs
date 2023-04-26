@@ -45,6 +45,9 @@ namespace LabFusion.BoneMenu
             // Voice chat
             CreateBoolPreference(category, "Voicechat", FusionPreferences.LocalServerSettings.VoicechatEnabled);
 
+            // Player constraining
+            CreateBoolPreference(category, "Player Constraining", FusionPreferences.LocalServerSettings.PlayerConstrainingEnabled);
+
             // Server privacy
             CreateEnumPreference(category, "Server Privacy", FusionPreferences.LocalServerSettings.Privacy);
 

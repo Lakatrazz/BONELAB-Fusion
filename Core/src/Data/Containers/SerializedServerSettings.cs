@@ -21,6 +21,7 @@ namespace LabFusion.Data {
         public void Serialize(FusionWriter writer) {
             writer.Write(settings.NametagsEnabled.GetValue());
             writer.Write(settings.VoicechatEnabled.GetValue());
+            writer.Write(settings.PlayerConstrainingEnabled.GetValue());
             writer.Write((byte)settings.Privacy.GetValue());
             writer.Write((byte)settings.TimeScaleMode.GetValue());
             writer.Write(settings.MaxPlayers.GetValue()); 
@@ -40,6 +41,7 @@ namespace LabFusion.Data {
             {
                 NametagsEnabled = new ReadonlyFusionPrev<bool>(reader.ReadBoolean()),
                 VoicechatEnabled = new ReadonlyFusionPrev<bool>(reader.ReadBoolean()),
+                PlayerConstrainingEnabled = new ReadonlyFusionPrev<bool>(reader.ReadBoolean()),
                 Privacy = new ReadonlyFusionPrev<ServerPrivacy>((ServerPrivacy)reader.ReadByte()),
                 TimeScaleMode = new ReadonlyFusionPrev<TimeScaleMode>((TimeScaleMode)reader.ReadByte()),
                 MaxPlayers = new ReadonlyFusionPrev<byte>(reader.ReadByte()),

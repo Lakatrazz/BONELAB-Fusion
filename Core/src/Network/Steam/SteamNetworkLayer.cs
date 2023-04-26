@@ -422,6 +422,7 @@ namespace LabFusion.Network
             category.CreateFunctionElement("Copy SteamID to Clipboard", Color.white, OnCopySteamID);
 
             BoneMenuCreator.CreatePlayerListMenu(category);
+            BoneMenuCreator.CreateAdminActionsMenu(category);
         }
 
         private void OnClickCreateServer() {

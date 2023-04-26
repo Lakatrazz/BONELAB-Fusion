@@ -198,8 +198,12 @@ namespace LabFusion.Network
 
             PooleeUtilities.CheckingForSpawn.Push(poolee);
 
-            PropSyncable newSyncable = new PropSyncable(null, go.gameObject);
-            newSyncable.SetOwner(owner);
+            PropSyncable newSyncable = new(null, go.gameObject, false);
+
+            DelayUtilities.DelayFrames(() => {
+                newSyncable.Init();
+                newSyncable.SetOwner(owner);
+            }, 4);
 
             SyncManager.RegisterSyncable(newSyncable, syncId);
 
