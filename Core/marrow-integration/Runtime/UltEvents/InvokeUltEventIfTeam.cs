@@ -25,7 +25,7 @@ namespace LabFusion.MarrowIntegration
 
         public static readonly FusionComponentCache<GameObject, InvokeUltEventIfTeam> Cache = new FusionComponentCache<GameObject, InvokeUltEventIfTeam>();
 
-        private string teamName;
+        public string TeamName { get; private set; }
 
         private void Awake()
         {
@@ -47,7 +47,7 @@ namespace LabFusion.MarrowIntegration
 
         public void SetTeamName(string name)
         {
-            teamName = name;
+            TeamName = name;
         }
 #else
         public override string Comment => "The UltEventHolder attached to this GameObject will be executed when the local player becomes part of a designated team in any team-based mode.";

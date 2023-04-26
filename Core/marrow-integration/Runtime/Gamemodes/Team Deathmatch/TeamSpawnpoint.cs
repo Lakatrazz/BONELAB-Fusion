@@ -30,9 +30,7 @@ namespace LabFusion.MarrowIntegration
 
         public static readonly FusionComponentCache<GameObject, TeamSpawnpoint> Cache = new FusionComponentCache<GameObject, TeamSpawnpoint>();
 
-        public Team Team { get => _team; }
-
-        private Team _team;
+        public string TeamName { get; private set; }
 
         private void Awake()
         {
@@ -44,9 +42,9 @@ namespace LabFusion.MarrowIntegration
             Cache.Remove(gameObject);
         }
 
-        public void SetTeam(Team team)
+        public void SetTeam(string teamName)
         {
-            this._team = team;
+            TeamName = teamName;
         }
 #else
         public override string Comment => "Creates a spawn point for players on a team during Team Deathmatch.\n" +
@@ -55,7 +53,7 @@ namespace LabFusion.MarrowIntegration
 
 #if UNITY_EDITOR        
 
-        public void SetTeam(Team team) { }
+        public void SetTeam(string teamName) { }
 
         [DrawGizmo(GizmoType.Active | GizmoType.Selected | GizmoType.NonSelected)]
         private static void DrawPreviewGizmo(TeamSpawnpoint spawnpoint, GizmoType gizmoType)

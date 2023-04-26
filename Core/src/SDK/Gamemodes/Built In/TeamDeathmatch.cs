@@ -645,6 +645,19 @@ namespace LabFusion.SDK.Gamemodes
                     ultEvent.Invoke();
                 }
             }
+            else
+            {
+                // Likely a custom event for a team
+                foreach(var holder in InvokeUltEventIfTeam.Cache.Components)
+                {
+                    if(team.TeamName != holder.TeamName)
+                    {
+                        continue;
+                    }
+
+                    holder.Invoke();
+                }
+            }
 
             // Invoke spawn point changes on level load
             FusionSceneManager.HookOnLevelLoad(() => InitializeTeamSpawns(team));
@@ -666,6 +679,19 @@ namespace LabFusion.SDK.Gamemodes
             {
                 foreach (var point in LavaGangSpawnpoint.Cache.Components)
                 {
+                    transforms.Add(point.transform);
+                }
+            }
+            else
+            {
+                // Likely a custom event for a team
+                foreach(var point in TeamSpawnpoint.Cache.Components)
+                {
+                    if(team.TeamName != point.TeamName)
+                    {
+                        continue;
+                    }
+
                     transforms.Add(point.transform);
                 }
             }
