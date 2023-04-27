@@ -716,9 +716,6 @@ namespace LabFusion.SDK.Gamemodes
         {
             base.OnMetadataChanged(key, value);
 
-            MelonLoader.MelonLogger.Msg("Metadata Key: " + key);
-            MelonLoader.MelonLogger.Msg("Metadata Value: " + value);
-
             bool isScoreRequest = key.StartsWith(TeamScoreKey);
             bool isTeamRequest = key.StartsWith(TeamKey);
 
