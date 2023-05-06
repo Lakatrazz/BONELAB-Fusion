@@ -68,6 +68,9 @@ namespace LabFusion
         }
 
         public override void OnInitializeMelon() {
+            // Prepare the bonemenu category
+            FusionPreferences.OnPrepareBoneMenuCategory();
+
             // Pull files
             FusionFileLoader.OnInitializeMelon();
 

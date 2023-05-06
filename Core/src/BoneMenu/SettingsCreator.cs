@@ -39,6 +39,10 @@ namespace LabFusion.BoneMenu
 
         private static void CreateServerSettingsMenu(MenuCategory category)
         {
+            // Server display
+            var displaySettingsCategory = category.CreateCategory("Display Settings", Color.white);
+            CreateStringPreference(displaySettingsCategory, "Server Name", FusionPreferences.LocalServerSettings.ServerName);
+
             // Nametags enabled
             CreateBoolPreference(category, "Nametags", FusionPreferences.LocalServerSettings.NametagsEnabled);
 
@@ -90,26 +94,10 @@ namespace LabFusion.BoneMenu
 
             CreateEnumPreference(nicknameCategory, "Nickname Visibility", FusionPreferences.ClientSettings.NicknameVisibility);
 
-            string currentNickname = PlayerIdManager.LocalNickname;
-            var nickname = nicknameCategory.CreateFunctionElement(string.IsNullOrWhiteSpace(currentNickname) ? "No Nickname" : $"Nickname: {currentNickname}", Color.white, null);
-            var pasteNickname = nicknameCategory.CreateFunctionElement("Paste Nickname", Color.white, () => {
-                if (!Clipboard.ContainsText())
-                    return;
-
-                var text = Clipboard.GetText();
-                text = text.LimitLength(PlayerIdManager.MaxNameLength);
-                FusionPreferences.ClientSettings.Nickname.SetValue(text);
-            });
-            var resetNickname = nicknameCategory.CreateFunctionElement("Reset Nickname", Color.white, () => {
-                FusionPreferences.ClientSettings.Nickname.SetValue("");
-            });
-
-            FusionPreferences.ClientSettings.Nickname.OnValueChanged += (v) => {
-                nickname.SetName(string.IsNullOrWhiteSpace(v) ? "No Nickname" : $"Nickname: {v}");
-
+            CreateStringPreference(nicknameCategory, "Nickname", FusionPreferences.ClientSettings.Nickname, (v) => {
                 if (PlayerIdManager.LocalId != null)
                     PlayerIdManager.LocalId.TrySetMetadata(MetadataHelper.NicknameKey, v);
-            };
+            });
 
             // Voice chat
             var voiceChatCategory = category.CreateCategory("Voice Chat", Color.white);

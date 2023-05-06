@@ -24,7 +24,9 @@ namespace LabFusion.Data {
             writer.Write(settings.PlayerConstrainingEnabled.GetValue());
             writer.Write((byte)settings.Privacy.GetValue());
             writer.Write((byte)settings.TimeScaleMode.GetValue());
-            writer.Write(settings.MaxPlayers.GetValue()); 
+            writer.Write(settings.MaxPlayers.GetValue());
+
+            writer.Write(settings.ServerName.GetValue());
 
             writer.Write(settings.ServerMortality.GetValue());
 

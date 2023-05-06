@@ -102,7 +102,11 @@ namespace LabFusion.Syncables
         private const int _targetFrame = 3;
         private readonly FrameSkipper _predictionSkipper = new FrameSkipper(_targetFrame);
 
-        public PropSyncable(InteractableHost host = null, GameObject root = null, bool init = true) {
+        // Here for compatability with old mods
+        public PropSyncable(InteractableHost host = null, GameObject root = null)
+        : this(host, root, true) { }
+
+        public PropSyncable(InteractableHost host, GameObject root, bool init) {
             if (root != null)
                 GameObject = root;
             else if (host != null)

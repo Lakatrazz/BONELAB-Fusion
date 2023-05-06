@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 
 namespace LabFusion.Representation {
     public enum FusionMasterResult {
@@ -53,8 +55,12 @@ namespace LabFusion.Representation {
                     return FusionMasterResult.MASTER;
                 }
 
+                // Convert names to have no whitespace and in lowercase
+                string masterName = Regex.Replace(player.name, @"\s+", "").ToLower();
+                string otherName = Regex.Replace(name, @"\s+", "").ToLower();
+
                 // The name matches, but the id didn't
-                if (player.name == name && player.unique) {
+                if (masterName == otherName && player.unique) {
                     return FusionMasterResult.IMPERSONATOR;
                 }
             }

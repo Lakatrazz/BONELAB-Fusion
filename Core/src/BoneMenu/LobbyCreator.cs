@@ -42,7 +42,16 @@ namespace LabFusion.BoneMenu
             }
 
             // Get the username/title of the lobby
-            var userString = $"{info.LobbyName}'s Server ({info.PlayerCount}/{info.MaxPlayers})";
+            string userString;
+
+            string countString = $"({info.PlayerCount}/{info.MaxPlayers})";
+
+            if (!string.IsNullOrWhiteSpace(info.LobbyName)) {
+                userString = $"{info.LobbyName} [{info.LobbyOwner}] {countString}";
+            }
+            else {
+                userString = $"{info.LobbyOwner}'s Server {countString}";
+            }
 
             // Change color based on version matching
             Color lobbyColor = Color.white;
