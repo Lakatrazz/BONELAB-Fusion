@@ -41,6 +41,11 @@ namespace LabFusion.Patching
             var rm = __instance.physRig.manager;
             if (NetworkInfo.HasServer && rm == RigData.RigReferences.RigManager) {
                 // Notify the server about the death beginning
+                if (FusionPlayer.LastAttacker.HasValue)
+                {
+                    PlayerSender.SendPlayerAction(PlayerActionType.DYING_BY_OTHER_PLAYER, FusionPlayer.LastAttacker.Value);
+                }
+
                 PlayerSender.SendPlayerAction(PlayerActionType.DYING);
             }
         }
