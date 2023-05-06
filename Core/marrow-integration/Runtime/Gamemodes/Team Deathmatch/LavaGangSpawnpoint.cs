@@ -27,11 +27,11 @@ namespace LabFusion.MarrowIntegration {
 
         public static readonly FusionComponentCache<GameObject, LavaGangSpawnpoint> Cache = new FusionComponentCache<GameObject, LavaGangSpawnpoint>();
 
-        private void Awake() {
+        private void OnEnable() {
             Cache.Add(gameObject, this);
         }
 
-        private void OnDestroy() {
+        private void OnDisable() {
             Cache.Remove(gameObject);
         }
 #else

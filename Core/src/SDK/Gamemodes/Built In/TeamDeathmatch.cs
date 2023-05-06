@@ -19,6 +19,9 @@ namespace LabFusion.SDK.Gamemodes
 {
     public class TeamDeathmatch : Gamemode
     {
+        public const string DefaultSabrelakeName = "Sabrelake";
+        public const string DefaultLavaGangName = "Lava Gang";
+
         private const int _minPlayerBits = 30;
         private const int _maxPlayerBits = 250;
 
@@ -113,6 +116,24 @@ namespace LabFusion.SDK.Gamemodes
             }
         }
 
+        public void SetTeamDisplayName(string teamName, string displayName)
+        {
+            var team = teams.FirstOrDefault((t) => t.TeamName == teamName);
+
+            if (team != null)
+            {
+                team.SetDisplayName(displayName);
+            }
+        }
+
+        public void SetTeamLogo(string teamName, Texture2D logo) {
+            var team = teams.FirstOrDefault((t) => t.TeamName == teamName);
+
+            if (team != null) {
+                team.SetLogo(logo);
+            }
+        }
+
         public void AddTeam(Team team)
         {
             teams.Add(team);
@@ -120,8 +141,10 @@ namespace LabFusion.SDK.Gamemodes
 
         public void AddDefaultTeams()
         {
-            Team sabrelake = new Team("Sabrelake", Color.yellow);
-            Team lavaGang = new Team("Lava Gang", Color.magenta);
+            teams.Clear();
+
+            Team sabrelake = new Team(DefaultSabrelakeName, Color.yellow);
+            Team lavaGang = new Team(DefaultLavaGangName, Color.magenta);
 
             sabrelake.SetMusic(FusionContentLoader.SabrelakeVictory, FusionContentLoader.SabrelakeFailure);
             lavaGang.SetMusic(FusionContentLoader.LavaGangVictory, FusionContentLoader.LavaGangFailure);
@@ -129,14 +152,8 @@ namespace LabFusion.SDK.Gamemodes
             sabrelake.SetLogo(FusionContentLoader.SabrelakeLogo);
             lavaGang.SetLogo(FusionContentLoader.LavaGangLogo);
 
-            if(!teams.Exists((team) => team.TeamName == sabrelake.TeamName))
-            {
-                AddTeam(sabrelake);
-            }
-            else if(!teams.Exists((team) => team.TeamName == lavaGang.TeamName))
-            {
-                AddTeam(lavaGang);
-            }
+            AddTeam(sabrelake);
+            AddTeam(lavaGang);
         }
 
         public Team GetTeam(string teamName)
@@ -387,7 +404,7 @@ namespace LabFusion.SDK.Gamemodes
             base.OnStopGamemode();
 
             List<Team> leaders = teams;
-            leaders.OrderBy(team => GetScoreFromTeam(team)).Reverse();
+            leaders = leaders.OrderBy(team => GetScoreFromTeam(team)).Reverse().ToList();
 
             Team winningTeam = leaders.First();
             Team secondPlaceTeam = leaders[1];
@@ -397,12 +414,12 @@ namespace LabFusion.SDK.Gamemodes
             bool tied = leaders.All((team) => team.TeamScore == GetScoreFromTeam(winningTeam));
 
             if (!tied) {
-                message = $"First Place: {winningTeam.TeamName} (Score: {GetScoreFromTeam(winningTeam)}) \n";
-                message += $"Second Place: {secondPlaceTeam.TeamName} (Score: {GetScoreFromTeam(secondPlaceTeam)}) \n";
+                message = $"First Place: {winningTeam.DisplayName} (Score: {GetScoreFromTeam(winningTeam)}) \n";
+                message += $"Second Place: {secondPlaceTeam.DisplayName} (Score: {GetScoreFromTeam(secondPlaceTeam)}) \n";
 
                 if (leaders.Count > 2) {
                     Team thirdPlaceTeam = leaders[2];
-                    message += $"Third Place: {thirdPlaceTeam.TeamName} (Score: {GetScoreFromTeam(thirdPlaceTeam)}) \n";
+                    message += $"Third Place: {thirdPlaceTeam.DisplayName} (Score: {GetScoreFromTeam(thirdPlaceTeam)}) \n";
                 }
 
                 message += GetTeamStatus(winningTeam);
@@ -617,7 +634,7 @@ namespace LabFusion.SDK.Gamemodes
             {
                 title = "Team Deathmatch Assignment",
                 showTitleOnPopup = true,
-                message = $"Your team is: {team.TeamName}",
+                message = $"Your team is: {team.DisplayName}",
                 isMenuItem = false,
                 isPopup = true,
                 popupLength = 5f,
@@ -628,14 +645,14 @@ namespace LabFusion.SDK.Gamemodes
             _localTeam = team;
 
             // Invoke ult events
-            if (team.TeamName == "Sabrelake")
+            if (team.TeamName == DefaultSabrelakeName)
             {
                 foreach (var ultEvent in InvokeUltEventIfTeamSabrelake.Cache.Components)
                 {
                     ultEvent.Invoke();
                 }
             }
-            else if(team.TeamName == "Lava Gang")
+            else if(team.TeamName == DefaultLavaGangName)
             {
                 foreach (var ultEvent in InvokeUltEventIfTeamLavaGang.Cache.Components)
                 {
@@ -665,14 +682,14 @@ namespace LabFusion.SDK.Gamemodes
             // Get all spawn points
             List<Transform> transforms = new List<Transform>();
 
-            if (team.TeamName == "Sabrelake")
+            if (team.TeamName == DefaultSabrelakeName)
             {
                 foreach (var point in SabrelakeSpawnpoint.Cache.Components)
                 {
                     transforms.Add(point.transform);
                 }
             }
-            else if(team.TeamName == "Lava Gang")
+            else if (team.TeamName == DefaultLavaGangName)
             {
                 foreach (var point in LavaGangSpawnpoint.Cache.Components)
                 {
@@ -738,7 +755,7 @@ namespace LabFusion.SDK.Gamemodes
                 {
                     title = "Team Deathmatch Point",
                     showTitleOnPopup = true,
-                    message = $"{_localTeam.TeamName}'s score is {value}!",
+                    message = $"{_localTeam.DisplayName}'s score is {value}!",
                     isMenuItem = false,
                     isPopup = true,
                     popupLength = 0.7f,
@@ -828,12 +845,18 @@ namespace LabFusion.SDK.Gamemodes
 
         protected void IncrementScore(Team team)
         {
+            if (team == null)
+                return;
+
             var currentScore = GetScoreFromTeam(team);
             SetScore(team, currentScore + 1);
         }
 
         public void SetScore(Team team, int score)
         {
+            if (team == null)
+                return;
+
             TrySetMetadata(GetScoreKey(team), score.ToString());
         }
 

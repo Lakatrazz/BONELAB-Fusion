@@ -27,6 +27,7 @@ namespace LabFusion.SDK.Gamemodes
         public Team(string teamName, Color teamColor, int maxPlayers = 6)
         {
             TeamName = teamName;
+            _displayName = null;
             TeamColor = teamColor;
             MaxPlayers = maxPlayers;
 
@@ -39,6 +40,9 @@ namespace LabFusion.SDK.Gamemodes
 
         public Texture2D Logo { get; private set; }
         public List<TeamLogoInstance> LogoInstances { get; private set; }
+
+        private string _displayName = null;
+        public string DisplayName => _displayName ?? TeamName;
 
         public int TeamScore { get; }
 
@@ -81,6 +85,11 @@ namespace LabFusion.SDK.Gamemodes
         public void SetLogo(Texture2D logo)
         {
             this.Logo = logo;
+        }
+
+        public void SetDisplayName(string displayName)
+        {
+            this._displayName = displayName;
         }
 
         public void SetMusic(AudioClip winMusic = null, AudioClip lossMusic = null)
