@@ -394,25 +394,22 @@ namespace LabFusion.SDK.Gamemodes
 
             string message = "";
 
-            message = $"First Place: {winningTeam.TeamName} (Score: {GetScoreFromTeam(winningTeam)}) \n";
-            message += $"Second Place: {secondPlaceTeam.TeamName} (Score: {GetScoreFromTeam(secondPlaceTeam)}) \n";
-
-            if (leaders.Count > 2)
-            {
-                Team thirdPlaceTeam = leaders[2];
-                message += $"Third Place: {thirdPlaceTeam.TeamName} (Score: {GetScoreFromTeam(thirdPlaceTeam)}) \n";
-            }
-
             bool tied = leaders.All((team) => team.TeamScore == GetScoreFromTeam(winningTeam));
 
-            if (tied)
-            {
-                message += "Tie! (All teams scored the same score!)";
-                OnTeamTied();
-            }
-            else
-            {
+            if (!tied) {
+                message = $"First Place: {winningTeam.TeamName} (Score: {GetScoreFromTeam(winningTeam)}) \n";
+                message += $"Second Place: {secondPlaceTeam.TeamName} (Score: {GetScoreFromTeam(secondPlaceTeam)}) \n";
+
+                if (leaders.Count > 2) {
+                    Team thirdPlaceTeam = leaders[2];
+                    message += $"Third Place: {thirdPlaceTeam.TeamName} (Score: {GetScoreFromTeam(thirdPlaceTeam)}) \n";
+                }
+
                 message += GetTeamStatus(winningTeam);
+            }
+            else {
+                message += $"Tie! (All Scored: {GetScoreFromTeam(winningTeam)})";
+                OnTeamTied();
             }
 
             // Show the winners in a notification
@@ -809,10 +806,15 @@ namespace LabFusion.SDK.Gamemodes
 
         protected void AssignTeam(PlayerId id)
         {
-            Team newTeam = _lastTeam;
-
             // Assign a random team
-            newTeam = teams[UnityEngine.Random.Range(0, teams.Count)];
+            List<Team> teamPool = new List<Team>(teams);
+
+            // Remove our last team from the list
+            if (teamPool.Count > 1 && _lastTeam != null) {
+                teamPool.Remove(_lastTeam);
+            }
+
+            Team newTeam = teamPool[UnityEngine.Random.Range(0, teamPool.Count)];
 
             // Assign it
             SetTeam(id, newTeam);
