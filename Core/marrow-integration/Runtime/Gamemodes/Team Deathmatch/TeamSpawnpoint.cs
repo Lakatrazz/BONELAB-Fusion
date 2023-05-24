@@ -1,12 +1,12 @@
 ﻿using System;
 
 using UnityEngine;
-using LabFusion.SDK.Gamemodes;
 
 #if MELONLOADER
 using MelonLoader;
 
 using LabFusion.Utilities;
+using LabFusion.SDK.Gamemodes;
 #endif
 
 #if UNITY_EDITOR
@@ -49,12 +49,11 @@ namespace LabFusion.MarrowIntegration
 #else
         public override string Comment => "Creates a spawn point for players on a team during Team Deathmatch.\n" +
             "You can have as many of these in your scene as you want, and it will become a random spawn.";
+
+        public void SetTeam(string teamName) { }
 #endif
 
 #if UNITY_EDITOR        
-
-        public void SetTeam(string teamName) { }
-
         [DrawGizmo(GizmoType.Active | GizmoType.Selected | GizmoType.NonSelected)]
         private static void DrawPreviewGizmo(TeamSpawnpoint spawnpoint, GizmoType gizmoType)
         {
