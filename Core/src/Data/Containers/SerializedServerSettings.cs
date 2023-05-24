@@ -14,7 +14,7 @@ using UnityEngine;
 
 namespace LabFusion.Data {
     public class SerializedServerSettings : IFusionSerializable {
-        public const int Size = sizeof(byte) * 11;
+        public const int Size = sizeof(byte) * 13;
 
         public FusionPreferences.ServerSettings settings;
 
@@ -47,6 +47,8 @@ namespace LabFusion.Data {
                 Privacy = new ReadonlyFusionPrev<ServerPrivacy>((ServerPrivacy)reader.ReadByte()),
                 TimeScaleMode = new ReadonlyFusionPrev<TimeScaleMode>((TimeScaleMode)reader.ReadByte()),
                 MaxPlayers = new ReadonlyFusionPrev<byte>(reader.ReadByte()),
+
+                ServerName = new ReadonlyFusionPrev<string>(reader.ReadString()),
 
                 ServerMortality = new ReadonlyFusionPrev<bool>(reader.ReadBoolean()),
 
