@@ -87,6 +87,10 @@ namespace LabFusion.BoneMenu
             CreateBoolPreference(nametagCategory, "Nametags", FusionPreferences.ClientSettings.NametagsEnabled);
 
             // Nametag color
+            var color = FusionPreferences.ClientSettings.NametagColor.GetValue();
+            color.a = 1f;
+            FusionPreferences.ClientSettings.NametagColor.SetValue(color);
+
             CreateColorPreference(nametagCategory, FusionPreferences.ClientSettings.NametagColor);
 
             // Nickname

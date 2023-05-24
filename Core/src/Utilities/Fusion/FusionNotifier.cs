@@ -12,19 +12,46 @@ using UnityEngine.Playables;
 
 namespace LabFusion.Utilities
 {
+    public struct NotificationText {
+        public string text;
+
+        public Color color;
+
+        public bool richText;
+
+        public NotificationText(string text) : this(text, Color.white) { }
+
+        public NotificationText(string text, Color color, bool richText = false) {
+            if (!richText) {
+                text = text.RemoveRichText();
+            }
+
+            this.text = text;
+            this.color = color;
+            this.richText = richText;
+        }
+
+        public static implicit operator NotificationText(string text) {
+            return new NotificationText(text);
+        }
+    }
+
     public class FusionNotification
     {
-        public string title = "";
-        public Color titleColor = Color.white;
+        // Text settings
+        public NotificationText title;
+
+        public NotificationText message;
+
+        // Popup settings
         public bool showTitleOnPopup = false;
 
-        public string message = "";
-        public Color messageColor = Color.white;
-
-        public bool isMenuItem = true;
-
         public bool isPopup = true;
+
         public float popupLength = 2f;
+
+        // BoneMenu settings
+        public bool isMenuItem = true;
 
         public Action<MenuCategory> onCreateCategory = null;
     }
@@ -53,14 +80,14 @@ namespace LabFusion.Utilities
             if (notification.isMenuItem) {
                 // Use a name generated with an index because BoneMenu returns an existing category if names match
                 string generated = $"Internal_Notification_Generated_{_notificationNumber}";
-                var category = BoneMenuCreator.NotificationCategory.CreateCategory(generated, notification.titleColor);
+                var category = BoneMenuCreator.NotificationCategory.CreateCategory(generated, notification.title.color);
 
-                category.SetName(notification.title);
+                category.SetName(notification.title.text);
 
                 _notificationNumber++;
 
-                if (!string.IsNullOrWhiteSpace(notification.message))
-                    category.CreateFunctionElement(notification.message, notification.messageColor, null);
+                if (!string.IsNullOrWhiteSpace(notification.message.text))
+                    category.CreateFunctionElement(notification.message.text, notification.message.color, null);
 
                 category.CreateFunctionElement("Mark as Read", Color.red, () =>
                 {
@@ -82,9 +109,9 @@ namespace LabFusion.Utilities
                 string incomingTitle = "New Notification";
 
                 if (notification.showTitleOnPopup)
-                    incomingTitle = notification.title;
+                    incomingTitle = notification.title.text;
 
-                string incomingSubTitle = notification.message;
+                string incomingSubTitle = notification.message.text;
                 float holdTime = notification.popupLength;
 
                 headTitles.CUSTOMDISPLAY(incomingTitle, incomingSubTitle, null, holdTime);

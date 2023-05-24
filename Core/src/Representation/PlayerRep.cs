@@ -749,7 +749,10 @@ namespace LabFusion.Representation
                 // Update settings
                 if (_isSettingsDirty) {
                     if (playerSettings != null) {
-                        repNameText.color = playerSettings.nametagColor;
+                        // Make sure the alpha is 1 so that people cannot create invisible names
+                        var color = playerSettings.nametagColor;
+                        color.a = 1f;
+                        repNameText.color = color;
                     }
 
                     _isSettingsDirty = false;
