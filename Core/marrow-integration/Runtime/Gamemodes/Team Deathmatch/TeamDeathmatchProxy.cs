@@ -123,6 +123,7 @@ namespace LabFusion.MarrowIntegration
         public void IncrementSabrelakeScore(int amount) => Internal_IncrementTeamScore(Internal_GetTeamByName(TeamDeathmatch.DefaultSabrelakeName), amount);
         public void IncrementLavaGangScore(int amount) => Internal_IncrementTeamScore(Internal_GetTeamByName(TeamDeathmatch.DefaultLavaGangName), amount);
 
+        [HideFromIl2Cpp]
         private void Internal_SetTeamScore(Team team, int score)
         {
             if (TeamDeathmatch.Instance != null && TeamDeathmatch.Instance.IsActive())
@@ -131,6 +132,7 @@ namespace LabFusion.MarrowIntegration
             }
         }
 
+        [HideFromIl2Cpp]
         private void Internal_IncrementTeamScore(Team team, int amount)
         {
             if (TeamDeathmatch.Instance != null && TeamDeathmatch.Instance.IsActive())
@@ -139,6 +141,7 @@ namespace LabFusion.MarrowIntegration
             }
         }
 
+        [HideFromIl2Cpp]
         private Team Internal_GetTeamByName(string teamName) {
             if (TeamDeathmatch.Instance != null) {
                 return TeamDeathmatch.Instance.GetTeam(teamName);

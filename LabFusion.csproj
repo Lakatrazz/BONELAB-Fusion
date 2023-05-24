@@ -224,9 +224,9 @@
     <Compile Include="Core\src\BoneMenu\AdminActionsCreator.cs" />
     <Compile Include="Core\src\BoneMenu\PlayerListCreator.cs" />
     <Compile Include="Core\src\BoneMenu\SettingsCreator.cs" />
-    <Compile Include="Core\src\Data\Containers\FrameSkipper.cs" />
+    <Compile Include="Core\src\Data\Containers\Syncables\FrameSkipper.cs" />
     <Compile Include="Core\src\Data\Containers\FusionArrayPool.cs" />
-    <Compile Include="Core\src\Data\Containers\GrabbedGripList.cs" />
+    <Compile Include="Core\src\Data\Containers\Syncables\GrabbedGripList.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\GameControllerData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\HalfwayParkData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\HolodeckData.cs" />
@@ -242,7 +242,7 @@
     <Compile Include="Core\src\Data\Containers\Levels\DescentData.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedPropGrab.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedWorldGrab.cs" />
-    <Compile Include="Core\src\Data\Containers\GripPair.cs" />
+    <Compile Include="Core\src\Data\Containers\Syncables\GripPair.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\HomeData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\MagmaGateData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\MineDiveData.cs" />
@@ -259,8 +259,9 @@
     <Compile Include="Core\src\Data\Containers\Grips\SerializedPlayerBodyGrab.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedServerSettings.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedPlayerSettings.cs" />
-    <Compile Include="Core\src\Data\Containers\RigidbodyCache.cs" />
-    <Compile Include="Core\src\Data\Containers\TransformCache.cs" />
+    <Compile Include="Core\src\Data\Containers\Syncables\RigidbodyCache.cs" />
+    <Compile Include="Core\src\Data\Containers\Syncables\TempRigidbodyList.cs" />
+    <Compile Include="Core\src\Data\Containers\Syncables\TransformCache.cs" />
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedSmallQuaternion.cs" />
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedQuaternion.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedStaticGrab.cs" />
