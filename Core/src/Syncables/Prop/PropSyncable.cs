@@ -147,6 +147,8 @@ namespace LabFusion.Syncables
             TransformCaches = new TransformCache[GameObjectCount];
             RigidbodyCaches = new RigidbodyCache[GameObjectCount];
             PDControllers = new PDController[GameObjectCount];
+
+            DestroyLockJoints();
             LockJoints = new FixedJoint[GameObjectCount];
 
             for (var i = 0; i < GameObjectCount; i++) {
@@ -227,6 +229,16 @@ namespace LabFusion.Syncables
         }
 
         public bool IsDestroyed() => _wasDisposed;
+
+        private void DestroyLockJoints() {
+            if (LockJoints == null)
+                return;
+
+            for (var i = 0; i < LockJoints.Length; i++) {
+                if (LockJoints[i] != null)
+                    GameObject.Destroy(LockJoints[i]);
+            }
+        }
 
         public void InsertCatchupDelegate(Action<ulong> catchup) {
             _catchupDelegate += catchup;
@@ -319,10 +331,7 @@ namespace LabFusion.Syncables
                 extender.OnCleanup();
             }
 
-            foreach (var joint in LockJoints) {
-                if (joint != null)
-                    GameObject.Destroy(joint);
-            }
+            DestroyLockJoints();
 
             _wasDisposed = true;
         }
