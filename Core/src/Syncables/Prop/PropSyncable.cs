@@ -215,17 +215,6 @@ namespace LabFusion.Syncables
             _extenders = PropExtenderManager.GetPropExtenders(this);
 
             _initialized = true;
-
-            OnPostInit();
-        }
-
-        private void OnPostInit() {
-            DelayUtilities.DelayFrames(() => {
-                if (_initialized && !IsDestroyed()) {
-                    AssignInformation(GameObject);
-                    OnInitRigidbodies();
-                }
-            }, 4);
         }
 
         public bool IsDestroyed() => _wasDisposed;
