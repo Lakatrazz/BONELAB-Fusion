@@ -41,10 +41,16 @@ namespace LabFusion.Utilities {
         public static void DespawnAll() {
             if (NetworkInfo.IsServer) {
                 var pools = AssetSpawner._instance._poolList;
+
+                // Loop through all pools and get their spawned objects so we can despawn them
                 foreach (var pool in pools) {
                     var spawnedObjects = pool.spawned.ToArray();
 
                     foreach (var spawned in spawnedObjects)  {
+                        // Don't despawn the player!
+                        if (spawned.GetComponentInChildren<RigManager>(true) != null)
+                            continue;
+
                         spawned.Despawn();
                     }
                 }
