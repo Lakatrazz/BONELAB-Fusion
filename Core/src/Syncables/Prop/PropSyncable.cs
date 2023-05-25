@@ -100,7 +100,7 @@ namespace LabFusion.Syncables
         private bool _initialized = false;
 
         private const int _targetFrame = 3;
-        private readonly FrameSkipper _predictionSkipper = new FrameSkipper(_targetFrame);
+        private readonly FrameSkipper _predictionSkipper = new(_targetFrame);
 
         public PropSyncable(InteractableHost host = null, GameObject root = null) {
             if (root != null)
@@ -122,10 +122,6 @@ namespace LabFusion.Syncables
                 AssignInformation(GameObject);
 
             foreach (var grip in PropGrips) {
-                foreach (var hand in grip.attachedHands) {
-                    OnAttach(hand, grip);
-                }
-
                 grip.attachedHandDelegate += (Grip.HandDelegate)((h) => { OnAttach(h, grip); });
                 grip.detachedHandDelegate += (Grip.HandDelegate)((h) => { OnDetach(h, grip); });
             }
