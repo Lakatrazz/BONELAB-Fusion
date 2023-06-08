@@ -92,7 +92,7 @@ namespace LabFusion.Network
             // Make sure the tag is valid, otherwise we dont return a message
             if (tag.HasValue) {
                 var value = tag.Value;
-                var tagBytes = BitConverter.GetBytes(value);
+                var tagBytes = BitConverter.GetBytes((ushort)value);
 
                 var message = Internal_Create(size);
                 message._buffer[0] = NativeMessageTag.Module;
