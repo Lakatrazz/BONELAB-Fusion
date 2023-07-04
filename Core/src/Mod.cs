@@ -20,6 +20,7 @@ using UnityEngine;
 
 using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Points;
+using System.Linq;
 
 namespace LabFusion
 {
@@ -46,6 +47,8 @@ namespace LabFusion
         public static Assembly FusionAssembly { get; private set; }
 
         private static int _nextSyncableSendRate = 1;
+
+        private static bool _hasAutoUpdater = false;
 
         public override void OnEarlyInitializeMelon() {
             Instance = this;
@@ -110,6 +113,23 @@ namespace LabFusion
             PersistentAssetCreator.OnLateInitializeMelon();
 
             FusionPreferences.OnCreateBoneMenu();
+
+            // Check if the auto updater is installed
+            _hasAutoUpdater = MelonPlugin.RegisteredMelons.Any((p) => p.Info.Name.Contains("LabFusion Updater"));
+
+            if (!_hasAutoUpdater) {
+                FusionNotifier.Send(new FusionNotification()
+                {
+                    isMenuItem = false,
+                    isPopup = true,
+                    message = "You do not have the Fusion Autoupdater installed in your plugins folder!" +
+                    "\nIt is recommended to install it in order to stay up to date.",
+                });
+
+#if DEBUG
+                FusionLogger.Warn("The player does not have the auto updater installed.");
+#endif
+            }
         }
 
         protected void OnInitializeNetworking() {

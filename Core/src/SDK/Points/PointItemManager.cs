@@ -172,6 +172,8 @@ namespace LabFusion.SDK.Points {
         }
 
         public static void RewardBits(int bits) {
+            bits = Mathf.Max(0, bits);
+
             // Make sure the amount isn't invalid
             if (bits.IsNaN()) {
                 FusionLogger.ErrorLine("Prevented attempt to give invalid bit reward. Please notify a Fusion developer and send them your log.");
@@ -185,6 +187,8 @@ namespace LabFusion.SDK.Points {
         }
 
         public static void DecrementBits(int bits) {
+            bits = Mathf.Max(0, bits);
+
             // Make sure the amount isn't invalid
             if (bits.IsNaN()) {
                 FusionLogger.ErrorLine("Prevented attempt to remove an invalid bit amount. Please notify a Fusion developer and send them your log.");

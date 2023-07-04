@@ -259,7 +259,7 @@ namespace LabFusion.SDK.Gamemodes
 
             for(int i = 0; i < teams.Count; i++)
             {
-                accumulatedScore = accumulatedScore + teams[i].TeamScore;
+                accumulatedScore += GetScoreFromTeam(teams[i]);
             }
 
             return accumulatedScore;
@@ -411,7 +411,7 @@ namespace LabFusion.SDK.Gamemodes
 
             string message = "";
 
-            bool tied = leaders.All((team) => team.TeamScore == GetScoreFromTeam(winningTeam));
+            bool tied = leaders.All((team) => GetScoreFromTeam(team) == GetScoreFromTeam(winningTeam));
 
             if (!tied) {
                 message = $"First Place: {winningTeam.DisplayName} (Score: {GetScoreFromTeam(winningTeam)}) \n";

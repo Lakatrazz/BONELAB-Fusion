@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using HarmonyLib;
+
 using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Representation;
@@ -23,14 +24,18 @@ namespace LabFusion.Patching {
         public static void OnUpdate(ArtRig __instance) {
             // Check if we have a player rep to animate the jaw on here
             if (NetworkInfo.HasServer && PlayerRepManager.TryGetPlayerRep(__instance.manager, out var rep)) {
-                var avatar = __instance.manager._avatar;
-
-                if (!avatar.gameObject.activeInHierarchy) {
-                    return;
-                }
-
                 var jaw = __instance.m_jaw;
                 jaw.localRotation = Quaternion.AngleAxis(20f * rep.GetVoiceLoudness(), Vector3Extensions.right);
+            }
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(ArtRig.OnLateUpdate))]
+        public static void OnLateUpdate(ArtRig __instance) {
+            // If this is a player rep, match the avatar jaw to the simulated jaw
+            if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(__instance.manager))
+            {
+                var avatar = __instance.manager._avatar;
 
                 var animatorJaw = avatar.animator.GetBoneTransform(HumanBodyBones.Jaw);
 

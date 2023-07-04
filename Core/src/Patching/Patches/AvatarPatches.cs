@@ -20,17 +20,15 @@ using Avatar = SLZ.VRMK.Avatar;
 namespace LabFusion.Patching {
     [HarmonyPatch(typeof(Avatar))]
     public static class AvatarPatches {
-        [HarmonyPatch(nameof(Avatar.RefreshBodyMeasurements))]
-        [HarmonyPatch(new Type[0])]
-        [HarmonyPrefix]
-        public static void RefreshBodyMeasurementsPrefix(Avatar __instance) {
-            OverrideBodyMeasurements(__instance);
-        }
+        public static bool IgnorePatches = false;
 
         [HarmonyPatch(nameof(Avatar.RefreshBodyMeasurements))]
         [HarmonyPatch(new Type[0])]
         [HarmonyPostfix]
         public static void RefreshBodyMeasurementsPostfix(Avatar __instance) {
+            if (IgnorePatches)
+                return;
+
             OverrideBodyMeasurements(__instance);
         }
 
@@ -44,13 +42,20 @@ namespace LabFusion.Patching {
                     // Make sure this isn't the RealHeptaRig avatar! We don't want to scale those values!
                     if (rm != null && PlayerRepManager.TryGetPlayerRep(rm, out var rep) && __instance != rm.realHeptaRig.player && rep.avatarStats != null)
                     {
-                        // Apply the avatar stats
+                        // Apply avatar scaling
+                        var go = __instance.gameObject;
+
+                        // Now, apply the synced avatar stats
                         rep.avatarStats.CopyTo(__instance);
 
-                        // Scale the mesh if its poly blank
-                        var go = __instance.gameObject;
+                        // Polyblank should just scale based on the custom avatar height
                         if (go.name.Contains("char_marrow1_polyBlank")) {
-                            go.transform.localScale = Vector3Extensions.one * (__instance._height / 1.76f);
+                            float newHeight = rep.avatarStats.height;
+                            go.transform.localScale = Vector3Extensions.one * (newHeight / 1.76f);
+                        }
+                        // Otherwise, apply the synced scale
+                        else {
+                            // TODO: Implement
                         }
                     }
                 }

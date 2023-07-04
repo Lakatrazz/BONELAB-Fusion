@@ -285,6 +285,7 @@
     <Compile Include="Core\src\Exceptions\ExpectedServerException.cs" />
     <Compile Include="Core\src\Extensions\AlignPlug.cs" />
     <Compile Include="Core\src\Extensions\Array.cs" />
+    <Compile Include="Core\src\Extensions\AudioSource.cs" />
     <Compile Include="Core\src\Extensions\Byte.cs" />
     <Compile Include="Core\src\Extensions\Chunk.cs" />
     <Compile Include="Core\src\Extensions\Grip.cs" />
@@ -319,6 +320,8 @@
     <Compile Include="Core\src\Network\Helpers\NetworkVerification.cs" />
     <Compile Include="Core\src\Network\Helpers\SendRateTable.cs" />
     <Compile Include="Core\src\Network\INetworkLobby.cs" />
+    <Compile Include="Core\src\Network\IVoiceHandler.cs" />
+    <Compile Include="Core\src\Network\IVoiceManager.cs" />
     <Compile Include="Core\src\Network\Messages\Arena\BaseGameControllerMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Arena\TimeTrialGameControllerMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Gamemodes\GamemodeMetadataRemoveMessage.cs" />
@@ -366,9 +369,10 @@
     <Compile Include="Core\src\Network\Messages\Spawning\SpawnableCratePlacerMessage.cs" />
     <Compile Include="Core\src\Network\NetworkLayerDeterminer.cs" />
     <Compile Include="Core\src\Network\Steam\SpacewarNetworkLayer.cs" />
+    <Compile Include="Core\src\Network\Steam\SteamVoiceManager.cs" />
     <Compile Include="Core\src\Network\Steam\SteamVRNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Steam\SteamLobby.cs" />
-    <Compile Include="Core\src\Network\Steam\SteamVoiceIdentifier.cs" />
+    <Compile Include="Core\src\Network\Steam\SteamVoiceHandler.cs" />
     <Compile Include="Core\src\Patching\NativeStructs\Attack_.cs" />
     <Compile Include="Core\src\Patching\Patches\Attacks\ImpactPropertiesPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\AvatarDicePatches.cs" />

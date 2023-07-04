@@ -20,6 +20,8 @@ namespace LabFusion.Data {
     public class SerializedAvatarStats : IFusionSerializable {
         public const int Size = sizeof(float) * 70 + SerializedSoftEllipse.Size * 8;
 
+        // Root scale
+
         // Ellipse/offset values
         public float headTop;
         public float chinY;

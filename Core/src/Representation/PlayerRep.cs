@@ -177,24 +177,12 @@ namespace LabFusion.Representation
             // Modify the source settings
             var rm = RigReferences.RigManager;
             if (IsCreated && rm._avatar) {
-                float heightMult = rm._avatar.height / 1.76f;
-
-                _voiceSource.spatialBlend = 1f;
-                _voiceSource.minDistance = 0.5f * heightMult;
-                _voiceSource.maxDistance = 30f * heightMult;
-                _voiceSource.reverbZoneMix = Mathf.Clamp(0.35f * heightMult, 0f, 1.02f);
-                _voiceSource.dopplerLevel = 0.5f;
-
                 var mouthSource = rm.physicsRig.headSfx.mouthSrc;
                 _voiceSource.transform.position = mouthSource.transform.position;
-
-                // Set the mixer
-                if (_voiceSource.outputAudioMixerGroup == null && !pullCord.IsNOC())
-                    _voiceSource.outputAudioMixerGroup = pullCord.mixerGroup;
             }
             else {
                 _voiceSource.spatialBlend = 0f;
-                _voiceSource.minDistance = 0.5f;
+                _voiceSource.minDistance = 0f;
                 _voiceSource.maxDistance = 30f;
                 _voiceSource.reverbZoneMix = 0.35f;
                 _voiceSource.dopplerLevel = 0.5f;
@@ -288,12 +276,12 @@ namespace LabFusion.Representation
                 rm.SwapAvatarCrate(FusionAvatar.POLY_BLANK_BARCODE, true, (Action<bool>)OnSwapFallback);
             }
             else {
-                UpdateNametagSettings();
+                UpdateAvatarSettings();
             }
         }
 
         private void OnSwapFallback(bool success) {
-            UpdateNametagSettings();
+            UpdateAvatarSettings();
         }
 
         internal void Internal_OnAvatarChanged(string barcode) {
@@ -364,6 +352,11 @@ namespace LabFusion.Representation
             return offset;
         }
 
+        private void UpdateAvatarSettings() {
+            UpdateNametagSettings();
+            UpdateVoiceSourceSettings();
+        }
+
         private void UpdateNametagSettings() {
             var rm = RigReferences.RigManager;
             if (IsCreated && rm.avatar) {
@@ -371,6 +364,22 @@ namespace LabFusion.Representation
                 repCanvasTransform.localScale = Vector3Extensions.one / NameTagDivider * height;
 
                 repNameText.text = Username;
+            }
+        }
+
+        private void UpdateVoiceSourceSettings() {
+            var rm = RigReferences.RigManager;
+            if (IsCreated && rm._avatar) {
+                float heightMult = rm._avatar.height / 1.76f;
+
+                _voiceSource.spatialBlend = 1f;
+                _voiceSource.reverbZoneMix = Mathf.Clamp(0.35f * heightMult, 0f, 1.02f);
+
+                _voiceSource.SetRealisticRolloff(0.5f, 30f * heightMult);
+
+                // Set the mixer
+                if (_voiceSource.outputAudioMixerGroup == null && !pullCord.IsNOC())
+                    _voiceSource.outputAudioMixerGroup = pullCord.mixerGroup;
             }
         }
 
@@ -725,6 +734,7 @@ namespace LabFusion.Representation
                     _isAvatarDirty = false;
 
                     PlayerAdditionsHelper.OnAvatarChanged(rm);
+                    UpdateAvatarSettings();
                 }
 
                 // Change body vitals
