@@ -13,7 +13,7 @@ namespace LabFusion.Data
 {
     public static class ChangelogLoader
     {
-        public static void ReadFromFile()
+        public static void ReadFile()
         {
 #if DEBUG
             FusionMod.Changelog = "- Debug build. Changelog will show in the release build.";

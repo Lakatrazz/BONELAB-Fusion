@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 namespace LabFusion.Data {
     public static class FusionFileLoader {
         public static void OnInitializeMelon() {
-            PermissionList.PullFromFile();
-            BanList.PullFromFile();
-            PointSaveManager.ReadFromFile();
-            ChangelogLoader.ReadFromFile();
+            PermissionList.ReadFile();
+            BanList.ReadFile();
+            PointSaveManager.ReadFile();
+            ChangelogLoader.ReadFile();
         }
 
         public static void OnDeinitializeMelon() {

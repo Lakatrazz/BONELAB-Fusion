@@ -25,7 +25,7 @@ namespace LabFusion.BoneMenu
             _banListCategory.CreateFunctionElement("Refresh", Color.white, RefreshBanList);
 
             // Pull the latest file info
-            BanList.PullFromFile();
+            BanList.ReadFile();
 
             // Add a ban item for every banned player
             foreach (var tuple in BanList.BannedUsers) {
