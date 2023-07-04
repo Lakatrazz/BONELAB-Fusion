@@ -8,7 +8,7 @@ namespace LabFusion.Data
     {
         public static void WriteBinary(string path, object value, BinaryFormatter formatter = null)
         {
-            if (formatter == null) formatter = new BinaryFormatter();
+            formatter ??= new BinaryFormatter();
 
             string fullPath = PersistentData.GetPath(path);
             string directoryName = Path.GetDirectoryName(fullPath);
@@ -25,7 +25,7 @@ namespace LabFusion.Data
 
         public static T ReadBinary<T>(string path, BinaryFormatter formatter = null)
         {
-            if (formatter == null) formatter = new BinaryFormatter();
+            formatter ??= new BinaryFormatter();
 
             string fullPath = PersistentData.GetPath(path);
 
