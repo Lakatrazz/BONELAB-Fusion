@@ -9,6 +9,7 @@ namespace LabFusion.Data
     public static class BanList
     {
         private const string _rootName = "BanList";
+
         private const string _fileName = "banlist.xml";
 
         private const string _elementName = "Ban";

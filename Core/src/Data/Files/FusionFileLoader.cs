@@ -11,6 +11,7 @@ namespace LabFusion.Data {
         public static void OnInitializeMelon() {
             PermissionList.ReadFile();
             BanList.ReadFile();
+            ContactsList.ReadFile();
             PointSaveManager.ReadFile();
             ChangelogLoader.ReadFile();
         }

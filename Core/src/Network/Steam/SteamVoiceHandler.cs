@@ -1,7 +1,9 @@
-﻿using LabFusion.Extensions;
+﻿using LabFusion.Data;
+using LabFusion.Extensions;
 using LabFusion.Preferences;
 using LabFusion.Representation;
 using LabFusion.Utilities;
+
 using Steamworks;
 
 using System;
@@ -30,6 +32,10 @@ namespace LabFusion.Network {
         public SteamVoiceHandler(PlayerId id) {
             // Save the id
             _id = id;
+            OnContactUpdated(ContactsList.GetContact(id));
+
+            // Hook into contact info changing
+            ContactsList.OnContactUpdated += OnContactUpdated;
 
             // Create the audio source and clip
             CreateAudioSource();
@@ -41,6 +47,18 @@ namespace LabFusion.Network {
 
             // Set the rep's audio source
             VerifyRep();
+        }
+
+        public override void Cleanup()
+        {
+            // Unhook contact updating
+            ContactsList.OnContactUpdated -= OnContactUpdated;
+
+            base.Cleanup();
+        }
+
+        private void OnContactUpdated(Contact contact) {
+            Volume = contact.volume;
         }
 
         public override void Update() {

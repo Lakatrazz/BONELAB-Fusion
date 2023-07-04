@@ -1,5 +1,6 @@
 ﻿using BoneLib.BoneMenu;
 using BoneLib.BoneMenu.Elements;
+using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Preferences;
@@ -127,6 +128,16 @@ namespace LabFusion.BoneMenu
             });
             category.CreateFunctionElement($"Instance ID: {smallId}", Color.yellow, () => {
                 Clipboard.SetText(smallId.ToString());
+            });
+
+            // Create VC options
+            var voiceCategory = category.CreateCategory("Voice Settings", Color.white);
+
+            voiceCategory.CreateFloatElement("Volume", Color.white, ContactsList.GetContact(id).volume, 0.1f, 0f, 2f, (v) =>
+            {
+                var contact = ContactsList.GetContact(id);
+                contact.volume = v;
+                ContactsList.UpdateContact(contact);
             });
         }
     }

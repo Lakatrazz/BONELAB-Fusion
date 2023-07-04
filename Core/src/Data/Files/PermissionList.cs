@@ -10,6 +10,7 @@ namespace LabFusion.Data
     public static class PermissionList
     {
         private const string _rootName = "PermissionList";
+
         private const string _fileName = "permissionList.xml";
 
         private const string _elementName = "Permission";
