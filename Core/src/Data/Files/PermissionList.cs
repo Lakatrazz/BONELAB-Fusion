@@ -17,7 +17,7 @@ namespace LabFusion.Data
         private const string _userName = "username";
         private const string _levelName = "level";
 
-        private static List<Tuple<ulong, string, PermissionLevel>> _permittedUsers = new List<Tuple<ulong, string, PermissionLevel>>();
+        private static readonly List<Tuple<ulong, string, PermissionLevel>> _permittedUsers = new();
 
         public static IReadOnlyList<Tuple<ulong, string, PermissionLevel>> PermittedUsers => _permittedUsers;
 

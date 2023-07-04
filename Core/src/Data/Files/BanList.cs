@@ -16,7 +16,7 @@ namespace LabFusion.Data
         private const string _userName = "username";
         private const string _reasonName = "reason";
 
-        private static List<Tuple<ulong, string, string>> _bannedUsers = new List<Tuple<ulong, string, string>>();
+        private static readonly List<Tuple<ulong, string, string>> _bannedUsers = new();
 
         public static IReadOnlyList<Tuple<ulong, string, string>> BannedUsers => _bannedUsers;
 
