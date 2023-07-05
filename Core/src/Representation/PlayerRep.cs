@@ -314,14 +314,14 @@ namespace LabFusion.Representation
             var rm = RigReferences.RigManager;
 
             if (!success) {
-                RigReferences.SwapAvatarCrate(FusionAvatar.POLY_BLANK_BARCODE, OnSwapFallback, ApplyScaling);
+                RigReferences.SwapAvatarCrate(FusionAvatar.POLY_BLANK_BARCODE, OnSwapFallback, OnPrepareAvatar);
             }
             else {
                 UpdateAvatarSettings();
             }
         }
 
-        private void ApplyScaling(string barcode, GameObject avatar) {
+        private void OnPrepareAvatar(string barcode, GameObject avatar) {
             // If we have synced avatar stats, set the scale properly
             if (avatarStats != null) {
                 Transform transform = avatar.transform;
@@ -793,7 +793,7 @@ namespace LabFusion.Representation
             if (!rm._avatar.IsNOC()) {
                 // Swap the avatar
                 if (_isAvatarDirty) {
-                    RigReferences.SwapAvatarCrate(avatarId, OnSwapAvatar, ApplyScaling);
+                    RigReferences.SwapAvatarCrate(avatarId, OnSwapAvatar, OnPrepareAvatar);
                     _isAvatarDirty = false;
 
                     PlayerAdditionsHelper.OnAvatarChanged(rm);

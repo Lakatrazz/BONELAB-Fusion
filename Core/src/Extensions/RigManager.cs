@@ -24,11 +24,11 @@ namespace LabFusion.Extensions {
                 callback?.Invoke(false);
             }
             else {
-                MelonCoroutines.Start(CoWaitAndSwapAvatar(references, crate, callback, preSwapAvatar));
+                MelonCoroutines.Start(CoWaitAndSwapAvatarRoutine(references, crate, callback, preSwapAvatar));
             }
         }
 
-        private static IEnumerator CoWaitAndSwapAvatar(RigReferenceCollection references, AvatarCrate crate, Action<bool> callback = null, Action<string, GameObject> preSwapAvatar = null)
+        private static IEnumerator CoWaitAndSwapAvatarRoutine(RigReferenceCollection references, AvatarCrate crate, Action<bool> callback = null, Action<string, GameObject> preSwapAvatar = null)
         {
             bool loaded = false;
             GameObject avatar = null;
