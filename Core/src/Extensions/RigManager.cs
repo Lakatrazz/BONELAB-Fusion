@@ -53,6 +53,7 @@ namespace LabFusion.Extensions {
             {
                 var rm = references.RigManager;
                 GameObject instance = GameObject.Instantiate(avatar);
+                instance.SetActive(false);
                 instance.name = avatar.name;
 
                 preSwapAvatar?.Invoke(crate.Barcode, instance);
@@ -61,7 +62,7 @@ namespace LabFusion.Extensions {
                 instance.transform.localPosition = Vector3Extensions.zero;
                 instance.transform.localRotation = QuaternionExtensions.identity;
 
-                var avatarComponent = instance.GetComponentInParent<Avatar>();
+                var avatarComponent = instance.GetComponentInParent<Avatar>(true);
                 rm.SwapAvatar(avatarComponent);
 
                 while (references.IsValid && rm.avatar != avatarComponent)
