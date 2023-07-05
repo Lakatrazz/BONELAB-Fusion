@@ -80,6 +80,10 @@ namespace LabFusion.Network {
         }
 
         public override void OnVoiceBytesReceived(byte[] bytes) {
+            if (_hasRep && Rep.MicrophoneDisabled) {
+                return;
+            }
+
             VerifyRep();
 
             // Decompress the voice data

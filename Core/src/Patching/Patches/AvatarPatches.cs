@@ -32,32 +32,20 @@ namespace LabFusion.Patching {
             OverrideBodyMeasurements(__instance);
         }
 
+        private static bool ValidateAvatar(Avatar avatar, out PlayerRep rep, out RigManager rm) {
+            rm = avatar.GetComponentInParent<RigManager>();
+            rep = null;
+
+            // Make sure this isn't the RealHeptaRig avatar! We don't want to scale those values!
+            return rm != null && PlayerRepManager.TryGetPlayerRep(rm, out rep) && avatar != rm.realHeptaRig.player && rep.avatarStats != null;
+        }
+
         private static void OverrideBodyMeasurements(Avatar __instance) {
             try
             {
-                if (NetworkInfo.HasServer)
-                {
-                    var rm = __instance.GetComponentInParent<RigManager>();
-
-                    // Make sure this isn't the RealHeptaRig avatar! We don't want to scale those values!
-                    if (rm != null && PlayerRepManager.TryGetPlayerRep(rm, out var rep) && __instance != rm.realHeptaRig.player && rep.avatarStats != null)
-                    {
-                        // Apply avatar scaling
-                        var go = __instance.gameObject;
-
-                        // Now, apply the synced avatar stats
-                        rep.avatarStats.CopyTo(__instance);
-
-                        // Polyblank should just scale based on the custom avatar height
-                        if (go.name.Contains("char_marrow1_polyBlank")) {
-                            float newHeight = rep.avatarStats.height;
-                            go.transform.localScale = Vector3Extensions.one * (newHeight / 1.76f);
-                        }
-                        // Otherwise, apply the synced scale
-                        else {
-                            // TODO: Implement
-                        }
-                    }
+                if (NetworkInfo.HasServer && ValidateAvatar(__instance, out var rep, out var rm)) {
+                    // Apply the synced avatar stats
+                    rep.avatarStats.CopyTo(__instance);
                 }
             }
             catch (Exception e)

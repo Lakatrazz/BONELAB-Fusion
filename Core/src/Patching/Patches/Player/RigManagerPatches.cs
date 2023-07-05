@@ -24,7 +24,7 @@ namespace LabFusion.Patching
     public static class RigManagerPatches {
         [HarmonyPatch(nameof(RigManager.SwitchAvatar))]
         [HarmonyPostfix]
-        public static void SwitchAvatar(RigManager __instance, Avatar newAvatar) {
+        public static void SwitchAvatarPostfix(RigManager __instance, Avatar newAvatar) {
             try {
                 MelonCoroutines.Start(Internal_WaitForBarcode(__instance, newAvatar));
             }
