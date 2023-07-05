@@ -64,13 +64,15 @@ namespace LabFusion.Extensions {
 
                 var avatarComponent = instance.GetComponentInParent<Avatar>(true);
                 rm.SwapAvatar(avatarComponent);
-
+                
                 while (references.IsValid && rm.avatar != avatarComponent)
                     yield return null;
 
                 if (!references.IsValid)
                     yield break;
 
+                rm.onAvatarSwapped?.Invoke();
+                rm.onAvatarSwapped2?.Invoke(crate.Barcode);
                 callback?.Invoke(true);
             }
         }

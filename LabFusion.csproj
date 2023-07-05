@@ -267,6 +267,7 @@
     <Compile Include="Core\src\Data\Containers\Grips\SerializedStaticGrab.cs" />
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedLocalTransform.cs" />
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedTransform.cs" />
+    <Compile Include="Core\src\Data\Containers\XML\PlayerList.cs" />
     <Compile Include="Core\src\Data\Files\ChangelogLoader.cs" />
     <Compile Include="Core\src\Data\Files\XML\ContactsList.cs" />
     <Compile Include="Core\src\Data\Files\DataSaver.cs" />
@@ -1286,7 +1287,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core\resources\bundles\Android\" />
-    <Folder Include="Core\src\Data\Containers\XML\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
