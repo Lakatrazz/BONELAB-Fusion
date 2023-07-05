@@ -70,6 +70,7 @@ namespace LabFusion.Network {
 
                     isMenuItem = false,
                     isPopup = true,
+                    type = NotificationType.ERROR,
                 });
 
                 return;
@@ -97,6 +98,7 @@ namespace LabFusion.Network {
 
                     isMenuItem = false,
                     isPopup = true,
+                    type = NotificationType.ERROR,
                 });
 
                 return;

@@ -63,6 +63,7 @@ namespace LabFusion.Network {
                 message = "Started a server!",
                 isMenuItem = false,
                 isPopup = true,
+                type = NotificationType.SUCCESS,
             });
 
             // Reload the scene
@@ -86,6 +87,7 @@ namespace LabFusion.Network {
                 message = "Joined a server!",
                 isMenuItem = false,
                 isPopup = true,
+                type = NotificationType.SUCCESS,
             });
         }
 
@@ -126,6 +128,7 @@ namespace LabFusion.Network {
                     isMenuItem = true,
                     isPopup = true,
                     popupLength = 5f,
+                    type = NotificationType.WARNING,
                 });
             }
         }

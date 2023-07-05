@@ -8,10 +8,16 @@ using System;
 using System.Collections.Generic;
 
 using UnityEngine;
-using UnityEngine.Playables;
 
 namespace LabFusion.Utilities
 {
+    public enum NotificationType {
+        INFORMATION = 0,
+        WARNING = 1,
+        ERROR = 2,
+        SUCCESS = 3,
+    }
+
     public struct NotificationText {
         public string text;
 
@@ -49,6 +55,8 @@ namespace LabFusion.Utilities
         public bool isPopup = true;
 
         public float popupLength = 2f;
+
+        public NotificationType type = NotificationType.INFORMATION;
 
         // BoneMenu settings
         public bool isMenuItem = true;
@@ -112,9 +120,20 @@ namespace LabFusion.Utilities
                     incomingTitle = notification.title.text;
 
                 string incomingSubTitle = notification.message.text;
+
+                Texture2D incomingTexture = notification.type switch
+                {
+                    NotificationType.WARNING => FusionContentLoader.NotificationWarning,
+                    NotificationType.ERROR => FusionContentLoader.NotificationError,
+                    NotificationType.SUCCESS => FusionContentLoader.NotificationSuccess,
+                    _ => FusionContentLoader.NotificationInformation,
+                };
+                Sprite incomingSprite = Sprite.Create(incomingTexture, new Rect(0.0f, 0.0f, incomingTexture.width, incomingTexture.height), new Vector2(0.5f, 0.5f), 100.0f);
+
                 float holdTime = notification.popupLength;
 
-                headTitles.CUSTOMDISPLAY(incomingTitle, incomingSubTitle, null, holdTime);
+                headTitles.CUSTOMDISPLAY(incomingTitle, incomingSubTitle, incomingSprite, holdTime);
+                headTitles.sr_element.sprite = incomingSprite;
             }
         }
 

@@ -52,5 +52,10 @@ namespace LabFusion.Data
 
         public const string EquipItem = "ui_EquipItem";
         public const string UnequipItem = "ui_UnequipItem";
+
+        public const string NotificationInformation = "notification_Information";
+        public const string NotificationWarning = "notification_Warning";
+        public const string NotificationError = "notification_Error";
+        public const string NotificationSuccess = "notification_Success";
     }
 }

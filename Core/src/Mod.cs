@@ -124,6 +124,7 @@ namespace LabFusion
                     isPopup = true,
                     message = "You do not have the Fusion Autoupdater installed in your plugins folder!" +
                     "\nIt is recommended to install it in order to stay up to date.",
+                    type = NotificationType.WARNING,
                 });
 
 #if DEBUG

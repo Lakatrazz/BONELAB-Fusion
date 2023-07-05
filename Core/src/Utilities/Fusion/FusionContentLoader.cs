@@ -42,6 +42,11 @@ namespace LabFusion.Utilities {
         public static AudioClip EquipItem { get; private set; }
         public static AudioClip UnequipItem { get; private set; }
 
+        public static Texture2D NotificationInformation { get; private set; }
+        public static Texture2D NotificationWarning { get; private set; }
+        public static Texture2D NotificationError { get; private set; }
+        public static Texture2D NotificationSuccess { get; private set; }
+
         private static readonly string[] _combatSongNames = new string[6] {
             "music_FreqCreepInModulationBuggyPhysics",
             "music_SicklyBugInitiative",
@@ -89,6 +94,11 @@ namespace LabFusion.Utilities {
 
                 EquipItem = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.EquipItem);
                 UnequipItem = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.UnequipItem);
+
+                NotificationInformation = ContentBundle.LoadPersistentAsset<Texture2D>(ResourcePaths.NotificationInformation);
+                NotificationWarning = ContentBundle.LoadPersistentAsset<Texture2D>(ResourcePaths.NotificationWarning);
+                NotificationError = ContentBundle.LoadPersistentAsset<Texture2D>(ResourcePaths.NotificationError);
+                NotificationSuccess = ContentBundle.LoadPersistentAsset<Texture2D>(ResourcePaths.NotificationSuccess);
             }
             else
                 FusionLogger.Error("Content Bundle failed to load!");

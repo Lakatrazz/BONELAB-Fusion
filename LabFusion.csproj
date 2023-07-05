@@ -268,17 +268,17 @@
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedLocalTransform.cs" />
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedTransform.cs" />
     <Compile Include="Core\src\Data\Files\ChangelogLoader.cs" />
-    <Compile Include="Core\src\Data\Files\ContactsList.cs" />
+    <Compile Include="Core\src\Data\Files\XML\ContactsList.cs" />
     <Compile Include="Core\src\Data\Files\DataSaver.cs" />
     <Compile Include="Core\src\Data\Files\EmbeddedAssetBundle.cs" />
     <Compile Include="Core\src\Data\Files\FusionFileLoader.cs" />
-    <Compile Include="Core\src\Data\Files\BanList.cs" />
-    <Compile Include="Core\src\Data\Files\PermissionList.cs" />
+    <Compile Include="Core\src\Data\Files\XML\BanList.cs" />
+    <Compile Include="Core\src\Data\Files\XML\PermissionList.cs" />
     <Compile Include="Core\src\Data\Files\SteamAPILoader.cs" />
     <Compile Include="Core\src\Data\Files\EmbeddedResource.cs" />
     <Compile Include="Core\src\Data\Files\PersistentData.cs" />
     <Compile Include="Core\src\Data\Files\ResourcePaths.cs" />
-    <Compile Include="Core\src\Data\Files\XMLFile.cs" />
+    <Compile Include="Core\src\Data\Files\XML\XMLFile.cs" />
     <Compile Include="Core\src\Data\Interfaces\IFusionSerializable.cs" />
     <Compile Include="Core\src\Debugging\FusionDevMode.cs" />
     <Compile Include="Core\src\Debugging\FusionStopwatch.cs" />
@@ -299,6 +299,7 @@
     <Compile Include="Core\src\Extensions\Math.cs" />
     <Compile Include="Core\src\Extensions\PullCordDevice.cs" />
     <Compile Include="Core\src\Extensions\Quaternion.cs" />
+    <Compile Include="Core\src\Extensions\RigManager.cs" />
     <Compile Include="Core\src\Extensions\String.cs" />
     <Compile Include="Core\src\Extensions\Transform.cs" />
     <Compile Include="Core\src\Extensions\SyncableComparer.cs" />
@@ -1285,6 +1286,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core\resources\bundles\Android\" />
+    <Folder Include="Core\src\Data\Containers\XML\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
