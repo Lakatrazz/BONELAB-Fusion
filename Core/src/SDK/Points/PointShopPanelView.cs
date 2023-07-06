@@ -24,7 +24,7 @@ using SLZ.Utilities;
 namespace LabFusion.SDK.Points
 {
     [RegisterTypeInIl2Cpp]
-    public sealed class PointShopPanelView : MonoBehaviour {
+    public sealed class PointShopPanelView : FusionPanelView {
         public enum ActivePanel {
             CATALOG = 0,
             OWNED = 1,
@@ -36,9 +36,6 @@ namespace LabFusion.SDK.Points
         public PointShopPanelView(IntPtr intPtr) : base(intPtr) { }
 
         private Rigidbody _doorRigidbody;
-
-        private Transform _canvas;
-        private Transform _uiPlane;
 
         private Transform _groupItemsRoot;
         private Transform _categorySelectionRoot;
@@ -103,10 +100,8 @@ namespace LabFusion.SDK.Points
         [HideFromIl2Cpp]
         public IReadOnlyList<PointItem> PanelItems => _panel == ActivePanel.CATALOG ? CatalogItems : OwnedItems;
 
-        private void Awake() {
+        protected override void OnAwake() {
             // Setup the menu
-            SetupReferences();
-            UIMachineUtilities.OverrideFonts(transform);
             SetupButtons();
             SetupArrows();
             SetupInfoPage();
@@ -118,9 +113,6 @@ namespace LabFusion.SDK.Points
 
             // Hook into bit update
             PointItemManager.OnBitCountChanged += UpdateBitCountText;
-
-            // Disable until the trigger is entered
-            _canvas.gameObject.SetActive(false);
         }
 
         private void OnDestroy() {
@@ -128,13 +120,8 @@ namespace LabFusion.SDK.Points
             PointItemManager.OnBitCountChanged -= UpdateBitCountText;
         }
 
-        private void SetupReferences() {
+        protected override void OnSetupReferences() {
             _doorRigidbody = transform.parent.Find("Art/Offset/VendorAtlas/Door Pivot").GetComponent<Rigidbody>();
-
-            _canvas = transform.Find("CANVAS");
-            _uiPlane = _canvas.Find("UIPLANE");
-
-            UIMachineUtilities.CreateLaserCursor(_canvas, _uiPlane, new Vector3(1.3f, 1f, 0.1f));
 
             _groupItemsRoot = _canvas.Find("group_Items");
             _categorySelectionRoot = _groupItemsRoot.Find("category_Selection");
@@ -223,16 +210,6 @@ namespace LabFusion.SDK.Points
                 _itemButtons[i].onClick.AddListener((UnityAction)(() => {
                     SelectItem(button);
                 }));
-            }
-
-            // Add clicking events to every button
-            foreach (var button in transform.GetComponentsInChildren<Button>(true)) {
-                var collider = button.GetComponentInChildren<Collider>(true);
-                if (collider != null)
-                {
-                    var interactor = collider.gameObject.AddComponent<FusionUITrigger>();
-                    interactor.button = button;
-                }
             }
         }
 

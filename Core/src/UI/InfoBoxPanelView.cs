@@ -12,14 +12,15 @@ using UnityEngine.UI;
 namespace LabFusion.UI
 {
     [RegisterTypeInIl2Cpp]
-    public sealed class InfoBoxPanelView : MonoBehaviour {
+    public sealed class InfoBoxPanelView : FusionPanelView {
         public InfoBoxPanelView(IntPtr intPtr) : base(intPtr) { }
-
-        private Transform _canvas;
-        private Transform _uiPlane;
 
         private TMP_Text _versionText;
         private TMP_Text _changelogText;
+
+        private TMP_Text _credits01Text;
+        private TMP_Text _credits02Text;
+        private TMP_Text _credits03Text;
 
         private Transform _groupPatchNotes;
         private Transform _groupCredits;
@@ -29,25 +30,15 @@ namespace LabFusion.UI
         private Button _creditsButton;
         private Button _mysteryButton;
 
-        private void Awake() {
+        protected override void OnAwake() {
             // Setup the menu
-            SetupReferences();
             SetupButtons();
-            UIMachineUtilities.OverrideFonts(transform);
 
             // Load the first page
             LoadPage(_groupPatchNotes.gameObject);
-
-            // Disable until the trigger is entered
-            _canvas.gameObject.SetActive(false);
         }
 
-        private void SetupReferences() {
-            _canvas = transform.Find("CANVAS");
-            _uiPlane = _canvas.Find("UIPLANE");
-
-            UIMachineUtilities.CreateLaserCursor(_canvas, _uiPlane, new Vector3(0.64f, 0.64f, 0.1f));
-
+        protected override void OnSetupReferences() {
             _versionText = _canvas.Find("text_versionNumber").GetComponent<TMP_Text>();
             _versionText.text = $"v{FusionMod.Version}";
 
@@ -57,6 +48,17 @@ namespace LabFusion.UI
 
             _changelogText = _groupPatchNotes.Find("button_changelogContents").GetComponentInChildren<TMP_Text>();
             _changelogText.text = FusionMod.Changelog;
+
+            // Setup credits text
+            _credits01Text = _groupCredits.Find("text_credits01").GetComponentInChildren<TMP_Text>();
+            _credits02Text = _groupCredits.Find("text_credits02").GetComponentInChildren<TMP_Text>();
+            _credits03Text = _groupCredits.Find("text_credits03").GetComponentInChildren<TMP_Text>();
+
+            if (FusionMod.Credits != null) {
+                _credits01Text.text = FusionMod.Credits[0];
+                _credits02Text.text = FusionMod.Credits[1];
+                _credits03Text.text = FusionMod.Credits[2];
+            }
 
             _patchNotesButton = _canvas.Find("button_patchNotes").GetComponent<Button>();
             _creditsButton = _canvas.Find("button_credits").GetComponent<Button>();
@@ -75,9 +77,6 @@ namespace LabFusion.UI
             _mysteryButton.AddClickEvent(() => {
                 LoadPage(_groupMystery.gameObject);
             });
-
-            // Add clicking events to every button
-            UIMachineUtilities.AddButtonTriggers(transform);
         }
 
         private void LoadPage(GameObject page) {

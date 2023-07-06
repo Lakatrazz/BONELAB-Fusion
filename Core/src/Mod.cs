@@ -38,6 +38,8 @@ namespace LabFusion
 
         public static string Changelog { get; internal set; } = null;
 
+        public static string[] Credits { get; internal set; } = null;
+
         /// <summary>
         /// The desired networking layer. Swap this out to change the networking system.
         /// </summary>

@@ -501,8 +501,8 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6033626742230453415}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.033439998, y: 0.033440005, z: 0.033440005}
+  m_LocalPosition: {x: 0, y: 0, z: 0.0000000055879354}
+  m_LocalScale: {x: 0.033439998, y: 0.033440012, z: 0.033440012}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6138642255008361936}
@@ -575,30 +575,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'DEVELOPERS
-
-    - Lakatrazz
-
-
-    CONTRIBUTORS
-
-    - trevtv
-
-
-    TESTERS
-
-    -
-    Alfi
-
-    - Ethi
-
-    - AlexTheBaba
-
-    - nptnk
-
-    - Mr. Gaming
-
-    - Riggle'
+  m_text: Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor
+    incididunt ut labore et dolore magna aliqua Ut enim ad minim veniam quis nostrud
+    exercitation ullamco laboris
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9d0dad972feb99f488ec25db7a69e7b1, type: 2}
   m_sharedMaterial: {fileID: 7078131235166814271, guid: 9d0dad972feb99f488ec25db7a69e7b1, type: 2}
@@ -958,8 +937,8 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6719054343961556323}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.033439998, y: 0.033440005, z: 0.033440005}
+  m_LocalPosition: {x: 0, y: 0, z: 0.0000000055879354}
+  m_LocalScale: {x: 0.033439998, y: 0.033440012, z: 0.033440012}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6138642255008361936}
@@ -1032,15 +1011,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'THE GAME
-
-    - SLZ. Thank you!
-
-
-    YOU
-
-    - Thank you for playing
-    my mod!'
+  m_text: Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor
+    incididunt ut labore et dolore magna aliqua Ut enim ad minim veniam quis
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9d0dad972feb99f488ec25db7a69e7b1, type: 2}
   m_sharedMaterial: {fileID: 7078131235166814271, guid: 9d0dad972feb99f488ec25db7a69e7b1, type: 2}
@@ -1314,8 +1286,8 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7139167796697370540}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.033439998, y: 0.033440005, z: 0.033440005}
+  m_LocalPosition: {x: 0, y: 0, z: 0.0000000055879354}
+  m_LocalScale: {x: 0.033439998, y: 0.033440012, z: 0.033440012}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6138642255008361936}
@@ -1388,31 +1360,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '- zz0000
-
-    - Brwok
-
-    - 172/tarf
-
-    - DrewMileham
-
-    - alecpizz
-
-    -
-    Maranara
-
-    - TabloidA
-
-
-    MODELS
-
-    - AlexTheBaba
-
-
-    SOUNDTRACK
-
-    -
-    172/tarf'
+  m_text: Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor
+    incididunt ut labore et dolore magna aliqua Ut enim ad minim veniam quis nostrud
+    exercitation ullamco laboris
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9d0dad972feb99f488ec25db7a69e7b1, type: 2}
   m_sharedMaterial: {fileID: 7078131235166814271, guid: 9d0dad972feb99f488ec25db7a69e7b1, type: 2}
