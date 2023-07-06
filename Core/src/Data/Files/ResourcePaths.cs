@@ -43,9 +43,12 @@ namespace LabFusion.Data
 
         public const string GeoGrpFellDownTheStairs = "music_GeoGrpFellDownTheStairs";
 
+        // UI sounds
         public const string UISelect = "UI_Beep_Bend_Short_stereo";
         public const string UIDeny = "UI_Error_Double_Note_Down_Notch_stereo";
         public const string UIConfirm = "UI_SCI-FI_Confirm_Dry_stereo";
+        public const string UITurnOff = "UI_TurnOff";
+        public const string UITurnOn = "UI_TurnOn";
 
         public const string PurchaseFailure = "stinger_FailPurchase";
         public const string PurchaseSuccess = "stinger_SuccessPurchase";
@@ -57,5 +60,12 @@ namespace LabFusion.Data
         public const string NotificationWarning = "notification_Warning";
         public const string NotificationError = "notification_Error";
         public const string NotificationSuccess = "notification_Success";
+
+        // Laser cursor
+        public const string LaserCursor = "laser_Cursor";
+        public const string LaserPulseSound = "laser_PulseSound";
+        public const string LaserRaySpawn = "laser_RaySpawn";
+        public const string LaserRayDespawn = "laser_RayDespawn";
+        public const string LaserPrismaticSFX = "laser_PrismaticSFX";
     }
 }

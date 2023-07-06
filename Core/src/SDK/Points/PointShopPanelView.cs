@@ -17,6 +17,9 @@ using UnhollowerBaseLib.Attributes;
 using LabFusion.Utilities;
 using LabFusion.UI;
 using LabFusion.Extensions;
+using SLZ.UI;
+using SLZ.Bonelab;
+using SLZ.Utilities;
 
 namespace LabFusion.SDK.Points
 {
@@ -35,6 +38,7 @@ namespace LabFusion.SDK.Points
         private Rigidbody _doorRigidbody;
 
         private Transform _canvas;
+        private Transform _uiPlane;
 
         private Transform _groupItemsRoot;
         private Transform _categorySelectionRoot;
@@ -102,7 +106,7 @@ namespace LabFusion.SDK.Points
         private void Awake() {
             // Setup the menu
             SetupReferences();
-            SetupText();
+            UIMachineUtilities.OverrideFonts(transform);
             SetupButtons();
             SetupArrows();
             SetupInfoPage();
@@ -114,6 +118,9 @@ namespace LabFusion.SDK.Points
 
             // Hook into bit update
             PointItemManager.OnBitCountChanged += UpdateBitCountText;
+
+            // Disable until the trigger is entered
+            _canvas.gameObject.SetActive(false);
         }
 
         private void OnDestroy() {
@@ -125,6 +132,9 @@ namespace LabFusion.SDK.Points
             _doorRigidbody = transform.parent.Find("Art/Offset/VendorAtlas/Door Pivot").GetComponent<Rigidbody>();
 
             _canvas = transform.Find("CANVAS");
+            _uiPlane = _canvas.Find("UIPLANE");
+
+            UIMachineUtilities.CreateLaserCursor(_canvas, _uiPlane, new Vector3(1.3f, 1f, 0.1f));
 
             _groupItemsRoot = _canvas.Find("group_Items");
             _categorySelectionRoot = _groupItemsRoot.Find("category_Selection");
@@ -173,23 +183,17 @@ namespace LabFusion.SDK.Points
             _groupWhatIsThisRoot = _canvas.Find("group_WhatIsThis");
 
             var helpButton = _canvas.Find("button_Help").GetComponent<Button>();
-            helpButton.onClick.AddListener((UnityAction)(() =>
+            helpButton.AddClickEvent(() =>
             {
                 SelectPanel(ActivePanel.HELP);
-            }));
+            });
 
             var helpGoBack = _groupWhatIsThisRoot.Find("button_goBack").GetComponent<Button>();
-            helpGoBack.onClick.AddListener((UnityAction)(() =>
+            helpGoBack.AddClickEvent(() =>
             {
                 SelectPanel(_lastCatalogPanel);
                 LoadCatalogPage();
-            }));
-        }
-
-        private void SetupText() {
-            foreach (var text in gameObject.GetComponentsInChildren<TMP_Text>(true)) {
-                text.font = PersistentAssetCreator.Font;
-            }
+            });
         }
 
         private void SetupButtons() {

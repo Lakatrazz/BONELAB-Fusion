@@ -678,11 +678,13 @@
     <Compile Include="Core\src\Utilities\Internal\PhysicsUtilities.cs" />
     <Compile Include="Core\src\Preferences\FusionPreferences.cs" />
     <Compile Include="Core\src\Utilities\Internal\StaticGripFixer.cs" />
+    <Compile Include="Core\src\Utilities\UI\LaserCursorUtilities.cs" />
     <Compile Include="Core\src\Utilities\PlayerAdditionsHelper.cs" />
     <Compile Include="Core\src\Utilities\PooleeUtilities.cs" />
     <Compile Include="Core\src\Utilities\SafetyUtilities.cs" />
     <Compile Include="Core\src\Utilities\ThreadingUtilities.cs" />
     <Compile Include="Core\src\Utilities\TriggerUtilities.cs" />
+    <Compile Include="Core\src\Utilities\UI\UIMachineUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Core\resources\lib\x86_64\steam_api64.dll" />

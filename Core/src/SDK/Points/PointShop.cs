@@ -18,7 +18,6 @@ using LabFusion.Utilities;
 using SLZ.Marrow.Data;
 
 using UnhollowerBaseLib;
-using static SLZ.Interaction.LadderInfo;
 
 namespace LabFusion.SDK.Points
 {
@@ -72,6 +71,9 @@ namespace LabFusion.SDK.Points
             // Add the panel view
             Transform panel = transform.Find("PANELVIEW");
             _panelView = panel.gameObject.AddComponent<PointShopPanelView>();
+
+            // Setup the UI trigger
+            UIMachineUtilities.CreateUITrigger(panel.Find("CANVAS").gameObject, transform.Find("uiTrigger").gameObject);
 
             // Setup audio
             PersistentAssetCreator.HookOnSFXMixerLoaded((m) => {

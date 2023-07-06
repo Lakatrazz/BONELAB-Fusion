@@ -16,6 +16,7 @@ namespace LabFusion.UI
         public InfoBoxPanelView(IntPtr intPtr) : base(intPtr) { }
 
         private Transform _canvas;
+        private Transform _uiPlane;
 
         private TMP_Text _versionText;
         private TMP_Text _changelogText;
@@ -32,14 +33,20 @@ namespace LabFusion.UI
             // Setup the menu
             SetupReferences();
             SetupButtons();
-            SetupText();
+            UIMachineUtilities.OverrideFonts(transform);
 
             // Load the first page
             LoadPage(_groupPatchNotes.gameObject);
+
+            // Disable until the trigger is entered
+            _canvas.gameObject.SetActive(false);
         }
 
         private void SetupReferences() {
             _canvas = transform.Find("CANVAS");
+            _uiPlane = _canvas.Find("UIPLANE");
+
+            UIMachineUtilities.CreateLaserCursor(_canvas, _uiPlane, new Vector3(0.64f, 0.64f, 0.1f));
 
             _versionText = _canvas.Find("text_versionNumber").GetComponent<TMP_Text>();
             _versionText.text = $"v{FusionMod.Version}";
@@ -59,34 +66,18 @@ namespace LabFusion.UI
         private void SetupButtons()
         {
             // Setup page buttons
-            _patchNotesButton.onClick.AddListener((UnityAction)(() => {
+            _patchNotesButton.AddClickEvent(() => {
                 LoadPage(_groupPatchNotes.gameObject);
-            }));
-            _creditsButton.onClick.AddListener((UnityAction)(() => {
+            });
+            _creditsButton.AddClickEvent(() => {
                 LoadPage(_groupCredits.gameObject);
-            }));
-            _mysteryButton.onClick.AddListener((UnityAction)(() => {
+            });
+            _mysteryButton.AddClickEvent(() => {
                 LoadPage(_groupMystery.gameObject);
-            }));
+            });
 
             // Add clicking events to every button
-            foreach (var button in transform.GetComponentsInChildren<Button>(true))
-            {
-                var collider = button.GetComponentInChildren<Collider>(true);
-                if (collider != null)
-                {
-                    var interactor = collider.gameObject.AddComponent<FusionUITrigger>();
-                    interactor.button = button;
-                }
-            }
-        }
-
-        private void SetupText()
-        {
-            foreach (var text in gameObject.GetComponentsInChildren<TMP_Text>(true))
-            {
-                text.font = PersistentAssetCreator.Font;
-            }
+            UIMachineUtilities.AddButtonTriggers(transform);
         }
 
         private void LoadPage(GameObject page) {

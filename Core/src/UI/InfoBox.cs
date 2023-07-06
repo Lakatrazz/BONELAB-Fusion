@@ -71,6 +71,9 @@ namespace LabFusion.UI
             // Add the panel view
             Transform panel = transform.Find("PANELVIEW");
             _panelView = panel.gameObject.AddComponent<InfoBoxPanelView>();
+
+            // Setup the UI trigger
+            UIMachineUtilities.CreateUITrigger(panel.Find("CANVAS").gameObject, transform.Find("uiTrigger").gameObject);
         }
     }
 }

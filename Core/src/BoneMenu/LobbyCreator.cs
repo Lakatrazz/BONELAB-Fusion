@@ -96,7 +96,7 @@ namespace LabFusion.BoneMenu
             var playersCategory = lobbyCategory.CreateCategory("Players", Color.white);
 
             foreach (var player in info.PlayerList.players) {
-                if (!player.IsValid)
+                if (!player.isValid)
                     continue;
 
                 playersCategory.CreateFunctionElement(player.username, Color.white, null);

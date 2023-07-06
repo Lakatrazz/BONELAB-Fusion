@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2724877129926911943}
   - component: {fileID: 5006795218086505460}
   - component: {fileID: 8043541524683241830}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: arrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -86,7 +86,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4778596027752943354}
   - component: {fileID: 4798850978302454002}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 2016604489387604543}
   - component: {fileID: 6326154247234975667}
   - component: {fileID: 1092342851797916095}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: bg_image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -207,7 +207,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2442296740209624579}
   - component: {fileID: 676731167517627152}
-  m_Layer: 0
+  - component: {fileID: 530446018738216108}
+  m_Layer: 5
   m_Name: button_arrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -276,3 +277,16 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &530446018738216108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7756098199585199147}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
