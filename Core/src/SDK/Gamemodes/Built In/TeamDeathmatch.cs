@@ -562,7 +562,10 @@ namespace LabFusion.SDK.Gamemodes
             if (value == "NaturalEnd")
             {
                 int bitReward = GetRewardedBits();
-                PointItemManager.RewardBits(bitReward);
+
+                if (bitReward > 0) {
+                    PointItemManager.RewardBits(bitReward);
+                }
             }
         }
 
