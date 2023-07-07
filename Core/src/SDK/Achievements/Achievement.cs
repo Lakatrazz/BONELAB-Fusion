@@ -13,6 +13,7 @@ namespace LabFusion.SDK.Achievements
 {
     public abstract class Achievement : IXMLPackable {
         public static event Action<Achievement> OnAchievementUpdated;
+        public static event Action<Achievement> OnAchievementCompleted;
 
         // The title of the achievement
         public abstract string Title { get; }
@@ -64,6 +65,7 @@ namespace LabFusion.SDK.Achievements
 
         private void Complete() {
             PointItemManager.RewardBits(BitReward);
+            OnAchievementCompleted?.Invoke(this);
 
             OnComplete();
         }

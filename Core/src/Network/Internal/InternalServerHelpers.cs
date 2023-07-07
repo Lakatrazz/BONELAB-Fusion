@@ -94,6 +94,10 @@ namespace LabFusion.Network {
                 isPopup = true,
                 type = NotificationType.SUCCESS,
             });
+
+            // Unlock achievement
+            if (AchievementManager.TryGetAchievement<WarmWelcome>(out var achievement))
+                achievement.IncrementTask();
         }
 
         /// <summary>

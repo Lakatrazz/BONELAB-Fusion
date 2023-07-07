@@ -48,6 +48,19 @@ namespace LabFusion.UI {
             // Setup the UI trigger
             UIMachineUtilities.CreateUITrigger(panel.Find("CANVAS").gameObject, transform.Find("uiTrigger").gameObject);
 
+            // Setup audio
+            PersistentAssetCreator.HookOnSFXMixerLoaded((m) => {
+                if (gameObject != null)
+                {
+                    AudioSource[] sources = gameObject.GetComponentsInChildren<AudioSource>(true);
+
+                    foreach (var source in sources)
+                    {
+                        source.outputAudioMixerGroup = m;
+                    }
+                }
+            });
+
             OnAwake();
         }
 

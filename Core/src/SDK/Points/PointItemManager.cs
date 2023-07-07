@@ -171,7 +171,7 @@ namespace LabFusion.SDK.Points {
             return PointSaveManager.GetBitCount();
         }
 
-        public static void RewardBits(int bits) {
+        public static void RewardBits(int bits, bool popup = true) {
             bits = Mathf.Max(0, bits);
 
             // Make sure the amount isn't invalid
@@ -183,10 +183,13 @@ namespace LabFusion.SDK.Points {
             var currentBits = GetBitCount();
             PointSaveManager.SetBitCount(currentBits + bits);
 
+            if (popup)
+                FusionBitPopup.Send(bits);
+
             OnBitCountChanged.InvokeSafe("executing OnBitCountChanged");
         }
 
-        public static void DecrementBits(int bits) {
+        public static void DecrementBits(int bits, bool popup = true) {
             bits = Mathf.Max(0, bits);
 
             // Make sure the amount isn't invalid
@@ -197,6 +200,9 @@ namespace LabFusion.SDK.Points {
 
             var currentBits = GetBitCount();
             PointSaveManager.SetBitCount(currentBits - bits);
+
+            if (popup)
+                FusionBitPopup.Send(-bits);
 
             OnBitCountChanged.InvokeSafe("executing OnBitCountChanged");
         }
@@ -220,8 +226,8 @@ namespace LabFusion.SDK.Points {
                 return false;
 
             PointSaveManager.UpgradeItem(item.Barcode);
-            int newBits = bits - price;
-            PointSaveManager.SetBitCount(newBits);
+
+            DecrementBits(price);
 
             return true;
         }
@@ -242,8 +248,8 @@ namespace LabFusion.SDK.Points {
                 return false;
 
             PointSaveManager.UnlockItem(item.Barcode);
-            int newBits = bits - price;
-            PointSaveManager.SetBitCount(newBits);
+
+            DecrementBits(price);
 
             return true;
         }

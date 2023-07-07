@@ -658,6 +658,8 @@
     <Compile Include="Core\src\Syncables\Prop\PropComponentArrayExtender.cs" />
     <Compile Include="Core\src\Syncables\Prop\PropComponentExtender.cs" />
     <Compile Include="Core\src\Syncables\Prop\Extenders\PropExtenderManager.cs" />
+    <Compile Include="Core\src\Utilities\Fusion\Popups\FusionBitPopup.cs" />
+    <Compile Include="Core\src\Utilities\Fusion\Popups\FusionAchievementPopup.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionAvatar.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionOverrides.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionAchievementLoader.cs" />
@@ -670,6 +672,7 @@
     <Compile Include="Core\src\SDK\Points\PointShopHelper.cs" />
     <Compile Include="Core\src\UI\Info Box\InfoBox.cs" />
     <Compile Include="Core\src\UI\Info Box\InfoBoxHelper.cs" />
+    <Compile Include="Core\src\Utilities\Fusion\Popups\FusionPopupManager.cs" />
     <Compile Include="Core\src\Utilities\Fusion\Scene\FusionSceneManager.cs" />
     <Compile Include="Core\src\Utilities\Fusion\Scene\FusionSceneHooks.cs" />
     <Compile Include="Core\src\Utilities\Fusion\Scene\FusionSceneStatus.cs" />
@@ -677,7 +680,7 @@
     <Compile Include="Core\src\Utilities\GameObjectUtilitiesAsync.cs" />
     <Compile Include="Core\src\Utilities\ImpactUtilities.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionBundleLoader.cs" />
-    <Compile Include="Core\src\Utilities\Fusion\FusionNotifier.cs" />
+    <Compile Include="Core\src\Utilities\Fusion\Popups\FusionNotifier.cs" />
     <Compile Include="Core\src\Utilities\Internal\NativeUtilities.cs" />
     <Compile Include="Core\src\Utilities\Internal\PooleePusher.cs" />
     <Compile Include="Core\src\Utilities\Internal\SafeEvents.cs" />

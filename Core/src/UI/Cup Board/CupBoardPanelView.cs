@@ -50,7 +50,7 @@ namespace LabFusion.UI
         }
 
         private void OnDestroy() {
-            Achievement.OnAchievementUpdated += OnAchievementUpdated;
+            Achievement.OnAchievementUpdated -= OnAchievementUpdated;
         }
 
         [HideFromIl2Cpp]

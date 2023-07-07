@@ -31,19 +31,6 @@ namespace LabFusion.SDK.Points
 
         public PointShopPanelView PanelView => _panelView;
 
-        protected override void OnAwake() {
-            // Setup audio
-            PersistentAssetCreator.HookOnSFXMixerLoaded((m) => {
-                if (gameObject != null) {
-                    AudioSource[] sources = gameObject.GetComponentsInChildren<AudioSource>(true);
-
-                    foreach (var source in sources) {
-                        source.outputAudioMixerGroup = m;
-                    }
-                }
-            });
-        }
-
         protected override void AddPanelView(GameObject panel) {
             _panelView = panel.AddComponent<PointShopPanelView>();
         }

@@ -35,6 +35,9 @@ namespace LabFusion.Data
 
         public const string EntangledLinePrefab = "renderer_EntangledLine";
 
+        public const string AchievementPopupPrefab = "achievement_Popup";
+        public const string BitPopupPrefab = "bit_Popup";
+
         public const string SabrelakeLogo = "tex_sabreLakeLogo";
         public const string LavaGangLogo = "tex_lavaGangLogo";
 
@@ -45,6 +48,8 @@ namespace LabFusion.Data
         public const string SabrelakeFailure = "sting_sabrelakeFailure";
 
         public const string DMTie = "sting_DMTie";
+
+        public const string BitGet = "stinger_BitGet";
 
         public const string GeoGrpFellDownTheStairs = "music_GeoGrpFellDownTheStairs";
 

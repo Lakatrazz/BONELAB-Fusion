@@ -94,6 +94,8 @@ namespace LabFusion
 
             SyncManager.OnInitializeMelon();
 
+            FusionPopupManager.OnInitializeMelon();
+
             // Create prefs
             FusionPreferences.OnInitializePreferences();
 
@@ -236,8 +238,8 @@ namespace LabFusion
             // Store rig info/update avatars
             RigData.OnRigUpdate();
 
-            // Update notifications
-            FusionNotifier.OnUpdate();
+            // Update popups
+            FusionPopupManager.OnUpdate();
 
             // Send players based on player count
             int playerSendRate = SendRateTable.GetPlayerSendRate();

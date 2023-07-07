@@ -545,20 +545,11 @@ namespace LabFusion.SDK.Gamemodes
         /// <param name="value"></param>
         protected override void OnEventTriggered(string value)
         {
-            FusionNotification oneMinuteNotification = new FusionNotification()
+            FusionNotification oneMinuteNotification = new()
             {
                 title = "Team Deathmatch Timer",
                 showTitleOnPopup = true,
                 message = "One minute left!",
-                isMenuItem = false,
-                isPopup = true,
-            };
-
-            FusionNotification bitRewardNotification = new FusionNotification()
-            {
-                title = "Bits Rewarded",
-                showTitleOnPopup = true,
-                popupLength = 3f,
                 isMenuItem = false,
                 isPopup = true,
             };
@@ -568,12 +559,9 @@ namespace LabFusion.SDK.Gamemodes
                 FusionNotifier.Send(oneMinuteNotification);
             }
 
-            if(value == "NaturalEnd")
+            if (value == "NaturalEnd")
             {
                 int bitReward = GetRewardedBits();
-                string message = bitReward == 1 ? "Bit" : "Bits";
-
-                bitRewardNotification.message = $"You Won {bitReward}" + message;
                 PointItemManager.RewardBits(bitReward);
             }
         }

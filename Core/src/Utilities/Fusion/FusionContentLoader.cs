@@ -20,6 +20,9 @@ namespace LabFusion.Utilities {
 
         public static GameObject EntangledLinePrefab { get; private set; }
 
+        public static GameObject AchievementPopupPrefab { get; private set; }
+        public static GameObject BitPopupPrefab { get; private set; }
+
         public static Texture2D SabrelakeLogo { get; private set; }
         public static Texture2D LavaGangLogo { get; private set; }
 
@@ -32,6 +35,8 @@ namespace LabFusion.Utilities {
         public static AudioClip SabrelakeFailure { get; private set; }
 
         public static AudioClip DMTie { get; private set; }
+
+        public static AudioClip BitGet { get; private set; }
 
         public static AudioClip UISelect { get; private set; }
         public static AudioClip UIDeny { get; private set; }
@@ -79,6 +84,9 @@ namespace LabFusion.Utilities {
 
                 EntangledLinePrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.EntangledLinePrefab);
 
+                AchievementPopupPrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.AchievementPopupPrefab);
+                BitPopupPrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.BitPopupPrefab);
+
                 SabrelakeLogo = ContentBundle.LoadPersistentAsset<Texture2D>(ResourcePaths.SabrelakeLogo); 
                 LavaGangLogo = ContentBundle.LoadPersistentAsset<Texture2D>(ResourcePaths.LavaGangLogo);
 
@@ -95,6 +103,8 @@ namespace LabFusion.Utilities {
                 SabrelakeFailure = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.SabrelakeFailure);
 
                 DMTie = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.DMTie);
+
+                BitGet = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.BitGet);
 
                 UISelect = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.UISelect);
                 UIDeny = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.UIDeny);
