@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 using SLZ.Marrow.SceneStreaming;
+using LabFusion.SDK.Achievements;
 
 namespace LabFusion.Network {
     /// <summary>
@@ -65,6 +66,10 @@ namespace LabFusion.Network {
                 isPopup = true,
                 type = NotificationType.SUCCESS,
             });
+
+            // Unlock achievement
+            if (AchievementManager.TryGetAchievement<HeadOfHouse>(out var achievement))
+                achievement.IncrementTask();
 
             // Reload the scene
             SceneStreamer.Reload();

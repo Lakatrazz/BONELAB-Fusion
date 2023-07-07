@@ -267,6 +267,7 @@
     <Compile Include="Core\src\Data\Containers\Grips\SerializedStaticGrab.cs" />
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedLocalTransform.cs" />
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedTransform.cs" />
+    <Compile Include="Core\src\Data\Containers\XML\IXMLPackable.cs" />
     <Compile Include="Core\src\Data\Containers\XML\PlayerList.cs" />
     <Compile Include="Core\src\Data\Files\ChangelogLoader.cs" />
     <Compile Include="Core\src\Data\Files\XML\ContactsList.cs" />
@@ -422,6 +423,14 @@
     <Compile Include="Core\src\Patching\Patches\Trigger\MirrorPatches.cs" />
     <Compile Include="Core\src\Representation\FusionBlessings.cs" />
     <Compile Include="Core\src\Representation\FusionMasterList.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Achievement.cs" />
+    <Compile Include="Core\src\SDK\Achievements\AchievementManager.cs" />
+    <Compile Include="Core\src\SDK\Achievements\AchievementSaveManager.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\ExperiencedExecutioner.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\WarmWelcome.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\MediocreMarksman.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\RookieAssassin.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\HeadOfHouse.cs" />
     <Compile Include="Core\src\SDK\Gamemodes\Team.cs" />
     <Compile Include="Core\src\SDK\Gamemodes\TeamLogoInstance.cs" />
     <Compile Include="Core\src\SDK\Points\AccessoryItem.cs" />
@@ -530,8 +539,13 @@
     <Compile Include="Core\src\Syncables\Prop\PropCollisionSyncerExtender.cs" />
     <Compile Include="Core\src\Syncables\Prop\PropLifeCycleEvents.cs" />
     <Compile Include="Core\src\Syncables\SyncBlacklist.cs" />
+    <Compile Include="Core\src\UI\Cup Board\CupBoard.cs" />
+    <Compile Include="Core\src\UI\Cup Board\CupBoardPanelView.cs" />
+    <Compile Include="Core\src\UI\Cup Board\CupBoardHelper.cs" />
+    <Compile Include="Core\src\UI\FusionPanelView.cs" />
+    <Compile Include="Core\src\UI\FusionUIMachine.cs" />
     <Compile Include="Core\src\UI\FusionUITrigger.cs" />
-    <Compile Include="Core\src\UI\InfoBoxPanelView.cs" />
+    <Compile Include="Core\src\UI\Info Box\InfoBoxPanelView.cs" />
     <Compile Include="Core\src\Utilities\AssemblyUtilities.cs" />
     <Compile Include="Core\src\Utilities\ByteRetriever.cs" />
     <Compile Include="Core\src\Utilities\CommonBarcodes.cs" />
@@ -646,6 +660,7 @@
     <Compile Include="Core\src\Syncables\Prop\Extenders\PropExtenderManager.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionAvatar.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionOverrides.cs" />
+    <Compile Include="Core\src\Utilities\Fusion\FusionAchievementLoader.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionPointItemLoader.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionContentLoader.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionComponentCache.cs" />
@@ -653,8 +668,8 @@
     <Compile Include="Core\src\Utilities\Fusion\FusionAudio.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionPlayer.cs" />
     <Compile Include="Core\src\SDK\Points\PointShopHelper.cs" />
-    <Compile Include="Core\src\UI\InfoBox.cs" />
-    <Compile Include="Core\src\UI\InfoBoxHelper.cs" />
+    <Compile Include="Core\src\UI\Info Box\InfoBox.cs" />
+    <Compile Include="Core\src\UI\Info Box\InfoBoxHelper.cs" />
     <Compile Include="Core\src\Utilities\Fusion\Scene\FusionSceneManager.cs" />
     <Compile Include="Core\src\Utilities\Fusion\Scene\FusionSceneHooks.cs" />
     <Compile Include="Core\src\Utilities\Fusion\Scene\FusionSceneStatus.cs" />
@@ -1278,7 +1293,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Core\resources\raw_changelog.txt" />
+    <EmbeddedResource Include="Core\resources\text\raw_changelog.txt" />
+    <EmbeddedResource Include="Core\resources\text\credits\raw_credits_01.txt" />
+    <EmbeddedResource Include="Core\resources\text\credits\raw_credits_02.txt" />
+    <EmbeddedResource Include="Core\resources\text\credits\raw_credits_03.txt" />
     <Content Include="Core\src\AssemblyInfo.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>AssemblyInfo.cs</LastGenOutput>
@@ -1295,6 +1313,7 @@
     <None Include=".editorconfig" />
     <EmbeddedResource Include="Core\resources\bundles\StandaloneWindows64\content_bundle.fusion" />
     <EmbeddedResource Include="Core\resources\bundles\StandaloneWindows64\item_bundle.fusion" />
+    <EmbeddedResource Include="Core\resources\bundles\StandaloneWindows64\achievement_bundle.fusion" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -35,6 +35,8 @@ namespace LabFusion.SDK.Points
 
         public PointShopPanelView(IntPtr intPtr) : base(intPtr) { }
 
+        protected override Vector3 Bounds => new(1.3f, 1f, 0.1f);
+
         private Rigidbody _doorRigidbody;
 
         private Transform _groupItemsRoot;

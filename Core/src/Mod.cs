@@ -21,6 +21,7 @@ using UnityEngine;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Points;
 using System.Linq;
+using LabFusion.SDK.Achievements;
 
 namespace LabFusion
 {
@@ -89,6 +90,7 @@ namespace LabFusion
             PropExtenderManager.RegisterExtendersFromAssembly(FusionAssembly);
             GamemodeRegistration.LoadGamemodes(FusionAssembly);
             PointItemManager.LoadItems(FusionAssembly);
+            AchievementManager.LoadAchievements(FusionAssembly);
 
             SyncManager.OnInitializeMelon();
 

@@ -17,6 +17,9 @@ namespace LabFusion.Data
         public const string WindowsBundlePrefix = "LabFusion.Core.resources.bundles.StandaloneWindows64.";
         public const string AndroidBundlePrefix = "LabFusion.Core.resources.bundles.Android.";
 
+        // Achievement bundle
+        public const string AchievementBundle = "achievement_bundle.fusion";
+
         // Item bundle
         public const string ItemBundle = "item_bundle.fusion";
 
@@ -28,6 +31,7 @@ namespace LabFusion.Data
 
         public const string PointShopPrefab = "machine_PointShop";
         public const string InfoBoxPrefab = "machine_InfoBox";
+        public const string CupBoardPrefab = "machine_CupBoard";
 
         public const string EntangledLinePrefab = "renderer_EntangledLine";
 

@@ -20,7 +20,7 @@ namespace LabFusion.Utilities {
         public static void CreateLaserCursor(Transform canvas, Transform uiPlane, Vector3 bounds) {
             LaserCursorUtilities.CreateLaserCursor((cursor) =>
             {
-                cursor.transform.parent = canvas;
+                cursor.transform.parent = canvas.parent;
                 cursor.transform.localPosition = Vector3Extensions.zero;
                 cursor.transform.localRotation = QuaternionExtensions.identity;
 
