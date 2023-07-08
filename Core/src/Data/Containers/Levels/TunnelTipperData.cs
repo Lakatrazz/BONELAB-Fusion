@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace LabFusion.Data {
     public class TunnelTipperData : LevelDataHandler {
-        private static readonly Vector3[] _deathmatchSpawnPoints = new Vector3[5] {
+        private static readonly Vector3[] _deathmatchSpawnPoints = new Vector3[10] {
     new Vector3(10.0078f, 16.0968f, 21.5753f),
     new Vector3(10.0832f, 15.663f, 25.6005f),
     new Vector3(9.9641f, 18.1093f, -20.7673f),
@@ -25,7 +25,7 @@ namespace LabFusion.Data {
         };
 
         protected override void MainSceneInitialized() {
-            // Check if this is tunnel tipper
+            // Check if this is the right map
             if (FusionSceneManager.Title == "Tunnel Tipper" && FusionSceneManager.Level.Pallet.Internal) {
                 // Create DM spawn points
                 for (var i = 0; i < _deathmatchSpawnPoints.Length; i++) {
