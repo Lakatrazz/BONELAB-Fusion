@@ -42,6 +42,11 @@ Thread commandThread = new(() =>
                         NetworkHandler.SendToClient(writer);
                         break;
                     }
+                case "forcestart":
+                    {
+                        SteamHandler.Init(250820);
+                        break;
+                    }
                 default:
                     Console.WriteLine("Unknown command.");
                     break;
