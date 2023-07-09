@@ -709,9 +709,28 @@ namespace LabFusion.Network
             // Fetch lobbies
             var task = _lobbyManager.RequestLobbyIds();
 
+            float timeTaken = 0f;
+
             while (!task.IsCompleted)
+            {
                 yield return null;
-;
+                timeTaken += Time.deltaTime;
+
+                if (timeTaken >= 20f)
+                {
+                    FusionNotifier.Send(new FusionNotification()
+                    {
+                        title = "Timed Out",
+                        showTitleOnPopup = true,
+                        message = "Timed out when requesting lobby ids.",
+                        isMenuItem = false,
+                        isPopup = true,
+                    });
+                    yield break;
+                }
+            }
+
+
             var lobbies = task.Result;
             int lobbyCount = 0;
 
@@ -721,9 +740,26 @@ namespace LabFusion.Network
 
                 var metadataTask = _lobbyManager.RequestLobbyMetadataInfo(lobby);
 
-                while (!metadataTask.IsCompleted)
-                    yield return null;
+                timeTaken = 0f;
 
+                while (!metadataTask.IsCompleted)
+                {
+                    yield return null;
+                    timeTaken += Time.deltaTime;
+
+                    if (timeTaken >= 20f)
+                    {
+                        FusionNotifier.Send(new FusionNotification()
+                        {
+                            title = "Timed Out",
+                            showTitleOnPopup = true,
+                            message = "Timed out when requesting lobby ids.",
+                            isMenuItem = false,
+                            isPopup = true,
+                        });
+                        yield break;
+                    }
+                }
 
                 LobbyMetadataInfo info = metadataTask.Result;
 
