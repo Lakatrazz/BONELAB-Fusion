@@ -74,7 +74,7 @@ namespace LabFusion.Preferences {
         }
 
         public struct ClientSettings {
-            // Selected network layer and settings
+            // Selected network layer
             public static FusionPref<NetworkLayerType> NetworkLayerType { get; internal set; }
             public static FusionPref<int> ProxyPort { get; internal set; }
 

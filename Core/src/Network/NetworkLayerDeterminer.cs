@@ -12,10 +12,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabFusion.Network
-{
-    public enum NetworkLayerType
-    {
+namespace LabFusion.Network {
+    public enum NetworkLayerType {
         STEAM_VR = 0,
         SPACEWAR = 1,
         EMPTY = 2,
@@ -23,22 +21,18 @@ namespace LabFusion.Network
         PROXY_SPACEWAR = 4,
     }
 
-    public static class NetworkLayerDeterminer
-    {
+    public static class NetworkLayerDeterminer {
         public static NetworkLayerType LoadedType { get; private set; }
 
-        public static NetworkLayerType GetDefaultType()
-        {
+        public static NetworkLayerType GetDefaultType() {
             if (HelperMethods.IsAndroid())
-                return NetworkLayerType.PROXY_STEAM_VR;
+                return NetworkLayerType.EMPTY;
 
             return NetworkLayerType.STEAM_VR;
         }
 
-        public static NetworkLayerType VerifyType(NetworkLayerType type)
-        {
-            switch (type)
-            {
+        public static NetworkLayerType VerifyType(NetworkLayerType type) {
+            switch (type) {
                 default:
                 case NetworkLayerType.STEAM_VR:
                     if (!SteamVRNetworkLayer.VerifyLayer())
@@ -50,23 +44,18 @@ namespace LabFusion.Network
                         return VerifyType(NetworkLayerType.EMPTY);
                     else
                         return NetworkLayerType.SPACEWAR;
-                case NetworkLayerType.PROXY_STEAM_VR:
-                case NetworkLayerType.PROXY_SPACEWAR:
-                    return type;
                 case NetworkLayerType.EMPTY:
                     return NetworkLayerType.EMPTY;
             }
         }
 
-        public static Type GetLoadedType()
-        {
+        public static Type GetLoadedType() {
             var type = FusionPreferences.ClientSettings.NetworkLayerType.GetValue();
             type = VerifyType(type);
 
             LoadedType = type;
 
-            switch (type)
-            {
+            switch (type) {
                 default:
                 case NetworkLayerType.STEAM_VR:
                     return typeof(SteamVRNetworkLayer);
@@ -74,9 +63,6 @@ namespace LabFusion.Network
                     return typeof(SpacewarNetworkLayer);
                 case NetworkLayerType.EMPTY:
                     return typeof(EmptyNetworkLayer);
-                case NetworkLayerType.PROXY_STEAM_VR:
-                case NetworkLayerType.PROXY_SPACEWAR:
-                    return typeof(ProxyNetworkLayer);
             }
         }
     }

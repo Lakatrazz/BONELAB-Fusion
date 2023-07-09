@@ -17,7 +17,7 @@ namespace LabFusion.Representation {
         public static readonly Dictionary<RigManager, PlayerRep> ManagerLookup = new Dictionary<RigManager, PlayerRep>(new UnityComparer());
 
         public static bool HasPlayerId(RigManager manager) {
-            return manager == null ? false : ManagerLookup.ContainsKey(manager);
+            return ManagerLookup.ContainsKey(manager);
         }
 
         public static bool TryGetPlayerRep(byte id, out PlayerRep playerRep) {

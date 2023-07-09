@@ -221,6 +221,7 @@
     <Compile Include="Core\marrow-integration\Runtime\Gamemodes\Deathmatch\DeathmatchSpawnpoint.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Gamemodes\Team Deathmatch\TeamDeathmatchProxy.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Gamemodes\Deathmatch\DeathmatchProxy.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\Gamemodes\Team Deathmatch\TeamSpawnpoint.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Internal\FusionMarrowBehaviour.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\DisableSyncing.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\NotificationProxy.cs" />
@@ -233,6 +234,7 @@
     <Compile Include="Core\marrow-integration\Runtime\Misc\AlwaysAllowImpactDamage.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\AutoSyncOnStart.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\OnlyTriggerOnLocalPlayer.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\UltEvents\InvokeUltEventIfTeam.cs" />
     <Compile Include="Core\marrow-integration\Runtime\UltEvents\InvokeUltEventIfTeamLavaGang.cs" />
     <Compile Include="Core\marrow-integration\Runtime\UltEvents\InvokeUltEventIfTeamSabrelake.cs" />
     <Compile Include="Core\marrow-integration\Runtime\UltEvents\InvokeUltEventIfClient.cs" />
@@ -251,11 +253,12 @@
     <Compile Include="Core\src\BoneMenu\LobbyCreator.cs" />
     <Compile Include="Core\src\BoneMenu\NotificationCreator.cs" />
     <Compile Include="Core\src\BoneMenu\BanListCreator.cs" />
+    <Compile Include="Core\src\BoneMenu\AdminActionsCreator.cs" />
     <Compile Include="Core\src\BoneMenu\PlayerListCreator.cs" />
     <Compile Include="Core\src\BoneMenu\SettingsCreator.cs" />
-    <Compile Include="Core\src\Data\Containers\FrameSkipper.cs" />
+    <Compile Include="Core\src\Data\Containers\Syncables\FrameSkipper.cs" />
     <Compile Include="Core\src\Data\Containers\FusionArrayPool.cs" />
-    <Compile Include="Core\src\Data\Containers\GrabbedGripList.cs" />
+    <Compile Include="Core\src\Data\Containers\Syncables\GrabbedGripList.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\GameControllerData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\HalfwayParkData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\HolodeckData.cs" />
@@ -271,7 +274,7 @@
     <Compile Include="Core\src\Data\Containers\Levels\DescentData.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedPropGrab.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedWorldGrab.cs" />
-    <Compile Include="Core\src\Data\Containers\GripPair.cs" />
+    <Compile Include="Core\src\Data\Containers\Syncables\GripPair.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\HomeData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\MagmaGateData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\MineDiveData.cs" />
@@ -288,22 +291,28 @@
     <Compile Include="Core\src\Data\Containers\Grips\SerializedPlayerBodyGrab.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedServerSettings.cs" />
     <Compile Include="Core\src\Data\Containers\SerializedPlayerSettings.cs" />
-    <Compile Include="Core\src\Data\Containers\RigidbodyCache.cs" />
-    <Compile Include="Core\src\Data\Containers\TransformCache.cs" />
+    <Compile Include="Core\src\Data\Containers\Syncables\RigidbodyCache.cs" />
+    <Compile Include="Core\src\Data\Containers\Syncables\TempRigidbodyList.cs" />
+    <Compile Include="Core\src\Data\Containers\Syncables\TransformCache.cs" />
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedSmallQuaternion.cs" />
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedQuaternion.cs" />
     <Compile Include="Core\src\Data\Containers\Grips\SerializedStaticGrab.cs" />
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedLocalTransform.cs" />
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedTransform.cs" />
+    <Compile Include="Core\src\Data\Containers\XML\IXMLPackable.cs" />
+    <Compile Include="Core\src\Data\Containers\XML\PlayerList.cs" />
+    <Compile Include="Core\src\Data\Files\ChangelogLoader.cs" />
+    <Compile Include="Core\src\Data\Files\XML\ContactsList.cs" />
     <Compile Include="Core\src\Data\Files\DataSaver.cs" />
     <Compile Include="Core\src\Data\Files\EmbeddedAssetBundle.cs" />
     <Compile Include="Core\src\Data\Files\FusionFileLoader.cs" />
-    <Compile Include="Core\src\Data\Files\BanList.cs" />
-    <Compile Include="Core\src\Data\Files\PermissionList.cs" />
+    <Compile Include="Core\src\Data\Files\XML\BanList.cs" />
+    <Compile Include="Core\src\Data\Files\XML\PermissionList.cs" />
     <Compile Include="Core\src\Data\Files\SteamAPILoader.cs" />
     <Compile Include="Core\src\Data\Files\EmbeddedResource.cs" />
     <Compile Include="Core\src\Data\Files\PersistentData.cs" />
     <Compile Include="Core\src\Data\Files\ResourcePaths.cs" />
+    <Compile Include="Core\src\Data\Files\XML\XMLFile.cs" />
     <Compile Include="Core\src\Data\Interfaces\IFusionSerializable.cs" />
     <Compile Include="Core\src\Debugging\FusionDevMode.cs" />
     <Compile Include="Core\src\Debugging\FusionStopwatch.cs" />
@@ -312,6 +321,7 @@
     <Compile Include="Core\src\Exceptions\ExpectedServerException.cs" />
     <Compile Include="Core\src\Extensions\AlignPlug.cs" />
     <Compile Include="Core\src\Extensions\Array.cs" />
+    <Compile Include="Core\src\Extensions\AudioSource.cs" />
     <Compile Include="Core\src\Extensions\Byte.cs" />
     <Compile Include="Core\src\Extensions\Chunk.cs" />
     <Compile Include="Core\src\Extensions\Grip.cs" />
@@ -323,6 +333,7 @@
     <Compile Include="Core\src\Extensions\Math.cs" />
     <Compile Include="Core\src\Extensions\PullCordDevice.cs" />
     <Compile Include="Core\src\Extensions\Quaternion.cs" />
+    <Compile Include="Core\src\Extensions\RigManager.cs" />
     <Compile Include="Core\src\Extensions\String.cs" />
     <Compile Include="Core\src\Extensions\Transform.cs" />
     <Compile Include="Core\src\Extensions\SyncableComparer.cs" />
@@ -345,7 +356,10 @@
     <Compile Include="Core\src\Network\Helpers\MetadataHelper.cs" />
     <Compile Include="Core\src\Network\Helpers\NetworkVerification.cs" />
     <Compile Include="Core\src\Network\Helpers\SendRateTable.cs" />
+    <Compile Include="Core\src\Network\Helpers\VoiceHelper.cs" />
     <Compile Include="Core\src\Network\INetworkLobby.cs" />
+    <Compile Include="Core\src\Network\IVoiceHandler.cs" />
+    <Compile Include="Core\src\Network\IVoiceManager.cs" />
     <Compile Include="Core\src\Network\Messages\Arena\BaseGameControllerMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Arena\TimeTrialGameControllerMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Gamemodes\GamemodeMetadataRemoveMessage.cs" />
@@ -397,9 +411,10 @@
     <Compile Include="Core\src\Network\Proxy\ProxySocketHandler.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxyVoiceIdentifier.cs" />
     <Compile Include="Core\src\Network\Steam\SpacewarNetworkLayer.cs" />
+    <Compile Include="Core\src\Network\Steam\SteamVoiceManager.cs" />
     <Compile Include="Core\src\Network\Steam\SteamVRNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Steam\SteamLobby.cs" />
-    <Compile Include="Core\src\Network\Steam\SteamVoiceIdentifier.cs" />
+    <Compile Include="Core\src\Network\Steam\SteamVoiceHandler.cs" />
     <Compile Include="Core\src\Patching\NativeStructs\Attack_.cs" />
     <Compile Include="Core\src\Patching\Patches\Attacks\ImpactPropertiesPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\AvatarDicePatches.cs" />
@@ -421,6 +436,7 @@
     <Compile Include="Core\src\Patching\Patches\Levels\ZoneEncounterPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\ArtRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\JimmyDoorControllerPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Player\RigManagerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\PlayerDamageReceiverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\RemapRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Props\AmmoPickupPatches.cs" />
@@ -441,6 +457,18 @@
     <Compile Include="Core\src\Patching\Patches\Attacks\StabSlashPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Trigger\GenGameControl_TriggerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Trigger\MirrorPatches.cs" />
+    <Compile Include="Core\src\Representation\FusionBlessings.cs" />
+    <Compile Include="Core\src\Representation\FusionMasterList.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Achievement.cs" />
+    <Compile Include="Core\src\SDK\Achievements\AchievementManager.cs" />
+    <Compile Include="Core\src\SDK\Achievements\AchievementSaveManager.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\ExperiencedExecutioner.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\WarmWelcome.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\MediocreMarksman.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\RookieAssassin.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\HeadOfHouse.cs" />
+    <Compile Include="Core\src\SDK\Gamemodes\Team.cs" />
+    <Compile Include="Core\src\SDK\Gamemodes\TeamLogoInstance.cs" />
     <Compile Include="Core\src\SDK\Points\AccessoryItem.cs" />
     <Compile Include="Core\src\SDK\Points\AccessoryItemHelper.cs" />
     <Compile Include="Core\src\SDK\Points\BitEconomy.cs" />
@@ -483,6 +511,7 @@
     <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\Junktion.cs" />
     <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\GloopTrail.cs" />
     <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\Gemstone.cs" />
+    <Compile Include="Core\src\SDK\Points\Built In\Passive\BitMiner.cs" />
     <Compile Include="Core\src\SDK\Points\PointItem.cs" />
     <Compile Include="Core\src\SDK\Points\PointItemManager.cs" />
     <Compile Include="Core\src\SDK\Points\PointSaveManager.cs" />
@@ -546,11 +575,17 @@
     <Compile Include="Core\src\Syncables\Prop\PropCollisionSyncerExtender.cs" />
     <Compile Include="Core\src\Syncables\Prop\PropLifeCycleEvents.cs" />
     <Compile Include="Core\src\Syncables\SyncBlacklist.cs" />
+    <Compile Include="Core\src\UI\Cup Board\CupBoard.cs" />
+    <Compile Include="Core\src\UI\Cup Board\CupBoardPanelView.cs" />
+    <Compile Include="Core\src\UI\Cup Board\CupBoardHelper.cs" />
+    <Compile Include="Core\src\UI\FusionPanelView.cs" />
+    <Compile Include="Core\src\UI\FusionUIMachine.cs" />
     <Compile Include="Core\src\UI\FusionUITrigger.cs" />
-    <Compile Include="Core\src\UI\InfoBoxPanelView.cs" />
+    <Compile Include="Core\src\UI\Info Box\InfoBoxPanelView.cs" />
     <Compile Include="Core\src\Utilities\AssemblyUtilities.cs" />
     <Compile Include="Core\src\Utilities\ByteRetriever.cs" />
     <Compile Include="Core\src\Utilities\CommonBarcodes.cs" />
+    <Compile Include="Core\src\Utilities\DelayUtilities.cs" />
     <Compile Include="Core\src\Utilities\DllTools.cs" />
     <Compile Include="Core\src\Network\Helpers\Net.cs" />
     <Compile Include="Core\src\Network\Helpers\NetworkHelper.cs" />
@@ -659,8 +694,11 @@
     <Compile Include="Core\src\Syncables\Prop\PropComponentArrayExtender.cs" />
     <Compile Include="Core\src\Syncables\Prop\PropComponentExtender.cs" />
     <Compile Include="Core\src\Syncables\Prop\Extenders\PropExtenderManager.cs" />
+    <Compile Include="Core\src\Utilities\Fusion\Popups\FusionBitPopup.cs" />
+    <Compile Include="Core\src\Utilities\Fusion\Popups\FusionAchievementPopup.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionAvatar.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionOverrides.cs" />
+    <Compile Include="Core\src\Utilities\Fusion\FusionAchievementLoader.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionPointItemLoader.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionContentLoader.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionComponentCache.cs" />
@@ -668,15 +706,17 @@
     <Compile Include="Core\src\Utilities\Fusion\FusionAudio.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionPlayer.cs" />
     <Compile Include="Core\src\SDK\Points\PointShopHelper.cs" />
-    <Compile Include="Core\src\UI\InfoBox.cs" />
-    <Compile Include="Core\src\UI\InfoBoxHelper.cs" />
+    <Compile Include="Core\src\UI\Info Box\InfoBox.cs" />
+    <Compile Include="Core\src\UI\Info Box\InfoBoxHelper.cs" />
+    <Compile Include="Core\src\Utilities\Fusion\Popups\FusionPopupManager.cs" />
     <Compile Include="Core\src\Utilities\Fusion\Scene\FusionSceneManager.cs" />
     <Compile Include="Core\src\Utilities\Fusion\Scene\FusionSceneHooks.cs" />
     <Compile Include="Core\src\Utilities\Fusion\Scene\FusionSceneStatus.cs" />
     <Compile Include="Core\src\Utilities\GameObjectUtilities.cs" />
+    <Compile Include="Core\src\Utilities\GameObjectUtilitiesAsync.cs" />
     <Compile Include="Core\src\Utilities\ImpactUtilities.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionBundleLoader.cs" />
-    <Compile Include="Core\src\Utilities\Fusion\FusionNotifier.cs" />
+    <Compile Include="Core\src\Utilities\Fusion\Popups\FusionNotifier.cs" />
     <Compile Include="Core\src\Utilities\Internal\NativeUtilities.cs" />
     <Compile Include="Core\src\Utilities\Internal\PooleePusher.cs" />
     <Compile Include="Core\src\Utilities\Internal\SafeEvents.cs" />
@@ -692,11 +732,13 @@
     <Compile Include="Core\src\Utilities\Internal\PhysicsUtilities.cs" />
     <Compile Include="Core\src\Preferences\FusionPreferences.cs" />
     <Compile Include="Core\src\Utilities\Internal\StaticGripFixer.cs" />
+    <Compile Include="Core\src\Utilities\UI\LaserCursorUtilities.cs" />
     <Compile Include="Core\src\Utilities\PlayerAdditionsHelper.cs" />
     <Compile Include="Core\src\Utilities\PooleeUtilities.cs" />
     <Compile Include="Core\src\Utilities\SafetyUtilities.cs" />
     <Compile Include="Core\src\Utilities\ThreadingUtilities.cs" />
     <Compile Include="Core\src\Utilities\TriggerUtilities.cs" />
+    <Compile Include="Core\src\Utilities\UI\UIMachineUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Core\resources\lib\x86_64\steam_api64.dll" />
@@ -1290,6 +1332,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Core\resources\text\raw_changelog.txt" />
+    <EmbeddedResource Include="Core\resources\text\credits\raw_credits_01.txt" />
+    <EmbeddedResource Include="Core\resources\text\credits\raw_credits_02.txt" />
+    <EmbeddedResource Include="Core\resources\text\credits\raw_credits_03.txt" />
     <Content Include="Core\src\AssemblyInfo.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>AssemblyInfo.cs</LastGenOutput>
@@ -1299,14 +1345,14 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Core\resources\bundles\Android\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
     <EmbeddedResource Include="Core\resources\bundles\StandaloneWindows64\content_bundle.fusion" />
     <EmbeddedResource Include="Core\resources\bundles\StandaloneWindows64\item_bundle.fusion" />
-    <EmbeddedResource Include="Core\resources\bundles\Android\content_bundle.fusion" />
-    <EmbeddedResource Include="Core\resources\bundles\Android\item_bundle.fusion" />
+    <EmbeddedResource Include="Core\resources\bundles\StandaloneWindows64\achievement_bundle.fusion" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

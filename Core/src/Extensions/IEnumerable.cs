@@ -44,20 +44,6 @@ namespace LabFusion.Extensions {
             return false;
         }
 
-        public static IEnumerable<T> SkipLast<T>(this IEnumerable<T> source)
-        {
-            using (var e = source.GetEnumerator())
-            {
-                if (e.MoveNext())
-                {
-                    for (var value = e.Current; e.MoveNext(); value = e.Current)
-                    {
-                        yield return value;
-                    }
-                }
-            }
-        }
-
         private static Random _random = new Random();
 
         public static void Shuffle<T>(this IList<T> list) {

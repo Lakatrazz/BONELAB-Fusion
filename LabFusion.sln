@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LabFusionUpdater", "LabFusi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdaterApp", "UpdaterApp\UpdaterApp.csproj", "{368C8264-42C6-4AFB-B9EE-0A9F90C1F3BE}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FusionHelper", "Core\FusionHelper\FusionHelper.csproj", "{16567D34-EFB1-42E8-8159-B38A257AA9D5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{368C8264-42C6-4AFB-B9EE-0A9F90C1F3BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{368C8264-42C6-4AFB-B9EE-0A9F90C1F3BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{368C8264-42C6-4AFB-B9EE-0A9F90C1F3BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16567D34-EFB1-42E8-8159-B38A257AA9D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16567D34-EFB1-42E8-8159-B38A257AA9D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16567D34-EFB1-42E8-8159-B38A257AA9D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16567D34-EFB1-42E8-8159-B38A257AA9D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

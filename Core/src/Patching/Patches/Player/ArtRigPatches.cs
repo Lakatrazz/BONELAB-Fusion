@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,9 +9,9 @@ using HarmonyLib;
 using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Representation;
-using LabFusion.Utilities;
-using MelonLoader;
+
 using SLZ.Rig;
+
 using UnityEngine;
 
 using Avatar = SLZ.VRMK.Avatar;
@@ -51,45 +50,6 @@ namespace LabFusion.Patching {
             // The game doesn't setup the jaw by default
             var artJaw = __instance.artJaw;
             artJaw.localRotation = avatar.artOffsets.jawOffset;
-        }
-
-        [HarmonyPostfix]
-        [HarmonyPatch(nameof(ArtRig.SetAvatar))]
-        public static void SetAvatar(ArtRig __instance, Avatar avatar)
-        {
-            try
-            {
-                MelonCoroutines.Start(Internal_WaitForBarcode(__instance.manager, avatar));
-            }
-            catch (Exception e)
-            {
-                FusionLogger.LogException("ArtRig.SetAvatar", e);
-            }
-        }
-
-        private static IEnumerator Internal_WaitForBarcode(RigManager __instance, Avatar newAvatar)
-        {
-            // Wait a few frames to ensure the barcode reference has updated
-            for (var i = 0; i < 2; i++)
-                yield return null;
-
-            // First make sure our player hasn't been destroyed (ex. loading new scene)
-            if (__instance.IsNOC())
-                yield break;
-
-            // Next check the avatar hasn't changed
-            if (__instance._avatar != newAvatar)
-                yield break;
-
-            // Is this our local player? If so, sync the avatar change
-            if (__instance.IsLocalPlayer())
-            {
-                FusionPlayer.Internal_OnAvatarChanged(__instance, newAvatar, __instance.AvatarCrate.Barcode);
-            }
-            else if (PlayerRepManager.TryGetPlayerRep(__instance, out var rep))
-            {
-                rep.Internal_OnAvatarChanged(__instance.AvatarCrate.Barcode);
-            }
         }
     }
 }
