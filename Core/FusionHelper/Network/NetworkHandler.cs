@@ -131,35 +131,47 @@ namespace FusionHelper.Network
             // oh dear.
             NetDataWriter writer = new();
             writer.Put((byte)MessageTypes.LobbyMetadata);
-            writer.Put(lobbyId);
-            ulong.TryParse(lobby.GetData("LobbyId"), out ulong metaLobbyId);
 
+            // Lobby Id
+            writer.Put(lobbyId);
+
+            // Metadata Lobby Id
+            ulong.TryParse(lobby.GetData("LobbyId"), out ulong metaLobbyId);
             writer.Put(metaLobbyId);
+
+            // Lobby Name
             string name = lobby.GetData("LobbyName");
             Console.WriteLine($"Writing metadata for {name} (id {lobbyId})");
             writer.Put(name);
 
+            // Open Status
             bool hasServerOpen = lobby.GetData("BONELAB_FUSION_HasServerOpen") == bool.TrueString;
             Console.WriteLine($"Has Server Open: {hasServerOpen}");
             writer.Put(hasServerOpen);
 
+            // Player Count
             int.TryParse(lobby.GetData("PlayerCount"), out int playerCount);
-
             writer.Put(playerCount);
 
+            // Nametag Settings
             writer.Put(lobby.GetData("NametagsEnabled") == bool.TrueString);
 
+            // Privacy Settings
             Enum.TryParse(lobby.GetData("Privacy"), out ServerPrivacy privacy);
             writer.Put((int)privacy);
 
+            // TimeScale Settings
             Enum.TryParse(lobby.GetData("TimeScaleMode"), out TimeScaleMode tsMode);
             writer.Put((int)tsMode);
 
+            // Max Players
             int.TryParse(lobby.GetData("MaxPlayers"), out int maxPlayers);
             writer.Put(maxPlayers);
 
+            // Voicechat Settings
             writer.Put(lobby.GetData("VoicechatEnabled") == bool.TrueString);
 
+            // Level and Gamemode
             writer.Put(lobby.GetData("LevelName"));
             writer.Put(lobby.GetData("GamemodeName"));
 
