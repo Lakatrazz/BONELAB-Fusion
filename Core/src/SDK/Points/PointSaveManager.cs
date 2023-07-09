@@ -20,6 +20,7 @@ namespace LabFusion.SDK.Points {
         public class PointSaveData {
             public string[] _boughtItems = null;
             public string[] _enabledItems = null;
+            public Dictionary<string, int> _upgradedItems = null;
             public int _bitCount = 0;
 
             public static PointSaveData CreateCurrent() {
@@ -27,6 +28,7 @@ namespace LabFusion.SDK.Points {
                 {
                     _boughtItems = _unlockedItems.ToArray(),
                     _enabledItems = _equippedItems.ToArray(),
+                    _upgradedItems = _itemUpgrades,
                     _bitCount = _totalBits,
                 };
                 return data;
@@ -48,7 +50,7 @@ namespace LabFusion.SDK.Points {
                 File.Copy(filePath, backupPath, true);
         }
 
-        public static void ReadFromFile() {
+        public static void ReadFile() {
             var data = DataSaver.ReadBinary<PointSaveData>(_filePath);
 
             if (data != null) {
@@ -58,8 +60,18 @@ namespace LabFusion.SDK.Points {
                 if (data._enabledItems != null)
                     _equippedItems = data._enabledItems.ToList();
 
+                if (data._upgradedItems != null)
+                    _itemUpgrades = data._upgradedItems;
+
                 _totalBits = data._bitCount;
             }
+        }
+
+        public static int GetUpgradeLevel(string barcode) {
+            if (_itemUpgrades.TryGetValue(barcode, out var level))
+                return level;
+            else
+                return -1;
         }
 
         public static bool IsUnlocked(string barcode) {
@@ -92,6 +104,20 @@ namespace LabFusion.SDK.Points {
             WriteToFile();
         }
 
+        public static void UpgradeItem(string barcode) {
+            if (!_itemUpgrades.ContainsKey(barcode))
+                _itemUpgrades.Add(barcode, -1);
+
+            _itemUpgrades[barcode]++;
+        }
+        
+        public static void SetUpgradeLevel(string barcode, int level) {
+            if (!_itemUpgrades.ContainsKey(barcode))
+                _itemUpgrades.Add(barcode, -1);
+
+            _itemUpgrades[barcode] = level;
+        }
+
         public static void SetEquipped(string barcode, bool isEquipped) {
             if (isEquipped) {
                 if (!_equippedItems.Contains(barcode))
@@ -112,6 +138,7 @@ namespace LabFusion.SDK.Points {
 
         private static List<string> _unlockedItems = new List<string>();
         private static List<string> _equippedItems = new List<string>();
+        private static Dictionary<string, int> _itemUpgrades = new Dictionary<string, int>();
         private static int _totalBits;
     }
 }

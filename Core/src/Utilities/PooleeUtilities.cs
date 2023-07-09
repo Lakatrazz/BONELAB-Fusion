@@ -24,6 +24,7 @@ using SLZ.Props.Weapons;
 using SLZ.Rig;
 using SLZ.Props;
 using LabFusion.Senders;
+using SLZ.Marrow.Warehouse;
 
 namespace LabFusion.Utilities {
     public static class PooleeUtilities {
@@ -36,6 +37,25 @@ namespace LabFusion.Utilities {
         internal static bool CanDespawn = false;
 
         internal static PooleePusher ServerSpawnedList = new PooleePusher();
+
+        public static void DespawnAll() {
+            if (NetworkInfo.IsServer) {
+                var pools = AssetSpawner._instance._poolList;
+
+                // Loop through all pools and get their spawned objects so we can despawn them
+                foreach (var pool in pools) {
+                    var spawnedObjects = pool.spawned.ToArray();
+
+                    foreach (var spawned in spawnedObjects)  {
+                        // Don't despawn the player!
+                        if (spawned.GetComponentInChildren<RigManager>(true) != null)
+                            continue;
+
+                        spawned.Despawn();
+                    }
+                }
+            }
+        }
 
         public static void OnServerLocalSpawn(ushort syncId, GameObject go, out PropSyncable newSyncable) {
             newSyncable = null;

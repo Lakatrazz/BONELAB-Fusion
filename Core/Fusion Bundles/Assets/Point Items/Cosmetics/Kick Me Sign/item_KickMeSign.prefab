@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3031581902841493343}
+  - component: {fileID: 5593523458222059286}
   m_Layer: 0
   m_Name: item_KickMeSign
   m_TagString: Untagged
@@ -32,6 +33,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &5593523458222059286
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6063503736484749969}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0.000000014901161, y: -0.08843649, z: -0.052316554}
+  m_Size: 0.13207299
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.005647919
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 3432403649536556878}
+  m_Enabled: 1
 --- !u!1001 &4063317027245515722
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -105,6 +125,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 281fc7c736abdf547b1a837d757dbb62, type: 3}
+--- !u!23 &3432403649536556878 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 281fc7c736abdf547b1a837d757dbb62, type: 3}
+  m_PrefabInstance: {fileID: 4063317027245515722}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4605339859249169441 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 281fc7c736abdf547b1a837d757dbb62, type: 3}

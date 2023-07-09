@@ -18,7 +18,10 @@ namespace LabFusion.Data {
     // And also stat modifier mods (Quicksilver, StatModifier, Spiderlab)
     // This has a LOT of data, so this should ONLY be sent when necessary!
     public class SerializedAvatarStats : IFusionSerializable {
-        public const int Size = sizeof(float) * 70 + SerializedSoftEllipse.Size * 8;
+        public const int Size = sizeof(float) * 73 + SerializedSoftEllipse.Size * 8;
+
+        // Root scale
+        public Vector3 localScale;
 
         // Ellipse/offset values
         public float headTop;
@@ -112,6 +115,9 @@ namespace LabFusion.Data {
         public SerializedAvatarStats() { }
 
         public SerializedAvatarStats(Avatar avatar) {
+            // Save the scale
+            localScale = avatar.transform.localScale;
+
             // Save ellipse/offset values
             headTop = avatar._headTop;
             chinY = avatar._chinY;
@@ -294,6 +300,9 @@ namespace LabFusion.Data {
         }
 
         public void Serialize(FusionWriter writer) {
+            // Write scale
+            writer.Write(localScale);
+
             // Write ellipse/offset values
             writer.Write(headTop);
             writer.Write(chinY);
@@ -385,6 +394,9 @@ namespace LabFusion.Data {
         }
 
         public void Deserialize(FusionReader reader) {
+            // Read scale
+            localScale = reader.ReadVector3();
+
             // Read ellipse/offset values
             headTop = reader.ReadSingle();
             chinY = reader.ReadSingle();

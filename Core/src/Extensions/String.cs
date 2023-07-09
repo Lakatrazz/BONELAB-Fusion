@@ -7,19 +7,22 @@ using System.Threading.Tasks;
 
 namespace LabFusion.Extensions {
     public static class StringExtensions {
-        public static string LimitLength(this string str, int maxLength) {
-            if (string.IsNullOrEmpty(str))
-                return str;
-
-            // Get a version of the string without rich text tags 
-            Regex rich = new Regex(@"<[^>]*>");
+        public static string RemoveRichText(this string str) {
+            Regex rich = new(@"<[^>]*>");
             string plainText = str;
 
             if (rich.IsMatch(plainText)) {
                 plainText = rich.Replace(plainText, string.Empty);
             }
 
-            int plainLength = plainText.Length;
+            return plainText;
+        }
+
+        public static string LimitLength(this string str, int maxLength) {
+            if (string.IsNullOrEmpty(str))
+                return str;
+
+            int plainLength = RemoveRichText(str).Length;
 
             if (plainLength <= maxLength) {
                 return str;

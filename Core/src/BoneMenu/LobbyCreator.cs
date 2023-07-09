@@ -42,13 +42,27 @@ namespace LabFusion.BoneMenu
             }
 
             // Get the username/title of the lobby
-            var userString = $"{info.LobbyName}'s Server ({info.PlayerCount}/{info.MaxPlayers})";
+            string userString;
+
+            string countString = $"({info.PlayerCount}/{info.MaxPlayers})";
+
+            if (!string.IsNullOrWhiteSpace(info.LobbyName)) {
+                userString = $"{info.LobbyName} [{info.LobbyOwner}] {countString}";
+            }
+            else {
+                userString = $"{info.LobbyOwner}'s Server {countString}";
+            }
 
             // Change color based on version matching
             Color lobbyColor = Color.white;
+            Color versionColor = Color.white;
 
-            if (NetworkVerification.CompareVersion(info.LobbyVersion, FusionMod.Version) != VersionResult.Ok)
+            if (NetworkVerification.CompareVersion(info.LobbyVersion, FusionMod.Version) != VersionResult.Ok) {
                 lobbyColor = Color.red;
+                versionColor = Color.red;
+            }
+            else if (!info.ClientHasLevel)
+                lobbyColor = Color.yellow;
 
             // Create the category and get the default lobby info
             var lobbyCategory = rootCategory.CreateCategory($"INTERNAL_LOBBY_{_lobbyIndex++}", lobbyColor);
@@ -57,10 +71,12 @@ namespace LabFusion.BoneMenu
             lobbyCategory.CreateFunctionElement("Join Server", Color.white, lobby.CreateJoinDelegate(info));
 
             // Show their version
-            lobbyCategory.CreateFunctionElement($"Version: {info.LobbyVersion}", lobbyColor, null);
+            lobbyCategory.CreateFunctionElement($"Version: {info.LobbyVersion}", versionColor, null);
 
             // Show their active level
-            lobbyCategory.CreateFunctionElement($"Level: {info.LevelName}", Color.white, null);
+            Color levelColor = info.ClientHasLevel ? Color.white : Color.red;
+
+            lobbyCategory.CreateFunctionElement($"Level: {info.LevelName}", levelColor, null);
 
             // Show their active gamemode
             lobbyCategory.CreateFunctionElement($"Gamemode: {info.GamemodeName}", Color.white, null);
@@ -75,6 +91,16 @@ namespace LabFusion.BoneMenu
             settingsCategory.CreateFunctionElement($"Server Privacy: {info.Privacy}", Color.white, null);
             settingsCategory.CreateFunctionElement($"Time Scale Mode: {info.TimeScaleMode}", Color.white, null);
             settingsCategory.CreateFunctionElement($"Voicechat: {(info.VoicechatEnabled ? "Enabled" : "Disabled")}", Color.white, null);
+
+            // Create a category for the player list
+            var playersCategory = lobbyCategory.CreateCategory("Players", Color.white);
+
+            foreach (var player in info.PlayerList.players) {
+                if (!player.isValid)
+                    continue;
+
+                playersCategory.CreateFunctionElement(player.username, Color.white, null);
+            }
 
             // Allow outside mods to add their own lobby information
             MultiplayerHooking.Internal_OnLobbyCategoryCreated(lobbyCategory, lobby);

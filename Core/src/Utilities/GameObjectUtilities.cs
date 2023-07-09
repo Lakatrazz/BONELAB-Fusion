@@ -9,7 +9,7 @@ using LabFusion.Extensions;
 using IL2GoList = Il2CppSystem.Collections.Generic.List<UnityEngine.GameObject>;
 
 namespace LabFusion.Utilities {
-    public static class GameObjectUtilities {
+    public static partial class GameObjectUtilities {
         public const char PathSeparator = '¬';
 
         private static readonly IL2GoList _rootObjectBuffer = new();
@@ -50,11 +50,20 @@ namespace LabFusion.Utilities {
                 return matching[index];
         }
 
-        public static string GetFullPath(this GameObject go) {
+        public static string GetFullPath(this GameObject go)
+        {
             try {
                 return $"{go.scene.name}{PathSeparator}{go.transform.root.gameObject.GetRootIndex()}{go.transform.GetBasePath()}";
             }
-            catch { }
+            catch
+#if DEBUG
+            (Exception e)
+#endif
+            {
+#if DEBUG
+                FusionLogger.LogException("getting path of GameObject", e);
+#endif
+            }
 
             return "INVALID_PATH";
         }

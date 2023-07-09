@@ -24,12 +24,14 @@ namespace LabFusion.Network
         public byte smallId;
         public byte ammoCount;
         public ushort gunId;
+        public byte gunIndex;
 
         public void Serialize(FusionWriter writer)
         {
             writer.Write(smallId);
             writer.Write(ammoCount);
             writer.Write(gunId);
+            writer.Write(gunIndex);
         }
 
         public void Deserialize(FusionReader reader)
@@ -37,6 +39,7 @@ namespace LabFusion.Network
             smallId = reader.ReadByte();
             ammoCount = reader.ReadByte();
             gunId = reader.ReadUInt16();
+            gunIndex = reader.ReadByte();
         }
 
         public void Dispose()
@@ -44,13 +47,14 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static GunShotData Create(byte smallId, byte ammoCount, ushort gunId)
+        public static GunShotData Create(byte smallId, byte ammoCount, ushort gunId, byte gunIndex)
         {
             return new GunShotData()
             {
                 smallId = smallId,
                 ammoCount = ammoCount,
                 gunId = gunId,
+                gunIndex = gunIndex,
             };
         }
     }
@@ -77,7 +81,7 @@ namespace LabFusion.Network
                         if (SyncManager.TryGetSyncable(data.gunId, out var gun) && gun is PropSyncable gunSyncable && gunSyncable.TryGetExtender<GunExtender>(out var extender))
                         {
                             // Fire the gun, make sure it has ammo in its mag so it can fire properly
-                            var comp = extender.Component;
+                            var comp = extender.GetComponent(data.gunIndex);
 
                             comp.hasFiredOnce = false;
                             comp._hasFiredSinceLastBroadcast = false;

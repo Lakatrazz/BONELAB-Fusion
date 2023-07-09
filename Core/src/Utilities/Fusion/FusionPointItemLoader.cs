@@ -27,7 +27,7 @@ namespace LabFusion.Utilities {
     public static class FusionPointItemLoader {
         public static AssetBundle ItemBundle { get; private set; }
 
-        private static readonly string[] _itemNames = new string[39] {
+        private static readonly string[] _itemNames = new string[] {
             // BaBa Corp Cosmetics
             nameof(Gemstone),
             nameof(GloopTrail),
@@ -68,6 +68,7 @@ namespace LabFusion.Utilities {
             nameof(TestItem),
             nameof(TheBeacon),
             nameof(WeirdShades),
+            nameof(BitMiner),
         };
 
         private static readonly Dictionary<string, ItemPair> _itemPairs = new Dictionary<string, ItemPair>();

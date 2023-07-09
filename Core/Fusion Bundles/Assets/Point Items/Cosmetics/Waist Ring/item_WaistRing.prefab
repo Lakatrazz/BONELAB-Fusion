@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5268771734237633543}
+  - component: {fileID: 9007087111740664228}
   m_Layer: 0
   m_Name: item_WaistRing
   m_TagString: Untagged
@@ -32,6 +33,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &9007087111740664228
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1659166775954201656}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0, y: 0, z: 0}
+  m_Size: 1
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.007304148
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 5664496645078369982}
+  m_Enabled: 1
 --- !u!1 &3472337929447092200
 GameObject:
   m_ObjectHideFlags: 0

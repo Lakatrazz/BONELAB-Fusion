@@ -25,20 +25,20 @@ namespace LabFusion.Network
         public const int Size = sizeof(byte) + sizeof(ushort);
 
         public byte smallId;
-        public GameObject gameObject;
+        public string gameObjectPath;
         public ushort id;
 
         public void Serialize(FusionWriter writer)
         {
             writer.Write(smallId);
-            writer.Write(gameObject);
+            writer.Write(gameObjectPath);
             writer.Write(id);
         }
 
         public void Deserialize(FusionReader reader)
         {
             smallId = reader.ReadByte();
-            gameObject = reader.ReadGameObject();
+            gameObjectPath = reader.ReadString();
             id = reader.ReadUInt16();
         }
 
@@ -47,72 +47,93 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static PropSyncableCreateData Create(byte smallId, GameObject gameObject, ushort id)
+        public static PropSyncableCreateData Create(byte smallId, string gameObjectPath, ushort id)
         {
             return new PropSyncableCreateData()
             {
                 smallId = smallId,
-                gameObject = gameObject,
+                gameObjectPath = gameObjectPath,
                 id = id
             };
         }
     }
 
     [Net.DelayWhileTargetLoading]
-    public class PropSyncableCreateMessage : FusionMessageHandler
+    public class PropSyncableCreateMessage : FusionMessageHandlerAsync
     {
         public override byte? Tag => NativeMessageTag.PropSyncableCreate;
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        public override async Task HandleMessageAsync(byte[] bytes, bool isServerHandled = false)
         {
+            await Task.Delay(16);
+            ThreadingUtilities.IL2PrepareThread();
+
             using (FusionReader reader = FusionReader.Create(bytes))
             {
                 using (var data = reader.ReadFusionSerializable<PropSyncableCreateData>())
                 {
+                    GameObject gameObject = await GameObjectUtilities.GetGameObjectAsync(data.gameObjectPath);
 
                     // Send message to other clients if server
                     if (NetworkInfo.IsServer && isServerHandled)
                     {
-                        // If the object is blacklisted, don't bother sending the message to others
-                        var go = data.gameObject;
+                        bool isCompleted = false;
+                        ThreadingUtilities.RunSynchronously(() => {
+                            // If the object is blacklisted, don't bother sending the message to others
+                            var go = gameObject;
 
-                        if (go != null && !go.IsSyncWhitelisted()) {
-                            return;
-                        }
+                            if (go != null && !go.IsSyncWhitelisted()) {
+                                isCompleted = true;
+                                return;
+                            }
 
-                        using (var message = FusionMessage.Create(Tag.Value, bytes))
-                        {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-                        }
+                            using (var message = FusionMessage.Create(Tag.Value, bytes)) {
+                                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+                            }
+
+                            isCompleted = true;
+                        });
+
+                        while (!isCompleted)
+                            await Task.Delay(16);
                     }
                     else
                     {
-                        if (data.gameObject != null)
+                        bool isCompleted = false;
+                        ThreadingUtilities.RunSynchronously(() =>
                         {
-                            var go = data.gameObject;
+                            if (gameObject != null)
+                            {
+                                // Check if its blacklisted
+                                if (!gameObject.IsSyncWhitelisted()) {
+                                    isCompleted = true;
+                                    return;
+                                }
 
-                            // Check if its blacklisted
-                            if (!go.IsSyncWhitelisted())
-                                return;
+                                var host = InteractableHost.Cache.Get(gameObject);
+                                PropSyncable syncable;
 
-                            var host = InteractableHost.Cache.Get(go);
-                            PropSyncable syncable;
+                                if (host)
+                                    syncable = new PropSyncable(host);
+                                else
+                                    syncable = new PropSyncable(null, gameObject);
 
-                            if (host)
-                                syncable = new PropSyncable(host);
-                            else
-                                syncable = new PropSyncable(null, go);
+                                SyncManager.RegisterSyncable(syncable, data.id);
 
-                            SyncManager.RegisterSyncable(syncable, data.id);
+                                syncable.SetOwner(data.smallId);
 
-                            syncable.SetOwner(data.smallId);
+                                // Insert catchup hook for future users
+                                if (NetworkInfo.IsServer)
+                                    syncable.InsertCatchupDelegate((id) => {
+                                        PropSender.SendCatchupCreation(syncable, id);
+                                    });
 
-                            // Insert catchup hook for future users
-                            if (NetworkInfo.IsServer)
-                                syncable.InsertCatchupDelegate((id) => {
-                                    PropSender.SendCatchupCreation(syncable, id);
-                                });
-                        }
+                                isCompleted = true;
+                            }
+                        });
+
+                        while (!isCompleted)
+                            await Task.Delay(16);
                     }
                 }
             }

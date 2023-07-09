@@ -20,26 +20,26 @@ using UnityEngine;
 
 using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Points;
+using System.Linq;
+using LabFusion.SDK.Achievements;
 
 namespace LabFusion
 {
     public struct FusionVersion
     {
         public const byte versionMajor = 1;
-        public const byte versionMinor = 3;
-        public const short versionPatch = 1;
+        public const byte versionMinor = 5;
+        public const short versionPatch = 0;
     }
 
     public class FusionMod : MelonMod {
         public const string Name = "LabFusion";
         public const string Author = "Lakatrazz";
-        public static readonly Version Version = new Version(FusionVersion.versionMajor, FusionVersion.versionMinor, FusionVersion.versionPatch);
+        public static readonly Version Version = new(FusionVersion.versionMajor, FusionVersion.versionMinor, FusionVersion.versionPatch);
 
-#if DEBUG
-        public const string Changelog = "- Debug build. Changelog will show in the release build.";
-#else
-        public const string Changelog = "- No changelog.";
-#endif
+        public static string Changelog { get; internal set; } = null;
+
+        public static string[] Credits { get; internal set; } = null;
 
         /// <summary>
         /// The desired networking layer. Swap this out to change the networking system.
@@ -50,6 +50,8 @@ namespace LabFusion
         public static Assembly FusionAssembly { get; private set; }
 
         private static int _nextSyncableSendRate = 1;
+
+        private static bool _hasAutoUpdater = false;
 
         public override void OnEarlyInitializeMelon() {
             Instance = this;
@@ -72,6 +74,9 @@ namespace LabFusion
         }
 
         public override void OnInitializeMelon() {
+            // Prepare the bonemenu category
+            FusionPreferences.OnPrepareBoneMenuCategory();
+
             // Pull files
             FusionFileLoader.OnInitializeMelon();
 
@@ -85,8 +90,11 @@ namespace LabFusion
             PropExtenderManager.RegisterExtendersFromAssembly(FusionAssembly);
             GamemodeRegistration.LoadGamemodes(FusionAssembly);
             PointItemManager.LoadItems(FusionAssembly);
+            AchievementManager.LoadAchievements(FusionAssembly);
 
             SyncManager.OnInitializeMelon();
+
+            FusionPopupManager.OnInitializeMelon();
 
             // Create prefs
             FusionPreferences.OnInitializePreferences();
@@ -111,6 +119,24 @@ namespace LabFusion
             PersistentAssetCreator.OnLateInitializeMelon();
 
             FusionPreferences.OnCreateBoneMenu();
+
+            // Check if the auto updater is installed
+            _hasAutoUpdater = MelonPlugin.RegisteredMelons.Any((p) => p.Info.Name.Contains("LabFusion Updater"));
+
+            if (!_hasAutoUpdater) {
+                FusionNotifier.Send(new FusionNotification()
+                {
+                    isMenuItem = false,
+                    isPopup = true,
+                    message = "You do not have the Fusion Autoupdater installed in your plugins folder!" +
+                    "\nIt is recommended to install it in order to stay up to date.",
+                    type = NotificationType.WARNING,
+                });
+
+#if DEBUG
+                FusionLogger.Warn("The player does not have the auto updater installed.");
+#endif
+            }
         }
 
         protected void OnInitializeNetworking() {
@@ -212,8 +238,8 @@ namespace LabFusion
             // Store rig info/update avatars
             RigData.OnRigUpdate();
 
-            // Update notifications
-            FusionNotifier.OnUpdate();
+            // Update popups
+            FusionPopupManager.OnUpdate();
 
             // Send players based on player count
             int playerSendRate = SendRateTable.GetPlayerSendRate();

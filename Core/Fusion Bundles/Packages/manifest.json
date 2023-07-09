@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.lakatrazz.marrowextrashaders": "https://github.com/Lakatrazz/Marrow-Extra-Shaders.git",
     "com.stresslevelzero.marrow.sdk": "https://github.com/StressLevelZero/MarrowSDK.git",
     "com.unity.collab-proxy": "1.17.7",
     "com.unity.feature.development": "1.0.1",

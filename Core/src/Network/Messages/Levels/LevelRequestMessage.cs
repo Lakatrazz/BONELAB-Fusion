@@ -66,8 +66,8 @@ namespace LabFusion.Network
                         if (id != null && id.TryGetDisplayName(out var name)) {
                             FusionNotifier.Send(new FusionNotification() {
                                 title = $"{data.title} Load Request",
-                                message = $"{name} has requested to load {data.title}.",
-                                messageColor = Color.yellow,
+                                message = new NotificationText($"{name} has requested to load {data.title}.", Color.yellow),
+
                                 isMenuItem = true,
                                 isPopup = true,
                                 onCreateCategory = (c) =>

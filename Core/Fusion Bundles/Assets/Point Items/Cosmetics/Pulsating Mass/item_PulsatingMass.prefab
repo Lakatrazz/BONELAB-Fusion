@@ -98,6 +98,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5758003882074517786}
   - component: {fileID: 754469138391101564}
+  - component: {fileID: 2295356471577362565}
   m_Layer: 0
   m_Name: item_PulsatingMass
   m_TagString: Untagged
@@ -141,3 +142,22 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!205 &2295356471577362565
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7946880639778444938}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0.042189837, y: -0.06068781, z: -0.014968872}
+  m_Size: 0.6539202
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.007746959
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 7067619904358539584}
+  m_Enabled: 1

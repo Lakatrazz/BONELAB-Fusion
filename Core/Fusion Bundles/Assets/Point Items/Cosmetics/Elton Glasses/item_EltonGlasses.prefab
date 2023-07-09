@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7477386893132680580}
+  - component: {fileID: 9188193995530249779}
   m_Layer: 0
   m_Name: item_EltonGlasses
   m_TagString: Untagged
@@ -32,6 +33,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &9188193995530249779
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1869751320091957322}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0.00000011920929, y: -0.0030932464, z: -0.062358238}
+  m_Size: 0.17357278
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.009144402
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 4064939922201023037}
+  m_Enabled: 1
 --- !u!1001 &3434000158981492409
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -108,5 +128,10 @@ PrefabInstance:
 --- !u!4 &2892082329046968658 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: bbfd1f826ba57ce488db3dcabec6ff91, type: 3}
+  m_PrefabInstance: {fileID: 3434000158981492409}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &4064939922201023037 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: bbfd1f826ba57ce488db3dcabec6ff91, type: 3}
   m_PrefabInstance: {fileID: 3434000158981492409}
   m_PrefabAsset: {fileID: 0}

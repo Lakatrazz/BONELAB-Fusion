@@ -33,20 +33,17 @@ namespace LabFusion.Extensions {
             return $"{transform.parent.GetBasePath()}{GameObjectUtilities.PathSeparator}{GetSiblingNameIndex(transform)}{GameObjectUtilities.PathSeparator}{transform.name}";
         }
 
-        private static readonly List<Transform> _siblingBuffer = new();
-
         internal static List<Transform> FindSiblingsWithName(this Transform parent, string name)
         {
-            _siblingBuffer.Clear();
-            _siblingBuffer.Capacity = parent.childCount;
+            List<Transform> buffer = new List<Transform>(parent.childCount);
 
             for (var i = 0; i < parent.childCount; i++) {
-                _siblingBuffer.Add(parent.GetChild(i));
+                buffer.Add(parent.GetChild(i));
             }
 
-            _siblingBuffer.RemoveAll((t) => t.name != name);
+            buffer.RemoveAll((t) => t.name != name);
 
-            return _siblingBuffer;
+            return buffer;
         }
 
         internal static int GetSiblingNameIndex(this Transform transform)

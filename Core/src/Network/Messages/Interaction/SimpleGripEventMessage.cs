@@ -20,6 +20,8 @@ namespace LabFusion.Network
     public enum SimpleGripEventType {
         TRIGGER_DOWN = 0,
         MENU_TAP = 1,
+        ATTACH = 2,
+        DETACH = 3,
     }
 
     public class SimpleGripEventData : IFusionSerializable, IDisposable
@@ -96,6 +98,12 @@ namespace LabFusion.Network
                                         break;
                                     case SimpleGripEventType.MENU_TAP:
                                         gripEvent.OnMenuTapDown.Invoke();
+                                        break;
+                                    case SimpleGripEventType.ATTACH:
+                                        gripEvent.OnAttach.Invoke();
+                                        break;
+                                    case SimpleGripEventType.DETACH:
+                                        gripEvent.OnDetach.Invoke();
                                         break;
                                 }
                             }

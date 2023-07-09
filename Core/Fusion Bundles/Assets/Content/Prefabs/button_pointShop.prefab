@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7031133318715770877}
   - component: {fileID: 7644337337888548468}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -56,7 +56,7 @@ GameObject:
   - component: {fileID: 8996693104787626775}
   - component: {fileID: 4423470166564588230}
   - component: {fileID: 7721088330569829692}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -230,7 +230,7 @@ GameObject:
   - component: {fileID: 4297493394544356893}
   - component: {fileID: 8616700713713820561}
   - component: {fileID: 3420308446675373469}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: bg_image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -305,7 +305,7 @@ GameObject:
   m_Component:
   - component: {fileID: 124816089154228769}
   - component: {fileID: 2971130046922770226}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: button_pointShop
   m_TagString: Untagged
   m_Icon: {fileID: 0}

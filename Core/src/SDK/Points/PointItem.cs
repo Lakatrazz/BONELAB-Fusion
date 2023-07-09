@@ -26,6 +26,25 @@ namespace LabFusion.SDK.Points {
         public PlayerId playerId;
     }
 
+    public sealed class PointItemUpgrade {
+        public string Description { get; }
+
+        public int Price { get; }
+
+        public string PurchasedDescription { get; }
+
+        public PointItemUpgrade(string description, int price, string purchasedDescription = null) {
+            Description = description;
+
+            Price = price;
+
+            if (purchasedDescription == null)
+                PurchasedDescription = description;
+            else
+                PurchasedDescription = purchasedDescription;
+        }
+    }
+
     public abstract class PointItem {
         // The title of the item
         public abstract string Title { get; }
@@ -35,6 +54,9 @@ namespace LabFusion.SDK.Points {
 
         // The tags of the item. The first tag is shown in the shop after the price. (Optional)
         public virtual string[] Tags => null;
+
+        // The upgrades of the item. UpgradeLevel of -1 is no upgrades, 0 is first upgrade. (Optional)
+        public virtual PointItemUpgrade[] Upgrades => null;
 
         // The version of the item
         public virtual string Version => "1.0.0";
@@ -54,6 +76,37 @@ namespace LabFusion.SDK.Points {
         // The adjusted price based on the economy. This cannot be overriden.
         public int AdjustedPrice => BitEconomy.ConvertPrice(Price);
 
+        // The active target price, whether it be for the next upgrade or for the regular purchase.
+        public int ActivePrice { 
+            get {
+                if (IsUnlocked)
+                {
+                    if (NextUpgrade != null)
+                        return BitEconomy.ConvertPrice(NextUpgrade.Price);
+
+                    if (CurrentUpgrade != null)
+                        return BitEconomy.ConvertPrice(CurrentUpgrade.Price);
+                }
+
+                return AdjustedPrice;
+            }
+        }
+
+        // The active target description, whether it be for the next upgrade or for the regular purchase.
+        public string ActiveDescription { 
+            get {
+                if (IsUnlocked) {
+                    if (NextUpgrade != null)
+                        return NextUpgrade.Description;
+
+                    if (CurrentUpgrade != null)
+                        return CurrentUpgrade.PurchasedDescription;
+                }
+
+                return Description;
+            }
+        }
+
         // The rarity level of the item.
         public virtual RarityLevel Rarity => RarityLevel.White;
 
@@ -67,6 +120,45 @@ namespace LabFusion.SDK.Points {
         public virtual bool ImplementUpdate => false;
         public virtual bool ImplementFixedUpdate => false;
         public virtual bool ImplementLateUpdate => false;
+
+        public PointItemUpgrade CurrentUpgrade { 
+            get {
+                if (Upgrades == null || UpgradeLevel <= -1)
+                    return null;
+
+                return Upgrades[UpgradeLevel];
+            } 
+        }
+
+        public PointItemUpgrade NextUpgrade {
+            get {
+                if (IsMaxUpgrade)
+                    return null;
+
+                return Upgrades[UpgradeLevel + 1];
+            }
+        }
+
+        public bool IsMaxUpgrade => UpgradeLevel >= UpgradeCount - 1;
+
+        public int UpgradeLevel 
+        { 
+            get {
+                if (Upgrades == null || Upgrades.Length <= 0)
+                    return -1;
+
+                return Mathf.Min(PointSaveManager.GetUpgradeLevel(Barcode), Upgrades.Length - 1);
+            } 
+        }
+
+        public int UpgradeCount {
+            get {
+                if (Upgrades == null || Upgrades.Length <= 0)
+                    return -1;
+
+                return Upgrades.Length;
+            }
+        }
 
         public bool IsUnlocked => PointSaveManager.IsUnlocked(Barcode);
 

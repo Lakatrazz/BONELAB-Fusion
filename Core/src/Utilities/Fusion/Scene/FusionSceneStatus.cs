@@ -31,6 +31,13 @@ namespace LabFusion.Utilities
         public static string Barcode => Level != null ? Level.Barcode : "";
         public static string Title => Level != null ? Level.Title : "";
 
+        public static bool HasLevel(string barcode) {
+            if (AssetWarehouse.Instance.GetCrate<LevelCrate>(barcode) != null)
+                return true;
+            else
+                return false;
+        }
+
         public static bool IsLoading() => _isLoading;
 
         public static bool IsDelayedLoading() => _isDelayedLoading;

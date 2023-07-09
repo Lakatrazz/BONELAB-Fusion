@@ -1,5 +1,8 @@
-﻿using SLZ.Combat;
+﻿using LabFusion.Data;
+
+using SLZ.Combat;
 using SLZ.Data;
+using SLZ.Marrow.Data;
 using SLZ.Rig;
 
 using System;
@@ -22,23 +25,15 @@ namespace LabFusion.Utilities {
 
         internal static SurfaceData BloodSurfaceData { get; private set; }
         internal static TMP_FontAsset Font { get; private set; }
+        internal static HandPose SoftGrabPose { get; private set; }
 
-        private static AudioMixerGroup _musicMixer;
-        private static AudioMixerGroup _sfxMixer;
-
-        internal static AudioMixerGroup MusicMixer {
-            get {
-                return _musicMixer;
-            }
-        }
-        internal static AudioMixerGroup SFXMixer {
-            get {
-                return _sfxMixer;
-            }
-        }
+        internal static AudioMixerGroup MusicMixer { get; private set; }
+        internal static AudioMixerGroup SFXMixer { get; private set; }
 
         private static Action<AudioMixerGroup> _onMusicMixerLoaded = null;
         private static Action<AudioMixerGroup> _onSFXMixerLoaded = null;
+
+        private static Action<HandPose> _onSoftGrabLoaded = null;
 
         internal static void OnLateInitializeMelon() {
             CreateSurfaceData();
@@ -47,11 +42,12 @@ namespace LabFusion.Utilities {
 
         internal static void OnMainSceneInitialized() {
             GetAllMixers();
+            GetHandPose();
         }
 
         // Thanks to https://bonelab.thunderstore.io/package/Maranara/Mixer_Fixer/
         private static void GetAllMixers() {
-            if (_sfxMixer != null && _musicMixer != null)
+            if (SFXMixer != null && MusicMixer != null)
                 return;
 
             AudioMixerGroup[] groups = Resources.FindObjectsOfTypeAll<AudioMixerGroup>();
@@ -59,27 +55,36 @@ namespace LabFusion.Utilities {
             foreach (var group in groups) {
                 switch (group.name) {
                     case "Music":
-                        _musicMixer = group;
+                        MusicMixer = group;
                         break;
                     case "SFX":
-                        _sfxMixer = group;
+                        SFXMixer = group;
                         break;
                 }
             }
 
-            if (_musicMixer != null)
-                _onMusicMixerLoaded?.Invoke(_musicMixer);
+            if (MusicMixer != null)
+                _onMusicMixerLoaded?.Invoke(MusicMixer);
 
-            if (_sfxMixer != null)
-                _onSFXMixerLoaded?.Invoke(_sfxMixer);
+            if (SFXMixer != null)
+                _onSFXMixerLoaded?.Invoke(SFXMixer);
 
             _onMusicMixerLoaded = null;
             _onSFXMixerLoaded = null;
         }
 
+        private static void GetHandPose() {
+            SoftGrabPose = RigData.RigReferences.RigManager.worldGripHandPose;
+
+            if (SoftGrabPose != null)
+                _onSoftGrabLoaded?.Invoke(SoftGrabPose);
+
+            _onSoftGrabLoaded = null;
+        }
+
         public static void HookOnMusicMixerLoaded(Action<AudioMixerGroup> action) {
-            if (_musicMixer != null) {
-                action?.Invoke(_musicMixer);
+            if (MusicMixer != null) {
+                action?.Invoke(MusicMixer);
             }
             else {
                 _onMusicMixerLoaded += action;
@@ -88,11 +93,20 @@ namespace LabFusion.Utilities {
 
         public static void HookOnSFXMixerLoaded(Action<AudioMixerGroup> action)
         {
-            if (_sfxMixer != null) {
-                action?.Invoke(_sfxMixer);
+            if (SFXMixer != null) {
+                action?.Invoke(SFXMixer);
             }
             else {
                 _onSFXMixerLoaded += action;
+            }
+        }
+
+        public static void HookOnSoftGrabLoaded(Action<HandPose> action) {
+            if (SoftGrabPose != null) {
+                action?.Invoke(SoftGrabPose);
+            }
+            else {
+                _onSoftGrabLoaded += action;
             }
         }
 

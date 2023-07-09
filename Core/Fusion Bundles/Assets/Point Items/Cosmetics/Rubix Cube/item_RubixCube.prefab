@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 367368238121202546}
   - component: {fileID: 6935687186886407055}
+  - component: {fileID: 3362117774226748775}
   m_Layer: 0
   m_Name: item_RubixCube
   m_TagString: Untagged
@@ -53,6 +54,25 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!205 &3362117774226748775
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5368093687856116987}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0.016282069, y: 0.03757602, z: 0.0026461743}
+  m_Size: 0.14272803
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.007304148
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 4921911480975642897}
+  m_Enabled: 1
 --- !u!1 &7171458774872323631
 GameObject:
   m_ObjectHideFlags: 0
@@ -158,6 +178,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 69fecc6409e71f44eb80ba4520250a63, type: 3}
+--- !u!23 &4921911480975642897 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 69fecc6409e71f44eb80ba4520250a63, type: 3}
+  m_PrefabInstance: {fileID: 6021226715707788693}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6054254854856485502 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 69fecc6409e71f44eb80ba4520250a63, type: 3}

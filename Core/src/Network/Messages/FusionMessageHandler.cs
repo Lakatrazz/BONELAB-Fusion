@@ -11,13 +11,82 @@ using MelonLoader;
 
 namespace LabFusion.Network
 {
+    public abstract class FusionMessageHandlerAsync : FusionMessageHandler {
+        public abstract Task HandleMessageAsync(byte[] bytes, bool isServerHandled = false);
+
+        public sealed override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
+            throw new NotImplementedException();
+        }
+
+        protected override IEnumerator HandleMessage_Internal(byte[] bytes, bool isServerHandled = false)
+        {
+            // Initialize the attribute info
+            for (var i = 0; i < NetAttributes.Length; i++)
+            {
+                var attribute = NetAttributes[i];
+                attribute.OnHandleBegin();
+            }
+
+            // Check if we should already stop handling
+            for (var i = 0; i < NetAttributes.Length; i++)
+            {
+                var attribute = NetAttributes[i];
+
+                if (attribute.StopHandling())
+                    yield break;
+            }
+
+            // Check for any awaitable attributes
+            Net.NetAttribute awaitable = null;
+
+            for (var i = 0; i < NetAttributes.Length; i++)
+            {
+                var attribute = NetAttributes[i];
+
+                if (attribute.IsAwaitable())
+                {
+                    awaitable = attribute;
+                    break;
+                }
+            }
+
+            if (awaitable != null)
+            {
+                while (!awaitable.CanContinue())
+                    yield return null;
+            }
+
+            Task task = null;
+
+            try
+            {
+                // Now handle the message info
+                task = HandleMessageAsync(bytes, isServerHandled);
+            }
+            catch (Exception e)
+            {
+                FusionLogger.LogException("handling message", e);
+            }
+
+            // Await the async handle message before we return our byte buffer
+            if (task != null) {
+                while (!task.IsCompleted)
+                    yield return null;
+            }
+
+            // Return the buffer
+            ByteRetriever.Return(bytes);
+        }
+
+    }
+
     public abstract class FusionMessageHandler
     {
         public virtual byte? Tag { get; } = null;
 
         public Net.NetAttribute[] NetAttributes { get; set; }
 
-        private IEnumerator HandleMessage_Internal(byte[] bytes, bool isServerHandled = false) {
+        protected virtual IEnumerator HandleMessage_Internal(byte[] bytes, bool isServerHandled = false) {
             // Initialize the attribute info
             for (var i = 0; i < NetAttributes.Length; i++) {
                 var attribute = NetAttributes[i];

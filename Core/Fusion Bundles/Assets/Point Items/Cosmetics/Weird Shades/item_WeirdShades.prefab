@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3601401802284202954}
+  - component: {fileID: 353928001546958358}
   m_Layer: 0
   m_Name: item_WeirdShades
   m_TagString: Untagged
@@ -32,6 +33,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &353928001546958358
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5750266540656832004}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0, y: 0.0013597701, z: 0.013599998}
+  m_Size: 0.12602347
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.010133538
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 8958475298858272940}
+  m_Enabled: 1
 --- !u!1001 &4851122567182704227
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -108,5 +128,10 @@ PrefabInstance:
 --- !u!4 &4960749318088898952 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: c18d913840469df4da63b2e18933ab8b, type: 3}
+  m_PrefabInstance: {fileID: 4851122567182704227}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &8958475298858272940 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -4683669308469848369, guid: c18d913840469df4da63b2e18933ab8b, type: 3}
   m_PrefabInstance: {fileID: 4851122567182704227}
   m_PrefabAsset: {fileID: 0}

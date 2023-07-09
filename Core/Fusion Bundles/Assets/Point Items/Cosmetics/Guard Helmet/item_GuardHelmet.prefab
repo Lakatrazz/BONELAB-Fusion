@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3058198806984415548}
+  - component: {fileID: 158492001110735697}
   m_Layer: 0
   m_Name: item_GuardHelmet
   m_TagString: Untagged
@@ -32,6 +33,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &158492001110735697
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6072915758359743730}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0.0025999993, y: -0.06991789, z: -0.017115742}
+  m_Size: 0.26396397
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.008201271
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 3064692676687947392}
+  m_Enabled: 1
 --- !u!1001 &4415335649911732740
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -105,6 +125,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6eb2d2cb090c62f4ab618400d8ec284f, type: 3}
+--- !u!23 &3064692676687947392 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 6eb2d2cb090c62f4ab618400d8ec284f, type: 3}
+  m_PrefabInstance: {fileID: 4415335649911732740}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4236995666484010479 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 6eb2d2cb090c62f4ab618400d8ec284f, type: 3}
