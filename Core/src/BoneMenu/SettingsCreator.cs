@@ -39,11 +39,18 @@ namespace LabFusion.BoneMenu
 
         private static void CreateServerSettingsMenu(MenuCategory category)
         {
+            // Server display
+            var displaySettingsCategory = category.CreateCategory("Display Settings", Color.white);
+            CreateStringPreference(displaySettingsCategory, "Server Name", FusionPreferences.LocalServerSettings.ServerName);
+
             // Nametags enabled
             CreateBoolPreference(category, "Nametags", FusionPreferences.LocalServerSettings.NametagsEnabled);
 
             // Voice chat
             CreateBoolPreference(category, "Voicechat", FusionPreferences.LocalServerSettings.VoicechatEnabled);
+
+            // Player constraining
+            CreateBoolPreference(category, "Player Constraining", FusionPreferences.LocalServerSettings.PlayerConstrainingEnabled);
 
             // Server privacy
             CreateEnumPreference(category, "Server Privacy", FusionPreferences.LocalServerSettings.Privacy);
@@ -80,6 +87,10 @@ namespace LabFusion.BoneMenu
             CreateBoolPreference(nametagCategory, "Nametags", FusionPreferences.ClientSettings.NametagsEnabled);
 
             // Nametag color
+            var color = FusionPreferences.ClientSettings.NametagColor.GetValue();
+            color.a = 1f;
+            FusionPreferences.ClientSettings.NametagColor.SetValue(color);
+
             CreateColorPreference(nametagCategory, FusionPreferences.ClientSettings.NametagColor);
 
             // Nickname
@@ -87,23 +98,10 @@ namespace LabFusion.BoneMenu
 
             CreateEnumPreference(nicknameCategory, "Nickname Visibility", FusionPreferences.ClientSettings.NicknameVisibility);
 
-            string currentNickname = PlayerIdManager.LocalNickname;
-            var nickname = nicknameCategory.CreateFunctionElement(string.IsNullOrWhiteSpace(currentNickname) ? "No Nickname" : $"Nickname: {currentNickname}", Color.white, null);
-            var pasteNickname = nicknameCategory.CreateFunctionElement("Paste Nickname", Color.white, () => {
-                var text = Clipboard.GetText();
-                text = text.LimitLength(PlayerIdManager.MaxNameLength);
-                FusionPreferences.ClientSettings.Nickname.SetValue(text);
-            });
-            var resetNickname = nicknameCategory.CreateFunctionElement("Reset Nickname", Color.white, () => {
-                FusionPreferences.ClientSettings.Nickname.SetValue("");
-            });
-
-            FusionPreferences.ClientSettings.Nickname.OnValueChanged += (v) => {
-                nickname.SetName(string.IsNullOrWhiteSpace(v) ? "No Nickname" : $"Nickname: {v}");
-
+            CreateStringPreference(nicknameCategory, "Nickname", FusionPreferences.ClientSettings.Nickname, (v) => {
                 if (PlayerIdManager.LocalId != null)
                     PlayerIdManager.LocalId.TrySetMetadata(MetadataHelper.NicknameKey, v);
-            };
+            });
 
             // Voice chat
             var voiceChatCategory = category.CreateCategory("Voice Chat", Color.white);

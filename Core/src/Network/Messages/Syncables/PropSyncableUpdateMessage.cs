@@ -76,7 +76,7 @@ namespace LabFusion.Network
             var transformCaches = syncable.TransformCaches;
             var rigidbodyCaches = syncable.RigidbodyCaches;
 
-            int length = transformCaches.Length;
+            int length = syncable.GameObjectCount;
 
             var data = new PropSyncableUpdateData {
                 ownerId = ownerId,
@@ -116,7 +116,7 @@ namespace LabFusion.Network
                 using (var data = reader.ReadFusionSerializable<PropSyncableUpdateData>()) {
                     // Find the prop syncable and update its info
                     var syncable = data.GetPropSyncable();
-                    if (syncable != null && syncable.IsRegistered() && syncable.Owner.HasValue && syncable.Owner.Value == data.ownerId && syncable.HostGameObjects.Length == data.length) {
+                    if (syncable != null && syncable.IsRegistered() && syncable.Owner.HasValue && syncable.Owner.Value == data.ownerId && syncable.GameObjectCount == data.length) {
                         syncable.RefreshMessageTime();
 
                         for (var i = 0; i < data.length; i++) {

@@ -79,6 +79,24 @@ namespace LabFusion.Patching
     public static class AmmoSocketPatches {
         public static bool IgnorePatch = false;
 
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(AmmoSocket.EjectMagazine))]
+        public static bool EjectMagazine(AmmoSocket __instance) {
+            if (IgnorePatch)
+                return true;
+
+            // If the gun is being held by another player, don't locally allow EjectMagazine
+            var gun = __instance.gun;
+            if (NetworkInfo.HasServer && gun != null && gun.triggerGrip != null) {
+                var hand = gun.triggerGrip.GetHand();
+
+                if (hand != null && PlayerRepManager.HasPlayerId(hand.manager))
+                    return false;
+            }
+
+            return true;
+        }
+
         [HarmonyPatch(nameof(AmmoSocket.OnPlugLocked))]
         [HarmonyPrefix]
         public static void OnPlugLocked(AmmoSocket __instance, Plug plug) {

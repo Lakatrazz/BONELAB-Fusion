@@ -1,0 +1,1 @@
+- Fix Despawn All button despawning the player on custom maps

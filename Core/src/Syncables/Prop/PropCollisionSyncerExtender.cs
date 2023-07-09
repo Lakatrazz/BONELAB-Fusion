@@ -12,9 +12,9 @@ namespace LabFusion.Syncables
         public PropCollisionSyncer Component;
 
         public bool ValidateExtender(PropSyncable syncable) {
-            if (syncable.Rigidbodies.Length > 0) {
+            if (syncable.GameObjectCount > 0) {
                 PropSyncable = syncable;
-                Component = PropSyncable.Rigidbodies[0].gameObject.AddComponent<PropCollisionSyncer>();
+                Component = PropSyncable.TempRigidbodies.Items[0].GameObject.AddComponent<PropCollisionSyncer>();
                 Component.syncable = PropSyncable;
                 return true;
             }

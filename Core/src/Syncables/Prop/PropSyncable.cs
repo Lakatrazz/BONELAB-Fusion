@@ -33,17 +33,17 @@ namespace LabFusion.Syncables
 
         public bool IsVehicle = false;
 
+        public int GameObjectCount => TempRigidbodies != null ? TempRigidbodies.Length : 0;
+
         public Grip[] PropGrips;
-        public Rigidbody[] Rigidbodies;
         public FixedJoint[] LockJoints;
         public PDController[] PDControllers;
 
-        public GameObject[] HostGameObjects;
-        public Transform[] HostTransforms;
+        public TempRigidbodyList TempRigidbodies;
         public TransformCache[] TransformCaches;
         public RigidbodyCache[] RigidbodyCaches;
 
-        public readonly AssetPoolee AssetPoolee;
+        public AssetPoolee AssetPoolee;
 
         public readonly GameObject GameObject;
 
@@ -52,7 +52,7 @@ namespace LabFusion.Syncables
         public PropLifeCycleEvents LifeCycleEvents;
 
         public bool DisableSyncing = false;
-        public readonly bool HasIgnoreHierarchy;
+        public bool HasIgnoreHierarchy;
 
         public float TimeOfMessage = 0f;
 
@@ -97,8 +97,10 @@ namespace LabFusion.Syncables
 
         private bool _wasDisposed = false;
 
+        private bool _initialized = false;
+
         private const int _targetFrame = 3;
-        private readonly FrameSkipper _predictionSkipper = new FrameSkipper(_targetFrame);
+        private readonly FrameSkipper _predictionSkipper = new(_targetFrame);
 
         public PropSyncable(InteractableHost host = null, GameObject root = null) {
             if (root != null)
@@ -106,74 +108,56 @@ namespace LabFusion.Syncables
             else if (host != null)
                 GameObject = host.GetSyncRoot();
 
-            AssetPoolee = AssetPoolee.Cache.Get(GameObject);
-
             if (Cache.TryGet(GameObject, out var syncable))
                 SyncManager.RemoveSyncable(syncable);
 
             Cache.Add(GameObject, this);
 
-            LifeCycleEvents = GameObject.AddComponent<PropLifeCycleEvents>();
-            LifeCycleEvents.enabled = false;
-            LifeCycleEvents.Syncable = this;
-            LifeCycleEvents.enabled = true;
+            Init();
+        }
 
-            // Recreate all rigidbodies incase of them being gone (ascent Amber ball, looking at you)
-            var tempHosts = GameObject.GetComponentsInChildren<InteractableHost>(true);
-            foreach (var tempHost in tempHosts) {
-                if (tempHost.IsStatic)
-                    continue;
-
-                // Remove from key lists
-                if (KeyReciever.ClaimedHosts != null) {
-                    bool removed = KeyReciever.ClaimedHosts.Remove(tempHost.TryCast<IGrippable>());
-
-                    // If this was in a socket and we just removed it, recreate the rigidbody
-                    if (removed) {
-                        tempHost.CreateRigidbody();
-                        tempHost.EnableInteraction();
-                    }
-                }
-            }
-
+        private void OnInitGrips() {
             // Assign grip, rigidbody, etc. info
-            if (GameObject) 
+            if (GameObject)
                 AssignInformation(GameObject);
-            
+
             foreach (var grip in PropGrips) {
                 grip.attachedHandDelegate += (Grip.HandDelegate)((h) => { OnAttach(h, grip); });
                 grip.detachedHandDelegate += (Grip.HandDelegate)((h) => { OnDetach(h, grip); });
             }
+        }
 
+        private void OnInitRigidbodies() {
             // Setup target arrays
-            InitialPositions = new Vector3?[Rigidbodies.Length];
-            InitialRotations = new Quaternion?[Rigidbodies.Length];
-            DesiredPositions = new Vector3?[Rigidbodies.Length];
-            DesiredRotations = new Quaternion?[Rigidbodies.Length];
-            DesiredVelocities = new Vector3?[Rigidbodies.Length];
-            DesiredAngularVelocities = new Vector3?[Rigidbodies.Length];
+            InitialPositions = new Vector3?[GameObjectCount];
+            InitialRotations = new Quaternion?[GameObjectCount];
+            DesiredPositions = new Vector3?[GameObjectCount];
+            DesiredRotations = new Quaternion?[GameObjectCount];
+            DesiredVelocities = new Vector3?[GameObjectCount];
+            DesiredAngularVelocities = new Vector3?[GameObjectCount];
 
-            LastSentPositions = new Vector3[Rigidbodies.Length];
-            LastSentRotations = new Quaternion[Rigidbodies.Length];
+            LastSentPositions = new Vector3[GameObjectCount];
+            LastSentRotations = new Quaternion[GameObjectCount];
 
             // Setup gameobject arrays
-            HostGameObjects = new GameObject[Rigidbodies.Length];
-            HostTransforms = new Transform[Rigidbodies.Length];
-            TransformCaches = new TransformCache[Rigidbodies.Length];
-            RigidbodyCaches = new RigidbodyCache[Rigidbodies.Length];
-            PDControllers = new PDController[Rigidbodies.Length];
-            LockJoints = new FixedJoint[Rigidbodies.Length];
+            TransformCaches = new TransformCache[GameObjectCount];
+            RigidbodyCaches = new RigidbodyCache[GameObjectCount];
+            PDControllers = new PDController[GameObjectCount];
 
-            for (var i = 0; i < Rigidbodies.Length; i++) {
+            DestroyLockJoints();
+            LockJoints = new FixedJoint[GameObjectCount];
+
+            for (var i = 0; i < GameObjectCount; i++) {
                 // Clear out potential conflicting syncables
-                var go = Rigidbodies[i].gameObject;
-                if (HostCache.TryGet(go, out var conflict) && conflict != this)
-                    SyncManager.RemoveSyncable(conflict);
+                var go = TempRigidbodies.Items[i].GameObject;
+                if (HostCache.TryGet(go, out var conflict)) {
+                    if (conflict == this)
+                        HostCache.Remove(go);
+                    else
+                        SyncManager.RemoveSyncable(conflict);
+                }
 
                 // Get the GameObject info
-                HostGameObjects[i] = go;
-                HostTransforms[i] = go.transform;
-
                 HostCache.Add(go, this);
 
                 PDControllers[i] = new PDController();
@@ -182,16 +166,64 @@ namespace LabFusion.Syncables
                 TransformCaches[i] = new TransformCache();
                 RigidbodyCaches[i] = new RigidbodyCache();
 
-                TransformCaches[i].FixedUpdate(HostTransforms[i]);
-                RigidbodyCaches[i].FixedUpdate(Rigidbodies[i]);
+                TransformCaches[i].FixedUpdate(TempRigidbodies.Items[i].Transform);
+                RigidbodyCaches[i].FixedUpdate(TempRigidbodies.Items[i].Rigidbody);
             }
+        }
+
+        public void Init() {
+            if (_initialized || _wasDisposed)
+                return;
+
+            AssetPoolee = AssetPoolee.Cache.Get(GameObject);
+
+            LifeCycleEvents = GameObject.AddComponent<PropLifeCycleEvents>();
+            LifeCycleEvents.enabled = false;
+            LifeCycleEvents.Syncable = this;
+            LifeCycleEvents.enabled = true;
+
+            // Recreate all rigidbodies incase of them being gone (ascent Amber ball, looking at you)
+            var tempHosts = GameObject.GetComponentsInChildren<InteractableHost>(true);
+            foreach (var tempHost in tempHosts)
+            {
+                if (tempHost.IsStatic)
+                    continue;
+
+                // Remove from key lists
+                if (KeyReciever.ClaimedHosts != null)
+                {
+                    bool removed = KeyReciever.ClaimedHosts.Remove(tempHost.TryCast<IGrippable>());
+
+                    // If this was in a socket and we just removed it, recreate the rigidbody
+                    if (removed)
+                    {
+                        tempHost.CreateRigidbody();
+                        tempHost.EnableInteraction();
+                    }
+                }
+            }
+
+            OnInitGrips();
+            OnInitRigidbodies();
 
             HasIgnoreHierarchy = GameObject.GetComponentInParent<IgnoreHierarchy>(true);
 
             _extenders = PropExtenderManager.GetPropExtenders(this);
+
+            _initialized = true;
         }
 
         public bool IsDestroyed() => _wasDisposed;
+
+        private void DestroyLockJoints() {
+            if (LockJoints == null)
+                return;
+
+            for (var i = 0; i < LockJoints.Length; i++) {
+                if (LockJoints[i] != null)
+                    GameObject.Destroy(LockJoints[i]);
+            }
+        }
 
         public void InsertCatchupDelegate(Action<ulong> catchup) {
             _catchupDelegate += catchup;
@@ -216,7 +248,9 @@ namespace LabFusion.Syncables
 
         private void AssignInformation(GameObject go) {
             PropGrips = go.GetComponentsInChildren<Grip>(true);
-            Rigidbodies = go.GetComponentsInChildren<Rigidbody>(true);
+
+            TempRigidbodies = new TempRigidbodyList();
+            TempRigidbodies.WriteComponents(go);
 
             _grabbedGrips = new GrabbedGripList(this, PropGrips.Length);
         }
@@ -232,6 +266,9 @@ namespace LabFusion.Syncables
         }
 
         public void OnAttach(Hand hand, Grip grip) {
+            if (IsDestroyed())
+                return;
+
             OnTransferOwner(hand);
 
             _grabbedGrips.OnGripAttach(hand, grip);
@@ -241,6 +278,9 @@ namespace LabFusion.Syncables
         }
 
         public void OnDetach(Hand hand, Grip grip) {
+            if (IsDestroyed())
+                return;
+
             OnTransferOwner(hand);
 
             _grabbedGrips.OnGripDetach(hand, grip);
@@ -265,21 +305,18 @@ namespace LabFusion.Syncables
                 GameObject.Destroy(LifeCycleEvents);
             }
 
-            foreach (var host in HostGameObjects) {
-                if (host == null)
+            foreach (var item in TempRigidbodies.Items) {
+                if (item.GameObject == null)
                     continue;
 
-                HostCache.Remove(host);
+                HostCache.Remove(item.GameObject);
             }
 
             foreach (var extender in _extenders) {
                 extender.OnCleanup();
             }
 
-            foreach (var joint in LockJoints) {
-                if (joint != null)
-                    GameObject.Destroy(joint);
-            }
+            DestroyLockJoints();
 
             _wasDisposed = true;
         }
@@ -302,6 +339,15 @@ namespace LabFusion.Syncables
         public byte? GetOwner() => Owner;
 
         public void SetOwner(byte owner) {
+            // Make sure this has been initialized
+            if (!_initialized)
+            {
+#if DEBUG
+                FusionLogger.Warn("Tried setting the owner of a PropSyncable, but it wasn't initialized!");
+#endif
+                return;
+            }
+
             // Make sure this isn't destroyed
             if (IsDestroyed()) {
 #if DEBUG
@@ -335,7 +381,7 @@ namespace LabFusion.Syncables
         }
 
         public void FreezeValues() {
-            for (var i = 0; i < Rigidbodies.Length; i++) {
+            for (var i = 0; i < GameObjectCount; i++) {
                 var transform = TransformCaches[i];
 
                 DesiredPositions[i] = transform.Position;
@@ -348,7 +394,7 @@ namespace LabFusion.Syncables
         }
 
         public void NullValues() {
-            for (var i = 0; i < Rigidbodies.Length; i++) {
+            for (var i = 0; i < GameObjectCount; i++) {
                 DesiredPositions[i] = null;
                 DesiredRotations[i] = null;
                 DesiredVelocities[i] = null;
@@ -368,8 +414,8 @@ namespace LabFusion.Syncables
             if (_verifyRigidbodies) {
                 // Check if any are missing
                 bool needToUpdate = false;
-                foreach (var rb in Rigidbodies) {
-                    if (rb.IsNOC()) {
+                foreach (var item in TempRigidbodies.Items) {
+                    if (item.Rigidbody.IsNOC()) {
                         needToUpdate = true;
                         break;
                     }
@@ -377,13 +423,13 @@ namespace LabFusion.Syncables
 
                 // Re-get all rigidbodies
                 if (needToUpdate) {
-                    for (var i = 0; i < HostGameObjects.Length; i++) {
-                        var host = HostGameObjects[i];
+                    for (var i = 0; i < GameObjectCount; i++) {
+                        var host = TempRigidbodies.Items[i].GameObject;
 
                         if (!host.IsNOC())
-                            Rigidbodies[i] = host.GetComponent<Rigidbody>();
+                            TempRigidbodies.Items[i].Rigidbody = host.GetComponent<Rigidbody>();
 
-                        RigidbodyCaches[i].VerifyNull(Rigidbodies[i]);
+                        RigidbodyCaches[i].VerifyNull(TempRigidbodies.Items[i].Rigidbody);
                     }
                 }
 
@@ -393,13 +439,13 @@ namespace LabFusion.Syncables
 
         private void VerifyLocking() {
             if (_isLockingDirty) {
-                for (var i = 0; i < Rigidbodies.Length; i++) {
+                for (var i = 0; i < GameObjectCount; i++) {
                     if (LockJoints[i] != null)
                         GameObject.Destroy(LockJoints[i]);
 
-                    var rb = Rigidbodies[i];
-                    var gameObject = HostGameObjects[i];
-                    var transform = HostTransforms[i];
+                    var rb = TempRigidbodies.Items[i].Rigidbody;
+                    var gameObject = TempRigidbodies.Items[i].GameObject;
+                    var transform = TempRigidbodies.Items[i].Transform;
 
                     var lockPos = InitialPositions[i];
                     var lockRot = InitialRotations[i];
@@ -436,9 +482,9 @@ namespace LabFusion.Syncables
         }
 
         public ushort? GetIndex(GameObject go) {
-            for (ushort i = 0; i < HostGameObjects.Length; i++)
+            for (ushort i = 0; i < GameObjectCount; i++)
             {
-                if (HostGameObjects[i] == go)
+                if (TempRigidbodies.Items[i].GameObject == go)
                     return i;
             }
             return null;
@@ -446,8 +492,8 @@ namespace LabFusion.Syncables
 
         public GameObject GetHost(ushort index)
         {
-            if (HostGameObjects != null && HostGameObjects.Length > index)
-                return HostGameObjects[index];
+            if (GameObjectCount > index)
+                return TempRigidbodies.Items[index].GameObject;
             return null;
         }
 
@@ -457,6 +503,9 @@ namespace LabFusion.Syncables
         private bool HasValidParameters() => !DisableSyncing && _hasRegistered && FusionSceneManager.IsLoadDone() && IsRootEnabled;
 
         public void OnFixedUpdate() {
+            if (!_initialized)
+                return;
+
             try {
                 if (!HasValidParameters())
                     return;
@@ -471,27 +520,34 @@ namespace LabFusion.Syncables
             catch (Exception e) {
                 if (e is NullReferenceException)
                     OnExceptionThrown();
+#if !DEBUG
                 else {
+#endif
                     throw e;
+#if !DEBUG
                 }
+#endif
             }
         }
 
         private void OnExceptionThrown() {
             for (var i = 0; i < RigidbodyCaches.Length; i++) {
-                RigidbodyCaches[i].VerifyNull(Rigidbodies[i]);
+                RigidbodyCaches[i].VerifyNull(TempRigidbodies.Items[i].Rigidbody);
             }
         }
 
         private void OnFixedUpdateCache() {
             for (var i = 0; i < TransformCaches.Length; i++) {
-                TransformCaches[i].FixedUpdate(HostTransforms[i]);
-                RigidbodyCaches[i].FixedUpdate(Rigidbodies[i]);
+                TransformCaches[i].FixedUpdate(TempRigidbodies.Items[i].Transform);
+                RigidbodyCaches[i].FixedUpdate(TempRigidbodies.Items[i].Rigidbody);
             }
         }
 
         public void OnUpdate()
         {
+            if (!_initialized)
+                return;
+
             try {
                 if (!HasValidParameters())
                     return;
@@ -515,9 +571,13 @@ namespace LabFusion.Syncables
             catch (Exception e) {
                 if (e is NullReferenceException)
                     OnExceptionThrown();
+#if !DEBUG
                 else {
+#endif
                     throw e;
+#if !DEBUG
                 }
+#endif
             }
         }
 
@@ -551,14 +611,14 @@ namespace LabFusion.Syncables
 
             bool hasMovingBody = false;
 
-            for (var i = 0; i < Rigidbodies.Length; i++) {
+            for (var i = 0; i < GameObjectCount; i++) {
                 var cache = RigidbodyCaches[i];
 
                 if (cache.IsNull) {
                     continue;
                 }
 
-                var rb = Rigidbodies[i];
+                var rb = TempRigidbodies.Items[i].Rigidbody;
 
                 // Don't sync kinematic rigidbodies
                 if (rb.isKinematic)
@@ -590,7 +650,7 @@ namespace LabFusion.Syncables
                 LastSentRotations[i] = cache.Rotation;
             }
 
-            using (var writer = FusionWriter.Create(PropSyncableUpdateData.DefaultSize + (PropSyncableUpdateData.RigidbodySize * Rigidbodies.Length))) {
+            using (var writer = FusionWriter.Create(PropSyncableUpdateData.DefaultSize + (PropSyncableUpdateData.RigidbodySize * GameObjectCount))) {
                 using (var data = PropSyncableUpdateData.Create(PlayerIdManager.LocalSmallId, this)) {
                     writer.Write(data);
 
@@ -636,7 +696,7 @@ namespace LabFusion.Syncables
             if (!IsHeld && (IsSleeping || timeSinceMessage >= 1f)) {
                 if (!_isIgnoringForces) {
                     // Set all desired values to nothing
-                    for (var i = 0; i < Rigidbodies.Length; i++) {
+                    for (var i = 0; i < GameObjectCount; i++) {
                         DesiredPositions[i] = null;
                         DesiredRotations[i] = null;
                         DesiredVelocities[i] = null;
@@ -656,14 +716,14 @@ namespace LabFusion.Syncables
                 _isIgnoringForces = false;
             }
 
-            for (var i = 0; i < Rigidbodies.Length; i++) {
+            for (var i = 0; i < GameObjectCount; i++) {
                 var rbCache = RigidbodyCaches[i];
 
                 if (rbCache.IsNull)
                     continue;
 
-                var rb = Rigidbodies[i];
-                var transform = HostTransforms[i];
+                var rb = TempRigidbodies.Items[i].Rigidbody;
+                var transform = TempRigidbodies.Items[i].Transform;
                 var cache = TransformCaches[i];
 
                 bool isGrabbed = false;

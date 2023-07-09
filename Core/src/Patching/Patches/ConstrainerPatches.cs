@@ -7,12 +7,14 @@ using System.Threading.Tasks;
 using HarmonyLib;
 
 using LabFusion.Network;
+using LabFusion.Preferences;
 using LabFusion.Representation;
 using LabFusion.Syncables;
 using LabFusion.Utilities;
 using MelonLoader;
 using SLZ.Interaction;
 using SLZ.Props;
+using SLZ.Rig;
 using UnityEngine;
 
 namespace LabFusion.Patching {
@@ -50,9 +52,25 @@ namespace LabFusion.Patching {
         public static ushort FirstId;
         public static ushort SecondId;
 
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(Constrainer.PrimaryButtonUp))]
+        public static void PrimaryButtonUpPrefix(Constrainer __instance) {
+            if (NetworkInfo.HasServer && __instance.mode != Constrainer.ConstraintMode.Remove && !FusionPreferences.ActiveServerSettings.PlayerConstrainingEnabled.GetValue()) {
+                if (__instance._rb1 != null && __instance._rb1.GetComponentInParent<RigManager>() != null) {
+                    __instance._gO1 = null;
+                    __instance._rb1 = null;
+                }
+
+                if (__instance._rb2 != null && __instance._rb2.GetComponentInParent<RigManager>() != null) {
+                    __instance._gO2 = null;
+                    __instance._rb2 = null;
+                }
+            }
+        }
+
         [HarmonyPostfix]
         [HarmonyPatch(nameof(Constrainer.PrimaryButtonUp))]
-        public static void PrimaryButtonUp(Constrainer __instance)
+        public static void PrimaryButtonUpPostfix(Constrainer __instance)
         {
             var go1 = __instance._gO1;
             var go2 = __instance._gO2;

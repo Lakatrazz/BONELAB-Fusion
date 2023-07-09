@@ -16,6 +16,9 @@ public class ExtraToolsEditor : EditorWindow
     {
         string assetBundleDirectory = "Assets/AssetBundles/StandaloneWindows64";
         Directory.CreateDirectory(assetBundleDirectory);
+
+        EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64);
+
         BuildPipeline.BuildAssetBundles(assetBundleDirectory, BundleOptions, BuildTarget.StandaloneWindows64);
     }
 
@@ -24,6 +27,9 @@ public class ExtraToolsEditor : EditorWindow
     {
         string assetBundleDirectory = "Assets/AssetBundles/Android";
         Directory.CreateDirectory(assetBundleDirectory);
+
+        EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Android, BuildTarget.Android);
+
         BuildPipeline.BuildAssetBundles(assetBundleDirectory, BundleOptions, BuildTarget.Android);
     }
 

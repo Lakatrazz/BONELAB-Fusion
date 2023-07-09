@@ -14,16 +14,19 @@ using UnityEngine;
 
 namespace LabFusion.Data {
     public class SerializedServerSettings : IFusionSerializable {
-        public const int Size = sizeof(byte) * 11;
+        public const int Size = sizeof(byte) * 13;
 
         public FusionPreferences.ServerSettings settings;
 
         public void Serialize(FusionWriter writer) {
             writer.Write(settings.NametagsEnabled.GetValue());
             writer.Write(settings.VoicechatEnabled.GetValue());
+            writer.Write(settings.PlayerConstrainingEnabled.GetValue());
             writer.Write((byte)settings.Privacy.GetValue());
             writer.Write((byte)settings.TimeScaleMode.GetValue());
-            writer.Write(settings.MaxPlayers.GetValue()); 
+            writer.Write(settings.MaxPlayers.GetValue());
+
+            writer.Write(settings.ServerName.GetValue());
 
             writer.Write(settings.ServerMortality.GetValue());
 
@@ -40,9 +43,12 @@ namespace LabFusion.Data {
             {
                 NametagsEnabled = new ReadonlyFusionPrev<bool>(reader.ReadBoolean()),
                 VoicechatEnabled = new ReadonlyFusionPrev<bool>(reader.ReadBoolean()),
+                PlayerConstrainingEnabled = new ReadonlyFusionPrev<bool>(reader.ReadBoolean()),
                 Privacy = new ReadonlyFusionPrev<ServerPrivacy>((ServerPrivacy)reader.ReadByte()),
                 TimeScaleMode = new ReadonlyFusionPrev<TimeScaleMode>((TimeScaleMode)reader.ReadByte()),
                 MaxPlayers = new ReadonlyFusionPrev<byte>(reader.ReadByte()),
+
+                ServerName = new ReadonlyFusionPrev<string>(reader.ReadString()),
 
                 ServerMortality = new ReadonlyFusionPrev<bool>(reader.ReadBoolean()),
 

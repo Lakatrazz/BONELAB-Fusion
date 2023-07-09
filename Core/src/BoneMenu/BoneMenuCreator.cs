@@ -1,4 +1,5 @@
 ﻿using BoneLib.BoneMenu.Elements;
+using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Preferences;
 using LabFusion.Representation;
@@ -85,6 +86,28 @@ namespace LabFusion.BoneMenu
 
             pref.OnValueChanged += (v) => {
                 element.SetValue(v);
+            };
+        }
+
+        public static void CreateStringPreference(MenuCategory category, string name, IFusionPref<string> pref, Action<string> onValueChanged = null, int maxLength = PlayerIdManager.MaxNameLength) {
+            string currentValue = pref.GetValue();
+            var display = category.CreateFunctionElement(string.IsNullOrWhiteSpace(currentValue) ? $"No {name}" : $"{name}: {currentValue}", Color.white, null);
+            var pasteButton = category.CreateFunctionElement($"Paste {name}", Color.white, () => {
+                if (!Clipboard.ContainsText())
+                    return;
+
+                var text = Clipboard.GetText();
+                text = text.LimitLength(maxLength);
+                pref.SetValue(text);
+            });
+            var resetButton = category.CreateFunctionElement($"Reset {name}", Color.white, () => {
+                pref.SetValue("");
+            });
+
+            pref.OnValueChanged += (v) => {
+                display.SetName(string.IsNullOrWhiteSpace(v) ? $"No {name}" : $"{name}: {v}");
+
+                onValueChanged?.Invoke(v);
             };
         }
     }

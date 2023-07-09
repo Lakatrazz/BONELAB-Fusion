@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7545420197507151534}
+  - component: {fileID: 6013232472400862403}
   m_Layer: 0
   m_Name: item_PieceOfResistance
   m_TagString: Untagged
@@ -32,6 +33,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &6013232472400862403
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1621582397085279072}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0, y: -0.011745095, z: -0.11100003}
+  m_Size: 0.6295055
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.009144402
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 6837676191263178863}
+  m_Enabled: 1
 --- !u!1001 &5270860717241785579
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -108,5 +128,10 @@ PrefabInstance:
 --- !u!4 &5669858861284899584 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: e579ed279cb2f074599b3fd9a6499ee7, type: 3}
+  m_PrefabInstance: {fileID: 5270860717241785579}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6837676191263178863 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: e579ed279cb2f074599b3fd9a6499ee7, type: 3}
   m_PrefabInstance: {fileID: 5270860717241785579}
   m_PrefabAsset: {fileID: 0}

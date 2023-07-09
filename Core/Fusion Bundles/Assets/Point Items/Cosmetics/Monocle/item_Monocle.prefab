@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5425617775958208958}
+  - component: {fileID: 1748149296838473482}
   m_Layer: 0
   m_Name: item_Monocle
   m_TagString: Untagged
@@ -32,6 +33,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &1748149296838473482
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3853983652849083504}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: -0.0066315047, y: 0, z: 0.0387}
+  m_Size: 0.04530061
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.0052626156
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 6006318055768518157}
+  m_Enabled: 1
 --- !u!1001 &4943597600205599369
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -108,5 +128,10 @@ PrefabInstance:
 --- !u!4 &4832809550388598114 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1821eaaf278e6824f8eb0bcc27a330ce, type: 3}
+  m_PrefabInstance: {fileID: 4943597600205599369}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6006318055768518157 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 1821eaaf278e6824f8eb0bcc27a330ce, type: 3}
   m_PrefabInstance: {fileID: 4943597600205599369}
   m_PrefabAsset: {fileID: 0}

@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.lakatrazz.marrowextrashaders": {
+      "version": "https://github.com/Lakatrazz/Marrow-Extra-Shaders.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "7963eb921feca52df3c1e822343f0a5b5638e7b7"
+    },
     "com.stresslevelzero.marrow.sdk": {
       "version": "https://github.com/StressLevelZero/MarrowSDK.git",
       "depth": 0,

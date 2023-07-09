@@ -54,20 +54,17 @@ namespace LabFusion.Patching
                 return;
 
             try {
-                if (NetworkInfo.HasServer && GunExtender.Cache.TryGet(__instance, out var gunSyncable)) {
+                if (NetworkInfo.HasServer && GunExtender.Cache.TryGet(__instance, out var gunSyncable) && gunSyncable.TryGetExtender<GunExtender>(out var extender)) {
                     // Make sure this is being grabbed by our main player
                     if (__instance.triggerGrip && __instance.triggerGrip.attachedHands.Find((Il2CppSystem.Predicate<Hand>)((h) => h.manager == RigData.RigReferences.RigManager))) {
-                        using (var writer = FusionWriter.Create(GunShotData.Size)) {
-                            var ammoCount = __instance._magState != null ? (byte)__instance._magState.AmmoCount : (byte)0;
+                        using var writer = FusionWriter.Create(GunShotData.Size);
+                        var ammoCount = __instance._magState != null ? (byte)__instance._magState.AmmoCount : (byte)0;
 
-                            using (var data = GunShotData.Create(PlayerIdManager.LocalSmallId, ammoCount, gunSyncable.Id)) {
-                                writer.Write(data);
+                        using var data = GunShotData.Create(PlayerIdManager.LocalSmallId, ammoCount, gunSyncable.Id, extender.GetIndex(__instance).Value);
+                        writer.Write(data);
 
-                                using (var message = FusionMessage.Create(NativeMessageTag.GunShot, writer)) {
-                                    MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                                }
-                            }
-                        }
+                        using var message = FusionMessage.Create(NativeMessageTag.GunShot, writer);
+                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
                     }
                 }
             }

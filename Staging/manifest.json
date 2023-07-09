@@ -1,9 +1,0 @@
-{
-    "name": "Fusion",
-    "version_number": "1.3.0",
-    "website_url": "https://github.com/Lakatrazz/BONELAB-Fusion",
-    "description": "A multiplayer mod for BONELAB, taking advantage of its physical interaction.",
-    "dependencies": [
-        "gnonme-BoneLib-2.2.1"
-    ]
-}

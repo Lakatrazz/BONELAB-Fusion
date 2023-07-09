@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8726961815753732619}
   - component: {fileID: 1249117978430608846}
   - component: {fileID: 8089341511926320983}
+  - component: {fileID: 6296342926470293980}
   m_Layer: 0
   m_Name: item_GloopTrail
   m_TagString: Untagged
@@ -4821,3 +4822,22 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!205 &6296342926470293980
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2328564250870895192}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0.04739982, y: -0.4440595, z: 0.0254893}
+  m_Size: 1.0972223
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.0056721396
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 8089341511926320983}
+  m_Enabled: 1

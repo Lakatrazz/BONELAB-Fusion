@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6113718762174703822}
+  - component: {fileID: 7639398667812441116}
   m_Layer: 0
   m_Name: item_Fez
   m_TagString: Untagged
@@ -32,6 +33,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &7639398667812441116
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3093966325410938112}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0, y: 0.0059863236, z: 0.013100002}
+  m_Size: 0.08286712
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.009633219
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 6025343641358430902}
+  m_Enabled: 1
 --- !u!1001 &4926876142976200242
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -108,5 +128,10 @@ PrefabInstance:
 --- !u!4 &4887952346242091481 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: c0b39b15742ff094fba4d0a52853b1e7, type: 3}
+  m_PrefabInstance: {fileID: 4926876142976200242}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6025343641358430902 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: c0b39b15742ff094fba4d0a52853b1e7, type: 3}
   m_PrefabInstance: {fileID: 4926876142976200242}
   m_PrefabAsset: {fileID: 0}

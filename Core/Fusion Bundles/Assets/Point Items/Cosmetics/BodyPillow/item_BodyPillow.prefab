@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1086156627609617884}
+  - component: {fileID: 3941809150621547495}
   m_Layer: 0
   m_Name: item_BodyPillow
   m_TagString: Untagged
@@ -32,6 +33,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &3941809150621547495
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6166960695911467094}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0.0000020861626, y: -0.22999991, z: -0.18599986}
+  m_Size: 1.1812949
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.012807659
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 7062000464142143679}
+  m_Enabled: 1
 --- !u!1001 &8485012184675683387
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -105,6 +125,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6fd6b02502a47fc43b4ab9e90ff43261, type: 3}
+--- !u!23 &7062000464142143679 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 6fd6b02502a47fc43b4ab9e90ff43261, type: 3}
+  m_PrefabInstance: {fileID: 8485012184675683387}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8235510167547538384 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 6fd6b02502a47fc43b4ab9e90ff43261, type: 3}

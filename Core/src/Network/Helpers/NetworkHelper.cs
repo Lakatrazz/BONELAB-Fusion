@@ -1,12 +1,13 @@
 ﻿using LabFusion.Data;
 using LabFusion.Representation;
 using LabFusion.Senders;
-
+using LabFusion.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 
 namespace LabFusion.Network {
     /// <summary>
@@ -56,6 +57,25 @@ namespace LabFusion.Network {
         /// </summary>
         /// <param name="id"></param>
         public static void KickUser(PlayerId id) {
+            // Don't kick blessed users
+            if (FusionBlessings.IsBlessed(id)) {
+                if (!id.TryGetDisplayName(out var name))
+                    name = "Wacky Willy";
+
+                FusionNotifier.Send(new FusionNotification() {
+                    title = "Failed to Kick User",
+                    showTitleOnPopup = true,
+
+                    message = $"{name} has denied your kick request.",
+
+                    isMenuItem = false,
+                    isPopup = true,
+                    type = NotificationType.ERROR,
+                });
+
+                return;
+            }
+
             ConnectionSender.SendDisconnect(id, "Kicked from Server");
         }
 
@@ -64,6 +84,26 @@ namespace LabFusion.Network {
         /// </summary>
         /// <param name="id"></param>
         public static void BanUser(PlayerId id) {
+            // Don't ban blessed users
+            if (FusionBlessings.IsBlessed(id)) {
+                if (!id.TryGetDisplayName(out var name))
+                    name = "Wacky Willy";
+
+                FusionNotifier.Send(new FusionNotification()
+                {
+                    title = "Failed to Ban User",
+                    showTitleOnPopup = true,
+
+                    message = $"{name} has denied your ban request.",
+
+                    isMenuItem = false,
+                    isPopup = true,
+                    type = NotificationType.ERROR,
+                });
+
+                return;
+            }
+
             BanList.Ban(id.LongId, id.GetMetadata(MetadataHelper.UsernameKey), "Banned");
             ConnectionSender.SendDisconnect(id, "Banned from Server");
         }
@@ -74,6 +114,10 @@ namespace LabFusion.Network {
         /// <param name="longId"></param>
         /// <returns></returns>
         public static bool IsBanned(ulong longId) {
+            // Check if the user is blessed
+            if (FusionBlessings.IsBlessed(longId))
+                return false;
+
             // Check the ban list
             foreach (var tuple in BanList.BannedUsers) {
                 if (tuple.Item1 == longId)

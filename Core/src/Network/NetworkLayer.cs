@@ -45,6 +45,11 @@ namespace LabFusion.Network
         internal virtual INetworkLobby CurrentLobby => null;
 
         /// <summary>
+        /// Returns the used voice manager.
+        /// </summary>
+        internal virtual IVoiceManager VoiceManager => null;
+
+        /// <summary>
         /// Starts the server.
         /// </summary>
         internal abstract void StartServer();

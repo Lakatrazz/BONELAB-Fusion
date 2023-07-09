@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 using SLZ.Marrow.SceneStreaming;
+using LabFusion.SDK.Achievements;
 
 namespace LabFusion.Network {
     /// <summary>
@@ -63,7 +64,12 @@ namespace LabFusion.Network {
                 message = "Started a server!",
                 isMenuItem = false,
                 isPopup = true,
+                type = NotificationType.SUCCESS,
             });
+
+            // Unlock achievement
+            if (AchievementManager.TryGetAchievement<HeadOfHouse>(out var achievement))
+                achievement.IncrementTask();
 
             // Reload the scene
             SceneStreamer.Reload();
@@ -86,7 +92,12 @@ namespace LabFusion.Network {
                 message = "Joined a server!",
                 isMenuItem = false,
                 isPopup = true,
+                type = NotificationType.SUCCESS,
             });
+
+            // Unlock achievement
+            if (AchievementManager.TryGetAchievement<WarmWelcome>(out var achievement))
+                achievement.IncrementTask();
         }
 
         /// <summary>
@@ -126,6 +137,7 @@ namespace LabFusion.Network {
                     isMenuItem = true,
                     isPopup = true,
                     popupLength = 5f,
+                    type = NotificationType.WARNING,
                 });
             }
         }
