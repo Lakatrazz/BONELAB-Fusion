@@ -67,6 +67,9 @@ namespace LabFusion.Network {
                     return typeof(SpacewarNetworkLayer);
                 case NetworkLayerType.EMPTY:
                     return typeof(EmptyNetworkLayer);
+                case NetworkLayerType.PROXY_STEAM_VR:
+                case NetworkLayerType.PROXY_SPACEWAR:
+                    return typeof(ProxyNetworkLayer);
             }
         }
     }
