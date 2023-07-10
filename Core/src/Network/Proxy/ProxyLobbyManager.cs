@@ -1,4 +1,6 @@
 ﻿using FusionHelper.Network;
+using LabFusion.Utilities;
+using LabFusion.XML;
 using LiteNetLib;
 using LiteNetLib.Utils;
 using MelonLoader;
@@ -7,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace LabFusion.Network
 {
@@ -61,9 +64,10 @@ namespace LabFusion.Network
 
                 var tcs = _metadataInfoRequests[lobbyId];
 
-                LobbyMetadataInfo metadataInfo = new LobbyMetadataInfo()
+                LobbyMetadataInfo metadataInfo = new()
                 {
                     LobbyId = packetReader.GetULong(),
+                    LobbyOwner = packetReader.GetString(),
                     LobbyName = packetReader.GetString(),
                     HasServerOpen = packetReader.GetBool(),
                     PlayerCount = packetReader.GetInt(),
@@ -75,8 +79,27 @@ namespace LabFusion.Network
                     VoicechatEnabled = packetReader.GetBool(),
 
                     LevelName = packetReader.GetString(),
+                    LevelBarcode = packetReader.GetString(),
                     GamemodeName = packetReader.GetString()
                 };
+
+                try
+                {
+                    string listStr = packetReader.GetString();
+                    FusionLogger.Log(listStr);
+                    XDocument parsedList = XDocument.Parse(listStr);
+                    var list = new XML.PlayerList();
+                    list.ReadDocument(parsedList);
+                    metadataInfo.PlayerList = list;
+                }
+                catch
+                {
+                    metadataInfo.PlayerList = new()
+                    {
+                        players = new PlayerList.PlayerInfo[0]
+                    };
+                }
+
                 if (Version.TryParse(packetReader.GetString(), out var version))
                 {
                     metadataInfo.LobbyVersion = version;

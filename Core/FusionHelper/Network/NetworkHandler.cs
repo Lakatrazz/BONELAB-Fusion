@@ -139,6 +139,9 @@ namespace FusionHelper.Network
             ulong.TryParse(lobby.GetData("LobbyId"), out ulong metaLobbyId);
             writer.Put(metaLobbyId);
 
+            // Lobby Owner
+            writer.Put(lobby.GetData("LobbyOwner"));
+
             // Lobby Name
             string name = lobby.GetData("LobbyName");
             Console.WriteLine($"Writing metadata for {name} (id {lobbyId})");
@@ -173,7 +176,11 @@ namespace FusionHelper.Network
 
             // Level and Gamemode
             writer.Put(lobby.GetData("LevelName"));
+            writer.Put(lobby.GetData("LevelBarcode"));
             writer.Put(lobby.GetData("GamemodeName"));
+
+            // Player List
+            writer.Put(lobby.GetData("PlayerList"));
 
             // Put LobbyVersion at the end because of weird stuff in the deserialisation code
             writer.Put(lobby.GetData("LobbyVersion"));
