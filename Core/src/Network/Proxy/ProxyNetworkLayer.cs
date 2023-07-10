@@ -255,7 +255,7 @@ namespace LabFusion.Network
                         ulong playerLong = dataReader.GetULong();
                         byte[] data = dataReader.GetBytesWithLength();
                         var identifier = ProxyVoiceIdentifier.GetVoiceIdentifier(PlayerIdManager.GetPlayerId(playerLong));
-                        identifier.OnDecompressedVoiceBytesReceived(data);
+                        identifier?.OnDecompressedVoiceBytesReceived(data);
                         break;
                     }
             }
@@ -354,10 +354,7 @@ namespace LabFusion.Network
 
             var identifier = ProxyVoiceIdentifier.GetVoiceIdentifier(id);
 
-            if (identifier != null)
-            {
-                identifier.OnVoiceBytesReceived(bytes);
-            }
+            identifier?.OnVoiceBytesReceived(bytes);
         }
 
         internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message)

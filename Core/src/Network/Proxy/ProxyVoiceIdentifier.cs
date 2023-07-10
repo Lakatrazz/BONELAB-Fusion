@@ -116,6 +116,9 @@ namespace LabFusion.Network {
         }
 
         public static ProxyVoiceIdentifier GetVoiceIdentifier(PlayerId id) {
+            if (id == null)
+                return null;
+
             for (var i = 0; i < VoiceIdentifiers.Count; i++) {
                 var identifier = VoiceIdentifiers[i];
 
