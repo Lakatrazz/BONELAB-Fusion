@@ -3,7 +3,7 @@
 
 CONTRIBUTORS
 - trevtv
-- Someone Somewhere
+- <size=68%>Someone Somewhere<size=100%>
 
 TESTERS
 - Alfi
