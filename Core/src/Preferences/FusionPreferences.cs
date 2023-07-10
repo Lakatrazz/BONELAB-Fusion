@@ -23,6 +23,7 @@ namespace LabFusion.Preferences {
             public IFusionPref<bool> VoicechatEnabled;
             public IFusionPref<bool> PlayerConstrainingEnabled;
             public IFusionPref<ServerPrivacy> Privacy;
+            public IFusionPref<bool> AllowQuestUsers;
             public IFusionPref<TimeScaleMode> TimeScaleMode;
             public IFusionPref<byte> MaxPlayers;
 
@@ -50,6 +51,7 @@ namespace LabFusion.Preferences {
                     VoicechatEnabled = new FusionPref<bool>(prefCategory, "Server Voicechat Enabled", true, PrefUpdateMode.SERVER_UPDATE),
                     PlayerConstrainingEnabled = new FusionPref<bool>(prefCategory, "Server Player Constraining Enabled", true, PrefUpdateMode.SERVER_UPDATE),
                     Privacy = new FusionPref<ServerPrivacy>(prefCategory, "Server Privacy", ServerPrivacy.PUBLIC, PrefUpdateMode.LOCAL_UPDATE),
+                    AllowQuestUsers = new FusionPref<bool>(prefCategory, "Allow Quest Users", true, PrefUpdateMode.SERVER_UPDATE),
                     TimeScaleMode = new FusionPref<TimeScaleMode>(prefCategory, "Time Scale Mode", Senders.TimeScaleMode.LOW_GRAVITY, PrefUpdateMode.SERVER_UPDATE),
                     MaxPlayers = new FusionPref<byte>(prefCategory, "Max Players", 10, PrefUpdateMode.SERVER_UPDATE),
 
