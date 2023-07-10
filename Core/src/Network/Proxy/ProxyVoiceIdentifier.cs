@@ -48,6 +48,9 @@ namespace LabFusion.Network {
             _source.clip = AudioClip.Create("SteamVoice", Convert.ToInt32(_androidSampleRate),
                         1, Convert.ToInt32(_androidSampleRate), true, (PCMReaderCallback)PcmReaderCallback);
 
+            // Pitch fix, I don't know
+            _source.pitch = 0.5f;
+
             // Setup the mixing settings
             _source.rolloffMode = AudioRolloffMode.Linear;
 
