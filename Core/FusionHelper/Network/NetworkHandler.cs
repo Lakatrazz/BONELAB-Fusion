@@ -325,6 +325,11 @@ namespace FusionHelper.Network
                         SendToClient(writer);
                         break;
                     }
+                case (ulong)MessageTypes.SetLobbyMetadata:
+                    {
+                        SteamHandler.SetMetadata(dataReader.GetString(), dataReader.GetString());
+                        break;
+                    }
             }
 
             dataReader.Recycle();

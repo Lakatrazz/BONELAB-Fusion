@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FusionHelper.Network
+﻿namespace FusionHelper.Network
 {
     internal enum MessageTypes
     {
@@ -28,5 +22,6 @@ namespace FusionHelper.Network
         LobbyMetadata = 17,
         UpdateConnectPresence = 18,
         DecompressVoice = 19,
+        SetLobbyMetadata = 20,
     }
 }

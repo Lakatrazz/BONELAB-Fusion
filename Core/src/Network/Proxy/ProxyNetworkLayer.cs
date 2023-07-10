@@ -30,17 +30,10 @@ using System.Windows.Forms;
 using LabFusion.Senders;
 using LabFusion.BoneMenu;
 
-using System.IO;
-
-using UnhollowerBaseLib;
-using System.Net;
 using Steamworks;
 using FusionHelper.Network;
-using BoneLib;
 using LiteNetLib;
 using LiteNetLib.Utils;
-using System.Windows.Forms.DataVisualization.Charting;
-using System.Threading;
 
 namespace LabFusion.Network
 {
@@ -52,6 +45,9 @@ namespace LabFusion.Network
         internal override bool IsClient => _isConnectionActive;
 
         public SteamId SteamId;
+
+        private INetworkLobby _currentLobby;
+        internal override INetworkLobby CurrentLobby => _currentLobby;
 
         protected bool _isServerActive = false;
         protected bool _isConnectionActive = false;
@@ -465,6 +461,8 @@ namespace LabFusion.Network
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged += OnUpdateSteamLobby;
             MultiplayerHooking.OnDisconnect += OnDisconnect;
+
+            _currentLobby = new ProxyNetworkLobby();
         }
 
         private void OnPlayerJoin(PlayerId id)
@@ -506,7 +504,7 @@ namespace LabFusion.Network
             if (CurrentLobby == null)
             {
 #if DEBUG
-                FusionLogger.Warn("Tried updating the steam lobby, but it was null!");
+                FusionLogger.Warn("Tried updating the proxy lobby, but it was null!");
 #endif
                 return;
             }
@@ -669,35 +667,6 @@ namespace LabFusion.Network
                     return true;
                 case ServerPrivacy.FRIENDS_ONLY:
                     return IsFriend(info.LobbyId);
-            }
-        }
-
-        class ProxyNetworkLobby : INetworkLobby
-        {
-            public LobbyMetadataInfo info;
-
-            public string GetMetadata(string key)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void SetMetadata(string key, string value)
-            {
-                throw new NotImplementedException();
-            }
-
-            public bool TryGetMetadata(string key, out string value)
-            {
-                throw new NotImplementedException();
-            }
-
-            public Action CreateJoinDelegate(LobbyMetadataInfo info)
-            {
-                if (NetworkInfo.CurrentNetworkLayer is ProxyNetworkLayer proxyLayer) {
-                    return () => proxyLayer.JoinServer(info.LobbyId);
-                }
-
-                return null;
             }
         }
 

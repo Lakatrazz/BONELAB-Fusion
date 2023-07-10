@@ -17,6 +17,8 @@ namespace FusionHelper.Steamworks
         public static SteamConnectionManager ConnectionManager { get; private set; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
+        private static Lobby? _localLobby;
+
         public static void Init(int appId)
         {
             try
@@ -30,6 +32,8 @@ namespace FusionHelper.Steamworks
             {
                 Console.WriteLine("Failed to initialize Steamworks! \n" + e);
             }
+
+            AwaitLobbyCreation();
         }
 
         public static void Tick()
@@ -50,6 +54,21 @@ namespace FusionHelper.Steamworks
             {
                 Console.WriteLine("Failed when receiving data on Socket and Connection: {0}", e);
             }
+        }
+
+        private static async void AwaitLobbyCreation()
+        {
+            var lobbyTask = await SteamMatchmaking.CreateLobbyAsync();
+
+            if (!lobbyTask.HasValue)
+            {
+#if DEBUG
+                Console.WriteLine("Failed to create a steam lobby!");
+#endif
+                return;
+            }
+
+            _localLobby = lobbyTask.Value;
         }
 
         public static void ConnectRelay(ulong serverId)
@@ -86,6 +105,17 @@ namespace FusionHelper.Steamworks
             connection.SendMessage(intPtrMessage, sizeOfMessage, sendType);
 
             Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
+        }
+
+        public static void SetMetadata(string key, string value)
+        {
+            if (_localLobby == null)
+            {
+                Console.WriteLine("Attempting to update null lobby.");
+                return;
+            }
+
+            _localLobby.Value.SetData(key, value);
         }
 
         public static byte[] DecompressVoice(byte[] from)

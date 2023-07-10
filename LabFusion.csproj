@@ -408,6 +408,7 @@
     <Compile Include="Core\src\Network\NetworkLayerDeterminer.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxyLobbyManager.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxyNetworkLayer.cs" />
+    <Compile Include="Core\src\Network\Proxy\ProxyNetworkLobby.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxySocketHandler.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxyVoiceIdentifier.cs" />
     <Compile Include="Core\src\Network\Steam\SpacewarNetworkLayer.cs" />
