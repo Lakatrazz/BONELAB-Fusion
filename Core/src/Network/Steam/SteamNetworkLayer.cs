@@ -166,7 +166,7 @@ namespace LabFusion.Network
             }
         }
 
-        internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes, bool steamCompressed) {
+        internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes, bool layerCompressed) {
             // If we are deafened, no need to deal with voice chat
             bool isDeafened = !FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue() || FusionPreferences.ClientSettings.Deafened;
             if (isDeafened)
@@ -175,7 +175,7 @@ namespace LabFusion.Network
             var handler = VoiceManager.GetVoiceHandler(id);
 
             if (handler != null) {
-                handler.OnVoiceBytesReceived(bytes, steamCompressed);
+                handler.OnVoiceBytesReceived(bytes, layerCompressed);
             }
         }
 

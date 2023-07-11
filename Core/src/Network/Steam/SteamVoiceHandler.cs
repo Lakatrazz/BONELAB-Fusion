@@ -79,7 +79,7 @@ namespace LabFusion.Network {
             }
         }
 
-        public override void OnVoiceBytesReceived(byte[] bytes, bool steamCompressed) {
+        public override void OnVoiceBytesReceived(byte[] bytes, bool layerCompressed) {
             if (_hasRep && Rep.MicrophoneDisabled) {
                 return;
             }
@@ -94,7 +94,7 @@ namespace LabFusion.Network {
             _decompressedVoiceStream.Position = 0;
 
             int numBytesWritten = 0;
-            if (steamCompressed)
+            if (layerCompressed)
                 numBytesWritten = SteamUser.DecompressVoice(_compressedVoiceStream, bytes.Length, _decompressedVoiceStream);
             else
             {
