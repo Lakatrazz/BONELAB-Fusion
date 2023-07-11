@@ -300,6 +300,16 @@ namespace LabFusion.Network
             if (serverConnection == null)
             {
                 FusionLogger.Warn("Attempting to send data to a null server peer! Is the proxy active?");
+                FusionNotifier.Send(new FusionNotification()
+                {
+                    isMenuItem = false,
+                    isPopup = true,
+                    popupLength = 4,
+                    showTitleOnPopup = true,
+                    title = "Connection Failed",
+                    message = "Failed to send data to the proxy, is FusionHelper running on your computer?",
+                    type = NotificationType.ERROR
+                }) ;
                 return;
             }
 
