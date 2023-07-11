@@ -62,6 +62,13 @@ namespace LabFusion.Network
         private NetPeer serverConnection;
         private ProxyLobbyManager _lobbyManager;
 
+        // VC Stuff
+        private int lastSample;
+        private const int FREQUENCY = 22100;
+        private bool notRecording = true;
+        private bool sending = false;
+        private AudioClip sendingClip;
+
         internal override void OnInitializeLayer()
         {
             Instance = this;
@@ -314,24 +321,32 @@ namespace LabFusion.Network
         internal override void OnVoiceChatUpdate()
         {
             if (NetworkInfo.HasServer)
-                ProxyVoiceIdentifier.OnUpdate();
-
-            /*if (NetworkInfo.HasServer)
             {
                 bool voiceEnabled = FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue() && !FusionPreferences.ClientSettings.Muted && !FusionPreferences.ClientSettings.Deafened;
 
-                // Update voice record
-                if (SteamUser.VoiceRecord != voiceEnabled)
-                    SteamUser.VoiceRecord = voiceEnabled;
-
                 // Read voice data
-                if (voiceEnabled && SteamUser.HasVoiceData)
+                if (voiceEnabled)
                 {
-                    // yea yea creates a new array every call.
-                    // if you find this and are bothered to replace it with the mem stream version then go ahead
-                    byte[] voiceData = SteamUser.ReadVoiceDataBytes();
+                    if (notRecording)
+                    {
+                        notRecording = false;
+                        sendingClip = Microphone.Start(null, true, 100, FREQUENCY);
+                        sending = true;
+                    }
+                    else if (sending)
+                    {
+                        int pos = Microphone.GetPosition(null);
+                        int diff = pos - lastSample;
 
-                    PlayerSender.SendPlayerVoiceChat(voiceData);
+                        if (diff > 0)
+                        {
+                            float[] samples = new float[diff * sendingClip.channels];
+                            sendingClip.GetData(samples, lastSample);
+                            byte[] ba = ToByteArray(samples);
+                            PlayerSender.SendPlayerVoiceChat(ba, false);
+                        }
+                        lastSample = pos;
+                    }
                 }
 
                 // Update identifiers
@@ -340,12 +355,30 @@ namespace LabFusion.Network
             else
             {
                 // Disable voice recording
-                if (SteamUser.VoiceRecord)
-                    SteamUser.VoiceRecord = false;
-            }*/
+                Microphone.End(null);
+            }
         }
 
-        internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes)
+        public byte[] ToByteArray(float[] floatArray)
+        {
+            short[] shortArray = new short[floatArray.Length];
+
+            // Convert float array to short array
+            for (int i = 0; i < floatArray.Length; i++)
+            {
+                shortArray[i] = (short)(floatArray[i] * short.MaxValue);
+            }
+
+            byte[] byteArray = new byte[shortArray.Length * 2]; // Each short requires 2 bytes
+
+            // Convert short array to byte array
+            Buffer.BlockCopy(shortArray, 0, byteArray, 0, byteArray.Length);
+
+            sentBytes += byteArray.Length;
+            return byteArray;
+        }
+
+        internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes, bool steamCompressed)
         {
             // If we are deafened, no need to deal with voice chat
             bool isDeafened = !FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue() || FusionPreferences.ClientSettings.Deafened;
@@ -354,7 +387,7 @@ namespace LabFusion.Network
 
             var identifier = ProxyVoiceIdentifier.GetVoiceIdentifier(id);
 
-            identifier?.OnVoiceBytesReceived(bytes);
+            identifier?.OnVoiceBytesReceived(bytes, steamCompressed);
         }
 
         internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message)

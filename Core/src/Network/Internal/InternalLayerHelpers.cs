@@ -56,10 +56,10 @@ namespace LabFusion.Network
                 CurrentNetworkLayer.OnVoiceChatUpdate();
         }
 
-        internal static void OnVoiceBytesReceived(PlayerId id, byte[] bytes)
+        internal static void OnVoiceBytesReceived(PlayerId id, byte[] bytes, bool steamCompressed)
         {
             if (CurrentNetworkLayer != null)
-                CurrentNetworkLayer.OnVoiceBytesReceived(id, bytes);
+                CurrentNetworkLayer.OnVoiceBytesReceived(id, bytes, steamCompressed);
         }
 
         internal static void OnSetupBoneMenuLayer(MenuCategory category) {

@@ -144,11 +144,18 @@ namespace LabFusion.Network {
             }
         }
 
-        public void OnVoiceBytesReceived(byte[] bytes) {
-            NetDataWriter writer = ProxyNetworkLayer.NewWriter(FusionHelper.Network.MessageTypes.DecompressVoice);
-            writer.Put(_id.LongId);
-            writer.PutBytesWithLength(bytes);
-            ProxyNetworkLayer.Instance.SendToProxyServer(writer);
+        public void OnVoiceBytesReceived(byte[] bytes, bool steamCompressed) {
+            if (steamCompressed)
+            {
+                NetDataWriter writer = ProxyNetworkLayer.NewWriter(FusionHelper.Network.MessageTypes.DecompressVoice);
+                writer.Put(_id.LongId);
+                writer.PutBytesWithLength(bytes);
+                ProxyNetworkLayer.Instance.SendToProxyServer(writer);
+            }
+            else
+            {
+                OnDecompressedVoiceBytesReceived(bytes);
+            }
         }
 
         public void OnDecompressedVoiceBytesReceived(byte[] bytes)

@@ -153,7 +153,7 @@ namespace LabFusion.Network
                     // if you find this and are bothered to replace it with the mem stream version then go ahead
                     byte[] voiceData = SteamUser.ReadVoiceDataBytes();
 
-                    PlayerSender.SendPlayerVoiceChat(voiceData);
+                    PlayerSender.SendPlayerVoiceChat(voiceData, true);
                 }
 
                 // Update the manager
@@ -166,7 +166,7 @@ namespace LabFusion.Network
             }
         }
 
-        internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes) {
+        internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes, bool steamCompressed) {
             // If we are deafened, no need to deal with voice chat
             bool isDeafened = !FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue() || FusionPreferences.ClientSettings.Deafened;
             if (isDeafened)
@@ -175,7 +175,7 @@ namespace LabFusion.Network
             var handler = VoiceManager.GetVoiceHandler(id);
 
             if (handler != null) {
-                handler.OnVoiceBytesReceived(bytes);
+                handler.OnVoiceBytesReceived(bytes, steamCompressed);
             }
         }
 

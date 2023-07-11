@@ -49,13 +49,13 @@ namespace LabFusion.Senders {
             }
         }
 
-        public static void SendPlayerVoiceChat(byte[] voiceData) {
+        public static void SendPlayerVoiceChat(byte[] voiceData, bool steamCompressed) {
             if (!NetworkInfo.HasServer)
                 return;
 
             using (var writer = FusionWriter.Create(PlayerVoiceChatData.Size + voiceData.Length))
             {
-                using (var data = PlayerVoiceChatData.Create(PlayerIdManager.LocalSmallId, voiceData))
+                using (var data = PlayerVoiceChatData.Create(PlayerIdManager.LocalSmallId, voiceData, steamCompressed))
                 {
                     writer.Write(data);
 
