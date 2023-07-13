@@ -1,4 +1,5 @@
 ﻿using BoneLib.BoneMenu.Elements;
+using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Preferences;
@@ -64,6 +65,38 @@ namespace LabFusion.BoneMenu
                 // Update mortality
                 if (Gamemode.ActiveGamemode == null)
                     FusionPlayer.ResetMortality();
+            };
+
+            // Level Switching Buttons
+            CreateBoolPreference(category, "Level Switching Buttons", FusionPreferences.LocalServerSettings.LevelSwitchingButtonsEnabled);
+            MultiplayerHooking.OnServerSettingsChanged += () => {
+                // Disable button componets
+                if (FusionPreferences.LocalServerSettings.LevelSwitchingButtonsEnabled.Equals(true)) //chances are theres a better way to do this but this works
+                {
+                    MelonLoader.MelonLogger.Log(LevelDataHandler.buttonToggle);
+                    foreach (SLZ.Interaction.ButtonToggle levelButtons in LevelDataHandler.buttonToggle)
+                    {
+                        SLZ.Interaction.ButtonToggle ButtonToggle = levelButtons.GetComponent<SLZ.Interaction.ButtonToggle>();
+                        if (ButtonToggle != null)
+                        {
+                            ButtonToggle.enabled = false;
+                        }
+                        
+                    }
+                } 
+                else
+                {
+                    foreach(SLZ.Interaction.ButtonToggle levelButtons in LevelDataHandler.buttonToggle)
+                    {
+                        SLZ.Interaction.ButtonToggle ButtonToggle = levelButtons.GetComponent<SLZ.Interaction.ButtonToggle>();
+                        if (ButtonToggle != null)
+                        {
+                            ButtonToggle.enabled = true;
+                        }
+
+                    }
+                }
+
             };
 
             // Max players
