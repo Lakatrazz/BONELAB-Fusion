@@ -48,7 +48,7 @@ namespace LabFusion.Preferences {
                     // General settings
                     NametagsEnabled = new FusionPref<bool>(prefCategory, "Server Nametags Enabled", true, PrefUpdateMode.SERVER_UPDATE),
                     VoicechatEnabled = new FusionPref<bool>(prefCategory, "Server Voicechat Enabled", true, PrefUpdateMode.SERVER_UPDATE),
-                    PlayerConstrainingEnabled = new FusionPref<bool>(prefCategory, "Server Player Constraining Enabled", true, PrefUpdateMode.SERVER_UPDATE),
+                    PlayerConstrainingEnabled = new FusionPref<bool>(prefCategory, "Server Player Constraints Enabled", false, PrefUpdateMode.SERVER_UPDATE),
                     Privacy = new FusionPref<ServerPrivacy>(prefCategory, "Server Privacy", ServerPrivacy.PUBLIC, PrefUpdateMode.LOCAL_UPDATE),
                     TimeScaleMode = new FusionPref<TimeScaleMode>(prefCategory, "Time Scale Mode", Senders.TimeScaleMode.LOW_GRAVITY, PrefUpdateMode.SERVER_UPDATE),
                     MaxPlayers = new FusionPref<byte>(prefCategory, "Max Players", 10, PrefUpdateMode.SERVER_UPDATE),
