@@ -1,11 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+	<Configurations>Debug-Win;Release-Win;Debug-Mac;Release-Mac</Configurations>
+	<PlatformConfiguration Condition="$(Configuration.EndsWith('-Mac'))">Mac</PlatformConfiguration>
+	<PlatformConfiguration Condition="$(Configuration.EndsWith('-Win'))">Win</PlatformConfiguration>
+	<OutputType>Exe</OutputType>
+	<TargetFramework Condition="$(Configuration.EndsWith('-Win'))">net6.0-windows</TargetFramework>
+	<TargetFramework Condition="$(Configuration.EndsWith('-Mac'))">net6.0-macos11.0</TargetFramework>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<Nullable>enable</Nullable>
+	<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+	<DefineConstants Condition="'$(PlatformConfiguration)' == 'Mac'">PLATFORM_MAC</DefineConstants>
+	<DefineConstants Condition="'$(PlatformConfiguration)' == 'Win'">PLATFORM_WIN</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,9 +19,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="steam_api64.dll">
+    <None Update="libsteam_api.dylib" Condition="'$(PlatformConfiguration)' == 'Mac'">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="steam_api64.dll" Condition="'$(PlatformConfiguration)' == 'Win'">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
 </Project>

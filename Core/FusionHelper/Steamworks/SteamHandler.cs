@@ -23,6 +23,8 @@ namespace FusionHelper.Steamworks
         {
             try
             {
+                File.WriteAllText(Path.Combine(Directory.GetCurrentDirectory(), "steam_appid.txt"), appId.ToString());
+
                 if (!SteamClient.IsValid)
                     SteamClient.Init((uint)appId, ASYNC_CALLBACKS);
                 SteamNetworkingUtils.InitRelayNetworkAccess();
