@@ -111,6 +111,18 @@ namespace Steamworks.Data
 		}
 
 		/// <summary>
+		/// Return true if IP is a fake IPv4 for Steam Datagram Relay
+		/// </summary>
+		public bool IsFakeIPv4
+		{
+			get
+			{
+				NetAddress self = this;
+				return SteamNetworkingUtils.Internal.IsFakeIPv4( InternalGetIPv4( ref self ) );
+			}
+		}
+
+		/// <summary>
 		/// Return true if this identity is localhost.  (Either IPv6 ::1, or IPv4 127.0.0.1)
 		/// </summary>
 		public bool IsLocalHost
@@ -136,15 +148,20 @@ namespace Steamworks.Data
 					return Utility.Int32ToIp( ip );
 				}
 
+				if ( IsIPv6AllZeros )
+				{
+					return IPAddress.IPv6Loopback;
+				}
+
 				throw new System.NotImplementedException( "Oops - no IPV6 support yet?" );
 			}
 		}
 
 		public override string ToString()
 		{
-			var ptr = Helpers.TakeMemory();
+			using var ptr = Helpers.TakeMemory();
 			var self = this;
-			InternalToString( ref self, ptr, Helpers.MaxStringSize, true );
+			InternalToString( ref self, ptr, Helpers.MemoryBufferSize, true );
 			return Helpers.MemoryToString( ptr );
 		}
 	}

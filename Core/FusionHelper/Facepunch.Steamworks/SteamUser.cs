@@ -17,13 +17,17 @@ namespace Steamworks
 	{
 		internal static ISteamUser Internal => Interface as ISteamUser;
 
-		internal override void InitializeInterface( bool server )
+		internal override bool InitializeInterface( bool server )
 		{
 			SetInterface( server, new ISteamUser( server ) );
+			if ( Interface.Self == IntPtr.Zero ) return false;
+
 			InstallEvents();
 
 			richPresence = new Dictionary<string, string>();
 			SampleRate = OptimalSampleRate;
+
+			return true;
 		}
 
 		static Dictionary<string, string> richPresence;
@@ -39,11 +43,12 @@ namespace Steamworks
 			Dispatch.Install<MicroTxnAuthorizationResponse_t>( x => OnMicroTxnAuthorizationResponse?.Invoke( x.AppID, x.OrderID, x.Authorized != 0 ) );
 			Dispatch.Install<GameWebCallback_t>( x => OnGameWebCallback?.Invoke( x.URLUTF8() ) );
 			Dispatch.Install<GetAuthSessionTicketResponse_t>( x => OnGetAuthSessionTicketResponse?.Invoke( x ) );
+			Dispatch.Install<GetTicketForWebApiResponse_t>( x => OnGetTicketForWebApiResponse?.Invoke( x ) );
 			Dispatch.Install<DurationControl_t>( x => OnDurationControl?.Invoke( new DurationControl { _inner = x } ) );
 		}
 
 		/// <summary>
-		/// Called when a connections to the Steam back-end has been established.
+		/// Invoked when a connections to the Steam back-end has been established.
 		/// This means the Steam client now has a working connection to the Steam servers. 
 		/// Usually this will have occurred before the game has launched, and should only be seen if the 
 		/// user has dropped connection due to a networking issue or a Steam server update.
@@ -51,14 +56,14 @@ namespace Steamworks
 		public static event Action OnSteamServersConnected;
 
 		/// <summary>
-		/// Called when a connection attempt has failed.
+		/// Invoked when a connection attempt has failed.
 		///	This will occur periodically if the Steam client is not connected, 
 		///	and has failed when retrying to establish a connection.
 		/// </summary>
 		public static event Action OnSteamServerConnectFailure;
 
 		/// <summary>
-		/// Called if the client has lost connection to the Steam servers.
+		/// Invoked when the client has lost connection to the Steam servers.
 		/// Real-time services will be disabled until a matching OnSteamServersConnected has been posted.
 		/// </summary>
 		public static event Action OnSteamServersDisconnected;
@@ -72,31 +77,37 @@ namespace Steamworks
 		public static event Action OnClientGameServerDeny;
 
 		/// <summary>
-		/// Called whenever the users licenses (owned packages) changes.
+		/// Invoked whenever the users licenses (owned packages) changes.
 		/// </summary>
 		public static event Action OnLicensesUpdated;
 
 		/// <summary>
-		/// Called when an auth ticket has been validated. 
-		/// The first parameter is the steamid of this user
-		/// The second is the Steam ID that owns the game, this will be different from the first 
-		/// if the game is being borrowed via Steam Family Sharing
+		/// Invoked when an auth ticket has been validated. 
+		/// The first parameter is the <see cref="SteamId"/> of this user
+		/// The second is the <see cref="SteamId"/> that owns the game, which will be different from the first 
+		/// if the game is being borrowed via Steam Family Sharing.
 		/// </summary>
 		public static event Action<SteamId, SteamId, AuthResponse> OnValidateAuthTicketResponse;
 
 		/// <summary>
-		/// Used internally for GetAuthSessionTicketAsync
+		/// Used internally for <see cref="GetAuthSessionTicketAsync(NetIdentity, double)"/>.
 		/// </summary>
 		internal static event Action<GetAuthSessionTicketResponse_t> OnGetAuthSessionTicketResponse;
 
 		/// <summary>
-		/// Called when a user has responded to a microtransaction authorization request.
+		/// Used internally for <see cref="GetAuthTicketForWebApiAsync(string, double)"/>.
+		/// </summary>
+		internal static event Action<GetTicketForWebApiResponse_t> OnGetTicketForWebApiResponse;
+
+		/// <summary>
+		/// Invoked when a user has responded to a microtransaction authorization request.
 		/// ( appid, orderid, user authorized )
 		/// </summary>
 		public static event Action<AppId, ulong, bool> OnMicroTxnAuthorizationResponse;
 
 		/// <summary>
-		/// Sent to your game in response to a steam://gamewebcallback/ command from a user clicking a link in the Steam overlay browser.
+		/// Sent to your game in response to a steam://gamewebcallback/(appid)/command/stuff command from a user clicking a 
+		/// link in the Steam overlay browser.
 		/// You can use this to add support for external site signups where you want to pop back into the browser after some web page 
 		/// signup sequence, and optionally get back some detail about that.
 		/// </summary>
@@ -109,9 +120,6 @@ namespace Steamworks
 		/// </summary>
 		public static event Action<DurationControl> OnDurationControl;
 
-
-
-
 		static bool _recordingVoice;
 
 		/// <summary>
@@ -119,7 +127,6 @@ namespace Steamworks
 		/// Once started, use GetAvailableVoice and GetVoice to get the data, and then call StopVoiceRecording 
 		/// when the user has released their push-to-talk hotkey or the game session has completed.
 		/// </summary>
-
 		public static bool VoiceRecord
 		{
 			get => _recordingVoice;
@@ -133,7 +140,7 @@ namespace Steamworks
 
 
 		/// <summary>
-		/// Returns true if we have voice data waiting to be read
+		/// Returns true if we have voice data waiting to be read.
 		/// </summary>
 		public static bool HasVoiceData
 		{
@@ -260,6 +267,9 @@ namespace Steamworks
 			return (int)szWritten;
 		}
 
+		/// <summary>
+		/// Lazy version
+		/// </summary>
 		public static unsafe int DecompressVoice( byte[] from, System.IO.Stream output )
 		{
 			var to = Helpers.TakeBuffer( 1024 * 64 );
@@ -284,16 +294,32 @@ namespace Steamworks
 		}
 
 		/// <summary>
-		/// Retrieve a authentication ticket to be sent to the entity who wishes to authenticate you.
+		/// Advanced and potentially fastest version - incase you know what you're doing
 		/// </summary>
-		public static unsafe AuthTicket GetAuthSessionTicket()
+		public static unsafe int DecompressVoice( IntPtr from, int length, IntPtr to, int bufferSize )
+		{
+			if ( length <= 0 ) throw new ArgumentException( $"length should be > 0 " );
+			if ( bufferSize <= 0 ) throw new ArgumentException( $"bufferSize should be > 0 " );
+
+			uint szWritten = 0;
+
+			if ( Internal.DecompressVoice( from, (uint) length, to, (uint)bufferSize, ref szWritten, SampleRate ) != VoiceResult.OK )
+				return 0;
+			
+			return (int)szWritten;
+		}
+
+		/// <summary>
+		/// Retrieve an authentication ticket to be sent to the entity who wishes to authenticate you.
+		/// </summary>
+		public static unsafe AuthTicket GetAuthSessionTicket( NetIdentity identity )
 		{
 			var data = Helpers.TakeBuffer( 1024 );
 
 			fixed ( byte* b = data )
 			{
 				uint ticketLength = 0;
-				uint ticket = Internal.GetAuthSessionTicket( (IntPtr)b, data.Length, ref ticketLength );
+				uint ticket = Internal.GetAuthSessionTicket( (IntPtr)b, data.Length, ref ticketLength, ref identity );
 
 				if ( ticket == 0 )
 					return null;
@@ -309,10 +335,10 @@ namespace Steamworks
 		/// <summary>
 		/// Retrieve a authentication ticket to be sent to the entity who wishes to authenticate you.
 		/// This waits for a positive response from the backend before returning the ticket. This means
-		/// the ticket is definitely ready to go as soon as it returns. Will return null if the callback
+		/// the ticket is definitely ready to go as soon as it returns. Will return <see langword="null"/> if the callback
 		/// times out or returns negatively.
 		/// </summary>
-		public static async Task<AuthTicket> GetAuthSessionTicketAsync( double timeoutSeconds = 10.0f )
+		public static async Task<AuthTicket> GetAuthSessionTicketAsync( NetIdentity identity, double timeoutSeconds = 10.0f )
 		{
 			var result = Result.Pending;
 			AuthTicket ticket = null;
@@ -328,7 +354,7 @@ namespace Steamworks
 
 			try
 			{
-				ticket = GetAuthSessionTicket();
+				ticket = GetAuthSessionTicket( identity );
 				if ( ticket == null )
 					return null;
 
@@ -352,6 +378,72 @@ namespace Steamworks
 			finally
 			{
 				OnGetAuthSessionTicketResponse -= f;
+			}
+		}
+
+		/// <summary>
+		/// Retrieve an authentication ticket to be sent to the entity who wishes to authenticate you.
+		/// </summary>
+		private static unsafe AuthTicket GetAuthTicketForWebApi( string identity )
+		{
+			uint ticket = Internal.GetAuthTicketForWebApi( identity );
+
+			if ( ticket == 0 )
+				return null;
+
+			return new AuthTicket()
+			{
+				Handle = ticket
+			};
+		}
+
+		/// <summary>
+		/// Retrieve a authentication ticket to be sent to the entity who wishes to authenticate you.
+		/// This waits for a positive response from the backend before returning the ticket. This means
+		/// the ticket is definitely ready to go as soon as it returns. Will return <see langword="null"/> if the callback
+		/// times out or returns negatively.
+		/// </summary>
+		public static async Task<AuthTicket> GetAuthTicketForWebApiAsync( string identity, double timeoutSeconds = 10.0f )
+		{
+			var result = Result.Pending;
+			AuthTicket ticket = null;
+			var stopwatch = Stopwatch.StartNew();
+
+			void f( GetTicketForWebApiResponse_t t )
+			{
+				if ( t.AuthTicket != ticket.Handle ) return;
+				result = t.Result;
+				ticket.Data = t.GubTicket;
+			}
+
+			OnGetTicketForWebApiResponse += f;
+
+			try
+			{
+				ticket = GetAuthTicketForWebApi( identity );
+				if ( ticket == null )
+					return null;
+
+				while ( result == Result.Pending )
+				{
+					await Task.Delay( 10 );
+
+					if ( stopwatch.Elapsed.TotalSeconds > timeoutSeconds )
+					{
+						ticket.Cancel();
+						return null;
+					}
+				}
+
+				if ( result == Result.OK )
+					return ticket;
+
+				ticket.Cancel();
+				return null;
+			}
+			finally
+			{
+				OnGetTicketForWebApiResponse -= f;
 			}
 		}
 

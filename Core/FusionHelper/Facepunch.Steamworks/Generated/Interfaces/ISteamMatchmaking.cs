@@ -7,7 +7,7 @@ using Steamworks.Data;
 
 namespace Steamworks
 {
-	internal class ISteamMatchmaking : SteamInterface
+	internal unsafe class ISteamMatchmaking : SteamInterface
 	{
 		
 		internal ISteamMatchmaking( bool IsGameServer )
@@ -266,8 +266,8 @@ namespace Steamworks
 		#endregion
 		internal bool GetLobbyDataByIndex( SteamId steamIDLobby, int iLobbyData, out string pchKey, out string pchValue )
 		{
-			IntPtr mempchKey = Helpers.TakeMemory();
-			IntPtr mempchValue = Helpers.TakeMemory();
+			using var mempchKey = Helpers.TakeMemory();
+			using var mempchValue = Helpers.TakeMemory();
 			var returnValue = _GetLobbyDataByIndex( Self, steamIDLobby, iLobbyData, mempchKey, (1024 * 32), mempchValue, (1024 * 32) );
 			pchKey = Helpers.MemoryToString( mempchKey );
 			pchValue = Helpers.MemoryToString( mempchValue );

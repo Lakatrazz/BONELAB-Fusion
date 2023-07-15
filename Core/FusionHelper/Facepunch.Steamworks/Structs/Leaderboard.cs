@@ -60,13 +60,28 @@ namespace Steamworks.Data
 		}
 
 		/// <summary>
+		/// Fetches leaderboard entries for an arbitrary set of users on a specified leaderboard.
+		/// </summary>
+		public async Task<LeaderboardEntry[]> GetScoresForUsersAsync( SteamId[] users )
+		{
+			if ( users == null || users.Length == 0 )
+				return null;
+
+			var r = await SteamUserStats.Internal.DownloadLeaderboardEntriesForUsers( Id, users, users.Length );
+			if ( !r.HasValue )
+				return null;
+
+			return await LeaderboardResultToEntries( r.Value );
+		}
+
+		/// <summary>
 		/// Used to query for a sequential range of leaderboard entries by leaderboard Sort.
 		/// </summary>
 		public async Task<LeaderboardEntry[]> GetScoresAsync( int count, int offset = 1 )
 		{
 			if ( offset <= 0 ) throw new System.ArgumentException( "Should be 1+", nameof( offset ) );
 
-			var r = await SteamUserStats.Internal.DownloadLeaderboardEntries( Id, LeaderboardDataRequest.Global, offset, offset + count );
+			var r = await SteamUserStats.Internal.DownloadLeaderboardEntries( Id, LeaderboardDataRequest.Global, offset, offset + count - 1 );
 			if ( !r.HasValue )
 				return null;
 

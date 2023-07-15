@@ -40,6 +40,11 @@ namespace Steamworks.Ugc
 		public string[] Tags { get; internal set; }
 
 		/// <summary>
+		/// A dictionary of key value tags for this item, only available from queries WithKeyValueTags(true)
+		/// </summary>
+		public Dictionary<string,string> KeyValueTags { get; internal set; }
+
+		/// <summary>
 		/// App Id of the app that created this item
 		/// </summary>
 		public AppId CreatorApp => details.CreatorAppID;
@@ -103,6 +108,15 @@ namespace Steamworks.Ugc
         /// The number of downvotes of this item
         /// </summary>
         public uint VotesDown => details.VotesDown;
+		/// <summary>
+		/// Dependencies/children of this item or collection, available only from WithDependencies(true) queries
+		/// </summary>
+		public PublishedFileId[] Children;
+
+		/// <summary>
+		/// Additional previews of this item or collection, available only from WithAdditionalPreviews(true) queries
+		/// </summary>
+		public UgcAdditionalPreview[] AdditionalPreviews { get; internal set; }
 
         public bool IsInstalled => (State & ItemState.Installed) == ItemState.Installed;
 		public bool IsDownloading => (State & ItemState.Downloading) == ItemState.Downloading;
@@ -217,10 +231,18 @@ namespace Steamworks.Ugc
 
 		public static async Task<Item?> GetAsync( PublishedFileId id, int maxageseconds = 60 * 30 )
 		{
-			var result = await SteamUGC.Internal.RequestUGCDetails( id, (uint) maxageseconds );
-			if ( !result.HasValue ) return null;
+			var file = await Steamworks.Ugc.Query.All
+											.WithFileId( id )
+											.WithLongDescription( true )
+											.GetPageAsync( 1 );
 
-			return From( result.Value.Details );
+			if ( !file.HasValue ) return null;
+			using ( file.Value )
+			{
+				if ( file.Value.ResultCount == 0 ) return null;
+
+				return file.Value.Entries.First();
+			}
 		}
 
 		internal static Item From( SteamUGCDetails_t details )
@@ -352,10 +374,15 @@ namespace Steamworks.Ugc
 		public ulong NumSecondsPlayedDuringTimePeriod { get; internal set; }
 		public ulong NumPlaytimeSessionsDuringTimePeriod { get; internal set; }
 
-        /// <summary>
-        /// The URL to the preview image for this item
-        /// </summary>
-        public string PreviewImageUrl { get; internal set; }
+		/// <summary>
+		/// The URL to the preview image for this item
+		/// </summary>
+		public string PreviewImageUrl { get; internal set; }
+
+		/// <summary>
+		/// The metadata string for this item, only available from queries WithMetadata(true)
+		/// </summary>
+		public string Metadata { get; internal set; }
 
 		/// <summary>
 		/// Edit this item
@@ -364,7 +391,19 @@ namespace Steamworks.Ugc
 		{
 			return new Ugc.Editor( Id );
 		}
-		
+
+		public async Task<bool> AddDependency( PublishedFileId child )
+		{
+			var r = await SteamUGC.Internal.AddDependency( Id, child );
+			return r?.Result == Result.OK;
+		}
+
+		public async Task<bool> RemoveDependency( PublishedFileId child )
+		{
+			var r = await SteamUGC.Internal.RemoveDependency( Id, child );
+			return r?.Result == Result.OK;
+		}
+
 		public Result Result => details.Result;
 	}
 }

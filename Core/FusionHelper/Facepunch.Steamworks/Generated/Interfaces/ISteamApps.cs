@@ -7,7 +7,7 @@ using Steamworks.Data;
 
 namespace Steamworks
 {
-	internal class ISteamApps : SteamInterface
+	internal unsafe class ISteamApps : SteamInterface
 	{
 		
 		internal ISteamApps( bool IsGameServer )
@@ -18,9 +18,6 @@ namespace Steamworks
 		[DllImport( Platform.LibraryName, EntryPoint = "SteamAPI_SteamApps_v008", CallingConvention = Platform.CC)]
 		internal static extern IntPtr SteamAPI_SteamApps_v008();
 		public override IntPtr GetUserInterfacePointer() => SteamAPI_SteamApps_v008();
-		[DllImport( Platform.LibraryName, EntryPoint = "SteamAPI_SteamGameServerApps_v008", CallingConvention = Platform.CC)]
-		internal static extern IntPtr SteamAPI_SteamGameServerApps_v008();
-		public override IntPtr GetServerInterfacePointer() => SteamAPI_SteamGameServerApps_v008();
 		
 		
 		#region FunctionMeta
@@ -159,7 +156,7 @@ namespace Steamworks
 		#endregion
 		internal bool BGetDLCDataByIndex( int iDLC, ref AppId pAppID, [MarshalAs( UnmanagedType.U1 )] ref bool pbAvailable, out string pchName )
 		{
-			IntPtr mempchName = Helpers.TakeMemory();
+			using var mempchName = Helpers.TakeMemory();
 			var returnValue = _BGetDLCDataByIndex( Self, iDLC, ref pAppID, ref pbAvailable, mempchName, (1024 * 32) );
 			pchName = Helpers.MemoryToString( mempchName );
 			return returnValue;
@@ -203,7 +200,7 @@ namespace Steamworks
 		#endregion
 		internal bool GetCurrentBetaName( out string pchName )
 		{
-			IntPtr mempchName = Helpers.TakeMemory();
+			using var mempchName = Helpers.TakeMemory();
 			var returnValue = _GetCurrentBetaName( Self, mempchName, (1024 * 32) );
 			pchName = Helpers.MemoryToString( mempchName );
 			return returnValue;
@@ -239,7 +236,7 @@ namespace Steamworks
 		#endregion
 		internal uint GetAppInstallDir( AppId appID, out string pchFolder )
 		{
-			IntPtr mempchFolder = Helpers.TakeMemory();
+			using var mempchFolder = Helpers.TakeMemory();
 			var returnValue = _GetAppInstallDir( Self, appID, mempchFolder, (1024 * 32) );
 			pchFolder = Helpers.MemoryToString( mempchFolder );
 			return returnValue;
@@ -330,7 +327,7 @@ namespace Steamworks
 		#endregion
 		internal int GetLaunchCommandLine( out string pszCommandLine )
 		{
-			IntPtr mempszCommandLine = Helpers.TakeMemory();
+			using var mempszCommandLine = Helpers.TakeMemory();
 			var returnValue = _GetLaunchCommandLine( Self, mempszCommandLine, (1024 * 32) );
 			pszCommandLine = Helpers.MemoryToString( mempszCommandLine );
 			return returnValue;
@@ -345,6 +342,30 @@ namespace Steamworks
 		internal bool BIsSubscribedFromFamilySharing()
 		{
 			var returnValue = _BIsSubscribedFromFamilySharing( Self );
+			return returnValue;
+		}
+		
+		#region FunctionMeta
+		[DllImport( Platform.LibraryName, EntryPoint = "SteamAPI_ISteamApps_BIsTimedTrial", CallingConvention = Platform.CC)]
+		[return: MarshalAs( UnmanagedType.I1 )]
+		private static extern bool _BIsTimedTrial( IntPtr self, ref uint punSecondsAllowed, ref uint punSecondsPlayed );
+		
+		#endregion
+		internal bool BIsTimedTrial( ref uint punSecondsAllowed, ref uint punSecondsPlayed )
+		{
+			var returnValue = _BIsTimedTrial( Self, ref punSecondsAllowed, ref punSecondsPlayed );
+			return returnValue;
+		}
+		
+		#region FunctionMeta
+		[DllImport( Platform.LibraryName, EntryPoint = "SteamAPI_ISteamApps_SetDlcContext", CallingConvention = Platform.CC)]
+		[return: MarshalAs( UnmanagedType.I1 )]
+		private static extern bool _SetDlcContext( IntPtr self, AppId nAppID );
+		
+		#endregion
+		internal bool SetDlcContext( AppId nAppID )
+		{
+			var returnValue = _SetDlcContext( Self, nAppID );
 			return returnValue;
 		}
 		
