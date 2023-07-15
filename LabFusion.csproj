@@ -292,6 +292,7 @@
     <Compile Include="Core\src\Extensions\AudioSource.cs" />
     <Compile Include="Core\src\Extensions\Byte.cs" />
     <Compile Include="Core\src\Extensions\Chunk.cs" />
+    <Compile Include="Core\src\Extensions\Component.cs" />
     <Compile Include="Core\src\Extensions\Grip.cs" />
     <Compile Include="Core\src\Extensions\Hand.cs" />
     <Compile Include="Core\src\Extensions\IEnumerable.cs" />

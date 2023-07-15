@@ -33,13 +33,6 @@ namespace LabFusion.Data
         // Last frame value
         private static float _lastFixedDelta;
 
-        // Frame skipping logic
-        // Multiplying the input deltaTime into our force equation will make up for the lost forces in the skipped frames
-        private const int _targetFrame = 3;
-        private const int _proportionalMult = 2;
-        private readonly FrameSkipper _forceSkipper = new FrameSkipper(_targetFrame);
-        private readonly FrameSkipper _torqueSkipper = new FrameSkipper(_targetFrame);
-
         public static void OnInitializeMelon() {
             _positionKp = CalculateKP(PositionFrequency);
             _positionKd = CalculateKD(PositionFrequency, PositionDamping);
@@ -49,9 +42,7 @@ namespace LabFusion.Data
         }
 
         public static void OnFixedUpdate() {
-            // The delta time gets multiplied in the calculations by the amount of frames we're skipping
-            // This is so that the forces get scaled as if all skipped frames were still being solved
-            float dt = Time.fixedDeltaTime * _targetFrame;
+            float dt = Time.fixedDeltaTime;
 
             // Make sure the deltaTime has changed
             if (Mathf.Approximately(dt, _lastFixedDelta)) {
@@ -62,13 +53,13 @@ namespace LabFusion.Data
 
             // Position
             float pG = 1f / (1f + _positionKd * dt + _positionKp * dt * dt);
-            _positionKsg = _positionKp * pG * _proportionalMult;
-            _positionKdg = (_positionKd + _positionKp * dt) * pG * _targetFrame;
+            _positionKsg = _positionKp * pG;
+            _positionKdg = (_positionKd + _positionKp * dt) * pG;
 
             // Rotation
             float rG = 1f / (1f + _rotationKd * dt + _rotationKp * dt * dt);
-            _rotationKsg = _rotationKp * rG * _targetFrame;
-            _rotationKdg = (_rotationKd + _rotationKp * dt) * rG * _targetFrame;
+            _rotationKsg = _rotationKp * rG;
+            _rotationKdg = (_rotationKd + _rotationKp * dt) * rG;
         }
 
         private static float CalculateKP(float frequency) {
@@ -85,10 +76,6 @@ namespace LabFusion.Data
             if (rb.useGravity)
                 gravity = PhysicsUtilities.Gravity;
 
-            // We only run forces on specific frames to save performance
-            if (!_forceSkipper.IsMatchingFrame())
-                return -gravity;
-            
             Vector3 Pt0 = position;
             Vector3 Vt0 = velocity;
 
@@ -106,10 +93,6 @@ namespace LabFusion.Data
 
         public Vector3 GetTorque(Rigidbody rb, in Quaternion rotation, in Vector3 angularVelocity, in Quaternion targetRot, in Vector3 targetVel)
         {
-            // We only run torques on specific frames to save performance
-            if (!_torqueSkipper.IsMatchingFrame())
-                return Vector3Extensions.zero;
-
             Quaternion Qt1 = targetRot;
             Vector3 Vt1 = targetVel;
 

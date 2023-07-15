@@ -37,7 +37,7 @@ namespace LabFusion.Syncables {
         public static void RequestSyncableID(ushort queuedId) {
             if (NetworkInfo.HasServer) {
                 if (NetworkInfo.IsServer) {
-                    UnqueueSyncable(queuedId, AllocateSyncID(), out var syncable);
+                    UnqueueSyncable(queuedId, AllocateSyncID(), out _);
                 }
                 else
                 {
@@ -229,5 +229,15 @@ namespace LabFusion.Syncables {
         public static bool HasSyncable(ushort id) => Syncables.ContainsKey(id);
 
         public static bool TryGetSyncable(ushort id, out ISyncable syncable) => Syncables.TryGetValue(id, out syncable);
+
+        public static bool TryGetSyncable<TSyncable>(ushort id, out TSyncable syncable) where TSyncable : ISyncable {
+            if (TryGetSyncable(id, out ISyncable result) && result is TSyncable generic) {
+                syncable = generic;
+                return true;
+            }
+
+            syncable = default;
+            return false;
+        }
     }
 }

@@ -3,9 +3,8 @@ using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using HarmonyLib;
-
+using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Preferences;
 using LabFusion.Representation;
@@ -52,20 +51,60 @@ namespace LabFusion.Patching {
         public static ushort FirstId;
         public static ushort SecondId;
 
+        private static void OverrideSourceTracker(Constrainer constrainer, GameObject go) {
+            if (go == null)
+                return;
+
+            var tracker = constrainer.SelectConstraint(go);
+
+            if (tracker == null)
+                return;
+
+            tracker.source = constrainer;
+        }
+
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Constrainer.PrimaryButtonUp))]
-        public static void PrimaryButtonUpPrefix(Constrainer __instance) {
-            if (NetworkInfo.HasServer && __instance.mode != Constrainer.ConstraintMode.Remove && !FusionPreferences.ActiveServerSettings.PlayerConstrainingEnabled.GetValue()) {
-                if (__instance._rb1 != null && __instance._rb1.GetComponentInParent<RigManager>() != null) {
-                    __instance._gO1 = null;
-                    __instance._rb1 = null;
-                }
+        public static bool PrimaryButtonUpPrefix(Constrainer __instance) {
+            if (IsReceivingConstraints)
+                return true;
 
-                if (__instance._rb2 != null && __instance._rb2.GetComponentInParent<RigManager>() != null) {
-                    __instance._gO2 = null;
-                    __instance._rb2 = null;
+            if (NetworkInfo.HasServer) {
+                // Removing constraints
+                if (__instance.mode == Constrainer.ConstraintMode.Remove) {
+                    // Override the "source" on the trackers so that we know what constrainer removed them
+                    // This is then checked in the patch and is verified by the server (the server requires this constrainer to exist!)
+                    OverrideSourceTracker(__instance, __instance._gO1);
+                    OverrideSourceTracker(__instance, __instance._gO2);
+                }
+                // Creating constraints
+                else {
+                    // Prevent player constraining if its disabled
+                    if (!FusionPreferences.ActiveServerSettings.PlayerConstrainingEnabled.GetValue()) {
+                        bool preventPlayer = false;
+
+                        if (__instance._rb1.IsPartOfPlayer()) {
+                            __instance._gO1 = null;
+                            __instance._rb1 = null;
+                            preventPlayer = true;
+                        }
+
+                        if (__instance._rb2.IsPartOfPlayer()) {
+                            __instance._gO2 = null;
+                            __instance._rb2 = null;
+                            preventPlayer = true;
+                        }
+
+                        if (preventPlayer) {
+                            __instance._raycastMissedOnDown = true;
+                            __instance.sfx.Release();
+                            return false;
+                        }
+                    }
                 }
             }
+
+            return true;
         }
 
         [HarmonyPostfix]
@@ -89,11 +128,18 @@ namespace LabFusion.Patching {
                 // See if the constrainer is synced
                 if (!IsReceivingConstraints && ConstrainerExtender.Cache.TryGet(__instance, out var syncable))
                 {
-                    // Now, sync the start and end position, and constraint mode
-                    var firstSyncable = new ConstraintSyncable(firstTracker);
-                    var secondSyncable = new ConstraintSyncable(secondTracker);
-                    
-                    MelonCoroutines.Start(CoDelaySyncConstraints(new ConstrainerPointPair(__instance), syncable.GetId(), firstSyncable, secondSyncable));
+                    // Delete the constraints and send a creation request
+                    ConstraintTrackerPatches.IgnorePatches = true;
+                    firstTracker.DeleteConstraint();
+                    ConstraintTrackerPatches.IgnorePatches = false;
+
+                    // Send create message
+                    using var writer = FusionWriter.Create(ConstraintCreateData.Size);
+                    using var data = ConstraintCreateData.Create(PlayerIdManager.LocalSmallId, syncable.Id, new ConstrainerPointPair(__instance));
+                    writer.Write(data);
+
+                    using var message = FusionMessage.Create(NativeMessageTag.ConstraintCreate, writer);
+                    MessageSender.SendToServer(NetworkChannel.Reliable, message);
                 }
                 // If this is a received message, setup the constraints
                 else {
@@ -102,39 +148,6 @@ namespace LabFusion.Patching {
 
                     var secondSyncable = new ConstraintSyncable(secondTracker);
                     SyncManager.RegisterSyncable(secondSyncable, SecondId);
-                }
-            }
-        }
-
-        private static IEnumerator CoDelaySyncConstraints(ConstrainerPointPair pair, ushort constrainerId, ConstraintSyncable first, ConstraintSyncable other)
-        {
-            // Get id for first tracker
-            ushort queuedId = SyncManager.QueueSyncable(first);
-            
-            SyncManager.RequestSyncableID(queuedId);
-
-            while (first.IsQueued())
-                yield return null;
-
-            // Get id for second tracker
-            queuedId = SyncManager.QueueSyncable(other);
-
-            SyncManager.RequestSyncableID(queuedId);
-
-            while (other.IsQueued())
-                yield return null;
-
-            // Send create message
-            using (var writer = FusionWriter.Create(ConstraintCreateData.Size))
-            {
-                using (var data = ConstraintCreateData.Create(PlayerIdManager.LocalSmallId, constrainerId, pair, first, other))
-                {
-                    writer.Write(data);
-
-                    using (var message = FusionMessage.Create(NativeMessageTag.ConstraintCreate, writer))
-                    {
-                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                    }
                 }
             }
         }
