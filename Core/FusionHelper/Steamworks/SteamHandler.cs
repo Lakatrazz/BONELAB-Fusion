@@ -23,7 +23,13 @@ namespace FusionHelper.Steamworks
         {
             try
             {
-                File.WriteAllText(Path.Combine(Directory.GetCurrentDirectory(), "steam_appid.txt"), appId.ToString());
+
+                string directory = Directory.GetCurrentDirectory();
+                #if PLATFORM_MAC
+                if (directory.Contains("FusionHelper.app"))
+                    directory = Path.Combine(directory, "Contents", "MacOS");
+                #endif
+                File.WriteAllText(Path.Combine(directory, "steam_appid.txt"), appId.ToString());
 
                 if (!SteamClient.IsValid)
                     SteamClient.Init((uint)appId, ASYNC_CALLBACKS);

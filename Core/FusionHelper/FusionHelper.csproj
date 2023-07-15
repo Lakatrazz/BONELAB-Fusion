@@ -1,6 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+	<ApplicationId>app.trev.FusionHelper</ApplicationId>
 	<Configurations>Debug-Win;Release-Win;Debug-Mac;Release-Mac</Configurations>
 	  
 	<PlatformConfiguration Condition="$(Configuration.EndsWith('-Mac'))">Mac</PlatformConfiguration>
