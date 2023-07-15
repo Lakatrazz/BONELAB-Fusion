@@ -154,7 +154,7 @@ namespace LabFusion.Network
                     return;
 
                 // Check if player constraining is disabled and if this is attempting to constrain a player
-                if (!FusionPreferences.ActiveServerSettings.PlayerConstrainingEnabled.GetValue())
+                if (!FusionPreferences.ActiveServerSettings.PlayerConstraintsEnabled.GetValue())
                 {
                     if (data.tracker1.gameObject.IsPartOfPlayer() || data.tracker2.gameObject.IsPartOfPlayer())
                         return;

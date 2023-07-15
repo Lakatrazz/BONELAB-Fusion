@@ -80,7 +80,7 @@ namespace LabFusion.Patching {
                 // Creating constraints
                 else {
                     // Prevent player constraining if its disabled
-                    if (!FusionPreferences.ActiveServerSettings.PlayerConstrainingEnabled.GetValue()) {
+                    if (!FusionPreferences.ActiveServerSettings.PlayerConstraintsEnabled.GetValue()) {
                         bool preventPlayer = false;
 
                         if (__instance._rb1.IsPartOfPlayer()) {

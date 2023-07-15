@@ -50,7 +50,7 @@ namespace LabFusion.BoneMenu
             CreateBoolPreference(category, "Voicechat", FusionPreferences.LocalServerSettings.VoicechatEnabled);
 
             // Player constraining
-            CreateBoolPreference(category, "Player Constraining", FusionPreferences.LocalServerSettings.PlayerConstrainingEnabled);
+            CreateBoolPreference(category, "Player Constraining", FusionPreferences.LocalServerSettings.PlayerConstraintsEnabled);
 
             // Server privacy
             CreateEnumPreference(category, "Server Privacy", FusionPreferences.LocalServerSettings.Privacy);
