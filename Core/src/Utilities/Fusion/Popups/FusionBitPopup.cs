@@ -22,7 +22,7 @@ namespace LabFusion.Utilities
         public static readonly Quaternion LocalRotation = Quaternion.Euler(0f, 17.252f, 0f);
 
         internal static void OnUpdate() {
-            if (!FusionSceneManager.IsDelayedLoading() && RigData.HasPlayer && _bitQueue.Count > 0) {
+            if (FusionSceneManager.HasTargetLoaded() && !FusionSceneManager.IsDelayedLoading() && RigData.HasPlayer && _bitQueue.Count > 0) {
                 DequeueBit();
             }
         }

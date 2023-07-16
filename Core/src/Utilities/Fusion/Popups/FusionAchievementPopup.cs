@@ -65,7 +65,7 @@ namespace LabFusion.Utilities
 
         internal static void OnUpdate() {
             // Make sure we aren't loading so we can dequeue existing achievements
-            if (_queuedAchievements.Count > 0 && !FusionSceneManager.IsDelayedLoading() && RigData.HasPlayer) {
+            if (_queuedAchievements.Count > 0 && FusionSceneManager.HasTargetLoaded() && !FusionSceneManager.IsDelayedLoading() && RigData.HasPlayer) {
                 // Dequeue achievements
                 if (!IsPlayingPopup()) {
                     DequeueAchievement();
