@@ -352,4 +352,6 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
-/LabFusion.csproj
+
+# Other Things
+Core/Fusion Bundles/Assets/AssetBundles/

@@ -16,6 +16,7 @@ using UnityEngine;
 
 using SLZ.Marrow.SceneStreaming;
 using LabFusion.SDK.Achievements;
+using BoneLib;
 
 namespace LabFusion.Network {
     /// <summary>
@@ -209,7 +210,10 @@ namespace LabFusion.Network {
                 { MetadataHelper.NicknameKey, PlayerIdManager.LocalNickname },
 
                 // Permission
-                { MetadataHelper.PermissionKey, NetworkInfo.IsServer ? PermissionLevel.OWNER.ToString() : PermissionLevel.DEFAULT.ToString() }
+                { MetadataHelper.PermissionKey, NetworkInfo.IsServer ? PermissionLevel.OWNER.ToString() : PermissionLevel.DEFAULT.ToString() },
+
+                // Platform
+                { MetadataHelper.PlatformKey, HelperMethods.IsAndroid() ? "QUEST" : "PC" }
             };
 
             return metadata;

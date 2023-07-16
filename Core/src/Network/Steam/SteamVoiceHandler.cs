@@ -93,7 +93,14 @@ namespace LabFusion.Network {
             _compressedVoiceStream.Position = 0;
             _decompressedVoiceStream.Position = 0;
 
-            int numBytesWritten = SteamUser.DecompressVoice(_compressedVoiceStream, bytes.Length, _decompressedVoiceStream);
+            int numBytesWritten = 0;
+            if (true) // TODO: quest vc stuff pt 2
+                numBytesWritten = SteamUser.DecompressVoice(_compressedVoiceStream, bytes.Length, _decompressedVoiceStream);
+            else
+            {
+                _decompressedVoiceStream.Write(bytes, 0, bytes.Length);
+                numBytesWritten = bytes.Length;
+            }
 
             _decompressedVoiceStream.Position = 0;
 

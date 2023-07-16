@@ -109,6 +109,14 @@ namespace LabFusion.Network
                 return null;
         }
 
+        public byte[] ToByteArray()
+        {
+            byte[] bytes = ByteRetriever.Rent(Length);
+            Marshal.Copy((IntPtr)_buffer, bytes, 0, Length);
+
+            return bytes;
+        }
+
         public void Dispose() {
             if (_disposed)
                 return;
