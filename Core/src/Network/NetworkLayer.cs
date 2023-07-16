@@ -147,7 +147,7 @@ namespace LabFusion.Network
 
         internal virtual void OnVoiceChatUpdate() { }
 
-        internal virtual void OnVoiceBytesReceived(PlayerId id, byte[] bytes, bool layerCompressed) { }
+        internal virtual void OnVoiceBytesReceived(PlayerId id, byte[] bytes) { }
 
         internal virtual void OnUserJoin(PlayerId id) { }
 

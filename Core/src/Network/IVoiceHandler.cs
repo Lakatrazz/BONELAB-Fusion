@@ -22,7 +22,7 @@ namespace LabFusion.Network
 
         public void CreateAudioSource();
         public void VerifyRep();
-        public void OnVoiceBytesReceived(byte[] bytes, bool layerCompressed);
+        public void OnVoiceBytesReceived(byte[] bytes);
 
         public void Cleanup();
         public void Update();
@@ -82,6 +82,6 @@ namespace LabFusion.Network
 
         public abstract void Update();
 
-        public abstract void OnVoiceBytesReceived(byte[] bytes, bool layerCompressed);
+        public abstract void OnVoiceBytesReceived(byte[] bytes);
     }
 }

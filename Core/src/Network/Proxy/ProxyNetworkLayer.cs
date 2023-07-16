@@ -387,7 +387,7 @@ namespace LabFusion.Network
             return byteArray;
         }
 
-        internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes, bool layerCompressed)
+        internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes)
         {
             // If we are deafened, no need to deal with voice chat
             bool isDeafened = !FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue() || FusionPreferences.ClientSettings.Deafened;
@@ -396,7 +396,7 @@ namespace LabFusion.Network
 
             var identifier = ProxyVoiceIdentifier.GetVoiceIdentifier(id);
 
-            identifier?.OnVoiceBytesReceived(bytes, layerCompressed);
+            identifier?.OnVoiceBytesReceived(bytes);
         }
 
         internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message)

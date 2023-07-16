@@ -17,20 +17,17 @@ namespace LabFusion.Network
 
         public byte smallId;
         public byte[] bytes;
-        public bool layerCompressed;
 
         public void Serialize(FusionWriter writer)
         {
             writer.Write(smallId);
             writer.Write(bytes);
-            writer.Write(layerCompressed);
         }
 
         public void Deserialize(FusionReader reader)
         {
             smallId = reader.ReadByte();
             bytes = reader.ReadBytes();
-            layerCompressed = reader.ReadBoolean();
         }
 
         public void Dispose()
@@ -45,7 +42,6 @@ namespace LabFusion.Network
             {
                 smallId = smallId,
                 bytes = voiceData,
-                layerCompressed = layerCompressed,
             };
         }
     }
@@ -68,7 +64,7 @@ namespace LabFusion.Network
                     var id = PlayerIdManager.GetPlayerId(data.smallId);
 
                     if (id != null)
-                        InternalLayerHelpers.OnVoiceBytesReceived(id, data.bytes, data.layerCompressed);
+                        InternalLayerHelpers.OnVoiceBytesReceived(id, data.bytes);
 
                     // Bounce the message back
                     if (NetworkInfo.IsServer)

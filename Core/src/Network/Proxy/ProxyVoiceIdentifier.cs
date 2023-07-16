@@ -144,8 +144,8 @@ namespace LabFusion.Network {
             }
         }
 
-        public void OnVoiceBytesReceived(byte[] bytes, bool layerCompressed) {
-            if (layerCompressed)
+        public void OnVoiceBytesReceived(byte[] bytes) {
+            if (true) // TODO: sending vc
             {
                 NetDataWriter writer = ProxyNetworkLayer.NewWriter(FusionHelper.Network.MessageTypes.DecompressVoice);
                 writer.Put(_id.LongId);
