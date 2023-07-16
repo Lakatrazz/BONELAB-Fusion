@@ -103,6 +103,11 @@ namespace LabFusion.BoneMenu
             // Player constraining
             CreateBoolPreference(category, "Player Constraining", FusionPreferences.LocalServerSettings.PlayerConstraintsEnabled);
 
+            // Cheat detection
+            var cheatsCategory = category.CreateCategory("Cheat Detection", Color.white);
+            CreateBoolPreference(cheatsCategory, "Kick Stat Changers", FusionPreferences.LocalServerSettings.KickStatChangers);
+            CreateFloatPreference(cheatsCategory, "Stat Changer Leeway", 1f, 0f, 10f, FusionPreferences.LocalServerSettings.StatChangerLeeway);
+
             // Server privacy
             CreateEnumPreference(category, "Server Privacy", FusionPreferences.LocalServerSettings.Privacy);
 

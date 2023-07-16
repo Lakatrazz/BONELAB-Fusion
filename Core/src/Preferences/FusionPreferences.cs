@@ -33,6 +33,10 @@ namespace LabFusion.Preferences {
             // Mortality
             public IFusionPref<bool> ServerMortality;
 
+            // Cheat detection
+            public IFusionPref<bool> KickStatChangers;
+            public IFusionPref<float> StatChangerLeeway;
+
             // Permissions
             public IFusionPref<PermissionLevel> DevToolsAllowed;
             public IFusionPref<PermissionLevel> ConstrainerAllowed;
@@ -60,6 +64,10 @@ namespace LabFusion.Preferences {
 
                     // Mortality
                     ServerMortality = new FusionPref<bool>(prefCategory, "Server Mortality", true, PrefUpdateMode.SERVER_UPDATE),
+
+                    // Cheat detection
+                    KickStatChangers = new FusionPref<bool>(prefCategory, "Server Kick Stat Changers", true, PrefUpdateMode.SERVER_UPDATE),
+                    StatChangerLeeway = new FusionPref<float>(prefCategory, "Server Stat Changer Leeway", 0f, PrefUpdateMode.SERVER_UPDATE),
 
                     // Server permissions
                     DevToolsAllowed = new FusionPref<PermissionLevel>(prefCategory, "Dev Tools Allowed", PermissionLevel.DEFAULT, PrefUpdateMode.SERVER_UPDATE),
