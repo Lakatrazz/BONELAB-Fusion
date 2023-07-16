@@ -172,6 +172,9 @@ namespace LabFusion.Patching {
                         using var writer = FusionWriter.Create(ConstrainerModeData.Size);
                         using var data = ConstrainerModeData.Create(PlayerIdManager.LocalSmallId, syncable.Id, nextMode);
                         writer.Write(data);
+
+                        using var message = FusionMessage.Create(NativeMessageTag.ConstrainerMode, writer);
+                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
                     }
                 }
             }
