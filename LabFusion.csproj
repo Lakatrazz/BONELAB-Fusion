@@ -334,6 +334,7 @@
     <Compile Include="Core\src\Network\Messages\Gamemodes\GamemodeMetadataRemoveMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Gamemodes\GamemodeTriggerResponseMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Gamemodes\GamemodeMetadataSetMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Interaction\ConstrainerModeMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\PowerableJointVoltageMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\TwoButtonRemoteControllerEventMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Interaction\FunicularControllerEventMessage.cs" />
