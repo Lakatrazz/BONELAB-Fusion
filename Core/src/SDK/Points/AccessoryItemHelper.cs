@@ -15,12 +15,19 @@ using Avatar = SLZ.VRMK.Avatar;
 namespace LabFusion.SDK.Points {
     public enum AccessoryPoint
     {
+        // Head
         HEAD,
         HEAD_TOP,
+        
+        // Eyes
         EYE_LEFT,
         EYE_RIGHT,
         EYE_CENTER,
+
+        // Face
         NOSE,
+
+        // Spine
         CHEST,
         CHEST_BACK,
         HIPS,

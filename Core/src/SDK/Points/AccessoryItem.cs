@@ -1,6 +1,6 @@
 ﻿using LabFusion.Extensions;
 using LabFusion.MarrowIntegration;
-
+using LabFusion.Utilities;
 using SLZ.Rig;
 
 using System.Collections.Generic;
@@ -26,6 +26,7 @@ namespace LabFusion.SDK.Points
 
             public AccessoryInstance(PointItemPayload payload, GameObject accessory, bool isHiddenInView) {
                 rigManager = payload.rigManager;
+                avatar = null;
 
                 this.accessory = accessory;
                 transform = accessory.transform;
@@ -38,8 +39,11 @@ namespace LabFusion.SDK.Points
                 points = new();
 
                 foreach (var component in avatar.GetComponentsInChildren<MarrowCosmeticPoint>()) {
-                    if (!points.ContainsKey(component.Point))
-                        points.Add(component.Point, component);
+                    var casted = component.TryCast<MarrowCosmeticPoint>();
+
+                    if (!points.ContainsKey(casted.Point)) {
+                        points.Add(casted.Point, casted);
+                    }
                 }
             }
 
@@ -50,8 +54,9 @@ namespace LabFusion.SDK.Points
                     accessory.SetActive(true);
 
                 // Compare avatar
-                if (rigManager.avatar != avatar)
+                if (rigManager.avatar != avatar) {
                     UpdateAvatar(rigManager.avatar);
+                }
 
                 // Get item transform
                 Vector3 position;
