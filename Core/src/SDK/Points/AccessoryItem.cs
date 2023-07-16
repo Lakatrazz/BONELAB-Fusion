@@ -1,29 +1,28 @@
 ﻿using LabFusion.Extensions;
-using LabFusion.SDK.Points;
-using LabFusion.Utilities;
+using LabFusion.MarrowIntegration;
+
 using SLZ.Rig;
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
+
+using Avatar = SLZ.VRMK.Avatar;
 
 namespace LabFusion.SDK.Points
 {
     public abstract class AccessoryItem : PointItem {
         protected class AccessoryInstance {
             public RigManager rigManager;
+            public Avatar avatar;
 
             public GameObject accessory;
             public Transform transform;
 
             public bool isHiddenInView;
 
-            public Dictionary<Mirror, GameObject> mirrors = new Dictionary<Mirror, GameObject>(new UnityComparer());
+            public Dictionary<Mirror, GameObject> mirrors = new(new UnityComparer());
+            public Dictionary<AccessoryPoint, MarrowCosmeticPoint> points = new();
 
             public AccessoryInstance(PointItemPayload payload, GameObject accessory, bool isHiddenInView) {
                 rigManager = payload.rigManager;
@@ -34,14 +33,41 @@ namespace LabFusion.SDK.Points
                 this.isHiddenInView = isHiddenInView;
             }
             
+            private void UpdateAvatar(Avatar avatar) {
+                this.avatar = avatar;
+                points = new();
+
+                foreach (var component in avatar.GetComponentsInChildren<MarrowCosmeticPoint>()) {
+                    if (!points.ContainsKey(component.Point))
+                        points.Add(component.Point, component);
+                }
+            }
+
             public void Update(AccessoryPoint itemPoint, AccessoryScaleMode mode) {
                 if (Time.timeScale > 0f && isHiddenInView)
                     accessory.SetActive(false);
                 else
                     accessory.SetActive(true);
 
-                AccessoryItemHelper.GetTransform(itemPoint, mode, rigManager, out var position, out var rotation, out var scale);
-                
+                // Compare avatar
+                if (rigManager.avatar != avatar)
+                    UpdateAvatar(rigManager.avatar);
+
+                // Get item transform
+                Vector3 position;
+                Quaternion rotation;
+                Vector3 scale;
+                // SDK offset transform
+                if (points.TryGetValue(itemPoint, out var component)) {
+                    position = component.Transform.position;
+                    rotation = component.Transform.rotation;
+                    scale = component.Transform.lossyScale;
+                }
+                // Auto calcualted transform
+                else {
+                    AccessoryItemHelper.GetTransform(itemPoint, mode, rigManager, out position, out rotation, out scale);
+                }
+
                 transform.SetPositionAndRotation(position, rotation);
                 transform.localScale = scale;
             }
@@ -69,8 +95,7 @@ namespace LabFusion.SDK.Points
                     if (mirror.Key && mirror.Value) {
                         // Remove the mirror if its disabled
                         if (!mirror.Key.isActiveAndEnabled) {
-                            if (mirrorsToRemove == null)
-                                mirrorsToRemove = new List<Mirror>();
+                            mirrorsToRemove ??= new List<Mirror>();
 
                             mirrorsToRemove.Add(mirror.Key);
                             continue;
@@ -210,8 +235,7 @@ namespace LabFusion.SDK.Points
 
             foreach (var instance in _accessoryInstances) {
                 if (!instance.Value.IsValid()) {
-                    if (accessoriesToRemove == null)
-                        accessoriesToRemove = new List<AccessoryInstance>();
+                    accessoriesToRemove ??= new List<AccessoryInstance>();
 
                     accessoriesToRemove.Add(instance.Value);
                     continue;
