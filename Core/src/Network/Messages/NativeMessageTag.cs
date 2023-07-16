@@ -137,6 +137,8 @@ namespace LabFusion.Network
 
             SpawnGunPreviewMesh = 79,
 
+            MineDiveCart = 80,
+
             // SDK messages
             // Module setup
             Module = 200,
