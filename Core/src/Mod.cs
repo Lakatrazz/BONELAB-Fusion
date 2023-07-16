@@ -197,6 +197,7 @@ namespace LabFusion
             SyncManager.OnCleanup();
             RigData.OnCacheRigInfo();
             PersistentAssetCreator.OnMainSceneInitialized();
+            ConstrainerUtilities.OnMainSceneInitialized();
 
             // Create player reps
             PlayerRep.OnRecreateReps();

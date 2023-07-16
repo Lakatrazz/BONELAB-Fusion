@@ -80,7 +80,7 @@ namespace LabFusion.Patching {
                 // Creating constraints
                 else {
                     // Prevent player constraining if its disabled
-                    if (!FusionPreferences.ActiveServerSettings.PlayerConstraintsEnabled.GetValue()) {
+                    if (!ConstrainerUtilities.PlayerConstraintsEnabled) {
                         bool preventPlayer = false;
 
                         if (__instance._rb1.IsPartOfPlayer()) {
@@ -154,9 +154,27 @@ namespace LabFusion.Patching {
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Constrainer.OnTriggerGripUpdate))]
-        public static bool OnTriggerGripUpdate(Hand hand) {
-            if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(hand.manager))
-                return false;
+        public static bool OnTriggerGripUpdatePrefix(Constrainer __instance, Hand hand) {
+            if (NetworkInfo.HasServer) { 
+                if (PlayerRepManager.HasPlayerId(hand.manager)) {
+                    return false;
+                }
+                else if (ConstrainerExtender.Cache.TryGet(__instance, out var syncable) ){
+                    // Check if the mode was changed
+                    if (hand.Controller.GetMenuTap()) {
+                        // Send mode message
+                        Constrainer.ConstraintMode nextMode = __instance.mode;
+                        if (nextMode == Constrainer.ConstraintMode.Remove)
+                            nextMode = Constrainer.ConstraintMode.Tether;
+                        else
+                            nextMode++;
+
+                        using var writer = FusionWriter.Create(ConstrainerModeData.Size);
+                        using var data = ConstrainerModeData.Create(PlayerIdManager.LocalSmallId, syncable.Id, nextMode);
+                        writer.Write(data);
+                    }
+                }
+            }
 
             return true;
         }

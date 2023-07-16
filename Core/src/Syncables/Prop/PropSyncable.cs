@@ -246,6 +246,16 @@ namespace LabFusion.Syncables
             return false;
         }
 
+        public bool HasExtender<T>() where T : IPropExtender {
+            foreach (var found in _extenders) {
+                if (found.GetType() == typeof(T)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private void AssignInformation(GameObject go) {
             PropGrips = go.GetComponentsInChildren<Grip>(true);
 

@@ -23,7 +23,7 @@ namespace LabFusion.Network
 {
     public class ConstraintDeleteData : IFusionSerializable, IDisposable
     {
-        public const int Size = sizeof(byte) + sizeof(ushort);
+        public const int Size = sizeof(byte) + sizeof(ushort) * 2;
 
         public byte smallId;
         public ushort constrainerId;
@@ -69,22 +69,28 @@ namespace LabFusion.Network
             using FusionReader reader = FusionReader.Create(bytes);
             using var data = reader.ReadFusionSerializable<ConstraintDeleteData>();
 
+            bool hasConstrainer = SyncManager.TryGetSyncable<PropSyncable>(data.constrainerId, out var constrainer);
+
             // Send message to all clients if server
             if (NetworkInfo.IsServer && isServerHandled) {
                 // Make sure we have a constrainer server side (and it's being held)
-                if (SyncManager.TryGetSyncable<PropSyncable>(data.constrainerId, out var syncable) && syncable.IsHeld && syncable.TryGetExtender<ConstrainerExtender>(out _)) {
+                if (hasConstrainer && constrainer.IsHeld && constrainer.HasExtender<ConstrainerExtender>()) {
                     using var message = FusionMessage.Create(Tag.Value, bytes);
                     MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
                 }
             }
             else {
                 if (SyncManager.TryGetSyncable<ConstraintSyncable>(data.constraintId, out var constraint)) {
-                    
                     ConstraintTrackerPatches.IgnorePatches = true;
                     constraint.Tracker.DeleteConstraint();
                     ConstraintTrackerPatches.IgnorePatches = false;
 
                     SyncManager.RemoveSyncable(constraint);
+
+                    // Play sound
+                    if (data.smallId != PlayerIdManager.LocalSmallId && hasConstrainer && constrainer.TryGetExtender<ConstrainerExtender>(out var extender)) {
+                        extender.Component.sfx.Release();
+                    }
                 }
             }
         }

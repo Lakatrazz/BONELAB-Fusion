@@ -135,18 +135,23 @@ namespace LabFusion.Network
             using FusionReader reader = FusionReader.Create(bytes);
             using var data = reader.ReadFusionSerializable<ConstraintCreateData>();
 
+            bool hasConstrainer = SyncManager.TryGetSyncable<PropSyncable>(data.constrainerId, out var constrainer);
+
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {
-                // Recreate the message so we can assign server-side sync ids
-                using var writer = FusionWriter.Create();
-                data.point1Id = SyncManager.AllocateSyncID();
-                data.point2Id = SyncManager.AllocateSyncID();
+                // Make sure we have a constrainer server side (and it's being held)
+                if (hasConstrainer && constrainer.IsHeld && constrainer.HasExtender<ConstrainerExtender>()) {
+                    // Recreate the message so we can assign server-side sync ids
+                    using var writer = FusionWriter.Create();
+                    data.point1Id = SyncManager.AllocateSyncID();
+                    data.point2Id = SyncManager.AllocateSyncID();
 
-                writer.Write(data);
+                    writer.Write(data);
 
-                using var message = FusionMessage.Create(Tag.Value, writer);
-                MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                    using var message = FusionMessage.Create(Tag.Value, writer);
+                    MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                }
             }
             else
             {
@@ -154,15 +159,16 @@ namespace LabFusion.Network
                     return;
 
                 // Check if player constraining is disabled and if this is attempting to constrain a player
-                if (!FusionPreferences.ActiveServerSettings.PlayerConstraintsEnabled.GetValue())
+                if (!ConstrainerUtilities.PlayerConstraintsEnabled)
                 {
                     if (data.tracker1.gameObject.IsPartOfPlayer() || data.tracker2.gameObject.IsPartOfPlayer())
                         return;
                 }
 
-                if (SyncManager.TryGetSyncable(data.constrainerId, out var syncable) && syncable is PropSyncable constrainer && constrainer.TryGetExtender<ConstrainerExtender>(out var extender))
+                if (ConstrainerUtilities.HasConstrainer && hasConstrainer && constrainer.TryGetExtender<ConstrainerExtender>(out var extender))
                 {
-                    var comp = extender.Component;
+                    var comp = ConstrainerUtilities.GlobalConstrainer;
+                    var syncedComp = extender.Component;
                     comp.mode = data.mode;
 
                     // Setup points
@@ -206,6 +212,12 @@ namespace LabFusion.Network
                     // Reset positions
                     tran1.SetPositionAndRotation(go1Pos, go1Rot);
                     tran2.SetPositionAndRotation(go2Pos, go2Rot);
+
+                    // Play sound
+                    if (data.smallId != PlayerIdManager.LocalSmallId) {
+                        syncedComp.sfx.GravLocked();
+                        syncedComp.sfx.Release();
+                    }
                 }
             }
         }

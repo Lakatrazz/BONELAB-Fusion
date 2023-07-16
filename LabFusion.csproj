@@ -550,6 +550,7 @@
     <Compile Include="Core\src\Utilities\AssemblyUtilities.cs" />
     <Compile Include="Core\src\Utilities\ByteRetriever.cs" />
     <Compile Include="Core\src\Utilities\CommonBarcodes.cs" />
+    <Compile Include="Core\src\Utilities\ConstrainerUtilities.cs" />
     <Compile Include="Core\src\Utilities\DelayUtilities.cs" />
     <Compile Include="Core\src\Utilities\DllTools.cs" />
     <Compile Include="Core\src\Network\Helpers\Net.cs" />
