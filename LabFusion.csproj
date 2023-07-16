@@ -213,6 +213,16 @@
     <Compile Include="Core\dependencies\LiteNetLib\Utils\NtpPacket.cs" />
     <Compile Include="Core\dependencies\LiteNetLib\Utils\NtpRequest.cs" />
     <Compile Include="Core\FusionHelper\Network\MessageTypes.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\Cosmetics\MarrowCosmeticEyeCenter.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\Cosmetics\MarrowCosmeticNose.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\Cosmetics\MarrowCosmeticChest.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\Cosmetics\MarrowCosmeticChestBack.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\Cosmetics\MarrowCosmeticHips.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\Cosmetics\MarrowCosmeticEyeRight.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\Cosmetics\MarrowCosmeticEyeLeft.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\Cosmetics\MarrowCosmeticHeadTop.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\Cosmetics\MarrowCosmeticHead.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\Cosmetics\MarrowCosmeticPoint.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Gamemodes\Entangled\EntangledProxy.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Gamemodes\GamemodeEndEvent.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Gamemodes\GamemodeStartEvent.cs" />
@@ -1368,7 +1378,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>COPY "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\BONELAB\Mods"
-adb push "$(TargetPath)" /sdcard/Android/data/com.StressLevelZero.BONELAB/files/Mods</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
