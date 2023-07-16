@@ -331,6 +331,7 @@
     <Compile Include="Core\src\Network\IVoiceManager.cs" />
     <Compile Include="Core\src\Network\Messages\Arena\BaseGameControllerMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Arena\TimeTrialGameControllerMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Campaign\MineDiveCartMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Gamemodes\GamemodeMetadataRemoveMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Gamemodes\GamemodeTriggerResponseMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Gamemodes\GamemodeMetadataSetMessage.cs" />

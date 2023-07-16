@@ -27,6 +27,7 @@ namespace LabFusion.Data {
             writer.Write(settings.MaxPlayers.GetValue());
 
             writer.Write(settings.ServerName.GetValue());
+            writer.Write(settings.ServerTags.GetValue());
 
             writer.Write(settings.ServerMortality.GetValue());
 
@@ -49,6 +50,7 @@ namespace LabFusion.Data {
                 MaxPlayers = new ReadonlyFusionPrev<byte>(reader.ReadByte()),
 
                 ServerName = new ReadonlyFusionPrev<string>(reader.ReadString()),
+                ServerTags = new ReadonlyFusionPrev<List<string>>(reader.ReadStrings().ToList()),
 
                 ServerMortality = new ReadonlyFusionPrev<bool>(reader.ReadBoolean()),
 

@@ -1,4 +1,5 @@
-﻿using LabFusion.Preferences;
+﻿using LabFusion.Extensions;
+using LabFusion.Preferences;
 using LabFusion.Representation;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Senders;
@@ -21,6 +22,7 @@ namespace LabFusion.Network {
         public ulong LobbyId;
         public string LobbyOwner;
         public string LobbyName;
+        public string LobbyTags;
         public Version LobbyVersion;
         public bool HasServerOpen;
         public int PlayerCount;
@@ -49,6 +51,7 @@ namespace LabFusion.Network {
                 LobbyId = PlayerIdManager.LocalLongId,
                 LobbyOwner = PlayerIdManager.LocalUsername,
                 LobbyName = FusionPreferences.LocalServerSettings.ServerName.GetValue(),
+                LobbyTags = FusionPreferences.LocalServerSettings.ServerTags.GetValue().Contract(),
                 LobbyVersion = FusionMod.Version,
                 HasServerOpen = NetworkInfo.IsServer,
                 PlayerCount = PlayerIdManager.PlayerCount,
@@ -73,6 +76,7 @@ namespace LabFusion.Network {
             lobby.SetMetadata(nameof(LobbyId), LobbyId.ToString());
             lobby.SetMetadata(nameof(LobbyOwner), LobbyOwner);
             lobby.SetMetadata(nameof(LobbyName), LobbyName);
+            lobby.SetMetadata(nameof(LobbyTags), LobbyTags);
             lobby.SetMetadata(nameof(LobbyVersion), LobbyVersion.ToString());
             lobby.SetMetadata(HasServerOpenKey, HasServerOpen.ToString());
             lobby.SetMetadata(nameof(PlayerCount), PlayerCount.ToString());
@@ -96,6 +100,7 @@ namespace LabFusion.Network {
                 // Lobby info
                 LobbyOwner = lobby.GetMetadata(nameof(LobbyOwner)),
                 LobbyName = lobby.GetMetadata(nameof(LobbyName)),
+                LobbyTags = lobby.GetMetadata(nameof(LobbyTags)),
                 HasServerOpen = lobby.GetMetadata(HasServerOpenKey) == bool.TrueString,
 
                 // Lobby settings

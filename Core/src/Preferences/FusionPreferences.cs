@@ -28,6 +28,7 @@ namespace LabFusion.Preferences {
 
             // Visual
             public IFusionPref<string> ServerName;
+            public IFusionPref<List<string>> ServerTags;
 
             // Mortality
             public IFusionPref<bool> ServerMortality;
@@ -55,6 +56,7 @@ namespace LabFusion.Preferences {
 
                     // Visual
                     ServerName = new FusionPref<string>(prefCategory, "Server Name", "", PrefUpdateMode.LOCAL_UPDATE),
+                    ServerTags = new FusionPref<List<string>>(prefCategory, "Server Tags", new List<string>(), PrefUpdateMode.LOCAL_UPDATE),
 
                     // Mortality
                     ServerMortality = new FusionPref<bool>(prefCategory, "Server Mortality", true, PrefUpdateMode.SERVER_UPDATE),
