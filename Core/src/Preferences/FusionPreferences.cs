@@ -24,6 +24,7 @@ namespace LabFusion.Preferences {
             public IFusionPref<bool> PlayerConstraintsEnabled;
             public IFusionPref<ServerPrivacy> Privacy;
             public IFusionPref<bool> AllowQuestUsers;
+            public IFusionPref<bool> AllowPCUsers;
             public IFusionPref<TimeScaleMode> TimeScaleMode;
             public IFusionPref<byte> MaxPlayers;
 
@@ -57,6 +58,7 @@ namespace LabFusion.Preferences {
                     PlayerConstraintsEnabled = new FusionPref<bool>(prefCategory, "Server Player Constraints Enabled", false, PrefUpdateMode.SERVER_UPDATE),
                     Privacy = new FusionPref<ServerPrivacy>(prefCategory, "Server Privacy", ServerPrivacy.PUBLIC, PrefUpdateMode.LOCAL_UPDATE),
                     AllowQuestUsers = new FusionPref<bool>(prefCategory, "Allow Quest Users", true, PrefUpdateMode.SERVER_UPDATE),
+                    AllowPCUsers = new FusionPref<bool>(prefCategory, "Allow PC Users", true, PrefUpdateMode.SERVER_UPDATE),
                     TimeScaleMode = new FusionPref<TimeScaleMode>(prefCategory, "Time Scale Mode", Senders.TimeScaleMode.LOW_GRAVITY, PrefUpdateMode.SERVER_UPDATE),
                     MaxPlayers = new FusionPref<byte>(prefCategory, "Max Players", 10, PrefUpdateMode.SERVER_UPDATE),
 
