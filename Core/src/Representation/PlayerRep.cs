@@ -116,6 +116,8 @@ namespace LabFusion.Representation
         private bool _isSettingsDirty = false;
         private bool _isServerDirty = false;
 
+        private bool _isQuestUser = false;
+
         // Voice chat integration
         private const float _voiceUpdateStep = 0.3f;
 
@@ -144,6 +146,8 @@ namespace LabFusion.Representation
 
             // Insert the PlayerRep into the global list
             PlayerRepManager.Internal_InsertPlayerRep(this);
+
+            _isQuestUser = PlayerId.GetMetadata(MetadataHelper.PlatformKey) == "QUEST";
 
             pelvisPDController = new PDController();
 
@@ -397,6 +401,11 @@ namespace LabFusion.Representation
             repNameText.enableAutoSizing = true;
 
             repNameText.text = Username;
+            if (_isQuestUser)
+            {
+                repNameText.richText = true;
+                repNameText.text += " <size=60%>Q";
+            }
             repNameText.font = PersistentAssetCreator.Font;
         }
 
@@ -422,6 +431,11 @@ namespace LabFusion.Representation
                 repCanvasTransform.localScale = Vector3Extensions.one / NameTagDivider * height;
 
                 repNameText.text = Username;
+                if (_isQuestUser)
+                {
+                    repNameText.richText = true;
+                    repNameText.text += " <size=60%>Q";
+                }
             }
         }
 

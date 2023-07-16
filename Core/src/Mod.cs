@@ -123,7 +123,7 @@ namespace LabFusion
             // Check if the auto updater is installed
             _hasAutoUpdater = MelonPlugin.RegisteredMelons.Any((p) => p.Info.Name.Contains("LabFusion Updater"));
 
-            if (!_hasAutoUpdater) {
+            if (!_hasAutoUpdater && !BoneLib.HelperMethods.IsAndroid()) {
                 FusionNotifier.Send(new FusionNotification()
                 {
                     isMenuItem = false,

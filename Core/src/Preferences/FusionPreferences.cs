@@ -23,6 +23,7 @@ namespace LabFusion.Preferences {
             public IFusionPref<bool> VoicechatEnabled;
             public IFusionPref<bool> PlayerConstraintsEnabled;
             public IFusionPref<ServerPrivacy> Privacy;
+            public IFusionPref<bool> AllowQuestUsers;
             public IFusionPref<TimeScaleMode> TimeScaleMode;
             public IFusionPref<byte> MaxPlayers;
 
@@ -51,6 +52,7 @@ namespace LabFusion.Preferences {
                     VoicechatEnabled = new FusionPref<bool>(prefCategory, "Server Voicechat Enabled", true, PrefUpdateMode.SERVER_UPDATE),
                     PlayerConstraintsEnabled = new FusionPref<bool>(prefCategory, "Server Player Constraints Enabled", false, PrefUpdateMode.SERVER_UPDATE),
                     Privacy = new FusionPref<ServerPrivacy>(prefCategory, "Server Privacy", ServerPrivacy.PUBLIC, PrefUpdateMode.LOCAL_UPDATE),
+                    AllowQuestUsers = new FusionPref<bool>(prefCategory, "Allow Quest Users", true, PrefUpdateMode.SERVER_UPDATE),
                     TimeScaleMode = new FusionPref<TimeScaleMode>(prefCategory, "Time Scale Mode", Senders.TimeScaleMode.LOW_GRAVITY, PrefUpdateMode.SERVER_UPDATE),
                     MaxPlayers = new FusionPref<byte>(prefCategory, "Max Players", 10, PrefUpdateMode.SERVER_UPDATE),
 
@@ -78,7 +80,8 @@ namespace LabFusion.Preferences {
         public struct ClientSettings {
             // Selected network layer
             public static FusionPref<NetworkLayerType> NetworkLayerType { get; internal set; }
-            
+            public static FusionPref<int> ProxyPort { get; internal set; }
+
             // Nametag settings
             public static FusionPref<bool> NametagsEnabled { get; internal set; }
             public static FusionPref<Color> NametagColor { get; internal set; }
@@ -168,6 +171,7 @@ namespace LabFusion.Preferences {
 
             // Client settings
             ClientSettings.NetworkLayerType = new FusionPref<NetworkLayerType>(prefCategory, "Network Layer Type", NetworkLayerDeterminer.GetDefaultType(), PrefUpdateMode.IGNORE);
+            ClientSettings.ProxyPort = new FusionPref<int>(prefCategory, "Proxy Port", 28340, PrefUpdateMode.IGNORE);
 
             // Nametag
             ClientSettings.NametagsEnabled = new FusionPref<bool>(prefCategory, "Client Nametags Enabled", true, PrefUpdateMode.LOCAL_UPDATE);

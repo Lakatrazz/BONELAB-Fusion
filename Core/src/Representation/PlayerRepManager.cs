@@ -1,11 +1,7 @@
 ﻿using LabFusion.Extensions;
 using SLZ.Rig;
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LabFusion.Representation {
     public static class PlayerRepManager {
@@ -17,6 +13,8 @@ namespace LabFusion.Representation {
         public static readonly Dictionary<RigManager, PlayerRep> ManagerLookup = new Dictionary<RigManager, PlayerRep>(new UnityComparer());
 
         public static bool HasPlayerId(RigManager manager) {
+            if (manager == null)
+                return false;
             return ManagerLookup.ContainsKey(manager);
         }
 

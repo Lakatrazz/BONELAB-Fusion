@@ -106,6 +106,9 @@ namespace LabFusion.BoneMenu
             // Server privacy
             CreateEnumPreference(category, "Server Privacy", FusionPreferences.LocalServerSettings.Privacy);
 
+            // Quest users
+            CreateBoolPreference(category, "Allow Quest Users", FusionPreferences.LocalServerSettings.AllowQuestUsers);
+
             // Time scale mode
             CreateEnumPreference(category, "Time Scale Mode", FusionPreferences.LocalServerSettings.TimeScaleMode);
 
