@@ -14,7 +14,7 @@ namespace Steamworks
 
 #if PLATFORM_WIN
     public const string LibraryName = "steam_api64";
-#elif PLATFORM_MAC
+#elif PLATFORM_MAC || PLATFORM_LINUX
     public const string LibraryName = "libsteam_api";
 #endif
 
