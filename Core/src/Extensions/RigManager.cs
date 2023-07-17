@@ -71,6 +71,7 @@ namespace LabFusion.Extensions {
                 if (!references.IsValid)
                     yield break;
 
+                rm._avatarCrate = new AvatarCrateReference(crate.Barcode);
                 rm.onAvatarSwapped?.Invoke();
                 rm.onAvatarSwapped2?.Invoke(crate.Barcode);
                 callback?.Invoke(true);
