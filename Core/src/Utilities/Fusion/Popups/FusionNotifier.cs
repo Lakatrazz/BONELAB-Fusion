@@ -11,18 +11,48 @@ using UnityEngine;
 
 namespace LabFusion.Utilities
 {
+    /// <summary>
+    /// The basic types of notifications that can be sent.
+    /// </summary>
     public enum NotificationType {
+        /// <summary>
+        /// Used to inform the user.
+        /// </summary>
         INFORMATION = 0,
+
+        /// <summary>
+        /// Used when the user should be notified of a potential issue.
+        /// </summary>
         WARNING = 1,
+
+        /// <summary>
+        /// Used when the user or program attempts a task and it fails.
+        /// </summary>
         ERROR = 2,
+
+        /// <summary>
+        /// Used when the user or program performs a task and it suceeds.
+        /// </summary>
         SUCCESS = 3,
     }
 
+    /// <summary>
+    /// The class used to supply text in a notification.
+    /// </summary>
     public struct NotificationText {
+        /// <summary>
+        /// The text.
+        /// </summary>
         public string text;
 
+        /// <summary>
+        /// The color of the text.
+        /// </summary>
         public Color color;
 
+        /// <summary>
+        /// Should rich text be allowed?
+        /// </summary>
         public bool richText;
 
         public NotificationText(string text) : this(text, Color.white) { }
@@ -42,25 +72,52 @@ namespace LabFusion.Utilities
         }
     }
 
+    /// <summary>
+    /// The class used for sending notifications to the player. No constructors, provide your own information.
+    /// </summary>
     public class FusionNotification
     {
         // Text settings
+        /// <summary>
+        /// The title of the notification.
+        /// </summary>
         public NotificationText title;
 
+        /// <summary>
+        /// The main body of the notification.
+        /// </summary>
         public NotificationText message;
 
         // Popup settings
+        /// <summary>
+        /// Should the title be used on the popup? (If false, it shows "New Notification".)
+        /// </summary>
         public bool showTitleOnPopup = false;
 
+        /// <summary>
+        /// Should this notification popup?
+        /// </summary>
         public bool isPopup = true;
 
+        /// <summary>
+        /// How long the notification will be up.
+        /// </summary>
         public float popupLength = 2f;
 
+        /// <summary>
+        /// The type of notification this is. Changes the icon.
+        /// </summary>
         public NotificationType type = NotificationType.INFORMATION;
 
         // BoneMenu settings
+        /// <summary>
+        /// Will the notification popup inside of the menu tab?
+        /// </summary>
         public bool isMenuItem = true;
 
+        /// <summary>
+        /// A hook for adding custom functions in the menu. Requires <see cref="isMenuItem"/> to be on.
+        /// </summary>
         public Action<MenuCategory> onCreateCategory = null;
     }
 

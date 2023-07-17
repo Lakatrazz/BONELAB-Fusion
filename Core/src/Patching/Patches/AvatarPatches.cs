@@ -43,14 +43,17 @@ namespace LabFusion.Patching {
             return rm != null && PlayerRepManager.TryGetPlayerRep(rm, out rep) && avatar != rm.realHeptaRig.player && rep.avatarStats != null;
         }
 
-        private static bool ValidateStats(Avatar __instance, SerializedAvatarStats stats) {
+        private static bool ValidateStats(Avatar __instance, PlayerRep rep, SerializedAvatarStats stats) {
             // Make sure this is the server before validating
             if (NetworkInfo.HasServer) {
+                // Get permission level of the player
+                FusionPermissions.FetchPermissionLevel(rep.PlayerId, out var level, out _);
+
                 bool isPolyblank = __instance.name.Contains(FusionAvatar.POLY_BLANK_NAME);
 
                 // Check if this player is using a stat changer
                 // We don't check polyblank as it could be a custom avatar
-                if (!isPolyblank && FusionPreferences.LocalServerSettings.KickStatChangers.GetValue()) {
+                if (!isPolyblank && !FusionPermissions.HasSufficientPermissions(level, FusionPreferences.LocalServerSettings.StatChangersAllowed.GetValue())) {
                     float leeway = FusionPreferences.LocalServerSettings.StatChangerLeeway.GetValue();
                     leeway = Mathf.Clamp(leeway + 1f, 1f, 11f);
 
@@ -86,8 +89,25 @@ namespace LabFusion.Patching {
                     var newStats = rep.avatarStats;
 
                     // Make sure the stats are valid before applying them
-                    if (!ValidateStats(__instance, newStats)) {
+                    if (!ValidateStats(__instance, rep, newStats)) {
                         ConnectionSender.SendDisconnect(rep.PlayerId, "Stat changers are not allowed on this server. Your stats appear to be modified.");
+
+                        string username;
+                        if (rep.PlayerId.TryGetDisplayName(out var name))
+                            username = name;
+                        else
+                            username = rep.PlayerId.LongId.ToString();
+
+                        // Notify the host, they may not know this is a thing
+                        FusionNotifier.Send(new FusionNotification()
+                        {
+                            isMenuItem = false,
+                            isPopup = true,
+                            title = "Cheat Detected",
+                            type = NotificationType.WARNING,
+                            message = $"{username} was kicked due to modified stats. (This can be disabled.)",
+                            showTitleOnPopup = true,
+                        });
                         return;
                     }
 

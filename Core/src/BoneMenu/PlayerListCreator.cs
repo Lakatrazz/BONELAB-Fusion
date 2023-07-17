@@ -88,7 +88,8 @@ namespace LabFusion.BoneMenu
             FusionPermissions.FetchPermissionLevel(PlayerIdManager.LocalLongId, out var selfLevel, out _);
 
             // Create moderation options
-            if (!id.IsSelf && FusionPermissions.HasHigherPermissions(selfLevel, level)) {
+            // If we are the server then we have full auth. Otherwise, check perm level
+            if (!id.IsSelf && (NetworkInfo.IsServer || FusionPermissions.HasHigherPermissions(selfLevel, level))) {
                 var serverSettings = FusionPreferences.ActiveServerSettings;
 
                 var moderationCategory = category.CreateCategory("Moderation", Color.white);

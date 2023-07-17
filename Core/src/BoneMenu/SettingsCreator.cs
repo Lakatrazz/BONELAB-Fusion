@@ -105,7 +105,7 @@ namespace LabFusion.BoneMenu
 
             // Cheat detection
             var cheatsCategory = category.CreateCategory("Cheat Detection", Color.white);
-            CreateBoolPreference(cheatsCategory, "Kick Stat Changers", FusionPreferences.LocalServerSettings.KickStatChangers);
+            CreateEnumPreference(cheatsCategory, "Stat Changers Allowed", FusionPreferences.LocalServerSettings.StatChangersAllowed);
             CreateFloatPreference(cheatsCategory, "Stat Changer Leeway", 1f, 0f, 10f, FusionPreferences.LocalServerSettings.StatChangerLeeway);
 
             // Server privacy

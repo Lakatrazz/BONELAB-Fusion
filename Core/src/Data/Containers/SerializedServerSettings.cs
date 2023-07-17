@@ -14,7 +14,7 @@ using UnityEngine;
 
 namespace LabFusion.Data {
     public class SerializedServerSettings : IFusionSerializable {
-        public const int Size = sizeof(byte) * 16 + sizeof(float);
+        public const int Size = sizeof(byte) * 13;
 
         public FusionPreferences.ServerSettings settings;
 
@@ -33,10 +33,6 @@ namespace LabFusion.Data {
 
             // Mortality
             writer.Write(settings.ServerMortality.GetValue());
-
-            // Cheat detection
-            writer.Write(settings.KickStatChangers.GetValue());
-            writer.Write(settings.StatChangerLeeway.GetValue());
 
             // Server permissions
             writer.Write((byte)settings.DevToolsAllowed.GetValue());
@@ -64,10 +60,6 @@ namespace LabFusion.Data {
 
                 // Mortality
                 ServerMortality = new ReadonlyFusionPrev<bool>(reader.ReadBoolean()),
-
-                // Cheat detection
-                KickStatChangers = new ReadonlyFusionPrev<bool>(reader.ReadBoolean()),
-                StatChangerLeeway = new ReadonlyFusionPrev<float>(reader.ReadSingle()),
 
                 // Server permissions
                 DevToolsAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadByte()),
