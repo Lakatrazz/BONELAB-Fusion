@@ -28,7 +28,7 @@ namespace LabFusion.SDK.Points {
 
         public override AccessoryScaleMode ScaleMode => AccessoryScaleMode.HEIGHT;
 
-        public override bool IsHiddenInView => true;
+        public override bool IsHiddenInView => false;
 
         public override string[] Tags => new string[3] {
             "Ring",

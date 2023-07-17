@@ -24,14 +24,14 @@ namespace LabFusion.SDK.Points {
 
         public override GameObject AccessoryPrefab => FusionPointItemLoader.GetPair(nameof(CirclingBit)).GameObject;
 
-        public override AccessoryPoint ItemPoint => AccessoryPoint.HIPS;
+        public override AccessoryPoint ItemPoint => AccessoryPoint.HEAD;
 
-        public override AccessoryScaleMode ScaleMode => AccessoryScaleMode.HEIGHT;
+        public override AccessoryScaleMode ScaleMode => AccessoryScaleMode.HEAD;
 
         public override bool IsHiddenInView => true;
 
         public override string[] Tags => new string[3] {
-            "Ring",
+            "Effect",
             "Cosmetic",
             "Valuable",
         };

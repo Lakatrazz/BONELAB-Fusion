@@ -24,7 +24,7 @@ namespace LabFusion.SDK.Points {
 
         public override GameObject AccessoryPrefab => FusionPointItemLoader.GetPair(nameof(ArrowHead)).GameObject;
 
-        public override AccessoryPoint ItemPoint => AccessoryPoint.HEAD;
+        public override AccessoryPoint ItemPoint => AccessoryPoint.HEAD_TOP;
 
         public override AccessoryScaleMode ScaleMode => AccessoryScaleMode.HEAD;
 
