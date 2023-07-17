@@ -332,7 +332,7 @@ namespace LabFusion.Network
         {
             if (NetworkInfo.HasServer)
             {
-                bool voiceEnabled = FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue() && !FusionPreferences.ClientSettings.Muted && !FusionPreferences.ClientSettings.Deafened;
+                /*bool voiceEnabled = FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue() && !FusionPreferences.ClientSettings.Muted && !FusionPreferences.ClientSettings.Deafened;
 
                 // Read voice data
                 if (voiceEnabled)
@@ -357,7 +357,7 @@ namespace LabFusion.Network
                         }
                         lastSample = pos;
                     }
-                }
+                }*/
 
                 // Update identifiers
                 ProxyVoiceIdentifier.OnUpdate();
@@ -365,7 +365,7 @@ namespace LabFusion.Network
             else
             {
                 // Disable voice recording
-                Microphone.End(null);
+                //Microphone.End(null);
             }
         }
 
