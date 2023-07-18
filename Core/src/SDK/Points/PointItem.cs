@@ -162,11 +162,11 @@ namespace LabFusion.SDK.Points {
 
         public bool IsUnlocked => PointSaveManager.IsUnlocked(Barcode);
 
-        public bool IsEquipped => PointSaveManager.IsEquipped(Barcode);
+        public bool IsEquipped => IsUnlocked && PointSaveManager.IsEquipped(Barcode);
 
         public string MainTag => Tags == null || Tags.Length <= 0 ? "Misc" : Tags[0];
 
-        protected List<ulong> _shownPlayers = new List<ulong>();
+        protected List<ulong> _shownPlayers = new();
         public IReadOnlyList<ulong> ShownPlayers => _shownPlayers;
 
         internal void Register() {
