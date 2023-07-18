@@ -29,6 +29,9 @@ namespace LabFusion.SDK.Points
             public Dictionary<Mirror, GameObject> mirrors = new(new UnityComparer());
             public Dictionary<AccessoryPoint, MarrowCosmeticPoint> points = new();
 
+            private bool _destroyed = false;
+            public bool IsDestroyed => _destroyed;
+
             public AccessoryInstance(PointItemPayload payload, GameObject accessory, bool isHiddenInView, AccessoryPoint itemPoint, AccessoryScaleMode scaleMode) {
                 rigManager = payload.rigManager;
                 avatar = null;
@@ -59,12 +62,18 @@ namespace LabFusion.SDK.Points
             }
 
             private void OnPostLateUpdate() {
+                if (IsDestroyed)
+                    return;
+
                 Update(itemPoint, scaleMode);
 
                 UpdateMirrors();
             }
 
             private void OnPauseStateChange(bool value) {
+                if (IsDestroyed)
+                    return;
+
                 UpdateVisibility(value);
             }
             
@@ -186,6 +195,8 @@ namespace LabFusion.SDK.Points
             }
 
             public void Cleanup() {
+                _destroyed = true;
+
                 if (!accessory.IsNOC())
                     GameObject.Destroy(accessory);
 
