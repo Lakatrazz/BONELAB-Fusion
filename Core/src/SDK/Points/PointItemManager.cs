@@ -321,7 +321,7 @@ namespace LabFusion.SDK.Points {
         }
 
         public static void SetEquipped(PointItem item, bool isEquipped) {
-            if (item == null || !item.IsUnlocked)
+            if (item == null || (!item.IsUnlocked && !item.IsEquipped))
                 return;
 
             Internal_OnEquipChange(PlayerIdManager.LocalId, item.Barcode, isEquipped);
@@ -336,7 +336,7 @@ namespace LabFusion.SDK.Points {
         }
 
         public static IReadOnlyList<PointItem> GetLockedItems(SortMode sort = SortMode.PRICE) {
-            List<PointItem> items = new List<PointItem>(LoadedItems.Count);
+            List<PointItem> items = new(LoadedItems.Count);
 
             foreach (var item in LoadedItems) {
                 if (item.Redacted)
