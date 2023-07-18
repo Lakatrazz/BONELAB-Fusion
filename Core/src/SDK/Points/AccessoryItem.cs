@@ -23,10 +23,13 @@ namespace LabFusion.SDK.Points
 
             public bool isHiddenInView;
 
+            public AccessoryPoint itemPoint;
+            public AccessoryScaleMode scaleMode;
+
             public Dictionary<Mirror, GameObject> mirrors = new(new UnityComparer());
             public Dictionary<AccessoryPoint, MarrowCosmeticPoint> points = new();
 
-            public AccessoryInstance(PointItemPayload payload, GameObject accessory, bool isHiddenInView) {
+            public AccessoryInstance(PointItemPayload payload, GameObject accessory, bool isHiddenInView, AccessoryPoint itemPoint, AccessoryScaleMode scaleMode) {
                 rigManager = payload.rigManager;
                 avatar = null;
 
@@ -34,6 +37,35 @@ namespace LabFusion.SDK.Points
                 transform = accessory.transform;
 
                 this.isHiddenInView = isHiddenInView;
+
+                this.itemPoint = itemPoint;
+                this.scaleMode = scaleMode;
+
+                UpdateVisibility(false);
+
+                Hook();
+            }
+
+            private void Hook() {
+                rigManager.OnPostLateUpdate += (Il2CppSystem.Action)OnPostLateUpdate;
+                ControllerRig.OnPauseStateChange += (Il2CppSystem.Action<bool>)OnPauseStateChange;
+            }
+
+            private void Unhook() {
+                if (!rigManager.IsNOC()) {
+                    rigManager.OnPostLateUpdate -= (Il2CppSystem.Action)OnPostLateUpdate;
+                    ControllerRig.OnPauseStateChange -= (Il2CppSystem.Action<bool>)OnPauseStateChange;
+                }
+            }
+
+            private void OnPostLateUpdate() {
+                Update(itemPoint, scaleMode);
+
+                UpdateMirrors();
+            }
+
+            private void OnPauseStateChange(bool value) {
+                UpdateVisibility(value);
             }
             
             private void UpdateAvatar(Avatar avatar) {
@@ -49,12 +81,14 @@ namespace LabFusion.SDK.Points
                 }
             }
 
-            public void Update(AccessoryPoint itemPoint, AccessoryScaleMode mode) {
-                if (Time.timeScale > 0f && isHiddenInView)
+            private void UpdateVisibility(bool paused) {
+                if (!paused && isHiddenInView)
                     accessory.SetActive(false);
                 else
                     accessory.SetActive(true);
+            }
 
+            public void Update(AccessoryPoint itemPoint, AccessoryScaleMode mode) {
                 // Compare avatar
                 if (rigManager.avatar != avatar) {
                     UpdateAvatar(rigManager.avatar);
@@ -161,6 +195,8 @@ namespace LabFusion.SDK.Points
                 }
 
                 mirrors.Clear();
+
+                Unhook();
             }
         }
 
@@ -222,7 +258,7 @@ namespace LabFusion.SDK.Points
                 var accessory = GameObject.Instantiate(AccessoryPrefab);
                 accessory.name = AccessoryPrefab.name;
 
-                var instance = new AccessoryInstance(payload, accessory, payload.type == PointItemPayloadType.SELF && IsHiddenInView);
+                var instance = new AccessoryInstance(payload, accessory, payload.type == PointItemPayloadType.SELF && IsHiddenInView, ItemPoint, ScaleMode);
                 _accessoryInstances.Add(payload.rigManager, instance);
             }
             else if (!isVisible && _accessoryInstances.ContainsKey(payload.rigManager)) {
@@ -230,14 +266,6 @@ namespace LabFusion.SDK.Points
                 instance.Cleanup();
                 _accessoryInstances.Remove(payload.rigManager);
             }
-        }
-
-        public override void OnRegistered() {
-            ArtRigPatches.OnArtLateUpdate += OnArtLateUpdate;
-        }
-
-        public override void OnUnregistered() {
-            ArtRigPatches.OnArtLateUpdate -= OnArtLateUpdate;
         }
 
         public override void OnLateUpdate()
@@ -263,21 +291,6 @@ namespace LabFusion.SDK.Points
                     instance.Cleanup();
                     _accessoryInstances.Remove(instance.rigManager);
                 }
-            }
-        }
-
-        public void OnArtLateUpdate(ArtRig rig) {
-            // Make sure theres accessory instances
-            if (_accessoryInstances.Count <= 0)
-                return;
-
-            // Update the positions of the accessories
-            var manager = rig.manager;
-
-            if (_accessoryInstances.TryGetValue(manager, out var instance)) {
-                instance.Update(ItemPoint, ScaleMode);
-
-                instance.UpdateMirrors();
             }
         }
     }
