@@ -153,7 +153,7 @@ namespace LabFusion.Network
                     // if you find this and are bothered to replace it with the mem stream version then go ahead
                     byte[] voiceData = SteamUser.ReadVoiceDataBytes();
 
-                    PlayerSender.SendPlayerVoiceChat(voiceData);
+                    PlayerSender.SendPlayerVoiceChat(voiceData, true);
                 }
 
                 // Update the manager

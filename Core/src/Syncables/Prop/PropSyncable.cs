@@ -89,6 +89,8 @@ namespace LabFusion.Syncables
 
         private IReadOnlyList<IPropExtender> _extenders;
 
+        private List<IOwnerLocker> _ownerLockers;
+
         private GrabbedGripList _grabbedGrips;
 
         public bool IsHeld = false;
@@ -208,6 +210,7 @@ namespace LabFusion.Syncables
 
             HasIgnoreHierarchy = GameObject.GetComponentInParent<IgnoreHierarchy>(true);
 
+            _ownerLockers = new();
             _extenders = PropExtenderManager.GetPropExtenders(this);
 
             _initialized = true;
@@ -234,6 +237,23 @@ namespace LabFusion.Syncables
             _catchupDelegate?.InvokeSafe(user, "executing Catchup Delegate");
         }
 
+        public void AddOwnerLocker(IOwnerLocker locker) {
+            if (_ownerLockers == null) {
+#if DEBUG
+                FusionLogger.Warn("Tried to add an owner locker but the list was null!");
+#endif
+                return;
+            }
+
+            if (!_ownerLockers.Contains(locker)) {
+                _ownerLockers.Add(locker);
+
+#if DEBUG
+                FusionLogger.Log("Added owner locker!");
+#endif
+            }
+        }
+
         public bool TryGetExtender<T>(out T extender) where T : IPropExtender {
             foreach (var found in _extenders) {
                 if (found.GetType() == typeof(T)) {
@@ -243,6 +263,16 @@ namespace LabFusion.Syncables
             }
 
             extender = default;
+            return false;
+        }
+
+        public bool HasExtender<T>() where T : IPropExtender {
+            foreach (var found in _extenders) {
+                if (found.GetType() == typeof(T)) {
+                    return true;
+                }
+            }
+
             return false;
         }
 
@@ -256,6 +286,11 @@ namespace LabFusion.Syncables
         }
 
         public void OnTransferOwner(Hand hand) {
+            // Check if we're locked
+            if (_ownerLockers.CheckLocks(out var owner) && owner != PlayerIdManager.LocalSmallId) {
+                return;
+            }
+
             // Determine the manager
             // Main player
             if (hand.manager == RigData.RigReferences.RigManager) {

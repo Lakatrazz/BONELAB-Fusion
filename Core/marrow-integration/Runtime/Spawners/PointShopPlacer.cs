@@ -29,7 +29,9 @@ namespace LabFusion.MarrowIntegration {
 
         public void Start()
         {
-            PointShopHelper.SetupPointShop(transform.position, transform.rotation, transform.lossyScale);
+            FusionSceneManager.HookOnLevelLoad(() => {
+                PointShopHelper.SetupPointShop(transform.position, transform.rotation, transform.lossyScale);
+            });
         }
 #else
         public override string Comment => "Allows you to place the BitMart anywhere within your map!\n" +

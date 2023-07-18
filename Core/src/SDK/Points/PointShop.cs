@@ -31,6 +31,13 @@ namespace LabFusion.SDK.Points
 
         public PointShopPanelView PanelView => _panelView;
 
+        protected override void OnAwake() {
+            base.OnAwake();
+
+            // Disable "Out Of Order" sign as the new UI has been implemented
+            transform.Find("Art/Offset/Out Of Order Pivot").gameObject.SetActive(false);
+        }
+
         protected override void AddPanelView(GameObject panel) {
             _panelView = panel.AddComponent<PointShopPanelView>();
         }

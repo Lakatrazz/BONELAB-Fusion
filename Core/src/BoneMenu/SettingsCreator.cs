@@ -19,6 +19,17 @@ using UnityEngine;
 namespace LabFusion.BoneMenu
 {
     internal static partial class BoneMenuCreator {
+        // List of all possible tags
+        private static readonly string[] _tagsList = new string[] {
+            "Campaign",
+            "Sandbox",
+            "Roleplay",
+            "Gamemode",
+            "Hangout"
+        };
+
+        private static readonly Dictionary<string, BoolElement> _tagElements = new();
+
         // Settings menu
         private static MenuCategory _serverSettingsCategory;
         private static MenuCategory _clientSettingsCategory;
@@ -43,6 +54,46 @@ namespace LabFusion.BoneMenu
             var displaySettingsCategory = category.CreateCategory("Display Settings", Color.white);
             CreateStringPreference(displaySettingsCategory, "Server Name", FusionPreferences.LocalServerSettings.ServerName);
 
+            // Create tags menu
+            var tagsCategory = displaySettingsCategory.CreateCategory("Server Tags", Color.white);
+            tagsCategory.CreateFunctionElement("Clear Tags", Color.white, () => {
+                FusionPreferences.LocalServerSettings.ServerTags.SetValue(new List<string>());
+            });
+            FusionPreferences.LocalServerSettings.ServerTags.OnValueChanged += (v) => {
+                foreach (var element in _tagElements.Values) {
+                    element.SetValue(false);
+                }
+
+                foreach (var tag in v) {
+                    if (_tagElements.TryGetValue(tag, out var element)) {
+                        element.SetValue(true);
+                    }
+                }
+            };
+
+            var serverTags = FusionPreferences.LocalServerSettings.ServerTags.GetValue();
+
+            foreach (var tag in _tagsList) {
+                _tagElements.Add(tag, tagsCategory.CreateBoolElement(tag, Color.white, serverTags.Contains(tag), (v) => {
+                    // Refresh
+                    serverTags = FusionPreferences.LocalServerSettings.ServerTags.GetValue();
+
+                    // Add tag
+                    if (v) {
+                        if (!serverTags.Contains(tag))
+                            serverTags.Add(tag);
+
+                        FusionPreferences.LocalServerSettings.ServerTags.SetValue(serverTags);
+                    }
+                    // Remove tag
+                    else {
+                        serverTags.Remove(tag);
+
+                        FusionPreferences.LocalServerSettings.ServerTags.SetValue(serverTags);
+                    }
+                }));
+            }
+
             // Nametags enabled
             CreateBoolPreference(category, "Nametags", FusionPreferences.LocalServerSettings.NametagsEnabled);
 
@@ -50,10 +101,24 @@ namespace LabFusion.BoneMenu
             CreateBoolPreference(category, "Voicechat", FusionPreferences.LocalServerSettings.VoicechatEnabled);
 
             // Player constraining
-            CreateBoolPreference(category, "Player Constraining", FusionPreferences.LocalServerSettings.PlayerConstrainingEnabled);
+            CreateBoolPreference(category, "Player Constraining", FusionPreferences.LocalServerSettings.PlayerConstraintsEnabled);
+
+            // Vote kicking
+            CreateBoolPreference(category, "Vote Kicking", FusionPreferences.LocalServerSettings.VoteKickingEnabled);
+
+            // Cheat detection
+            var cheatsCategory = category.CreateCategory("Cheat Detection", Color.white);
+            CreateEnumPreference(cheatsCategory, "Stat Changers Allowed", FusionPreferences.LocalServerSettings.StatChangersAllowed);
+            CreateFloatPreference(cheatsCategory, "Stat Changer Leeway", 1f, 0f, 10f, FusionPreferences.LocalServerSettings.StatChangerLeeway);
 
             // Server privacy
             CreateEnumPreference(category, "Server Privacy", FusionPreferences.LocalServerSettings.Privacy);
+
+            // Quest users
+            CreateBoolPreference(category, "Allow Quest Users", FusionPreferences.LocalServerSettings.AllowQuestUsers);
+
+            // PC users
+            CreateBoolPreference(category, "Allow PC Users", FusionPreferences.LocalServerSettings.AllowPCUsers);
 
             // Time scale mode
             CreateEnumPreference(category, "Time Scale Mode", FusionPreferences.LocalServerSettings.TimeScaleMode);

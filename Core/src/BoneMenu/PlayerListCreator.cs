@@ -87,10 +87,23 @@ namespace LabFusion.BoneMenu
             // Get self permissions
             FusionPermissions.FetchPermissionLevel(PlayerIdManager.LocalLongId, out var selfLevel, out _);
 
-            // Create moderation options
-            if (!id.IsSelf && FusionPermissions.HasHigherPermissions(selfLevel, level)) {
-                var serverSettings = FusionPreferences.ActiveServerSettings;
+            var serverSettings = FusionPreferences.ActiveServerSettings;
 
+            // Create vote options
+            if (!id.IsSelf && FusionPermissions.HasSufficientPermissions(selfLevel, level)) {
+                var votingCategory = category.CreateCategory("Voting", Color.white);
+
+                // Vote kick
+                if (serverSettings.VoteKickingEnabled.GetValue()) {
+                    votingCategory.CreateFunctionElement("Vote Kick", Color.red, () => {
+                        PlayerSender.SendVoteKickRequest(id);
+                    }, "Are you sure?");
+                }
+            }
+
+            // Create moderation options
+            // If we are the server then we have full auth. Otherwise, check perm level
+            if (!id.IsSelf && (NetworkInfo.IsServer || FusionPermissions.HasHigherPermissions(selfLevel, level))) {
                 var moderationCategory = category.CreateCategory("Moderation", Color.white);
 
                 // Kick button

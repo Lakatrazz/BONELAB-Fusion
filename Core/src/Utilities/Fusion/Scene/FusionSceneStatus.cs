@@ -47,7 +47,8 @@ namespace LabFusion.Utilities
         public static bool IsDelayedLoadDone() => !_isDelayedLoading;
 
         public static bool HasTargetLoaded() {
-            if (NetworkInfo.IsServer)
+            // If we are the host or have no server, just do the normal load check
+            if (!NetworkInfo.HasServer || NetworkInfo.IsServer)
                 return IsLoadDone();
 
             return _hasStartedLoadingTarget && _hasEnteredTargetLoadingScreen && IsLoadDone();

@@ -10,8 +10,6 @@ using IL2GoList = Il2CppSystem.Collections.Generic.List<UnityEngine.GameObject>;
 
 namespace LabFusion.Utilities {
     public static partial class GameObjectUtilities {
-        public const char PathSeparator = '¬';
-
         private static readonly IL2GoList _rootObjectBuffer = new();
 
         internal static IL2GoList FindRootsWithName(string scene, string name) {
@@ -53,7 +51,7 @@ namespace LabFusion.Utilities {
         public static string GetFullPath(this GameObject go)
         {
             try {
-                return $"{go.scene.name}{PathSeparator}{go.transform.root.gameObject.GetRootIndex()}{go.transform.GetBasePath()}";
+                return $"{go.scene.name}{StringExtensions.UniqueSeparator}{go.transform.root.gameObject.GetRootIndex()}{go.transform.GetBasePath()}";
             }
             catch
 #if DEBUG
@@ -69,7 +67,7 @@ namespace LabFusion.Utilities {
         }
 
         public static GameObject GetGameObject(string path) {
-            string[] parts = path.Split(PathSeparator);
+            string[] parts = path.Split(StringExtensions.UniqueSeparator);
             string scene = parts[0];
             int index = int.Parse(parts[1]);
             string name = parts[2];
