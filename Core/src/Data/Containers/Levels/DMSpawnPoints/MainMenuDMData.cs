@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace LabFusion.Data {
-    public class ContainerYardData : LevelDataHandler {
+    public class MainMenUData : LevelDataHandler {
         private static readonly Vector3[] _deathmatchSpawnPoints = new Vector3[4] {
     new Vector3(29.8048f, -1.1377f, 0.8369f),
     new Vector3(26.6286f, -1.1377f, 0.9376f),
