@@ -68,7 +68,7 @@ namespace LabFusion.SDK.Points
                 if (points.TryGetValue(itemPoint, out var component)) {
                     AccessoryItemHelper.GetTransform(component, out position, out rotation, out scale);
                 }
-                // Auto calcualted transform
+                // Auto calculated transform
                 else {
                     AccessoryItemHelper.GetTransform(itemPoint, mode, rigManager, out position, out rotation, out scale);
                 }
