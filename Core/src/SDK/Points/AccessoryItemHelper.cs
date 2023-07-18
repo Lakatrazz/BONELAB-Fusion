@@ -1,4 +1,5 @@
 ﻿using LabFusion.Extensions;
+using LabFusion.MarrowIntegration;
 using LabFusion.Utilities;
 using SLZ.Rig;
 using SLZ.VRMK;
@@ -50,6 +51,12 @@ namespace LabFusion.SDK.Points {
             else {
                 return (artRig.eyeLf.position + artRig.eyeRt.position) * 0.5f;
             }
+        }
+
+        public static void GetTransform(MarrowCosmeticPoint point, out Vector3 position, out Quaternion rotation, out Vector3 scale) {
+            position = point.Transform.position;
+            rotation = point.Transform.rotation;
+            scale = point.Transform.lossyScale;
         }
 
         public static void GetTransform(AccessoryPoint itemPoint, AccessoryScaleMode mode, RigManager rig, out Vector3 position, out Quaternion rotation, out Vector3 scale) {

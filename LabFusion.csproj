@@ -374,6 +374,7 @@
     <Compile Include="Core\src\Network\Helpers\NetworkVerification.cs" />
     <Compile Include="Core\src\Network\Helpers\SendRateTable.cs" />
     <Compile Include="Core\src\Network\Helpers\VoiceHelper.cs" />
+    <Compile Include="Core\src\Network\Helpers\VoteKickHelper.cs" />
     <Compile Include="Core\src\Network\INetworkLobby.cs" />
     <Compile Include="Core\src\Network\IVoiceHandler.cs" />
     <Compile Include="Core\src\Network\IVoiceManager.cs" />
@@ -399,6 +400,8 @@
     <Compile Include="Core\src\Network\Messages\Representation\PlayerRepDamageMessage.cs" />
     <Compile Include="Core\src\Network\Messages\SDK\GameObjectActiveMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\PermissionCommandRequestMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Server\VoteKickResponseMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Server\VoteKickRequestMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\PlayerVoiceChatMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Syncables\PropSyncableSleepMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Trials\TrialSpawnerEventsMessage.cs" />

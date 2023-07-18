@@ -9,6 +9,7 @@ namespace LabFusion.Network
     public static class NativeMessageTag
     {
         public static readonly byte
+            // Built in messages
             Unknown = 0,
 
             ConnectionRequest = 1,
@@ -138,6 +139,10 @@ namespace LabFusion.Network
             SpawnGunPreviewMesh = 79,
 
             MineDiveCart = 80,
+
+            // Vote kicking
+            VoteKickRequest = 81,
+            VoteKickResponse = 82,
 
             // SDK messages
             // Module setup

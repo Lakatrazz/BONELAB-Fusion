@@ -20,6 +20,11 @@ using Avatar = SLZ.VRMK.Avatar;
 namespace LabFusion.Patching {
     [HarmonyPatch(typeof(ArtRig))]
     public static class ArtRigPatches {
+        /// <summary>
+        /// Invoked after an ArtRig has finished updating its avatar. No safety checks, be careful.
+        /// </summary>
+        public static event Action<ArtRig> OnArtLateUpdate;
+
         [HarmonyPostfix]
         [HarmonyPatch(nameof(ArtRig.OnUpdate))]
         public static void OnUpdate(ArtRig __instance) {
@@ -43,6 +48,9 @@ namespace LabFusion.Patching {
                 if (animatorJaw != null)
                     animatorJaw.rotation = __instance.artJaw.rotation;
             }
+
+            // Invoke the hook
+            OnArtLateUpdate?.Invoke(__instance);
         }
 
         [HarmonyPostfix]

@@ -71,6 +71,8 @@ namespace LabFusion
             PointItemManager.Internal_HookAssemblies();
 
             PlayerAdditionsHelper.OnInitializeMelon();
+
+            VoteKickHelper.Internal_OnInitializeMelon();
         }
 
         public override void OnInitializeMelon() {
@@ -161,6 +163,8 @@ namespace LabFusion
         public override void OnDeinitializeMelon() {
             // Cleanup networking
             InternalLayerHelpers.OnCleanupLayer();
+
+            VoteKickHelper.Internal_OnDeinitializeMelon();
 
             // Backup files
             FusionFileLoader.OnDeinitializeMelon();

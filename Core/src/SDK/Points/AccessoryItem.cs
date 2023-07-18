@@ -1,6 +1,8 @@
 ﻿using LabFusion.Extensions;
 using LabFusion.MarrowIntegration;
+using LabFusion.Patching;
 using LabFusion.Utilities;
+
 using SLZ.Rig;
 
 using System.Collections.Generic;
@@ -64,9 +66,7 @@ namespace LabFusion.SDK.Points
                 Vector3 scale;
                 // SDK offset transform
                 if (points.TryGetValue(itemPoint, out var component)) {
-                    position = component.Transform.position;
-                    rotation = component.Transform.rotation;
-                    scale = component.Transform.lossyScale;
+                    AccessoryItemHelper.GetTransform(component, out position, out rotation, out scale);
                 }
                 // Auto calcualted transform
                 else {
@@ -176,9 +176,6 @@ namespace LabFusion.SDK.Points
         // Is the accessory hidden from the local view?
         public virtual bool IsHiddenInView => false;
 
-        // We use LateUpdate to update object positions, so it should be hooked
-        public override bool ImplementLateUpdate => true;
-
         protected Dictionary<RigManager, AccessoryInstance> _accessoryInstances = new Dictionary<RigManager, AccessoryInstance>(new UnityComparer());
 
         public override void OnUpdateObjects(PointItemPayload payload, bool isVisible) {
@@ -232,30 +229,31 @@ namespace LabFusion.SDK.Points
             }
         }
 
-        public override void OnLateUpdate() {
+        public override void OnRegistered() {
+            ArtRigPatches.OnArtLateUpdate += OnArtLateUpdate;
+        }
+
+        public override void OnUnregistered() {
+            ArtRigPatches.OnArtLateUpdate -= OnArtLateUpdate;
+        }
+
+        public void OnArtLateUpdate(ArtRig rig) {
             if (_accessoryInstances.Count <= 0)
                 return;
 
-            List<AccessoryInstance> accessoriesToRemove = null;
+            var manager = rig.manager;
 
-            foreach (var instance in _accessoryInstances) {
-                if (!instance.Value.IsValid()) {
-                    accessoriesToRemove ??= new List<AccessoryInstance>();
-
-                    accessoriesToRemove.Add(instance.Value);
-                    continue;
-                }
-
-                instance.Value.Update(ItemPoint, ScaleMode);
-
-                instance.Value.UpdateMirrors();
-            }
-
-            if (accessoriesToRemove != null) {
-                for (var i = 0; i < accessoriesToRemove.Count; i++) {
-                    var instance = accessoriesToRemove[i];
+            if (_accessoryInstances.TryGetValue(manager, out var instance)) {
+                // Make sure it's valid
+                if (!instance.IsValid()) {
                     instance.Cleanup();
-                    _accessoryInstances.Remove(instance.rigManager);
+                    _accessoryInstances.Remove(manager);
+                }
+                // Update the instance
+                else {
+                    instance.Update(ItemPoint, ScaleMode);
+
+                    instance.UpdateMirrors();
                 }
             }
         }
