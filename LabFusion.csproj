@@ -266,12 +266,15 @@
     <Compile Include="Core\src\BoneMenu\AdminActionsCreator.cs" />
     <Compile Include="Core\src\BoneMenu\PlayerListCreator.cs" />
     <Compile Include="Core\src\BoneMenu\SettingsCreator.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\DescentDMData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\MainMenuDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\MirrorData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\NeonDistrictTacTrialData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\NeonDistrictParkourData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\TunnelTipperData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\ContainerYardData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\TuscanyData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\VoidG114DMData.cs" />
     <Compile Include="Core\src\Data\Containers\Syncables\FrameSkipper.cs" />
     <Compile Include="Core\src\Data\Containers\FusionArrayPool.cs" />
     <Compile Include="Core\src\Data\Containers\Syncables\GrabbedGripList.cs" />
