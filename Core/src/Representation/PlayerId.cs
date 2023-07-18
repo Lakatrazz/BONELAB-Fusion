@@ -63,6 +63,13 @@ namespace LabFusion.Representation
             return id == null || !id.IsValid;
         }
 
+        public bool HasEquipped(PointItem item) {
+            if (IsSelf)
+                return item.IsEquipped;
+            else
+                return EquippedItems.Contains(item.Barcode);
+        }
+
         public bool TrySetMetadata(string key, string value) {
             // If we are the server, we just accept the request
             // Otherwise, we make sure this is our PlayerId

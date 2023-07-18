@@ -131,7 +131,7 @@ namespace LabFusion.Patching
             {
                 foreach (var item in PointItemManager.LoadedItems)
                 {
-                    if (playerId.EquippedItems.Contains(item.Barcode))
+                    if (playerId.HasEquipped(item))
                     {
                         item.OnUpdateObjects(new PointItemPayload()
                         {
