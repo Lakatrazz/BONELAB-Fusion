@@ -13,6 +13,9 @@ namespace LabFusion.Syncables {
         public static bool CheckLocks(this IList<IOwnerLocker> list, out byte owner) {
             owner = 0;
 
+            if (list == null)
+                return false;
+
             foreach (var locker in list) { 
                 if (locker.CheckLock(out var result)) {
                     owner = result;

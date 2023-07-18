@@ -176,6 +176,9 @@ namespace LabFusion.SDK.Points
         // Is the accessory hidden from the local view?
         public virtual bool IsHiddenInView => false;
 
+        // We use LateUpdate to cleanup accessories, so it should be hooked
+        public override bool ImplementLateUpdate => true;
+
         protected Dictionary<RigManager, AccessoryInstance> _accessoryInstances = new Dictionary<RigManager, AccessoryInstance>(new UnityComparer());
 
         public override void OnUpdateObjects(PointItemPayload payload, bool isVisible) {
@@ -237,24 +240,44 @@ namespace LabFusion.SDK.Points
             ArtRigPatches.OnArtLateUpdate -= OnArtLateUpdate;
         }
 
-        public void OnArtLateUpdate(ArtRig rig) {
+        public override void OnLateUpdate()
+        {
+            // Make sure theres accessory instances
             if (_accessoryInstances.Count <= 0)
                 return;
 
+            // Check if all instances are valid. Otherwise, clean them up
+            List<AccessoryInstance> accessoriesToRemove = null;
+
+            foreach (var instance in _accessoryInstances) {
+                if (!instance.Value.IsValid()) {
+                    accessoriesToRemove ??= new List<AccessoryInstance>();
+
+                    accessoriesToRemove.Add(instance.Value);
+                }
+            }
+
+            if (accessoriesToRemove != null) {
+                for (var i = 0; i < accessoriesToRemove.Count; i++) {
+                    var instance = accessoriesToRemove[i];
+                    instance.Cleanup();
+                    _accessoryInstances.Remove(instance.rigManager);
+                }
+            }
+        }
+
+        public void OnArtLateUpdate(ArtRig rig) {
+            // Make sure theres accessory instances
+            if (_accessoryInstances.Count <= 0)
+                return;
+
+            // Update the positions of the accessories
             var manager = rig.manager;
 
             if (_accessoryInstances.TryGetValue(manager, out var instance)) {
-                // Make sure it's valid
-                if (!instance.IsValid()) {
-                    instance.Cleanup();
-                    _accessoryInstances.Remove(manager);
-                }
-                // Update the instance
-                else {
-                    instance.Update(ItemPoint, ScaleMode);
+                instance.Update(ItemPoint, ScaleMode);
 
-                    instance.UpdateMirrors();
-                }
+                instance.UpdateMirrors();
             }
         }
     }

@@ -90,8 +90,6 @@ namespace LabFusion.Syncables
         private IReadOnlyList<IPropExtender> _extenders;
 
         private List<IOwnerLocker> _ownerLockers;
-        public List<IOwnerLocker> OwnerLockers { get { return _ownerLockers; } }
-
 
         private GrabbedGripList _grabbedGrips;
 
@@ -239,6 +237,23 @@ namespace LabFusion.Syncables
             _catchupDelegate?.InvokeSafe(user, "executing Catchup Delegate");
         }
 
+        public void AddOwnerLocker(IOwnerLocker locker) {
+            if (_ownerLockers == null) {
+#if DEBUG
+                FusionLogger.Warn("Tried to add an owner locker but the list was null!");
+#endif
+                return;
+            }
+
+            if (!_ownerLockers.Contains(locker)) {
+                _ownerLockers.Add(locker);
+
+#if DEBUG
+                FusionLogger.Log("Added owner locker!");
+#endif
+            }
+        }
+
         public bool TryGetExtender<T>(out T extender) where T : IPropExtender {
             foreach (var found in _extenders) {
                 if (found.GetType() == typeof(T)) {
@@ -272,7 +287,7 @@ namespace LabFusion.Syncables
 
         public void OnTransferOwner(Hand hand) {
             // Check if we're locked
-            if (OwnerLockers.CheckLocks(out var owner) && owner != PlayerIdManager.LocalSmallId) {
+            if (_ownerLockers.CheckLocks(out var owner) && owner != PlayerIdManager.LocalSmallId) {
                 return;
             }
 

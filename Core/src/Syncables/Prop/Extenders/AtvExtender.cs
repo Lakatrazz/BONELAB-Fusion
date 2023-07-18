@@ -16,12 +16,11 @@ namespace LabFusion.Syncables {
 
         protected override void AddToCache(Atv atv, PropSyncable syncable) {
             Cache.Add(atv, syncable);
-            syncable.OwnerLockers.Add(this);
+            syncable.AddOwnerLocker(this);
         }
 
         protected override void RemoveFromCache(Atv atv) {
             Cache.Remove(atv);
-            PropSyncable.OwnerLockers.Remove(this);
         }
 
         public bool CheckLock(out byte owner) {

@@ -609,7 +609,9 @@
     <Compile Include="Core\src\Senders\Level\TrialSender.cs" />
     <Compile Include="Core\src\Senders\Level\CampaignSender.cs" />
     <Compile Include="Core\src\Syncables\ConstraintSyncable.cs" />
+    <Compile Include="Core\src\Syncables\IOwnerLocker.cs" />
     <Compile Include="Core\src\Syncables\Prop\Extenders\PowerableJointExtender.cs" />
+    <Compile Include="Core\src\Syncables\Prop\Extenders\AtvExtender.cs" />
     <Compile Include="Core\src\Syncables\Prop\Extenders\TwoButtonRemoteControllerExtender.cs" />
     <Compile Include="Core\src\Syncables\Prop\Extenders\FunicularControllerExtender.cs" />
     <Compile Include="Core\src\Syncables\Prop\Extenders\FlyingGunExtender.cs" />
