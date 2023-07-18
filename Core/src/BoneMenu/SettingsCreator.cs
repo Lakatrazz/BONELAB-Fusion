@@ -103,6 +103,9 @@ namespace LabFusion.BoneMenu
             // Player constraining
             CreateBoolPreference(category, "Player Constraining", FusionPreferences.LocalServerSettings.PlayerConstraintsEnabled);
 
+            // Vote kicking
+            CreateBoolPreference(category, "Vote Kicking", FusionPreferences.LocalServerSettings.VoteKickingEnabled);
+
             // Cheat detection
             var cheatsCategory = category.CreateCategory("Cheat Detection", Color.white);
             CreateEnumPreference(cheatsCategory, "Stat Changers Allowed", FusionPreferences.LocalServerSettings.StatChangersAllowed);

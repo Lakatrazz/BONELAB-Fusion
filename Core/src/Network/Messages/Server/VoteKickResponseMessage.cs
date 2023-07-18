@@ -89,7 +89,7 @@ namespace LabFusion.Network
                 else {
                     FusionNotifier.Send(new FusionNotification() {
                         title = "Vote Kick",
-                        message = $"A player has voted to kick {data.username}. ({data.votes/data.requiredVotes} Votes)",
+                        message = $"A player has voted to kick {data.username}. ({data.votes}/{data.requiredVotes} Votes)",
                         type = NotificationType.INFORMATION,
                         isPopup = true,
                         isMenuItem = false,

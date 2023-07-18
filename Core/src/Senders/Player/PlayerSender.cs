@@ -104,13 +104,12 @@ namespace LabFusion.Senders {
         }
 
         public static void SendVoteKickRequest(byte target) {
-            if (!NetworkInfo.IsServer) {
-                using var writer = FusionWriter.Create(VoteKickRequestData.Size);
-                using var data = VoteKickRequestData.Create(PlayerIdManager.LocalId, target);
+            using var writer = FusionWriter.Create(VoteKickRequestData.Size);
+            using var data = VoteKickRequestData.Create(PlayerIdManager.LocalId, target);
+            writer.Write(data);
 
-                using var message = FusionMessage.Create(NativeMessageTag.VoteKickRequest, writer);
-                MessageSender.SendToServer(NetworkChannel.Reliable, message);
-            }
+            using var message = FusionMessage.Create(NativeMessageTag.VoteKickRequest, writer);
+            MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
 
         public static void SendPlayerAction(PlayerActionType type, byte? otherPlayer = null) {

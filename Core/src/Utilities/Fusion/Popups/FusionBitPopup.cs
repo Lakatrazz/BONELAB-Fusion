@@ -15,7 +15,7 @@ namespace LabFusion.Utilities
 {
     public static class FusionBitPopup
     {
-        private static Queue<int> _bitQueue = new();
+        private static readonly Queue<int> _bitQueue = new();
 
         public const float DefaultDuration = 1f;
         public static readonly Vector3 LocalPosition = new(0.319f, -0.198f, 0.783f);

@@ -45,7 +45,7 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
             // This should only ever be handled by the server
-            if (NetworkInfo.IsServer && isServerHandled) {
+            if (isServerHandled) {
                 using FusionReader reader = FusionReader.Create(bytes);
                 using var data = reader.ReadFusionSerializable<VoteKickRequestData>();
 
@@ -65,6 +65,7 @@ namespace LabFusion.Network
                     // Send response to all players
                     using var writer = FusionWriter.Create(VoteKickResponseData.Size);
                     using var responseData = VoteKickResponseData.Create(data.target, username, count, required, kick);
+                    writer.Write(responseData);
 
                     using var message = FusionMessage.Create(NativeMessageTag.VoteKickResponse, writer);
                     MessageSender.BroadcastMessageExcept(data.target, NetworkChannel.Reliable, message, false);
