@@ -1,20 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 using HarmonyLib;
+
 using LabFusion.Data;
-using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Preferences;
 using LabFusion.Representation;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 
+using MelonLoader;
+
 using SLZ.Rig;
-using SLZ.VRMK;
 
 using UnityEngine;
 
@@ -90,24 +91,7 @@ namespace LabFusion.Patching {
 
                     // Make sure the stats are valid before applying them
                     if (!ValidateStats(__instance, rep, newStats)) {
-                        ConnectionSender.SendDisconnect(rep.PlayerId, "Stat changers are not allowed on this server. Your stats appear to be modified.");
-
-                        string username;
-                        if (rep.PlayerId.TryGetDisplayName(out var name))
-                            username = name;
-                        else
-                            username = rep.PlayerId.LongId.ToString();
-
-                        // Notify the host, they may not know this is a thing
-                        FusionNotifier.Send(new FusionNotification()
-                        {
-                            isMenuItem = false,
-                            isPopup = true,
-                            title = "Cheat Detected",
-                            type = NotificationType.WARNING,
-                            message = $"{username} was kicked due to modified stats. (This can be disabled.)",
-                            showTitleOnPopup = true,
-                        });
+                        MelonCoroutines.Start(CoKickStatChangerRoutine(__instance, rep));
                         return;
                     }
 
@@ -119,6 +103,43 @@ namespace LabFusion.Patching {
             {
                 FusionLogger.LogException("patching Avatar.RefreshBodyMeasurements", e);
             }
+        }
+
+        // We wait a little bit before kicking the user, just to make sure their avatar wasn't incorrectly found guilty mid change
+        private static IEnumerator CoKickStatChangerRoutine(Avatar avatar, PlayerRep rep)
+        {
+            // Wait two seconds
+            float start = Time.realtimeSinceStartup;
+            while (Time.realtimeSinceStartup - start <= 2f)
+                yield return null;
+
+            // Does the RigManager still exist?
+            if (!rep.IsCreated)
+                yield break;
+
+            // Does the avatar still apply?
+            if (rep.RigReferences.RigManager.avatar != avatar)
+                yield break;
+
+            // Go ahead and disconnect the user
+            ConnectionSender.SendDisconnect(rep.PlayerId, "Stat changers are not allowed on this server. Your stats appear to be modified.");
+
+            string username;
+            if (rep.PlayerId.TryGetDisplayName(out var name))
+                username = name;
+            else
+                username = rep.PlayerId.LongId.ToString();
+
+            // Notify the host, they may not know this is a thing
+            FusionNotifier.Send(new FusionNotification()
+            {
+                isMenuItem = false,
+                isPopup = true,
+                title = "Cheat Detected",
+                type = NotificationType.WARNING,
+                message = $"{username} was kicked due to modified stats. (This can be disabled.)",
+                showTitleOnPopup = true,
+            });
         }
     }
 }
