@@ -89,6 +89,10 @@ namespace LabFusion.Syncables
 
         private IReadOnlyList<IPropExtender> _extenders;
 
+        private List<IOwnerLocker> _ownerLockers;
+        public List<IOwnerLocker> OwnerLockers { get { return _ownerLockers; } }
+
+
         private GrabbedGripList _grabbedGrips;
 
         public bool IsHeld = false;
@@ -208,6 +212,7 @@ namespace LabFusion.Syncables
 
             HasIgnoreHierarchy = GameObject.GetComponentInParent<IgnoreHierarchy>(true);
 
+            _ownerLockers = new();
             _extenders = PropExtenderManager.GetPropExtenders(this);
 
             _initialized = true;
@@ -266,6 +271,11 @@ namespace LabFusion.Syncables
         }
 
         public void OnTransferOwner(Hand hand) {
+            // Check if we're locked
+            if (OwnerLockers.CheckLocks(out var owner) && owner != PlayerIdManager.LocalSmallId) {
+                return;
+            }
+
             // Determine the manager
             // Main player
             if (hand.manager == RigData.RigReferences.RigManager) {
