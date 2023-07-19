@@ -274,6 +274,7 @@
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\TunnelTipperData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\ContainerYardData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\TuscanyData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\HubDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\VoidG114DMData.cs" />
     <Compile Include="Core\src\Data\Containers\Syncables\FrameSkipper.cs" />
     <Compile Include="Core\src\Data\Containers\FusionArrayPool.cs" />
