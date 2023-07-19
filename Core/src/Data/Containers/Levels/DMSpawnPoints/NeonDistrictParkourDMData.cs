@@ -10,21 +10,25 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace LabFusion.Data {
-    public class MirrorData : LevelDataHandler {
-        private static readonly Vector3[] _deathmatchSpawnPoints = new Vector3[8] {
-    new Vector3(-0.3258f, 1.3078f, 2.3584f),
-    new Vector3(-12.8975f, 1.3411f, -12.7348f),
-    new Vector3(-11.0187f, 1.2294f, 0.2149f),
-    new Vector3(0.1774f, 1.2333f, -10.9054f),
-    new Vector3(-13.9262f, 10.2407f, -14.7184f),
-    new Vector3(-11.6317f, 10.1571f, -0.3718f),
-    new Vector3(-1.2534f, 10.245f, -9.7245f),
-    new Vector3(-1.3073f, 10.8671f, -0.2344f),
+    public class NeonDistrictParkourDMData : LevelDataHandler {
+        private static readonly Vector3[] _deathmatchSpawnPoints = new Vector3[12] {
+    new Vector3(14.1986f, 0.9377f, -7.2248f),
+    new Vector3(4.0275f, 4.3721f, -3.6219f),
+    new Vector3(17.0486f, 3.0206f, -14.0138f),
+    new Vector3(13.5923f, 1.1912f, -13.8777f),
+    new Vector3(18.5329f, 4.9916f, -24.4213f),
+    new Vector3(8.154f, 3.3383f, -30.4304f),
+    new Vector3(-3.1803f, 8.2037f, -31.3292f),
+    new Vector3(-13.4639f, 3.3676f, -29.011f),
+    new Vector3(-9.9654f, 1.3233f, -21.4282f),
+    new Vector3(-9.157f, 1.3293f, -9.5022f),
+    new Vector3(-2.9644f, 1.2189f, -16.9085f),
+    new Vector3(1.1659f, 1.2677f, -7.5986f),
         };
 
         protected override void MainSceneInitialized() {
             // Check if this is the right map
-            if (FusionSceneManager.Title == "Mirror" && FusionSceneManager.Level.Pallet.Internal) {
+            if (FusionSceneManager.Title == "Neon District Parkour" && FusionSceneManager.Level.Pallet.Internal) {
                 // Create DM spawn points
                 for (var i = 0; i < _deathmatchSpawnPoints.Length; i++) {
                     GameObject spawnPoint = new GameObject("Deathmatch Spawn");

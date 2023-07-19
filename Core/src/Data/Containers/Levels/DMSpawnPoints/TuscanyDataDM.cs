@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace LabFusion.Data {
-    public class TuscanyData : LevelDataHandler {
+    public class TuscanyDMData : LevelDataHandler {
         private static readonly Vector3[] _deathmatchSpawnPoints = new Vector3[10] {
    new Vector3(17.886f, 6.9674f, 54.4874f),
     new Vector3(-39.3922f, 0.7033f, 7.8235f),

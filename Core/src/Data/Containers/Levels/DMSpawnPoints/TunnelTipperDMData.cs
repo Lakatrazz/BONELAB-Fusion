@@ -10,25 +10,23 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace LabFusion.Data {
-    public class NeonDistrictTacTrialData : LevelDataHandler {
-        private static readonly Vector3[] _deathmatchSpawnPoints = new Vector3[12] {
-    new Vector3(14.1986f, 0.9377f, -7.2248f),
-    new Vector3(4.0275f, 4.3721f, -3.6219f),
-    new Vector3(17.0486f, 3.0206f, -14.0138f),
-    new Vector3(13.5923f, 1.1912f, -13.8777f),
-    new Vector3(18.5329f, 4.9916f, -24.4213f),
-    new Vector3(8.154f, 3.3383f, -30.4304f),
-    new Vector3(-3.1803f, 8.2037f, -31.3292f),
-    new Vector3(-13.4639f, 3.3676f, -29.011f),
-    new Vector3(-9.9654f, 1.3233f, -21.4282f),
-    new Vector3(-9.157f, 1.3293f, -9.5022f),
-    new Vector3(-2.9644f, 1.2189f, -16.9085f),
-    new Vector3(1.1659f, 1.2677f, -7.5986f),
+    public class TunnelTipperDMData : LevelDataHandler {
+        private static readonly Vector3[] _deathmatchSpawnPoints = new Vector3[10] {
+    new Vector3(10.0078f, 16.0968f, 21.5753f),
+    new Vector3(10.0832f, 15.663f, 25.6005f),
+    new Vector3(9.9641f, 18.1093f, -20.7673f),
+    new Vector3(10.595f, 15.1221f, -15.0623f),
+    new Vector3(11.1202f, 1.1871f, 10.3299f),
+    new Vector3(6.7449f, 6.9961f, 2.9742f),
+    new Vector3(11.9569f, 7.818f, -4.9224f),
+    new Vector3(9.2211f, -9.798f, 26.545f),
+    new Vector3(9.386f, 9.9136f, -15.1336f),
+    new Vector3(9.7402f, 10.0533f, 18.4418f),
         };
 
         protected override void MainSceneInitialized() {
             // Check if this is the right map
-            if (FusionSceneManager.Title == "Neon District Tac Trial" && FusionSceneManager.Level.Pallet.Internal) {
+            if (FusionSceneManager.Title == "Tunnel Tipper" && FusionSceneManager.Level.Pallet.Internal) {
                 // Create DM spawn points
                 for (var i = 0; i < _deathmatchSpawnPoints.Length; i++) {
                     GameObject spawnPoint = new GameObject("Deathmatch Spawn");
