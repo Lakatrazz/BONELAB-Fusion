@@ -280,7 +280,7 @@
     <Compile Include="Core\src\Data\Containers\FusionArrayPool.cs" />
     <Compile Include="Core\src\Data\Containers\Syncables\GrabbedGripList.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\GameControllerData.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\HalfwayParkData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\HalfwayParkDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\HolodeckData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\LevelDataHandler.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\ResetButtonRemover.cs" />
