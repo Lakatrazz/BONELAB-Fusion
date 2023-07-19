@@ -22,7 +22,7 @@ namespace LabFusion.Data {
     new Vector3(53.2528f, -25.712f, 61.801f),
     new Vector3(48.7699f, -25.7121f, 29.7422f),
     new Vector3(24.4213f, -25.7121f, 30.5197f),
-    new Vector3(-4.5168f, -25.7123f, 70.1425f)),
+    new Vector3(-4.5168f, -25.7123f, 70.1425f),
         };
 
         protected override void MainSceneInitialized() {
