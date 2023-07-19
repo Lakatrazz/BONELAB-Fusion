@@ -112,6 +112,12 @@ namespace FusionHelper.Network
         private static async void RespondWithLobbyIds()
         {
             Lobby[] lobbies = await FetchLobbies();
+            if (lobbies == null)
+            {
+                Console.WriteLine("Failed to fetch lobbies! Make sure your Steam client is connected to their servers and restart FusionHelper. If that doesn't solve it, Steam's servers may be down right now.");
+                return;
+            }
+
             NetDataWriter writer = new();
             writer.Put((byte)MessageTypes.LobbyIds);
             writer.Put((uint)lobbies.Length);

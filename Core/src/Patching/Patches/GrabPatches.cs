@@ -157,7 +157,7 @@ namespace LabFusion.Patching
             catch (Exception e)
             {
 #if DEBUG
-                FusionLogger.LogException("to execute patch Hand.DetachObject", e);
+                FusionLogger.LogException("to execute patch Grip.OnDetachedFromHand", e);
 #endif
             }
         }

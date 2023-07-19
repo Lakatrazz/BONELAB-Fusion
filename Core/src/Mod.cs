@@ -22,6 +22,7 @@ using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Points;
 using System.Linq;
 using LabFusion.SDK.Achievements;
+using LabFusion.Patching;
 
 namespace LabFusion
 {
@@ -76,6 +77,10 @@ namespace LabFusion
         }
 
         public override void OnInitializeMelon() {
+            // Manually patch methods on Android because some only work on PC
+            if (BoneLib.HelperMethods.IsAndroid())
+                ManualPatchRunner.Init(HarmonyInstance);
+
             // Prepare the bonemenu category
             FusionPreferences.OnPrepareBoneMenuCategory();
 
