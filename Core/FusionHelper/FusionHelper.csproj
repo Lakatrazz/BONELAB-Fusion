@@ -2,6 +2,7 @@
 
   <PropertyGroup>
 	<ApplicationId>app.trev.FusionHelper</ApplicationId>
+	<ApplicationIcon>fusion.ico</ApplicationIcon>
 	<Configurations>Debug-Win;Release-Win;Debug-Mac;Release-Mac;Debug-Linux;Release-Linux</Configurations>
 	  
 	<PlatformConfiguration Condition="$(Configuration.EndsWith('-Mac'))">Mac</PlatformConfiguration>
