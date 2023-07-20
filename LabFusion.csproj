@@ -266,6 +266,9 @@
     <Compile Include="Core\src\BoneMenu\AdminActionsCreator.cs" />
     <Compile Include="Core\src\BoneMenu\PlayerListCreator.cs" />
     <Compile Include="Core\src\BoneMenu\SettingsCreator.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\BigAnomalyBDMData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\MineDiveDMData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\BigAnomalyDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\MagmaGateDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\RooftopsDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\BaselineDMData.cs" />

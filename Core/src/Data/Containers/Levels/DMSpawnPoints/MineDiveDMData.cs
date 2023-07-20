@@ -10,21 +10,19 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace LabFusion.Data {
-    public class MirrorDMData : LevelDataHandler {// fun fact, when i played this with a tester he said that it was the worst pvp experience he ever had. this map was NOT made for deathmatch buttttttttt its fine
-        private static readonly Vector3[] _deathmatchSpawnPoints = new Vector3[8] {
-    new Vector3(-0.3258f, 1.3078f, 2.3584f),
-    new Vector3(-12.8975f, 1.3411f, -12.7348f),
-    new Vector3(-11.0187f, 1.2294f, 0.2149f),
-    new Vector3(0.1774f, 1.2333f, -10.9054f),
-    new Vector3(-13.9262f, 10.2407f, -14.7184f),
-    new Vector3(-11.6317f, 10.1571f, -0.3718f),
-    new Vector3(-1.2534f, 10.245f, -9.7245f),
-    new Vector3(-1.3073f, 10.8671f, -0.2344f),
+    public class MineDiveDMData : LevelDataHandler {
+        private static readonly Vector3[] _deathmatchSpawnPoints = new Vector3[6] {
+    new Vector3(-5.6735f, -0.0314f, -11.8826f),
+    new Vector3(-10.8307f, -0.0054f, 11.0599f),
+    new Vector3(-11.1408f, 0.3384f, -23.1127f),
+    new Vector3(-5.2951f, -0.1026f, -34.264f),
+    new Vector3(-1.4603f, -0.0231f, -24.2549f),
+    new Vector3(3.4105f, -0.0699f, 10.5926f),
         };
 
         protected override void MainSceneInitialized() {
             // Check if this is the right map
-            if (FusionSceneManager.Title == "Mirror" && FusionSceneManager.Level.Pallet.Internal) {
+            if (FusionSceneManager.Title == "04 - Mine Dive" && FusionSceneManager.Level.Pallet.Internal) {
                 // Create DM spawn points
                 for (var i = 0; i < _deathmatchSpawnPoints.Length; i++) {
                     GameObject spawnPoint = new GameObject("Deathmatch Spawn");
