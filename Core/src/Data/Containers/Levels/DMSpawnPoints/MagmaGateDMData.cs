@@ -31,7 +31,7 @@ namespace LabFusion.Data {
 
         protected override void MainSceneInitialized() {
             // Check if this is the right map
-            if (FusionSceneManager.Title == "01 - Descent" && FusionSceneManager.Level.Pallet.Internal) {
+            if (FusionSceneManager.Title == "08 - Magma Gate" && FusionSceneManager.Level.Pallet.Internal) {
                 // Create DM spawn points
                 for (var i = 0; i < _deathmatchSpawnPoints.Length; i++) {
                     GameObject spawnPoint = new GameObject("Deathmatch Spawn");
