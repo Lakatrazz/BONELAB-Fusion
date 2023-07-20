@@ -21,19 +21,17 @@ namespace FusionHelper.Steamworks
 
         public static void Init(int appId)
         {
+#if !PLATFORM_MAC
             try
             {
                 string directory = Directory.GetCurrentDirectory();
-                #if PLATFORM_MAC
-                if (directory.Contains("FusionHelper.app"))
-                    directory = Path.Combine(directory, "Contents", "MacOS");
-                #endif
                 File.WriteAllText(Path.Combine(directory, "steam_appid.txt"), appId.ToString());
             }
             catch
             {
                 Console.WriteLine("Failed to write the Steam app id to disk, defaulting to SteamVR. Please make sure your in-game settings match with this.");
             }
+#endif
 
             try
             {
