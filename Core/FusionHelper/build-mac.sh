@@ -24,12 +24,16 @@ if [ "${architecture_flag,,}" = "arm64" ]; then
     architecture_flag="arm64"
 fi
 
+# Set the path to the FusionHelper.app
+fusion_helper_path="./bin/${configuration}/net6.0-macos11.0/osx-${architecture_flag}/FusionHelper.app"
+
+# Clear old data
+echo "Deleting old FusionHelper build..."
+rm -R "${fusion_helper_path}"
+
 # Perform the dotnet publish command with the specified configuration and architecture flags
 echo "Compiling FusionHelper for ${architecture_flag} in ${build_type} mode..."
 dotnet publish -a $architecture_flag -c $configuration --sc true
-
-# Set the path to the FusionHelper.app
-fusion_helper_path="./bin/${configuration}/net6.0-macos11.0/osx-${architecture_flag}/FusionHelper.app"
 
 echo "Replacing default application launcher with terminal launcher..."
 
