@@ -99,23 +99,13 @@ namespace LabFusion.SDK.Gamemodes
                 _savedMinutes = v;
             });
 
-            category.CreateFloatElement(_vitalityText, Color.white, _totalVitality, 0.1f, _minVitality, _maxVitality, (r) => {
-
+            category.CreateFloatElement(_vitalityText, Color.white, _totalVitality, 0.1f, _minVitality, _maxVitality, (r) => 
+            {
                 _totalVitality = r;
-
-                //supposed to change the category name but does not work for some reason -TEE
-                if (r > -0.1f)
-                {
-                    _vitalityText = "Vitlalty";
-                }
-                else
-                {
-                    _vitalityText = "Vitality (Default)";
-                }
-
             });
 
-            category.CreateIntElement("Ammo", Color.white, _totalAmmo, 100, _minAmmo, _maxAmmo, (a) => {
+            category.CreateIntElement("Ammo", Color.white, _totalAmmo, 100, _minAmmo, _maxAmmo, (a) => 
+            {
                 _totalAmmo = a;
             });
         }
