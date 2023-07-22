@@ -41,6 +41,14 @@ namespace LabFusion.SDK.Gamemodes
         private const int _minMinutes = 2;
         private const int _maxMinutes = 60;
 
+        private const float _defaultVitality = -0.1f;
+        private const float _minVitality = -0.1f;
+        private const float _maxVitality = 100.0f;
+
+        private const int _defaultAmmo = 1000;
+        private const int _minAmmo = 0;
+        private const int _maxAmmo = 100000;
+
         // Prefix
         public const string DefaultPrefix = "FusionTDM";
 
@@ -50,6 +58,8 @@ namespace LabFusion.SDK.Gamemodes
 
         public override string GamemodeCategory => "Fusion";
         public override string GamemodeName => "Team Deathmatch";
+
+        public string _vitalityText = "Vitality";
 
         public override bool DisableDevTools => true;
         public override bool DisableSpawnGun => true;
@@ -64,6 +74,10 @@ namespace LabFusion.SDK.Gamemodes
 
         private int _savedMinutes = _defaultMinutes;
         private int _totalMinutes = _defaultMinutes;
+
+        private float _totalVitality = _defaultVitality;
+
+        private int _totalAmmo = _defaultAmmo;
 
         private Team _lastTeam = null;
         private Team _localTeam = null;
@@ -83,6 +97,26 @@ namespace LabFusion.SDK.Gamemodes
             {
                 _totalMinutes = v;
                 _savedMinutes = v;
+            });
+
+            category.CreateFloatElement(_vitalityText, Color.white, _totalVitality, 0.1f, _minVitality, _maxVitality, (r) => {
+
+                _totalVitality = r;
+
+                //supposed to change the category name but does not work for some reason -TEE
+                if (r > -0.1f)
+                {
+                    _vitalityText = "Vitlalty";
+                }
+                else
+                {
+                    _vitalityText = "Vitality (Default)";
+                }
+
+            });
+
+            category.CreateIntElement("Ammo", Color.white, _totalAmmo, 100, _minAmmo, _maxAmmo, (a) => {
+                _totalAmmo = a;
             });
         }
 
@@ -378,7 +412,7 @@ namespace LabFusion.SDK.Gamemodes
                 FusionPlayer.SetMortality(true);
 
                 // Setup ammo
-                FusionPlayer.SetAmmo(1000);
+                FusionPlayer.SetAmmo(_totalAmmo);
 
                 // Push nametag updates
                 FusionOverrides.ForceUpdateOverrides();
@@ -389,7 +423,11 @@ namespace LabFusion.SDK.Gamemodes
                     FusionPlayer.SetAvatarOverride(_avatarOverride);
                 }
 
-                if (_vitalityOverride.HasValue)
+                if (_totalVitality > -0.1f)
+                {
+                    FusionPlayer.SetPlayerVitality(_totalVitality);
+                }
+                else
                 {
                     FusionPlayer.SetPlayerVitality(_vitalityOverride.Value);
                 }

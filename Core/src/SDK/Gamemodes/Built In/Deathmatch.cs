@@ -16,8 +16,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Gamemodes {
-    public class Deathmatch : Gamemode {
+namespace LabFusion.SDK.Gamemodes
+{
+    public class Deathmatch : Gamemode
+    {
         private const int _minPlayerBits = 30;
         private const int _maxPlayerBits = 250;
 
@@ -27,6 +29,14 @@ namespace LabFusion.SDK.Gamemodes {
         private const int _minMinutes = 2;
         private const int _maxMinutes = 60;
 
+        private const float _defaultVitality = -0.1f;
+        private const float _minVitality = -0.1f;
+        private const float _maxVitality = 100.0f;
+
+        private const int _defaultAmmo = 1000;
+        private const int _minAmmo = 0;
+        private const int _maxAmmo = 100000;
+
         // Prefix
         public const string DefaultPrefix = "InternalDeathmatchMetadata";
 
@@ -35,6 +45,9 @@ namespace LabFusion.SDK.Gamemodes {
 
         public override string GamemodeCategory => "Fusion";
         public override string GamemodeName => "Deathmatch";
+
+        public string _vitalityText = "Vitality";
+
 
         public override bool DisableDevTools => true;
         public override bool DisableSpawnGun => true;
@@ -48,6 +61,10 @@ namespace LabFusion.SDK.Gamemodes {
         private int _savedMinutes = _defaultMinutes;
         private int _totalMinutes = _defaultMinutes;
 
+        private float _totalVitality = _defaultVitality;
+
+        private int _totalAmmo = _defaultAmmo;
+
         private bool _hasOverridenValues = false;
 
         private string _avatarOverride = null;
@@ -55,29 +72,55 @@ namespace LabFusion.SDK.Gamemodes {
 
         private bool _enabledLateJoining = true;
 
-        public override void OnBoneMenuCreated(MenuCategory category) {
+        public override void OnBoneMenuCreated(MenuCategory category)
+        {
             base.OnBoneMenuCreated(category);
 
             category.CreateIntElement("Round Minutes", Color.white, _totalMinutes, 1, _minMinutes, _maxMinutes, (v) => {
                 _totalMinutes = v;
                 _savedMinutes = v;
             });
+
+            category.CreateFloatElement(_vitalityText, Color.white, _totalVitality, 0.1f, _minVitality, _maxVitality, (r) => {
+
+                _totalVitality = r;
+
+                //supposed to change the category name but does not work for some reason -TEE
+                if (r > -0.1f)
+                {
+                    _vitalityText = "Vitlalty";
+                }
+                else
+                {
+                    _vitalityText = "Vitality (Default)";
+                }
+
+            });
+
+            category.CreateIntElement("Ammo", Color.white, _totalAmmo, 100, _minAmmo, _maxAmmo, (a) => {
+                _totalAmmo = a;
+            });
         }
 
-        public override void OnMainSceneInitialized() {
-            if (!_hasOverridenValues) {
+        public override void OnMainSceneInitialized()
+        {
+            if (!_hasOverridenValues)
+            {
                 SetDefaultValues();
             }
-            else {
+            else
+            {
                 _hasOverridenValues = false;
             }
         }
 
-        public override void OnLoadingBegin() {
+        public override void OnLoadingBegin()
+        {
             _hasOverridenValues = false;
         }
 
-        public void SetDefaultValues() {
+        public void SetDefaultValues()
+        {
             _totalMinutes = _savedMinutes;
             SetPlaylist(DefaultMusicVolume, FusionContentLoader.CombatPlaylist);
 
@@ -87,8 +130,10 @@ namespace LabFusion.SDK.Gamemodes {
             _enabledLateJoining = true;
         }
 
-        public void SetOverriden() {
-            if (FusionSceneManager.IsLoading()) {
+        public void SetOverriden()
+        {
+            if (FusionSceneManager.IsLoading())
+            {
                 if (!_hasOverridenValues)
                     SetDefaultValues();
 
@@ -96,29 +141,34 @@ namespace LabFusion.SDK.Gamemodes {
             }
         }
 
-        public void SetLateJoining(bool enabled) {
+        public void SetLateJoining(bool enabled)
+        {
             _enabledLateJoining = enabled;
         }
 
-        public void SetRoundLength(int minutes) {
+        public void SetRoundLength(int minutes)
+        {
             _totalMinutes = minutes;
         }
 
-        public void SetAvatarOverride(string barcode) {
+        public void SetAvatarOverride(string barcode)
+        {
             _avatarOverride = barcode;
 
             if (IsActive())
                 FusionPlayer.SetAvatarOverride(barcode);
         }
 
-        public void SetPlayerVitality(float vitality) {
+        public void SetPlayerVitality(float vitality)
+        {
             _vitalityOverride = vitality;
 
             if (IsActive())
                 FusionPlayer.SetPlayerVitality(vitality);
         }
 
-        public IReadOnlyList<PlayerId> GetPlayersByScore() {
+        public IReadOnlyList<PlayerId> GetPlayersByScore()
+        {
             List<PlayerId> leaders = new List<PlayerId>(PlayerIdManager.PlayerIds);
             leaders = leaders.OrderBy(id => GetScore(id)).ToList();
             leaders.Reverse();
@@ -126,7 +176,8 @@ namespace LabFusion.SDK.Gamemodes {
             return leaders;
         }
 
-        public PlayerId GetByScore(int place) {
+        public PlayerId GetByScore(int place)
+        {
             var players = GetPlayersByScore();
 
             if (players != null && players.Count > place)
@@ -134,14 +185,17 @@ namespace LabFusion.SDK.Gamemodes {
             return null;
         }
 
-        public int GetPlace(PlayerId id) {
+        public int GetPlace(PlayerId id)
+        {
             var players = GetPlayersByScore();
 
             if (players == null)
                 return -1;
 
-            for (var i = 0; i < players.Count; i++) {
-                if (players[i] == id) {
+            for (var i = 0; i < players.Count; i++)
+            {
+                if (players[i] == id)
+                {
                     return i + 1;
                 }
             }
@@ -149,17 +203,20 @@ namespace LabFusion.SDK.Gamemodes {
             return -1;
         }
 
-        public int GetTotalScore() {
+        public int GetTotalScore()
+        {
             int score = 0;
 
-            foreach (var player in PlayerIdManager.PlayerIds) {
+            foreach (var player in PlayerIdManager.PlayerIds)
+            {
                 score += GetScore(player);
             }
 
             return score;
         }
 
-        private int GetRewardedBits() {
+        private int GetRewardedBits()
+        {
             // Change the max bit count based on player count
             int playerCount = PlayerIdManager.PlayerCount - 1;
 
@@ -183,7 +240,8 @@ namespace LabFusion.SDK.Gamemodes {
             reward += UnityEngine.Random.Range(-maxRand, maxRand);
 
             // Make sure the reward isn't invalid
-            if (reward.IsNaN()) {
+            if (reward.IsNaN())
+            {
                 FusionLogger.ErrorLine("Prevented attempt to give invalid bit reward. Please notify a Fusion developer and send them your log.");
                 return 0;
             }
@@ -191,7 +249,8 @@ namespace LabFusion.SDK.Gamemodes {
             return reward;
         }
 
-        public override void OnGamemodeRegistered() {
+        public override void OnGamemodeRegistered()
+        {
             Instance = this;
 
             // Add hooks
@@ -201,7 +260,8 @@ namespace LabFusion.SDK.Gamemodes {
             SetDefaultValues();
         }
 
-        public override void OnGamemodeUnregistered() {
+        public override void OnGamemodeUnregistered()
+        {
             if (Instance == this)
                 Instance = null;
 
@@ -210,18 +270,23 @@ namespace LabFusion.SDK.Gamemodes {
             FusionOverrides.OnValidateNametag -= OnValidateNametag;
         }
 
-        protected bool OnValidateNametag(PlayerId id) {
+        protected bool OnValidateNametag(PlayerId id)
+        {
             if (!IsActive())
                 return true;
 
             return false;
         }
 
-        protected void OnPlayerAction(PlayerId player, PlayerActionType type, PlayerId otherPlayer = null) {
-            if (IsActive() && NetworkInfo.IsServer) {
-                switch (type) {
+        protected void OnPlayerAction(PlayerId player, PlayerActionType type, PlayerId otherPlayer = null)
+        {
+            if (IsActive() && NetworkInfo.IsServer)
+            {
+                switch (type)
+                {
                     case PlayerActionType.DEATH_BY_OTHER_PLAYER:
-                        if (otherPlayer != null && otherPlayer != player) {
+                        if (otherPlayer != null && otherPlayer != player)
+                        {
                             IncrementScore(otherPlayer);
                         }
                         break;
@@ -229,10 +294,12 @@ namespace LabFusion.SDK.Gamemodes {
             }
         }
 
-        protected override void OnStartGamemode() {
+        protected override void OnStartGamemode()
+        {
             base.OnStartGamemode();
 
-            if (NetworkInfo.IsServer) {
+            if (NetworkInfo.IsServer)
+            {
                 ResetScores();
             }
 
@@ -254,18 +321,20 @@ namespace LabFusion.SDK.Gamemodes {
                 FusionPlayer.SetMortality(true);
 
                 // Setup ammo
-                FusionPlayer.SetAmmo(1000);
+                FusionPlayer.SetAmmo(_totalAmmo);
 
                 // Get all spawn points
                 List<Transform> transforms = new List<Transform>();
-                foreach (var point in DeathmatchSpawnpoint.Cache.Components) {
+                foreach (var point in DeathmatchSpawnpoint.Cache.Components)
+                {
                     transforms.Add(point.transform);
                 }
 
                 FusionPlayer.SetSpawnPoints(transforms.ToArray());
 
                 // Teleport to a random spawn point
-                if (FusionPlayer.TryGetSpawnPoint(out var spawn)) {
+                if (FusionPlayer.TryGetSpawnPoint(out var spawn))
+                {
                     FusionPlayer.Teleport(spawn.position, spawn.forward);
                 }
 
@@ -276,21 +345,33 @@ namespace LabFusion.SDK.Gamemodes {
                 if (_avatarOverride != null)
                     FusionPlayer.SetAvatarOverride(_avatarOverride);
 
-                if (_vitalityOverride.HasValue)
+                if (_totalVitality > -0.1f)
+                {
+                    FusionPlayer.SetPlayerVitality(_totalVitality);
+                }
+                else
+                {
                     FusionPlayer.SetPlayerVitality(_vitalityOverride.Value);
+                }
+                    
+                
             });
         }
 
-        protected void OnVictoryStatus(bool isVictory = false) {
-            if (isVictory) {
+        protected void OnVictoryStatus(bool isVictory = false)
+        {
+            if (isVictory)
+            {
                 FusionAudio.Play2D(FusionContentLoader.LavaGangVictory, DefaultMusicVolume);
             }
-            else {
+            else
+            {
                 FusionAudio.Play2D(FusionContentLoader.LavaGangFailure, DefaultMusicVolume);
             }
         }
 
-        protected override void OnStopGamemode() {
+        protected override void OnStopGamemode()
+        {
             base.OnStopGamemode();
 
             // Get the winner message
@@ -303,26 +384,31 @@ namespace LabFusion.SDK.Gamemodes {
 
             string message = "No one scored points!";
 
-            if (firstPlace != null && firstPlace.TryGetDisplayName(out var name)) {
+            if (firstPlace != null && firstPlace.TryGetDisplayName(out var name))
+            {
                 message = $"First Place: {name} (Score: {GetScore(firstPlace)}) \n";
             }
 
-            if (secondPlace != null && secondPlace.TryGetDisplayName(out name)) {
+            if (secondPlace != null && secondPlace.TryGetDisplayName(out name))
+            {
                 message += $"Second Place: {name} (Score: {GetScore(secondPlace)}) \n";
             }
 
-            if (thirdPlace != null && thirdPlace.TryGetDisplayName(out name)) {
+            if (thirdPlace != null && thirdPlace.TryGetDisplayName(out name))
+            {
                 message += $"Third Place: {name} (Score: {GetScore(thirdPlace)}) \n";
             }
 
-            if (selfPlace != -1 && selfPlace > 3) {
+            if (selfPlace != -1 && selfPlace > 3)
+            {
                 message += $"Your Place: {selfPlace} (Score: {selfScore})";
             }
 
             // Play victory/failure sounds
             int playerCount = PlayerIdManager.PlayerCount;
 
-            if (playerCount > 1) {
+            if (playerCount > 1)
+            {
                 bool isVictory = false;
 
                 if (selfPlace < Mathf.Min(playerCount, 3))
@@ -366,36 +452,44 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         public float GetTimeElapsed() => Time.realtimeSinceStartup - _timeOfStart;
-        public float GetMinutesLeft() {
+        public float GetMinutesLeft()
+        {
             float elapsed = GetTimeElapsed();
             return _totalMinutes - (elapsed / 60f);
         }
 
-        protected override void OnUpdate() {
+        protected override void OnUpdate()
+        {
             // Active update
-            if (IsActive() && NetworkInfo.IsServer) {
+            if (IsActive() && NetworkInfo.IsServer)
+            {
                 // Get time left
                 float minutesLeft = GetMinutesLeft();
 
                 // Check for minute barrier
-                if (!_oneMinuteLeft) {
-                    if (minutesLeft <= 1f) {
+                if (!_oneMinuteLeft)
+                {
+                    if (minutesLeft <= 1f)
+                    {
                         TryInvokeTrigger("OneMinuteLeft");
                         _oneMinuteLeft = true;
                     }
                 }
-                
+
                 // Should the gamemode end?
-                if (minutesLeft <= 0f) {
+                if (minutesLeft <= 0f)
+                {
                     StopGamemode();
                     TryInvokeTrigger("NaturalEnd");
                 }
             }
         }
 
-        protected override void OnEventTriggered(string value) {
+        protected override void OnEventTriggered(string value)
+        {
             // Check event
-            switch (value) {
+            switch (value)
+            {
                 case "OneMinuteLeft":
                     FusionNotifier.Send(new FusionNotification()
                     {
@@ -409,18 +503,21 @@ namespace LabFusion.SDK.Gamemodes {
                 case "NaturalEnd":
                     int bitReward = GetRewardedBits();
 
-                    if (bitReward > 0) {
+                    if (bitReward > 0)
+                    {
                         PointItemManager.RewardBits(bitReward);
                     }
                     break;
             }
         }
 
-        protected override void OnMetadataChanged(string key, string value) {
+        protected override void OnMetadataChanged(string key, string value)
+        {
             // Check if our score increased
             var playerKey = GetScoreKey(PlayerIdManager.LocalId);
 
-            if (playerKey == key && value != "0") {
+            if (playerKey == key && value != "0")
+            {
                 FusionNotifier.Send(new FusionNotification()
                 {
                     title = "Deathmatch Point",
@@ -433,31 +530,37 @@ namespace LabFusion.SDK.Gamemodes {
             }
         }
 
-        protected void ResetScores() {
-            foreach (var player in PlayerIdManager.PlayerIds) {
+        protected void ResetScores()
+        {
+            foreach (var player in PlayerIdManager.PlayerIds)
+            {
                 TrySetMetadata(GetScoreKey(player), "0");
             }
         }
 
-        protected void IncrementScore(PlayerId id) {
+        protected void IncrementScore(PlayerId id)
+        {
             var score = GetScore(id);
             score++;
 
             TrySetMetadata(GetScoreKey(id), score.ToString());
         }
 
-        protected string GetScoreKey(PlayerId id) {
+        protected string GetScoreKey(PlayerId id)
+        {
             if (id == null)
                 return "";
 
             return $"{PlayerScoreKey}.{id.LongId}";
         }
 
-        protected int GetScore(PlayerId id) {
+        protected int GetScore(PlayerId id)
+        {
             if (id == null)
                 return 0;
 
-            if (TryGetMetadata(GetScoreKey(id), out var value) && int.TryParse(value, out var score)) {
+            if (TryGetMetadata(GetScoreKey(id), out var value) && int.TryParse(value, out var score))
+            {
                 return score;
             }
 
