@@ -14,7 +14,7 @@ using SLZ.Interaction;
 using UnityEngine; // can prob remove before pull request
 using LabFusion.Preferences;
 
-namespace LabFusion.Data { 
+namespace LabFusion.Data {
     public abstract class LevelDataHandler {
         protected virtual void SceneAwake() { }
         protected virtual void MainSceneInitialized() { }
