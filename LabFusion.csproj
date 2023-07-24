@@ -224,6 +224,7 @@
     <Compile Include="Core\src\BoneMenu\AdminActionsCreator.cs" />
     <Compile Include="Core\src\BoneMenu\PlayerListCreator.cs" />
     <Compile Include="Core\src\BoneMenu\SettingsCreator.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\ButtonDisabler.cs" />
     <Compile Include="Core\src\Data\Containers\Syncables\FrameSkipper.cs" />
     <Compile Include="Core\src\Data\Containers\FusionArrayPool.cs" />
     <Compile Include="Core\src\Data\Containers\Syncables\GrabbedGripList.cs" />
@@ -231,7 +232,6 @@
     <Compile Include="Core\src\Data\Containers\Levels\HalfwayParkData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\HolodeckData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\LevelDataHandler.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\ResetButtonRemover.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\VoidG114Data.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\TimeTrialData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\KartRaceData.cs" />

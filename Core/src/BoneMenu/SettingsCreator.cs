@@ -1,4 +1,5 @@
 ﻿using BoneLib.BoneMenu.Elements;
+using LabFusion.Core.src.Data.Containers.Levels;
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Network;
@@ -70,34 +71,13 @@ namespace LabFusion.BoneMenu
             // Level Switching Buttons
             CreateBoolPreference(category, "Level Switching Buttons", FusionPreferences.LocalServerSettings.LevelSwitchingButtonsEnabled);
             MultiplayerHooking.OnServerSettingsChanged += () => {
-                // Disable button componets
-                if (FusionPreferences.LocalServerSettings.LevelSwitchingButtonsEnabled.Equals(true)) //chances are theres a better way to do this but this works
+                // Edit buttons
+                if (NetworkInfo.IsServer)
                 {
-                    MelonLoader.MelonLogger.Log(LevelDataHandler.buttonToggle);
-                    foreach (SLZ.Interaction.ButtonToggle levelButtons in LevelDataHandler.buttonToggle)
-                    {
-                        SLZ.Interaction.ButtonToggle ButtonToggle = levelButtons.GetComponent<SLZ.Interaction.ButtonToggle>();
-                        if (ButtonToggle != null)
-                        {
-                            ButtonToggle.enabled = false;
-                        }
-                        
-                    }
-                } 
-                else
-                {
-                    foreach(SLZ.Interaction.ButtonToggle levelButtons in LevelDataHandler.buttonToggle)
-                    {
-                        SLZ.Interaction.ButtonToggle ButtonToggle = levelButtons.GetComponent<SLZ.Interaction.ButtonToggle>();
-                        if (ButtonToggle != null)
-                        {
-                            ButtonToggle.enabled = true;
-                        }
-
-                    }
+                    ButtonDisabler.LevelSwitchingButtonDisabler();
                 }
-
             };
+
 
             // Max players
             CreateBytePreference(category, "Max Players", 1, 2, 255, FusionPreferences.LocalServerSettings.MaxPlayers);

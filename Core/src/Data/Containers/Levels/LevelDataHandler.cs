@@ -16,7 +16,6 @@ using LabFusion.Preferences;
 
 namespace LabFusion.Data { 
     public abstract class LevelDataHandler {
-        public static List<Component> buttonToggle; // should change to new spot
         protected virtual void SceneAwake() { }
         protected virtual void MainSceneInitialized() { }
         protected virtual void PlayerCatchup(ulong longId) { }
@@ -24,33 +23,6 @@ namespace LabFusion.Data {
         private static void OnSceneAwake() {
             for (var i = 0; i < Handlers.Count; i++) {
                 Handlers[i].SceneAwake();
-            }
-            var objectsWithKeyword = Transform.FindObjectsOfType<Transform>(true);
-            foreach (Transform obj in objectsWithKeyword)
-            {
-                if (obj.name.Contains("FLOORS") || obj.name.Contains("LoadButtons"))
-                {
-                    for (int i = 0; i < obj.childCount; i++)
-                    {
-                        if (i == 10 || i == 11)
-                        {
-                            continue;
-                        }
-                        Transform child = obj.GetChild(i);
-                        SLZ.Interaction.ButtonToggle ButtonToggle = child.GetComponent<SLZ.Interaction.ButtonToggle>();
-                        if (ButtonToggle != null)
-                        {
-                            if (FusionPreferences.LocalServerSettings.LevelSwitchingButtonsEnabled.Equals(true)) //chances are theres a better way to do this but this works
-                            {
-                                ButtonToggle.enabled = false;
-                            }
-                            else
-                            {
-                                ButtonToggle.enabled = true;
-                            }
-                        }
-                    }
-                }
             }
         }
 
@@ -97,5 +69,6 @@ namespace LabFusion.Data {
         }
 
         public static readonly List<LevelDataHandler> Handlers = new List<LevelDataHandler>();
+        public static List<Component> buttonToggle;
     }
 }
