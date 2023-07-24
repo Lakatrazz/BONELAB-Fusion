@@ -50,7 +50,7 @@ namespace LabFusion.Preferences {
                     NametagsEnabled = new FusionPref<bool>(prefCategory, "Server Nametags Enabled", true, PrefUpdateMode.SERVER_UPDATE),
                     VoicechatEnabled = new FusionPref<bool>(prefCategory, "Server Voicechat Enabled", true, PrefUpdateMode.SERVER_UPDATE),
                     PlayerConstrainingEnabled = new FusionPref<bool>(prefCategory, "Server Player Constraining Enabled", true, PrefUpdateMode.SERVER_UPDATE),
-                    LevelSwitchingButtonsEnabled = new FusionPref<bool>(prefCategory, "Server Level Swithing From Button", true, PrefUpdateMode.LOCAL_UPDATE),
+                    LevelSwitchingButtonsEnabled = new FusionPref<bool>(prefCategory, "Server Level Swithing From Button", false, PrefUpdateMode.LOCAL_UPDATE),
                     Privacy = new FusionPref<ServerPrivacy>(prefCategory, "Server Privacy", ServerPrivacy.PUBLIC, PrefUpdateMode.LOCAL_UPDATE),
                     TimeScaleMode = new FusionPref<TimeScaleMode>(prefCategory, "Time Scale Mode", Senders.TimeScaleMode.LOW_GRAVITY, PrefUpdateMode.SERVER_UPDATE),
                     MaxPlayers = new FusionPref<byte>(prefCategory, "Max Players", 10, PrefUpdateMode.SERVER_UPDATE),
