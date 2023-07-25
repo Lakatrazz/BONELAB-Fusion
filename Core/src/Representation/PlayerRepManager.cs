@@ -1,4 +1,5 @@
 ﻿using LabFusion.Extensions;
+using LabFusion.Utilities;
 using SLZ.Rig;
 
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace LabFusion.Representation {
         }
 
         public static bool TryGetPlayerRep(byte id, out PlayerRep playerRep) {
-            return IDLookup.TryGetValue(id, out playerRep);
+            return IDLookup.TryGetValueC(id, out playerRep);
         }
 
         public static bool TryGetPlayerRep(RigManager manager, out PlayerRep playerRep) {
@@ -28,7 +29,7 @@ namespace LabFusion.Representation {
                 return false;
             }
 
-            return ManagerLookup.TryGetValue(manager, out playerRep);
+            return ManagerLookup.TryGetValueUnity(manager, out playerRep);
         }
 
         internal static void Internal_InsertPlayerRep(PlayerRep rep) {

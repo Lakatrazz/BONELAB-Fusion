@@ -1,5 +1,5 @@
 ﻿using BoneLib.BoneMenu.Elements;
-
+using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Senders;
@@ -262,11 +262,11 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         public bool TryGetMetadata(string key, out string value) {
-            return _internalMetadata.TryGetValue(key, out value);
+            return _internalMetadata.TryGetValueC(key, out value);
         }
 
         public string GetMetadata(string key) {
-            if (_internalMetadata.TryGetValue(key, out string value))
+            if (_internalMetadata.TryGetValueC(key, out string value))
                 return value;
 
             return null;

@@ -164,7 +164,7 @@ namespace LabFusion.SDK.Points {
                 return false;
             }
 
-            return PointItemLookup.TryGetValue(barcode, out item);
+            return PointItemLookup.TryGetValueC(barcode, out item);
         }
 
         public static int GetBitCount() {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LabFusion.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,7 @@ namespace LabFusion.Data
 
         public T[] Rent(int size)
         {
-            if (!_pool.TryGetValue(size, out Queue<T[]> queue) || queue.Count == 0)
+            if (!_pool.TryGetValueC(size, out Queue<T[]> queue) || queue.Count == 0)
             {
                 return new T[size];
             }
@@ -28,7 +29,7 @@ namespace LabFusion.Data
             }
 
             int size = buffer.Length;
-            if (!_pool.TryGetValue(size, out Queue<T[]> queue))
+            if (!_pool.TryGetValueC(size, out Queue<T[]> queue))
             {
                 queue = new Queue<T[]>();
                 _pool.Add(size, queue);

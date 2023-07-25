@@ -82,11 +82,11 @@ namespace LabFusion.Representation
         }
 
         public bool TryGetMetadata(string key, out string value) {
-            return _internalMetadata.TryGetValue(key, out value);
+            return _internalMetadata.TryGetValueC(key, out value);
         }
 
         public string GetMetadata(string key) {
-            if (_internalMetadata.TryGetValue(key, out string value))
+            if (_internalMetadata.TryGetValueC(key, out string value))
                 return value;
 
             return null;

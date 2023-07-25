@@ -1,4 +1,5 @@
-﻿using LabFusion.Utilities;
+﻿using LabFusion.Extensions;
+using LabFusion.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +33,7 @@ namespace LabFusion.SDK.Achievements {
                 Achievements.Add(achievement);
                 AchievementLookup.Add(achievement.Barcode, achievement);
 
-                if (AchievementSaveManager.Pointers.TryGetValue(achievement.Barcode, out var pointer)) {
+                if (AchievementSaveManager.Pointers.TryGetValueC(achievement.Barcode, out var pointer)) {
                     achievement.Unpack(XElement.Parse(pointer.data));
                 }
             }
@@ -46,7 +47,7 @@ namespace LabFusion.SDK.Achievements {
                 return false;
             }
 
-            return AchievementLookup.TryGetValue(barcode, out achievement);
+            return AchievementLookup.TryGetValueC(barcode, out achievement);
         }
 
         public static bool TryGetAchievement<T>(out T achievement) where T : Achievement {

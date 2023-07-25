@@ -1,4 +1,5 @@
-﻿using LabFusion.Representation;
+﻿using LabFusion.Extensions;
+using LabFusion.Representation;
 using LabFusion.Utilities;
 
 using System;
@@ -87,7 +88,7 @@ namespace LabFusion.Network {
         }
 
         public static int GetVoteCount(ulong target) {
-            if (_voteKickTracker.TryGetValue(target, out var info)) {
+            if (_voteKickTracker.TryGetValueC(target, out var info)) {
                 return info.voters.Count;
             }
             else
@@ -96,7 +97,7 @@ namespace LabFusion.Network {
 
         public static bool Vote(ulong target, ulong voter) {
             // Make sure the voter hasn't voted in the past specific amount of time
-            if (_voterTracker.TryGetValue(voter, out var time) && Time.realtimeSinceStartup - time < MinVoteDelay) {
+            if (_voterTracker.TryGetValueC(voter, out var time) && Time.realtimeSinceStartup - time < MinVoteDelay) {
                 return false;
             }
             _voterTracker.Remove(voter);
@@ -109,7 +110,7 @@ namespace LabFusion.Network {
                 return false;
 
             // Check if the person has already voted on the target
-            if (_voteKickTracker.TryGetValue(target, out var info)) {
+            if (_voteKickTracker.TryGetValueC(target, out var info)) {
                 // Add the voter to the info or skip the vote completely
                 if (info.voters.Contains(voter))
                     return false;

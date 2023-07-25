@@ -108,7 +108,7 @@ namespace LabFusion.SDK.Points
                 Quaternion rotation;
                 Vector3 scale;
                 // SDK offset transform
-                if (points.TryGetValue(itemPoint, out var component)) {
+                if (points.TryGetValueC(itemPoint, out var component)) {
                     AccessoryItemHelper.GetTransform(component, out position, out rotation, out scale);
                 }
                 // Auto calculated transform
@@ -128,7 +128,7 @@ namespace LabFusion.SDK.Points
             }
 
             public void RemoveMirror(Mirror mirror) {
-                if (mirrors.TryGetValue(mirror, out var accessory)) {
+                if (mirrors.TryGetValueUnity(mirror, out var accessory)) {
                     mirrors.Remove(mirror);
 
                     GameObject.Destroy(accessory);

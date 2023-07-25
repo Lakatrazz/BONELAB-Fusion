@@ -10,6 +10,7 @@ using LabFusion.Network;
 using LabFusion.Extensions;
 using LabFusion.Utilities;
 using LabFusion.Representation;
+using BoneLib;
 
 namespace LabFusion.Syncables {
     public static class SyncManager {
@@ -209,7 +210,7 @@ namespace LabFusion.Syncables {
         public static bool UnqueueSyncable(ushort queuedId, ushort newId, out ISyncable syncable) {
             syncable = null;
 
-            if (QueuedSyncables.ContainsKey(queuedId)) {
+            if (HasQueuedSyncable(queuedId)) {
                 syncable = QueuedSyncables[queuedId];
                 QueuedSyncables.Remove(queuedId);
 
@@ -225,10 +226,24 @@ namespace LabFusion.Syncables {
 
             return false;
         }
+        
+        public static bool HasQueuedSyncable(ushort id)
+        {
+            if (!HelperMethods.IsAndroid())
+                return QueuedSyncables.ContainsKey(id);
+            else
+                return QueuedSyncables.Any(a => a.Key == id);
+        }
 
-        public static bool HasSyncable(ushort id) => Syncables.ContainsKey(id);
+        public static bool HasSyncable(ushort id)
+        {
+            if (!HelperMethods.IsAndroid())
+                return Syncables.ContainsKey(id);
+            else
+                return Syncables.Any(a => a.Key == id);
+        }
 
-        public static bool TryGetSyncable(ushort id, out ISyncable syncable) => Syncables.TryGetValue(id, out syncable);
+        public static bool TryGetSyncable(ushort id, out ISyncable syncable) => Syncables.TryGetValueC(id, out syncable);
 
         public static bool TryGetSyncable<TSyncable>(ushort id, out TSyncable syncable) where TSyncable : ISyncable {
             if (TryGetSyncable(id, out ISyncable result) && result is TSyncable generic) {
