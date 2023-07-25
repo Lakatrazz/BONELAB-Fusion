@@ -191,15 +191,12 @@ namespace LabFusion.Data
                 grip.DisableInteraction();
             }
 
-            MelonCoroutines.Start(Internal_DelayedEnableInteraction());
+            DelayUtilities.Delay(Internal_DelayedEnableInteraction, 300);
         }
 
-        private IEnumerator Internal_DelayedEnableInteraction() {
-            for (var i = 0; i < 300; i++)
-                yield return null;
-
+        private void Internal_DelayedEnableInteraction() {
             if (RigGrips == null)
-                yield break;
+                return;
 
             foreach (var grip in RigGrips) {
                 grip.EnableInteraction();

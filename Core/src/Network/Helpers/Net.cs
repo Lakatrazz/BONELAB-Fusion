@@ -24,16 +24,16 @@ namespace LabFusion.Network {
             public virtual bool StopHandling() => false;
 
             /// <summary>
-            /// Returns true if this attribute can be awaited with CanContinue.
+            /// Returns true if this attribute can be hooked with HookComplete.
             /// </summary>
             /// <returns></returns>
             public virtual bool IsAwaitable() => false;
 
             /// <summary>
-            /// Returns true if the message handler can continue while awaiting this attribute.
+            /// Registers this action so that it will be called when the message handling can continue.
             /// </summary>
-            /// <returns></returns>
-            public virtual bool CanContinue() => true;
+            /// <param name="action"></param>
+            public virtual void HookComplete(Action action) => action.Invoke();
         }
 
         /// <summary>
@@ -43,8 +43,8 @@ namespace LabFusion.Network {
         public class DelayWhileLoading : NetAttribute {
             public override bool IsAwaitable() => true;
 
-            public override bool CanContinue() {
-                return !FusionSceneManager.IsLoading();
+            public override void HookComplete(Action action) {
+                FusionSceneManager.HookOnLevelLoad(action);
             }
         }
 
@@ -55,8 +55,8 @@ namespace LabFusion.Network {
         public class DelayWhileTargetLoading : NetAttribute {
             public override bool IsAwaitable() => true;
 
-            public override bool CanContinue() {
-                return FusionSceneManager.HasTargetLoaded();
+            public override void HookComplete(Action action) {
+                FusionSceneManager.HookOnTargetLevelLoad(action);
             }
         }
 

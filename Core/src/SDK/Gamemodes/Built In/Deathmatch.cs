@@ -249,7 +249,7 @@ namespace LabFusion.SDK.Gamemodes {
             _oneMinuteLeft = false;
 
             // Invoke player changes on level load
-            FusionSceneManager.HookOnLevelLoad(() => {
+            FusionSceneManager.HookOnTargetLevelLoad(() => {
                 // Force mortality
                 FusionPlayer.SetMortality(true);
 

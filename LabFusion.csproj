@@ -392,6 +392,7 @@
     <Compile Include="Core\src\Network\Messages\Levels\HolodeckEventMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Levels\ZoneEncounterEventMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Levels\LevelRequestMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\MessageHandler.cs" />
     <Compile Include="Core\src\Network\Messages\PointShop\PointItemTriggerValueMessage.cs" />
     <Compile Include="Core\src\Network\Messages\PointShop\PointItemTriggerMessage.cs" />
     <Compile Include="Core\src\Network\Messages\PointShop\PointItemEquipStateMessage.cs" />
