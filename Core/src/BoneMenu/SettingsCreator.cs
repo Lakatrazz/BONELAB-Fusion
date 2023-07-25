@@ -65,7 +65,7 @@ namespace LabFusion.BoneMenu
                 }
 
                 foreach (var tag in v) {
-                    if (_tagElements.TryGetValue(tag, out var element)) {
+                    if (_tagElements.TryGetValueC(tag, out var element)) {
                         element.SetValue(true);
                     }
                 }

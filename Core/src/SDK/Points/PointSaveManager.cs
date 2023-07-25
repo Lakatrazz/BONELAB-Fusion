@@ -1,5 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Debugging;
+using LabFusion.Extensions;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Utilities;
 
@@ -68,7 +69,7 @@ namespace LabFusion.SDK.Points {
         }
 
         public static int GetUpgradeLevel(string barcode) {
-            if (_itemUpgrades.TryGetValue(barcode, out var level))
+            if (_itemUpgrades.TryGetValueC(barcode, out var level))
                 return level;
             else
                 return -1;

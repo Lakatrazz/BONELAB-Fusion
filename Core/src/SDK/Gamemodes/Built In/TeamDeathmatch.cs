@@ -348,7 +348,7 @@ namespace LabFusion.SDK.Gamemodes
 
         protected void OnPlayerLeave(PlayerId id)
         {
-            if (_logoInstances.TryGetValue(id, out var instance))
+            if (_logoInstances.TryGetValueC(id, out var instance))
             {
                 instance.Cleanup();
                 _logoInstances.Remove(id);
