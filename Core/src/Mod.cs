@@ -77,10 +77,6 @@ namespace LabFusion
         }
 
         public override void OnInitializeMelon() {
-            // Manually patch methods on Android because some only work on PC
-            if (BoneLib.HelperMethods.IsAndroid())
-                ManualPatchRunner.Init(HarmonyInstance);
-
             // Prepare the bonemenu category
             FusionPreferences.OnPrepareBoneMenuCategory();
 
