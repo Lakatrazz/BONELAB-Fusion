@@ -22,6 +22,7 @@ namespace LabFusion.Data {
             writer.Write(settings.NametagsEnabled.GetValue());
             writer.Write(settings.VoicechatEnabled.GetValue());
             writer.Write(settings.PlayerConstrainingEnabled.GetValue());
+            writer.Write(settings.PlayerConstraintsEnabled.GetValue());
             writer.Write(settings.LevelSwitchingButtonsEnabled.GetValue());
             writer.Write(settings.VoteKickingEnabled.GetValue());
             writer.Write((byte)settings.Privacy.GetValue());

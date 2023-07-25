@@ -22,6 +22,7 @@ namespace LabFusion.Preferences {
             public IFusionPref<bool> NametagsEnabled;
             public IFusionPref<bool> VoicechatEnabled;
             public IFusionPref<bool> PlayerConstrainingEnabled;
+            public IFusionPref<bool> PlayerConstraintsEnabled;
             public IFusionPref<bool> LevelSwitchingButtonsEnabled;
             public IFusionPref<bool> VoteKickingEnabled;
             public IFusionPref<ServerPrivacy> Privacy;
@@ -51,6 +52,7 @@ namespace LabFusion.Preferences {
                     NametagsEnabled = new FusionPref<bool>(prefCategory, "Server Nametags Enabled", true, PrefUpdateMode.SERVER_UPDATE),
                     VoicechatEnabled = new FusionPref<bool>(prefCategory, "Server Voicechat Enabled", true, PrefUpdateMode.SERVER_UPDATE),
                     PlayerConstrainingEnabled = new FusionPref<bool>(prefCategory, "Server Player Constraining Enabled", true, PrefUpdateMode.SERVER_UPDATE),
+                    PlayerConstraintsEnabled = new FusionPref<bool>(prefCategory, "Server Player Constraints Enabled", false, PrefUpdateMode.SERVER_UPDATE),
                     LevelSwitchingButtonsEnabled = new FusionPref<bool>(prefCategory, "Server Level Swithing From Button", false, PrefUpdateMode.LOCAL_UPDATE),
                     VoteKickingEnabled = new FusionPref<bool>(prefCategory, "Server Vote Kicking Enabled", true, PrefUpdateMode.SERVER_UPDATE),
                     Privacy = new FusionPref<ServerPrivacy>(prefCategory, "Server Privacy", ServerPrivacy.PUBLIC, PrefUpdateMode.LOCAL_UPDATE),
