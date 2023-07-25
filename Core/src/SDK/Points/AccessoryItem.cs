@@ -11,6 +11,10 @@ using UnityEngine;
 
 using Avatar = SLZ.VRMK.Avatar;
 
+using Il2Action = Il2CppSystem.Action;
+using Il2ActionBool = Il2CppSystem.Action<bool>;
+using Il2Delegate = Il2CppSystem.Delegate;
+
 namespace LabFusion.SDK.Points
 {
     public abstract class AccessoryItem : PointItem {
@@ -50,14 +54,17 @@ namespace LabFusion.SDK.Points
             }
 
             private void Hook() {
-                rigManager.OnPostLateUpdate += (Il2CppSystem.Action)OnPostLateUpdate;
-                ControllerRig.OnPauseStateChange += (Il2CppSystem.Action<bool>)OnPauseStateChange;
+                // We want our code to execute first in the RigManager, before the head is overriden
+                // So we combine these two delegates manually
+                rigManager.OnPostLateUpdate = Il2Delegate.Combine((Il2Action)OnPostLateUpdate, rigManager.OnPostLateUpdate).Cast<Il2Action>();
+                
+                ControllerRig.OnPauseStateChange += (Il2ActionBool)OnPauseStateChange;
             }
 
             private void Unhook() {
                 if (!rigManager.IsNOC()) {
-                    rigManager.OnPostLateUpdate -= (Il2CppSystem.Action)OnPostLateUpdate;
-                    ControllerRig.OnPauseStateChange -= (Il2CppSystem.Action<bool>)OnPauseStateChange;
+                    rigManager.OnPostLateUpdate -= (Il2Action)OnPostLateUpdate;
+                    ControllerRig.OnPauseStateChange -= (Il2ActionBool)OnPauseStateChange;
                 }
             }
 

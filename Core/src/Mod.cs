@@ -282,6 +282,9 @@ namespace LabFusion
 
             // Update gamemodes
             GamemodeManager.Internal_OnUpdate();
+
+            // Update delayed events at the very end of the frame
+            DelayUtilities.Internal_OnUpdate();
         }
 
         public override void OnFixedUpdate() {

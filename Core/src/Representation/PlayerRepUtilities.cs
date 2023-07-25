@@ -252,16 +252,13 @@ namespace LabFusion.Representation {
             PlayerAdditionsHelper.OnCreatedRig(rigManager);
 
             // Add ammo to the other categories
-            MelonCoroutines.Start(Internal_DelayAddAmmo(ammoInventory));
+            DelayUtilities.Delay(() => { Internal_DelayedAddAmmo(ammoInventory); }, 2);
 
             // Spatialize wind audio
-            MelonCoroutines.Start(Internal_SpatializeWind(rigManager.physicsRig.m_head.GetComponent<WindBuffetSFX>()));
+            DelayUtilities.Delay(() => { Internal_SpatializeWind(rigManager.physicsRig.m_head.GetComponent<WindBuffetSFX>()); }, 5);
         }
 
-        private static IEnumerator Internal_DelayAddAmmo(AmmoInventory inventory) {
-            for (var i = 0; i < 2; i++)
-                yield return null;
-
+        private static void Internal_DelayedAddAmmo(AmmoInventory inventory) {
             if (!inventory.IsNOC()) {
                 var count = 100000;
                 inventory.AddCartridge(inventory.heavyAmmoGroup, count);
@@ -304,10 +301,7 @@ namespace LabFusion.Representation {
             haptor.enabled = false;
         }
 
-        private static IEnumerator Internal_SpatializeWind(WindBuffetSFX sfx) {
-            for (var i = 0; i < 5; i++)
-                yield return null;
-
+        private static void Internal_SpatializeWind(WindBuffetSFX sfx) {
             if (!sfx.IsNOC() && sfx._buffetSrc)
                 sfx._buffetSrc.spatialBlend = 1f;
         }

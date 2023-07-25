@@ -18,7 +18,7 @@ using UnityEngine;
 
 namespace LabFusion.Syncables
 {
-    public class PropSyncable : ISyncable {
+    public class PropSyncable : Syncable {
         private enum SendState {
             IDLE = 0,
             SENDING = 1,
@@ -58,8 +58,6 @@ namespace LabFusion.Syncables
 
         public bool IsSleeping = false;
 
-        public ushort Id;
-
         public byte? Owner = null;
 
         // Target info
@@ -76,8 +74,6 @@ namespace LabFusion.Syncables
         public Quaternion[] LastSentRotations;
 
         private bool _verifyRigidbodies;
-
-        private bool _hasRegistered = false;
 
         private bool _isLockingDirty = false;
         private bool _lockedState = false;
@@ -96,8 +92,6 @@ namespace LabFusion.Syncables
         public bool IsHeld = false;
 
         private Action<ulong> _catchupDelegate;
-
-        private bool _wasDisposed = false;
 
         private bool _initialized = false;
 
@@ -174,7 +168,7 @@ namespace LabFusion.Syncables
         }
 
         public void Init() {
-            if (_initialized || _wasDisposed)
+            if (_initialized || IsDestroyed())
                 return;
 
             AssetPoolee = AssetPoolee.Cache.Get(GameObject);
@@ -216,8 +210,6 @@ namespace LabFusion.Syncables
             _initialized = true;
         }
 
-        public bool IsDestroyed() => _wasDisposed;
-
         private void DestroyLockJoints() {
             if (LockJoints == null)
                 return;
@@ -228,11 +220,11 @@ namespace LabFusion.Syncables
             }
         }
 
-        public void InsertCatchupDelegate(Action<ulong> catchup) {
+        public override void InsertCatchupDelegate(Action<ulong> catchup) {
             _catchupDelegate += catchup;
         }
 
-        public void InvokeCatchup(ulong user) {
+        public override void InvokeCatchup(ulong user) {
             // Send any stored catchup info for our object
             _catchupDelegate?.InvokeSafe(user, "executing Catchup Delegate");
         }
@@ -324,7 +316,7 @@ namespace LabFusion.Syncables
                 extender.OnDetach(hand, grip);
         }
 
-        public void Cleanup() {
+        public override void Cleanup() {
             if (IsDestroyed()) {
 #if DEBUG
                 FusionLogger.Warn("Tried destroying a PropSyncable, but it was already destroyed!");
@@ -353,16 +345,16 @@ namespace LabFusion.Syncables
 
             DestroyLockJoints();
 
-            _wasDisposed = true;
+            base.Cleanup();
         }
 
-        public Grip GetGrip(ushort index) {
+        public override Grip GetGrip(ushort index) {
             if (PropGrips != null && PropGrips.Length > index)
                 return PropGrips[index];
             return null;
         }
 
-        public bool IsGrabbed() {
+        public override bool IsGrabbed() {
             foreach (var grip in PropGrips) {
                 if (grip.attachedHands.Count > 0)
                     return true;
@@ -371,9 +363,9 @@ namespace LabFusion.Syncables
             return false;
         }
 
-        public byte? GetOwner() => Owner;
+        public override byte? GetOwner() => Owner;
 
-        public void SetOwner(byte owner) {
+        public override void SetOwner(byte owner) {
             // Make sure this has been initialized
             if (!_initialized)
             {
@@ -411,7 +403,7 @@ namespace LabFusion.Syncables
             }
         }
 
-        public void RemoveOwner() {
+        public override void RemoveOwner() {
             Owner = null;
         }
 
@@ -439,7 +431,7 @@ namespace LabFusion.Syncables
             }
         }
 
-        public bool IsOwner() => Owner.HasValue && Owner.Value == PlayerIdManager.LocalSmallId;
+        public override bool IsOwner() => Owner.HasValue && Owner.Value == PlayerIdManager.LocalSmallId;
 
         public void SetRigidbodiesDirty() {
             _verifyRigidbodies = true;
@@ -497,16 +489,7 @@ namespace LabFusion.Syncables
             }
         }
 
-        public void OnRegister(ushort id) {
-            Id = id;
-            _hasRegistered = true;
-        }
-
-        public ushort GetId() {
-            return Id;
-        }
-
-        public ushort? GetIndex(Grip grip)
+        public override ushort? GetIndex(Grip grip)
         {
             for (ushort i = 0; i < PropGrips.Length; i++)
             {
@@ -532,12 +515,9 @@ namespace LabFusion.Syncables
             return null;
         }
 
-        public bool IsQueued() => SyncManager.QueuedSyncables.ContainsValue(this) && !IsDestroyed();
-        public bool IsRegistered() => _hasRegistered;
+        private bool HasValidParameters() => !DisableSyncing && IsRegistered() && FusionSceneManager.IsLoadDone() && IsRootEnabled;
 
-        private bool HasValidParameters() => !DisableSyncing && _hasRegistered && FusionSceneManager.IsLoadDone() && IsRootEnabled;
-
-        public void OnFixedUpdate() {
+        public override void OnFixedUpdate() {
             if (!_initialized)
                 return;
 
@@ -578,7 +558,7 @@ namespace LabFusion.Syncables
             }
         }
 
-        public void OnUpdate()
+        public override void OnUpdate()
         {
             if (!_initialized)
                 return;

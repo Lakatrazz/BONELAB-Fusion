@@ -13,66 +13,45 @@ using UnityEngine;
 
 namespace LabFusion.Syncables
 {
-    public class ConstraintSyncable : ISyncable
+    public class ConstraintSyncable : Syncable
     {
         public static FusionComponentCache<ConstraintTracker, ConstraintSyncable> Cache = new FusionComponentCache<ConstraintTracker, ConstraintSyncable>();
 
         public readonly ConstraintTracker Tracker;
-
-        public ushort Id;
-
-        private bool _hasRegistered = false;
-
-        private bool _wasDisposed = false;
 
         public ConstraintSyncable(ConstraintTracker tracker) {
             Tracker = tracker;
             Cache.Add(tracker, this);
         }
 
-        public bool IsDestroyed() => _wasDisposed;
-
         // Catchup not implemented yet
-        public void InsertCatchupDelegate(Action<ulong> catchup) { }
+        public override void InsertCatchupDelegate(Action<ulong> catchup) { }
 
-        public void InvokeCatchup(ulong user) { }
+        public override void InvokeCatchup(ulong user) { }
 
-        public void Cleanup() {
+        public override void Cleanup() {
             if (!Tracker.IsNOC())
                 Cache.Remove(Tracker);
 
-            _wasDisposed = true;
+            base.Cleanup();
         }
 
-        Grip ISyncable.GetGrip(ushort index) => throw new NotImplementedException();
+        public override Grip GetGrip(ushort index) => throw new NotImplementedException();
 
-        public ushort GetId() => Id;
+        public override ushort? GetIndex(Grip grip) => throw new NotImplementedException();
 
-        public ushort? GetIndex(Grip grip) => throw new NotImplementedException();
+        public override byte? GetOwner() => throw new NotImplementedException();
 
-        byte? ISyncable.GetOwner() => throw new NotImplementedException();
+        public override bool IsGrabbed() => throw new NotImplementedException();
 
-        bool ISyncable.IsGrabbed() => throw new NotImplementedException();
+        public override bool IsOwner() => throw new NotImplementedException();
 
-        bool ISyncable.IsOwner() => throw new NotImplementedException();
+        public override void OnFixedUpdate() { }
 
-        public bool IsQueued() {
-            return SyncManager.QueuedSyncables.ContainsValue(this);
-        }
+        public override void OnUpdate() { }
 
-        public bool IsRegistered() => _hasRegistered;
+        public override void SetOwner(byte owner) => throw new NotImplementedException();
 
-        void ISyncable.OnFixedUpdate() { }
-
-        public void OnRegister(ushort id) {
-            Id = id;
-            _hasRegistered = true;
-        }
-
-        void ISyncable.OnUpdate() { }
-
-        void ISyncable.SetOwner(byte owner) => throw new NotImplementedException();
-
-        void ISyncable.RemoveOwner() => throw new NotImplementedException();
+        public override void RemoveOwner() => throw new NotImplementedException();
     }
 }

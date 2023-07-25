@@ -42,18 +42,12 @@ namespace LabFusion.Syncables {
                 }
                 else
                 {
-                    using (var writer = FusionWriter.Create(SyncableIDRequestData.Size))
-                    {
-                        using (var data = SyncableIDRequestData.Create(PlayerIdManager.LocalSmallId, queuedId))
-                        {
-                            writer.Write(data);
+                    using var writer = FusionWriter.Create(SyncableIDRequestData.Size);
+                    using var data = SyncableIDRequestData.Create(PlayerIdManager.LocalSmallId, queuedId);
+                    writer.Write(data);
 
-                            using (var message = FusionMessage.Create(NativeMessageTag.SyncableIDRequest, writer))
-                            {
-                                MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                            }
-                        }
-                    }
+                    using var message = FusionMessage.Create(NativeMessageTag.SyncableIDRequest, writer);
+                    MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
                 }
             }
         }

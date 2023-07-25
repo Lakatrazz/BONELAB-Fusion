@@ -13,57 +13,9 @@ using MelonLoader;
 
 namespace LabFusion.Network
 {
-    public abstract class ModuleMessageHandler {
+    public abstract class ModuleMessageHandler : MessageHandler {
         internal ushort? _tag = null;
         public ushort? Tag => _tag;
-
-        public Net.NetAttribute[] NetAttributes { get; set; }
-
-        private IEnumerator HandleMessage_Internal(byte[] bytes, bool isServerHandled = false)
-        {
-            // Initialize the attribute info
-            foreach (var attribute in NetAttributes) {
-                attribute.OnHandleBegin();
-            }
-
-            // Check if we should already stop handling
-            foreach (var attribute in NetAttributes)
-            {
-                if (attribute.StopHandling())
-                    yield break;
-            }
-
-            // Check for any awaitable attributes
-            Net.NetAttribute awaitable = null;
-
-            foreach (var attribute in NetAttributes)
-            {
-                if (attribute.IsAwaitable())
-                {
-                    awaitable = attribute;
-                    break;
-                }
-            }
-
-            if (awaitable != null)
-            {
-                while (!awaitable.CanContinue())
-                    yield return null;
-            }
-
-            try {
-                // Now handle the message info
-                HandleMessage(bytes, isServerHandled);
-            } 
-            catch (Exception e) {
-                FusionLogger.LogException("handling module message", e);
-            }
-
-            // Return the byte pool
-            ByteRetriever.Return(bytes);
-        }
-
-        public abstract void HandleMessage(byte[] bytes, bool isServerHandled = false);
 
         public static void LoadHandlers(Assembly assembly) {
             if (assembly == null) 
@@ -136,7 +88,7 @@ namespace LabFusion.Network
 
                 // Since modules cannot be assumed to exist for everyone, we need to null check
                 if (Handlers.Length > tag && Handlers[tag] != null) {
-                    MelonCoroutines.Start(Handlers[tag].HandleMessage_Internal(buffer, isServerHandled));
+                    Handlers[tag].Internal_HandleMessage(buffer, isServerHandled);
                 }
             }
             catch (Exception e)

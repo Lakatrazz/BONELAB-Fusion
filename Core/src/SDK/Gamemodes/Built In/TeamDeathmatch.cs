@@ -372,7 +372,7 @@ namespace LabFusion.SDK.Gamemodes
             _oneMinuteLeft = false;
 
             // Invoke player changes on level load
-            FusionSceneManager.HookOnLevelLoad(() =>
+            FusionSceneManager.HookOnTargetLevelLoad(() =>
             {
                 // Force mortality
                 FusionPlayer.SetMortality(true);
@@ -665,7 +665,7 @@ namespace LabFusion.SDK.Gamemodes
             }
 
             // Invoke spawn point changes on level load
-            FusionSceneManager.HookOnLevelLoad(() => InitializeTeamSpawns(team));
+            FusionSceneManager.HookOnTargetLevelLoad(() => InitializeTeamSpawns(team));
         }
 
         protected void InitializeTeamSpawns(Team team)

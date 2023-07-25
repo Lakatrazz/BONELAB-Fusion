@@ -203,6 +203,7 @@ namespace LabFusion.Network
                     ConstrainerPatches.FirstId = data.point1Id;
                     ConstrainerPatches.SecondId = data.point2Id;
 
+                    comp.LineMaterial = syncedComp.LineMaterial;
                     comp.PrimaryButtonUp();
 
                     ConstrainerPatches.FirstId = 0;

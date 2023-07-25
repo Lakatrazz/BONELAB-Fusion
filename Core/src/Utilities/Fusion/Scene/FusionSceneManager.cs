@@ -68,6 +68,12 @@ namespace LabFusion.Utilities {
                 // Invoke the level load hook
                 _onLevelLoad?.Invoke();
                 _onLevelLoad = null;
+
+                // If the target was loaded, invoke that hook
+                if (HasTargetLoaded()) {
+                    _onTargetLevelLoad?.Invoke();
+                    _onTargetLevelLoad = null;
+                }
             }
 
             _wasLoading = _isLoading;
