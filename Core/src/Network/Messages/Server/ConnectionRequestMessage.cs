@@ -130,6 +130,22 @@ namespace LabFusion.Network
                             return;
                         }
 
+                        // Check if Quest user
+                        if (!FusionPreferences.LocalServerSettings.AllowQuestUsers.GetValue()
+                            && data.initialMetadata[MetadataHelper.PlatformKey] == "QUEST")
+                        {
+                            ConnectionSender.SendConnectionDeny(data.longId, "Quest users are blocked from this server.");
+                            return;
+                        }
+
+                        // Check if PC user
+                        if (!FusionPreferences.LocalServerSettings.AllowQuestUsers.GetValue()
+                            && data.initialMetadata[MetadataHelper.PlatformKey] == "PC")
+                        {
+                            ConnectionSender.SendConnectionDeny(data.longId, "PC users are blocked from this server.");
+                            return;
+                        }
+
                         // Finally, check for dynamic connection disallowing
                         if (!MultiplayerHooking.Internal_OnShouldAllowConnection(data.longId, out string reason)) {
                             ConnectionSender.SendConnectionDeny(data.longId, reason);

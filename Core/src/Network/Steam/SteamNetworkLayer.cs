@@ -52,6 +52,9 @@ namespace LabFusion.Network
         private INetworkLobby _currentLobby;
         internal override INetworkLobby CurrentLobby => _currentLobby;
 
+        private readonly SteamVoiceManager _voiceManager = new();
+        internal override IVoiceManager VoiceManager => _voiceManager;
+
         public SteamId SteamId;
 
         public static SteamSocketManager SteamSocket;
@@ -138,7 +141,7 @@ namespace LabFusion.Network
 
         internal override void OnVoiceChatUpdate() {
             if (NetworkInfo.HasServer) {
-                bool voiceEnabled = FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue() && !FusionPreferences.ClientSettings.Muted && !FusionPreferences.ClientSettings.Deafened;
+                bool voiceEnabled = VoiceHelper.IsVoiceEnabled;
 
                 // Update voice record
                 if (SteamUser.VoiceRecord != voiceEnabled)
@@ -150,11 +153,11 @@ namespace LabFusion.Network
                     // if you find this and are bothered to replace it with the mem stream version then go ahead
                     byte[] voiceData = SteamUser.ReadVoiceDataBytes();
 
-                    PlayerSender.SendPlayerVoiceChat(voiceData);
+                    PlayerSender.SendPlayerVoiceChat(voiceData, true);
                 }
 
-                // Update identifiers
-                SteamVoiceIdentifier.OnUpdate();
+                // Update the manager
+                VoiceManager.Update();
             }
             else {
                 // Disable voice recording
@@ -169,10 +172,10 @@ namespace LabFusion.Network
             if (isDeafened)
                 return;
 
-            var identifier = SteamVoiceIdentifier.GetVoiceIdentifier(id);
+            var handler = VoiceManager.GetVoiceHandler(id);
 
-            if (identifier != null) {
-                identifier.OnVoiceBytesReceived(bytes);
+            if (handler != null) {
+                handler.OnVoiceBytesReceived(bytes);
             }
         }
 
@@ -303,19 +306,19 @@ namespace LabFusion.Network
 
         private void OnPlayerJoin(PlayerId id) {
             if (!id.IsSelf)
-                SteamVoiceIdentifier.GetVoiceIdentifier(id);
+                VoiceManager.GetVoiceHandler(id);
 
             OnUpdateSteamLobby();
         }
 
         private void OnPlayerLeave(PlayerId id) {
-            SteamVoiceIdentifier.RemoveVoiceIdentifier(id);
+            VoiceManager.Remove(id);
 
             OnUpdateSteamLobby();
         }
 
         private void OnDisconnect() {
-            SteamVoiceIdentifier.CleanupAll();
+            VoiceManager.RemoveAll();
         }
 
         private void UnHookSteamEvents() {

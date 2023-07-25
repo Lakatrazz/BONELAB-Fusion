@@ -38,33 +38,24 @@ namespace LabFusion.Senders {
             if (!NetworkInfo.HasServer)
                 return;
 
-            using (FusionWriter writer = FusionWriter.Create(PlayerRepAvatarData.DefaultSize + barcode.GetSize())) {
-                using (PlayerRepAvatarData data = PlayerRepAvatarData.Create(PlayerIdManager.LocalSmallId, stats, barcode)) {
-                    writer.Write(data);
+            using FusionWriter writer = FusionWriter.Create(PlayerRepAvatarData.DefaultSize + barcode.GetSize());
+            using PlayerRepAvatarData data = PlayerRepAvatarData.Create(PlayerIdManager.LocalSmallId, stats, barcode);
+            writer.Write(data);
 
-                    using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepAvatar, writer)) {
-                        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                    }
-                }
-            }
+            using var message = FusionMessage.Create(NativeMessageTag.PlayerRepAvatar, writer);
+            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
         }
 
-        public static void SendPlayerVoiceChat(byte[] voiceData) {
+        public static void SendPlayerVoiceChat(byte[] voiceData, bool layerCompressed) {
             if (!NetworkInfo.HasServer)
                 return;
 
-            using (var writer = FusionWriter.Create(PlayerVoiceChatData.Size + voiceData.Length))
-            {
-                using (var data = PlayerVoiceChatData.Create(PlayerIdManager.LocalSmallId, voiceData))
-                {
-                    writer.Write(data);
+            using var writer = FusionWriter.Create(PlayerVoiceChatData.Size + voiceData.Length);
+            using var data = PlayerVoiceChatData.Create(PlayerIdManager.LocalSmallId, voiceData, layerCompressed);
+            writer.Write(data);
 
-                    using (var message = FusionMessage.Create(NativeMessageTag.PlayerVoiceChat, writer))
-                    {
-                        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.VoiceChat, message);
-                    }
-                }
-            }
+            using var message = FusionMessage.Create(NativeMessageTag.PlayerVoiceChat, writer);
+            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.VoiceChat, message);
         }
 
         public static void SendPlayerTeleport(byte target, Vector3 position)
@@ -72,76 +63,62 @@ namespace LabFusion.Senders {
             if (!NetworkInfo.IsServer)
                 return;
 
-            using (var writer = FusionWriter.Create(PlayerRepTeleportData.Size))
-            {
-                using (var data = PlayerRepTeleportData.Create(target, position))
-                {
-                    writer.Write(data);
+            using var writer = FusionWriter.Create(PlayerRepTeleportData.Size);
+            using var data = PlayerRepTeleportData.Create(target, position);
+            writer.Write(data);
 
-                    using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepTeleport, writer))
-                    {
-                        MessageSender.SendFromServer(target, NetworkChannel.Reliable, message);
-                    }
-                }
-            }
+            using var message = FusionMessage.Create(NativeMessageTag.PlayerRepTeleport, writer);
+            MessageSender.SendFromServer(target, NetworkChannel.Reliable, message);
         }
 
         public static void SendPlayerDamage(byte target, float damage) {
-            using (var writer = FusionWriter.Create(PlayerRepDamageData.Size))
-            {
-                using (var data = PlayerRepDamageData.Create(PlayerIdManager.LocalSmallId, target, damage))
-                {
-                    writer.Write(data);
+            using var writer = FusionWriter.Create(PlayerRepDamageData.Size);
+            using var data = PlayerRepDamageData.Create(PlayerIdManager.LocalSmallId, target, damage);
+            writer.Write(data);
 
-                    using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepDamage, writer))
-                    {
-                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                    }
-                }
-            }
+            using var message = FusionMessage.Create(NativeMessageTag.PlayerRepDamage, writer);
+            MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
 
         public static void SendPlayerMetadataRequest(byte smallId, string key, string value) {
-            using (var writer = FusionWriter.Create(PlayerMetadataRequestData.GetSize(key, value)))
-            {
-                using (var data = PlayerMetadataRequestData.Create(smallId, key, value))
-                {
-                    writer.Write(data);
+            using var writer = FusionWriter.Create(PlayerMetadataRequestData.GetSize(key, value));
+            using var data = PlayerMetadataRequestData.Create(smallId, key, value);
+            writer.Write(data);
 
-                    using (var message = FusionMessage.Create(NativeMessageTag.PlayerMetadataRequest, writer))
-                    {
-                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                    }
-                }
-            }
+            using var message = FusionMessage.Create(NativeMessageTag.PlayerMetadataRequest, writer);
+            MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
 
         public static void SendPlayerMetadataResponse(byte smallId, string key, string value) {
             // Make sure this is the server
             if (NetworkInfo.IsServer) {
-                using (var writer = FusionWriter.Create(PlayerMetadataResponseData.GetSize(key, value))) {
-                    using (var data = PlayerMetadataResponseData.Create(smallId, key, value)) {
-                        writer.Write(data);
+                using var writer = FusionWriter.Create(PlayerMetadataResponseData.GetSize(key, value));
+                using var data = PlayerMetadataResponseData.Create(smallId, key, value);
+                writer.Write(data);
 
-                        using (var message = FusionMessage.Create(NativeMessageTag.PlayerMetadataResponse, writer)) {
-                            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
+                using var message = FusionMessage.Create(NativeMessageTag.PlayerMetadataResponse, writer);
+                MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
             }
             else
                 throw new ExpectedClientException();
         }
 
+        public static void SendVoteKickRequest(byte target) {
+            using var writer = FusionWriter.Create(VoteKickRequestData.Size);
+            using var data = VoteKickRequestData.Create(PlayerIdManager.LocalId, target);
+            writer.Write(data);
+
+            using var message = FusionMessage.Create(NativeMessageTag.VoteKickRequest, writer);
+            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        }
+
         public static void SendPlayerAction(PlayerActionType type, byte? otherPlayer = null) {
             using (var writer = FusionWriter.Create(PlayerRepActionData.Size)) {
-                using (var data = PlayerRepActionData.Create(PlayerIdManager.LocalSmallId, type, otherPlayer)) {
-                    writer.Write(data);
+                using var data = PlayerRepActionData.Create(PlayerIdManager.LocalSmallId, type, otherPlayer);
+                writer.Write(data);
 
-                    using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepAction, writer)) {
-                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                    }
-                }
+                using var message = FusionMessage.Create(NativeMessageTag.PlayerRepAction, writer);
+                MessageSender.SendToServer(NetworkChannel.Reliable, message);
             }
 
             // Inform the hooks locally

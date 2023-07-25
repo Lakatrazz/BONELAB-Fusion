@@ -45,22 +45,19 @@ namespace LabFusion.Network
         public override byte? Tag => NativeMessageTag.PointItemEquipState;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
-            using (var reader = FusionReader.Create(bytes)) {
-                using (var data = reader.ReadFusionSerializable<PointItemEquipStateData>()) {
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled)
-                    {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes))
-                        {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-                        }
-                    }
-                    else if (PointItemManager.TryGetPointItem(data.barcode, out var item)) {
-                        var id = PlayerIdManager.GetPlayerId(data.smallId);
+            using var reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<PointItemEquipStateData>();
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
+            {
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+            }
+            else if (PointItemManager.TryGetPointItem(data.barcode, out var item))
+            {
+                var id = PlayerIdManager.GetPlayerId(data.smallId);
 
-                        id.Internal_ForceSetEquipped(data.barcode, data.isEquipped);
-                    }
-                }
+                id.Internal_ForceSetEquipped(data.barcode, data.isEquipped);
             }
         }
     }

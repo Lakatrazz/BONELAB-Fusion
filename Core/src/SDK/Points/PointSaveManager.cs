@@ -50,7 +50,7 @@ namespace LabFusion.SDK.Points {
                 File.Copy(filePath, backupPath, true);
         }
 
-        public static void ReadFromFile() {
+        public static void ReadFile() {
             var data = DataSaver.ReadBinary<PointSaveData>(_filePath);
 
             if (data != null) {

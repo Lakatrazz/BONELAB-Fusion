@@ -171,7 +171,9 @@ namespace LabFusion.SDK.Points {
             return PointSaveManager.GetBitCount();
         }
 
-        public static void RewardBits(int bits) {
+        public static void RewardBits(int bits, bool popup = true) {
+            bits = Mathf.Max(0, bits);
+
             // Make sure the amount isn't invalid
             if (bits.IsNaN()) {
                 FusionLogger.ErrorLine("Prevented attempt to give invalid bit reward. Please notify a Fusion developer and send them your log.");
@@ -181,10 +183,15 @@ namespace LabFusion.SDK.Points {
             var currentBits = GetBitCount();
             PointSaveManager.SetBitCount(currentBits + bits);
 
+            if (popup)
+                FusionBitPopup.Send(bits);
+
             OnBitCountChanged.InvokeSafe("executing OnBitCountChanged");
         }
 
-        public static void DecrementBits(int bits) {
+        public static void DecrementBits(int bits, bool popup = true) {
+            bits = Mathf.Max(0, bits);
+
             // Make sure the amount isn't invalid
             if (bits.IsNaN()) {
                 FusionLogger.ErrorLine("Prevented attempt to remove an invalid bit amount. Please notify a Fusion developer and send them your log.");
@@ -193,6 +200,9 @@ namespace LabFusion.SDK.Points {
 
             var currentBits = GetBitCount();
             PointSaveManager.SetBitCount(currentBits - bits);
+
+            if (popup)
+                FusionBitPopup.Send(-bits);
 
             OnBitCountChanged.InvokeSafe("executing OnBitCountChanged");
         }
@@ -216,8 +226,8 @@ namespace LabFusion.SDK.Points {
                 return false;
 
             PointSaveManager.UpgradeItem(item.Barcode);
-            int newBits = bits - price;
-            PointSaveManager.SetBitCount(newBits);
+
+            DecrementBits(price);
 
             return true;
         }
@@ -238,8 +248,8 @@ namespace LabFusion.SDK.Points {
                 return false;
 
             PointSaveManager.UnlockItem(item.Barcode);
-            int newBits = bits - price;
-            PointSaveManager.SetBitCount(newBits);
+
+            DecrementBits(price);
 
             return true;
         }
@@ -311,7 +321,7 @@ namespace LabFusion.SDK.Points {
         }
 
         public static void SetEquipped(PointItem item, bool isEquipped) {
-            if (item == null || !item.IsUnlocked)
+            if (item == null || (!item.IsUnlocked && !item.IsEquipped))
                 return;
 
             Internal_OnEquipChange(PlayerIdManager.LocalId, item.Barcode, isEquipped);
@@ -326,7 +336,7 @@ namespace LabFusion.SDK.Points {
         }
 
         public static IReadOnlyList<PointItem> GetLockedItems(SortMode sort = SortMode.PRICE) {
-            List<PointItem> items = new List<PointItem>(LoadedItems.Count);
+            List<PointItem> items = new(LoadedItems.Count);
 
             foreach (var item in LoadedItems) {
                 if (item.Redacted)

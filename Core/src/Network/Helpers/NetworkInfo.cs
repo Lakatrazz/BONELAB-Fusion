@@ -18,6 +18,11 @@ namespace LabFusion.Network {
         public static INetworkLobby CurrentLobby => CurrentNetworkLayer.CurrentLobby;
 
         /// <summary>
+        /// The current voice manager. Can be null. Contains information about player voice chat.
+        /// </summary>
+        public static IVoiceManager VoiceManager => CurrentNetworkLayer.VoiceManager;
+
+        /// <summary>
         /// Returns true if a network layer has been established.
         /// </summary>
         public static bool HasLayer => CurrentNetworkLayer != null;

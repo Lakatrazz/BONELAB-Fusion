@@ -1,5 +1,5 @@
 ﻿using BoneLib.BoneMenu.Elements;
-
+using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Preferences;
 using LabFusion.Representation;
@@ -91,6 +91,23 @@ namespace LabFusion.BoneMenu
             settingsCategory.CreateFunctionElement($"Server Privacy: {info.Privacy}", Color.white, null);
             settingsCategory.CreateFunctionElement($"Time Scale Mode: {info.TimeScaleMode}", Color.white, null);
             settingsCategory.CreateFunctionElement($"Voicechat: {(info.VoicechatEnabled ? "Enabled" : "Disabled")}", Color.white, null);
+
+            // Create a category for the player list
+            var playersCategory = lobbyCategory.CreateCategory("Players", Color.white);
+
+            foreach (var player in info.PlayerList.players) {
+                if (!player.isValid)
+                    continue;
+
+                playersCategory.CreateFunctionElement(player.username, Color.white, null);
+            }
+
+            // Create a category for the server tags
+            var tagsCategory = lobbyCategory.CreateCategory("Tags", Color.white);
+
+            foreach (var tag in info.LobbyTags.Expand()) {
+                tagsCategory.CreateFunctionElement(tag, Color.white, null);
+            }
 
             // Allow outside mods to add their own lobby information
             MultiplayerHooking.Internal_OnLobbyCategoryCreated(lobbyCategory, lobby);

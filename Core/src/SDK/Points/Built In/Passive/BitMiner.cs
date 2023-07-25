@@ -60,7 +60,7 @@ namespace LabFusion.SDK.Points
                     if (_bitTime > 60f) {
                         while (_bitTime > 60f) {
                             _bitTime -= 60f;
-                            PointItemManager.RewardBits(1 + (UpgradeLevel + 1));
+                            PointItemManager.RewardBits(1 + (UpgradeLevel + 1), false);
                         }
                     }
                 }

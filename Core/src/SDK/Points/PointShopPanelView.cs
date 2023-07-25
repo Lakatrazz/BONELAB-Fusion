@@ -17,11 +17,14 @@ using UnhollowerBaseLib.Attributes;
 using LabFusion.Utilities;
 using LabFusion.UI;
 using LabFusion.Extensions;
+using SLZ.UI;
+using SLZ.Bonelab;
+using SLZ.Utilities;
 
 namespace LabFusion.SDK.Points
 {
     [RegisterTypeInIl2Cpp]
-    public sealed class PointShopPanelView : MonoBehaviour {
+    public sealed class PointShopPanelView : FusionPanelView {
         public enum ActivePanel {
             CATALOG = 0,
             OWNED = 1,
@@ -32,9 +35,9 @@ namespace LabFusion.SDK.Points
 
         public PointShopPanelView(IntPtr intPtr) : base(intPtr) { }
 
-        private Rigidbody _doorRigidbody;
+        protected override Vector3 Bounds => new(1.3f, 1f, 0.1f);
 
-        private Transform _canvas;
+        private Rigidbody _doorRigidbody;
 
         private Transform _groupItemsRoot;
         private Transform _categorySelectionRoot;
@@ -99,10 +102,8 @@ namespace LabFusion.SDK.Points
         [HideFromIl2Cpp]
         public IReadOnlyList<PointItem> PanelItems => _panel == ActivePanel.CATALOG ? CatalogItems : OwnedItems;
 
-        private void Awake() {
+        protected override void OnAwake() {
             // Setup the menu
-            SetupReferences();
-            SetupText();
             SetupButtons();
             SetupArrows();
             SetupInfoPage();
@@ -121,10 +122,8 @@ namespace LabFusion.SDK.Points
             PointItemManager.OnBitCountChanged -= UpdateBitCountText;
         }
 
-        private void SetupReferences() {
+        protected override void OnSetupReferences() {
             _doorRigidbody = transform.parent.Find("Art/Offset/VendorAtlas/Door Pivot").GetComponent<Rigidbody>();
-
-            _canvas = transform.Find("CANVAS");
 
             _groupItemsRoot = _canvas.Find("group_Items");
             _categorySelectionRoot = _groupItemsRoot.Find("category_Selection");
@@ -173,23 +172,17 @@ namespace LabFusion.SDK.Points
             _groupWhatIsThisRoot = _canvas.Find("group_WhatIsThis");
 
             var helpButton = _canvas.Find("button_Help").GetComponent<Button>();
-            helpButton.onClick.AddListener((UnityAction)(() =>
+            helpButton.AddClickEvent(() =>
             {
                 SelectPanel(ActivePanel.HELP);
-            }));
+            });
 
             var helpGoBack = _groupWhatIsThisRoot.Find("button_goBack").GetComponent<Button>();
-            helpGoBack.onClick.AddListener((UnityAction)(() =>
+            helpGoBack.AddClickEvent(() =>
             {
                 SelectPanel(_lastCatalogPanel);
                 LoadCatalogPage();
-            }));
-        }
-
-        private void SetupText() {
-            foreach (var text in gameObject.GetComponentsInChildren<TMP_Text>(true)) {
-                text.font = PersistentAssetCreator.Font;
-            }
+            });
         }
 
         private void SetupButtons() {
@@ -219,16 +212,6 @@ namespace LabFusion.SDK.Points
                 _itemButtons[i].onClick.AddListener((UnityAction)(() => {
                     SelectItem(button);
                 }));
-            }
-
-            // Add clicking events to every button
-            foreach (var button in transform.GetComponentsInChildren<Button>(true)) {
-                var collider = button.GetComponentInChildren<Collider>(true);
-                if (collider != null)
-                {
-                    var interactor = collider.gameObject.AddComponent<FusionUITrigger>();
-                    interactor.button = button;
-                }
             }
         }
 

@@ -7,6 +7,28 @@ using System.Threading.Tasks;
 
 namespace LabFusion.Extensions {
     public static class StringExtensions {
+        public const char UniqueSeparator = '¬';
+
+        public static string Contract(this IList<string> list) {
+            StringBuilder builder = new();
+            for (var i = 0; i < list.Count; i++) {
+                var value = list[i];
+                builder.Append(value);
+
+                if (i + 1 < list.Count)
+                    builder.Append(UniqueSeparator);
+            }
+
+            return builder.ToString();
+        }
+
+        public static string[] Expand(this string value) {
+            if (string.IsNullOrEmpty(value))
+                return new string[0];
+
+            return value.Split(UniqueSeparator);
+        }
+
         public static string RemoveRichText(this string str) {
             Regex rich = new(@"<[^>]*>");
             string plainText = str;

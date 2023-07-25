@@ -20,14 +20,17 @@ using UnityEngine;
 
 using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Points;
+using System.Linq;
+using LabFusion.SDK.Achievements;
+using LabFusion.Patching;
 
 namespace LabFusion
 {
     public struct FusionVersion
     {
         public const byte versionMajor = 1;
-        public const byte versionMinor = 4;
-        public const short versionPatch = 1;
+        public const byte versionMinor = 5;
+        public const short versionPatch = 0;
     }
 
     public class FusionMod : MelonMod {
@@ -36,6 +39,8 @@ namespace LabFusion
         public static readonly Version Version = new(FusionVersion.versionMajor, FusionVersion.versionMinor, FusionVersion.versionPatch);
 
         public static string Changelog { get; internal set; } = null;
+
+        public static string[] Credits { get; internal set; } = null;
 
         /// <summary>
         /// The desired networking layer. Swap this out to change the networking system.
@@ -46,6 +51,8 @@ namespace LabFusion
         public static Assembly FusionAssembly { get; private set; }
 
         private static int _nextSyncableSendRate = 1;
+
+        private static bool _hasAutoUpdater = false;
 
         public override void OnEarlyInitializeMelon() {
             Instance = this;
@@ -65,9 +72,15 @@ namespace LabFusion
             PointItemManager.Internal_HookAssemblies();
 
             PlayerAdditionsHelper.OnInitializeMelon();
+
+            VoteKickHelper.Internal_OnInitializeMelon();
         }
 
         public override void OnInitializeMelon() {
+            // Manually patch methods on Android because some only work on PC
+            if (BoneLib.HelperMethods.IsAndroid())
+                ManualPatchRunner.Init(HarmonyInstance);
+
             // Prepare the bonemenu category
             FusionPreferences.OnPrepareBoneMenuCategory();
 
@@ -84,8 +97,11 @@ namespace LabFusion
             PropExtenderManager.RegisterExtendersFromAssembly(FusionAssembly);
             GamemodeRegistration.LoadGamemodes(FusionAssembly);
             PointItemManager.LoadItems(FusionAssembly);
+            AchievementManager.LoadAchievements(FusionAssembly);
 
             SyncManager.OnInitializeMelon();
+
+            FusionPopupManager.OnInitializeMelon();
 
             // Create prefs
             FusionPreferences.OnInitializePreferences();
@@ -110,6 +126,24 @@ namespace LabFusion
             PersistentAssetCreator.OnLateInitializeMelon();
 
             FusionPreferences.OnCreateBoneMenu();
+
+            // Check if the auto updater is installed
+            _hasAutoUpdater = MelonPlugin.RegisteredMelons.Any((p) => p.Info.Name.Contains("LabFusion Updater"));
+
+            if (!_hasAutoUpdater && !BoneLib.HelperMethods.IsAndroid()) {
+                FusionNotifier.Send(new FusionNotification()
+                {
+                    isMenuItem = false,
+                    isPopup = true,
+                    message = "You do not have the Fusion Autoupdater installed in your plugins folder!" +
+                    "\nIt is recommended to install it in order to stay up to date.",
+                    type = NotificationType.WARNING,
+                });
+
+#if DEBUG
+                FusionLogger.Warn("The player does not have the auto updater installed.");
+#endif
+            }
         }
 
         protected void OnInitializeNetworking() {
@@ -134,6 +168,8 @@ namespace LabFusion
         public override void OnDeinitializeMelon() {
             // Cleanup networking
             InternalLayerHelpers.OnCleanupLayer();
+
+            VoteKickHelper.Internal_OnDeinitializeMelon();
 
             // Backup files
             FusionFileLoader.OnDeinitializeMelon();
@@ -170,6 +206,7 @@ namespace LabFusion
             SyncManager.OnCleanup();
             RigData.OnCacheRigInfo();
             PersistentAssetCreator.OnMainSceneInitialized();
+            ConstrainerUtilities.OnMainSceneInitialized();
 
             // Create player reps
             PlayerRep.OnRecreateReps();
@@ -211,8 +248,8 @@ namespace LabFusion
             // Store rig info/update avatars
             RigData.OnRigUpdate();
 
-            // Update notifications
-            FusionNotifier.OnUpdate();
+            // Update popups
+            FusionPopupManager.OnUpdate();
 
             // Send players based on player count
             int playerSendRate = SendRateTable.GetPlayerSendRate();

@@ -1,5 +1,7 @@
-﻿using LabFusion.Representation;
+﻿using LabFusion.Network;
+using LabFusion.Representation;
 using LabFusion.Utilities;
+
 using SLZ.Bonelab;
 using SLZ.Vehicle;
 
@@ -17,10 +19,26 @@ namespace LabFusion.Data
         public static GameObject InvisibleMinecart;
 
         private static readonly float LocalOffset = -1.581f;
-        private static readonly Vector3 JointAnchor = new Vector3(0f, 0.283f, 0.795f);
+        private static readonly Vector3 JointAnchor = new(0f, 0.283f, 0.795f);
         const int MaxExtraCarts = 7;
 
+        private static int _cartAmount = 0;
+        private static bool _hasCreatedCarts = false;
+
+        protected override void PlayerCatchup(ulong longId) {
+            if (Minecart != null && _hasCreatedCarts) {
+                using var writer = FusionWriter.Create();
+                using var data = MineDiveCartData.Create(_cartAmount);
+                writer.Write(data);
+
+                using var message = FusionMessage.Create(NativeMessageTag.MineDiveCart, writer);
+                MessageSender.SendFromServer(longId, NetworkChannel.Reliable, message);
+            }
+        }
+
         protected override void SceneAwake() {
+            _hasCreatedCarts = false;
+
             Minecart = GameObject.Find("Minecart Gun Variant");
             AvatarCart = GameObject.Find("Avatar-Gun Variant (1)");
 
@@ -38,19 +56,30 @@ namespace LabFusion.Data
         }
 
         protected override void MainSceneInitialized() {
-            CreateExtraCarts();
+            if (NetworkInfo.IsServer) {
+                _cartAmount = PlayerIdManager.PlayerCount - 1;
+                CreateExtraCarts(_cartAmount);
+
+                using var writer = FusionWriter.Create();
+                using var data = MineDiveCartData.Create(_cartAmount);
+                writer.Write(data);
+
+                using var message = FusionMessage.Create(NativeMessageTag.MineDiveCart, writer);
+                MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+            }
         }
 
-        private static void CreateExtraCarts()
+        public static void CreateExtraCarts(int amount)
         {
+            if (_hasCreatedCarts || amount <= 0)
+                return;
+
             if (Minecart != null)
             {
                 var minecartColliders = Minecart.GetComponentsInChildren<Collider>(true);
                 var avatarcartColliders = AvatarCart.GetComponentsInChildren<Collider>(true);
 
                 var splineTrack = GameObject.Find("MineCart-Track-01-Player-Track").GetComponent<SplineJoint>();
-
-                var extraPlayers = PlayerIdManager.PlayerCount - 1;
 
                 Transform lastCart = Minecart.transform;
 
@@ -60,7 +89,7 @@ namespace LabFusion.Data
 
                 List<Transform> carts = new List<Transform>();
 
-                for (var i = 0; i < extraPlayers && i < MaxExtraCarts; i++)
+                for (var i = 0; i < amount && i < MaxExtraCarts; i++)
                 {
                     // Create minecarts
                     var newCart = GameObject.Instantiate(InvisibleMinecart);
@@ -150,6 +179,8 @@ namespace LabFusion.Data
                     }
                 }
             }
+
+            _hasCreatedCarts = true;
         }
     }
 }

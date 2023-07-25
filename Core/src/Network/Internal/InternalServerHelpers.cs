@@ -15,6 +15,8 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 using SLZ.Marrow.SceneStreaming;
+using LabFusion.SDK.Achievements;
+using BoneLib;
 
 namespace LabFusion.Network {
     /// <summary>
@@ -63,7 +65,12 @@ namespace LabFusion.Network {
                 message = "Started a server!",
                 isMenuItem = false,
                 isPopup = true,
+                type = NotificationType.SUCCESS,
             });
+
+            // Unlock achievement
+            if (AchievementManager.TryGetAchievement<HeadOfHouse>(out var achievement))
+                achievement.IncrementTask();
 
             // Reload the scene
             SceneStreamer.Reload();
@@ -86,7 +93,12 @@ namespace LabFusion.Network {
                 message = "Joined a server!",
                 isMenuItem = false,
                 isPopup = true,
+                type = NotificationType.SUCCESS,
             });
+
+            // Unlock achievement
+            if (AchievementManager.TryGetAchievement<WarmWelcome>(out var achievement))
+                achievement.IncrementTask();
         }
 
         /// <summary>
@@ -126,6 +138,7 @@ namespace LabFusion.Network {
                     isMenuItem = true,
                     isPopup = true,
                     popupLength = 5f,
+                    type = NotificationType.WARNING,
                 });
             }
         }
@@ -197,7 +210,10 @@ namespace LabFusion.Network {
                 { MetadataHelper.NicknameKey, PlayerIdManager.LocalNickname },
 
                 // Permission
-                { MetadataHelper.PermissionKey, NetworkInfo.IsServer ? PermissionLevel.OWNER.ToString() : PermissionLevel.DEFAULT.ToString() }
+                { MetadataHelper.PermissionKey, NetworkInfo.IsServer ? PermissionLevel.OWNER.ToString() : PermissionLevel.DEFAULT.ToString() },
+
+                // Platform
+                { MetadataHelper.PlatformKey, HelperMethods.IsAndroid() ? "QUEST" : "PC" }
             };
 
             return metadata;

@@ -59,6 +59,8 @@ namespace LabFusion.Data
         public BaseController LeftController { get; private set; }
         public BaseController RightController { get; private set; }
 
+        public Transform Head { get; private set; }
+
         public void OnDestroy() {
             IsValid = false;
             RigRigidbodies = null;
@@ -234,6 +236,8 @@ namespace LabFusion.Data
 
             LeftController = rigManager.openControllerRig.leftController;
             RightController = rigManager.openControllerRig.rightController;
+
+            Head = RigManager.physicsRig.m_head;
         }
     }
 

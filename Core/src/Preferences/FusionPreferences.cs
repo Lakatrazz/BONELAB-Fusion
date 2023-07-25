@@ -26,14 +26,21 @@ namespace LabFusion.Preferences {
             public IFusionPref<bool> LevelSwitchingButtonsEnabled;
             public IFusionPref<bool> VoteKickingEnabled;
             public IFusionPref<ServerPrivacy> Privacy;
+            public IFusionPref<bool> AllowQuestUsers;
+            public IFusionPref<bool> AllowPCUsers;
             public IFusionPref<TimeScaleMode> TimeScaleMode;
             public IFusionPref<byte> MaxPlayers;
 
             // Visual
             public IFusionPref<string> ServerName;
+            public IFusionPref<List<string>> ServerTags;
 
             // Mortality
             public IFusionPref<bool> ServerMortality;
+
+            // Cheat detection
+            public IFusionPref<PermissionLevel> StatChangersAllowed;
+            public IFusionPref<float> StatChangerLeeway;
 
             // Permissions
             public IFusionPref<PermissionLevel> DevToolsAllowed;
@@ -56,14 +63,21 @@ namespace LabFusion.Preferences {
                     LevelSwitchingButtonsEnabled = new FusionPref<bool>(prefCategory, "Server Level Swithing From Button", false, PrefUpdateMode.LOCAL_UPDATE),
                     VoteKickingEnabled = new FusionPref<bool>(prefCategory, "Server Vote Kicking Enabled", true, PrefUpdateMode.SERVER_UPDATE),
                     Privacy = new FusionPref<ServerPrivacy>(prefCategory, "Server Privacy", ServerPrivacy.PUBLIC, PrefUpdateMode.LOCAL_UPDATE),
+                    AllowQuestUsers = new FusionPref<bool>(prefCategory, "Allow Quest Users", true, PrefUpdateMode.SERVER_UPDATE),
+                    AllowPCUsers = new FusionPref<bool>(prefCategory, "Allow PC Users", true, PrefUpdateMode.SERVER_UPDATE),
                     TimeScaleMode = new FusionPref<TimeScaleMode>(prefCategory, "Time Scale Mode", Senders.TimeScaleMode.LOW_GRAVITY, PrefUpdateMode.SERVER_UPDATE),
                     MaxPlayers = new FusionPref<byte>(prefCategory, "Max Players", 10, PrefUpdateMode.SERVER_UPDATE),
 
                     // Visual
                     ServerName = new FusionPref<string>(prefCategory, "Server Name", "", PrefUpdateMode.LOCAL_UPDATE),
+                    ServerTags = new FusionPref<List<string>>(prefCategory, "Server Tags", new List<string>(), PrefUpdateMode.LOCAL_UPDATE),
 
                     // Mortality
                     ServerMortality = new FusionPref<bool>(prefCategory, "Server Mortality", true, PrefUpdateMode.SERVER_UPDATE),
+
+                    // Cheat detection
+                    StatChangersAllowed = new FusionPref<PermissionLevel>(prefCategory, "Stat Changers Allowed", PermissionLevel.OPERATOR, PrefUpdateMode.SERVER_UPDATE),
+                    StatChangerLeeway = new FusionPref<float>(prefCategory, "Stat Changer Leeway", 0f, PrefUpdateMode.SERVER_UPDATE),
 
                     // Server permissions
                     DevToolsAllowed = new FusionPref<PermissionLevel>(prefCategory, "Dev Tools Allowed", PermissionLevel.DEFAULT, PrefUpdateMode.SERVER_UPDATE),
@@ -82,7 +96,8 @@ namespace LabFusion.Preferences {
         public struct ClientSettings {
             // Selected network layer
             public static FusionPref<NetworkLayerType> NetworkLayerType { get; internal set; }
-            
+            public static FusionPref<int> ProxyPort { get; internal set; }
+
             // Nametag settings
             public static FusionPref<bool> NametagsEnabled { get; internal set; }
             public static FusionPref<Color> NametagColor { get; internal set; }
@@ -172,6 +187,7 @@ namespace LabFusion.Preferences {
 
             // Client settings
             ClientSettings.NetworkLayerType = new FusionPref<NetworkLayerType>(prefCategory, "Network Layer Type", NetworkLayerDeterminer.GetDefaultType(), PrefUpdateMode.IGNORE);
+            ClientSettings.ProxyPort = new FusionPref<int>(prefCategory, "Proxy Port", 28340, PrefUpdateMode.IGNORE);
 
             // Nametag
             ClientSettings.NametagsEnabled = new FusionPref<bool>(prefCategory, "Client Nametags Enabled", true, PrefUpdateMode.LOCAL_UPDATE);

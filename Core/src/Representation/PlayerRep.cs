@@ -23,6 +23,11 @@ using UnityEngine;
 
 using MelonLoader;
 
+using SLZ.Marrow.Warehouse;
+using SLZ.VRMK;
+
+using Avatar = SLZ.VRMK.Avatar;
+
 namespace LabFusion.Representation
 {
     public class PlayerRep : IDisposable {
@@ -38,6 +43,16 @@ namespace LabFusion.Representation
         /// Returns true if the transforms of the rep have been created yet.
         /// </summary>
         public bool IsCreated => RigReferences.IsValid;
+
+        /// <summary>
+        /// The distance of this PlayerRep's head to the local player's head (squared).
+        /// </summary>
+        public float DistanceSqr { get; private set; }
+
+        /// <summary>
+        /// Whether or not the player's microphone logic is disabled.
+        /// </summary>
+        public bool MicrophoneDisabled { get; private set; }
 
         public static Transform[] syncedPoints = null;
         public static Transform[] gameworldPoints = null;
@@ -101,10 +116,16 @@ namespace LabFusion.Representation
         private bool _isSettingsDirty = false;
         private bool _isServerDirty = false;
 
+        private bool _isQuestUser = false;
+
         // Voice chat integration
         private const float _voiceUpdateStep = 0.3f;
 
+        private float _maxMicrophoneDistance = 30f;
+
         private AudioSource _voiceSource = null;
+
+        private bool _spatialized = false;
 
         private float _voiceUpdateTime = 0f;
 
@@ -126,6 +147,8 @@ namespace LabFusion.Representation
             // Insert the PlayerRep into the global list
             PlayerRepManager.Internal_InsertPlayerRep(this);
 
+            _isQuestUser = PlayerId.GetMetadata(MetadataHelper.PlatformKey) == "QUEST";
+
             pelvisPDController = new PDController();
 
             MultiplayerHooking.OnServerSettingsChanged += OnServerSettingsChanged;
@@ -146,15 +169,51 @@ namespace LabFusion.Representation
             if (_voiceSource.IsNOC())
                 return;
 
+            // Modify the source settings
+            var rm = RigReferences.RigManager;
+            if (IsCreated && rm._avatar) {
+                var mouthSource = rm.physicsRig.headSfx.mouthSrc;
+                _voiceSource.transform.position = mouthSource.transform.position;
+
+                if (!_spatialized) {
+                    UpdateVoiceSourceSettings();
+                    _spatialized = true;
+                }
+
+                MicrophoneDisabled = DistanceSqr > (_maxMicrophoneDistance * _maxMicrophoneDistance) * 1.2f;
+            }
+            else {
+                _voiceSource.spatialBlend = 0f;
+                _voiceSource.minDistance = 0f;
+                _voiceSource.maxDistance = 30f;
+                _voiceSource.reverbZoneMix = 0.35f;
+                _voiceSource.dopplerLevel = 0.5f;
+
+                _spatialized = false;
+                MicrophoneDisabled = false;
+            }
+
+            // Update the jaw movement
+            if (MicrophoneDisabled) {
+                _voiceLoudness = 0f;
+            }
+            else {
+                OnUpdateVoiceLoudness();
+            }
+        }
+
+        private void OnUpdateVoiceLoudness() {
             // Update the amplitude
             _voiceUpdateTime += Time.deltaTime;
-            if (_voiceUpdateTime >= _voiceUpdateStep) {
+            if (_voiceUpdateTime >= _voiceUpdateStep)
+            {
                 _voiceUpdateTime = 0f;
 
                 var spectrum = _voiceSource.GetSpectrumData(256, 0, FFTWindow.Rectangular);
 
                 float gain = 0f;
-                for (var i = 0; i < spectrum.Length; i++) {
+                for (var i = 0; i < spectrum.Length; i++)
+                {
                     gain += Mathf.Abs(spectrum[i]);
                 }
 
@@ -173,32 +232,6 @@ namespace LabFusion.Representation
             sin = Mathf.Clamp01(sin);
 
             _voiceLoudness = Mathf.Lerp(_voiceLoudness * sin, _targetLoudness, Time.deltaTime * 12f);
-
-            // Modify the source settings
-            var rm = RigReferences.RigManager;
-            if (IsCreated && rm._avatar) {
-                float heightMult = rm._avatar.height / 1.76f;
-
-                _voiceSource.spatialBlend = 1f;
-                _voiceSource.minDistance = 0.5f * heightMult;
-                _voiceSource.maxDistance = 30f * heightMult;
-                _voiceSource.reverbZoneMix = Mathf.Clamp(0.35f * heightMult, 0f, 1.02f);
-                _voiceSource.dopplerLevel = 0.5f;
-
-                var mouthSource = rm.physicsRig.headSfx.mouthSrc;
-                _voiceSource.transform.position = mouthSource.transform.position;
-
-                // Set the mixer
-                if (_voiceSource.outputAudioMixerGroup == null && !pullCord.IsNOC())
-                    _voiceSource.outputAudioMixerGroup = pullCord.mixerGroup;
-            }
-            else {
-                _voiceSource.spatialBlend = 0f;
-                _voiceSource.minDistance = 0.5f;
-                _voiceSource.maxDistance = 30f;
-                _voiceSource.reverbZoneMix = 0.35f;
-                _voiceSource.dopplerLevel = 0.5f;
-            }
         }
 
         private void OnMetadataChanged(PlayerId id) {
@@ -285,15 +318,32 @@ namespace LabFusion.Representation
             var rm = RigReferences.RigManager;
 
             if (!success) {
-                rm.SwapAvatarCrate(FusionAvatar.POLY_BLANK_BARCODE, true, (Action<bool>)OnSwapFallback);
+                RigReferences.SwapAvatarCrate(FusionAvatar.POLY_BLANK_BARCODE, OnSwapFallback, OnPrepareAvatar);
             }
             else {
-                UpdateNametagSettings();
+                UpdateAvatarSettings();
+            }
+        }
+
+        private void OnPrepareAvatar(string barcode, GameObject avatar) {
+            // If we have synced avatar stats, set the scale properly
+            if (avatarStats != null) {
+                Transform transform = avatar.transform;
+
+                // Polyblank should just scale based on the custom avatar height
+                if (barcode == FusionAvatar.POLY_BLANK_BARCODE) {
+                    float newHeight = avatarStats.height;
+                    transform.localScale = Vector3Extensions.one * (newHeight / 1.76f);
+                }
+                // Otherwise, apply the synced scale
+                else {
+                    transform.localScale = avatarStats.localScale;
+                }
             }
         }
 
         private void OnSwapFallback(bool success) {
-            UpdateNametagSettings();
+            UpdateAvatarSettings();
         }
 
         internal void Internal_OnAvatarChanged(string barcode) {
@@ -351,6 +401,11 @@ namespace LabFusion.Representation
             repNameText.enableAutoSizing = true;
 
             repNameText.text = Username;
+            if (_isQuestUser)
+            {
+                repNameText.richText = true;
+                repNameText.text += " <size=60%>Q";
+            }
             repNameText.font = PersistentAssetCreator.Font;
         }
 
@@ -364,6 +419,11 @@ namespace LabFusion.Representation
             return offset;
         }
 
+        private void UpdateAvatarSettings() {
+            UpdateNametagSettings();
+            UpdateVoiceSourceSettings();
+        }
+
         private void UpdateNametagSettings() {
             var rm = RigReferences.RigManager;
             if (IsCreated && rm.avatar) {
@@ -371,6 +431,32 @@ namespace LabFusion.Representation
                 repCanvasTransform.localScale = Vector3Extensions.one / NameTagDivider * height;
 
                 repNameText.text = Username;
+                if (_isQuestUser)
+                {
+                    repNameText.richText = true;
+                    repNameText.text += " <size=60%>Q";
+                }
+            }
+        }
+
+        private void UpdateVoiceSourceSettings() {
+            if (_voiceSource == null)
+                return;
+
+            var rm = RigReferences.RigManager;
+            if (IsCreated && rm._avatar) {
+                float heightMult = rm._avatar.height / 1.76f;
+
+                _voiceSource.spatialBlend = 1f;
+                _voiceSource.reverbZoneMix = Mathf.Clamp(0.35f * heightMult, 0f, 1.02f);
+
+                _maxMicrophoneDistance = 30f * heightMult;
+
+                _voiceSource.SetRealisticRolloff(0.5f, _maxMicrophoneDistance);
+
+                // Set the mixer
+                if (_voiceSource.outputAudioMixerGroup == null && !pullCord.IsNOC())
+                    _voiceSource.outputAudioMixerGroup = pullCord.mixerGroup;
             }
         }
 
@@ -721,7 +807,7 @@ namespace LabFusion.Representation
             if (!rm._avatar.IsNOC()) {
                 // Swap the avatar
                 if (_isAvatarDirty) {
-                    rm.SwapAvatarCrate(avatarId, true, (Action<bool>)OnSwapAvatar);
+                    RigReferences.SwapAvatarCrate(avatarId, OnSwapAvatar, OnPrepareAvatar);
                     _isAvatarDirty = false;
 
                     PlayerAdditionsHelper.OnAvatarChanged(rm);
@@ -765,6 +851,9 @@ namespace LabFusion.Representation
                     _isServerDirty = false;
                 }
             }
+
+            // Update distance value
+            DistanceSqr = (RigReferences.Head.position - RigData.RigReferences.Head.position).sqrMagnitude;
         }
 
         public static void OnUpdate() {

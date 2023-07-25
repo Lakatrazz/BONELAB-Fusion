@@ -29,6 +29,7 @@ namespace LabFusion.Utilities {
 
         private static readonly string[] _itemNames = new string[] {
             // BaBa Corp Cosmetics
+            // Pack 1
             nameof(Gemstone),
             nameof(GloopTrail),
             nameof(Junktion),
@@ -69,6 +70,43 @@ namespace LabFusion.Utilities {
             nameof(TheBeacon),
             nameof(WeirdShades),
             nameof(BitMiner),
+
+            // Pack 2
+            nameof(AncientTablet),
+            nameof(BitBackpack),
+            nameof(Briefcase),
+            nameof(CirclingBit),
+            nameof(Floatie),
+            nameof(Headset),
+            nameof(HotHead),
+            nameof(Jetpack),
+            nameof(NESGuitar),
+            nameof(OctoSpecs),
+            nameof(Potion),
+            nameof(PsychicPerception),
+            nameof(RetroMind),
+            nameof(SignalingSpiral),
+            nameof(Speaker),
+            nameof(VioletVortex),
+
+            // Riggle Cosmetics
+            // Pack 1
+            nameof(ArrowHead),
+            nameof(BucketHat),
+            nameof(CBRNGasMask),
+            nameof(Crown),
+            nameof(Fedoral),
+            nameof(FlinchsJinjle),
+            nameof(GP5),
+            nameof(JesterHat),
+            nameof(MissedAWideGlasses),
+            nameof(MissedAWideHat),
+            nameof(OldTimeyPipe),
+            nameof(RiotHelmet),
+            nameof(Smitty),
+            nameof(VirtuallyInsane),
+            nameof(Wonker),
+            nameof(ZestySwagShades),
         };
 
         private static readonly Dictionary<string, ItemPair> _itemPairs = new Dictionary<string, ItemPair>();

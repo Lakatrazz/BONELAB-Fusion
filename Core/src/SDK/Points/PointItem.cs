@@ -166,7 +166,7 @@ namespace LabFusion.SDK.Points {
 
         public string MainTag => Tags == null || Tags.Length <= 0 ? "Misc" : Tags[0];
 
-        protected List<ulong> _shownPlayers = new List<ulong>();
+        protected List<ulong> _shownPlayers = new();
         public IReadOnlyList<ulong> ShownPlayers => _shownPlayers;
 
         internal void Register() {

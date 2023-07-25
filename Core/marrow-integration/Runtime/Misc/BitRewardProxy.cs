@@ -23,10 +23,16 @@ namespace LabFusion.MarrowIntegration {
             PointItemManager.RewardBits(bits);
         }
 
+        public void DecrementBits(int bits) {
+            PointItemManager.DecrementBits(bits);
+        }
+
 #else
         public override string Comment => "This proxy lets you reward bits to the user through a UnityEvent or UltEvent.";
 
         public void RewardBits(int bits) { }
+
+        public void DecrementBits(int bits) { }
 #endif
     }
 }

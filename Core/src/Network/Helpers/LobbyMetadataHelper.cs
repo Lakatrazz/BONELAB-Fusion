@@ -1,14 +1,17 @@
-﻿using LabFusion.Preferences;
+﻿using LabFusion.Extensions;
+using LabFusion.Preferences;
 using LabFusion.Representation;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Senders;
 using LabFusion.Utilities;
+using LabFusion.XML;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace LabFusion.Network {
     public struct LobbyMetadataInfo {
@@ -19,9 +22,11 @@ namespace LabFusion.Network {
         public ulong LobbyId;
         public string LobbyOwner;
         public string LobbyName;
+        public string LobbyTags;
         public Version LobbyVersion;
         public bool HasServerOpen;
         public int PlayerCount;
+        public PlayerList PlayerList;
 
         // Lobby settings
         public bool NametagsEnabled;
@@ -38,14 +43,19 @@ namespace LabFusion.Network {
         public bool ClientHasLevel;
 
         public static LobbyMetadataInfo Create() {
+            var playerList = new PlayerList();
+            playerList.ReadPlayerList();
+
             return new LobbyMetadataInfo() {
                 // Lobby info
                 LobbyId = PlayerIdManager.LocalLongId,
                 LobbyOwner = PlayerIdManager.LocalUsername,
                 LobbyName = FusionPreferences.LocalServerSettings.ServerName.GetValue(),
+                LobbyTags = FusionPreferences.LocalServerSettings.ServerTags.GetValue().Contract(),
                 LobbyVersion = FusionMod.Version,
                 HasServerOpen = NetworkInfo.IsServer,
                 PlayerCount = PlayerIdManager.PlayerCount,
+                PlayerList = playerList,
 
                 // Lobby settings
                 NametagsEnabled = FusionPreferences.LocalServerSettings.NametagsEnabled.GetValue(),
@@ -66,9 +76,11 @@ namespace LabFusion.Network {
             lobby.SetMetadata(nameof(LobbyId), LobbyId.ToString());
             lobby.SetMetadata(nameof(LobbyOwner), LobbyOwner);
             lobby.SetMetadata(nameof(LobbyName), LobbyName);
+            lobby.SetMetadata(nameof(LobbyTags), LobbyTags);
             lobby.SetMetadata(nameof(LobbyVersion), LobbyVersion.ToString());
             lobby.SetMetadata(HasServerOpenKey, HasServerOpen.ToString());
             lobby.SetMetadata(nameof(PlayerCount), PlayerCount.ToString());
+            lobby.SetMetadata(nameof(PlayerList), PlayerList.WriteDocument().ToString());
 
             // Lobby settings
             lobby.SetMetadata(nameof(NametagsEnabled), NametagsEnabled.ToString());
@@ -88,6 +100,7 @@ namespace LabFusion.Network {
                 // Lobby info
                 LobbyOwner = lobby.GetMetadata(nameof(LobbyOwner)),
                 LobbyName = lobby.GetMetadata(nameof(LobbyName)),
+                LobbyTags = lobby.GetMetadata(nameof(LobbyTags)),
                 HasServerOpen = lobby.GetMetadata(HasServerOpenKey) == bool.TrueString,
 
                 // Lobby settings
@@ -98,6 +111,17 @@ namespace LabFusion.Network {
                 LevelName = lobby.GetMetadata(nameof(LevelName)),
                 GamemodeName = lobby.GetMetadata(nameof(GamemodeName)),
             };
+            // Check if we have a player list
+            if (lobby.TryGetMetadata(nameof(PlayerList), out var playerXML)) {
+                info.PlayerList = new PlayerList();
+                info.PlayerList.ReadDocument(XDocument.Parse(playerXML));
+            }
+            else {
+                info.PlayerList = new() {
+                    players = new PlayerList.PlayerInfo[0]
+                };
+            }
+
             // Check if we have the level the host has
             if (lobby.TryGetMetadata(nameof(LevelBarcode), out var barcode)) {
                 info.LevelBarcode = barcode;

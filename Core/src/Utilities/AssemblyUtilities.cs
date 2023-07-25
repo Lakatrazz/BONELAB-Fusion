@@ -1,5 +1,4 @@
-﻿using LabFusion.Utilities;
-using System;
+﻿using System;
 using System.Reflection;
 
 namespace LabFusion.Utilities

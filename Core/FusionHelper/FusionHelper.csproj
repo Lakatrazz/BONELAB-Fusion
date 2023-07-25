@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<ApplicationId>app.trev.FusionHelper</ApplicationId>
+	<ApplicationIcon>Resources/fusion.ico</ApplicationIcon>
+	<Configurations>Debug-Win;Release-Win;Debug-Mac;Release-Mac;Debug-Linux;Release-Linux</Configurations>
+	  
+	<PlatformConfiguration Condition="$(Configuration.EndsWith('-Mac'))">Mac</PlatformConfiguration>
+	<PlatformConfiguration Condition="$(Configuration.EndsWith('-Win'))">Win</PlatformConfiguration>
+	<PlatformConfiguration Condition="$(Configuration.EndsWith('-Linux'))">Linux</PlatformConfiguration>
+	  
+	<OutputType>Exe</OutputType>
+	  
+	<TargetFramework Condition="$(Configuration.EndsWith('-Win'))">net6.0-windows</TargetFramework>
+	<TargetFramework Condition="$(Configuration.EndsWith('-Mac'))">net6.0-macos11.0</TargetFramework>
+	<TargetFramework Condition="$(Configuration.EndsWith('-Linux'))">net6.0</TargetFramework>
+	  
+	<ImplicitUsings>enable</ImplicitUsings>
+	<Nullable>enable</Nullable>
+	<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+	  
+	<DefineConstants Condition="'$(PlatformConfiguration)' == 'Mac'">PLATFORM_MAC</DefineConstants>
+	<DefineConstants Condition="'$(PlatformConfiguration)' == 'Win'">PLATFORM_WIN</DefineConstants>
+	<DefineConstants Condition="'$(PlatformConfiguration)' == 'Linux'">PLATFORM_LINUX</DefineConstants>
+	  
+	<Platforms>ARM64;x64</Platforms>
+	 
+	<RuntimeIdentifier Condition="'$(PlatformConfiguration)' == 'Mac' And '$(Platform)' == 'ARM64'">osx-arm64</RuntimeIdentifier>
+	<RuntimeIdentifier Condition="'$(PlatformConfiguration)' == 'Mac' And '$(Platform)' == 'x64'">osx-x64</RuntimeIdentifier>
+	<RuntimeIdentifier Condition="'$(PlatformConfiguration)' == 'Win' And '$(Platform)' == 'x64'">win-x64</RuntimeIdentifier>
+	<RuntimeIdentifier Condition="'$(PlatformConfiguration)' == 'Linux' And '$(Platform)' == 'x64'">linux-x64</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LiteNetLib" Version="1.0.0-rc.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="libsteam_api.dylib" Condition="'$(PlatformConfiguration)' == 'Mac'">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="steam_api64.dll" Condition="'$(PlatformConfiguration)' == 'Win'">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+	<None Update="libsteam_api.so" Condition="'$(PlatformConfiguration)' == 'Linux'">
+		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+  </ItemGroup>
+</Project>
