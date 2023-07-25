@@ -225,6 +225,12 @@
     <Compile Include="Core\src\BoneMenu\PlayerListCreator.cs" />
     <Compile Include="Core\src\BoneMenu\SettingsCreator.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\ButtonDisabler.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\MirrorData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\NeonDistrictTacTrialData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\NeonDistrictParkourData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\TunnelTipperData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\ContainerYardData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\TuscanyData.cs" />
     <Compile Include="Core\src\Data\Containers\Syncables\FrameSkipper.cs" />
     <Compile Include="Core\src\Data\Containers\FusionArrayPool.cs" />
     <Compile Include="Core\src\Data\Containers\Syncables\GrabbedGripList.cs" />
