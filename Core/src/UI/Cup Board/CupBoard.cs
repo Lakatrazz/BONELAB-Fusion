@@ -27,7 +27,7 @@ namespace LabFusion.UI
     [RegisterTypeInIl2Cpp]
     public sealed class CupBoard : FusionUIMachine
     {
-        private const float _maxMusicVolume = 0.5f;
+        private const float _maxMusicVolume = 0.3f;
 
         public CupBoard(IntPtr intPtr) : base(intPtr) { }
 

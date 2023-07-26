@@ -72,7 +72,7 @@ Material:
     - _Details: 0
     - _DstBlend: 0
     - _Emission: 1
-    - _EmissionFalloff: -1
+    - _EmissionFalloff: 3
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
@@ -91,5 +91,5 @@ Material:
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _EmissionColor: {r: 1, g: 0.37736028, b: 0, a: 1}
+    - _EmissionColor: {r: 1.4980392, g: 0.5647059, b: 0, a: 1}
   m_BuildTextureStacks: []
