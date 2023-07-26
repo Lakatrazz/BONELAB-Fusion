@@ -32,7 +32,7 @@ namespace LabFusion.Utilities {
 
                 cursor.regions = new LaserCursor.CursorRegion[] { region };
 
-                FusionSceneManager.HookOnTargetLevelLoad(() => {
+                FusionSceneManager.HookOnLevelLoad(() => {
                     cursor.gameObject.SetActive(true);
                 });
             });

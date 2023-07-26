@@ -29,7 +29,7 @@ namespace LabFusion.MarrowIntegration {
 
         public void Start()
         {
-            FusionSceneManager.HookOnTargetLevelLoad(() => {
+            FusionSceneManager.HookOnLevelLoad(() => {
                 PointShopHelper.SetupPointShop(transform.position, transform.rotation, transform.lossyScale);
             });
         }

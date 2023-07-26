@@ -433,7 +433,8 @@
     <Compile Include="Core\src\Network\Proxy\ProxyNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxyNetworkLobby.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxySocketHandler.cs" />
-    <Compile Include="Core\src\Network\Proxy\ProxyVoiceIdentifier.cs" />
+    <Compile Include="Core\src\Network\Proxy\ProxyVoiceManager.cs" />
+    <Compile Include="Core\src\Network\Proxy\ProxyVoiceHandler.cs" />
     <Compile Include="Core\src\Network\Steam\SpacewarNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Steam\SteamVoiceManager.cs" />
     <Compile Include="Core\src\Network\Steam\SteamVRNetworkLayer.cs" />

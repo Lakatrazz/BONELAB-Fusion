@@ -168,15 +168,11 @@ namespace LabFusion.Network
 
         internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes) {
             // If we are deafened, no need to deal with voice chat
-            bool isDeafened = !FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue() || FusionPreferences.ClientSettings.Deafened;
-            if (isDeafened)
+            if (VoiceHelper.IsDeafened)
                 return;
 
             var handler = VoiceManager.GetVoiceHandler(id);
-
-            if (handler != null) {
-                handler.OnVoiceBytesReceived(bytes);
-            }
+            handler?.OnVoiceBytesReceived(bytes);
         }
 
         internal override string GetUsername(ulong userId) {

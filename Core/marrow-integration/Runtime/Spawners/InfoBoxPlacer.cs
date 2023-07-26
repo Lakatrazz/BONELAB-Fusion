@@ -29,7 +29,7 @@ namespace LabFusion.MarrowIntegration {
 
         public void Start()
         {
-            FusionSceneManager.HookOnTargetLevelLoad(() => {
+            FusionSceneManager.HookOnLevelLoad(() => {
                 InfoBoxHelper.SetupInfoBox(transform.position, transform.rotation, transform.lossyScale);
             });
         }

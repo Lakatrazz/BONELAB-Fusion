@@ -63,19 +63,28 @@ namespace LabFusion.SDK.Achievements {
         }
 
         public static float GetAchievementProgress() {
-            int totalAchievements = LoadedAchievements.Count;
+            int totalAchievements = 0;
             int completedAchievements = 0;
 
             foreach (var achievement in LoadedAchievements) {
+                // Ignore redacted achievements
+                if (achievement.Redacted)
+                    continue;
+
+                // Increment our numbers
                 if (achievement.IsComplete)
                     completedAchievements++;
+
+                totalAchievements++;
             }
 
             return Mathf.Clamp01((float)completedAchievements / (float)totalAchievements);
         }
 
         public static IReadOnlyList<Achievement> GetSortedAchievements() {
-            return LoadedAchievements.OrderBy(a => a.IsComplete).ThenBy(a => a.BitReward).ToList();
+            var list = LoadedAchievements.OrderBy(a => a.IsComplete).ThenBy(a => a.BitReward).ToList();
+            list.RemoveAll((a) => a.Redacted && !a.IsComplete);
+            return list;
         }
 
         public static IReadOnlyList<Achievement> LoadedAchievements => Achievements;
