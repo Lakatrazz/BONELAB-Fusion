@@ -77,7 +77,7 @@ namespace LabFusion.Data
 
         private static void OnTaxiSeatRegistered() {
             // Give the achievement in a server with more than 1 player
-            if (NetworkInfo.HasServer && PlayerIdManager.PlayerCount > 1) {
+            if (NetworkInfo.HasServer && PlayerIdManager.HasOtherPlayers) {
                 // Increment the achievement task
                 if (AchievementManager.TryGetAchievement<OneMoreTime>(out var achievement))
                     achievement.IncrementTask();
