@@ -14,8 +14,9 @@ namespace LabFusion.Representation
     public static class PlayerIdManager {
         public const int MaxNameLength = 32;
 
-        public static readonly List<PlayerId> PlayerIds = new List<PlayerId>();
+        public static readonly List<PlayerId> PlayerIds = new();
         public static int PlayerCount => PlayerIds.Count;
+        public static bool HasOtherPlayers => PlayerCount > 1;
 
         public static string LocalUsername { get; private set; } = "[unknown]";
         public static string LocalNickname => FusionPreferences.ClientSettings.Nickname.GetValue();

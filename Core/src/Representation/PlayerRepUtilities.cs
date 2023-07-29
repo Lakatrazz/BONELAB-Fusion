@@ -37,13 +37,6 @@ using SLZ.Player;
 
 namespace LabFusion.Representation {
     public static class PlayerRepUtilities {
-        public static bool IsLocalPlayer(this RigManager rig) {
-            if (!RigData.HasPlayer)
-                return true;
-
-            return rig == RigData.RigReferences.RigManager;
-        }
-
         public static bool TryGetRigInfo(RigManager rig, out byte smallId, out RigReferenceCollection references) {
             smallId = 0;
             references = null;

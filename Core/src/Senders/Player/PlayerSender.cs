@@ -16,15 +16,45 @@ using UnityEngine;
 
 namespace LabFusion.Senders {
     public enum PlayerActionType {
+        /// <summary>
+        /// No event.
+        /// </summary>
         UNKNOWN = 1 << 0,
+
+        /// <summary>
+        /// Invoked when Player jumps.
+        /// </summary>
         JUMP = 1 << 1,
+
+        /// <summary>
+        /// Invoked when Player dies.
+        /// </summary>
         DEATH = 1 << 2,
+
+        /// <summary>
+        /// Invoked when Player plays the dying animation.
+        /// </summary>
         DYING = 1 << 3,
+
+        /// <summary>
+        /// Invoked when Player deals damage to Other Player.
+        /// </summary>
+        DEALT_DAMAGE_TO_OTHER_PLAYER = 1 << 4,
+
+        /// <summary>
+        /// Invoked when Player plays the dying animation due to Other Player.
+        /// </summary>
         DYING_BY_OTHER_PLAYER = 1 << 5,
+
+        /// <summary>
+        /// Invoked when Player saves themselves before the dying animation ends.
+        /// </summary>
         RECOVERY = 1 << 6,
+
+        /// <summary>
+        /// Invoked when Player is killed by Other Player.
+        /// </summary>
         DEATH_BY_OTHER_PLAYER = 1 << 7,
-        DEALT_DAMAGE = 1 << 8,
-        DAMAGE_BY_OTHER_PLAYER = 1 << 9
     }
 
     public enum NicknameVisibility {
@@ -113,16 +143,12 @@ namespace LabFusion.Senders {
         }
 
         public static void SendPlayerAction(PlayerActionType type, byte? otherPlayer = null) {
-            using (var writer = FusionWriter.Create(PlayerRepActionData.Size)) {
-                using var data = PlayerRepActionData.Create(PlayerIdManager.LocalSmallId, type, otherPlayer);
-                writer.Write(data);
+            using var writer = FusionWriter.Create(PlayerRepActionData.Size);
+            using var data = PlayerRepActionData.Create(PlayerIdManager.LocalSmallId, type, otherPlayer);
+            writer.Write(data);
 
-                using var message = FusionMessage.Create(NativeMessageTag.PlayerRepAction, writer);
-                MessageSender.SendToServer(NetworkChannel.Reliable, message);
-            }
-
-            // Inform the hooks locally
-            MultiplayerHooking.Internal_OnPlayerAction(PlayerIdManager.LocalId, type);
+            using var message = FusionMessage.Create(NativeMessageTag.PlayerRepAction, writer);
+            MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
     }
 }

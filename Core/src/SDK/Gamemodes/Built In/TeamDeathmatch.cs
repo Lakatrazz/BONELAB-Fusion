@@ -4,6 +4,7 @@ using LabFusion.Extensions;
 using LabFusion.MarrowIntegration;
 using LabFusion.Network;
 using LabFusion.Representation;
+using LabFusion.SDK.Achievements;
 using LabFusion.SDK.Points;
 using LabFusion.Senders;
 using LabFusion.Utilities;
@@ -329,7 +330,15 @@ namespace LabFusion.SDK.Gamemodes
 
                 if (killerTeam != killedTeam)
                 {
-                    IncrementScore(killerTeam);
+                    // Increment score for that team
+                    if (NetworkInfo.IsServer) {
+                        IncrementScore(killerTeam);
+                    }
+
+                    // If we are the killer, increment our achievement
+                    if (otherPlayer.IsSelf) {
+                        AchievementManager.IncrementAchievements<KillerAchievement>();
+                    }
                 }
             }
         }

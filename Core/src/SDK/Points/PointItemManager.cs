@@ -47,6 +47,7 @@ namespace LabFusion.SDK.Points {
 
     public static class PointItemManager {
         public static event Action OnBitCountChanged = null;
+        public static event Action<PointItem> OnItemUnlocked = null;
 
         public static Color ParseColor(RarityLevel level) {
             switch (level) {
@@ -250,6 +251,8 @@ namespace LabFusion.SDK.Points {
             PointSaveManager.UnlockItem(item.Barcode);
 
             DecrementBits(price);
+
+            OnItemUnlocked?.Invoke(item);
 
             return true;
         }

@@ -3,6 +3,7 @@ using LabFusion.Senders;
 using LabFusion.Utilities;
 
 using SLZ.Bonelab;
+using SLZ.Interaction;
 using SLZ.UI;
 
 using System;
@@ -56,9 +57,11 @@ namespace LabFusion.Data {
         public static GameControl_Descent GameController;
         public static Control_UI_BodyMeasurements BodyMeasurementsUI;
 
-        private static List<DescentIntroEvent> _introEvents = new List<DescentIntroEvent>();
-        private static List<DescentNooseEvent> _nooseEvents = new List<DescentNooseEvent>();
-        private static List<DescentElevatorEvent> _elevatorEvents = new List<DescentElevatorEvent>();
+        public static Grip KnifeGrip;
+
+        private static List<DescentIntroEvent> _introEvents = new();
+        private static List<DescentNooseEvent> _nooseEvents = new();
+        private static List<DescentElevatorEvent> _elevatorEvents = new();
 
         public static DescentIntroEvent CreateIntroEvent(int selectionNumber, DescentIntroType type) {
             var value = new DescentIntroEvent(selectionNumber, type);
@@ -99,6 +102,11 @@ namespace LabFusion.Data {
             Elevator = GameObject.FindObjectOfType<TutorialElevator>(true);
             GameController = GameObject.FindObjectOfType<GameControl_Descent>(true);
             BodyMeasurementsUI = GameObject.FindObjectOfType<Control_UI_BodyMeasurements>(true);
+
+            var knife = GameObject.Find("SEQUENCE_EFFECTS/Dagger_A/grips/gripObject");
+            if (knife != null) {
+                KnifeGrip = knife.GetComponent<Grip>();
+            }
         }
 
         public void CacheValues() => MainSceneInitialized();

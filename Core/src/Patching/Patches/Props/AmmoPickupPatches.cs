@@ -8,6 +8,7 @@ using HarmonyLib;
 using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Representation;
+using LabFusion.Utilities;
 using SLZ.AI;
 using SLZ.Bonelab;
 using SLZ.Rig;
@@ -22,7 +23,7 @@ namespace LabFusion.Patching {
             // Make sure the ammo pickups are only triggered by ourselves and no one else
             if (NetworkInfo.HasServer && other.attachedRigidbody != null) {
                 var triggerRef = PlayerTriggerProxy.Cache.Get(other.attachedRigidbody.gameObject);
-                if (triggerRef != null && !triggerRef.physicsRig.manager.IsLocalPlayer()) {
+                if (triggerRef != null && !triggerRef.physicsRig.manager.IsSelf()) {
                     return false;
                 }
             }

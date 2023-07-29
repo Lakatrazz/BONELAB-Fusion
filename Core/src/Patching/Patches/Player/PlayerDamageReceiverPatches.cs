@@ -82,7 +82,6 @@ namespace LabFusion.Patching
 
                                     // Only allow manual bullet damage
                                     if (_attack.attackType == AttackType.Piercing) {
-                                        PlayerSender.SendPlayerAction(PlayerActionType.DAMAGE_BY_OTHER_PLAYER, rep.PlayerId);
                                         return;
                                     }
                                 }
@@ -95,7 +94,7 @@ namespace LabFusion.Patching
                             else if (PlayerRepManager.TryGetPlayerRep(rm, out var rep) && shooter.IsSelf()) {
                                 // Send the damage over the network
                                 PlayerSender.SendPlayerDamage(rep.PlayerId, _attack.damage);
-                                PlayerSender.SendPlayerAction(PlayerActionType.DEALT_DAMAGE);
+                                PlayerSender.SendPlayerAction(PlayerActionType.DEALT_DAMAGE_TO_OTHER_PLAYER, rep.PlayerId);
                             }
                         }
                     }

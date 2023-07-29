@@ -4,6 +4,7 @@ using LabFusion.Extensions;
 using LabFusion.MarrowIntegration;
 using LabFusion.Network;
 using LabFusion.Representation;
+using LabFusion.SDK.Achievements;
 using LabFusion.SDK.Points;
 using LabFusion.Senders;
 using LabFusion.Utilities;
@@ -41,6 +42,8 @@ namespace LabFusion.SDK.Gamemodes {
         public override bool DisableManualUnragdoll => true;
 
         public override bool PreventNewJoins => !_enabledLateJoining;
+
+        private bool _hasDied;
 
         private float _timeOfStart;
         private bool _oneMinuteLeft;
@@ -119,7 +122,7 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         public IReadOnlyList<PlayerId> GetPlayersByScore() {
-            List<PlayerId> leaders = new List<PlayerId>(PlayerIdManager.PlayerIds);
+            List<PlayerId> leaders = new(PlayerIdManager.PlayerIds);
             leaders = leaders.OrderBy(id => GetScore(id)).ToList();
             leaders.Reverse();
 
@@ -218,11 +221,25 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         protected void OnPlayerAction(PlayerId player, PlayerActionType type, PlayerId otherPlayer = null) {
-            if (IsActive() && NetworkInfo.IsServer) {
+            if (IsActive()) {
                 switch (type) {
+                    case PlayerActionType.DEATH:
+                        // If we died, we can't get the Rampage achievement
+                        if (player.IsSelf) {
+                            _hasDied = true;
+                        }
+                        break;
                     case PlayerActionType.DEATH_BY_OTHER_PLAYER:
                         if (otherPlayer != null && otherPlayer != player) {
-                            IncrementScore(otherPlayer);
+                            // Increment score for that player
+                            if (NetworkInfo.IsServer) {
+                                IncrementScore(otherPlayer);
+                            }
+
+                            // If we are the killer, increment our achievement
+                            if (otherPlayer.IsSelf) {
+                                AchievementManager.IncrementAchievements<KillerAchievement>();
+                            }
                         }
                         break;
                 }
@@ -245,8 +262,12 @@ namespace LabFusion.SDK.Gamemodes {
                 isPopup = true,
             });
 
+            // Reset time
             _timeOfStart = Time.realtimeSinceStartup;
             _oneMinuteLeft = false;
+
+            // Reset death status
+            _hasDied = false;
 
             // Invoke player changes on level load
             FusionSceneManager.HookOnTargetLevelLoad(() => {
@@ -329,6 +350,12 @@ namespace LabFusion.SDK.Gamemodes {
                     isVictory = true;
 
                 OnVictoryStatus(isVictory);
+
+                // If we are first place and haven't died, give Rampage achievement
+                if (selfPlace == 1 && !_hasDied) {
+                    if (AchievementManager.TryGetAchievement<Rampage>(out var achievement))
+                        achievement.IncrementTask();
+                }
             }
 
             // Show the winners in a notification

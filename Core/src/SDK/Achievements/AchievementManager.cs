@@ -36,6 +36,8 @@ namespace LabFusion.SDK.Achievements {
                 if (AchievementSaveManager.Pointers.TryGetValueC(achievement.Barcode, out var pointer)) {
                     achievement.Unpack(XElement.Parse(pointer.data));
                 }
+
+                achievement.Register();
             }
         }
 
@@ -60,6 +62,25 @@ namespace LabFusion.SDK.Achievements {
             
             achievement = null;
             return false;
+        }
+
+        public static void IncrementAchievements<T>() where T : Achievement {
+            foreach (var achievement in GetAchievements<T>()) {
+                achievement.IncrementTask();
+            }
+        }
+
+        public static List<T> GetAchievements<T>() where T : Achievement {
+            List<T> list = new();
+
+            foreach (var found in Achievements) {
+                if (found is T result) {
+                    list.Add(result);
+                }
+            }
+
+
+            return list;
         }
 
         public static float GetAchievementProgress() {

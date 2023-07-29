@@ -23,7 +23,7 @@ namespace LabFusion.Patching {
         [HarmonyPatch(nameof(RemapRig.JumpCharge))]
         public static void JumpCharge(RemapRig __instance, float deltaTime, bool chargeInput, bool __state)
         {
-            if (NetworkInfo.HasServer && __instance.manager.IsLocalPlayer()) {
+            if (NetworkInfo.HasServer && __instance.manager.IsSelf()) {
                 if (_wasChargingInput && !chargeInput) {
                     PlayerSender.SendPlayerAction(PlayerActionType.JUMP);
                 }

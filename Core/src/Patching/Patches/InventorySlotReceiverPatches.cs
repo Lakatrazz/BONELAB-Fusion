@@ -9,6 +9,7 @@ using HarmonyLib;
 using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Representation;
+using LabFusion.SDK.Achievements;
 using LabFusion.Syncables;
 using LabFusion.Utilities;
 
@@ -64,21 +65,21 @@ namespace LabFusion.Patching {
                             return;
 
                         var handedness = Handedness.UNDEFINED;
-                        if (hand != null)
+                        if (hand != null) {
                             handedness = hand.handedness;
 
-                        using (var writer = FusionWriter.Create(InventorySlotDropData.Size))
-                        {
-                            using (var data = InventorySlotDropData.Create(smallId.Value, PlayerIdManager.LocalSmallId, index.Value, handedness, isAvatarSlot))
-                            {
-                                writer.Write(data);
-
-                                using (var message = FusionMessage.Create(NativeMessageTag.InventorySlotDrop, writer))
-                                {
-                                    MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                                }
+                            // Reward achievement
+                            if (!rigManager.IsSelf() && AchievementManager.TryGetAchievement<HighwayMan>(out var achievement)) {
+                                achievement.IncrementTask();
                             }
                         }
+
+                        using var writer = FusionWriter.Create(InventorySlotDropData.Size);
+                        using var data = InventorySlotDropData.Create(smallId.Value, PlayerIdManager.LocalSmallId, index.Value, handedness, isAvatarSlot);
+                        writer.Write(data);
+
+                        using var message = FusionMessage.Create(NativeMessageTag.InventorySlotDrop, writer);
+                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
                     }
                 }
             }
@@ -142,18 +143,12 @@ namespace LabFusion.Patching {
                             return;
 
 
-                        using (var writer = FusionWriter.Create(InventorySlotInsertData.Size))
-                        {
-                            using (var data = InventorySlotInsertData.Create(smallId.Value, PlayerIdManager.LocalSmallId, syncable.Id, index.Value, isAvatarSlot))
-                            {
-                                writer.Write(data);
+                        using var writer = FusionWriter.Create(InventorySlotInsertData.Size);
+                        using var data = InventorySlotInsertData.Create(smallId.Value, PlayerIdManager.LocalSmallId, syncable.Id, index.Value, isAvatarSlot);
+                        writer.Write(data);
 
-                                using (var message = FusionMessage.Create(NativeMessageTag.InventorySlotInsert, writer))
-                                {
-                                    MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                                }
-                            }
-                        }
+                        using var message = FusionMessage.Create(NativeMessageTag.InventorySlotInsert, writer);
+                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
                     }
                 }
             }

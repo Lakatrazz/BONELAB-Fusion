@@ -180,7 +180,7 @@ namespace LabFusion.Data
 
             foreach (var grip in RigGrips) {
                 foreach (var hand in grip.attachedHands.ToArray()) {
-                    if (hand.manager.IsLocalPlayer())
+                    if (hand.manager.IsSelf())
                         grip.TryDetach(hand);
                 }
 

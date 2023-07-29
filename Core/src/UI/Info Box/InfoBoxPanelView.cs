@@ -1,4 +1,5 @@
-﻿using LabFusion.Utilities;
+﻿using LabFusion.SDK.Achievements;
+using LabFusion.Utilities;
 using MelonLoader;
 
 using System;
@@ -77,6 +78,10 @@ namespace LabFusion.UI
                 LoadPage(_groupCredits.gameObject);
             });
             _mysteryButton.AddClickEvent(() => {
+                // Unlock the peter achievement
+                if (AchievementManager.TryGetAchievement<HelloThere>(out var achievement))
+                    achievement.IncrementTask();
+
                 LoadPage(_groupMystery.gameObject);
             });
         }

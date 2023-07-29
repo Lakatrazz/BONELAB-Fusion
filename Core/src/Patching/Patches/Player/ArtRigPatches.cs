@@ -78,7 +78,7 @@ namespace LabFusion.Patching {
                 return;
 
             // Is this our local player? If so, sync the avatar change
-            if (__instance.IsLocalPlayer())
+            if (__instance.IsSelf())
             {
                 FusionPlayer.Internal_OnAvatarChanged(__instance, newAvatar, __instance.AvatarCrate.Barcode);
             }

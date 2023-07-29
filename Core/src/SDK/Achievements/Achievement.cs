@@ -45,6 +45,18 @@ namespace LabFusion.SDK.Achievements
         // The total number of tasks required.
         public virtual int MaxTasks => 1;
 
+        public void Register() {
+            OnRegister();
+        }
+
+        protected virtual void OnRegister() { }
+
+        public void Unregister() {
+            OnUnregister();
+        }
+
+        protected virtual void OnUnregister() { }
+
         public virtual void Pack(XElement element) {
             element.SetAttributeValue(nameof(CompletedTasks), CompletedTasks);
         }

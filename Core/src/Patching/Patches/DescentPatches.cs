@@ -9,8 +9,9 @@ using HarmonyLib;
 using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Representation;
+using LabFusion.SDK.Achievements;
 using LabFusion.Senders;
-
+using LabFusion.Utilities;
 using SLZ.Bonelab;
 using SLZ.UI;
 
@@ -250,13 +251,26 @@ namespace LabFusion.Patching {
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(NooseBonelabIntro.NooseCut))]
-        public static void NooseCut() {
+        public static void NooseCut(NooseBonelabIntro __instance) {
             if (IgnorePatches)
                 return;
 
             if (NetworkInfo.HasServer) {
                 var nooseEvent = DescentData.CreateNooseEvent(PlayerIdManager.LocalSmallId, DescentNooseType.CUT_NOOSE);
                 CampaignSender.SendDescentNoose(nooseEvent);
+
+                // Check if we were holding the knife and we weren't attached to the noose
+                if (!__instance.rM.IsSelf() && DescentData.KnifeGrip != null) {
+                    foreach (var hand in DescentData.KnifeGrip.attachedHands) {
+                        // Make sure this is our hand
+                        if (hand.manager.IsSelf()) {
+                            AchievementManager.TryGetAchievement<Betrayal>(out var achievement);
+                            achievement?.IncrementTask();
+
+                            break;
+                        }
+                    }
+                }
             }
         }
     }

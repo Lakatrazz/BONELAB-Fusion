@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace LabFusion.SDK.Achievements
 {
-    public class RookieAssassin : Achievement
+    public class RookieAssassin : KillerAchievement
     {
         public override string Title => "Rookie Assassin";
 
