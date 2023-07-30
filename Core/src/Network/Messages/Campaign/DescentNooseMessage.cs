@@ -98,6 +98,8 @@ namespace LabFusion.Network
                     case DescentNooseType.CUT_NOOSE:
                         // This function is called to cut the noose as if a knife cut it
                         DescentData.Noose.NooseCut();
+
+                        DescentData.CheckAchievement();
                         break;
                 }
 

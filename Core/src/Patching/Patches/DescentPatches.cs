@@ -251,7 +251,7 @@ namespace LabFusion.Patching {
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(NooseBonelabIntro.NooseCut))]
-        public static void NooseCut(NooseBonelabIntro __instance) {
+        public static void NooseCut() {
             if (IgnorePatches)
                 return;
 
@@ -259,18 +259,7 @@ namespace LabFusion.Patching {
                 var nooseEvent = DescentData.CreateNooseEvent(PlayerIdManager.LocalSmallId, DescentNooseType.CUT_NOOSE);
                 CampaignSender.SendDescentNoose(nooseEvent);
 
-                // Check if we were holding the knife and we weren't attached to the noose
-                if (!__instance.rM.IsSelf() && DescentData.KnifeGrip != null) {
-                    foreach (var hand in DescentData.KnifeGrip.attachedHands) {
-                        // Make sure this is our hand
-                        if (hand.manager.IsSelf()) {
-                            AchievementManager.TryGetAchievement<Betrayal>(out var achievement);
-                            achievement?.IncrementTask();
-
-                            break;
-                        }
-                    }
-                }
+                DescentData.CheckAchievement();
             }
         }
     }
