@@ -1,5 +1,5 @@
 ﻿using BoneLib.BoneMenu.Elements;
-
+using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.MarrowIntegration;
 using LabFusion.Network;
@@ -69,7 +69,7 @@ namespace LabFusion.SDK.Gamemodes
         private Team _lastTeam = null;
         private Team _localTeam = null;
 
-        private readonly Dictionary<PlayerId, TeamLogoInstance> _logoInstances = new Dictionary<PlayerId, TeamLogoInstance>();
+        private readonly FusionDictionary<PlayerId, TeamLogoInstance> _logoInstances = new();
 
         private string _avatarOverride = null;
         private float? _vitalityOverride = null;
@@ -357,7 +357,7 @@ namespace LabFusion.SDK.Gamemodes
 
         protected void OnPlayerLeave(PlayerId id)
         {
-            if (_logoInstances.TryGetValueC(id, out var instance))
+            if (_logoInstances.TryGetValue(id, out var instance))
             {
                 instance.Cleanup();
                 _logoInstances.Remove(id);

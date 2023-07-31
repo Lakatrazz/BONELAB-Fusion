@@ -1,4 +1,5 @@
-﻿using LabFusion.Extensions;
+﻿using LabFusion.Data;
+using LabFusion.Extensions;
 using LabFusion.Utilities;
 using SLZ.Rig;
 
@@ -10,8 +11,8 @@ namespace LabFusion.Representation {
         public const string PlayerRepName = "[RigManager (FUSION PlayerRep)]";
 
         public static readonly List<PlayerRep> PlayerReps = new();
-        public static readonly Dictionary<byte, PlayerRep> IDLookup = new(); 
-        public static readonly Dictionary<RigManager, PlayerRep> ManagerLookup = new(new UnityComparer());
+        public static readonly FusionDictionary<byte, PlayerRep> IDLookup = new(); 
+        public static readonly FusionDictionary<RigManager, PlayerRep> ManagerLookup = new(new UnityComparer());
 
         public static bool HasPlayerId(RigManager manager) {
             if (manager == null)
@@ -20,7 +21,7 @@ namespace LabFusion.Representation {
         }
 
         public static bool TryGetPlayerRep(byte id, out PlayerRep playerRep) {
-            return IDLookup.TryGetValueC(id, out playerRep);
+            return IDLookup.TryGetValue(id, out playerRep);
         }
 
         public static bool TryGetPlayerRep(RigManager manager, out PlayerRep playerRep) {
@@ -29,7 +30,7 @@ namespace LabFusion.Representation {
                 return false;
             }
 
-            return ManagerLookup.TryGetValueUnity(manager, out playerRep);
+            return ManagerLookup.TryGetValue(manager, out playerRep);
         }
 
         internal static void Internal_InsertPlayerRep(PlayerRep rep) {

@@ -1,4 +1,5 @@
 ﻿using BoneLib.BoneMenu.Elements;
+using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Preferences;
@@ -28,7 +29,7 @@ namespace LabFusion.BoneMenu
             "Hangout"
         };
 
-        private static readonly Dictionary<string, BoolElement> _tagElements = new();
+        private static readonly FusionDictionary<string, BoolElement> _tagElements = new();
 
         // Settings menu
         private static MenuCategory _serverSettingsCategory;
@@ -65,7 +66,7 @@ namespace LabFusion.BoneMenu
                 }
 
                 foreach (var tag in v) {
-                    if (_tagElements.TryGetValueC(tag, out var element)) {
+                    if (_tagElements.TryGetValue(tag, out var element)) {
                         element.SetValue(true);
                     }
                 }

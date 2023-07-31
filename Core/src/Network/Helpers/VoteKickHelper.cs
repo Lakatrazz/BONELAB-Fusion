@@ -1,4 +1,5 @@
-﻿using LabFusion.Extensions;
+﻿using LabFusion.Data;
+using LabFusion.Extensions;
 using LabFusion.Representation;
 using LabFusion.Utilities;
 
@@ -35,10 +36,10 @@ namespace LabFusion.Network {
         }
 
         // Tracks the amount of users in a vote kicking process
-        private static readonly Dictionary<ulong, VoteKickInfo> _voteKickTracker = new();
+        private static readonly FusionDictionary<ulong, VoteKickInfo> _voteKickTracker = new();
 
         // Tracks the time at which people vote
-        private static readonly Dictionary<ulong, float> _voterTracker = new();
+        private static readonly FusionDictionary<ulong, float> _voterTracker = new();
 
         private static bool _hasReset = true;
         private static float _timeOfLastVote = -float.PositiveInfinity;
@@ -88,7 +89,7 @@ namespace LabFusion.Network {
         }
 
         public static int GetVoteCount(ulong target) {
-            if (_voteKickTracker.TryGetValueC(target, out var info)) {
+            if (_voteKickTracker.TryGetValue(target, out var info)) {
                 return info.voters.Count;
             }
             else
@@ -97,7 +98,7 @@ namespace LabFusion.Network {
 
         public static bool Vote(ulong target, ulong voter) {
             // Make sure the voter hasn't voted in the past specific amount of time
-            if (_voterTracker.TryGetValueC(voter, out var time) && Time.realtimeSinceStartup - time < MinVoteDelay) {
+            if (_voterTracker.TryGetValue(voter, out var time) && Time.realtimeSinceStartup - time < MinVoteDelay) {
                 return false;
             }
             _voterTracker.Remove(voter);
@@ -110,7 +111,7 @@ namespace LabFusion.Network {
                 return false;
 
             // Check if the person has already voted on the target
-            if (_voteKickTracker.TryGetValueC(target, out var info)) {
+            if (_voteKickTracker.TryGetValue(target, out var info)) {
                 // Add the voter to the info or skip the vote completely
                 if (info.voters.Contains(voter))
                     return false;

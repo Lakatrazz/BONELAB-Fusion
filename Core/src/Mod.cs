@@ -9,6 +9,9 @@ using LabFusion.Syncables;
 using LabFusion.Grabbables;
 using LabFusion.SDK.Modules;
 using LabFusion.Preferences;
+using LabFusion.SDK.Gamemodes;
+using LabFusion.SDK.Points;
+using LabFusion.SDK.Achievements;
 
 #if DEBUG
 using LabFusion.Debugging;
@@ -18,11 +21,7 @@ using MelonLoader;
 
 using UnityEngine;
 
-using LabFusion.SDK.Gamemodes;
-using LabFusion.SDK.Points;
 using System.Linq;
-using LabFusion.SDK.Achievements;
-using LabFusion.Patching;
 
 namespace LabFusion
 {

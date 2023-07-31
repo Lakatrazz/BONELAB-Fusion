@@ -17,6 +17,8 @@ using MelonLoader;
 
 using SLZ.Marrow.Warehouse;
 using SLZ.Rig;
+using LabFusion.MonoBehaviours;
+using static RootMotion.FinalIK.GrounderQuadruped;
 
 namespace LabFusion.Senders
 {
@@ -36,34 +38,22 @@ namespace LabFusion.Senders
             {
                 syncable.SetOwner(owner);
 
-                using (var writer = FusionWriter.Create(SyncableOwnershipResponseData.Size))
-                {
-                    using (var response = SyncableOwnershipResponseData.Create(owner, id))
-                    {
-                        writer.Write(response);
+                using var writer = FusionWriter.Create(SyncableOwnershipResponseData.Size);
+                using var response = SyncableOwnershipResponseData.Create(owner, id);
+                writer.Write(response);
 
-                        using (var message = FusionMessage.Create(NativeMessageTag.SyncableOwnershipResponse, writer))
-                        {
-                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
+                using var message = FusionMessage.Create(NativeMessageTag.SyncableOwnershipResponse, writer);
+                MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
             }
             // Send request to server
             else
             {
-                using (var writer = FusionWriter.Create(SyncableOwnershipRequestData.Size))
-                {
-                    using (var response = SyncableOwnershipRequestData.Create(owner, id))
-                    {
-                        writer.Write(response);
+                using var writer = FusionWriter.Create(SyncableOwnershipRequestData.Size);
+                using var response = SyncableOwnershipRequestData.Create(owner, id);
+                writer.Write(response);
 
-                        using (var message = FusionMessage.Create(NativeMessageTag.SyncableOwnershipRequest, writer))
-                        {
-                            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
+                using var message = FusionMessage.Create(NativeMessageTag.SyncableOwnershipRequest, writer);
+                MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
             }
         }
 
@@ -85,18 +75,12 @@ namespace LabFusion.Senders
         /// <param name="syncable"></param>
         public static void SendSleep(PropSyncable syncable) {
             if (NetworkInfo.HasServer) {
-                using (var writer = FusionWriter.Create(PropSyncableSleepData.Size))
-                {
-                    using (var data = PropSyncableSleepData.Create(syncable.GetOwner().Value, syncable.GetId()))
-                    {
-                        writer.Write(data);
+                using var writer = FusionWriter.Create(PropSyncableSleepData.Size);
+                using var data = PropSyncableSleepData.Create(syncable.GetOwner().Value, syncable.GetId());
+                writer.Write(data);
 
-                        using (var message = FusionMessage.Create(NativeMessageTag.PropSyncableSleep, writer))
-                        {
-                            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
+                using var message = FusionMessage.Create(NativeMessageTag.PropSyncableSleep, writer);
+                MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
             }
         }
 
@@ -106,19 +90,19 @@ namespace LabFusion.Senders
         /// <param name="syncable"></param>
         public static void SendCatchupCreation(PropSyncable syncable, ulong userId) {
             if (NetworkInfo.IsServer) {
-                using (var writer = FusionWriter.Create(PropSyncableCreateData.Size))
-                {
-                    using (var data = PropSyncableCreateData.Create(syncable.GetOwner().Value, syncable.GameObject.GetFullPath(), syncable.Id))
-                    {
-                        writer.Write(data);
+                using var writer = FusionWriter.Create(PropSyncableCreateData.Size);
+                using var data = PropSyncableCreateData.Create(syncable.GetOwner().Value, syncable.GameObject.GetFullPath(), syncable.Id);
+                writer.Write(data);
 
-                        using (var message = FusionMessage.Create(NativeMessageTag.PropSyncableCreate, writer))
-                        {
-                            MessageSender.SendFromServer(userId, NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
+                using var message = FusionMessage.Create(NativeMessageTag.PropSyncableCreate, writer);
+                MessageSender.SendFromServer(userId, NetworkChannel.Reliable, message);
             }
+        }
+
+        private struct PropCreationInfo {
+            public GameObject root;
+            public Action<PropSyncable> onFinished;
+            public bool waitUntilEnabled;
         }
 
         /// <summary>
@@ -133,89 +117,145 @@ namespace LabFusion.Senders
                 onFinished?.Invoke(syncable);
             }
             else {
-                MelonCoroutines.Start(Internal_InitializePropSyncable(root, onFinished, waitUntilEnabled));
+                var info = new PropCreationInfo() {
+                    root = root,
+                    onFinished = onFinished,
+                    waitUntilEnabled = waitUntilEnabled,
+                };
+                FusionSceneManager.HookOnDelayedLevelLoad(() => { Internal_InitializePropSyncable(info); });
             }
         }
 
-        private static IEnumerator Internal_InitializePropSyncable(GameObject root, Action<PropSyncable> onFinished, bool waitUntilEnabled) {
-            // Wait for level to finish loading
-            while (FusionSceneManager.IsDelayedLoading())
-                yield return null;
-            
-            // Wait for the gameObject to be enabled, if you are expecting it to be disabled
-            if (waitUntilEnabled) {
-                while (!root.activeInHierarchy)
-                    yield return null;
+        private static void Internal_InitializePropSyncable(PropCreationInfo info) {
+            PropSyncable newSyncable = null;
+
+            // Wait until the object is enabled?
+            if (info.waitUntilEnabled) {
+                var notify = info.root.AddComponent<NotifyOnEnable>();
+                notify.Hook(OnStart);
+            }
+            else {
+                OnStart();
             }
 
-            // Double check the root doesn't already have a syncable, incase it was synced while we were waiting
-            if (PropSyncable.Cache.ContainsSource(root))
-                yield break;
+            void OnStart() {
+                // Double check the root doesn't already have a syncable, incase it was synced while we were waiting
+                if (PropSyncable.Cache.ContainsSource(info.root))
+                    return;
 
-            // Create syncable
-            var newSyncable = new PropSyncable(null, root);
+                // Create syncable
+                newSyncable = new PropSyncable(null, info.root);
 
-            // We aren't a server. Request an id.
-            if (!NetworkInfo.IsServer) {
-                ushort queuedId = SyncManager.QueueSyncable(newSyncable);
-                SyncManager.RequestSyncableID(queuedId);
+                // We aren't a server. Request an id.
+                if (!NetworkInfo.IsServer) {
+                    ushort queuedId = SyncManager.QueueSyncable(newSyncable);
+                    SyncManager.RequestSyncableID(queuedId);
 
-                while (newSyncable.IsQueued())
-                    yield return null;
+                    newSyncable.HookOnRegistered(() => {
+                        _ = newSyncable.GameObject.GetFullPathAsync(OnPathReceived);
+                    });
+                }
+                // We are a server, we can just register it
+                else {
+                    SyncManager.RegisterSyncable(newSyncable, SyncManager.AllocateSyncID());
 
-                yield return null;
+                    newSyncable.HookOnRegistered(() => {
+                        _ = newSyncable.GameObject.GetFullPathAsync(OnPathReceived);
+                    });
+                }
+            }
 
-                var pathTask = newSyncable.GameObject.GetFullPathAsync();
-                while (!pathTask.IsCompleted)
-                    yield return null;
-
+            void OnPathReceived(string result) {
                 if (newSyncable.IsDestroyed())
-                    yield break;
+                    return;
 
-                using (var writer = FusionWriter.Create(PropSyncableCreateData.Size))
-                {
-                    using (var data = PropSyncableCreateData.Create(PlayerIdManager.LocalSmallId, pathTask.Result, newSyncable.Id))
-                    {
-                        writer.Write(data);
+                using var writer = FusionWriter.Create(PropSyncableCreateData.Size);
+                using var data = PropSyncableCreateData.Create(PlayerIdManager.LocalSmallId, result, newSyncable.Id);
+                writer.Write(data);
 
-                        using (var message = FusionMessage.Create(NativeMessageTag.PropSyncableCreate, writer))
-                        {
-                            MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
+                using var message = FusionMessage.Create(NativeMessageTag.PropSyncableCreate, writer);
+                MessageSender.SendToServer(NetworkChannel.Reliable, message);
 
-                yield return null;
-            }
-            // We are a server, we can just register it
-            else if (NetworkInfo.IsServer) {
-                SyncManager.RegisterSyncable(newSyncable, SyncManager.AllocateSyncID());
-
-                var pathTask = newSyncable.GameObject.GetFullPathAsync();
-                while (!pathTask.IsCompleted)
-                    yield return null;
-
-                using (var writer = FusionWriter.Create(PropSyncableCreateData.Size))
-                {
-                    using (var data = PropSyncableCreateData.Create(PlayerIdManager.LocalSmallId, pathTask.Result, newSyncable.Id))
-                    {
-                        writer.Write(data);
-
-                        using (var message = FusionMessage.Create(NativeMessageTag.PropSyncableCreate, writer))
-                        {
-                            MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
-
-                yield return null;
+                OnFinish();
             }
 
-            if (newSyncable.IsDestroyed())
-                yield break;
-
-            newSyncable.SetOwner(PlayerIdManager.LocalSmallId);
-            onFinished?.Invoke(newSyncable);
+            void OnFinish() {
+                newSyncable.SetOwner(PlayerIdManager.LocalSmallId);
+                info.onFinished?.Invoke(newSyncable);
+            }
         }
+
+        // private static IEnumerator Internal_InitializePropSyncable(GameObject root, Action<PropSyncable> onFinished, bool waitUntilEnabled) {
+        //     // Wait for level to finish loading
+        //     while (FusionSceneManager.IsDelayedLoading())
+        //         yield return null;
+        //     
+        //     // Wait for the gameObject to be enabled, if you are expecting it to be disabled
+        //     if (waitUntilEnabled) {
+        //         while (!root.activeInHierarchy)
+        //             yield return null;
+        //     }
+        // 
+        //     // Double check the root doesn't already have a syncable, incase it was synced while we were waiting
+        //     if (PropSyncable.Cache.ContainsSource(root))
+        //         yield break;
+        // 
+        //     // Create syncable
+        //     var newSyncable = new PropSyncable(null, root);
+        // 
+        //     // We aren't a server. Request an id.
+        //     if (!NetworkInfo.IsServer) {
+        //         ushort queuedId = SyncManager.QueueSyncable(newSyncable);
+        //         SyncManager.RequestSyncableID(queuedId);
+        // 
+        //         while (newSyncable.IsQueued())
+        //             yield return null;
+        // 
+        //         yield return null;
+        // 
+        //         var pathTask = newSyncable.GameObject.GetFullPathAsync();
+        //         while (!pathTask.IsCompleted)
+        //             yield return null;
+        // 
+        //         if (newSyncable.IsDestroyed())
+        //             yield break;
+        // 
+        //         using (var writer = FusionWriter.Create(PropSyncableCreateData.Size))
+        //         {
+        //             using var data = PropSyncableCreateData.Create(PlayerIdManager.LocalSmallId, pathTask.Result, newSyncable.Id);
+        //             writer.Write(data);
+        // 
+        //             using var message = FusionMessage.Create(NativeMessageTag.PropSyncableCreate, writer);
+        //             MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        //         }
+        // 
+        //         yield return null;
+        //     }
+        //     // We are a server, we can just register it
+        //     else if (NetworkInfo.IsServer) {
+        //         SyncManager.RegisterSyncable(newSyncable, SyncManager.AllocateSyncID());
+        // 
+        //         var pathTask = newSyncable.GameObject.GetFullPathAsync();
+        //         while (!pathTask.IsCompleted)
+        //             yield return null;
+        // 
+        //         using (var writer = FusionWriter.Create(PropSyncableCreateData.Size))
+        //         {
+        //             using var data = PropSyncableCreateData.Create(PlayerIdManager.LocalSmallId, pathTask.Result, newSyncable.Id);
+        //             writer.Write(data);
+        // 
+        //             using var message = FusionMessage.Create(NativeMessageTag.PropSyncableCreate, writer);
+        //             MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        //         }
+        // 
+        //         yield return null;
+        //     }
+        // 
+        //     if (newSyncable.IsDestroyed())
+        //         yield break;
+        // 
+        //     newSyncable.SetOwner(PlayerIdManager.LocalSmallId);
+        //     onFinished?.Invoke(newSyncable);
+        // }
     }
 }

@@ -85,7 +85,7 @@ namespace LabFusion.SDK.Achievements
             WriteToFile();
         }
 
-        public static Dictionary<string, AchievementPointer> Pointers => _achievementPointers;
-        private static Dictionary<string, AchievementPointer> _achievementPointers = new();
+        public static FusionDictionary<string, AchievementPointer> Pointers => _achievementPointers;
+        private static FusionDictionary<string, AchievementPointer> _achievementPointers = new();
     }
 }

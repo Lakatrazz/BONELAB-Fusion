@@ -266,6 +266,7 @@
     <Compile Include="Core\src\BoneMenu\AdminActionsCreator.cs" />
     <Compile Include="Core\src\BoneMenu\PlayerListCreator.cs" />
     <Compile Include="Core\src\BoneMenu\SettingsCreator.cs" />
+    <Compile Include="Core\src\Data\Containers\FusionDictionary.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\MirrorData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\NeonDistrictTacTrialData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\NeonDistrictParkourData.cs" />
@@ -365,6 +366,7 @@
     <Compile Include="Core\src\Mod.cs" />
     <Compile Include="Core\src\MonoBehaviours\DestroyOnDisconnect.cs" />
     <Compile Include="Core\src\MonoBehaviours\MirrorIdentifier.cs" />
+    <Compile Include="Core\src\MonoBehaviours\NotifyOnEnable.cs" />
     <Compile Include="Core\src\MonoBehaviours\PropCollisionSyncer.cs" />
     <Compile Include="Core\src\MonoBehaviours\CollisionSyncer.cs" />
     <Compile Include="Core\src\MonoBehaviours\TimedDespawner.cs" />

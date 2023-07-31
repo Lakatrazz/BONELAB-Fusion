@@ -95,6 +95,10 @@ namespace LabFusion.Utilities {
             {
                 _isDelayedLoading = false;
                 FusionMod.OnMainSceneInitializeDelayed();
+
+                // Invoke the level load hook
+                _onDelayedLevelLoad?.Invoke();
+                _onDelayedLevelLoad = null;
             }
         }
 

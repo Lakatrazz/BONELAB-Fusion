@@ -17,13 +17,13 @@ namespace LabFusion.Syncables {
         /// <summary>
         /// The list of syncables currently active.
         /// </summary>
-        public static readonly Dictionary<ushort, ISyncable> Syncables = new Dictionary<ushort, ISyncable>(new SyncableComparer());
+        public static readonly FusionDictionary<ushort, ISyncable> Syncables = new(new SyncableComparer());
 
         /// <summary>
         /// The list of syncables currently queued while waiting for an ID response from the server.
         /// <para>Make sure when adding or removing syncables from this list you are NOT using Syncable.GetId! That is for the permanent Syncables list!</para>
         /// </summary>
-        public static readonly Dictionary<ushort, ISyncable> QueuedSyncables = new Dictionary<ushort, ISyncable>(new SyncableComparer());
+        public static readonly FusionDictionary<ushort, ISyncable> QueuedSyncables = new(new SyncableComparer());
 
         /// <summary>
         /// The last allocated id. Incremented server side.
@@ -223,21 +223,15 @@ namespace LabFusion.Syncables {
         
         public static bool HasQueuedSyncable(ushort id)
         {
-            if (!HelperMethods.IsAndroid())
-                return QueuedSyncables.ContainsKey(id);
-            else
-                return QueuedSyncables.Any(a => a.Key == id);
+            return QueuedSyncables.ContainsKey(id);
         }
 
         public static bool HasSyncable(ushort id)
         {
-            if (!HelperMethods.IsAndroid())
-                return Syncables.ContainsKey(id);
-            else
-                return Syncables.Any(a => a.Key == id);
+            return Syncables.ContainsKey(id);
         }
 
-        public static bool TryGetSyncable(ushort id, out ISyncable syncable) => Syncables.TryGetValueC(id, out syncable);
+        public static bool TryGetSyncable(ushort id, out ISyncable syncable) => Syncables.TryGetValue(id, out syncable);
 
         public static bool TryGetSyncable<TSyncable>(ushort id, out TSyncable syncable) where TSyncable : ISyncable {
             if (TryGetSyncable(id, out ISyncable result) && result is TSyncable generic) {

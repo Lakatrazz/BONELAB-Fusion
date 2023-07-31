@@ -1,4 +1,5 @@
-﻿using LabFusion.Extensions;
+﻿using LabFusion.Data;
+using LabFusion.Extensions;
 using LabFusion.MarrowIntegration;
 using LabFusion.Patching;
 using LabFusion.Utilities;
@@ -30,8 +31,8 @@ namespace LabFusion.SDK.Points
             public AccessoryPoint itemPoint;
             public AccessoryScaleMode scaleMode;
 
-            public Dictionary<Mirror, GameObject> mirrors = new(new UnityComparer());
-            public Dictionary<AccessoryPoint, MarrowCosmeticPoint> points = new();
+            public FusionDictionary<Mirror, GameObject> mirrors = new(new UnityComparer());
+            public FusionDictionary<AccessoryPoint, MarrowCosmeticPoint> points = new();
 
             private bool _destroyed = false;
             public bool IsDestroyed => _destroyed;
@@ -115,7 +116,7 @@ namespace LabFusion.SDK.Points
                 Quaternion rotation;
                 Vector3 scale;
                 // SDK offset transform
-                if (points.TryGetValueC(itemPoint, out var component)) {
+                if (points.TryGetValue(itemPoint, out var component)) {
                     AccessoryItemHelper.GetTransform(component, out position, out rotation, out scale);
                 }
                 // Auto calculated transform
@@ -135,7 +136,7 @@ namespace LabFusion.SDK.Points
             }
 
             public void RemoveMirror(Mirror mirror) {
-                if (mirrors.TryGetValueUnity(mirror, out var accessory)) {
+                if (mirrors.TryGetValue(mirror, out var accessory)) {
                     mirrors.Remove(mirror);
 
                     GameObject.Destroy(accessory);
@@ -233,7 +234,7 @@ namespace LabFusion.SDK.Points
         // We use LateUpdate to cleanup accessories, so it should be hooked
         public override bool ImplementLateUpdate => true;
 
-        protected Dictionary<RigManager, AccessoryInstance> _accessoryInstances = new Dictionary<RigManager, AccessoryInstance>(new UnityComparer());
+        protected FusionDictionary<RigManager, AccessoryInstance> _accessoryInstances = new(new UnityComparer());
 
         public override void OnUpdateObjects(PointItemPayload payload, bool isVisible) {
             // Make sure we have a prefab

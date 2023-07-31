@@ -7,13 +7,13 @@ using System.Collections.Generic;
 
 namespace LabFusion.Data {
     public class GrabbedGripList {
-        private readonly Dictionary<Grip, int> _grips;
+        private readonly FusionDictionary<Grip, int> _grips;
 
         private PropSyncable _syncable;
 
         public GrabbedGripList(PropSyncable syncable, int count = 32) {
             _syncable = syncable;
-            _grips = new Dictionary<Grip, int>(count, new UnityComparer());
+            _grips = new FusionDictionary<Grip, int>(count, new UnityComparer());
         }
 
         public void OnPushUpdate() {
@@ -26,8 +26,7 @@ namespace LabFusion.Data {
                     var hand = hands[i];
 
                     if (hand.manager.activeSeat) {
-                        if (gripsToRemove == null)
-                            gripsToRemove = new List<Grip>();
+                        gripsToRemove ??= new List<Grip>();
 
                         gripsToRemove.Add(grip);
                         break;
@@ -78,6 +77,6 @@ namespace LabFusion.Data {
                 _syncable.IsHeld = false;
         }
 
-        public IReadOnlyCollection<Grip> GetGrabbedGrips() => _grips.Keys;
+        public ICollection<Grip> GetGrabbedGrips() => _grips.Keys;
     }
 }

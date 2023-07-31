@@ -1,4 +1,5 @@
 ﻿using BoneLib.BoneMenu.Elements;
+using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Representation;
@@ -39,8 +40,8 @@ namespace LabFusion.SDK.Gamemodes {
         public virtual bool DisableSpawnGun { get; } = false;
         public virtual bool DisableManualUnragdoll { get; } = false;
 
-        private readonly Dictionary<string, string> _internalMetadata = new Dictionary<string, string>();
-        public Dictionary<string, string> Metadata => _internalMetadata;
+        private readonly FusionDictionary<string, string> _internalMetadata = new();
+        public FusionDictionary<string, string> Metadata => _internalMetadata;
 
         // Music
         public virtual bool MusicEnabled => MusicToggled;
@@ -262,11 +263,11 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         public bool TryGetMetadata(string key, out string value) {
-            return _internalMetadata.TryGetValueC(key, out value);
+            return _internalMetadata.TryGetValue(key, out value);
         }
 
         public string GetMetadata(string key) {
-            if (_internalMetadata.TryGetValueC(key, out string value))
+            if (_internalMetadata.TryGetValue(key, out string value))
                 return value;
 
             return null;

@@ -9,11 +9,11 @@ namespace LabFusion.Data
 {
     public class FusionArrayPool<T>
     {
-        private readonly Dictionary<int, Queue<T[]>> _pool = new Dictionary<int, Queue<T[]>>();
+        private readonly FusionDictionary<int, Queue<T[]>> _pool = new();
 
         public T[] Rent(int size)
         {
-            if (!_pool.TryGetValueC(size, out Queue<T[]> queue) || queue.Count == 0)
+            if (!_pool.TryGetValue(size, out Queue<T[]> queue) || queue.Count == 0)
             {
                 return new T[size];
             }
@@ -29,7 +29,7 @@ namespace LabFusion.Data
             }
 
             int size = buffer.Length;
-            if (!_pool.TryGetValueC(size, out Queue<T[]> queue))
+            if (!_pool.TryGetValue(size, out Queue<T[]> queue))
             {
                 queue = new Queue<T[]>();
                 _pool.Add(size, queue);
