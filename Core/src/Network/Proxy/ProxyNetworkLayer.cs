@@ -400,6 +400,12 @@ namespace LabFusion.Network
             handler?.OnVoiceBytesReceived(bytes);
         }
 
+        // We currently cant tell if this user is our friend or not,
+        // so just always return true.
+        internal override bool IsFriend(ulong userId) {
+            return true;
+        }
+
         internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message)
         {
             if (IsServer)
