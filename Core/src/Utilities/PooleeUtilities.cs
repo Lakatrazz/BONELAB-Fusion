@@ -51,6 +51,10 @@ namespace LabFusion.Utilities {
                         if (spawned.GetComponentInChildren<RigManager>(true) != null)
                             continue;
 
+                        // Also don't despawn magazines (or guns with magazines)
+                        if (spawned.GetComponentInChildren<Magazine>(true) != null)
+                            continue;
+
                         spawned.Despawn();
                     }
                 }
