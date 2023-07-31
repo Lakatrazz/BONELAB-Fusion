@@ -91,7 +91,7 @@ namespace LabFusion.Preferences {
 
         public struct ClientSettings {
             // Selected network layer
-            public static FusionPref<NetworkLayerType> NetworkLayerType { get; internal set; }
+            public static FusionPref<string> NetworkLayerTitle { get; internal set; }
             public static FusionPref<int> ProxyPort { get; internal set; }
 
             // Nametag settings
@@ -127,16 +127,12 @@ namespace LabFusion.Preferences {
 
         internal static void SendServerSettings() {
             if (NetworkInfo.HasServer && NetworkInfo.IsServer) {
-                using (var writer = FusionWriter.Create()) {
-                    using (var data = ServerSettingsData.Create(SerializedServerSettings.Create()))  {
-                        writer.Write(data);
+                using var writer = FusionWriter.Create();
+                using var data = ServerSettingsData.Create(SerializedServerSettings.Create());
+                writer.Write(data);
 
-                        using (var message = FusionMessage.Create(NativeMessageTag.ServerSettings, writer))
-                        {
-                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
+                using var message = FusionMessage.Create(NativeMessageTag.ServerSettings, writer);
+                MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
             }
         }
 
@@ -182,7 +178,7 @@ namespace LabFusion.Preferences {
             LocalServerSettings = ServerSettings.CreateMelonPrefs();
 
             // Client settings
-            ClientSettings.NetworkLayerType = new FusionPref<NetworkLayerType>(prefCategory, "Network Layer Type", NetworkLayerDeterminer.GetDefaultType(), PrefUpdateMode.IGNORE);
+            ClientSettings.NetworkLayerTitle = new FusionPref<string>(prefCategory, "Network Layer Title", NetworkLayerDeterminer.GetDefaultLayer().Title, PrefUpdateMode.IGNORE);
             ClientSettings.ProxyPort = new FusionPref<int>(prefCategory, "Proxy Port", 28340, PrefUpdateMode.IGNORE);
 
             // Nametag
@@ -211,14 +207,34 @@ namespace LabFusion.Preferences {
             fusionCategory = MenuManager.CreateCategory("BONELAB Fusion", Color.white);
         }
 
+        private static int _lastIndex;
+
         internal static void OnCreateBoneMenu() {
             // Create category for changing network layer
             var networkLayerManager = fusionCategory.CreateCategory("Network Layer Manager", Color.yellow);
             networkLayerManager.CreateFunctionElement("Players need to be on the same layer!", Color.yellow, null);
 
-            networkLayerManager.CreateFunctionElement($"Active Layer: {NetworkLayerDeterminer.LoadedType}", Color.white, null);
-            BoneMenuCreator.CreateEnumPreference(networkLayerManager, "Target Layer", ClientSettings.NetworkLayerType);
-            networkLayerManager.CreateFunctionElement("Changing this setting requires a game restart!", Color.red, null);
+            _lastIndex = NetworkLayer.SupportedLayers.IndexOf(NetworkLayerDeterminer.LoadedLayer);
+
+            networkLayerManager.CreateFunctionElement($"Active Layer: {NetworkLayerDeterminer.LoadedTitle}", Color.white, null);
+            
+            var targetPanel = networkLayerManager.CreateSubPanel($"Target Layer: {ClientSettings.NetworkLayerTitle.GetValue()}", Color.white);
+            targetPanel.CreateFunctionElement("Cycle", Color.white, () => {
+                int count = NetworkLayer.SupportedLayers.Count;
+                if (count <= 0)
+                    return;
+
+                _lastIndex++;
+                if (count <= _lastIndex)
+                    _lastIndex = 0;
+
+                ClientSettings.NetworkLayerTitle.SetValue(NetworkLayer.SupportedLayers[_lastIndex].Title);
+            });
+            ClientSettings.NetworkLayerTitle.OnValueChanged += (v) => {
+                targetPanel.SetName($"Target Layer: {v}");
+            };
+
+            targetPanel.CreateFunctionElement("Changing this setting requires a game restart!", Color.red, null);
 
             // Setup bonemenu for the network layer
             InternalLayerHelpers.OnSetupBoneMenuLayer(fusionCategory);

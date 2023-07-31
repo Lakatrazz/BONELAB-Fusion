@@ -34,12 +34,17 @@ using Steamworks;
 using FusionHelper.Network;
 using LiteNetLib;
 using LiteNetLib.Utils;
+using BoneLib;
 
 namespace LabFusion.Network
 {
-    public class ProxyNetworkLayer : NetworkLayer
+    public abstract class ProxyNetworkLayer : NetworkLayer
     {
+        public abstract uint ApplicationID { get; }
+
         internal static ProxyNetworkLayer Instance { get; private set; }
+
+        internal override string Title => "Proxy";
 
         internal override bool IsServer => _isServerActive;
         internal override bool IsClient => _isConnectionActive;
@@ -72,6 +77,14 @@ namespace LabFusion.Network
         private bool sending = false;
         private AudioClip sendingClip;
 
+        internal override bool CheckSupported() {
+            return HelperMethods.IsAndroid();
+        }
+
+        internal override bool CheckValidation() {
+            return true;
+        }
+
         internal override void OnInitializeLayer()
         {
             Instance = this;
@@ -90,29 +103,14 @@ namespace LabFusion.Network
             {
                 serverConnection = peer;
                 NetDataWriter writer = NewWriter(MessageTypes.SteamID);
-                NetworkLayerType layer = FusionPreferences.ClientSettings.NetworkLayerType.GetValue();
 
-                int appId;
-                switch (layer)
-                {
-                    case NetworkLayerType.PROXY_STEAM_VR:
-                        appId = SteamVRNetworkLayer.SteamVRId;
-                        break;
-                    case NetworkLayerType.PROXY_SPACEWAR:
-                        appId = SpacewarNetworkLayer.SpacewarId;
-                        break;
-                    default:
-                        FusionLogger.Error("Attempted to initialize ProxyNetworkLayer without a known ApplicationID!");
-                        appId = 0;
-                        break;
-                }
                 listener.PeerDisconnectedEvent += (peer, disconnectInfo) => {
                     FusionLogger.Error("Proxy has disconnected, restarting server discovery!");
                     serverConnection = null;
                     MelonCoroutines.Start(DiscoverServer());
                 };
 
-                writer.Put(appId);
+                writer.Put(ApplicationID);
                 SendToProxyServer(writer);
             };
 

@@ -1,7 +1,4 @@
-﻿using LabFusion.Data;
-using LabFusion.Utilities;
-using Steamworks;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace LabFusion.Network
@@ -11,26 +8,11 @@ namespace LabFusion.Network
 
         public override uint ApplicationID => SteamVRId;
 
-        // Verification method to see if our game can actually run this layer
-        public static bool VerifyLayer()
-        {
-            // Make sure the API actually loaded
-            if (!SteamAPILoader.HasSteamAPI)
-                return false;
+        internal override string Title => "SteamVR";
 
-            try
-            {
-                // Try loading the steam client
-                if (!SteamClient.IsValid)
-                    SteamClient.Init(SteamVRId, AsyncCallbacks);
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                FusionLogger.LogException("initializing SteamVR layer", e);
-                return false;
-            }
+        internal override bool TryGetFallback(out NetworkLayer fallback) {
+            fallback = GetLayer<SpacewarNetworkLayer>();
+            return fallback != null;
         }
     }
 }

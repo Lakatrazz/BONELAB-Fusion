@@ -11,26 +11,6 @@ namespace LabFusion.Network
 
         public override uint ApplicationID => SpacewarId;
 
-        // Verification method to see if our game can actually run this layer
-        public static bool VerifyLayer()
-        {
-            // Make sure the API actually loaded
-            if (!SteamAPILoader.HasSteamAPI)
-                return false;
-
-            try
-            {
-                // Try loading the steam client
-                if (!SteamClient.IsValid)
-                    SteamClient.Init(SpacewarId, AsyncCallbacks);
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                FusionLogger.LogException("initializing Spacewar layer", e);
-                return false;
-            }
-        }
+        internal override string Title => "Spacewar";
     }
 }

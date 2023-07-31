@@ -166,10 +166,15 @@ namespace LabFusion.Network
                         return;
                 }
 
-                if (ConstrainerUtilities.HasConstrainer && hasConstrainer && constrainer.TryGetExtender<ConstrainerExtender>(out var extender))
-                {
+                if (ConstrainerUtilities.HasConstrainer) {
+                    // Get the synced constrainer
+                    // This isn't required for client constraint creation, but is used for SFX and VFX
+                    Constrainer syncedComp = null;
+                    if (hasConstrainer && constrainer.TryGetExtender<ConstrainerExtender>(out var extender))
+                        syncedComp = extender.Component;
+                    hasConstrainer = syncedComp != null;
+
                     var comp = ConstrainerUtilities.GlobalConstrainer;
-                    var syncedComp = extender.Component;
                     comp.mode = data.mode;
 
                     // Setup points
@@ -204,7 +209,9 @@ namespace LabFusion.Network
                     ConstrainerPatches.FirstId = data.point1Id;
                     ConstrainerPatches.SecondId = data.point2Id;
 
-                    comp.LineMaterial = syncedComp.LineMaterial;
+                    if (hasConstrainer)
+                        comp.LineMaterial = syncedComp.LineMaterial;
+
                     comp.PrimaryButtonUp();
 
                     ConstrainerPatches.FirstId = 0;
@@ -217,9 +224,11 @@ namespace LabFusion.Network
 
                     // Events when the constrainer is from another player
                     if (data.smallId != PlayerIdManager.LocalSmallId) {
-                        // Play sound
-                        syncedComp.sfx.GravLocked();
-                        syncedComp.sfx.Release();
+                        if (hasConstrainer) {
+                            // Play sound
+                            syncedComp.sfx.GravLocked();
+                            syncedComp.sfx.Release();
+                        }
 
                         // Check for host constraint achievement
                         if (data.smallId == 0 && AchievementManager.TryGetAchievement<ClassStruggle>(out var achievement)) {

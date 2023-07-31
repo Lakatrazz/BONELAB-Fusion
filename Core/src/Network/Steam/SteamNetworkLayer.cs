@@ -34,6 +34,7 @@ using System.IO;
 
 using UnhollowerBaseLib;
 using LabFusion.SDK.Gamemodes;
+using BoneLib;
 
 namespace LabFusion.Network
 {
@@ -45,6 +46,8 @@ namespace LabFusion.Network
         // AsyncCallbacks are bad!
         // In Unity/Melonloader, they can cause random crashes, especially when making a lot of calls
         public const bool AsyncCallbacks = false;
+
+        internal override string Title => "Steam";
 
         internal override bool IsServer => _isServerActive;
         internal override bool IsClient => _isConnectionActive;
@@ -76,6 +79,28 @@ namespace LabFusion.Network
         // The stored time of the last lobby update
         // We automatically push lobby metadata updates every 30 seconds
         protected float _lastLobbyUpdate = 0f;
+
+        internal override bool CheckSupported() {
+            return !HelperMethods.IsAndroid();
+        }
+
+        internal override bool CheckValidation() {
+            // Make sure the API actually loaded
+            if (!SteamAPILoader.HasSteamAPI)
+                return false;
+
+            try {
+                // Try loading the steam client
+                if (!SteamClient.IsValid)
+                    SteamClient.Init(ApplicationID, AsyncCallbacks);
+
+                return true;
+            }
+            catch (Exception e) {
+                FusionLogger.LogException($"initializing {Title} layer", e);
+                return false;
+            }
+        }
 
         internal override void OnInitializeLayer() {
             try {
