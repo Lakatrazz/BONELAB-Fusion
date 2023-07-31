@@ -15,6 +15,8 @@ using LabFusion.Utilities;
 using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Senders;
+using LabFusion.Representation;
+using LabFusion.SDK.Achievements;
 
 namespace LabFusion.Data
 {
@@ -39,6 +41,9 @@ namespace LabFusion.Data
                 TaxiSeat = TaxiController.rearSeat;
                 ArmController = GameObject.FindObjectOfType<ArticulatedArmController>(true);
                 ArmFinale = GameObject.FindObjectOfType<ArmFinale>(true);
+
+                // Hook seat event
+                TaxiSeat.RegisteredEvent += (Il2CppSystem.Action)OnTaxiSeatRegistered;
 
                 // Add extra seats
                 // Inside seat
@@ -67,6 +72,15 @@ namespace LabFusion.Data
 #endif
                     }
                 }
+            }
+        }
+
+        private static void OnTaxiSeatRegistered() {
+            // Give the achievement in a server with more than 1 player
+            if (NetworkInfo.HasServer && PlayerIdManager.HasOtherPlayers) {
+                // Increment the achievement task
+                if (AchievementManager.TryGetAchievement<OneMoreTime>(out var achievement))
+                    achievement.IncrementTask();
             }
         }
 

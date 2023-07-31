@@ -21,6 +21,7 @@ using SLZ.Props;
 using LabFusion.Preferences;
 using SLZ.Rig;
 using LabFusion.Extensions;
+using LabFusion.SDK.Achievements;
 
 namespace LabFusion.Network
 {
@@ -203,6 +204,7 @@ namespace LabFusion.Network
                     ConstrainerPatches.FirstId = data.point1Id;
                     ConstrainerPatches.SecondId = data.point2Id;
 
+                    comp.LineMaterial = syncedComp.LineMaterial;
                     comp.PrimaryButtonUp();
 
                     ConstrainerPatches.FirstId = 0;
@@ -213,10 +215,18 @@ namespace LabFusion.Network
                     tran1.SetPositionAndRotation(go1Pos, go1Rot);
                     tran2.SetPositionAndRotation(go2Pos, go2Rot);
 
-                    // Play sound
+                    // Events when the constrainer is from another player
                     if (data.smallId != PlayerIdManager.LocalSmallId) {
+                        // Play sound
                         syncedComp.sfx.GravLocked();
                         syncedComp.sfx.Release();
+
+                        // Check for host constraint achievement
+                        if (data.smallId == 0 && AchievementManager.TryGetAchievement<ClassStruggle>(out var achievement)) {
+                            if (!achievement.IsComplete && (tran1.IsPartOfSelf() || tran2.IsPartOfSelf())) {
+                                achievement.IncrementTask();
+                            }
+                        }
                     }
                 }
             }

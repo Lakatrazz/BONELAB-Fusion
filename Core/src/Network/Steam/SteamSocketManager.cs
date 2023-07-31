@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using LabFusion.Data;
 using LabFusion.Representation;
 using LabFusion.Senders;
 
@@ -13,7 +13,7 @@ using Steamworks.Data;
 namespace LabFusion.Network
 {
     public class SteamSocketManager : SocketManager {
-        public Dictionary<ulong, Connection> ConnectedSteamIds = new Dictionary<ulong, Connection>();
+        public FusionDictionary<ulong, Connection> ConnectedSteamIds = new();
 
         public override void OnConnecting(Connection connection, ConnectionInfo data) {
             base.OnConnecting(connection, data);

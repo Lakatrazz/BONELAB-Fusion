@@ -1,4 +1,6 @@
-﻿using LabFusion.Utilities;
+﻿using LabFusion.Data;
+using LabFusion.Extensions;
+using LabFusion.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +37,8 @@ namespace LabFusion.SDK.Achievements {
                 if (AchievementSaveManager.Pointers.TryGetValue(achievement.Barcode, out var pointer)) {
                     achievement.Unpack(XElement.Parse(pointer.data));
                 }
+
+                achievement.Register();
             }
         }
 
@@ -61,25 +65,53 @@ namespace LabFusion.SDK.Achievements {
             return false;
         }
 
+        public static void IncrementAchievements<T>() where T : Achievement {
+            foreach (var achievement in GetAchievements<T>()) {
+                achievement.IncrementTask();
+            }
+        }
+
+        public static List<T> GetAchievements<T>() where T : Achievement {
+            List<T> list = new();
+
+            foreach (var found in Achievements) {
+                if (found is T result) {
+                    list.Add(result);
+                }
+            }
+
+
+            return list;
+        }
+
         public static float GetAchievementProgress() {
-            int totalAchievements = LoadedAchievements.Count;
+            int totalAchievements = 0;
             int completedAchievements = 0;
 
             foreach (var achievement in LoadedAchievements) {
+                // Ignore redacted achievements
+                if (achievement.Redacted)
+                    continue;
+
+                // Increment our numbers
                 if (achievement.IsComplete)
                     completedAchievements++;
+
+                totalAchievements++;
             }
 
             return Mathf.Clamp01((float)completedAchievements / (float)totalAchievements);
         }
 
         public static IReadOnlyList<Achievement> GetSortedAchievements() {
-            return LoadedAchievements.OrderBy(a => a.IsComplete).ThenBy(a => a.BitReward).ToList();
+            var list = LoadedAchievements.OrderBy(a => a.IsComplete).ThenBy(a => a.BitReward).ToList();
+            list.RemoveAll((a) => a.Redacted && !a.IsComplete);
+            return list;
         }
 
         public static IReadOnlyList<Achievement> LoadedAchievements => Achievements;
 
         internal static readonly List<Achievement> Achievements = new();
-        internal static readonly Dictionary<string, Achievement> AchievementLookup = new();
+        internal static readonly FusionDictionary<string, Achievement> AchievementLookup = new();
     }
 }

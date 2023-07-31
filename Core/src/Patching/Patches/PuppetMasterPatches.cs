@@ -30,18 +30,15 @@ namespace LabFusion.Patching
                 if (!syncable.IsOwner())
                     return false;
                 else {
-                    using (var writer = FusionWriter.Create(PuppetMasterKillData.Size))
-                    {
-                        using (var data = PuppetMasterKillData.Create(PlayerIdManager.LocalSmallId, syncable.Id))
-                        {
-                            writer.Write(data);
+                    using (var writer = FusionWriter.Create(PuppetMasterKillData.Size)) {
+                        using var data = PuppetMasterKillData.Create(PlayerIdManager.LocalSmallId, syncable.Id);
+                        writer.Write(data);
 
-                            using (var message = FusionMessage.Create(NativeMessageTag.PuppetMasterKill, writer))
-                            {
-                                MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                            }
-                        }
+                        using var message = FusionMessage.Create(NativeMessageTag.PuppetMasterKill, writer);
+                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
                     }
+
+                    PuppetMasterExtender.LastKilled = syncable;
 
                     return true;
                 }

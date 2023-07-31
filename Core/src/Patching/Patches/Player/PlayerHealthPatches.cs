@@ -55,7 +55,7 @@ namespace LabFusion.Patching
         public static void DeathVocal(HeadSFX __instance) {
             // Is this our player? Did they actually die?
             var rm = __instance.physRig.manager;
-            if (NetworkInfo.HasServer && rm.IsLocalPlayer() && !rm.health.alive) {
+            if (NetworkInfo.HasServer && rm.IsSelf() && !rm.health.alive) {
                 // If in a gamemode with auto holstering, then do it
                 if (Gamemode.ActiveGamemode != null && Gamemode.ActiveGamemode.AutoHolsterOnDeath) {
                     rm.physicsRig.leftHand.TryAutoHolsterGrip(RigData.RigReferences);

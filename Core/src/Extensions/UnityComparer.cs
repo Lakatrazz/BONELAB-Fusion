@@ -1,8 +1,6 @@
-﻿using SLZ.Serialize;
+﻿using System.Collections.Generic;
 
-using System.Collections.Generic;
-
-using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace LabFusion.Extensions
 {

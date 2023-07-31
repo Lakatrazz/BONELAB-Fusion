@@ -49,6 +49,9 @@ namespace LabFusion.Network
         private INetworkLobby _currentLobby;
         internal override INetworkLobby CurrentLobby => _currentLobby;
 
+        private readonly ProxyVoiceManager _voiceManager = new();
+        internal override IVoiceManager VoiceManager => _voiceManager;
+
         protected bool _isServerActive = false;
         protected bool _isConnectionActive = false;
 
@@ -261,8 +264,8 @@ namespace LabFusion.Network
                     {
                         ulong playerLong = dataReader.GetULong();
                         byte[] data = dataReader.GetBytesWithLength();
-                        var identifier = ProxyVoiceIdentifier.GetVoiceIdentifier(PlayerIdManager.GetPlayerId(playerLong));
-                        identifier?.OnDecompressedVoiceBytesReceived(data);
+                        var handler = _voiceManager.GetVoiceHandler(PlayerIdManager.GetPlayerId(playerLong)) as ProxyVoiceHandler;
+                        handler?.OnDecompressedVoiceBytesReceived(data);
                         break;
                     }
             }
@@ -359,8 +362,8 @@ namespace LabFusion.Network
                     }
                 }*/
 
-                // Update identifiers
-                ProxyVoiceIdentifier.OnUpdate();
+                // Update the manager
+                VoiceManager.Update();
             }
             else
             {
@@ -390,13 +393,17 @@ namespace LabFusion.Network
         internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes)
         {
             // If we are deafened, no need to deal with voice chat
-            bool isDeafened = !FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue() || FusionPreferences.ClientSettings.Deafened;
-            if (isDeafened)
+            if (VoiceHelper.IsDeafened)
                 return;
 
-            var identifier = ProxyVoiceIdentifier.GetVoiceIdentifier(id);
+            var handler = _voiceManager.GetVoiceHandler(id);
+            handler?.OnVoiceBytesReceived(bytes);
+        }
 
-            identifier?.OnVoiceBytesReceived(bytes);
+        // We currently cant tell if this user is our friend or not,
+        // so just always return true.
+        internal override bool IsFriend(ulong userId) {
+            return true;
         }
 
         internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message)
@@ -507,21 +514,21 @@ namespace LabFusion.Network
         private void OnPlayerJoin(PlayerId id)
         {
             if (!id.IsSelf)
-                ProxyVoiceIdentifier.GetVoiceIdentifier(id);
+                _voiceManager.GetVoiceHandler(id);
 
             OnUpdateSteamLobby();
         }
 
         private void OnPlayerLeave(PlayerId id)
         {
-            ProxyVoiceIdentifier.RemoveVoiceIdentifier(id);
+            _voiceManager.Remove(id);
 
             OnUpdateSteamLobby();
         }
 
         private void OnDisconnect()
         {
-            ProxyVoiceIdentifier.CleanupAll();
+            _voiceManager.RemoveAll();
         }
 
         private void UnHookSteamEvents()

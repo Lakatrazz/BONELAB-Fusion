@@ -1,4 +1,5 @@
-﻿using LabFusion.Extensions;
+﻿using LabFusion.Data;
+using LabFusion.Extensions;
 using LabFusion.MarrowIntegration;
 using LabFusion.Patching;
 using LabFusion.Utilities;
@@ -10,6 +11,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using Avatar = SLZ.VRMK.Avatar;
+
+using Il2Action = Il2CppSystem.Action;
+using Il2ActionBool = Il2CppSystem.Action<bool>;
+using Il2Delegate = Il2CppSystem.Delegate;
 
 namespace LabFusion.SDK.Points
 {
@@ -26,8 +31,8 @@ namespace LabFusion.SDK.Points
             public AccessoryPoint itemPoint;
             public AccessoryScaleMode scaleMode;
 
-            public Dictionary<Mirror, GameObject> mirrors = new(new UnityComparer());
-            public Dictionary<AccessoryPoint, MarrowCosmeticPoint> points = new();
+            public FusionDictionary<Mirror, GameObject> mirrors = new(new UnityComparer());
+            public FusionDictionary<AccessoryPoint, MarrowCosmeticPoint> points = new();
 
             private bool _destroyed = false;
             public bool IsDestroyed => _destroyed;
@@ -50,14 +55,17 @@ namespace LabFusion.SDK.Points
             }
 
             private void Hook() {
-                rigManager.OnPostLateUpdate += (Il2CppSystem.Action)OnPostLateUpdate;
-                ControllerRig.OnPauseStateChange += (Il2CppSystem.Action<bool>)OnPauseStateChange;
+                // We want our code to execute first in the RigManager, before the head is overriden
+                // So we combine these two delegates manually
+                rigManager.OnPostLateUpdate = Il2Delegate.Combine((Il2Action)OnPostLateUpdate, rigManager.OnPostLateUpdate).Cast<Il2Action>();
+                
+                ControllerRig.OnPauseStateChange += (Il2ActionBool)OnPauseStateChange;
             }
 
             private void Unhook() {
                 if (!rigManager.IsNOC()) {
-                    rigManager.OnPostLateUpdate -= (Il2CppSystem.Action)OnPostLateUpdate;
-                    ControllerRig.OnPauseStateChange -= (Il2CppSystem.Action<bool>)OnPauseStateChange;
+                    rigManager.OnPostLateUpdate -= (Il2Action)OnPostLateUpdate;
+                    ControllerRig.OnPauseStateChange -= (Il2ActionBool)OnPauseStateChange;
                 }
             }
 
@@ -226,7 +234,7 @@ namespace LabFusion.SDK.Points
         // We use LateUpdate to cleanup accessories, so it should be hooked
         public override bool ImplementLateUpdate => true;
 
-        protected Dictionary<RigManager, AccessoryInstance> _accessoryInstances = new Dictionary<RigManager, AccessoryInstance>(new UnityComparer());
+        protected FusionDictionary<RigManager, AccessoryInstance> _accessoryInstances = new(new UnityComparer());
 
         public override void OnUpdateObjects(PointItemPayload payload, bool isVisible) {
             // Make sure we have a prefab

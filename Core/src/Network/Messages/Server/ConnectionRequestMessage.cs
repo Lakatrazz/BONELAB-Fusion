@@ -20,7 +20,7 @@ namespace LabFusion.Network
         public Version version;
         public string avatarBarcode;
         public SerializedAvatarStats avatarStats;
-        public Dictionary<string, string> initialMetadata;
+        public FusionDictionary<string, string> initialMetadata;
         public List<string> initialEquippedItems;
 
         public bool IsValid { get; private set; } = true;

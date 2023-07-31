@@ -53,11 +53,9 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
             // Despawn the poolee if it exists
-            using (var reader = FusionReader.Create(bytes)) {
-                using (var data = reader.ReadFusionSerializable<DespawnResponseData>()) {
-                    MelonCoroutines.Start(Internal_WaitForValidDespawn(data.syncId, data.despawnerId, data.isMag));
-                }
-            }
+            using var reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<DespawnResponseData>();
+            MelonCoroutines.Start(Internal_WaitForValidDespawn(data.syncId, data.despawnerId, data.isMag));
         }
 
         private static IEnumerator Internal_WaitForValidDespawn(ushort syncId, byte despawnerId, bool isMag) {

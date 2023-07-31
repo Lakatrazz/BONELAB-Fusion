@@ -69,10 +69,8 @@ namespace LabFusion.Network
                     // Bounce the message back
                     if (NetworkInfo.IsServer)
                     {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes))
-                        {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.VoiceChat, message);
-                        }
+                        using var message = FusionMessage.Create(Tag.Value, bytes);
+                        MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.VoiceChat, message);
                     }
                 }
             }

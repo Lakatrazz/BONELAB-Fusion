@@ -32,7 +32,7 @@ namespace LabFusion.Syncables {
                 // Get owner id
                 var rm = seat.rigManager;
 
-                if (rm.IsLocalPlayer()) {
+                if (rm.IsSelf()) {
                     owner = PlayerIdManager.LocalSmallId;
                     return true;
                 }

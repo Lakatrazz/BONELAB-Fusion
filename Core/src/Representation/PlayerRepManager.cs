@@ -1,4 +1,6 @@
-﻿using LabFusion.Extensions;
+﻿using LabFusion.Data;
+using LabFusion.Extensions;
+using LabFusion.Utilities;
 using SLZ.Rig;
 
 using System.Collections.Generic;
@@ -9,8 +11,8 @@ namespace LabFusion.Representation {
         public const string PlayerRepName = "[RigManager (FUSION PlayerRep)]";
 
         public static readonly List<PlayerRep> PlayerReps = new();
-        public static readonly Dictionary<byte, PlayerRep> IDLookup = new(); 
-        public static readonly Dictionary<RigManager, PlayerRep> ManagerLookup = new(new UnityComparer());
+        public static readonly FusionDictionary<byte, PlayerRep> IDLookup = new(); 
+        public static readonly FusionDictionary<RigManager, PlayerRep> ManagerLookup = new(new UnityComparer());
 
         public static bool HasPlayerId(RigManager manager) {
             if (manager == null)

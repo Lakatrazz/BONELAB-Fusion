@@ -10,12 +10,8 @@ namespace LabFusion.Network
 {
     public sealed class SteamVoiceManager : VoiceManager {
         public override VoiceHandler GetVoiceHandler(PlayerId id) {
-            for (var i = 0; i < VoiceHandlers.Count; i++) {
-                var handler = VoiceHandlers[i];
-
-                if (handler.ID == id)
-                    return handler;
-            }
+            if (TryGetHandler(id, out var handler))
+                return handler;
 
             var newIdentifier = new SteamVoiceHandler(id);
             VoiceHandlers.Add(newIdentifier);

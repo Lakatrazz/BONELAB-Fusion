@@ -1,5 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Debugging;
+using LabFusion.Extensions;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Utilities;
 
@@ -136,9 +137,9 @@ namespace LabFusion.SDK.Points {
             WriteToFile();
         }
 
-        private static List<string> _unlockedItems = new List<string>();
-        private static List<string> _equippedItems = new List<string>();
-        private static Dictionary<string, int> _itemUpgrades = new Dictionary<string, int>();
+        private static List<string> _unlockedItems = new();
+        private static List<string> _equippedItems = new();
+        private static FusionDictionary<string, int> _itemUpgrades = new();
         private static int _totalBits;
     }
 }

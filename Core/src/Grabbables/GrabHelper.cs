@@ -59,15 +59,13 @@ namespace LabFusion.Grabbables {
 
         public static void SendObjectForcePull(Hand hand, Grip grip) {
             if (NetworkInfo.HasServer) {
-                MelonCoroutines.Start(Internal_ObjectForcePullRoutine(hand, grip));
+                DelayUtilities.Delay(() => {
+                    Internal_ObjectForcePull(hand, grip);
+                }, 4);
             }
         }
 
-        internal static IEnumerator Internal_ObjectForcePullRoutine(Hand hand, Grip grip) {
-            // Delay a few frames
-            for (var i = 0; i < 4; i++)
-                yield return null;
-
+        internal static void Internal_ObjectForcePull(Hand hand, Grip grip) {
             if (NetworkInfo.HasServer) {
                 // Check to see if this has a rigidbody
                 if (grip.HasRigidbody && !grip.GetComponentInParent<RigManager>())
@@ -81,10 +79,9 @@ namespace LabFusion.Grabbables {
 
                     // Do we already have a synced object?
                     if (GripExtender.Cache.TryGet(grip, out var syncable) || PropSyncable.HostCache.TryGet(host.gameObject, out syncable) || PropSyncable.Cache.TryGet(root, out syncable)) {
-                        while (!syncable.IsRegistered())
-                            yield return null;
-
-                        PropSender.SendOwnershipTransfer(syncable);
+                        syncable.HookOnRegistered(() => {
+                            PropSender.SendOwnershipTransfer(syncable);
+                        });
                     }
                     // Create a new one
                     else {
@@ -98,16 +95,14 @@ namespace LabFusion.Grabbables {
         {
             if (NetworkInfo.HasServer)
             {
-                MelonCoroutines.Start(Internal_ObjectAttachRoutine(hand, grip));
+                DelayUtilities.Delay(() => {
+                    Internal_ObjectAttach(hand, grip);
+                }, 4);
             }
         }
 
-        internal static IEnumerator Internal_ObjectAttachRoutine(Hand hand, Grip grip)
+        internal static void Internal_ObjectAttach(Hand hand, Grip grip)
         {
-            // Delay a few frames
-            for (var i = 0; i < 4; i++)
-                yield return null;
-
             if (NetworkInfo.HasServer)
             {
                 var handedness = hand.handedness;
@@ -116,7 +111,6 @@ namespace LabFusion.Grabbables {
                 byte smallId = PlayerIdManager.LocalSmallId;
                 GrabGroup group = GrabGroup.UNKNOWN;
                 SerializedGrab serializedGrab = null;
-                bool validGrip = false;
 
                 // If the grip exists, we'll check its stuff
                 if (grip != null)
@@ -126,27 +120,22 @@ namespace LabFusion.Grabbables {
                     {
                         group = GrabGroup.PLAYER_BODY;
                         serializedGrab = new SerializedPlayerBodyGrab(repId, repReferences.GetIndex(grip, isAvatarGrip).Value, isAvatarGrip);
-                        validGrip = true;
+                        OnFinish();
                     }
                     // Check for static grips
-                    else if (grip.IsStatic)
-                    {
-                        if (grip.TryCast<WorldGrip>() != null)
-                        {
+                    else if (grip.IsStatic) {
+                        if (grip.TryCast<WorldGrip>() != null) {
                             group = GrabGroup.WORLD_GRIP;
                             serializedGrab = new SerializedWorldGrab(smallId);
-                            validGrip = true;
+                            OnFinish();
                         }
-                        else
-                        {
+                        else {
                             group = GrabGroup.STATIC;
 
-                            var pathTask = grip.gameObject.GetFullPathAsync();
-                            while (!pathTask.IsCompleted)
-                                yield return null;
-
-                            serializedGrab = new SerializedStaticGrab(pathTask.Result);
-                            validGrip = true;
+                            _ = grip.gameObject.GetFullPathAsync((p) => {
+                                serializedGrab = new SerializedStaticGrab(p);
+                                OnFinish();
+                            });
                         }
                     }
                     // Check for prop grips
@@ -158,115 +147,87 @@ namespace LabFusion.Grabbables {
                         GameObject root = host.GetSyncRoot();
 
                         // Do we already have a synced object?
-                        if (GripExtender.Cache.TryGet(grip, out var syncable) || PropSyncable.HostCache.TryGet(host.gameObject, out syncable) || PropSyncable.Cache.TryGet(root, out syncable))
-                        {
+                        if (GripExtender.Cache.TryGet(grip, out var syncable) || PropSyncable.HostCache.TryGet(host.gameObject, out syncable) || PropSyncable.Cache.TryGet(root, out syncable)) {
                             serializedGrab = new SerializedPropGrab("_", syncable.GetIndex(grip).Value, syncable.GetId());
-                            validGrip = true;
+                            OnFinish();
                         }
                         else {
                             // Make sure the GameObject is whitelisted before syncing
                             if (!root.IsSyncWhitelisted())
-                                yield break;
+                                return;
+
+                            // Invoked when a PropSyncable is finished gathering its pathed
+                            void OnPropFinish(PropSyncable syncable, string path) {
+                                serializedGrab = new SerializedPropGrab(path, syncable.GetIndex(grip).Value, syncable.Id);
+                                OnFinish();
+                            }
 
                             // Create a new one
-                            if (!NetworkInfo.IsServer)
-                            {
+                            if (!NetworkInfo.IsServer) {
                                 syncable = new PropSyncable(host);
     
                                 ushort queuedId = SyncManager.QueueSyncable(syncable);
     
-                                using (var writer = FusionWriter.Create(SyncableIDRequestData.Size))
-                                {
-                                    using (var data = SyncableIDRequestData.Create(smallId, queuedId))
-                                    {
-                                        writer.Write(data);
-    
-                                        using (var message = FusionMessage.Create(NativeMessageTag.SyncableIDRequest, writer))
-                                        {
-                                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                                        }
-                                    }
+                                using (var writer = FusionWriter.Create(SyncableIDRequestData.Size)) {
+                                    using var data = SyncableIDRequestData.Create(smallId, queuedId);
+                                    writer.Write(data);
+
+                                    using var message = FusionMessage.Create(NativeMessageTag.SyncableIDRequest, writer);
+                                    MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
                                 }
     
-                                while (syncable.IsQueued())
-                                    yield return null;
-    
-                                yield return null;
-
-                                var pathTask = host.gameObject.GetFullPathAsync();
-                                while (!pathTask.IsCompleted)
-                                    yield return null;
-
-                                serializedGrab = new SerializedPropGrab(pathTask.Result, syncable.GetIndex(grip).Value, syncable.Id);
-                                validGrip = true;
+                                syncable.HookOnRegistered(() => {
+                                    _ = host.gameObject.GetFullPathAsync((p) => { OnPropFinish(syncable, p); });
+                                });
                             }
                             else if (NetworkInfo.IsServer)
                             {
                                 syncable = new PropSyncable(host);
                                 SyncManager.RegisterSyncable(syncable, SyncManager.AllocateSyncID());
 
-                                var pathTask = host.gameObject.GetFullPathAsync();
-                                while (!pathTask.IsCompleted)
-                                    yield return null;
-
-                                serializedGrab = new SerializedPropGrab(pathTask.Result, syncable.GetIndex(grip).Value, syncable.Id);
-    
-                                validGrip = true;
+                                _ = host.gameObject.GetFullPathAsync((p) => { OnPropFinish(syncable, p); });
                             }
                         }
                     }
                 }
 
-                // Now, send the message
-                if (validGrip) {
+                // Send the message when whatever task is finished
+                void OnFinish() {
                     // Write the default grip values
                     serializedGrab.WriteDefaultGrip(hand, grip);
 
-                    using (var writer = FusionWriter.Create(PlayerRepGrabData.Size + serializedGrab.GetSize()))
-                    {
-                        using (var data = PlayerRepGrabData.Create(smallId, handedness, group, serializedGrab))
-                        {
-                            writer.Write(data);
+                    using var writer = FusionWriter.Create(PlayerRepGrabData.Size + serializedGrab.GetSize());
+                    using var data = PlayerRepGrabData.Create(smallId, handedness, group, serializedGrab);
+                    writer.Write(data);
 
-                            using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepGrab, writer))
-                            {
-                                MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                            }
-                        }
-                    }
+                    using var message = FusionMessage.Create(NativeMessageTag.PlayerRepGrab, writer);
+                    MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
                 }
             }
         }
 
         public static void SendObjectDetach(Hand hand)
         {
-            MelonCoroutines.Start(Internal_ObjectDetachRoutine(hand));
+            DelayUtilities.Delay(() =>
+            {
+                Internal_ObjectDetach(hand);
+            }, 8);
         }
 
-        internal static IEnumerator Internal_ObjectDetachRoutine(Hand hand) {
-            // Delay a few frames
-            for (var i = 0; i < 8; i++)
-                yield return null;
-
+        internal static void Internal_ObjectDetach(Hand hand) {
             var handedness = hand.handedness;
 
             if (hand.m_CurrentAttachedGO != null)
-                yield break;
+                return;
 
             if (NetworkInfo.HasServer)
             {
-                using (var writer = FusionWriter.Create(PlayerRepReleaseData.Size))
-                {
-                    using (var data = PlayerRepReleaseData.Create(PlayerIdManager.LocalSmallId, handedness))
-                    {
-                        writer.Write(data);
+                using var writer = FusionWriter.Create(PlayerRepReleaseData.Size);
+                using var data = PlayerRepReleaseData.Create(PlayerIdManager.LocalSmallId, handedness);
+                writer.Write(data);
 
-                        using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepRelease, writer))
-                        {
-                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
+                using var message = FusionMessage.Create(NativeMessageTag.PlayerRepRelease, writer);
+                MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
             }
         }
     }

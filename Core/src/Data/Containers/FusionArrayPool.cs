@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LabFusion.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace LabFusion.Data
 {
     public class FusionArrayPool<T>
     {
-        private readonly Dictionary<int, Queue<T[]>> _pool = new Dictionary<int, Queue<T[]>>();
+        private readonly FusionDictionary<int, Queue<T[]>> _pool = new();
 
         public T[] Rent(int size)
         {

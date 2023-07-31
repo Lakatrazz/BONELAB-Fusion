@@ -60,40 +60,28 @@ namespace LabFusion.Senders {
         }
 
         public static void SendDescentNoose(DescentNooseEvent nooseEvent, ulong? target = null) {
-            using (var writer = FusionWriter.Create())
-            {
-                using (var data = DescentNooseData.Create(nooseEvent.smallId, nooseEvent.type))
-                {
-                    writer.Write(data);
+            using var writer = FusionWriter.Create();
+            using var data = DescentNooseData.Create(nooseEvent.smallId, nooseEvent.type);
+            writer.Write(data);
 
-                    using (var message = FusionMessage.Create(NativeMessageTag.DescentNoose, writer))
-                    {
-                        if (target.HasValue)
-                            MessageSender.SendFromServer(target.Value, NetworkChannel.Reliable, message);
-                        else
-                            MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                    }
-                }
-            }
+            using var message = FusionMessage.Create(NativeMessageTag.DescentNoose, writer);
+            if (target.HasValue)
+                MessageSender.SendFromServer(target.Value, NetworkChannel.Reliable, message);
+            else
+                MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
 
         public static void SendDescentElevator(DescentElevatorEvent elevatorEvent, ulong? target = null)
         {
-            using (var writer = FusionWriter.Create())
-            {
-                using (var data = DescentElevatorData.Create(PlayerIdManager.LocalSmallId, elevatorEvent.type))
-                {
-                    writer.Write(data);
+            using var writer = FusionWriter.Create();
+            using var data = DescentElevatorData.Create(PlayerIdManager.LocalSmallId, elevatorEvent.type);
+            writer.Write(data);
 
-                    using (var message = FusionMessage.Create(NativeMessageTag.DescentElevator, writer))
-                    {
-                        if (target.HasValue)
-                            MessageSender.SendFromServer(target.Value, NetworkChannel.Reliable, message);
-                        else
-                            MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                    }
-                }
-            }
+            using var message = FusionMessage.Create(NativeMessageTag.DescentElevator, writer);
+            if (target.HasValue)
+                MessageSender.SendFromServer(target.Value, NetworkChannel.Reliable, message);
+            else
+                MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
 
         public static void SendHomeEvent(int selectionNumber, HomeEventType type)

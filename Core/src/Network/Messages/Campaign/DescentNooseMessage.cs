@@ -62,47 +62,48 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<DescentNooseData>();
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
             {
-                using (var data = reader.ReadFusionSerializable<DescentNooseData>())
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+            }
+            else
+            {
+                NoosePatches.IgnorePatches = true;
+
+                // Register a noose event for catchup
+                _ = DescentData.CreateNooseEvent(data.smallId, data.type);
+
+                switch (data.type)
                 {
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled) {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+                    default:
+                    case DescentNooseType.UNKNOWN:
+                        break;
+                    case DescentNooseType.ATTACH_NOOSE:
+                        if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep))
+                        {
+                            // Assign the RigManager and Health to the noose
+                            // We assign the rigmanager so the noose knows what neck to joint to
+                            // The player health is also assigned so it doesn't damage the local player
+                            DescentData.Noose.rM = rep.RigReferences.RigManager;
+                            DescentData.Noose.pH = rep.RigReferences.Health;
+
+                            // Now we actually attach the neck of the player
+                            DescentData.Noose.AttachNeck();
                         }
-                    }
-                    else {
-                        NoosePatches.IgnorePatches = true;
+                        break;
+                    case DescentNooseType.CUT_NOOSE:
+                        // This function is called to cut the noose as if a knife cut it
+                        DescentData.Noose.NooseCut();
 
-                        // Register a noose event for catchup
-                        _ = DescentData.CreateNooseEvent(data.smallId, data.type);
-
-                        switch (data.type) {
-                            default:
-                            case DescentNooseType.UNKNOWN:
-                                break;
-                            case DescentNooseType.ATTACH_NOOSE:
-                                if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep)) {
-                                    // Assign the RigManager and Health to the noose
-                                    // We assign the rigmanager so the noose knows what neck to joint to
-                                    // The player health is also assigned so it doesn't damage the local player
-                                    DescentData.Noose.rM = rep.RigReferences.RigManager;
-                                    DescentData.Noose.pH = rep.RigReferences.Health;
-
-                                    // Now we actually attach the neck of the player
-                                    DescentData.Noose.AttachNeck();
-                                }
-                                break;
-                            case DescentNooseType.CUT_NOOSE:
-                                // This function is called to cut the noose as if a knife cut it
-                                DescentData.Noose.NooseCut();
-                                break;
-                        }
-
-                        NoosePatches.IgnorePatches = false;
-                    }
+                        DescentData.CheckAchievement();
+                        break;
                 }
+
+                NoosePatches.IgnorePatches = false;
             }
         }
     }

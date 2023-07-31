@@ -9,6 +9,9 @@ using LabFusion.Syncables;
 using LabFusion.Grabbables;
 using LabFusion.SDK.Modules;
 using LabFusion.Preferences;
+using LabFusion.SDK.Gamemodes;
+using LabFusion.SDK.Points;
+using LabFusion.SDK.Achievements;
 
 #if DEBUG
 using LabFusion.Debugging;
@@ -18,11 +21,7 @@ using MelonLoader;
 
 using UnityEngine;
 
-using LabFusion.SDK.Gamemodes;
-using LabFusion.SDK.Points;
 using System.Linq;
-using LabFusion.SDK.Achievements;
-using LabFusion.Patching;
 
 namespace LabFusion
 {
@@ -77,10 +76,6 @@ namespace LabFusion
         }
 
         public override void OnInitializeMelon() {
-            // Manually patch methods on Android because some only work on PC
-            if (BoneLib.HelperMethods.IsAndroid())
-                ManualPatchRunner.Init(HarmonyInstance);
-
             // Prepare the bonemenu category
             FusionPreferences.OnPrepareBoneMenuCategory();
 
@@ -282,6 +277,9 @@ namespace LabFusion
 
             // Update gamemodes
             GamemodeManager.Internal_OnUpdate();
+
+            // Update delayed events at the very end of the frame
+            DelayUtilities.Internal_OnUpdate();
         }
 
         public override void OnFixedUpdate() {

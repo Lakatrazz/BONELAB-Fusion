@@ -29,16 +29,8 @@ namespace LabFusion.Utilities {
                 if (!go.IsSyncWhitelisted())
                     return;
 
-                MelonCoroutines.Start(Internal_WaitAndSync(go));
+                DelayUtilities.Delay(() => { PropSender.SendPropCreation(go); }, 4);
             }
-        }
-
-        private static IEnumerator Internal_WaitAndSync(GameObject go)
-        {
-            for (var i = 0; i < 4; i++)
-                yield return null;
-
-            PropSender.SendPropCreation(go);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using SLZ.Rig;
+﻿using LabFusion.Utilities;
+using SLZ.Rig;
 
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,29 @@ namespace LabFusion.Extensions {
                 return false;
 
             return comp.GetComponentInParent<RigManager>() != null;
+        }
+
+        /// <summary>
+        /// Returns true if this GameObject is part of the local player.
+        /// </summary>
+        /// <param name="go"></param>
+        public static bool IsPartOfSelf(this GameObject go) {
+            if (go == null)
+                return false;
+
+            return go.GetComponentInParent<RigManager>().IsSelf();
+        }
+
+        /// <summary>
+        /// Returns true if this Component is part of the local player.
+        /// </summary>
+        /// <param name="comp"></param>
+        public static bool IsPartOfSelf(this Component comp)
+        {
+            if (comp == null)
+                return false;
+
+            return comp.GetComponentInParent<RigManager>().IsSelf();
         }
     }
 }

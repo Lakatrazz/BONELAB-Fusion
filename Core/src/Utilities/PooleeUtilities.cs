@@ -28,15 +28,15 @@ using SLZ.Marrow.Warehouse;
 
 namespace LabFusion.Utilities {
     public static class PooleeUtilities {
-        internal static PooleePusher ForceEnabled = new PooleePusher();
+        internal static PooleePusher ForceEnabled = new();
 
-        internal static PooleePusher CheckingForSpawn = new PooleePusher();
+        internal static PooleePusher CheckingForSpawn = new();
 
-        internal static PooleePusher CanSpawnList = new PooleePusher();
+        internal static PooleePusher CanSpawnList = new();
 
         internal static bool CanDespawn = false;
 
-        internal static PooleePusher ServerSpawnedList = new PooleePusher();
+        internal static PooleePusher ServerSpawnedList = new();
 
         public static void DespawnAll() {
             if (NetworkInfo.IsServer) {
@@ -49,6 +49,10 @@ namespace LabFusion.Utilities {
                     foreach (var spawned in spawnedObjects)  {
                         // Don't despawn the player!
                         if (spawned.GetComponentInChildren<RigManager>(true) != null)
+                            continue;
+
+                        // Also don't despawn magazines (or guns with magazines)
+                        if (spawned.GetComponentInChildren<Magazine>(true) != null)
                             continue;
 
                         spawned.Despawn();
@@ -85,79 +89,56 @@ namespace LabFusion.Utilities {
         public static void SendDespawn(ushort syncId) {
             // Send response
             if (NetworkInfo.IsServer) {
-                using (var writer = FusionWriter.Create(DespawnResponseData.Size)) {
-                    using (var data = DespawnResponseData.Create(syncId, PlayerIdManager.LocalSmallId)) {
-                        writer.Write(data);
+                using var writer = FusionWriter.Create(DespawnResponseData.Size);
+                using var data = DespawnResponseData.Create(syncId, PlayerIdManager.LocalSmallId);
+                writer.Write(data);
 
-                        using (var message = FusionMessage.Create(NativeMessageTag.DespawnResponse, writer)) {
-                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
+                using var message = FusionMessage.Create(NativeMessageTag.DespawnResponse, writer);
+                MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
             }
             // Send request
             else {
-                using (var writer = FusionWriter.Create(DespawnRequestData.Size))
-                {
-                    using (var data = DespawnRequestData.Create(syncId, PlayerIdManager.LocalSmallId))
-                    {
-                        writer.Write(data);
+                using var writer = FusionWriter.Create(DespawnRequestData.Size);
+                using var data = DespawnRequestData.Create(syncId, PlayerIdManager.LocalSmallId);
+                writer.Write(data);
 
-                        using (var message = FusionMessage.Create(NativeMessageTag.DespawnRequest, writer))
-                        {
-                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
+                using var message = FusionMessage.Create(NativeMessageTag.DespawnRequest, writer);
+                MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
             }
         }
 
         public static void RequestDespawn(ushort syncId, bool isMag = false) {
-            using (var writer = FusionWriter.Create(DespawnRequestData.Size))
-            {
-                using (var data = DespawnRequestData.Create(syncId, PlayerIdManager.LocalSmallId, isMag))
-                {
-                    writer.Write(data);
+            using var writer = FusionWriter.Create(DespawnRequestData.Size);
+            using var data = DespawnRequestData.Create(syncId, PlayerIdManager.LocalSmallId, isMag);
+            writer.Write(data);
 
-                    using (var message = FusionMessage.Create(NativeMessageTag.DespawnRequest, writer))
-                    {
-                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                    }
-                }
-            }
+            using var message = FusionMessage.Create(NativeMessageTag.DespawnRequest, writer);
+            MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
 
         public static void RequestSpawn(string barcode, SerializedTransform serializedTransform, byte? owner = null, Handedness hand = Handedness.UNDEFINED) {
-            using (var writer = FusionWriter.Create(SpawnRequestData.Size))
-            {
-                using (var data = SpawnRequestData.Create(owner.HasValue ? owner.Value : PlayerIdManager.LocalSmallId, barcode, serializedTransform, hand))
-                {
-                    writer.Write(data);
+            using var writer = FusionWriter.Create(SpawnRequestData.Size);
+            using var data = SpawnRequestData.Create(owner.HasValue ? owner.Value : PlayerIdManager.LocalSmallId, barcode, serializedTransform, hand);
+            writer.Write(data);
 
-                    using (var message = FusionMessage.Create(NativeMessageTag.SpawnRequest, writer)) {
-                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                    }
-                }
-            }
+            using var message = FusionMessage.Create(NativeMessageTag.SpawnRequest, writer);
+            MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
 
         public static void SendSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, bool ignoreSelf = false, ZoneSpawner spawner = null, Handedness hand = Handedness.UNDEFINED) {
             string spawnerPath = "_";
             if (spawner != null)
                 spawnerPath = spawner.gameObject.GetFullPath();
-            
-            using (var writer = FusionWriter.Create(SpawnResponseData.GetSize(barcode, spawnerPath))) {
-                using (var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, spawnerPath, hand)) {
-                    writer.Write(data);
 
-                    using (var message = FusionMessage.Create(NativeMessageTag.SpawnResponse, writer)) {
-                        if (!ignoreSelf)
-                            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-                        else
-                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                    }
-                }
-            }
+            using var writer = FusionWriter.Create(SpawnResponseData.GetSize(barcode, spawnerPath));
+            using var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, spawnerPath, hand);
+            writer.Write(data);
+
+            using var message = FusionMessage.Create(NativeMessageTag.SpawnResponse, writer);
+            if (!ignoreSelf)
+                MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+            else
+                MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
         }
 
         public static bool CanForceDespawn(AssetPoolee instance) {

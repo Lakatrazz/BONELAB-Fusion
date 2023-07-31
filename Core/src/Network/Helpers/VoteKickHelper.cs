@@ -1,4 +1,6 @@
-﻿using LabFusion.Representation;
+﻿using LabFusion.Data;
+using LabFusion.Extensions;
+using LabFusion.Representation;
 using LabFusion.Utilities;
 
 using System;
@@ -34,10 +36,10 @@ namespace LabFusion.Network {
         }
 
         // Tracks the amount of users in a vote kicking process
-        private static readonly Dictionary<ulong, VoteKickInfo> _voteKickTracker = new();
+        private static readonly FusionDictionary<ulong, VoteKickInfo> _voteKickTracker = new();
 
         // Tracks the time at which people vote
-        private static readonly Dictionary<ulong, float> _voterTracker = new();
+        private static readonly FusionDictionary<ulong, float> _voterTracker = new();
 
         private static bool _hasReset = true;
         private static float _timeOfLastVote = -float.PositiveInfinity;

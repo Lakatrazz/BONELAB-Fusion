@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace LabFusion.SDK.Achievements
 {
-    public class ExperiencedExecutioner : Achievement
+    public class ExperiencedExecutioner : KillerAchievement
     {
         public override string Title => "Experienced Executioner";
 
