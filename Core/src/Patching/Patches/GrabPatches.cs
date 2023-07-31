@@ -137,8 +137,9 @@ namespace LabFusion.Patching
 
         private static void OnAttachedToHand(Hand hand, HandReciever receiver)
         {
-            if (TryGetGrip(receiver, out var grip))
+            if (TryGetGrip(receiver, out var grip)) {
                 GrabHelper.SendObjectAttach(hand, grip);
+            }
         }
 
         private static void OnDetachedFromHand(Hand hand) {

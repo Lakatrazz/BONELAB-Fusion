@@ -13,7 +13,7 @@ namespace LabFusion.Extensions {
                 return set.Contains(item);
             }
             else {
-                return set.Any((i) => i.GetHashCode() == item.GetHashCode());
+                return set.Any((i) => i.EqualsIL2CPP(item));
             }
         }
 
@@ -22,7 +22,7 @@ namespace LabFusion.Extensions {
                 return set.Remove(item);
             }
             else {
-                return set.RemoveWhere((i) => i.GetHashCode() == item.GetHashCode()) > 0;
+                return set.RemoveWhere((i) => i.EqualsIL2CPP(item)) > 0;
             }
         }
         #endregion

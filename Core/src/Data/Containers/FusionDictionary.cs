@@ -1,5 +1,5 @@
 ﻿using BoneLib;
-
+using LabFusion.Extensions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -69,11 +69,11 @@ namespace LabFusion.Data {
         }
 
         public bool CompareKeys(TKey lft, TKey rht) {
-            return lft.GetHashCode() == rht.GetHashCode();
+            return lft.EqualsIL2CPP(rht);
         }
 
         public bool CompareValues(TValue lft, TValue rht) {
-            return lft.GetHashCode() == rht.GetHashCode();
+            return lft.EqualsIL2CPP(rht);
         }
 
         public void Clear() {
@@ -97,7 +97,7 @@ namespace LabFusion.Data {
 
                 // ArgumentException
                 if (ContainsKey(key))
-                    throw new ArgumentException();
+                    throw new ArgumentException("key already exists in the dictionary.");
 
                 // Add
                 _internalKeys.Add(key);
