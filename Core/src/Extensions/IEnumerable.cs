@@ -65,7 +65,7 @@ namespace LabFusion.Extensions {
             return false;
         }
 
-        private static Random _random = new Random();
+        private static readonly Random _random = new();
 
         public static void Shuffle<T>(this IList<T> list) {
             int n = list.Count;
