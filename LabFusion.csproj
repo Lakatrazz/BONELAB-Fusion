@@ -277,13 +277,11 @@
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\BigAnomalyDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\MagmaGateDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\RooftopsDMData.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\BaselineDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\DescentDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\MoonBaseDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\MainMenuDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\MirrorDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\BigBoneBowlingDMData.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\NeonDistrictTacTrialDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\NeonDistrictParkourDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\TunnelTipperDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\ContainerYardDMData.cs" />
