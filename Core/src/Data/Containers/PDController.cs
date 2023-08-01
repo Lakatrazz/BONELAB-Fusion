@@ -10,11 +10,11 @@ namespace LabFusion.Data
 {
     public class PDController {
         // Tweak these values to control movement properties of all synced objects
-        private const float PositionFrequency = 20f;
-        private const float PositionDamping = 5f;
+        private const float PositionFrequency = 10f;
+        private const float PositionDamping = 3f;
 
-        private const float RotationFrequency = 500f;
-        private const float RotationDamping = 50f;
+        private const float RotationFrequency = 100f;
+        private const float RotationDamping = 10f;
 
         // Calculated KP and KD values for adding forces. These are only calculated once
         private static float _positionKp;
@@ -31,7 +31,17 @@ namespace LabFusion.Data
         private static float _rotationKdg;
 
         // Last frame value
-        private static float _lastFixedDelta;
+        private static float _lastFixedDelta = 1f;
+
+        // Derivatives
+        private bool _validPosition = false;
+        private bool _validRotation = false;
+
+        private Vector3 _lastVelocity = Vector3Extensions.zero;
+        private Vector3 _lastAngularVelocity = Vector3Extensions.zero;
+
+        private Vector3 _lastPosition = Vector3Extensions.zero;
+        private Quaternion _lastRotation = QuaternionExtensions.identity;
 
         public static void OnInitializeMelon() {
             _positionKp = CalculateKP(PositionFrequency);
@@ -70,7 +80,27 @@ namespace LabFusion.Data
             return 4.5f * frequency * damping;
         }
 
+        public void ResetPosition() {
+            _validPosition = false;
+        }
+        
+        public void ResetRotation() {
+            _validRotation = false;
+        }
+
+        public void Reset() {
+            ResetPosition();
+            ResetRotation();
+        }
+
         public Vector3 GetForce(in Rigidbody rb, in Vector3 position, in Vector3 velocity, in Vector3 targetPos, in Vector3 targetVel) {
+            // Update derivatives if needed
+            if (!_validPosition) {
+                _lastPosition = targetPos;
+                _lastVelocity = targetVel;
+                _validPosition = true;
+            }
+            
             // Get gravity so we can apply a counter force
             Vector3 gravity = Vector3Extensions.zero;
             if (rb.useGravity)
@@ -79,10 +109,16 @@ namespace LabFusion.Data
             Vector3 Pt0 = position;
             Vector3 Vt0 = velocity;
 
-            Vector3 Pt1 = targetPos;
-            Vector3 Vt1 = targetVel;
+            Vector3 Pt1 = _lastPosition;
+            Vector3 Vt1 = _lastVelocity;
 
             var force = (Pt1 - Pt0) * _positionKsg + (Vt1 - Vt0) * _positionKdg - gravity;
+
+            // Acceleration
+            force += (targetVel - _lastVelocity) / _lastFixedDelta;
+            _lastVelocity = targetVel;
+
+            _lastPosition = targetPos;
 
             // Safety check
             if (force.IsNanOrInf())
@@ -93,8 +129,15 @@ namespace LabFusion.Data
 
         public Vector3 GetTorque(Rigidbody rb, in Quaternion rotation, in Vector3 angularVelocity, in Quaternion targetRot, in Vector3 targetVel)
         {
-            Quaternion Qt1 = targetRot;
-            Vector3 Vt1 = targetVel;
+            // Update derivatives if needed
+            if (!_validRotation) {
+                _lastRotation = targetRot;
+                _lastAngularVelocity = targetVel;
+                _validRotation = true;
+            }
+
+            Quaternion Qt1 = _lastRotation;
+            Vector3 Vt1 = _lastAngularVelocity;
 
             Quaternion q = Qt1 * Quaternion.Inverse(rotation);
             if (q.w < 0)
@@ -109,6 +152,12 @@ namespace LabFusion.Data
             
             x *= MathExtensions.Deg2Rad;
             var torque = _rotationKsg * x * xMag + _rotationKdg * (Vt1 - angularVelocity);
+
+            // Acceleration
+            torque += (targetVel - _lastAngularVelocity) / _lastFixedDelta;
+            _lastAngularVelocity = targetVel;
+
+            _lastRotation = targetRot;
 
             // Safety check
             if (torque.IsNanOrInf())

@@ -428,6 +428,8 @@ namespace LabFusion.Syncables
                 DesiredAngularVelocities[i] = null;
                 InitialPositions[i] = null;
                 InitialRotations[i] = null;
+
+                PDControllers[i].Reset();
             }
         }
 
@@ -665,15 +667,12 @@ namespace LabFusion.Syncables
                 LastSentRotations[i] = cache.Rotation;
             }
 
-            using (var writer = FusionWriter.Create(PropSyncableUpdateData.DefaultSize + (PropSyncableUpdateData.RigidbodySize * GameObjectCount))) {
-                using (var data = PropSyncableUpdateData.Create(PlayerIdManager.LocalSmallId, this)) {
-                    writer.Write(data);
+            using var writer = FusionWriter.Create(PropSyncableUpdateData.DefaultSize + (PropSyncableUpdateData.RigidbodySize * GameObjectCount));
+            using var data = PropSyncableUpdateData.Create(PlayerIdManager.LocalSmallId, this);
+            writer.Write(data);
 
-                    using (var message = FusionMessage.Create(NativeMessageTag.PropSyncableUpdate, writer)) {
-                        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Unreliable, message);
-                    }
-                }
-            }
+            using var message = FusionMessage.Create(NativeMessageTag.PropSyncableUpdate, writer);
+            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Unreliable, message);
         }
 
         private void SetSendState(SendState state) {
@@ -734,8 +733,12 @@ namespace LabFusion.Syncables
             for (var i = 0; i < GameObjectCount; i++) {
                 var rbCache = RigidbodyCaches[i];
 
-                if (rbCache.IsNull)
+                var pdController = PDControllers[i];
+
+                if (rbCache.IsNull) {
+                    pdController.Reset();
                     continue;
+                }
 
                 var rb = TempRigidbodies.Items[i].Rigidbody;
                 var transform = TempRigidbodies.Items[i].Transform;
@@ -755,6 +758,7 @@ namespace LabFusion.Syncables
                 }
 
                 if (isGrabbed || !DesiredPositions[i].HasValue || !DesiredRotations[i].HasValue) {
+                    pdController.Reset();
                     continue;
                 }
 
@@ -768,11 +772,10 @@ namespace LabFusion.Syncables
                 // Check if this is kinematic
                 // If so, just ignore values
                 if (rb.isKinematic) {
+                    pdController.Reset();
                     continue;
                 }
 
-                var pdController = PDControllers[i];
-                
                 // Don't over predict
                 if (timeSinceMessage <= 0.6f) {
                     // Move position with prediction
@@ -816,6 +819,8 @@ namespace LabFusion.Syncables
                     else {
                         if (rb.useGravity)
                             rb.AddForce(-PhysicsUtilities.Gravity, ForceMode.Acceleration);
+
+                        pdController.ResetPosition();
                     }
 
                     rb.AddTorque(pdController.GetTorque(rb, cache.Rotation, rbCache.AngularVelocity, rot, angVel), ForceMode.Acceleration);
