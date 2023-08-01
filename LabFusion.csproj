@@ -751,7 +751,6 @@
     <Compile Include="Core\src\Patching\Patches\Unity\PhysicsPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\VirtualControllerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ZonePatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\ZoneSpawnerPatches.cs" />
     <Compile Include="Core\src\Representation\PlayerId.cs" />
     <Compile Include="Core\src\Representation\PlayerIdManager.cs" />
     <Compile Include="Core\src\Representation\PlayerRep.cs" />
