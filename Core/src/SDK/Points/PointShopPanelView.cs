@@ -398,7 +398,12 @@ namespace LabFusion.SDK.Points
             _infoTitle.text = item.Title;
             _infoTitle.color = PointItemManager.ParseColor(item.Rarity);
             _infoDescription.text = item.ActiveDescription;
-            _infoPrice.text = $"{item.ActivePrice} Bits";
+
+            if (item.Priceless)
+                _infoPrice.text = "Priceless";
+            else
+                _infoPrice.text = $"{item.ActivePrice} Bits";
+
             _infoAuthor.text = item.Author;
             _infoVersion.text = item.Version;
 

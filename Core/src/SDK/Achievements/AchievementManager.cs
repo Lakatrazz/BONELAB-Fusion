@@ -84,6 +84,10 @@ namespace LabFusion.SDK.Achievements {
             return list;
         }
 
+        public static bool IsCompleted() {
+            return GetAchievementProgress() >= 1f;
+        }
+
         public static float GetAchievementProgress() {
             int totalAchievements = 0;
             int completedAchievements = 0;

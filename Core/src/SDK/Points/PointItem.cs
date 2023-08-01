@@ -73,6 +73,9 @@ namespace LabFusion.SDK.Points {
         // The price of the item in bits (currency)
         public abstract int Price { get; }
 
+        // Does this item have a price? (optional)
+        public virtual bool Priceless => false;
+
         // The adjusted price based on the economy. This cannot be overriden.
         public int AdjustedPrice => BitEconomy.ConvertPrice(Price);
 
@@ -160,7 +163,7 @@ namespace LabFusion.SDK.Points {
             }
         }
 
-        public bool IsUnlocked => PointSaveManager.IsUnlocked(Barcode);
+        public virtual bool IsUnlocked => PointSaveManager.IsUnlocked(Barcode);
 
         public bool IsEquipped => PointSaveManager.IsEquipped(Barcode);
 

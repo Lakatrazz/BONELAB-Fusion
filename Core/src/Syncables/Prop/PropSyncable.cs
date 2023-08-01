@@ -810,6 +810,8 @@ namespace LabFusion.Syncables
 
                     rb.velocity = Vector3Extensions.zero;
                     rb.angularVelocity = Vector3Extensions.zero;
+
+                    pdController.Reset();
                 }
                 // Instead calculate velocity stuff
                 else {

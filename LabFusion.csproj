@@ -572,6 +572,7 @@
     <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 2\Briefcase.cs" />
     <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 2\BitBackpack.cs" />
     <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 2\AncientTablet.cs" />
+    <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Special\VictoryTrophy.cs" />
     <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\Riggle\Pack 1\Wonker.cs" />
     <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\Riggle\Pack 1\VirtuallyInsane.cs" />
     <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\Riggle\Pack 1\Smitty.cs" />
