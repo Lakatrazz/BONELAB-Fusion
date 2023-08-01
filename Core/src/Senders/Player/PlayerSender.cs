@@ -76,12 +76,12 @@ namespace LabFusion.Senders {
             MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
         }
 
-        public static void SendPlayerVoiceChat(byte[] voiceData, bool layerCompressed) {
+        public static void SendPlayerVoiceChat(byte[] voiceData) {
             if (!NetworkInfo.HasServer)
                 return;
 
             using var writer = FusionWriter.Create(PlayerVoiceChatData.Size + voiceData.Length);
-            using var data = PlayerVoiceChatData.Create(PlayerIdManager.LocalSmallId, voiceData, layerCompressed);
+            using var data = PlayerVoiceChatData.Create(PlayerIdManager.LocalSmallId, voiceData);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.PlayerVoiceChat, writer);

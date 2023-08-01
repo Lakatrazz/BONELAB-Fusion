@@ -36,7 +36,7 @@ namespace LabFusion.Network
             ByteRetriever.Return(bytes);
         }
 
-        public static PlayerVoiceChatData Create(byte smallId, byte[] voiceData, bool layerCompressed)
+        public static PlayerVoiceChatData Create(byte smallId, byte[] voiceData)
         {
             return new PlayerVoiceChatData()
             {
