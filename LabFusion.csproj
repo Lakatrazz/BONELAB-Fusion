@@ -291,6 +291,7 @@
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\TuscanyDataDM.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\HubDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\VoidG114DMData.cs" />
+    <Compile Include="Core\src\Data\Containers\FusionDictionary.cs" />
     <Compile Include="Core\src\Data\Containers\Syncables\FrameSkipper.cs" />
     <Compile Include="Core\src\Data\Containers\FusionArrayPool.cs" />
     <Compile Include="Core\src\Data\Containers\Syncables\GrabbedGripList.cs" />
