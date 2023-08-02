@@ -1,32 +1,75 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using HarmonyLib;
 
 using LabFusion.Network;
 using LabFusion.Utilities;
 using LabFusion.Data;
+using LabFusion.Representation;
+using LabFusion.SDK.Achievements;
+using LabFusion.Syncables;
 
 using SLZ.Marrow.Pool;
 using SLZ.Props;
-
-using UnityEngine;
-
-using LabFusion.Syncables;
-
 using SLZ.Props.Weapons;
 using SLZ.Interaction;
-using LabFusion.Representation;
-using LabFusion.SDK.Achievements;
+
+using MelonLoader;
 
 namespace LabFusion.Patching
 {
     [HarmonyPatch(typeof(Gun))]
     public static class GunPatches {
         public static bool IgnorePatches = false;
+
+        public static void Patch() {
+            PatchOnFire();
+        }
+
+        private static EmptyPatchDelegate _original;
+
+        private static unsafe void PatchOnFire() {
+            var tgtPtr = NativeUtilities.GetNativePtr<Gun>("NativeMethodInfoPtr_OnFire_Protected_Virtual_New_Void_0");
+            var dstPtr = NativeUtilities.GetDestPtr<EmptyPatchDelegate>(OnFire);
+
+            MelonUtils.NativeHookAttach((IntPtr)(&tgtPtr), dstPtr);
+            _original = NativeUtilities.GetOriginal<EmptyPatchDelegate>(tgtPtr);
+        }
+
+        private static void OnFire(IntPtr instance, IntPtr method) {
+            OnFirePrefix(new Gun(instance));
+
+            _original(instance, method);
+        }
+
+        private static void OnFirePrefix(Gun __instance)
+        {
+            if (IgnorePatches)
+                return;
+
+            try
+            {
+                if (NetworkInfo.HasServer && GunExtender.Cache.TryGet(__instance, out var gunSyncable) && gunSyncable.TryGetExtender<GunExtender>(out var extender))
+                {
+                    // Make sure this is being grabbed by our main player
+                    if (__instance.triggerGrip && __instance.triggerGrip.attachedHands.Find((Il2CppSystem.Predicate<Hand>)((h) => h.manager == RigData.RigReferences.RigManager)))
+                    {
+                        using var writer = FusionWriter.Create(GunShotData.Size);
+                        var ammoCount = __instance._magState != null ? (byte)__instance._magState.AmmoCount : (byte)0;
+
+                        using var data = GunShotData.Create(PlayerIdManager.LocalSmallId, ammoCount, gunSyncable.Id, extender.GetIndex(__instance).Value);
+                        writer.Write(data);
+
+                        using var message = FusionMessage.Create(NativeMessageTag.GunShot, writer);
+                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                FusionLogger.LogException("patching Gun.OnFire", e);
+            }
+        }
 
         [HarmonyPatch(nameof(Gun.Fire))]
         [HarmonyPrefix]
@@ -46,32 +89,6 @@ namespace LabFusion.Patching
              }
 
             return true;
-        }
-
-        [HarmonyPatch(nameof(Gun.OnFire))]
-        [HarmonyPrefix]
-        public static void OnFire(Gun __instance) {
-            if (IgnorePatches)
-                return;
-
-            try {
-                if (NetworkInfo.HasServer && GunExtender.Cache.TryGet(__instance, out var gunSyncable) && gunSyncable.TryGetExtender<GunExtender>(out var extender)) {
-                    // Make sure this is being grabbed by our main player
-                    if (__instance.triggerGrip && __instance.triggerGrip.attachedHands.Find((Il2CppSystem.Predicate<Hand>)((h) => h.manager == RigData.RigReferences.RigManager))) {
-                        using var writer = FusionWriter.Create(GunShotData.Size);
-                        var ammoCount = __instance._magState != null ? (byte)__instance._magState.AmmoCount : (byte)0;
-
-                        using var data = GunShotData.Create(PlayerIdManager.LocalSmallId, ammoCount, gunSyncable.Id, extender.GetIndex(__instance).Value);
-                        writer.Write(data);
-
-                        using var message = FusionMessage.Create(NativeMessageTag.GunShot, writer);
-                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                    }
-                }
-            }
-            catch (Exception e) {
-                FusionLogger.LogException("patching Gun.OnFire", e);
-            }
         }
     }
 

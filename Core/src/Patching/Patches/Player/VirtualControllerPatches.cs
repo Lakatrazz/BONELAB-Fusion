@@ -38,15 +38,11 @@ namespace LabFusion.Patching
         public delegate bool CheckHandDesyncPatchDelegate(IntPtr instance, IntPtr pair, IntPtr contHandle, IntPtr rigHandle, IntPtr method);
 
         private unsafe static void PatchCheckHandDesync() {
-            CheckHandDesyncPatchDelegate patch = CheckHandDesync;
-
-            string nativeInfoName = "NativeMethodInfoPtr_CheckHandDesync_Private_Boolean_HandGripPair_SimpleTransform_SimpleTransform_0";
-            
-            var tgtPtr = NativeUtilities.GetNativePtr<VirtualController>(nativeInfoName);
-            var dstPtr = patch.Method.MethodHandle.GetFunctionPointer();
+            var tgtPtr = NativeUtilities.GetNativePtr<VirtualController>("NativeMethodInfoPtr_CheckHandDesync_Private_Boolean_HandGripPair_SimpleTransform_SimpleTransform_0");
+            var dstPtr = NativeUtilities.GetDestPtr<CheckHandDesyncPatchDelegate>(CheckHandDesync);
 
             MelonUtils.NativeHookAttach((IntPtr)(&tgtPtr), dstPtr);
-            _original = Marshal.GetDelegateForFunctionPointer<CheckHandDesyncPatchDelegate>(tgtPtr);
+            _original = NativeUtilities.GetOriginal<CheckHandDesyncPatchDelegate>(tgtPtr);
         }
 
         private static bool CheckHandDesync(IntPtr instance, IntPtr pair, IntPtr contHandle, IntPtr rigHandle, IntPtr method) {

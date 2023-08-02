@@ -444,6 +444,7 @@
     <Compile Include="Core\src\Network\Steam\SteamVRNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Steam\SteamLobby.cs" />
     <Compile Include="Core\src\Network\Steam\SteamVoiceHandler.cs" />
+    <Compile Include="Core\src\Patching\CommonDelegates.cs" />
     <Compile Include="Core\src\Patching\NativeStructs\Attack_.cs" />
     <Compile Include="Core\src\Patching\Patches\Attacks\ImpactPropertiesPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\AvatarDicePatches.cs" />
@@ -802,7 +803,7 @@
     <Compile Include="Core\src\Utilities\Internal\SafeEvents.cs" />
     <Compile Include="Core\src\Utilities\Fusion\MultiplayerHooking.cs" />
     <Compile Include="Core\src\Preferences\FusionPref.cs" />
-    <Compile Include="Core\src\Utilities\Internal\PatchingUtilities.cs" />
+    <Compile Include="Core\src\Patching\ManualPatcher.cs" />
     <Compile Include="Core\src\Utilities\Internal\BigEndianHelper.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionLogger.cs" />
     <Compile Include="Core\src\Syncables\ISyncable.cs" />

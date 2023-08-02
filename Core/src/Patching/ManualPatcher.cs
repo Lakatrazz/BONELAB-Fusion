@@ -4,19 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using UnityEngine.SceneManagement;
-using UnityEngine.Events;
-using BoneLib;
-
-using LabFusion.Patching;
-
-namespace LabFusion.Utilities {
-    internal static class PatchingUtilities {
+namespace LabFusion.Patching {
+    internal static class ManualPatcher {
         internal static void PatchAll() {
+            // Native patches
+            // Patched due to structs or other IL2CPP issues
             VirtualControllerPatches.Patch();
             SubBehaviourHealthPatches.Patch();
             ImpactPropertiesPatches.Patch();
             PlayerDamageReceiverPatches.Patch();
+
+            // Patched due to overlapping patches on Android causing them to break
+            GunPatches.Patch();
         }
     }
 }

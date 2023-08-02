@@ -12,6 +12,7 @@ using LabFusion.Preferences;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Points;
 using LabFusion.SDK.Achievements;
+using LabFusion.Patching;
 
 #if DEBUG
 using LabFusion.Debugging;
@@ -110,7 +111,7 @@ namespace LabFusion
         }
 
         public override void OnLateInitializeMelon() {
-            PatchingUtilities.PatchAll();
+            ManualPatcher.PatchAll();
             InternalLayerHelpers.OnLateInitializeLayer();
             PersistentAssetCreator.OnLateInitializeMelon();
 
