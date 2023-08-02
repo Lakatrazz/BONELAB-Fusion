@@ -20,15 +20,22 @@ architecture=$2
 configuration="${build_type}-Mac"
 architecture_flag="x64"
 
-if [ "$architecture" = "ARM64" ]; then
+if [ "${architecture_flag,,}" = "arm64" ]; then
     architecture_flag="arm64"
 fi
 
-# Perform the dotnet publish command with the specified configuration and architecture flags
-dotnet publish -a $architecture_flag -c $configuration --sc true
-
 # Set the path to the FusionHelper.app
 fusion_helper_path="./bin/${configuration}/net6.0-macos11.0/osx-${architecture_flag}/FusionHelper.app"
+
+# Clear old data
+echo "Deleting old FusionHelper build..."
+rm -R "${fusion_helper_path}"
+
+# Perform the dotnet publish command with the specified configuration and architecture flags
+echo "Compiling FusionHelper for ${architecture_flag} in ${build_type} mode..."
+dotnet publish -a $architecture_flag -c $configuration --sc true
+
+echo "Replacing default application launcher with terminal launcher..."
 
 # Rename the file FusionHelper.app/Contents/MacOS/FusionHelper to FusionHelper.app/Contents/MacOS/FH_Loader
 mv "${fusion_helper_path}/Contents/MacOS/FusionHelper" "${fusion_helper_path}/Contents/MacOS/FH_Loader"
@@ -37,7 +44,10 @@ mv "${fusion_helper_path}/Contents/MacOS/FusionHelper" "${fusion_helper_path}/Co
 cp "./Resources/FusionHelperTerminalLauncher" "${fusion_helper_path}/Contents/MacOS/FusionHelper"
 
 # Write SteamVR app id to FusionHelper.app/Contents/MacOS/steam_appid.txt
+echo "Writing SteamVR app id..."
 echo "250820" > "${fusion_helper_path}/Contents/MacOS/steam_appid.txt"
+
+echo "Adding icon to FusionHelper.app..."
 
 # Create the folder FusionHelper.app/Contents/Resources
 mkdir -p "${fusion_helper_path}/Contents/Resources"
@@ -47,3 +57,5 @@ cp "./Resources/fusion.icns" "${fusion_helper_path}/Contents/Resources/fusion.ic
 
 # Modify FusionHelper.app/Contents/Info.plist to add an 'Icon file' entry set to 'fusion.icns'
 plutil -insert "CFBundleIconFile" -string "fusion.icns" "${fusion_helper_path}/Contents/Info.plist"
+
+echo "Done."

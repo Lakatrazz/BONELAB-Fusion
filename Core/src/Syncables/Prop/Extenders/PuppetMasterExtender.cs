@@ -11,7 +11,9 @@ using UnityEngine;
 
 namespace LabFusion.Syncables {
     public class PuppetMasterExtender : PropComponentExtender<PuppetMaster> {
-        public static FusionComponentCache<PuppetMaster, PropSyncable> Cache = new FusionComponentCache<PuppetMaster, PropSyncable>();
+        public static FusionComponentCache<PuppetMaster, PropSyncable> Cache = new();
+
+        public static PropSyncable LastKilled = null;
 
         protected override void AddToCache(PuppetMaster puppet, PropSyncable syncable) {
             Cache.Add(puppet, syncable);

@@ -36,11 +36,26 @@ namespace LabFusion.SDK.Achievements
         // Whether or not the achievement has been completed.
         public bool IsComplete => CompletedTasks >= MaxTasks;
 
+        // If true, this achievement will not show in the menu or count towards progress.
+        public virtual bool Redacted => false;
+
         // The amount of tasks currently completed.
         public int CompletedTasks { get; protected set; }
 
         // The total number of tasks required.
         public virtual int MaxTasks => 1;
+
+        public void Register() {
+            OnRegister();
+        }
+
+        protected virtual void OnRegister() { }
+
+        public void Unregister() {
+            OnUnregister();
+        }
+
+        protected virtual void OnUnregister() { }
 
         public virtual void Pack(XElement element) {
             element.SetAttributeValue(nameof(CompletedTasks), CompletedTasks);

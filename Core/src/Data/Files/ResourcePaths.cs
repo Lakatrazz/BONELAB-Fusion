@@ -52,6 +52,7 @@ namespace LabFusion.Data
         public const string BitGet = "stinger_BitGet";
 
         public const string GeoGrpFellDownTheStairs = "music_GeoGrpFellDownTheStairs";
+        public const string BouncingStrong = "music_BouncingStrong";
 
         // UI sounds
         public const string UISelect = "UI_Beep_Bend_Short_stereo";

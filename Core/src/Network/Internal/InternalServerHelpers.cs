@@ -17,6 +17,7 @@ using UnityEngine;
 using SLZ.Marrow.SceneStreaming;
 using LabFusion.SDK.Achievements;
 using BoneLib;
+using LabFusion.Data;
 
 namespace LabFusion.Network {
     /// <summary>
@@ -200,9 +201,9 @@ namespace LabFusion.Network {
         /// Gets the default metadata for the local player.
         /// </summary>
         /// <returns></returns>
-        internal static Dictionary<string, string> GetInitialMetadata() {
+        internal static FusionDictionary<string, string> GetInitialMetadata() {
             // Create the dict
-            var metadata = new Dictionary<string, string> {
+            var metadata = new FusionDictionary<string, string> {
                 // Username
                 { MetadataHelper.UsernameKey, PlayerIdManager.LocalUsername },
 

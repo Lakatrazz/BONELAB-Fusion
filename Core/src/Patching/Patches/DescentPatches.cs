@@ -9,8 +9,9 @@ using HarmonyLib;
 using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Representation;
+using LabFusion.SDK.Achievements;
 using LabFusion.Senders;
-
+using LabFusion.Utilities;
 using SLZ.Bonelab;
 using SLZ.UI;
 
@@ -257,6 +258,8 @@ namespace LabFusion.Patching {
             if (NetworkInfo.HasServer) {
                 var nooseEvent = DescentData.CreateNooseEvent(PlayerIdManager.LocalSmallId, DescentNooseType.CUT_NOOSE);
                 CampaignSender.SendDescentNoose(nooseEvent);
+
+                DescentData.CheckAchievement();
             }
         }
     }

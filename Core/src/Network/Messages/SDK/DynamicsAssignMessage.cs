@@ -17,7 +17,7 @@ namespace LabFusion.Network
     {
         public string[] moduleHandlerNames;
         public string[] gamemodeNames;
-        public Dictionary<string, string>[] gamemodeMetadatas;
+        public FusionDictionary<string, string>[] gamemodeMetadatas;
 
         public void Serialize(FusionWriter writer)
         {
@@ -45,7 +45,7 @@ namespace LabFusion.Network
             int length = reader.ReadInt32();
 
             // Read all active metadata info
-            gamemodeMetadatas = new Dictionary<string, string>[length];
+            gamemodeMetadatas = new FusionDictionary<string, string>[length];
             for (var i = 0; i < length; i++) {
                 gamemodeMetadatas[i] = reader.ReadStringDictionary();
             }

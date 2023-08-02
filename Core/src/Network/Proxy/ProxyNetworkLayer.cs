@@ -34,12 +34,17 @@ using Steamworks;
 using FusionHelper.Network;
 using LiteNetLib;
 using LiteNetLib.Utils;
+using BoneLib;
 
 namespace LabFusion.Network
 {
-    public class ProxyNetworkLayer : NetworkLayer
+    public abstract class ProxyNetworkLayer : NetworkLayer
     {
+        public abstract uint ApplicationID { get; }
+
         internal static ProxyNetworkLayer Instance { get; private set; }
+
+        internal override string Title => "Proxy";
 
         internal override bool IsServer => _isServerActive;
         internal override bool IsClient => _isConnectionActive;
@@ -48,6 +53,9 @@ namespace LabFusion.Network
 
         private INetworkLobby _currentLobby;
         internal override INetworkLobby CurrentLobby => _currentLobby;
+
+        private readonly ProxyVoiceManager _voiceManager = new();
+        internal override IVoiceManager VoiceManager => _voiceManager;
 
         protected bool _isServerActive = false;
         protected bool _isConnectionActive = false;
@@ -69,6 +77,14 @@ namespace LabFusion.Network
         private bool sending = false;
         private AudioClip sendingClip;
 
+        internal override bool CheckSupported() {
+            return HelperMethods.IsAndroid();
+        }
+
+        internal override bool CheckValidation() {
+            return true;
+        }
+
         internal override void OnInitializeLayer()
         {
             Instance = this;
@@ -87,29 +103,14 @@ namespace LabFusion.Network
             {
                 serverConnection = peer;
                 NetDataWriter writer = NewWriter(MessageTypes.SteamID);
-                NetworkLayerType layer = FusionPreferences.ClientSettings.NetworkLayerType.GetValue();
 
-                int appId;
-                switch (layer)
-                {
-                    case NetworkLayerType.PROXY_STEAM_VR:
-                        appId = SteamVRNetworkLayer.SteamVRId;
-                        break;
-                    case NetworkLayerType.PROXY_SPACEWAR:
-                        appId = SpacewarNetworkLayer.SpacewarId;
-                        break;
-                    default:
-                        FusionLogger.Error("Attempted to initialize ProxyNetworkLayer without a known ApplicationID!");
-                        appId = 0;
-                        break;
-                }
                 listener.PeerDisconnectedEvent += (peer, disconnectInfo) => {
                     FusionLogger.Error("Proxy has disconnected, restarting server discovery!");
                     serverConnection = null;
                     MelonCoroutines.Start(DiscoverServer());
                 };
 
-                writer.Put(appId);
+                writer.Put(ApplicationID);
                 SendToProxyServer(writer);
             };
 
@@ -261,8 +262,8 @@ namespace LabFusion.Network
                     {
                         ulong playerLong = dataReader.GetULong();
                         byte[] data = dataReader.GetBytesWithLength();
-                        var identifier = ProxyVoiceIdentifier.GetVoiceIdentifier(PlayerIdManager.GetPlayerId(playerLong));
-                        identifier?.OnDecompressedVoiceBytesReceived(data);
+                        var handler = _voiceManager.GetVoiceHandler(PlayerIdManager.GetPlayerId(playerLong)) as ProxyVoiceHandler;
+                        handler?.OnDecompressedVoiceBytesReceived(data);
                         break;
                     }
             }
@@ -359,8 +360,8 @@ namespace LabFusion.Network
                     }
                 }*/
 
-                // Update identifiers
-                ProxyVoiceIdentifier.OnUpdate();
+                // Update the manager
+                VoiceManager.Update();
             }
             else
             {
@@ -390,13 +391,17 @@ namespace LabFusion.Network
         internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes)
         {
             // If we are deafened, no need to deal with voice chat
-            bool isDeafened = !FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue() || FusionPreferences.ClientSettings.Deafened;
-            if (isDeafened)
+            if (VoiceHelper.IsDeafened)
                 return;
 
-            var identifier = ProxyVoiceIdentifier.GetVoiceIdentifier(id);
+            var handler = _voiceManager.GetVoiceHandler(id);
+            handler?.OnVoiceBytesReceived(bytes);
+        }
 
-            identifier?.OnVoiceBytesReceived(bytes);
+        // We currently cant tell if this user is our friend or not,
+        // so just always return true.
+        internal override bool IsFriend(ulong userId) {
+            return true;
         }
 
         internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message)
@@ -507,21 +512,21 @@ namespace LabFusion.Network
         private void OnPlayerJoin(PlayerId id)
         {
             if (!id.IsSelf)
-                ProxyVoiceIdentifier.GetVoiceIdentifier(id);
+                _voiceManager.GetVoiceHandler(id);
 
             OnUpdateSteamLobby();
         }
 
         private void OnPlayerLeave(PlayerId id)
         {
-            ProxyVoiceIdentifier.RemoveVoiceIdentifier(id);
+            _voiceManager.Remove(id);
 
             OnUpdateSteamLobby();
         }
 
         private void OnDisconnect()
         {
-            ProxyVoiceIdentifier.CleanupAll();
+            _voiceManager.RemoveAll();
         }
 
         private void UnHookSteamEvents()

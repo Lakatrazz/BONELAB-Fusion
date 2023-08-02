@@ -1,8 +1,10 @@
 ﻿using LabFusion.Network;
+using LabFusion.SDK.Achievements;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 
 using SLZ.Bonelab;
+using SLZ.Interaction;
 using SLZ.UI;
 
 using System;
@@ -56,9 +58,11 @@ namespace LabFusion.Data {
         public static GameControl_Descent GameController;
         public static Control_UI_BodyMeasurements BodyMeasurementsUI;
 
-        private static List<DescentIntroEvent> _introEvents = new List<DescentIntroEvent>();
-        private static List<DescentNooseEvent> _nooseEvents = new List<DescentNooseEvent>();
-        private static List<DescentElevatorEvent> _elevatorEvents = new List<DescentElevatorEvent>();
+        public static Grip KnifeGrip;
+
+        private static readonly List<DescentIntroEvent> _introEvents = new();
+        private static readonly List<DescentNooseEvent> _nooseEvents = new();
+        private static readonly List<DescentElevatorEvent> _elevatorEvents = new();
 
         public static DescentIntroEvent CreateIntroEvent(int selectionNumber, DescentIntroType type) {
             var value = new DescentIntroEvent(selectionNumber, type);
@@ -89,6 +93,23 @@ namespace LabFusion.Data {
             return value;
         }
 
+        public static void CheckAchievement() {
+            if (KnifeGrip == null && !FindKnife())
+                return;
+
+            // Check if we were holding the knife and we weren't attached to the noose
+            if (!Noose.rM.IsSelf()) {
+                foreach (var hand in KnifeGrip.attachedHands) {
+                    // Make sure this is our hand
+                    if (hand.manager.IsSelf()) {
+                        AchievementManager.TryGetAchievement<Betrayal>(out var achievement);
+                        achievement?.IncrementTask();
+                        break;
+                    }
+                }
+            }
+        }
+
         protected override void SceneAwake() {
             Instance = this;
             _introEvents.Clear();
@@ -99,6 +120,17 @@ namespace LabFusion.Data {
             Elevator = GameObject.FindObjectOfType<TutorialElevator>(true);
             GameController = GameObject.FindObjectOfType<GameControl_Descent>(true);
             BodyMeasurementsUI = GameObject.FindObjectOfType<Control_UI_BodyMeasurements>(true);
+            FindKnife();
+        }
+
+        private static bool FindKnife() {
+            var knife = GameObject.Find("SEQUENCE_EFFECTS/Dagger_A");
+            if (knife != null) {
+                KnifeGrip = knife.GetComponentInChildren<Grip>(true);
+                return true;
+            }
+
+            return false;
         }
 
         public void CacheValues() => MainSceneInitialized();

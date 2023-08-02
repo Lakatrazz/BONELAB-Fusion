@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BoneLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +7,26 @@ using System.Threading.Tasks;
 
 namespace LabFusion.Extensions {
     public static class IEnumerableExtensions {
+        #region HASHSET
+        public static bool ContainsIL2CPP<T>(this HashSet<T> set, T item) {
+            if (!HelperMethods.IsAndroid()) {
+                return set.Contains(item);
+            }
+            else {
+                return set.Any((i) => i.EqualsIL2CPP(item));
+            }
+        }
+
+        public static bool RemoveIL2CPP<T>(this HashSet<T> set, T item) {
+            if (!HelperMethods.IsAndroid()) {
+                return set.Remove(item);
+            }
+            else {
+                return set.RemoveWhere((i) => i.EqualsIL2CPP(item)) > 0;
+            }
+        }
+        #endregion
+
         public static bool ContainsInstance<T>(this List<T> list, T obj) where T : class {
             return list.Any((o) => o == obj);
         }
@@ -44,7 +65,7 @@ namespace LabFusion.Extensions {
             return false;
         }
 
-        private static Random _random = new Random();
+        private static readonly Random _random = new();
 
         public static void Shuffle<T>(this IList<T> list) {
             int n = list.Count;

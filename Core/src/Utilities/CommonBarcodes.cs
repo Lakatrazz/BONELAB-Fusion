@@ -14,5 +14,7 @@ namespace LabFusion.Utilities {
         public const string CONSTRAINER_ASSET_GUID = "bf9c97bf88c22dc4f981578e75d9aa12";
 
         public const string INVALID_AVATAR_BARCODE = "BONELABFUSION.NONE";
+
+        public const string STRONG_BARCODE = "fa534c5a83ee4ec6bd641fec424c4142.Avatar.Strong";
     }
 }

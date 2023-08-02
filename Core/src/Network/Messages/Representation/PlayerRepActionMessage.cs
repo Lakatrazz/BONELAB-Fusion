@@ -60,61 +60,62 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (var reader = FusionReader.Create(bytes))
+            using var reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<PlayerRepActionData>();
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
             {
-                using (var data = reader.ReadFusionSerializable<PlayerRepActionData>()) {
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled) {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-                        }
-                    }
-                    else if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep)) {
-                        PlayerId otherPlayer = data.otherPlayer.HasValue ? PlayerIdManager.GetPlayerId(data.otherPlayer.Value) : null;
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+            }
+            else if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep))
+            {
+                PlayerId otherPlayer = data.otherPlayer.HasValue ? PlayerIdManager.GetPlayerId(data.otherPlayer.Value) : null;
 
-                        // Make sure the rig exists
-                        if (rep.IsCreated) {
-                            var rm = rep.RigReferences.RigManager;
+                // Make sure the rig exists
+                if (rep.IsCreated)
+                {
+                    var rm = rep.RigReferences.RigManager;
 
-                            switch (data.type) {
-                                default:
-                                case PlayerActionType.UNKNOWN:
-                                    break;
-                                case PlayerActionType.JUMP:
-                                    Il2CppSystem.Action onJump = null;
-                                    onJump = (Il2CppSystem.Action)Il2CppSystem.Delegate.Combine(onJump, RemapRig.onPlayerJump);
+                    switch (data.type)
+                    {
+                        default:
+                        case PlayerActionType.UNKNOWN:
+                            break;
+                        case PlayerActionType.JUMP:
+                            Il2CppSystem.Action onJump = null;
+                            onJump = (Il2CppSystem.Action)Il2CppSystem.Delegate.Combine(onJump, RemapRig.onPlayerJump);
 
-                                    RemapRig.onPlayerJump = null;
+                            RemapRig.onPlayerJump = null;
 
-                                    rm.remapHeptaRig.Jump();
+                            rm.remapHeptaRig.Jump();
 
-                                    RemapRig.onPlayerJump = onJump;
-                                    break;
-                                case PlayerActionType.DEATH:
-                                    rm.physicsRig.headSfx.DeathVocal();
-                                    rep.RigReferences.DisableInteraction();
-                                    break;
-                                case PlayerActionType.DYING:
-                                    rm.physicsRig.headSfx.DyingVocal();
-                                    break;
-                                case PlayerActionType.RECOVERY:
-                                    rm.physicsRig.headSfx.RecoveryVocal();
-                                    break;
-                            }
-                        }
-
-                        // Inform the hooks
-                        MultiplayerHooking.Internal_OnPlayerAction(rep.PlayerId, data.type, otherPlayer);
-                    }
-                    else if (data.smallId == PlayerIdManager.LocalSmallId) {
-                        // Get ids
-                        PlayerId playerId = PlayerIdManager.LocalId;
-                        PlayerId otherPlayer = data.otherPlayer.HasValue ? PlayerIdManager.GetPlayerId(data.otherPlayer.Value) : null;
-
-                        // Inform the hooks
-                        MultiplayerHooking.Internal_OnPlayerAction(playerId, data.type, otherPlayer);
+                            RemapRig.onPlayerJump = onJump;
+                            break;
+                        case PlayerActionType.DEATH:
+                            rm.physicsRig.headSfx.DeathVocal();
+                            rep.RigReferences.DisableInteraction();
+                            break;
+                        case PlayerActionType.DYING:
+                            rm.physicsRig.headSfx.DyingVocal();
+                            break;
+                        case PlayerActionType.RECOVERY:
+                            rm.physicsRig.headSfx.RecoveryVocal();
+                            break;
                     }
                 }
+
+                // Inform the hooks
+                MultiplayerHooking.Internal_OnPlayerAction(rep.PlayerId, data.type, otherPlayer);
+            }
+            else if (data.smallId == PlayerIdManager.LocalSmallId)
+            {
+                // Get ids
+                PlayerId playerId = PlayerIdManager.LocalId;
+                PlayerId otherPlayer = data.otherPlayer.HasValue ? PlayerIdManager.GetPlayerId(data.otherPlayer.Value) : null;
+
+                // Inform the hooks
+                MultiplayerHooking.Internal_OnPlayerAction(playerId, data.type, otherPlayer);
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using BoneLib.BoneMenu.Elements;
+﻿using BoneLib;
+using BoneLib.BoneMenu.Elements;
 using LabFusion.Network;
 using LabFusion.Utilities;
 
@@ -16,11 +17,25 @@ namespace LabFusion.Network
     /// </summary>
     public class EmptyNetworkLayer : NetworkLayer
     {
+        internal override string Title => "Empty";
+
         internal override void Disconnect(string reason = "") { }
 
         internal override void StartServer() { }
 
         internal override void OnCleanupLayer() { }
+
+        internal override bool CheckSupported() {
+#if DEBUG
+            return true;
+#else
+            return false;
+#endif
+        }
+
+        internal override bool CheckValidation() {
+            return true;
+        }
 
         internal override void OnInitializeLayer() {
             FusionLogger.Log("Initialized mod with an empty networking layer!", ConsoleColor.Magenta);
@@ -36,8 +51,14 @@ namespace LabFusion.Network
 
             // Info for people incase this layer ends up being selected
             category.CreateFunctionElement("You currently have no networking selected.", Color.white, null);
-            category.CreateFunctionElement("This means you likely do not have Steam open.", Color.white, null);
-            category.CreateFunctionElement("Please install and open Steam.", Color.white, null);
+
+            if (!HelperMethods.IsAndroid()) {
+                category.CreateFunctionElement("This means you likely do not have Steam open.", Color.white, null);
+                category.CreateFunctionElement("Please install and open Steam.", Color.white, null);
+            }
+            else {
+                category.CreateFunctionElement("Please select a layer in settings.", Color.white, null);
+            }
         }
     }
 }

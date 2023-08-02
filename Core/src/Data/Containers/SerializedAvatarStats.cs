@@ -196,7 +196,7 @@ namespace LabFusion.Data {
             speed = avatar._speed;
             strengthUpper = avatar._strengthUpper;
             strengthLower = avatar._strengthLower;
-            vitality = avatar._strengthLower;
+            vitality = avatar._vitality;
             intelligence = avatar._intelligence;
 
             // Save mass

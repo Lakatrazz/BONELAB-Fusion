@@ -27,8 +27,6 @@ namespace LabFusion.Network {
         private readonly MemoryStream _decompressedVoiceStream = new();
         private readonly Queue<float> _streamingReadQueue = new();
 
-        private float _lastClearTime;
-
         public SteamVoiceHandler(PlayerId id) {
             // Save the id
             _id = id;
@@ -61,26 +59,8 @@ namespace LabFusion.Network {
             Volume = contact.volume;
         }
 
-        public override void Update() {
-            float time = Time.realtimeSinceStartup;
-
-            // Every five seconds of no audio, clear the buffer
-            if (time - _lastClearTime >= 5f) {
-                // Clear audio data
-                var clip = _source.clip;
-                float[] samples = new float[clip.samples * clip.channels];
-                _source.clip.SetData(samples, 0);
-
-                // Clear the queue
-                _streamingReadQueue.Clear();
-
-                // Reset time
-                _lastClearTime = time;
-            }
-        }
-
         public override void OnVoiceBytesReceived(byte[] bytes) {
-            if (_hasRep && Rep.MicrophoneDisabled) {
+            if (MicrophoneDisabled) {
                 return;
             }
 
@@ -114,9 +94,6 @@ namespace LabFusion.Network {
 
                 _streamingReadQueue.Enqueue(pcmFloat);
             }
-
-            // Reset clear time since we received a message
-            _lastClearTime = Time.realtimeSinceStartup;
         }
 
         private float GetVoiceMultiplier() {

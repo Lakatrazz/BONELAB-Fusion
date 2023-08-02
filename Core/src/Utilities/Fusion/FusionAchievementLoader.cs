@@ -25,11 +25,35 @@ namespace LabFusion.Utilities {
         public static AssetBundle AchievementBundle { get; private set; }
 
         private static readonly string[] _achievementNames = new string[] {
-            nameof(HeadOfHouse),
+            // Deathmatch
             nameof(ExperiencedExecutioner),
             nameof(MediocreMarksman),
             nameof(RookieAssassin),
-            nameof(WarmWelcome)
+            nameof(Rampage),
+
+            // Bitmart
+            nameof(StyleAddict),
+            nameof(StyleBaby),
+            nameof(StyleMan),
+            
+            // Campaign
+            nameof(Betrayal),
+            nameof(OneMoreTime),
+
+            // Server
+            nameof(HeadOfHouse),
+            nameof(WarmWelcome),
+
+            // Misc
+            nameof(BouncingStrong),
+            nameof(LavaGang),
+            nameof(CleanupCrew),
+            nameof(ClassStruggle),
+            nameof(GuardianAngel),
+            nameof(HighwayMan),
+            nameof(DaycareAttendant),
+            nameof(AroundTheWorld),
+            nameof(HelloThere),
         };
 
         private static readonly Dictionary<string, AchievementPair> _achievementPairs = new();

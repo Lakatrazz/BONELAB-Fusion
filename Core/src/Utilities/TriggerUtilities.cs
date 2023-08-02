@@ -21,9 +21,9 @@ using LabFusion.MarrowIntegration;
 
 namespace LabFusion.Utilities {
     public static class TriggerUtilities {
-        public static readonly Dictionary<TriggerLasers, int> TriggerCount = new Dictionary<TriggerLasers, int>(new UnityComparer());
-        public static readonly Dictionary<GenGameControl_Trigger, int> GenTriggerCount = new Dictionary<GenGameControl_Trigger, int>(new UnityComparer());
-        public static readonly Dictionary<TriggerRefProxy, List<Chunk>> PlayerChunks = new Dictionary<TriggerRefProxy, List<Chunk>>(new UnityComparer());
+        public static readonly FusionDictionary<TriggerLasers, int> TriggerCount = new(new UnityComparer());
+        public static readonly FusionDictionary<GenGameControl_Trigger, int> GenTriggerCount = new(new UnityComparer());
+        public static readonly FusionDictionary<TriggerRefProxy, List<Chunk>> PlayerChunks = new(new UnityComparer());
 
         internal static void Increment(TriggerLasers trigger) {
             if (!TriggerCount.ContainsKey(trigger))

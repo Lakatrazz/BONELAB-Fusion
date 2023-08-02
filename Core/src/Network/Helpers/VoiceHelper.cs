@@ -20,7 +20,7 @@ namespace LabFusion.Network {
             } 
         }
 
-        public static bool IsDeafened => FusionPreferences.ClientSettings.Deafened;
+        public static bool IsDeafened => FusionPreferences.ClientSettings.Deafened || !ServerVoiceEnabled;
 
         public static bool IsVoiceEnabled {
             get {
@@ -28,5 +28,7 @@ namespace LabFusion.Network {
                 return serverSetting && !IsMuted && !IsDeafened;
             }
         }
+
+        public static bool ServerVoiceEnabled { get { return FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue(); } }
     }
 }

@@ -68,6 +68,12 @@ namespace LabFusion.Utilities {
                 // Invoke the level load hook
                 _onLevelLoad?.Invoke();
                 _onLevelLoad = null;
+
+                // If the target was loaded, invoke that hook
+                if (HasTargetLoaded()) {
+                    _onTargetLevelLoad?.Invoke();
+                    _onTargetLevelLoad = null;
+                }
             }
 
             _wasLoading = _isLoading;
@@ -89,6 +95,10 @@ namespace LabFusion.Utilities {
             {
                 _isDelayedLoading = false;
                 FusionMod.OnMainSceneInitializeDelayed();
+
+                // Invoke the level load hook
+                _onDelayedLevelLoad?.Invoke();
+                _onDelayedLevelLoad = null;
             }
         }
 

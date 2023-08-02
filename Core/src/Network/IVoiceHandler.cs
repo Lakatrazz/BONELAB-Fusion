@@ -46,6 +46,8 @@ namespace LabFusion.Network
         protected float _volume = 1f;
         public float Volume { get { return _volume; } set { _volume = value; } }
 
+        public bool MicrophoneDisabled { get { return _hasRep && Rep.MicrophoneDisabled; } }
+
         public virtual void CreateAudioSource() {
             _sourceGo = new GameObject($"{ID.SmallId} Voice Source");
             _source = _sourceGo.AddComponent<AudioSource>();
@@ -80,7 +82,7 @@ namespace LabFusion.Network
             _isDestroyed = true;
         }
 
-        public abstract void Update();
+        public virtual void Update() { }
 
         public abstract void OnVoiceBytesReceived(byte[] bytes);
     }

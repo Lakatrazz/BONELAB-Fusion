@@ -253,7 +253,7 @@ namespace LabFusion.Network
                                 current.TryDetach(found);
                         }
 
-                        MelonCoroutines.Start(Internal_ForceGrabConfirm(found, grip));
+                        DelayUtilities.Delay(() => { Internal_ForceGrabConfirm(found, grip); }, 1);
                     }
                 }
                 else if (PlayerRepManager.TryGetPlayerRep(owner, out var rep)) {
@@ -264,22 +264,16 @@ namespace LabFusion.Network
                 }
             }
 
-            MelonCoroutines.Start(PostSpawnRoutine(poolee, owner, grip, hand));
+            DelayUtilities.Delay(() => { Internal_PostSpawn(poolee, owner, grip, hand); }, 3);
         }
 
-        private static IEnumerator Internal_ForceGrabConfirm(Hand hand, Grip grip) {
-            yield return null;
-
+        private static void Internal_ForceGrabConfirm(Hand hand, Grip grip) {
             grip.MoveIntoHand(hand);
 
             grip.TryAttach(hand, true);
         }
 
-        private static IEnumerator PostSpawnRoutine(AssetPoolee __instance, byte owner, Grip grip = null, Handedness hand = Handedness.UNDEFINED) {
-            for (var i = 0; i < 3; i++) {
-                yield return null;
-            }
-
+        private static void Internal_PostSpawn(AssetPoolee __instance, byte owner, Grip grip = null, Handedness hand = Handedness.UNDEFINED) {
             PooleeUtilities.CanSpawnList.Pull(__instance);
             PooleeUtilities.ForceEnabled.Pull(__instance);
             PooleeUtilities.CheckingForSpawn.Pull(__instance);

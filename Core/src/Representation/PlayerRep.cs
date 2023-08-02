@@ -630,13 +630,16 @@ namespace LabFusion.Representation
         public void OnPelvisPin() {
             try {
                 // Stop pelvis
-                if (!IsCreated || serializedPelvis == null)
+                if (!IsCreated || serializedPelvis == null) {
+                    pelvisPDController.Reset();
                     return;
+                }
 
                 // Check for seating
                 var rigManager = RigReferences.RigManager;
 
                 if (rigManager.activeSeat) {
+                    pelvisPDController.Reset();
                     return;
                 }
 
@@ -669,6 +672,8 @@ namespace LabFusion.Representation
                     if (rigManager.physicsRig.torso.spineInternalMult <= 0f) {
                         repPelvis.AddTorque(pelvisPDController.GetTorque(repPelvis, pelvisRotation, repPelvis.angularVelocity, rot, predictAngularVelocity), ForceMode.Acceleration);
                     }
+                    else
+                        pelvisPDController.ResetRotation();
                 }
 
                 // Check for stability teleport
@@ -693,6 +698,8 @@ namespace LabFusion.Representation
                     // Reset locosphere and knee pos so the rig doesn't get stuck
                     physRig.knee.transform.position = serializedPelvis.position;
                     physRig.feet.transform.position = serializedPelvis.position;
+
+                    pelvisPDController.Reset();
                 }
             }
             catch {

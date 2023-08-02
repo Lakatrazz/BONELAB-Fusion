@@ -11,6 +11,8 @@ namespace LabFusion.SDK.Points {
         public const string BaBaAuthor = "BaBaCorp";
         public const string RiggleAuthor = "Riggle";
 
+        public const int PricelessValue = 99999999;
+
         public static int ConvertPrice(int pennies) {
             return (int)(BitsToPennyRatio * (double)pennies);
         }

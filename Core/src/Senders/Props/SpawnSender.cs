@@ -54,31 +54,26 @@ namespace LabFusion.Senders
         {
             if (NetworkInfo.IsServer)
             {
-                MelonCoroutines.Start(Internal_WaitForCratePlacer(placer, go));
+                // Wait for the level to load and for 5 frames before sending messages
+                FusionSceneManager.HookOnLevelLoad(() => {
+                    DelayUtilities.Delay(() => {
+                        Internal_OnSendCratePlacer(placer, go);
+                    }, 5);
+                });
             }
         }
 
-        private static IEnumerator Internal_WaitForCratePlacer(SpawnableCratePlacer placer, GameObject go)
+        private static void Internal_OnSendCratePlacer(SpawnableCratePlacer placer, GameObject go)
         {
-            while (FusionSceneManager.IsLoading())
-                yield return null;
-
-            for (var i = 0; i < 5; i++)
-                yield return null;
-
             if (PropSyncable.Cache.TryGet(go, out var syncable))
             {
                 using (var writer = FusionWriter.Create(SpawnableCratePlacerData.Size))
                 {
-                    using (var data = SpawnableCratePlacerData.Create(syncable.GetId(), placer.gameObject))
-                    {
-                        writer.Write(data);
+                    using var data = SpawnableCratePlacerData.Create(syncable.GetId(), placer.gameObject);
+                    writer.Write(data);
 
-                        using (var message = FusionMessage.Create(NativeMessageTag.SpawnableCratePlacer, writer))
-                        {
-                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                        }
-                    }
+                    using var message = FusionMessage.Create(NativeMessageTag.SpawnableCratePlacer, writer);
+                    MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
                 }
 
                 // Insert the catchup hook for future users

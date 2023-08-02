@@ -27,6 +27,7 @@ namespace LabFusion.Utilities {
         public static Texture2D LavaGangLogo { get; private set; }
 
         public static AudioClip GeoGrpFellDownTheStairs { get; private set; }
+        public static AudioClip BouncingStrong { get; private set; }
 
         public static AudioClip LavaGangVictory { get; private set; }
         public static AudioClip SabrelakeVictory { get; private set; }
@@ -95,6 +96,7 @@ namespace LabFusion.Utilities {
                 }
 
                 GeoGrpFellDownTheStairs = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.GeoGrpFellDownTheStairs);
+                BouncingStrong = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.BouncingStrong);
 
                 LavaGangVictory = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.LavaGangVictory);
                 SabrelakeVictory = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.SabrelakeVictory);

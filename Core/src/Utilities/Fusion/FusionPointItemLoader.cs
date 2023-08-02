@@ -89,6 +89,9 @@ namespace LabFusion.Utilities {
             nameof(Speaker),
             nameof(VioletVortex),
 
+            // Special
+            nameof(VictoryTrophy),
+
             // Riggle Cosmetics
             // Pack 1
             nameof(ArrowHead),
@@ -109,7 +112,7 @@ namespace LabFusion.Utilities {
             nameof(ZestySwagShades),
         };
 
-        private static readonly Dictionary<string, ItemPair> _itemPairs = new Dictionary<string, ItemPair>();
+        private static readonly Dictionary<string, ItemPair> _itemPairs = new();
 
         public static void OnBundleLoad() {
             ItemBundle = FusionBundleLoader.LoadAssetBundle(ResourcePaths.ItemBundle);

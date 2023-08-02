@@ -17,6 +17,8 @@ using LabFusion.Grabbables;
 using LabFusion.Network;
 using LabFusion.Extensions;
 
+using Il2ActionHandReceiver = Il2CppSystem.Action<SLZ.Interaction.HandReciever>;
+
 namespace LabFusion.Patching
 {
     [HarmonyPatch(typeof(BarrelGrip))]
@@ -110,9 +112,9 @@ namespace LabFusion.Patching
         }
     }
 
-    [HarmonyPatch(typeof(Grip))]
     public static class GripPatches
     {
+        // This is just referenced by other grip patches, not actually a patch itself
         public static void UpdateJointConfiguration(Hand hand) {
             if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(hand.manager)) {
                 var joint = hand.joint;
@@ -122,44 +124,27 @@ namespace LabFusion.Patching
             }
         }
 
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(Grip.OnAttachedToHand))]
-        public static void OnAttachedToHand(Grip __instance, Hand hand)
-        {
-            try
-            {
-                // Make sure this is the main rig
-                if (hand.manager != RigData.RigReferences.RigManager)
-                    return;
+        #region HAND HOOKING
+        public static void HookHand(Hand hand) {
+            hand.onRecieverAttached += (Il2ActionHandReceiver)((r) => { OnAttachedToHand(hand, r); });
+            hand.onRecieverDetached += (Il2ActionHandReceiver)((r) => { OnDetachedFromHand(hand); });
+        }
 
-                GrabHelper.SendObjectAttach(hand, __instance);
-            }
-            catch (Exception e)
-            {
-#if DEBUG
-                FusionLogger.LogException("to execute patch Grip.OnAttachedToHand", e);
-#endif
+        private static bool TryGetGrip(HandReciever receiver, out Grip grip) {
+            grip = receiver.TryCast<Grip>();
+            return grip != null;
+        }
+
+        private static void OnAttachedToHand(Hand hand, HandReciever receiver)
+        {
+            if (TryGetGrip(receiver, out var grip)) {
+                GrabHelper.SendObjectAttach(hand, grip);
             }
         }
 
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(Grip.OnDetachedFromHand))]
-        public static void OnDetachedFromHand(Grip __instance, Hand hand)
-        {
-            try
-            {
-                // Make sure this is the main rig
-                if (hand.manager != RigData.RigReferences.RigManager)
-                    return;
-
-                GrabHelper.SendObjectDetach(hand);
-            }
-            catch (Exception e)
-            {
-#if DEBUG
-                FusionLogger.LogException("to execute patch Grip.OnDetachedFromHand", e);
-#endif
-            }
+        private static void OnDetachedFromHand(Hand hand) {
+            GrabHelper.SendObjectDetach(hand);
         }
+        #endregion
     }
 }

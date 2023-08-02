@@ -24,6 +24,21 @@ namespace LabFusion.Network
         protected List<VoiceHandler> _voiceHandlers = new();
         public List<VoiceHandler> VoiceHandlers => _voiceHandlers;
 
+        protected bool TryGetHandler(PlayerId id, out VoiceHandler handler) {
+            handler = null;
+
+            for (var i = 0; i < VoiceHandlers.Count; i++) {
+                var result = VoiceHandlers[i];
+
+                if (result.ID == id) { 
+                    handler = result;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public abstract VoiceHandler GetVoiceHandler(PlayerId id);
 
         public void Update() {

@@ -47,6 +47,7 @@ namespace LabFusion.SDK.Points {
 
     public static class PointItemManager {
         public static event Action OnBitCountChanged = null;
+        public static event Action<PointItem> OnItemUnlocked = null;
 
         public static Color ParseColor(RarityLevel level) {
             switch (level) {
@@ -251,6 +252,8 @@ namespace LabFusion.SDK.Points {
 
             DecrementBits(price);
 
+            OnItemUnlocked?.Invoke(item);
+
             return true;
         }
 
@@ -395,6 +398,6 @@ namespace LabFusion.SDK.Points {
         public static IReadOnlyList<PointItem> LoadedItems => PointItems;
 
         internal static readonly List<PointItem> PointItems = new List<PointItem>();
-        internal static readonly Dictionary<string, PointItem> PointItemLookup = new Dictionary<string, PointItem>();
+        internal static readonly FusionDictionary<string, PointItem> PointItemLookup = new();
     }
 }
