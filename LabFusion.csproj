@@ -266,6 +266,8 @@
     <Compile Include="Core\src\BoneMenu\AdminActionsCreator.cs" />
     <Compile Include="Core\src\BoneMenu\PlayerListCreator.cs" />
     <Compile Include="Core\src\BoneMenu\SettingsCreator.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\DungWarDMData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\DropPitDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\HoloChamberDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\HomeDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\AscentDMData.cs" />
