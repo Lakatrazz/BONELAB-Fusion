@@ -82,6 +82,9 @@ namespace FusionHelper.Network
             Server.Start(ReadPort());
 
             Console.WriteLine("Initialized UDP socket on port " + Server.LocalPort);
+#if PLATFORM_WIN
+            Console.WriteLine("\x1b[93mBe sure to allow FusionHelper access both public and private networks if/when the firewall asks.\x1b[0m");
+#endif
         }
 
         private static int ReadPort()
