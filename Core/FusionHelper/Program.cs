@@ -2,13 +2,13 @@
 using FusionHelper.Steamworks;
 using LiteNetLib.Utils;
 
-NetworkHandler.Init();
-
 #if PLATFORM_MAC
 
-Console.WriteLine("I see you're on a Mac. The Mac version of FusionHelper currently only supports the PROXY_STEAM_VR networking layer, please be sure to not change it.");
+Console.WriteLine("\x1b[93mI see you're on a Mac. The Mac version of FusionHelper currently only supports the PROXY_STEAM_VR networking layer, please be sure to not change it.\x1b[0m");
 
 #endif
+
+NetworkHandler.Init();
 
 Thread tickThread = new(() =>
 {
