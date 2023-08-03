@@ -70,20 +70,23 @@ namespace LabFusion.BoneMenu
 
             lobbyCategory.CreateFunctionElement("Join Server", Color.white, lobby.CreateJoinDelegate(info));
 
+            var generalInfoPanel = lobbyCategory.CreateSubPanel("General Info", Color.white);
+
             // Show their version
-            lobbyCategory.CreateFunctionElement($"Version: {info.LobbyVersion}", versionColor, null);
+            generalInfoPanel.CreateFunctionElement($"Version: {info.LobbyVersion}", versionColor, null);
 
             // Show their active level
             Color levelColor = info.ClientHasLevel ? Color.white : Color.red;
 
-            lobbyCategory.CreateFunctionElement($"Level: {info.LevelName}", levelColor, null);
-
-            // Show their active gamemode
-            lobbyCategory.CreateFunctionElement($"Gamemode: {info.GamemodeName}", Color.white, null);
-            lobbyCategory.CreateFunctionElement($"Is Gamemode Running: {info.IsGamemodeRunning}", Color.white, null);
+            generalInfoPanel.CreateFunctionElement($"Level: {info.LevelName}", levelColor, null);
 
             // Show the player count
-            lobbyCategory.CreateFunctionElement($"{info.PlayerCount} out of {info.MaxPlayers} Players", new Color(0.68f, 0.85f, 0.9f), null);
+            generalInfoPanel.CreateFunctionElement($"{info.PlayerCount} out of {info.MaxPlayers} Players", new Color(0.68f, 0.85f, 0.9f), null);
+
+            // Show their active gamemode
+            var gamemodePanel = lobbyCategory.CreateSubPanel("Gamemode Info", Color.white);
+            gamemodePanel.CreateFunctionElement(info.GamemodeName, Color.white, null);
+            gamemodePanel.CreateFunctionElement(info.IsGamemodeRunning ? "Running" : "Not Running", Color.white, null);
 
             // Create a category for settings
             var settingsCategory = lobbyCategory.CreateCategory("Settings", Color.yellow);
