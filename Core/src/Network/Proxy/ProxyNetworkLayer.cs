@@ -612,7 +612,7 @@ namespace LabFusion.Network
             _createServerElement = category.CreateFunctionElement("Create Server", Color.white, OnClickCreateServer);
             category.CreateFunctionElement("Copy SteamID to Clipboard", Color.white, OnCopySteamID);
 
-            BoneMenuCreator.CreatePlayerListMenu(category);
+            BoneMenuCreator.PopulateServerInfo(category);
         }
 
         private void OnClickCreateServer()
