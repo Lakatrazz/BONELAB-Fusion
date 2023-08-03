@@ -38,7 +38,9 @@ namespace LabFusion.Network {
         // Lobby status
         public string LevelName;
         public string LevelBarcode;
+
         public string GamemodeName;
+        public bool IsGamemodeRunning;
 
         public bool ClientHasLevel;
 
@@ -67,7 +69,8 @@ namespace LabFusion.Network {
                 // Lobby status
                 LevelName = FusionSceneManager.Title,
                 LevelBarcode = FusionSceneManager.Barcode,
-                GamemodeName = Gamemode.ActiveGamemode != null ? Gamemode.ActiveGamemode.GamemodeName : "No Gamemode",
+                GamemodeName = Gamemode.TargetGamemode != null ? Gamemode.TargetGamemode.GamemodeName : "No Gamemode",
+                IsGamemodeRunning = Gamemode.IsGamemodeRunning,
             };
         }
 
@@ -93,6 +96,7 @@ namespace LabFusion.Network {
             lobby.SetMetadata(nameof(LevelName), LevelName);
             lobby.SetMetadata(nameof(LevelBarcode), LevelBarcode);
             lobby.SetMetadata(nameof(GamemodeName), GamemodeName);
+            lobby.SetMetadata(nameof(IsGamemodeRunning), IsGamemodeRunning.ToString());
         }
 
         public static LobbyMetadataInfo Read(INetworkLobby lobby) {
@@ -110,6 +114,7 @@ namespace LabFusion.Network {
                 // Lobby status
                 LevelName = lobby.GetMetadata(nameof(LevelName)),
                 GamemodeName = lobby.GetMetadata(nameof(GamemodeName)),
+                IsGamemodeRunning = lobby.GetMetadata(nameof(IsGamemodeRunning)) == bool.TrueString,
             };
             // Check if we have a player list
             if (lobby.TryGetMetadata(nameof(PlayerList), out var playerXML)) {

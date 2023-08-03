@@ -80,6 +80,7 @@ namespace LabFusion.BoneMenu
 
             // Show their active gamemode
             lobbyCategory.CreateFunctionElement($"Gamemode: {info.GamemodeName}", Color.white, null);
+            lobbyCategory.CreateFunctionElement($"Is Gamemode Running: {info.IsGamemodeRunning}", Color.white, null);
 
             // Show the player count
             lobbyCategory.CreateFunctionElement($"{info.PlayerCount} out of {info.MaxPlayers} Players", new Color(0.68f, 0.85f, 0.9f), null);

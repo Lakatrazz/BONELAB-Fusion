@@ -11,6 +11,7 @@ namespace LabFusion.BoneMenu
     {
         private static MenuCategory _gamemodesCategory;
         private static FunctionElement _gamemodeElement;
+        private static FunctionElement _markedElement;
 
         public static void CreateGamemodesMenu(MenuCategory category) {
             // Root category
@@ -37,6 +38,11 @@ namespace LabFusion.BoneMenu
                 _gamemodeElement.SetName(text);
         }
 
+        public static void SetMarkedGamemodeText(string text) {
+            if (_markedElement != null)
+                _markedElement.SetName(text);
+        }
+
         public static void RefreshGamemodes() {
             // Clear existing gamemodes just incase
             ClearGamemodes(false);
@@ -46,6 +52,12 @@ namespace LabFusion.BoneMenu
             {
                 if (Gamemode.ActiveGamemode != null)
                     Gamemode.ActiveGamemode.StopGamemode();
+            });
+
+            // Add marked button
+            _markedElement = _gamemodesCategory.CreateFunctionElement("No Marked Gamemode", Color.white, () => {
+                if (Gamemode.MarkedGamemode != null)
+                    Gamemode.MarkedGamemode.UnmarkGamemode();
             });
 
             // Add toggle buttons

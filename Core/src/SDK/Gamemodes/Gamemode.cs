@@ -1,4 +1,5 @@
 ﻿using BoneLib.BoneMenu.Elements;
+using LabFusion.BoneMenu;
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Network;
@@ -9,13 +10,35 @@ using System;
 using System.Collections.Generic;
 
 using UnityEngine;
+using static SLZ.Bonelab.BaseGameController;
 
 namespace LabFusion.SDK.Gamemodes {
     public abstract class Gamemode {
         public const float DefaultMusicVolume = 0.4f;
 
+        internal static bool _isGamemodeRunning = false;
         internal static Gamemode _activeGamemode = null;
+        internal static Gamemode _markedGamemode = null;
+
+        /// <summary>
+        /// Is a Gamemode currently running?
+        /// </summary>
+        public static bool IsGamemodeRunning => _isGamemodeRunning;
+
+        /// <summary>
+        /// The active Gamemode.
+        /// </summary>
         public static Gamemode ActiveGamemode => _activeGamemode;
+
+        /// <summary>
+        /// The Gamemode that the current server is marked as.
+        /// </summary>
+        public static Gamemode MarkedGamemode => _markedGamemode;
+
+        /// <summary>
+        /// The target Gamemode. Returns active Gamemode if it exists, or the marked Gamemode.
+        /// </summary>
+        public static Gamemode TargetGamemode => _activeGamemode ?? _markedGamemode;
 
         public static bool MusicToggled { get; internal set; } = true;
         public static bool LateJoining { get; internal set; } = false;
@@ -113,6 +136,7 @@ namespace LabFusion.SDK.Gamemodes {
         public virtual void OnLoadingBegin() { }
 
         protected FunctionElement _gamemodeToggleElement = null;
+        protected FunctionElement _gamemodeMarkElement = null;
 
         public virtual void OnBoneMenuCreated(MenuCategory category) {
             // Default elements
@@ -124,11 +148,33 @@ namespace LabFusion.SDK.Gamemodes {
                     StopGamemode();
                 }
             });
+
+            _gamemodeMarkElement = category.CreateFunctionElement("Mark Gamemode", Color.yellow, () => {
+                if (MarkedGamemode != this) {
+                    MarkGamemode();
+                }
+                else {
+                    UnmarkGamemode();
+                }
+            });
         }
 
         public bool StartGamemode(bool forceStopCurrent = false) {
             // We can only start the gamemode as a server!
             if (!NetworkInfo.IsServer) {
+                return false;
+            }
+
+            // If the server is marked under a different Gamemode, don't start
+            if (MarkedGamemode != null && MarkedGamemode != this) {
+                FusionNotifier.Send(new FusionNotification() {
+                    isMenuItem = false,
+                    isPopup = true,
+                    type = NotificationType.ERROR,
+                    showTitleOnPopup = true,
+                    title = "Failed To Start",
+                    message = "You cannot start this Gamemode because another Gamemode is marked!"
+                });
                 return false;
             }
 
@@ -157,6 +203,33 @@ namespace LabFusion.SDK.Gamemodes {
                 return false;
 
             TrySetMetadata(GamemodeHelper.IsStartedKey, "False");
+            return true;
+        }
+
+        public bool MarkGamemode() {
+            if (_isGamemodeRunning)
+                return false;
+
+            if (MarkedGamemode != null && MarkedGamemode != this)
+                MarkedGamemode.UnmarkGamemode();
+
+            _markedGamemode = this;
+
+            OnMarkGamemode();
+
+            BoneMenuCreator.SetMarkedGamemodeText($"Unmark {GamemodeName}");
+            return true;
+        }
+
+        public bool UnmarkGamemode() {
+            if (_markedGamemode != this)
+                return false;
+
+            _markedGamemode = null;
+
+            OnUnmarkGamemode();
+
+            BoneMenuCreator.SetMarkedGamemodeText("No Marked Gamemode");
             return true;
         }
 
@@ -209,6 +282,24 @@ namespace LabFusion.SDK.Gamemodes {
             // Set default bonemenu element
             if (_gamemodeToggleElement != null) {
                 _gamemodeToggleElement.SetName("Start Gamemode");
+            }
+        }
+
+        protected virtual void OnMarkGamemode()
+        {
+            // Set default bonemenu element
+            if (_gamemodeMarkElement != null)
+            {
+                _gamemodeMarkElement.SetName("Unmark Gamemode");
+            }
+        }
+
+        protected virtual void OnUnmarkGamemode()
+        {
+            // Set default bonemenu element
+            if (_gamemodeMarkElement != null)
+            {
+                _gamemodeMarkElement.SetName("Mark Gamemode");
             }
         }
 

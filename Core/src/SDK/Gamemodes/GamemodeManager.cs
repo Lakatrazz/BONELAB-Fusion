@@ -28,7 +28,10 @@ namespace LabFusion.SDK.Gamemodes {
 
         internal static void Internal_SetActiveGamemode(Gamemode gamemode) {
             if (Gamemode._activeGamemode != gamemode) {
+
                 Gamemode._activeGamemode = gamemode;
+                Gamemode._isGamemodeRunning = gamemode != null;
+
                 OnGamemodeChanged.InvokeSafe(gamemode, "executing hook OnGamemodeChanged");
             }
 
