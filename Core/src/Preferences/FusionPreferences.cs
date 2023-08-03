@@ -104,6 +104,7 @@ namespace LabFusion.Preferences {
 
             // Voicechat settings
             public static FusionPref<bool> Muted { get; internal set; }
+            public static FusionPref<bool> MutedIndicator { get; internal set; }
             public static FusionPref<bool> Deafened { get; internal set; }
             public static FusionPref<float> GlobalVolume { get; internal set; }
 
@@ -138,35 +139,23 @@ namespace LabFusion.Preferences {
 
         internal static void SendServerSettings(ulong longId) {
             if (NetworkInfo.HasServer && NetworkInfo.IsServer) {
-                using (var writer = FusionWriter.Create(ServerSettingsData.Size))
-                {
-                    using (var data = ServerSettingsData.Create(SerializedServerSettings.Create()))
-                    {
-                        writer.Write(data);
+                using var writer = FusionWriter.Create(ServerSettingsData.Size);
+                using var data = ServerSettingsData.Create(SerializedServerSettings.Create());
+                writer.Write(data);
 
-                        using (var message = FusionMessage.Create(NativeMessageTag.ServerSettings, writer))
-                        {
-                            MessageSender.SendFromServer(longId, NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
+                using var message = FusionMessage.Create(NativeMessageTag.ServerSettings, writer);
+                MessageSender.SendFromServer(longId, NetworkChannel.Reliable, message);
             }
         }
 
         internal static void SendClientSettings() {
             if (NetworkInfo.HasServer) {
-                using (var writer = FusionWriter.Create(PlayerSettingsData.Size))
-                {
-                    using (var data = PlayerSettingsData.Create(PlayerIdManager.LocalSmallId, SerializedPlayerSettings.Create()))
-                    {
-                        writer.Write(data);
+                using var writer = FusionWriter.Create(PlayerSettingsData.Size);
+                using var data = PlayerSettingsData.Create(PlayerIdManager.LocalSmallId, SerializedPlayerSettings.Create());
+                writer.Write(data);
 
-                        using (var message = FusionMessage.Create(NativeMessageTag.PlayerSettings, writer))
-                        {
-                            MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
+                using var message = FusionMessage.Create(NativeMessageTag.PlayerSettings, writer);
+                MessageSender.SendToServer(NetworkChannel.Reliable, message);
             }
         }
 
@@ -191,6 +180,7 @@ namespace LabFusion.Preferences {
 
             // Voicechat
             ClientSettings.Muted = new FusionPref<bool>(prefCategory, "Muted", false, PrefUpdateMode.IGNORE);
+            ClientSettings.MutedIndicator = new FusionPref<bool>(prefCategory, "Muted Indicator", true, PrefUpdateMode.IGNORE);
             ClientSettings.Deafened = new FusionPref<bool>(prefCategory, "Deafened", false, PrefUpdateMode.IGNORE);
             ClientSettings.GlobalVolume = new FusionPref<float>(prefCategory, "GlobalMicVolume", 1f, PrefUpdateMode.IGNORE);
 

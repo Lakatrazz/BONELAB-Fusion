@@ -173,6 +173,7 @@ namespace LabFusion.BoneMenu
             var voiceChatCategory = category.CreateCategory("Voice Chat", Color.white);
 
             CreateBoolPreference(voiceChatCategory, "Muted", FusionPreferences.ClientSettings.Muted);
+            CreateBoolPreference(voiceChatCategory, "Muted Indicator", FusionPreferences.ClientSettings.MutedIndicator);
             CreateBoolPreference(voiceChatCategory, "Deafened", FusionPreferences.ClientSettings.Deafened);
             CreateFloatPreference(voiceChatCategory, "Global Volume", 0.1f, 0f, 10f, FusionPreferences.ClientSettings.GlobalVolume);
         }

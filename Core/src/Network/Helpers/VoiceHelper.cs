@@ -9,6 +9,11 @@ using System.Threading.Tasks;
 
 namespace LabFusion.Network {
     public static class VoiceHelper {
+        public static bool CanTalk => (NetworkInfo.VoiceManager?.CanTalk).GetValueOrDefault();
+        public static bool CanHear => (NetworkInfo.VoiceManager?.CanHear).GetValueOrDefault();
+
+        public static bool ShowIndicator => NetworkInfo.HasServer && FusionPreferences.ClientSettings.Muted.GetValue() && FusionPreferences.ClientSettings.MutedIndicator.GetValue();
+
         public static bool IsMuted { 
             get {
                 bool isDying = false;

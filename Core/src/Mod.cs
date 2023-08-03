@@ -67,8 +67,6 @@ namespace LabFusion
             GamemodeRegistration.Internal_HookAssemblies();
             PointItemManager.Internal_HookAssemblies();
 
-            PlayerAdditionsHelper.OnInitializeMelon();
-
             VoteKickHelper.Internal_OnInitializeMelon();
         }
 
@@ -114,6 +112,7 @@ namespace LabFusion
             ManualPatcher.PatchAll();
             InternalLayerHelpers.OnLateInitializeLayer();
             PersistentAssetCreator.OnLateInitializeMelon();
+            PlayerAdditionsHelper.OnInitializeMelon();
 
             FusionPreferences.OnCreateBoneMenu();
 

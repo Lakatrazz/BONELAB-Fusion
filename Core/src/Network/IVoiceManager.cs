@@ -11,6 +11,9 @@ namespace LabFusion.Network
     public interface IVoiceManager {
         public List<VoiceHandler> VoiceHandlers { get; }
 
+        public bool CanTalk { get; }
+        public bool CanHear { get; }
+
         public VoiceHandler GetVoiceHandler(PlayerId id);
 
         public void Update();
@@ -23,6 +26,9 @@ namespace LabFusion.Network
     {
         protected List<VoiceHandler> _voiceHandlers = new();
         public List<VoiceHandler> VoiceHandlers => _voiceHandlers;
+
+        public virtual bool CanTalk => true;
+        public virtual bool CanHear => true;
 
         protected bool TryGetHandler(PlayerId id, out VoiceHandler handler) {
             handler = null;

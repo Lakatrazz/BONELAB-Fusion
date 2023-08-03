@@ -22,6 +22,7 @@ namespace LabFusion.Utilities {
 
         public static GameObject AchievementPopupPrefab { get; private set; }
         public static GameObject BitPopupPrefab { get; private set; }
+        public static GameObject MutePopupPrefab { get; private set; }
 
         public static Texture2D SabrelakeLogo { get; private set; }
         public static Texture2D LavaGangLogo { get; private set; }
@@ -87,6 +88,7 @@ namespace LabFusion.Utilities {
 
                 AchievementPopupPrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.AchievementPopupPrefab);
                 BitPopupPrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.BitPopupPrefab);
+                MutePopupPrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.MutePopupPrefab);
 
                 SabrelakeLogo = ContentBundle.LoadPersistentAsset<Texture2D>(ResourcePaths.SabrelakeLogo); 
                 LavaGangLogo = ContentBundle.LoadPersistentAsset<Texture2D>(ResourcePaths.LavaGangLogo);

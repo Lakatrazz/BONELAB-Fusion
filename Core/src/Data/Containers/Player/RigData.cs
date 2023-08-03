@@ -254,13 +254,6 @@ namespace LabFusion.Data
                 return;
             }
             
-            // Add player additions
-            PlayerAdditionsHelper.OnCreatedRig(manager);
-
-            if (NetworkInfo.HasServer) {
-                PlayerAdditionsHelper.OnEnterServer(manager);
-            }
-
             // Store spawn values
             RigSpawn = manager.transform.position;
             RigSpawnRot = manager.transform.rotation;
