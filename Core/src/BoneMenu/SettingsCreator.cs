@@ -165,10 +165,17 @@ namespace LabFusion.BoneMenu
             // Voice chat
             var voiceChatSubPanel = category.CreateSubPanel("Voice Chat Settings", Color.white);
 
-            CreateBoolPreference(voiceChatSubPanel, "Muted", FusionPreferences.ClientSettings.Muted);
-            CreateBoolPreference(voiceChatSubPanel, "Muted Indicator", FusionPreferences.ClientSettings.MutedIndicator);
-            CreateBoolPreference(voiceChatSubPanel, "Deafened", FusionPreferences.ClientSettings.Deafened);
-            CreateFloatPreference(voiceChatSubPanel, "Global Volume", 0.1f, 0f, 10f, FusionPreferences.ClientSettings.GlobalVolume);
+            if (VoiceHelper.CanTalk) {
+                CreateBoolPreference(voiceChatSubPanel, "Muted", FusionPreferences.ClientSettings.Muted);
+                CreateBoolPreference(voiceChatSubPanel, "Muted Indicator", FusionPreferences.ClientSettings.MutedIndicator);
+            }
+
+            if (VoiceHelper.CanHear) {
+                CreateBoolPreference(voiceChatSubPanel, "Deafened", FusionPreferences.ClientSettings.Deafened);
+                CreateFloatPreference(voiceChatSubPanel, "Global Volume", 0.1f, 0f, 10f, FusionPreferences.ClientSettings.GlobalVolume);
+            }
+
+            RemoveEmptySubPanel(category, voiceChatSubPanel);
         }
 
     }
