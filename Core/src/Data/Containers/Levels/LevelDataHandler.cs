@@ -13,19 +13,34 @@ using BoneLib;
 
 namespace LabFusion.Data {
     public abstract class LevelDataHandler {
+        public virtual string LevelTitle => null;
+
+        protected virtual bool IsMatchingScene() {
+            if (string.IsNullOrEmpty(LevelTitle))
+                return false;
+
+            return FusionSceneManager.Title == LevelTitle && FusionSceneManager.Level.Pallet.Internal;
+        }
+
         protected virtual void SceneAwake() { }
         protected virtual void MainSceneInitialized() { }
         protected virtual void PlayerCatchup(ulong longId) { }
 
         private static void OnSceneAwake() {
             for (var i = 0; i < Handlers.Count; i++) {
-                Handlers[i].SceneAwake();
+                var handler = Handlers[i];
+
+                if (handler.IsMatchingScene())
+                    handler.SceneAwake();
             }
         }
 
         private static void OnMainSceneInitialized() {
             for (var i = 0; i < Handlers.Count; i++) {
-                Handlers[i].MainSceneInitialized();
+                var handler = Handlers[i];
+
+                if (handler.IsMatchingScene())
+                    handler.MainSceneInitialized();
             }
         }
 
@@ -65,6 +80,6 @@ namespace LabFusion.Data {
             FusionLogger.Log($"Registered {type.Name}");
         }
 
-        public static readonly List<LevelDataHandler> Handlers = new List<LevelDataHandler>();
+        public static readonly List<LevelDataHandler> Handlers = new();
     }
 }

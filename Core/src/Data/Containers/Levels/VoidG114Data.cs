@@ -17,6 +17,8 @@ using LabFusion.Extensions;
 
 namespace LabFusion.Data {
     public class VoidG114Data : LevelDataHandler {
+        public override string LevelTitle => "15 - Void G114";
+
         public static GameControl_MenuVoidG114 GameController;
 
         // Point shop setup

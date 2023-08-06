@@ -10,8 +10,10 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace LabFusion.Data {
-    public class MoonBaseDMData : LevelDataHandler {
-        private static readonly Vector3[] _deathmatchSpawnPoints = new Vector3[23] {
+    public class MoonBaseDMData : DMLevelDataHandler {
+        public override string LevelTitle => "09- MoonBase";
+
+        protected override Vector3[] DeathmatchSpawnPoints => new Vector3[23] {
     new Vector3(122.7655f, -5.5817f, -42.2308f),
     new Vector3(140.8222f, 5.8074f, -52.3688f),
     new Vector3(139.7279f, -3.9626f, -53.8363f),
@@ -36,19 +38,5 @@ namespace LabFusion.Data {
     new Vector3(-33.2483f, -26.3449f, 21.1142f),
     new Vector3(132.2135f, -8.9626f, -55.3668f),
         }; // 23 spawn points my god, what is this, tarkov?
-
-        protected override void MainSceneInitialized() {
-            // Check if this is the right map
-            if (FusionSceneManager.Title == "09- MoonBase" && FusionSceneManager.Level.Pallet.Internal) {
-                // Create DM spawn points
-                for (var i = 0; i < _deathmatchSpawnPoints.Length; i++) {
-                    GameObject spawnPoint = new GameObject("Deathmatch Spawn");
-                    spawnPoint.transform.position = _deathmatchSpawnPoints[i];
-                    spawnPoint.AddComponent<DeathmatchSpawnpoint>();
-                    spawnPoint.AddComponent<LavaGangSpawnpoint>();
-                    spawnPoint.AddComponent<SabrelakeSpawnpoint>();
-                }
-            }
-        }
     }
 }

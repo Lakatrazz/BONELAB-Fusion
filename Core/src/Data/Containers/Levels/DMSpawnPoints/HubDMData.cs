@@ -10,8 +10,10 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace LabFusion.Data {
-    public class HubDMData : LevelDataHandler {
-        private static readonly Vector3[] _deathmatchSpawnPoints = new Vector3[15] {
+    public class HubDMData : DMLevelDataHandler {
+        public override string LevelTitle => "02 - BONELAB Hub";
+
+        protected override Vector3[] DeathmatchSpawnPoints => new Vector3[15] {
     new Vector3(-29.4879f, -2.9626f, 4.1192f),
     new Vector3(-8.5206f, 0.1815f, 0.0839f),
     new Vector3(8.0277f, -2.9218f, 4.6869f),
@@ -28,19 +30,5 @@ namespace LabFusion.Data {
     new Vector3(-8.4574f, 25.0374f, 51.2673f),
     new Vector3(-4.0549f, 0.0375f, 39.6959f),
         };
-
-        protected override void MainSceneInitialized() {
-            // Check if this is the right map
-            if (FusionSceneManager.Title == "02 - BONELAB Hub" && FusionSceneManager.Level.Pallet.Internal) {
-                // Create DM spawn points
-                for (var i = 0; i < _deathmatchSpawnPoints.Length; i++) {
-                    GameObject spawnPoint = new GameObject("Deathmatch Spawn");
-                    spawnPoint.transform.position = _deathmatchSpawnPoints[i];
-                    spawnPoint.AddComponent<DeathmatchSpawnpoint>();
-                    spawnPoint.AddComponent<LavaGangSpawnpoint>();
-                    spawnPoint.AddComponent<SabrelakeSpawnpoint>();
-                }
-            }
-        }
     }
 }

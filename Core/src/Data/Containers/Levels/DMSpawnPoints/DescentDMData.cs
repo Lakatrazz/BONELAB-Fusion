@@ -10,8 +10,10 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace LabFusion.Data {
-    public class DescentDMData : LevelDataHandler {
-        private static readonly Vector3[] _deathmatchSpawnPoints = new Vector3[12] {
+    public class DescentDMData : DMLevelDataHandler {
+        public override string LevelTitle => "01 - Descent";
+
+        protected override Vector3[] DeathmatchSpawnPoints => new Vector3[12] {
     new Vector3(123.9262f, -62.2602f, 166.4684f),
     new Vector3(125.4921f, -72.8109f, 186.0882f),
     new Vector3(122.0129f, -65.7702f, 192.8663f),
@@ -25,19 +27,5 @@ namespace LabFusion.Data {
     new Vector3(115.0106f, -72.8502f, 162.9939f),
     new Vector3(123.6596f, -72.8502f, 229.1833f),
         };
-
-        protected override void MainSceneInitialized() {
-            // Check if this is the right map
-            if (FusionSceneManager.Title == "01 - Descent" && FusionSceneManager.Level.Pallet.Internal) {
-                // Create DM spawn points
-                for (var i = 0; i < _deathmatchSpawnPoints.Length; i++) {
-                    GameObject spawnPoint = new GameObject("Deathmatch Spawn");
-                    spawnPoint.transform.position = _deathmatchSpawnPoints[i];
-                    spawnPoint.AddComponent<DeathmatchSpawnpoint>();
-                    spawnPoint.AddComponent<LavaGangSpawnpoint>();
-                    spawnPoint.AddComponent<SabrelakeSpawnpoint>();
-                }
-            }
-        }
     }
 }

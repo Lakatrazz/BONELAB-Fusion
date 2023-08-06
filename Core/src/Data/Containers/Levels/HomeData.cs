@@ -22,6 +22,8 @@ namespace LabFusion.Data
 {
     public class HomeData : LevelDataHandler
     {
+        public override string LevelTitle => "14 - Home";
+
         public static GameControl_Outro GameController;
         public static TaxiController TaxiController;
         public static Seat TaxiSeat;

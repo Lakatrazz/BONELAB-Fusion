@@ -10,8 +10,10 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace LabFusion.Data {
-    public class BigAnomalyDMData : LevelDataHandler {
-        private static readonly Vector3[] _deathmatchSpawnPoints = new Vector3[9] {
+    public class BigAnomalyDMData : DMLevelDataHandler {
+        public override string LevelTitle => "05 - Big Anomaly";
+
+        protected override Vector3[] DeathmatchSpawnPoints => new Vector3[9] {
     new Vector3(4.4089f, 40.0375f, 108.1976f),
     new Vector3(27.662f, 43.0375f, 93.3687f),
     new Vector3(-9.566f, 40.0375f, 103.2718f),
@@ -22,19 +24,5 @@ namespace LabFusion.Data {
     new Vector3(41.3916f, 25.0374f, 60.6696f),
     new Vector3(29.4577f, 25.0374f, 61.6327f),
         };
-
-        protected override void MainSceneInitialized() {
-            // Check if this is the right map
-            if (FusionSceneManager.Title == "05 - Big Anomaly" && FusionSceneManager.Level.Pallet.Internal) {
-                // Create DM spawn points
-                for (var i = 0; i < _deathmatchSpawnPoints.Length; i++) {
-                    GameObject spawnPoint = new GameObject("Deathmatch Spawn");
-                    spawnPoint.transform.position = _deathmatchSpawnPoints[i];
-                    spawnPoint.AddComponent<DeathmatchSpawnpoint>();
-                    spawnPoint.AddComponent<LavaGangSpawnpoint>();
-                    spawnPoint.AddComponent<SabrelakeSpawnpoint>();
-                }
-            }
-        }
     }
 }

@@ -10,8 +10,10 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace LabFusion.Data {
-    public class MonoWayDMData : LevelDataHandler {
-        private static readonly Vector3[] _deathmatchSpawnPoints = new Vector3[14] {
+    public class MonogonMotorwayDMData : DMLevelDataHandler {
+        public override string LevelTitle => "10 - Monogon Motorway";
+
+        protected override Vector3[] DeathmatchSpawnPoints => new Vector3[14] {
     new Vector3(49.9405f, 1.0374f, -51.5276f),
     new Vector3(39.0956f, 7.0375f, -24.3985f),
     new Vector3(34.3241f, 1.197f, -52.855f),
@@ -27,19 +29,5 @@ namespace LabFusion.Data {
     new Vector3(10.5809f, 7.5374f, -34.0675f),
     new Vector3(80.5201f, 7.2038f, -67.1719f),
         };
-
-        protected override void MainSceneInitialized() {
-            // Check if this is the right map
-            if (FusionSceneManager.Title == "10 - Monogon Motorway" && FusionSceneManager.Level.Pallet.Internal) {
-                // Create DM spawn points
-                for (var i = 0; i < _deathmatchSpawnPoints.Length; i++) {
-                    GameObject spawnPoint = new GameObject("Deathmatch Spawn");
-                    spawnPoint.transform.position = _deathmatchSpawnPoints[i];
-                    spawnPoint.AddComponent<DeathmatchSpawnpoint>();
-                    spawnPoint.AddComponent<LavaGangSpawnpoint>();
-                    spawnPoint.AddComponent<SabrelakeSpawnpoint>();
-                }
-            }
-        }
     }
 }

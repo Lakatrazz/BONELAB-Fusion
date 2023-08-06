@@ -12,6 +12,9 @@ using LabFusion.Extensions;
 
 namespace LabFusion.Data {
     public class ArenaData : LevelDataHandler {
+        // This may apply to multiple levels.
+        public override string LevelTitle => null;
+
         public static Arena_GameController GameController;
         public static GenGameControl_Display GameControlDisplay;
         public static ArenaMenuController MenuController;

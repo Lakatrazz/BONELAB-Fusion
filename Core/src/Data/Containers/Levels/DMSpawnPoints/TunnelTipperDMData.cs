@@ -10,8 +10,9 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace LabFusion.Data {
-    public class TunnelTipperDMData : LevelDataHandler {
-        private static readonly Vector3[] _deathmatchSpawnPoints = new Vector3[10] {
+    public class TunnelTipperDMData : DMLevelDataHandler {
+        public override string LevelTitle => "Tunnel Tipper";
+        protected override Vector3[] DeathmatchSpawnPoints => new Vector3[10] {
     new Vector3(10.0078f, 16.0968f, 21.5753f),
     new Vector3(10.0832f, 15.663f, 25.6005f),
     new Vector3(9.9641f, 18.1093f, -20.7673f),
@@ -23,19 +24,5 @@ namespace LabFusion.Data {
     new Vector3(9.386f, 9.9136f, -15.1336f),
     new Vector3(9.7402f, 10.0533f, 18.4418f),
         };
-
-        protected override void MainSceneInitialized() {
-            // Check if this is the right map
-            if (FusionSceneManager.Title == "Tunnel Tipper" && FusionSceneManager.Level.Pallet.Internal) {
-                // Create DM spawn points
-                for (var i = 0; i < _deathmatchSpawnPoints.Length; i++) {
-                    GameObject spawnPoint = new GameObject("Deathmatch Spawn");
-                    spawnPoint.transform.position = _deathmatchSpawnPoints[i];
-                    spawnPoint.AddComponent<DeathmatchSpawnpoint>();
-                    spawnPoint.AddComponent<LavaGangSpawnpoint>();
-                    spawnPoint.AddComponent<SabrelakeSpawnpoint>();
-                }
-            }
-        }
     }
 }

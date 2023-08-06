@@ -10,8 +10,10 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace LabFusion.Data {
-    public class MagmaGateDMData : LevelDataHandler {
-        private static readonly Vector3[] _deathmatchSpawnPoints = new Vector3[15] {
+    public class MagmaGateDMData : DMLevelDataHandler {
+        public override string LevelTitle => "08 - Magma Gate";
+
+        protected override Vector3[] DeathmatchSpawnPoints => new Vector3[15] {
     new Vector3(-37.7922f, -0.1129f, 34.9711f),
     new Vector3(-14.8091f, 0.9308f, 35.5413f),
     new Vector3(4.7724f, 3.0374f, -0.7067f),
@@ -28,19 +30,5 @@ namespace LabFusion.Data {
     new Vector3(-7.9078f, 12.0374f, -2.0455f),
     new Vector3(9.312f, 4.9901f, 29.5975f),
         };
-
-        protected override void MainSceneInitialized() {
-            // Check if this is the right map
-            if (FusionSceneManager.Title == "08 - Magma Gate" && FusionSceneManager.Level.Pallet.Internal) {
-                // Create DM spawn points
-                for (var i = 0; i < _deathmatchSpawnPoints.Length; i++) {
-                    GameObject spawnPoint = new GameObject("Deathmatch Spawn");
-                    spawnPoint.transform.position = _deathmatchSpawnPoints[i];
-                    spawnPoint.AddComponent<DeathmatchSpawnpoint>();
-                    spawnPoint.AddComponent<LavaGangSpawnpoint>();
-                    spawnPoint.AddComponent<SabrelakeSpawnpoint>();
-                }
-            }
-        }
     }
 }

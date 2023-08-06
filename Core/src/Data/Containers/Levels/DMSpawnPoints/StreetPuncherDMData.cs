@@ -10,8 +10,9 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace LabFusion.Data {
-    public class StreetPuncherDMData : LevelDataHandler {
-        private static readonly Vector3[] _deathmatchSpawnPoints = new Vector3[12] {
+    public class StreetPuncherDMData : DMLevelDataHandler {
+        public override string LevelTitle => "06 - Street Puncher";
+        protected override Vector3[] DeathmatchSpawnPoints => new Vector3[12] {
     new Vector3(-1.4924f, 11.7874f, 94.0635f),
     new Vector3(3.5141f, 13.4904f, 101.4765f),
     new Vector3(9.0983f, 17.7881f, 134.1948f),
@@ -25,19 +26,5 @@ namespace LabFusion.Data {
     new Vector3(6.6608f, 11.3569f, 110.1438f),
     new Vector3(-5.1882f, 17.7874f, 134.6813f),
         };
-
-        protected override void MainSceneInitialized() {
-            // Check if this is the right map
-            if (FusionSceneManager.Title == "06 - Street Puncher" && FusionSceneManager.Level.Pallet.Internal) {
-                // Create DM spawn points
-                for (var i = 0; i < _deathmatchSpawnPoints.Length; i++) {
-                    GameObject spawnPoint = new GameObject("Deathmatch Spawn");
-                    spawnPoint.transform.position = _deathmatchSpawnPoints[i];
-                    spawnPoint.AddComponent<DeathmatchSpawnpoint>();
-                    spawnPoint.AddComponent<LavaGangSpawnpoint>();
-                    spawnPoint.AddComponent<SabrelakeSpawnpoint>();
-                }
-            }
-        }
     }
 }

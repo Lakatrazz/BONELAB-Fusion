@@ -10,8 +10,10 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace LabFusion.Data {
-    public class NeonDistrictParkourDMData : LevelDataHandler {
-        private static readonly Vector3[] _deathmatchSpawnPoints = new Vector3[12] {
+    public class NeonDistrictParkourDMData : DMLevelDataHandler {
+        public override string LevelTitle => "Neon District Parkour";
+
+        protected override Vector3[] DeathmatchSpawnPoints => new Vector3[12] {
     new Vector3(14.1986f, 0.9377f, -7.2248f),
     new Vector3(4.0275f, 4.3721f, -3.6219f),
     new Vector3(17.0486f, 3.0206f, -14.0138f),
@@ -25,19 +27,5 @@ namespace LabFusion.Data {
     new Vector3(-2.9644f, 1.2189f, -16.9085f),
     new Vector3(1.1659f, 1.2677f, -7.5986f),
         };
-
-        protected override void MainSceneInitialized() {
-            // Check if this is the right map
-            if (FusionSceneManager.Title == "Neon District Parkour" && FusionSceneManager.Level.Pallet.Internal) {
-                // Create DM spawn points
-                for (var i = 0; i < _deathmatchSpawnPoints.Length; i++) {
-                    GameObject spawnPoint = new GameObject("Deathmatch Spawn");
-                    spawnPoint.transform.position = _deathmatchSpawnPoints[i];
-                    spawnPoint.AddComponent<DeathmatchSpawnpoint>();
-                    spawnPoint.AddComponent<LavaGangSpawnpoint>();
-                    spawnPoint.AddComponent<SabrelakeSpawnpoint>();
-                }
-            }
-        }
     }
 }

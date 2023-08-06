@@ -1,7 +1,4 @@
-﻿using LabFusion.MarrowIntegration;
-using LabFusion.Utilities;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,8 +7,10 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace LabFusion.Data {
-    public class PillarClimbDMData : LevelDataHandler {
-        private static readonly Vector3[] _deathmatchSpawnPoints = new Vector3[8] {
+    public class PillarClimbDMData : DMLevelDataHandler {
+        public override string LevelTitle => "11 - Pillar Climb";
+
+        protected override Vector3[] DeathmatchSpawnPoints => new Vector3[8] {
     new Vector3(3.7457f, 0.0374f, -1.5809f),
     new Vector3(0.8794f, 8.0174f, 1.4217f),
     new Vector3(0.3373f, 14.8141f, 0.2999f),
@@ -21,19 +20,5 @@ namespace LabFusion.Data {
     new Vector3(10.5365f, 49.3929f, -4.7714f),
     new Vector3(-4.1714f, 36.5375f, -0.3992f),
         };
-
-        protected override void MainSceneInitialized() {
-            // Check if this is the right map
-            if (FusionSceneManager.Title == "11 - Pillar Climb" && FusionSceneManager.Level.Pallet.Internal) {
-                // Create DM spawn points
-                for (var i = 0; i < _deathmatchSpawnPoints.Length; i++) {
-                    GameObject spawnPoint = new GameObject("Deathmatch Spawn");
-                    spawnPoint.transform.position = _deathmatchSpawnPoints[i];
-                    spawnPoint.AddComponent<DeathmatchSpawnpoint>();
-                    spawnPoint.AddComponent<LavaGangSpawnpoint>();
-                    spawnPoint.AddComponent<SabrelakeSpawnpoint>();
-                }
-            }
-        }
     }
 }

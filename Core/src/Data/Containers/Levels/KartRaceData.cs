@@ -24,6 +24,8 @@ using MelonLoader;
 namespace LabFusion.Data {
     public class KartRaceData : LevelDataHandler
     {
+        public override string LevelTitle => "10 - Monogon Motorway";
+
         private static readonly Vector3[] ExtraKartPositions = new Vector3[5]
         {
             new Vector3(-3.62f, -5.222564f, 6.46f),

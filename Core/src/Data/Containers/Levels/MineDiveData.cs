@@ -14,6 +14,8 @@ namespace LabFusion.Data
 {
     public class MineDiveData : LevelDataHandler
     {
+        public override string LevelTitle => "04 - Mine Dive";
+
         public static GameObject Minecart;
         public static GameObject AvatarCart;
         public static GameObject InvisibleMinecart;

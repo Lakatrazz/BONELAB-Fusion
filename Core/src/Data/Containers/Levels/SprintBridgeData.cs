@@ -13,6 +13,8 @@ using UnityEngine;
 namespace LabFusion.Data {
     public class SprintBridgeData : LevelDataHandler
     {
+        public override string LevelTitle => "07 - Sprint Bridge 04";
+
         public static GameControl_SprintBridge04 GameController;
 
         protected override void MainSceneInitialized() {

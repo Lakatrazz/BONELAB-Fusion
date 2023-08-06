@@ -10,8 +10,10 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace LabFusion.Data {
-    public class MirrorDMData : LevelDataHandler {// fun fact, when i played this with a tester he said that it was the worst pvp experience he ever had. this map was NOT made for deathmatch buttttttttt its fine
-        private static readonly Vector3[] _deathmatchSpawnPoints = new Vector3[8] {
+    public class MirrorDMData : DMLevelDataHandler {
+        public override string LevelTitle => "Mirror";
+
+        protected override Vector3[] DeathmatchSpawnPoints => new Vector3[8] {
     new Vector3(-0.3258f, 1.3078f, 2.3584f),
     new Vector3(-12.8975f, 1.3411f, -12.7348f),
     new Vector3(-11.0187f, 1.2294f, 0.2149f),
@@ -21,19 +23,5 @@ namespace LabFusion.Data {
     new Vector3(-1.2534f, 10.245f, -9.7245f),
     new Vector3(-1.3073f, 10.8671f, -0.2344f),
         };
-
-        protected override void MainSceneInitialized() {
-            // Check if this is the right map
-            if (FusionSceneManager.Title == "Mirror" && FusionSceneManager.Level.Pallet.Internal) {
-                // Create DM spawn points
-                for (var i = 0; i < _deathmatchSpawnPoints.Length; i++) {
-                    GameObject spawnPoint = new GameObject("Deathmatch Spawn");
-                    spawnPoint.transform.position = _deathmatchSpawnPoints[i];
-                    spawnPoint.AddComponent<DeathmatchSpawnpoint>();
-                    spawnPoint.AddComponent<LavaGangSpawnpoint>();
-                    spawnPoint.AddComponent<SabrelakeSpawnpoint>();
-                }
-            }
-        }
     }
 }

@@ -51,6 +51,8 @@ namespace LabFusion.Data {
 
     public class DescentData : LevelDataHandler
     {
+        public override string LevelTitle => "01 - Descent";
+
         public static DescentData Instance { get; private set; }
 
         public static NooseBonelabIntro Noose;
