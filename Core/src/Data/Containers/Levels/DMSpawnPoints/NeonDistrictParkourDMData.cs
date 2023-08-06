@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 namespace LabFusion.Data {
-    public class NeonDistrictParkourData : LevelDataHandler {
+    public class NeonDistrictParkourDMData : LevelDataHandler {
         private static readonly Vector3[] _deathmatchSpawnPoints = new Vector3[12] {
     new Vector3(14.1986f, 0.9377f, -7.2248f),
     new Vector3(4.0275f, 4.3721f, -3.6219f),
