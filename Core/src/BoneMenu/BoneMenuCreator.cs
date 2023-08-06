@@ -18,6 +18,12 @@ namespace LabFusion.BoneMenu
 {
     internal static partial class BoneMenuCreator
     {
+        public static void RemoveEmptyCategory(MenuCategory parent, MenuCategory child) {
+            if (child.Elements.Count <= 0)
+                parent.Elements.RemoveInstance(child);
+        }
+
+        #region MENU CATEGORIES
         public static void CreateColorPreference(MenuCategory category, IFusionPref<Color> pref)
         {
             var currentColor = pref;
@@ -110,5 +116,103 @@ namespace LabFusion.BoneMenu
                 onValueChanged?.Invoke(v);
             };
         }
+        #endregion
+
+        #region SUB PANEL
+        public static void CreateColorPreference(SubPanelElement subPanel, IFusionPref<Color> pref)
+        {
+            var currentColor = pref;
+            var colorR = subPanel.CreateFloatElement("Red", Color.red, currentColor.GetValue().r, 0.05f, 0f, 1f, (r) => {
+                var color = currentColor.GetValue();
+                color.r = r;
+                currentColor.SetValue(color);
+            });
+            var colorG = subPanel.CreateFloatElement("Green", Color.green, currentColor.GetValue().g, 0.05f, 0f, 1f, (g) => {
+                var color = currentColor.GetValue();
+                color.g = g;
+                currentColor.SetValue(color);
+            });
+            var colorB = subPanel.CreateFloatElement("Blue", Color.blue, currentColor.GetValue().b, 0.05f, 0f, 1f, (b) => {
+                var color = currentColor.GetValue();
+                color.b = b;
+                currentColor.SetValue(color);
+            });
+            var colorPreview = subPanel.CreateFunctionElement("■■■■■■■■■■■", currentColor.GetValue(), null);
+
+            currentColor.OnValueChanged += (color) => {
+                colorR.SetValue(color.r);
+                colorG.SetValue(color.g);
+                colorB.SetValue(color.b);
+                colorPreview.SetColor(color);
+            };
+        }
+
+        public static void CreateBytePreference(SubPanelElement subPanel, string name, byte increment, byte minValue, byte maxValue, IFusionPref<byte> pref)
+        {
+            var element = subPanel.CreateIntElement(name, Color.white, pref.GetValue(), increment, minValue, maxValue, (v) => {
+                pref.SetValue((byte)v);
+            });
+
+            pref.OnValueChanged += (v) => {
+                element.SetValue(v);
+            };
+        }
+
+        public static void CreateFloatPreference(SubPanelElement subPanel, string name, float increment, float minValue, float maxValue, IFusionPref<float> pref)
+        {
+            var element = subPanel.CreateFloatElement(name, Color.white, pref.GetValue(), increment, minValue, maxValue, (v) => {
+                pref.SetValue(v);
+            });
+
+            pref.OnValueChanged += (v) => {
+                element.SetValue(v);
+            };
+        }
+
+        public static void CreateBoolPreference(SubPanelElement subPanel, string name, IFusionPref<bool> pref)
+        {
+            var element = subPanel.CreateBoolElement(name, Color.white, pref.GetValue(), (v) => {
+                pref.SetValue(v);
+            });
+
+            pref.OnValueChanged += (v) => {
+                element.SetValue(v);
+            };
+        }
+
+        public static void CreateEnumPreference<TEnum>(SubPanelElement subPanel, string name, IFusionPref<TEnum> pref) where TEnum : Enum
+        {
+            var element = subPanel.CreateEnumElement(name, Color.white, pref.GetValue(), (v) => {
+                pref.SetValue(v);
+            });
+
+            pref.OnValueChanged += (v) => {
+                element.SetValue(v);
+            };
+        }
+
+        public static void CreateStringPreference(SubPanelElement subPanel, string name, IFusionPref<string> pref, Action<string> onValueChanged = null, int maxLength = PlayerIdManager.MaxNameLength)
+        {
+            string currentValue = pref.GetValue();
+            var display = subPanel.CreateFunctionElement(string.IsNullOrWhiteSpace(currentValue) ? $"No {name}" : $"{name}: {currentValue}", Color.white, null);
+            var pasteButton = subPanel.CreateFunctionElement($"Paste {name}", Color.white, () => {
+                if (!Clipboard.ContainsText())
+                    return;
+
+                var text = Clipboard.GetText();
+                text = text.LimitLength(maxLength);
+                pref.SetValue(text);
+            });
+            var resetButton = subPanel.CreateFunctionElement($"Reset {name}", Color.white, () => {
+                pref.SetValue("");
+            });
+
+            pref.OnValueChanged += (v) => {
+                display.SetName(string.IsNullOrWhiteSpace(v) ? $"No {name}" : $"{name}: {v}");
+
+                onValueChanged?.Invoke(v);
+            };
+        }
+        #endregion
     }
 }

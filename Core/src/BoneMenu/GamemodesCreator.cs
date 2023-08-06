@@ -47,23 +47,6 @@ namespace LabFusion.BoneMenu
             // Clear existing gamemodes just incase
             ClearGamemodes(false);
 
-            // Add stop button
-            _gamemodeElement = _gamemodesCategory.CreateFunctionElement("No Active Gamemode", Color.white, () =>
-            {
-                if (Gamemode.ActiveGamemode != null)
-                    Gamemode.ActiveGamemode.StopGamemode();
-            });
-
-            // Add marked button
-            _markedElement = _gamemodesCategory.CreateFunctionElement("No Marked Gamemode", Color.white, () => {
-                if (Gamemode.MarkedGamemode != null)
-                    Gamemode.MarkedGamemode.UnmarkGamemode();
-            });
-
-            // Add toggle buttons
-            CreateBoolPreference(_gamemodesCategory, "Music", FusionPreferences.ClientSettings.GamemodeMusic);
-            CreateBoolPreference(_gamemodesCategory, "Late Joining", FusionPreferences.ClientSettings.GamemodeLateJoining);
-
             // Add necessary gamemodes
             foreach (var gamemode in GamemodeManager.Gamemodes) {
                 // Make sure the gamemode isnt null
@@ -77,6 +60,25 @@ namespace LabFusion.BoneMenu
                     gamemode.OnBoneMenuCreated(lowerCategory);
                 }
             }
+
+            // Add stop button
+            var activity = _gamemodesCategory.CreateSubPanel("Activity", Color.white);
+            _gamemodeElement = activity.CreateFunctionElement("No Active Gamemode", Color.white, () =>
+            {
+                if (Gamemode.ActiveGamemode != null)
+                    Gamemode.ActiveGamemode.StopGamemode();
+            });
+
+            // Add marked button
+            _markedElement = activity.CreateFunctionElement("No Marked Gamemode", Color.white, () => {
+                if (Gamemode.MarkedGamemode != null)
+                    Gamemode.MarkedGamemode.UnmarkGamemode();
+            });
+
+            // Add toggle buttons
+            var options = _gamemodesCategory.CreateSubPanel("Options", Color.white);
+            CreateBoolPreference(options, "Music", FusionPreferences.ClientSettings.GamemodeMusic);
+            CreateBoolPreference(options, "Late Joining", FusionPreferences.ClientSettings.GamemodeLateJoining);
         }
 
         public static void ClearGamemodes(bool showText = true) {

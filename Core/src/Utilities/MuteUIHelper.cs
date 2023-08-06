@@ -8,6 +8,7 @@ using SLZ.UI;
 using System;
 
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 namespace LabFusion.Utilities
@@ -15,15 +16,33 @@ namespace LabFusion.Utilities
     public static class MuteUIHelper {
         private static PageItem _mutePage = null;
         private static GameObject _muteIcon = null;
+        private static Renderer _muteRenderer = null;
+        private static Camera _muteCamera = null;
 
         public static void OnInitializeMelon() {
             FusionPreferences.ClientSettings.Muted.OnValueChanged += OnMutedChanged;
             FusionPreferences.ClientSettings.MutedIndicator.OnValueChanged += OnIndicatorChanged;
+
+            RenderPipelineManager.beginCameraRendering += (Il2CppSystem.Action<ScriptableRenderContext, Camera>)OnBeginCameraRendering;
+            RenderPipelineManager.endCameraRendering += (Il2CppSystem.Action<ScriptableRenderContext, Camera>)OnEndCameraRendering;
         }
 
         public static void OnDeinitializeMelon() {
             FusionPreferences.ClientSettings.Muted.OnValueChanged -= OnMutedChanged;
             FusionPreferences.ClientSettings.MutedIndicator.OnValueChanged -= OnIndicatorChanged;
+
+            RenderPipelineManager.beginCameraRendering -= (Il2CppSystem.Action<ScriptableRenderContext, Camera>)OnBeginCameraRendering;
+            RenderPipelineManager.endCameraRendering -= (Il2CppSystem.Action<ScriptableRenderContext, Camera>)OnEndCameraRendering;
+        }
+
+        private static void OnBeginCameraRendering(ScriptableRenderContext context, Camera camera) {
+            if (camera == _muteCamera && _muteRenderer != null)
+                _muteRenderer.enabled = true;
+        }
+
+        private static void OnEndCameraRendering(ScriptableRenderContext context, Camera camera) {
+            if (camera == _muteCamera && _muteRenderer != null)
+                _muteRenderer.enabled = false;
         }
 
         private static void OnMutedChanged(bool value) {
@@ -73,11 +92,14 @@ namespace LabFusion.Utilities
                 homePage.items.Add(_mutePage);
 
                 // Add mute icon
-                _muteIcon = GameObject.Instantiate(FusionContentLoader.MutePopupPrefab, Vector3Extensions.up * -500f, QuaternionExtensions.identity);
+                Transform playerHead = manager.openControllerRig.m_head;
+                _muteIcon = GameObject.Instantiate(FusionContentLoader.MutePopupPrefab, playerHead);
                 _muteIcon.name = "Mute Icon [FUSION]";
-                var muteCamera = _muteIcon.GetComponent<Camera>();
-                var cameraData = manager.openControllerRig.m_head.GetComponent<UniversalAdditionalCameraData>();
-                cameraData.cameraStack.Add(muteCamera);
+                _muteRenderer = _muteIcon.GetComponentInChildren<Renderer>();
+                _muteRenderer.enabled = false;
+                _muteCamera = _muteIcon.GetComponent<Camera>();
+                var cameraData = playerHead.GetComponent<UniversalAdditionalCameraData>();
+                cameraData.cameraStack.Add(_muteCamera);
 
                 _muteIcon.SetActive(VoiceHelper.ShowIndicator);
             }

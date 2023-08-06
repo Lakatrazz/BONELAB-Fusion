@@ -70,7 +70,41 @@ namespace LabFusion.BoneMenu
 
             lobbyCategory.CreateFunctionElement("Join Server", Color.white, lobby.CreateJoinDelegate(info));
 
+            // Create a category for the player list
+            var playersCategory = lobbyCategory.CreateCategory("Players", Color.white);
+
+            foreach (var player in info.PlayerList.players) {
+                if (!player.isValid)
+                    continue;
+
+                playersCategory.CreateFunctionElement(player.username, Color.white, null);
+            }
+
+            RemoveEmptyCategory(lobbyCategory, playersCategory);
+
+            // Create a category for the server tags
+            var tagsCategory = lobbyCategory.CreateCategory("Tags", Color.white);
+
+            foreach (var tag in info.LobbyTags.Expand()) {
+                tagsCategory.CreateFunctionElement(tag, Color.white, null);
+            }
+
+            RemoveEmptyCategory(lobbyCategory, tagsCategory);
+
+            // Allow outside mods to add their own lobby information
+            var modsCategory = lobbyCategory.CreateCategory("Extra Info", Color.cyan);
+            MultiplayerHooking.Internal_OnLobbyCategoryCreated(modsCategory, lobby);
+
+            RemoveEmptyCategory(lobbyCategory, modsCategory);
+
+            // Create general info panel
             var generalInfoPanel = lobbyCategory.CreateSubPanel("General Info", Color.white);
+
+            // Names
+            generalInfoPanel.CreateFunctionElement($"Username: {info.LobbyOwner}", Color.white, null);
+
+            if (!string.IsNullOrWhiteSpace(info.LobbyName))
+                generalInfoPanel.CreateFunctionElement($"Server Name: {info.LobbyName}", Color.white, null);
 
             // Show their version
             generalInfoPanel.CreateFunctionElement($"Version: {info.LobbyVersion}", versionColor, null);
@@ -89,32 +123,12 @@ namespace LabFusion.BoneMenu
             gamemodePanel.CreateFunctionElement(info.IsGamemodeRunning ? "Running" : "Not Running", Color.white, null);
 
             // Create a category for settings
-            var settingsCategory = lobbyCategory.CreateCategory("Settings", Color.yellow);
+            var settingsCategory = lobbyCategory.CreateSubPanel("Settings", Color.yellow);
 
             settingsCategory.CreateFunctionElement($"Nametags: {(info.NametagsEnabled ? "Enabled" : "Disabled")}", Color.white, null);
             settingsCategory.CreateFunctionElement($"Server Privacy: {info.Privacy}", Color.white, null);
             settingsCategory.CreateFunctionElement($"Time Scale Mode: {info.TimeScaleMode}", Color.white, null);
             settingsCategory.CreateFunctionElement($"Voicechat: {(info.VoicechatEnabled ? "Enabled" : "Disabled")}", Color.white, null);
-
-            // Create a category for the player list
-            var playersCategory = lobbyCategory.CreateCategory("Players", Color.white);
-
-            foreach (var player in info.PlayerList.players) {
-                if (!player.isValid)
-                    continue;
-
-                playersCategory.CreateFunctionElement(player.username, Color.white, null);
-            }
-
-            // Create a category for the server tags
-            var tagsCategory = lobbyCategory.CreateCategory("Tags", Color.white);
-
-            foreach (var tag in info.LobbyTags.Expand()) {
-                tagsCategory.CreateFunctionElement(tag, Color.white, null);
-            }
-
-            // Allow outside mods to add their own lobby information
-            MultiplayerHooking.Internal_OnLobbyCategoryCreated(lobbyCategory, lobby);
         }
     }
 }

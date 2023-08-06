@@ -17,7 +17,7 @@ namespace LabFusion.Data {
 
         protected virtual bool IsMatchingScene() {
             if (string.IsNullOrEmpty(LevelTitle))
-                return false;
+                return true;
 
             return FusionSceneManager.Title == LevelTitle && FusionSceneManager.Level.Pallet.Internal;
         }
