@@ -68,15 +68,12 @@ namespace LabFusion.BoneMenu
             var lobbyCategory = rootCategory.CreateCategory($"INTERNAL_LOBBY_{_lobbyIndex++}", lobbyColor);
             lobbyCategory.SetName(userString);
 
-            lobbyCategory.CreateFunctionElement("Join Server", Color.white, lobby.CreateJoinDelegate(info));
+            lobbyCategory.CreateFunctionElement("Join Server", Color.white, info.CreateJoinDelegate(lobby));
 
             // Create a category for the player list
             var playersCategory = lobbyCategory.CreateCategory("Players", Color.white);
 
             foreach (var player in info.PlayerList.players) {
-                if (!player.isValid)
-                    continue;
-
                 playersCategory.CreateFunctionElement(player.username, Color.white, null);
             }
 

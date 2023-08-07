@@ -13,25 +13,17 @@ namespace LabFusion.XML {
     public sealed class PlayerList {
         public struct PlayerInfo {
             public string username;
-            public bool isValid;
 
             public PlayerInfo(PlayerId id) {
                 username = id.GetMetadata(MetadataHelper.UsernameKey);
-                isValid = true;
             }
 
             public PlayerInfo(XElement element) {
                 element.TryGetAttribute(nameof(username), out username);
-
-                if (element.TryGetAttribute(nameof(isValid), out var isValidRaw))
-                    isValid = isValidRaw == bool.TrueString;
-                else
-                    isValid = false;
             }
 
             public void WriteElement(XElement element) {
                 element.SetAttributeValue(nameof(username), username);
-                element.SetAttributeValue(nameof(isValid), isValid.ToString());
             }
         }
 
@@ -68,7 +60,7 @@ namespace LabFusion.XML {
 
         private XDocument CreateDefault() {
             XDocument document = new();
-            document.Add(new XElement(nameof(PlayerInfo)));
+            document.Add(new XElement("Root"));
             return document;
         }
     }

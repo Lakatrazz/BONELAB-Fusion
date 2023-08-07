@@ -542,7 +542,7 @@ namespace LabFusion.Network
             list.FilterDistanceWorldwide();
             list.WithMaxResults(int.MaxValue);
             list.WithSlotsAvailable(int.MaxValue);
-            list.WithKeyValue(LobbyMetadataInfo.HasServerOpenKey, bool.TrueString);
+            list.WithKeyValue(LobbyConstants.HasServerOpenKey, bool.TrueString);
             return list.RequestAsync();
         }
 

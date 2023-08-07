@@ -1,9 +1,12 @@
 ﻿using FusionHelper.Network;
+
 using LabFusion.Utilities;
-using LabFusion.XML;
+
 using LiteNetLib;
 using LiteNetLib.Utils;
+
 using MelonLoader;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +21,7 @@ namespace LabFusion.Network
     {
         private TaskCompletionSource<ulong[]> _lobbyIdSource = null;
         private readonly ProxyNetworkLayer _networkLayer;
-        private Dictionary<ulong, TaskCompletionSource<LobbyMetadataInfo>> _metadataInfoRequests = new Dictionary<ulong, TaskCompletionSource<LobbyMetadataInfo>>();
+        private readonly Dictionary<ulong, TaskCompletionSource<LobbyMetadataInfo>> _metadataInfoRequests = new();
 
         internal ProxyLobbyManager(ProxyNetworkLayer networkLayer)
         {
@@ -54,62 +57,33 @@ namespace LabFusion.Network
             if (messageType == MessageTypes.LobbyMetadata)
             {
                 ulong lobbyId = packetReader.GetULong();
-                MelonLogger.Msg($"Got LobbyMetadata for {lobbyId}");
+                FusionLogger.Log($"Got LobbyMetadata for {lobbyId}");
 
                 if (!_metadataInfoRequests.ContainsKey(lobbyId))
                 {
-                    MelonLogger.Error("Got extraneous LobbyMetadata response?");
+                    FusionLogger.Error("Got extraneous LobbyMetadata response?");
                     return;
                 }
 
                 var tcs = _metadataInfoRequests[lobbyId];
 
-                LobbyMetadataInfo metadataInfo = new()
-                {
-                    LobbyId = packetReader.GetULong(),
-                    LobbyOwner = packetReader.GetString(),
-                    LobbyName = packetReader.GetString(),
-                    HasServerOpen = packetReader.GetBool(),
-                    PlayerCount = packetReader.GetInt(),
-                    NametagsEnabled = packetReader.GetBool(),
-                    Privacy = (ServerPrivacy)packetReader.GetInt(),
-                    TimeScaleMode = (Senders.TimeScaleMode)packetReader.GetInt(),
+                ProxyNetworkLobby lobby = new();
 
-                    MaxPlayers = packetReader.GetInt(),
-                    VoicechatEnabled = packetReader.GetBool(),
+                // Get the amount of keys
+                int keyCount = packetReader.GetInt();
 
-                    LevelName = packetReader.GetString(),
-                    LevelBarcode = packetReader.GetString(),
-                    GamemodeName = packetReader.GetString()
-                };
+                // Read key array
+                for (var i = 0; i < keyCount; i++) {
+                    // In order, key then value
+                    string key = packetReader.GetString();
+                    string value = packetReader.GetString();
 
-                try
-                {
-                    string listStr = packetReader.GetString();
-                    FusionLogger.Log(listStr);
-                    XDocument parsedList = XDocument.Parse(listStr);
-                    var list = new XML.PlayerList();
-                    list.ReadDocument(parsedList);
-                    metadataInfo.PlayerList = list;
-                }
-                catch
-                {
-                    metadataInfo.PlayerList = new()
-                    {
-                        players = new PlayerList.PlayerInfo[0]
-                    };
+                    lobby.CacheMetadata(key, value);
                 }
 
-                if (Version.TryParse(packetReader.GetString(), out var version))
-                {
-                    metadataInfo.LobbyVersion = version;
-                }
-                else
-                {
-                    metadataInfo.LobbyVersion = new Version(0, 0, 0);
-                }
+                LobbyMetadataInfo info = LobbyMetadataHelper.ReadInfo(lobby);
 
-                tcs.SetResult(metadataInfo);
+                tcs.SetResult(info);
                 _metadataInfoRequests.Remove(lobbyId);
             }
         }

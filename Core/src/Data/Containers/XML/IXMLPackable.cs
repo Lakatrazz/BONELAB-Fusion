@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace LabFusion.Data
+namespace LabFusion.XML
 {
     public interface IXMLPackable {
         public void Pack(XElement element);

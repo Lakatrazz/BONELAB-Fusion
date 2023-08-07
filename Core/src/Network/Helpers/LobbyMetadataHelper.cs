@@ -15,9 +15,6 @@ using System.Xml.Linq;
 
 namespace LabFusion.Network {
     public struct LobbyMetadataInfo {
-        private const string _internalPrefix = "BONELAB_FUSION_";
-        public const string HasServerOpenKey = _internalPrefix + "HasServerOpen";
-
         // Lobby info
         public ulong LobbyId;
         public string LobbyOwner;
@@ -81,7 +78,7 @@ namespace LabFusion.Network {
             lobby.SetMetadata(nameof(LobbyName), LobbyName);
             lobby.SetMetadata(nameof(LobbyTags), LobbyTags);
             lobby.SetMetadata(nameof(LobbyVersion), LobbyVersion.ToString());
-            lobby.SetMetadata(HasServerOpenKey, HasServerOpen.ToString());
+            lobby.SetMetadata(LobbyConstants.HasServerOpenKey, HasServerOpen.ToString());
             lobby.SetMetadata(nameof(PlayerCount), PlayerCount.ToString());
             lobby.SetMetadata(nameof(PlayerList), PlayerList.WriteDocument().ToString());
 
@@ -97,6 +94,9 @@ namespace LabFusion.Network {
             lobby.SetMetadata(nameof(LevelBarcode), LevelBarcode);
             lobby.SetMetadata(nameof(GamemodeName), GamemodeName);
             lobby.SetMetadata(nameof(IsGamemodeRunning), IsGamemodeRunning.ToString());
+
+            // Now, write all the keys into an array in the metadata
+            lobby.WriteKeyCollection();
         }
 
         public static LobbyMetadataInfo Read(INetworkLobby lobby) {
@@ -105,7 +105,7 @@ namespace LabFusion.Network {
                 LobbyOwner = lobby.GetMetadata(nameof(LobbyOwner)),
                 LobbyName = lobby.GetMetadata(nameof(LobbyName)),
                 LobbyTags = lobby.GetMetadata(nameof(LobbyTags)),
-                HasServerOpen = lobby.GetMetadata(HasServerOpenKey) == bool.TrueString,
+                HasServerOpen = lobby.GetMetadata(LobbyConstants.HasServerOpenKey) == bool.TrueString,
 
                 // Lobby settings
                 NametagsEnabled = lobby.GetMetadata(nameof(NametagsEnabled)) == bool.TrueString,
@@ -162,6 +162,25 @@ namespace LabFusion.Network {
                 info.TimeScaleMode = mode;
 
             return info;
+        }
+
+        public Action CreateJoinDelegate(INetworkLobby lobby) {
+            if (!ClientHasLevel) {
+                string levelName = LevelName;
+
+                return () => {
+                    FusionNotifier.Send(new FusionNotification() {
+                        title = "Failed to Join",
+                        showTitleOnPopup = true,
+                        isMenuItem = false,
+                        isPopup = true,
+                        message = $"You do not have the map {levelName} installed!",
+                        popupLength = 6f,
+                    });
+                };
+            }
+
+            return lobby.CreateJoinDelegate(LobbyId);
         }
     }
 
