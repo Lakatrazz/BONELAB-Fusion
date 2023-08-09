@@ -36,7 +36,7 @@ All of the functions of the mod can be found in BONEMENU under the tab "BONELAB 
 
 ## Physical Interactions
 Instead of players and synced props being kinematic, non-physics objects, all interactions are solved using physical forces.<br>
-This means you can pickup your friends, throw them, stand on them, push them, and more.
+This means you can pick up your friends, throw them, stand on them, push them, and more.
 
 ## Campaign Support
 The entire campaign has been ensured completable, with nearly every custom event synced, as well as optimizations made to make the experience run as smoothly as possible.
@@ -51,7 +51,7 @@ All platforms are able to crossplay together. In order to do so, you simply have
 
 # Additional Content
 ## Modules, Gamemodes, and the Bitmart
-Fusion has integrated support to allow other mods implement Fusion compatibility using "Modules". There is an SDK for Unity, allowing you to implement features while in multiplayer, as well as a code SDK in order to create unique synced features. You can find both of these on the GitHub repository linked on this page.
+Fusion has integrated support to allow other mods to implement Fusion compatibility using "Modules". There is an SDK for Unity, allowing you to implement features while in multiplayer, as well as a code SDK in order to create unique synced features. You can find both of these [here](https://github.com/Lakatrazz/BONELAB-Fusion).
 
 Besides that, Fusion also has integrated gamemodes. The current gamemodes are:
 - Deathmatch, Free-for-all fighting!

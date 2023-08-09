@@ -5,7 +5,7 @@ This is currently only for PCVR platforms. [You can view a basic installation gu
 This mod is networked and built around Steam, but the networking system can be swapped out using a Networking Layer.
 
 ## Modules
-Fusion supports a system called "Modules". This allows other code mods to addon and sync their own events in Fusion.
+Fusion supports a system called "Modules". This allows other code mods to add on and sync their own events in Fusion.
 Fusion also has an SDK for integrating features into Marrow™ SDK items, maps, and more.
 
 ## Marrow SDK Integration
