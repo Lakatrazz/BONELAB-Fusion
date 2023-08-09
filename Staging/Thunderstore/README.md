@@ -54,12 +54,20 @@ Besides that, Fusion also has integrated gamemodes. The current gamemodes are:
 - Deathmatch, Free-for-all fighting!
 - Team Deathmatch, Kill as many players on the opposite team!
 - Entangled, Be constrained to a randomized partner!
+
 Custom maps can implement these gamemodes, and customize them specifically for their map.
 
 Finally, Fusion has built in cosmetics. Winning gamemodes will earn you Bits to use at the Bitmart. Here, you are able to equip/unequip as well as purchase items such as cosmetics. Other players will be able to see these cosmetics, and you can mix and match as you choose.
 
+# Achievements
+As an additional way to earn Bits, you can accomplish various tasks to complete Achievements. There are a large amount of Achievements, each with differing challenge, risk, and reward. Upon completing every achievement, you may even unlock some secret items!
+
 # Credits
 You can view the most recent changes and credits in the in game info box in VoidG114.
+
+# Source Code
+- Fusion: https://github.com/Lakatrazz/BONELAB-Fusion
+- Fusion Example Module: https://github.com/Lakatrazz/Fusion-Module-Example
 
 # Soundtrack
 You can listen to the Fusion official soundtrack here:
