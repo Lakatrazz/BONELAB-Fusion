@@ -15,7 +15,6 @@ Added:
 - Sync MineDive minecart amount
 - Server tags
 - DM spawnpoints to every map (thanks idkbythispoint)
-- SDK scripts for cosmetic attach points
 - 30 new cosmetics
 - Stat cheat detection
 - Vote kicking
@@ -27,6 +26,7 @@ Adjusted:
 - Physics interactions
 SDK:
 - Made bit SDK script have separate function for removing bits
+- Scripts for avatar cosmetic attach points
 Internal:
 - VC code cleanup
 - Optimized coroutine usage

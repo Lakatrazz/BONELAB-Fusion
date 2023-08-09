@@ -8,22 +8,18 @@ using System.Threading.Tasks;
 using HarmonyLib;
 
 using LabFusion.Network;
-using LabFusion.Representation;
 using LabFusion.Syncables;
 using LabFusion.Utilities;
 using LabFusion.Data;
+using LabFusion.Extensions;
+using LabFusion.Senders;
 
 using SLZ.Marrow.Pool;
-
-using UnityEngine;
+using SLZ.Zones;
+using SLZ;
 
 using MelonLoader;
 
-using SLZ.Zones;
-
-using LabFusion.Extensions;
-using LabFusion.Senders;
-using SLZ;
 
 namespace LabFusion.Patching
 {
@@ -62,7 +58,11 @@ namespace LabFusion.Patching
                             CheckRemoveSyncable(__instance);
 
                             PooleeUtilities.CheckingForSpawn.Push(__instance);
-                            MelonCoroutines.Start(CoVerifySpawnedRoutine(__instance));
+                            FusionSceneManager.HookOnLevelLoad(() => {
+                                DelayUtilities.Delay(() => {
+                                    OnVerifySpawned(__instance);
+                                }, 4);
+                            });
                         }
                     }
                 }
@@ -93,13 +93,7 @@ namespace LabFusion.Patching
             }
         }
 
-        private static IEnumerator CoVerifySpawnedRoutine(AssetPoolee __instance) {
-            while (FusionSceneManager.IsLoading())
-                yield return null;
-
-            for (var i = 0; i < 4; i++)
-                yield return null;
-
+        private static void OnVerifySpawned(AssetPoolee __instance) {
             PooleeUtilities.CheckingForSpawn.Pull(__instance);
 
             try
