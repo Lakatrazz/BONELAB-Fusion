@@ -36,22 +36,22 @@ namespace LabFusion.Syncables
             base.Cleanup();
         }
 
-        public override Grip GetGrip(ushort index) => throw new NotImplementedException();
+        public override Grip GetGrip(ushort index) => null;
 
-        public override ushort? GetIndex(Grip grip) => throw new NotImplementedException();
+        public override ushort? GetIndex(Grip grip) => null;
 
-        public override byte? GetOwner() => throw new NotImplementedException();
+        public override byte? GetOwner() => null;
 
-        public override bool IsGrabbed() => throw new NotImplementedException();
+        public override bool IsGrabbed() => false;
 
-        public override bool IsOwner() => throw new NotImplementedException();
+        public override bool IsOwner() => false;
 
         public override void OnFixedUpdate() { }
 
         public override void OnUpdate() { }
 
-        public override void SetOwner(byte owner) => throw new NotImplementedException();
+        public override void SetOwner(byte owner) { }
 
-        public override void RemoveOwner() => throw new NotImplementedException();
+        public override void RemoveOwner() { }
     }
 }
