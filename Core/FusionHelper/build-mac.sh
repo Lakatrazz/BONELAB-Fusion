@@ -20,7 +20,7 @@ architecture=$2
 configuration="${build_type}-Mac"
 architecture_flag="x64"
 
-if [ "${architecture_flag,,}" = "arm64" ]; then
+if [ "$(echo "$architecture" | tr '[:upper:]' '[:lower:]')" = "arm64" ]; then
     architecture_flag="arm64"
 fi
 
