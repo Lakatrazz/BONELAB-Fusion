@@ -22,27 +22,30 @@ namespace LabFusion.Patching
     public static class GunPatches {
         public static bool IgnorePatches = false;
 
-        public static void Patch() {
-            PatchOnFire();
+        [HarmonyPatch(nameof(Gun.Fire))]
+        [HarmonyPrefix]
+        public static bool Fire(Gun __instance)
+        {
+            if (IgnorePatches)
+                return true;
+
+            if (NetworkInfo.HasServer && __instance.cartridgeState == Gun.CartridgeStates.UNSPENT && __instance.triggerGrip)
+            {
+                var hand = __instance.triggerGrip.GetHand();
+
+                if (hand == null)
+                    return true;
+
+                if (PlayerRepManager.HasPlayerId(hand.manager))
+                    return false;
+            }
+
+            return true;
         }
 
-        private static EmptyPatchDelegate _original;
-
-        private static unsafe void PatchOnFire() {
-            var tgtPtr = NativeUtilities.GetNativePtr<Gun>("NativeMethodInfoPtr_OnFire_Protected_Virtual_New_Void_0");
-            var dstPtr = NativeUtilities.GetDestPtr<EmptyPatchDelegate>(OnFire);
-
-            MelonUtils.NativeHookAttach((IntPtr)(&tgtPtr), dstPtr);
-            _original = NativeUtilities.GetOriginal<EmptyPatchDelegate>(tgtPtr);
-        }
-
-        private static void OnFire(IntPtr instance, IntPtr method) {
-            OnFirePrefix(new Gun(instance));
-
-            _original(instance, method);
-        }
-
-        private static void OnFirePrefix(Gun __instance)
+        [HarmonyPatch(nameof(Gun.OnFire))]
+        [HarmonyPrefix]
+        public static void OnFire(Gun __instance)
         {
             if (IgnorePatches)
                 return;
@@ -69,26 +72,6 @@ namespace LabFusion.Patching
             {
                 FusionLogger.LogException("patching Gun.OnFire", e);
             }
-        }
-
-        [HarmonyPatch(nameof(Gun.Fire))]
-        [HarmonyPrefix]
-        public static bool Fire(Gun __instance) {
-            if (IgnorePatches)
-                return true;
-
-             if (NetworkInfo.HasServer && __instance.cartridgeState == Gun.CartridgeStates.UNSPENT && __instance.triggerGrip)
-             {
-                 var hand = __instance.triggerGrip.GetHand();
-
-                 if (hand == null)
-                     return true;
-
-                 if (PlayerRepManager.HasPlayerId(hand.manager))
-                     return false;
-             }
-
-            return true;
         }
     }
 

@@ -13,9 +13,6 @@ namespace LabFusion.Patching {
             SubBehaviourHealthPatches.Patch();
             ImpactPropertiesPatches.Patch();
             PlayerDamageReceiverPatches.Patch();
-
-            // Patched due to overlapping patches on Android causing them to break
-            GunPatches.Patch();
         }
     }
 }
