@@ -74,16 +74,15 @@ namespace LabFusion.Network
             if (NetworkInfo.IsServer || isServerHandled)
                 throw new ExpectedClientException();
 
-            using (FusionReader reader = FusionReader.Create(bytes)) {
-                using (var data = reader.ReadFusionSerializable<DynamicsAssignData>()) {
-                    // Modules
-                    ModuleMessageHandler.PopulateHandlerTable(data.moduleHandlerNames);
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<DynamicsAssignData>();
 
-                    // Gamemodes
-                    GamemodeRegistration.PopulateGamemodeTable(data.gamemodeNames);
-                    GamemodeRegistration.PopulateGamemodeMetadatas(data.gamemodeMetadatas);
-                }
-            }
+            // Modules
+            ModuleMessageHandler.PopulateHandlerTable(data.moduleHandlerNames);
+
+            // Gamemodes
+            GamemodeRegistration.PopulateGamemodeTable(data.gamemodeNames);
+            GamemodeRegistration.PopulateGamemodeMetadatas(data.gamemodeMetadatas);
         }
     }
 }

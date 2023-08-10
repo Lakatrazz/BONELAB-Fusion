@@ -82,8 +82,15 @@ namespace LabFusion.Network
                             propHealth.hits = propHealth.req_hit_count + 1;
                             propHealth.bloodied = true;
 
-                            propHealth.TIMEDKILL();
-                            propHealth.SETPROP();
+                            try {
+                                propHealth.TIMEDKILL();
+                                propHealth.SETPROP();
+                            }
+                            catch {
+#if DEBUG
+                                FusionLogger.Warn("Got error trying to destroy a PropHealth. This is probably caused by the item.");
+#endif
+                            }
 
                             PropHealthPatches.IgnorePatches = false;
                         }

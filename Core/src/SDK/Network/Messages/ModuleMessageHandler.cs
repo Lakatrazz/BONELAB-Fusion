@@ -78,6 +78,14 @@ namespace LabFusion.Network
 
         public static void ReadMessage(byte[] bytes, bool isServerHandled = false)
         {
+            if (Handlers == null) {
+#if DEBUG
+                FusionLogger.Warn("We received a ModuleMessage, but Handlers were not registered yet.");
+#endif
+
+                return;
+            }
+
             try
             {
                 ushort tag = BitConverter.ToUInt16(bytes, 0);
@@ -97,7 +105,7 @@ namespace LabFusion.Network
             }
         }
 
-        internal static readonly List<Type> HandlerTypes = new List<Type>();
+        internal static readonly List<Type> HandlerTypes = new();
         internal static ModuleMessageHandler[] Handlers = null;
     }
 }
