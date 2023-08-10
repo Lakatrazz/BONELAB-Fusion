@@ -37,6 +37,16 @@ namespace LabFusion.Utilities {
         }
 
         public void Add(TSource source, TComponent component) {
+            if (_Cache.ContainsKey(source)) {
+                _Cache[source] = component;
+
+#if DEBUG
+                FusionLogger.Warn("Attempted to add component to a ComponentCache, but Source already existed. This is probably fine.");
+#endif
+
+                return;
+            }
+
             _HashTable.Add(source);
             _Cache.Add(source, component);
         }
