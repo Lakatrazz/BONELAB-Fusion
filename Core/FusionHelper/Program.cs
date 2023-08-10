@@ -8,6 +8,8 @@ Console.WriteLine("\x1b[93mI see you're on a Mac. The Mac version of FusionHelpe
 
 #endif
 
+SteamHandler.CheckSteamRunning();
+
 NetworkHandler.Init();
 
 Thread tickThread = new(() =>
