@@ -54,6 +54,13 @@ Thread commandThread = new(() =>
                         SteamHandler.Init(250820);
                         break;
                     }
+                case "quit":
+                case "exit":
+                case "stop":
+                    {
+                        Environment.Exit(0);
+                        break;
+                    }
                 default:
                     Console.WriteLine("Unknown command.");
                     break;
