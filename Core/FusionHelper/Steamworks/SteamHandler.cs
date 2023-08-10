@@ -156,9 +156,8 @@ namespace FusionHelper.Steamworks
 
         public static bool CheckSteamRunning()
         {
-            var procs = System.Diagnostics.Process.GetProcessesByName("steam");
-
-            bool running = procs.Length > 0;
+            var procs = System.Diagnostics.Process.GetProcesses();
+            bool running = procs.Any(p => p.ProcessName == "steam" || p.ProcessName == "steam_osx");
 
             if (!running)
                 Console.WriteLine("\x1b[91mSteam does not seem to be running, you may need to launch it and restart FusionHelper.\x1b[0m");
