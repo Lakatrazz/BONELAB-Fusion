@@ -1,6 +1,9 @@
 # BONELAB Fusion Release
 A multiplayer mod for BONELAB featuring support for Oculus and SteamVR.
 This is currently only for PCVR platforms. [You can view a basic installation guide here.](INSTALLATION.md)
+
+![](https://i.imgur.com/1ZpMfei.png)
+
 ## Networking
 This mod is networked and built around Steam, but the networking system can be swapped out using a Networking Layer.
 
@@ -15,8 +18,7 @@ It can be found in "Scripts/SLZ.Marrow.SDK/SLZ/Marrow/MarrowSDK".
 The reason for this is that this is already included in the real sdk, and Fusion uses some values from it, causing it to get confused.
 
 You can download the integration unity package from [the Releases tab of this repository](https://github.com/Lakatrazz/BONELAB-Fusion/releases/latest).
-Alternatively, you can download the files raw at this link:
-https://github.com/Lakatrazz/BONELAB-Fusion/tree/main/Core/marrow-integration
+Alternatively, you can download the files raw [here](https://github.com/Lakatrazz/BONELAB-Fusion/tree/main/Core/marrow-integration)
 
 ## Module Example
 The module example can be found here:
