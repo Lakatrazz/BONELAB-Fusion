@@ -14,7 +14,7 @@ When using the integration, if you have the extended sdk installed, delete the "
 It can be found in "Scripts/SLZ.Marrow.SDK/SLZ/Marrow/MarrowSDK".
 The reason for this is that this is already included in the real sdk, and Fusion uses some values from it, causing it to get confused.
 
-You can download the integration unity package from [the Releases tab of this repository](github.com/Lakatrazz/BONELAB-Fusion/releases/latest).
+You can download the integration unity package from [the Releases tab of this repository](https://github.com/Lakatrazz/BONELAB-Fusion/releases/latest).
 Alternatively, you can download the files raw at this link:
 https://github.com/Lakatrazz/BONELAB-Fusion/tree/main/Core/marrow-integration
 
