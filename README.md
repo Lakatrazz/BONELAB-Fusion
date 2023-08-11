@@ -1,6 +1,6 @@
 # BONELAB Fusion Release
-A multiplayer mod for BONELAB featuring support for Oculus and SteamVR.
-This is currently only for PCVR platforms. [You can view a basic installation guide here.](INSTALLATION.md)
+A multiplayer mod for BONELAB featuring support for all platforms.
+[You can view a basic installation guide here.](INSTALLATION.md)
 
 ![](https://i.imgur.com/1ZpMfei.png)
 
