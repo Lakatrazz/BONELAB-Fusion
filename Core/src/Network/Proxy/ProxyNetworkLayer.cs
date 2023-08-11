@@ -739,6 +739,7 @@ namespace LabFusion.Network
                         isMenuItem = false,
                         isPopup = true,
                     });
+                    _isPublicLobbySearching = false;
                     yield break;
                 }
             }
