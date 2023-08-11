@@ -21,6 +21,21 @@ namespace FusionHelper.Steamworks
 
         public static void Init(int appId)
         {
+#if DEBUG
+            Dispatch.OnDebugCallback = (type, str, server) =>
+            {
+                Console.WriteLine($"[Callback {type} {(server ? "server" : "client")}]");
+                Console.WriteLine(str);
+                Console.WriteLine($"");
+            };
+
+            Dispatch.OnException = (e) =>
+            {
+                Console.Error.WriteLine(e.Message);
+                Console.Error.WriteLine(e.StackTrace);
+            };
+#endif
+
 #if !PLATFORM_MAC
             try
             {

@@ -23,6 +23,8 @@
 	<DefineConstants Condition="'$(PlatformConfiguration)' == 'Win'">PLATFORM_WIN</DefineConstants>
 	<DefineConstants Condition="'$(PlatformConfiguration)' == 'Linux'">PLATFORM_LINUX</DefineConstants>
 	  
+	<DefineConstants Condition="$(Configuration.StartsWith('Debug-'))">DEBUG</DefineConstants>
+	  
 	<Platforms>ARM64;x64</Platforms>
 	 
 	<RuntimeIdentifier Condition="'$(PlatformConfiguration)' == 'Mac' And '$(Platform)' == 'ARM64'">osx-arm64</RuntimeIdentifier>
