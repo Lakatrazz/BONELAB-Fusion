@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
 	<ApplicationId>app.trev.FusionHelper</ApplicationId>
@@ -18,10 +18,13 @@
 	<ImplicitUsings>enable</ImplicitUsings>
 	<Nullable>enable</Nullable>
 	<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-	  
-	<DefineConstants Condition="'$(PlatformConfiguration)' == 'Mac'">PLATFORM_MAC</DefineConstants>
-	<DefineConstants Condition="'$(PlatformConfiguration)' == 'Win'">PLATFORM_WIN</DefineConstants>
-	<DefineConstants Condition="'$(PlatformConfiguration)' == 'Linux'">PLATFORM_LINUX</DefineConstants>
+
+	<DefineConstants Condition="'$(Configuration)' == 'Debug-Win'">DEBUG;PLATFORM_WIN</DefineConstants>
+	<DefineConstants Condition="'$(Configuration)' == 'Release-Win'">PLATFORM_WIN</DefineConstants>
+	<DefineConstants Condition="'$(Configuration)' == 'Debug-Mac'">DEBUG;PLATFORM_MAC</DefineConstants>
+	<DefineConstants Condition="'$(Configuration)' == 'Release-Mac'">PLATFORM_MAC</DefineConstants>
+	<DefineConstants Condition="'$(Configuration)' == 'Debug-Linux'">DEBUG;PLATFORM_LINUX</DefineConstants>
+	<DefineConstants Condition="'$(Configuration)' == 'Release-Linux'">PLATFORM_LINUX</DefineConstants>
 	  
 	<Platforms>ARM64;x64</Platforms>
 	 
