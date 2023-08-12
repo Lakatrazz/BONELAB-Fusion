@@ -1,12 +1,12 @@
-**Fusion**
-Platforms:
+## **Fusion**
+#### Platforms:
 - Meta Quest 2 Support
-Fixed:
+#### Fixed:
 - Module messages being broken
 - TDM bit rewarding being broken
 - Jaw on players being jittery
 - Constraint remover mods/bugs
-Added:
+#### Added:
 - Notification when Auto-Updater is missing
 - Player scaling support
 - Custom notification icons
@@ -22,17 +22,17 @@ Added:
 - Server Gamemode marking
 - Mute icon
 - Made level load/elevator buttons not function (thanks BreadSoup)
-Adjusted:
+#### Adjusted:
 - Made player constraints off by default
 - Physics interactions
-Internal:
+#### Internal:
 - VC code cleanup
 - Optimized coroutine usage
 
-**Fusion Auto Updater**
+## **Fusion Auto Updater**
 - No changes
 
-**Marrow Integration**
+## **Marrow Integration**
 - Made bit SDK script have separate function for removing bits
 - Scripts for avatar cosmetic attach points
 - Added achievement machine placer
