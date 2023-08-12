@@ -27,6 +27,7 @@ Adjusted:
 SDK:
 - Made bit SDK script have separate function for removing bits
 - Scripts for avatar cosmetic attach points
+- Added achievement machine placer
 Internal:
 - VC code cleanup
 - Optimized coroutine usage

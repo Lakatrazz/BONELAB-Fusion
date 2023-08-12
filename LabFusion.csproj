@@ -238,6 +238,7 @@
     <Compile Include="Core\marrow-integration\Runtime\Misc\BitRewardProxy.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\CrateSpawnerProxy.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\PlayerProxy.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\Spawners\CupBoardPlacer.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Spawners\InfoBoxPlacer.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Spawners\PointShopPlacer.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\SyncGameObjectEnabled.cs" />
