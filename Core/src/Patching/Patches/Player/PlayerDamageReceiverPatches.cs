@@ -32,20 +32,13 @@ namespace LabFusion.Patching
         // ReceiveAttack patching stuff
         private static ReceiveAttackPatchDelegate _original;
 
-        public delegate void ReceiveAttackPatchDelegate(IntPtr instance, IntPtr attack, IntPtr method);
-
         private unsafe static void PatchReceiveAttack()
         {
-            ReceiveAttackPatchDelegate patch = ReceiveAttack;
-
-            // Mouthful
-            string nativeInfoName = "NativeMethodInfoPtr_ReceiveAttack_Public_Virtual_Final_New_Void_Attack_0";
-
-            var tgtPtr = *(IntPtr*)(IntPtr)typeof(PlayerDamageReceiver).GetField(nativeInfoName, AccessTools.all).GetValue(null);
-            var dstPtr = patch.Method.MethodHandle.GetFunctionPointer();
+            var tgtPtr = NativeUtilities.GetNativePtr<PlayerDamageReceiver>("NativeMethodInfoPtr_ReceiveAttack_Public_Virtual_Final_New_Void_Attack_0");
+            var dstPtr = NativeUtilities.GetDestPtr<ReceiveAttackPatchDelegate>(ReceiveAttack);
 
             MelonUtils.NativeHookAttach((IntPtr)(&tgtPtr), dstPtr);
-            _original = Marshal.GetDelegateForFunctionPointer<ReceiveAttackPatchDelegate>(tgtPtr);
+            _original = NativeUtilities.GetOriginal<ReceiveAttackPatchDelegate>(tgtPtr);
         }
 
         private static void ReceiveAttack(IntPtr instance, IntPtr attack, IntPtr method)
@@ -82,7 +75,6 @@ namespace LabFusion.Patching
 
                                     // Only allow manual bullet damage
                                     if (_attack.attackType == AttackType.Piercing) {
-                                        PlayerSender.SendPlayerAction(PlayerActionType.DAMAGE_BY_OTHER_PLAYER, rep.PlayerId);
                                         return;
                                     }
                                 }
@@ -95,7 +87,7 @@ namespace LabFusion.Patching
                             else if (PlayerRepManager.TryGetPlayerRep(rm, out var rep) && shooter.IsSelf()) {
                                 // Send the damage over the network
                                 PlayerSender.SendPlayerDamage(rep.PlayerId, _attack.damage);
-                                PlayerSender.SendPlayerAction(PlayerActionType.DEALT_DAMAGE);
+                                PlayerSender.SendPlayerAction(PlayerActionType.DEALT_DAMAGE_TO_OTHER_PLAYER, rep.PlayerId);
                             }
                         }
                     }

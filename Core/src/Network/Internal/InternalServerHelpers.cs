@@ -15,6 +15,9 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 using SLZ.Marrow.SceneStreaming;
+using LabFusion.SDK.Achievements;
+using BoneLib;
+using LabFusion.Data;
 
 namespace LabFusion.Network {
     /// <summary>
@@ -63,7 +66,12 @@ namespace LabFusion.Network {
                 message = "Started a server!",
                 isMenuItem = false,
                 isPopup = true,
+                type = NotificationType.SUCCESS,
             });
+
+            // Unlock achievement
+            if (AchievementManager.TryGetAchievement<HeadOfHouse>(out var achievement))
+                achievement.IncrementTask();
 
             // Reload the scene
             SceneStreamer.Reload();
@@ -86,7 +94,12 @@ namespace LabFusion.Network {
                 message = "Joined a server!",
                 isMenuItem = false,
                 isPopup = true,
+                type = NotificationType.SUCCESS,
             });
+
+            // Unlock achievement
+            if (AchievementManager.TryGetAchievement<WarmWelcome>(out var achievement))
+                achievement.IncrementTask();
         }
 
         /// <summary>
@@ -126,6 +139,7 @@ namespace LabFusion.Network {
                     isMenuItem = true,
                     isPopup = true,
                     popupLength = 5f,
+                    type = NotificationType.WARNING,
                 });
             }
         }
@@ -187,9 +201,9 @@ namespace LabFusion.Network {
         /// Gets the default metadata for the local player.
         /// </summary>
         /// <returns></returns>
-        internal static Dictionary<string, string> GetInitialMetadata() {
+        internal static FusionDictionary<string, string> GetInitialMetadata() {
             // Create the dict
-            var metadata = new Dictionary<string, string> {
+            var metadata = new FusionDictionary<string, string> {
                 // Username
                 { MetadataHelper.UsernameKey, PlayerIdManager.LocalUsername },
 
@@ -197,7 +211,10 @@ namespace LabFusion.Network {
                 { MetadataHelper.NicknameKey, PlayerIdManager.LocalNickname },
 
                 // Permission
-                { MetadataHelper.PermissionKey, NetworkInfo.IsServer ? PermissionLevel.OWNER.ToString() : PermissionLevel.DEFAULT.ToString() }
+                { MetadataHelper.PermissionKey, NetworkInfo.IsServer ? PermissionLevel.OWNER.ToString() : PermissionLevel.DEFAULT.ToString() },
+
+                // Platform
+                { MetadataHelper.PlatformKey, HelperMethods.IsAndroid() ? "QUEST" : "PC" }
             };
 
             return metadata;

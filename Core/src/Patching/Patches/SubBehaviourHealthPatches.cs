@@ -26,13 +26,6 @@ namespace LabFusion.Patching {
             PatchTakeDamage();
         }
 
-        // Stun patching
-        [HarmonyPatch(typeof(SubBehaviourHealth), nameof(SubBehaviourHealth.Stun))]
-        [HarmonyPrefix]
-        public static bool Stun(int m, float stun) {
-            return false;
-        }
-
         // TakeDamage patching stuff
         private static TakeDamagePatchDelegate _original;
 
@@ -40,16 +33,11 @@ namespace LabFusion.Patching {
 
         private unsafe static void PatchTakeDamage()
         {
-            TakeDamagePatchDelegate patch = TakeDamage;
-
-            // Mouthful
-            string nativeInfoName = "NativeMethodInfoPtr_TakeDamage_Public_Single_Int32_Attack_0";
-
-            var tgtPtr = *(IntPtr*)(IntPtr)typeof(SubBehaviourHealth).GetField(nativeInfoName, AccessTools.all).GetValue(null);
-            var dstPtr = patch.Method.MethodHandle.GetFunctionPointer();
+            var tgtPtr = NativeUtilities.GetNativePtr<SubBehaviourHealth>("NativeMethodInfoPtr_TakeDamage_Public_Single_Int32_Attack_0");
+            var dstPtr = NativeUtilities.GetDestPtr<TakeDamagePatchDelegate>(TakeDamage);
 
             MelonUtils.NativeHookAttach((IntPtr)(&tgtPtr), dstPtr);
-            _original = Marshal.GetDelegateForFunctionPointer<TakeDamagePatchDelegate>(tgtPtr);
+            _original = NativeUtilities.GetOriginal<TakeDamagePatchDelegate>(tgtPtr);
         }
 
         private static float TakeDamage(IntPtr instance, int m, IntPtr attack, IntPtr method)

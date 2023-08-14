@@ -33,15 +33,15 @@ namespace LabFusion.Representation
         /// </summary>
         public event Action<PlayerId, string, string> OnMetadataPairChanged;
 
-        private readonly Dictionary<string, string> _internalMetadata = new Dictionary<string, string>();
-        public Dictionary<string, string> Metadata => _internalMetadata;
+        private readonly FusionDictionary<string, string> _internalMetadata = new();
+        public FusionDictionary<string, string> Metadata => _internalMetadata;
 
         private List<string> _internalEquippedItems = new List<string>();
         public List<string> EquippedItems => _internalEquippedItems;
 
         public PlayerId() { }
 
-        public PlayerId(ulong longId, byte smallId, Dictionary<string, string> metadata, List<string> equippedItems) {
+        public PlayerId(ulong longId, byte smallId, FusionDictionary<string, string> metadata, List<string> equippedItems) {
             LongId = longId;
             SmallId = smallId;
             _internalMetadata = metadata;
@@ -61,6 +61,13 @@ namespace LabFusion.Representation
 
         public static bool IsNullOrInvalid(PlayerId id) {
             return id == null || !id.IsValid;
+        }
+
+        public bool HasEquipped(PointItem item) {
+            if (IsSelf)
+                return item.IsEquipped;
+            else
+                return EquippedItems.Contains(item.Barcode);
         }
 
         public bool TrySetMetadata(string key, string value) {

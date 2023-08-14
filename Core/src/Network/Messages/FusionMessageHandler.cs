@@ -18,119 +18,36 @@ namespace LabFusion.Network
             throw new NotImplementedException();
         }
 
-        protected override IEnumerator HandleMessage_Internal(byte[] bytes, bool isServerHandled = false)
+        protected override void Internal_FinishMessage(byte[] bytes, bool isServerHandled = false)
         {
-            // Initialize the attribute info
-            for (var i = 0; i < NetAttributes.Length; i++)
-            {
-                var attribute = NetAttributes[i];
-                attribute.OnHandleBegin();
-            }
-
-            // Check if we should already stop handling
-            for (var i = 0; i < NetAttributes.Length; i++)
-            {
-                var attribute = NetAttributes[i];
-
-                if (attribute.StopHandling())
-                    yield break;
-            }
-
-            // Check for any awaitable attributes
-            Net.NetAttribute awaitable = null;
-
-            for (var i = 0; i < NetAttributes.Length; i++)
-            {
-                var attribute = NetAttributes[i];
-
-                if (attribute.IsAwaitable())
-                {
-                    awaitable = attribute;
-                    break;
-                }
-            }
-
-            if (awaitable != null)
-            {
-                while (!awaitable.CanContinue())
-                    yield return null;
-            }
-
             Task task = null;
-
-            try
-            {
-                // Now handle the message info
-                task = HandleMessageAsync(bytes, isServerHandled);
-            }
-            catch (Exception e)
-            {
-                FusionLogger.LogException("handling message", e);
-            }
-
-            // Await the async handle message before we return our byte buffer
-            if (task != null) {
-                while (!task.IsCompleted)
-                    yield return null;
-            }
-
-            // Return the buffer
-            ByteRetriever.Return(bytes);
-        }
-
-    }
-
-    public abstract class FusionMessageHandler
-    {
-        public virtual byte? Tag { get; } = null;
-
-        public Net.NetAttribute[] NetAttributes { get; set; }
-
-        protected virtual IEnumerator HandleMessage_Internal(byte[] bytes, bool isServerHandled = false) {
-            // Initialize the attribute info
-            for (var i = 0; i < NetAttributes.Length; i++) {
-                var attribute = NetAttributes[i];
-                attribute.OnHandleBegin();
-            }
-
-            // Check if we should already stop handling
-            for (var i = 0; i < NetAttributes.Length; i++) {
-                var attribute = NetAttributes[i];
-
-                if (attribute.StopHandling())
-                    yield break;
-            }
-
-            // Check for any awaitable attributes
-            Net.NetAttribute awaitable = null;
-
-            for (var i = 0; i < NetAttributes.Length; i++) {
-                var attribute = NetAttributes[i];
-
-                if (attribute.IsAwaitable()) {
-                    awaitable = attribute;
-                    break;
-                }
-            }
-
-            if (awaitable != null) {
-                while (!awaitable.CanContinue())
-                    yield return null;
-            }
 
             try {
                 // Now handle the message info
-                HandleMessage(bytes, isServerHandled);
+                task = HandleMessageAsync(bytes, isServerHandled);
             }
             catch (Exception e) {
                 FusionLogger.LogException("handling message", e);
             }
 
-            // Return the buffer
-            ByteRetriever.Return(bytes);
-        }
+            // Await the async handle message before we return our byte buffer
+            void OnFinish() { ByteRetriever.Return(bytes); }
 
-        public abstract void HandleMessage(byte[] bytes, bool isServerHandled = false);
+            if (task != null)
+            {
+                task.ContinueWith((t) => {
+                    ThreadingUtilities.RunSynchronously(OnFinish);
+                });
+            }
+            else {
+                OnFinish();
+            }
+        }
+    }
+
+    public abstract class FusionMessageHandler : MessageHandler
+    {
+        public virtual byte? Tag { get; } = null;
 
         // Handlers are created up front, they're not static
         public static void RegisterHandlersFromAssembly(Assembly targetAssembly)
@@ -179,12 +96,32 @@ namespace LabFusion.Network
                     message[i] = buffer[i + 1];
 
                 if (Handlers[tag] != null)
-                    MelonCoroutines.Start(Handlers[tag].HandleMessage_Internal(message, isServerHandled));
+                    Handlers[tag].Internal_HandleMessage(message, isServerHandled);
 #if DEBUG
                 else {
                     FusionLogger.Warn($"Received message with invalid tag {tag}!");
                 }
 #endif
+            }
+            catch (Exception e)
+            {
+                FusionLogger.Error($"Failed handling network message with reason: {e.Message}\nTrace:{e.StackTrace}");
+            }
+        }
+
+        public static void ReadMessage(byte[] bytes, bool isServerHandled = false)
+        {
+            NetworkInfo.BytesDown += bytes.Length;
+
+            try
+            {
+                byte tag = bytes[0];
+                byte[] buffer = ByteRetriever.Rent(bytes.Length - 1);
+
+                for (var i = 0; i < buffer.Length; i++)
+                    buffer[i] = bytes[i + 1];
+
+                Handlers[tag].Internal_HandleMessage(buffer, isServerHandled);
             }
             catch (Exception e)
             {

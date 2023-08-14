@@ -44,8 +44,6 @@ namespace LabFusion.SDK.Gamemodes
         private string _displayName = null;
         public string DisplayName => _displayName ?? TeamName;
 
-        public int TeamScore { get; }
-
         public List<PlayerId> Players { get; }
 
         public int PlayerCount { get; private set; }

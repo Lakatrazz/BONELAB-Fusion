@@ -1,27 +1,12 @@
 ﻿using LabFusion.MonoBehaviours;
 using LabFusion.Data;
 using LabFusion.Extensions;
+using LabFusion.Network;
 
 using SLZ.Combat;
 using SLZ.Rig;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using UnityEngine;
-
-using LabFusion.Network;
-
-using SLZ.Interaction;
-
-using UnhollowerBaseLib;
-
-using SLZ.Marrow.Data;
-using SLZ.UI;
-using LabFusion.Preferences;
 
 namespace LabFusion.Utilities {
     public static class PlayerAdditionsHelper {
@@ -46,11 +31,17 @@ namespace LabFusion.Utilities {
             _playerLayer = LayerMask.NameToLayer("Player");
 
             Physics.IgnoreLayerCollision(_feetLayer, _playerLayer, false);
+
+            // Invoke extras
+            MuteUIHelper.OnInitializeMelon();
         }
 
         public static void OnDeinitializeMelon() {
             // Undo layer changes
             Physics.IgnoreLayerCollision(_feetLayer, _playerLayer, true);
+
+            // Invoke extras
+            MuteUIHelper.OnDeinitializeMelon();
         }
 
         public static void OnAvatarChanged(RigManager manager) {
@@ -67,32 +58,8 @@ namespace LabFusion.Utilities {
         }
 
         public static void OnCreatedLocalPlayer(RigManager manager) {
-            // Insert quick mute button
-            var popUpMenu = manager.uiRig.popUpMenu;
-            var homePage = popUpMenu.radialPageView.m_HomePage;
-            var mutedPref = FusionPreferences.ClientSettings.Muted;
-
-            string name = mutedPref.GetValue() ? "Quick Unmute" : "Quick Mute";
-
-            var mutePage = new PageItem(name, PageItem.Directions.SOUTHEAST, (Action)(() => {
-                mutedPref.SetValue(!mutedPref.GetValue());
-                popUpMenu.Deactivate();
-
-                FusionNotifier.Send(new FusionNotification()
-                {
-                    isPopup = true,
-                    isMenuItem = false,
-                    message = mutedPref.GetValue() ? "Muted" : "Unmuted",
-                });
-            }));
-
-            mutedPref.OnValueChanged += (v) => {
-                if (mutePage != null) {
-                    mutePage.name = mutedPref.GetValue() ? "Quick Unmute" : "Quick Mute";
-                }
-            };
-
-            homePage.items.Add(mutePage);
+            // Forward to the regular method
+            OnCreatedRig(manager);
         }
 
         public static void OnCreatedRig(RigManager manager) {
@@ -110,6 +77,9 @@ namespace LabFusion.Utilities {
         public static void OnEnterServer(RigManager manager) {
             if (manager.IsNOC())
                 return;
+
+            // Create mute icon
+            MuteUIHelper.OnCreateMuteUI(manager);
 
             // Setup impact properties
             PersistentAssetCreator.SetupImpactProperties(manager);
@@ -146,6 +116,9 @@ namespace LabFusion.Utilities {
         public static void OnExitServer(RigManager manager) {
             if (manager.IsNOC())
                 return;
+
+            // Disable mute icons
+            MuteUIHelper.OnDestroyMuteUI(manager);
 
             // Remove impact properties
             var impactProperties = manager.GetComponentsInChildren<ImpactProperties>(true);

@@ -7,18 +7,13 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 using SLZ.Bonelab;
-using SLZ.Vehicle;
-
-using LabFusion.Extensions;
-using LabFusion.Network;
-using LabFusion.Representation;
-using LabFusion.Syncables;
-using LabFusion.Utilities;
 
 namespace LabFusion.Data
 {
     public class MagmaGateData : LevelDataHandler
     {
+        public override string LevelTitle => "08 - Magma Gate";
+
         public static GameControl_MagmaGate GameController;
 
         protected override void MainSceneInitialized()

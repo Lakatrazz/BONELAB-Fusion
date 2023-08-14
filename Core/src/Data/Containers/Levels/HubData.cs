@@ -17,6 +17,8 @@ using LabFusion.Extensions;
 namespace LabFusion.Data {
     public class HubData : LevelDataHandler
     {
+        public override string LevelTitle => "02 - BONELAB Hub";
+
         public static GameControl_Hub GameController;
         public static FunicularController Funicular;
 

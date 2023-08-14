@@ -70,8 +70,11 @@ namespace LabFusion.Network
                     }
                     else
                     {
-                        if (SyncManager.TryGetSyncable(data.puppetId, out var puppet) && puppet is PropSyncable puppetSyncable && puppetSyncable.TryGetExtender<PuppetMasterExtender>(out var extender))
+                        if (SyncManager.TryGetSyncable<PropSyncable>(data.puppetId, out var syncable) && syncable.TryGetExtender<PuppetMasterExtender>(out var extender))
                         {
+                            // Save the most recent killed NPC
+                            PuppetMasterExtender.LastKilled = syncable;
+
                             // Kill the puppet
                             PuppetMasterPatches.IgnorePatches = true;
                             extender.Component.Kill();

@@ -34,6 +34,7 @@ using System.IO;
 
 using UnhollowerBaseLib;
 using LabFusion.SDK.Gamemodes;
+using BoneLib;
 
 namespace LabFusion.Network
 {
@@ -46,11 +47,16 @@ namespace LabFusion.Network
         // In Unity/Melonloader, they can cause random crashes, especially when making a lot of calls
         public const bool AsyncCallbacks = false;
 
+        internal override string Title => "Steam";
+
         internal override bool IsServer => _isServerActive;
         internal override bool IsClient => _isConnectionActive;
 
         private INetworkLobby _currentLobby;
         internal override INetworkLobby CurrentLobby => _currentLobby;
+
+        private readonly SteamVoiceManager _voiceManager = new();
+        internal override IVoiceManager VoiceManager => _voiceManager;
 
         public SteamId SteamId;
 
@@ -73,6 +79,28 @@ namespace LabFusion.Network
         // The stored time of the last lobby update
         // We automatically push lobby metadata updates every 30 seconds
         protected float _lastLobbyUpdate = 0f;
+
+        internal override bool CheckSupported() {
+            return !HelperMethods.IsAndroid();
+        }
+
+        internal override bool CheckValidation() {
+            // Make sure the API actually loaded
+            if (!SteamAPILoader.HasSteamAPI)
+                return false;
+
+            try {
+                // Try loading the steam client
+                if (!SteamClient.IsValid)
+                    SteamClient.Init(ApplicationID, AsyncCallbacks);
+
+                return true;
+            }
+            catch (Exception e) {
+                FusionLogger.LogException($"initializing {Title} layer", e);
+                return false;
+            }
+        }
 
         internal override void OnInitializeLayer() {
             try {
@@ -138,7 +166,7 @@ namespace LabFusion.Network
 
         internal override void OnVoiceChatUpdate() {
             if (NetworkInfo.HasServer) {
-                bool voiceEnabled = FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue() && !FusionPreferences.ClientSettings.Muted && !FusionPreferences.ClientSettings.Deafened;
+                bool voiceEnabled = VoiceHelper.IsVoiceEnabled;
 
                 // Update voice record
                 if (SteamUser.VoiceRecord != voiceEnabled)
@@ -153,8 +181,8 @@ namespace LabFusion.Network
                     PlayerSender.SendPlayerVoiceChat(voiceData);
                 }
 
-                // Update identifiers
-                SteamVoiceIdentifier.OnUpdate();
+                // Update the manager
+                VoiceManager.Update();
             }
             else {
                 // Disable voice recording
@@ -165,15 +193,11 @@ namespace LabFusion.Network
 
         internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes) {
             // If we are deafened, no need to deal with voice chat
-            bool isDeafened = !FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue() || FusionPreferences.ClientSettings.Deafened;
-            if (isDeafened)
+            if (VoiceHelper.IsDeafened)
                 return;
 
-            var identifier = SteamVoiceIdentifier.GetVoiceIdentifier(id);
-
-            if (identifier != null) {
-                identifier.OnVoiceBytesReceived(bytes);
-            }
+            var handler = VoiceManager.GetVoiceHandler(id);
+            handler?.OnVoiceBytesReceived(bytes);
         }
 
         internal override string GetUsername(ulong userId) {
@@ -303,19 +327,19 @@ namespace LabFusion.Network
 
         private void OnPlayerJoin(PlayerId id) {
             if (!id.IsSelf)
-                SteamVoiceIdentifier.GetVoiceIdentifier(id);
+                VoiceManager.GetVoiceHandler(id);
 
             OnUpdateSteamLobby();
         }
 
         private void OnPlayerLeave(PlayerId id) {
-            SteamVoiceIdentifier.RemoveVoiceIdentifier(id);
+            VoiceManager.Remove(id);
 
             OnUpdateSteamLobby();
         }
 
         private void OnDisconnect() {
-            SteamVoiceIdentifier.CleanupAll();
+            VoiceManager.RemoveAll();
         }
 
         private void UnHookSteamEvents() {
@@ -421,8 +445,7 @@ namespace LabFusion.Network
             _createServerElement = category.CreateFunctionElement("Create Server", Color.white, OnClickCreateServer);
             category.CreateFunctionElement("Copy SteamID to Clipboard", Color.white, OnCopySteamID);
 
-            BoneMenuCreator.CreatePlayerListMenu(category);
-            BoneMenuCreator.CreateAdminActionsMenu(category);
+            BoneMenuCreator.PopulateServerInfo(category);
         }
 
         private void OnClickCreateServer() {
@@ -519,7 +542,7 @@ namespace LabFusion.Network
             list.FilterDistanceWorldwide();
             list.WithMaxResults(int.MaxValue);
             list.WithSlotsAvailable(int.MaxValue);
-            list.WithKeyValue(LobbyMetadataInfo.HasServerOpenKey, bool.TrueString);
+            list.WithKeyValue(LobbyConstants.HasServerOpenKey, bool.TrueString);
             return list.RequestAsync();
         }
 

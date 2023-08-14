@@ -3,65 +3,50 @@
 using LabFusion.Data;
 using LabFusion.Debugging;
 using LabFusion.Preferences;
-
+using LabFusion.Utilities;
 using Steamworks;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace LabFusion.Network {
-    public enum NetworkLayerType {
-        STEAM_VR = 0,
-        SPACEWAR = 1,
-        EMPTY = 2,
-    }
-
     public static class NetworkLayerDeterminer {
-        public static NetworkLayerType LoadedType { get; private set; }
+        public static NetworkLayer LoadedLayer { get; private set; }
+        public static string LoadedTitle { get; private set; }
 
-        public static NetworkLayerType GetDefaultType() {
+        public static NetworkLayer GetDefaultLayer() {
             if (HelperMethods.IsAndroid())
-                return NetworkLayerType.EMPTY;
+                return NetworkLayer.GetLayer<ProxySteamVRNetworkLayer>();
 
-            return NetworkLayerType.STEAM_VR;
+            return NetworkLayer.GetLayer<SteamVRNetworkLayer>();
         }
 
-        public static NetworkLayerType VerifyType(NetworkLayerType type) {
-            switch (type) {
-                default:
-                case NetworkLayerType.STEAM_VR:
-                    if (!SteamVRNetworkLayer.VerifyLayer())
-                        return VerifyType(NetworkLayerType.SPACEWAR);
-                    else
-                        return NetworkLayerType.STEAM_VR;
-                case NetworkLayerType.SPACEWAR:
-                    if (!SpacewarNetworkLayer.VerifyLayer())
-                        return VerifyType(NetworkLayerType.EMPTY);
-                    else
-                        return NetworkLayerType.SPACEWAR;
-                case NetworkLayerType.EMPTY:
-                    return NetworkLayerType.EMPTY;
+        public static NetworkLayer VerifyLayer(NetworkLayer layer) {
+            if (layer.CheckValidation()) {
+                return layer;
+            }
+            else if (layer.TryGetFallback(out var fallback)) {
+                return VerifyLayer(fallback);
+            }
+            else {
+                return NetworkLayer.GetLayer<EmptyNetworkLayer>();
             }
         }
 
-        public static Type GetLoadedType() {
-            var type = FusionPreferences.ClientSettings.NetworkLayerType.GetValue();
-            type = VerifyType(type);
-
-            LoadedType = type;
-
-            switch (type) {
-                default:
-                case NetworkLayerType.STEAM_VR:
-                    return typeof(SteamVRNetworkLayer);
-                case NetworkLayerType.SPACEWAR:
-                    return typeof(SpacewarNetworkLayer);
-                case NetworkLayerType.EMPTY:
-                    return typeof(EmptyNetworkLayer);
+        public static void LoadLayer() {
+            var title = FusionPreferences.ClientSettings.NetworkLayerTitle.GetValue();
+            if (!NetworkLayer.LayerLookup.TryGetValue(title, out var layer)) {
+                layer = GetDefaultLayer();
             }
+
+            layer = VerifyLayer(layer);
+
+            LoadedLayer = layer;
+            LoadedTitle = layer.Title;
         }
     }
 }

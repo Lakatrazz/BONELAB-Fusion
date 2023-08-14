@@ -1,5 +1,5 @@
 ﻿using BoneLib.BoneMenu.Elements;
-
+using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Preferences;
 using LabFusion.Representation;
@@ -68,32 +68,64 @@ namespace LabFusion.BoneMenu
             var lobbyCategory = rootCategory.CreateCategory($"INTERNAL_LOBBY_{_lobbyIndex++}", lobbyColor);
             lobbyCategory.SetName(userString);
 
-            lobbyCategory.CreateFunctionElement("Join Server", Color.white, lobby.CreateJoinDelegate(info));
+            lobbyCategory.CreateFunctionElement("Join Server", Color.white, info.CreateJoinDelegate(lobby));
+
+            // Create a category for the player list
+            var playersCategory = lobbyCategory.CreateCategory("Players", Color.white);
+
+            foreach (var player in info.PlayerList.players) {
+                playersCategory.CreateFunctionElement(player.username, Color.white, null);
+            }
+
+            RemoveEmptyCategory(lobbyCategory, playersCategory);
+
+            // Create a category for the server tags
+            var tagsCategory = lobbyCategory.CreateCategory("Tags", Color.white);
+
+            foreach (var tag in info.LobbyTags.Expand()) {
+                tagsCategory.CreateFunctionElement(tag, Color.white, null);
+            }
+
+            RemoveEmptyCategory(lobbyCategory, tagsCategory);
+
+            // Allow outside mods to add their own lobby information
+            var modsCategory = lobbyCategory.CreateCategory("Extra Info", Color.cyan);
+            MultiplayerHooking.Internal_OnLobbyCategoryCreated(modsCategory, lobby);
+
+            RemoveEmptyCategory(lobbyCategory, modsCategory);
+
+            // Create general info panel
+            var generalInfoPanel = lobbyCategory.CreateSubPanel("General Info", Color.white);
+
+            // Names
+            generalInfoPanel.CreateFunctionElement($"Username: {info.LobbyOwner}", Color.white, null);
+
+            if (!string.IsNullOrWhiteSpace(info.LobbyName))
+                generalInfoPanel.CreateFunctionElement($"Server Name: {info.LobbyName}", Color.white, null);
 
             // Show their version
-            lobbyCategory.CreateFunctionElement($"Version: {info.LobbyVersion}", versionColor, null);
+            generalInfoPanel.CreateFunctionElement($"Version: {info.LobbyVersion}", versionColor, null);
 
             // Show their active level
             Color levelColor = info.ClientHasLevel ? Color.white : Color.red;
 
-            lobbyCategory.CreateFunctionElement($"Level: {info.LevelName}", levelColor, null);
-
-            // Show their active gamemode
-            lobbyCategory.CreateFunctionElement($"Gamemode: {info.GamemodeName}", Color.white, null);
+            generalInfoPanel.CreateFunctionElement($"Level: {info.LevelName}", levelColor, null);
 
             // Show the player count
-            lobbyCategory.CreateFunctionElement($"{info.PlayerCount} out of {info.MaxPlayers} Players", new Color(0.68f, 0.85f, 0.9f), null);
+            generalInfoPanel.CreateFunctionElement($"{info.PlayerCount} out of {info.MaxPlayers} Players", new Color(0.68f, 0.85f, 0.9f), null);
+
+            // Show their active gamemode
+            var gamemodePanel = lobbyCategory.CreateSubPanel("Gamemode Info", Color.white);
+            gamemodePanel.CreateFunctionElement(info.GamemodeName, Color.white, null);
+            gamemodePanel.CreateFunctionElement(info.IsGamemodeRunning ? "Running" : "Not Running", Color.white, null);
 
             // Create a category for settings
-            var settingsCategory = lobbyCategory.CreateCategory("Settings", Color.yellow);
+            var settingsCategory = lobbyCategory.CreateSubPanel("Settings", Color.yellow);
 
             settingsCategory.CreateFunctionElement($"Nametags: {(info.NametagsEnabled ? "Enabled" : "Disabled")}", Color.white, null);
             settingsCategory.CreateFunctionElement($"Server Privacy: {info.Privacy}", Color.white, null);
             settingsCategory.CreateFunctionElement($"Time Scale Mode: {info.TimeScaleMode}", Color.white, null);
             settingsCategory.CreateFunctionElement($"Voicechat: {(info.VoicechatEnabled ? "Enabled" : "Disabled")}", Color.white, null);
-
-            // Allow outside mods to add their own lobby information
-            MultiplayerHooking.Internal_OnLobbyCategoryCreated(lobbyCategory, lobby);
         }
     }
 }

@@ -1,0 +1,10 @@
+#!/bin/bash
+DIR=$(cd "$(dirname "$0")"; pwd)
+APP_NAME="FH_Loader"
+
+osascript <<EOD
+tell application "Terminal"
+    do script with command "clear && $DIR/$APP_NAME"
+    activate
+end tell
+EOD

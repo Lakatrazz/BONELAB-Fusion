@@ -29,8 +29,8 @@ namespace LabFusion.Extensions {
 
         internal static string GetBasePath(this Transform transform) {
             if (transform.parent == null)
-                return $"{GameObjectUtilities.PathSeparator}{transform.name}";
-            return $"{transform.parent.GetBasePath()}{GameObjectUtilities.PathSeparator}{GetSiblingNameIndex(transform)}{GameObjectUtilities.PathSeparator}{transform.name}";
+                return $"{StringExtensions.UniqueSeparator}{transform.name}";
+            return $"{transform.parent.GetBasePath()}{StringExtensions.UniqueSeparator}{GetSiblingNameIndex(transform)}{StringExtensions.UniqueSeparator}{transform.name}";
         }
 
         internal static List<Transform> FindSiblingsWithName(this Transform parent, string name)

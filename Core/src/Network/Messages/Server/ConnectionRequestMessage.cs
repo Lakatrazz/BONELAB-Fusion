@@ -20,7 +20,7 @@ namespace LabFusion.Network
         public Version version;
         public string avatarBarcode;
         public SerializedAvatarStats avatarStats;
-        public Dictionary<string, string> initialMetadata;
+        public FusionDictionary<string, string> initialMetadata;
         public List<string> initialEquippedItems;
 
         public bool IsValid { get; private set; } = true;
@@ -127,6 +127,22 @@ namespace LabFusion.Network
                         // Check for banning
                         if (NetworkHelper.IsBanned(data.longId)) {
                             ConnectionSender.SendConnectionDeny(data.longId, "Banned from Server");
+                            return;
+                        }
+
+                        // Check if Quest user
+                        if (!FusionPreferences.LocalServerSettings.AllowQuestUsers.GetValue()
+                            && data.initialMetadata[MetadataHelper.PlatformKey] == "QUEST")
+                        {
+                            ConnectionSender.SendConnectionDeny(data.longId, "Quest users are blocked from this server.");
+                            return;
+                        }
+
+                        // Check if PC user
+                        if (!FusionPreferences.LocalServerSettings.AllowQuestUsers.GetValue()
+                            && data.initialMetadata[MetadataHelper.PlatformKey] == "PC")
+                        {
+                            ConnectionSender.SendConnectionDeny(data.longId, "PC users are blocked from this server.");
                             return;
                         }
 

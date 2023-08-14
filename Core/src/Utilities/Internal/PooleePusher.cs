@@ -10,7 +10,7 @@ using SLZ.Marrow.Pool;
 
 namespace LabFusion.Utilities {
     internal class PooleePusher {
-        private readonly List<AssetPoolee> _list = new List<AssetPoolee>();
+        private readonly List<AssetPoolee> _list = new();
 
         public void Push(AssetPoolee poolee) {
             if (!_list.Has(poolee))

@@ -44,6 +44,10 @@ namespace LabFusion.Data
         }
 
         public static void OnFreeSteamAPI() {
+            // Don't unload it if it isn't loaded
+            if (!HasSteamAPI)
+                return;
+
             DllTools.FreeLibrary(_libraryPtr);
 
             HasSteamAPI = false;

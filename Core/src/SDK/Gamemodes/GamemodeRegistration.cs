@@ -1,4 +1,5 @@
 ﻿using LabFusion.BoneMenu;
+using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Utilities;
@@ -53,8 +54,8 @@ namespace LabFusion.SDK.Gamemodes {
             return array;
         }
 
-        public static Dictionary<string, string>[] GetExistingMetadata() {
-            Dictionary<string, string>[] metadata = new Dictionary<string, string>[Gamemodes.Length];
+        public static FusionDictionary<string, string>[] GetExistingMetadata() {
+            FusionDictionary<string, string>[] metadata = new FusionDictionary<string, string>[Gamemodes.Length];
 
             for (var i = 0; i < metadata.Length; i++) {
                 metadata[i] = Gamemodes[i].Metadata;
@@ -81,7 +82,7 @@ namespace LabFusion.SDK.Gamemodes {
             BoneMenuCreator.RefreshGamemodes();
         }
 
-        public static void PopulateGamemodeMetadatas(Dictionary<string, string>[] metadatas) {
+        public static void PopulateGamemodeMetadatas(FusionDictionary<string, string>[] metadatas) {
             for (var i = 0; i < Gamemodes.Length && i < metadatas.Length; i++) {
                 var gamemode = Gamemodes[i];
                 var metadata = metadatas[i];

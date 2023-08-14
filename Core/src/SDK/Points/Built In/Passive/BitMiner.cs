@@ -54,13 +54,13 @@ namespace LabFusion.SDK.Points
 
         public override void OnLateUpdate() {
             if (IsUnlocked && IsEquipped && NetworkInfo.HasServer) {
-                if (PlayerIdManager.PlayerCount > 1) {
+                if (PlayerIdManager.HasOtherPlayers) {
                     _bitTime += Time.deltaTime;
 
                     if (_bitTime > 60f) {
                         while (_bitTime > 60f) {
                             _bitTime -= 60f;
-                            PointItemManager.RewardBits(1 + (UpgradeLevel + 1));
+                            PointItemManager.RewardBits(1 + (UpgradeLevel + 1), false);
                         }
                     }
                 }

@@ -18,7 +18,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 using UnityEngine;
-
 using Avatar = SLZ.VRMK.Avatar;
 
 namespace LabFusion.Utilities {
@@ -87,6 +86,9 @@ namespace LabFusion.Utilities {
         /// <param name="rigManager"></param>
         /// <returns></returns>
         public static bool IsSelf(this RigManager rigManager) {
+            if (!RigData.HasPlayer)
+                return true;
+
             return rigManager == RigData.RigReferences.RigManager;
         }
 

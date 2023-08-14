@@ -108,7 +108,7 @@ namespace LabFusion.Utilities
 
                 ThreadingUtilities.IL2PrepareThread();
 
-                path = $"{go.scene.name}{PathSeparator}{index}{transform.GetBasePath()}";
+                path = $"{go.scene.name}{StringExtensions.UniqueSeparator}{index}{transform.GetBasePath()}";
             }
             catch
 #if DEBUG
@@ -130,7 +130,7 @@ namespace LabFusion.Utilities
         {
             await Task.Delay(16);
 
-            string[] parts = path.Split(PathSeparator);
+            string[] parts = path.Split(StringExtensions.UniqueSeparator);
             string scene = parts[0];
             int index = int.Parse(parts[1]);
             string name = parts[2];

@@ -29,6 +29,7 @@ using SLZ.Marrow.Warehouse;
 using SLZ.AI;
 using SLZ.UI;
 using LabFusion.Debugging;
+using LabFusion.Patching;
 
 namespace LabFusion.Data
 {
@@ -58,6 +59,8 @@ namespace LabFusion.Data
 
         public BaseController LeftController { get; private set; }
         public BaseController RightController { get; private set; }
+
+        public Transform Head { get; private set; }
 
         public void OnDestroy() {
             IsValid = false;
@@ -153,27 +156,22 @@ namespace LabFusion.Data
         }
 
         public Hand GetHand(Handedness handedness) {
-            switch (handedness) {
-                default:
-                    return null;
-                case Handedness.LEFT:
-                    return LeftHand;
-                case Handedness.RIGHT:
-                    return RightHand;
-            }
+            return handedness switch
+            {
+                Handedness.LEFT => LeftHand,
+                Handedness.RIGHT => RightHand,
+                _ => null,
+            };
         }
 
         public UIControllerInput GetUIInput(Handedness handedness)
         {
-            switch (handedness)
+            return handedness switch
             {
-                default:
-                    return null;
-                case Handedness.LEFT:
-                    return LeftUIInput;
-                case Handedness.RIGHT:
-                    return RightUIInput;
-            }
+                Handedness.LEFT => LeftUIInput,
+                Handedness.RIGHT => RightUIInput,
+                _ => null,
+            };
         }
 
         public void DisableInteraction() {
@@ -182,22 +180,19 @@ namespace LabFusion.Data
 
             foreach (var grip in RigGrips) {
                 foreach (var hand in grip.attachedHands.ToArray()) {
-                    if (hand.manager.IsLocalPlayer())
+                    if (hand.manager.IsSelf())
                         grip.TryDetach(hand);
                 }
 
                 grip.DisableInteraction();
             }
 
-            MelonCoroutines.Start(Internal_DelayedEnableInteraction());
+            DelayUtilities.Delay(Internal_DelayedEnableInteraction, 300);
         }
 
-        private IEnumerator Internal_DelayedEnableInteraction() {
-            for (var i = 0; i < 300; i++)
-                yield return null;
-
+        private void Internal_DelayedEnableInteraction() {
             if (RigGrips == null)
-                yield break;
+                return;
 
             foreach (var grip in RigGrips) {
                 grip.EnableInteraction();
@@ -234,6 +229,8 @@ namespace LabFusion.Data
 
             LeftController = rigManager.openControllerRig.leftController;
             RightController = rigManager.openControllerRig.rightController;
+
+            Head = RigManager.physicsRig.m_head;
         }
     }
 
@@ -257,19 +254,14 @@ namespace LabFusion.Data
                 return;
             }
             
-            // Add player additions
-            PlayerAdditionsHelper.OnCreatedRig(manager);
-
-            if (NetworkInfo.HasServer) {
-                PlayerAdditionsHelper.OnEnterServer(manager);
-            }
-
             // Store spawn values
             RigSpawn = manager.transform.position;
             RigSpawnRot = manager.transform.rotation;
 
             // Store the references
             RigReferences = new RigReferenceCollection(manager);
+            GripPatches.HookHand(RigReferences.LeftHand);
+            GripPatches.HookHand(RigReferences.RightHand);
             RigReferences.RigManager.bodyVitals.rescaleEvent += (BodyVitals.RescaleUI)OnSendVitals;
 
             // Notify hooks
@@ -283,14 +275,13 @@ namespace LabFusion.Data
         public static void OnSendVitals() {
             // Send body vitals to network
             if (NetworkInfo.HasServer) {
-                using (FusionWriter writer = FusionWriter.Create(PlayerRepVitalsData.Size)) {
-                    using (PlayerRepVitalsData data = PlayerRepVitalsData.Create(PlayerIdManager.LocalSmallId, RigReferences.RigManager.bodyVitals)) {
-                        writer.Write(data);
+                using FusionWriter writer = FusionWriter.Create(PlayerRepVitalsData.Size);
+                using PlayerRepVitalsData data = PlayerRepVitalsData.Create(PlayerIdManager.LocalSmallId, RigReferences.RigManager.bodyVitals);
+                writer.Write(data);
 
-                        using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepVitals, writer)) {
-                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                        }
-                    }
+                using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepVitals, writer))
+                {
+                    MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
                 }
             }
         }

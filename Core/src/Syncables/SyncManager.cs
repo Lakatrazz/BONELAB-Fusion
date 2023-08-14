@@ -10,19 +10,20 @@ using LabFusion.Network;
 using LabFusion.Extensions;
 using LabFusion.Utilities;
 using LabFusion.Representation;
+using BoneLib;
 
 namespace LabFusion.Syncables {
     public static class SyncManager {
         /// <summary>
         /// The list of syncables currently active.
         /// </summary>
-        public static readonly Dictionary<ushort, ISyncable> Syncables = new Dictionary<ushort, ISyncable>(new SyncableComparer());
+        public static readonly FusionDictionary<ushort, ISyncable> Syncables = new(new SyncableComparer());
 
         /// <summary>
         /// The list of syncables currently queued while waiting for an ID response from the server.
         /// <para>Make sure when adding or removing syncables from this list you are NOT using Syncable.GetId! That is for the permanent Syncables list!</para>
         /// </summary>
-        public static readonly Dictionary<ushort, ISyncable> QueuedSyncables = new Dictionary<ushort, ISyncable>(new SyncableComparer());
+        public static readonly FusionDictionary<ushort, ISyncable> QueuedSyncables = new(new SyncableComparer());
 
         /// <summary>
         /// The last allocated id. Incremented server side.
@@ -37,22 +38,16 @@ namespace LabFusion.Syncables {
         public static void RequestSyncableID(ushort queuedId) {
             if (NetworkInfo.HasServer) {
                 if (NetworkInfo.IsServer) {
-                    UnqueueSyncable(queuedId, AllocateSyncID(), out var syncable);
+                    UnqueueSyncable(queuedId, AllocateSyncID(), out _);
                 }
                 else
                 {
-                    using (var writer = FusionWriter.Create(SyncableIDRequestData.Size))
-                    {
-                        using (var data = SyncableIDRequestData.Create(PlayerIdManager.LocalSmallId, queuedId))
-                        {
-                            writer.Write(data);
+                    using var writer = FusionWriter.Create(SyncableIDRequestData.Size);
+                    using var data = SyncableIDRequestData.Create(PlayerIdManager.LocalSmallId, queuedId);
+                    writer.Write(data);
 
-                            using (var message = FusionMessage.Create(NativeMessageTag.SyncableIDRequest, writer))
-                            {
-                                MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                            }
-                        }
-                    }
+                    using var message = FusionMessage.Create(NativeMessageTag.SyncableIDRequest, writer);
+                    MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
                 }
             }
         }
@@ -209,7 +204,7 @@ namespace LabFusion.Syncables {
         public static bool UnqueueSyncable(ushort queuedId, ushort newId, out ISyncable syncable) {
             syncable = null;
 
-            if (QueuedSyncables.ContainsKey(queuedId)) {
+            if (HasQueuedSyncable(queuedId)) {
                 syncable = QueuedSyncables[queuedId];
                 QueuedSyncables.Remove(queuedId);
 
@@ -225,9 +220,27 @@ namespace LabFusion.Syncables {
 
             return false;
         }
+        
+        public static bool HasQueuedSyncable(ushort id)
+        {
+            return QueuedSyncables.ContainsKey(id);
+        }
 
-        public static bool HasSyncable(ushort id) => Syncables.ContainsKey(id);
+        public static bool HasSyncable(ushort id)
+        {
+            return Syncables.ContainsKey(id);
+        }
 
         public static bool TryGetSyncable(ushort id, out ISyncable syncable) => Syncables.TryGetValue(id, out syncable);
+
+        public static bool TryGetSyncable<TSyncable>(ushort id, out TSyncable syncable) where TSyncable : ISyncable {
+            if (TryGetSyncable(id, out ISyncable result) && result is TSyncable generic) {
+                syncable = generic;
+                return true;
+            }
+
+            syncable = default;
+            return false;
+        }
     }
 }

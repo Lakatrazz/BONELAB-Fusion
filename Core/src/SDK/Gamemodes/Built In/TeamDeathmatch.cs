@@ -1,9 +1,10 @@
 ﻿using BoneLib.BoneMenu.Elements;
-
+using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.MarrowIntegration;
 using LabFusion.Network;
 using LabFusion.Representation;
+using LabFusion.SDK.Achievements;
 using LabFusion.SDK.Points;
 using LabFusion.Senders;
 using LabFusion.Utilities;
@@ -68,7 +69,7 @@ namespace LabFusion.SDK.Gamemodes
         private Team _lastTeam = null;
         private Team _localTeam = null;
 
-        private readonly Dictionary<PlayerId, TeamLogoInstance> _logoInstances = new Dictionary<PlayerId, TeamLogoInstance>();
+        private readonly FusionDictionary<PlayerId, TeamLogoInstance> _logoInstances = new();
 
         private string _avatarOverride = null;
         private float? _vitalityOverride = null;
@@ -259,7 +260,7 @@ namespace LabFusion.SDK.Gamemodes
 
             for(int i = 0; i < teams.Count; i++)
             {
-                accumulatedScore = accumulatedScore + teams[i].TeamScore;
+                accumulatedScore += GetScoreFromTeam(teams[i]);
             }
 
             return accumulatedScore;
@@ -329,7 +330,15 @@ namespace LabFusion.SDK.Gamemodes
 
                 if (killerTeam != killedTeam)
                 {
-                    IncrementScore(killerTeam);
+                    // Increment score for that team
+                    if (NetworkInfo.IsServer) {
+                        IncrementScore(killerTeam);
+                    }
+
+                    // If we are the killer, increment our achievement
+                    if (otherPlayer.IsSelf) {
+                        AchievementManager.IncrementAchievements<KillerAchievement>();
+                    }
                 }
             }
         }
@@ -372,7 +381,7 @@ namespace LabFusion.SDK.Gamemodes
             _oneMinuteLeft = false;
 
             // Invoke player changes on level load
-            FusionSceneManager.HookOnLevelLoad(() =>
+            FusionSceneManager.HookOnTargetLevelLoad(() =>
             {
                 // Force mortality
                 FusionPlayer.SetMortality(true);
@@ -411,7 +420,7 @@ namespace LabFusion.SDK.Gamemodes
 
             string message = "";
 
-            bool tied = leaders.All((team) => team.TeamScore == GetScoreFromTeam(winningTeam));
+            bool tied = leaders.All((team) => GetScoreFromTeam(team) == GetScoreFromTeam(winningTeam));
 
             if (!tied) {
                 message = $"First Place: {winningTeam.DisplayName} (Score: {GetScoreFromTeam(winningTeam)}) \n";
@@ -545,20 +554,11 @@ namespace LabFusion.SDK.Gamemodes
         /// <param name="value"></param>
         protected override void OnEventTriggered(string value)
         {
-            FusionNotification oneMinuteNotification = new FusionNotification()
+            FusionNotification oneMinuteNotification = new()
             {
                 title = "Team Deathmatch Timer",
                 showTitleOnPopup = true,
                 message = "One minute left!",
-                isMenuItem = false,
-                isPopup = true,
-            };
-
-            FusionNotification bitRewardNotification = new FusionNotification()
-            {
-                title = "Bits Rewarded",
-                showTitleOnPopup = true,
-                popupLength = 3f,
                 isMenuItem = false,
                 isPopup = true,
             };
@@ -568,13 +568,13 @@ namespace LabFusion.SDK.Gamemodes
                 FusionNotifier.Send(oneMinuteNotification);
             }
 
-            if(value == "NaturalEnd")
+            if (value == "NaturalEnd")
             {
                 int bitReward = GetRewardedBits();
-                string message = bitReward == 1 ? "Bit" : "Bits";
 
-                bitRewardNotification.message = $"You Won {bitReward}" + message;
-                PointItemManager.RewardBits(bitReward);
+                if (bitReward > 0) {
+                    PointItemManager.RewardBits(bitReward);
+                }
             }
         }
 
@@ -674,7 +674,7 @@ namespace LabFusion.SDK.Gamemodes
             }
 
             // Invoke spawn point changes on level load
-            FusionSceneManager.HookOnLevelLoad(() => InitializeTeamSpawns(team));
+            FusionSceneManager.HookOnTargetLevelLoad(() => InitializeTeamSpawns(team));
         }
 
         protected void InitializeTeamSpawns(Team team)

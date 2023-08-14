@@ -1,4 +1,6 @@
 ﻿using LabFusion.Extensions;
+using LabFusion.MarrowIntegration;
+using LabFusion.Utilities;
 using SLZ.Rig;
 using SLZ.VRMK;
 
@@ -15,12 +17,19 @@ using Avatar = SLZ.VRMK.Avatar;
 namespace LabFusion.SDK.Points {
     public enum AccessoryPoint
     {
+        // Head
         HEAD,
         HEAD_TOP,
+        
+        // Eyes
         EYE_LEFT,
         EYE_RIGHT,
         EYE_CENTER,
+
+        // Face
         NOSE,
+
+        // Spine
         CHEST,
         CHEST_BACK,
         HIPS,
@@ -35,6 +44,21 @@ namespace LabFusion.SDK.Points {
     }
 
     public static class AccessoryItemHelper {
+        private static Vector3 GetEyeCenter(RigManager rig, ArtRig artRig) {
+            if (Time.timeScale > 0f) {
+                return rig.ControllerRig.m_head.position;
+            }
+            else {
+                return (artRig.eyeLf.position + artRig.eyeRt.position) * 0.5f;
+            }
+        }
+
+        public static void GetTransform(MarrowCosmeticPoint point, out Vector3 position, out Quaternion rotation, out Vector3 scale) {
+            position = point.Transform.position;
+            rotation = point.Transform.rotation;
+            scale = point.Transform.lossyScale;
+        }
+
         public static void GetTransform(AccessoryPoint itemPoint, AccessoryScaleMode mode, RigManager rig, out Vector3 position, out Quaternion rotation, out Vector3 scale) {
             ArtRig artRig = rig.artOutputRig;
             Avatar avatar = rig._avatar;
@@ -49,7 +73,8 @@ namespace LabFusion.SDK.Points {
                     rotation = artRig.m_head.rotation;
                     break;
                 case AccessoryPoint.HEAD_TOP:
-                    Vector3 eyeCenter = (artRig.eyeLf.position + artRig.eyeRt.position) * 0.5f;
+                    Vector3 eyeCenter = GetEyeCenter(rig, artRig);
+
                     eyeCenter += artRig.m_head.up * (avatar._headTop * avatar.height);
                     eyeCenter = artRig.m_head.InverseTransformPoint(eyeCenter);
 
@@ -66,11 +91,11 @@ namespace LabFusion.SDK.Points {
                     rotation = artRig.eyeLf.rotation;
                     break;
                 case AccessoryPoint.EYE_CENTER:
-                    position = (artRig.eyeLf.position + artRig.eyeRt.position) * 0.5f;
+                    position = GetEyeCenter(rig, artRig);
                     rotation = artRig.m_head.rotation;
                     break;
                 case AccessoryPoint.NOSE:
-                    Vector3 noseCenter = (artRig.eyeLf.position + artRig.eyeRt.position) * 0.5f;
+                    Vector3 noseCenter = GetEyeCenter(rig, artRig);
                     position = artRig.m_head.position + artRig.m_head.forward * (avatar.ForeheadEllipseZ * avatar.height);
 
                     noseCenter = artRig.m_head.InverseTransformPoint(noseCenter);

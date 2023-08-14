@@ -20,6 +20,8 @@ using UnityEngine;
 using SLZ.Props;
 using LabFusion.Preferences;
 using SLZ.Rig;
+using LabFusion.Extensions;
+using LabFusion.SDK.Achievements;
 
 namespace LabFusion.Network
 {
@@ -101,7 +103,7 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static ConstraintCreateData Create(byte smallId, ushort constrainerId, ConstrainerPointPair pair, ConstraintSyncable point1, ConstraintSyncable point2)
+        public static ConstraintCreateData Create(byte smallId, ushort constrainerId, ConstrainerPointPair pair)
         {
             return new ConstraintCreateData()
             {
@@ -116,9 +118,11 @@ namespace LabFusion.Network
                 point2 = pair.point2,
                 normal1 = pair.normal1,
                 normal2 = pair.normal2,
-                point1Id = point1.GetId(),
-                point2Id = point2.GetId(),
-        };
+
+                // These are unknown by the client, but are set by the server
+                point1Id = 0,
+                point2Id = 0,
+            };
         }
     }
 
@@ -129,71 +133,108 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<ConstraintCreateData>();
+
+            bool hasConstrainer = SyncManager.TryGetSyncable<PropSyncable>(data.constrainerId, out var constrainer);
+
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
             {
-                using (var data = reader.ReadFusionSerializable<ConstraintCreateData>())
+                // Make sure we have a constrainer server side (and it's being held)
+                if (hasConstrainer && constrainer.IsHeld && constrainer.HasExtender<ConstrainerExtender>()) {
+                    // Recreate the message so we can assign server-side sync ids
+                    using var writer = FusionWriter.Create();
+                    data.point1Id = SyncManager.AllocateSyncID();
+                    data.point2Id = SyncManager.AllocateSyncID();
+
+                    writer.Write(data);
+
+                    using var message = FusionMessage.Create(Tag.Value, writer);
+                    MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                }
+            }
+            else
+            {
+                if (!data.tracker1.gameObject || !data.tracker2.gameObject)
+                    return;
+
+                // Check if player constraining is disabled and if this is attempting to constrain a player
+                if (!ConstrainerUtilities.PlayerConstraintsEnabled)
                 {
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled) {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+                    if (data.tracker1.gameObject.IsPartOfPlayer() || data.tracker2.gameObject.IsPartOfPlayer())
+                        return;
+                }
+
+                if (ConstrainerUtilities.HasConstrainer) {
+                    // Get the synced constrainer
+                    // This isn't required for client constraint creation, but is used for SFX and VFX
+                    Constrainer syncedComp = null;
+                    if (hasConstrainer && constrainer.TryGetExtender<ConstrainerExtender>(out var extender))
+                        syncedComp = extender.Component;
+                    hasConstrainer = syncedComp != null;
+
+                    var comp = ConstrainerUtilities.GlobalConstrainer;
+                    comp.mode = data.mode;
+
+                    // Setup points
+                    comp._point1 = data.point1;
+                    comp._point2 = data.point2;
+
+                    comp._normal1 = data.normal1;
+                    comp._normal2 = data.normal2;
+
+                    // Setup gameobjects
+                    comp._gO1 = data.tracker1.gameObject;
+                    comp._gO2 = data.tracker2.gameObject;
+                    comp._rb1 = comp._gO1.GetComponentInChildren<Rigidbody>(true);
+                    comp._rb2 = comp._gO2.GetComponentInChildren<Rigidbody>(true);
+
+                    // Store positions
+                    Transform tran1 = comp._gO1.transform;
+                    Transform tran2 = comp._gO2.transform;
+
+                    Vector3 go1Pos = tran1.position;
+                    Quaternion go1Rot = tran1.rotation;
+
+                    Vector3 go2Pos = tran2.position;
+                    Quaternion go2Rot = tran2.rotation;
+
+                    // Force positions
+                    tran1.SetPositionAndRotation(data.tracker1Transform.position, data.tracker1Transform.rotation.Expand());
+                    tran2.SetPositionAndRotation(data.tracker2Transform.position, data.tracker2Transform.rotation.Expand());
+
+                    // Create the constraint
+                    ConstrainerPatches.IsReceivingConstraints = true;
+                    ConstrainerPatches.FirstId = data.point1Id;
+                    ConstrainerPatches.SecondId = data.point2Id;
+
+                    if (hasConstrainer)
+                        comp.LineMaterial = syncedComp.LineMaterial;
+
+                    comp.PrimaryButtonUp();
+
+                    ConstrainerPatches.FirstId = 0;
+                    ConstrainerPatches.SecondId = 0;
+                    ConstrainerPatches.IsReceivingConstraints = false;
+
+                    // Reset positions
+                    tran1.SetPositionAndRotation(go1Pos, go1Rot);
+                    tran2.SetPositionAndRotation(go2Pos, go2Rot);
+
+                    // Events when the constrainer is from another player
+                    if (data.smallId != PlayerIdManager.LocalSmallId) {
+                        if (hasConstrainer) {
+                            // Play sound
+                            syncedComp.sfx.GravLocked();
+                            syncedComp.sfx.Release();
                         }
-                    }
-                    else {
-                        if (!data.tracker1.gameObject || !data.tracker2.gameObject)
-                            return;
 
-                        // Check if player constraining is disabled and if this is attempting to constrain a player
-                        if (!FusionPreferences.ActiveServerSettings.PlayerConstrainingEnabled.GetValue()) {
-                            if (data.tracker1.gameObject.GetComponentInParent<RigManager>() || data.tracker2.gameObject.GetComponentInParent<RigManager>())
-                                return;
-                        }
-
-                        if (SyncManager.TryGetSyncable(data.constrainerId, out var syncable) && syncable is PropSyncable constrainer && constrainer.TryGetExtender<ConstrainerExtender>(out var extender)) {
-                            var comp = extender.Component;
-                            comp.mode = data.mode;
-
-                            // Setup points
-                            comp._point1 = data.point1;
-                            comp._point2 = data.point2;
-
-                            comp._normal1 = data.normal1;
-                            comp._normal2 = data.normal2;
-
-                            // Setup gameobjects
-                            comp._gO1 = data.tracker1.gameObject;
-                            comp._gO2 = data.tracker2.gameObject;
-                            comp._rb1 = comp._gO1.GetComponentInChildren<Rigidbody>(true);
-                            comp._rb2 = comp._gO2.GetComponentInChildren<Rigidbody>(true);
-
-                            // Store positions
-                            Transform tran1 = comp._gO1.transform;
-                            Transform tran2 = comp._gO2.transform;
-
-                            Vector3 go1Pos = tran1.position;
-                            Quaternion go1Rot = tran1.rotation;
-
-                            Vector3 go2Pos = tran2.position;
-                            Quaternion go2Rot = tran2.rotation;
-
-                            // Force positions
-                            tran1.SetPositionAndRotation(data.tracker1Transform.position, data.tracker1Transform.rotation.Expand());
-                            tran2.SetPositionAndRotation(data.tracker2Transform.position, data.tracker2Transform.rotation.Expand());
-
-                            // Create the constraint
-                            ConstrainerPatches.IsReceivingConstraints = true;
-                            ConstrainerPatches.FirstId = data.point1Id;
-                            ConstrainerPatches.SecondId = data.point2Id;
-
-                            comp.PrimaryButtonUp();
-
-                            ConstrainerPatches.FirstId = 0;
-                            ConstrainerPatches.SecondId = 0;
-                            ConstrainerPatches.IsReceivingConstraints = false;
-
-                            // Reset positions
-                            tran1.SetPositionAndRotation(go1Pos, go1Rot);
-                            tran2.SetPositionAndRotation(go2Pos, go2Rot);
+                        // Check for host constraint achievement
+                        if (data.smallId == 0 && AchievementManager.TryGetAchievement<ClassStruggle>(out var achievement)) {
+                            if (!achievement.IsComplete && (tran1.IsPartOfSelf() || tran2.IsPartOfSelf())) {
+                                achievement.IncrementTask();
+                            }
                         }
                     }
                 }

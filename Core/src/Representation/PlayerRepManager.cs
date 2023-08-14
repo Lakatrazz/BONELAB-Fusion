@@ -1,22 +1,22 @@
-﻿using LabFusion.Extensions;
+﻿using LabFusion.Data;
+using LabFusion.Extensions;
+using LabFusion.Utilities;
 using SLZ.Rig;
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LabFusion.Representation {
     public static class PlayerRepManager {
         // This should never change, incase other mods rely on it.
         public const string PlayerRepName = "[RigManager (FUSION PlayerRep)]";
 
-        public static readonly List<PlayerRep> PlayerReps = new List<PlayerRep>();
-        public static readonly Dictionary<byte, PlayerRep> IDLookup = new Dictionary<byte, PlayerRep>(); 
-        public static readonly Dictionary<RigManager, PlayerRep> ManagerLookup = new Dictionary<RigManager, PlayerRep>(new UnityComparer());
+        public static readonly List<PlayerRep> PlayerReps = new();
+        public static readonly FusionDictionary<byte, PlayerRep> IDLookup = new(); 
+        public static readonly FusionDictionary<RigManager, PlayerRep> ManagerLookup = new(new UnityComparer());
 
         public static bool HasPlayerId(RigManager manager) {
+            if (manager == null)
+                return false;
             return ManagerLookup.ContainsKey(manager);
         }
 
