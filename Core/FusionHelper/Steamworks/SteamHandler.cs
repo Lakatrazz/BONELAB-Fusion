@@ -26,7 +26,6 @@ namespace FusionHelper.Steamworks
 
         public static void Init(int appId)
         {
-
 #if !PLATFORM_MAC
             try
             {

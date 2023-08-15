@@ -38,12 +38,17 @@ namespace FusionHelper.Steamworks
             // OnConnecting
             if (info.m_info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connecting)
             {
-                SteamHandler.SocketManager?.OnConnecting(info);
+                // Is this correct?
+                if (info.m_hConn != Connection)
+                    SteamHandler.SocketManager?.OnConnecting(info);
             }
 
             // OnConnected
             if (info.m_info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected)
             {
+                // Is this correct?
+                if (info.m_hConn != Connection)
+                    SteamHandler.SocketManager?.OnConnected(info);
             }
         }
 
