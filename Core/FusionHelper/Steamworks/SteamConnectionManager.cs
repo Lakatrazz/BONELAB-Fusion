@@ -1,9 +1,4 @@
 ﻿using Steamworks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FusionHelper.Network;
 using System.Runtime.InteropServices;
 using LiteNetLib.Utils;
@@ -27,11 +22,16 @@ namespace FusionHelper.Steamworks
                 || info.m_info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ClosedByPeer
                 || info.m_info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_ProblemDetectedLocally)
             {
-                NetworkHandler.SendToClient(MessageTypes.OnConnectionDisconnected);
+                // If this is us, fully cleanup
+                if (info.m_hConn == Connection)
+                {
+                    NetworkHandler.SendToClient(MessageTypes.OnConnectionDisconnected);
 
 #if DEBUG
-                Console.WriteLine("Client was disconnected.");
+                    Console.WriteLine("Client was disconnected.");
 #endif
+                }
+
                 SteamHandler.SocketManager?.OnDisconnected(info);
             }
 

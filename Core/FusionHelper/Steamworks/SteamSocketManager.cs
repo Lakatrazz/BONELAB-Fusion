@@ -19,7 +19,6 @@ namespace FusionHelper.Steamworks
 
         public void OnConnecting(SteamNetConnectionStatusChangedCallback_t info)
         {
-            // TODO: connection verification
             SteamNetworkingSockets.AcceptConnection(info.m_hConn);
         }
 
