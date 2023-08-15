@@ -92,7 +92,6 @@ namespace FusionHelper.Steamworks
             IsServer = false;
         }
 
-        // TODO: socket/server hosting doesnt work
         public static void CreateRelay()
         {
             SocketManager.Socket = SteamNetworkingSockets.CreateListenSocketP2P(0, 0, Array.Empty<SteamNetworkingConfigValue_t>());
