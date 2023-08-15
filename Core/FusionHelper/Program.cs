@@ -4,7 +4,7 @@ using LiteNetLib.Utils;
 
 #if PLATFORM_MAC
 
-Console.WriteLine("\x1b[93mI see you're on a Mac. The Mac version of FusionHelper currently only supports the PROXY_STEAM_VR networking layer, please be sure to not change it.\x1b[0m");
+Console.WriteLine("\x1b[93mI see you're on a Mac. The Mac version of FusionHelper currently only supports the PROXY_STEAM_VR networking layer, please be sure to not change it in the Fusion settings.\x1b[0m");
 
 #endif
 

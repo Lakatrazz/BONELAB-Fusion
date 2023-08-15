@@ -19,12 +19,12 @@
 	<Nullable>enable</Nullable>
 	<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 
-	<DefineConstants Condition="'$(Configuration)' == 'Debug-Win'">DEBUG;PLATFORM_WIN</DefineConstants>
-	<DefineConstants Condition="'$(Configuration)' == 'Release-Win'">PLATFORM_WIN</DefineConstants>
-	<DefineConstants Condition="'$(Configuration)' == 'Debug-Mac'">DEBUG;PLATFORM_MAC</DefineConstants>
-	<DefineConstants Condition="'$(Configuration)' == 'Release-Mac'">PLATFORM_MAC</DefineConstants>
-	<DefineConstants Condition="'$(Configuration)' == 'Debug-Linux'">DEBUG;PLATFORM_LINUX</DefineConstants>
-	<DefineConstants Condition="'$(Configuration)' == 'Release-Linux'">PLATFORM_LINUX</DefineConstants>
+	<DefineConstants Condition="'$(Configuration)' == 'Debug-Win'">DEBUG;PLATFORM_WIN;STEAMWORKS_WIN;STEAMWORKS_X64</DefineConstants>
+	<DefineConstants Condition="'$(Configuration)' == 'Release-Win'">PLATFORM_WIN;STEAMWORKS_WIN;STEAMWORKS_X64</DefineConstants>
+	<DefineConstants Condition="'$(Configuration)' == 'Debug-Mac'">DEBUG;PLATFORM_MAC;STEAMWORKS_LIN_OSX;STEAMWORKS_X64</DefineConstants>
+	<DefineConstants Condition="'$(Configuration)' == 'Release-Mac'">PLATFORM_MAC;STEAMWORKS_LIN_OSX;STEAMWORKS_X64</DefineConstants>
+	<DefineConstants Condition="'$(Configuration)' == 'Debug-Linux'">DEBUG;PLATFORM_LINUX;STEAMWORKS_LIN_OSX;STEAMWORKS_X64</DefineConstants>
+	<DefineConstants Condition="'$(Configuration)' == 'Release-Linux'">PLATFORM_LINUX;STEAMWORKS_LIN_OSX;STEAMWORKS_X64</DefineConstants>
 	  
 	<Platforms>ARM64;x64</Platforms>
 	 
