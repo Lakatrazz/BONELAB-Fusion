@@ -147,7 +147,7 @@ namespace LabFusion.Network
                         }
 
                         // Finally, check for dynamic connection disallowing
-                        if (!MultiplayerHooking.Internal_OnShouldAllowConnection(data.longId, out string reason)) {
+                        if (!MultiplayerHooking.Internal_OnShouldAllowConnection(data, out string reason)) {
                             ConnectionSender.SendConnectionDeny(data.longId, reason);
                             return;
                         }
