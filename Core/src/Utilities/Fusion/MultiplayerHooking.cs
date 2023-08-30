@@ -13,7 +13,7 @@ using LabFusion.Senders;
 using SLZ.Rig;
 
 namespace LabFusion.Utilities {
-    public delegate bool UserAccessEvent(ulong userId, out string reason);
+    public delegate bool UserAccessEvent(ConnectionRequestData requestData, out string reason);
     public delegate void ServerEvent();
     public delegate void UpdateEvent();
     public delegate void PlayerUpdate(PlayerId playerId);
@@ -38,7 +38,7 @@ namespace LabFusion.Utilities {
         public static event LobbyMenuAction OnLobbyCategoryCreated;
         public static event RigManagerEvent OnLocalPlayerCreated, OnPlayerRepCreated;
 
-        internal static bool Internal_OnShouldAllowConnection(ulong userId, out string reason) {
+        internal static bool Internal_OnShouldAllowConnection(ConnectionRequestData requestData, out string reason) {
             reason = "";
 
             if (OnShouldAllowConnection == null)
@@ -47,7 +47,7 @@ namespace LabFusion.Utilities {
             foreach (var invocation in OnShouldAllowConnection.GetInvocationList()) {
                 var accessEvent = (UserAccessEvent)invocation;
 
-                if (!accessEvent.Invoke(userId, out reason))
+                if (!accessEvent.Invoke(requestData, out reason))
                     return false;
             }
 
