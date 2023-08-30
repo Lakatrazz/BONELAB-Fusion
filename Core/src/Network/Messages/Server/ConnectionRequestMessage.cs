@@ -139,7 +139,7 @@ namespace LabFusion.Network
                         }
 
                         // Check if PC user
-                        if (!FusionPreferences.LocalServerSettings.AllowQuestUsers.GetValue()
+                        if (!FusionPreferences.LocalServerSettings.AllowPCUsers.GetValue()
                             && data.initialMetadata[MetadataHelper.PlatformKey] == "PC")
                         {
                             ConnectionSender.SendConnectionDeny(data.longId, "PC users are blocked from this server.");

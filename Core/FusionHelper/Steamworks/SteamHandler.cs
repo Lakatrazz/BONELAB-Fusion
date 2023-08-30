@@ -1,15 +1,13 @@
 ﻿using FusionHelper.Network;
 using LiteNetLib.Utils;
-using Steamworks;
-using Steamworks.Data;
-using Steamworks.ServerList;
 using System.Runtime.InteropServices;
+using Steamworks;
+using System.Security.Cryptography;
 
 namespace FusionHelper.Steamworks
 {
     internal static class SteamHandler
     {
-        const bool ASYNC_CALLBACKS = true;
         const int RECEIVE_BUFFER_SIZE = 32;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -17,25 +15,17 @@ namespace FusionHelper.Steamworks
         public static SteamConnectionManager ConnectionManager { get; private set; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-        private static Lobby? _localLobby;
+        public static bool IsServer;
+        private static bool IsInited;
+
+        private static CSteamID? _localLobby;
+
+        // C API things
+        private static CallResult<LobbyCreated_t> _createLobbyCallResult;
+        private static Callback<GameRichPresenceJoinRequested_t> _gameRichPresJoinRequestedCallback;
 
         public static void Init(int appId)
         {
-#if DEBUG
-            Dispatch.OnDebugCallback = (type, str, server) =>
-            {
-                Console.WriteLine($"[Callback {type} {(server ? "server" : "client")}]");
-                Console.WriteLine(str);
-                Console.WriteLine($"");
-            };
-
-            Dispatch.OnException = (e) =>
-            {
-                Console.Error.WriteLine(e.Message);
-                Console.Error.WriteLine(e.StackTrace);
-            };
-#endif
-
 #if !PLATFORM_MAC
             try
             {
@@ -50,10 +40,13 @@ namespace FusionHelper.Steamworks
 
             try
             {
-                if (!SteamClient.IsValid)
-                    SteamClient.Init((uint)appId, ASYNC_CALLBACKS);
+                SteamAPI.Init();
                 SteamNetworkingUtils.InitRelayNetworkAccess();
-                SteamFriends.OnGameRichPresenceJoinRequested += OnGameRichPresenceJoinRequested;
+                _gameRichPresJoinRequestedCallback = Callback<GameRichPresenceJoinRequested_t>.Create(OnGameRichPresenceJoinRequested);
+                ConnectionManager = new SteamConnectionManager();
+                SocketManager = new SteamSocketManager();
+
+                IsInited = true;
             }
             catch (Exception e)
             {
@@ -65,11 +58,9 @@ namespace FusionHelper.Steamworks
 
         public static void Tick()
         {
-            if (!ASYNC_CALLBACKS)
+            if (IsInited)
             {
-#pragma warning disable CS0162 // Unreachable code detected
-                SteamClient.RunCallbacks();
-#pragma warning restore CS0162 // Unreachable code detected
+                SteamAPI.RunCallbacks();
             }
 
             try
@@ -83,44 +74,46 @@ namespace FusionHelper.Steamworks
             }
         }
 
-        private static async void AwaitLobbyCreation()
+        private static void AwaitLobbyCreation()
         {
-            var lobbyTask = await SteamMatchmaking.CreateLobbyAsync();
-
-            if (!lobbyTask.HasValue)
+            var lobbyTask = SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeInvisible, 100);
+            _createLobbyCallResult = CallResult<LobbyCreated_t>.Create((a, b) =>
             {
-#if DEBUG
-                Console.WriteLine("Failed to create a steam lobby!");
-#endif
-                return;
-            }
-
-            _localLobby = lobbyTask.Value;
+                _localLobby = new CSteamID(a.m_ulSteamIDLobby);
+            });
+            _createLobbyCallResult.Set(lobbyTask);
         }
 
         public static void ConnectRelay(ulong serverId)
         {
-            ConnectionManager = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(serverId, 0);
+            SteamNetworkingIdentity id = default;
+            id.SetSteamID64(serverId);
+            ConnectionManager.Connection = SteamNetworkingSockets.ConnectP2P(ref id, 0, 0, Array.Empty<SteamNetworkingConfigValue_t>());
+            IsServer = false;
         }
 
         public static void CreateRelay()
         {
-            SocketManager = SteamNetworkingSockets.CreateRelaySocket<SteamSocketManager>(0);
+            SocketManager.Socket = SteamNetworkingSockets.CreateListenSocketP2P(0, 0, Array.Empty<SteamNetworkingConfigValue_t>());
 
             // Host needs to connect to own socket server with a ConnectionManager to send/receive messages
             // Relay Socket servers are created/connected to through SteamIds rather than "Normal" Socket Servers which take IP addresses
-            ConnectionManager = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(SteamClient.SteamId);
+            SteamNetworkingIdentity id = default;
+            id.SetSteamID64(SteamUser.GetSteamID().m_SteamID);
+            ConnectionManager.Connection = SteamNetworkingSockets.ConnectP2P(ref id, 0, 0, Array.Empty<SteamNetworkingConfigValue_t>());
+
+            IsServer = true;
         }
 
-        private static void OnGameRichPresenceJoinRequested(Friend friend, string value)
+        private static void OnGameRichPresenceJoinRequested(GameRichPresenceJoinRequested_t pCallback)
         {
             // Forward this to joining a server from the friend
             NetDataWriter writer = NetworkHandler.NewWriter(MessageTypes.JoinServer);
-            writer.Put(friend.Id);
+            writer.Put(pCallback.m_steamIDFriend.m_SteamID);
             NetworkHandler.SendToClient(writer);
         }
 
-        public static void SendToClient(Connection connection, byte[] message, bool reliable)
+        public static void SendToClient(HSteamNetConnection connection, byte[] message, bool reliable)
         {
             SendType sendType = reliable ? SendType.Reliable : SendType.Unreliable;
 
@@ -129,7 +122,7 @@ namespace FusionHelper.Steamworks
             IntPtr intPtrMessage = Marshal.AllocHGlobal(sizeOfMessage);
             Marshal.Copy(message, 0, intPtrMessage, sizeOfMessage);
 
-            connection.SendMessage(intPtrMessage, sizeOfMessage, sendType);
+            SteamNetworkingSockets.SendMessageToConnection(connection, intPtrMessage, (uint)sizeOfMessage, (int)sendType, out long _);
 
             Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
         }
@@ -142,23 +135,19 @@ namespace FusionHelper.Steamworks
                 return;
             }
 
-            _localLobby.Value.SetData(key, value);
+            SteamMatchmaking.SetLobbyData(_localLobby.Value, key, value);
         }
 
         public static byte[] DecompressVoice(byte[] from)
         {
+            // TODO: does not handle if decompressed is over buffer size
             unsafe
             {
                 var to = new byte[1024 * 64];
-
                 uint szWritten = 0;
 
-                fixed (byte* frm = from)
-                fixed (byte* dst = to)
-                {
-                    if (SteamUser.Internal.DecompressVoice((IntPtr)frm, (uint)from.Length, (IntPtr)dst, (uint)to.Length, ref szWritten, SteamUser.SampleRate) != VoiceResult.OK)
-                        return Array.Empty<byte>();
-                }
+                if (SteamUser.DecompressVoice(from, (uint)from.Length, to, (uint)to.Length, out szWritten, SteamUser.GetVoiceOptimalSampleRate()) != EVoiceResult.k_EVoiceResultOK)
+                    return Array.Empty<byte>();
 
                 if (szWritten == 0)
                     return Array.Empty<byte>();
@@ -182,8 +171,17 @@ namespace FusionHelper.Steamworks
 
         public static void KillConnection()
         {
-            ConnectionManager?.Close();
-            SocketManager?.Close();
+            if (ConnectionManager != null)
+                SteamNetworkingSockets.CloseConnection(ConnectionManager.Connection, (int)ESteamNetConnectionEnd.k_ESteamNetConnectionEnd_App_Generic, "Connection killed by FusionHelper", false);
+
+            if (SocketManager != null)
+            {
+                SteamNetworkingSockets.DestroyPollGroup(SocketManager.PollGroup);
+                SteamNetworkingSockets.CloseListenSocket(SocketManager.Socket);
+            }
+
+
+            IsServer = false;
         }
     }
 }

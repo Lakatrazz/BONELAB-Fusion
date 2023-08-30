@@ -56,5 +56,18 @@ namespace LabFusion.Network {
                     return NetworkHelper.IsFriend(userId);
             }
         }
+
+        public static bool IsPlatformAllowed(bool allowQuest, bool allowPC)
+        {
+            bool onQuest = BoneLib.HelperMethods.IsAndroid();
+
+            if (!allowQuest && onQuest)
+                return false;
+
+            if (!allowPC && !onQuest)
+                return false;
+
+            return true;
+        }
     }
 }

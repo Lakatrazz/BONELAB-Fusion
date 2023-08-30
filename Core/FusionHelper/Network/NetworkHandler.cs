@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 
 using Steamworks;
-using Steamworks.Data;
 
 using LiteNetLib;
 using LiteNetLib.Utils;
@@ -88,6 +87,8 @@ namespace FusionHelper.Network
             Console.WriteLine("Initialized UDP socket on port " + Server.LocalPort);
 #if PLATFORM_WIN
             Console.WriteLine("\x1b[93mBe sure to allow FusionHelper access both public and private networks if/when the firewall asks.\x1b[0m");
+#elif PLATFORM_MAC
+            Console.WriteLine("\x1b[93mBe sure to allow FusionHelper to receive and send information if/when the firewall asks.\x1b[0m");
 #endif
         }
 
@@ -106,19 +107,43 @@ namespace FusionHelper.Network
             return 28340;
         }
 
-        private static Task<Lobby[]> FetchLobbies()
+        private static async Task<CSteamID[]> FetchLobbies()
         {
-            var list = SteamMatchmaking.LobbyList;
-            list.FilterDistanceWorldwide();
-            list.WithMaxResults(int.MaxValue);
-            list.WithSlotsAvailable(int.MaxValue);
-            list.WithKeyValue("BONELAB_FUSION_HasServerOpen", bool.TrueString);
-            return list.RequestAsync();
+            SteamMatchmaking.AddRequestLobbyListDistanceFilter(ELobbyDistanceFilter.k_ELobbyDistanceFilterWorldwide);
+            SteamMatchmaking.AddRequestLobbyListFilterSlotsAvailable(int.MaxValue);
+            SteamMatchmaking.AddRequestLobbyListResultCountFilter(int.MaxValue);
+            SteamMatchmaking.AddRequestLobbyListStringFilter("BONELAB_FUSION_HasServerOpen", bool.TrueString, ELobbyComparison.k_ELobbyComparisonEqual);
+
+            var task = SteamMatchmaking.RequestLobbyList();
+
+            CSteamID[]? lobbyIdList = null;
+            var res = CallResult<LobbyMatchList_t>.Create((lml, good) =>
+            {
+                if (lml.m_nLobbiesMatching == 0)
+                {
+                    lobbyIdList = Array.Empty<CSteamID>();
+                }
+
+                lobbyIdList = new CSteamID[lml.m_nLobbiesMatching];
+
+                for (int i = 0; i < lml.m_nLobbiesMatching; i++)
+                {
+                    lobbyIdList[i] = SteamMatchmaking.GetLobbyByIndex(i);
+                }
+            });
+            res.Set(task);
+
+            while (lobbyIdList == null)
+            {
+                await Task.Delay(250);
+            }
+
+            return lobbyIdList;
         }
 
         private static async void RespondWithLobbyIds()
         {
-            Lobby[] lobbies = await FetchLobbies();
+            CSteamID[] lobbies = await FetchLobbies();
             if (lobbies == null)
             {
                 Console.WriteLine("Failed to fetch lobbies! Make sure your Steam client is connected to their servers and restart FusionHelper. If that doesn't solve it, Steam's servers may be down right now.");
@@ -129,9 +154,9 @@ namespace FusionHelper.Network
             writer.Put((byte)MessageTypes.LobbyIds);
             writer.Put((uint)lobbies.Length);
             
-            foreach (Lobby l in lobbies)
+            foreach (CSteamID l in lobbies)
             {
-                writer.Put(l.Id.Value);
+                writer.Put(l.m_SteamID);
             }
 
             ClientConnection.Send(writer, DeliveryMethod.ReliableUnordered);
@@ -139,9 +164,8 @@ namespace FusionHelper.Network
 
         private static void RespondWithLobbyMetadata(ulong lobbyId)
         {
-            Lobby lobby = new(lobbyId);
+            CSteamID lobby = new(lobbyId);
 
-            // oh dear.
             NetDataWriter writer = new();
             writer.Put((byte)MessageTypes.LobbyMetadata);
 
@@ -149,7 +173,7 @@ namespace FusionHelper.Network
             writer.Put(lobbyId);
 
             // Key collection, contains an array of all keys in the metadata
-            string[] keyCollection =  lobby.GetData("BONELAB_FUSION_KeyCollection").Expand();
+            string[] keyCollection =  SteamMatchmaking.GetLobbyData(lobby, "BONELAB_FUSION_KeyCollection").Expand();
 
             // Array length
             writer.Put(keyCollection.Length);
@@ -157,7 +181,7 @@ namespace FusionHelper.Network
             // Write entire array
             for (var i = 0; i < keyCollection.Length; i++) {
                 var key = keyCollection[i];
-                var value = lobby.GetData(key);
+                var value = SteamMatchmaking.GetLobbyData(lobby, key);
 
                 // In order, key then value
                 writer.Put(key);
@@ -185,7 +209,7 @@ namespace FusionHelper.Network
                         SteamHandler.Init(appId);
 
                         // Actually send back SteamID
-                        ulong steamID = SteamClient.IsValid ? SteamClient.SteamId : 0;
+                        ulong steamID = SteamUser.GetSteamID().m_SteamID;
                         NetDataWriter writer = NewWriter(MessageTypes.SteamID);
                         writer.Put(steamID);
                         SendToClient(writer);
@@ -195,7 +219,7 @@ namespace FusionHelper.Network
                 case (ulong)MessageTypes.GetUsername:
                     {
                         ulong userId = dataReader.GetULong();
-                        string name = new Friend(userId).Name;
+                        string name = SteamFriends.GetFriendPersonaName(new CSteamID(userId));
                         NetDataWriter writer = NewWriter(MessageTypes.GetUsername);
                         writer.Put(name);
                         SendToClient(writer);
@@ -214,10 +238,9 @@ namespace FusionHelper.Network
 
                         SendType sendType = id == (ulong)MessageTypes.ReliableBroadcastToClients ? SendType.Reliable : SendType.Unreliable;
 
-                        for (var i = 0; i < SteamHandler.SocketManager.Connected.Count; i++)
+                        foreach (var connection in SteamHandler.SocketManager.ConnectedSteamIds)
                         {
-                            var connection = SteamHandler.SocketManager.Connected[i];
-                            connection.SendMessage(intPtrMessage, sizeOfMessage, sendType);
+                            SteamNetworkingSockets.SendMessageToConnection(connection.Value, intPtrMessage, (uint)sizeOfMessage, (int)sendType, out long _);
                         }
 
                         Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
@@ -227,6 +250,12 @@ namespace FusionHelper.Network
                 case (ulong)MessageTypes.ReliableBroadcastToServer:
                 case (ulong)MessageTypes.UnreliableBroadcastToServer:
                     {
+                        if (SteamHandler.ConnectionManager.Connection.m_HSteamNetConnection == 0)
+                        {
+                            Console.WriteLine("\x1b[91mFusion is trying to broadcast without a valid connection. Please restart BONELAB. \x1b[0m");
+                            return;
+                        }
+
                         byte[] data = dataReader.GetBytesWithLength();
 
                         // Convert string/byte[] message into IntPtr data type for efficient message send / garbage management
@@ -236,21 +265,28 @@ namespace FusionHelper.Network
 
                         SendType sendType = id == (ulong)MessageTypes.ReliableBroadcastToServer ? SendType.Reliable : SendType.Unreliable;
 
-                        Result success = SteamHandler.ConnectionManager.Connection.SendMessage(intPtrMessage, sizeOfMessage, sendType);
-                        if (success == Result.OK)
+                        try
                         {
-                            Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
-                        }
-                        else
-                        {
-                            // RETRY
-                            Result retry = SteamHandler.ConnectionManager.Connection.SendMessage(intPtrMessage, sizeOfMessage, sendType);
-                            Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
-
-                            if (retry != Result.OK)
+                            EResult success = SteamNetworkingSockets.SendMessageToConnection(SteamHandler.ConnectionManager.Connection, intPtrMessage, (uint)sizeOfMessage, (int)sendType, out long _);
+                            if (success == EResult.k_EResultOK)
                             {
-                                throw new Exception($"Steam result was {retry}.");
+                                Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
                             }
+                            else
+                            {
+                                // RETRY
+                                EResult retry = SteamNetworkingSockets.SendMessageToConnection(SteamHandler.ConnectionManager.Connection, intPtrMessage, (uint)sizeOfMessage, (int)sendType, out long _);
+                                Marshal.FreeHGlobal(intPtrMessage); // Free up memory at pointer
+
+                                if (retry != EResult.k_EResultOK)
+                                {
+                                    throw new Exception($"Steam result was {retry}.");
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.ToString());
                         }
                         break;
                     }
@@ -263,7 +299,7 @@ namespace FusionHelper.Network
 
                         if (SteamHandler.SocketManager.ConnectedSteamIds.ContainsKey(userId))
                             SteamHandler.SendToClient(SteamHandler.SocketManager.ConnectedSteamIds[userId], message, reliable);
-                        else if (userId == SteamClient.SteamId)
+                        else if (userId == SteamUser.GetSteamID().m_SteamID)
                             SteamHandler.SendToClient(SteamHandler.ConnectionManager.Connection, message, reliable);
 
                         break;
@@ -289,7 +325,7 @@ namespace FusionHelper.Network
                     break;
                 case (ulong)MessageTypes.UpdateConnectPresence:
                     {
-                        string? data = dataReader.GetString() == "true" ? "true" : null;
+                        string data = dataReader.GetString() == "true" ? "true" : "";
                         SteamFriends.SetRichPresence("connect", data);
                         break;
                     }
