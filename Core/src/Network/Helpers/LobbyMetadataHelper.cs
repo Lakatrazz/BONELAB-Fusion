@@ -31,6 +31,8 @@ namespace LabFusion.Network {
         public TimeScaleMode TimeScaleMode;
         public int MaxPlayers;
         public bool VoicechatEnabled;
+        public bool AllowQuestUsers;
+        public bool AllowPCUsers;
 
         // Lobby status
         public string LevelName;
@@ -62,6 +64,8 @@ namespace LabFusion.Network {
                 TimeScaleMode = FusionPreferences.LocalServerSettings.TimeScaleMode.GetValue(),
                 MaxPlayers = FusionPreferences.LocalServerSettings.MaxPlayers.GetValue(),
                 VoicechatEnabled = FusionPreferences.LocalServerSettings.VoicechatEnabled.GetValue(),
+                AllowQuestUsers = FusionPreferences.LocalServerSettings.AllowQuestUsers.GetValue(),
+                AllowPCUsers = FusionPreferences.LocalServerSettings.AllowPCUsers.GetValue(),
 
                 // Lobby status
                 LevelName = FusionSceneManager.Title,
@@ -88,6 +92,8 @@ namespace LabFusion.Network {
             lobby.SetMetadata(nameof(TimeScaleMode), TimeScaleMode.ToString());
             lobby.SetMetadata(nameof(MaxPlayers), MaxPlayers.ToString());
             lobby.SetMetadata(nameof(VoicechatEnabled), VoicechatEnabled.ToString());
+            lobby.SetMetadata(nameof(AllowQuestUsers), AllowQuestUsers.ToString());
+            lobby.SetMetadata(nameof(AllowPCUsers), AllowPCUsers.ToString());
 
             // Lobby status
             lobby.SetMetadata(nameof(LevelName), LevelName);
@@ -110,6 +116,8 @@ namespace LabFusion.Network {
                 // Lobby settings
                 NametagsEnabled = lobby.GetMetadata(nameof(NametagsEnabled)) == bool.TrueString,
                 VoicechatEnabled = lobby.GetMetadata(nameof(VoicechatEnabled)) == bool.TrueString,
+                AllowQuestUsers = lobby.GetMetadata(nameof(AllowQuestUsers)) == bool.TrueString,
+                AllowPCUsers = lobby.GetMetadata(nameof(AllowPCUsers)) == bool.TrueString,
 
                 // Lobby status
                 LevelName = lobby.GetMetadata(nameof(LevelName)),

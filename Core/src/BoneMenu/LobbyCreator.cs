@@ -57,7 +57,8 @@ namespace LabFusion.BoneMenu
             Color lobbyColor = Color.white;
             Color versionColor = Color.white;
 
-            if (NetworkVerification.CompareVersion(info.LobbyVersion, FusionMod.Version) != VersionResult.Ok) {
+            if (NetworkVerification.CompareVersion(info.LobbyVersion, FusionMod.Version) != VersionResult.Ok
+                || !NetworkVerification.IsPlatformAllowed(info.AllowQuestUsers, info.AllowPCUsers)) {
                 lobbyColor = Color.red;
                 versionColor = Color.red;
             }
