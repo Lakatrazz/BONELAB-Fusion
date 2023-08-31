@@ -260,7 +260,7 @@ namespace LabFusion.SDK.Gamemodes {
             }
         }
 
-        private bool Internal_UserJoinCheck(ulong userId, out string reason) {
+        private bool Internal_UserJoinCheck(PlayerId playerId, out string reason) {
             if (ActiveGamemode == this && (PreventNewJoins || !LateJoining)) {
                 reason = $"Gamemode {GamemodeName} is currently running!";
                 return false;
