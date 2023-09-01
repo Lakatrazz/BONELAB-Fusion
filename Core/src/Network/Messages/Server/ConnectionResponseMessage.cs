@@ -51,34 +51,35 @@ namespace LabFusion.Network
         public override byte? Tag => NativeMessageTag.ConnectionResponse;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
-            using (FusionReader reader = FusionReader.Create(bytes)) {
-                // This should only ever be handled client side!
-                if (isServerHandled)
-                    throw new ExpectedClientException();
+            using FusionReader reader = FusionReader.Create(bytes);
+            // This should only ever be handled client side!
+            if (isServerHandled)
+                throw new ExpectedClientException();
 
-                var data = reader.ReadFusionSerializable<ConnectionResponseData>();
+            var data = reader.ReadFusionSerializable<ConnectionResponseData>();
 
-                // Insert the id into our list
-                data.playerId.Insert();
+            // Insert the id into our list
+            data.playerId.Insert();
 
-                // Check the id to see if its our own
-                // If it is, just update our self reference
-                if (data.playerId.LongId == PlayerIdManager.LocalLongId) {
-                    PlayerIdManager.ApplyLocalId();
+            // Check the id to see if its our own
+            // If it is, just update our self reference
+            if (data.playerId.LongId == PlayerIdManager.LocalLongId)
+            {
+                PlayerIdManager.ApplyLocalId();
 
-                    InternalServerHelpers.OnJoinServer();
-                }
-                // Otherwise, create a player rep
-                else {
-                    InternalServerHelpers.OnUserJoin(data.playerId, data.isInitialJoin);
-                    var rep = new PlayerRep(data.playerId);
-                    rep.SwapAvatar(data.avatarStats, data.avatarBarcode);
-                }
-
-                // Update our vitals to everyone
-                if (RigData.RigReferences.RigManager)
-                    RigData.OnSendVitals();
+                InternalServerHelpers.OnJoinServer();
             }
+            // Otherwise, create a player rep
+            else
+            {
+                InternalServerHelpers.OnUserJoin(data.playerId, data.isInitialJoin);
+                var rep = new PlayerRep(data.playerId);
+                rep.SwapAvatar(data.avatarStats, data.avatarBarcode);
+            }
+
+            // Update our vitals to everyone
+            if (RigData.RigReferences.RigManager)
+                RigData.OnSendVitals();
         }
     }
 }

@@ -31,6 +31,8 @@ namespace FusionHelper.Steamworks
                 Shutdown();
             }
 
+            Console.WriteLine($"Initializing Steamworks with appid {appId}.");
+
 #if !PLATFORM_MAC
             try
             {
@@ -65,6 +67,8 @@ namespace FusionHelper.Steamworks
         {
             if (IsInited)
             {
+                Console.WriteLine("Shutting down Steamworks instance.");
+
                 SteamAPI.Shutdown();
                 IsInited = false;
             }
@@ -72,10 +76,10 @@ namespace FusionHelper.Steamworks
 
         public static void Tick()
         {
-            if (IsInited)
-            {
-                SteamAPI.RunCallbacks();
-            }
+            if (!IsInited)
+                return;
+
+            SteamAPI.RunCallbacks();
 
             try
             {
@@ -113,8 +117,12 @@ namespace FusionHelper.Steamworks
             // Host needs to connect to own socket server with a ConnectionManager to send/receive messages
             // Relay Socket servers are created/connected to through SteamIds rather than "Normal" Socket Servers which take IP addresses
             SteamNetworkingIdentity id = default;
-            id.SetSteamID64(SteamUser.GetSteamID().m_SteamID);
+            var steamId = SteamUser.GetSteamID().m_SteamID;
+            id.SetSteamID64(steamId);
             ConnectionManager.Connection = SteamNetworkingSockets.ConnectP2P(ref id, 0, 0, Array.Empty<SteamNetworkingConfigValue_t>());
+            
+            // The SocketManager also needs ourselves as a connection reference, so we can send messages to ourselves
+            SocketManager.InsertConnection(steamId, ConnectionManager.Connection);
 
             IsServer = true;
         }
@@ -190,7 +198,9 @@ namespace FusionHelper.Steamworks
 
             if (SocketManager != null)
             {
-                SteamNetworkingSockets.DestroyPollGroup(SocketManager.PollGroup);
+                // This used to be destroyed when closing servers, but it was also never recreated and broke servers
+                // SteamNetworkingSockets.DestroyPollGroup(SocketManager.PollGroup);
+
                 SteamNetworkingSockets.CloseListenSocket(SocketManager.Socket);
             }
 
