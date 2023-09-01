@@ -26,6 +26,11 @@ namespace FusionHelper.Steamworks
 
         public static void Init(int appId)
         {
+            if (IsInited)
+            {
+                Shutdown();
+            }
+
 #if !PLATFORM_MAC
             try
             {
@@ -54,6 +59,15 @@ namespace FusionHelper.Steamworks
             }
 
             AwaitLobbyCreation();
+        }
+
+        public static void Shutdown()
+        {
+            if (IsInited)
+            {
+                SteamAPI.Shutdown();
+                IsInited = false;
+            }
         }
 
         public static void Tick()

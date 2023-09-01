@@ -65,6 +65,8 @@ namespace FusionHelper.Network
             listener.PeerDisconnectedEvent += (peer, disconnectInfo) => {
                 Console.WriteLine("Client disconnected, resetting for reuse.");
                 Server.DisconnectPeerForce(peer);
+                SteamHandler.Shutdown();
+
                 _hasBeenDiscovered = false;
             };
             listener.NetworkReceiveEvent += EvaluateMessage;
