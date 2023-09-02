@@ -36,3 +36,6 @@
 - Made bit SDK script have separate function for removing bits
 - Scripts for avatar cosmetic attach points
 - Added achievement machine placer
+
+## **Fusion Helper**
+- [Download Here](https://github.com/Lakatrazz/Fusion-Helper/releases/latest)
