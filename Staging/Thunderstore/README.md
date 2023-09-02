@@ -18,7 +18,7 @@ Having been in development for 5 months, the long awaited multiplayer mod FUSION
 2. Install LemonLoader (latest version required).
 3. Install BoneLib.
 4. Download Fusion and drag the LabFusion.dll file into your Mods folder. Ignore the LabFusionUpdater.dll file, it does not work on Quest.
-5. Download FusionHelper on your PC ([available here](github.com/Lakatrazz/Fusion-Helper/releases/latest)). This will wirelessly connect to your Quest.
+5. Download FusionHelper on your PC ([available here](https://github.com/Lakatrazz/Fusion-Helper/releases/latest)). This will wirelessly connect to your Quest.
      - Note that the PC does not need to run BONELAB, or have good specifications.
 6. Run Steam and FusionHelper on your PC.
      - Make sure to run these programs every time you play, and that your PC and Quest are on the same network.
