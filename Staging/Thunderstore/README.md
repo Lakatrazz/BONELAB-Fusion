@@ -28,7 +28,7 @@ Having been in development for 5 months, the long awaited multiplayer mod FUSION
 
 ## Video Tutorials
 - PCVR: https://youtu.be/wz-ERSaz8GU
-- Quest: (Unavailable)
+- Quest: https://youtu.be/3dB_3g6CM9Q
 
 # About
 ## How to Use the Mod
