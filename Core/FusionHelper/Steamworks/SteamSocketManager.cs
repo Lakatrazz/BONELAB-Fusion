@@ -12,9 +12,15 @@ namespace FusionHelper.Steamworks
 
         public HSteamNetPollGroup PollGroup;
 
-        public SteamSocketManager()
+        public void CreateRelay()
         {
             PollGroup = SteamNetworkingSockets.CreatePollGroup();
+            Socket = SteamNetworkingSockets.CreateListenSocketP2P(0, 0, Array.Empty<SteamNetworkingConfigValue_t>());
+        }
+
+        public void KillRelay() {
+            SteamNetworkingSockets.DestroyPollGroup(PollGroup);
+            SteamNetworkingSockets.CloseListenSocket(Socket);
         }
 
         public void OnConnecting(SteamNetConnectionStatusChangedCallback_t info)

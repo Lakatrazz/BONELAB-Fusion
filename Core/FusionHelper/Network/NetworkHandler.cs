@@ -15,23 +15,6 @@ using FusionHelper.Steamworks;
 
 namespace FusionHelper.Network
 {
-    public enum ServerPrivacy
-    {
-        PUBLIC = 0,
-        PRIVATE = 1,
-        FRIENDS_ONLY = 2,
-        LOCKED = 3,
-    }
-
-    public enum TimeScaleMode
-    {
-        DISABLED = 0,
-        LOW_GRAVITY = 1,
-        HOST_ONLY = 2,
-        EVERYONE = 3,
-        CLIENT_SIDE_UNSTABLE = 4,
-    }
-
     internal static class NetworkHandler
     {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

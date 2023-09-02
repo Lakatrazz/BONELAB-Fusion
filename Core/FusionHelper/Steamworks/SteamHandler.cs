@@ -112,7 +112,7 @@ namespace FusionHelper.Steamworks
 
         public static void CreateRelay()
         {
-            SocketManager.Socket = SteamNetworkingSockets.CreateListenSocketP2P(0, 0, Array.Empty<SteamNetworkingConfigValue_t>());
+            SocketManager.CreateRelay();
 
             // Host needs to connect to own socket server with a ConnectionManager to send/receive messages
             // Relay Socket servers are created/connected to through SteamIds rather than "Normal" Socket Servers which take IP addresses
@@ -198,10 +198,7 @@ namespace FusionHelper.Steamworks
 
             if (SocketManager != null)
             {
-                // This used to be destroyed when closing servers, but it was also never recreated and broke servers
-                // SteamNetworkingSockets.DestroyPollGroup(SocketManager.PollGroup);
-
-                SteamNetworkingSockets.CloseListenSocket(SocketManager.Socket);
+                SocketManager.KillRelay();
             }
 
 
