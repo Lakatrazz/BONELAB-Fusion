@@ -111,6 +111,9 @@ namespace LabFusion.Preferences {
             // Gamemode settings
             public static FusionPref<bool> GamemodeMusic { get; internal set; }
             public static FusionPref<bool> GamemodeLateJoining { get; internal set; }
+
+            // Lobby settings
+            public static FusionPref<bool> ShowFullLobbies { get; internal set; }
         }
 
         internal static ServerSettings LocalServerSettings;
@@ -187,6 +190,9 @@ namespace LabFusion.Preferences {
             // Gamemodes
             ClientSettings.GamemodeMusic = new FusionPref<bool>(prefCategory, "Gamemode Music", true, PrefUpdateMode.IGNORE);
             ClientSettings.GamemodeLateJoining = new FusionPref<bool>(prefCategory, "Gamemode Late Joining", true, PrefUpdateMode.IGNORE);
+
+            // Lobbies
+            ClientSettings.ShowFullLobbies = new FusionPref<bool>(prefCategory, "Show Full Lobbies", false, PrefUpdateMode.IGNORE);
 
             // Save category
             prefCategory.SaveToFile(false);

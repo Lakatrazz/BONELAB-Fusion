@@ -176,6 +176,11 @@ namespace LabFusion.BoneMenu
             }
 
             RemoveEmptySubPanel(category, voiceChatSubPanel);
+
+            // Public lobbies 
+            var publicLobbyPanel = category.CreateSubPanel("Public Lobby Showing", Color.white);
+
+            CreateBoolPreference(publicLobbyPanel, "Show Full Lobbies", FusionPreferences.ClientSettings.ShowFullLobbies);
         }
 
     }

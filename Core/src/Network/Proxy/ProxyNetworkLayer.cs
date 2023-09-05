@@ -699,8 +699,12 @@ namespace LabFusion.Network
             if (!info.HasServerOpen)
                 return false;
 
-            // Decide if this server is too private
+            // Make sure the lobby isn't full
+            if (!FusionPreferences.ClientSettings.ShowFullLobbies.GetValue())
+                if (info.PlayerCount == info.MaxPlayers)
+                    return false;
 
+            // Decide if this server is too private
             switch (info.Privacy)
             {
                 default:
