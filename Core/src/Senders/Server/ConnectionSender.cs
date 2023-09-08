@@ -87,18 +87,12 @@ namespace LabFusion.Senders {
 
         public static void SendPlayerJoin(PlayerId id, string avatar, SerializedAvatarStats stats)
         {
-            using (FusionWriter writer = FusionWriter.Create())
-            {
-                using (var response = ConnectionResponseData.Create(id, avatar, stats, true))
-                {
-                    writer.Write(response);
+            using FusionWriter writer = FusionWriter.Create();
+            using var response = ConnectionResponseData.Create(id, avatar, stats, true);
+            writer.Write(response);
 
-                    using (var message = FusionMessage.Create(NativeMessageTag.ConnectionResponse, writer))
-                    {
-                        MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-                    }
-                }
-            }
+            using var message = FusionMessage.Create(NativeMessageTag.ConnectionResponse, writer);
+            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
         }
     }
 }

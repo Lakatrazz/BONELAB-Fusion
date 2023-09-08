@@ -7,14 +7,20 @@ namespace FusionHelper.Steamworks
 {
     public class SteamSocketManager
     {
-        public Dictionary<ulong, HSteamNetConnection> ConnectedSteamIds = new Dictionary<ulong, HSteamNetConnection>();
+        public Dictionary<ulong, HSteamNetConnection> ConnectedSteamIds = new();
         public HSteamListenSocket Socket;
 
         public HSteamNetPollGroup PollGroup;
 
-        public SteamSocketManager()
+        public void CreateRelay()
         {
             PollGroup = SteamNetworkingSockets.CreatePollGroup();
+            Socket = SteamNetworkingSockets.CreateListenSocketP2P(0, 0, Array.Empty<SteamNetworkingConfigValue_t>());
+        }
+
+        public void KillRelay() {
+            SteamNetworkingSockets.DestroyPollGroup(PollGroup);
+            SteamNetworkingSockets.CloseListenSocket(Socket);
         }
 
         public void OnConnecting(SteamNetConnectionStatusChangedCallback_t info)
@@ -41,8 +47,7 @@ namespace FusionHelper.Steamworks
 
         public void OnMessage(HSteamNetConnection connection, SteamNetworkingIdentity identity, IntPtr data, int size, long messageNum, long recvTime, int channel)
         {
-            if (!ConnectedSteamIds.ContainsKey(identity.GetSteamID64()))
-                ConnectedSteamIds.Add(identity.GetSteamID64(), connection);
+            InsertConnection(identity.GetSteamID64(), connection);
 
             byte[] message = new byte[size];
             Marshal.Copy(data, message, 0, size);
@@ -50,6 +55,10 @@ namespace FusionHelper.Steamworks
             NetDataWriter writer = NetworkHandler.NewWriter(MessageTypes.OnMessage);
             writer.PutBytesWithLength(message);
             NetworkHandler.SendToClient(writer);
+        }
+
+        public void InsertConnection(ulong steamId, HSteamNetConnection connection) {
+            ConnectedSteamIds[steamId] = connection;
         }
 
         public void Receive(int bufferSize = 32)

@@ -192,7 +192,8 @@ namespace LabFusion.Data {
                             return;
                         }
                     }
-                    throw new KeyNotFoundException();
+
+                    Add(key, value);
                 }
             }
         }

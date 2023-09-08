@@ -45,8 +45,7 @@ namespace LabFusion.Network
         public override void OnMessage(Connection connection, NetIdentity identity, IntPtr data, int size, long messageNum, long recvTime, int channel) {
             base.OnMessage(connection, identity, data, size, messageNum, recvTime, channel);
 
-            if (!ConnectedSteamIds.ContainsKey(identity.steamid))
-                ConnectedSteamIds.Add(identity.steamid, connection);
+            ConnectedSteamIds[identity.steamid] = connection;
 
             SteamSocketHandler.OnSocketMessageReceived(data, size, true);
         }

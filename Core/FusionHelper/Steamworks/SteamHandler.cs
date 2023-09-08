@@ -26,6 +26,13 @@ namespace FusionHelper.Steamworks
 
         public static void Init(int appId)
         {
+            if (IsInited)
+            {
+                Shutdown();
+            }
+
+            Console.WriteLine($"Initializing Steamworks with appid {appId}.");
+
 #if !PLATFORM_MAC
             try
             {
@@ -56,12 +63,23 @@ namespace FusionHelper.Steamworks
             AwaitLobbyCreation();
         }
 
-        public static void Tick()
+        public static void Shutdown()
         {
             if (IsInited)
             {
-                SteamAPI.RunCallbacks();
+                Console.WriteLine("Shutting down Steamworks instance.");
+
+                SteamAPI.Shutdown();
+                IsInited = false;
             }
+        }
+
+        public static void Tick()
+        {
+            if (!IsInited)
+                return;
+
+            SteamAPI.RunCallbacks();
 
             try
             {
@@ -94,13 +112,17 @@ namespace FusionHelper.Steamworks
 
         public static void CreateRelay()
         {
-            SocketManager.Socket = SteamNetworkingSockets.CreateListenSocketP2P(0, 0, Array.Empty<SteamNetworkingConfigValue_t>());
+            SocketManager.CreateRelay();
 
             // Host needs to connect to own socket server with a ConnectionManager to send/receive messages
             // Relay Socket servers are created/connected to through SteamIds rather than "Normal" Socket Servers which take IP addresses
             SteamNetworkingIdentity id = default;
-            id.SetSteamID64(SteamUser.GetSteamID().m_SteamID);
+            var steamId = SteamUser.GetSteamID().m_SteamID;
+            id.SetSteamID64(steamId);
             ConnectionManager.Connection = SteamNetworkingSockets.ConnectP2P(ref id, 0, 0, Array.Empty<SteamNetworkingConfigValue_t>());
+            
+            // The SocketManager also needs ourselves as a connection reference, so we can send messages to ourselves
+            SocketManager.InsertConnection(steamId, ConnectionManager.Connection);
 
             IsServer = true;
         }
@@ -176,8 +198,7 @@ namespace FusionHelper.Steamworks
 
             if (SocketManager != null)
             {
-                SteamNetworkingSockets.DestroyPollGroup(SocketManager.PollGroup);
-                SteamNetworkingSockets.CloseListenSocket(SocketManager.Socket);
+                SocketManager.KillRelay();
             }
 
 
