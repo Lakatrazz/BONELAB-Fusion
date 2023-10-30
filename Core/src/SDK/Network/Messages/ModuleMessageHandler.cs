@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-
+using LabFusion.Data;
 using LabFusion.Utilities;
 using LabFusion.Extensions;
 
@@ -27,28 +23,30 @@ namespace LabFusion.Network
         public static void RegisterHandler<T>() where T : ModuleMessageHandler => RegisterHandler(typeof(T));
 
         protected static void RegisterHandler(Type type) {
-            if (HandlerTypes.Contains(type))
+            if (HandlerTypes.ContainsKey(type.AssemblyQualifiedName))
                 throw new ArgumentException($"Handler {type.Name} was already registered.");
 
-            HandlerTypes.Add(type);
+            HandlerTypes.Add(type.AssemblyQualifiedName, type);
         }
 
         public static string[] GetExistingTypeNames() {
-            string[] array = new string[HandlerTypes.Count];
-            for (var i = 0; i < array.Length; i++) {
-                array[i] = HandlerTypes[i].AssemblyQualifiedName;
-            }
-            return array;
+            return HandlerTypes.Keys.ToArray();
         }
 
         public static void PopulateHandlerTable(string[] names) {
+
             Handlers = new ModuleMessageHandler[names.Length];
 
             for (ushort i = 0; i < names.Length; i++) {
-                var type = Type.GetType(names[i]);
-                if (type != null && HandlerTypes.Contains(type)) {
+                string handlerName = names[i];
+                if (HandlerTypes.ContainsKey(handlerName)) {
+                    Type type = HandlerTypes[handlerName];
                     var handler = Internal_CreateHandler(type, i);
                     Handlers[i] = handler;
+                }
+                else
+                {
+                    Handlers[i] = null;
                 }
             }
         }
@@ -58,7 +56,7 @@ namespace LabFusion.Network
         }
 
         private static ModuleMessageHandler Internal_CreateHandler(Type type, ushort tag) {
-            var handler = Activator.CreateInstance(type) as ModuleMessageHandler;
+            var handler = (ModuleMessageHandler) Activator.CreateInstance(type);
             handler._tag = tag;
             handler.NetAttributes = type.GetCustomAttributes<Net.NetAttribute>().ToArray();
             return handler;
@@ -68,8 +66,17 @@ namespace LabFusion.Network
             if (Handlers != null) {
                 for (ushort i = 0; i < Handlers.Length; i++) {
                     var other = Handlers[i];
-                    if (other.GetType() == type)
+                    
+                    // We don't have one for this slot. Skip.
+                    if (other == null)
+                    {
+                        continue; 
+                    }
+                    
+                    if (other.GetType().AssemblyQualifiedName == type.AssemblyQualifiedName)
+                    {
                         return i;
+                    }
                 }
             }
 
@@ -90,10 +97,10 @@ namespace LabFusion.Network
             {
                 ushort tag = BitConverter.ToUInt16(bytes, 0);
                 byte[] buffer = ByteRetriever.Rent(bytes.Length - 2);
-
+             
                 for (var i = 0; i < buffer.Length; i++)
                     buffer[i] = bytes[i + 2];
-
+             
                 // Since modules cannot be assumed to exist for everyone, we need to null check
                 if (Handlers.Length > tag && Handlers[tag] != null) {
                     Handlers[tag].Internal_HandleMessage(buffer, isServerHandled);
@@ -104,8 +111,8 @@ namespace LabFusion.Network
                 FusionLogger.Error($"Failed handling network message with reason: {e.Message}\nTrace:{e.StackTrace}");
             }
         }
-
-        internal static readonly List<Type> HandlerTypes = new();
+        
+        internal static FusionDictionary<string, Type> HandlerTypes = new();
         internal static ModuleMessageHandler[] Handlers = null;
     }
 }
