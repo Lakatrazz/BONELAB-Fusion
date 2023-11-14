@@ -81,8 +81,8 @@ namespace LabFusion.UI
             float scaled = progress * offsetCount;
 
             for (var i = 0; i < offsetCount; i++) {
-                float value = Mathf.Clamp01(scaled - i);
-                _musicLayers[i + 1].volume = Mathf.Lerp(0f, _maxMusicVolume, value);
+                float value = scaled - i;
+                _musicLayers[i + 1].volume = ManagedMathf.Lerp(0f, _maxMusicVolume, value);
             }
         }
 

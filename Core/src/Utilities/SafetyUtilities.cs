@@ -8,6 +8,6 @@ using UnityEngine;
 
 namespace LabFusion.Utilities {
     public static class SafetyUtilities {
-        public static bool IsValidTime => Time.timeScale > 0f && Time.deltaTime > 0f && Time.fixedDeltaTime > 0f;
+        public static bool IsValidTime => TimeUtilities.TimeScale > 0f && TimeUtilities.DeltaTime > 0f && TimeUtilities.FixedDeltaTime > 0f;
     }
 }

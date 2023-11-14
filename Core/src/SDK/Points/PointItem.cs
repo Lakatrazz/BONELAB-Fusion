@@ -150,7 +150,7 @@ namespace LabFusion.SDK.Points {
                 if (Upgrades == null || Upgrades.Length <= 0)
                     return -1;
 
-                return Mathf.Min(PointSaveManager.GetUpgradeLevel(Barcode), Upgrades.Length - 1);
+                return Math.Min(PointSaveManager.GetUpgradeLevel(Barcode), Upgrades.Length - 1);
             } 
         }
 
@@ -168,9 +168,6 @@ namespace LabFusion.SDK.Points {
         public bool IsEquipped => PointSaveManager.IsEquipped(Barcode);
 
         public string MainTag => Tags == null || Tags.Length <= 0 ? "Misc" : Tags[0];
-
-        protected List<ulong> _shownPlayers = new();
-        public IReadOnlyList<ulong> ShownPlayers => _shownPlayers;
 
         internal void Register() {
             if (ImplementFixedUpdate)

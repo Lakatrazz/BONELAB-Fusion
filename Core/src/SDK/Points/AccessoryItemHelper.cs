@@ -45,7 +45,7 @@ namespace LabFusion.SDK.Points {
 
     public static class AccessoryItemHelper {
         private static Vector3 GetEyeCenter(RigManager rig, ArtRig artRig) {
-            if (Time.timeScale > 0f) {
+            if (TimeUtilities.TimeScale > 0f) {
                 return rig.ControllerRig.m_head.position;
             }
             else {

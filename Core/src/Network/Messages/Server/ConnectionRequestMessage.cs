@@ -173,7 +173,7 @@ namespace LabFusion.Network
                     foreach (var id in PlayerIdManager.PlayerIds)
                     {
                         var barcode = CommonBarcodes.INVALID_AVATAR_BARCODE;
-                        SerializedAvatarStats stats = new SerializedAvatarStats();
+                        SerializedAvatarStats stats = new();
                         if (id.SmallId == 0)
                         {
                             barcode = RigData.RigAvatarId;

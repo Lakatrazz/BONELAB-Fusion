@@ -649,10 +649,10 @@ namespace LabFusion.Syncables
 
             // Update send time
             if (hasMovingBody)
-                _timeOfLastSend = Time.realtimeSinceStartup;
+                _timeOfLastSend = TimeUtilities.TimeSinceStartup;
 
             // If a rigidbody has not moved within half a second, stop sending
-            if (Time.realtimeSinceStartup - _timeOfLastSend >= 0.5f) {
+            if (TimeUtilities.TimeSinceStartup - _timeOfLastSend >= 0.5f) {
                 SetSendState(SendState.IDLE);
                 return;
             }
@@ -692,7 +692,7 @@ namespace LabFusion.Syncables
         }
 
         public void RefreshMessageTime() {
-            TimeOfMessage = Time.realtimeSinceStartup;
+            TimeOfMessage = TimeUtilities.TimeSinceStartup;
             IsSleeping = false;
         }
 
@@ -700,8 +700,8 @@ namespace LabFusion.Syncables
             if (!SafetyUtilities.IsValidTime)
                 return;
 
-            float dt = Time.fixedDeltaTime;
-            float timeSinceMessage = Time.realtimeSinceStartup - TimeOfMessage;
+            float dt = TimeUtilities.FixedDeltaTime;
+            float timeSinceMessage = TimeUtilities.TimeSinceStartup - TimeOfMessage;
 
             foreach (var extender in _extenders)
                 extender.OnReceivedUpdate();

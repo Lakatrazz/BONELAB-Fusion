@@ -258,6 +258,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>AssemblyInfo.tt</DependentUpon>
     </Compile>
+    <Compile Include="Core\src\BoneMenu\BatchedBoneMenu.cs" />
     <Compile Include="Core\src\BoneMenu\BoneMenuCreator.cs" />
     <Compile Include="Core\src\BoneMenu\DebugCreator.cs" />
     <Compile Include="Core\src\BoneMenu\GamemodesCreator.cs" />
@@ -837,6 +838,8 @@
     <Compile Include="Core\src\Utilities\Internal\PhysicsUtilities.cs" />
     <Compile Include="Core\src\Preferences\FusionPreferences.cs" />
     <Compile Include="Core\src\Utilities\Internal\StaticGripFixer.cs" />
+    <Compile Include="Core\src\Utilities\Internal\TimeUtilities.cs" />
+    <Compile Include="Core\src\Utilities\Internal\ManagedMathf.cs" />
     <Compile Include="Core\src\Utilities\MuteUIHelper.cs" />
     <Compile Include="Core\src\Utilities\UI\LaserCursorUtilities.cs" />
     <Compile Include="Core\src\Utilities\PlayerAdditionsHelper.cs" />

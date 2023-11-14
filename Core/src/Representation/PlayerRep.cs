@@ -65,16 +65,6 @@ namespace LabFusion.Representation
         public SerializedLocalTransform[] serializedGameworldLocalTransforms = new SerializedLocalTransform[RigAbstractor.GameworldRigTransformCount];
         public SerializedTransform serializedPelvis;
 
-        public float serializedFeetOffset;
-        public float serializedCrouchTarget;
-        public float serializedSpineCrouchOff;
-
-        public float serializedVrTwist;
-
-        public ControllerRig.TraversalState serializedTravState;
-        public ControllerRig.VertState serializedVertState;
-        public ControllerRig.VrVertState serializedVrVertState;
-
         public Vector3 predictVelocity;
         public Vector3 predictAngularVelocity;
 
@@ -171,7 +161,7 @@ namespace LabFusion.Representation
 
             // Modify the source settings
             var rm = RigReferences.RigManager;
-            if (IsCreated && rm._avatar) {
+            if (IsCreated) {
                 var mouthSource = rm.physicsRig.headSfx.mouthSrc;
                 _voiceSource.transform.position = mouthSource.transform.position;
 
@@ -204,7 +194,7 @@ namespace LabFusion.Representation
 
         private void OnUpdateVoiceLoudness() {
             // Update the amplitude
-            _voiceUpdateTime += Time.deltaTime;
+            _voiceUpdateTime += TimeUtilities.DeltaTime;
             if (_voiceUpdateTime >= _voiceUpdateStep)
             {
                 _voiceUpdateTime = 0f;
@@ -214,7 +204,7 @@ namespace LabFusion.Representation
                 float gain = 0f;
                 for (var i = 0; i < spectrum.Length; i++)
                 {
-                    gain += Mathf.Abs(spectrum[i]);
+                    gain += Math.Abs(spectrum[i]);
                 }
 
                 if (spectrum.Length > 0)
@@ -224,14 +214,14 @@ namespace LabFusion.Representation
 
                 // Add affectors
                 _targetLoudness *= 100f;
-                _targetLoudness = Mathf.Clamp(_targetLoudness, 0f, 2f);
+                _targetLoudness = ManagedMathf.Clamp(_targetLoudness, 0f, 2f);
             }
 
             // Lerp towards the desired value
-            float sin = Mathf.Abs(_sinAmplitude * Mathf.Sin(_sinOmega * Time.timeSinceLevelLoad));
-            sin = Mathf.Clamp01(sin);
+            float sin = Math.Abs(_sinAmplitude * (float)Math.Sin(_sinOmega * TimeUtilities.TimeSinceStartup));
+            sin = ManagedMathf.Clamp01(sin);
 
-            _voiceLoudness = Mathf.Lerp(_voiceLoudness * sin, _targetLoudness, Time.deltaTime * 12f);
+            _voiceLoudness = ManagedMathf.LerpUnclamped(_voiceLoudness * sin, _targetLoudness, TimeUtilities.DeltaTime * 12f);
         }
 
         private void OnMetadataChanged(PlayerId id) {
@@ -273,7 +263,7 @@ namespace LabFusion.Representation
                     return;
 
                 // Attach the hand
-                grip.TryAttach(hand, grip.CheckInstantAttach(), targetInBase);
+                grip.TryAttach(hand, false, targetInBase);
             }
         }
 
@@ -448,7 +438,7 @@ namespace LabFusion.Representation
                 float heightMult = rm._avatar.height / 1.76f;
 
                 _voiceSource.spatialBlend = 1f;
-                _voiceSource.reverbZoneMix = Mathf.Clamp(0.35f * heightMult, 0f, 1.02f);
+                _voiceSource.reverbZoneMix = ManagedMathf.Clamp(0.35f * heightMult, 0f, 1.02f);
 
                 _maxMicrophoneDistance = 30f * heightMult;
 
@@ -607,19 +597,6 @@ namespace LabFusion.Representation
                     repTransforms[i].localPosition = serializedLocalTransforms[i].position;
                     repTransforms[i].localRotation = serializedLocalTransforms[i].rotation.Expand();
                 }
-
-                var rm = RigReferences.RigManager;
-                var controllerRig = rm.openControllerRig;
-
-                controllerRig.feetOffset = serializedFeetOffset;
-                controllerRig._crouchTarget = serializedCrouchTarget;
-                controllerRig._spineCrouchOff = serializedSpineCrouchOff;
-
-                rm.virtualHeptaRig.spineCrouchOffset = serializedSpineCrouchOff;
-
-                controllerRig.travState = serializedTravState;
-                controllerRig.vertState = serializedVertState;
-                controllerRig.vrVertState = serializedVrVertState;
             }
             catch {
                 // Literally no reason this should happen but it does
@@ -648,8 +625,8 @@ namespace LabFusion.Representation
                 Quaternion pelvisRotation = pelvisTransform.rotation;
 
                 // Move position with prediction
-                if (Time.realtimeSinceStartup - timeSincePelvisSent <= 1.5f) {
-                    serializedPelvis.position += predictVelocity * Time.fixedDeltaTime;
+                if (TimeUtilities.TimeSinceStartup - timeSincePelvisSent <= 1.5f) {
+                    serializedPelvis.position += predictVelocity * TimeUtilities.FixedDeltaTime;
 
                     _hasLockedPosition = false;
                 }
@@ -716,15 +693,11 @@ namespace LabFusion.Representation
 
                 using (var writer = FusionWriter.Create(PlayerRepGameworldData.Size))
                 {
-                    using (var data = PlayerRepGameworldData.Create(PlayerIdManager.LocalSmallId, gameworldPoints))
-                    {
-                        writer.Write(data);
+                    using var data = PlayerRepGameworldData.Create(PlayerIdManager.LocalSmallId, gameworldPoints);
+                    writer.Write(data);
 
-                        using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepGameworld, writer))
-                        {
-                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Unreliable, message);
-                        }
-                    }
+                    using var message = FusionMessage.Create(NativeMessageTag.PlayerRepGameworld, writer);
+                    MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Unreliable, message);
                 }
 
                 return true;
@@ -744,13 +717,11 @@ namespace LabFusion.Representation
                     return false;
 
                 using (var writer = FusionWriter.Create(PlayerRepTransformData.Size)) {
-                    using (var data = PlayerRepTransformData.Create(PlayerIdManager.LocalSmallId, syncedPoints, syncedPelvis, syncedPlayspace, syncedLeftHand, syncedRightHand)) {
-                        writer.Write(data);
+                    using var data = PlayerRepTransformData.Create(PlayerIdManager.LocalSmallId, syncedPoints, syncedPelvis, syncedPlayspace, syncedLeftHand, syncedRightHand);
+                    writer.Write(data);
 
-                        using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepTransform, writer)) {
-                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Unreliable, message);
-                        }
-                    }
+                    using var message = FusionMessage.Create(NativeMessageTag.PlayerRepTransform, writer);
+                    MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Unreliable, message);
                 }
 
                 return true;
@@ -811,52 +782,51 @@ namespace LabFusion.Representation
 
             // Update the player if its dirty and has an avatar
             var rm = RigReferences.RigManager;
-            if (!rm._avatar.IsNOC()) {
-                // Swap the avatar
-                if (_isAvatarDirty) {
-                    RigReferences.SwapAvatarCrate(avatarId, OnSwapAvatar, OnPrepareAvatar);
-                    _isAvatarDirty = false;
 
-                    PlayerAdditionsHelper.OnAvatarChanged(rm);
+            // Swap the avatar
+            if (_isAvatarDirty) {
+                RigReferences.SwapAvatarCrate(avatarId, OnSwapAvatar, OnPrepareAvatar);
+                _isAvatarDirty = false;
+
+                PlayerAdditionsHelper.OnAvatarChanged(rm);
+            }
+
+            // Change body vitals
+            if (_isVitalsDirty) {
+                if (vitals != null) {
+                    vitals.CopyTo(rm.bodyVitals);
                 }
 
-                // Change body vitals
-                if (_isVitalsDirty) {
-                    if (vitals != null) {
-                        vitals.CopyTo(rm.bodyVitals);
-                    }
+                _isVitalsDirty = false;
+            }
+            
+            // Toggle ragdoll mode
+            if (_isRagdollDirty) {
+                if (_ragdollState)
+                    rm.physicsRig.RagdollRig();
+                else
+                    rm.physicsRig.UnRagdollRig();
 
-                    _isVitalsDirty = false;
+                _isRagdollDirty = false;
+            }
+
+            // Update settings
+            if (_isSettingsDirty) {
+                if (playerSettings != null) {
+                    // Make sure the alpha is 1 so that people cannot create invisible names
+                    var color = playerSettings.nametagColor;
+                    color.a = 1f;
+                    repNameText.color = color;
                 }
-                
-                // Toggle ragdoll mode
-                if (_isRagdollDirty) {
-                    if (_ragdollState)
-                        rm.physicsRig.RagdollRig();
-                    else
-                        rm.physicsRig.UnRagdollRig();
 
-                    _isRagdollDirty = false;
-                }
+                _isSettingsDirty = false;
+            }
+            
+            // Update server side settings
+            if (_isServerDirty) {
+                repCanvas.gameObject.SetActive(FusionPreferences.NametagsEnabled && FusionOverrides.ValidateNametag(PlayerId));
 
-                // Update settings
-                if (_isSettingsDirty) {
-                    if (playerSettings != null) {
-                        // Make sure the alpha is 1 so that people cannot create invisible names
-                        var color = playerSettings.nametagColor;
-                        color.a = 1f;
-                        repNameText.color = color;
-                    }
-
-                    _isSettingsDirty = false;
-                }
-                
-                // Update server side settings
-                if (_isServerDirty) {
-                    repCanvas.gameObject.SetActive(FusionPreferences.NametagsEnabled && FusionOverrides.ValidateNametag(PlayerId));
-
-                    _isServerDirty = false;
-                }
+                _isServerDirty = false;
             }
 
             // Update distance value

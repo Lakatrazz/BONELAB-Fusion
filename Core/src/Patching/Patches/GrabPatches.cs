@@ -112,6 +112,7 @@ namespace LabFusion.Patching
         }
     }
 
+    [HarmonyPatch(typeof(Grip))]
     public static class GripPatches
     {
         // This is just referenced by other grip patches, not actually a patch itself
@@ -124,27 +125,24 @@ namespace LabFusion.Patching
             }
         }
 
-        #region HAND HOOKING
-        public static void HookHand(Hand hand) {
-            hand.onRecieverAttached += (Il2ActionHandReceiver)((r) => { OnAttachedToHand(hand, r); });
-            hand.onRecieverDetached += (Il2ActionHandReceiver)((r) => { OnDetachedFromHand(hand); });
-        }
-
-        private static bool TryGetGrip(HandReciever receiver, out Grip grip) {
-            grip = receiver.TryCast<Grip>();
-            return grip != null;
-        }
-
-        private static void OnAttachedToHand(Hand hand, HandReciever receiver)
-        {
-            if (TryGetGrip(receiver, out var grip)) {
-                GrabHelper.SendObjectAttach(hand, grip);
+        [HarmonyPatch(nameof(Grip.OnAttachedToHand))]
+        [HarmonyPostfix]
+        private static void OnAttachedToHand(Grip __instance, Hand hand) {
+            if (hand.manager.IsSelf()) {
+                GrabHelper.SendObjectAttach(hand, __instance);
             }
         }
 
+        [HarmonyPatch(nameof(Grip.OnDetachedFromHand))]
+        [HarmonyPostfix]
         private static void OnDetachedFromHand(Hand hand) {
-            GrabHelper.SendObjectDetach(hand);
+            if (hand.manager.IsSelf()) {
+                GrabHelper.SendObjectDetach(hand);
+
+                // Fix broken UI
+                var uiInput = RigData.RigReferences.GetUIInput(hand.handedness);
+                uiInput._cursorTargetOverrides.Clear();
+            }
         }
-        #endregion
     }
 }

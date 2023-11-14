@@ -88,7 +88,7 @@ namespace LabFusion.Utilities {
             }
             else if (_loadingTimer <= LEVEL_LOAD_WINDOW)
             {
-                _loadingTimer += Time.deltaTime;
+                _loadingTimer += TimeUtilities.DeltaTime;
                 _isDelayedLoading = true;
             }
             else if (_isDelayedLoading)

@@ -40,21 +40,19 @@ namespace LabFusion.Network
         }
     }
 
-    [Net.SkipHandleWhileLoading]
     public class WorldGravityMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.WorldGravity;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            if (!NetworkInfo.CurrentNetworkLayer.IsServer) {
-                using (var reader = FusionReader.Create(bytes)) {
-                    using (var data = reader.ReadFusionSerializable<WorldGravityMessageData>()) {
-                        PhysicsUtilities.CanModifyGravity = true;
-                        Physics.gravity = data.gravity;
-                        PhysicsUtilities.CanModifyGravity = false;
-                    }
-                }
+            if (!NetworkInfo.IsServer) {
+                using var reader = FusionReader.Create(bytes);
+                using var data = reader.ReadFusionSerializable<WorldGravityMessageData>();
+
+                PhysicsUtilities.CanModifyGravity = true;
+                Physics.gravity = data.gravity;
+                PhysicsUtilities.CanModifyGravity = false;
             }
         }
     }

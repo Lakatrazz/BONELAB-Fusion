@@ -16,7 +16,9 @@ namespace LabFusion.Syncables
         {
             if (targetAssembly == null) throw new NullReferenceException("Can't register from a null assembly!");
 
+#if DEBUG
             FusionLogger.Log($"Populating PropExtender list from {targetAssembly.GetName().Name}!");
+#endif
 
             AssemblyUtilities.LoadAllValid<IPropExtender>(targetAssembly, RegisterExtender);
         }
@@ -30,7 +32,9 @@ namespace LabFusion.Syncables
 
             ExtenderTypes[_lastExtenderIndex++] = type;
 
+#if DEBUG
             FusionLogger.Log($"Registered {type.Name}");
+#endif
         }
 
         public static IReadOnlyList<IPropExtender> GetPropExtenders(PropSyncable syncable)

@@ -61,7 +61,7 @@ namespace LabFusion.Network {
             // Only check for the server
             if (NetworkInfo.IsServer) {
                 // Compare times
-                if (!_hasReset && Time.realtimeSinceStartup - _timeOfLastVote >= ResetVoteTime) {
+                if (!_hasReset && TimeUtilities.TimeSinceStartup - _timeOfLastVote >= ResetVoteTime) {
                     _hasReset = true;
                     _voteKickTracker.Clear();
                 }
@@ -85,7 +85,7 @@ namespace LabFusion.Network {
             float count = (float)PlayerIdManager.PlayerCount;
             float percent = RequiredPercent;
 
-            return Mathf.CeilToInt(count * percent);
+            return ManagedMathf.CeilToInt(count * percent);
         }
 
         public static int GetVoteCount(ulong target) {
@@ -98,7 +98,7 @@ namespace LabFusion.Network {
 
         public static bool Vote(ulong target, ulong voter) {
             // Make sure the voter hasn't voted in the past specific amount of time
-            if (_voterTracker.TryGetValue(voter, out var time) && Time.realtimeSinceStartup - time < MinVoteDelay) {
+            if (_voterTracker.TryGetValue(voter, out var time) && TimeUtilities.TimeSinceStartup - time < MinVoteDelay) {
                 return false;
             }
             _voterTracker.Remove(voter);
@@ -123,9 +123,9 @@ namespace LabFusion.Network {
             }
 
             // Add the voter to the tracker
-            _voterTracker.Add(voter, Time.realtimeSinceStartup);
+            _voterTracker.Add(voter, TimeUtilities.TimeSinceStartup);
 
-            _timeOfLastVote = Time.realtimeSinceStartup;
+            _timeOfLastVote = TimeUtilities.TimeSinceStartup;
             _hasReset = false;
 
             return true;

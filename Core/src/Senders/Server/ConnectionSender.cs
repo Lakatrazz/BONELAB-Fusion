@@ -54,15 +54,12 @@ namespace LabFusion.Senders {
 
         public static void SendConnectionRequest() {
             if (NetworkInfo.HasServer) {
-                using (FusionWriter writer = FusionWriter.Create()) {
-                    using (ConnectionRequestData data = ConnectionRequestData.Create(PlayerIdManager.LocalLongId, FusionMod.Version, RigData.GetAvatarBarcode(), RigData.RigAvatarStats)) {
-                        writer.Write(data);
+                using FusionWriter writer = FusionWriter.Create();
+                using ConnectionRequestData data = ConnectionRequestData.Create(PlayerIdManager.LocalLongId, FusionMod.Version, RigData.GetAvatarBarcode(), RigData.RigAvatarStats);
+                writer.Write(data);
 
-                        using (FusionMessage message = FusionMessage.Create(NativeMessageTag.ConnectionRequest, writer)) {
-                            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
+                using FusionMessage message = FusionMessage.Create(NativeMessageTag.ConnectionRequest, writer);
+                MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
             }
             else {
                 FusionLogger.Error("Attempted to send a connection request, but we are not connected to anyone!");
@@ -71,18 +68,12 @@ namespace LabFusion.Senders {
 
         public static void SendPlayerCatchup(ulong newUser, PlayerId id, string avatar, SerializedAvatarStats stats)
         {
-            using (FusionWriter writer = FusionWriter.Create())
-            {
-                using (var response = ConnectionResponseData.Create(id, avatar, stats, false))
-                {
-                    writer.Write(response);
+            using FusionWriter writer = FusionWriter.Create();
+            using var response = ConnectionResponseData.Create(id, avatar, stats, false);
+            writer.Write(response);
 
-                    using (var message = FusionMessage.Create(NativeMessageTag.ConnectionResponse, writer))
-                    {
-                        MessageSender.SendFromServer(newUser, NetworkChannel.Reliable, message);
-                    }
-                }
-            }
+            using var message = FusionMessage.Create(NativeMessageTag.ConnectionResponse, writer);
+            MessageSender.SendFromServer(newUser, NetworkChannel.Reliable, message);
         }
 
         public static void SendPlayerJoin(PlayerId id, string avatar, SerializedAvatarStats stats)

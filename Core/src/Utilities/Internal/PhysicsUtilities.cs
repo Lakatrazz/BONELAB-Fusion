@@ -15,10 +15,30 @@ namespace LabFusion.Utilities {
     internal static class PhysicsUtilities {
         internal static bool CanModifyGravity = false;
 
-        public static Vector3 Gravity;
+        private static readonly Vector3 DefaultGravity = new(0f, -9.81f, 0f);
 
-        internal static void OnCacheValues() {
-            Gravity = Physics.gravity;
+        public static Vector3 Gravity = DefaultGravity;
+
+        internal static void OnInitializeMelon() {
+            MultiplayerHooking.OnPlayerCatchup += OnPlayerCatchup;
+        }
+
+        private static void OnPlayerCatchup(ulong id) {
+            using var writer = FusionWriter.Create(WorldGravityMessageData.Size);
+            using var data = WorldGravityMessageData.Create(Gravity);
+            writer.Write(data);
+
+            using var message = FusionMessage.Create(NativeMessageTag.WorldGravity, writer);
+            MessageSender.SendFromServer(id, NetworkChannel.Reliable, message);
+        }
+
+        internal static void SendGravity(Vector3 value) {
+            using var writer = FusionWriter.Create(WorldGravityMessageData.Size);
+            using var data = WorldGravityMessageData.Create(value);
+            writer.Write(data);
+
+            using var message = FusionMessage.Create(NativeMessageTag.WorldGravity, writer);
+            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
         }
 
         internal static void OnUpdateTimescale() {
@@ -43,7 +63,7 @@ namespace LabFusion.Utilities {
 
                             float mult = 1f - (1f / controlTime.cur_intensity);
 
-                            Vector3 force = -PhysicsUtilities.Gravity * mult;
+                            Vector3 force = -Gravity * mult;
 
                             if (references.RigRigidbodies == null)
                                 references.GetRigidbodies();
@@ -61,24 +81,6 @@ namespace LabFusion.Utilities {
                         }
 
                         break;
-                }
-            }
-        }
-
-        internal static void OnSendPhysicsInformation() {
-            // Only run every 40 frames
-            if (Time.frameCount % 40 != 0)
-                return;
-
-            if (NetworkInfo.IsServer) {
-                using (var writer = FusionWriter.Create(WorldGravityMessageData.Size)) {
-                    using (var data = WorldGravityMessageData.Create(PhysicsUtilities.Gravity)) {
-                        writer.Write(data);
-
-                        using (var message = FusionMessage.Create(NativeMessageTag.WorldGravity, writer)) {
-                            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Unreliable, message);
-                        }
-                    }
                 }
             }
         }

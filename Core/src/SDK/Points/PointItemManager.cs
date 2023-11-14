@@ -173,7 +173,7 @@ namespace LabFusion.SDK.Points {
         }
 
         public static void RewardBits(int bits, bool popup = true) {
-            bits = Mathf.Max(0, bits);
+            bits = Math.Max(0, bits);
 
             // Make sure the amount isn't invalid
             if (bits.IsNaN()) {
@@ -191,7 +191,7 @@ namespace LabFusion.SDK.Points {
         }
 
         public static void DecrementBits(int bits, bool popup = true) {
-            bits = Mathf.Max(0, bits);
+            bits = Math.Max(0, bits);
 
             // Make sure the amount isn't invalid
             if (bits.IsNaN()) {

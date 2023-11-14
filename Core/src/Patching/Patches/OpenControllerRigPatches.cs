@@ -84,7 +84,7 @@ namespace LabFusion.Patching
                         __instance.globalTimeControl = RigData.RigReferences.RigManager.openControllerRig.globalTimeControl;
 
                     // Return false if we are paused
-                    if (Time.timeScale <= 0f)
+                    if (TimeUtilities.TimeScale <= 0f)
                         return false;
                 }
             }

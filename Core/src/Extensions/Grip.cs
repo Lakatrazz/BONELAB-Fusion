@@ -70,15 +70,6 @@ namespace LabFusion.Extensions
             }
         }
 
-        public static bool CheckInstantAttach(this Grip grip) {
-            bool isInstant = true;
-
-            if (grip.IsStatic || grip.TryCast<WorldGrip>() || grip.TryCast<GenericGrip>() || grip.TryCast<BarrelGrip>() || grip.TryCast<BoxGrip>())
-                isInstant = false;
-
-            return isInstant;
-        }
-
         public static void TryAttach(this Grip grip, Hand hand, bool isInstant = false, SimpleTransform? targetInBase = null) {
             // Detach an existing grip
             hand.TryDetach();

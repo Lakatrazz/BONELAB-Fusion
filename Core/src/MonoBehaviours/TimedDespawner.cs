@@ -1,7 +1,7 @@
 ﻿using LabFusion.Network;
 using LabFusion.Senders;
 using LabFusion.Syncables;
-
+using LabFusion.Utilities;
 using MelonLoader;
 
 using SLZ.Marrow.Pool;
@@ -37,7 +37,7 @@ namespace LabFusion.MonoBehaviours
         }
 
         public void Refresh() {
-            _timeOfRefresh = Time.realtimeSinceStartup;
+            _timeOfRefresh = TimeUtilities.TimeSinceStartup;
         }
 
         public void LateUpdate() {
@@ -52,7 +52,7 @@ namespace LabFusion.MonoBehaviours
                 _hasSyncable = syncable != null;
             }
 
-            if (NetworkInfo.IsServer && _hasPoolee && Time.realtimeSinceStartup - _timeOfRefresh >= totalTime) {
+            if (NetworkInfo.IsServer && _hasPoolee && TimeUtilities.TimeSinceStartup - _timeOfRefresh >= totalTime) {
                 poolee.Despawn();
             }
         }

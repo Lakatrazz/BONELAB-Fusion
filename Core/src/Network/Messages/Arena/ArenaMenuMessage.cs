@@ -69,49 +69,45 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<ArenaMenuData>();
+            var menu = ArenaData.MenuController;
+
+            ArenaMenuPatches.IgnorePatches = true;
+
+            // We ONLY handle this for clients, this message should only ever be sent by the server!
+            if (!NetworkInfo.IsServer && menu)
             {
-                using (var data = reader.ReadFusionSerializable<ArenaMenuData>())
+                switch (data.type)
                 {
-                    var menu = ArenaData.MenuController;
-
-                    ArenaMenuPatches.IgnorePatches = true;
-
-                    // We ONLY handle this for clients, this message should only ever be sent by the server!
-                    if (!NetworkInfo.IsServer && menu)
-                    {
-                        switch (data.type)
-                        {
-                            default:
-                            case ArenaMenuType.UNKNOWN:
-                                break;
-                            case ArenaMenuType.CHALLENGE_SELECT:
-                                menu.ChallengeSelect(data.selectionNumber);
-                                break;
-                            case ArenaMenuType.TRIAL_SELECT:
-                                menu.TrialSelect(data.selectionNumber);
-                                break;
-                            case ArenaMenuType.SURVIVAL_SELECT:
-                                menu.SurvivalSelect();
-                                break;
-                            case ArenaMenuType.TOGGLE_DIFFICULTY:
-                                menu.ToggleDifficulty(data.selectionNumber);
-                                break;
-                            case ArenaMenuType.TOGGLE_ENEMY_PROFILE:
-                                menu.ToggleEnemyProfile(data.selectionNumber);
-                                break;
-                            case ArenaMenuType.CREATE_CUSTOM_GAME_AND_START:
-                                menu.CreateCustomGameAndStart();
-                                break;
-                            case ArenaMenuType.RESUME_SURVIVAL_FROM_ROUND:
-                                menu.ResumeSurvivalFromRound();
-                                break;
-                        }
-                    }
-
-                    ArenaMenuPatches.IgnorePatches = false;
+                    default:
+                    case ArenaMenuType.UNKNOWN:
+                        break;
+                    case ArenaMenuType.CHALLENGE_SELECT:
+                        menu.ChallengeSelect(data.selectionNumber);
+                        break;
+                    case ArenaMenuType.TRIAL_SELECT:
+                        menu.TrialSelect(data.selectionNumber);
+                        break;
+                    case ArenaMenuType.SURVIVAL_SELECT:
+                        menu.SurvivalSelect();
+                        break;
+                    case ArenaMenuType.TOGGLE_DIFFICULTY:
+                        menu.ToggleDifficulty(data.selectionNumber);
+                        break;
+                    case ArenaMenuType.TOGGLE_ENEMY_PROFILE:
+                        menu.ToggleEnemyProfile(data.selectionNumber);
+                        break;
+                    case ArenaMenuType.CREATE_CUSTOM_GAME_AND_START:
+                        menu.CreateCustomGameAndStart();
+                        break;
+                    case ArenaMenuType.RESUME_SURVIVAL_FROM_ROUND:
+                        menu.ResumeSurvivalFromRound();
+                        break;
                 }
             }
+
+            ArenaMenuPatches.IgnorePatches = false;
         }
     }
 }

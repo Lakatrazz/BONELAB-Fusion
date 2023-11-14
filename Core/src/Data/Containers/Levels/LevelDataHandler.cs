@@ -64,7 +64,9 @@ namespace LabFusion.Data {
         {
             if (targetAssembly == null) throw new NullReferenceException("Can't register from a null assembly!");
 
+#if DEBUG
             FusionLogger.Log($"Populating LevelDataHandler list from {targetAssembly.GetName().Name}!");
+#endif
 
             AssemblyUtilities.LoadAllValid<LevelDataHandler>(targetAssembly, RegisterHandler);
         }
@@ -77,7 +79,9 @@ namespace LabFusion.Data {
             LevelDataHandler handler = Activator.CreateInstance(type) as LevelDataHandler;
             Handlers.Add(handler);
 
+#if DEBUG
             FusionLogger.Log($"Registered {type.Name}");
+#endif
         }
 
         public static readonly List<LevelDataHandler> Handlers = new();

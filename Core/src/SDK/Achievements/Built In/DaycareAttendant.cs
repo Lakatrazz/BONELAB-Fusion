@@ -56,7 +56,7 @@ namespace LabFusion.SDK.Achievements
         private void OnLateUpdate() { 
             // If we haven't already given the achievement, and there is more than 1 player, increment the timer
             if (!_oneHourPassed && PlayerIdManager.HasOtherPlayers) {
-                _timeElapsed += Time.deltaTime;
+                _timeElapsed += TimeUtilities.DeltaTime;
 
                 // 3600 seconds in an hour
                 if (_timeElapsed >= 3600f) {

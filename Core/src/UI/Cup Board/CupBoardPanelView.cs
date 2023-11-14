@@ -119,9 +119,9 @@ namespace LabFusion.UI
                 _pageCount = (int)Math.Ceiling((double)PageItems.Count / (double)_achievementButtonCount);
             }
 
-            _currentPageIndex = Mathf.Clamp(_currentPageIndex, 0, PageCount);
+            _currentPageIndex = ManagedMathf.Clamp(_currentPageIndex, 0, PageCount);
 
-            _pageCountText.text = $"Page {_currentPageIndex + 1} out of {Mathf.Max(1, PageCount)}";
+            _pageCountText.text = $"Page {_currentPageIndex + 1} out of {Math.Max(1, PageCount)}";
 
             // Loop through every panel
             for (var i = 0; i < _achievementButtonCount; i++) {

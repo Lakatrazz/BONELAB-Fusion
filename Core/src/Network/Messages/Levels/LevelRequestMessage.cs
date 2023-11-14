@@ -51,10 +51,10 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             // Prevent request spamming
-            if (Time.realtimeSinceStartup - _timeOfRequest <= _requestCooldown)
+            if (TimeUtilities.TimeSinceStartup - _timeOfRequest <= _requestCooldown)
                 return;
 
-            _timeOfRequest = Time.realtimeSinceStartup;
+            _timeOfRequest = TimeUtilities.TimeSinceStartup;
 
             if (NetworkInfo.IsServer && isServerHandled) {
                 using (var reader = FusionReader.Create(bytes)) {

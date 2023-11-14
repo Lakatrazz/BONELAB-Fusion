@@ -30,8 +30,8 @@ namespace LabFusion
     public struct FusionVersion
     {
         public const byte versionMajor = 1;
-        public const byte versionMinor = 5;
-        public const short versionPatch = 1;
+        public const byte versionMinor = 6;
+        public const short versionPatch = 0;
     }
 
     public class FusionMod : MelonMod {
@@ -93,6 +93,8 @@ namespace LabFusion
             SyncManager.OnInitializeMelon();
 
             FusionPopupManager.OnInitializeMelon();
+
+            PhysicsUtilities.OnInitializeMelon();
 
             // Create prefs
             FusionPreferences.OnInitializePreferences();
@@ -225,29 +227,26 @@ namespace LabFusion
             NetworkInfo.BytesDown = 0;
             NetworkInfo.BytesUp = 0;
 
+            // Update Time before running any functions
+            TimeUtilities.OnEarlyUpdate();
+
             // Update threaded events
             ThreadingUtilities.Internal_OnUpdate();
 
-            // Cache physics values
-            PhysicsUtilities.OnCacheValues();
-
             // Update the level loading checks
             FusionSceneManager.Internal_UpdateScene();
-
-            // Store rig info/update avatars
-            RigData.OnRigUpdate();
 
             // Update popups
             FusionPopupManager.OnUpdate();
 
             // Send players based on player count
             int playerSendRate = SendRateTable.GetPlayerSendRate();
-            if (Time.frameCount % playerSendRate == 0) {
+            if (TimeUtilities.FrameCount % playerSendRate == 0) {
                 PlayerRep.OnSyncRep();
             }
 
             // Send syncables based on byte amount
-            if (Time.frameCount % _nextSyncableSendRate == 0) {
+            if (TimeUtilities.FrameCount % _nextSyncableSendRate == 0) {
                 var lastBytes = NetworkInfo.BytesUp;
 
                 SyncManager.OnUpdate();
@@ -255,9 +254,6 @@ namespace LabFusion
                 var byteDifference = NetworkInfo.BytesUp - lastBytes;
                 _nextSyncableSendRate = SendRateTable.GetObjectSendRate(byteDifference);
             }
-
-            // Send physics updates
-            PhysicsUtilities.OnSendPhysicsInformation();
 
             // Update reps
             PlayerRep.OnUpdate();
@@ -277,6 +273,8 @@ namespace LabFusion
         }
 
         public override void OnFixedUpdate() {
+            TimeUtilities.OnEarlyFixedUpdate();
+
             PhysicsUtilities.OnUpdateTimescale();
 
             PDController.OnFixedUpdate();

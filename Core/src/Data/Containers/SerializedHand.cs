@@ -1,4 +1,5 @@
 ﻿using LabFusion.Network;
+using LabFusion.Utilities;
 using SLZ.Interaction;
 using SLZ.Marrow.Input;
 using SLZ.Rig;
@@ -70,7 +71,7 @@ namespace LabFusion.Data
             controller._processedPinky = pinkyCurl;
             controller._processedThumb = thumbCurl;
 
-            controller._solvedGrip = Mathf.Clamp(solvedGrip, 0f, OpenController.grabThreshold - 0.01f);
+            controller._solvedGrip = ManagedMathf.Clamp(solvedGrip, 0f, OpenController.grabThreshold - 0.01f);
             controller._primaryAxis = primaryAxis;
 
             controller.Type = controllerType;
@@ -103,7 +104,7 @@ namespace LabFusion.Data
             controller._thumbstickAxis = thumbstickAxis;
 
             // Update hovering so that grips solve properly
-            controller._lastTimeGrabbed = Time.realtimeSinceStartup;
+            controller._lastTimeGrabbed = TimeUtilities.TimeSinceStartup;
         }
 
         public void SolveButtonPress(bool lastValue, bool newValue, ref bool up, ref bool down)

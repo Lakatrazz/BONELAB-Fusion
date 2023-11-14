@@ -16,12 +16,22 @@ namespace LabFusion.Patching {
     public static class PhysicsPatches {
         [HarmonyPatch(nameof(Physics.gravity), MethodType.Setter)]
         [HarmonyPrefix]
-        public static bool SetGravity(Vector3 value) {
+        public static bool SetGravityPrefix(Vector3 value) {
             if (NetworkInfo.HasServer && !NetworkInfo.IsServer && !PhysicsUtilities.CanModifyGravity) {
                 return false;
             }
 
             return true;
+        }
+
+        [HarmonyPatch(nameof(Physics.gravity), MethodType.Setter)]
+        [HarmonyPostfix]
+        public static void SetGravityPostfix(Vector3 value) {
+            if (NetworkInfo.IsServer) {
+                PhysicsUtilities.SendGravity(value);
+            }
+
+            PhysicsUtilities.Gravity = value;
         }
     }
 }

@@ -245,8 +245,6 @@ namespace LabFusion.Data
         public static Vector3 RigSpawn { get; private set; }
         public static Quaternion RigSpawnRot { get; private set; }
 
-        private static bool _wasPaused = false;
-
         public static void OnCacheRigInfo() {
             var manager = Player.rigManager;
 
@@ -260,8 +258,6 @@ namespace LabFusion.Data
 
             // Store the references
             RigReferences = new RigReferenceCollection(manager);
-            GripPatches.HookHand(RigReferences.LeftHand);
-            GripPatches.HookHand(RigReferences.RightHand);
             RigReferences.RigManager.bodyVitals.rescaleEvent += (BodyVitals.RescaleUI)OnSendVitals;
 
             // Notify hooks
@@ -279,36 +275,8 @@ namespace LabFusion.Data
                 using PlayerRepVitalsData data = PlayerRepVitalsData.Create(PlayerIdManager.LocalSmallId, RigReferences.RigManager.bodyVitals);
                 writer.Write(data);
 
-                using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepVitals, writer))
-                {
-                    MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                }
-            }
-        }
-
-        public static void OnRigUpdate() {
-            if (HasPlayer) {
-                var rm = RigReferences.RigManager;
-
-                // Pause check incase the rigs decide to behave strangely
-                if (!RigReferences.ControllerRig.IsPaused && _wasPaused) {
-                    rm.bodyVitals.CalibratePlayerBodyScale();
-                }
-
-                _wasPaused = RigReferences.ControllerRig.IsPaused;
-
-                // Update hands
-                OnHandUpdate(RigReferences.LeftHand);
-                OnHandUpdate(RigReferences.RightHand);
-            }
-        }
-
-        public static void OnHandUpdate(Hand hand) {
-            // Try fixing UI every 30 frames
-            // If the hand is not holding anything, clear the list
-            if (NetworkInfo.HasServer && Time.frameCount % 60 == 0 && !hand.HasAttachedObject()) {
-                var uiInput = RigReferences.GetUIInput(hand.handedness);
-                uiInput._cursorTargetOverrides.Clear();
+                using var message = FusionMessage.Create(NativeMessageTag.PlayerRepVitals, writer);
+                MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
             }
         }
 

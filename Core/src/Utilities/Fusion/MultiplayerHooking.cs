@@ -80,12 +80,16 @@ namespace LabFusion.Utilities {
         internal static void Internal_OnServerSettingsChanged() => OnServerSettingsChanged.InvokeSafe("executing server settings changed hook");
 
         // Unity hooks
-        public static event UpdateEvent OnUpdate, OnFixedUpdate, OnLateUpdate,
-            OnMainSceneInitialized, OnLoadingBegin;
+        /// <summary>
+        /// A hook for frame updates. Errors are not caught for performance reasons, please use carefully!
+        /// </summary>
+        public static event UpdateEvent OnUpdate, OnFixedUpdate, OnLateUpdate;
 
-        internal static void Internal_OnUpdate() => OnUpdate.InvokeSafe("executing OnUpdate hook");
-        internal static void Internal_OnFixedUpdate() => OnFixedUpdate.InvokeSafe("executing OnFixedUpdate hook");
-        internal static void Internal_OnLateUpdate() => OnLateUpdate.InvokeSafe("executing OnLateUpdate hook");
+        public static event UpdateEvent OnMainSceneInitialized, OnLoadingBegin;
+
+        internal static void Internal_OnUpdate() => OnUpdate?.Invoke();
+        internal static void Internal_OnFixedUpdate() => OnFixedUpdate?.Invoke();
+        internal static void Internal_OnLateUpdate() => OnLateUpdate?.Invoke();
         internal static void Internal_OnMainSceneInitialized() => OnMainSceneInitialized.InvokeSafe("executing OnMainSceneInitialized hook");
         internal static void Internal_OnLoadingBegin() => OnLoadingBegin.InvokeSafe("executing OnLoadingBegin hook");
     }

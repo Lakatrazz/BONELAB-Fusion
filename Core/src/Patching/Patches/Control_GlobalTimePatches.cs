@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using HarmonyLib;
+using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Preferences;
 using LabFusion.Senders;
@@ -14,6 +15,14 @@ namespace LabFusion.Patching {
     [HarmonyPatch(typeof(Control_GlobalTime))]
     public static class Control_GlobalTimePatches {
         public static bool IgnorePatches = false;
+
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(Control_GlobalTime.UNPAUSE))]
+        public static void UNPAUSE() {
+            // Recalibrate player
+            // With multiple RigManagers in the scene, the player scale will become 0 when unpausing
+            RigData.RigReferences.RigManager.bodyVitals.CalibratePlayerBodyScale();
+        }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Control_GlobalTime.DECREASE_TIMESCALE))]

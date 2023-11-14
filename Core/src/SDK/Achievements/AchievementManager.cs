@@ -104,7 +104,7 @@ namespace LabFusion.SDK.Achievements {
                 totalAchievements++;
             }
 
-            return Mathf.Clamp01((float)completedAchievements / (float)totalAchievements);
+            return ManagedMathf.Clamp01((float)completedAchievements / (float)totalAchievements);
         }
 
         public static IReadOnlyList<Achievement> GetSortedAchievements() {

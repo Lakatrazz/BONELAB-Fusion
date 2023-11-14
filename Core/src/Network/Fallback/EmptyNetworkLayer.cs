@@ -25,6 +25,8 @@ namespace LabFusion.Network
 
         internal override void OnCleanupLayer() { }
 
+        internal override void OnUpdateLobby() { }
+
         internal override bool CheckSupported() {
 #if DEBUG
             return true;

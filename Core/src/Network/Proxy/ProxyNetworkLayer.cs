@@ -153,7 +153,7 @@ namespace LabFusion.Network
 
                 while (timeElapsed < 5)
                 {
-                    timeElapsed += Time.deltaTime;
+                    timeElapsed += TimeUtilities.DeltaTime;
                     yield return null;
                 }
             }
@@ -248,7 +248,7 @@ namespace LabFusion.Network
                         // Call server setup
                         InternalServerHelpers.OnStartServer();
 
-                        OnUpdateSteamLobby();
+                        OnUpdateLobby();
                         OnUpdateRichPresence();
                         break;
                     }
@@ -461,7 +461,7 @@ namespace LabFusion.Network
 
             ConnectionSender.SendConnectionRequest();
 
-            OnUpdateSteamLobby();
+            OnUpdateLobby();
             OnUpdateRichPresence();
         }
 
@@ -485,7 +485,7 @@ namespace LabFusion.Network
 
             InternalServerHelpers.OnDisconnect(reason);
 
-            OnUpdateSteamLobby();
+            OnUpdateLobby();
             OnUpdateRichPresence();
         }
 
@@ -500,10 +500,10 @@ namespace LabFusion.Network
         private void HookSteamEvents()
         {
             // Add server hooks
-            MultiplayerHooking.OnMainSceneInitialized += OnUpdateSteamLobby;
+            MultiplayerHooking.OnMainSceneInitialized += OnUpdateLobby;
             MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
-            MultiplayerHooking.OnServerSettingsChanged += OnUpdateSteamLobby;
+            MultiplayerHooking.OnServerSettingsChanged += OnUpdateLobby;
             MultiplayerHooking.OnDisconnect += OnDisconnect;
 
             _currentLobby = new ProxyNetworkLobby();
@@ -514,14 +514,14 @@ namespace LabFusion.Network
             if (!id.IsSelf)
                 _voiceManager.GetVoiceHandler(id);
 
-            OnUpdateSteamLobby();
+            OnUpdateLobby();
         }
 
         private void OnPlayerLeave(PlayerId id)
         {
             _voiceManager.Remove(id);
 
-            OnUpdateSteamLobby();
+            OnUpdateLobby();
         }
 
         private void OnDisconnect()
@@ -535,14 +535,14 @@ namespace LabFusion.Network
             //SteamFriends.OnGameRichPresenceJoinRequested -= OnGameRichPresenceJoinRequested;
 
             // Remove server hooks
-            MultiplayerHooking.OnMainSceneInitialized -= OnUpdateSteamLobby;
+            MultiplayerHooking.OnMainSceneInitialized -= OnUpdateLobby;
             MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
             MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
-            MultiplayerHooking.OnServerSettingsChanged -= OnUpdateSteamLobby;
+            MultiplayerHooking.OnServerSettingsChanged -= OnUpdateLobby;
             MultiplayerHooking.OnDisconnect -= OnDisconnect;
         }
 
-        private void OnUpdateSteamLobby()
+        internal override void OnUpdateLobby()
         {
             // Make sure the lobby exists
             if (CurrentLobby == null)
@@ -672,9 +672,6 @@ namespace LabFusion.Network
         private LobbySortMode _publicLobbySortMode = LobbySortMode.LEVEL;
         private bool _isPublicLobbySearching = false;
 
-        private const int _maxLobbiesInOneFrame = 1;
-        private const int _lobbyFrameDelay = 10;
-
         private void Menu_RefreshPublicLobbies()
         {
             // Make sure we arent already searching
@@ -727,7 +724,7 @@ namespace LabFusion.Network
             while (!task.IsCompleted)
             {
                 yield return null;
-                timeTaken += Time.deltaTime;
+                timeTaken += TimeUtilities.DeltaTime;
 
                 if (timeTaken >= 20f)
                 {
@@ -746,58 +743,40 @@ namespace LabFusion.Network
 
 
             var lobbies = task.Result;
-            int lobbyCount = 0;
 
-            foreach (var lobby in lobbies)
-            {
-                // TODO: Make sure this is not us
+            using (BatchedBoneMenu.Create()) {
+                foreach (var lobby in lobbies) {
+                    var metadataTask = _lobbyManager.RequestLobbyMetadataInfo(lobby);
 
-                var metadataTask = _lobbyManager.RequestLobbyMetadataInfo(lobby);
+                    timeTaken = 0f;
 
-                timeTaken = 0f;
-
-                while (!metadataTask.IsCompleted)
-                {
-                    yield return null;
-                    timeTaken += Time.deltaTime;
-
-                    if (timeTaken >= 20f)
-                    {
-                        FusionNotifier.Send(new FusionNotification()
-                        {
-                            title = "Timed Out",
-                            showTitleOnPopup = true,
-                            message = "Timed out when requesting lobby ids.",
-                            isMenuItem = false,
-                            isPopup = true,
-                        });
-                        _isPublicLobbySearching = false;
-                        yield break;
-                    }
-                }
-
-                LobbyMetadataInfo info = metadataTask.Result;
-
-                if (Internal_CanShowLobby(info))
-                {
-                    // Add to list
-                    ProxyNetworkLobby networkLobby = new ProxyNetworkLobby()
-                    {
-                        info = info
-                    };
-                    BoneMenuCreator.CreateLobby(_publicLobbiesCategory, info, networkLobby, sortMode);
-                }
-
-                lobbyCount++;
-
-                if (lobbyCount >= _maxLobbiesInOneFrame) {
-                    lobbyCount = 0;
-
-                    for (var i = 0; i < _lobbyFrameDelay; i++) {
+                    while (!metadataTask.IsCompleted) {
                         yield return null;
+                        timeTaken += TimeUtilities.DeltaTime;
+
+                        if (timeTaken >= 20f) {
+                            FusionNotifier.Send(new FusionNotification() {
+                                title = "Timed Out",
+                                showTitleOnPopup = true,
+                                message = "Timed out when requesting lobby ids.",
+                                isMenuItem = false,
+                                isPopup = true,
+                            });
+                            _isPublicLobbySearching = false;
+                            yield break;
+                        }
+                    }
+
+                    LobbyMetadataInfo info = metadataTask.Result;
+
+                    if (Internal_CanShowLobby(info)) {
+                        // Add to list
+                        ProxyNetworkLobby networkLobby = new() {
+                            info = info
+                        };
+                        BoneMenuCreator.CreateLobby(_publicLobbiesCategory, info, networkLobby, sortMode);
                     }
                 }
-
             }
 
             // Select the updated category

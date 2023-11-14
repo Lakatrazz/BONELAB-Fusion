@@ -52,10 +52,10 @@ namespace LabFusion.Data
         }
 
         public static void OnFixedUpdate() {
-            float dt = Time.fixedDeltaTime;
+            float dt = TimeUtilities.FixedDeltaTime;
 
             // Make sure the deltaTime has changed
-            if (Mathf.Approximately(dt, _lastFixedDelta)) {
+            if (ManagedMathf.Approximately(dt, _lastFixedDelta)) {
                 return;
             }
 

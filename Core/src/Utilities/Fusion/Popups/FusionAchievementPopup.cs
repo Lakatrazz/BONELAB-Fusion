@@ -32,7 +32,7 @@ namespace LabFusion.Utilities
         }
 
         private static void DequeueAchievement() {
-            _timeOfPopup = Time.realtimeSinceStartup;
+            _timeOfPopup = TimeUtilities.TimeSinceStartup;
             var achievement = _queuedAchievements.Dequeue();
 
             var camera = RigData.RigReferences.ControllerRig.m_head;
@@ -56,7 +56,7 @@ namespace LabFusion.Utilities
 
         internal static bool IsPlayingPopup()
         {
-            return Time.realtimeSinceStartup - _timeOfPopup <= (DefaultDuration + 0.1f);
+            return TimeUtilities.TimeSinceStartup - _timeOfPopup <= (DefaultDuration + 0.1f);
         }
 
         internal static void OnInitializeMelon() {

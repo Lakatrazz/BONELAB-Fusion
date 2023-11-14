@@ -76,10 +76,6 @@ namespace LabFusion.Network
         // This isn't actually used for joining servers, just for matchmaking
         protected Lobby _localLobby;
 
-        // The stored time of the last lobby update
-        // We automatically push lobby metadata updates every 30 seconds
-        protected float _lastLobbyUpdate = 0f;
-
         internal override bool CheckSupported() {
             return !HelperMethods.IsAndroid();
         }
@@ -138,11 +134,6 @@ namespace LabFusion.Network
         }
 
         internal override void OnUpdateLayer() {
-            // Push lobby updates
-            if (Time.realtimeSinceStartup - _lastLobbyUpdate >= 30f) {
-                OnUpdateSteamLobby();
-            }
-
             // Run callbacks for our client
             if (!AsyncCallbacks) {
 #pragma warning disable CS0162 // Unreachable code detected
@@ -249,7 +240,7 @@ namespace LabFusion.Network
             // Call server setup
             InternalServerHelpers.OnStartServer();
 
-            OnUpdateSteamLobby();
+            OnUpdateLobby();
             OnUpdateRichPresence();
         }
 
@@ -266,7 +257,7 @@ namespace LabFusion.Network
 
             ConnectionSender.SendConnectionRequest();
 
-            OnUpdateSteamLobby();
+            OnUpdateLobby();
             OnUpdateRichPresence();
         }
 
@@ -292,7 +283,7 @@ namespace LabFusion.Network
             
             InternalServerHelpers.OnDisconnect(reason);
 
-            OnUpdateSteamLobby();
+            OnUpdateLobby();
             OnUpdateRichPresence();
         }
 
@@ -310,11 +301,11 @@ namespace LabFusion.Network
             SteamFriends.OnGameRichPresenceJoinRequested += OnGameRichPresenceJoinRequested;
 
             // Add server hooks
-            MultiplayerHooking.OnMainSceneInitialized += OnUpdateSteamLobby;
+            MultiplayerHooking.OnMainSceneInitialized += OnUpdateLobby;
             GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
             MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
-            MultiplayerHooking.OnServerSettingsChanged += OnUpdateSteamLobby;
+            MultiplayerHooking.OnServerSettingsChanged += OnUpdateLobby;
             MultiplayerHooking.OnDisconnect += OnDisconnect;
 
             // Create a local lobby
@@ -322,20 +313,20 @@ namespace LabFusion.Network
         }
 
         private void OnGamemodeChanged(Gamemode gamemode) {
-            OnUpdateSteamLobby();
+            OnUpdateLobby();
         }
 
         private void OnPlayerJoin(PlayerId id) {
             if (!id.IsSelf)
                 VoiceManager.GetVoiceHandler(id);
 
-            OnUpdateSteamLobby();
+            OnUpdateLobby();
         }
 
         private void OnPlayerLeave(PlayerId id) {
             VoiceManager.Remove(id);
 
-            OnUpdateSteamLobby();
+            OnUpdateLobby();
         }
 
         private void OnDisconnect() {
@@ -347,11 +338,11 @@ namespace LabFusion.Network
             SteamFriends.OnGameRichPresenceJoinRequested -= OnGameRichPresenceJoinRequested;
             
             // Remove server hooks
-            MultiplayerHooking.OnMainSceneInitialized -= OnUpdateSteamLobby;
+            MultiplayerHooking.OnMainSceneInitialized -= OnUpdateLobby;
             GamemodeManager.OnGamemodeChanged -= OnGamemodeChanged;
             MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
             MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
-            MultiplayerHooking.OnServerSettingsChanged -= OnUpdateSteamLobby;
+            MultiplayerHooking.OnServerSettingsChanged -= OnUpdateLobby;
             MultiplayerHooking.OnDisconnect -= OnDisconnect;
 
             // Remove the local lobby
@@ -377,7 +368,7 @@ namespace LabFusion.Network
             JoinServer(friend.Id);
         }
 
-        private void OnUpdateSteamLobby() {
+        internal override void OnUpdateLobby() {
             // Make sure the lobby exists
             if (CurrentLobby == null) {
 #if DEBUG
@@ -391,9 +382,6 @@ namespace LabFusion.Network
 
             // Update bonemenu items
             OnUpdateCreateServerText();
-
-            // Save current time
-            _lastLobbyUpdate = Time.realtimeSinceStartup;
         }
 
         internal override void OnSetupBoneMenu(MenuCategory category) {
@@ -500,9 +488,6 @@ namespace LabFusion.Network
         private LobbySortMode _publicLobbySortMode = LobbySortMode.LEVEL;
         private bool _isPublicLobbySearching = false;
 
-        private const int _maxLobbiesInOneFrame = 2;
-        private const int _lobbyFrameDelay = 10;
-
         private void Menu_RefreshPublicLobbies() {
             // Make sure we arent already searching
             if (_isPublicLobbySearching)
@@ -558,29 +543,19 @@ namespace LabFusion.Network
 
             var lobbies = task.Result;
 
-            int lobbyCount = 0;
+            using (BatchedBoneMenu.Create()) {
+                foreach (var lobby in lobbies) {
+                    // Make sure this is not us
+                    if (lobby.Owner.IsMe) {
+                        continue;
+                    }
 
-            foreach (var lobby in lobbies) {
-                // Make sure this is not us
-                if (lobby.Owner.IsMe) {
-                    continue;
-                }
+                    var networkLobby = new SteamLobby(lobby);
+                    var info = LobbyMetadataHelper.ReadInfo(networkLobby);
 
-                var networkLobby = new SteamLobby(lobby);
-                var info = LobbyMetadataHelper.ReadInfo(networkLobby);
-
-                if (Internal_CanShowLobby(info)) {
-                    // Add to list
-                    BoneMenuCreator.CreateLobby(_publicLobbiesCategory, info, networkLobby, sortMode);
-                }
-
-                lobbyCount++;
-
-                if (lobbyCount >= _maxLobbiesInOneFrame) {
-                    lobbyCount = 0;
-
-                    for (var i = 0; i < _lobbyFrameDelay; i++) {
-                        yield return null;
+                    if (Internal_CanShowLobby(info)) {
+                        // Add to list
+                        BoneMenuCreator.CreateLobby(_publicLobbiesCategory, info, networkLobby, sortMode);
                     }
                 }
             }
@@ -617,32 +592,22 @@ namespace LabFusion.Network
 
             var lobbies = task.Result;
 
-            int lobbyCount = 0;
-
-            foreach (var lobby in lobbies)
+            using (BatchedBoneMenu.Create())
             {
-                // Make sure this is not us but is also a friend
-                if (lobby.Owner.IsMe)
-                    continue;
+                foreach (var lobby in lobbies) {
+                    // Make sure this is not us but is also a friend
+                    if (lobby.Owner.IsMe)
+                        continue;
 
-                var networkLobby = new SteamLobby(lobby);
-                var lobbyInfo = LobbyMetadataHelper.ReadInfo(networkLobby);
+                    var networkLobby = new SteamLobby(lobby);
+                    var lobbyInfo = LobbyMetadataHelper.ReadInfo(networkLobby);
 
-                if (!IsFriend(lobbyInfo.LobbyId))
-                    continue;
+                    if (!IsFriend(lobbyInfo.LobbyId))
+                        continue;
 
-                if (Internal_CanShowLobby(lobbyInfo)) {
-                    // Add to list
-                    BoneMenuCreator.CreateLobby(_friendsCategory, lobbyInfo, networkLobby);
-                }
-
-                lobbyCount++;
-
-                if (lobbyCount >= _maxLobbiesInOneFrame) {
-                    lobbyCount = 0;
-
-                    for (var i = 0; i < _lobbyFrameDelay; i++) {
-                        yield return null;
+                    if (Internal_CanShowLobby(lobbyInfo)) {
+                        // Add to list
+                        BoneMenuCreator.CreateLobby(_friendsCategory, lobbyInfo, networkLobby);
                     }
                 }
             }

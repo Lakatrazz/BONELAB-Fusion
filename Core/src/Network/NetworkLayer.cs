@@ -198,11 +198,15 @@ namespace LabFusion.Network
 
         internal virtual void OnSetupBoneMenu(MenuCategory category) { }
 
+        internal abstract void OnUpdateLobby();
+
         public static void RegisterLayersFromAssembly(Assembly targetAssembly)
         {
             if (targetAssembly == null) throw new NullReferenceException("Can't register from a null assembly!");
 
+#if DEBUG
             FusionLogger.Log($"Populating NetworkLayer list from {targetAssembly.GetName().Name}!");
+#endif
 
             AssemblyUtilities.LoadAllValid<NetworkLayer>(targetAssembly, RegisterLayer);
         }
@@ -213,15 +217,15 @@ namespace LabFusion.Network
         {
             NetworkLayer layer = Activator.CreateInstance(type) as NetworkLayer;
 
-            if (string.IsNullOrWhiteSpace(layer.Title))
-            {
+            if (string.IsNullOrWhiteSpace(layer.Title)) {
                 FusionLogger.Warn($"Didn't register {type.Name} because its Title was invalid!");
             }
-            else
-            {
+            else {
                 if (LayerLookup.ContainsKey(layer.Title)) throw new Exception($"{type.Name} has the same Title as {LayerLookup[layer.Title].GetType().Name}, we can't replace layers!");
 
+#if DEBUG
                 FusionLogger.Log($"Registered {type.Name}");
+#endif
 
                 Layers.Add(layer);
                 LayerLookup.Add(layer.Title, layer);

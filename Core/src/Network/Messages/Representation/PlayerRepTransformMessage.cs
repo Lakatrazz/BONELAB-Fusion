@@ -18,18 +18,10 @@ using UnityEngine;
 namespace LabFusion.Network {
     public class PlayerRepTransformData : IFusionSerializable, IDisposable
     {
-        public const int Size = sizeof(byte) * 4 + sizeof(float) * 10 + SerializedLocalTransform.Size 
+        public const int Size = sizeof(byte) + sizeof(float) * 7 + SerializedLocalTransform.Size 
             * RigAbstractor.TransformSyncCount + SerializedTransform.Size + SerializedSmallQuaternion.Size + SerializedHand.Size * 2;
 
         public byte smallId;
-
-        public float feetOffset;
-        public float crouchTarget;
-        public float spineCrouchOff;
-
-        public ControllerRig.TraversalState travState;
-        public ControllerRig.VertState vertState;
-        public ControllerRig.VrVertState vrVertState;
 
         public float curr_Health;
 
@@ -51,14 +43,6 @@ namespace LabFusion.Network {
             writer.Write(predictVelocity);
             writer.Write(predictAngularVelocity);
 
-            writer.Write(feetOffset);
-            writer.Write(crouchTarget);
-            writer.Write(spineCrouchOff);
-
-            writer.Write((byte)travState);
-            writer.Write((byte)vertState);
-            writer.Write((byte)vrVertState);
-
             writer.Write(curr_Health);
 
             for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
@@ -78,14 +62,6 @@ namespace LabFusion.Network {
             predictVelocity = reader.ReadVector3();
             predictAngularVelocity = reader.ReadVector3();
 
-            feetOffset = reader.ReadSingle();
-            crouchTarget = reader.ReadSingle();
-            spineCrouchOff = reader.ReadSingle();
-
-            travState = (ControllerRig.TraversalState)reader.ReadByte();
-            vertState = (ControllerRig.VertState)reader.ReadByte();
-            vrVertState = (ControllerRig.VrVertState)reader.ReadByte();
-
             curr_Health = reader.ReadSingle();
 
             for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
@@ -104,21 +80,13 @@ namespace LabFusion.Network {
 
         public static PlayerRepTransformData Create(byte smallId, Transform[] syncTransforms, Transform syncedPelvis, Transform syncedPlayspace, Hand leftHand, Hand rightHand)
         {
-            var rm = RigData.RigReferences.RigManager;
             var health = RigData.RigReferences.Health;
-            var controllerRig = rm.openControllerRig;
 
             var data = new PlayerRepTransformData {
                 smallId = smallId,
 
-                predictVelocity = RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.velocity * Time.timeScale,
-                predictAngularVelocity = RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.angularVelocity * Time.timeScale,
-
-                feetOffset = controllerRig.feetOffset,
-                crouchTarget = controllerRig._crouchTarget,
-                travState = controllerRig.travState,
-                vertState = controllerRig.vertState,
-                vrVertState = controllerRig.vrVertState,
+                predictVelocity = RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.velocity * TimeUtilities.TimeScale,
+                predictAngularVelocity = RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.angularVelocity * TimeUtilities.TimeScale,
 
                 curr_Health = health.curr_Health,
 
@@ -143,43 +111,37 @@ namespace LabFusion.Network {
         public override byte? Tag => NativeMessageTag.PlayerRepTransform;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
-            using (var reader = FusionReader.Create(bytes)) {
-                var data = reader.ReadFusionSerializable<PlayerRepTransformData>();
+            using var reader = FusionReader.Create(bytes);
+            var data = reader.ReadFusionSerializable<PlayerRepTransformData>();
 
-                // Send message to other clients if server
-                if (NetworkInfo.IsServer && isServerHandled) {
-                    if (data.smallId != 0) {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Unreliable, message);
-                        }
-                    }
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
+            {
+                if (data.smallId != 0)
+                {
+                    using var message = FusionMessage.Create(Tag.Value, bytes);
+                    MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Unreliable, message);
                 }
+            }
 
-                // Apply player rep data
-                if (data.smallId != PlayerIdManager.LocalSmallId && PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep) && rep.IsCreated) {
-                    rep.serializedFeetOffset = data.feetOffset;
-                    rep.serializedCrouchTarget = data.crouchTarget;
-                    rep.serializedSpineCrouchOff = data.spineCrouchOff;
+            // Apply player rep data
+            if (data.smallId != PlayerIdManager.LocalSmallId && PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep) && rep.IsCreated)
+            {
+                rep.serializedLocalTransforms = data.serializedLocalTransforms;
+                rep.serializedPelvis = data.serializedPelvis;
+                rep.repPlayspace.rotation = data.serializedPlayspace.Expand();
+                rep.predictVelocity = data.predictVelocity;
+                rep.predictAngularVelocity = data.predictAngularVelocity;
+                rep.timeSincePelvisSent = TimeUtilities.TimeSinceStartup;
 
-                    rep.serializedTravState = data.travState;
-                    rep.serializedVertState = data.vertState;
-                    rep.serializedVrVertState = data.vrVertState;
+                rep.serializedLeftHand = data.leftHand;
+                rep.serializedRightHand = data.rightHand;
 
-                    rep.serializedLocalTransforms = data.serializedLocalTransforms;
-                    rep.serializedPelvis = data.serializedPelvis;
-                    rep.repPlayspace.rotation = data.serializedPlayspace.Expand();
-                    rep.predictVelocity = data.predictVelocity;
-                    rep.predictAngularVelocity = data.predictAngularVelocity;
-                    rep.timeSincePelvisSent = Time.realtimeSinceStartup;
-
-                    rep.serializedLeftHand = data.leftHand;
-                    rep.serializedRightHand = data.rightHand;
-
-                    // Apply changes to the RigManager
-                    if (rep.IsCreated) {
-                        var health = rep.RigReferences.Health;
-                        health.curr_Health = data.curr_Health;
-                    }
+                // Apply changes to the RigManager
+                if (rep.IsCreated)
+                {
+                    var health = rep.RigReferences.Health;
+                    health.curr_Health = data.curr_Health;
                 }
             }
         }

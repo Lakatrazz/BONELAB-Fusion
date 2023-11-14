@@ -37,7 +37,7 @@ namespace LabFusion.Utilities {
                 TriggerCount.Add(trigger, 0);
 
             TriggerCount[trigger]--;
-            TriggerCount[trigger] = Mathf.Clamp(TriggerCount[trigger], 0, int.MaxValue);
+            TriggerCount[trigger] = ManagedMathf.Clamp(TriggerCount[trigger], 0, int.MaxValue);
         }
 
         internal static void Increment(GenGameControl_Trigger trigger)
@@ -54,7 +54,7 @@ namespace LabFusion.Utilities {
                 GenTriggerCount.Add(trigger, 0);
 
             GenTriggerCount[trigger]--;
-            GenTriggerCount[trigger] = Mathf.Clamp(GenTriggerCount[trigger], 0, int.MaxValue);
+            GenTriggerCount[trigger] = ManagedMathf.Clamp(GenTriggerCount[trigger], 0, int.MaxValue);
         }
 
         internal static void SetChunk(Collider other, Chunk chunk) {

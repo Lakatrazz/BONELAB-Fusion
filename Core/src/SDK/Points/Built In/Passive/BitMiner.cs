@@ -55,7 +55,7 @@ namespace LabFusion.SDK.Points
         public override void OnLateUpdate() {
             if (IsUnlocked && IsEquipped && NetworkInfo.HasServer) {
                 if (PlayerIdManager.HasOtherPlayers) {
-                    _bitTime += Time.deltaTime;
+                    _bitTime += TimeUtilities.DeltaTime;
 
                     if (_bitTime > 60f) {
                         while (_bitTime > 60f) {

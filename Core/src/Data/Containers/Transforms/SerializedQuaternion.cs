@@ -88,7 +88,7 @@ namespace LabFusion.Data
             float f2 = c2 / PRECISION_OFFSET;
             float f3 = c3 / PRECISION_OFFSET;
 
-            float f4 = Mathf.Sqrt(1f - Pow(f1) - Pow(f2) - Pow(f3));
+            float f4 = (float)Math.Sqrt(1f - Pow(f1) - Pow(f2) - Pow(f3));
 
             // Still dumb...
             switch (loss)

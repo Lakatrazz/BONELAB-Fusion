@@ -96,8 +96,8 @@ namespace LabFusion.Network
                 data.serializedQuaternions[i] = SerializedSmallQuaternion.Compress(transform.Rotation);
 
                 if (!rb.IsNull) {
-                    data.serializedVelocities[i] = rb.Velocity * Time.timeScale;
-                    data.serializedAngularVelocities[i] = rb.AngularVelocity * Time.timeScale;
+                    data.serializedVelocities[i] = rb.Velocity * TimeUtilities.TimeScale;
+                    data.serializedAngularVelocities[i] = rb.AngularVelocity * TimeUtilities.TimeScale;
                 }
             }
 

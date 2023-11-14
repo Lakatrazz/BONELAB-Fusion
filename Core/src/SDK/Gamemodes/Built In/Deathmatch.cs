@@ -168,7 +168,7 @@ namespace LabFusion.SDK.Gamemodes {
 
             // 10 and 100 are the min and max values for the max bit count
             float playerPercent = (float)playerCount / 3f;
-            int maxBits = Mathf.FloorToInt(Mathf.Lerp(_minPlayerBits, _maxPlayerBits, playerPercent));
+            int maxBits = ManagedMathf.FloorToInt(ManagedMathf.Lerp(_minPlayerBits, _maxPlayerBits, playerPercent));
             int maxRand = maxBits / 10;
 
             // Get the scores
@@ -179,8 +179,8 @@ namespace LabFusion.SDK.Gamemodes {
             if (totalScore <= 0)
                 return 0;
 
-            float percent = Mathf.Clamp01((float)score / (float)totalScore);
-            int reward = Mathf.FloorToInt((float)maxBits * percent);
+            float percent = ManagedMathf.Clamp01((float)score / (float)totalScore);
+            int reward = ManagedMathf.FloorToInt((float)maxBits * percent);
 
             // Add randomness
             reward += UnityEngine.Random.Range(-maxRand, maxRand);
@@ -263,7 +263,7 @@ namespace LabFusion.SDK.Gamemodes {
             });
 
             // Reset time
-            _timeOfStart = Time.realtimeSinceStartup;
+            _timeOfStart = TimeUtilities.TimeSinceStartup;
             _oneMinuteLeft = false;
 
             // Reset death status
@@ -346,7 +346,7 @@ namespace LabFusion.SDK.Gamemodes {
             if (playerCount > 1) {
                 bool isVictory = false;
 
-                if (selfPlace < Mathf.Min(playerCount, 3))
+                if (selfPlace < Math.Min(playerCount, 3))
                     isVictory = true;
 
                 OnVictoryStatus(isVictory);
@@ -392,7 +392,7 @@ namespace LabFusion.SDK.Gamemodes {
             FusionPlayer.ClearPlayerVitality();
         }
 
-        public float GetTimeElapsed() => Time.realtimeSinceStartup - _timeOfStart;
+        public float GetTimeElapsed() => TimeUtilities.TimeSinceStartup - _timeOfStart;
         public float GetMinutesLeft() {
             float elapsed = GetTimeElapsed();
             return _totalMinutes - (elapsed / 60f);

@@ -87,9 +87,9 @@ namespace LabFusion.Network
         }
 
         private static IEnumerator Internal_WaitForSyncable(GameObject placer, ushort spawnId) {
-            float startTime = Time.realtimeSinceStartup;
+            float startTime = TimeUtilities.TimeSinceStartup;
             ISyncable syncable = null;
-            while (syncable == null && Time.realtimeSinceStartup - startTime <= 1f) {
+            while (syncable == null && TimeUtilities.TimeSinceStartup - startTime <= 1f) {
                 yield return null;
 
                 SyncManager.TryGetSyncable(spawnId, out syncable);

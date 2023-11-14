@@ -97,8 +97,8 @@ namespace LabFusion.Data
         }
 
         public static void TeleportToJimmyFinger() {
-            var rm = RigData.RigReferences.RigManager;
-            if (!rm.IsNOC()) {
+            if (RigData.HasPlayer) {
+                var rm = RigData.RigReferences.RigManager;
                 var pos = new Vector3(-0.25f, 95.23f, 13f);
 
                 rm.Teleport(pos, true);

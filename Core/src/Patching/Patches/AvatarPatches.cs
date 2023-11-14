@@ -46,7 +46,7 @@ namespace LabFusion.Patching {
 
         private static bool ValidateStats(Avatar __instance, PlayerRep rep, SerializedAvatarStats stats) {
             // Make sure this is the server before validating
-            if (NetworkInfo.HasServer) {
+            if (NetworkInfo.IsServer) {
                 // Get permission level of the player
                 FusionPermissions.FetchPermissionLevel(rep.PlayerId, out var level, out _);
 
@@ -56,7 +56,7 @@ namespace LabFusion.Patching {
                 // We don't check polyblank as it could be a custom avatar
                 if (!isPolyblank && !FusionPermissions.HasSufficientPermissions(level, FusionPreferences.LocalServerSettings.StatChangersAllowed.GetValue())) {
                     float leeway = FusionPreferences.LocalServerSettings.StatChangerLeeway.GetValue();
-                    leeway = Mathf.Clamp(leeway + 1f, 1f, 11f);
+                    leeway = ManagedMathf.Clamp(leeway + 1f, 1f, 11f);
 
                     // Health
                     if (stats.vitality > __instance.vitality * 2f * leeway)
@@ -109,8 +109,8 @@ namespace LabFusion.Patching {
         private static IEnumerator CoKickStatChangerRoutine(Avatar avatar, PlayerRep rep)
         {
             // Wait two seconds
-            float start = Time.realtimeSinceStartup;
-            while (Time.realtimeSinceStartup - start <= 2f)
+            float start = TimeUtilities.TimeSinceStartup;
+            while (TimeUtilities.TimeSinceStartup - start <= 2f)
                 yield return null;
 
             // Does the RigManager still exist?

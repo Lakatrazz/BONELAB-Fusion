@@ -133,7 +133,7 @@ namespace LabFusion.SDK.Points {
         public static int GetBitCount() => _totalBits;
 
         public static void SetBitCount(int count) {
-            _totalBits = Mathf.Max(0, count);
+            _totalBits = Math.Max(0, count);
             WriteToFile();
         }
 

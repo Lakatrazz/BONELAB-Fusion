@@ -2,12 +2,6 @@
 using LabFusion.Representation;
 using LabFusion.Senders;
 using LabFusion.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.UI.WebControls;
 
 namespace LabFusion.Network {
     /// <summary>
@@ -18,9 +12,7 @@ namespace LabFusion.Network {
         /// Starts a server if there is currently none active.
         /// </summary>
         public static void StartServer() {
-            if (NetworkInfo.CurrentNetworkLayer != null) {
-                NetworkInfo.CurrentNetworkLayer.StartServer();
-            }
+            NetworkInfo.CurrentNetworkLayer?.StartServer();
         }
 
         /// <summary>
@@ -36,8 +28,14 @@ namespace LabFusion.Network {
         /// Disconnects the network layer and cleans up.
         /// </summary>
         public static void Disconnect(string reason = "") {
-            if (NetworkInfo.CurrentNetworkLayer != null)
-                NetworkInfo.CurrentNetworkLayer.Disconnect(reason);
+            NetworkInfo.CurrentNetworkLayer?.Disconnect(reason);
+        }
+
+        /// <summary>
+        /// Pushes an update to the lobby metadata.
+        /// </summary>
+        public static void UpdateLobby() {
+            InternalLayerHelpers.OnUpdateLobby();
         }
 
         /// <summary>

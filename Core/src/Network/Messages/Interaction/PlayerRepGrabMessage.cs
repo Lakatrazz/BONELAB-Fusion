@@ -94,8 +94,8 @@ namespace LabFusion.Network
 
             var grip = data.GetGrip();
             if (grip == null) {
-                float time = Time.realtimeSinceStartup;
-                while (grip == null && (Time.realtimeSinceStartup - time) <= 0.5f) {
+                float time = TimeUtilities.TimeSinceStartup;
+                while (grip == null && (TimeUtilities.TimeSinceStartup - time) <= 0.5f) {
                     yield return null;
                     grip = data.GetGrip();
                 }

@@ -54,7 +54,9 @@ namespace LabFusion.Network
         {
             if (targetAssembly == null) throw new NullReferenceException("Can't register from a null assembly!");
 
+#if DEBUG
             FusionLogger.Log($"Populating MessageHandler list from {targetAssembly.GetName().Name}!");
+#endif
 
             AssemblyUtilities.LoadAllValid<FusionMessageHandler>(targetAssembly, RegisterHandler);
         }
@@ -77,7 +79,9 @@ namespace LabFusion.Network
 
                 if (Handlers[index] != null) throw new Exception($"{type.Name} has the same index as {Handlers[index].GetType().Name}, we can't replace handlers!");
 
+#if DEBUG
                 FusionLogger.Log($"Registered {type.Name}");
+#endif
 
                 Handlers[index] = handler;
             }

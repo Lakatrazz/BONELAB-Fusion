@@ -329,7 +329,7 @@ namespace LabFusion.SDK.Points
         }
 
         private void UpdatePageCountText() {
-            _pageCountText.text = $"Page {_currentPageIndex + 1} out of {Mathf.Max(1, PageCount)}";
+            _pageCountText.text = $"Page {_currentPageIndex + 1} out of {Math.Max(1, PageCount)}";
         }
 
         private void UpdateBitCountText() {
@@ -358,7 +358,7 @@ namespace LabFusion.SDK.Points
                     break;
             }
 
-            _currentPageIndex = Mathf.Clamp(_currentPageIndex, 0, PageCount);
+            _currentPageIndex = ManagedMathf.Clamp(_currentPageIndex, 0, PageCount);
 
             // Loop through every button
             for (var i = 0; i < _itemButtonCount; i++) {

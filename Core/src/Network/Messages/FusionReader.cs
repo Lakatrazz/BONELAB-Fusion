@@ -35,7 +35,7 @@ namespace LabFusion.Network
         }
 
         public T ReadFusionSerializable<T>() where T : IFusionSerializable, new() {
-            T instance = new T();
+            T instance = new();
             instance.Deserialize(this);
             return instance;
         }
