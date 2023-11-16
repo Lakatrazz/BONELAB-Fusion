@@ -15,7 +15,8 @@ using LabFusion.Utilities;
 using SLZ.Bonelab;
 using SLZ.UI;
 
-namespace LabFusion.Patching {
+namespace LabFusion.Patching
+{
     [HarmonyPatch(typeof(Control_UI_BodyMeasurements))]
     public static class Control_UI_BodyMeasurementsPatches
     {
@@ -30,14 +31,16 @@ namespace LabFusion.Patching {
             if (IgnorePatches)
                 return;
 
-            if (NetworkInfo.HasServer) {
+            if (NetworkInfo.HasServer)
+            {
                 CampaignSender.SendDescentIntro(introEvent);
             }
         }
     }
 
     [HarmonyPatch(typeof(GameControl_Descent))]
-    public static class GameControl_DescentPatches {
+    public static class GameControl_DescentPatches
+    {
         public static bool IgnorePatches = false;
 
         [HarmonyPrefix]
@@ -49,7 +52,8 @@ namespace LabFusion.Patching {
             if (IgnorePatches)
                 return;
 
-            if (NetworkInfo.HasServer) {
+            if (NetworkInfo.HasServer)
+            {
                 CampaignSender.SendDescentIntro(introEvent);
             }
         }
@@ -71,19 +75,23 @@ namespace LabFusion.Patching {
     }
 
     [HarmonyPatch(typeof(TutorialElevator))]
-    public static class ElevatorPatches {
+    public static class ElevatorPatches
+    {
         public static bool IgnorePatches = false;
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(TutorialElevator.StartElevator))]
-        public static bool StartElevator() {
+        public static bool StartElevator()
+        {
             var elevatorEvent = DescentData.CreateElevatorEvent(DescentElevatorType.START_ELEVATOR);
 
             if (IgnorePatches)
                 return true;
 
-            if (NetworkInfo.HasServer) {
-                if (NetworkInfo.IsServer) {
+            if (NetworkInfo.HasServer)
+            {
+                if (NetworkInfo.IsServer)
+                {
                     CampaignSender.SendDescentElevator(elevatorEvent);
                     return true;
                 }
@@ -234,16 +242,19 @@ namespace LabFusion.Patching {
     }
 
     [HarmonyPatch(typeof(NooseBonelabIntro))]
-    public static class NoosePatches {
+    public static class NoosePatches
+    {
         public static bool IgnorePatches = false;
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(NooseBonelabIntro.AttachNeck))]
-        public static void AttachNeck() {
+        public static void AttachNeck()
+        {
             if (IgnorePatches)
                 return;
 
-            if (NetworkInfo.HasServer) {
+            if (NetworkInfo.HasServer)
+            {
                 var nooseEvent = DescentData.CreateNooseEvent(PlayerIdManager.LocalSmallId, DescentNooseType.ATTACH_NOOSE);
                 CampaignSender.SendDescentNoose(nooseEvent);
             }
@@ -251,11 +262,13 @@ namespace LabFusion.Patching {
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(NooseBonelabIntro.NooseCut))]
-        public static void NooseCut() {
+        public static void NooseCut()
+        {
             if (IgnorePatches)
                 return;
 
-            if (NetworkInfo.HasServer) {
+            if (NetworkInfo.HasServer)
+            {
                 var nooseEvent = DescentData.CreateNooseEvent(PlayerIdManager.LocalSmallId, DescentNooseType.CUT_NOOSE);
                 CampaignSender.SendDescentNoose(nooseEvent);
 

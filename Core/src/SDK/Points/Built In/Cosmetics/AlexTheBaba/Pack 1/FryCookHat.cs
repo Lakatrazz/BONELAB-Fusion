@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class FryCookHat : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class FryCookHat : AccessoryItem
+    {
         public override string Title => "Frycook Hat";
 
         public override string Author => BitEconomy.BaBaAuthor;

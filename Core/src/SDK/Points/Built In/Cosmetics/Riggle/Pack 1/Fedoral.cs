@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class Fedoral : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class Fedoral : AccessoryItem
+    {
         public override string Title => "Fedoral";
 
         public override string Author => BitEconomy.RiggleAuthor;

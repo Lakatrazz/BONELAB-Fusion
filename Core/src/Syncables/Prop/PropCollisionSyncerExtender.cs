@@ -6,13 +6,16 @@ using UnityEngine;
 
 namespace LabFusion.Syncables
 {
-    public class PropCollisionSyncerExtender : IPropExtender {
+    public class PropCollisionSyncerExtender : IPropExtender
+    {
         public PropSyncable PropSyncable { get; set; }
 
         public PropCollisionSyncer Component;
 
-        public bool ValidateExtender(PropSyncable syncable) {
-            if (syncable.GameObjectCount > 0) {
+        public bool ValidateExtender(PropSyncable syncable)
+        {
+            if (syncable.GameObjectCount > 0)
+            {
                 PropSyncable = syncable;
                 Component = PropSyncable.TempRigidbodies.Items[0].GameObject.AddComponent<PropCollisionSyncer>();
                 Component.syncable = PropSyncable;
@@ -22,8 +25,10 @@ namespace LabFusion.Syncables
             return false;
         }
 
-        public void OnCleanup() {
-            if (!Component.IsNOC()) {
+        public void OnCleanup()
+        {
+            if (!Component.IsNOC())
+            {
                 GameObject.Destroy(Component);
             }
         }

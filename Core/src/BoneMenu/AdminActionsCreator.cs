@@ -19,7 +19,8 @@ namespace LabFusion.BoneMenu
         {
             // Root category
             var adminActions = category.CreateCategory("Admin Actions", Color.white);
-            adminActions.CreateFunctionElement("Despawn All", Color.white, () => {
+            adminActions.CreateFunctionElement("Despawn All", Color.white, () =>
+            {
                 PooleeUtilities.DespawnAll();
             }, "Are you sure?");
         }

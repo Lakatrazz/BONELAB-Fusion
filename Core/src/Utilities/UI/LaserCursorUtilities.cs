@@ -8,9 +8,12 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Utilities {
-    public static class LaserCursorUtilities {
-        public static LaserCursor CreateLaserCursor(Action<LaserCursor> onSetupRegions = null) {
+namespace LabFusion.Utilities
+{
+    public static class LaserCursorUtilities
+    {
+        public static LaserCursor CreateLaserCursor(Action<LaserCursor> onSetupRegions = null)
+        {
             var instance = GameObject.Instantiate(FusionContentLoader.LaserCursor);
             var transform = instance.transform;
             instance.SetActive(false);
@@ -88,7 +91,8 @@ namespace LabFusion.Utilities {
             return cursor;
         }
 
-        private static PageElementView SetupPageElementView(this Transform transform) {
+        private static PageElementView SetupPageElementView(this Transform transform)
+        {
             var highlightUI = transform.gameObject.AddComponent<HighlightUI>();
             highlightUI.color1 = new Color(1f, 1f, 1f, 0.1294118f);
             highlightUI.color2 = Color.white;

@@ -9,18 +9,21 @@ using MelonLoader;
 using LabFusion.Utilities;
 #endif
 
-namespace LabFusion.MarrowIntegration {
+namespace LabFusion.MarrowIntegration
+{
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
     [AddComponentMenu("BONELAB Fusion/Misc/Notification Proxy")]
     [DisallowMultipleComponent]
 #endif
-    public sealed class NotificationProxy : FusionMarrowBehaviour {
+    public sealed class NotificationProxy : FusionMarrowBehaviour
+    {
 #if MELONLOADER
         public NotificationProxy(IntPtr intPtr) : base(intPtr) { }
 
-        public void Send(string title, string message, float length) {
+        public void Send(string title, string message, float length)
+        {
             FusionNotifier.Send(new FusionNotification()
             {
                 title = title,

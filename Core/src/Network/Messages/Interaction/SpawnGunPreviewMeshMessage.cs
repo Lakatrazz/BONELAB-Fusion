@@ -21,7 +21,8 @@ namespace LabFusion.Network
         public ushort syncId;
         public string barcode;
 
-        public static int GetSize(string barcode) {
+        public static int GetSize(string barcode)
+        {
             return Size + barcode.GetSize();
         }
 
@@ -62,29 +63,28 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<SpawnGunPreviewMeshData>();
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
             {
-                using (var data = reader.ReadFusionSerializable<SpawnGunPreviewMeshData>())
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+            }
+            else
+            {
+                if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable && propSyncable.TryGetExtender<SpawnGunExtender>(out var extender))
                 {
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled) {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-                        }
-                    }
-                    else {
-                        if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable && propSyncable.TryGetExtender<SpawnGunExtender>(out var extender)) {
-                            var crateRef = new SpawnableCrateReference(data.barcode);
+                    var crateRef = new SpawnableCrateReference(data.barcode);
 
-                            if (crateRef.Crate != null) {
-                                SpawnGunPatches.IgnorePatches = true;
+                    if (crateRef.Crate != null)
+                    {
+                        SpawnGunPatches.IgnorePatches = true;
 
-                                extender.Component._selectedCrate = crateRef.Crate;
-                                extender.Component.SetPreviewMesh();
+                        extender.Component._selectedCrate = crateRef.Crate;
+                        extender.Component.SetPreviewMesh();
 
-                                SpawnGunPatches.IgnorePatches = false;
-                            }
-                        }
+                        SpawnGunPatches.IgnorePatches = false;
                     }
                 }
             }

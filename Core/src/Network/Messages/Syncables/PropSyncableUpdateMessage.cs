@@ -35,7 +35,8 @@ namespace LabFusion.Network
             writer.Write(syncId);
             writer.Write(length);
 
-            for (var i = 0; i < length; i++) {
+            for (var i = 0; i < length; i++)
+            {
                 writer.Write(serializedPositions[i]);
                 writer.Write(serializedQuaternions[i]);
                 writer.Write(serializedVelocities[i]);
@@ -54,7 +55,8 @@ namespace LabFusion.Network
             serializedVelocities = new SystemVector3[length];
             serializedAngularVelocities = new SystemVector3[length];
 
-            for (var i = 0; i < length; i++) {
+            for (var i = 0; i < length; i++)
+            {
                 serializedPositions[i] = reader.ReadSystemVector3();
                 serializedQuaternions[i] = reader.ReadFusionSerializable<SerializedSmallQuaternion>();
                 serializedVelocities[i] = reader.ReadSystemVector3();
@@ -62,14 +64,16 @@ namespace LabFusion.Network
             }
         }
 
-        public PropSyncable GetPropSyncable() {
+        public PropSyncable GetPropSyncable()
+        {
             if (SyncManager.TryGetSyncable(syncId, out var syncable) && syncable is PropSyncable propSyncable)
                 return propSyncable;
 
             return null;
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
 
@@ -81,7 +85,8 @@ namespace LabFusion.Network
 
             int length = syncable.GameObjectCount;
 
-            var data = new PropSyncableUpdateData {
+            var data = new PropSyncableUpdateData
+            {
                 ownerId = ownerId,
                 syncId = syncId,
                 length = (byte)length,
@@ -91,14 +96,16 @@ namespace LabFusion.Network
                 serializedAngularVelocities = new SystemVector3[length],
             };
 
-            for (var i = 0; i < length; i++) {
+            for (var i = 0; i < length; i++)
+            {
                 var transform = transformCaches[i];
                 var rb = rigidbodyCaches[i];
 
                 data.serializedPositions[i] = transform.Position;
                 data.serializedQuaternions[i] = SerializedSmallQuaternion.Compress(transform.Rotation);
 
-                if (!rb.IsNull) {
+                if (!rb.IsNull)
+                {
                     data.serializedVelocities[i] = rb.Velocity * TimeUtilities.TimeScale;
                     data.serializedAngularVelocities[i] = rb.AngularVelocity * TimeUtilities.TimeScale;
                 }
@@ -115,32 +122,32 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (var reader = FusionReader.Create(bytes)) {
-                using (var data = reader.ReadFusionSerializable<PropSyncableUpdateData>()) {
-                    // Find the prop syncable and update its info
-                    var syncable = data.GetPropSyncable();
-                    if (syncable != null && syncable.IsRegistered() && syncable.Owner.HasValue && syncable.Owner.Value == data.ownerId && syncable.GameObjectCount == data.length) {
-                        syncable.RefreshMessageTime();
+            using var reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<PropSyncableUpdateData>();
+            // Find the prop syncable and update its info
+            var syncable = data.GetPropSyncable();
+            if (syncable != null && syncable.IsRegistered() && syncable.Owner.HasValue && syncable.Owner.Value == data.ownerId && syncable.GameObjectCount == data.length)
+            {
+                syncable.RefreshMessageTime();
 
-                        for (var i = 0; i < data.length; i++) {
-                            syncable.InitialPositions[i] = data.serializedPositions[i];
-                            syncable.InitialRotations[i] = data.serializedQuaternions[i].Expand();
-                            
-                            syncable.DesiredPositions[i] = data.serializedPositions[i];
-                            syncable.DesiredRotations[i] = data.serializedQuaternions[i].Expand();
+                for (var i = 0; i < data.length; i++)
+                {
+                    syncable.InitialPositions[i] = data.serializedPositions[i];
+                    syncable.InitialRotations[i] = data.serializedQuaternions[i].Expand();
 
-                            syncable.DesiredVelocities[i] = data.serializedVelocities[i];
-                            syncable.DesiredAngularVelocities[i] = data.serializedAngularVelocities[i];
-                        }
-                    }
+                    syncable.DesiredPositions[i] = data.serializedPositions[i];
+                    syncable.DesiredRotations[i] = data.serializedQuaternions[i].Expand();
 
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled) {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessageExcept(data.ownerId, NetworkChannel.Unreliable, message);
-                        }
-                    }
+                    syncable.DesiredVelocities[i] = data.serializedVelocities[i];
+                    syncable.DesiredAngularVelocities[i] = data.serializedAngularVelocities[i];
                 }
+            }
+
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
+            {
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.ownerId, NetworkChannel.Unreliable, message);
             }
         }
     }

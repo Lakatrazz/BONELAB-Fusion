@@ -24,7 +24,8 @@ namespace LabFusion.Data
 
         private static XMLFile _file;
 
-        public static void ReadFile() {
+        public static void ReadFile()
+        {
             _permittedUsers.Clear();
 
             _file = new XMLFile(_fileName, _rootName);
@@ -43,10 +44,12 @@ namespace LabFusion.Data
             });
         }
 
-        private static void WriteFile() {
+        private static void WriteFile()
+        {
             List<object> entries = new();
 
-            foreach (var tuple in _permittedUsers) {
+            foreach (var tuple in _permittedUsers)
+            {
                 XElement entry = new(_elementName);
 
                 entry.SetAttributeValue(_idName, tuple.Item1);
@@ -59,11 +62,14 @@ namespace LabFusion.Data
             _file.WriteFile(entries);
         }
 
-        public static void SetPermission(ulong longId, string username, PermissionLevel level) {
+        public static void SetPermission(ulong longId, string username, PermissionLevel level)
+        {
             var tuple = new Tuple<ulong, string, PermissionLevel>(longId, username, level);
 
-            foreach (var user in _permittedUsers.ToArray()) {
-                if (user.Item1 == longId) {
+            foreach (var user in _permittedUsers.ToArray())
+            {
+                if (user.Item1 == longId)
+                {
                     _permittedUsers.Remove(user);
                     break;
                 }

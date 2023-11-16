@@ -13,28 +13,35 @@ using SLZ.AI;
 
 using UnityEngine;
 
-namespace LabFusion.Syncables {
-    public class BehaviourBaseNavExtender : PropComponentExtender<BehaviourBaseNav> {
+namespace LabFusion.Syncables
+{
+    public class BehaviourBaseNavExtender : PropComponentExtender<BehaviourBaseNav>
+    {
         public static FusionComponentCache<BehaviourBaseNav, PropSyncable> Cache = new FusionComponentCache<BehaviourBaseNav, PropSyncable>();
 
-        protected override void AddToCache(BehaviourBaseNav behaviour, PropSyncable syncable) {
+        protected override void AddToCache(BehaviourBaseNav behaviour, PropSyncable syncable)
+        {
             Cache.Add(behaviour, syncable);
         }
 
-        protected override void RemoveFromCache(BehaviourBaseNav behaviour) {
+        protected override void RemoveFromCache(BehaviourBaseNav behaviour)
+        {
             Cache.Remove(behaviour);
         }
 
-        public void SwitchLocoState(BehaviourBaseNav.LocoState locoState) {
+        public void SwitchLocoState(BehaviourBaseNav.LocoState locoState)
+        {
             BehaviourBaseNavPatches.IgnorePatches = true;
             Component.SwitchLocoState(locoState, 0f, true);
             BehaviourBaseNavPatches.IgnorePatches = false;
         }
 
-        public void SwitchMentalState(BehaviourBaseNav.MentalState mentalState, TriggerRefProxy proxy = null) {
+        public void SwitchMentalState(BehaviourBaseNav.MentalState mentalState, TriggerRefProxy proxy = null)
+        {
             BehaviourBaseNavPatches.IgnorePatches = true;
 
-            switch (mentalState) {
+            switch (mentalState)
+            {
                 default:
                     Component.SwitchMentalState(mentalState);
                     break;

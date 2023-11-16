@@ -9,31 +9,40 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabFusion.Network {
-    public class SteamLobby : NetworkLobby {
+namespace LabFusion.Network
+{
+    public class SteamLobby : NetworkLobby
+    {
         private Lobby _lobby;
 
-        public SteamLobby(Lobby lobby) {
+        public SteamLobby(Lobby lobby)
+        {
             _lobby = lobby;
         }
 
-        public override void SetMetadata(string key, string value) {
+        public override void SetMetadata(string key, string value)
+        {
             _lobby.SetData(key, value);
             SaveKey(key);
         }
 
-        public override bool TryGetMetadata(string key, out string value) {
+        public override bool TryGetMetadata(string key, out string value)
+        {
             value = _lobby.GetData(key);
             return !string.IsNullOrWhiteSpace(value);
         }
 
-        public override string GetMetadata(string key) { 
+        public override string GetMetadata(string key)
+        {
             return _lobby.GetData(key);
         }
 
-        public override Action CreateJoinDelegate(ulong lobbyId) {
-            if (NetworkInfo.CurrentNetworkLayer is SteamNetworkLayer steamLayer) {
-                return () => {
+        public override Action CreateJoinDelegate(ulong lobbyId)
+        {
+            if (NetworkInfo.CurrentNetworkLayer is SteamNetworkLayer steamLayer)
+            {
+                return () =>
+                {
                     steamLayer.JoinServer(lobbyId);
                 };
             }

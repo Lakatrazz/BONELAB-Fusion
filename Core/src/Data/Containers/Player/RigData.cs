@@ -36,7 +36,8 @@ namespace LabFusion.Data
     /// <summary>
     /// A collection of basic rig information for use across PlayerReps and the Main RigManager.
     /// </summary>
-    public class RigReferenceCollection {
+    public class RigReferenceCollection
+    {
         public bool IsValid { get; private set; } = false;
 
         public RigManager RigManager { get; private set; }
@@ -62,25 +63,29 @@ namespace LabFusion.Data
 
         public Transform Head { get; private set; }
 
-        public void OnDestroy() {
+        public void OnDestroy()
+        {
             IsValid = false;
             RigRigidbodies = null;
         }
 
-        public byte? GetIndex(Grip grip, bool isAvatarGrip = false) {
+        public byte? GetIndex(Grip grip, bool isAvatarGrip = false)
+        {
             var gripArray = RigGrips;
 
             if (isAvatarGrip)
                 gripArray = GetAvatarGrips();
 
-            for (byte i = 0; i < gripArray.Length; i++) {
+            for (byte i = 0; i < gripArray.Length; i++)
+            {
                 if (gripArray[i] == grip)
                     return i;
             }
             return null;
         }
 
-        public Grip GetGrip(byte index, bool isAvatarGrip = false) {
+        public Grip GetGrip(byte index, bool isAvatarGrip = false)
+        {
             var gripArray = RigGrips;
 
             if (isAvatarGrip)
@@ -91,17 +96,20 @@ namespace LabFusion.Data
             return null;
         }
 
-        internal Grip[] GetAvatarGrips() {
+        internal Grip[] GetAvatarGrips()
+        {
             return RigManager._avatar.GetComponentsInChildren<Grip>();
         }
 
-        internal InventorySlotReceiver[] GetAvatarSlots() {
+        internal InventorySlotReceiver[] GetAvatarSlots()
+        {
             return RigManager._avatar.GetComponentsInChildren<InventorySlotReceiver>();
         }
 
         // Rigidbody order likes to randomly change on players
         // So we have to disgustingly update it every index call
-        internal void GetRigidbodies() {
+        internal void GetRigidbodies()
+        {
             if (!IsValid)
                 return;
 
@@ -144,7 +152,8 @@ namespace LabFusion.Data
             return null;
         }
 
-        public InventorySlotReceiver GetSlot(byte index, bool isAvatarSlot = false) {
+        public InventorySlotReceiver GetSlot(byte index, bool isAvatarSlot = false)
+        {
             var slotArray = RigSlots;
 
             if (isAvatarSlot)
@@ -155,7 +164,8 @@ namespace LabFusion.Data
             return null;
         }
 
-        public Hand GetHand(Handedness handedness) {
+        public Hand GetHand(Handedness handedness)
+        {
             return handedness switch
             {
                 Handedness.LEFT => LeftHand,
@@ -174,12 +184,15 @@ namespace LabFusion.Data
             };
         }
 
-        public void DisableInteraction() {
+        public void DisableInteraction()
+        {
             if (RigGrips == null)
                 return;
 
-            foreach (var grip in RigGrips) {
-                foreach (var hand in grip.attachedHands.ToArray()) {
+            foreach (var grip in RigGrips)
+            {
+                foreach (var hand in grip.attachedHands.ToArray())
+                {
                     if (hand.manager.IsSelf())
                         grip.TryDetach(hand);
                 }
@@ -190,18 +203,21 @@ namespace LabFusion.Data
             DelayUtilities.Delay(Internal_DelayedEnableInteraction, 300);
         }
 
-        private void Internal_DelayedEnableInteraction() {
+        private void Internal_DelayedEnableInteraction()
+        {
             if (RigGrips == null)
                 return;
 
-            foreach (var grip in RigGrips) {
+            foreach (var grip in RigGrips)
+            {
                 grip.EnableInteraction();
             }
         }
 
         public RigReferenceCollection() { }
 
-        public RigReferenceCollection(RigManager rigManager) {
+        public RigReferenceCollection(RigManager rigManager)
+        {
             // Get the rig manager and hook when its destroyed
             RigManager = rigManager;
             RigRigidbodies = null;
@@ -245,13 +261,15 @@ namespace LabFusion.Data
         public static Vector3 RigSpawn { get; private set; }
         public static Quaternion RigSpawnRot { get; private set; }
 
-        public static void OnCacheRigInfo() {
+        public static void OnCacheRigInfo()
+        {
             var manager = Player.rigManager;
 
-            if (!manager) {
+            if (!manager)
+            {
                 return;
             }
-            
+
             // Store spawn values
             RigSpawn = manager.transform.position;
             RigSpawnRot = manager.transform.rotation;
@@ -268,9 +286,11 @@ namespace LabFusion.Data
                 FusionPlayer.Internal_OnAvatarChanged(manager, manager._avatar, manager.AvatarCrate.Barcode);
         }
 
-        public static void OnSendVitals() {
+        public static void OnSendVitals()
+        {
             // Send body vitals to network
-            if (NetworkInfo.HasServer) {
+            if (NetworkInfo.HasServer)
+            {
                 using FusionWriter writer = FusionWriter.Create(PlayerRepVitalsData.Size);
                 using PlayerRepVitalsData data = PlayerRepVitalsData.Create(PlayerIdManager.LocalSmallId, RigReferences.RigManager.bodyVitals);
                 writer.Write(data);
@@ -280,7 +300,8 @@ namespace LabFusion.Data
             }
         }
 
-        public static string GetAvatarBarcode() {
+        public static string GetAvatarBarcode()
+        {
             var rm = RigReferences.RigManager;
 
             if (rm)

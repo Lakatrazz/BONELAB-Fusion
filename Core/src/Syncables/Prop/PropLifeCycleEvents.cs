@@ -8,14 +8,17 @@ using UnityEngine;
 
 using MelonLoader;
 
-namespace LabFusion.Syncables {
+namespace LabFusion.Syncables
+{
     [RegisterTypeInIl2Cpp]
-    public sealed class PropLifeCycleEvents : MonoBehaviour {
+    public sealed class PropLifeCycleEvents : MonoBehaviour
+    {
         public PropLifeCycleEvents(IntPtr intPtr) : base(intPtr) { }
 
         public PropSyncable Syncable;
 
-        private void OnEnable() {
+        private void OnEnable()
+        {
             // Make sure our syncable exists
             if (Syncable == null)
                 return;
@@ -23,7 +26,8 @@ namespace LabFusion.Syncables {
             Syncable.IsRootEnabled = true;
         }
 
-        private void OnDisable() {
+        private void OnDisable()
+        {
             // Make sure our syncable exists
             if (Syncable == null)
                 return;
@@ -31,7 +35,8 @@ namespace LabFusion.Syncables {
             Syncable.IsRootEnabled = false;
         }
 
-        private void OnDestroy() {
+        private void OnDestroy()
+        {
             // Make sure our syncable exists
             if (Syncable == null)
                 return;

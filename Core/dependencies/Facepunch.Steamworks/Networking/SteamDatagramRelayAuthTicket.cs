@@ -5,8 +5,8 @@ using System.Text;
 
 namespace Steamworks.Data
 {
-	struct SteamDatagramRelayAuthTicket
-	{
-		// Not implemented, not used
-	};
+    struct SteamDatagramRelayAuthTicket
+    {
+        // Not implemented, not used
+    };
 }

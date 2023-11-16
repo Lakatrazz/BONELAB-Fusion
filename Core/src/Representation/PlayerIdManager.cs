@@ -11,7 +11,8 @@ using LabFusion.Preferences;
 
 namespace LabFusion.Representation
 {
-    public static class PlayerIdManager {
+    public static class PlayerIdManager
+    {
         public const int MaxNameLength = 32;
 
         public static readonly List<PlayerId> PlayerIds = new();
@@ -25,19 +26,23 @@ namespace LabFusion.Representation
         public static byte LocalSmallId { get; private set; }
         public static PlayerId LocalId { get; private set; }
 
-        public static byte? GetUnusedPlayerId() {
-            for (byte i = 0; i < 255; i++) {
+        public static byte? GetUnusedPlayerId()
+        {
+            for (byte i = 0; i < 255; i++)
+            {
                 if (GetPlayerId(i) == null)
                     return i;
             }
             return null;
         }
 
-        public static PlayerId GetPlayerId(byte smallId) {
+        public static PlayerId GetPlayerId(byte smallId)
+        {
             return PlayerIds.FirstOrDefault(x => x.SmallId == smallId);
         }
 
-        public static PlayerId GetPlayerId(ulong longId) {
+        public static PlayerId GetPlayerId(ulong longId)
+        {
             return PlayerIds.FirstOrDefault(x => x.LongId == longId);
         }
 
@@ -45,27 +50,33 @@ namespace LabFusion.Representation
 
         public static bool HasPlayerId(ulong longId) => GetPlayerId(longId) != null;
 
-        internal static void ApplyLocalId() {
+        internal static void ApplyLocalId()
+        {
             var id = GetPlayerId(LocalLongId);
-            if (id != null) {
+            if (id != null)
+            {
                 LocalId = id;
                 LocalSmallId = id.SmallId;
             }
-            else {
+            else
+            {
                 LocalId = null;
                 LocalSmallId = 0;
             }
         }
 
-        internal static void RemoveLocalId() {
+        internal static void RemoveLocalId()
+        {
             LocalId = null;
         }
 
-        internal static void SetLongId(ulong longId) {
+        internal static void SetLongId(ulong longId)
+        {
             LocalLongId = longId;
         }
 
-        internal static void SetUsername(string username) {
+        internal static void SetUsername(string username)
+        {
             LocalUsername = username;
         }
     }

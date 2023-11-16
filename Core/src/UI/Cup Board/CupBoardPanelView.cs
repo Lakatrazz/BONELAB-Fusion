@@ -14,7 +14,8 @@ using UnityEngine.UI;
 namespace LabFusion.UI
 {
     [RegisterTypeInIl2Cpp]
-    public sealed class CupBoardPanelView : FusionPanelView {
+    public sealed class CupBoardPanelView : FusionPanelView
+    {
         public CupBoardPanelView(IntPtr intPtr) : base(intPtr) { }
 
         protected override Vector3 Bounds => new(2.14f, 1.4f, 0.1f);
@@ -49,16 +50,19 @@ namespace LabFusion.UI
             LoadPage();
         }
 
-        private void OnDestroy() {
+        private void OnDestroy()
+        {
             Achievement.OnAchievementUpdated -= OnAchievementUpdated;
         }
 
         [HideFromIl2Cpp]
-        private void OnAchievementUpdated(Achievement achievement) {
+        private void OnAchievementUpdated(Achievement achievement)
+        {
             LoadPage();
         }
 
-        protected override void OnSetupReferences() {
+        protected override void OnSetupReferences()
+        {
             _achievementButtonsRoot = _canvas.Find("achievement_Buttons");
             _arrowButtonsRoot = _canvas.Find("arrow_Buttons");
 
@@ -69,16 +73,19 @@ namespace LabFusion.UI
 
             _achievementButtonCount = _achievementButtonsRoot.childCount;
             _achievementPanels = new Transform[_achievementButtonCount];
-            for (var i = 0; i < _achievementButtonCount; i++) {
+            for (var i = 0; i < _achievementButtonCount; i++)
+            {
                 _achievementPanels[i] = _achievementButtonsRoot.GetChild(i);
 
-                if (i == 0) {
+                if (i == 0)
+                {
                     _defaultPreview = _achievementPanels[i].GetComponentInChildren<RawImage>().texture;
                 }
-            } 
+            }
         }
 
-        private void SetupArrows() {
+        private void SetupArrows()
+        {
             // Setup the arrows
             _arrowButtonsRoot.Find("button_lastPage").GetComponent<Button>().AddClickEvent(() =>
             {
@@ -110,12 +117,15 @@ namespace LabFusion.UI
             LoadPage();
         }
 
-        private void LoadPage() {
+        private void LoadPage()
+        {
             // Get page count
-            if (PageItems.Count <= 0) {
+            if (PageItems.Count <= 0)
+            {
                 _pageCount = 0;
             }
-            else {
+            else
+            {
                 _pageCount = (int)Math.Ceiling((double)PageItems.Count / (double)_achievementButtonCount);
             }
 
@@ -124,11 +134,13 @@ namespace LabFusion.UI
             _pageCountText.text = $"Page {_currentPageIndex + 1} out of {Math.Max(1, PageCount)}";
 
             // Loop through every panel
-            for (var i = 0; i < _achievementButtonCount; i++) {
+            for (var i = 0; i < _achievementButtonCount; i++)
+            {
                 var panel = _achievementPanels[i];
                 var achievementIndex = GetAchievementIndex(i);
 
-                if (PageItems.Count <= achievementIndex) {
+                if (PageItems.Count <= achievementIndex)
+                {
                     panel.gameObject.SetActive(false);
                     continue;
                 }
@@ -141,7 +153,8 @@ namespace LabFusion.UI
             LoadProgress();
         }
 
-        private void LoadProgress() {
+        private void LoadProgress()
+        {
             float progress = AchievementManager.GetAchievementProgress();
             _progressSlider.Set(progress, false);
             _progressText.text = $"{progress * 100f}%";
@@ -162,11 +175,13 @@ namespace LabFusion.UI
             description.text = achievement.Description;
             bitCount.text = achievement.BitReward.ToString();
             progress.text = achievement.Progress;
-            
-            if (achievement.PreviewImage != null) {
+
+            if (achievement.PreviewImage != null)
+            {
                 icon.texture = achievement.PreviewImage;
             }
-            else {
+            else
+            {
                 icon.texture = _defaultPreview;
             }
 

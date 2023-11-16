@@ -17,7 +17,8 @@ using LabFusion.Extensions;
 
 namespace LabFusion.Data
 {
-    public class WorldGrabGroupHandler : GrabGroupHandler<SerializedWorldGrab> {
+    public class WorldGrabGroupHandler : GrabGroupHandler<SerializedWorldGrab>
+    {
         public override GrabGroup? Group => GrabGroup.WORLD_GRIP;
     }
 
@@ -35,7 +36,8 @@ namespace LabFusion.Data
             this.grabberId = grabberId;
         }
 
-        public override int GetSize() {
+        public override int GetSize()
+        {
             return Size;
         }
 
@@ -64,8 +66,10 @@ namespace LabFusion.Data
 
         public override Grip GetGrip()
         {
-            if (PlayerRepManager.TryGetPlayerRep(grabberId, out var rep)) {
-                if (rep.RigReferences.RigManager) {
+            if (PlayerRepManager.TryGetPlayerRep(grabberId, out var rep))
+            {
+                if (rep.RigReferences.RigManager)
+                {
                     var worldGrip = rep.RigReferences.RigManager.worldGrip;
                     return worldGrip;
                 }
@@ -88,7 +92,7 @@ namespace LabFusion.Data
             Quaternion rotation = handTransform.rotation;
 
             // Move the hand into its world position
-            handTransform.SetPositionAndRotation(worldHand.position.ToUnityVector3(), worldHand.rotation.Expand().ToUnityQuaternion());
+            handTransform.SetPositionAndRotation(worldHand.position.ToUnityVector3(), worldHand.rotation.ToUnityQuaternion());
 
             // Apply the grab
             base.RequestGrab(rep, handedness, grip);

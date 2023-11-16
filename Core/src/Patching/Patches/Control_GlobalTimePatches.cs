@@ -11,14 +11,17 @@ using LabFusion.Preferences;
 using LabFusion.Senders;
 using UnityEngine;
 
-namespace LabFusion.Patching {
+namespace LabFusion.Patching
+{
     [HarmonyPatch(typeof(Control_GlobalTime))]
-    public static class Control_GlobalTimePatches {
+    public static class Control_GlobalTimePatches
+    {
         public static bool IgnorePatches = false;
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(Control_GlobalTime.UNPAUSE))]
-        public static void UNPAUSE() {
+        public static void UNPAUSE()
+        {
             // Recalibrate player
             // With multiple RigManagers in the scene, the player scale will become 0 when unpausing
             RigData.RigReferences.RigManager.bodyVitals.CalibratePlayerBodyScale();
@@ -26,14 +29,17 @@ namespace LabFusion.Patching {
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Control_GlobalTime.DECREASE_TIMESCALE))]
-        public static bool DECREASE_TIMESCALE(Control_GlobalTime __instance) {
+        public static bool DECREASE_TIMESCALE(Control_GlobalTime __instance)
+        {
             if (IgnorePatches)
                 return true;
 
-            if (NetworkInfo.HasServer) {
+            if (NetworkInfo.HasServer)
+            {
                 var mode = FusionPreferences.TimeScaleMode;
 
-                switch (mode) {
+                switch (mode)
+                {
                     case TimeScaleMode.DISABLED:
                         return false;
                     case TimeScaleMode.CLIENT_SIDE_UNSTABLE:
@@ -53,7 +59,8 @@ namespace LabFusion.Patching {
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Control_GlobalTime.TOGGLE_TIMESCALE))]
-        public static void TOGGLE_TIMESCALE(Control_GlobalTime __instance) {
+        public static void TOGGLE_TIMESCALE(Control_GlobalTime __instance)
+        {
             if (IgnorePatches)
                 return;
 

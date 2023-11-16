@@ -14,8 +14,10 @@ using UnityEngine;
 
 namespace LabFusion.Data
 {
-    public class SerializedTriggerRefReference : IFusionSerializable {
-        private enum ReferenceType {
+    public class SerializedTriggerRefReference : IFusionSerializable
+    {
+        private enum ReferenceType
+        {
             UNKNOWN = 0,
             PROP_SYNCABLE = 1,
             RIG_MANAGER = 2,
@@ -27,12 +29,15 @@ namespace LabFusion.Data
 
         public SerializedTriggerRefReference() { }
 
-        public SerializedTriggerRefReference(TriggerRefProxy proxy) {
+        public SerializedTriggerRefReference(TriggerRefProxy proxy)
+        {
             this.proxy = proxy;
         }
 
-        public void Serialize(FusionWriter writer) {
-            if (proxy == null) {
+        public void Serialize(FusionWriter writer)
+        {
+            if (proxy == null)
+            {
                 writer.Write((byte)ReferenceType.NULL);
                 return;
             }
@@ -40,17 +45,21 @@ namespace LabFusion.Data
             PhysicsRig physRig;
 
             // Check if there is a syncable, and write it
-            if (TriggerRefProxyExtender.Cache.TryGet(proxy, out var syncable)) {
+            if (TriggerRefProxyExtender.Cache.TryGet(proxy, out var syncable))
+            {
                 writer.Write((byte)ReferenceType.PROP_SYNCABLE);
                 writer.Write(syncable.GetId());
             }
             // Check if this is attached to a rigmanager
-            else if ((physRig = proxy.GetComponentInParent<PhysicsRig>()) != null) {
-                if (PlayerRepUtilities.TryGetRigInfo(physRig.manager, out var smallId, out var references)) {
+            else if ((physRig = proxy.GetComponentInParent<PhysicsRig>()) != null)
+            {
+                if (PlayerRepUtilities.TryGetRigInfo(physRig.manager, out var smallId, out var references))
+                {
                     writer.Write((byte)ReferenceType.RIG_MANAGER);
                     writer.Write(smallId);
                 }
-                else {
+                else
+                {
                     writer.Write((byte)ReferenceType.UNKNOWN);
 
 #if DEBUG
@@ -59,11 +68,13 @@ namespace LabFusion.Data
                 }
             }
         }
-        
-        public void Deserialize(FusionReader reader) {
+
+        public void Deserialize(FusionReader reader)
+        {
             var type = (ReferenceType)reader.ReadByte();
 
-            switch (type) {
+            switch (type)
+            {
                 default:
                 case ReferenceType.UNKNOWN:
                     // This should never happen
@@ -74,14 +85,16 @@ namespace LabFusion.Data
                 case ReferenceType.PROP_SYNCABLE:
                     var id = reader.ReadUInt16();
 
-                    if (SyncManager.TryGetSyncable(id, out var syncable) && syncable is PropSyncable prop && prop.TryGetExtender<TriggerRefProxyExtender>(out var extender)) {
+                    if (SyncManager.TryGetSyncable(id, out var syncable) && syncable is PropSyncable prop && prop.TryGetExtender<TriggerRefProxyExtender>(out var extender))
+                    {
                         proxy = extender.Component;
                     }
                     break;
                 case ReferenceType.RIG_MANAGER:
                     var smallId = reader.ReadByte();
 
-                    if (PlayerRepUtilities.TryGetReferences(smallId, out var references)) {
+                    if (PlayerRepUtilities.TryGetReferences(smallId, out var references))
+                    {
                         proxy = references.Proxy;
                     }
                     break;

@@ -62,44 +62,44 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<MagazineInsertData>();
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
             {
-                using (var data = reader.ReadFusionSerializable<MagazineInsertData>())
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+            }
+            else
+            {
+                if (SyncManager.TryGetSyncable(data.magazineId, out var mag) && mag is PropSyncable magazineSyncable && magazineSyncable.TryGetExtender<MagazineExtender>(out var magExtender) && SyncManager.TryGetSyncable(data.gunId, out var gun) && gun is PropSyncable gunSyncable && gunSyncable.TryGetExtender<AmmoSocketExtender>(out var socketExtender))
                 {
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled) {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-                        }
-                    }
-                    else {
-                        if (SyncManager.TryGetSyncable(data.magazineId, out var mag) && mag is PropSyncable magazineSyncable && magazineSyncable.TryGetExtender<MagazineExtender>(out var magExtender) && SyncManager.TryGetSyncable(data.gunId, out var gun) && gun is PropSyncable gunSyncable && gunSyncable.TryGetExtender<AmmoSocketExtender>(out var socketExtender)) {
-                            // Insert mag into gun
-                            if (socketExtender.Component._magazinePlug) {
-                                var otherPlug = socketExtender.Component._magazinePlug;
+                    // Insert mag into gun
+                    if (socketExtender.Component._magazinePlug)
+                    {
+                        var otherPlug = socketExtender.Component._magazinePlug;
 
-                                if (otherPlug != magExtender.Component.magazinePlug) {
-                                    AmmoSocketPatches.IgnorePatch = true;
-                                    if (otherPlug)
-                                    {
-                                        otherPlug.ForceEject();
+                        if (otherPlug != magExtender.Component.magazinePlug)
+                        {
+                            AmmoSocketPatches.IgnorePatch = true;
+                            if (otherPlug)
+                            {
+                                otherPlug.ForceEject();
 
-                                        if (MagazineExtender.Cache.TryGet(otherPlug.magazine, out var otherMag))
-                                        {
-                                            otherMag.SetRigidbodiesDirty();
-                                        }
-                                    }
-                                    AmmoSocketPatches.IgnorePatch = false;
+                                if (MagazineExtender.Cache.TryGet(otherPlug.magazine, out var otherMag))
+                                {
+                                    otherMag.SetRigidbodiesDirty();
                                 }
                             }
-
-                            magExtender.Component.magazinePlug.host.TryDetach();
-
-                            AmmoSocketPatches.IgnorePatch = true;
-                            magExtender.Component.magazinePlug.InsertPlug(socketExtender.Component);
                             AmmoSocketPatches.IgnorePatch = false;
                         }
                     }
+
+                    magExtender.Component.magazinePlug.host.TryDetach();
+
+                    AmmoSocketPatches.IgnorePatch = true;
+                    magExtender.Component.magazinePlug.InsertPlug(socketExtender.Component);
+                    AmmoSocketPatches.IgnorePatch = false;
                 }
             }
         }

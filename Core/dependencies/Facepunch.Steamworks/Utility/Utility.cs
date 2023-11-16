@@ -8,25 +8,25 @@ using System.Text;
 
 namespace Steamworks
 {
-	public static partial class Utility
+    public static partial class Utility
     {
-        static internal T ToType<T>( this IntPtr ptr )
+        static internal T ToType<T>(this IntPtr ptr)
         {
-            if ( ptr == IntPtr.Zero )
+            if (ptr == IntPtr.Zero)
                 return default;
 
-            return (T)Marshal.PtrToStructure( ptr, typeof( T ) );
+            return (T)Marshal.PtrToStructure(ptr, typeof(T));
         }
 
-        static internal object ToType( this IntPtr ptr, System.Type t )
+        static internal object ToType(this IntPtr ptr, System.Type t)
         {
-            if ( ptr == IntPtr.Zero )
+            if (ptr == IntPtr.Zero)
                 return default;
 
-            return Marshal.PtrToStructure( ptr, t );
+            return Marshal.PtrToStructure(ptr, t);
         }
 
-        static internal uint Swap( uint x )
+        static internal uint Swap(uint x)
         {
             return ((x & 0x000000ff) << 24) +
                    ((x & 0x0000ff00) << 8) +
@@ -34,19 +34,19 @@ namespace Steamworks
                    ((x & 0xff000000) >> 24);
         }
 
-        static public uint IpToInt32( this IPAddress ipAddress )
+        static public uint IpToInt32(this IPAddress ipAddress)
         {
-            return Swap( (uint) ipAddress.Address );
+            return Swap((uint)ipAddress.Address);
         }
 
-        static public IPAddress Int32ToIp( uint ipAddress )
+        static public IPAddress Int32ToIp(uint ipAddress)
         {
-            return new IPAddress( Swap( ipAddress ) );
+            return new IPAddress(Swap(ipAddress));
         }
 
-		public static string FormatPrice(string currency, double price)
+        public static string FormatPrice(string currency, double price)
         {
-			var decimaled = price.ToString("0.00");
+            var decimaled = price.ToString("0.00");
 
             switch (currency)
             {
@@ -97,22 +97,22 @@ namespace Steamworks
             }
         }
 
-		static readonly byte[] readBuffer = new byte[1024 * 8];
+        static readonly byte[] readBuffer = new byte[1024 * 8];
 
-		public static string ReadNullTerminatedUTF8String( this BinaryReader br )
-		{
-			lock ( readBuffer )
-			{
-				byte chr;
-				int i = 0;
-				while ( (chr = br.ReadByte()) != 0 && i < readBuffer.Length )
-				{
-					readBuffer[i] = chr;
-					i++;
-				}
+        public static string ReadNullTerminatedUTF8String(this BinaryReader br)
+        {
+            lock (readBuffer)
+            {
+                byte chr;
+                int i = 0;
+                while ((chr = br.ReadByte()) != 0 && i < readBuffer.Length)
+                {
+                    readBuffer[i] = chr;
+                    i++;
+                }
 
-				return Encoding.UTF8.GetString( readBuffer, 0, i );
-			}
-		}
-	}
+                return Encoding.UTF8.GetString(readBuffer, 0, i);
+            }
+        }
+    }
 }

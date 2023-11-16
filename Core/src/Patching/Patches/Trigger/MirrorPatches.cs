@@ -24,7 +24,8 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(Mirror.OnTriggerEnter))]
         public static bool OnTriggerEnter(Mirror __instance, Collider c)
         {
-            if (c.CompareTag("Player")) {
+            if (c.CompareTag("Player"))
+            {
                 if (NetworkInfo.HasServer)
                     return OnEnterMultiplayer(__instance, c);
                 else
@@ -34,10 +35,12 @@ namespace LabFusion.Patching
             return true;
         }
 
-        private static bool OnEnterSingleplayer(Mirror __instance, Collider c) {
+        private static bool OnEnterSingleplayer(Mirror __instance, Collider c)
+        {
             var rigManager = RigManager.Cache.Get(TriggerRefProxy.Cache.Get(c.gameObject).root);
 
-            foreach (var item in PointItemManager.LoadedItems) {
+            foreach (var item in PointItemManager.LoadedItems)
+            {
                 if (item.IsEquipped)
                 {
                     item.OnUpdateObjects(new PointItemPayload()
@@ -53,7 +56,8 @@ namespace LabFusion.Patching
             return true;
         }
 
-        private static bool OnEnterMultiplayer(Mirror __instance, Collider c) {
+        private static bool OnEnterMultiplayer(Mirror __instance, Collider c)
+        {
             // Check if we have a identifier
             RigManager rig = null;
             PlayerId playerId;
@@ -151,7 +155,8 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(Mirror.OnTriggerExit))]
         public static bool OnTriggerExit(Mirror __instance, Collider c)
         {
-            if (c.CompareTag("Player")) {
+            if (c.CompareTag("Player"))
+            {
                 if (NetworkInfo.HasServer)
                     return OnExitMultiplayer(__instance, c);
                 else
@@ -162,7 +167,8 @@ namespace LabFusion.Patching
             return true;
         }
 
-        private static bool OnExitMultiplayer(Mirror __instance, Collider c) {
+        private static bool OnExitMultiplayer(Mirror __instance, Collider c)
+        {
             // Check if we have a identifier
             RigManager rig = null;
             PlayerId playerId = null;
@@ -202,11 +208,14 @@ namespace LabFusion.Patching
             return isTarget;
         }
 
-        private static bool OnExitSingleplayer(Mirror __instance, Collider c) {
+        private static bool OnExitSingleplayer(Mirror __instance, Collider c)
+        {
             var rigManager = RigManager.Cache.Get(TriggerRefProxy.Cache.Get(c.gameObject).root);
 
-            foreach (var item in PointItemManager.LoadedItems) {
-                if (item.IsEquipped) {
+            foreach (var item in PointItemManager.LoadedItems)
+            {
+                if (item.IsEquipped)
+                {
                     item.OnUpdateObjects(new PointItemPayload()
                     {
                         type = PointItemPayloadType.MIRROR,

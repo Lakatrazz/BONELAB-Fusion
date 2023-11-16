@@ -12,21 +12,27 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Utilities {
-    public static class FusionDevTools {
-        public static bool DespawnConstrainer(PlayerId id) {
+namespace LabFusion.Utilities
+{
+    public static class FusionDevTools
+    {
+        public static bool DespawnConstrainer(PlayerId id)
+        {
             // Check permission level
             FusionPermissions.FetchPermissionLevel(id, out var level, out _);
-            if (!FusionPermissions.HasSufficientPermissions(level, FusionPreferences.ActiveServerSettings.ConstrainerAllowed.GetValue())) {
+            if (!FusionPermissions.HasSufficientPermissions(level, FusionPreferences.ActiveServerSettings.ConstrainerAllowed.GetValue()))
+            {
                 return true;
             }
 
             return false;
         }
 
-        public static bool DespawnDevTool(PlayerId id) {
+        public static bool DespawnDevTool(PlayerId id)
+        {
             // Check gamemode
-            if (Gamemode.ActiveGamemode != null) {
+            if (Gamemode.ActiveGamemode != null)
+            {
                 var gamemode = Gamemode.ActiveGamemode;
 
                 if (gamemode.DisableDevTools)
@@ -35,14 +41,16 @@ namespace LabFusion.Utilities {
 
             // Check permission level
             FusionPermissions.FetchPermissionLevel(id, out var level, out _);
-            if (!FusionPermissions.HasSufficientPermissions(level, FusionPreferences.ActiveServerSettings.DevToolsAllowed.GetValue())) {
+            if (!FusionPermissions.HasSufficientPermissions(level, FusionPreferences.ActiveServerSettings.DevToolsAllowed.GetValue()))
+            {
                 return true;
             }
 
             return false;
         }
 
-        public static bool PreventSpawnGun(PlayerId id) {
+        public static bool PreventSpawnGun(PlayerId id)
+        {
             // Check gamemode
             if (Gamemode.ActiveGamemode != null)
             {
@@ -54,7 +62,8 @@ namespace LabFusion.Utilities {
 
             // Check permission level
             FusionPermissions.FetchPermissionLevel(id, out var level, out _);
-            if (!FusionPermissions.HasSufficientPermissions(level, FusionPreferences.ActiveServerSettings.DevToolsAllowed.GetValue())) {
+            if (!FusionPermissions.HasSufficientPermissions(level, FusionPreferences.ActiveServerSettings.DevToolsAllowed.GetValue()))
+            {
                 return true;
             }
 

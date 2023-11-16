@@ -34,7 +34,8 @@ namespace LabFusion.MarrowIntegration
 
         public void SetSabrelakeLogo(Texture2D logo) => Internal_SetTeamLogo(TeamDeathmatch.DefaultSabrelakeName, logo);
 
-        private void Internal_SetTeamDisplayName(string teamName, string displayName) {
+        private void Internal_SetTeamDisplayName(string teamName, string displayName)
+        {
             if (TeamDeathmatch.Instance != null)
             {
                 TeamDeathmatch.Instance.SetOverriden();
@@ -42,8 +43,10 @@ namespace LabFusion.MarrowIntegration
             }
         }
 
-        private void Internal_SetTeamLogo(string teamName, Texture2D logo) {
-            if (TeamDeathmatch.Instance != null) {
+        private void Internal_SetTeamLogo(string teamName, Texture2D logo)
+        {
+            if (TeamDeathmatch.Instance != null)
+            {
                 TeamDeathmatch.Instance.SetOverriden();
                 TeamDeathmatch.Instance.SetTeamLogo(teamName, logo);
             }
@@ -142,8 +145,10 @@ namespace LabFusion.MarrowIntegration
         }
 
         [HideFromIl2Cpp]
-        private Team Internal_GetTeamByName(string teamName) {
-            if (TeamDeathmatch.Instance != null) {
+        private Team Internal_GetTeamByName(string teamName)
+        {
+            if (TeamDeathmatch.Instance != null)
+            {
                 return TeamDeathmatch.Instance.GetTeam(teamName);
             }
 

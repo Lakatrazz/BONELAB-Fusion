@@ -18,34 +18,41 @@ namespace LabFusion.Network
     {
         internal static NetworkLayer CurrentNetworkLayer { get; private set; }
 
-        internal static void SetLayer(NetworkLayer layer) {
+        internal static void SetLayer(NetworkLayer layer)
+        {
             CurrentNetworkLayer = layer;
             CurrentNetworkLayer.OnInitializeLayer();
         }
 
-        internal static void OnLateInitializeLayer() {
+        internal static void OnLateInitializeLayer()
+        {
             CurrentNetworkLayer?.OnLateInitializeLayer();
         }
 
-        internal static void OnCleanupLayer() {
+        internal static void OnCleanupLayer()
+        {
             CurrentNetworkLayer?.OnCleanupLayer();
 
             CurrentNetworkLayer = null;
         }
 
-        internal static void OnUpdateLayer() {
+        internal static void OnUpdateLayer()
+        {
             CurrentNetworkLayer?.OnUpdateLayer();
         }
 
-        internal static void OnLateUpdateLayer() {
+        internal static void OnLateUpdateLayer()
+        {
             CurrentNetworkLayer?.OnLateUpdateLayer();
         }
 
-        internal static void OnGUILayer() {
+        internal static void OnGUILayer()
+        {
             CurrentNetworkLayer?.OnGUILayer();
         }
 
-        internal static void OnUpdateLobby() {
+        internal static void OnUpdateLobby()
+        {
             CurrentNetworkLayer?.OnUpdateLobby();
         }
 
@@ -59,11 +66,13 @@ namespace LabFusion.Network
             CurrentNetworkLayer?.OnVoiceBytesReceived(id, bytes);
         }
 
-        internal static void OnSetupBoneMenuLayer(MenuCategory category) {
+        internal static void OnSetupBoneMenuLayer(MenuCategory category)
+        {
             CurrentNetworkLayer?.OnSetupBoneMenu(category);
         }
 
-        internal static void OnUserJoin(PlayerId id) {
+        internal static void OnUserJoin(PlayerId id)
+        {
             CurrentNetworkLayer?.OnUserJoin(id);
         }
     }

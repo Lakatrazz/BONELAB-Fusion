@@ -56,25 +56,21 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<TrialSpawnerEventsData>();
+            var go = data.trialSpawnerEvents;
+
+            // We ONLY handle this for clients, this message should only ever be sent by the server!
+            if (!NetworkInfo.IsServer && go)
             {
-                using (var data = reader.ReadFusionSerializable<TrialSpawnerEventsData>())
-                {
-                    var go = data.trialSpawnerEvents;
+                var events = go.GetComponent<Trial_SpawnerEvents>();
 
-                    // We ONLY handle this for clients, this message should only ever be sent by the server!
-                    if (!NetworkInfo.IsServer && go)
-                    {
-                        var events = go.GetComponent<Trial_SpawnerEvents>();
-
-                        Trial_SpawnerEventsPatches.IgnorePatches = true;
-                        events.OnSpawnerDeath();
-                        Trial_SpawnerEventsPatches.IgnorePatches = false;
-                    }
-                    else
-                        throw new ExpectedClientException();
-                }
+                Trial_SpawnerEventsPatches.IgnorePatches = true;
+                events.OnSpawnerDeath();
+                Trial_SpawnerEventsPatches.IgnorePatches = false;
             }
+            else
+                throw new ExpectedClientException();
         }
     }
 }

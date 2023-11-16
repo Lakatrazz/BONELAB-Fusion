@@ -9,7 +9,8 @@ using static Ara.AraTrail;
 
 namespace LabFusion.Utilities
 {
-    internal static class TimeUtilities {
+    internal static class TimeUtilities
+    {
         public static float DeltaTime { get { return _deltaTime; } }
 
         public static float FixedDeltaTime { get { return _fixedDeltaTime; } }
@@ -28,7 +29,8 @@ namespace LabFusion.Utilities
 
         private static int _frameCount = 0;
 
-        internal static void OnEarlyUpdate() {
+        internal static void OnEarlyUpdate()
+        {
             _timeScale = Time.timeScale;
 
             _deltaTime = Time.deltaTime;
@@ -37,11 +39,13 @@ namespace LabFusion.Utilities
             _frameCount++;
         }
 
-        internal static void OnEarlyFixedUpdate() {
+        internal static void OnEarlyFixedUpdate()
+        {
             _fixedDeltaTime = Time.fixedDeltaTime;
         }
 
-        public static bool IsMatchingFrame(int interval) {
+        public static bool IsMatchingFrame(int interval)
+        {
             return FrameCount % interval == 0;
         }
     }

@@ -26,7 +26,7 @@ namespace LiteNetLib
 
         void INatPunchListener.OnNatIntroductionRequest(IPEndPoint localEndPoint, IPEndPoint remoteEndPoint, string token)
         {
-            if(NatIntroductionRequest != null)
+            if (NatIntroductionRequest != null)
                 NatIntroductionRequest(localEndPoint, remoteEndPoint, token);
         }
 
@@ -214,7 +214,7 @@ namespace LiteNetLib
             NetDebug.Write(NetLogLevel.Trace, "[NAT] introduction received");
 
             // send internal punch
-            var punchPacket = new NatPunchPacket {Token = req.Token};
+            var punchPacket = new NatPunchPacket { Token = req.Token };
             Send(punchPacket, req.Internal);
             NetDebug.Write(NetLogLevel.Trace, "[NAT] internal punch sent to " + req.Internal);
 
@@ -237,7 +237,7 @@ namespace LiteNetLib
                 senderEndPoint, req.Token);
 
             //Release punch success to client; enabling him to Connect() to Sender if token is ok
-            if(UnsyncedEvents)
+            if (UnsyncedEvents)
             {
                 _natPunchListener.OnNatIntroductionSuccess(
                     senderEndPoint,

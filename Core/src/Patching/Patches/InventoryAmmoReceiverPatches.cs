@@ -14,25 +14,31 @@ using LabFusion.Utilities;
 using SLZ.Interaction;
 using SLZ.Props.Weapons;
 
-namespace LabFusion.Patching {
+namespace LabFusion.Patching
+{
 
     [HarmonyPatch(typeof(InventoryAmmoReceiver), nameof(InventoryAmmoReceiver.OnHandGrab))]
-    public class InventoryAmmoReceiverGrab {
-        public static bool Prefix(InventoryAmmoReceiver __instance, Hand hand) {
-            try {
-                if (NetworkInfo.HasServer && __instance.rigManager == RigData.RigReferences.RigManager) {
+    public class InventoryAmmoReceiverGrab
+    {
+        public static bool Prefix(InventoryAmmoReceiver __instance, Hand hand)
+        {
+            try
+            {
+                if (NetworkInfo.HasServer && __instance.rigManager == RigData.RigReferences.RigManager)
+                {
                     var magazineData = __instance._selectedMagazineData;
 
                     if (magazineData == null)
                         return false;
-                    
+
                     var cartridgeData = __instance._selectedCartridgeData;
-                    
+
                     if (cartridgeData == null || __instance._AmmoInventory.GetCartridgeCount(cartridgeData) <= 0)
                         return false;
 
                     var inventoryHand = InventoryHand.Cache.Get(hand.gameObject);
-                    if (inventoryHand) {
+                    if (inventoryHand)
+                    {
                         inventoryHand.IgnoreUnlock();
                     }
 
@@ -42,7 +48,8 @@ namespace LabFusion.Patching {
                     return false;
                 }
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
 #if DEBUG
                 FusionLogger.LogException("patching InventoryAmmoReceiver.OnHandGrab", e);
 #endif
@@ -59,7 +66,8 @@ namespace LabFusion.Patching {
         {
             try
             {
-                if (NetworkInfo.HasServer && __instance.rigManager == RigData.RigReferences.RigManager && Magazine.Cache.Get(host.GetHostGameObject()) && PropSyncable.Cache.TryGet(host.GetHostGameObject(), out var syncable)) {
+                if (NetworkInfo.HasServer && __instance.rigManager == RigData.RigReferences.RigManager && Magazine.Cache.Get(host.GetHostGameObject()) && PropSyncable.Cache.TryGet(host.GetHostGameObject(), out var syncable))
+                {
                     // Make sure this magazine isn't currently locked in a socket
                     // The base game doesn't check for this and bugs occur in the base game, but due to latency said bugs are more common
                     if (syncable.TryGetExtender<MagazineExtender>(out var extender) && !extender.Component.magazinePlug._isLocked)

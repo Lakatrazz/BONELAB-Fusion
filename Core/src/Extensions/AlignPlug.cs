@@ -6,11 +6,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabFusion.Extensions {
-    public static class AlignPlugExtensions {
-        public static void ForceEject(this AlignPlug plug) {
-            try {
-                if (plug._lastSocket && !plug._lastSocket.IsClearOnInsert) {
+namespace LabFusion.Extensions
+{
+    public static class AlignPlugExtensions
+    {
+        public static void ForceEject(this AlignPlug plug)
+        {
+            try
+            {
+                if (plug._lastSocket && !plug._lastSocket.IsClearOnInsert)
+                {
                     plug.EjectPlug();
 
                     while (plug._isExitTransition)

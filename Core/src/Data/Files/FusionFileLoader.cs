@@ -7,9 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabFusion.Data {
-    public static class FusionFileLoader {
-        public static void OnInitializeMelon() {
+namespace LabFusion.Data
+{
+    public static class FusionFileLoader
+    {
+        public static void OnInitializeMelon()
+        {
             PermissionList.ReadFile();
             BanList.ReadFile();
             ContactsList.ReadFile();
@@ -21,7 +24,8 @@ namespace LabFusion.Data {
             ChangelogLoader.ReadFile();
         }
 
-        public static void OnDeinitializeMelon() {
+        public static void OnDeinitializeMelon()
+        {
             PointSaveManager.WriteBackup();
             AchievementSaveManager.WriteBackup();
         }

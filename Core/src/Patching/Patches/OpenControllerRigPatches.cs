@@ -27,14 +27,16 @@ namespace LabFusion.Patching
     {
         [HarmonyPatch(nameof(XRHMD.IsUserPresent), MethodType.Getter)]
         [HarmonyPostfix]
-        public static void IsUserPresent(ref bool __result) {
+        public static void IsUserPresent(ref bool __result)
+        {
             if (NetworkInfo.HasServer)
                 __result = true;
         }
     }
 
     [HarmonyPatch(typeof(ControllerRig))]
-    public static class ControllerRigPatches {
+    public static class ControllerRigPatches
+    {
         [HarmonyPrefix]
         [HarmonyPatch(nameof(ControllerRig.OnFixedUpdate))]
         public static void OnFixedUpdate(ControllerRig __instance, float deltaTime)
@@ -56,14 +58,17 @@ namespace LabFusion.Patching
     }
 
     [HarmonyPatch(typeof(OpenControllerRig))]
-    public static class OpenControllerRigPatches {
+    public static class OpenControllerRigPatches
+    {
         [HarmonyPrefix]
         [HarmonyPatch(nameof(OpenControllerRig.OnBeginCameraRendering))]
-        public static bool OnBeginCameraRendering(OpenControllerRig __instance, ScriptableRenderContext ctx, Camera cam) {
-            if (PlayerRepManager.HasPlayerId(__instance.manager)) {
+        public static bool OnBeginCameraRendering(OpenControllerRig __instance, ScriptableRenderContext ctx, Camera cam)
+        {
+            if (PlayerRepManager.HasPlayerId(__instance.manager))
+            {
                 return false;
             }
-            
+
             return true;
         }
     }

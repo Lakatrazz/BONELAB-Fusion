@@ -17,7 +17,8 @@ using SLZ.Props.Weapons;
 
 namespace LabFusion.Network
 {
-    public enum TwoButtonRemoteControllerEventType {
+    public enum TwoButtonRemoteControllerEventType
+    {
         UNKNOWN = 0,
         DEENERGIZEJOINT = 1,
         ENERGIZEJOINT = 2,
@@ -69,41 +70,37 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<TwoButtonRemoteControllerEventData>();
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
             {
-                using (var data = reader.ReadFusionSerializable<TwoButtonRemoteControllerEventData>())
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+            }
+            else
+            {
+                if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable && propSyncable.TryGetExtender<TwoButtonRemoteControllerExtender>(out var extender))
                 {
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled)
-                    {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes))
-                        {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-                        }
-                    }
-                    else
-                    {
-                        if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable && propSyncable.TryGetExtender<TwoButtonRemoteControllerExtender>(out var extender)) {
-                            TwoButtonRemoteControllerPatches.IgnorePatches = true;
-                            
-                            switch (data.type) {
-                                default:
-                                case TwoButtonRemoteControllerEventType.UNKNOWN:
-                                    break;
-                                case TwoButtonRemoteControllerEventType.DEENERGIZEJOINT:
-                                    extender.Component.DEENERGIZEJOINT();
-                                    break;
-                                case TwoButtonRemoteControllerEventType.ENERGIZEJOINT:
-                                    extender.Component.ENERGIZEJOINT();
-                                    break;
-                                case TwoButtonRemoteControllerEventType.ENERGIZEJOINTNEGATIVE:
-                                    extender.Component.ENERGIZEJOINTNEGATIVE();
-                                    break;
-                            }
+                    TwoButtonRemoteControllerPatches.IgnorePatches = true;
 
-                            TwoButtonRemoteControllerPatches.IgnorePatches = false;
-                        }
+                    switch (data.type)
+                    {
+                        default:
+                        case TwoButtonRemoteControllerEventType.UNKNOWN:
+                            break;
+                        case TwoButtonRemoteControllerEventType.DEENERGIZEJOINT:
+                            extender.Component.DEENERGIZEJOINT();
+                            break;
+                        case TwoButtonRemoteControllerEventType.ENERGIZEJOINT:
+                            extender.Component.ENERGIZEJOINT();
+                            break;
+                        case TwoButtonRemoteControllerEventType.ENERGIZEJOINTNEGATIVE:
+                            extender.Component.ENERGIZEJOINTNEGATIVE();
+                            break;
                     }
+
+                    TwoButtonRemoteControllerPatches.IgnorePatches = false;
                 }
             }
         }

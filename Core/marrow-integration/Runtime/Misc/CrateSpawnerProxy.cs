@@ -11,25 +11,32 @@ using SLZ.Marrow.Pool;
 using SLZ.Marrow.Warehouse;
 #endif
 
-namespace LabFusion.MarrowIntegration {
+namespace LabFusion.MarrowIntegration
+{
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
     [AddComponentMenu("BONELAB Fusion/Misc/Crate Spawner Proxy")]
     [DisallowMultipleComponent]
 #endif
-    public sealed class CrateSpawnerProxy : FusionMarrowBehaviour {
+    public sealed class CrateSpawnerProxy : FusionMarrowBehaviour
+    {
 #if MELONLOADER
         public CrateSpawnerProxy(IntPtr intPtr) : base(intPtr) { }
 
-        public void DespawnAll(string barcode) { 
-            if (!NetworkInfo.HasServer || NetworkInfo.IsServer) {
+        public void DespawnAll(string barcode)
+        {
+            if (!NetworkInfo.HasServer || NetworkInfo.IsServer)
+            {
                 var barcodeToPool = AssetSpawner._instance._barcodeToPool;
-                foreach (var pair in barcodeToPool) {
-                    if (pair.key.ToString() == barcode) {
+                foreach (var pair in barcodeToPool)
+                {
+                    if (pair.key.ToString() == barcode)
+                    {
                         var spawnedObjects = pair.value.spawned.ToArray();
 
-                        foreach (var spawned in spawnedObjects) {
+                        foreach (var spawned in spawnedObjects)
+                        {
                             spawned.Despawn();
                         }
 

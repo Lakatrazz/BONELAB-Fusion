@@ -12,8 +12,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using static SLZ.Bonelab.BaseGameController;
 
-namespace LabFusion.SDK.Gamemodes {
-    public abstract class Gamemode {
+namespace LabFusion.SDK.Gamemodes
+{
+    public abstract class Gamemode
+    {
         public const float DefaultMusicVolume = 0.4f;
 
         internal static bool _isGamemodeRunning = false;
@@ -72,24 +74,28 @@ namespace LabFusion.SDK.Gamemodes {
 
         protected GamemodePlaylist _playlist = null;
 
-        internal void GamemodeRegistered() {
+        internal void GamemodeRegistered()
+        {
             MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
             MultiplayerHooking.OnLoadingBegin += OnLoadingBegin;
 
             OnGamemodeRegistered();
         }
 
-        internal void GamemodeUnregistered() {
+        internal void GamemodeUnregistered()
+        {
             MultiplayerHooking.OnMainSceneInitialized -= OnMainSceneInitialized;
             MultiplayerHooking.OnLoadingBegin -= OnLoadingBegin;
 
             OnGamemodeUnregistered();
         }
 
-        public void SetPlaylist(float volume = 1f, params AudioClip[] clips) {
+        public void SetPlaylist(float volume = 1f, params AudioClip[] clips)
+        {
             bool wasPlaying = false;
 
-            if (_playlist != null) {
+            if (_playlist != null)
+            {
                 wasPlaying = _playlist.IsPlaying;
                 _playlist.Dispose();
                 _playlist = null;
@@ -101,26 +107,32 @@ namespace LabFusion.SDK.Gamemodes {
                 PlayPlaylist();
         }
 
-        public void PlayPlaylist() {
+        public void PlayPlaylist()
+        {
             if (_playlist != null)
                 _playlist.Play();
         }
 
-        public void StopPlaylist() {
-            if (_playlist != null) {
+        public void StopPlaylist()
+        {
+            if (_playlist != null)
+            {
                 _playlist.Stop();
             }
         }
 
-        public void DisposePlaylist() {
-            if (_playlist != null) {
+        public void DisposePlaylist()
+        {
+            if (_playlist != null)
+            {
                 _playlist.Dispose();
                 _playlist = null;
             }
         }
 
 
-        public void UpdatePlaylist() {
+        public void UpdatePlaylist()
+        {
             if (_playlist != null)
                 _playlist.Update();
         }
@@ -138,36 +150,47 @@ namespace LabFusion.SDK.Gamemodes {
         protected FunctionElement _gamemodeToggleElement = null;
         protected FunctionElement _gamemodeMarkElement = null;
 
-        public virtual void OnBoneMenuCreated(MenuCategory category) {
+        public virtual void OnBoneMenuCreated(MenuCategory category)
+        {
             // Default elements
-            _gamemodeToggleElement = category.CreateFunctionElement("Start Gamemode", Color.yellow, () => {
-                if (!IsActive()) {
+            _gamemodeToggleElement = category.CreateFunctionElement("Start Gamemode", Color.yellow, () =>
+            {
+                if (!IsActive())
+                {
                     StartGamemode(true);
                 }
-                else {
+                else
+                {
                     StopGamemode();
                 }
             });
 
-            _gamemodeMarkElement = category.CreateFunctionElement("Mark Gamemode", Color.yellow, () => {
-                if (MarkedGamemode != this) {
+            _gamemodeMarkElement = category.CreateFunctionElement("Mark Gamemode", Color.yellow, () =>
+            {
+                if (MarkedGamemode != this)
+                {
                     MarkGamemode();
                 }
-                else {
+                else
+                {
                     UnmarkGamemode();
                 }
             });
         }
 
-        public bool StartGamemode(bool forceStopCurrent = false) {
+        public bool StartGamemode(bool forceStopCurrent = false)
+        {
             // We can only start the gamemode as a server!
-            if (!NetworkInfo.IsServer) {
+            if (!NetworkInfo.IsServer)
+            {
                 return false;
             }
 
             // If the server is marked under a different Gamemode, don't start
-            if (MarkedGamemode != null && MarkedGamemode != this) {
-                FusionNotifier.Send(new FusionNotification() {
+            if (MarkedGamemode != null && MarkedGamemode != this)
+            {
+                FusionNotifier.Send(new FusionNotification()
+                {
                     isMenuItem = false,
                     isPopup = true,
                     type = NotificationType.ERROR,
@@ -179,7 +202,8 @@ namespace LabFusion.SDK.Gamemodes {
             }
 
             // Check if theres an already active gamemode
-            if (ActiveGamemode != null) {
+            if (ActiveGamemode != null)
+            {
                 // If we can't force stop, just return.
                 if (!forceStopCurrent)
                     return false;
@@ -192,9 +216,11 @@ namespace LabFusion.SDK.Gamemodes {
             return true;
         }
 
-        public bool StopGamemode() {
+        public bool StopGamemode()
+        {
             // We can only stop the gamemode as a server!
-            if (!NetworkInfo.IsServer) {
+            if (!NetworkInfo.IsServer)
+            {
                 return false;
             }
 
@@ -206,7 +232,8 @@ namespace LabFusion.SDK.Gamemodes {
             return true;
         }
 
-        public bool MarkGamemode() {
+        public bool MarkGamemode()
+        {
             if (_isGamemodeRunning)
                 return false;
 
@@ -221,7 +248,8 @@ namespace LabFusion.SDK.Gamemodes {
             return true;
         }
 
-        public bool UnmarkGamemode() {
+        public bool UnmarkGamemode()
+        {
             if (_markedGamemode != this)
                 return false;
 
@@ -233,12 +261,14 @@ namespace LabFusion.SDK.Gamemodes {
             return true;
         }
 
-        internal void Internal_SetGamemodeState(bool isStarted) {
+        internal void Internal_SetGamemodeState(bool isStarted)
+        {
             // Make sure we aren't doing this twice
             if (IsStarted == isStarted)
                 return;
 
-            if (isStarted) {
+            if (isStarted)
+            {
                 MultiplayerHooking.OnShouldAllowConnection += Internal_UserJoinCheck;
 
                 GamemodeManager.Internal_SetActiveGamemode(this);
@@ -248,7 +278,8 @@ namespace LabFusion.SDK.Gamemodes {
                 if (!ManualPlaylist)
                     PlayPlaylist();
             }
-            else {
+            else
+            {
                 MultiplayerHooking.OnShouldAllowConnection -= Internal_UserJoinCheck;
 
                 GamemodeManager.Internal_SetActiveGamemode(null);
@@ -260,8 +291,10 @@ namespace LabFusion.SDK.Gamemodes {
             }
         }
 
-        private bool Internal_UserJoinCheck(PlayerId playerId, out string reason) {
-            if (ActiveGamemode == this && (PreventNewJoins || !LateJoining)) {
+        private bool Internal_UserJoinCheck(PlayerId playerId, out string reason)
+        {
+            if (ActiveGamemode == this && (PreventNewJoins || !LateJoining))
+            {
                 reason = $"Gamemode {GamemodeName} is currently running!";
                 return false;
             }
@@ -271,16 +304,20 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         // Gamemode state
-        protected virtual void OnStartGamemode() { 
+        protected virtual void OnStartGamemode()
+        {
             // Set default bonemenu element
-            if (_gamemodeToggleElement != null) {
+            if (_gamemodeToggleElement != null)
+            {
                 _gamemodeToggleElement.SetName("Stop Gamemode");
             }
         }
 
-        protected virtual void OnStopGamemode() {
+        protected virtual void OnStopGamemode()
+        {
             // Set default bonemenu element
-            if (_gamemodeToggleElement != null) {
+            if (_gamemodeToggleElement != null)
+            {
                 _gamemodeToggleElement.SetName("Start Gamemode");
             }
         }
@@ -304,18 +341,21 @@ namespace LabFusion.SDK.Gamemodes {
         }
 
         // Update methods
-        public void FixedUpdate() {
+        public void FixedUpdate()
+        {
             OnFixedUpdate();
         }
         protected virtual void OnFixedUpdate() { }
 
-        public void Update() {
+        public void Update()
+        {
             UpdatePlaylist();
             OnUpdate();
         }
         protected virtual void OnUpdate() { }
 
-        public void LateUpdate() {
+        public void LateUpdate()
+        {
             OnLateUpdate();
         }
         protected virtual void OnLateUpdate() { }
@@ -323,7 +363,8 @@ namespace LabFusion.SDK.Gamemodes {
         public bool TrySetMetadata(string key, string value)
         {
             // We can only change metadata as the server!
-            if (NetworkInfo.IsServer) {
+            if (NetworkInfo.IsServer)
+            {
                 GamemodeSender.SendGamemodeMetadataSet(Tag.Value, key, value);
                 return true;
             }
@@ -331,9 +372,11 @@ namespace LabFusion.SDK.Gamemodes {
             return false;
         }
 
-        public bool TryRemoveMetadata(string key) {
+        public bool TryRemoveMetadata(string key)
+        {
             // We can only remove metadata as the server!
-            if (NetworkInfo.IsServer && _internalMetadata.ContainsKey(key)) {
+            if (NetworkInfo.IsServer && _internalMetadata.ContainsKey(key))
+            {
                 GamemodeSender.SendGamemodeMetadataRemove(Tag.Value, key);
                 return true;
             }
@@ -353,11 +396,13 @@ namespace LabFusion.SDK.Gamemodes {
             return false;
         }
 
-        public bool TryGetMetadata(string key, out string value) {
+        public bool TryGetMetadata(string key, out string value)
+        {
             return _internalMetadata.TryGetValue(key, out value);
         }
 
-        public string GetMetadata(string key) {
+        public string GetMetadata(string key)
+        {
             if (_internalMetadata.TryGetValue(key, out string value))
                 return value;
 
@@ -375,20 +420,25 @@ namespace LabFusion.SDK.Gamemodes {
             OnInternalMetadataChanged(key, value);
         }
 
-        internal void Internal_ForceRemoveMetadata(string key) {
-            if (_internalMetadata.ContainsKey(key)) {
+        internal void Internal_ForceRemoveMetadata(string key)
+        {
+            if (_internalMetadata.ContainsKey(key))
+            {
                 OnMetadataRemoved(key);
 
                 _internalMetadata.Remove(key);
             }
         }
 
-        internal void Internal_TriggerEvent(string value) {
+        internal void Internal_TriggerEvent(string value)
+        {
             OnEventTriggered(value);
         }
 
-        private void OnInternalMetadataChanged(string key, string value) {
-            switch (key) {
+        private void OnInternalMetadataChanged(string key, string value)
+        {
+            switch (key)
+            {
                 case GamemodeHelper.IsStartedKey:
                     Internal_SetGamemodeState(value == bool.TrueString);
                     break;

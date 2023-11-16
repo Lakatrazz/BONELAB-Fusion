@@ -18,14 +18,17 @@ namespace LabFusion.Patching
     [HarmonyPatch(typeof(HandJointConfiguration))]
     public static class HandJointConfigurationPatches
     {
-        private static void Internal_ApplyJointSettings(ConfigurableJoint joint) {
+        private static void Internal_ApplyJointSettings(ConfigurableJoint joint)
+        {
             joint.breakForce = float.PositiveInfinity;
             joint.breakTorque = float.PositiveInfinity;
 
-            if (NetworkInfo.HasServer) {
+            if (NetworkInfo.HasServer)
+            {
                 var hand = Hand.Cache.Get(joint.gameObject);
 
-                if (hand && PlayerRepManager.HasPlayerId(hand.manager)) {
+                if (hand && PlayerRepManager.HasPlayerId(hand.manager))
+                {
                     joint.breakForce = float.PositiveInfinity;
                     joint.breakTorque = float.PositiveInfinity;
                 }

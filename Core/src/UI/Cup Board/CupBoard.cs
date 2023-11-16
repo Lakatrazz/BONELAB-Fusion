@@ -40,7 +40,8 @@ namespace LabFusion.UI
 
         private GameObject _completionistGo = null;
 
-        protected override void OnAwake() {
+        protected override void OnAwake()
+        {
             base.OnAwake();
 
             _musicLayers = transform.Find("SFX/Music").GetComponentsInChildren<AudioSource>();
@@ -51,28 +52,33 @@ namespace LabFusion.UI
             Achievement.OnAchievementCompleted += OnAchievementCompleted;
             LoadProgress();
         }
-        
-        private void OnDestroy() {
+
+        private void OnDestroy()
+        {
             Achievement.OnAchievementCompleted -= OnAchievementCompleted;
         }
 
         [HideFromIl2Cpp]
-        private void OnAchievementCompleted(Achievement achievement) {
+        private void OnAchievementCompleted(Achievement achievement)
+        {
             LoadProgress();
         }
 
-        private void LoadProgress() {
+        private void LoadProgress()
+        {
             var progress = AchievementManager.GetAchievementProgress();
             LoadEffects(progress);
             LoadMusic(progress);
         }
 
-        private void LoadEffects(float progress) {
+        private void LoadEffects(float progress)
+        {
             bool isComplete = progress >= 1f;
             _completionistGo.SetActive(isComplete);
-        } 
+        }
 
-        private void LoadMusic(float progress) {
+        private void LoadMusic(float progress)
+        {
             // The first layer should always be max volume
             _musicLayers[0].volume = _maxMusicVolume;
 
@@ -80,7 +86,8 @@ namespace LabFusion.UI
             int offsetCount = _layerCount - 1;
             float scaled = progress * offsetCount;
 
-            for (var i = 0; i < offsetCount; i++) {
+            for (var i = 0; i < offsetCount; i++)
+            {
                 float value = scaled - i;
                 _musicLayers[i + 1].volume = ManagedMathf.Lerp(0f, _maxMusicVolume, value);
             }

@@ -28,14 +28,16 @@ namespace LabFusion.Data
             };
         }
 
-        private static string ReadFromPath(string resourcePath, string filePath) {
+        private static string ReadFromPath(string resourcePath, string filePath)
+        {
             File.WriteAllBytes(filePath, EmbeddedResource.LoadFromAssembly(FusionMod.FusionAssembly, resourcePath));
 
             var lines = File.ReadAllLines(filePath);
 
             StringBuilder builder = new();
 
-            foreach (var line in lines) {
+            foreach (var line in lines)
+            {
                 builder.Append(line);
                 builder.AppendLine();
             }

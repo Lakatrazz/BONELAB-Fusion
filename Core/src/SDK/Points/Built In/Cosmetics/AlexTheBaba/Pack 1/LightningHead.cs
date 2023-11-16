@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class LightningHead : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class LightningHead : AccessoryItem
+    {
         public override string Title => "Shocking Head Effect";
 
         public override string Author => BitEconomy.BaBaAuthor;

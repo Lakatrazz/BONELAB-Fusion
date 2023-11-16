@@ -12,7 +12,8 @@ using UnityEngine;
 
 namespace LabFusion.Data
 {
-    public class SerializedHand : IFusionSerializable {
+    public class SerializedHand : IFusionSerializable
+    {
         public const int Size = sizeof(float) * 3 + sizeof(byte) * 12;
 
         public float forceMultiplier;
@@ -62,7 +63,8 @@ namespace LabFusion.Data
             thumbstickAxis = controller._thumbstickAxis;
         }
 
-        public void CopyTo(Hand hand, BaseController controller) {
+        public void CopyTo(Hand hand, BaseController controller)
+        {
             hand.physHand.forceMultiplier = forceMultiplier;
 
             controller._processedIndex = indexCurl;
@@ -109,7 +111,8 @@ namespace LabFusion.Data
 
         public void SolveButtonPress(bool lastValue, bool newValue, ref bool up, ref bool down)
         {
-            if (newValue) {
+            if (newValue)
+            {
                 up = false;
 
                 if (!lastValue)
@@ -117,7 +120,8 @@ namespace LabFusion.Data
                 else
                     down = false;
             }
-            else {
+            else
+            {
                 down = false;
 
                 if (lastValue)
@@ -127,7 +131,8 @@ namespace LabFusion.Data
             }
         }
 
-        public void Serialize(FusionWriter writer) {
+        public void Serialize(FusionWriter writer)
+        {
             writer.Write(forceMultiplier);
 
             writer.Write((byte)(indexCurl * PRECISION_MULTIPLIER));
@@ -149,7 +154,8 @@ namespace LabFusion.Data
             writer.Write(thumbstickAxis);
         }
 
-        public void Deserialize(FusionReader reader) {
+        public void Deserialize(FusionReader reader)
+        {
             forceMultiplier = reader.ReadSingle();
 
             indexCurl = ReadCompressedFloat(reader);
@@ -171,7 +177,8 @@ namespace LabFusion.Data
             thumbstickAxis = reader.ReadVector2();
         }
 
-        private float ReadCompressedFloat(FusionReader reader) {
+        private float ReadCompressedFloat(FusionReader reader)
+        {
             return ((float)reader.ReadByte()) / PRECISION_MULTIPLIER;
         }
     }

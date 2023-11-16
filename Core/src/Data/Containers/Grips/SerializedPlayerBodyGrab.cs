@@ -15,12 +15,15 @@ using SLZ.Interaction;
 
 using UnityEngine;
 
-namespace LabFusion.Data {
-    public class PlayerGrabGroupHandler : GrabGroupHandler<SerializedPlayerBodyGrab> {
+namespace LabFusion.Data
+{
+    public class PlayerGrabGroupHandler : GrabGroupHandler<SerializedPlayerBodyGrab>
+    {
         public override GrabGroup? Group => GrabGroup.PLAYER_BODY;
     }
 
-    public class SerializedPlayerBodyGrab : SerializedGrab {
+    public class SerializedPlayerBodyGrab : SerializedGrab
+    {
         public new const int Size = SerializedGrab.Size + sizeof(byte) * 3 + SerializedTransform.Size;
 
         public byte grabbedUser;
@@ -28,7 +31,8 @@ namespace LabFusion.Data {
         public bool isAvatarGrip;
         public SerializedTransform relativeHand = null;
 
-        public SerializedPlayerBodyGrab(byte grabbedUser, byte gripIndex, bool isAvatarGrip) {
+        public SerializedPlayerBodyGrab(byte grabbedUser, byte gripIndex, bool isAvatarGrip)
+        {
             this.grabbedUser = grabbedUser;
             this.gripIndex = gripIndex;
             this.isAvatarGrip = isAvatarGrip;
@@ -36,17 +40,20 @@ namespace LabFusion.Data {
 
         public SerializedPlayerBodyGrab() { }
 
-        public override int GetSize() {
+        public override int GetSize()
+        {
             return Size;
         }
 
-        public override void WriteDefaultGrip(Hand hand, Grip grip) {
+        public override void WriteDefaultGrip(Hand hand, Grip grip)
+        {
             base.WriteDefaultGrip(hand, grip);
 
             relativeHand = gripPair.GetRelativeHand();
         }
 
-        public override void Serialize(FusionWriter writer) {
+        public override void Serialize(FusionWriter writer)
+        {
             base.Serialize(writer);
 
             writer.Write(grabbedUser);
@@ -55,7 +62,8 @@ namespace LabFusion.Data {
             writer.Write(relativeHand);
         }
 
-        public override void Deserialize(FusionReader reader) {
+        public override void Deserialize(FusionReader reader)
+        {
             base.Deserialize(reader);
 
             grabbedUser = reader.ReadByte();
@@ -64,7 +72,8 @@ namespace LabFusion.Data {
             relativeHand = reader.ReadFusionSerializable<SerializedTransform>();
         }
 
-        public override Grip GetGrip() {
+        public override Grip GetGrip()
+        {
             RigReferenceCollection references = null;
             if (grabbedUser == PlayerIdManager.LocalSmallId)
                 references = RigData.RigReferences;

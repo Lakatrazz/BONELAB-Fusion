@@ -73,7 +73,8 @@ namespace LabFusion.Network
                 int keyCount = packetReader.GetInt();
 
                 // Read key array
-                for (var i = 0; i < keyCount; i++) {
+                for (var i = 0; i < keyCount; i++)
+                {
                     // In order, key then value
                     string key = packetReader.GetString();
                     string value = packetReader.GetString();

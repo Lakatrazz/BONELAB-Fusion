@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.UI {
-    public class FusionPanelView : MonoBehaviour {
+namespace LabFusion.UI
+{
+    public class FusionPanelView : MonoBehaviour
+    {
         public FusionPanelView(IntPtr intPtr) : base(intPtr) { }
 
         protected virtual Vector3 Bounds => new(1f, 1f, 0.1f);
@@ -16,7 +18,8 @@ namespace LabFusion.UI {
         protected Transform _canvas;
         protected Transform _uiPlane;
 
-        private void Awake() {
+        private void Awake()
+        {
             UIMachineUtilities.OverrideFonts(transform);
             UIMachineUtilities.AddButtonTriggers(transform);
 
@@ -27,7 +30,8 @@ namespace LabFusion.UI {
             _canvas.gameObject.SetActive(false);
         }
 
-        private void SetupReferences() {
+        private void SetupReferences()
+        {
             _canvas = transform.Find("CANVAS");
             _uiPlane = _canvas.Find("UIPLANE");
 

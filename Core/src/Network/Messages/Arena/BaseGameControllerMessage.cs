@@ -51,32 +51,28 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<BaseGameControllerData>();
+            BaseGameControllerPatches.IgnorePatches = true;
+
+            // We ONLY handle this for clients, this message should only ever be sent by the server!
+            if (!NetworkInfo.IsServer && GameControllerData.HasGameController)
             {
-                using (var data = reader.ReadFusionSerializable<BaseGameControllerData>())
+                switch (data.type)
                 {
-                    BaseGameControllerPatches.IgnorePatches = true;
-
-                    // We ONLY handle this for clients, this message should only ever be sent by the server!
-                    if (!NetworkInfo.IsServer && GameControllerData.HasGameController)
-                    {
-                        switch (data.type)
-                        {
-                            default:
-                            case BaseGameControllerType.UNKNOWN:
-                                break;
-                            case BaseGameControllerType.BeginSession:
-                                GameControllerData.GameController.BeginSession();
-                                break;
-                            case BaseGameControllerType.EndSession:
-                                GameControllerData.GameController.EndSession();
-                                break;
-                        }
-                    }
-
-                    BaseGameControllerPatches.IgnorePatches = false;
+                    default:
+                    case BaseGameControllerType.UNKNOWN:
+                        break;
+                    case BaseGameControllerType.BeginSession:
+                        GameControllerData.GameController.BeginSession();
+                        break;
+                    case BaseGameControllerType.EndSession:
+                        GameControllerData.GameController.EndSession();
+                        break;
                 }
             }
+
+            BaseGameControllerPatches.IgnorePatches = false;
         }
     }
 }

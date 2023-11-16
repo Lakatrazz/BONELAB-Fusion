@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Data {
-    public class MonogonMotorwayDMData : DMLevelDataHandler {
+namespace LabFusion.Data
+{
+    public class MonogonMotorwayDMData : DMLevelDataHandler
+    {
         public override string LevelTitle => "10 - Monogon Motorway";
 
         protected override Vector3[] DeathmatchSpawnPoints => new Vector3[14] {

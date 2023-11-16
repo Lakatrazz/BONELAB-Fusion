@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 using SLZ.Interaction;
 
-namespace LabFusion.Syncables {
-    public interface ISyncable {
+namespace LabFusion.Syncables
+{
+    public interface ISyncable
+    {
         void InsertCatchupDelegate(Action<ulong> catchup);
 
         void InvokeCatchup(ulong user);
@@ -70,11 +72,13 @@ namespace LabFusion.Syncables {
         public abstract void OnFixedUpdate();
         public abstract void OnUpdate();
 
-        public virtual void Cleanup() {
+        public virtual void Cleanup()
+        {
             _wasDisposed = true;
         }
 
-        public virtual void OnRegister(ushort id) {
+        public virtual void OnRegister(ushort id)
+        {
             Id = id;
             _hasRegistered = true;
 
@@ -82,11 +86,14 @@ namespace LabFusion.Syncables {
             _onRegistered = null;
         }
 
-        public void HookOnRegistered(Action action) {
-            if (!IsRegistered()) {
+        public void HookOnRegistered(Action action)
+        {
+            if (!IsRegistered())
+            {
                 _onRegistered += action;
             }
-            else {
+            else
+            {
                 action();
             }
         }
@@ -95,7 +102,8 @@ namespace LabFusion.Syncables {
         public bool IsRegistered() => _hasRegistered;
         public bool IsDestroyed() => _wasDisposed;
 
-        public ushort GetId() {
+        public ushort GetId()
+        {
             return Id;
         }
     }

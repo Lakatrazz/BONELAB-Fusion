@@ -31,7 +31,8 @@ namespace LabFusion.Utilities
             _queuedAchievements.Enqueue(achievement);
         }
 
-        private static void DequeueAchievement() {
+        private static void DequeueAchievement()
+        {
             _timeOfPopup = TimeUtilities.TimeSinceStartup;
             var achievement = _queuedAchievements.Dequeue();
 
@@ -59,15 +60,19 @@ namespace LabFusion.Utilities
             return TimeUtilities.TimeSinceStartup - _timeOfPopup <= (DefaultDuration + 0.1f);
         }
 
-        internal static void OnInitializeMelon() {
+        internal static void OnInitializeMelon()
+        {
             Achievement.OnAchievementCompleted += Send;
         }
 
-        internal static void OnUpdate() {
+        internal static void OnUpdate()
+        {
             // Make sure we aren't loading so we can dequeue existing achievements
-            if (_queuedAchievements.Count > 0 && FusionSceneManager.HasTargetLoaded() && !FusionSceneManager.IsDelayedLoading() && RigData.HasPlayer) {
+            if (_queuedAchievements.Count > 0 && FusionSceneManager.HasTargetLoaded() && !FusionSceneManager.IsDelayedLoading() && RigData.HasPlayer)
+            {
                 // Dequeue achievements
-                if (!IsPlayingPopup()) {
+                if (!IsPlayingPopup())
+                {
                     DequeueAchievement();
                 }
             }

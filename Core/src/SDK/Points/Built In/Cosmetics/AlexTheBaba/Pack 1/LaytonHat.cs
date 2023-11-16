@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class LaytonHat : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class LaytonHat : AccessoryItem
+    {
         public override string Title => "Silk Hat";
 
         public override string Author => BitEconomy.BaBaAuthor;

@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class KickMeSign : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class KickMeSign : AccessoryItem
+    {
         public override string Title => "Kick Me Sign";
 
         public override string Author => BitEconomy.BaBaAuthor;

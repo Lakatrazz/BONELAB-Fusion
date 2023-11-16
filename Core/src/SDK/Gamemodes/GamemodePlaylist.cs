@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Gamemodes {
-    public class GamemodePlaylist {
+namespace LabFusion.SDK.Gamemodes
+{
+    public class GamemodePlaylist
+    {
         public Gamemode gamemode;
 
         public float volume;
@@ -22,9 +24,11 @@ namespace LabFusion.SDK.Gamemodes {
 
         public bool IsPlaying => _playing;
 
-        public GamemodePlaylist(Gamemode gamemode, float volume, params AudioClip[] clips) {
+        public GamemodePlaylist(Gamemode gamemode, float volume, params AudioClip[] clips)
+        {
             // Create the audio source
-            var go = new GameObject("Gamemode Music") {
+            var go = new GameObject("Gamemode Music")
+            {
                 hideFlags = HideFlags.DontUnloadUnusedAsset
             };
             source = go.AddComponent<AudioSource>();
@@ -33,7 +37,8 @@ namespace LabFusion.SDK.Gamemodes {
             source.spatialBlend = 0f;
             source.volume = volume;
 
-            PersistentAssetCreator.HookOnMusicMixerLoaded((m) => {
+            PersistentAssetCreator.HookOnMusicMixerLoaded((m) =>
+            {
                 if (source != null)
                     source.outputAudioMixerGroup = m;
             });
@@ -46,39 +51,47 @@ namespace LabFusion.SDK.Gamemodes {
             this.gamemode = gamemode;
         }
 
-        public void Play() {
+        public void Play()
+        {
             _playing = true;
 
-            if (!source.IsNOC()) {
+            if (!source.IsNOC())
+            {
                 _currentClip = 0;
                 SetClip(_currentClip);
                 source.Play();
             }
         }
 
-        private void SetClip(int index) {
+        private void SetClip(int index)
+        {
             if (clips.Length > index)
                 source.clip = clips[index];
         }
 
-        private void NextClip() {
+        private void NextClip()
+        {
             _currentClip++;
 
             if (_currentClip >= clips.Length)
                 _currentClip = 0;
         }
 
-        public void Update() {
-            if (!source.IsNOC() && _playing) {
+        public void Update()
+        {
+            if (!source.IsNOC() && _playing)
+            {
                 // Update volume
-                if (gamemode.MusicEnabled != _wasEnabled) {
+                if (gamemode.MusicEnabled != _wasEnabled)
+                {
                     source.volume = gamemode.MusicEnabled ? volume : 0f;
                 }
 
                 _wasEnabled = gamemode.MusicEnabled;
 
                 // Change song?
-                if (!source.isPlaying) {
+                if (!source.isPlaying)
+                {
                     NextClip();
                     SetClip(_currentClip);
 
@@ -87,10 +100,12 @@ namespace LabFusion.SDK.Gamemodes {
             }
         }
 
-        public void Stop() {
+        public void Stop()
+        {
             _playing = false;
 
-            if (!source.IsNOC()) {
+            if (!source.IsNOC())
+            {
                 _currentClip = -1;
                 source.Stop();
             }
@@ -98,8 +113,10 @@ namespace LabFusion.SDK.Gamemodes {
             clips.Shuffle();
         }
 
-        public void Dispose() {
-            if (!source.IsNOC()) {
+        public void Dispose()
+        {
+            if (!source.IsNOC())
+            {
                 GameObject.Destroy(source.gameObject);
             }
         }

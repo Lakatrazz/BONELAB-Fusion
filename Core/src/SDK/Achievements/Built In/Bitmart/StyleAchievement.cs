@@ -7,21 +7,26 @@ using System.Threading.Tasks;
 
 namespace LabFusion.SDK.Achievements
 {
-    public abstract class StyleAchievement : Achievement {
-        protected override void OnRegister() {
+    public abstract class StyleAchievement : Achievement
+    {
+        protected override void OnRegister()
+        {
             CheckTasks();
             PointItemManager.OnItemUnlocked += OnItemUnlocked;
         }
 
-        protected override void OnUnregister() {
+        protected override void OnUnregister()
+        {
             PointItemManager.OnItemUnlocked -= OnItemUnlocked;
         }
 
-        private void OnItemUnlocked(PointItem item) {
+        private void OnItemUnlocked(PointItem item)
+        {
             CheckTasks();
         }
 
-        private void CheckTasks() {
+        private void CheckTasks()
+        {
             // Don't bother checking if it's already completed
             if (IsComplete)
                 return;
@@ -31,7 +36,8 @@ namespace LabFusion.SDK.Achievements
             if (debt <= 0)
                 return;
 
-            for (var i = 0; i < debt; i++) {
+            for (var i = 0; i < debt; i++)
+            {
                 IncrementTask();
             }
         }

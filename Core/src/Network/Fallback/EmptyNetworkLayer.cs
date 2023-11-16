@@ -27,7 +27,8 @@ namespace LabFusion.Network
 
         internal override void OnUpdateLobby() { }
 
-        internal override bool CheckSupported() {
+        internal override bool CheckSupported()
+        {
 #if DEBUG
             return true;
 #else
@@ -35,11 +36,13 @@ namespace LabFusion.Network
 #endif
         }
 
-        internal override bool CheckValidation() {
+        internal override bool CheckValidation()
+        {
             return true;
         }
 
-        internal override void OnInitializeLayer() {
+        internal override void OnInitializeLayer()
+        {
             FusionLogger.Log("Initialized mod with an empty networking layer!", ConsoleColor.Magenta);
 #if DEBUG
             FusionLogger.Log("This is for debugging purposes only, and will not allow multiplayer!", ConsoleColor.Magenta);
@@ -48,17 +51,20 @@ namespace LabFusion.Network
 #endif
         }
 
-        internal override void OnSetupBoneMenu(MenuCategory category) {
+        internal override void OnSetupBoneMenu(MenuCategory category)
+        {
             base.OnSetupBoneMenu(category);
 
             // Info for people incase this layer ends up being selected
             category.CreateFunctionElement("You currently have no networking selected.", Color.white, null);
 
-            if (!HelperMethods.IsAndroid()) {
+            if (!HelperMethods.IsAndroid())
+            {
                 category.CreateFunctionElement("This means you likely do not have Steam open.", Color.white, null);
                 category.CreateFunctionElement("Please install and open Steam.", Color.white, null);
             }
-            else {
+            else
+            {
                 category.CreateFunctionElement("Please select a layer in settings.", Color.white, null);
             }
         }

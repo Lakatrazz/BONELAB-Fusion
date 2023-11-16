@@ -15,8 +15,10 @@ using UnityEngine;
 using LabFusion.UI;
 using LabFusion.Extensions;
 
-namespace LabFusion.Data {
-    public class VoidG114Data : LevelDataHandler {
+namespace LabFusion.Data
+{
+    public class VoidG114Data : LevelDataHandler
+    {
         public override string LevelTitle => "15 - Void G114";
 
         public static GameControl_MenuVoidG114 GameController;
@@ -37,10 +39,12 @@ namespace LabFusion.Data {
         public static readonly Vector3 CupBoardPosition = new(26.5255f, -2.01f, 11.9655f);
         public static readonly Quaternion CupBoardRotation = Quaternion.Euler(0f, 180f, 0f);
 
-        protected override void MainSceneInitialized() {
+        protected override void MainSceneInitialized()
+        {
             GameController = GameObject.FindObjectOfType<GameControl_MenuVoidG114>(true);
 
-            if (GameController != null) {
+            if (GameController != null)
+            {
                 // Point shop
                 PointShopHelper.SetupPointShop(PointShopPosition, PointShopRotation, Vector3Extensions.one * 0.8f);
 

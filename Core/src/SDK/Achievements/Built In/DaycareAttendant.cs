@@ -24,13 +24,15 @@ namespace LabFusion.SDK.Achievements
         protected float _timeElapsed;
         protected bool _oneHourPassed = false;
 
-        protected override void OnRegister() {
+        protected override void OnRegister()
+        {
             MultiplayerHooking.OnJoinServer += OnJoinServer;
             MultiplayerHooking.OnStartServer += OnJoinServer;
             MultiplayerHooking.OnDisconnect += OnDisconnect;
         }
 
-        protected override void OnUnregister() {
+        protected override void OnUnregister()
+        {
             MultiplayerHooking.OnJoinServer -= OnJoinServer;
             MultiplayerHooking.OnStartServer -= OnJoinServer;
             MultiplayerHooking.OnDisconnect -= OnDisconnect;
@@ -39,27 +41,32 @@ namespace LabFusion.SDK.Achievements
             MultiplayerHooking.OnLateUpdate -= OnLateUpdate;
         }
 
-        private void OnJoinServer() {
+        private void OnJoinServer()
+        {
             _timeElapsed = 0f;
             _oneHourPassed = false;
 
             MultiplayerHooking.OnLateUpdate += OnLateUpdate;
         }
 
-        private void OnDisconnect() {
+        private void OnDisconnect()
+        {
             _timeElapsed = 0f;
             _oneHourPassed = false;
 
             MultiplayerHooking.OnLateUpdate -= OnLateUpdate;
         }
 
-        private void OnLateUpdate() { 
+        private void OnLateUpdate()
+        {
             // If we haven't already given the achievement, and there is more than 1 player, increment the timer
-            if (!_oneHourPassed && PlayerIdManager.HasOtherPlayers) {
+            if (!_oneHourPassed && PlayerIdManager.HasOtherPlayers)
+            {
                 _timeElapsed += TimeUtilities.DeltaTime;
 
                 // 3600 seconds in an hour
-                if (_timeElapsed >= 3600f) {
+                if (_timeElapsed >= 3600f)
+                {
                     _oneHourPassed = true;
                     IncrementTask();
                 }

@@ -13,7 +13,8 @@ using UnityEngine.UI;
 namespace LabFusion.UI
 {
     [RegisterTypeInIl2Cpp]
-    public sealed class InfoBoxPanelView : FusionPanelView {
+    public sealed class InfoBoxPanelView : FusionPanelView
+    {
         public InfoBoxPanelView(IntPtr intPtr) : base(intPtr) { }
 
         protected override Vector3 Bounds => new(0.64f, 0.64f, 0.1f);
@@ -33,7 +34,8 @@ namespace LabFusion.UI
         private Button _creditsButton;
         private Button _mysteryButton;
 
-        protected override void OnAwake() {
+        protected override void OnAwake()
+        {
             // Setup the menu
             SetupButtons();
 
@@ -41,7 +43,8 @@ namespace LabFusion.UI
             LoadPage(_groupPatchNotes.gameObject);
         }
 
-        protected override void OnSetupReferences() {
+        protected override void OnSetupReferences()
+        {
             _versionText = _canvas.Find("text_versionNumber").GetComponent<TMP_Text>();
             _versionText.text = $"v{FusionMod.Version}";
 
@@ -57,7 +60,8 @@ namespace LabFusion.UI
             _credits02Text = _groupCredits.Find("text_credits02").GetComponentInChildren<TMP_Text>();
             _credits03Text = _groupCredits.Find("text_credits03").GetComponentInChildren<TMP_Text>();
 
-            if (FusionMod.Credits != null) {
+            if (FusionMod.Credits != null)
+            {
                 _credits01Text.text = FusionMod.Credits[0];
                 _credits02Text.text = FusionMod.Credits[1];
                 _credits03Text.text = FusionMod.Credits[2];
@@ -71,13 +75,16 @@ namespace LabFusion.UI
         private void SetupButtons()
         {
             // Setup page buttons
-            _patchNotesButton.AddClickEvent(() => {
+            _patchNotesButton.AddClickEvent(() =>
+            {
                 LoadPage(_groupPatchNotes.gameObject);
             });
-            _creditsButton.AddClickEvent(() => {
+            _creditsButton.AddClickEvent(() =>
+            {
                 LoadPage(_groupCredits.gameObject);
             });
-            _mysteryButton.AddClickEvent(() => {
+            _mysteryButton.AddClickEvent(() =>
+            {
                 // Unlock the peter achievement
                 if (AchievementManager.TryGetAchievement<HelloThere>(out var achievement))
                     achievement.IncrementTask();
@@ -86,7 +93,8 @@ namespace LabFusion.UI
             });
         }
 
-        private void LoadPage(GameObject page) {
+        private void LoadPage(GameObject page)
+        {
             // Disable all other pages
             _groupPatchNotes.gameObject.SetActive(false);
             _groupCredits.gameObject.SetActive(false);

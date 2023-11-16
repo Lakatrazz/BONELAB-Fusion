@@ -20,7 +20,8 @@ using UnityEngine;
 
 namespace LabFusion.Network
 {
-    public enum KeySlotType {
+    public enum KeySlotType
+    {
         UNKNOWN = 0,
         INSERT_STATIC = 1,
         INSERT_PROP = 2,
@@ -93,60 +94,64 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<KeySlotData>();
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
             {
-                using (var data = reader.ReadFusionSerializable<KeySlotData>())
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+            }
+            else
+            {
+
+                if (SyncManager.TryGetSyncable(data.keyId, out var key) && key is PropSyncable keySyncable && keySyncable.TryGetExtender<KeyExtender>(out var keyExtender))
                 {
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled) {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-                        }
-                    }
-                    else {
+                    KeyRecieverPatches.IgnorePatches = true;
 
-                        if (SyncManager.TryGetSyncable(data.keyId, out var key) && key is PropSyncable keySyncable && keySyncable.TryGetExtender<KeyExtender>(out var keyExtender)) {
-                            KeyRecieverPatches.IgnorePatches = true;
-                            
-                            switch (data.type) {
-                                default:
-                                case KeySlotType.UNKNOWN:
-                                    break;
-                                case KeySlotType.INSERT_STATIC:
-                                    if (data.receiver != null) {
-                                        var keyReceiver = data.receiver.GetComponent<KeyReciever>();
+                    switch (data.type)
+                    {
+                        default:
+                        case KeySlotType.UNKNOWN:
+                            break;
+                        case KeySlotType.INSERT_STATIC:
+                            if (data.receiver != null)
+                            {
+                                var keyReceiver = data.receiver.GetComponent<KeyReciever>();
 
-                                        if (keyReceiver != null) {
-                                            var host = InteractableHost.Cache.Get(keyExtender.Component.gameObject);
+                                if (keyReceiver != null)
+                                {
+                                    var host = InteractableHost.Cache.Get(keyExtender.Component.gameObject);
 
-                                            // Insert the key and detach grips
-                                            host.TryDetach();
+                                    // Insert the key and detach grips
+                                    host.TryDetach();
 
-                                            keyReceiver.OnInteractableHostEnter(host);
-                                        }
-                                    }
-                                    break;
-                                case KeySlotType.INSERT_PROP:
-                                    if (SyncManager.TryGetSyncable(data.receiverId.Value, out var receiverSyncable) && receiverSyncable is PropSyncable receiverProp) {
-                                        if (receiverProp.TryGetExtender<KeyRecieverExtender>(out var receiverExtender)) {
-                                            var keyReceiver = receiverExtender.GetComponent(data.receiverIndex.Value);
-
-                                            if (keyReceiver != null) {
-                                                var host = InteractableHost.Cache.Get(keyExtender.Component.gameObject);
-
-                                                // Insert the key and detach grips
-                                                host.TryDetach();
-
-                                                keyReceiver.OnInteractableHostEnter(host);
-                                            }
-                                        }
-                                    }
-                                    break;
+                                    keyReceiver.OnInteractableHostEnter(host);
+                                }
                             }
+                            break;
+                        case KeySlotType.INSERT_PROP:
+                            if (SyncManager.TryGetSyncable(data.receiverId.Value, out var receiverSyncable) && receiverSyncable is PropSyncable receiverProp)
+                            {
+                                if (receiverProp.TryGetExtender<KeyRecieverExtender>(out var receiverExtender))
+                                {
+                                    var keyReceiver = receiverExtender.GetComponent(data.receiverIndex.Value);
 
-                            KeyRecieverPatches.IgnorePatches = false;
-                        }
+                                    if (keyReceiver != null)
+                                    {
+                                        var host = InteractableHost.Cache.Get(keyExtender.Component.gameObject);
+
+                                        // Insert the key and detach grips
+                                        host.TryDetach();
+
+                                        keyReceiver.OnInteractableHostEnter(host);
+                                    }
+                                }
+                            }
+                            break;
                     }
+
+                    KeyRecieverPatches.IgnorePatches = false;
                 }
             }
         }

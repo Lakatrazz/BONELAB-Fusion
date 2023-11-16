@@ -10,22 +10,27 @@ using UnityEngine;
 
 using MelonLoader;
 
-namespace LabFusion.MonoBehaviours {
+namespace LabFusion.MonoBehaviours
+{
     [RegisterTypeInIl2Cpp]
-    public class MirrorIdentifier : MonoBehaviour {
+    public class MirrorIdentifier : MonoBehaviour
+    {
         public MirrorIdentifier(IntPtr intPtr) : base(intPtr) { }
 
         public byte id;
 
-        public void Awake() {
+        public void Awake()
+        {
             MultiplayerHooking.OnDisconnect += OnDisconnect;
         }
 
-        public void OnDestroy() {
+        public void OnDestroy()
+        {
             MultiplayerHooking.OnDisconnect -= OnDisconnect;
         }
 
-        private void OnDisconnect() {
+        private void OnDisconnect()
+        {
             GameObject.Destroy(this);
         }
     }

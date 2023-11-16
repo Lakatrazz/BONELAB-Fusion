@@ -8,6 +8,7 @@ using LabFusion.Extensions;
 using LabFusion.Network;
 
 using SystemVector3 = System.Numerics.Vector3;
+using SystemQuaternion = System.Numerics.Quaternion;
 
 namespace LabFusion.Data
 {
@@ -17,30 +18,38 @@ namespace LabFusion.Data
         public static readonly SerializedTransform Default = new(Vector3Extensions.zero, Quaternion.identity);
 
         public SystemVector3 position;
-        public SerializedQuaternion rotation;
+        public SystemQuaternion rotation;
 
-        public void Serialize(FusionWriter writer) {
+        private SerializedQuaternion _compressedRotation;
+
+        public void Serialize(FusionWriter writer)
+        {
             writer.Write(position);
-            writer.Write(rotation);
+            writer.Write(_compressedRotation);
         }
 
-        public void Deserialize(FusionReader reader) {
+        public void Deserialize(FusionReader reader)
+        {
             position = reader.ReadSystemVector3();
-            rotation = reader.ReadFusionSerializable<SerializedQuaternion>();
+
+            _compressedRotation = reader.ReadFusionSerializable<SerializedQuaternion>();
+            rotation = _compressedRotation.Expand();
         }
 
         public SerializedTransform() { }
 
         public SerializedTransform(Vector3 position, Quaternion rotation)
-        {
-            this.position = position.ToSystemVector3();
-            this.rotation = SerializedQuaternion.Compress(rotation.ToSystemQuaternion());
-        }
+            : this(position.ToSystemVector3(), rotation.ToSystemQuaternion()) { }
 
         public SerializedTransform(Transform transform)
+            : this(transform.position.ToSystemVector3(), transform.rotation.ToSystemQuaternion()) { }
+
+        public SerializedTransform(SystemVector3 position, SystemQuaternion rotation)
         {
-            this.position = transform.position.ToSystemVector3();
-            this.rotation = SerializedQuaternion.Compress(transform.rotation.ToSystemQuaternion());
+            this.position = position;
+            this.rotation = rotation;
+
+            this._compressedRotation = SerializedQuaternion.Compress(this.rotation);
         }
     }
 }

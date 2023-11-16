@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class LegoHead : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class LegoHead : AccessoryItem
+    {
         public override string Title => "Brickhead";
 
         public override string Author => BitEconomy.BaBaAuthor;

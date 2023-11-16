@@ -8,20 +8,25 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 
-namespace LabFusion.Representation {
-    public enum FusionMasterResult {
+namespace LabFusion.Representation
+{
+    public enum FusionMasterResult
+    {
         NORMAL = 1 << 0,
         IMPERSONATOR = 1 << 1,
         MASTER = 1 << 2,
     }
 
-    public static class FusionMasterList {
-        public struct MasterPlayer {
+    public static class FusionMasterList
+    {
+        public struct MasterPlayer
+        {
             public ulong id;
             public string name;
             public bool unique;
 
-            public MasterPlayer(ulong id, string name, bool unique = true) {
+            public MasterPlayer(ulong id, string name, bool unique = true)
+            {
                 this.id = id;
                 this.name = name;
                 this.unique = unique;
@@ -39,19 +44,23 @@ namespace LabFusion.Representation {
             new MasterPlayer(76561198837064193, "172", false),
         };
 
-        public static FusionMasterResult VerifyPlayer(ulong id, string name) {
+        public static FusionMasterResult VerifyPlayer(ulong id, string name)
+        {
             if (NetworkInfo.CurrentNetworkLayer is SteamNetworkLayer)
                 return Internal_VerifyPlayer(_steamPlayers, id, name);
-            
+
             return FusionMasterResult.NORMAL;
         }
 
-        private static FusionMasterResult Internal_VerifyPlayer(MasterPlayer[] players, ulong id, string name) {
-            for (var i = 0; i < players.Length; i++) {
+        private static FusionMasterResult Internal_VerifyPlayer(MasterPlayer[] players, ulong id, string name)
+        {
+            for (var i = 0; i < players.Length; i++)
+            {
                 var player = players[i];
 
                 // Our id matches, and this is a master user
-                if (player.id == id) {
+                if (player.id == id)
+                {
                     return FusionMasterResult.MASTER;
                 }
 
@@ -60,7 +69,8 @@ namespace LabFusion.Representation {
                 string otherName = Regex.Replace(name, @"\s+", "").ToLower();
 
                 // The name matches, but the id didn't
-                if (masterName == otherName && player.unique) {
+                if (masterName == otherName && player.unique)
+                {
                     return FusionMasterResult.IMPERSONATOR;
                 }
             }

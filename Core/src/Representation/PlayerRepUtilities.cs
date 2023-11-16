@@ -35,18 +35,23 @@ using SLZ.SFX;
 using UnityEngine.Rendering.Universal;
 using SLZ.Player;
 
-namespace LabFusion.Representation {
-    public static class PlayerRepUtilities {
-        public static bool TryGetRigInfo(RigManager rig, out byte smallId, out RigReferenceCollection references) {
+namespace LabFusion.Representation
+{
+    public static class PlayerRepUtilities
+    {
+        public static bool TryGetRigInfo(RigManager rig, out byte smallId, out RigReferenceCollection references)
+        {
             smallId = 0;
             references = null;
-            
-            if (rig == RigData.RigReferences.RigManager) {
+
+            if (rig == RigData.RigReferences.RigManager)
+            {
                 smallId = PlayerIdManager.LocalSmallId;
                 references = RigData.RigReferences;
                 return true;
             }
-            else if (PlayerRepManager.TryGetPlayerRep(rig, out var rep)) {
+            else if (PlayerRepManager.TryGetPlayerRep(rig, out var rep))
+            {
                 smallId = rep.PlayerId.SmallId;
                 references = rep.RigReferences;
                 return true;
@@ -55,14 +60,17 @@ namespace LabFusion.Representation {
             return false;
         }
 
-        public static bool TryGetReferences(byte smallId, out RigReferenceCollection references) {
+        public static bool TryGetReferences(byte smallId, out RigReferenceCollection references)
+        {
             references = null;
 
-            if (smallId == PlayerIdManager.LocalSmallId) {
+            if (smallId == PlayerIdManager.LocalSmallId)
+            {
                 references = RigData.RigReferences;
                 return true;
             }
-            else if (PlayerRepManager.TryGetPlayerRep(smallId, out var rep)) {
+            else if (PlayerRepManager.TryGetPlayerRep(smallId, out var rep))
+            {
                 references = rep.RigReferences;
                 return true;
             }
@@ -70,7 +78,8 @@ namespace LabFusion.Representation {
             return false;
         }
 
-        public static bool FindAttachedPlayer(Grip grip, out byte smallId, out RigReferenceCollection references, out bool isAvatarGrip) {
+        public static bool FindAttachedPlayer(Grip grip, out byte smallId, out RigReferenceCollection references, out bool isAvatarGrip)
+        {
             smallId = 0;
             references = null;
             isAvatarGrip = false;
@@ -85,7 +94,8 @@ namespace LabFusion.Representation {
             return TryGetRigInfo(rig, out smallId, out references);
         }
 
-        public static void CreateNewRig(Action<RigManager> onRigCreated) {
+        public static void CreateNewRig(Action<RigManager> onRigCreated)
+        {
             if (MarrowSettings.RuntimeInstance == null)
                 return;
 
@@ -96,7 +106,8 @@ namespace LabFusion.Representation {
             crate.LoadAsset((Action<GameObject>)((go) => Internal_OnLoadPlayer(go, onRigCreated)));
         }
 
-        private static void Internal_OnLoadPlayer(GameObject asset, Action<RigManager> onRigCreated) {
+        private static void Internal_OnLoadPlayer(GameObject asset, Action<RigManager> onRigCreated)
+        {
             // Create a temporary parent that is disabled
             GameObject tempParent = new GameObject();
             tempParent.SetActive(false);
@@ -106,7 +117,7 @@ namespace LabFusion.Representation {
             var go = GameObject.Instantiate(rigAsset, tempParent.transform);
             go.name = PlayerRepManager.PlayerRepName;
             go.SetActive(false);
-            
+
             if (RigData.RigReferences.RigManager)
             {
                 go.transform.position = RigData.RigSpawn;
@@ -138,7 +149,8 @@ namespace LabFusion.Representation {
             ammoInventory.AddCartridge(ammoInventory.lightAmmoGroup, count);
 
             var playerHealth = rigManager.health.TryCast<Player_Health>();
-            if (playerHealth != null) {
+            if (playerHealth != null)
+            {
                 playerHealth.reloadLevelOnDeath = false;
                 playerHealth.healthMode = Health.HealthMode.Invincible;
 
@@ -179,7 +191,8 @@ namespace LabFusion.Representation {
             rigManager.uiRig.Start();
             rigManager.uiRig.popUpMenu.radialPageView.Start();
 
-            try {
+            try
+            {
                 rigManager.uiRig.popUpMenu.Start();
             }
             catch { }
@@ -234,7 +247,7 @@ namespace LabFusion.Representation {
             // Remove unnecessary controller components
             GameObject.DestroyImmediate(rigManager.openControllerRig.leftController.GetComponent<UIControllerInput>());
             GameObject.DestroyImmediate(rigManager.openControllerRig.rightController.GetComponent<UIControllerInput>());
-            
+
             Internal_ClearHaptor(rigManager.openControllerRig.leftController.GetComponent<Haptor>());
             Internal_ClearHaptor(rigManager.openControllerRig.rightController.GetComponent<Haptor>());
 
@@ -251,8 +264,10 @@ namespace LabFusion.Representation {
             DelayUtilities.Delay(() => { Internal_SpatializeWind(rigManager.physicsRig.m_head.GetComponent<WindBuffetSFX>()); }, 5);
         }
 
-        private static void Internal_DelayedAddAmmo(AmmoInventory inventory) {
-            if (!inventory.IsNOC()) {
+        private static void Internal_DelayedAddAmmo(AmmoInventory inventory)
+        {
+            if (!inventory.IsNOC())
+            {
                 var count = 100000;
                 inventory.AddCartridge(inventory.heavyAmmoGroup, count);
                 inventory.AddCartridge(inventory.mediumAmmoGroup, count);
@@ -294,7 +309,8 @@ namespace LabFusion.Representation {
             haptor.enabled = false;
         }
 
-        private static void Internal_SpatializeWind(WindBuffetSFX sfx) {
+        private static void Internal_SpatializeWind(WindBuffetSFX sfx)
+        {
             if (!sfx.IsNOC() && sfx._buffetSrc)
                 sfx._buffetSrc.spatialBlend = 1f;
         }

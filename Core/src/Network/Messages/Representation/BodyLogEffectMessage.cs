@@ -46,24 +46,19 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (var reader = FusionReader.Create(bytes))
+            using var reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<BodyLogEffectData>();
+            // Play the effect
+            if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep))
             {
-                using (var data = reader.ReadFusionSerializable<BodyLogEffectData>())
-                {
-                    // Play the effect
-                    if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep)) {
-                        rep.PlayPullCordEffects();
-                    }
+                rep.PlayPullCordEffects();
+            }
 
-                    // Bounce the message back
-                    if (NetworkInfo.IsServer)
-                    {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes))
-                        {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
+            // Bounce the message back
+            if (NetworkInfo.IsServer)
+            {
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
             }
         }
     }

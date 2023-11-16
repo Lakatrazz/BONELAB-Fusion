@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Data {
-    public class PillarClimbDMData : DMLevelDataHandler {
+namespace LabFusion.Data
+{
+    public class PillarClimbDMData : DMLevelDataHandler
+    {
         public override string LevelTitle => "11 - Pillar Climb";
 
         protected override Vector3[] DeathmatchSpawnPoints => new Vector3[8] {

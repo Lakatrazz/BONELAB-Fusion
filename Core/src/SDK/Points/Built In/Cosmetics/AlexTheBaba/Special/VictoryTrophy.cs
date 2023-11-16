@@ -10,8 +10,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class VictoryTrophy : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class VictoryTrophy : AccessoryItem
+    {
         public override string Title => "Victory Trophy";
 
         public override string Author => BitEconomy.BaBaAuthor;

@@ -64,35 +64,35 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<MagazineEjectData>();
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
             {
-                using (var data = reader.ReadFusionSerializable<MagazineEjectData>())
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+            }
+            else if (SyncManager.TryGetSyncable(data.gunId, out var gun) && gun is PropSyncable gunSyncable && gunSyncable.TryGetExtender<AmmoSocketExtender>(out var extender))
+            {
+                // Eject mag from gun
+                if (extender.Component._magazinePlug)
                 {
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled) {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+                    AmmoSocketPatches.IgnorePatch = true;
+
+                    var ammoPlug = extender.Component._magazinePlug;
+                    if (ammoPlug.magazine && MagazineExtender.Cache.TryGet(ammoPlug.magazine, out var magSyncable) && magSyncable.Id == data.magazineId)
+                    {
+                        ammoPlug.ForceEject();
+
+                        magSyncable.SetRigidbodiesDirty();
+
+                        if (data.hand != Handedness.UNDEFINED && PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep))
+                        {
+                            rep.AttachObject(data.hand, ammoPlug.magazine.grip);
                         }
                     }
-                    else if (SyncManager.TryGetSyncable(data.gunId, out var gun) && gun is PropSyncable gunSyncable && gunSyncable.TryGetExtender<AmmoSocketExtender>(out var extender)) {
-                        // Eject mag from gun
-                        if (extender.Component._magazinePlug) {
-                            AmmoSocketPatches.IgnorePatch = true;
 
-                            var ammoPlug = extender.Component._magazinePlug;
-                            if (ammoPlug.magazine && MagazineExtender.Cache.TryGet(ammoPlug.magazine, out var magSyncable) && magSyncable.Id == data.magazineId) {
-                                ammoPlug.ForceEject();
-
-                                magSyncable.SetRigidbodiesDirty();
-
-                                if (data.hand != Handedness.UNDEFINED && PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep)) {
-                                    rep.AttachObject(data.hand, ammoPlug.magazine.grip);
-                                }
-                            }
-
-                            AmmoSocketPatches.IgnorePatch = false;
-                        }
-                    }
+                    AmmoSocketPatches.IgnorePatch = false;
                 }
             }
         }

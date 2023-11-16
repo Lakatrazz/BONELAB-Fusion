@@ -15,13 +15,15 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Data {
+namespace LabFusion.Data
+{
     public struct DescentIntroEvent
     {
         public int selectionNumber;
         public DescentIntroType type;
 
-        public DescentIntroEvent(int selectionNumber, DescentIntroType type) {
+        public DescentIntroEvent(int selectionNumber, DescentIntroType type)
+        {
             this.selectionNumber = selectionNumber;
             this.type = type;
         }
@@ -66,7 +68,8 @@ namespace LabFusion.Data {
         private static readonly List<DescentNooseEvent> _nooseEvents = new();
         private static readonly List<DescentElevatorEvent> _elevatorEvents = new();
 
-        public static DescentIntroEvent CreateIntroEvent(int selectionNumber, DescentIntroType type) {
+        public static DescentIntroEvent CreateIntroEvent(int selectionNumber, DescentIntroType type)
+        {
             var value = new DescentIntroEvent(selectionNumber, type);
 
             if (NetworkInfo.IsServer)
@@ -95,15 +98,19 @@ namespace LabFusion.Data {
             return value;
         }
 
-        public static void CheckAchievement() {
+        public static void CheckAchievement()
+        {
             if (KnifeGrip == null && !FindKnife())
                 return;
 
             // Check if we were holding the knife and we weren't attached to the noose
-            if (!Noose.rM.IsSelf()) {
-                foreach (var hand in KnifeGrip.attachedHands) {
+            if (!Noose.rM.IsSelf())
+            {
+                foreach (var hand in KnifeGrip.attachedHands)
+                {
                     // Make sure this is our hand
-                    if (hand.manager.IsSelf()) {
+                    if (hand.manager.IsSelf())
+                    {
                         AchievementManager.TryGetAchievement<Betrayal>(out var achievement);
                         achievement?.IncrementTask();
                         break;
@@ -112,12 +119,14 @@ namespace LabFusion.Data {
             }
         }
 
-        protected override void SceneAwake() {
+        protected override void SceneAwake()
+        {
             Instance = this;
             _introEvents.Clear();
         }
 
-        protected override void MainSceneInitialized() {
+        protected override void MainSceneInitialized()
+        {
             Noose = GameObject.FindObjectOfType<NooseBonelabIntro>(true);
             Elevator = GameObject.FindObjectOfType<TutorialElevator>(true);
             GameController = GameObject.FindObjectOfType<GameControl_Descent>(true);
@@ -125,9 +134,11 @@ namespace LabFusion.Data {
             FindKnife();
         }
 
-        private static bool FindKnife() {
+        private static bool FindKnife()
+        {
             var knife = GameObject.Find("SEQUENCE_EFFECTS/Dagger_A");
-            if (knife != null) {
+            if (knife != null)
+            {
                 KnifeGrip = knife.GetComponentInChildren<Grip>(true);
                 return true;
             }
@@ -137,19 +148,23 @@ namespace LabFusion.Data {
 
         public void CacheValues() => MainSceneInitialized();
 
-        protected override void PlayerCatchup(ulong longId) {
+        protected override void PlayerCatchup(ulong longId)
+        {
             // Send all intro events
-            foreach (var intro in _introEvents) {
+            foreach (var intro in _introEvents)
+            {
                 CampaignSender.SendDescentIntro(intro, longId);
             }
 
             // Send all noose events
-            foreach (var noose in _nooseEvents) {
+            foreach (var noose in _nooseEvents)
+            {
                 CampaignSender.SendDescentNoose(noose, longId);
             }
 
             // Send all elevator events
-            foreach (var elevator in _elevatorEvents) {
+            foreach (var elevator in _elevatorEvents)
+            {
                 CampaignSender.SendDescentElevator(elevator, longId);
             }
         }

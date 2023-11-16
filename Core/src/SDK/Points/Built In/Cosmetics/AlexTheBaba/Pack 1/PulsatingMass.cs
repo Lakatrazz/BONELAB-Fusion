@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class PulsatingMass : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class PulsatingMass : AccessoryItem
+    {
         public override string Title => "Pulsating Mass";
 
         public override string Author => BitEconomy.BaBaAuthor;

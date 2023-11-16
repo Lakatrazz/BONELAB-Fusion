@@ -19,7 +19,8 @@ using MelonLoader;
 namespace LabFusion.Patching
 {
     [HarmonyPatch(typeof(Gun))]
-    public static class GunPatches {
+    public static class GunPatches
+    {
         public static bool IgnorePatches = false;
 
         [HarmonyPatch(nameof(Gun.Fire))]
@@ -76,16 +77,19 @@ namespace LabFusion.Patching
     }
 
     [HarmonyPatch(typeof(SpawnGun))]
-    public static class SpawnGunPatches {
+    public static class SpawnGunPatches
+    {
         public static bool IgnorePatches = false;
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(SpawnGun.SetPreviewMesh))]
-        public static void SetPreviewMesh(SpawnGun __instance) {
+        public static void SetPreviewMesh(SpawnGun __instance)
+        {
             if (IgnorePatches)
                 return;
 
-            if (__instance._selectedCrate != null && NetworkInfo.HasServer && SpawnGunExtender.Cache.TryGet(__instance, out var syncable)) {
+            if (__instance._selectedCrate != null && NetworkInfo.HasServer && SpawnGunExtender.Cache.TryGet(__instance, out var syncable))
+            {
                 string barcode = __instance._selectedCrate.Barcode;
 
                 using var writer = FusionWriter.Create(SpawnGunPreviewMeshData.GetSize(barcode));
@@ -99,30 +103,37 @@ namespace LabFusion.Patching
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(SpawnGun.OnFire))]
-        public static void OnFire(SpawnGun __instance) {
-            if (NetworkInfo.HasServer) {
-                if (__instance._selectedMode == UtilityModes.SPAWNER && __instance._selectedCrate != null) {
+        public static void OnFire(SpawnGun __instance)
+        {
+            if (NetworkInfo.HasServer)
+            {
+                if (__instance._selectedMode == UtilityModes.SPAWNER && __instance._selectedCrate != null)
+                {
                     // Reward achievement
                     if (PlayerIdManager.HasOtherPlayers && AchievementManager.TryGetAchievement<LavaGang>(out var achievement))
                         achievement.IncrementTask();
 
                     // No need to send a spawn request if we are the server.
-                    if (!NetworkInfo.IsServer) {
+                    if (!NetworkInfo.IsServer)
+                    {
                         var crate = __instance._selectedCrate;
                         PooleeUtilities.RequestSpawn(crate.Barcode, new SerializedTransform(__instance.placerPreview.transform));
                     }
                 }
-                else if (__instance._selectedMode == UtilityModes.REMOVER && __instance._hitInfo.rigidbody != null) {
+                else if (__instance._selectedMode == UtilityModes.REMOVER && __instance._hitInfo.rigidbody != null)
+                {
                     var hitBody = __instance._hitInfo.rigidbody;
                     AssetPoolee poolee = hitBody.GetComponentInParent<AssetPoolee>();
 
-                    if (poolee != null) {
+                    if (poolee != null)
+                    {
                         // Reward achievement
                         if (PlayerIdManager.HasOtherPlayers && AchievementManager.TryGetAchievement<CleanupCrew>(out var achievement))
                             achievement.IncrementTask();
 
                         // No need to send a despawn request if we are the server
-                        if (!NetworkInfo.IsServer && PropSyncable.Cache.TryGet(poolee.gameObject, out var syncable)) {
+                        if (!NetworkInfo.IsServer && PropSyncable.Cache.TryGet(poolee.gameObject, out var syncable))
+                        {
                             PooleeUtilities.SendDespawn(syncable.GetId());
                         }
                     }

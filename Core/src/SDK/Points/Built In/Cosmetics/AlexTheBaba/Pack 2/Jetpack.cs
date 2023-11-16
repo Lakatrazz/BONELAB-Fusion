@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class Jetpack : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class Jetpack : AccessoryItem
+    {
         public override string Title => "Junky Jetpack";
 
         public override string Author => BitEconomy.BaBaAuthor;

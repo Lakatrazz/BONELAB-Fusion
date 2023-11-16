@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class NyanTrail : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class NyanTrail : AccessoryItem
+    {
         public override string Title => "Nyan Trail";
 
         public override string Author => BitEconomy.BaBaAuthor;

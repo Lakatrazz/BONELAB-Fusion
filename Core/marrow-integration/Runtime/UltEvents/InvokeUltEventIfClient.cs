@@ -9,7 +9,8 @@ using MelonLoader;
 using LabFusion.Network;
 #endif
 
-namespace LabFusion.MarrowIntegration {
+namespace LabFusion.MarrowIntegration
+{
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
@@ -17,11 +18,13 @@ namespace LabFusion.MarrowIntegration {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(UltEventHolder))]
 #endif
-    public sealed class InvokeUltEventIfClient : FusionMarrowBehaviour {
+    public sealed class InvokeUltEventIfClient : FusionMarrowBehaviour
+    {
 #if MELONLOADER
         public InvokeUltEventIfClient(IntPtr intPtr) : base(intPtr) { }
-        
-        private void Start() {
+
+        private void Start()
+        {
             var holder = GetComponent<UltEventHolder>();
 
             if (NetworkInfo.IsClient && holder != null)

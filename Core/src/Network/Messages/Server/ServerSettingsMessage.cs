@@ -49,19 +49,16 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<ServerSettingsData>();
+            // ONLY clients should receive this!
+            if (!NetworkInfo.IsServer)
             {
-                using (var data = reader.ReadFusionSerializable<ServerSettingsData>())
-                {
-                    // ONLY clients should receive this!
-                    if (!NetworkInfo.IsServer) {
-                        FusionPreferences.ReceivedServerSettings = data.settings.settings;
-                        MultiplayerHooking.Internal_OnServerSettingsChanged();
-                    }
-                    else
-                        throw new ExpectedClientException();
-                }
+                FusionPreferences.ReceivedServerSettings = data.settings.settings;
+                MultiplayerHooking.Internal_OnServerSettingsChanged();
             }
+            else
+                throw new ExpectedClientException();
         }
     }
 }

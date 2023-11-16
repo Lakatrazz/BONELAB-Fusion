@@ -23,14 +23,16 @@ namespace LabFusion.Data
         // The amount we multiply / divide by to preserve precision when using shorts
         public const float PRECISION_OFFSET = 10000.0f;
 
-        public void Serialize(FusionWriter writer) {
+        public void Serialize(FusionWriter writer)
+        {
             writer.Write(c1);
             writer.Write(c2);
             writer.Write(c3);
             writer.Write(loss);
         }
 
-        public void Deserialize(FusionReader reader) {
+        public void Deserialize(FusionReader reader)
+        {
             c1 = reader.ReadInt16();
             c2 = reader.ReadInt16();
             c3 = reader.ReadInt16();
@@ -45,7 +47,8 @@ namespace LabFusion.Data
             // Basically compression works by dropping a component that is the lowest absolute value
             // We first add each component to an array, then sort said array from largest to smallest absolute value
 
-            unsafe {
+            unsafe
+            {
                 float* components = stackalloc float[4] { quat.X, quat.Y, quat.Z, quat.W };
 
                 byte dropped = 0;
@@ -65,7 +68,8 @@ namespace LabFusion.Data
                 short* compressed = stackalloc short[3];
 
                 int compIndex = 0;
-                for (int c = 0; c < 4; c++) {
+                for (int c = 0; c < 4; c++)
+                {
                     if (c == dropped)
                         continue;
 
@@ -81,7 +85,8 @@ namespace LabFusion.Data
             return serialized;
         }
 
-        public SystemQuaternion Expand() {
+        public SystemQuaternion Expand()
+        {
             if (loss >= 4)
                 throw new DataCorruptionException($"Expanding a quaternion led to a lost component of {loss}!");
 

@@ -223,7 +223,7 @@ namespace LiteNetLib.Utils
                 {
                     var itm = default(TProperty);
                     itm.Deserialize(r);
-                    if(i < listCount)
+                    if (i < listCount)
                         list[i] = itm;
                     else
                         list.Add(itm);
@@ -489,7 +489,7 @@ namespace LiteNetLib.Utils
                     var s = _serializers[i];
                     if (s.Type == CallType.Basic)
                         s.Read(obj, reader);
-                    else if(s.Type == CallType.Array)
+                    else if (s.Type == CallType.Array)
                         s.ReadArray(obj, reader);
                     else
                         s.ReadList(obj, reader);

@@ -33,9 +33,11 @@ namespace LabFusion.Data
         protected override void MainSceneInitialized()
         {
             GameController = GameObject.FindObjectOfType<GameControl_Outro>(true);
-            if (GameController != null) {
+            if (GameController != null)
+            {
                 // In a server, teleport the player to the top of the lift so they don't spawn underneath it if its synced
-                if (NetworkInfo.HasServer) {
+                if (NetworkInfo.HasServer)
+                {
                     FusionPlayer.Teleport(new Vector3(-9.030009f, -5.142975f, -71.18999f), Vector3Extensions.forward, true);
                 }
 
@@ -60,7 +62,8 @@ namespace LabFusion.Data
                 Internal_CreateSeat(6, new Vector3(-0.48f, 0.928f, 1.998f), Vector3Extensions.zero);
 
                 // Send the taxi, windmill, and lift to sync
-                if (NetworkInfo.IsServer) {
+                if (NetworkInfo.IsServer)
+                {
                     // Taxi
                     PropSender.SendPropCreation(TaxiController.gameObject, null, true);
 
@@ -68,7 +71,8 @@ namespace LabFusion.Data
                     var windmill = ArmFinale.transform.Find("WindMill (2)");
                     if (windmill != null)
                         PropSender.SendPropCreation(windmill.gameObject);
-                    else {
+                    else
+                    {
 #if DEBUG
                         FusionLogger.Warn("Failed to find Windmill!");
 #endif
@@ -77,16 +81,19 @@ namespace LabFusion.Data
             }
         }
 
-        private static void OnTaxiSeatRegistered() {
+        private static void OnTaxiSeatRegistered()
+        {
             // Give the achievement in a server with more than 1 player
-            if (NetworkInfo.HasServer && PlayerIdManager.HasOtherPlayers) {
+            if (NetworkInfo.HasServer && PlayerIdManager.HasOtherPlayers)
+            {
                 // Increment the achievement task
                 if (AchievementManager.TryGetAchievement<OneMoreTime>(out var achievement))
                     achievement.IncrementTask();
             }
         }
 
-        private static void Internal_CreateSeat(int index, Vector3 localPosition, Vector3 localRotation) {
+        private static void Internal_CreateSeat(int index, Vector3 localPosition, Vector3 localRotation)
+        {
             var extraSeat = GameObject.Instantiate(TaxiSeat.gameObject);
             extraSeat.transform.parent = TaxiSeat.transform.parent;
             extraSeat.SetActive(true);
@@ -96,8 +103,10 @@ namespace LabFusion.Data
             extraSeat.transform.localRotation = Quaternion.Euler(localRotation);
         }
 
-        public static void TeleportToJimmyFinger() {
-            if (RigData.HasPlayer) {
+        public static void TeleportToJimmyFinger()
+        {
+            if (RigData.HasPlayer)
+            {
                 var rm = RigData.RigReferences.RigManager;
                 var pos = new Vector3(-0.25f, 95.23f, 13f);
 

@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class Junktion : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class Junktion : AccessoryItem
+    {
         public override string Title => "Junk-tion";
 
         public override string Author => BitEconomy.BaBaAuthor;

@@ -9,31 +9,39 @@ using LabFusion.SDK.Gamemodes;
 using UnhollowerBaseLib.Attributes;
 #endif
 
-namespace LabFusion.MarrowIntegration {
+namespace LabFusion.MarrowIntegration
+{
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
     [AddComponentMenu("BONELAB Fusion/Gamemodes/Entangled Proxy")]
     [DisallowMultipleComponent]
 #endif
-    public sealed class EntangledProxy : FusionMarrowBehaviour {
+    public sealed class EntangledProxy : FusionMarrowBehaviour
+    {
 #if MELONLOADER
         public EntangledProxy(IntPtr intPtr) : base(intPtr) { }
 
-        public void StartGamemode() {
-            if (Entangled.Instance != null) {
+        public void StartGamemode()
+        {
+            if (Entangled.Instance != null)
+            {
                 Entangled.Instance.StartGamemode(true);
             }
         }
 
-        public void StopGamemode() {
-            if (Entangled.Instance != null) {
+        public void StopGamemode()
+        {
+            if (Entangled.Instance != null)
+            {
                 Entangled.Instance.StopGamemode();
             }
         }
 
-        public void SetDefaultValues() {
-            if (Entangled.Instance != null) {
+        public void SetDefaultValues()
+        {
+            if (Entangled.Instance != null)
+            {
                 Entangled.Instance.SetDefaultValues();
             }
         }
@@ -44,8 +52,10 @@ namespace LabFusion.MarrowIntegration {
         public void SetPlaylist(AudioClip clip1, AudioClip clip2, AudioClip clip3, AudioClip clip4) => Internal_SetPlaylist(clip1, clip2, clip3, clip4);
 
         [HideFromIl2Cpp]
-        private void Internal_SetPlaylist(params AudioClip[] clips) {
-            if (Entangled.Instance != null) {
+        private void Internal_SetPlaylist(params AudioClip[] clips)
+        {
+            if (Entangled.Instance != null)
+            {
                 Entangled.Instance.SetOverriden();
                 Entangled.Instance.SetPlaylist(Gamemode.DefaultMusicVolume, clips);
             }

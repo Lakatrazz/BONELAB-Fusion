@@ -50,20 +50,16 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            if (NetworkInfo.IsServer && isServerHandled) {
-                using (var reader = FusionReader.Create(bytes)) {
-                    using (var data = reader.ReadFusionSerializable<SyncableOwnershipRequestData>()) {
-                        using (var writer = FusionWriter.Create(SyncableOwnershipResponseData.Size)) {
-                            using (var response = SyncableOwnershipResponseData.Create(data.smallId, data.syncId)) {
-                                writer.Write(response);
+            if (NetworkInfo.IsServer && isServerHandled)
+            {
+                using var reader = FusionReader.Create(bytes);
+                using var data = reader.ReadFusionSerializable<SyncableOwnershipRequestData>();
+                using var writer = FusionWriter.Create(SyncableOwnershipResponseData.Size);
+                using var response = SyncableOwnershipResponseData.Create(data.smallId, data.syncId);
+                writer.Write(response);
 
-                                using (var message = FusionMessage.Create(NativeMessageTag.SyncableOwnershipResponse, writer)) {
-                                    MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-                                }
-                            }
-                        }
-                    }
-                }
+                using var message = FusionMessage.Create(NativeMessageTag.SyncableOwnershipResponse, writer);
+                MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
             }
         }
     }

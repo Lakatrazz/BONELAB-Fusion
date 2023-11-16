@@ -11,28 +11,34 @@ using LabFusion.Extensions;
 
 namespace LabFusion.Network
 {
-    public class VoteKickRequestData : IFusionSerializable, IDisposable {
+    public class VoteKickRequestData : IFusionSerializable, IDisposable
+    {
         public const int Size = sizeof(byte) * 2;
 
         public byte smallId;
         public byte target;
 
-        public void Serialize(FusionWriter writer) {
+        public void Serialize(FusionWriter writer)
+        {
             writer.Write(smallId);
             writer.Write(target);
         }
-        
-        public void Deserialize(FusionReader reader) {
+
+        public void Deserialize(FusionReader reader)
+        {
             smallId = reader.ReadByte();
             target = reader.ReadByte();
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
 
-        public static VoteKickRequestData Create(byte smallId, byte target) {
-            return new VoteKickRequestData() {
+        public static VoteKickRequestData Create(byte smallId, byte target)
+        {
+            return new VoteKickRequestData()
+            {
                 smallId = smallId,
                 target = target,
             };
@@ -43,14 +49,17 @@ namespace LabFusion.Network
     {
         public override byte? Tag => NativeMessageTag.VoteKickRequest;
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
+        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        {
             // This should only ever be handled by the server
-            if (isServerHandled) {
+            if (isServerHandled)
+            {
                 using FusionReader reader = FusionReader.Create(bytes);
                 using var data = reader.ReadFusionSerializable<VoteKickRequestData>();
 
                 // Try applying the vote
-                if (VoteKickHelper.Vote(data.target, data.smallId)) {
+                if (VoteKickHelper.Vote(data.target, data.smallId))
+                {
                     int count = VoteKickHelper.GetVoteCount(data.target);
                     int required = VoteKickHelper.GetRequiredVotes();
 

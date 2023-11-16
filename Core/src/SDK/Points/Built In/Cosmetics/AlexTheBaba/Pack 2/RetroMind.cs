@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class RetroMind : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class RetroMind : AccessoryItem
+    {
         public override string Title => "Retro Mind";
 
         public override string Author => BitEconomy.BaBaAuthor;

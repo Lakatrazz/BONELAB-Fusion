@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabFusion.Network {
-    public static class NetworkInfo {
+namespace LabFusion.Network
+{
+    public static class NetworkInfo
+    {
         /// <summary>
         /// The current network interface. Not recommended to touch!
         /// </summary>

@@ -17,7 +17,8 @@ using SLZ.Props.Weapons;
 
 namespace LabFusion.Network
 {
-    public enum DescentIntroType {
+    public enum DescentIntroType
+    {
         UNKNOWN = 0,
         SEQUENCE = 1,
         BUTTON_CONFIRM = 2,
@@ -67,39 +68,37 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<DescentIntroData>();
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
             {
-                using (var data = reader.ReadFusionSerializable<DescentIntroData>())
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+            }
+            else
+            {
+                GameControl_DescentPatches.IgnorePatches = true;
+                Control_UI_BodyMeasurementsPatches.IgnorePatches = true;
+
+                switch (data.type)
                 {
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled) {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-                        }
-                    }
-                    else {
-                        GameControl_DescentPatches.IgnorePatches = true;
-                        Control_UI_BodyMeasurementsPatches.IgnorePatches = true;
-
-                        switch (data.type) {
-                            default:
-                            case DescentIntroType.UNKNOWN:
-                                break;
-                            case DescentIntroType.SEQUENCE:
-                                DescentData.GameController.SEQUENCE(data.selectionNumber);
-                                break;
-                            case DescentIntroType.BUTTON_CONFIRM:
-                                DescentData.BodyMeasurementsUI.BUTTON_CONFIRM();
-                                break;
-                            case DescentIntroType.CONFIRM_FORCE_GRAB:
-                                DescentData.GameController.CONFIRMFORCEGRAB();
-                                break;
-                        }
-
-                        GameControl_DescentPatches.IgnorePatches = false;
-                        Control_UI_BodyMeasurementsPatches.IgnorePatches = false;
-                    }
+                    default:
+                    case DescentIntroType.UNKNOWN:
+                        break;
+                    case DescentIntroType.SEQUENCE:
+                        DescentData.GameController.SEQUENCE(data.selectionNumber);
+                        break;
+                    case DescentIntroType.BUTTON_CONFIRM:
+                        DescentData.BodyMeasurementsUI.BUTTON_CONFIRM();
+                        break;
+                    case DescentIntroType.CONFIRM_FORCE_GRAB:
+                        DescentData.GameController.CONFIRMFORCEGRAB();
+                        break;
                 }
+
+                GameControl_DescentPatches.IgnorePatches = false;
+                Control_UI_BodyMeasurementsPatches.IgnorePatches = false;
             }
         }
     }

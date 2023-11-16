@@ -10,21 +10,27 @@ using LabFusion.Senders;
 using LabFusion.Syncables;
 using SLZ.Bonelab;
 
-namespace LabFusion.Patching {
+namespace LabFusion.Patching
+{
     [HarmonyPatch(typeof(TwoButtonRemoteController))]
-    public static class TwoButtonRemoteControllerPatches {
+    public static class TwoButtonRemoteControllerPatches
+    {
         public static bool IgnorePatches = false;
 
-        private static bool OnJointEvent(TwoButtonRemoteController __instance, TwoButtonRemoteControllerEventType type) {
+        private static bool OnJointEvent(TwoButtonRemoteController __instance, TwoButtonRemoteControllerEventType type)
+        {
             if (IgnorePatches)
                 return true;
 
-            if (NetworkInfo.HasServer && TwoButtonRemoteControllerExtender.Cache.TryGet(__instance, out var syncable)) {
-                if (syncable.IsOwner()) {
+            if (NetworkInfo.HasServer && TwoButtonRemoteControllerExtender.Cache.TryGet(__instance, out var syncable))
+            {
+                if (syncable.IsOwner())
+                {
                     PowerableSender.SendTwoButtonRemoteControllerEvent(syncable.GetId(), type);
                     return true;
                 }
-                else {
+                else
+                {
                     return false;
                 }
             }
@@ -34,7 +40,8 @@ namespace LabFusion.Patching {
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(TwoButtonRemoteController.DEENERGIZEJOINT))]
-        public static bool DEENERGIZEJOINT(TwoButtonRemoteController __instance) {
+        public static bool DEENERGIZEJOINT(TwoButtonRemoteController __instance)
+        {
             return OnJointEvent(__instance, TwoButtonRemoteControllerEventType.DEENERGIZEJOINT);
         }
 

@@ -10,7 +10,8 @@ using SLZ.Bonelab;
 
 using LabFusion.Extensions;
 
-namespace LabFusion.Data {
+namespace LabFusion.Data
+{
     public class TimeTrialData : LevelDataHandler
     {
         // This should always apply to all levels.
@@ -18,7 +19,8 @@ namespace LabFusion.Data {
 
         public static TimeTrial_GameController GameController;
 
-        protected override void MainSceneInitialized() {
+        protected override void MainSceneInitialized()
+        {
             GameController = GameObject.FindObjectOfType<TimeTrial_GameController>();
         }
 

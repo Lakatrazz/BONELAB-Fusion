@@ -17,7 +17,8 @@ using SLZ.Props.Weapons;
 
 namespace LabFusion.Network
 {
-    public enum ChallengeSelectType {
+    public enum ChallengeSelectType
+    {
         UNKNOWN = 0,
         SELECT_CHALLENGE = 1,
         ON_CHALLENGE_SELECT = 2,
@@ -66,32 +67,30 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<ChallengeSelectData>();
+            var menu = ArenaData.GetMenu(data.menuIndex);
+
+            ChallengePatches.IgnorePatches = true;
+
+            // We ONLY handle this for clients, this message should only ever be sent by the server!
+            if (!NetworkInfo.IsServer && menu)
             {
-                using (var data = reader.ReadFusionSerializable<ChallengeSelectData>())
+                switch (data.type)
                 {
-                    var menu = ArenaData.GetMenu(data.menuIndex);
-
-                    ChallengePatches.IgnorePatches = true;
-
-                    // We ONLY handle this for clients, this message should only ever be sent by the server!
-                    if (!NetworkInfo.IsServer && menu) {
-                        switch (data.type) {
-                            default:
-                            case ChallengeSelectType.UNKNOWN:
-                                break;
-                            case ChallengeSelectType.SELECT_CHALLENGE:
-                                menu.SelectChallenge(data.challengeNumber);
-                                break;
-                            case ChallengeSelectType.ON_CHALLENGE_SELECT:
-                                menu.OnChallengeSelect();
-                                break;
-                        }
-                    }
-
-                    ChallengePatches.IgnorePatches = false;
+                    default:
+                    case ChallengeSelectType.UNKNOWN:
+                        break;
+                    case ChallengeSelectType.SELECT_CHALLENGE:
+                        menu.SelectChallenge(data.challengeNumber);
+                        break;
+                    case ChallengeSelectType.ON_CHALLENGE_SELECT:
+                        menu.OnChallengeSelect();
+                        break;
                 }
             }
+
+            ChallengePatches.IgnorePatches = false;
         }
     }
 }

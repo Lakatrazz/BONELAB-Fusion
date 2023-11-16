@@ -27,8 +27,10 @@ namespace LabFusion.Data
         private static int _cartAmount = 0;
         private static bool _hasCreatedCarts = false;
 
-        protected override void PlayerCatchup(ulong longId) {
-            if (Minecart != null && _hasCreatedCarts) {
+        protected override void PlayerCatchup(ulong longId)
+        {
+            if (Minecart != null && _hasCreatedCarts)
+            {
                 using var writer = FusionWriter.Create();
                 using var data = MineDiveCartData.Create(_cartAmount);
                 writer.Write(data);
@@ -38,13 +40,15 @@ namespace LabFusion.Data
             }
         }
 
-        protected override void SceneAwake() {
+        protected override void SceneAwake()
+        {
             _hasCreatedCarts = false;
 
             Minecart = GameObject.Find("Minecart Gun Variant");
             AvatarCart = GameObject.Find("Avatar-Gun Variant (1)");
 
-            if (Minecart != null) {
+            if (Minecart != null)
+            {
                 Transform tempParent = new GameObject().transform;
                 tempParent.gameObject.SetActive(false);
 
@@ -57,8 +61,10 @@ namespace LabFusion.Data
             }
         }
 
-        protected override void MainSceneInitialized() {
-            if (NetworkInfo.IsServer) {
+        protected override void MainSceneInitialized()
+        {
+            if (NetworkInfo.IsServer)
+            {
                 _cartAmount = PlayerIdManager.PlayerCount - 1;
                 CreateExtraCarts(_cartAmount);
 
@@ -163,20 +169,25 @@ namespace LabFusion.Data
                 }
 
                 // Ignore colliders between each other
-                foreach (var first in colliders) {
-                    foreach (var second in colliders) {
+                foreach (var first in colliders)
+                {
+                    foreach (var second in colliders)
+                    {
                         Physics.IgnoreCollision(first, second, true);
                     }
                 }
 
                 // Parent all carts
-                foreach (var cart in carts) {
+                foreach (var cart in carts)
+                {
                     cart.transform.parent = Minecart.transform;
                 }
 
                 // Re-enable collision between front cart and avatar cart
-                foreach (var first in minecartColliders) {
-                    foreach (var second in avatarcartColliders) {
+                foreach (var first in minecartColliders)
+                {
+                    foreach (var second in avatarcartColliders)
+                    {
                         Physics.IgnoreCollision(first, second, false);
                     }
                 }

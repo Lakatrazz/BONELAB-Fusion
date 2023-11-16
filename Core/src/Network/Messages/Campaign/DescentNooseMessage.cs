@@ -17,7 +17,8 @@ using SLZ.Props.Weapons;
 
 namespace LabFusion.Network
 {
-    public enum DescentNooseType {
+    public enum DescentNooseType
+    {
         UNKNOWN = 0,
         ATTACH_NOOSE = 1,
         CUT_NOOSE = 2,

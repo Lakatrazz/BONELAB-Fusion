@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class ZestySwagShades : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class ZestySwagShades : AccessoryItem
+    {
         public override string Title => "Zesty Swag Shades";
 
         public override string Author => BitEconomy.RiggleAuthor;

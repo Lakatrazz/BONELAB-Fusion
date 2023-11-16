@@ -77,11 +77,13 @@ namespace LabFusion.Network
         private bool sending = false;
         private AudioClip sendingClip;
 
-        internal override bool CheckSupported() {
+        internal override bool CheckSupported()
+        {
             return HelperMethods.IsAndroid();
         }
 
-        internal override bool CheckValidation() {
+        internal override bool CheckValidation()
+        {
             return true;
         }
 
@@ -104,7 +106,8 @@ namespace LabFusion.Network
                 serverConnection = peer;
                 NetDataWriter writer = NewWriter(MessageTypes.SteamID);
 
-                listener.PeerDisconnectedEvent += (peer, disconnectInfo) => {
+                listener.PeerDisconnectedEvent += (peer, disconnectInfo) =>
+                {
                     FusionLogger.Error("Proxy has disconnected, restarting server discovery!");
                     serverConnection = null;
                     MelonCoroutines.Start(DiscoverServer());
@@ -278,7 +281,7 @@ namespace LabFusion.Network
         internal override void OnCleanupLayer()
         {
             client.Stop();
-            
+
             Disconnect();
 
             UnHookSteamEvents();
@@ -310,7 +313,7 @@ namespace LabFusion.Network
                     title = "Connection Failed",
                     message = "Failed to send data to the proxy, is FusionHelper running on your computer?",
                     type = NotificationType.ERROR
-                }) ;
+                });
                 return;
             }
 
@@ -400,7 +403,8 @@ namespace LabFusion.Network
 
         // We currently cant tell if this user is our friend or not,
         // so just always return true.
-        internal override bool IsFriend(ulong userId) {
+        internal override bool IsFriend(ulong userId)
+        {
             return true;
         }
 
@@ -744,18 +748,23 @@ namespace LabFusion.Network
 
             var lobbies = task.Result;
 
-            using (BatchedBoneMenu.Create()) {
-                foreach (var lobby in lobbies) {
+            using (BatchedBoneMenu.Create())
+            {
+                foreach (var lobby in lobbies)
+                {
                     var metadataTask = _lobbyManager.RequestLobbyMetadataInfo(lobby);
 
                     timeTaken = 0f;
 
-                    while (!metadataTask.IsCompleted) {
+                    while (!metadataTask.IsCompleted)
+                    {
                         yield return null;
                         timeTaken += TimeUtilities.DeltaTime;
 
-                        if (timeTaken >= 20f) {
-                            FusionNotifier.Send(new FusionNotification() {
+                        if (timeTaken >= 20f)
+                        {
+                            FusionNotifier.Send(new FusionNotification()
+                            {
                                 title = "Timed Out",
                                 showTitleOnPopup = true,
                                 message = "Timed out when requesting lobby ids.",
@@ -769,9 +778,11 @@ namespace LabFusion.Network
 
                     LobbyMetadataInfo info = metadataTask.Result;
 
-                    if (Internal_CanShowLobby(info)) {
+                    if (Internal_CanShowLobby(info))
+                    {
                         // Add to list
-                        ProxyNetworkLobby networkLobby = new() {
+                        ProxyNetworkLobby networkLobby = new()
+                        {
                             info = info
                         };
                         BoneMenuCreator.CreateLobby(_publicLobbiesCategory, info, networkLobby, sortMode);

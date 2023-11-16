@@ -18,7 +18,8 @@ using SLZ.Props.Weapons;
 namespace LabFusion.Network
 {
     // jesus christ Hub has so many events I need to sync
-    public enum BonelabHubEventType {
+    public enum BonelabHubEventType
+    {
         UNKNOWN = 0,
         ELEVATOR_BREAKOUT = 1,
         SETUP_ELEVATOR = 2,
@@ -71,67 +72,64 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<BonelabHubEventData>();
+            GameControl_HubPatches.IgnorePatches = true;
+            var controller = HubData.GameController;
+
+            if (!NetworkInfo.IsServer && controller)
             {
-                using (var data = reader.ReadFusionSerializable<BonelabHubEventData>())
+                switch (data.type)
                 {
-                    GameControl_HubPatches.IgnorePatches = true;
-                    var controller = HubData.GameController;
-
-                    if (!NetworkInfo.IsServer && controller) {
-                        switch (data.type)
-                        {
-                            default:
-                            case BonelabHubEventType.UNKNOWN:
-                                break;
-                            case BonelabHubEventType.ELEVATOR_BREAKOUT:
-                                controller.ELEVATORBREAKOUT();
-                                break;
-                            case BonelabHubEventType.SETUP_ELEVATOR:
-                                controller.SETUPELEVATOR();
-                                break;
-                            case BonelabHubEventType.OPEN_BW_DOOR:
-                                controller.OPENBWDOOR();
-                                break;
-                            case BonelabHubEventType.BW_BOX_DESTROYED:
-                                controller.BWBOXDESTROYED();
-                                break;
-                            case BonelabHubEventType.AIR_LOCK_ENTER_NORTH:
-                                controller.AIRLOCKENTERNORTH();
-                                break;
-                            case BonelabHubEventType.AIR_LOCK_ENTER_SOUTH:
-                                controller.AIRLOCKENTERSOUTH();
-                                break;
-                            case BonelabHubEventType.AIR_LOCK_OCCUPIED:
-                                controller.AIRLOCKOCCUPIED();
-                                break;
-                            case BonelabHubEventType.AIR_LOCK_UNOCCUPIED:
-                                controller.AIRLOCKUNOCCUPIED();
-                                break;
-                            case BonelabHubEventType.AIR_LOCK_CYCLE:
-                                controller.AIRLOCKCYCLE();
-                                break;
-                            case BonelabHubEventType.CANCEL_CYCLE:
-                                controller.CANCELCYCLE();
-                                break;
-                            case BonelabHubEventType.OPEN_SMALL_DOOR:
-                                controller.OpenSmallDoor();
-                                break;
-                            case BonelabHubEventType.CLOSE_SMALL_DOOR:
-                                controller.CloseSmallDoor();
-                                break;
-                            case BonelabHubEventType.OPEN_BIG_DOORS:
-                                controller.OpenBigDoors();
-                                break;
-                            case BonelabHubEventType.CLOSE_BIG_DOORS:
-                                controller.CloseBigDoors();
-                                break;
-                        }
-                    }
-
-                    GameControl_HubPatches.IgnorePatches = false;
+                    default:
+                    case BonelabHubEventType.UNKNOWN:
+                        break;
+                    case BonelabHubEventType.ELEVATOR_BREAKOUT:
+                        controller.ELEVATORBREAKOUT();
+                        break;
+                    case BonelabHubEventType.SETUP_ELEVATOR:
+                        controller.SETUPELEVATOR();
+                        break;
+                    case BonelabHubEventType.OPEN_BW_DOOR:
+                        controller.OPENBWDOOR();
+                        break;
+                    case BonelabHubEventType.BW_BOX_DESTROYED:
+                        controller.BWBOXDESTROYED();
+                        break;
+                    case BonelabHubEventType.AIR_LOCK_ENTER_NORTH:
+                        controller.AIRLOCKENTERNORTH();
+                        break;
+                    case BonelabHubEventType.AIR_LOCK_ENTER_SOUTH:
+                        controller.AIRLOCKENTERSOUTH();
+                        break;
+                    case BonelabHubEventType.AIR_LOCK_OCCUPIED:
+                        controller.AIRLOCKOCCUPIED();
+                        break;
+                    case BonelabHubEventType.AIR_LOCK_UNOCCUPIED:
+                        controller.AIRLOCKUNOCCUPIED();
+                        break;
+                    case BonelabHubEventType.AIR_LOCK_CYCLE:
+                        controller.AIRLOCKCYCLE();
+                        break;
+                    case BonelabHubEventType.CANCEL_CYCLE:
+                        controller.CANCELCYCLE();
+                        break;
+                    case BonelabHubEventType.OPEN_SMALL_DOOR:
+                        controller.OpenSmallDoor();
+                        break;
+                    case BonelabHubEventType.CLOSE_SMALL_DOOR:
+                        controller.CloseSmallDoor();
+                        break;
+                    case BonelabHubEventType.OPEN_BIG_DOORS:
+                        controller.OpenBigDoors();
+                        break;
+                    case BonelabHubEventType.CLOSE_BIG_DOORS:
+                        controller.CloseBigDoors();
+                        break;
                 }
             }
+
+            GameControl_HubPatches.IgnorePatches = false;
         }
     }
 }

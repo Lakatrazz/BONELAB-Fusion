@@ -14,14 +14,17 @@ using SLZ.Props;
 
 using UnityEngine;
 
-namespace LabFusion.Patching {
+namespace LabFusion.Patching
+{
     [HarmonyPatch(typeof(ObjectDestructable))]
-    public static class ObjectDestructablePatches {
+    public static class ObjectDestructablePatches
+    {
         public static bool IgnorePatches = false;
 
         [HarmonyPatch(nameof(ObjectDestructable.TakeDamage))]
         [HarmonyPrefix]
-        public static bool TakeDamagePrefix(ObjectDestructable __instance, Vector3 normal, float damage, bool crit, AttackType attackType, ref bool __state) {
+        public static bool TakeDamagePrefix(ObjectDestructable __instance, Vector3 normal, float damage, bool crit, AttackType attackType, ref bool __state)
+        {
             if (IgnorePatches)
                 return true;
 
@@ -36,27 +39,24 @@ namespace LabFusion.Patching {
 
         [HarmonyPatch(nameof(ObjectDestructable.TakeDamage))]
         [HarmonyPostfix]
-        public static void TakeDamagePostfix(ObjectDestructable __instance, Vector3 normal, float damage, bool crit, AttackType attackType, ref bool __state) {
+        public static void TakeDamagePostfix(ObjectDestructable __instance, Vector3 normal, float damage, bool crit, AttackType attackType, ref bool __state)
+        {
             PooleeDespawnPatch.IgnorePatch = false;
 
             if (IgnorePatches)
                 return;
 
-            if (NetworkInfo.HasServer && ObjectDestructableExtender.Cache.TryGet(__instance, out var syncable) && syncable.TryGetExtender<ObjectDestructableExtender>(out var extender)) {
+            if (NetworkInfo.HasServer && ObjectDestructableExtender.Cache.TryGet(__instance, out var syncable) && syncable.TryGetExtender<ObjectDestructableExtender>(out var extender))
+            {
                 // Send object destroy
-                if (syncable.IsOwner() && !__state && __instance._isDead) {
-                    using (var writer = FusionWriter.Create(ObjectDestructableDestroyData.Size))
-                    {
-                        using (var data = ObjectDestructableDestroyData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value))
-                        {
-                            writer.Write(data);
+                if (syncable.IsOwner() && !__state && __instance._isDead)
+                {
+                    using var writer = FusionWriter.Create(ObjectDestructableDestroyData.Size);
+                    using var data = ObjectDestructableDestroyData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value);
+                    writer.Write(data);
 
-                            using (var message = FusionMessage.Create(NativeMessageTag.ObjectDestructableDestroy, writer))
-                            {
-                                MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                            }
-                        }
-                    }
+                    using var message = FusionMessage.Create(NativeMessageTag.ObjectDestructableDestroy, writer);
+                    MessageSender.SendToServer(NetworkChannel.Reliable, message);
                 }
             }
         }

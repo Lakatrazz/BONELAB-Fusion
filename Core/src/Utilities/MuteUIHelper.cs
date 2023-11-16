@@ -13,13 +13,15 @@ using UnityEngine.Rendering.Universal;
 
 namespace LabFusion.Utilities
 {
-    public static class MuteUIHelper {
+    public static class MuteUIHelper
+    {
         private static PageItem _mutePage = null;
         private static GameObject _muteIcon = null;
         private static Renderer _muteRenderer = null;
         private static Camera _muteCamera = null;
 
-        public static void OnInitializeMelon() {
+        public static void OnInitializeMelon()
+        {
             FusionPreferences.ClientSettings.Muted.OnValueChanged += OnMutedChanged;
             FusionPreferences.ClientSettings.MutedIndicator.OnValueChanged += OnIndicatorChanged;
 
@@ -27,7 +29,8 @@ namespace LabFusion.Utilities
             RenderPipelineManager.endCameraRendering += (Il2CppSystem.Action<ScriptableRenderContext, Camera>)OnEndCameraRendering;
         }
 
-        public static void OnDeinitializeMelon() {
+        public static void OnDeinitializeMelon()
+        {
             FusionPreferences.ClientSettings.Muted.OnValueChanged -= OnMutedChanged;
             FusionPreferences.ClientSettings.MutedIndicator.OnValueChanged -= OnIndicatorChanged;
 
@@ -35,30 +38,37 @@ namespace LabFusion.Utilities
             RenderPipelineManager.endCameraRendering -= (Il2CppSystem.Action<ScriptableRenderContext, Camera>)OnEndCameraRendering;
         }
 
-        private static void OnBeginCameraRendering(ScriptableRenderContext context, Camera camera) {
+        private static void OnBeginCameraRendering(ScriptableRenderContext context, Camera camera)
+        {
             if (camera == _muteCamera && _muteRenderer != null)
                 _muteRenderer.enabled = true;
         }
 
-        private static void OnEndCameraRendering(ScriptableRenderContext context, Camera camera) {
+        private static void OnEndCameraRendering(ScriptableRenderContext context, Camera camera)
+        {
             if (camera == _muteCamera && _muteRenderer != null)
                 _muteRenderer.enabled = false;
         }
 
-        private static void OnMutedChanged(bool value) {
-            if (_mutePage != null) {
+        private static void OnMutedChanged(bool value)
+        {
+            if (_mutePage != null)
+            {
                 _mutePage.name = value ? "Quick Unmute" : "Quick Mute";
             }
 
             UpdateMuteIcon();
         }
 
-        private static void OnIndicatorChanged(bool value) {
+        private static void OnIndicatorChanged(bool value)
+        {
             UpdateMuteIcon();
         }
 
-        private static void UpdateMuteIcon() {
-            if (_muteIcon != null) {
+        private static void UpdateMuteIcon()
+        {
+            if (_muteIcon != null)
+            {
                 _muteIcon.SetActive(VoiceHelper.ShowIndicator);
             }
         }

@@ -11,9 +11,11 @@ using LabFusion.Syncables;
 using SLZ.Marrow.Data;
 using SLZ.Props;
 
-namespace LabFusion.Patching {
+namespace LabFusion.Patching
+{
     [HarmonyPatch(typeof(Prop_Health))]
-    public static class PropHealthPatches {
+    public static class PropHealthPatches
+    {
         public static bool IgnorePatches = false;
 
         [HarmonyPrefix]
@@ -33,23 +35,25 @@ namespace LabFusion.Patching {
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Prop_Health.DESTROYED))]
-        public static bool DESTROYEDPrefix(Prop_Health __instance) {
+        public static bool DESTROYEDPrefix(Prop_Health __instance)
+        {
             if (IgnorePatches)
                 return true;
 
-            if (NetworkInfo.HasServer && PropHealthExtender.Cache.TryGet(__instance, out var syncable) && syncable.TryGetExtender<PropHealthExtender>(out var extender)) {
+            if (NetworkInfo.HasServer && PropHealthExtender.Cache.TryGet(__instance, out var syncable) && syncable.TryGetExtender<PropHealthExtender>(out var extender))
+            {
                 if (!syncable.IsOwner())
                     return false;
                 // Send object destroy
-                else {
-                    using (var writer = FusionWriter.Create(PropHealthDestroyData.Size)) {
-                        using (var data = PropHealthDestroyData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value)) {
-                            writer.Write(data);
+                else
+                {
+                    using (var writer = FusionWriter.Create(PropHealthDestroyData.Size))
+                    {
+                        using var data = PropHealthDestroyData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value);
+                        writer.Write(data);
 
-                            using (var message = FusionMessage.Create(NativeMessageTag.PropHealthDestroy, writer)) {
-                                MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                            }
-                        }
+                        using var message = FusionMessage.Create(NativeMessageTag.PropHealthDestroy, writer);
+                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
                     }
                     return true;
                 }
@@ -61,7 +65,8 @@ namespace LabFusion.Patching {
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(Prop_Health.DESTROYED))]
-        public static void DESTROYEDPostfix(Prop_Health __instance) {
+        public static void DESTROYEDPostfix(Prop_Health __instance)
+        {
             PooleeDespawnPatch.IgnorePatch = false;
         }
     }

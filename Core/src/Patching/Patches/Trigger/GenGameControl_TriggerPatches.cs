@@ -16,13 +16,17 @@ using SLZ.Zones;
 
 using UnityEngine;
 
-namespace LabFusion.Patching {
+namespace LabFusion.Patching
+{
     [HarmonyPatch(typeof(GenGameControl_Trigger))]
-    public static class GenGameControl_TriggerPatches {
+    public static class GenGameControl_TriggerPatches
+    {
         [HarmonyPrefix]
         [HarmonyPatch(nameof(GenGameControl_Trigger.OnTriggerEnter))]
-        public static bool OnTriggerEnter(GenGameControl_Trigger __instance, Collider other) {
-            if (NetworkInfo.HasServer && other.CompareTag("Player")) {
+        public static bool OnTriggerEnter(GenGameControl_Trigger __instance, Collider other)
+        {
+            if (NetworkInfo.HasServer && other.CompareTag("Player"))
+            {
                 if (TriggerUtilities.VerifyLevelTrigger(__instance, other, out bool runMethod))
                     return runMethod;
 
@@ -37,8 +41,10 @@ namespace LabFusion.Patching {
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(GenGameControl_Trigger.OnTriggerExit))]
-        public static bool OnTriggerExit(GenGameControl_Trigger __instance, Collider other) {
-            if (NetworkInfo.HasServer && other.CompareTag("Player")) {
+        public static bool OnTriggerExit(GenGameControl_Trigger __instance, Collider other)
+        {
+            if (NetworkInfo.HasServer && other.CompareTag("Player"))
+            {
                 if (TriggerUtilities.VerifyLevelTrigger(__instance, other, out bool runMethod))
                     return runMethod;
 

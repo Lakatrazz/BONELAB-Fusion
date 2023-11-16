@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Extensions {
-    public static class TransformExtensions {
+namespace LabFusion.Extensions
+{
+    public static class TransformExtensions
+    {
         public static Quaternion TransformRotation(this Transform transform, Quaternion rotation) => transform.rotation * rotation;
 
         public static Quaternion InverseTransformRotation(this Transform transform, Quaternion rotation) => Quaternion.Inverse(transform.rotation) * rotation;
@@ -19,15 +21,18 @@ namespace LabFusion.Extensions {
         /// Causes a transform to look at the player.
         /// </summary>
         /// <param name="transform"></param>
-        public static void LookAtPlayer(this Transform transform) {
-            if (RigData.HasPlayer) {
+        public static void LookAtPlayer(this Transform transform)
+        {
+            if (RigData.HasPlayer)
+            {
                 var rm = RigData.RigReferences.RigManager;
                 var head = rm.physicsRig.m_head;
                 transform.rotation = Quaternion.LookRotation(Vector3.Normalize(transform.position - head.position), head.up);
             }
         }
 
-        internal static string GetBasePath(this Transform transform) {
+        internal static string GetBasePath(this Transform transform)
+        {
             if (transform.parent == null)
                 return $"{StringExtensions.UniqueSeparator}{transform.name}";
             return $"{transform.parent.GetBasePath()}{StringExtensions.UniqueSeparator}{GetSiblingNameIndex(transform)}{StringExtensions.UniqueSeparator}{transform.name}";
@@ -37,7 +42,8 @@ namespace LabFusion.Extensions {
         {
             List<Transform> buffer = new List<Transform>(parent.childCount);
 
-            for (var i = 0; i < parent.childCount; i++) {
+            for (var i = 0; i < parent.childCount; i++)
+            {
                 buffer.Add(parent.GetChild(i));
             }
 

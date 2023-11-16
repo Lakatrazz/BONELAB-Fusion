@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class BitsTrail : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class BitsTrail : AccessoryItem
+    {
         public override string Title => "LODS OF BITS";
 
         public override string Author => BitEconomy.BaBaAuthor;

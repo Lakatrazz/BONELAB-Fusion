@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class Briefcase : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class Briefcase : AccessoryItem
+    {
         public override string Title => "Briefcase";
 
         public override string Author => BitEconomy.BaBaAuthor;

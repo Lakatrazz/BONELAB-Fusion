@@ -14,7 +14,8 @@ namespace LabFusion.Utilities
     /// <summary>
     /// The basic types of notifications that can be sent.
     /// </summary>
-    public enum NotificationType {
+    public enum NotificationType
+    {
         /// <summary>
         /// Used to inform the user.
         /// </summary>
@@ -39,7 +40,8 @@ namespace LabFusion.Utilities
     /// <summary>
     /// The class used to supply text in a notification.
     /// </summary>
-    public struct NotificationText {
+    public struct NotificationText
+    {
         /// <summary>
         /// The text.
         /// </summary>
@@ -57,8 +59,10 @@ namespace LabFusion.Utilities
 
         public NotificationText(string text) : this(text, Color.white) { }
 
-        public NotificationText(string text, Color color, bool richText = false) {
-            if (!richText) {
+        public NotificationText(string text, Color color, bool richText = false)
+        {
+            if (!richText)
+            {
                 text = text.RemoveRichText();
             }
 
@@ -67,7 +71,8 @@ namespace LabFusion.Utilities
             this.richText = richText;
         }
 
-        public static implicit operator NotificationText(string text) {
+        public static implicit operator NotificationText(string text)
+        {
             return new NotificationText(text);
         }
     }
@@ -130,19 +135,23 @@ namespace LabFusion.Utilities
 
         private static bool _hasEnabledTutorialRig = false;
 
-        public static void Send(FusionNotification notification) {
+        public static void Send(FusionNotification notification)
+        {
             QueueNotification(notification);
         }
 
-        private static void QueueNotification(FusionNotification notification) { 
+        private static void QueueNotification(FusionNotification notification)
+        {
             _queuedNotifications.Enqueue(notification);
         }
 
-        private static void DequeueNotification() {
+        private static void DequeueNotification()
+        {
             var notification = _queuedNotifications.Dequeue();
 
             // Add to bonemenu
-            if (notification.isMenuItem) {
+            if (notification.isMenuItem)
+            {
                 // Use a name generated with an index because BoneMenu returns an existing category if names match
                 string generated = $"Internal_Notification_Generated_{_notificationNumber}";
                 var category = BoneMenuCreator.NotificationCategory.CreateCategory(generated, notification.title.color);
@@ -165,7 +174,8 @@ namespace LabFusion.Utilities
             // Show to the player
             var rm = RigData.RigReferences.RigManager;
 
-            if (notification.isPopup && !rm.IsNOC()) {
+            if (notification.isPopup && !rm.IsNOC())
+            {
                 var tutorialRig = rm.tutorialRig;
                 var headTitles = tutorialRig.headTitles;
 
@@ -194,10 +204,12 @@ namespace LabFusion.Utilities
             }
         }
 
-        internal static void EnableTutorialRig() {
+        internal static void EnableTutorialRig()
+        {
             var rm = RigData.RigReferences.RigManager;
 
-            if (!rm.IsNOC()) {
+            if (!rm.IsNOC())
+            {
                 var tutorialRig = rm.tutorialRig;
                 var headTitles = tutorialRig.headTitles;
 
@@ -207,10 +219,12 @@ namespace LabFusion.Utilities
             }
         }
 
-        internal static bool IsPlayingNotification() {
+        internal static bool IsPlayingNotification()
+        {
             var rm = RigData.RigReferences.RigManager;
 
-            if (!rm.IsNOC()) {
+            if (!rm.IsNOC())
+            {
                 var tutorialRig = rm.tutorialRig;
                 var headTitles = tutorialRig.headTitles;
 
@@ -220,17 +234,22 @@ namespace LabFusion.Utilities
             return false;
         }
 
-        internal static void OnUpdate() {
+        internal static void OnUpdate()
+        {
             // Make sure we aren't loading so we can dequeue existing notifications
-            if (_queuedNotifications.Count > 0 && !FusionSceneManager.IsLoading() && RigData.HasPlayer) {
+            if (_queuedNotifications.Count > 0 && !FusionSceneManager.IsLoading() && RigData.HasPlayer)
+            {
                 // Enable the tutorial rig a frame before showing notifs
-                if (!_hasEnabledTutorialRig) {
+                if (!_hasEnabledTutorialRig)
+                {
                     EnableTutorialRig();
                     _hasEnabledTutorialRig = true;
                 }
-                else {
+                else
+                {
                     // Dequeue notifications
-                    if (_queuedNotifications.Count > 0 && !IsPlayingNotification()) {
+                    if (_queuedNotifications.Count > 0 && !IsPlayingNotification())
+                    {
                         DequeueNotification();
                     }
                 }

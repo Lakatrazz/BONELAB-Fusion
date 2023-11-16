@@ -42,29 +42,37 @@ namespace LabFusion.SDK.Points
 
         private float _bitTime;
 
-        private static string Internal_CreateNextLevelDescription(int level) {
+        private static string Internal_CreateNextLevelDescription(int level)
+        {
             return $"\n\nNext Level: {level} - Grants {level + 1} bits per minute.";
         }
 
-        private static string Internal_CreateDescription(int bits) {
+        private static string Internal_CreateDescription(int bits)
+        {
             string suffix = bits != 1 ? "s" : "";
 
             return $"Hires a team of hard working nullbodies to mine valuables from the depths of MythOS. Grants {bits} bit{suffix} per minute you are in a Fusion lobby with another person.";
         }
 
-        public override void OnLateUpdate() {
-            if (IsUnlocked && IsEquipped && NetworkInfo.HasServer) {
-                if (PlayerIdManager.HasOtherPlayers) {
+        public override void OnLateUpdate()
+        {
+            if (IsUnlocked && IsEquipped && NetworkInfo.HasServer)
+            {
+                if (PlayerIdManager.HasOtherPlayers)
+                {
                     _bitTime += TimeUtilities.DeltaTime;
 
-                    if (_bitTime > 60f) {
-                        while (_bitTime > 60f) {
+                    if (_bitTime > 60f)
+                    {
+                        while (_bitTime > 60f)
+                        {
                             _bitTime -= 60f;
                             PointItemManager.RewardBits(1 + (UpgradeLevel + 1), false);
                         }
                     }
                 }
-                else {
+                else
+                {
                     _bitTime = 0f;
                 }
             }

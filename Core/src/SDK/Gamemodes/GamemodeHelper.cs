@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabFusion.SDK.Gamemodes {
-    public static class GamemodeHelper {
+namespace LabFusion.SDK.Gamemodes
+{
+    public static class GamemodeHelper
+    {
         // Prefix
         public const string DefaultPrefix = "InternalGamemodeMetadata";
 

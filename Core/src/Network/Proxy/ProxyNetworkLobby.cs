@@ -15,7 +15,8 @@ namespace LabFusion.Network
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public void CacheMetadata(string key, string value) {
+        public void CacheMetadata(string key, string value)
+        {
             _cachedMetadata[key] = value;
         }
 
@@ -41,8 +42,10 @@ namespace LabFusion.Network
             return _cachedMetadata.TryGetValue(key, out value) && !string.IsNullOrWhiteSpace(value);
         }
 
-        public override Action CreateJoinDelegate(ulong lobbyId) {
-            if (NetworkInfo.CurrentNetworkLayer is ProxyNetworkLayer proxyLayer) {
+        public override Action CreateJoinDelegate(ulong lobbyId)
+        {
+            if (NetworkInfo.CurrentNetworkLayer is ProxyNetworkLayer proxyLayer)
+            {
                 return () => proxyLayer.JoinServer(lobbyId);
             }
 

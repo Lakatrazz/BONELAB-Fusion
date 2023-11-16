@@ -20,7 +20,8 @@ namespace LabFusion.Utilities
             Scene sceneAsset = default;
             bool isFinished = false;
 
-            ThreadingUtilities.RunSynchronously(() => {
+            ThreadingUtilities.RunSynchronously(() =>
+            {
                 sceneAsset = SceneManager.GetSceneByName(scene);
                 isFinished = true;
             });
@@ -36,7 +37,8 @@ namespace LabFusion.Utilities
             if (!isValid)
                 return buffer;
 
-            ThreadingUtilities.RunSynchronously(() => {
+            ThreadingUtilities.RunSynchronously(() =>
+            {
                 buffer.Capacity = sceneAsset.rootCount;
                 sceneAsset.GetRootGameObjects(buffer);
                 isFinished = true;

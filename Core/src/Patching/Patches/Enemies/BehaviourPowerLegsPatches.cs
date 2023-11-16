@@ -14,12 +14,15 @@ using PuppetMasta;
 
 using UnityEngine;
 
-namespace LabFusion.Patching {
+namespace LabFusion.Patching
+{
     [HarmonyPatch(typeof(BehaviourPowerLegs))]
-    public static class BehaviourPowerLegsPatches {
+    public static class BehaviourPowerLegsPatches
+    {
         [HarmonyPrefix]
         [HarmonyPatch(nameof(BehaviourPowerLegs.SwitchLocoState))]
-        public static bool SwitchLocoState(BehaviourPowerLegs __instance, BehaviourBaseNav.LocoState lState, float coolDown, bool forceSwitch) {
+        public static bool SwitchLocoState(BehaviourPowerLegs __instance, BehaviourBaseNav.LocoState lState, float coolDown, bool forceSwitch)
+        {
             if (BehaviourBaseNavPatches.IgnorePatches)
                 return true;
 

@@ -9,7 +9,8 @@ using LabFusion.Patching;
 
 namespace LabFusion.Network
 {
-    public enum HolodeckEventType {
+    public enum HolodeckEventType
+    {
         UNKNOWN = 0,
         TOGGLE_DOOR = 1,
         SELECT_MATERIAL = 2,
@@ -62,41 +63,37 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<HolodeckEventData>();
+            if (NetworkInfo.IsServer && isServerHandled)
             {
-                using (var data = reader.ReadFusionSerializable<HolodeckEventData>())
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+            }
+            else
+            {
+                var deck = HolodeckData.GameController;
+
+                GameControl_HolodeckPatches.IgnorePatches = true;
+
+                if (deck != null)
                 {
-                    if (NetworkInfo.IsServer && isServerHandled) {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes))
-                        {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-                        }
-                    }
-                    else {
-                        var deck = HolodeckData.GameController;
-
-                        GameControl_HolodeckPatches.IgnorePatches = true;
-
-                        if (deck != null)
-                        {
-                            switch (data.type)
-                            {
-                                default:
-                                case HolodeckEventType.UNKNOWN:
-                                    break;
-                                case HolodeckEventType.TOGGLE_DOOR:
-                                    deck.doorHide.SetActive(!data.toggleValue);
-                                    deck.TOGGLEDOOR();
-                                    break;
-                                case HolodeckEventType.SELECT_MATERIAL:
-                                    deck.SELECTMATERIAL(data.selectionIndex);
-                                    break;
-                            }
-                        }
-
-                        GameControl_HolodeckPatches.IgnorePatches = false;
+                    switch (data.type)
+                    {
+                        default:
+                        case HolodeckEventType.UNKNOWN:
+                            break;
+                        case HolodeckEventType.TOGGLE_DOOR:
+                            deck.doorHide.SetActive(!data.toggleValue);
+                            deck.TOGGLEDOOR();
+                            break;
+                        case HolodeckEventType.SELECT_MATERIAL:
+                            deck.SELECTMATERIAL(data.selectionIndex);
+                            break;
                     }
                 }
+
+                GameControl_HolodeckPatches.IgnorePatches = false;
             }
         }
     }

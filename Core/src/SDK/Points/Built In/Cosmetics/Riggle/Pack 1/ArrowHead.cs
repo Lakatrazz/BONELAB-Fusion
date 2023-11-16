@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class ArrowHead : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class ArrowHead : AccessoryItem
+    {
         public override string Title => "Arrow Head";
 
         public override string Author => BitEconomy.RiggleAuthor;

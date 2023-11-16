@@ -14,20 +14,24 @@ using SLZ.Props.Weapons;
 
 using UnityEngine;
 
-namespace LabFusion.Syncables {
-    public class MagazineExtender : PropComponentExtender<Magazine> {
+namespace LabFusion.Syncables
+{
+    public class MagazineExtender : PropComponentExtender<Magazine>
+    {
         public static FusionComponentCache<Magazine, PropSyncable> Cache = new FusionComponentCache<Magazine, PropSyncable>();
 
         public TimedDespawner Despawner;
 
-        protected override void AddToCache(Magazine mag, PropSyncable syncable) {
+        protected override void AddToCache(Magazine mag, PropSyncable syncable)
+        {
             Cache.Add(mag, syncable);
             Despawner = mag.gameObject.AddComponent<TimedDespawner>();
             Despawner.syncable = syncable;
             Despawner.totalTime = 20f;
         }
 
-        protected override void RemoveFromCache(Magazine mag) {
+        protected override void RemoveFromCache(Magazine mag)
+        {
             Cache.Remove(mag);
 
             if (!Despawner.IsNOC())

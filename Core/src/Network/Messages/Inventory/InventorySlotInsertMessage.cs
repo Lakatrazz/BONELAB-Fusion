@@ -74,34 +74,36 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<InventorySlotInsertData>();
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
             {
-                using (var data = reader.ReadFusionSerializable<InventorySlotInsertData>()) {
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled) {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessageExcept(data.inserter, NetworkChannel.Reliable, message, false);
-                        }
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.inserter, NetworkChannel.Reliable, message, false);
+            }
+            else
+            {
+                if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable && propSyncable.TryGetExtender<WeaponSlotExtender>(out var extender))
+                {
+                    RigReferenceCollection references = null;
+
+                    if (data.smallId == PlayerIdManager.LocalSmallId)
+                    {
+                        references = RigData.RigReferences;
                     }
-                    else {
-                        if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable && propSyncable.TryGetExtender<WeaponSlotExtender>(out var extender)) {
-                            RigReferenceCollection references = null;
-                            
-                            if (data.smallId == PlayerIdManager.LocalSmallId) {
-                                references = RigData.RigReferences;
-                            }
-                            else if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep)) {
-                                references = rep.RigReferences;
-                            }
+                    else if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep))
+                    {
+                        references = rep.RigReferences;
+                    }
 
-                            if (references != null) {
-                                extender.Component.interactableHost.TryDetach();
+                    if (references != null)
+                    {
+                        extender.Component.interactableHost.TryDetach();
 
-                                InventorySlotReceiverDrop.PreventInsertCheck = true;
-                                references.GetSlot(data.slotIndex, data.isAvatarSlot).InsertInSlot(extender.Component.interactableHost);
-                                InventorySlotReceiverDrop.PreventInsertCheck = false;
-                            }
-                        }
+                        InventorySlotReceiverDrop.PreventInsertCheck = true;
+                        references.GetSlot(data.slotIndex, data.isAvatarSlot).InsertInSlot(extender.Component.interactableHost);
+                        InventorySlotReceiverDrop.PreventInsertCheck = false;
                     }
                 }
             }

@@ -14,7 +14,8 @@ namespace LabFusion.Network
     {
         public string levelBarcode;
 
-        public static int GetSize(string barcode) {
+        public static int GetSize(string barcode)
+        {
             return barcode.GetSize();
         }
 
@@ -28,12 +29,15 @@ namespace LabFusion.Network
             levelBarcode = reader.ReadString();
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
 
-        public static SceneLoadData Create(string levelBarcode) {
-            return new SceneLoadData() {
+        public static SceneLoadData Create(string levelBarcode)
+        {
+            return new SceneLoadData()
+            {
                 levelBarcode = levelBarcode,
             };
         }
@@ -45,16 +49,15 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            if (!NetworkInfo.IsServer && !isServerHandled) {
-                using (var reader = FusionReader.Create(bytes)) {
-                    using (var data = reader.ReadFusionSerializable<SceneLoadData>()) {
+            if (!NetworkInfo.IsServer && !isServerHandled)
+            {
+                using var reader = FusionReader.Create(bytes);
+                using var data = reader.ReadFusionSerializable<SceneLoadData>();
 #if DEBUG
-                        FusionLogger.Log($"Received level load for {data.levelBarcode}!");
+                FusionLogger.Log($"Received level load for {data.levelBarcode}!");
 #endif
 
-                        FusionSceneManager.SetTargetScene(data.levelBarcode);
-                    }
-                }
+                FusionSceneManager.SetTargetScene(data.levelBarcode);
             }
         }
     }

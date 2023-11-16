@@ -6,8 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabFusion.Network {
-    public enum VersionResult {
+namespace LabFusion.Network
+{
+    public enum VersionResult
+    {
         Unknown = 0,
         Ok = 1,
         Lower = 2,
@@ -17,14 +19,16 @@ namespace LabFusion.Network {
     /// <summary>
     /// Helper class for verifying users and actions.
     /// </summary>
-    public static class NetworkVerification {
+    public static class NetworkVerification
+    {
         /// <summary>
         /// Compares the server and user versions.
         /// </summary>
         /// <param name="server"></param>
         /// <param name="user"></param>
         /// <returns></returns>
-        public static VersionResult CompareVersion(Version server, Version user) {
+        public static VersionResult CompareVersion(Version server, Version user)
+        {
             // We don't care about the patch/build number
             server = new Version(server.Major, server.Minor, 0);
             user = new Version(user.Major, user.Minor, 0);
@@ -33,7 +37,7 @@ namespace LabFusion.Network {
                 return VersionResult.Lower;
             else if (server > user)
                 return VersionResult.Higher;
-            
+
             return VersionResult.Ok;
         }
 
@@ -42,10 +46,12 @@ namespace LabFusion.Network {
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public static bool IsClientApproved(ulong userId) {
+        public static bool IsClientApproved(ulong userId)
+        {
             var privacy = FusionPreferences.LocalServerSettings.Privacy.GetValue();
 
-            switch (privacy) {
+            switch (privacy)
+            {
                 default:
                 case ServerPrivacy.LOCKED:
                     return false;

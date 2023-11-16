@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Data {
-    public class TunnelTipperDMData : DMLevelDataHandler {
+namespace LabFusion.Data
+{
+    public class TunnelTipperDMData : DMLevelDataHandler
+    {
         public override string LevelTitle => "Tunnel Tipper";
         protected override Vector3[] DeathmatchSpawnPoints => new Vector3[10] {
     new Vector3(10.0078f, 16.0968f, 21.5753f),

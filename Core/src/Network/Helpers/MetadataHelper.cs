@@ -9,8 +9,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabFusion.Network {
-    public static class MetadataHelper {
+namespace LabFusion.Network
+{
+    public static class MetadataHelper
+    {
         // Default keys
         public const string UsernameKey = "Username";
         public const string NicknameKey = "Nickname";
@@ -18,8 +20,10 @@ namespace LabFusion.Network {
         public const string PermissionKey = "PermissionLevel";
         public const string PlatformKey = "Platform";
 
-        public static bool TryGetPermissionLevel(this PlayerId id, out PermissionLevel level) {
-            if (id.TryGetMetadata(PermissionKey, out string rawLevel) && Enum.TryParse(rawLevel, out PermissionLevel newLevel)) {
+        public static bool TryGetPermissionLevel(this PlayerId id, out PermissionLevel level)
+        {
+            if (id.TryGetMetadata(PermissionKey, out string rawLevel) && Enum.TryParse(rawLevel, out PermissionLevel newLevel))
+            {
                 level = newLevel;
                 return true;
             }
@@ -28,24 +32,29 @@ namespace LabFusion.Network {
             return false;
         }
 
-        public static bool TryGetDisplayName(this PlayerId id, out string name) {
+        public static bool TryGetDisplayName(this PlayerId id, out string name)
+        {
             id.TryGetMetadata(UsernameKey, out var username);
             id.TryGetMetadata(NicknameKey, out var nickname);
 
             // Check validity
-            if (FusionMasterList.VerifyPlayer(id.LongId, username) == FusionMasterResult.IMPERSONATOR) {
+            if (FusionMasterList.VerifyPlayer(id.LongId, username) == FusionMasterResult.IMPERSONATOR)
+            {
                 username = $"{username} (FAKE)";
             }
 
-            if (FusionMasterList.VerifyPlayer(id.LongId, nickname) == FusionMasterResult.IMPERSONATOR) {
+            if (FusionMasterList.VerifyPlayer(id.LongId, nickname) == FusionMasterResult.IMPERSONATOR)
+            {
                 nickname = $"{nickname} (FAKE)";
             }
 
             // Convert how the nickname is displayed
-            if (!string.IsNullOrWhiteSpace(nickname)) {
+            if (!string.IsNullOrWhiteSpace(nickname))
+            {
                 var visibility = FusionPreferences.ClientSettings.NicknameVisibility.GetValue();
 
-                switch (visibility) {
+                switch (visibility)
+                {
                     default:
                     case NicknameVisibility.SHOW_WITH_PREFIX:
                         name = $"~{nickname}";
@@ -58,7 +67,8 @@ namespace LabFusion.Network {
                         break;
                 }
             }
-            else {
+            else
+            {
                 name = username;
             }
 

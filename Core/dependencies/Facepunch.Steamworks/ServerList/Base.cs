@@ -7,191 +7,191 @@ using Steamworks.Data;
 
 namespace Steamworks.ServerList
 {
-	public abstract class Base : IDisposable
-	{
+    public abstract class Base : IDisposable
+    {
 
-		#region ISteamMatchmakingServers
-		internal static ISteamMatchmakingServers Internal => SteamMatchmakingServers.Internal;
-		#endregion
-
-
-		/// <summary>
-		/// Which app we're querying. Defaults to the current app.
-		/// </summary>
-		public AppId AppId { get; set; }
-
-		/// <summary>
-		/// When a new server is added, this function will get called
-		/// </summary>
-		public event Action OnChanges;
-
-		/// <summary>
-		/// Called for every responsive server
-		/// </summary>
-		public event Action<ServerInfo> OnResponsiveServer;
-
-		/// <summary>
-		/// A list of servers that responded. If you're only interested in servers that responded since you
-		/// last updated, then simply clear this list.
-		/// </summary>
-		public List<ServerInfo> Responsive = new List<ServerInfo>();
-
-		/// <summary>
-		/// A list of servers that were in the master list but didn't respond. 
-		/// </summary>
-		public List<ServerInfo> Unresponsive = new List<ServerInfo>();
+        #region ISteamMatchmakingServers
+        internal static ISteamMatchmakingServers Internal => SteamMatchmakingServers.Internal;
+        #endregion
 
 
-		public Base()
-		{
-			AppId = SteamClient.AppId; // Default AppId is this 
-		}
+        /// <summary>
+        /// Which app we're querying. Defaults to the current app.
+        /// </summary>
+        public AppId AppId { get; set; }
 
-		/// <summary>
-		/// Query the server list. Task result will be true when finished
-		/// </summary>
-		/// <returns></returns>
-		public virtual async Task<bool> RunQueryAsync( float timeoutSeconds = 10 )
-		{
-			var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        /// <summary>
+        /// When a new server is added, this function will get called
+        /// </summary>
+        public event Action OnChanges;
 
-			Reset();
-			LaunchQuery();
+        /// <summary>
+        /// Called for every responsive server
+        /// </summary>
+        public event Action<ServerInfo> OnResponsiveServer;
 
-			var thisRequest = request;
+        /// <summary>
+        /// A list of servers that responded. If you're only interested in servers that responded since you
+        /// last updated, then simply clear this list.
+        /// </summary>
+        public List<ServerInfo> Responsive = new List<ServerInfo>();
 
-			while ( IsRefreshing )
-			{
-				await Task.Delay( 33 );
+        /// <summary>
+        /// A list of servers that were in the master list but didn't respond. 
+        /// </summary>
+        public List<ServerInfo> Unresponsive = new List<ServerInfo>();
 
-				//
-				// The request has been cancelled or changed in some way
-				//
-				if ( request.Value == IntPtr.Zero || thisRequest.Value != request.Value )
-					return false;
 
-				if ( !SteamClient.IsValid )
-					return false;
+        public Base()
+        {
+            AppId = SteamClient.AppId; // Default AppId is this 
+        }
 
-				var r = Responsive.Count;
+        /// <summary>
+        /// Query the server list. Task result will be true when finished
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<bool> RunQueryAsync(float timeoutSeconds = 10)
+        {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
-				UpdatePending();
-				UpdateResponsive();
+            Reset();
+            LaunchQuery();
 
-				if ( r != Responsive.Count )
-				{
-					InvokeChanges();
-				}
+            var thisRequest = request;
 
-				if ( stopwatch.Elapsed.TotalSeconds > timeoutSeconds )
-					break;
-			}
+            while (IsRefreshing)
+            {
+                await Task.Delay(33);
 
-			MovePendingToUnresponsive();
-			InvokeChanges();
+                //
+                // The request has been cancelled or changed in some way
+                //
+                if (request.Value == IntPtr.Zero || thisRequest.Value != request.Value)
+                    return false;
 
-			return true;
-		}
+                if (!SteamClient.IsValid)
+                    return false;
 
-		public virtual void Cancel() => Internal.CancelQuery( request );
+                var r = Responsive.Count;
 
-		// Overrides
-		internal abstract void LaunchQuery();
+                UpdatePending();
+                UpdateResponsive();
 
-		internal HServerListRequest request;
+                if (r != Responsive.Count)
+                {
+                    InvokeChanges();
+                }
 
-		#region Filters
+                if (stopwatch.Elapsed.TotalSeconds > timeoutSeconds)
+                    break;
+            }
 
-		internal List<MatchMakingKeyValuePair> filters = new List<MatchMakingKeyValuePair>();
-		internal virtual MatchMakingKeyValuePair[] GetFilters() => filters.ToArray();
+            MovePendingToUnresponsive();
+            InvokeChanges();
 
-		public void AddFilter( string key, string value )
-		{
-			filters.Add( new MatchMakingKeyValuePair { Key = key, Value = value } );
-		}
+            return true;
+        }
 
-		#endregion
+        public virtual void Cancel() => Internal.CancelQuery(request);
 
-		internal int Count => Internal.GetServerCount( request );
-		internal bool IsRefreshing => request.Value != IntPtr.Zero && Internal.IsRefreshing( request );
-		internal List<int> watchList = new List<int>();
-		internal int LastCount = 0;
+        // Overrides
+        internal abstract void LaunchQuery();
 
-		void Reset()
-		{
-			ReleaseQuery();
-			LastCount = 0;
-			watchList.Clear();
-		}
+        internal HServerListRequest request;
 
-		void ReleaseQuery()
-		{
-			if ( request.Value != IntPtr.Zero )
-			{
-				Cancel();
-				Internal.ReleaseRequest( request );
-				request = IntPtr.Zero;
-			}
-		}
+        #region Filters
 
-		public void Dispose()
-		{
-			ReleaseQuery();
-		}
+        internal List<MatchMakingKeyValuePair> filters = new List<MatchMakingKeyValuePair>();
+        internal virtual MatchMakingKeyValuePair[] GetFilters() => filters.ToArray();
 
-		internal void InvokeChanges()
-		{
-			OnChanges?.Invoke();
-		}
+        public void AddFilter(string key, string value)
+        {
+            filters.Add(new MatchMakingKeyValuePair { Key = key, Value = value });
+        }
 
-		void UpdatePending()
-		{
-			var count = Count;
-			if ( count == LastCount ) return;
-			
-			for ( int i = LastCount; i < count; i++ )
-			{
-				watchList.Add( i );
-			}
-			
-			LastCount = count;
-		}
+        #endregion
 
-		public void UpdateResponsive()
-		{
-			watchList.RemoveAll( x =>
-			{
-				var info = Internal.GetServerDetails( request, x );
-				if ( info.HadSuccessfulResponse )
-				{
-					OnServer( ServerInfo.From( info ), info.HadSuccessfulResponse );
-					return true;
-				}
+        internal int Count => Internal.GetServerCount(request);
+        internal bool IsRefreshing => request.Value != IntPtr.Zero && Internal.IsRefreshing(request);
+        internal List<int> watchList = new List<int>();
+        internal int LastCount = 0;
 
-				return false;
-			} );
-		}
+        void Reset()
+        {
+            ReleaseQuery();
+            LastCount = 0;
+            watchList.Clear();
+        }
 
-		void MovePendingToUnresponsive()
-		{
-			watchList.RemoveAll( x =>
-			{
-				var info = Internal.GetServerDetails( request, x );
-				OnServer( ServerInfo.From( info ), info.HadSuccessfulResponse );
-				return true;
-			} );
-		}
+        void ReleaseQuery()
+        {
+            if (request.Value != IntPtr.Zero)
+            {
+                Cancel();
+                Internal.ReleaseRequest(request);
+                request = IntPtr.Zero;
+            }
+        }
 
-		private void OnServer( ServerInfo serverInfo, bool responded )
-		{
-			if ( responded )
-			{
-				Responsive.Add( serverInfo );
-				OnResponsiveServer?.Invoke( serverInfo );
-				return;
-			}
-			
-			Unresponsive.Add( serverInfo );
-		}
-	}
+        public void Dispose()
+        {
+            ReleaseQuery();
+        }
+
+        internal void InvokeChanges()
+        {
+            OnChanges?.Invoke();
+        }
+
+        void UpdatePending()
+        {
+            var count = Count;
+            if (count == LastCount) return;
+
+            for (int i = LastCount; i < count; i++)
+            {
+                watchList.Add(i);
+            }
+
+            LastCount = count;
+        }
+
+        public void UpdateResponsive()
+        {
+            watchList.RemoveAll(x =>
+            {
+                var info = Internal.GetServerDetails(request, x);
+                if (info.HadSuccessfulResponse)
+                {
+                    OnServer(ServerInfo.From(info), info.HadSuccessfulResponse);
+                    return true;
+                }
+
+                return false;
+            });
+        }
+
+        void MovePendingToUnresponsive()
+        {
+            watchList.RemoveAll(x =>
+            {
+                var info = Internal.GetServerDetails(request, x);
+                OnServer(ServerInfo.From(info), info.HadSuccessfulResponse);
+                return true;
+            });
+        }
+
+        private void OnServer(ServerInfo serverInfo, bool responded)
+        {
+            if (responded)
+            {
+                Responsive.Add(serverInfo);
+                OnResponsiveServer?.Invoke(serverInfo);
+                return;
+            }
+
+            Unresponsive.Add(serverInfo);
+        }
+    }
 }

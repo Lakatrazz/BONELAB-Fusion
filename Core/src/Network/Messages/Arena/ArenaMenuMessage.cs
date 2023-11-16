@@ -19,7 +19,8 @@ using LabFusion.Exceptions;
 
 namespace LabFusion.Network
 {
-    public enum ArenaMenuType {
+    public enum ArenaMenuType
+    {
         UNKNOWN = 0,
         CHALLENGE_SELECT = 1,
         TRIAL_SELECT = 2,

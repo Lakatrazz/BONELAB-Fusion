@@ -22,20 +22,25 @@ namespace LabFusion.SDK.Achievements
 
         public override Texture2D PreviewImage => FusionAchievementLoader.GetPair(nameof(GuardianAngel)).Preview;
 
-        protected override void OnRegister() {
+        protected override void OnRegister()
+        {
             MultiplayerHooking.OnPlayerAction += OnPlayerAction;
         }
 
-        protected override void OnUnregister() {
+        protected override void OnUnregister()
+        {
             MultiplayerHooking.OnPlayerAction -= OnPlayerAction;
         }
 
-        private void OnPlayerAction(PlayerId player, PlayerActionType type, PlayerId otherPlayer) {
+        private void OnPlayerAction(PlayerId player, PlayerActionType type, PlayerId otherPlayer)
+        {
             // Was the person saved?
-            if (!player.IsSelf && type == PlayerActionType.RECOVERY) {
+            if (!player.IsSelf && type == PlayerActionType.RECOVERY)
+            {
                 // Check the most recently killed NPC
                 // If we are the owner, we probably saved them
-                if (PuppetMasterExtender.LastKilled != null && PuppetMasterExtender.LastKilled.IsOwner()) {
+                if (PuppetMasterExtender.LastKilled != null && PuppetMasterExtender.LastKilled.IsOwner())
+                {
                     IncrementTask();
                 }
             }

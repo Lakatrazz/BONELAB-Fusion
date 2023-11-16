@@ -66,42 +66,39 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<GunShotData>();
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
             {
-                using (var data = reader.ReadFusionSerializable<GunShotData>())
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+            }
+            else
+            {
+                if (SyncManager.TryGetSyncable(data.gunId, out var gun) && gun is PropSyncable gunSyncable && gunSyncable.TryGetExtender<GunExtender>(out var extender))
                 {
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled) {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-                        }
-                    }
-                    else
+                    // Fire the gun, make sure it has ammo in its mag so it can fire properly
+                    var comp = extender.GetComponent(data.gunIndex);
+
+                    comp.hasFiredOnce = false;
+                    comp._hasFiredSinceLastBroadcast = false;
+                    comp.isTriggerPulledOnAttach = false;
+
+                    if (comp._magState != null)
                     {
-                        if (SyncManager.TryGetSyncable(data.gunId, out var gun) && gun is PropSyncable gunSyncable && gunSyncable.TryGetExtender<GunExtender>(out var extender))
-                        {
-                            // Fire the gun, make sure it has ammo in its mag so it can fire properly
-                            var comp = extender.GetComponent(data.gunIndex);
-
-                            comp.hasFiredOnce = false;
-                            comp._hasFiredSinceLastBroadcast = false;
-                            comp.isTriggerPulledOnAttach = false;
-
-                            if (comp._magState != null) {
-                                comp._magState.SetCartridge(data.ammoCount + 1);
-                            }
-
-                            comp.CeaseFire();
-                            comp.Charge();
-
-                            if (!comp.allowFireOnSlideGrabbed)
-                                comp.SlideGrabbedReleased();
-                            
-                            GunPatches.IgnorePatches = true;
-                            comp.Fire();
-                            GunPatches.IgnorePatches = false;
-                        }
+                        comp._magState.SetCartridge(data.ammoCount + 1);
                     }
+
+                    comp.CeaseFire();
+                    comp.Charge();
+
+                    if (!comp.allowFireOnSlideGrabbed)
+                        comp.SlideGrabbedReleased();
+
+                    GunPatches.IgnorePatches = true;
+                    comp.Fire();
+                    GunPatches.IgnorePatches = false;
                 }
             }
         }

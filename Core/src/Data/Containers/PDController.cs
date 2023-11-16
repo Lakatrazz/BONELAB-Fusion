@@ -11,7 +11,8 @@ using SystemQuaternion = System.Numerics.Quaternion;
 
 namespace LabFusion.Data
 {
-    public class PDController {
+    public class PDController
+    {
         // Tweak these values to control movement properties of all synced objects
         private const float PositionFrequency = 10f;
         private const float PositionDamping = 3f;
@@ -46,7 +47,8 @@ namespace LabFusion.Data
         private SystemVector3 _lastPosition = SystemVector3.Zero;
         private SystemQuaternion _lastRotation = SystemQuaternion.Identity;
 
-        public static void OnInitializeMelon() {
+        public static void OnInitializeMelon()
+        {
             _positionKp = CalculateKP(PositionFrequency);
             _positionKd = CalculateKD(PositionFrequency, PositionDamping);
 
@@ -54,11 +56,13 @@ namespace LabFusion.Data
             _rotationKd = CalculateKD(RotationFrequency, RotationDamping);
         }
 
-        public static void OnFixedUpdate() {
+        public static void OnFixedUpdate()
+        {
             float dt = TimeUtilities.FixedDeltaTime;
 
             // Make sure the deltaTime has changed
-            if (ManagedMathf.Approximately(dt, _lastFixedDelta)) {
+            if (ManagedMathf.Approximately(dt, _lastFixedDelta))
+            {
                 return;
             }
 
@@ -75,30 +79,37 @@ namespace LabFusion.Data
             _rotationKdg = (_rotationKd + _rotationKp * dt) * rG;
         }
 
-        private static float CalculateKP(float frequency) {
+        private static float CalculateKP(float frequency)
+        {
             return (6f * frequency) * (6f * frequency) * 0.25f;
         }
 
-        private static float CalculateKD(float frequency, float damping) {
+        private static float CalculateKD(float frequency, float damping)
+        {
             return 4.5f * frequency * damping;
         }
 
-        public void ResetPosition() {
+        public void ResetPosition()
+        {
             _validPosition = false;
         }
-        
-        public void ResetRotation() {
+
+        public void ResetRotation()
+        {
             _validRotation = false;
         }
 
-        public void Reset() {
+        public void Reset()
+        {
             ResetPosition();
             ResetRotation();
         }
 
-        public SystemVector3 GetForce(in Rigidbody rb, in SystemVector3 position, in SystemVector3 velocity, in SystemVector3 targetPos, in SystemVector3 targetVel) {
+        public SystemVector3 GetForce(in Rigidbody rb, in SystemVector3 position, in SystemVector3 velocity, in SystemVector3 targetPos, in SystemVector3 targetVel)
+        {
             // Update derivatives if needed
-            if (!_validPosition) {
+            if (!_validPosition)
+            {
                 _lastPosition = targetPos;
                 _lastVelocity = targetVel;
                 _validPosition = true;
@@ -133,7 +144,8 @@ namespace LabFusion.Data
         public SystemVector3 GetTorque(Rigidbody rb, in SystemQuaternion rotation, in SystemVector3 angularVelocity, in SystemQuaternion targetRot, in SystemVector3 targetVel)
         {
             // Update derivatives if needed
-            if (!_validRotation) {
+            if (!_validRotation)
+            {
                 _lastRotation = targetRot;
                 _lastAngularVelocity = targetVel;
                 _validRotation = true;
@@ -152,7 +164,7 @@ namespace LabFusion.Data
             }
             q.ToAngleAxis(out float xMag, out SystemVector3 x);
             x = SystemVector3.Normalize(x);
-            
+
             x *= ManagedMathf.Deg2Rad;
             var torque = _rotationKsg * x * xMag + _rotationKdg * (Vt1 - angularVelocity);
 

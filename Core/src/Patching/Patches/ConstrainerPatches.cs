@@ -16,8 +16,10 @@ using SLZ.Props;
 using SLZ.Rig;
 using UnityEngine;
 
-namespace LabFusion.Patching {
-    public struct ConstrainerPointPair {
+namespace LabFusion.Patching
+{
+    public struct ConstrainerPointPair
+    {
         public Constrainer.ConstraintMode mode;
 
         public Vector3 point1;
@@ -45,13 +47,15 @@ namespace LabFusion.Patching {
     }
 
     [HarmonyPatch(typeof(Constrainer))]
-    public static class ConstrainerPatches {
+    public static class ConstrainerPatches
+    {
 
         public static bool IsReceivingConstraints = false;
         public static ushort FirstId;
         public static ushort SecondId;
 
-        private static void OverrideSourceTracker(Constrainer constrainer, GameObject go) {
+        private static void OverrideSourceTracker(Constrainer constrainer, GameObject go)
+        {
             if (go == null)
                 return;
 
@@ -65,37 +69,45 @@ namespace LabFusion.Patching {
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Constrainer.PrimaryButtonUp))]
-        public static bool PrimaryButtonUpPrefix(Constrainer __instance) {
+        public static bool PrimaryButtonUpPrefix(Constrainer __instance)
+        {
             if (IsReceivingConstraints)
                 return true;
 
-            if (NetworkInfo.HasServer) {
+            if (NetworkInfo.HasServer)
+            {
                 // Removing constraints
-                if (__instance.mode == Constrainer.ConstraintMode.Remove) {
+                if (__instance.mode == Constrainer.ConstraintMode.Remove)
+                {
                     // Override the "source" on the trackers so that we know what constrainer removed them
                     // This is then checked in the patch and is verified by the server (the server requires this constrainer to exist!)
                     OverrideSourceTracker(__instance, __instance._gO1);
                     OverrideSourceTracker(__instance, __instance._gO2);
                 }
                 // Creating constraints
-                else {
+                else
+                {
                     // Prevent player constraining if its disabled
-                    if (!ConstrainerUtilities.PlayerConstraintsEnabled) {
+                    if (!ConstrainerUtilities.PlayerConstraintsEnabled)
+                    {
                         bool preventPlayer = false;
 
-                        if (__instance._rb1.IsPartOfPlayer()) {
+                        if (__instance._rb1.IsPartOfPlayer())
+                        {
                             __instance._gO1 = null;
                             __instance._rb1 = null;
                             preventPlayer = true;
                         }
 
-                        if (__instance._rb2.IsPartOfPlayer()) {
+                        if (__instance._rb2.IsPartOfPlayer())
+                        {
                             __instance._gO2 = null;
                             __instance._rb2 = null;
                             preventPlayer = true;
                         }
 
-                        if (preventPlayer) {
+                        if (preventPlayer)
+                        {
                             __instance._raycastMissedOnDown = true;
                             __instance.sfx.Release();
                             return false;
@@ -142,7 +154,8 @@ namespace LabFusion.Patching {
                     MessageSender.SendToServer(NetworkChannel.Reliable, message);
                 }
                 // If this is a received message, setup the constraints
-                else {
+                else
+                {
                     var firstSyncable = new ConstraintSyncable(firstTracker);
                     SyncManager.RegisterSyncable(firstSyncable, FirstId);
 
@@ -154,14 +167,19 @@ namespace LabFusion.Patching {
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Constrainer.OnTriggerGripUpdate))]
-        public static bool OnTriggerGripUpdatePrefix(Constrainer __instance, Hand hand) {
-            if (NetworkInfo.HasServer) { 
-                if (PlayerRepManager.HasPlayerId(hand.manager)) {
+        public static bool OnTriggerGripUpdatePrefix(Constrainer __instance, Hand hand)
+        {
+            if (NetworkInfo.HasServer)
+            {
+                if (PlayerRepManager.HasPlayerId(hand.manager))
+                {
                     return false;
                 }
-                else if (ConstrainerExtender.Cache.TryGet(__instance, out var syncable) ){
+                else if (ConstrainerExtender.Cache.TryGet(__instance, out var syncable))
+                {
                     // Check if the mode was changed
-                    if (hand.Controller.GetMenuTap()) {
+                    if (hand.Controller.GetMenuTap())
+                    {
                         // Send mode message
                         Constrainer.ConstraintMode nextMode = __instance.mode;
                         if (nextMode == Constrainer.ConstraintMode.Remove)

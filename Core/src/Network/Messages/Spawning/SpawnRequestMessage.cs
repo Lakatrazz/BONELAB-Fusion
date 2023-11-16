@@ -58,23 +58,23 @@ namespace LabFusion.Network
     {
         public override byte? Tag => NativeMessageTag.SpawnRequest;
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
-            if (NetworkInfo.IsServer && isServerHandled) {
-                using (var reader = FusionReader.Create(bytes)) {
-                    using (var data = reader.ReadFusionSerializable<SpawnRequestData>())
-                    {
-                        var playerId = PlayerIdManager.GetPlayerId(data.owner);
+        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        {
+            if (NetworkInfo.IsServer && isServerHandled)
+            {
+                using var reader = FusionReader.Create(bytes);
+                using var data = reader.ReadFusionSerializable<SpawnRequestData>();
+                var playerId = PlayerIdManager.GetPlayerId(data.owner);
 
-                        // Check if we should ignore the spawn gun request
-                        if (data.hand == Handedness.UNDEFINED && playerId != null && !playerId.IsSelf && FusionDevTools.PreventSpawnGun(playerId)) {
-                            return;
-                        }
-
-                        var syncId = SyncManager.AllocateSyncID();
-
-                        PooleeUtilities.SendSpawn(data.owner, data.barcode, syncId, data.serializedTransform, false, null, data.hand);
-                    }
+                // Check if we should ignore the spawn gun request
+                if (data.hand == Handedness.UNDEFINED && playerId != null && !playerId.IsSelf && FusionDevTools.PreventSpawnGun(playerId))
+                {
+                    return;
                 }
+
+                var syncId = SyncManager.AllocateSyncID();
+
+                PooleeUtilities.SendSpawn(data.owner, data.barcode, syncId, data.serializedTransform, false, null, data.hand);
             }
             else
                 throw new ExpectedServerException();

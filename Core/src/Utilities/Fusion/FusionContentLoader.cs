@@ -10,8 +10,10 @@ using LabFusion.Data;
 
 using UnityEngine;
 
-namespace LabFusion.Utilities {
-    public static class FusionContentLoader {
+namespace LabFusion.Utilities
+{
+    public static class FusionContentLoader
+    {
         public static AssetBundle ContentBundle { get; private set; }
 
         public static GameObject PointShopPrefab { get; private set; }
@@ -76,10 +78,12 @@ namespace LabFusion.Utilities {
         private static readonly List<AudioClip> _combatPlaylist = new List<AudioClip>();
         public static AudioClip[] CombatPlaylist => _combatPlaylist.ToArray();
 
-        public static void OnBundleLoad() {
+        public static void OnBundleLoad()
+        {
             ContentBundle = FusionBundleLoader.LoadAssetBundle(ResourcePaths.ContentBundle);
 
-            if (ContentBundle != null) {
+            if (ContentBundle != null)
+            {
                 PointShopPrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.PointShopPrefab);
                 InfoBoxPrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.InfoBoxPrefab);
                 CupBoardPrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.CupBoardPrefab);
@@ -90,10 +94,11 @@ namespace LabFusion.Utilities {
                 BitPopupPrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.BitPopupPrefab);
                 MutePopupPrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.MutePopupPrefab);
 
-                SabrelakeLogo = ContentBundle.LoadPersistentAsset<Texture2D>(ResourcePaths.SabrelakeLogo); 
+                SabrelakeLogo = ContentBundle.LoadPersistentAsset<Texture2D>(ResourcePaths.SabrelakeLogo);
                 LavaGangLogo = ContentBundle.LoadPersistentAsset<Texture2D>(ResourcePaths.LavaGangLogo);
 
-                foreach (var song in _combatSongNames) {
+                foreach (var song in _combatSongNames)
+                {
                     _combatPlaylist.Add(ContentBundle.LoadPersistentAsset<AudioClip>(song));
                 }
 
@@ -137,7 +142,8 @@ namespace LabFusion.Utilities {
                 FusionLogger.Error("Content Bundle failed to load!");
         }
 
-        public static void OnBundleUnloaded() {
+        public static void OnBundleUnloaded()
+        {
             // Unload content bundle
             if (ContentBundle != null)
                 ContentBundle.Unload(true);

@@ -9,7 +9,8 @@ using MelonLoader;
 using LabFusion.Utilities;
 #endif
 
-namespace LabFusion.MarrowIntegration {
+namespace LabFusion.MarrowIntegration
+{
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
@@ -17,21 +18,25 @@ namespace LabFusion.MarrowIntegration {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(UltEventHolder))]
 #endif
-    public sealed class InvokeUltEventIfTeamLavaGang : FusionMarrowBehaviour {
+    public sealed class InvokeUltEventIfTeamLavaGang : FusionMarrowBehaviour
+    {
 #if MELONLOADER
         public InvokeUltEventIfTeamLavaGang(IntPtr intPtr) : base(intPtr) { }
 
         public static readonly FusionComponentCache<GameObject, InvokeUltEventIfTeamLavaGang> Cache = new FusionComponentCache<GameObject, InvokeUltEventIfTeamLavaGang>();
 
-        private void Awake() {
+        private void Awake()
+        {
             Cache.Add(gameObject, this);
         }
 
-        private void OnDestroy() {
+        private void OnDestroy()
+        {
             Cache.Remove(gameObject);
         }
 
-        public void Invoke() {
+        public void Invoke()
+        {
             var holder = GetComponent<UltEventHolder>();
 
             if (holder != null)

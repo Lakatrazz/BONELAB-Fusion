@@ -11,35 +11,42 @@ using LabFusion.Extensions;
 
 namespace LabFusion.Network
 {
-    public class PlayerMetadataRequestData : IFusionSerializable, IDisposable {
+    public class PlayerMetadataRequestData : IFusionSerializable, IDisposable
+    {
         public const int DefaultSize = sizeof(byte);
 
         public byte smallId;
         public string key;
         public string value;
 
-        public static int GetSize(string key, string value) {
+        public static int GetSize(string key, string value)
+        {
             return DefaultSize + key.GetSize() + value.GetSize();
         }
 
-        public void Serialize(FusionWriter writer) {
+        public void Serialize(FusionWriter writer)
+        {
             writer.Write(smallId);
             writer.Write(key);
             writer.Write(value);
         }
-        
-        public void Deserialize(FusionReader reader) {
+
+        public void Deserialize(FusionReader reader)
+        {
             smallId = reader.ReadByte();
             key = reader.ReadString();
             value = reader.ReadString();
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
 
-        public static PlayerMetadataRequestData Create(byte smallId, string key, string value) {
-            return new PlayerMetadataRequestData() {
+        public static PlayerMetadataRequestData Create(byte smallId, string key, string value)
+        {
+            return new PlayerMetadataRequestData()
+            {
                 smallId = smallId,
                 key = key,
                 value = value,
@@ -51,16 +58,16 @@ namespace LabFusion.Network
     {
         public override byte? Tag => NativeMessageTag.PlayerMetadataRequest;
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
+        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        {
             // This should only ever be handled by the server
-            if (NetworkInfo.IsServer && isServerHandled) {
-                using (FusionReader reader = FusionReader.Create(bytes)) {
-                    using (var data = reader.ReadFusionSerializable<PlayerMetadataRequestData>()) {
+            if (NetworkInfo.IsServer && isServerHandled)
+            {
+                using FusionReader reader = FusionReader.Create(bytes);
+                using var data = reader.ReadFusionSerializable<PlayerMetadataRequestData>();
 
-                        // Send the response to all clients
-                        PlayerSender.SendPlayerMetadataResponse(data.smallId, data.key, data.value);
-                    }
-                }
+                // Send the response to all clients
+                PlayerSender.SendPlayerMetadataResponse(data.smallId, data.key, data.value);
             }
             else
                 throw new ExpectedServerException();

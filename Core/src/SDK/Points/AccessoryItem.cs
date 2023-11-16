@@ -18,8 +18,10 @@ using Il2Delegate = Il2CppSystem.Delegate;
 
 namespace LabFusion.SDK.Points
 {
-    public abstract class AccessoryItem : PointItem {
-        protected class AccessoryInstance {
+    public abstract class AccessoryItem : PointItem
+    {
+        protected class AccessoryInstance
+        {
             public RigManager rigManager;
             public Avatar avatar;
 
@@ -37,7 +39,8 @@ namespace LabFusion.SDK.Points
             private bool _destroyed = false;
             public bool IsDestroyed => _destroyed;
 
-            public AccessoryInstance(PointItemPayload payload, GameObject accessory, bool isHiddenInView, AccessoryPoint itemPoint, AccessoryScaleMode scaleMode) {
+            public AccessoryInstance(PointItemPayload payload, GameObject accessory, bool isHiddenInView, AccessoryPoint itemPoint, AccessoryScaleMode scaleMode)
+            {
                 rigManager = payload.rigManager;
                 avatar = null;
 
@@ -54,22 +57,26 @@ namespace LabFusion.SDK.Points
                 Hook();
             }
 
-            private void Hook() {
+            private void Hook()
+            {
                 // We want our code to execute first in the RigManager, before the head is overriden
                 // So we combine these two delegates manually
                 rigManager.OnPostLateUpdate = Il2Delegate.Combine((Il2Action)OnPostLateUpdate, rigManager.OnPostLateUpdate).Cast<Il2Action>();
-                
+
                 ControllerRig.OnPauseStateChange += (Il2ActionBool)OnPauseStateChange;
             }
 
-            private void Unhook() {
-                if (!rigManager.IsNOC()) {
+            private void Unhook()
+            {
+                if (!rigManager.IsNOC())
+                {
                     rigManager.OnPostLateUpdate -= (Il2Action)OnPostLateUpdate;
                     ControllerRig.OnPauseStateChange -= (Il2ActionBool)OnPauseStateChange;
                 }
             }
 
-            private void OnPostLateUpdate() {
+            private void OnPostLateUpdate()
+            {
                 if (IsDestroyed)
                     return;
 
@@ -78,36 +85,43 @@ namespace LabFusion.SDK.Points
                 UpdateMirrors();
             }
 
-            private void OnPauseStateChange(bool value) {
+            private void OnPauseStateChange(bool value)
+            {
                 if (IsDestroyed)
                     return;
 
                 UpdateVisibility(value);
             }
-            
-            private void UpdateAvatar(Avatar avatar) {
+
+            private void UpdateAvatar(Avatar avatar)
+            {
                 this.avatar = avatar;
                 points = new();
 
-                foreach (var component in avatar.GetComponentsInChildren<MarrowCosmeticPoint>()) {
+                foreach (var component in avatar.GetComponentsInChildren<MarrowCosmeticPoint>())
+                {
                     var casted = component.TryCast<MarrowCosmeticPoint>();
 
-                    if (!points.ContainsKey(casted.Point)) {
+                    if (!points.ContainsKey(casted.Point))
+                    {
                         points.Add(casted.Point, casted);
                     }
                 }
             }
 
-            private void UpdateVisibility(bool paused) {
+            private void UpdateVisibility(bool paused)
+            {
                 if (!paused && isHiddenInView)
                     accessory.SetActive(false);
                 else
                     accessory.SetActive(true);
             }
 
-            public void Update(AccessoryPoint itemPoint, AccessoryScaleMode mode) {
+            public void Update(AccessoryPoint itemPoint, AccessoryScaleMode mode)
+            {
                 // Compare avatar
-                if (rigManager.avatar != avatar) {
+                if (rigManager.avatar != avatar)
+                {
                     UpdateAvatar(rigManager.avatar);
                 }
 
@@ -116,11 +130,13 @@ namespace LabFusion.SDK.Points
                 Quaternion rotation;
                 Vector3 scale;
                 // SDK offset transform
-                if (points.TryGetValue(itemPoint, out var component)) {
+                if (points.TryGetValue(itemPoint, out var component))
+                {
                     AccessoryItemHelper.GetTransform(component, out position, out rotation, out scale);
                 }
                 // Auto calculated transform
-                else {
+                else
+                {
                     AccessoryItemHelper.GetTransform(itemPoint, mode, rigManager, out position, out rotation, out scale);
                 }
 
@@ -128,29 +144,36 @@ namespace LabFusion.SDK.Points
                 transform.localScale = scale;
             }
 
-            public void InsertMirror(Mirror mirror, GameObject accessory) {
+            public void InsertMirror(Mirror mirror, GameObject accessory)
+            {
                 if (mirrors.ContainsKey(mirror))
                     return;
 
                 mirrors.Add(mirror, accessory);
             }
 
-            public void RemoveMirror(Mirror mirror) {
-                if (mirrors.TryGetValue(mirror, out var accessory)) {
+            public void RemoveMirror(Mirror mirror)
+            {
+                if (mirrors.TryGetValue(mirror, out var accessory))
+                {
                     mirrors.Remove(mirror);
 
                     GameObject.Destroy(accessory);
                 }
             }
 
-            public void UpdateMirrors() {
+            public void UpdateMirrors()
+            {
                 List<Mirror> mirrorsToRemove = null;
 
                 // Update all mirrors
-                foreach (var mirror in mirrors) {
-                    if (mirror.Key && mirror.Value) {
+                foreach (var mirror in mirrors)
+                {
+                    if (mirror.Key && mirror.Value)
+                    {
                         // Remove the mirror if its disabled
-                        if (!mirror.Key.isActiveAndEnabled) {
+                        if (!mirror.Key.isActiveAndEnabled)
+                        {
                             mirrorsToRemove ??= new List<Mirror>();
 
                             mirrorsToRemove.Add(mirror.Key);
@@ -158,10 +181,12 @@ namespace LabFusion.SDK.Points
                         }
 
                         // Set the mirror accessory active or inactive
-                        if (mirror.Key.rigManager != rigManager){
+                        if (mirror.Key.rigManager != rigManager)
+                        {
                             mirror.Value.SetActive(false);
                         }
-                        else {
+                        else
+                        {
                             mirror.Value.SetActive(true);
 
                             Transform reflectTran = mirror.Key._reflectTran;
@@ -192,23 +217,27 @@ namespace LabFusion.SDK.Points
                 }
 
                 // Remove necessary mirrors
-                if (mirrorsToRemove != null) {
+                if (mirrorsToRemove != null)
+                {
                     foreach (var mirror in mirrorsToRemove)
                         RemoveMirror(mirror);
                 }
             }
 
-            public bool IsValid() {
+            public bool IsValid()
+            {
                 return !rigManager.IsNOC() && !accessory.IsNOC();
             }
 
-            public void Cleanup() {
+            public void Cleanup()
+            {
                 _destroyed = true;
 
                 if (!accessory.IsNOC())
                     GameObject.Destroy(accessory);
 
-                foreach (var mirror in mirrors) {
+                foreach (var mirror in mirrors)
+                {
                     if (!mirror.Value.IsNOC())
                         GameObject.Destroy(mirror.Value);
                 }
@@ -236,18 +265,21 @@ namespace LabFusion.SDK.Points
 
         protected FusionDictionary<RigManager, AccessoryInstance> _accessoryInstances = new(new UnityComparer());
 
-        public override void OnUpdateObjects(PointItemPayload payload, bool isVisible) {
+        public override void OnUpdateObjects(PointItemPayload payload, bool isVisible)
+        {
             // Make sure we have a prefab
             if (isVisible && AccessoryPrefab == null)
                 return;
 
             // Check if this is a mirror payload
-            if (payload.type == PointItemPayloadType.MIRROR) {
+            if (payload.type == PointItemPayloadType.MIRROR)
+            {
                 // Make sure we have an accessory instance of this
                 if (!_accessoryInstances.ContainsKey(payload.rigManager))
                     return;
 
-                if (isVisible) {
+                if (isVisible)
+                {
                     Transform tempParent = new GameObject("Temp Parent").transform;
                     tempParent.gameObject.SetActive(false);
 
@@ -261,7 +293,8 @@ namespace LabFusion.SDK.Points
 
                     _accessoryInstances[payload.rigManager].InsertMirror(payload.mirror, accessory);
                 }
-                else {
+                else
+                {
                     _accessoryInstances[payload.rigManager].RemoveMirror(payload.mirror);
                 }
 
@@ -273,14 +306,16 @@ namespace LabFusion.SDK.Points
                 return;
 
             // Check if we need to destroy or create an accessory
-            if (isVisible && !_accessoryInstances.ContainsKey(payload.rigManager)) {
+            if (isVisible && !_accessoryInstances.ContainsKey(payload.rigManager))
+            {
                 var accessory = GameObject.Instantiate(AccessoryPrefab);
                 accessory.name = AccessoryPrefab.name;
 
                 var instance = new AccessoryInstance(payload, accessory, payload.type == PointItemPayloadType.SELF && IsHiddenInView, ItemPoint, ScaleMode);
                 _accessoryInstances.Add(payload.rigManager, instance);
             }
-            else if (!isVisible && _accessoryInstances.ContainsKey(payload.rigManager)) {
+            else if (!isVisible && _accessoryInstances.ContainsKey(payload.rigManager))
+            {
                 var instance = _accessoryInstances[payload.rigManager];
                 instance.Cleanup();
                 _accessoryInstances.Remove(payload.rigManager);
@@ -296,16 +331,20 @@ namespace LabFusion.SDK.Points
             // Check if all instances are valid. Otherwise, clean them up
             List<AccessoryInstance> accessoriesToRemove = null;
 
-            foreach (var instance in _accessoryInstances) {
-                if (!instance.Value.IsValid()) {
+            foreach (var instance in _accessoryInstances)
+            {
+                if (!instance.Value.IsValid())
+                {
                     accessoriesToRemove ??= new List<AccessoryInstance>();
 
                     accessoriesToRemove.Add(instance.Value);
                 }
             }
 
-            if (accessoriesToRemove != null) {
-                for (var i = 0; i < accessoriesToRemove.Count; i++) {
+            if (accessoriesToRemove != null)
+            {
+                for (var i = 0; i < accessoriesToRemove.Count; i++)
+                {
                     var instance = accessoriesToRemove[i];
                     instance.Cleanup();
                     _accessoryInstances.Remove(instance.rigManager);

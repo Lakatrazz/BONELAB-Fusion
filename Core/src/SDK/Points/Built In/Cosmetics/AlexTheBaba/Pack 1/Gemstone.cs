@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class Gemstone : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class Gemstone : AccessoryItem
+    {
         public override string Title => "Ancient Artifact";
 
         public override string Author => BitEconomy.BaBaAuthor;

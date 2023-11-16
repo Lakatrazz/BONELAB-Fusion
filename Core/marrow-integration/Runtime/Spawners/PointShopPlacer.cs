@@ -15,7 +15,8 @@ using SLZ.Marrow.Utilities;
 using SLZ.Marrow;
 #endif
 
-namespace LabFusion.MarrowIntegration {
+namespace LabFusion.MarrowIntegration
+{
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
@@ -29,7 +30,8 @@ namespace LabFusion.MarrowIntegration {
 
         public void Start()
         {
-            FusionSceneManager.HookOnLevelLoad(() => {
+            FusionSceneManager.HookOnLevelLoad(() =>
+            {
                 PointShopHelper.SetupPointShop(transform.position, transform.rotation, transform.lossyScale);
             });
         }

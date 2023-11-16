@@ -25,7 +25,8 @@ namespace LabFusion.Patching
     // Since some methods here use structs, we native patch thanks to IL2CPP nonsense
     public static class PlayerDamageReceiverPatches
     {
-        public static void Patch() {
+        public static void Patch()
+        {
             PatchReceiveAttack();
         }
 
@@ -61,30 +62,37 @@ namespace LabFusion.Patching
 
                         RigManager shooter = null;
 
-                        if (proxy != null && proxy.root != null) {
+                        if (proxy != null && proxy.root != null)
+                        {
                             shooter = RigManager.Cache.Get(proxy.root);
                         }
 
                         // Make sure we have the attacker and attacked
-                        if (rm != null && shooter != null) {
+                        if (rm != null && shooter != null)
+                        {
                             // Is the attacked person us?
-                            if (rm.IsSelf()) {
+                            if (rm.IsSelf())
+                            {
                                 // Were we hit by another player?
-                                if (PlayerRepManager.TryGetPlayerRep(shooter, out var rep)) {
+                                if (PlayerRepManager.TryGetPlayerRep(shooter, out var rep))
+                                {
                                     FusionPlayer.LastAttacker = rep.PlayerId;
 
                                     // Only allow manual bullet damage
-                                    if (_attack.attackType == AttackType.Piercing) {
+                                    if (_attack.attackType == AttackType.Piercing)
+                                    {
                                         return;
                                     }
                                 }
                                 // Were we hit by ourselves?
-                                else {
+                                else
+                                {
                                     FusionPlayer.LastAttacker = null;
                                 }
                             }
                             // Is the attacked person another player? Did we attack them?
-                            else if (PlayerRepManager.TryGetPlayerRep(rm, out var rep) && shooter.IsSelf()) {
+                            else if (PlayerRepManager.TryGetPlayerRep(rm, out var rep) && shooter.IsSelf())
+                            {
                                 // Send the damage over the network
                                 PlayerSender.SendPlayerDamage(rep.PlayerId, _attack.damage);
                                 PlayerSender.SendPlayerAction(PlayerActionType.DEALT_DAMAGE_TO_OTHER_PLAYER, rep.PlayerId);

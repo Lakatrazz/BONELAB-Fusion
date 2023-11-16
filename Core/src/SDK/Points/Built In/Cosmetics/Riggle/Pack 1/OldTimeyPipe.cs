@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class OldTimeyPipe : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class OldTimeyPipe : AccessoryItem
+    {
         public override string Title => "Old Timey Pipe";
 
         public override string Author => BitEconomy.RiggleAuthor;

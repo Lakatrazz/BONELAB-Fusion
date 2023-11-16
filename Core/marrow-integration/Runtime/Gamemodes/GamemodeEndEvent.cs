@@ -11,7 +11,8 @@ using LabFusion.SDK.Gamemodes;
 using UnhollowerBaseLib.Attributes;
 #endif
 
-namespace LabFusion.MarrowIntegration {
+namespace LabFusion.MarrowIntegration
+{
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
@@ -19,21 +20,26 @@ namespace LabFusion.MarrowIntegration {
     [RequireComponent(typeof(UltEventHolder))]
     [DisallowMultipleComponent]
 #endif
-    public sealed class GamemodeEndEvent : FusionMarrowBehaviour {
+    public sealed class GamemodeEndEvent : FusionMarrowBehaviour
+    {
 #if MELONLOADER
         public GamemodeEndEvent(IntPtr intPtr) : base(intPtr) { }
 
-        private void Awake() {
+        private void Awake()
+        {
             GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
         }
 
-        private void OnDestroy() {
+        private void OnDestroy()
+        {
             GamemodeManager.OnGamemodeChanged -= OnGamemodeChanged;
         }
 
         [HideFromIl2Cpp]
-        private void OnGamemodeChanged(Gamemode gamemode) {
-            if (gamemode == null) {
+        private void OnGamemodeChanged(Gamemode gamemode)
+        {
+            if (gamemode == null)
+            {
                 var holder = GetComponent<UltEventHolder>();
 
                 if (holder != null)

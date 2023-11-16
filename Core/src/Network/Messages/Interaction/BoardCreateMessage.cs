@@ -111,39 +111,37 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<BoardCreateData>();
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
             {
-                using (var data = reader.ReadFusionSerializable<BoardCreateData>())
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+            }
+            else
+            {
+                if (SyncManager.TryGetSyncable(data.boardGunId, out var syncable) && syncable is PropSyncable boardGun && boardGun.TryGetExtender<BoardGeneratorExtender>(out var extender))
                 {
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled) {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-                        }
-                    }
-                    else {
-                        if (SyncManager.TryGetSyncable(data.boardGunId, out var syncable) && syncable is PropSyncable boardGun && boardGun.TryGetExtender<BoardGeneratorExtender>(out var extender)) {
-                            var comp = extender.Component;
+                    var comp = extender.Component;
 
-                            // Assign points
-                            comp.firstPoint = data.firstPoint;
-                            comp.EndPoint = data.endPoint;
+                    // Assign points
+                    comp.firstPoint = data.firstPoint;
+                    comp.EndPoint = data.endPoint;
 
-                            // Assign rigidbodies
-                            if (data.firstRb.gameObject != null)
-                                comp.FirstRb = data.firstRb.gameObject.GetComponent<Rigidbody>();
+                    // Assign rigidbodies
+                    if (data.firstRb.gameObject != null)
+                        comp.FirstRb = data.firstRb.gameObject.GetComponent<Rigidbody>();
 
-                            if (data.endRb.gameObject != null)
-                                comp.EndRb = data.endRb.gameObject.GetComponent<Rigidbody>();
+                    if (data.endRb.gameObject != null)
+                        comp.EndRb = data.endRb.gameObject.GetComponent<Rigidbody>();
 
-                            // Create board
-                            BoardGeneratorPatches.IgnorePatches = true;
+                    // Create board
+                    BoardGeneratorPatches.IgnorePatches = true;
 
-                            comp.BoardSpawner(data.idx, data.mass);
+                    comp.BoardSpawner(data.idx, data.mass);
 
-                            BoardGeneratorPatches.IgnorePatches = false;
-                        }
-                    }
+                    BoardGeneratorPatches.IgnorePatches = false;
                 }
             }
         }

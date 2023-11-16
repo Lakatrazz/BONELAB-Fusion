@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class BitBackpack : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class BitBackpack : AccessoryItem
+    {
         public override string Title => "Big Bit Backpack";
 
         public override string Author => BitEconomy.BaBaAuthor;

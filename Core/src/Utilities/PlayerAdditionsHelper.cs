@@ -8,20 +8,25 @@ using SLZ.Rig;
 
 using UnityEngine;
 
-namespace LabFusion.Utilities {
-    public static class PlayerAdditionsHelper {
+namespace LabFusion.Utilities
+{
+    public static class PlayerAdditionsHelper
+    {
         private static int _feetLayer;
         private static int _playerLayer;
 
-        public static void OnInitializeMelon() {
+        public static void OnInitializeMelon()
+        {
             // Hook multiplayer events
             MultiplayerHooking.OnJoinServer += () => { OnEnterServer(RigData.RigReferences.RigManager); };
             MultiplayerHooking.OnStartServer += () => { OnEnterServer(RigData.RigReferences.RigManager); };
             MultiplayerHooking.OnDisconnect += () => { OnExitServer(RigData.RigReferences.RigManager); };
-            MultiplayerHooking.OnLocalPlayerCreated += (rig) => {
+            MultiplayerHooking.OnLocalPlayerCreated += (rig) =>
+            {
                 OnCreatedLocalPlayer(rig);
 
-                if (NetworkInfo.HasServer) {
+                if (NetworkInfo.HasServer)
+                {
                     OnEnterServer(rig);
                 }
             };
@@ -36,7 +41,8 @@ namespace LabFusion.Utilities {
             MuteUIHelper.OnInitializeMelon();
         }
 
-        public static void OnDeinitializeMelon() {
+        public static void OnDeinitializeMelon()
+        {
             // Undo layer changes
             Physics.IgnoreLayerCollision(_feetLayer, _playerLayer, true);
 
@@ -44,7 +50,8 @@ namespace LabFusion.Utilities {
             MuteUIHelper.OnDeinitializeMelon();
         }
 
-        public static void OnAvatarChanged(RigManager manager) {
+        public static void OnAvatarChanged(RigManager manager)
+        {
             // Ignore collisions between the player and its locosphere/knee due to our layer changes
             var physRig = manager.physicsRig;
 
@@ -57,24 +64,30 @@ namespace LabFusion.Utilities {
             Internal_IgnoreCollisions(feetColliders, playerColliders);
         }
 
-        public static void OnCreatedLocalPlayer(RigManager manager) {
+        public static void OnCreatedLocalPlayer(RigManager manager)
+        {
             // Forward to the regular method
             OnCreatedRig(manager);
         }
 
-        public static void OnCreatedRig(RigManager manager) {
+        public static void OnCreatedRig(RigManager manager)
+        {
             OnAvatarChanged(manager);
         }
 
-        private static void Internal_IgnoreCollisions(Collider[] first, Collider[] second) {
-            foreach (var col1 in first) {
-                foreach (var col2 in second) {
+        private static void Internal_IgnoreCollisions(Collider[] first, Collider[] second)
+        {
+            foreach (var col1 in first)
+            {
+                foreach (var col2 in second)
+                {
                     Physics.IgnoreCollision(col1, col2, true);
                 }
             }
         }
 
-        public static void OnEnterServer(RigManager manager) {
+        public static void OnEnterServer(RigManager manager)
+        {
             if (manager.IsNOC())
                 return;
 
@@ -113,7 +126,8 @@ namespace LabFusion.Utilities {
             FusionPlayer.ResetMortality();
         }
 
-        public static void OnExitServer(RigManager manager) {
+        public static void OnExitServer(RigManager manager)
+        {
             if (manager.IsNOC())
                 return;
 

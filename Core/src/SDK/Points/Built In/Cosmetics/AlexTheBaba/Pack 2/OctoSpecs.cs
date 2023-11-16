@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class OctoSpecs : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class OctoSpecs : AccessoryItem
+    {
         public override string Title => "Octo Specs";
 
         public override string Author => BitEconomy.BaBaAuthor;

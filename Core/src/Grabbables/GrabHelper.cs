@@ -25,9 +25,12 @@ using SLZ.Interaction;
 using MelonLoader;
 using LabFusion.Senders;
 
-namespace LabFusion.Grabbables {
-    public static class GrabHelper {
-        public static void GetGripInfo(Grip grip, out InteractableHost host) {
+namespace LabFusion.Grabbables
+{
+    public static class GrabHelper
+    {
+        public static void GetGripInfo(Grip grip, out InteractableHost host)
+        {
             host = null;
 
             if (grip == null)
@@ -36,16 +39,19 @@ namespace LabFusion.Grabbables {
             var iGrippable = grip.Host;
 
             InteractableHost interactableHost;
-            if (interactableHost = iGrippable.TryCast<InteractableHost>()) {
+            if (interactableHost = iGrippable.TryCast<InteractableHost>())
+            {
                 // Try and find the host and manager
                 host = interactableHost;
                 var manager = host.manager;
 
                 // Loop through the cache of all parents if there is no manager
-                if (manager == null) {
+                if (manager == null)
+                {
                     Transform parent = host.transform.parent;
 
-                    while (parent != null) {
+                    while (parent != null)
+                    {
                         var foundHost = InteractableHost.Cache.Get(parent.gameObject);
 
                         if (foundHost != null)
@@ -57,16 +63,21 @@ namespace LabFusion.Grabbables {
             }
         }
 
-        public static void SendObjectForcePull(Hand hand, Grip grip) {
-            if (NetworkInfo.HasServer) {
-                DelayUtilities.Delay(() => {
+        public static void SendObjectForcePull(Hand hand, Grip grip)
+        {
+            if (NetworkInfo.HasServer)
+            {
+                DelayUtilities.Delay(() =>
+                {
                     Internal_ObjectForcePull(hand, grip);
                 }, 4);
             }
         }
 
-        internal static void Internal_ObjectForcePull(Hand hand, Grip grip) {
-            if (NetworkInfo.HasServer) {
+        internal static void Internal_ObjectForcePull(Hand hand, Grip grip)
+        {
+            if (NetworkInfo.HasServer)
+            {
                 // Check to see if this has a rigidbody
                 if (grip.HasRigidbody && !grip.GetComponentInParent<RigManager>())
                 {
@@ -78,13 +89,16 @@ namespace LabFusion.Grabbables {
                     GameObject root = host.GetSyncRoot();
 
                     // Do we already have a synced object?
-                    if (GripExtender.Cache.TryGet(grip, out var syncable) || PropSyncable.HostCache.TryGet(host.gameObject, out syncable) || PropSyncable.Cache.TryGet(root, out syncable)) {
-                        syncable.HookOnRegistered(() => {
+                    if (GripExtender.Cache.TryGet(grip, out var syncable) || PropSyncable.HostCache.TryGet(host.gameObject, out syncable) || PropSyncable.Cache.TryGet(root, out syncable))
+                    {
+                        syncable.HookOnRegistered(() =>
+                        {
                             PropSender.SendOwnershipTransfer(syncable);
                         });
                     }
                     // Create a new one
-                    else {
+                    else
+                    {
                         PropSender.SendPropCreation(root, null, false);
                     }
                 }
@@ -95,7 +109,8 @@ namespace LabFusion.Grabbables {
         {
             if (NetworkInfo.HasServer)
             {
-                DelayUtilities.Delay(() => {
+                DelayUtilities.Delay(() =>
+                {
                     Internal_ObjectAttach(hand, grip);
                 }, 4);
             }
@@ -123,16 +138,20 @@ namespace LabFusion.Grabbables {
                         OnFinish();
                     }
                     // Check for static grips
-                    else if (grip.IsStatic) {
-                        if (grip.TryCast<WorldGrip>() != null) {
+                    else if (grip.IsStatic)
+                    {
+                        if (grip.TryCast<WorldGrip>() != null)
+                        {
                             group = GrabGroup.WORLD_GRIP;
                             serializedGrab = new SerializedWorldGrab(smallId);
                             OnFinish();
                         }
-                        else {
+                        else
+                        {
                             group = GrabGroup.STATIC;
 
-                            _ = grip.gameObject.GetFullPathAsync((p) => {
+                            _ = grip.gameObject.GetFullPathAsync((p) =>
+                            {
                                 serializedGrab = new SerializedStaticGrab(p);
                                 OnFinish();
                             });
@@ -147,36 +166,42 @@ namespace LabFusion.Grabbables {
                         GameObject root = host.GetSyncRoot();
 
                         // Do we already have a synced object?
-                        if (GripExtender.Cache.TryGet(grip, out var syncable) || PropSyncable.HostCache.TryGet(host.gameObject, out syncable) || PropSyncable.Cache.TryGet(root, out syncable)) {
+                        if (GripExtender.Cache.TryGet(grip, out var syncable) || PropSyncable.HostCache.TryGet(host.gameObject, out syncable) || PropSyncable.Cache.TryGet(root, out syncable))
+                        {
                             serializedGrab = new SerializedPropGrab("_", syncable.GetIndex(grip).Value, syncable.GetId());
                             OnFinish();
                         }
-                        else {
+                        else
+                        {
                             // Make sure the GameObject is whitelisted before syncing
                             if (!root.IsSyncWhitelisted())
                                 return;
 
                             // Invoked when a PropSyncable is finished gathering its pathed
-                            void OnPropFinish(PropSyncable syncable, string path) {
+                            void OnPropFinish(PropSyncable syncable, string path)
+                            {
                                 serializedGrab = new SerializedPropGrab(path, syncable.GetIndex(grip).Value, syncable.Id);
                                 OnFinish();
                             }
 
                             // Create a new one
-                            if (!NetworkInfo.IsServer) {
+                            if (!NetworkInfo.IsServer)
+                            {
                                 syncable = new PropSyncable(host);
-    
+
                                 ushort queuedId = SyncManager.QueueSyncable(syncable);
-    
-                                using (var writer = FusionWriter.Create(SyncableIDRequestData.Size)) {
+
+                                using (var writer = FusionWriter.Create(SyncableIDRequestData.Size))
+                                {
                                     using var data = SyncableIDRequestData.Create(smallId, queuedId);
                                     writer.Write(data);
 
                                     using var message = FusionMessage.Create(NativeMessageTag.SyncableIDRequest, writer);
                                     MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
                                 }
-    
-                                syncable.HookOnRegistered(() => {
+
+                                syncable.HookOnRegistered(() =>
+                                {
                                     _ = host.gameObject.GetFullPathAsync((p) => { OnPropFinish(syncable, p); });
                                 });
                             }
@@ -192,7 +217,8 @@ namespace LabFusion.Grabbables {
                 }
 
                 // Send the message when whatever task is finished
-                void OnFinish() {
+                void OnFinish()
+                {
                     // Write the default grip values
                     serializedGrab.WriteDefaultGrip(hand, grip);
 
@@ -214,7 +240,8 @@ namespace LabFusion.Grabbables {
             }, 8);
         }
 
-        internal static void Internal_ObjectDetach(Hand hand) {
+        internal static void Internal_ObjectDetach(Hand hand)
+        {
             var handedness = hand.handedness;
 
             if (hand.m_CurrentAttachedGO != null)

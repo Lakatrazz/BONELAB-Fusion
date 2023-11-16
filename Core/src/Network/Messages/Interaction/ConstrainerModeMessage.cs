@@ -60,13 +60,16 @@ namespace LabFusion.Network
             using var data = reader.ReadFusionSerializable<ConstrainerModeData>();
 
             // Send message to all clients if server
-            if (NetworkInfo.IsServer && isServerHandled) {
+            if (NetworkInfo.IsServer && isServerHandled)
+            {
                 using var message = FusionMessage.Create(Tag.Value, bytes);
                 MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
             }
-            else {
+            else
+            {
                 // Play the SFX and change the mode
-                if (SyncManager.TryGetSyncable<PropSyncable>(data.constrainerId, out var constrainer) && constrainer.TryGetExtender<ConstrainerExtender>(out var extender)) {
+                if (SyncManager.TryGetSyncable<PropSyncable>(data.constrainerId, out var constrainer) && constrainer.TryGetExtender<ConstrainerExtender>(out var extender))
+                {
                     var comp = extender.Component;
                     comp.PlaySFX(comp.modeSFX, comp.firePoint.position);
 

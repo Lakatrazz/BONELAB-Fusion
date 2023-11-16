@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class CBRNGasMask : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class CBRNGasMask : AccessoryItem
+    {
         public override string Title => "CBRN Gas Mask";
 
         public override string Author => BitEconomy.RiggleAuthor;

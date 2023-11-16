@@ -9,15 +9,18 @@ using UnityEngine;
 
 namespace LabFusion.Syncables
 {
-    public abstract class PropComponentExtender<T> : IPropExtender where T : Component {
+    public abstract class PropComponentExtender<T> : IPropExtender where T : Component
+    {
         public PropSyncable PropSyncable { get; set; }
 
         public T Component;
 
-        public bool ValidateExtender(PropSyncable syncable) {
+        public bool ValidateExtender(PropSyncable syncable)
+        {
             Component = syncable.GameObject.GetComponentInChildren<T>(true);
 
-            if (Component) {
+            if (Component)
+            {
                 RemoveFromCache(Component);
                 AddToCache(Component, syncable);
                 PropSyncable = syncable;
@@ -27,7 +30,8 @@ namespace LabFusion.Syncables
             return false;
         }
 
-        public void OnCleanup() {
+        public void OnCleanup()
+        {
             RemoveFromCache(Component);
         }
 

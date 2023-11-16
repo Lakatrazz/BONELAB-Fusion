@@ -35,8 +35,10 @@ namespace LabFusion.Patching
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Seat.OnTriggerStay))]
-        public static bool OnTriggerStay(Collider other) {
-            if (NetworkInfo.HasServer) {
+        public static bool OnTriggerStay(Collider other)
+        {
+            if (NetworkInfo.HasServer)
+            {
                 var grounder = other.GetComponent<PhysGrounder>();
 
                 if (grounder != null && PlayerRepManager.HasPlayerId(grounder.physRig.manager))
@@ -48,13 +50,17 @@ namespace LabFusion.Patching
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Seat.Register))]
-        public static bool Register(Seat __instance, RigManager rM) {
+        public static bool Register(Seat __instance, RigManager rM)
+        {
             if (IgnorePatches)
                 return true;
 
-            if (NetworkInfo.HasServer) {
-                try {
-                    if (rM == RigData.RigReferences.RigManager) {
+            if (NetworkInfo.HasServer)
+            {
+                try
+                {
+                    if (rM == RigData.RigReferences.RigManager)
+                    {
                         MelonCoroutines.Start(Internal_SyncSeat(__instance));
                     }
                     else if (PlayerRepManager.HasPlayerId(rM))
@@ -69,11 +75,14 @@ namespace LabFusion.Patching
             return true;
         }
 
-        private static IEnumerator Internal_SyncSeat(Seat __instance) {
+        private static IEnumerator Internal_SyncSeat(Seat __instance)
+        {
             // Create new syncable if this doesn't exist
-            if (!SeatExtender.Cache.ContainsSource(__instance)) {
+            if (!SeatExtender.Cache.ContainsSource(__instance))
+            {
                 bool isAwaiting = true;
-                PropSender.SendPropCreation(__instance.gameObject, (p) => {
+                PropSender.SendPropCreation(__instance.gameObject, (p) =>
+                {
                     isAwaiting = false;
                 });
 
@@ -86,18 +95,12 @@ namespace LabFusion.Patching
             // Send seat request
             if (__instance.rigManager == RigData.RigReferences.RigManager && SeatExtender.Cache.TryGet(__instance, out var syncable) && syncable.TryGetExtender<SeatExtender>(out var extender))
             {
-                using (var writer = FusionWriter.Create(PlayerRepSeatData.Size))
-                {
-                    using (var data = PlayerRepSeatData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value, true))
-                    {
-                        writer.Write(data);
+                using var writer = FusionWriter.Create(PlayerRepSeatData.Size);
+                using var data = PlayerRepSeatData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value, true);
+                writer.Write(data);
 
-                        using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepSeat, writer))
-                        {
-                            MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
+                using var message = FusionMessage.Create(NativeMessageTag.PlayerRepSeat, writer);
+                MessageSender.SendToServer(NetworkChannel.Reliable, message);
             }
         }
 
@@ -109,18 +112,12 @@ namespace LabFusion.Patching
             {
                 if (NetworkInfo.HasServer && __instance._rig == RigData.RigReferences.RigManager && SeatExtender.Cache.TryGet(__instance, out var syncable) && syncable.TryGetExtender<SeatExtender>(out var extender))
                 {
-                    using (var writer = FusionWriter.Create(PlayerRepSeatData.Size))
-                    {
-                        using (var data = PlayerRepSeatData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value, false))
-                        {
-                            writer.Write(data);
+                    using var writer = FusionWriter.Create(PlayerRepSeatData.Size);
+                    using var data = PlayerRepSeatData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value, false);
+                    writer.Write(data);
 
-                            using (var message = FusionMessage.Create(NativeMessageTag.PlayerRepSeat, writer))
-                            {
-                                MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                            }
-                        }
-                    }
+                    using var message = FusionMessage.Create(NativeMessageTag.PlayerRepSeat, writer);
+                    MessageSender.SendToServer(NetworkChannel.Reliable, message);
                 }
             }
             catch (Exception e)

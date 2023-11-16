@@ -12,13 +12,16 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Data {
-    public class SerializedServerSettings : IFusionSerializable {
+namespace LabFusion.Data
+{
+    public class SerializedServerSettings : IFusionSerializable
+    {
         public const int Size = sizeof(byte) * 13;
 
         public FusionPreferences.ServerSettings settings;
 
-        public void Serialize(FusionWriter writer) {
+        public void Serialize(FusionWriter writer)
+        {
             // General settings
             writer.Write(settings.NametagsEnabled.GetValue());
             writer.Write(settings.VoicechatEnabled.GetValue());
@@ -44,7 +47,8 @@ namespace LabFusion.Data {
             writer.Write((byte)settings.Teleportation.GetValue());
         }
 
-        public void Deserialize(FusionReader reader) {
+        public void Deserialize(FusionReader reader)
+        {
             settings = new FusionPreferences.ServerSettings
             {
                 // General settings
@@ -73,8 +77,10 @@ namespace LabFusion.Data {
             };
         }
 
-        public static SerializedServerSettings Create() {
-            var settings = new SerializedServerSettings() {
+        public static SerializedServerSettings Create()
+        {
+            var settings = new SerializedServerSettings()
+            {
                 settings = FusionPreferences.LocalServerSettings,
             };
 

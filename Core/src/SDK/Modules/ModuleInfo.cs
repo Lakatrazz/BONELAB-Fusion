@@ -6,7 +6,8 @@ namespace LabFusion.SDK.Modules
     /// An assembly attribute pointing towards the Fusion module.
     /// </summary>
     [AttributeUsage(AttributeTargets.Assembly, Inherited = false, AllowMultiple = false)]
-    public sealed class ModuleInfo : Attribute {
+    public sealed class ModuleInfo : Attribute
+    {
         public readonly Type moduleType;
         public readonly string name, author, version, abbreviation;
         public readonly bool autoRegister;
@@ -15,7 +16,8 @@ namespace LabFusion.SDK.Modules
         public ModuleInfo(Type moduleType, string name, string version = null, string author = null, string abbreviation = null, bool autoRegister = true)
             : this(moduleType, name, version, author, abbreviation, autoRegister, ConsoleColor.Magenta) { }
 
-        public ModuleInfo(Type moduleType, string name, string version = null, string author = null, string abbreviation = null, bool autoRegister = true, ConsoleColor color = ConsoleColor.Magenta) {
+        public ModuleInfo(Type moduleType, string name, string version = null, string author = null, string abbreviation = null, bool autoRegister = true, ConsoleColor color = ConsoleColor.Magenta)
+        {
             this.moduleType = moduleType;
             this.name = name;
             this.author = author;
@@ -30,6 +32,6 @@ namespace LabFusion.SDK.Modules
             this.abbreviation = abbreviation;
             this.autoRegister = autoRegister;
             this.color = color;
-        }  
+        }
     }
 }

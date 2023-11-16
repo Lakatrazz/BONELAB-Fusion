@@ -15,7 +15,8 @@ using SLZ.Rig;
 
 namespace LabFusion.Representation
 {
-    public class PlayerId : IFusionSerializable, IDisposable, IEquatable<PlayerId> {
+    public class PlayerId : IFusionSerializable, IDisposable, IEquatable<PlayerId>
+    {
         public bool IsSelf => LongId == PlayerIdManager.LocalLongId;
         public bool IsValid => PlayerIdManager.PlayerIds.Contains(this);
 
@@ -41,14 +42,16 @@ namespace LabFusion.Representation
 
         public PlayerId() { }
 
-        public PlayerId(ulong longId, byte smallId, FusionDictionary<string, string> metadata, List<string> equippedItems) {
+        public PlayerId(ulong longId, byte smallId, FusionDictionary<string, string> metadata, List<string> equippedItems)
+        {
             LongId = longId;
             SmallId = smallId;
             _internalMetadata = metadata;
             _internalEquippedItems = equippedItems;
         }
 
-        public bool Equals(PlayerId other) {
+        public bool Equals(PlayerId other)
+        {
             if (other == null)
                 return false;
 
@@ -59,21 +62,25 @@ namespace LabFusion.Representation
 
         public static implicit operator ulong(PlayerId id) => id.LongId;
 
-        public static bool IsNullOrInvalid(PlayerId id) {
+        public static bool IsNullOrInvalid(PlayerId id)
+        {
             return id == null || !id.IsValid;
         }
 
-        public bool HasEquipped(PointItem item) {
+        public bool HasEquipped(PointItem item)
+        {
             if (IsSelf)
                 return item.IsEquipped;
             else
                 return EquippedItems.Contains(item.Barcode);
         }
 
-        public bool TrySetMetadata(string key, string value) {
+        public bool TrySetMetadata(string key, string value)
+        {
             // If we are the server, we just accept the request
             // Otherwise, we make sure this is our PlayerId
-            if (NetworkInfo.IsServer || SmallId == PlayerIdManager.LocalSmallId) {
+            if (NetworkInfo.IsServer || SmallId == PlayerIdManager.LocalSmallId)
+            {
                 PlayerSender.SendPlayerMetadataRequest(SmallId, key, value);
                 return true;
             }
@@ -81,18 +88,21 @@ namespace LabFusion.Representation
             return false;
         }
 
-        public bool TryGetMetadata(string key, out string value) {
+        public bool TryGetMetadata(string key, out string value)
+        {
             return _internalMetadata.TryGetValue(key, out value);
         }
 
-        public string GetMetadata(string key) {
+        public string GetMetadata(string key)
+        {
             if (_internalMetadata.TryGetValue(key, out string value))
                 return value;
 
             return null;
         }
 
-        internal void Internal_ForceSetMetadata(string key, string value) {
+        internal void Internal_ForceSetMetadata(string key, string value)
+        {
             if (_internalMetadata.ContainsKey(key))
                 _internalMetadata[key] = value;
             else
@@ -102,7 +112,8 @@ namespace LabFusion.Representation
             OnMetadataChanged.InvokeSafe(this, $"invoking OnMetadataChanged hook for player {SmallId}");
         }
 
-        internal void Internal_ForceSetEquipped(string barcode, bool value) {
+        internal void Internal_ForceSetEquipped(string barcode, bool value)
+        {
             // Remove/add to the list
             if (value && !_internalEquippedItems.Contains(barcode))
                 _internalEquippedItems.Add(barcode);
@@ -113,8 +124,10 @@ namespace LabFusion.Representation
             PointItemManager.Internal_OnEquipChange(this, barcode, value);
         }
 
-        public void Insert() {
-            if (PlayerIdManager.PlayerIds.Any((id) => id.SmallId == SmallId)) {
+        public void Insert()
+        {
+            if (PlayerIdManager.PlayerIds.Any((id) => id.SmallId == SmallId))
+            {
                 var list = PlayerIdManager.PlayerIds.FindAll((id) => id.SmallId == SmallId);
                 for (var i = 0; i < list.Count; i++)
                     list[i].Dispose();
@@ -123,7 +136,8 @@ namespace LabFusion.Representation
             PlayerIdManager.PlayerIds.Add(this);
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             PlayerIdManager.PlayerIds.RemoveInstance(this);
             if (PlayerIdManager.LocalId == this)
                 PlayerIdManager.RemoveLocalId();
@@ -131,7 +145,8 @@ namespace LabFusion.Representation
             GC.SuppressFinalize(this);
         }
 
-        public void Serialize(FusionWriter writer) {
+        public void Serialize(FusionWriter writer)
+        {
             writer.Write(LongId);
             writer.Write(SmallId);
 
@@ -140,20 +155,23 @@ namespace LabFusion.Representation
 
             writer.Write(_internalEquippedItems);
         }
-        
-        public void Deserialize(FusionReader reader) {
+
+        public void Deserialize(FusionReader reader)
+        {
             LongId = reader.ReadUInt64();
             SmallId = reader.ReadByte();
 
             // Read the player metadata
             var metaData = reader.ReadStringDictionary();
-            foreach (var pair in metaData) {
+            foreach (var pair in metaData)
+            {
                 Internal_ForceSetMetadata(pair.Key, pair.Value);
             }
 
             var equippedItems = reader.ReadStrings();
 
-            foreach (var item in equippedItems) {
+            foreach (var item in equippedItems)
+            {
                 Internal_ForceSetEquipped(item, true);
             }
         }

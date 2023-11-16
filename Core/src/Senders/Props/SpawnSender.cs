@@ -28,20 +28,16 @@ namespace LabFusion.Senders
         /// <param name="placer"></param>
         /// <param name="syncable"></param>
         /// <param name="userId"></param>
-        public static void SendCratePlacerCatchup(SpawnableCratePlacer placer, PropSyncable syncable, ulong userId) {
-            if (NetworkInfo.IsServer) {
-                using (var writer = FusionWriter.Create(SpawnableCratePlacerData.Size))
-                {
-                    using (var data = SpawnableCratePlacerData.Create(syncable.GetId(), placer.gameObject))
-                    {
-                        writer.Write(data);
+        public static void SendCratePlacerCatchup(SpawnableCratePlacer placer, PropSyncable syncable, ulong userId)
+        {
+            if (NetworkInfo.IsServer)
+            {
+                using var writer = FusionWriter.Create(SpawnableCratePlacerData.Size);
+                using var data = SpawnableCratePlacerData.Create(syncable.GetId(), placer.gameObject);
+                writer.Write(data);
 
-                        using (var message = FusionMessage.Create(NativeMessageTag.SpawnableCratePlacer, writer))
-                        {
-                            MessageSender.SendFromServer(userId, NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
+                using var message = FusionMessage.Create(NativeMessageTag.SpawnableCratePlacer, writer);
+                MessageSender.SendFromServer(userId, NetworkChannel.Reliable, message);
             }
         }
 
@@ -55,8 +51,10 @@ namespace LabFusion.Senders
             if (NetworkInfo.IsServer)
             {
                 // Wait for the level to load and for 5 frames before sending messages
-                FusionSceneManager.HookOnLevelLoad(() => {
-                    DelayUtilities.Delay(() => {
+                FusionSceneManager.HookOnLevelLoad(() =>
+                {
+                    DelayUtilities.Delay(() =>
+                    {
                         Internal_OnSendCratePlacer(placer, go);
                     }, 5);
                 });
@@ -77,7 +75,8 @@ namespace LabFusion.Senders
                 }
 
                 // Insert the catchup hook for future users
-                syncable.InsertCatchupDelegate((id) => {
+                syncable.InsertCatchupDelegate((id) =>
+                {
                     SendCratePlacerCatchup(placer, syncable, id);
                 });
             }
@@ -96,18 +95,12 @@ namespace LabFusion.Senders
                 if (spawner != null)
                     spawnerPath = spawner.gameObject.GetFullPath();
 
-                using (var writer = FusionWriter.Create(SpawnResponseData.GetSize(barcode, spawnerPath)))
-                {
-                    using (var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, spawnerPath, hand))
-                    {
-                        writer.Write(data);
+                using var writer = FusionWriter.Create(SpawnResponseData.GetSize(barcode, spawnerPath));
+                using var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, spawnerPath, hand);
+                writer.Write(data);
 
-                        using (var message = FusionMessage.Create(NativeMessageTag.SpawnResponse, writer))
-                        {
-                            MessageSender.SendFromServer(userId, NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
+                using var message = FusionMessage.Create(NativeMessageTag.SpawnResponse, writer);
+                MessageSender.SendFromServer(userId, NetworkChannel.Reliable, message);
             }
         }
     }

@@ -11,35 +11,42 @@ using LabFusion.Representation;
 
 namespace LabFusion.Network
 {
-    public class PlayerMetadataResponseData : IFusionSerializable, IDisposable {
+    public class PlayerMetadataResponseData : IFusionSerializable, IDisposable
+    {
         public const int DefaultSize = sizeof(byte);
 
         public byte smallId;
         public string key;
         public string value;
 
-        public static int GetSize(string key, string value) {
+        public static int GetSize(string key, string value)
+        {
             return DefaultSize + key.GetSize() + value.GetSize();
         }
 
-        public void Serialize(FusionWriter writer) {
+        public void Serialize(FusionWriter writer)
+        {
             writer.Write(smallId);
             writer.Write(key);
             writer.Write(value);
         }
-        
-        public void Deserialize(FusionReader reader) {
+
+        public void Deserialize(FusionReader reader)
+        {
             smallId = reader.ReadByte();
             key = reader.ReadString();
             value = reader.ReadString();
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
 
-        public static PlayerMetadataResponseData Create(byte smallId, string key, string value) {
-            return new PlayerMetadataResponseData() {
+        public static PlayerMetadataResponseData Create(byte smallId, string key, string value)
+        {
+            return new PlayerMetadataResponseData()
+            {
                 smallId = smallId,
                 key = key,
                 value = value,
@@ -51,19 +58,17 @@ namespace LabFusion.Network
     {
         public override byte? Tag => NativeMessageTag.PlayerMetadataResponse;
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
+        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        {
             if (NetworkInfo.IsClient || !isServerHandled)
             {
-                using (var reader = FusionReader.Create(bytes))
-                {
-                    using (var data = reader.ReadFusionSerializable<PlayerMetadataResponseData>())
-                    {
-                        var playerId = PlayerIdManager.GetPlayerId(data.smallId);
+                using var reader = FusionReader.Create(bytes);
+                using var data = reader.ReadFusionSerializable<PlayerMetadataResponseData>();
+                var playerId = PlayerIdManager.GetPlayerId(data.smallId);
 
-                        if (playerId != null) {
-                            playerId.Internal_ForceSetMetadata(data.key, data.value);
-                        }
-                    }
+                if (playerId != null)
+                {
+                    playerId.Internal_ForceSetMetadata(data.key, data.value);
                 }
             }
             else

@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class Potion : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class Potion : AccessoryItem
+    {
         public override string Title => "Potion Pack";
 
         public override string Author => BitEconomy.BaBaAuthor;

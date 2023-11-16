@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class Wonker : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class Wonker : AccessoryItem
+    {
         public override string Title => "Wonker";
 
         public override string Author => BitEconomy.RiggleAuthor;

@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Data {
-    public class MagmaGateDMData : DMLevelDataHandler {
+namespace LabFusion.Data
+{
+    public class MagmaGateDMData : DMLevelDataHandler
+    {
         public override string LevelTitle => "08 - Magma Gate";
 
         protected override Vector3[] DeathmatchSpawnPoints => new Vector3[15] {

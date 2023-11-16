@@ -58,41 +58,37 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<TimeTrialGameControllerData>();
+            TimeTrial_GameControllerPatches.IgnorePatches = true;
+
+            // We ONLY handle this for clients, this message should only ever be sent by the server!
+            if (!NetworkInfo.IsServer && TimeTrialData.IsInTimeTrial)
             {
-                using (var data = reader.ReadFusionSerializable<TimeTrialGameControllerData>())
+                switch (data.type)
                 {
-                    TimeTrial_GameControllerPatches.IgnorePatches = true;
-
-                    // We ONLY handle this for clients, this message should only ever be sent by the server!
-                    if (!NetworkInfo.IsServer && TimeTrialData.IsInTimeTrial)
-                    {
-                        switch (data.type)
-                        {
-                            default:
-                            case TimeTrialGameControllerType.UNKNOWN:
-                                break;
-                            case TimeTrialGameControllerType.UpdateDifficulty:
-                                TimeTrialData.GameController.UpdateDifficulty(data.value);
-                                break;
-                            case TimeTrialGameControllerType.TIMETRIAL_PlayerStartTrigger:
-                                TimeTrialData.GameController.TIMETRIAL_PlayerStartTrigger();
-                                break;
-                            case TimeTrialGameControllerType.TIMETRIAL_PlayerEndTrigger:
-                                TimeTrialData.GameController.TIMETRIAL_PlayerEndTrigger();
-                                break;
-                            case TimeTrialGameControllerType.ProgPointKillCount:
-                                TimeTrialData.GameController.ProgPointKillCount(data.value);
-                                break;
-                            case TimeTrialGameControllerType.SetRequiredKillCount:
-                                TimeTrialData.GameController.SetRequiredKillCount(data.value);
-                                break;
-                        }
-                    }
-
-                    TimeTrial_GameControllerPatches.IgnorePatches = false;
+                    default:
+                    case TimeTrialGameControllerType.UNKNOWN:
+                        break;
+                    case TimeTrialGameControllerType.UpdateDifficulty:
+                        TimeTrialData.GameController.UpdateDifficulty(data.value);
+                        break;
+                    case TimeTrialGameControllerType.TIMETRIAL_PlayerStartTrigger:
+                        TimeTrialData.GameController.TIMETRIAL_PlayerStartTrigger();
+                        break;
+                    case TimeTrialGameControllerType.TIMETRIAL_PlayerEndTrigger:
+                        TimeTrialData.GameController.TIMETRIAL_PlayerEndTrigger();
+                        break;
+                    case TimeTrialGameControllerType.ProgPointKillCount:
+                        TimeTrialData.GameController.ProgPointKillCount(data.value);
+                        break;
+                    case TimeTrialGameControllerType.SetRequiredKillCount:
+                        TimeTrialData.GameController.SetRequiredKillCount(data.value);
+                        break;
                 }
             }
+
+            TimeTrial_GameControllerPatches.IgnorePatches = false;
         }
     }
 }

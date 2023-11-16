@@ -21,22 +21,26 @@ using UnityEngine;
 
 using Avatar = SLZ.VRMK.Avatar;
 
-namespace LabFusion.Patching {
+namespace LabFusion.Patching
+{
     [HarmonyPatch(typeof(Avatar))]
-    public static class AvatarPatches {
+    public static class AvatarPatches
+    {
         public static bool IgnorePatches = false;
 
         [HarmonyPatch(nameof(Avatar.RefreshBodyMeasurements))]
         [HarmonyPatch(new Type[0])]
         [HarmonyPostfix]
-        public static void RefreshBodyMeasurementsPostfix(Avatar __instance) {
+        public static void RefreshBodyMeasurementsPostfix(Avatar __instance)
+        {
             if (IgnorePatches)
                 return;
 
             OverrideBodyMeasurements(__instance);
         }
 
-        private static bool ValidateAvatar(Avatar avatar, out PlayerRep rep, out RigManager rm) {
+        private static bool ValidateAvatar(Avatar avatar, out PlayerRep rep, out RigManager rm)
+        {
             rm = avatar.GetComponentInParent<RigManager>();
             rep = null;
 
@@ -44,9 +48,11 @@ namespace LabFusion.Patching {
             return rm != null && PlayerRepManager.TryGetPlayerRep(rm, out rep) && avatar != rm.realHeptaRig.player && rep.avatarStats != null;
         }
 
-        private static bool ValidateStats(Avatar __instance, PlayerRep rep, SerializedAvatarStats stats) {
+        private static bool ValidateStats(Avatar __instance, PlayerRep rep, SerializedAvatarStats stats)
+        {
             // Make sure this is the server before validating
-            if (NetworkInfo.IsServer) {
+            if (NetworkInfo.IsServer)
+            {
                 // Get permission level of the player
                 FusionPermissions.FetchPermissionLevel(rep.PlayerId, out var level, out _);
 
@@ -54,7 +60,8 @@ namespace LabFusion.Patching {
 
                 // Check if this player is using a stat changer
                 // We don't check polyblank as it could be a custom avatar
-                if (!isPolyblank && !FusionPermissions.HasSufficientPermissions(level, FusionPreferences.LocalServerSettings.StatChangersAllowed.GetValue())) {
+                if (!isPolyblank && !FusionPermissions.HasSufficientPermissions(level, FusionPreferences.LocalServerSettings.StatChangersAllowed.GetValue()))
+                {
                     float leeway = FusionPreferences.LocalServerSettings.StatChangerLeeway.GetValue();
                     leeway = ManagedMathf.Clamp(leeway + 1f, 1f, 11f);
 
@@ -79,18 +86,21 @@ namespace LabFusion.Patching {
                         return false;
                 }
             }
-            
+
             return true;
         }
 
-        private static void OverrideBodyMeasurements(Avatar __instance) {
+        private static void OverrideBodyMeasurements(Avatar __instance)
+        {
             try
             {
-                if (NetworkInfo.HasServer && ValidateAvatar(__instance, out var rep, out var rm)) {
+                if (NetworkInfo.HasServer && ValidateAvatar(__instance, out var rep, out var rm))
+                {
                     var newStats = rep.avatarStats;
 
                     // Make sure the stats are valid before applying them
-                    if (!ValidateStats(__instance, rep, newStats)) {
+                    if (!ValidateStats(__instance, rep, newStats))
+                    {
                         MelonCoroutines.Start(CoKickStatChangerRoutine(__instance, rep));
                         return;
                     }

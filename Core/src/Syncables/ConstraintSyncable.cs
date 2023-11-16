@@ -19,7 +19,8 @@ namespace LabFusion.Syncables
 
         public readonly ConstraintTracker Tracker;
 
-        public ConstraintSyncable(ConstraintTracker tracker) {
+        public ConstraintSyncable(ConstraintTracker tracker)
+        {
             Tracker = tracker;
             Cache.Add(tracker, this);
         }
@@ -29,7 +30,8 @@ namespace LabFusion.Syncables
 
         public override void InvokeCatchup(ulong user) { }
 
-        public override void Cleanup() {
+        public override void Cleanup()
+        {
             if (!Tracker.IsNOC())
                 Cache.Remove(Tracker);
 

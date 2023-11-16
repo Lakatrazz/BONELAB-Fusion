@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class EnaHat : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class EnaHat : AccessoryItem
+    {
         public override string Title => "Green Cap";
 
         public override string Author => BitEconomy.BaBaAuthor;

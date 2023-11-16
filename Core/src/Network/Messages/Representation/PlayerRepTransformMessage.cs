@@ -17,10 +17,11 @@ using UnityEngine;
 
 using SystemVector3 = System.Numerics.Vector3;
 
-namespace LabFusion.Network {
+namespace LabFusion.Network
+{
     public class PlayerRepTransformData : IFusionSerializable, IDisposable
     {
-        public const int Size = sizeof(byte) + sizeof(float) * 7 + SerializedLocalTransform.Size 
+        public const int Size = sizeof(byte) + sizeof(float) * 7 + SerializedLocalTransform.Size
             * RigAbstractor.TransformSyncCount + SerializedTransform.Size + SerializedSmallQuaternion.Size + SerializedHand.Size * 2;
 
         public byte smallId;
@@ -76,7 +77,8 @@ namespace LabFusion.Network {
             rightHand = reader.ReadFusionSerializable<SerializedHand>();
         }
 
-        public void Dispose() { 
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
 
@@ -84,7 +86,8 @@ namespace LabFusion.Network {
         {
             var health = RigData.RigReferences.Health;
 
-            var data = new PlayerRepTransformData {
+            var data = new PlayerRepTransformData
+            {
                 smallId = smallId,
 
                 predictVelocity = RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.velocity.ToSystemVector3() * TimeUtilities.TimeScale,
@@ -100,7 +103,8 @@ namespace LabFusion.Network {
                 rightHand = new SerializedHand(rightHand, rightHand.Controller)
             };
 
-            for (var i = 0; i < RigAbstractor.TransformSyncCount; i++) {
+            for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
+            {
                 data.serializedLocalTransforms[i] = new SerializedLocalTransform(syncTransforms[i]);
             }
 
@@ -109,10 +113,12 @@ namespace LabFusion.Network {
     }
 
     [Net.SkipHandleWhileLoading]
-    public class PlayerRepTransformMessage : FusionMessageHandler {
+    public class PlayerRepTransformMessage : FusionMessageHandler
+    {
         public override byte? Tag => NativeMessageTag.PlayerRepTransform;
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
+        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        {
             using var reader = FusionReader.Create(bytes);
             var data = reader.ReadFusionSerializable<PlayerRepTransformData>();
 

@@ -9,18 +9,23 @@ using System.Threading.Tasks;
 using UnhollowerBaseLib;
 using UnityEngine;
 
-namespace LabFusion.UI {
-    public class FusionUIMachine : MonoBehaviour {
+namespace LabFusion.UI
+{
+    public class FusionUIMachine : MonoBehaviour
+    {
         public FusionUIMachine(IntPtr intPtr) : base(intPtr) { }
 
-        private void Awake() {
+        private void Awake()
+        {
             // Create grips
             PersistentAssetCreator.HookOnSoftGrabLoaded((p) =>
             {
                 var root = GetGripRoot();
 
-                foreach (var collider in root.GetComponentsInChildren<Collider>()) {
-                    if (!Grip.Cache.Get(collider.gameObject)) {
+                foreach (var collider in root.GetComponentsInChildren<Collider>())
+                {
+                    if (!Grip.Cache.Get(collider.gameObject))
+                    {
                         var genericGrip = collider.gameObject.AddComponent<GenericGrip>();
                         genericGrip.isThrowable = true;
                         genericGrip.ignoreGripTargetOnAttach = false;
@@ -36,7 +41,8 @@ namespace LabFusion.UI {
                     }
                 }
 
-                foreach (var rb in transform.GetComponentsInChildren<Rigidbody>()) {
+                foreach (var rb in transform.GetComponentsInChildren<Rigidbody>())
+                {
                     rb.gameObject.AddComponent<InteractableHost>();
                 }
             });
@@ -49,7 +55,8 @@ namespace LabFusion.UI {
             UIMachineUtilities.CreateUITrigger(panel.Find("CANVAS").gameObject, transform.Find("uiTrigger").gameObject);
 
             // Setup audio
-            PersistentAssetCreator.HookOnSFXMixerLoaded((m) => {
+            PersistentAssetCreator.HookOnSFXMixerLoaded((m) =>
+            {
                 if (gameObject != null)
                 {
                     AudioSource[] sources = gameObject.GetComponentsInChildren<AudioSource>(true);

@@ -23,7 +23,8 @@ namespace LabFusion.Network
             base.OnConnecting(info);
         }
 
-        public override void OnDisconnected(ConnectionInfo info) {
+        public override void OnDisconnected(ConnectionInfo info)
+        {
             base.OnDisconnected(info);
 
             NetworkHelper.Disconnect();

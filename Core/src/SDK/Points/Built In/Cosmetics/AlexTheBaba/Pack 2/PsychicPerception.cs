@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class PsychicPerception : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class PsychicPerception : AccessoryItem
+    {
         public override string Title => "Psychic Perception";
 
         public override string Author => BitEconomy.BaBaAuthor;

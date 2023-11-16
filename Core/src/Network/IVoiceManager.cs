@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace LabFusion.Network
 {
-    public interface IVoiceManager {
+    public interface IVoiceManager
+    {
         public List<VoiceHandler> VoiceHandlers { get; }
 
         public bool CanTalk { get; }
@@ -30,13 +31,16 @@ namespace LabFusion.Network
         public virtual bool CanTalk => true;
         public virtual bool CanHear => true;
 
-        protected bool TryGetHandler(PlayerId id, out VoiceHandler handler) {
+        protected bool TryGetHandler(PlayerId id, out VoiceHandler handler)
+        {
             handler = null;
 
-            for (var i = 0; i < VoiceHandlers.Count; i++) {
+            for (var i = 0; i < VoiceHandlers.Count; i++)
+            {
                 var result = VoiceHandlers[i];
 
-                if (result.ID == id) { 
+                if (result.ID == id)
+                {
                     handler = result;
                     return true;
                 }
@@ -47,8 +51,10 @@ namespace LabFusion.Network
 
         public abstract VoiceHandler GetVoiceHandler(PlayerId id);
 
-        public void Update() {
-            for (var i = 0; i < VoiceHandlers.Count; i++) {
+        public void Update()
+        {
+            for (var i = 0; i < VoiceHandlers.Count; i++)
+            {
                 VoiceHandlers[i].Update();
             }
         }
@@ -57,14 +63,17 @@ namespace LabFusion.Network
         {
             VoiceHandler playerHandler = null;
 
-            foreach (var handler in VoiceHandlers) {
-                if (handler.ID == id) {
+            foreach (var handler in VoiceHandlers)
+            {
+                if (handler.ID == id)
+                {
                     playerHandler = handler;
                     break;
                 }
             }
 
-            if (playerHandler != null) {
+            if (playerHandler != null)
+            {
                 playerHandler.Cleanup();
                 _voiceHandlers.Remove(playerHandler);
             }
@@ -72,7 +81,8 @@ namespace LabFusion.Network
 
         public void RemoveAll()
         {
-            foreach (var handler in VoiceHandlers) {
+            foreach (var handler in VoiceHandlers)
+            {
                 handler.Cleanup();
             }
 

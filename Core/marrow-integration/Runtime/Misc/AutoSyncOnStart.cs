@@ -9,14 +9,16 @@ using LabFusion.Network;
 using LabFusion.Senders;
 #endif
 
-namespace LabFusion.MarrowIntegration {
+namespace LabFusion.MarrowIntegration
+{
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
     [AddComponentMenu("BONELAB Fusion/Misc/Auto Sync On Start")]
     [DisallowMultipleComponent]
 #endif
-    public sealed class AutoSyncOnStart : FusionMarrowBehaviour {
+    public sealed class AutoSyncOnStart : FusionMarrowBehaviour
+    {
 #if MELONLOADER
         public AutoSyncOnStart(IntPtr intPtr) : base(intPtr) { }
 

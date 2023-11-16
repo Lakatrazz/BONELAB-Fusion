@@ -15,16 +15,20 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public static class PointSaveManager {
+namespace LabFusion.SDK.Points
+{
+    public static class PointSaveManager
+    {
         [Serializable]
-        public class PointSaveData {
+        public class PointSaveData
+        {
             public string[] _boughtItems = null;
             public string[] _enabledItems = null;
             public Dictionary<string, int> _upgradedItems = null;
             public int _bitCount = 0;
 
-            public static PointSaveData CreateCurrent() {
+            public static PointSaveData CreateCurrent()
+            {
                 var data = new PointSaveData
                 {
                     _boughtItems = _unlockedItems.ToArray(),
@@ -39,11 +43,13 @@ namespace LabFusion.SDK.Points {
         private const string _filePath = "point_shop.dat";
         private const string _backupPath = "point_shop.dat.bak";
 
-        public static void WriteToFile() {
+        public static void WriteToFile()
+        {
             DataSaver.WriteBinary(_filePath, PointSaveData.CreateCurrent());
         }
 
-        public static void WriteBackup() {
+        public static void WriteBackup()
+        {
             string filePath = PersistentData.GetPath(_filePath);
             string backupPath = PersistentData.GetPath(_backupPath);
 
@@ -51,10 +57,12 @@ namespace LabFusion.SDK.Points {
                 File.Copy(filePath, backupPath, true);
         }
 
-        public static void ReadFile() {
+        public static void ReadFile()
+        {
             var data = DataSaver.ReadBinary<PointSaveData>(_filePath);
 
-            if (data != null) {
+            if (data != null)
+            {
                 if (data._boughtItems != null)
                     _unlockedItems = data._boughtItems.ToList();
 
@@ -68,14 +76,16 @@ namespace LabFusion.SDK.Points {
             }
         }
 
-        public static int GetUpgradeLevel(string barcode) {
+        public static int GetUpgradeLevel(string barcode)
+        {
             if (_itemUpgrades.TryGetValue(barcode, out var level))
                 return level;
             else
                 return -1;
         }
 
-        public static bool IsUnlocked(string barcode) {
+        public static bool IsUnlocked(string barcode)
+        {
 #if DEBUG
             if (FusionDevMode.UnlockEverything)
 #pragma warning disable CS0162 // Unreachable code detected
@@ -88,39 +98,46 @@ namespace LabFusion.SDK.Points {
 #pragma warning restore CS0162 // Unreachable code detected
         }
 
-        public static bool IsEquipped(string barcode) {
+        public static bool IsEquipped(string barcode)
+        {
             return _equippedItems.Contains(barcode);
         }
 
-        public static void UnlockItem(string barcode) {
+        public static void UnlockItem(string barcode)
+        {
             if (!_unlockedItems.Contains(barcode))
                 _unlockedItems.Add(barcode);
 
             WriteToFile();
         }
 
-        public static void LockItem(string barcode) {
+        public static void LockItem(string barcode)
+        {
             _unlockedItems.Remove(barcode);
 
             WriteToFile();
         }
 
-        public static void UpgradeItem(string barcode) {
+        public static void UpgradeItem(string barcode)
+        {
             if (!_itemUpgrades.ContainsKey(barcode))
                 _itemUpgrades.Add(barcode, -1);
 
             _itemUpgrades[barcode]++;
         }
-        
-        public static void SetUpgradeLevel(string barcode, int level) {
+
+        public static void SetUpgradeLevel(string barcode, int level)
+        {
             if (!_itemUpgrades.ContainsKey(barcode))
                 _itemUpgrades.Add(barcode, -1);
 
             _itemUpgrades[barcode] = level;
         }
 
-        public static void SetEquipped(string barcode, bool isEquipped) {
-            if (isEquipped) {
+        public static void SetEquipped(string barcode, bool isEquipped)
+        {
+            if (isEquipped)
+            {
                 if (!_equippedItems.Contains(barcode))
                     _equippedItems.Add(barcode);
             }
@@ -132,7 +149,8 @@ namespace LabFusion.SDK.Points {
 
         public static int GetBitCount() => _totalBits;
 
-        public static void SetBitCount(int count) {
+        public static void SetBitCount(int count)
+        {
             _totalBits = Math.Max(0, count);
             WriteToFile();
         }

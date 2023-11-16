@@ -2,11 +2,15 @@
 
 using LabFusion.Utilities;
 
-namespace LabFusion.UI {
-    public static class CupBoardHelper {
-        public static void SetupCupBoard(Vector3 position, Quaternion rotation, Vector3 scale) {
+namespace LabFusion.UI
+{
+    public static class CupBoardHelper
+    {
+        public static void SetupCupBoard(Vector3 position, Quaternion rotation, Vector3 scale)
+        {
             // Make sure we have the prefab
-            if (FusionContentLoader.CupBoardPrefab == null) {
+            if (FusionContentLoader.CupBoardPrefab == null)
+            {
                 FusionLogger.Warn("Missing the Cup Board prefab!");
                 return;
             }

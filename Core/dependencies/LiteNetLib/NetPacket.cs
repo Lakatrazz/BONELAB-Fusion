@@ -74,7 +74,7 @@ namespace LiteNetLib
         public byte ConnectionNumber
         {
             get => (byte)((RawData[0] & 0x60) >> 5);
-            set => RawData[0] = (byte) ((RawData[0] & 0x9F) | (value << 5));
+            set => RawData[0] = (byte)((RawData[0] & 0x9F) | (value << 5));
         }
 
         public ushort Sequence

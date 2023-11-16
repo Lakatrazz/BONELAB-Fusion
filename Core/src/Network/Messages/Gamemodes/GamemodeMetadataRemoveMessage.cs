@@ -11,26 +11,32 @@ using LabFusion.SDK.Gamemodes;
 
 namespace LabFusion.Network
 {
-    public class GamemodeMetadataRemoveData : IFusionSerializable, IDisposable {
+    public class GamemodeMetadataRemoveData : IFusionSerializable, IDisposable
+    {
         public ushort gamemodeId;
         public string key;
 
-        public void Serialize(FusionWriter writer) {
+        public void Serialize(FusionWriter writer)
+        {
             writer.Write(gamemodeId);
             writer.Write(key);
         }
-        
-        public void Deserialize(FusionReader reader) {
+
+        public void Deserialize(FusionReader reader)
+        {
             gamemodeId = reader.ReadUInt16();
             key = reader.ReadString();
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
 
-        public static GamemodeMetadataRemoveData Create(ushort gamemodeId, string key) {
-            return new GamemodeMetadataRemoveData() {
+        public static GamemodeMetadataRemoveData Create(ushort gamemodeId, string key)
+        {
+            return new GamemodeMetadataRemoveData()
+            {
                 gamemodeId = gamemodeId,
                 key = key,
             };
@@ -41,17 +47,15 @@ namespace LabFusion.Network
     {
         public override byte? Tag => NativeMessageTag.GamemodeMetadataRemove;
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
+        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        {
             if (NetworkInfo.IsClient || !isServerHandled)
             {
-                using (var reader = FusionReader.Create(bytes))
+                using var reader = FusionReader.Create(bytes);
+                using var data = reader.ReadFusionSerializable<GamemodeMetadataRemoveData>();
+                if (GamemodeManager.TryGetGamemode(data.gamemodeId, out var gamemode))
                 {
-                    using (var data = reader.ReadFusionSerializable<GamemodeMetadataRemoveData>())
-                    {
-                        if (GamemodeManager.TryGetGamemode(data.gamemodeId, out var gamemode)) {
-                            gamemode.Internal_ForceRemoveMetadata(data.key);
-                        }
-                    }
+                    gamemode.Internal_ForceRemoveMetadata(data.key);
                 }
             }
             else

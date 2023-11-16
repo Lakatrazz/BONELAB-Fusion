@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class WaistRing : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class WaistRing : AccessoryItem
+    {
         public override string Title => "Purple-Green Aura";
 
         public override string Author => BitEconomy.BaBaAuthor;

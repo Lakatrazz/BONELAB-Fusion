@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class StormyHead : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class StormyHead : AccessoryItem
+    {
         public override string Title => "Stormy Head Effect";
 
         public override string Author => BitEconomy.BaBaAuthor;

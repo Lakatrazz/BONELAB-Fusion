@@ -56,7 +56,8 @@ namespace LabFusion.Network
             using FusionReader reader = FusionReader.Create(bytes);
             using var data = reader.ReadFusionSerializable<MineDiveCartData>();
 
-            if (!NetworkInfo.IsServer) {
+            if (!NetworkInfo.IsServer)
+            {
                 MineDiveData.CreateExtraCarts(data.amount);
             }
             else

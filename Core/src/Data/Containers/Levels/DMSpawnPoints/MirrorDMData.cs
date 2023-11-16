@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Data {
-    public class MirrorDMData : DMLevelDataHandler {
+namespace LabFusion.Data
+{
+    public class MirrorDMData : DMLevelDataHandler
+    {
         public override string LevelTitle => "Mirror";
 
         protected override Vector3[] DeathmatchSpawnPoints => new Vector3[8] {

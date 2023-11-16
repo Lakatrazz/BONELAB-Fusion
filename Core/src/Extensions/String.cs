@@ -5,13 +5,17 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace LabFusion.Extensions {
-    public static class StringExtensions {
+namespace LabFusion.Extensions
+{
+    public static class StringExtensions
+    {
         public const char UniqueSeparator = '¬';
 
-        public static string Contract(this IList<string> list) {
+        public static string Contract(this IList<string> list)
+        {
             StringBuilder builder = new();
-            for (var i = 0; i < list.Count; i++) {
+            for (var i = 0; i < list.Count; i++)
+            {
                 var value = list[i];
                 builder.Append(value);
 
@@ -22,31 +26,36 @@ namespace LabFusion.Extensions {
             return builder.ToString();
         }
 
-        public static string[] Expand(this string value) {
+        public static string[] Expand(this string value)
+        {
             if (string.IsNullOrEmpty(value))
                 return Array.Empty<string>();
 
             return value.Split(UniqueSeparator);
         }
 
-        public static string RemoveRichText(this string str) {
+        public static string RemoveRichText(this string str)
+        {
             Regex rich = new(@"<[^>]*>");
             string plainText = str;
 
-            if (rich.IsMatch(plainText)) {
+            if (rich.IsMatch(plainText))
+            {
                 plainText = rich.Replace(plainText, string.Empty);
             }
 
             return plainText;
         }
 
-        public static string LimitLength(this string str, int maxLength) {
+        public static string LimitLength(this string str, int maxLength)
+        {
             if (string.IsNullOrEmpty(str))
                 return str;
 
             int plainLength = RemoveRichText(str).Length;
 
-            if (plainLength <= maxLength) {
+            if (plainLength <= maxLength)
+            {
                 return str;
             }
 
@@ -55,11 +64,13 @@ namespace LabFusion.Extensions {
             return str.Substring(0, maxLength + offset);
         }
 
-        public static int GetSize(this string str) {
+        public static int GetSize(this string str)
+        {
             return GetSize(str, Encoding.UTF8);
         }
 
-        public static int GetSize(this string str, Encoding encoding) {
+        public static int GetSize(this string str, Encoding encoding)
+        {
             return encoding.GetByteCount(str) + 4;
         }
     }

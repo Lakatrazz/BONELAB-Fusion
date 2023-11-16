@@ -9,21 +9,26 @@ using LabFusion.Utilities;
 using PuppetMasta;
 using UnityEngine;
 
-namespace LabFusion.Syncables {
-    public class PuppetMasterExtender : PropComponentExtender<PuppetMaster> {
+namespace LabFusion.Syncables
+{
+    public class PuppetMasterExtender : PropComponentExtender<PuppetMaster>
+    {
         public static FusionComponentCache<PuppetMaster, PropSyncable> Cache = new();
 
         public static PropSyncable LastKilled = null;
 
-        protected override void AddToCache(PuppetMaster puppet, PropSyncable syncable) {
+        protected override void AddToCache(PuppetMaster puppet, PropSyncable syncable)
+        {
             Cache.Add(puppet, syncable);
         }
 
-        protected override void RemoveFromCache(PuppetMaster puppet) {
+        protected override void RemoveFromCache(PuppetMaster puppet)
+        {
             Cache.Remove(puppet);
         }
 
-        public override void OnOwnershipTransfer() {
+        public override void OnOwnershipTransfer()
+        {
             // Force update slerp drives
             bool isOwner = PropSyncable.IsOwner();
 
@@ -31,8 +36,10 @@ namespace LabFusion.Syncables {
             float muscleSpring = Component.muscleSpring;
             float muscleDamper = Component.muscleDamper;
 
-            foreach (var muscle in Component.muscles) {
-                if (isOwner) {
+            foreach (var muscle in Component.muscles)
+            {
+                if (isOwner)
+                {
                     muscle.SetPdController(muscleWeightMaster, muscleSpring, muscleDamper);
                     muscle.joint.slerpDrive = new JointDrive()
                     {
@@ -41,7 +48,8 @@ namespace LabFusion.Syncables {
                         maximumForce = muscle._lastSlerpMaxF,
                     };
                 }
-                else {
+                else
+                {
                     muscle.joint.slerpDrive = default;
                 }
             }

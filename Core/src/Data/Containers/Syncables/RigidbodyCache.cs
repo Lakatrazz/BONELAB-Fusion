@@ -10,8 +10,10 @@ using UnityEngine;
 
 using SystemVector3 = System.Numerics.Vector3;
 
-namespace LabFusion.Data {
-    public sealed class RigidbodyCache {
+namespace LabFusion.Data
+{
+    public sealed class RigidbodyCache
+    {
         private SystemVector3 _velocity;
         private SystemVector3 _angularVelocity;
         private bool _isSleeping;
@@ -22,14 +24,17 @@ namespace LabFusion.Data {
         public bool IsSleeping => _isSleeping;
         public bool IsNull => _isNull;
 
-        public void VerifyNull(Rigidbody rigidbody) {
+        public void VerifyNull(Rigidbody rigidbody)
+        {
             _isNull = rigidbody == null;
         }
 
-        public void FixedUpdate(Rigidbody rigidbody) {
+        public void FixedUpdate(Rigidbody rigidbody)
+        {
             _isNull = rigidbody == null;
 
-            if (_isNull) {
+            if (_isNull)
+            {
                 _isSleeping = true;
                 return;
             }

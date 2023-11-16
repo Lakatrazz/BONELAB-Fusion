@@ -9,13 +9,16 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Extensions {
-    public static class ComponentExtensions {
+namespace LabFusion.Extensions
+{
+    public static class ComponentExtensions
+    {
         /// <summary>
         /// Returns true if this GameObject has a RigManager in the hierarchy.
         /// </summary>
         /// <param name="go"></param>
-        public static bool IsPartOfPlayer(this GameObject go) {
+        public static bool IsPartOfPlayer(this GameObject go)
+        {
             if (go == null)
                 return false;
 
@@ -26,7 +29,8 @@ namespace LabFusion.Extensions {
         /// Returns true if this Component has a RigManager in the hierarchy.
         /// </summary>
         /// <param name="comp"></param>
-        public static bool IsPartOfPlayer(this Component comp) {
+        public static bool IsPartOfPlayer(this Component comp)
+        {
             if (comp == null)
                 return false;
 
@@ -37,7 +41,8 @@ namespace LabFusion.Extensions {
         /// Returns true if this GameObject is part of the local player.
         /// </summary>
         /// <param name="go"></param>
-        public static bool IsPartOfSelf(this GameObject go) {
+        public static bool IsPartOfSelf(this GameObject go)
+        {
             if (go == null)
                 return false;
 

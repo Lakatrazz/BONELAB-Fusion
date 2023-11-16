@@ -10,8 +10,10 @@ using LabFusion.Extensions;
 using LabFusion.Data;
 using LabFusion.Network;
 
-namespace LabFusion.Grabbables {
-    public enum GrabGroup : byte {
+namespace LabFusion.Grabbables
+{
+    public enum GrabGroup : byte
+    {
         UNKNOWN = 0,
         PLAYER_BODY = 1,
         PROP = 2,
@@ -20,13 +22,16 @@ namespace LabFusion.Grabbables {
         WORLD_GRIP = 5,
     }
 
-    public abstract class GrabGroupHandler<T> : GrabGroupHandler where T : SerializedGrab, new() {
-        public override void HandleGrab(ref SerializedGrab serializedGrab, FusionReader reader) {
+    public abstract class GrabGroupHandler<T> : GrabGroupHandler where T : SerializedGrab, new()
+    {
+        public override void HandleGrab(ref SerializedGrab serializedGrab, FusionReader reader)
+        {
             serializedGrab = reader.ReadFusionSerializable<T>();
         }
     }
 
-    public abstract class GrabGroupHandler {
+    public abstract class GrabGroupHandler
+    {
         public virtual GrabGroup? Group { get; } = null;
 
         public abstract void HandleGrab(ref SerializedGrab serializedGrab, FusionReader reader);
@@ -49,10 +54,12 @@ namespace LabFusion.Grabbables {
         {
             GrabGroupHandler handler = Activator.CreateInstance(type) as GrabGroupHandler;
 
-            if (handler.Group == null) {
+            if (handler.Group == null)
+            {
                 FusionLogger.Warn($"Didn't register {type.Name} because its grab group was null!");
             }
-            else {
+            else
+            {
                 byte index = (byte)handler.Group.Value;
 
                 if (Handlers[index] != null) throw new Exception($"{type.Name} has the same index as {Handlers[index].GetType().Name}, we can't replace grab handlers!");
@@ -65,11 +72,14 @@ namespace LabFusion.Grabbables {
             }
         }
 
-        public static void ReadGrab(ref SerializedGrab grab, FusionReader reader, GrabGroup group) {
-            try {
+        public static void ReadGrab(ref SerializedGrab grab, FusionReader reader, GrabGroup group)
+        {
+            try
+            {
                 Handlers[(byte)group].HandleGrab(ref grab, reader);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 FusionLogger.Error($"Failed handling serialized grab with reason: {e.Message}\nTrace:{e.StackTrace}");
             }
         }

@@ -13,7 +13,8 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Network {
+namespace LabFusion.Network
+{
     public class PlayerRepGameworldData : IFusionSerializable, IDisposable
     {
         public const int Size = sizeof(byte) + SerializedLocalTransform.Size * RigAbstractor.GameworldRigTransformCount;
@@ -36,7 +37,8 @@ namespace LabFusion.Network {
                 serializedGameworldLocalTransforms[i] = reader.ReadFusionSerializable<SerializedLocalTransform>();
         }
 
-        public void Dispose() { 
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
 
@@ -47,7 +49,8 @@ namespace LabFusion.Network {
                 smallId = smallId,
             };
 
-            for (var i = 0; i < RigAbstractor.GameworldRigTransformCount; i++) {
+            for (var i = 0; i < RigAbstractor.GameworldRigTransformCount; i++)
+            {
                 data.serializedGameworldLocalTransforms[i] = new SerializedLocalTransform(syncTransforms[i]);
             }
 
@@ -56,10 +59,12 @@ namespace LabFusion.Network {
     }
 
     [Net.SkipHandleWhileLoading]
-    public class PlayerRepGameworldMessage : FusionMessageHandler {
+    public class PlayerRepGameworldMessage : FusionMessageHandler
+    {
         public override byte? Tag => NativeMessageTag.PlayerRepGameworld;
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
+        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        {
             using var reader = FusionReader.Create(bytes);
             var data = reader.ReadFusionSerializable<PlayerRepGameworldData>();
 
@@ -74,7 +79,8 @@ namespace LabFusion.Network {
             }
 
             // Apply player rep data
-            if (data.smallId != PlayerIdManager.LocalSmallId && PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep) && rep.IsCreated) {
+            if (data.smallId != PlayerIdManager.LocalSmallId && PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep) && rep.IsCreated)
+            {
                 rep.serializedGameworldLocalTransforms = data.serializedGameworldLocalTransforms;
             }
         }

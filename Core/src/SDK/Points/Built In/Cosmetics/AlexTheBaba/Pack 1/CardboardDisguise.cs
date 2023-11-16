@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class CardboardDisguise : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class CardboardDisguise : AccessoryItem
+    {
         public override string Title => "Cardboard Disguise";
 
         public override string Author => BitEconomy.BaBaAuthor;

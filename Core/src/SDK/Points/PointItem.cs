@@ -12,28 +12,33 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public enum PointItemPayloadType {
+namespace LabFusion.SDK.Points
+{
+    public enum PointItemPayloadType
+    {
         SELF = 0,
         MIRROR = 1,
         PLAYER_REP = 2,
     }
 
-    public struct PointItemPayload {
+    public struct PointItemPayload
+    {
         public PointItemPayloadType type;
         public RigManager rigManager;
         public Mirror mirror;
         public PlayerId playerId;
     }
 
-    public sealed class PointItemUpgrade {
+    public sealed class PointItemUpgrade
+    {
         public string Description { get; }
 
         public int Price { get; }
 
         public string PurchasedDescription { get; }
 
-        public PointItemUpgrade(string description, int price, string purchasedDescription = null) {
+        public PointItemUpgrade(string description, int price, string purchasedDescription = null)
+        {
             Description = description;
 
             Price = price;
@@ -45,7 +50,8 @@ namespace LabFusion.SDK.Points {
         }
     }
 
-    public abstract class PointItem {
+    public abstract class PointItem
+    {
         // The title of the item
         public abstract string Title { get; }
 
@@ -80,8 +86,10 @@ namespace LabFusion.SDK.Points {
         public int AdjustedPrice => BitEconomy.ConvertPrice(Price);
 
         // The active target price, whether it be for the next upgrade or for the regular purchase.
-        public int ActivePrice { 
-            get {
+        public int ActivePrice
+        {
+            get
+            {
                 if (IsUnlocked)
                 {
                     if (NextUpgrade != null)
@@ -96,9 +104,12 @@ namespace LabFusion.SDK.Points {
         }
 
         // The active target description, whether it be for the next upgrade or for the regular purchase.
-        public string ActiveDescription { 
-            get {
-                if (IsUnlocked) {
+        public string ActiveDescription
+        {
+            get
+            {
+                if (IsUnlocked)
+                {
                     if (NextUpgrade != null)
                         return NextUpgrade.Description;
 
@@ -124,17 +135,21 @@ namespace LabFusion.SDK.Points {
         public virtual bool ImplementFixedUpdate => false;
         public virtual bool ImplementLateUpdate => false;
 
-        public PointItemUpgrade CurrentUpgrade { 
-            get {
+        public PointItemUpgrade CurrentUpgrade
+        {
+            get
+            {
                 if (Upgrades == null || UpgradeLevel <= -1)
                     return null;
 
                 return Upgrades[UpgradeLevel];
-            } 
+            }
         }
 
-        public PointItemUpgrade NextUpgrade {
-            get {
+        public PointItemUpgrade NextUpgrade
+        {
+            get
+            {
                 if (IsMaxUpgrade)
                     return null;
 
@@ -144,18 +159,21 @@ namespace LabFusion.SDK.Points {
 
         public bool IsMaxUpgrade => UpgradeLevel >= UpgradeCount - 1;
 
-        public int UpgradeLevel 
-        { 
-            get {
+        public int UpgradeLevel
+        {
+            get
+            {
                 if (Upgrades == null || Upgrades.Length <= 0)
                     return -1;
 
                 return Math.Min(PointSaveManager.GetUpgradeLevel(Barcode), Upgrades.Length - 1);
-            } 
+            }
         }
 
-        public int UpgradeCount {
-            get {
+        public int UpgradeCount
+        {
+            get
+            {
                 if (Upgrades == null || Upgrades.Length <= 0)
                     return -1;
 
@@ -169,7 +187,8 @@ namespace LabFusion.SDK.Points {
 
         public string MainTag => Tags == null || Tags.Length <= 0 ? "Misc" : Tags[0];
 
-        internal void Register() {
+        internal void Register()
+        {
             if (ImplementFixedUpdate)
                 MultiplayerHooking.OnFixedUpdate += OnFixedUpdate;
 
@@ -184,7 +203,8 @@ namespace LabFusion.SDK.Points {
 
         public virtual void OnRegistered() { }
 
-        internal void Unregister() {
+        internal void Unregister()
+        {
             if (ImplementFixedUpdate)
                 MultiplayerHooking.OnFixedUpdate -= OnFixedUpdate;
 
@@ -209,7 +229,8 @@ namespace LabFusion.SDK.Points {
 
         public virtual void OnUpdateObjects(PointItemPayload payload, bool isVisible) { }
 
-        public void Trigger() {
+        public void Trigger()
+        {
             PointItemManager.Internal_OnTriggerItem(PlayerIdManager.LocalId, Barcode);
             PointItemSender.SendPointItemTrigger(Barcode);
         }

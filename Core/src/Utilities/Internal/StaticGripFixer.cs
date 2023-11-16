@@ -9,13 +9,17 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Utilities {
-    internal static class StaticGripFixer {
-        internal static void OnMainSceneInitialized() {
+namespace LabFusion.Utilities
+{
+    internal static class StaticGripFixer
+    {
+        internal static void OnMainSceneInitialized()
+        {
             // Ammo dispenser
             var ammoDispensers = GameObject.FindObjectsOfType<AmmoDispenser>();
 
-            foreach (var dispenser in ammoDispensers) {
+            foreach (var dispenser in ammoDispensers)
+            {
                 dispenser.gameObject.AddComponent<InteractableHost>();
             }
         }

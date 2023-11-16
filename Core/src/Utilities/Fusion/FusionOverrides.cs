@@ -7,18 +7,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabFusion.Utilities {
+namespace LabFusion.Utilities
+{
     public delegate bool UserOverride(PlayerId id);
 
-    public static class FusionOverrides {
+    public static class FusionOverrides
+    {
         private static UserOverride _onValidateNametag;
-        public static event UserOverride OnValidateNametag {
-            add {
+        public static event UserOverride OnValidateNametag
+        {
+            add
+            {
                 _onValidateNametag += value;
 
                 ForceUpdateOverrides();
             }
-            remove {
+            remove
+            {
                 _onValidateNametag -= value;
 
                 ForceUpdateOverrides();
@@ -27,11 +32,13 @@ namespace LabFusion.Utilities {
 
         public static event Action OnOverridesChanged;
 
-        public static bool ValidateNametag(PlayerId id) {
+        public static bool ValidateNametag(PlayerId id)
+        {
             if (_onValidateNametag == null)
                 return true;
 
-            foreach (var invocation in _onValidateNametag.GetInvocationList()) {
+            foreach (var invocation in _onValidateNametag.GetInvocationList())
+            {
                 var accessEvent = (UserOverride)invocation;
 
                 if (!accessEvent.Invoke(id))

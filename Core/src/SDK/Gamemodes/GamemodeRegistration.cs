@@ -9,8 +9,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace LabFusion.SDK.Gamemodes {
-    public static class GamemodeRegistration {
+namespace LabFusion.SDK.Gamemodes
+{
+    public static class GamemodeRegistration
+    {
         internal static void Internal_HookAssemblies()
         {
             AppDomain.CurrentDomain.AssemblyLoad += Internal_AssemblyLoad;
@@ -54,10 +56,12 @@ namespace LabFusion.SDK.Gamemodes {
             return array;
         }
 
-        public static FusionDictionary<string, string>[] GetExistingMetadata() {
+        public static FusionDictionary<string, string>[] GetExistingMetadata()
+        {
             FusionDictionary<string, string>[] metadata = new FusionDictionary<string, string>[Gamemodes.Length];
 
-            for (var i = 0; i < metadata.Length; i++) {
+            for (var i = 0; i < metadata.Length; i++)
+            {
                 metadata[i] = Gamemodes[i].Metadata;
             }
 
@@ -82,13 +86,17 @@ namespace LabFusion.SDK.Gamemodes {
             BoneMenuCreator.RefreshGamemodes();
         }
 
-        public static void PopulateGamemodeMetadatas(FusionDictionary<string, string>[] metadatas) {
-            for (var i = 0; i < Gamemodes.Length && i < metadatas.Length; i++) {
+        public static void PopulateGamemodeMetadatas(FusionDictionary<string, string>[] metadatas)
+        {
+            for (var i = 0; i < Gamemodes.Length && i < metadatas.Length; i++)
+            {
                 var gamemode = Gamemodes[i];
                 var metadata = metadatas[i];
 
-                if (gamemode != null && metadata != null) {
-                    foreach (var pair in metadata) {
+                if (gamemode != null && metadata != null)
+                {
+                    foreach (var pair in metadata)
+                    {
                         gamemode.Internal_ForceSetMetadata(pair.Key, pair.Value);
                     }
                 }
@@ -98,8 +106,10 @@ namespace LabFusion.SDK.Gamemodes {
         public static void ClearGamemodeTable()
         {
             // Force stop gamemodes
-            if (Gamemodes != null && Gamemodes.Length > 0) {
-                foreach (var gamemode in Gamemodes) {
+            if (Gamemodes != null && Gamemodes.Length > 0)
+            {
+                foreach (var gamemode in Gamemodes)
+                {
                     if (gamemode == null)
                         continue;
 
@@ -110,7 +120,7 @@ namespace LabFusion.SDK.Gamemodes {
 
             GamemodeManager.Internal_SetActiveGamemode(null);
             BoneMenuCreator.ClearGamemodes();
-            
+
             Gamemodes = null;
         }
 

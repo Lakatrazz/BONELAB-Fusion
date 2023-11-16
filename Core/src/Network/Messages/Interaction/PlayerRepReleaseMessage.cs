@@ -39,13 +39,15 @@ namespace LabFusion.Network
             return null;
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
 
         public static PlayerRepReleaseData Create(byte smallId, Handedness handedness)
         {
-            return new PlayerRepReleaseData() {
+            return new PlayerRepReleaseData()
+            {
                 smallId = smallId,
                 handedness = handedness
             };
@@ -59,25 +61,22 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<PlayerRepReleaseData>();
+            var rep = data.GetRep();
+
+            if (rep != null)
             {
-                using (var data = reader.ReadFusionSerializable<PlayerRepReleaseData>())
+                rep.DetachObject(data.handedness);
+            }
+
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
+            {
+                if (data.smallId != 0)
                 {
-                    var rep = data.GetRep();
-
-                    if (rep != null) {
-                        rep.DetachObject(data.handedness);
-                    }
-
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled) {
-                        if (data.smallId != 0) {
-                            using (var message = FusionMessage.Create(Tag.Value, bytes))
-                            {
-                                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
-                            }
-                        }
-                    }
+                    using var message = FusionMessage.Create(Tag.Value, bytes);
+                    MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
                 }
             }
         }

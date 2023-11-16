@@ -30,7 +30,8 @@ namespace LabFusion.Network
 
             writer.Write((byte)mentalState);
 
-            switch (mentalState) {
+            switch (mentalState)
+            {
                 case BehaviourBaseNav.MentalState.Engaged:
                 case BehaviourBaseNav.MentalState.Agroed:
                     writer.Write(triggerRef);
@@ -45,7 +46,8 @@ namespace LabFusion.Network
 
             mentalState = (BehaviourBaseNav.MentalState)reader.ReadByte();
 
-            switch (mentalState) {
+            switch (mentalState)
+            {
                 case BehaviourBaseNav.MentalState.Engaged:
                 case BehaviourBaseNav.MentalState.Agroed:
                     triggerRef = reader.ReadFusionSerializable<SerializedTriggerRefReference>();
@@ -53,14 +55,16 @@ namespace LabFusion.Network
             }
         }
 
-        public PropSyncable GetPropSyncable() {
+        public PropSyncable GetPropSyncable()
+        {
             if (SyncManager.TryGetSyncable(syncId, out var syncable) && syncable is PropSyncable propSyncable)
                 return propSyncable;
 
             return null;
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
 
@@ -87,24 +91,22 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (var reader = FusionReader.Create(bytes)) {
-                using (var data = reader.ReadFusionSerializable<BehaviourBaseNavMentalData>()) {
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled)
-                    {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes))
-                        {
-                            MessageSender.BroadcastMessageExcept(data.ownerId, NetworkChannel.Reliable, message, false);
-                        }
-                    }
-                    else {
-                        // Get the prop syncable, check if it has a behaviour
-                        // Then, set the mental state
-                        var syncable = data.GetPropSyncable();
-                        if (syncable != null && syncable.TryGetExtender<BehaviourBaseNavExtender>(out var extender)) {
-                            extender.SwitchMentalState(data.mentalState, data.triggerRef?.proxy);
-                        }
-                    }
+            using var reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<BehaviourBaseNavMentalData>();
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
+            {
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.ownerId, NetworkChannel.Reliable, message, false);
+            }
+            else
+            {
+                // Get the prop syncable, check if it has a behaviour
+                // Then, set the mental state
+                var syncable = data.GetPropSyncable();
+                if (syncable != null && syncable.TryGetExtender<BehaviourBaseNavExtender>(out var extender))
+                {
+                    extender.SwitchMentalState(data.mentalState, data.triggerRef?.proxy);
                 }
             }
         }

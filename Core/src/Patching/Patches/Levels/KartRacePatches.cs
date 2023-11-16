@@ -10,18 +10,22 @@ using LabFusion.Network;
 using LabFusion.Senders;
 using SLZ.Bonelab;
 
-namespace LabFusion.Patching {
+namespace LabFusion.Patching
+{
     [HarmonyPatch(typeof(GameControl_KartRace))]
-    public static class KartRacePatches {
+    public static class KartRacePatches
+    {
         public static bool IgnorePatches = false;
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(GameControl_KartRace.STARTRACE))]
-        public static bool STARTRACE() {
+        public static bool STARTRACE()
+        {
             if (IgnorePatches)
                 return true;
 
-            if (NetworkInfo.HasServer) {
+            if (NetworkInfo.HasServer)
+            {
                 CampaignSender.SendKartRaceEvent(KartRaceEventType.START_RACE);
             }
 

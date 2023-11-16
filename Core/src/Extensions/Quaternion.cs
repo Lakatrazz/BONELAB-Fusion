@@ -12,13 +12,16 @@ using SystemVector3 = System.Numerics.Vector3;
 using SystemQuaternion = System.Numerics.Quaternion;
 using Unity.Mathematics;
 
-namespace LabFusion.Extensions {
-    public static class QuaternionExtensions {
+namespace LabFusion.Extensions
+{
+    public static class QuaternionExtensions
+    {
         public static readonly Quaternion identity = Quaternion.identity;
 
         public const float kEpsilon = 0.000001F;
 
-        public static float GetMagnitude(Quaternion quaternion) {
+        public static float GetMagnitude(Quaternion quaternion)
+        {
             float x = quaternion.x;
             float y = quaternion.y;
             float z = quaternion.z;
@@ -47,7 +50,8 @@ namespace LabFusion.Extensions {
             result = new Quaternion(q.x * scale, q.y * scale, q.z * scale, q.w * scale);
         }
 
-        public static Quaternion AngleAxis(float angle, Vector3 axis) {
+        public static Quaternion AngleAxis(float angle, Vector3 axis)
+        {
             if (axis.sqrMagnitude == 0.0f)
                 return identity;
 
@@ -115,11 +119,13 @@ namespace LabFusion.Extensions {
             }
         }
 
-        public static SystemQuaternion ToSystemQuaternion(this Quaternion quaternion) {
+        public static SystemQuaternion ToSystemQuaternion(this Quaternion quaternion)
+        {
             return new SystemQuaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
         }
 
-        public static Quaternion ToUnityQuaternion(this SystemQuaternion quaternion) {
+        public static Quaternion ToUnityQuaternion(this SystemQuaternion quaternion)
+        {
             return new Quaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W);
         }
     }

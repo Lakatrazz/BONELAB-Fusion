@@ -11,26 +11,32 @@ using LabFusion.SDK.Gamemodes;
 
 namespace LabFusion.Network
 {
-    public class GamemodeTriggerResponseData : IFusionSerializable, IDisposable {
+    public class GamemodeTriggerResponseData : IFusionSerializable, IDisposable
+    {
         public ushort gamemodeId;
         public string value;
 
-        public void Serialize(FusionWriter writer) {
+        public void Serialize(FusionWriter writer)
+        {
             writer.Write(gamemodeId);
             writer.Write(value);
         }
-        
-        public void Deserialize(FusionReader reader) {
+
+        public void Deserialize(FusionReader reader)
+        {
             gamemodeId = reader.ReadUInt16();
             value = reader.ReadString();
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
 
-        public static GamemodeTriggerResponseData Create(ushort gamemodeId, string value) {
-            return new GamemodeTriggerResponseData() {
+        public static GamemodeTriggerResponseData Create(ushort gamemodeId, string value)
+        {
+            return new GamemodeTriggerResponseData()
+            {
                 gamemodeId = gamemodeId,
                 value = value,
             };
@@ -50,17 +56,15 @@ namespace LabFusion.Network
     {
         public override byte? Tag => NativeMessageTag.GamemodeTriggerResponse;
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
+        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        {
             if (NetworkInfo.IsClient || !isServerHandled)
             {
-                using (var reader = FusionReader.Create(bytes))
+                using var reader = FusionReader.Create(bytes);
+                using var data = reader.ReadFusionSerializable<GamemodeTriggerResponseData>();
+                if (GamemodeManager.TryGetGamemode(data.gamemodeId, out var gamemode))
                 {
-                    using (var data = reader.ReadFusionSerializable<GamemodeTriggerResponseData>())
-                    {
-                        if (GamemodeManager.TryGetGamemode(data.gamemodeId, out var gamemode)) {
-                            gamemode.Internal_TriggerEvent(data.value);
-                        }
-                    }
+                    gamemode.Internal_TriggerEvent(data.value);
                 }
             }
             else

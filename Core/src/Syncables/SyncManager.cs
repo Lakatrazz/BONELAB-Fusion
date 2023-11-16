@@ -12,8 +12,10 @@ using LabFusion.Utilities;
 using LabFusion.Representation;
 using BoneLib;
 
-namespace LabFusion.Syncables {
-    public static class SyncManager {
+namespace LabFusion.Syncables
+{
+    public static class SyncManager
+    {
         /// <summary>
         /// The list of syncables currently active.
         /// </summary>
@@ -35,9 +37,12 @@ namespace LabFusion.Syncables {
         /// </summary>
         public static ushort LastQueueId = 0;
 
-        public static void RequestSyncableID(ushort queuedId) {
-            if (NetworkInfo.HasServer) {
-                if (NetworkInfo.IsServer) {
+        public static void RequestSyncableID(ushort queuedId)
+        {
+            if (NetworkInfo.HasServer)
+            {
+                if (NetworkInfo.IsServer)
+                {
                     UnqueueSyncable(queuedId, AllocateSyncID(), out _);
                 }
                 else
@@ -52,13 +57,16 @@ namespace LabFusion.Syncables {
             }
         }
 
-        internal static void OnInitializeMelon() {
+        internal static void OnInitializeMelon()
+        {
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
         }
 
-        internal static void OnPlayerLeave(PlayerId id) {
+        internal static void OnPlayerLeave(PlayerId id)
+        {
             // Loop through every syncable and see if we need to remove the owner
-            foreach (var syncable in Syncables.Values) {
+            foreach (var syncable in Syncables.Values)
+            {
                 var owner = syncable.GetOwner();
 
                 if (owner.HasValue && PlayerIdManager.GetPlayerId(owner.Value) == null)
@@ -66,13 +74,17 @@ namespace LabFusion.Syncables {
             }
         }
 
-        internal static void OnUpdate() {
+        internal static void OnUpdate()
+        {
             // Here we send over position information/etc of our syncables
-            foreach (var syncable in Syncables.Values) {
-                try {
+            foreach (var syncable in Syncables.Values)
+            {
+                try
+                {
                     syncable.OnUpdate();
                 }
-                catch (Exception e) {
+                catch (Exception e)
+                {
 #if DEBUG
                     FusionLogger.LogException("executing OnUpdate for syncable", e);
 #endif
@@ -80,13 +92,17 @@ namespace LabFusion.Syncables {
             }
         }
 
-        internal static void OnFixedUpdate() {
+        internal static void OnFixedUpdate()
+        {
             // Here we update the positions/etc of all of our synced objects
-            foreach (var syncable in Syncables) {
-                try {
+            foreach (var syncable in Syncables)
+            {
+                try
+                {
                     syncable.Value.OnFixedUpdate();
                 }
-                catch (Exception e) {
+                catch (Exception e)
+                {
 #if DEBUG
                     FusionLogger.LogException("executing OnFixedUpdate for syncable", e);
 #endif
@@ -94,12 +110,16 @@ namespace LabFusion.Syncables {
             }
         }
 
-        public static void OnCleanup() {
-            foreach (var syncable in Syncables.Values) {
-                try {
+        public static void OnCleanup()
+        {
+            foreach (var syncable in Syncables.Values)
+            {
+                try
+                {
                     syncable.Cleanup();
                 }
-                catch (Exception e) {
+                catch (Exception e)
+                {
 #if DEBUG
                     FusionLogger.LogException("cleaning up Syncable", e);
 #endif
@@ -108,11 +128,14 @@ namespace LabFusion.Syncables {
 
             Syncables.Clear();
 
-            foreach (var syncable in QueuedSyncables) {
-                try {
+            foreach (var syncable in QueuedSyncables)
+            {
+                try
+                {
                     syncable.Value.Cleanup();
                 }
-                catch (Exception e) {
+                catch (Exception e)
+                {
 #if DEBUG
                     FusionLogger.LogException("cleaning up QueuedSyncable", e);
 #endif
@@ -125,12 +148,15 @@ namespace LabFusion.Syncables {
             LastQueueId = 0;
         }
 
-        public static ushort AllocateSyncID() {
+        public static ushort AllocateSyncID()
+        {
             LastId++;
 
             // Safety check incase the id is being used
-            if (Syncables.ContainsKey(LastId)) {
-                while (Syncables.ContainsKey(LastId) && LastId < ushort.MaxValue) {
+            if (Syncables.ContainsKey(LastId))
+            {
+                while (Syncables.ContainsKey(LastId) && LastId < ushort.MaxValue)
+                {
                     LastId++;
                 }
             }
@@ -138,12 +164,15 @@ namespace LabFusion.Syncables {
             return LastId;
         }
 
-        public static ushort AllocateQueueID() {
+        public static ushort AllocateQueueID()
+        {
             LastQueueId++;
 
             // Safety check incase the id is being used
-            if (QueuedSyncables.ContainsKey(LastQueueId)) {
-                while (QueuedSyncables.ContainsKey(LastQueueId) && LastQueueId < ushort.MaxValue) {
+            if (QueuedSyncables.ContainsKey(LastQueueId))
+            {
+                while (QueuedSyncables.ContainsKey(LastQueueId) && LastQueueId < ushort.MaxValue)
+                {
                     LastQueueId++;
                 }
             }
@@ -151,8 +180,10 @@ namespace LabFusion.Syncables {
             return LastQueueId;
         }
 
-        public static void RegisterSyncable(ISyncable syncable, ushort id) {
-            if (syncable.IsDestroyed()) {
+        public static void RegisterSyncable(ISyncable syncable, ushort id)
+        {
+            if (syncable.IsDestroyed())
+            {
                 FusionLogger.Warn("Tried registering a destroyed syncable!");
                 return;
             }
@@ -164,36 +195,44 @@ namespace LabFusion.Syncables {
             LastId = id;
         }
 
-        public static void RemoveSyncable(ISyncable syncable) {
+        public static void RemoveSyncable(ISyncable syncable)
+        {
             Internal_RemoveFromList(syncable);
             Internal_RemoveFromQueue(syncable);
 
             syncable.Cleanup();
         }
 
-        private static void Internal_RemoveFromList(ISyncable syncable) {
-            if (Syncables.ContainsValue(syncable)) {
+        private static void Internal_RemoveFromList(ISyncable syncable)
+        {
+            if (Syncables.ContainsValue(syncable))
+            {
                 var pair = Syncables.First(o => o.Value == syncable);
                 Syncables.Remove(pair.Key);
             }
         }
 
-        private static void Internal_RemoveFromQueue(ISyncable syncable) {
-            if (QueuedSyncables.ContainsValue(syncable)) {
+        private static void Internal_RemoveFromQueue(ISyncable syncable)
+        {
+            if (QueuedSyncables.ContainsValue(syncable))
+            {
                 var pair = QueuedSyncables.First(o => o.Value == syncable);
                 QueuedSyncables.Remove(pair.Key);
             }
         }
 
-        public static void RemoveSyncable(ushort id) {
-            if (Syncables.ContainsKey(id)) {
+        public static void RemoveSyncable(ushort id)
+        {
+            if (Syncables.ContainsKey(id))
+            {
                 var syncToRemove = Syncables[id];
                 Syncables.Remove(id);
                 syncToRemove.Cleanup();
             }
         }
 
-        public static ushort QueueSyncable(ISyncable syncable) {
+        public static ushort QueueSyncable(ISyncable syncable)
+        {
             Internal_RemoveFromQueue(syncable);
 
             var id = AllocateQueueID();
@@ -201,14 +240,17 @@ namespace LabFusion.Syncables {
             return id;
         }
 
-        public static bool UnqueueSyncable(ushort queuedId, ushort newId, out ISyncable syncable) {
+        public static bool UnqueueSyncable(ushort queuedId, ushort newId, out ISyncable syncable)
+        {
             syncable = null;
 
-            if (HasQueuedSyncable(queuedId)) {
+            if (HasQueuedSyncable(queuedId))
+            {
                 syncable = QueuedSyncables[queuedId];
                 QueuedSyncables.Remove(queuedId);
 
-                if (syncable.IsDestroyed()) {
+                if (syncable.IsDestroyed())
+                {
                     FusionLogger.Warn("Tried unqueuing a destroyed syncable!");
                     return false;
                 }
@@ -220,7 +262,7 @@ namespace LabFusion.Syncables {
 
             return false;
         }
-        
+
         public static bool HasQueuedSyncable(ushort id)
         {
             return QueuedSyncables.ContainsKey(id);
@@ -233,8 +275,10 @@ namespace LabFusion.Syncables {
 
         public static bool TryGetSyncable(ushort id, out ISyncable syncable) => Syncables.TryGetValue(id, out syncable);
 
-        public static bool TryGetSyncable<TSyncable>(ushort id, out TSyncable syncable) where TSyncable : ISyncable {
-            if (TryGetSyncable(id, out ISyncable result) && result is TSyncable generic) {
+        public static bool TryGetSyncable<TSyncable>(ushort id, out TSyncable syncable) where TSyncable : ISyncable
+        {
+            if (TryGetSyncable(id, out ISyncable result) && result is TSyncable generic)
+            {
                 syncable = generic;
                 return true;
             }

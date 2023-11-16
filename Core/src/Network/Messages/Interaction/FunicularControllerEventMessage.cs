@@ -19,7 +19,8 @@ using LabFusion.Exceptions;
 
 namespace LabFusion.Network
 {
-    public enum FunicularControllerEventType {
+    public enum FunicularControllerEventType
+    {
         UNKNOWN = 0,
         CARTGO = 1,
         CARTFORWARDS = 2,
@@ -67,32 +68,31 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<FunicularControllerEventData>();
+            if (!NetworkInfo.IsServer && SyncManager.TryGetSyncable(data.syncId, out var syncable))
             {
-                using (var data = reader.ReadFusionSerializable<FunicularControllerEventData>())
+                if (syncable is PropSyncable prop && prop.TryGetExtender<FunicularControllerExtender>(out var extender))
                 {
-                    if (!NetworkInfo.IsServer && SyncManager.TryGetSyncable(data.syncId, out var syncable)) {
-                        if (syncable is PropSyncable prop && prop.TryGetExtender<FunicularControllerExtender>(out var extender)) {
-                            FunicularControllerPatches.IgnorePatches = true;
-                            
-                            switch (data.type) {
-                                default:
-                                case FunicularControllerEventType.UNKNOWN:
-                                    break;
-                                case FunicularControllerEventType.CARTGO:
-                                    extender.Component.CartGo();
-                                    break;
-                                case FunicularControllerEventType.CARTFORWARDS:
-                                    extender.Component.CartForwards();
-                                    break;
-                                case FunicularControllerEventType.CARTBACKWARDS:
-                                    extender.Component.CartBackwards();
-                                    break;
-                            }
+                    FunicularControllerPatches.IgnorePatches = true;
 
-                            FunicularControllerPatches.IgnorePatches = false;
-                        }
+                    switch (data.type)
+                    {
+                        default:
+                        case FunicularControllerEventType.UNKNOWN:
+                            break;
+                        case FunicularControllerEventType.CARTGO:
+                            extender.Component.CartGo();
+                            break;
+                        case FunicularControllerEventType.CARTFORWARDS:
+                            extender.Component.CartForwards();
+                            break;
+                        case FunicularControllerEventType.CARTBACKWARDS:
+                            extender.Component.CartBackwards();
+                            break;
                     }
+
+                    FunicularControllerPatches.IgnorePatches = false;
                 }
             }
         }

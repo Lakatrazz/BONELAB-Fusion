@@ -22,16 +22,20 @@ namespace LabFusion.Network
     {
         public int Position { get; set; }
 
-        public int Length {
-            get {
+        public int Length
+        {
+            get
+            {
                 return Position;
             }
         }
 
         private byte[] buffer;
 
-        public byte[] Buffer {
-            get {
+        public byte[] Buffer
+        {
+            get
+            {
                 return buffer;
             }
         }
@@ -59,7 +63,8 @@ namespace LabFusion.Network
             };
         }
 
-        public void Write<T>(T value) where T : IFusionSerializable {
+        public void Write<T>(T value) where T : IFusionSerializable
+        {
             value.Serialize(this);
         }
 
@@ -71,13 +76,15 @@ namespace LabFusion.Network
                 Write("null");
         }
 
-        public void Write(Version version) {
+        public void Write(Version version)
+        {
             Write(version.Major);
             Write(version.Minor);
             Write(version.Build);
         }
 
-        public void Write(Color color) {
+        public void Write(Color color)
+        {
             Write(color.r);
             Write(color.g);
             Write(color.b);
@@ -91,7 +98,8 @@ namespace LabFusion.Network
             ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
-        public void Write(byte? value) {
+        public void Write(byte? value)
+        {
             Write(value.HasValue);
 
             if (value.HasValue)
@@ -149,18 +157,21 @@ namespace LabFusion.Network
             ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
-        public void Write(Vector3 value) {
+        public void Write(Vector3 value)
+        {
             Write(value.x);
             Write(value.y);
             Write(value.z);
         }
 
-        public void Write(Vector2 value) {
+        public void Write(Vector2 value)
+        {
             Write(value.x);
             Write(value.y);
         }
 
-        public void Write(SystemVector3 value) {
+        public void Write(SystemVector3 value)
+        {
             Write(value.X);
             Write(value.Y);
             Write(value.Z);
@@ -361,7 +372,8 @@ namespace LabFusion.Network
             ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
-        public void Write(Dictionary<string, string> value) {
+        public void Write(Dictionary<string, string> value)
+        {
             Write(value.Keys);
             Write(value.Values);
         }
@@ -372,7 +384,8 @@ namespace LabFusion.Network
             BigEndianHelper.WriteBytes(buffer, Position, value.Count);
             Position += 4;
             ArrayExtensions.EnsureLength(ref buffer, Position);
-            for (var i = 0; i < value.Count; i++) {
+            for (var i = 0; i < value.Count; i++)
+            {
                 Write(value.ElementAt(i));
             }
         }
@@ -433,7 +446,8 @@ namespace LabFusion.Network
             ArrayExtensions.EnsureLength(ref buffer, Position);
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
 
             ByteRetriever.Return(buffer);

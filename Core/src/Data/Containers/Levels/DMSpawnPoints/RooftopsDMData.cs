@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Data {
-    public class RooftopsDMData : DMLevelDataHandler {
+namespace LabFusion.Data
+{
+    public class RooftopsDMData : DMLevelDataHandler
+    {
         public override string LevelTitle => "Rooftops";
 
         protected override Vector3[] DeathmatchSpawnPoints => new Vector3[14] {

@@ -28,12 +28,15 @@ namespace LabFusion.Network
             title = reader.ReadString();
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
 
-        public static LevelRequestData Create(byte smallId, string barcode, string title) {
-            return new LevelRequestData() {
+        public static LevelRequestData Create(byte smallId, string barcode, string title)
+        {
+            return new LevelRequestData()
+            {
                 smallId = smallId,
                 barcode = barcode,
                 title = title,
@@ -56,30 +59,31 @@ namespace LabFusion.Network
 
             _timeOfRequest = TimeUtilities.TimeSinceStartup;
 
-            if (NetworkInfo.IsServer && isServerHandled) {
-                using (var reader = FusionReader.Create(bytes)) {
-                    using (var data = reader.ReadFusionSerializable<LevelRequestData>()) {
+            if (NetworkInfo.IsServer && isServerHandled)
+            {
+                using var reader = FusionReader.Create(bytes);
+                using var data = reader.ReadFusionSerializable<LevelRequestData>();
 
-                        // Get player and their username
-                        var id = PlayerIdManager.GetPlayerId(data.smallId);
+                // Get player and their username
+                var id = PlayerIdManager.GetPlayerId(data.smallId);
 
-                        if (id != null && id.TryGetDisplayName(out var name)) {
-                            FusionNotifier.Send(new FusionNotification() {
-                                title = $"{data.title} Load Request",
-                                message = new NotificationText($"{name} has requested to load {data.title}.", Color.yellow),
+                if (id != null && id.TryGetDisplayName(out var name))
+                {
+                    FusionNotifier.Send(new FusionNotification()
+                    {
+                        title = $"{data.title} Load Request",
+                        message = new NotificationText($"{name} has requested to load {data.title}.", Color.yellow),
 
-                                isMenuItem = true,
-                                isPopup = true,
-                                onCreateCategory = (c) =>
-                                {
-                                    c.CreateFunctionElement($"Accept", Color.yellow, () =>
-                                    {
-                                        SceneStreamer.Load(data.barcode);
-                                    });
-                                },
+                        isMenuItem = true,
+                        isPopup = true,
+                        onCreateCategory = (c) =>
+                        {
+                            c.CreateFunctionElement($"Accept", Color.yellow, () =>
+                            {
+                                SceneStreamer.Load(data.barcode);
                             });
-                        }
-                    }
+                        },
+                    });
                 }
             }
             else

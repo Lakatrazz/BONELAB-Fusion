@@ -5,13 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabFusion.Network {
-    public static class Net {
+namespace LabFusion.Network
+{
+    public static class Net
+    {
         /// <summary>
         /// The root net attribute.
         /// </summary>
         [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-        public abstract class NetAttribute : Attribute {
+        public abstract class NetAttribute : Attribute
+        {
             /// <summary>
             /// Runs any necessary code for the attribute.
             /// </summary>
@@ -40,10 +43,12 @@ namespace LabFusion.Network {
         /// Waits to handle any recieved messages until the scene has finished loading.
         /// </summary>
         [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-        public class DelayWhileLoading : NetAttribute {
+        public class DelayWhileLoading : NetAttribute
+        {
             public override bool IsAwaitable() => true;
 
-            public override void HookComplete(Action action) {
+            public override void HookComplete(Action action)
+            {
                 FusionSceneManager.HookOnLevelLoad(action);
             }
         }
@@ -52,10 +57,12 @@ namespace LabFusion.Network {
         /// Waits to handle any recieved messages until the server's target scene has finished loading.
         /// </summary>
         [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-        public class DelayWhileTargetLoading : NetAttribute {
+        public class DelayWhileTargetLoading : NetAttribute
+        {
             public override bool IsAwaitable() => true;
 
-            public override void HookComplete(Action action) {
+            public override void HookComplete(Action action)
+            {
                 FusionSceneManager.HookOnTargetLevelLoad(action);
             }
         }
@@ -64,8 +71,10 @@ namespace LabFusion.Network {
         /// Skips handling a message if the game is currently loading.
         /// </summary>
         [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-        public class SkipHandleWhileLoading : NetAttribute {
-            public override bool StopHandling() {
+        public class SkipHandleWhileLoading : NetAttribute
+        {
+            public override bool StopHandling()
+            {
                 return FusionSceneManager.IsLoading();
             }
         }

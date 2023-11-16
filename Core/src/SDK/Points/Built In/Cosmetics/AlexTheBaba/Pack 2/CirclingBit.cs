@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class CirclingBit : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class CirclingBit : AccessoryItem
+    {
         public override string Title => "Circling Bits";
 
         public override string Author => BitEconomy.BaBaAuthor;

@@ -19,9 +19,11 @@ namespace LabFusion.Extensions
         /// <param name="lft"></param>
         /// <param name="rht"></param>
         /// <returns></returns>
-        public static bool EqualsIL2CPP<T>(this T lft, T rht) {
+        public static bool EqualsIL2CPP<T>(this T lft, T rht)
+        {
             // Compare instance ids for unity objects
-            if (lft is Object objLft && rht is Object objRht) {
+            if (lft is Object objLft && rht is Object objRht)
+            {
                 return objLft.GetInstanceID() == objRht.GetInstanceID();
             }
 
@@ -33,8 +35,10 @@ namespace LabFusion.Extensions
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        internal static bool IsNOC(this Object obj) {
-            try {
+        internal static bool IsNOC(this Object obj)
+        {
+            try
+            {
                 return obj is null || obj.WasCollected || obj == null;
             }
             catch { }

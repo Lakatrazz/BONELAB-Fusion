@@ -62,7 +62,8 @@ namespace LabFusion.Patching
     }
 
     [HarmonyPatch(typeof(CylinderGrip))]
-    public static class CylinderGripPatches {
+    public static class CylinderGripPatches
+    {
         [HarmonyPostfix]
         [HarmonyPatch(nameof(CylinderGrip.UpdateJointConfiguration))]
         public static void UpdateJointConfiguration(Hand hand) => GripPatches.UpdateJointConfiguration(hand);
@@ -75,9 +76,10 @@ namespace LabFusion.Patching
         {
             __state = __instance.pullCoroutine != null;
 
-            if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(hand.manager)) {
+            if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(hand.manager))
+            {
                 return false;
-            } 
+            }
 
             return true;
         }
@@ -92,17 +94,21 @@ namespace LabFusion.Patching
     }
 
     [HarmonyPatch(typeof(InteractableHost))]
-    public static class InteractableHostPatches {
+    public static class InteractableHostPatches
+    {
         public static bool IgnorePatches = false;
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(InteractableHost.ForceDetach))]
-        public static bool ForceDetach(InteractableHost __instance) {
+        public static bool ForceDetach(InteractableHost __instance)
+        {
             if (IgnorePatches)
                 return true;
 
-            if (NetworkInfo.HasServer) {
-                foreach (var hand in __instance._hands) {
+            if (NetworkInfo.HasServer)
+            {
+                foreach (var hand in __instance._hands)
+                {
                     if (PlayerRepManager.HasPlayerId(hand.manager))
                         return false;
                 }
@@ -116,8 +122,10 @@ namespace LabFusion.Patching
     public static class GripPatches
     {
         // This is just referenced by other grip patches, not actually a patch itself
-        public static void UpdateJointConfiguration(Hand hand) {
-            if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(hand.manager)) {
+        public static void UpdateJointConfiguration(Hand hand)
+        {
+            if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(hand.manager))
+            {
                 var joint = hand.joint;
 
                 joint.breakForce = float.PositiveInfinity;
@@ -127,16 +135,20 @@ namespace LabFusion.Patching
 
         [HarmonyPatch(nameof(Grip.OnAttachedToHand))]
         [HarmonyPostfix]
-        private static void OnAttachedToHand(Grip __instance, Hand hand) {
-            if (hand.manager.IsSelf()) {
+        private static void OnAttachedToHand(Grip __instance, Hand hand)
+        {
+            if (hand.manager.IsSelf())
+            {
                 GrabHelper.SendObjectAttach(hand, __instance);
             }
         }
 
         [HarmonyPatch(nameof(Grip.OnDetachedFromHand))]
         [HarmonyPostfix]
-        private static void OnDetachedFromHand(Hand hand) {
-            if (hand.manager.IsSelf()) {
+        private static void OnDetachedFromHand(Hand hand)
+        {
+            if (hand.manager.IsSelf())
+            {
                 GrabHelper.SendObjectDetach(hand);
 
                 // Fix broken UI

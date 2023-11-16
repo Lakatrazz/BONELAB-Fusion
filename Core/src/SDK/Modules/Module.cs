@@ -6,18 +6,21 @@ using System.Threading.Tasks;
 
 using LabFusion.Representation;
 
-namespace LabFusion.SDK.Modules {
+namespace LabFusion.SDK.Modules
+{
     /// <summary>
     /// The class to inherit from when creating a Fusion module.
     /// </summary>
-    public abstract class Module {
+    public abstract class Module
+    {
         /// <summary>
         /// Logger for logging info from modules.
         /// </summary>
         public ModuleLogger LoggerInstance { get; internal set; }
 
         // Called internally when a module is setup
-        internal void ModuleLoaded(ModuleInfo info) {
+        internal void ModuleLoaded(ModuleInfo info)
+        {
             string name = info.name;
             if (!string.IsNullOrWhiteSpace(info.abbreviation))
                 name = info.abbreviation;

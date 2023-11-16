@@ -15,22 +15,27 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace LabFusion.Utilities {
-    public static partial class FusionSceneManager {
-        internal static void Internal_OnInitializeMelon() {
+namespace LabFusion.Utilities
+{
+    public static partial class FusionSceneManager
+    {
+        internal static void Internal_OnInitializeMelon()
+        {
             // Hook into events
             MultiplayerHooking.OnStartServer += Internal_OnCleanup;
             MultiplayerHooking.OnDisconnect += Internal_OnCleanup;
         }
 
-        private static void Internal_OnCleanup() {
+        private static void Internal_OnCleanup()
+        {
             // Reset target scenes
             _targetServerScene = null;
             _hasStartedLoadingTarget = false;
             _hasEnteredTargetLoadingScreen = false;
         }
 
-        private static void Internal_SetServerScene(string barcode) {
+        private static void Internal_SetServerScene(string barcode)
+        {
             // Here we set the target server scene
             // This is the scene barcode sent by the server to the client, which we want to load
             _targetServerScene = barcode;
@@ -38,7 +43,8 @@ namespace LabFusion.Utilities {
             _hasEnteredTargetLoadingScreen = false;
         }
 
-        private static void Internal_UpdateLoadStatus() {
+        private static void Internal_UpdateLoadStatus()
+        {
             if (IsLoading_Internal())
             {
                 _prevLevelBarcode = null;
@@ -70,7 +76,8 @@ namespace LabFusion.Utilities {
                 _onLevelLoad = null;
 
                 // If the target was loaded, invoke that hook
-                if (HasTargetLoaded()) {
+                if (HasTargetLoaded())
+                {
                     _onTargetLevelLoad?.Invoke();
                     _onTargetLevelLoad = null;
                 }
@@ -80,7 +87,8 @@ namespace LabFusion.Utilities {
 
         }
 
-        private static void Internal_UpdateDelayedLoadStatus() {
+        private static void Internal_UpdateDelayedLoadStatus()
+        {
             if (_isLoading)
             {
                 _loadingTimer = 0f;
@@ -102,18 +110,21 @@ namespace LabFusion.Utilities {
             }
         }
 
-        private static void Internal_UpdateTargetScene() {
+        private static void Internal_UpdateTargetScene()
+        {
             // Make sure we are a client and have loaded
             if (!NetworkInfo.IsClient)
                 return;
 
             // If we have entered the loading screen after beginning to load the target, set the value to true
-            if (_hasStartedLoadingTarget && IsLoading()) {
+            if (_hasStartedLoadingTarget && IsLoading())
+            {
                 _hasEnteredTargetLoadingScreen = true;
             }
 
             // If we aren't loading and we have a target scene, change to it
-            if (IsDelayedLoadDone() && !_hasStartedLoadingTarget && !string.IsNullOrEmpty(_targetServerScene)) {
+            if (IsDelayedLoadDone() && !_hasStartedLoadingTarget && !string.IsNullOrEmpty(_targetServerScene))
+            {
                 SceneLoadPatch.IgnorePatches = true;
                 SceneStreamer.Load(_targetServerScene);
                 SceneLoadPatch.IgnorePatches = false;
@@ -122,7 +133,8 @@ namespace LabFusion.Utilities {
             }
         }
 
-        internal static void Internal_UpdateScene() {
+        internal static void Internal_UpdateScene()
+        {
             // Loading status update
             Internal_UpdateLoadStatus();
 
@@ -133,7 +145,8 @@ namespace LabFusion.Utilities {
             Internal_UpdateTargetScene();
         }
 
-        public static void SetTargetScene(string barcode) {
+        public static void SetTargetScene(string barcode)
+        {
             Internal_SetServerScene(barcode);
         }
     }

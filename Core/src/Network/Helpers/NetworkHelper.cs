@@ -3,23 +3,28 @@ using LabFusion.Representation;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 
-namespace LabFusion.Network {
+namespace LabFusion.Network
+{
     /// <summary>
     /// Helper class for calling basic methods on the Server or Client.
     /// </summary>
-    public static class NetworkHelper {
+    public static class NetworkHelper
+    {
         /// <summary>
         /// Starts a server if there is currently none active.
         /// </summary>
-        public static void StartServer() {
+        public static void StartServer()
+        {
             NetworkInfo.CurrentNetworkLayer?.StartServer();
         }
 
         /// <summary>
         /// Stops an existing server.
         /// </summary>
-        public static void StopServer() {
-            if (NetworkInfo.CurrentNetworkLayer != null && NetworkInfo.IsServer) {
+        public static void StopServer()
+        {
+            if (NetworkInfo.CurrentNetworkLayer != null && NetworkInfo.IsServer)
+            {
                 NetworkInfo.CurrentNetworkLayer.Disconnect();
             }
         }
@@ -27,14 +32,16 @@ namespace LabFusion.Network {
         /// <summary>
         /// Disconnects the network layer and cleans up.
         /// </summary>
-        public static void Disconnect(string reason = "") {
+        public static void Disconnect(string reason = "")
+        {
             NetworkInfo.CurrentNetworkLayer?.Disconnect(reason);
         }
 
         /// <summary>
         /// Pushes an update to the lobby metadata.
         /// </summary>
-        public static void UpdateLobby() {
+        public static void UpdateLobby()
+        {
             InternalLayerHelpers.OnUpdateLobby();
         }
 
@@ -43,7 +50,8 @@ namespace LabFusion.Network {
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public static bool IsFriend(ulong userId) {
+        public static bool IsFriend(ulong userId)
+        {
             if (NetworkInfo.CurrentNetworkLayer != null)
                 return NetworkInfo.CurrentNetworkLayer.IsFriend(userId);
 
@@ -54,13 +62,16 @@ namespace LabFusion.Network {
         /// Kicks a user from the game.
         /// </summary>
         /// <param name="id"></param>
-        public static void KickUser(PlayerId id) {
+        public static void KickUser(PlayerId id)
+        {
             // Don't kick blessed users
-            if (FusionBlessings.IsBlessed(id)) {
+            if (FusionBlessings.IsBlessed(id))
+            {
                 if (!id.TryGetDisplayName(out var name))
                     name = "Wacky Willy";
 
-                FusionNotifier.Send(new FusionNotification() {
+                FusionNotifier.Send(new FusionNotification()
+                {
                     title = "Failed to Kick User",
                     showTitleOnPopup = true,
 
@@ -81,9 +92,11 @@ namespace LabFusion.Network {
         /// Bans a user from the game.
         /// </summary>
         /// <param name="id"></param>
-        public static void BanUser(PlayerId id) {
+        public static void BanUser(PlayerId id)
+        {
             // Don't ban blessed users
-            if (FusionBlessings.IsBlessed(id)) {
+            if (FusionBlessings.IsBlessed(id))
+            {
                 if (!id.TryGetDisplayName(out var name))
                     name = "Wacky Willy";
 
@@ -111,17 +124,19 @@ namespace LabFusion.Network {
         /// </summary>
         /// <param name="longId"></param>
         /// <returns></returns>
-        public static bool IsBanned(ulong longId) {
+        public static bool IsBanned(ulong longId)
+        {
             // Check if the user is blessed
             if (FusionBlessings.IsBlessed(longId))
                 return false;
 
             // Check the ban list
-            foreach (var tuple in BanList.BannedUsers) {
+            foreach (var tuple in BanList.BannedUsers)
+            {
                 if (tuple.Item1 == longId)
                     return true;
             }
-            
+
             return false;
         }
 
@@ -129,7 +144,8 @@ namespace LabFusion.Network {
         /// Pardons a user from the ban list.
         /// </summary>
         /// <param name="longId"></param>
-        public static void PardonUser(ulong longId) {
+        public static void PardonUser(ulong longId)
+        {
             BanList.Pardon(longId);
         }
     }

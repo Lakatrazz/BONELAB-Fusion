@@ -14,13 +14,14 @@ using UnityEngine;
 
 using Avatar = SLZ.VRMK.Avatar;
 
-namespace LabFusion.SDK.Points {
+namespace LabFusion.SDK.Points
+{
     public enum AccessoryPoint
     {
         // Head
         HEAD,
         HEAD_TOP,
-        
+
         // Eyes
         EYE_LEFT,
         EYE_RIGHT,
@@ -43,23 +44,29 @@ namespace LabFusion.SDK.Points {
         HEAD,
     }
 
-    public static class AccessoryItemHelper {
-        private static Vector3 GetEyeCenter(RigManager rig, ArtRig artRig) {
-            if (TimeUtilities.TimeScale > 0f) {
+    public static class AccessoryItemHelper
+    {
+        private static Vector3 GetEyeCenter(RigManager rig, ArtRig artRig)
+        {
+            if (TimeUtilities.TimeScale > 0f)
+            {
                 return rig.ControllerRig.m_head.position;
             }
-            else {
+            else
+            {
                 return (artRig.eyeLf.position + artRig.eyeRt.position) * 0.5f;
             }
         }
 
-        public static void GetTransform(MarrowCosmeticPoint point, out Vector3 position, out Quaternion rotation, out Vector3 scale) {
+        public static void GetTransform(MarrowCosmeticPoint point, out Vector3 position, out Quaternion rotation, out Vector3 scale)
+        {
             position = point.Transform.position;
             rotation = point.Transform.rotation;
             scale = point.Transform.lossyScale;
         }
 
-        public static void GetTransform(AccessoryPoint itemPoint, AccessoryScaleMode mode, RigManager rig, out Vector3 position, out Quaternion rotation, out Vector3 scale) {
+        public static void GetTransform(AccessoryPoint itemPoint, AccessoryScaleMode mode, RigManager rig, out Vector3 position, out Quaternion rotation, out Vector3 scale)
+        {
             ArtRig artRig = rig.artOutputRig;
             Avatar avatar = rig._avatar;
 
@@ -132,7 +139,8 @@ namespace LabFusion.SDK.Points {
             }
         }
 
-        public static Vector3 GetScale(Avatar avatar, AccessoryScaleMode mode) {
+        public static Vector3 GetScale(Avatar avatar, AccessoryScaleMode mode)
+        {
             switch (mode)
             {
                 default:

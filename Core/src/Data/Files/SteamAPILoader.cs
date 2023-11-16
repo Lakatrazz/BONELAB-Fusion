@@ -11,18 +11,21 @@ using BoneLib;
 
 namespace LabFusion.Data
 {
-    public static class SteamAPILoader {
+    public static class SteamAPILoader
+    {
         public static bool HasSteamAPI { get; private set; } = false;
 
         private static IntPtr _libraryPtr;
 
-        public static void OnLoadSteamAPI() {
+        public static void OnLoadSteamAPI()
+        {
             // If it's already loaded, don't load it again
             if (HasSteamAPI)
                 return;
 
             // Don't extract this for android
-            if (HelperMethods.IsAndroid()) {
+            if (HelperMethods.IsAndroid())
+            {
                 HasSteamAPI = false;
                 return;
             }
@@ -33,17 +36,20 @@ namespace LabFusion.Data
 
             _libraryPtr = DllTools.LoadLibrary(sdkPath);
 
-            if (_libraryPtr != IntPtr.Zero) {
+            if (_libraryPtr != IntPtr.Zero)
+            {
                 FusionLogger.Log("Successfully loaded steam_api64.dll into the application!");
                 HasSteamAPI = true;
             }
-            else {
+            else
+            {
                 uint errorCode = DllTools.GetLastError();
                 FusionLogger.Error($"Failed to load steam_api64.dll into the application.\nError Code: {errorCode}");
             }
         }
 
-        public static void OnFreeSteamAPI() {
+        public static void OnFreeSteamAPI()
+        {
             // Don't unload it if it isn't loaded
             if (!HasSteamAPI)
                 return;

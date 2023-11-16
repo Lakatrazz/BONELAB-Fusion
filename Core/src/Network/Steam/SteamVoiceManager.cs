@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 namespace LabFusion.Network
 {
-    public sealed class SteamVoiceManager : VoiceManager {
-        public override VoiceHandler GetVoiceHandler(PlayerId id) {
+    public sealed class SteamVoiceManager : VoiceManager
+    {
+        public override VoiceHandler GetVoiceHandler(PlayerId id)
+        {
             if (TryGetHandler(id, out var handler))
                 return handler;
 

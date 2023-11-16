@@ -24,8 +24,10 @@ using SLZ.Utilities;
 namespace LabFusion.SDK.Points
 {
     [RegisterTypeInIl2Cpp]
-    public sealed class PointShopPanelView : FusionPanelView {
-        public enum ActivePanel {
+    public sealed class PointShopPanelView : FusionPanelView
+    {
+        public enum ActivePanel
+        {
             CATALOG = 0,
             OWNED = 1,
             CONFIRMATION = 2,
@@ -102,7 +104,8 @@ namespace LabFusion.SDK.Points
         [HideFromIl2Cpp]
         public IReadOnlyList<PointItem> PanelItems => _panel == ActivePanel.CATALOG ? CatalogItems : OwnedItems;
 
-        protected override void OnAwake() {
+        protected override void OnAwake()
+        {
             // Setup the menu
             SetupButtons();
             SetupArrows();
@@ -117,12 +120,14 @@ namespace LabFusion.SDK.Points
             PointItemManager.OnBitCountChanged += UpdateBitCountText;
         }
 
-        private void OnDestroy() {
+        private void OnDestroy()
+        {
             // Unhook from bit update
             PointItemManager.OnBitCountChanged -= UpdateBitCountText;
         }
 
-        protected override void OnSetupReferences() {
+        protected override void OnSetupReferences()
+        {
             _doorRigidbody = transform.parent.Find("Art/Offset/VendorAtlas/Door Pivot").GetComponent<Rigidbody>();
 
             _groupItemsRoot = _canvas.Find("group_Items");
@@ -148,19 +153,22 @@ namespace LabFusion.SDK.Points
             _upgradeText = _infoUpgradeToLevel.GetComponentInChildren<TMP_Text>();
 
             _toggleButton = _groupInformationRoot.Find("button_Toggle").GetComponent<Button>();
-            _toggleButton.onClick.AddListener((UnityAction)(() => {
+            _toggleButton.onClick.AddListener((UnityAction)(() =>
+            {
                 ConfirmToggle();
             }));
             _toggleText = _toggleButton.GetComponentInChildren<TMP_Text>(true);
 
             _sortButton = _canvas.Find("button_SortBy").GetComponent<Button>();
-            _sortButton.onClick.AddListener((UnityAction)(() => {
+            _sortButton.onClick.AddListener((UnityAction)(() =>
+            {
                 SelectSort();
             }));
             _sortText = _sortButton.GetComponentInChildren<TMP_Text>(true);
 
             _unequipAllButton = _canvas.Find("button_UnequipAll").GetComponent<Button>();
-            _unequipAllButton.onClick.AddListener((UnityAction)(() => {
+            _unequipAllButton.onClick.AddListener((UnityAction)(() =>
+            {
                 PointItemManager.UnequipAll();
 
                 SelectPanel(ActivePanel.OWNED);
@@ -185,17 +193,20 @@ namespace LabFusion.SDK.Points
             });
         }
 
-        private void SetupButtons() {
+        private void SetupButtons()
+        {
             // Get the panel buttons
             _catalogButton = _categorySelectionRoot.Find("button_catalog").GetComponent<Button>();
-            _catalogButton.onClick.AddListener((UnityAction)(() => {
+            _catalogButton.onClick.AddListener((UnityAction)(() =>
+            {
                 _currentPageIndex = 0;
                 SelectPanel(ActivePanel.CATALOG);
                 LoadCatalogPage();
             }));
 
             _ownedButton = _categorySelectionRoot.Find("button_owned").GetComponent<Button>();
-            _ownedButton.onClick.AddListener((UnityAction)(() => {
+            _ownedButton.onClick.AddListener((UnityAction)(() =>
+            {
                 _currentPageIndex = 0;
                 SelectPanel(ActivePanel.OWNED);
                 LoadCatalogPage();
@@ -205,17 +216,20 @@ namespace LabFusion.SDK.Points
             _itemButtons = _itemButtonsRoot.GetComponentsInChildren<Button>(true);
             _itemButtonCount = _itemButtons.Length;
 
-            for (var i = 0; i < _itemButtonCount; i++) {
+            for (var i = 0; i < _itemButtonCount; i++)
+            {
                 int button = i;
 
                 // Add click listener
-                _itemButtons[i].onClick.AddListener((UnityAction)(() => {
+                _itemButtons[i].onClick.AddListener((UnityAction)(() =>
+                {
                     SelectItem(button);
                 }));
             }
         }
 
-        private void SetupArrows() {
+        private void SetupArrows()
+        {
             // Setup the arrows
             _arrowButtonsRoot.Find("button_lastPage").GetComponent<Button>().onClick.AddListener((UnityAction)(() =>
             {
@@ -227,16 +241,20 @@ namespace LabFusion.SDK.Points
             }));
         }
 
-        private void SetupInfoPage() {
-            _infoGoBack.onClick.AddListener((UnityAction)(() => {
+        private void SetupInfoPage()
+        {
+            _infoGoBack.onClick.AddListener((UnityAction)(() =>
+            {
                 SelectPanel(_lastCatalogPanel);
                 LoadCatalogPage();
             }));
-            _infoBuyConfirm.onClick.AddListener((UnityAction)(() => {
+            _infoBuyConfirm.onClick.AddListener((UnityAction)(() =>
+            {
                 ConfirmBuy();
             }));
 
-            _infoUpgradeToLevel.onClick.AddListener((UnityAction)(() => {
+            _infoUpgradeToLevel.onClick.AddListener((UnityAction)(() =>
+            {
                 ConfirmUpgrade();
             }));
         }
@@ -244,15 +262,18 @@ namespace LabFusion.SDK.Points
         private void PushCatalogUpdate()
         {
             // Get page count
-            if (CatalogItems.Count <= 0) {
+            if (CatalogItems.Count <= 0)
+            {
                 _catalogPageCount = 0;
             }
-            else {
+            else
+            {
                 _catalogPageCount = (int)Math.Ceiling((double)CatalogItems.Count / (double)_itemButtonCount);
             }
         }
 
-        private void PushOwnedUpdate() {
+        private void PushOwnedUpdate()
+        {
             // Get page count
             if (OwnedItems.Count <= 0)
             {
@@ -264,14 +285,16 @@ namespace LabFusion.SDK.Points
             }
         }
 
-        private void SelectItem(int index) {
+        private void SelectItem(int index)
+        {
             var itemIndex = GetItemIndex(index);
             if (PanelItems.Count <= itemIndex)
                 return;
 
             PointItem item = PanelItems[itemIndex];
 
-            switch (Panel) {
+            switch (Panel)
+            {
                 case ActivePanel.CATALOG:
                     SelectPanel(ActivePanel.CONFIRMATION);
                     LoadInfoPage(item);
@@ -283,10 +306,12 @@ namespace LabFusion.SDK.Points
             }
         }
 
-        private void SelectPanel(ActivePanel panel) {
+        private void SelectPanel(ActivePanel panel)
+        {
             _panel = panel;
 
-            switch (panel) {
+            switch (panel)
+            {
                 default:
                 case ActivePanel.CATALOG:
                 case ActivePanel.OWNED:
@@ -310,7 +335,8 @@ namespace LabFusion.SDK.Points
             }
         }
 
-        public void NextPage() {
+        public void NextPage()
+        {
             _currentPageIndex++;
 
             if (_currentPageIndex >= PageCount)
@@ -319,7 +345,8 @@ namespace LabFusion.SDK.Points
             LoadCatalogPage();
         }
 
-        public void LastPage() {
+        public void LastPage()
+        {
             _currentPageIndex--;
 
             if (_currentPageIndex < 0)
@@ -328,22 +355,27 @@ namespace LabFusion.SDK.Points
             LoadCatalogPage();
         }
 
-        private void UpdatePageCountText() {
+        private void UpdatePageCountText()
+        {
             _pageCountText.text = $"Page {_currentPageIndex + 1} out of {Math.Max(1, PageCount)}";
         }
 
-        private void UpdateBitCountText() {
+        private void UpdateBitCountText()
+        {
             _bitCountText.text = PointItemManager.GetBitCount().ToString();
         }
 
         [HideFromIl2Cpp]
-        private void UpdateToggleText(PointItem item) {
+        private void UpdateToggleText(PointItem item)
+        {
             _toggleText.text = item.IsEquipped ? "Unequip" : "Equip";
         }
 
-        private void LoadCatalogPage() {
+        private void LoadCatalogPage()
+        {
             // Push updates
-            switch (_panel) {
+            switch (_panel)
+            {
                 case ActivePanel.CATALOG:
                     PushCatalogUpdate();
 
@@ -361,11 +393,13 @@ namespace LabFusion.SDK.Points
             _currentPageIndex = ManagedMathf.Clamp(_currentPageIndex, 0, PageCount);
 
             // Loop through every button
-            for (var i = 0; i < _itemButtonCount; i++) {
+            for (var i = 0; i < _itemButtonCount; i++)
+            {
                 var button = _itemButtons[i];
                 var itemIndex = GetItemIndex(i);
 
-                if (PanelItems.Count <= itemIndex) {
+                if (PanelItems.Count <= itemIndex)
+                {
                     button.gameObject.SetActive(false);
                     continue;
                 }
@@ -381,7 +415,8 @@ namespace LabFusion.SDK.Points
         }
 
         [HideFromIl2Cpp]
-        private void LoadItem(Button button, PointItem item) {
+        private void LoadItem(Button button, PointItem item)
+        {
             var text = button.GetComponentInChildren<TMP_Text>(true);
             string tag = item.MainTag;
 
@@ -394,7 +429,8 @@ namespace LabFusion.SDK.Points
         }
 
         [HideFromIl2Cpp]
-        private void LoadInfoPage(PointItem item) {
+        private void LoadInfoPage(PointItem item)
+        {
             _infoTitle.text = item.Title;
             _infoTitle.color = PointItemManager.ParseColor(item.Rarity);
             _infoDescription.text = item.ActiveDescription;
@@ -409,11 +445,13 @@ namespace LabFusion.SDK.Points
 
             if (item.Tags == null || item.Tags.Length <= 0)
                 _infoTags.text = "Misc";
-            else {
+            else
+            {
                 string tags = "";
                 bool isFirst = true;
 
-                foreach (var tag in item.Tags) {
+                foreach (var tag in item.Tags)
+                {
                     if (isFirst)
                         tags = tag;
                     else
@@ -424,38 +462,45 @@ namespace LabFusion.SDK.Points
 
                 _infoTags.text = tags;
             }
-            
-            if (item.PreviewImage != null) {
+
+            if (item.PreviewImage != null)
+            {
                 _infoPreviewImage.texture = item.PreviewImage;
                 _infoPreviewImage.gameObject.SetActive(true);
             }
-            else {
+            else
+            {
                 _infoPreviewImage.texture = _defaultPreview;
                 _infoPreviewImage.gameObject.SetActive(true);
             }
 
             _targetInfoItem = item;
 
-            switch (Panel) {
+            switch (Panel)
+            {
                 case ActivePanel.INFORMATION:
                     _infoBuyConfirm.gameObject.SetActive(false);
 
-                    if (_targetInfoItem.IsMaxUpgrade) {
+                    if (_targetInfoItem.IsMaxUpgrade)
+                    {
                         _infoAlreadyOwned.gameObject.SetActive(true);
                         _infoUpgradeToLevel.gameObject.SetActive(false);
                     }
-                    else {
+                    else
+                    {
                         _infoAlreadyOwned.gameObject.SetActive(false);
                         _infoUpgradeToLevel.gameObject.SetActive(true);
 
                         _upgradeText.text = $"Upgrade to Level {_targetInfoItem.UpgradeLevel + 2}";
                     }
 
-                    if (item.CanEquip) {
+                    if (item.CanEquip)
+                    {
                         _toggleButton.gameObject.SetActive(true);
                         UpdateToggleText(item);
                     }
-                    else {
+                    else
+                    {
                         _toggleButton.gameObject.SetActive(false);
                     }
                     break;
@@ -471,8 +516,9 @@ namespace LabFusion.SDK.Points
             // Update text
             UpdateBitCountText();
         }
-        
-        private void SelectSort() {
+
+        private void SelectSort()
+        {
             int currentSort = (int)_sortMode;
             currentSort++;
 
@@ -482,24 +528,28 @@ namespace LabFusion.SDK.Points
             _sortMode = (SortMode)currentSort;
             UpdateSortModeText();
 
-            if (_panel == ActivePanel.CATALOG || _panel == ActivePanel.OWNED) {
+            if (_panel == ActivePanel.CATALOG || _panel == ActivePanel.OWNED)
+            {
                 _currentPageIndex = 0;
                 LoadCatalogPage();
             }
         }
 
-        private void UpdateSortModeText() {
+        private void UpdateSortModeText()
+        {
             _sortText.text = $"Sort By: {_sortMode}";
         }
 
-        private void ConfirmToggle() {
+        private void ConfirmToggle()
+        {
             // Make sure we have a target
             if (_targetInfoItem == null)
                 return;
 
             // Check the current state
             // Unequip
-            if (_targetInfoItem.IsEquipped) {
+            if (_targetInfoItem.IsEquipped)
+            {
                 PointItemManager.SetEquipped(_targetInfoItem, false);
 
                 FusionAudio.Play3D(transform.position, FusionContentLoader.UnequipItem);
@@ -507,7 +557,8 @@ namespace LabFusion.SDK.Points
                 _doorRigidbody.AddRelativeTorque(Vector3Extensions.right * 30f, ForceMode.Impulse);
             }
             // Equip
-            else {
+            else
+            {
                 PointItemManager.SetEquipped(_targetInfoItem, true);
 
                 FusionAudio.Play3D(transform.position, FusionContentLoader.EquipItem);
@@ -519,7 +570,8 @@ namespace LabFusion.SDK.Points
             UpdateToggleText(_targetInfoItem);
         }
 
-        private void ConfirmUpgrade() {
+        private void ConfirmUpgrade()
+        {
             // Make sure we have a target
             if (_targetInfoItem == null)
                 return;
@@ -540,26 +592,30 @@ namespace LabFusion.SDK.Points
             }
         }
 
-        private void ConfirmBuy() {
+        private void ConfirmBuy()
+        {
             // Make sure we have a target
             if (_targetInfoItem == null)
                 return;
 
             // Try buying the item
             // Check for success
-            if (PointItemManager.TryBuyItem(_targetInfoItem)) {
+            if (PointItemManager.TryBuyItem(_targetInfoItem))
+            {
                 SelectPanel(_lastCatalogPanel);
                 LoadCatalogPage();
 
                 FusionAudio.Play3D(transform.position, FusionContentLoader.PurchaseSuccess, 1f);
             }
             // Failure
-            else {
+            else
+            {
                 FusionAudio.Play3D(transform.position, FusionContentLoader.PurchaseFailure, 1f);
             }
         }
 
-        private int GetItemIndex(int button) {
+        private int GetItemIndex(int button)
+        {
             return button + (_currentPageIndex * _itemButtonCount);
         }
     }

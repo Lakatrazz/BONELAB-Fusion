@@ -65,44 +65,38 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<KartRaceEventData>();
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
             {
-                using (var data = reader.ReadFusionSerializable<KartRaceEventData>())
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+            }
+            else
+            {
+                KartRacePatches.IgnorePatches = true;
+
+                switch (data.type)
                 {
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled)
-                    {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes))
-                        {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-                        }
-                    }
-                    else
-                    {
-                        KartRacePatches.IgnorePatches = true;
-
-                        switch (data.type)
-                        {
-                            default:
-                            case KartRaceEventType.UNKNOWN:
-                                break;
-                            case KartRaceEventType.START_RACE:
-                                KartRaceData.GameController.STARTRACE();
-                                break;
-                            case KartRaceEventType.NEW_LAP:
-                                KartRaceData.GameController.NEWLAP();
-                                break;
-                            case KartRaceEventType.RESET_RACE:
-                                KartRaceData.GameController.RESETRACE();
-                                break;
-                            case KartRaceEventType.END_RACE:
-                                KartRaceData.GameController.ENDRACE();
-                                break;
-                        }
-
-                        KartRacePatches.IgnorePatches = false;
-                    }
+                    default:
+                    case KartRaceEventType.UNKNOWN:
+                        break;
+                    case KartRaceEventType.START_RACE:
+                        KartRaceData.GameController.STARTRACE();
+                        break;
+                    case KartRaceEventType.NEW_LAP:
+                        KartRaceData.GameController.NEWLAP();
+                        break;
+                    case KartRaceEventType.RESET_RACE:
+                        KartRaceData.GameController.RESETRACE();
+                        break;
+                    case KartRaceEventType.END_RACE:
+                        KartRaceData.GameController.ENDRACE();
+                        break;
                 }
+
+                KartRacePatches.IgnorePatches = false;
             }
         }
     }

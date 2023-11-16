@@ -38,14 +38,16 @@ namespace LabFusion.Network
             locoState = (BehaviourBaseNav.LocoState)reader.ReadByte();
         }
 
-        public PropSyncable GetPropSyncable() {
+        public PropSyncable GetPropSyncable()
+        {
             if (SyncManager.TryGetSyncable(syncId, out var syncable) && syncable is PropSyncable propSyncable)
                 return propSyncable;
 
             return null;
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
 
@@ -71,23 +73,21 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (var reader = FusionReader.Create(bytes)) {
-                using (var data = reader.ReadFusionSerializable<BehaviourBaseNavLocoData>()) {
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled)
-                    {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes))
-                        {
-                            MessageSender.BroadcastMessageExcept(data.ownerId, NetworkChannel.Reliable, message, false);
-                        }
-                    }
-                    else {
-                        // Find the prop syncable and update its behaviour nav
-                        var syncable = data.GetPropSyncable();
-                        if (syncable != null && syncable.TryGetExtender<BehaviourBaseNavExtender>(out var extender)) {
-                            extender.SwitchLocoState(data.locoState);
-                        }
-                    }
+            using var reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<BehaviourBaseNavLocoData>();
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
+            {
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.ownerId, NetworkChannel.Reliable, message, false);
+            }
+            else
+            {
+                // Find the prop syncable and update its behaviour nav
+                var syncable = data.GetPropSyncable();
+                if (syncable != null && syncable.TryGetExtender<BehaviourBaseNavExtender>(out var extender))
+                {
+                    extender.SwitchLocoState(data.locoState);
                 }
             }
         }

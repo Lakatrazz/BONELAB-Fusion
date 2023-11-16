@@ -6,14 +6,16 @@ using UnityEngine;
 using MelonLoader;
 #endif
 
-namespace LabFusion.MarrowIntegration {
+namespace LabFusion.MarrowIntegration
+{
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
     [AddComponentMenu("BONELAB Fusion/Misc/Disable Syncing")]
     [DisallowMultipleComponent]
 #endif
-    public sealed class DisableSyncing : FusionMarrowBehaviour {
+    public sealed class DisableSyncing : FusionMarrowBehaviour
+    {
 #if MELONLOADER
         public DisableSyncing(IntPtr intPtr) : base(intPtr) { }
 #else

@@ -66,31 +66,31 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (var reader = FusionReader.Create(bytes))
+            using var reader = FusionReader.Create(bytes);
+            var data = reader.ReadFusionSerializable<PlayerRepSeatData>();
+
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
             {
-                var data = reader.ReadFusionSerializable<PlayerRepSeatData>();
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+            }
+            else if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep) && SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable seatSyncable && seatSyncable.TryGetExtender<SeatExtender>(out var extender))
+            {
+                var seat = extender.GetComponent(data.seatIndex);
 
-                // Send message to other clients if server
-                if (NetworkInfo.IsServer && isServerHandled) {
-                    using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                        MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-                    }
-                }
-                else if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep) && SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable seatSyncable && seatSyncable.TryGetExtender<SeatExtender>(out var extender)) {
-                    var seat = extender.GetComponent(data.seatIndex);
+                if (seat)
+                {
+                    SeatPatches.IgnorePatches = true;
 
-                    if (seat) {
-                        SeatPatches.IgnorePatches = true;
+                    if (data.isIngress)
+                        seat.IngressRig(rep.RigReferences.RigManager);
+                    else if (rep.RigReferences.RigManager.activeSeat)
+                        rep.RigReferences.RigManager.activeSeat.EgressRig(true);
 
-                        if (data.isIngress)
-                            seat.IngressRig(rep.RigReferences.RigManager);
-                        else if (rep.RigReferences.RigManager.activeSeat)
-                            rep.RigReferences.RigManager.activeSeat.EgressRig(true);
+                    seatSyncable.PushUpdate();
 
-                        seatSyncable.PushUpdate();
-
-                        SeatPatches.IgnorePatches = false;
-                    }
+                    SeatPatches.IgnorePatches = false;
                 }
             }
         }

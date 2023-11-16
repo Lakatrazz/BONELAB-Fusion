@@ -11,7 +11,8 @@ using UnityEngine;
 
 namespace LabFusion.Network
 {
-    public interface IVoiceHandler {
+    public interface IVoiceHandler
+    {
         public PlayerId ID { get; }
         public PlayerRep Rep { get; }
         public AudioSource Source { get; }
@@ -28,7 +29,8 @@ namespace LabFusion.Network
         public void Update();
     }
 
-    public abstract class VoiceHandler : IVoiceHandler {
+    public abstract class VoiceHandler : IVoiceHandler
+    {
         protected PlayerId _id;
         public PlayerId ID { get { return _id; } }
 
@@ -48,7 +50,8 @@ namespace LabFusion.Network
 
         public bool MicrophoneDisabled { get { return _hasRep && Rep.MicrophoneDisabled; } }
 
-        public virtual void CreateAudioSource() {
+        public virtual void CreateAudioSource()
+        {
             _sourceGo = new GameObject($"{ID.SmallId} Voice Source");
             _source = _sourceGo.AddComponent<AudioSource>();
 
@@ -60,18 +63,23 @@ namespace LabFusion.Network
             _source.loop = true;
         }
 
-        public virtual void VerifyRep() {
-            if (!_hasRep && ID != null) {
-                if (PlayerRepManager.TryGetPlayerRep(ID, out _rep)) {
+        public virtual void VerifyRep()
+        {
+            if (!_hasRep && ID != null)
+            {
+                if (PlayerRepManager.TryGetPlayerRep(ID, out _rep))
+                {
                     _rep.InsertVoiceSource(Source);
                     _hasRep = true;
                 }
             }
         }
 
-        public virtual void Cleanup() {
+        public virtual void Cleanup()
+        {
             // Destroy audio source
-            if (_source != null) {
+            if (_source != null)
+            {
                 // Get rid of the clip
                 if (_source.clip != null)
                     GameObject.Destroy(_source.clip);

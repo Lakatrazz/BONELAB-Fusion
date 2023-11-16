@@ -60,24 +60,23 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (var reader = FusionReader.Create(bytes)) {
-                using (var data = reader.ReadFusionSerializable<PlayerRepDamageData>()) {
-                    // If we are the server, relay it to the desired user
-                    if (isServerHandled) {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.SendFromServer(data.damagedId, NetworkChannel.Reliable, message);
-                        }
-                    }
-                    // Otherwise, take the damage
-                    else if (data.damagedId == PlayerIdManager.LocalSmallId) {
-                        // Get player health
-                        var rm = RigData.RigReferences.RigManager;
-                        rm.health.TAKEDAMAGE(data.damage);
+            using var reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<PlayerRepDamageData>();
+            // If we are the server, relay it to the desired user
+            if (isServerHandled)
+            {
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.SendFromServer(data.damagedId, NetworkChannel.Reliable, message);
+            }
+            // Otherwise, take the damage
+            else if (data.damagedId == PlayerIdManager.LocalSmallId)
+            {
+                // Get player health
+                var rm = RigData.RigReferences.RigManager;
+                rm.health.TAKEDAMAGE(data.damage);
 
-                        // Track the damager
-                        FusionPlayer.LastAttacker = data.damagerId;
-                    }
-                }
+                // Track the damager
+                FusionPlayer.LastAttacker = data.damagerId;
             }
         }
     }

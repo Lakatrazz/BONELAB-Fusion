@@ -26,8 +26,10 @@ using SLZ.Props;
 using LabFusion.Senders;
 using SLZ.Marrow.Warehouse;
 
-namespace LabFusion.Utilities {
-    public static class PooleeUtilities {
+namespace LabFusion.Utilities
+{
+    public static class PooleeUtilities
+    {
         internal static PooleePusher ForceEnabled = new();
 
         internal static PooleePusher CheckingForSpawn = new();
@@ -38,15 +40,19 @@ namespace LabFusion.Utilities {
 
         internal static PooleePusher ServerSpawnedList = new();
 
-        public static void DespawnAll() {
-            if (NetworkInfo.IsServer) {
+        public static void DespawnAll()
+        {
+            if (NetworkInfo.IsServer)
+            {
                 var pools = AssetSpawner._instance._poolList;
 
                 // Loop through all pools and get their spawned objects so we can despawn them
-                foreach (var pool in pools) {
+                foreach (var pool in pools)
+                {
                     var spawnedObjects = pool.spawned.ToArray();
 
-                    foreach (var spawned in spawnedObjects)  {
+                    foreach (var spawned in spawnedObjects)
+                    {
                         // Don't despawn the player!
                         if (spawned.GetComponentInChildren<RigManager>(true) != null)
                             continue;
@@ -61,9 +67,10 @@ namespace LabFusion.Utilities {
             }
         }
 
-        public static void OnServerLocalSpawn(ushort syncId, GameObject go, out PropSyncable newSyncable) {
+        public static void OnServerLocalSpawn(ushort syncId, GameObject go, out PropSyncable newSyncable)
+        {
             newSyncable = null;
-            
+
             if (!NetworkInfo.IsServer)
                 return;
 
@@ -79,16 +86,19 @@ namespace LabFusion.Utilities {
             SyncManager.RegisterSyncable(newSyncable, syncId);
         }
 
-        public static bool IsPlayer(AssetPoolee poolee) {
+        public static bool IsPlayer(AssetPoolee poolee)
+        {
             if (poolee.IsNOC())
                 return false;
 
             return poolee.GetComponentInChildren<RigManager>(true);
         }
 
-        public static void SendDespawn(ushort syncId) {
+        public static void SendDespawn(ushort syncId)
+        {
             // Send response
-            if (NetworkInfo.IsServer) {
+            if (NetworkInfo.IsServer)
+            {
                 using var writer = FusionWriter.Create(DespawnResponseData.Size);
                 using var data = DespawnResponseData.Create(syncId, PlayerIdManager.LocalSmallId);
                 writer.Write(data);
@@ -97,7 +107,8 @@ namespace LabFusion.Utilities {
                 MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
             }
             // Send request
-            else {
+            else
+            {
                 using var writer = FusionWriter.Create(DespawnRequestData.Size);
                 using var data = DespawnRequestData.Create(syncId, PlayerIdManager.LocalSmallId);
                 writer.Write(data);
@@ -107,7 +118,8 @@ namespace LabFusion.Utilities {
             }
         }
 
-        public static void RequestDespawn(ushort syncId, bool isMag = false) {
+        public static void RequestDespawn(ushort syncId, bool isMag = false)
+        {
             using var writer = FusionWriter.Create(DespawnRequestData.Size);
             using var data = DespawnRequestData.Create(syncId, PlayerIdManager.LocalSmallId, isMag);
             writer.Write(data);
@@ -116,7 +128,8 @@ namespace LabFusion.Utilities {
             MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
 
-        public static void RequestSpawn(string barcode, SerializedTransform serializedTransform, byte? owner = null, Handedness hand = Handedness.UNDEFINED) {
+        public static void RequestSpawn(string barcode, SerializedTransform serializedTransform, byte? owner = null, Handedness hand = Handedness.UNDEFINED)
+        {
             using var writer = FusionWriter.Create(SpawnRequestData.Size);
             using var data = SpawnRequestData.Create(owner.HasValue ? owner.Value : PlayerIdManager.LocalSmallId, barcode, serializedTransform, hand);
             writer.Write(data);
@@ -125,7 +138,8 @@ namespace LabFusion.Utilities {
             MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
 
-        public static void SendSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, bool ignoreSelf = false, ZoneSpawner spawner = null, Handedness hand = Handedness.UNDEFINED) {
+        public static void SendSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, bool ignoreSelf = false, ZoneSpawner spawner = null, Handedness hand = Handedness.UNDEFINED)
+        {
             string spawnerPath = "_";
             if (spawner != null)
                 spawnerPath = spawner.gameObject.GetFullPath();
@@ -141,11 +155,13 @@ namespace LabFusion.Utilities {
                 MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
         }
 
-        public static bool CanForceDespawn(AssetPoolee instance) {
+        public static bool CanForceDespawn(AssetPoolee instance)
+        {
             return !CanSpawnList.Pull(instance) && instance.gameObject.IsSyncWhitelisted();
         }
 
-        public static bool CanSendSpawn(AssetPoolee instance) {
+        public static bool CanSendSpawn(AssetPoolee instance)
+        {
             return instance.gameObject.IsSyncWhitelisted();
         }
     }

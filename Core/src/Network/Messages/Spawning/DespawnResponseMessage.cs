@@ -19,19 +19,22 @@ namespace LabFusion.Network
         public byte despawnerId;
         public bool isMag;
 
-        public void Serialize(FusionWriter writer) {
+        public void Serialize(FusionWriter writer)
+        {
             writer.Write(syncId);
             writer.Write(despawnerId);
             writer.Write(isMag);
         }
 
-        public void Deserialize(FusionReader reader) {
+        public void Deserialize(FusionReader reader)
+        {
             syncId = reader.ReadUInt16();
             despawnerId = reader.ReadByte();
             isMag = reader.ReadBoolean();
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
 
@@ -51,17 +54,20 @@ namespace LabFusion.Network
     {
         public override byte? Tag => NativeMessageTag.DespawnResponse;
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
+        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        {
             // Despawn the poolee if it exists
             using var reader = FusionReader.Create(bytes);
             using var data = reader.ReadFusionSerializable<DespawnResponseData>();
             MelonCoroutines.Start(Internal_WaitForValidDespawn(data.syncId, data.despawnerId, data.isMag));
         }
 
-        private static IEnumerator Internal_WaitForValidDespawn(ushort syncId, byte despawnerId, bool isMag) {
+        private static IEnumerator Internal_WaitForValidDespawn(ushort syncId, byte despawnerId, bool isMag)
+        {
             // Delay at most 300 frames until this syncable exists
             int i = 0;
-            while (!SyncManager.HasSyncable(syncId)) {
+            while (!SyncManager.HasSyncable(syncId))
+            {
                 yield return null;
 
                 i++;
@@ -69,17 +75,20 @@ namespace LabFusion.Network
                 if (i >= 300)
                     break;
             }
-            
+
             // Get the syncable from the valid id
             if (SyncManager.TryGetSyncable(syncId, out var syncable) && syncable is PropSyncable propSyncable)
             {
                 PooleeUtilities.CanDespawn = true;
 
-                if (propSyncable.AssetPoolee && propSyncable.AssetPoolee.gameObject.activeInHierarchy) {
-                    if (isMag) {
+                if (propSyncable.AssetPoolee && propSyncable.AssetPoolee.gameObject.activeInHierarchy)
+                {
+                    if (isMag)
+                    {
                         AmmoInventory ammoInventory = RigData.RigReferences.RigManager.AmmoInventory;
 
-                        if (PlayerRepManager.TryGetPlayerRep(despawnerId, out var rep)) {
+                        if (PlayerRepManager.TryGetPlayerRep(despawnerId, out var rep))
+                        {
                             ammoInventory = rep.RigReferences.RigManager.AmmoInventory;
                         }
 
@@ -87,7 +96,8 @@ namespace LabFusion.Network
 
                         propSyncable.AssetPoolee.gameObject.SetActive(false);
                     }
-                    else {
+                    else
+                    {
                         propSyncable.AssetPoolee.Despawn();
                     }
                 }

@@ -14,9 +14,12 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Grabbables {
-    public static class InteractableHelpers {
-        public static GameObject GetSyncRoot(this GameObject go) {
+namespace LabFusion.Grabbables
+{
+    public static class InteractableHelpers
+    {
+        public static GameObject GetSyncRoot(this GameObject go)
+        {
             var poolee = go.GetComponentInParent<AssetPoolee>();
             var blip = go.GetComponentInParent<Blip>();
             var ignoreHierarchy = go.GetComponentInParent<IgnoreHierarchy>();
@@ -35,7 +38,8 @@ namespace LabFusion.Grabbables {
                 return host.manager.gameObject;
             else if (ignoreHierarchy)
                 return ignoreHierarchy.gameObject;
-            else {
+            else
+            {
                 var rigidbodies = go.GetComponentsInParent<Rigidbody>(true);
                 if (rigidbodies.Length > 0)
                     return rigidbodies.Last().gameObject;
@@ -44,7 +48,8 @@ namespace LabFusion.Grabbables {
             return go;
         }
 
-        public static GameObject GetSyncRoot(this InteractableHost host) {
+        public static GameObject GetSyncRoot(this InteractableHost host)
+        {
             return host.gameObject.GetSyncRoot();
         }
     }

@@ -17,7 +17,8 @@ using SLZ.Props.Weapons;
 
 namespace LabFusion.Network
 {
-    public enum DescentElevatorType {
+    public enum DescentElevatorType
+    {
         UNKNOWN = 0,
         START_ELEVATOR = 1,
         STOP_ELEVATOR = 2,
@@ -67,52 +68,50 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<DescentElevatorData>();
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
             {
-                using (var data = reader.ReadFusionSerializable<DescentElevatorData>())
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+            }
+            else
+            {
+                if (!DescentData.Elevator)
+                    DescentData.Instance.CacheValues();
+
+                ElevatorPatches.IgnorePatches = true;
+
+                switch (data.type)
                 {
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled) {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-                        }
-                    }
-                    else {
-                        if (!DescentData.Elevator)
-                            DescentData.Instance.CacheValues();
-
-                        ElevatorPatches.IgnorePatches = true;
-
-                        switch (data.type) {
-                            default:
-                            case DescentElevatorType.UNKNOWN:
-                                break;
-                            case DescentElevatorType.START_ELEVATOR:
-                                DescentData.Elevator.StartElevator();
-                                break;
-                            case DescentElevatorType.STOP_ELEVATOR:
-                                DescentData.Elevator.StopDoorRoutine();
-                                break;
-                            case DescentElevatorType.SEAL_DOORS:
-                                DescentData.Elevator.SealDoors();
-                                break;
-                            case DescentElevatorType.START_MOVE_UPWARD:
-                                DescentData.Elevator.StartMoveUpward();
-                                break;
-                            case DescentElevatorType.SLOW_UPWARD_MOVEMENT:
-                                DescentData.Elevator.SlowUpwardMovement();
-                                break;
-                            case DescentElevatorType.OPEN_DOORS:
-                                DescentData.Elevator.OpenDoors();
-                                break;
-                            case DescentElevatorType.CLOSE_DOORS:
-                                DescentData.Elevator.CloseDoors();
-                                break;
-                        }
-
-                        ElevatorPatches.IgnorePatches = false;
-                    }
+                    default:
+                    case DescentElevatorType.UNKNOWN:
+                        break;
+                    case DescentElevatorType.START_ELEVATOR:
+                        DescentData.Elevator.StartElevator();
+                        break;
+                    case DescentElevatorType.STOP_ELEVATOR:
+                        DescentData.Elevator.StopDoorRoutine();
+                        break;
+                    case DescentElevatorType.SEAL_DOORS:
+                        DescentData.Elevator.SealDoors();
+                        break;
+                    case DescentElevatorType.START_MOVE_UPWARD:
+                        DescentData.Elevator.StartMoveUpward();
+                        break;
+                    case DescentElevatorType.SLOW_UPWARD_MOVEMENT:
+                        DescentData.Elevator.SlowUpwardMovement();
+                        break;
+                    case DescentElevatorType.OPEN_DOORS:
+                        DescentData.Elevator.OpenDoors();
+                        break;
+                    case DescentElevatorType.CLOSE_DOORS:
+                        DescentData.Elevator.CloseDoors();
+                        break;
                 }
+
+                ElevatorPatches.IgnorePatches = false;
             }
         }
     }

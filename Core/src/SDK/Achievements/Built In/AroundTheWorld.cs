@@ -23,30 +23,36 @@ namespace LabFusion.SDK.Achievements
 
         private readonly List<string> _levels = new();
 
-        protected override void OnRegister() {
+        protected override void OnRegister()
+        {
             MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
             MultiplayerHooking.OnDisconnect += OnDisconnect;
         }
 
-        protected override void OnUnregister() {
+        protected override void OnUnregister()
+        {
             MultiplayerHooking.OnMainSceneInitialized -= OnMainSceneInitialized;
             MultiplayerHooking.OnDisconnect -= OnDisconnect;
         }
 
-        private void OnMainSceneInitialized() {
+        private void OnMainSceneInitialized()
+        {
             // Make sure we have a server and this level hasn't already been visited
-            if (NetworkInfo.HasServer && PlayerIdManager.HasOtherPlayers && !_levels.Contains(FusionSceneManager.Barcode)) {
+            if (NetworkInfo.HasServer && PlayerIdManager.HasOtherPlayers && !_levels.Contains(FusionSceneManager.Barcode))
+            {
                 _levels.Add(FusionSceneManager.Barcode);
 
                 // If we have over 10 unique levels, reward the achievement
-                if (_levels.Count >= 10) {
+                if (_levels.Count >= 10)
+                {
                     IncrementTask();
                     _levels.Clear();
                 }
             }
         }
 
-        private void OnDisconnect() {
+        private void OnDisconnect()
+        {
             // Clear our visited levels
             _levels.Clear();
         }

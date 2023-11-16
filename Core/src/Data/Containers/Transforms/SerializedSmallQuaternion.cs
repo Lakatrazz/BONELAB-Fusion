@@ -20,14 +20,16 @@ namespace LabFusion.Data
 
         public sbyte c1, c2, c3, c4;
 
-        public void Serialize(FusionWriter writer) {
+        public void Serialize(FusionWriter writer)
+        {
             writer.Write(c1.ToByte());
             writer.Write(c2.ToByte());
             writer.Write(c3.ToByte());
             writer.Write(c4.ToByte());
         }
 
-        public void Deserialize(FusionReader reader) {
+        public void Deserialize(FusionReader reader)
+        {
             c1 = reader.ReadByte().ToSByte();
             c2 = reader.ReadByte().ToSByte();
             c3 = reader.ReadByte().ToSByte();
@@ -45,7 +47,8 @@ namespace LabFusion.Data
             };
         }
 
-        public SystemQuaternion Expand() {
+        public SystemQuaternion Expand()
+        {
             return SystemQuaternion.Normalize(new SystemQuaternion(c1.ToSingle(), c2.ToSingle(), c3.ToSingle(), c4.ToSingle()));
         }
     }

@@ -20,8 +20,10 @@ using Il2Type = Il2CppSystem.Type;
 
 using SLZ.Rig;
 
-namespace LabFusion.Syncables {
-    public static class SyncBlacklist {
+namespace LabFusion.Syncables
+{
+    public static class SyncBlacklist
+    {
         private static readonly Il2Type[] BlacklistedChildComponents = new Il2Type[4] {
             Il2CppType.Of<GetVelocity>(),
             Il2CppType.Of<SpawnFragment>(),
@@ -33,17 +35,22 @@ namespace LabFusion.Syncables {
             Il2CppType.Of<RigManager>(),
         };
 
-        public static bool HasBlacklistedComponents(this GameObject go) {
+        public static bool HasBlacklistedComponents(this GameObject go)
+        {
             // Check children components
-            foreach (var type in BlacklistedChildComponents) {
-                if (go.GetComponentInChildren(type, true) != null) {
+            foreach (var type in BlacklistedChildComponents)
+            {
+                if (go.GetComponentInChildren(type, true) != null)
+                {
                     return true;
                 }
             }
 
             // Check parent components
-            foreach (var type in BlacklistedParentComponents) {
-                if (go.GetComponentInParent(type, true) != null) {
+            foreach (var type in BlacklistedParentComponents)
+            {
+                if (go.GetComponentInParent(type, true) != null)
+                {
                     return true;
                 }
             }

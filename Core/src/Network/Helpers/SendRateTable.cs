@@ -6,8 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabFusion.Network {
-    public static class SendRateTable {
+namespace LabFusion.Network
+{
+    public static class SendRateTable
+    {
         private static readonly int[] _playerTable = new int[9] {
             2,
             5,
@@ -37,11 +39,13 @@ namespace LabFusion.Network {
             4200,
         };
 
-        public static int GetPlayerSendRate() {
+        public static int GetPlayerSendRate()
+        {
             var count = PlayerIdManager.PlayerCount;
             var tableLength = _playerTable.Length;
 
-            for (var i = 0; i < tableLength; i++) {
+            for (var i = 0; i < tableLength; i++)
+            {
                 if (count <= _playerTable[i])
                     return i + 1;
             }
@@ -53,7 +57,8 @@ namespace LabFusion.Network {
         {
             var tableLength = _objectTable.Length;
 
-            for (var i = 0; i < tableLength; i++) {
+            for (var i = 0; i < tableLength; i++)
+            {
                 if (bytesUp <= _objectTable[i])
                     return i + 1;
             }

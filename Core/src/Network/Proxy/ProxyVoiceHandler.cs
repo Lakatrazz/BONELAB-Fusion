@@ -19,8 +19,10 @@ using UnityEngine;
 using PCMReaderCallback = UnityEngine.AudioClip.PCMReaderCallback;
 using LiteNetLib.Utils;
 
-namespace LabFusion.Network {
-    public class ProxyVoiceHandler : VoiceHandler {
+namespace LabFusion.Network
+{
+    public class ProxyVoiceHandler : VoiceHandler
+    {
         private const uint _androidSampleRate = 48000;
         private const float _defaultVolumeMultiplier = 10f;
         private const float _defaultPitchMultiplier = 0.5f;
@@ -29,7 +31,8 @@ namespace LabFusion.Network {
         private readonly MemoryStream _decompressedVoiceStream = new();
         private readonly Queue<float> _streamingReadQueue = new();
 
-        public ProxyVoiceHandler(PlayerId id) {
+        public ProxyVoiceHandler(PlayerId id)
+        {
             // Save the id
             _id = id;
             OnContactUpdated(ContactsList.GetContact(id));
@@ -60,7 +63,8 @@ namespace LabFusion.Network {
             base.Cleanup();
         }
 
-        private void OnContactUpdated(Contact contact) {
+        private void OnContactUpdated(Contact contact)
+        {
             Volume = contact.volume;
         }
 
@@ -81,7 +85,8 @@ namespace LabFusion.Network {
 
         public void OnDecompressedVoiceBytesReceived(byte[] bytes)
         {
-            if (MicrophoneDisabled) {
+            if (MicrophoneDisabled)
+            {
                 return;
             }
 
@@ -106,11 +111,13 @@ namespace LabFusion.Network {
             }
         }
 
-        private float GetVoiceMultiplier() {
+        private float GetVoiceMultiplier()
+        {
             float mult = _defaultVolumeMultiplier * FusionPreferences.ClientSettings.GlobalVolume * Volume;
 
             // If we are loading or the audio is 2D, lower the volume
-            if (FusionSceneManager.IsLoading() || _source.spatialBlend <= 0f) {
+            if (FusionSceneManager.IsLoading() || _source.spatialBlend <= 0f)
+            {
                 mult *= 0.25f;
             }
 

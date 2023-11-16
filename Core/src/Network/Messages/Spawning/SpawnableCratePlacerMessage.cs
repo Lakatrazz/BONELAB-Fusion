@@ -70,26 +70,26 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<SpawnableCratePlacerData>();
+            // This should only be handled by clients
+            if (!NetworkInfo.IsServer && !isServerHandled)
             {
-                using (var data = reader.ReadFusionSerializable<SpawnableCratePlacerData>())
+                if (data.placer != null)
                 {
-                    // This should only be handled by clients
-                    if (!NetworkInfo.IsServer && !isServerHandled) {
-                        if (data.placer != null) {
-                            MelonCoroutines.Start(Internal_WaitForSyncable(data.placer, data.spawnId));
-                        }
-                    }
-                    else
-                        throw new ExpectedClientException();
+                    MelonCoroutines.Start(Internal_WaitForSyncable(data.placer, data.spawnId));
                 }
             }
+            else
+                throw new ExpectedClientException();
         }
 
-        private static IEnumerator Internal_WaitForSyncable(GameObject placer, ushort spawnId) {
+        private static IEnumerator Internal_WaitForSyncable(GameObject placer, ushort spawnId)
+        {
             float startTime = TimeUtilities.TimeSinceStartup;
             ISyncable syncable = null;
-            while (syncable == null && TimeUtilities.TimeSinceStartup - startTime <= 1f) {
+            while (syncable == null && TimeUtilities.TimeSinceStartup - startTime <= 1f)
+            {
                 yield return null;
 
                 SyncManager.TryGetSyncable(spawnId, out syncable);

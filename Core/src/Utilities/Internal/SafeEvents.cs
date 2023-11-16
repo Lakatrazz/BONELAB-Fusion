@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabFusion.Utilities {
+namespace LabFusion.Utilities
+{
     // SafeActions from BoneLib, but using generic delegates instead
-    internal static class SafeEvents {
+    internal static class SafeEvents
+    {
         internal static void InvokeSafe<T>(this T action, string task) where T : Delegate
         {
             if (action == null)
@@ -51,7 +53,8 @@ namespace LabFusion.Utilities {
 
         internal static void InvokeSafe<T, T1, T2>(this T action, T1 param1, T2 param2, string task) where T : Delegate
         {
-            if (action == null) {
+            if (action == null)
+            {
                 return;
             }
 

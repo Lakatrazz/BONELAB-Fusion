@@ -19,15 +19,18 @@ using UnityEngine;
 
 using PCMReaderCallback = UnityEngine.AudioClip.PCMReaderCallback;
 
-namespace LabFusion.Network {
-    public class SteamVoiceHandler : VoiceHandler {
+namespace LabFusion.Network
+{
+    public class SteamVoiceHandler : VoiceHandler
+    {
         private const float _defaultVolumeMultiplier = 10f;
 
         private readonly MemoryStream _compressedVoiceStream = new();
         private readonly MemoryStream _decompressedVoiceStream = new();
         private readonly Queue<float> _streamingReadQueue = new();
 
-        public SteamVoiceHandler(PlayerId id) {
+        public SteamVoiceHandler(PlayerId id)
+        {
             // Save the id
             _id = id;
             OnContactUpdated(ContactsList.GetContact(id));
@@ -55,12 +58,15 @@ namespace LabFusion.Network {
             base.Cleanup();
         }
 
-        private void OnContactUpdated(Contact contact) {
+        private void OnContactUpdated(Contact contact)
+        {
             Volume = contact.volume;
         }
 
-        public override void OnVoiceBytesReceived(byte[] bytes) {
-            if (MicrophoneDisabled) {
+        public override void OnVoiceBytesReceived(byte[] bytes)
+        {
+            if (MicrophoneDisabled)
+            {
                 return;
             }
 
@@ -96,11 +102,13 @@ namespace LabFusion.Network {
             }
         }
 
-        private float GetVoiceMultiplier() {
+        private float GetVoiceMultiplier()
+        {
             float mult = _defaultVolumeMultiplier * FusionPreferences.ClientSettings.GlobalVolume * Volume;
 
             // If we are loading or the audio is 2D, lower the volume
-            if (FusionSceneManager.IsLoading() || _source.spatialBlend <= 0f) {
+            if (FusionSceneManager.IsLoading() || _source.spatialBlend <= 0f)
+            {
                 mult *= 0.25f;
             }
 

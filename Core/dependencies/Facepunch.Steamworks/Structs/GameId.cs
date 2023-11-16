@@ -6,11 +6,11 @@ using System.Text;
 
 namespace Steamworks.Data
 {
-	public struct GameId
-	{
-		// TODO - Be able to access these vars
+    public struct GameId
+    {
+        // TODO - Be able to access these vars
 
-		/*
+        /*
 		 
 		enum EGameIDType
 		{
@@ -30,16 +30,16 @@ namespace Steamworks.Data
 			unsigned int m_nModID : 32;
 		#endif
 		*/
-		public ulong Value;
+        public ulong Value;
 
-		public static implicit operator GameId( ulong value )
-		{
-			return new GameId { Value = value };
-		}
+        public static implicit operator GameId(ulong value)
+        {
+            return new GameId { Value = value };
+        }
 
-		public static implicit operator ulong( GameId value )
-		{
-			return value.Value;
-		}
-	}
+        public static implicit operator ulong(GameId value)
+        {
+            return value.Value;
+        }
+    }
 }

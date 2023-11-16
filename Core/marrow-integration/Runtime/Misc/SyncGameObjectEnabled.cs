@@ -11,14 +11,16 @@ using LabFusion.Senders;
 using LabFusion.Utilities;
 #endif
 
-namespace LabFusion.MarrowIntegration {
+namespace LabFusion.MarrowIntegration
+{
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
     [AddComponentMenu("BONELAB Fusion/Misc/Sync GameObject Enabled")]
     [DisallowMultipleComponent]
 #endif
-    public sealed class SyncGameObjectEnabled : FusionMarrowBehaviour {
+    public sealed class SyncGameObjectEnabled : FusionMarrowBehaviour
+    {
 #if MELONLOADER
         public SyncGameObjectEnabled(IntPtr intPtr) : base(intPtr) { }
 
@@ -26,31 +28,40 @@ namespace LabFusion.MarrowIntegration {
 
         public PropSyncable PropSyncable;
 
-        private void Awake() {
+        private void Awake()
+        {
             Cache.Add(gameObject, this);
         }
 
-        private void OnDestroy() {
+        private void OnDestroy()
+        {
             Cache.Remove(gameObject);
         }
 
-        private void OnEnable() {
-            if (NetworkInfo.HasServer) {
+        private void OnEnable()
+        {
+            if (NetworkInfo.HasServer)
+            {
                 // Check syncable
-                if (PropSyncable != null) {
+                if (PropSyncable != null)
+                {
                     if (PropSyncable.IsOwner())
                         SDKSender.SendGameObjectActive(true, this);
                 }
-                else if (NetworkInfo.IsServer) {
+                else if (NetworkInfo.IsServer)
+                {
                     SDKSender.SendGameObjectActive(true, this);
                 }
             }
         }
 
-        private void OnDisable() {
-            if (NetworkInfo.HasServer) {
+        private void OnDisable()
+        {
+            if (NetworkInfo.HasServer)
+            {
                 // Check syncable
-                if (PropSyncable != null) {
+                if (PropSyncable != null)
+                {
                     if (PropSyncable.IsOwner())
                         SDKSender.SendGameObjectActive(false, this);
                 }

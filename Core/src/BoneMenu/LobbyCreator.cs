@@ -17,7 +17,8 @@ using UnityEngine;
 
 namespace LabFusion.BoneMenu
 {
-    public enum LobbySortMode {
+    public enum LobbySortMode
+    {
         NONE = 0,
         GAMEMODE = 1,
         LEVEL = 2,
@@ -32,7 +33,8 @@ namespace LabFusion.BoneMenu
             // Create the root category if necessary
             MenuCategory rootCategory = category;
 
-            switch (sortMode) {
+            switch (sortMode)
+            {
                 case LobbySortMode.GAMEMODE:
                     rootCategory = category.CreateCategory(info.GamemodeName, Color.white);
                     break;
@@ -46,10 +48,12 @@ namespace LabFusion.BoneMenu
 
             string countString = $"({info.PlayerCount}/{info.MaxPlayers})";
 
-            if (!string.IsNullOrWhiteSpace(info.LobbyName)) {
+            if (!string.IsNullOrWhiteSpace(info.LobbyName))
+            {
                 userString = $"{info.LobbyName} [{info.LobbyOwner}] {countString}";
             }
-            else {
+            else
+            {
                 userString = $"{info.LobbyOwner}'s Server {countString}";
             }
 
@@ -58,7 +62,8 @@ namespace LabFusion.BoneMenu
             Color versionColor = Color.white;
 
             if (NetworkVerification.CompareVersion(info.LobbyVersion, FusionMod.Version) != VersionResult.Ok
-                || !NetworkVerification.IsPlatformAllowed(info.AllowQuestUsers, info.AllowPCUsers)) {
+                || !NetworkVerification.IsPlatformAllowed(info.AllowQuestUsers, info.AllowPCUsers))
+            {
                 lobbyColor = Color.red;
                 versionColor = Color.red;
             }
@@ -74,7 +79,8 @@ namespace LabFusion.BoneMenu
             // Create a category for the player list
             var playersCategory = lobbyCategory.CreateCategory("Players", Color.white);
 
-            foreach (var player in info.PlayerList.players) {
+            foreach (var player in info.PlayerList.players)
+            {
                 playersCategory.CreateFunctionElement(player.username, Color.white, null);
             }
 
@@ -83,7 +89,8 @@ namespace LabFusion.BoneMenu
             // Create a category for the server tags
             var tagsCategory = lobbyCategory.CreateCategory("Tags", Color.white);
 
-            foreach (var tag in info.LobbyTags.Expand()) {
+            foreach (var tag in info.LobbyTags.Expand())
+            {
                 tagsCategory.CreateFunctionElement(tag, Color.white, null);
             }
 

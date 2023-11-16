@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class EltonGlasses : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class EltonGlasses : AccessoryItem
+    {
         public override string Title => "Circle Shades";
 
         public override string Author => BitEconomy.BaBaAuthor;

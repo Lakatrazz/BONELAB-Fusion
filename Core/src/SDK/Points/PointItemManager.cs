@@ -15,7 +15,8 @@ using System.Reflection;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
+namespace LabFusion.SDK.Points
+{
     // Terraria rarity levels
     public enum RarityLevel
     {
@@ -34,7 +35,8 @@ namespace LabFusion.SDK.Points {
         Purple = 11,
     }
 
-    public enum SortMode {
+    public enum SortMode
+    {
         PRICE,
         NAME,
         TAG,
@@ -45,12 +47,15 @@ namespace LabFusion.SDK.Points {
         LAST_SORT,
     }
 
-    public static class PointItemManager {
+    public static class PointItemManager
+    {
         public static event Action OnBitCountChanged = null;
         public static event Action<PointItem> OnItemUnlocked = null;
 
-        public static Color ParseColor(RarityLevel level) {
-            switch (level) {
+        public static Color ParseColor(RarityLevel level)
+        {
+            switch (level)
+            {
                 case RarityLevel.Gray:
                     return Color.gray;
                 default:
@@ -97,9 +102,12 @@ namespace LabFusion.SDK.Points {
             MultiplayerHooking.OnPlayerRepCreated -= Internal_OnPlayerRepCreated;
         }
 
-        private static void Internal_OnLocalPlayerCreated(RigManager rigManager) {
-            foreach (var item in LoadedItems) {
-                if (item.IsEquipped) {
+        private static void Internal_OnLocalPlayerCreated(RigManager rigManager)
+        {
+            foreach (var item in LoadedItems)
+            {
+                if (item.IsEquipped)
+                {
                     item.OnUpdateObjects(new PointItemPayload()
                     {
                         type = PointItemPayloadType.SELF,
@@ -117,7 +125,8 @@ namespace LabFusion.SDK.Points {
 
             foreach (var item in LoadedItems)
             {
-                if (rep.PlayerId.EquippedItems.Contains(item.Barcode)) {
+                if (rep.PlayerId.EquippedItems.Contains(item.Barcode))
+                {
                     item.OnUpdateObjects(new PointItemPayload()
                     {
                         type = PointItemPayloadType.PLAYER_REP,
@@ -128,7 +137,8 @@ namespace LabFusion.SDK.Points {
             }
         }
 
-        private static void Internal_AssemblyLoad(object sender, AssemblyLoadEventArgs args) {
+        private static void Internal_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
+        {
             LoadItems(args.LoadedAssembly);
         }
 
@@ -148,7 +158,8 @@ namespace LabFusion.SDK.Points {
 
             if (PointItemLookup.ContainsKey(item.Barcode))
                 throw new ArgumentException($"Point Item with barcode {item.Barcode} was already registered.");
-            else {
+            else
+            {
                 PointItems.Add(item);
                 PointItemLookup.Add(item.Barcode, item);
 
@@ -159,8 +170,10 @@ namespace LabFusion.SDK.Points {
             }
         }
 
-        public static bool TryGetPointItem(string barcode, out PointItem item) {
-            if (barcode == null) {
+        public static bool TryGetPointItem(string barcode, out PointItem item)
+        {
+            if (barcode == null)
+            {
                 item = null;
                 return false;
             }
@@ -168,15 +181,18 @@ namespace LabFusion.SDK.Points {
             return PointItemLookup.TryGetValue(barcode, out item);
         }
 
-        public static int GetBitCount() {
+        public static int GetBitCount()
+        {
             return PointSaveManager.GetBitCount();
         }
 
-        public static void RewardBits(int bits, bool popup = true) {
+        public static void RewardBits(int bits, bool popup = true)
+        {
             bits = Math.Max(0, bits);
 
             // Make sure the amount isn't invalid
-            if (bits.IsNaN()) {
+            if (bits.IsNaN())
+            {
                 FusionLogger.ErrorLine("Prevented attempt to give invalid bit reward. Please notify a Fusion developer and send them your log.");
                 return;
             }
@@ -190,11 +206,13 @@ namespace LabFusion.SDK.Points {
             OnBitCountChanged.InvokeSafe("executing OnBitCountChanged");
         }
 
-        public static void DecrementBits(int bits, bool popup = true) {
+        public static void DecrementBits(int bits, bool popup = true)
+        {
             bits = Math.Max(0, bits);
 
             // Make sure the amount isn't invalid
-            if (bits.IsNaN()) {
+            if (bits.IsNaN())
+            {
                 FusionLogger.ErrorLine("Prevented attempt to remove an invalid bit amount. Please notify a Fusion developer and send them your log.");
                 return;
             }
@@ -208,7 +226,8 @@ namespace LabFusion.SDK.Points {
             OnBitCountChanged.InvokeSafe("executing OnBitCountChanged");
         }
 
-        public static bool TryUpgradeItem(PointItem item) {
+        public static bool TryUpgradeItem(PointItem item)
+        {
             var unlockedItems = GetUnlockedItems();
 
             if (!unlockedItems.Contains(item))
@@ -233,7 +252,8 @@ namespace LabFusion.SDK.Points {
             return true;
         }
 
-        public static bool TryBuyItem(PointItem item) {
+        public static bool TryBuyItem(PointItem item)
+        {
             var unlockedItems = GetUnlockedItems();
 
             if (unlockedItems.Contains(item))
@@ -257,17 +277,21 @@ namespace LabFusion.SDK.Points {
             return true;
         }
 
-        internal static void Internal_OnEquipChange(PlayerId id, string barcode, bool isEquipped) {
-            if (TryGetPointItem(barcode, out var item)) {
+        internal static void Internal_OnEquipChange(PlayerId id, string barcode, bool isEquipped)
+        {
+            if (TryGetPointItem(barcode, out var item))
+            {
                 // Get the rig info
                 RigManager manager = null;
                 PointItemPayloadType type = PointItemPayloadType.SELF;
 
-                if (id == null || id.IsSelf) {
+                if (id == null || id.IsSelf)
+                {
                     manager = RigData.RigReferences.RigManager;
                     type = PointItemPayloadType.SELF;
                 }
-                else if (PlayerRepManager.TryGetPlayerRep(id, out var rep)) {
+                else if (PlayerRepManager.TryGetPlayerRep(id, out var rep))
+                {
                     manager = rep.RigReferences.RigManager;
                     type = PointItemPayloadType.PLAYER_REP;
                 }
@@ -283,7 +307,8 @@ namespace LabFusion.SDK.Points {
                 item.OnEquipChanged(payload, isEquipped);
 
                 // Update visibility
-                if (manager != null) {
+                if (manager != null)
+                {
                     item.OnUpdateObjects(payload, isEquipped);
                 }
             }
@@ -323,7 +348,8 @@ namespace LabFusion.SDK.Points {
             }
         }
 
-        public static void SetEquipped(PointItem item, bool isEquipped) {
+        public static void SetEquipped(PointItem item, bool isEquipped)
+        {
             if (item == null || (!item.IsUnlocked && !item.IsEquipped))
                 return;
 
@@ -332,16 +358,20 @@ namespace LabFusion.SDK.Points {
             PointItemSender.SendPointItemEquip(item.Barcode, isEquipped);
         }
 
-        public static void UnequipAll() {
-            foreach (var item in LoadedItems) {
+        public static void UnequipAll()
+        {
+            foreach (var item in LoadedItems)
+            {
                 SetEquipped(item, false);
             }
         }
 
-        public static IReadOnlyList<PointItem> GetLockedItems(SortMode sort = SortMode.PRICE) {
+        public static IReadOnlyList<PointItem> GetLockedItems(SortMode sort = SortMode.PRICE)
+        {
             List<PointItem> items = new(LoadedItems.Count);
 
-            foreach (var item in LoadedItems) {
+            foreach (var item in LoadedItems)
+            {
                 if (item.Redacted)
                     continue;
 
@@ -357,10 +387,12 @@ namespace LabFusion.SDK.Points {
             return items;
         }
 
-        public static IReadOnlyList<PointItem> GetUnlockedItems(SortMode sort = SortMode.PRICE) {
+        public static IReadOnlyList<PointItem> GetUnlockedItems(SortMode sort = SortMode.PRICE)
+        {
             List<PointItem> items = new List<PointItem>(LoadedItems.Count);
 
-            foreach (var item in LoadedItems) {
+            foreach (var item in LoadedItems)
+            {
                 if ((sort == SortMode.EQUIPPED && !item.IsEquipped) || (sort == SortMode.UNEQUIPPED && item.IsEquipped))
                     continue;
 

@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class TestItem : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class TestItem : AccessoryItem
+    {
         public override string Title => "Test Item Please Ignore";
 
         public override string Author => BitEconomy.BaBaAuthor;

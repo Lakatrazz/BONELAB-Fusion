@@ -12,9 +12,11 @@ using LabFusion.Senders;
 
 using SLZ.Bonelab;
 
-namespace LabFusion.Patching {
+namespace LabFusion.Patching
+{
     [HarmonyPatch(typeof(TaxiController))]
-    public static class TaxiControllerPatches {
+    public static class TaxiControllerPatches
+    {
         public static bool IgnorePatches = false;
 
         [HarmonyPrefix]
@@ -24,10 +26,12 @@ namespace LabFusion.Patching {
             if (IgnorePatches)
                 return true;
 
-            if (NetworkInfo.HasServer) {
+            if (NetworkInfo.HasServer)
+            {
                 if (!NetworkInfo.IsServer)
                     return false;
-                else {
+                else
+                {
                     CampaignSender.SendHomeEvent(0, HomeEventType.SPLINE_LOOP_COUNTER);
                 }
             }
@@ -37,7 +41,8 @@ namespace LabFusion.Patching {
     }
 
     [HarmonyPatch(typeof(GameControl_Outro))]
-    public static class HomePatches {
+    public static class HomePatches
+    {
         public static bool IgnorePatches = false;
 
         [HarmonyPrefix]
@@ -51,7 +56,8 @@ namespace LabFusion.Patching {
             {
                 if (!NetworkInfo.IsServer)
                     return false;
-                else {
+                else
+                {
                     CampaignSender.SendHomeEvent(0, HomeEventType.WARMUP_JIMMY_ARM);
                 }
             }

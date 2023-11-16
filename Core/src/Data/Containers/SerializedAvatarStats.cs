@@ -13,11 +13,13 @@ using UnityEngine;
 
 using Avatar = SLZ.VRMK.Avatar;
 
-namespace LabFusion.Data {
+namespace LabFusion.Data
+{
     // We manually send proportions, stats, and mass incase of not having an avatar
     // And also stat modifier mods (Quicksilver, StatModifier, Spiderlab)
     // This has a LOT of data, so this should ONLY be sent when necessary!
-    public class SerializedAvatarStats : IFusionSerializable {
+    public class SerializedAvatarStats : IFusionSerializable
+    {
         public const int Size = sizeof(float) * 73 + SerializedSoftEllipse.Size * 8;
 
         // Root scale
@@ -114,7 +116,8 @@ namespace LabFusion.Data {
 
         public SerializedAvatarStats() { }
 
-        public SerializedAvatarStats(Avatar avatar) {
+        public SerializedAvatarStats(Avatar avatar)
+        {
             // Save the scale
             localScale = avatar.transform.localScale;
 
@@ -208,7 +211,8 @@ namespace LabFusion.Data {
             massTotal = avatar._massTotal;
         }
 
-        public void CopyTo(Avatar avatar) {
+        public void CopyTo(Avatar avatar)
+        {
             // Copy ellipse/offset values
             avatar._headTop = headTop;
             avatar._chinY = chinY;
@@ -299,7 +303,8 @@ namespace LabFusion.Data {
             avatar._massTotal = massTotal;
         }
 
-        public void Serialize(FusionWriter writer) {
+        public void Serialize(FusionWriter writer)
+        {
             // Write scale
             writer.Write(localScale);
 
@@ -310,7 +315,7 @@ namespace LabFusion.Data {
             writer.Write(waistY);
             writer.Write(highHipY);
             writer.Write(crotchBottom);
-            
+
             writer.Write(headEllipseX);
             writer.Write(jawEllipseX);
             writer.Write(neckEllipseX);
@@ -318,7 +323,7 @@ namespace LabFusion.Data {
             writer.Write(waistEllipseX);
             writer.Write(highHipsEllipseX);
             writer.Write(hipsEllipseX);
-            
+
             writer.Write(headEllipseZ);
             writer.Write(jawEllipseZ);
             writer.Write(neckEllipseZ);
@@ -393,7 +398,8 @@ namespace LabFusion.Data {
             writer.Write(massTotal);
         }
 
-        public void Deserialize(FusionReader reader) {
+        public void Deserialize(FusionReader reader)
+        {
             // Read scale
             localScale = reader.ReadVector3();
 

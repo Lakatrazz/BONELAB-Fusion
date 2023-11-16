@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Data {
-    public class DungeonWarriorDMData : DMLevelDataHandler {
+namespace LabFusion.Data
+{
+    public class DungeonWarriorDMData : DMLevelDataHandler
+    {
         public override string LevelTitle => "Dungeon Warrior";
 
         protected override Vector3[] DeathmatchSpawnPoints => new Vector3[7] {

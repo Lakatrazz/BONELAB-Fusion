@@ -13,33 +13,42 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabFusion.Network {
-    public static class NetworkLayerDeterminer {
+namespace LabFusion.Network
+{
+    public static class NetworkLayerDeterminer
+    {
         public static NetworkLayer LoadedLayer { get; private set; }
         public static string LoadedTitle { get; private set; }
 
-        public static NetworkLayer GetDefaultLayer() {
+        public static NetworkLayer GetDefaultLayer()
+        {
             if (HelperMethods.IsAndroid())
                 return NetworkLayer.GetLayer<ProxySteamVRNetworkLayer>();
 
             return NetworkLayer.GetLayer<SteamVRNetworkLayer>();
         }
 
-        public static NetworkLayer VerifyLayer(NetworkLayer layer) {
-            if (layer.CheckValidation()) {
+        public static NetworkLayer VerifyLayer(NetworkLayer layer)
+        {
+            if (layer.CheckValidation())
+            {
                 return layer;
             }
-            else if (layer.TryGetFallback(out var fallback)) {
+            else if (layer.TryGetFallback(out var fallback))
+            {
                 return VerifyLayer(fallback);
             }
-            else {
+            else
+            {
                 return NetworkLayer.GetLayer<EmptyNetworkLayer>();
             }
         }
 
-        public static void LoadLayer() {
+        public static void LoadLayer()
+        {
             var title = FusionPreferences.ClientSettings.NetworkLayerTitle.GetValue();
-            if (!NetworkLayer.LayerLookup.TryGetValue(title, out var layer)) {
+            if (!NetworkLayer.LayerLookup.TryGetValue(title, out var layer))
+            {
                 layer = GetDefaultLayer();
             }
 

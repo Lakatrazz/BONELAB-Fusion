@@ -24,7 +24,8 @@ namespace LabFusion.Data
         public override GrabGroup? Group => GrabGroup.PROP;
     }
 
-    public class SerializedPropGrab : SerializedGrab {
+    public class SerializedPropGrab : SerializedGrab
+    {
         public new const int Size = SerializedGrab.Size + sizeof(ushort) * 2 + SerializedTransform.Size;
 
         public string fullPath;
@@ -41,7 +42,8 @@ namespace LabFusion.Data
             this.id = id;
         }
 
-        public override int GetSize() {
+        public override int GetSize()
+        {
             return Size + fullPath.GetSize();
         }
 
@@ -72,7 +74,8 @@ namespace LabFusion.Data
             relativeHand = reader.ReadFusionSerializable<SerializedTransform>();
         }
 
-        public Grip GetGrip(out PropSyncable syncable) {
+        public Grip GetGrip(out PropSyncable syncable)
+        {
             GameObject go;
             InteractableHost host;
             syncable = null;
@@ -80,7 +83,8 @@ namespace LabFusion.Data
             if (SyncManager.TryGetSyncable(id, out var foundSyncable))
             {
 
-                if (foundSyncable is PropSyncable prop) {
+                if (foundSyncable is PropSyncable prop)
+                {
                     syncable = prop;
                     return syncable.GetGrip(index);
                 }
@@ -96,7 +100,8 @@ namespace LabFusion.Data
             return null;
         }
 
-        public override Grip GetGrip() {
+        public override Grip GetGrip()
+        {
             return GetGrip(out _);
         }
 

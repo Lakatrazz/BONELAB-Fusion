@@ -11,8 +11,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Network {
-    public static class VoteKickHelper {
+namespace LabFusion.Network
+{
+    public static class VoteKickHelper
+    {
         // The minimum amount of time that can pass before someone can vote again (in seconds)
         public const float MinVoteDelay = 120f;
 
@@ -22,11 +24,13 @@ namespace LabFusion.Network {
         // The minimum amount of players needed to vote before a kick is enforced
         public const float RequiredPercent = 0.6f;
 
-        public class VoteKickInfo {
+        public class VoteKickInfo
+        {
             public ulong target;
             public List<ulong> voters;
 
-            public VoteKickInfo(ulong target, ulong voter) {
+            public VoteKickInfo(ulong target, ulong voter)
+            {
                 this.target = target;
 
                 voters = new() {
@@ -44,7 +48,8 @@ namespace LabFusion.Network {
         private static bool _hasReset = true;
         private static float _timeOfLastVote = -float.PositiveInfinity;
 
-        internal static void Internal_OnInitializeMelon() {
+        internal static void Internal_OnInitializeMelon()
+        {
             MultiplayerHooking.OnDisconnect += OnResetValues;
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
             MultiplayerHooking.OnLateUpdate += OnLateUpdate;
@@ -57,18 +62,22 @@ namespace LabFusion.Network {
             MultiplayerHooking.OnLateUpdate -= OnLateUpdate;
         }
 
-        private static void OnLateUpdate() {
+        private static void OnLateUpdate()
+        {
             // Only check for the server
-            if (NetworkInfo.IsServer) {
+            if (NetworkInfo.IsServer)
+            {
                 // Compare times
-                if (!_hasReset && TimeUtilities.TimeSinceStartup - _timeOfLastVote >= ResetVoteTime) {
+                if (!_hasReset && TimeUtilities.TimeSinceStartup - _timeOfLastVote >= ResetVoteTime)
+                {
                     _hasReset = true;
                     _voteKickTracker.Clear();
                 }
             }
         }
 
-        private static void OnResetValues() {
+        private static void OnResetValues()
+        {
             _voteKickTracker.Clear();
             _voterTracker.Clear();
 
@@ -76,29 +85,35 @@ namespace LabFusion.Network {
             _timeOfLastVote = -float.PositiveInfinity;
         }
 
-        private static void OnPlayerLeave(PlayerId player) {
+        private static void OnPlayerLeave(PlayerId player)
+        {
             _voteKickTracker.Remove(player.LongId);
             _voterTracker.Remove(player.LongId);
         }
 
-        public static int GetRequiredVotes() {
+        public static int GetRequiredVotes()
+        {
             float count = (float)PlayerIdManager.PlayerCount;
             float percent = RequiredPercent;
 
             return ManagedMathf.CeilToInt(count * percent);
         }
 
-        public static int GetVoteCount(ulong target) {
-            if (_voteKickTracker.TryGetValue(target, out var info)) {
+        public static int GetVoteCount(ulong target)
+        {
+            if (_voteKickTracker.TryGetValue(target, out var info))
+            {
                 return info.voters.Count;
             }
             else
                 return 0;
         }
 
-        public static bool Vote(ulong target, ulong voter) {
+        public static bool Vote(ulong target, ulong voter)
+        {
             // Make sure the voter hasn't voted in the past specific amount of time
-            if (_voterTracker.TryGetValue(voter, out var time) && TimeUtilities.TimeSinceStartup - time < MinVoteDelay) {
+            if (_voterTracker.TryGetValue(voter, out var time) && TimeUtilities.TimeSinceStartup - time < MinVoteDelay)
+            {
                 return false;
             }
             _voterTracker.Remove(voter);
@@ -111,14 +126,16 @@ namespace LabFusion.Network {
                 return false;
 
             // Check if the person has already voted on the target
-            if (_voteKickTracker.TryGetValue(target, out var info)) {
+            if (_voteKickTracker.TryGetValue(target, out var info))
+            {
                 // Add the voter to the info or skip the vote completely
                 if (info.voters.Contains(voter))
                     return false;
                 else
                     info.voters.Add(voter);
             }
-            else {
+            else
+            {
                 _voteKickTracker.Add(target, new VoteKickInfo(target, voter));
             }
 

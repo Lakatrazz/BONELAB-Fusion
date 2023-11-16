@@ -8,9 +8,11 @@ using UnityEngine;
 
 namespace LabFusion.Extensions
 {
-    public static class AudioSourceExtensions {
+    public static class AudioSourceExtensions
+    {
         // https://forum.unity.com/threads/audio-realistic-sound-rolloff-tool.543362/
-        public static void SetRealisticRolloff(this AudioSource source, float minDistance, float maxDistance) {
+        public static void SetRealisticRolloff(this AudioSource source, float minDistance, float maxDistance)
+        {
             var keys = new Keyframe[]
             {
                 new Keyframe(minDistance, 1f),

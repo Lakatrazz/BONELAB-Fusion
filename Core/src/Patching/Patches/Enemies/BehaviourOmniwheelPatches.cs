@@ -14,9 +14,11 @@ using PuppetMasta;
 
 using UnityEngine;
 
-namespace LabFusion.Patching {
+namespace LabFusion.Patching
+{
     [HarmonyPatch(typeof(BehaviourOmniwheel))]
-    public static class BehaviourOmniwheelPatches {
+    public static class BehaviourOmniwheelPatches
+    {
         [HarmonyPrefix]
         [HarmonyPatch(nameof(BehaviourOmniwheel.SwitchLocoState))]
         public static bool SwitchLocoState(BehaviourOmniwheel __instance, BehaviourBaseNav.LocoState lState, float coolDown, bool forceSwitch)

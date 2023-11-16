@@ -15,9 +15,12 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace LabFusion.Utilities {
-    public static class UIMachineUtilities {
-        public static void CreateLaserCursor(Transform canvas, Transform uiPlane, Vector3 bounds) {
+namespace LabFusion.Utilities
+{
+    public static class UIMachineUtilities
+    {
+        public static void CreateLaserCursor(Transform canvas, Transform uiPlane, Vector3 bounds)
+        {
             LaserCursorUtilities.CreateLaserCursor((cursor) =>
             {
                 cursor.transform.parent = canvas.parent;
@@ -32,48 +35,58 @@ namespace LabFusion.Utilities {
 
                 cursor.regions = new LaserCursor.CursorRegion[] { region };
 
-                FusionSceneManager.HookOnLevelLoad(() => {
+                FusionSceneManager.HookOnLevelLoad(() =>
+                {
                     cursor.gameObject.SetActive(true);
                 });
             });
         }
 
-        public static void CreateUITrigger(GameObject canvas, GameObject trigger) {
+        public static void CreateUITrigger(GameObject canvas, GameObject trigger)
+        {
             var triggerLasers = trigger.AddComponent<TriggerLasers>();
             triggerLasers.LayerFilter = LayerMask.GetMask(new string[] { "Trigger", });
             triggerLasers.onlyTriggerOnPlayer = true;
             triggerLasers.OnTriggerEnterEvent = new UnityEventTrigger();
             triggerLasers.OnTriggerExitEvent = new UnityEventTrigger();
 
-            triggerLasers.OnTriggerEnterEvent.AddCall(UnityEvent.GetDelegate((UnityAction)(() => { 
+            triggerLasers.OnTriggerEnterEvent.AddCall(UnityEvent.GetDelegate((UnityAction)(() =>
+            {
                 canvas.SetActive(true);
                 FusionAudio.Play3D(canvas.transform.position, FusionContentLoader.UITurnOn);
             })));
 
-            triggerLasers.OnTriggerExitEvent.AddCall(UnityEvent.GetDelegate((UnityAction)(() => { 
+            triggerLasers.OnTriggerExitEvent.AddCall(UnityEvent.GetDelegate((UnityAction)(() =>
+            {
                 canvas.SetActive(false);
                 FusionAudio.Play3D(canvas.transform.position, FusionContentLoader.UITurnOff);
             })));
 
         }
 
-        public static void OverrideFonts(Transform root) {
-            foreach (var text in root.GetComponentsInChildren<TMP_Text>(true)) {
+        public static void OverrideFonts(Transform root)
+        {
+            foreach (var text in root.GetComponentsInChildren<TMP_Text>(true))
+            {
                 text.font = PersistentAssetCreator.Font;
             }
         }
 
-        public static void AddButtonTriggers(Transform root) {
-            foreach (var button in root.GetComponentsInChildren<Button>(true)) {
+        public static void AddButtonTriggers(Transform root)
+        {
+            foreach (var button in root.GetComponentsInChildren<Button>(true))
+            {
                 var collider = button.GetComponentInChildren<Collider>(true);
-                if (collider != null) {
+                if (collider != null)
+                {
                     var interactor = collider.gameObject.AddComponent<FusionUITrigger>();
                     interactor.button = button;
                 }
             }
         }
 
-        public static void AddClickEvent(this Button button, Action action) {
+        public static void AddClickEvent(this Button button, Action action)
+        {
             button.onClick.AddListener((UnityAction)action);
         }
     }

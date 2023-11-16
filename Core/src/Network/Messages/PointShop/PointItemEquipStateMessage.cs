@@ -10,29 +10,35 @@ using LabFusion.Representation;
 
 namespace LabFusion.Network
 {
-    public class PointItemEquipStateData : IFusionSerializable, IDisposable {
+    public class PointItemEquipStateData : IFusionSerializable, IDisposable
+    {
         public byte smallId;
         public string barcode;
         public bool isEquipped;
 
-        public void Serialize(FusionWriter writer) {
+        public void Serialize(FusionWriter writer)
+        {
             writer.Write(smallId);
             writer.Write(barcode);
             writer.Write(isEquipped);
         }
-        
-        public void Deserialize(FusionReader reader) {
+
+        public void Deserialize(FusionReader reader)
+        {
             smallId = reader.ReadByte();
             barcode = reader.ReadString();
             isEquipped = reader.ReadBoolean();
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
 
-        public static PointItemEquipStateData Create(byte smallId, string barcode, bool isEquipped) {
-            return new PointItemEquipStateData() {
+        public static PointItemEquipStateData Create(byte smallId, string barcode, bool isEquipped)
+        {
+            return new PointItemEquipStateData()
+            {
                 smallId = smallId,
                 barcode = barcode,
                 isEquipped = isEquipped,
@@ -44,7 +50,8 @@ namespace LabFusion.Network
     {
         public override byte? Tag => NativeMessageTag.PointItemEquipState;
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
+        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        {
             using var reader = FusionReader.Create(bytes);
             using var data = reader.ReadFusionSerializable<PointItemEquipStateData>();
             // Send message to other clients if server

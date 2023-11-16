@@ -54,33 +54,33 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<NimbusGunNoclipData>();
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
             {
-                using (var data = reader.ReadFusionSerializable<NimbusGunNoclipData>())
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+            }
+            else
+            {
+                if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable && propSyncable.TryGetExtender<FlyingGunExtender>(out var extender))
                 {
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled) {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-                        }
-                    }
-                    else
+                    var nimbus = extender.Component;
+
+                    if (data.isEnabled)
                     {
-                        if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable && propSyncable.TryGetExtender<FlyingGunExtender>(out var extender)) {
-                            var nimbus = extender.Component;
+                        nimbus.EnableNoClip();
+                        nimbus.sfx.Release();
+                    }
+                    else if (nimbus.triggerGrip)
+                    {
+                        var hand = nimbus.triggerGrip.GetHand();
 
-                            if (data.isEnabled) {
-                                nimbus.EnableNoClip();
-                                nimbus.sfx.Release();
-                            }
-                            else if (nimbus.triggerGrip) {
-                                var hand = nimbus.triggerGrip.GetHand();
-
-                                if (hand) {
-                                    nimbus.DisableNoClip(hand);
-                                    nimbus.sfx.Grab();
-                                }
-                            }
+                        if (hand)
+                        {
+                            nimbus.DisableNoClip(hand);
+                            nimbus.sfx.Grab();
                         }
                     }
                 }

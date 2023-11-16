@@ -5,11 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LabFusion.SDK.Gamemodes {
-    public static class GamemodeManager {
+namespace LabFusion.SDK.Gamemodes
+{
+    public static class GamemodeManager
+    {
         public static event Action<Gamemode> OnGamemodeChanged;
 
-        internal static void Internal_OnFixedUpdate() {
+        internal static void Internal_OnFixedUpdate()
+        {
             if (Gamemode.ActiveGamemode != null)
                 Gamemode.ActiveGamemode.FixedUpdate();
         }
@@ -26,8 +29,10 @@ namespace LabFusion.SDK.Gamemodes {
                 Gamemode.ActiveGamemode.LateUpdate();
         }
 
-        internal static void Internal_SetActiveGamemode(Gamemode gamemode) {
-            if (Gamemode._activeGamemode != gamemode) {
+        internal static void Internal_SetActiveGamemode(Gamemode gamemode)
+        {
+            if (Gamemode._activeGamemode != gamemode)
+            {
 
                 Gamemode._activeGamemode = gamemode;
                 Gamemode._isGamemodeRunning = gamemode != null;
@@ -41,16 +46,19 @@ namespace LabFusion.SDK.Gamemodes {
                 BoneMenuCreator.SetActiveGamemodeText($"Stop {gamemode.GamemodeName}");
         }
 
-        public static bool TryGetGamemode(ushort tag, out Gamemode gamemode) {
+        public static bool TryGetGamemode(ushort tag, out Gamemode gamemode)
+        {
             // Gamemodes are null?
-            if (Gamemodes == null) {
+            if (Gamemodes == null)
+            {
                 FusionLogger.Error("While trying to find a Gamemode, the gamemode array was null!");
                 gamemode = null;
                 return false;
             }
 
             // Since gamemodes cannot be assumed to exist for everyone, we need to null check
-            if (Gamemodes.Count > tag && Gamemodes.ElementAt(tag) != null) {
+            if (Gamemodes.Count > tag && Gamemodes.ElementAt(tag) != null)
+            {
                 gamemode = GamemodeRegistration.Gamemodes[tag];
                 return true;
             }
@@ -59,15 +67,19 @@ namespace LabFusion.SDK.Gamemodes {
             return false;
         }
 
-        public static Gamemode GetGamemode(ushort tag) {
+        public static Gamemode GetGamemode(ushort tag)
+        {
             TryGetGamemode(tag, out var gamemode);
             return gamemode;
         }
 
-        public static bool TryGetGamemode<TGamemode>(out TGamemode gamemode) where TGamemode : Gamemode {
+        public static bool TryGetGamemode<TGamemode>(out TGamemode gamemode) where TGamemode : Gamemode
+        {
             // Try find the gamemode from the type
-            foreach (var other in Gamemodes) {
-                if (other is TGamemode) {
+            foreach (var other in Gamemodes)
+            {
+                if (other is TGamemode)
+                {
                     gamemode = other as TGamemode;
                     return true;
                 }

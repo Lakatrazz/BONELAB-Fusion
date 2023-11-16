@@ -23,13 +23,13 @@ namespace LabFusion.Data
             if (manifestResources.Contains(name))
             {
                 FusionLogger.Log($"Loading embedded resource data {name}...", ConsoleColor.DarkCyan);
-                using (Stream str = assembly.GetManifestResourceStream(name))
-                using (MemoryStream memoryStream = new MemoryStream())
-                {
-                    str.CopyTo(memoryStream);
-                    FusionLogger.Log("Done!", ConsoleColor.DarkCyan);
-                    return memoryStream.ToArray();
-                }
+                using Stream str = assembly.GetManifestResourceStream(name);
+                using MemoryStream memoryStream = new();
+
+                str.CopyTo(memoryStream);
+                FusionLogger.Log("Done!", ConsoleColor.DarkCyan);
+
+                return memoryStream.ToArray();
             }
 
             return null;

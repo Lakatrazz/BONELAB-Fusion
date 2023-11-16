@@ -26,41 +26,41 @@ namespace Steamworks
         /// </summary>
         public string VersionString;
 
-		/// <summary>
-		/// This should be the same directory game where gets installed into. Just the folder name, not the whole path. I.e. "Rust", "Garrysmod".
-		/// </summary>
-		public string ModDir;
+        /// <summary>
+        /// This should be the same directory game where gets installed into. Just the folder name, not the whole path. I.e. "Rust", "Garrysmod".
+        /// </summary>
+        public string ModDir;
 
         /// <summary>
         /// The game description. Setting this to the full name of your game is recommended.
         /// </summary>
         public string GameDescription;
 
-		/// <summary>
-		/// Is a dedicated server
-		/// </summary>
-		public bool DedicatedServer;
+        /// <summary>
+        /// Is a dedicated server
+        /// </summary>
+        public bool DedicatedServer;
 
 
-		public SteamServerInit( string modDir, string gameDesc )
+        public SteamServerInit(string modDir, string gameDesc)
         {
-			DedicatedServer = true;
-			ModDir = modDir;
+            DedicatedServer = true;
+            ModDir = modDir;
             GameDescription = gameDesc;
-			GamePort = 27015;
-			QueryPort = 27016;
-			Secure = true;
-			VersionString = "1.0.0.0";
-			IpAddress = null;
-			SteamPort = 0;
-		}
+            GamePort = 27015;
+            QueryPort = 27016;
+            Secure = true;
+            VersionString = "1.0.0.0";
+            IpAddress = null;
+            SteamPort = 0;
+        }
 
         /// <summary>
         /// Set the Steam quert port 
         /// </summary>
         public SteamServerInit WithRandomSteamPort()
         {
-            SteamPort = (ushort)new Random().Next( 10000, 60000 );
+            SteamPort = (ushort)new Random().Next(10000, 60000);
             return this;
         }
 

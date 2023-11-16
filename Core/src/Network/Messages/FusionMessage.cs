@@ -40,19 +40,23 @@ namespace LabFusion.Network
             }
         }
 
-        internal static FusionMessage Internal_Create(int size) {
-            return new FusionMessage() {
+        internal static FusionMessage Internal_Create(int size)
+        {
+            return new FusionMessage()
+            {
                 _buffer = (byte*)Marshal.AllocHGlobal(size),
                 _size = size,
                 _disposed = false,
             };
         }
 
-        public static FusionMessage Create(byte tag, FusionWriter writer) {
+        public static FusionMessage Create(byte tag, FusionWriter writer)
+        {
             return Create(tag, writer.Buffer, writer.Length);
         }
 
-        public static FusionMessage Create(byte tag, byte[] buffer, int length = -1) {
+        public static FusionMessage Create(byte tag, byte[] buffer, int length = -1)
+        {
             if (length <= 0)
                 length = buffer.Length;
 
@@ -60,14 +64,16 @@ namespace LabFusion.Network
             var message = Internal_Create(size);
 
             message._buffer[0] = tag;
-            for (var i = 0; i < length; i++) {
+            for (var i = 0; i < length; i++)
+            {
                 message._buffer[i + 1] = buffer[i];
             }
 
             return message;
         }
 
-        public static FusionMessage ModuleCreate<TMessage>(FusionWriter writer) where TMessage : ModuleMessageHandler {
+        public static FusionMessage ModuleCreate<TMessage>(FusionWriter writer) where TMessage : ModuleMessageHandler
+        {
             return ModuleCreate(typeof(TMessage), writer);
         }
 
@@ -76,11 +82,13 @@ namespace LabFusion.Network
             return ModuleCreate(typeof(TMessage), buffer);
         }
 
-        public static FusionMessage ModuleCreate(Type type, FusionWriter writer) {
+        public static FusionMessage ModuleCreate(Type type, FusionWriter writer)
+        {
             return ModuleCreate(type, writer.Buffer, writer.Length);
         }
 
-        public static FusionMessage ModuleCreate(Type type, byte[] buffer, int length = -1) {
+        public static FusionMessage ModuleCreate(Type type, byte[] buffer, int length = -1)
+        {
             if (length <= 0)
                 length = buffer.Length;
 
@@ -90,7 +98,8 @@ namespace LabFusion.Network
             var tag = ModuleMessageHandler.GetHandlerTag(type);
 
             // Make sure the tag is valid, otherwise we dont return a message
-            if (tag.HasValue) {
+            if (tag.HasValue)
+            {
                 var value = tag.Value;
                 var tagBytes = BitConverter.GetBytes((ushort)value);
 
@@ -99,7 +108,8 @@ namespace LabFusion.Network
                 message._buffer[1] = tagBytes[0];
                 message._buffer[2] = tagBytes[1];
 
-                for (var i = 0; i < length; i++) {
+                for (var i = 0; i < length; i++)
+                {
                     message._buffer[i + 3] = buffer[i];
                 }
 
@@ -117,7 +127,8 @@ namespace LabFusion.Network
             return bytes;
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             if (_disposed)
                 return;
 

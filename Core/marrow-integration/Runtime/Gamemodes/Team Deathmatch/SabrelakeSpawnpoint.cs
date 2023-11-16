@@ -14,24 +14,28 @@ using SLZ.Marrow.Utilities;
 using SLZ.Marrow;
 #endif
 
-namespace LabFusion.MarrowIntegration {
+namespace LabFusion.MarrowIntegration
+{
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
     [AddComponentMenu("BONELAB Fusion/Gamemodes/Sabrelake Spawnpoint")]
     [DisallowMultipleComponent]
 #endif
-    public sealed class SabrelakeSpawnpoint : FusionMarrowBehaviour {
+    public sealed class SabrelakeSpawnpoint : FusionMarrowBehaviour
+    {
 #if MELONLOADER
         public SabrelakeSpawnpoint(IntPtr intPtr) : base(intPtr) { }
 
         public static readonly FusionComponentCache<GameObject, SabrelakeSpawnpoint> Cache = new FusionComponentCache<GameObject, SabrelakeSpawnpoint>();
 
-        private void OnEnable() {
+        private void OnEnable()
+        {
             Cache.Add(gameObject, this);
         }
 
-        private void OnDisable() {
+        private void OnDisable()
+        {
             Cache.Remove(gameObject);
         }
 #else

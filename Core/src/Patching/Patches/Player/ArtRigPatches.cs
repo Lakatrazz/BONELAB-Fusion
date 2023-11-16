@@ -17,14 +17,18 @@ using UnityEngine;
 
 using Avatar = SLZ.VRMK.Avatar;
 
-namespace LabFusion.Patching {
+namespace LabFusion.Patching
+{
     [HarmonyPatch(typeof(ArtRig))]
-    public static class ArtRigPatches {
+    public static class ArtRigPatches
+    {
         [HarmonyPostfix]
         [HarmonyPatch(nameof(ArtRig.OnUpdate))]
-        public static void OnUpdate(ArtRig __instance) {
+        public static void OnUpdate(ArtRig __instance)
+        {
             // Check if we have a player rep to animate the jaw on here
-            if (NetworkInfo.HasServer && PlayerRepManager.TryGetPlayerRep(__instance.manager, out var rep)) {
+            if (NetworkInfo.HasServer && PlayerRepManager.TryGetPlayerRep(__instance.manager, out var rep))
+            {
                 var jaw = __instance.m_jaw;
                 jaw.localRotation = Quaternion.AngleAxis(20f * rep.GetVoiceLoudness(), Vector3Extensions.right);
             }
@@ -32,7 +36,8 @@ namespace LabFusion.Patching {
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(ArtRig.OnLateUpdate))]
-        public static void OnLateUpdate(ArtRig __instance) {
+        public static void OnLateUpdate(ArtRig __instance)
+        {
             // If this is a player rep, match the avatar jaw to the simulated jaw
             if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(__instance.manager))
             {
@@ -47,7 +52,8 @@ namespace LabFusion.Patching {
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(ArtRig.ApplyRotationOffsetsToRig))]
-        public static void ApplyRotationOffsetsToRig(ArtRig __instance, Avatar avatar) {
+        public static void ApplyRotationOffsetsToRig(ArtRig __instance, Avatar avatar)
+        {
             // The game doesn't setup the jaw by default
             var artJaw = __instance.artJaw;
             artJaw.localRotation = avatar.artOffsets.jawOffset;

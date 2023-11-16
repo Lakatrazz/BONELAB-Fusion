@@ -22,13 +22,16 @@ using LabFusion.Extensions;
 namespace LabFusion.Patching
 {
     [HarmonyPatch(typeof(HeadSFX))]
-    public static class HeadSFXPatches {
+    public static class HeadSFXPatches
+    {
         [HarmonyPatch(nameof(HeadSFX.RecoveryVocal))]
         [HarmonyPrefix]
-        public static void RecoveryVocal(HeadSFX __instance) {
+        public static void RecoveryVocal(HeadSFX __instance)
+        {
             // Is this our player?
             var rm = __instance.physRig.manager;
-            if (NetworkInfo.HasServer && rm == RigData.RigReferences.RigManager) {
+            if (NetworkInfo.HasServer && rm == RigData.RigReferences.RigManager)
+            {
                 // Notify the server about the recovery
                 PlayerSender.SendPlayerAction(PlayerActionType.RECOVERY);
             }
@@ -36,10 +39,12 @@ namespace LabFusion.Patching
 
         [HarmonyPatch(nameof(HeadSFX.DyingVocal))]
         [HarmonyPrefix]
-        public static void DyingVocal(HeadSFX __instance) {
+        public static void DyingVocal(HeadSFX __instance)
+        {
             // Is this our player?
             var rm = __instance.physRig.manager;
-            if (NetworkInfo.HasServer && rm == RigData.RigReferences.RigManager) {
+            if (NetworkInfo.HasServer && rm == RigData.RigReferences.RigManager)
+            {
                 // Notify the server about the death beginning
                 if (FusionPlayer.LastAttacker.HasValue)
                 {
@@ -52,19 +57,23 @@ namespace LabFusion.Patching
 
         [HarmonyPatch(nameof(HeadSFX.DeathVocal))]
         [HarmonyPrefix]
-        public static void DeathVocal(HeadSFX __instance) {
+        public static void DeathVocal(HeadSFX __instance)
+        {
             // Is this our player? Did they actually die?
             var rm = __instance.physRig.manager;
-            if (NetworkInfo.HasServer && rm.IsSelf() && !rm.health.alive) {
+            if (NetworkInfo.HasServer && rm.IsSelf() && !rm.health.alive)
+            {
                 // If in a gamemode with auto holstering, then do it
-                if (Gamemode.ActiveGamemode != null && Gamemode.ActiveGamemode.AutoHolsterOnDeath) {
+                if (Gamemode.ActiveGamemode != null && Gamemode.ActiveGamemode.AutoHolsterOnDeath)
+                {
                     rm.physicsRig.leftHand.TryAutoHolsterGrip(RigData.RigReferences);
                     rm.physicsRig.rightHand.TryAutoHolsterGrip(RigData.RigReferences);
                 }
 
                 // If the player is ragdoll on death, reset them
                 // This prevents them spawning in the ground
-                if (rm.health._testRagdollOnDeath) {
+                if (rm.health._testRagdollOnDeath)
+                {
                     PhysicsRigPatches.ForceAllowUnragdoll = true;
                     rm.physicsRig.UnRagdollRig();
                     rm.physicsRig.ResetHands(Handedness.BOTH);
@@ -73,7 +82,8 @@ namespace LabFusion.Patching
                 }
 
                 // Update the spawn point
-                if (FusionPlayer.TryGetSpawnPoint(out var point)) {
+                if (FusionPlayer.TryGetSpawnPoint(out var point))
+                {
                     rm.bodyVitals.checkpointPosition = point.position;
                     rm.bodyVitals.checkpointFwd = point.forward;
                 }
@@ -95,7 +105,8 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(Player_Health.LifeSavingDamgeDealt))]
         public static void LifeSavingDamgeDealt(Player_Health __instance)
         {
-            if (__instance._rigManager == RigData.RigReferences.RigManager && __instance._testRagdollOnDeath) {
+            if (__instance._rigManager == RigData.RigReferences.RigManager && __instance._testRagdollOnDeath)
+            {
                 PhysicsRigPatches.ForceAllowUnragdoll = true;
                 __instance._rigManager.physicsRig.UnRagdollRig();
                 PhysicsRigPatches.ForceAllowUnragdoll = false;
@@ -104,15 +115,18 @@ namespace LabFusion.Patching
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Player_Health.TAKEDAMAGE))]
-        public static void TAKEDAMAGEPrefix(Player_Health __instance, float damage) {
+        public static void TAKEDAMAGEPrefix(Player_Health __instance, float damage)
+        {
             if (__instance.healthMode == Health.HealthMode.Invincible && __instance._testRagdollOnDeath)
                 __instance._testRagdollOnDeath = false;
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(Player_Health.TAKEDAMAGE))]
-        public static void TAKEDAMAGEPostfix(Player_Health __instance, float damage) {
-            if (__instance._rigManager == RigData.RigReferences.RigManager && __instance._testRagdollOnDeath && !__instance.alive) {
+        public static void TAKEDAMAGEPostfix(Player_Health __instance, float damage)
+        {
+            if (__instance._rigManager == RigData.RigReferences.RigManager && __instance._testRagdollOnDeath && !__instance.alive)
+            {
                 PhysicsRigPatches.ForceAllowUnragdoll = true;
                 __instance._rigManager.physicsRig.UnRagdollRig();
                 PhysicsRigPatches.ForceAllowUnragdoll = false;

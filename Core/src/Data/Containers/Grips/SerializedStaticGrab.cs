@@ -31,38 +31,45 @@ namespace LabFusion.Data
 
         public SerializedStaticGrab() { }
 
-        public SerializedStaticGrab(string fullPath) {
+        public SerializedStaticGrab(string fullPath)
+        {
             this.fullPath = fullPath;
         }
 
-        public override int GetSize() {
+        public override int GetSize()
+        {
             return Size + fullPath.GetSize();
         }
 
-        public override void WriteDefaultGrip(Hand hand, Grip grip) {
+        public override void WriteDefaultGrip(Hand hand, Grip grip)
+        {
             base.WriteDefaultGrip(hand, grip);
 
             worldHand = new SerializedTransform(hand.transform);
         }
 
-        public override void Serialize(FusionWriter writer) {
+        public override void Serialize(FusionWriter writer)
+        {
             base.Serialize(writer);
 
             writer.Write(fullPath);
             writer.Write(worldHand);
         }
 
-        public override void Deserialize(FusionReader reader) {
+        public override void Deserialize(FusionReader reader)
+        {
             base.Deserialize(reader);
 
             fullPath = reader.ReadString();
             worldHand = reader.ReadFusionSerializable<SerializedTransform>();
         }
 
-        public override Grip GetGrip() {
+        public override Grip GetGrip()
+        {
             var go = GameObjectUtilities.GetGameObject(fullPath);
 
-            if (go) {
+            if (go)
+            {
                 var grip = Grip.Cache.Get(go);
                 return grip;
             }
@@ -84,7 +91,7 @@ namespace LabFusion.Data
             Quaternion rotation = handTransform.rotation;
 
             // Move the hand into its world position
-            handTransform.SetPositionAndRotation(worldHand.position.ToUnityVector3(), worldHand.rotation.Expand().ToUnityQuaternion());
+            handTransform.SetPositionAndRotation(worldHand.position.ToUnityVector3(), worldHand.rotation.ToUnityQuaternion());
 
             // Apply the grab
             base.RequestGrab(rep, handedness, grip);

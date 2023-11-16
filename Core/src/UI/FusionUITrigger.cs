@@ -33,7 +33,8 @@ namespace LabFusion.UI
             var eventTrigger = gameObject.AddComponent<EventTrigger>();
 
             // Clicking
-            EventTrigger.Entry click = new() {
+            EventTrigger.Entry click = new()
+            {
                 eventID = EventTriggerType.PointerClick
             };
             click.callback.AddListener((UnityAction<BaseEventData>)((eventData) => { FusionAudio.Play3D(transform.position, FusionContentLoader.UIConfirm, InteractionVolume); button.onClick?.Invoke(); }));

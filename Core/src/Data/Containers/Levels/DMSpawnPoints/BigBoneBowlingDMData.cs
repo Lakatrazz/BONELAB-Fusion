@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Data {
-    public class BigBoneBowlingDMData : DMLevelDataHandler {
+namespace LabFusion.Data
+{
+    public class BigBoneBowlingDMData : DMLevelDataHandler
+    {
         public override string LevelTitle => "Big Bone Bowling";
 
         protected override Vector3[] DeathmatchSpawnPoints => new Vector3[11] {

@@ -10,23 +10,28 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Data {
+namespace LabFusion.Data
+{
     public class SprintBridgeData : LevelDataHandler
     {
         public override string LevelTitle => "07 - Sprint Bridge 04";
 
         public static GameControl_SprintBridge04 GameController;
 
-        protected override void MainSceneInitialized() {
+        protected override void MainSceneInitialized()
+        {
             GameController = GameObject.FindObjectOfType<GameControl_SprintBridge04>();
 
-            if (GameController != null) {
+            if (GameController != null)
+            {
                 var copter = GameObject.Find("TrashCopter");
 
-                if (copter != null) {
+                if (copter != null)
+                {
                     PropSender.SendPropCreation(copter);
                 }
-                else {
+                else
+                {
 #if DEBUG
                     FusionLogger.Warn("Failed to find TrashCopter in Sprint Bridge!");
 #endif

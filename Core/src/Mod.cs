@@ -34,7 +34,8 @@ namespace LabFusion
         public const short versionPatch = 0;
     }
 
-    public class FusionMod : MelonMod {
+    public class FusionMod : MelonMod
+    {
         public const string Name = "LabFusion";
         public const string Author = "Lakatrazz";
         public static readonly Version Version = new(FusionVersion.versionMajor, FusionVersion.versionMinor, FusionVersion.versionPatch);
@@ -50,7 +51,8 @@ namespace LabFusion
 
         private static bool _hasAutoUpdater = false;
 
-        public override void OnEarlyInitializeMelon() {
+        public override void OnEarlyInitializeMelon()
+        {
             Instance = this;
             FusionAssembly = Assembly.GetExecutingAssembly();
 
@@ -70,7 +72,8 @@ namespace LabFusion
             VoteKickHelper.Internal_OnInitializeMelon();
         }
 
-        public override void OnInitializeMelon() {
+        public override void OnInitializeMelon()
+        {
             // Prepare the bonemenu category
             FusionPreferences.OnPrepareBoneMenuCategory();
 
@@ -93,7 +96,7 @@ namespace LabFusion
             SyncManager.OnInitializeMelon();
 
             FusionPopupManager.OnInitializeMelon();
-            
+
             PhysicsUtilities.OnInitializeMelon();
 
             // Create prefs
@@ -110,7 +113,8 @@ namespace LabFusion
 #endif
         }
 
-        public override void OnLateInitializeMelon() {
+        public override void OnLateInitializeMelon()
+        {
             ManualPatcher.PatchAll();
             InternalLayerHelpers.OnLateInitializeLayer();
             PersistentAssetCreator.OnLateInitializeMelon();
@@ -121,7 +125,8 @@ namespace LabFusion
             // Check if the auto updater is installed
             _hasAutoUpdater = MelonPlugin.RegisteredMelons.Any((p) => p.Info.Name.Contains("LabFusion Updater"));
 
-            if (!_hasAutoUpdater && !HelperMethods.IsAndroid()) {
+            if (!_hasAutoUpdater && !HelperMethods.IsAndroid())
+            {
                 FusionNotifier.Send(new FusionNotification()
                 {
                     isMenuItem = false,
@@ -137,9 +142,11 @@ namespace LabFusion
             }
         }
 
-        protected void OnInitializeNetworking() {
+        protected void OnInitializeNetworking()
+        {
             // If a layer is already set, don't initialize
-            if (NetworkInfo.CurrentNetworkLayer != null) {
+            if (NetworkInfo.CurrentNetworkLayer != null)
+            {
                 FusionLogger.Warn("Cannot initialize new network layer because a previous one is active!");
                 return;
             }
@@ -147,7 +154,8 @@ namespace LabFusion
             // Validate the layer
             NetworkLayerDeterminer.LoadLayer();
 
-            if (NetworkLayerDeterminer.LoadedLayer == null) {
+            if (NetworkLayerDeterminer.LoadedLayer == null)
+            {
                 FusionLogger.Error("The target network layer is null!");
                 return;
             }
@@ -156,7 +164,8 @@ namespace LabFusion
             InternalLayerHelpers.SetLayer(NetworkLayerDeterminer.LoadedLayer);
         }
 
-        public override void OnDeinitializeMelon() {
+        public override void OnDeinitializeMelon()
+        {
             // Cleanup networking
             InternalLayerHelpers.OnCleanupLayer();
 
@@ -180,13 +189,15 @@ namespace LabFusion
             SteamAPILoader.OnFreeSteamAPI();
         }
 
-        public override void OnPreferencesLoaded() {
+        public override void OnPreferencesLoaded()
+        {
             FusionPreferences.OnPreferencesLoaded();
         }
 
-        public static void OnMainSceneInitialized() {
+        public static void OnMainSceneInitialized()
+        {
             string sceneName = FusionSceneManager.Level.Title;
-            
+
 #if DEBUG
             FusionLogger.Log($"Main scene {sceneName} was initialized.");
 #endif
@@ -212,7 +223,8 @@ namespace LabFusion
                 Gamemode.ActiveGamemode.StopGamemode();
         }
 
-        public static void OnMainSceneInitializeDelayed() {
+        public static void OnMainSceneInitializeDelayed()
+        {
             // Make sure the rig exists
             if (!RigData.HasPlayer)
                 return;
@@ -222,7 +234,8 @@ namespace LabFusion
             RigData.RigReferences.RigManager.openControllerRig.quickmenuEnabled = true;
         }
 
-        public override void OnUpdate() {
+        public override void OnUpdate()
+        {
             // Reset byte counts
             NetworkInfo.BytesDown = 0;
             NetworkInfo.BytesUp = 0;
@@ -241,12 +254,14 @@ namespace LabFusion
 
             // Send players based on player count
             int playerSendRate = SendRateTable.GetPlayerSendRate();
-            if (TimeUtilities.IsMatchingFrame(playerSendRate)) {
+            if (TimeUtilities.IsMatchingFrame(playerSendRate))
+            {
                 PlayerRep.OnSyncRep();
             }
 
             // Send syncables based on byte amount
-            if (TimeUtilities.IsMatchingFrame(_nextSyncableSendRate)) {
+            if (TimeUtilities.IsMatchingFrame(_nextSyncableSendRate))
+            {
                 var lastBytes = NetworkInfo.BytesUp;
 
                 SyncManager.OnUpdate();
@@ -272,7 +287,8 @@ namespace LabFusion
             DelayUtilities.Internal_OnUpdate();
         }
 
-        public override void OnFixedUpdate() {
+        public override void OnFixedUpdate()
+        {
             TimeUtilities.OnEarlyFixedUpdate();
 
             PhysicsUtilities.OnUpdateTimescale();
@@ -288,7 +304,8 @@ namespace LabFusion
             GamemodeManager.Internal_OnFixedUpdate();
         }
 
-        public override void OnLateUpdate() {
+        public override void OnLateUpdate()
+        {
             // Update stuff like nametags
             PlayerRep.OnLateUpdate();
 
@@ -302,7 +319,8 @@ namespace LabFusion
             GamemodeManager.Internal_OnLateUpdate();
         }
 
-        public override void OnGUI() {
+        public override void OnGUI()
+        {
             InternalLayerHelpers.OnGUILayer();
         }
     }

@@ -127,10 +127,12 @@ namespace LabFusion.SDK.Gamemodes
             }
         }
 
-        public void SetTeamLogo(string teamName, Texture2D logo) {
+        public void SetTeamLogo(string teamName, Texture2D logo)
+        {
             var team = teams.FirstOrDefault((t) => t.TeamName == teamName);
 
-            if (team != null) {
+            if (team != null)
+            {
                 team.SetLogo(logo);
             }
         }
@@ -159,9 +161,9 @@ namespace LabFusion.SDK.Gamemodes
 
         public Team GetTeam(string teamName)
         {
-            foreach(Team team in teams)
+            foreach (Team team in teams)
             {
-                if(team.TeamName == teamName)
+                if (team.TeamName == teamName)
                 {
                     return team;
                 }
@@ -258,7 +260,7 @@ namespace LabFusion.SDK.Gamemodes
         {
             int accumulatedScore = 0;
 
-            for(int i = 0; i < teams.Count; i++)
+            for (int i = 0; i < teams.Count; i++)
             {
                 accumulatedScore += GetScoreFromTeam(teams[i]);
             }
@@ -315,12 +317,12 @@ namespace LabFusion.SDK.Gamemodes
                     return;
                 }
 
-                if(otherPlayer == null)
+                if (otherPlayer == null)
                 {
                     return;
                 }
 
-                if(otherPlayer == player)
+                if (otherPlayer == player)
                 {
                     return;
                 }
@@ -331,12 +333,14 @@ namespace LabFusion.SDK.Gamemodes
                 if (killerTeam != killedTeam)
                 {
                     // Increment score for that team
-                    if (NetworkInfo.IsServer) {
+                    if (NetworkInfo.IsServer)
+                    {
                         IncrementScore(killerTeam);
                     }
 
                     // If we are the killer, increment our achievement
-                    if (otherPlayer.IsSelf) {
+                    if (otherPlayer.IsSelf)
+                    {
                         AchievementManager.IncrementAchievements<KillerAchievement>();
                     }
                 }
@@ -422,18 +426,21 @@ namespace LabFusion.SDK.Gamemodes
 
             bool tied = leaders.All((team) => GetScoreFromTeam(team) == GetScoreFromTeam(winningTeam));
 
-            if (!tied) {
+            if (!tied)
+            {
                 message = $"First Place: {winningTeam.DisplayName} (Score: {GetScoreFromTeam(winningTeam)}) \n";
                 message += $"Second Place: {secondPlaceTeam.DisplayName} (Score: {GetScoreFromTeam(secondPlaceTeam)}) \n";
 
-                if (leaders.Count > 2) {
+                if (leaders.Count > 2)
+                {
                     Team thirdPlaceTeam = leaders[2];
                     message += $"Third Place: {thirdPlaceTeam.DisplayName} (Score: {GetScoreFromTeam(thirdPlaceTeam)}) \n";
                 }
 
                 message += GetTeamStatus(winningTeam);
             }
-            else {
+            else
+            {
                 message += $"Tie! (All Scored: {GetScoreFromTeam(winningTeam)})";
                 OnTeamTied();
             }
@@ -572,7 +579,8 @@ namespace LabFusion.SDK.Gamemodes
             {
                 int bitReward = GetRewardedBits();
 
-                if (bitReward > 0) {
+                if (bitReward > 0)
+                {
                     PointItemManager.RewardBits(bitReward);
                 }
             }
@@ -652,7 +660,7 @@ namespace LabFusion.SDK.Gamemodes
                     ultEvent.Invoke();
                 }
             }
-            else if(team.TeamName == DefaultLavaGangName)
+            else if (team.TeamName == DefaultLavaGangName)
             {
                 foreach (var ultEvent in InvokeUltEventIfTeamLavaGang.Cache.Components)
                 {
@@ -662,9 +670,9 @@ namespace LabFusion.SDK.Gamemodes
             else
             {
                 // Likely a custom event for a team
-                foreach(var holder in InvokeUltEventIfTeam.Cache.Components)
+                foreach (var holder in InvokeUltEventIfTeam.Cache.Components)
                 {
-                    if(team.TeamName != holder.TeamName)
+                    if (team.TeamName != holder.TeamName)
                     {
                         continue;
                     }
@@ -699,9 +707,9 @@ namespace LabFusion.SDK.Gamemodes
             else
             {
                 // Likely a custom event for a team
-                foreach(var point in TeamSpawnpoint.Cache.Components)
+                foreach (var point in TeamSpawnpoint.Cache.Components)
                 {
-                    if(team.TeamName != point.TeamName)
+                    if (team.TeamName != point.TeamName)
                     {
                         continue;
                     }
@@ -738,7 +746,7 @@ namespace LabFusion.SDK.Gamemodes
                 OnRequestTeamPoint(key, value, int.Parse(value));
             }
 
-            if (isTeamRequest) 
+            if (isTeamRequest)
             {
                 Team team = GetTeamFromValue(value);
                 OnRequestTeamChanged(key, value, team);
@@ -815,7 +823,7 @@ namespace LabFusion.SDK.Gamemodes
             }
 
             // Set every score to 0
-            foreach(var team in teams)
+            foreach (var team in teams)
             {
                 SetScore(team, 0);
             }
@@ -827,7 +835,8 @@ namespace LabFusion.SDK.Gamemodes
             List<Team> teamPool = new List<Team>(teams);
 
             // Remove our last team from the list
-            if (teamPool.Count > 1 && _lastTeam != null) {
+            if (teamPool.Count > 1 && _lastTeam != null)
+            {
                 teamPool.Remove(_lastTeam);
             }
 
@@ -862,7 +871,7 @@ namespace LabFusion.SDK.Gamemodes
 
         protected void SetTeam(PlayerId id, Team team)
         {
-            if(team == null)
+            if (team == null)
             {
                 return;
             }
@@ -880,9 +889,9 @@ namespace LabFusion.SDK.Gamemodes
 
         protected Team GetTeamFromValue(string nameValue)
         {
-            foreach(Team team in teams)
+            foreach (Team team in teams)
             {
-                if(team.TeamName == nameValue)
+                if (team.TeamName == nameValue)
                 {
                     return team;
                 }
@@ -895,9 +904,9 @@ namespace LabFusion.SDK.Gamemodes
         {
             TryGetMetadata(GetTeamMemberKey(id), out string teamName);
 
-            foreach(Team team in teams)
+            foreach (Team team in teams)
             {
-                if(team.TeamName == teamName)
+                if (team.TeamName == teamName)
                 {
                     return team;
                 }

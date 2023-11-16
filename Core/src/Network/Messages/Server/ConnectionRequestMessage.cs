@@ -15,7 +15,8 @@ using MelonLoader;
 
 namespace LabFusion.Network
 {
-    public class ConnectionRequestData : IFusionSerializable, IDisposable {
+    public class ConnectionRequestData : IFusionSerializable, IDisposable
+    {
         public ulong longId;
         public Version version;
         public string avatarBarcode;
@@ -25,7 +26,8 @@ namespace LabFusion.Network
 
         public bool IsValid { get; private set; } = true;
 
-        public void Serialize(FusionWriter writer) {
+        public void Serialize(FusionWriter writer)
+        {
             writer.Write(longId);
             writer.Write(version);
             writer.Write(avatarBarcode);
@@ -33,9 +35,11 @@ namespace LabFusion.Network
             writer.Write(initialMetadata);
             writer.Write(initialEquippedItems);
         }
-        
-        public void Deserialize(FusionReader reader) {
-            try {
+
+        public void Deserialize(FusionReader reader)
+        {
+            try
+            {
                 longId = reader.ReadUInt64();
                 version = reader.ReadVersion();
                 avatarBarcode = reader.ReadString();
@@ -43,17 +47,21 @@ namespace LabFusion.Network
                 initialMetadata = reader.ReadStringDictionary();
                 initialEquippedItems = reader.ReadStrings().ToList();
             }
-            catch {
+            catch
+            {
                 IsValid = false;
             }
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
 
-        public static ConnectionRequestData Create(ulong longId, Version version, string avatarBarcode, SerializedAvatarStats stats) {
-            return new ConnectionRequestData() {
+        public static ConnectionRequestData Create(ulong longId, Version version, string avatarBarcode, SerializedAvatarStats stats)
+        {
+            return new ConnectionRequestData()
+            {
                 longId = longId,
                 version = version,
                 avatarBarcode = avatarBarcode,
@@ -68,8 +76,10 @@ namespace LabFusion.Network
     {
         public override byte? Tag => NativeMessageTag.ConnectionRequest;
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
-            if (NetworkInfo.IsServer) {
+        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        {
+            if (NetworkInfo.IsServer)
+            {
                 using FusionReader reader = FusionReader.Create(bytes);
                 var data = reader.ReadFusionSerializable<ConnectionRequestData>();
                 var newSmallId = PlayerIdManager.GetUnusedPlayerId();
@@ -161,7 +171,8 @@ namespace LabFusion.Network
                     var playerId = new PlayerId(data.longId, newSmallId.Value, data.initialMetadata, data.initialEquippedItems);
 
                     // Finally, check for dynamic connection disallowing
-                    if (!MultiplayerHooking.Internal_OnShouldAllowConnection(playerId, out string reason)) {
+                    if (!MultiplayerHooking.Internal_OnShouldAllowConnection(playerId, out string reason))
+                    {
                         ConnectionSender.SendConnectionDeny(data.longId, reason);
                         return;
                     }

@@ -170,7 +170,7 @@ namespace LiteNetLib
                     packet.Size = socket.ReceiveFrom(packet.RawData, 0, NetConstants.MaxPacketSize, SocketFlags.None,
                         ref bufferEndPoint);
                     //NetDebug.Write(NetLogLevel.Trace, $"[R]Received data from {bufferEndPoint}, result: {packet.Size}");
-                    OnMessageReceived(packet, (IPEndPoint) bufferEndPoint);
+                    OnMessageReceived(packet, (IPEndPoint)bufferEndPoint);
                     available -= packet.Size;
                 }
             }
@@ -185,7 +185,7 @@ namespace LiteNetLib
             catch (Exception e)
             {
                 //protects socket receive thread
-                NetDebug.WriteError("[NM] SocketReceiveThread error: " + e );
+                NetDebug.WriteError("[NM] SocketReceiveThread error: " + e);
             }
         }
 
@@ -259,12 +259,12 @@ namespace LiteNetLib
                 catch (Exception e)
                 {
                     //protects socket receive thread
-                    NetDebug.WriteError("[NM] SocketReceiveThread error: " + e );
+                    NetDebug.WriteError("[NM] SocketReceiveThread error: " + e);
                 }
             }
         }
 
-         /// <summary>
+        /// <summary>
         /// Start logic thread and listening on selected port
         /// </summary>
         /// <param name="addressIPv4">bind to specific ipv4 address</param>
@@ -292,7 +292,7 @@ namespace LiteNetLib
             if (!BindSocket(_udpSocketv4, new IPEndPoint(dualMode ? addressIPv6 : addressIPv4, port)))
                 return false;
 
-            LocalPort = ((IPEndPoint) _udpSocketv4.LocalEndPoint).Port;
+            LocalPort = ((IPEndPoint)_udpSocketv4.LocalEndPoint).Port;
 
 #if UNITY_IOS && !UNITY_EDITOR
             if (_unitySocketFix == null)
@@ -377,7 +377,7 @@ namespace LiteNetLib
             {
                 try
                 {
-                    socket.IOControl(SioUdpConnreset, new byte[] {0}, null);
+                    socket.IOControl(SioUdpConnreset, new byte[] { 0 }, null);
                 }
                 catch
                 {
@@ -407,7 +407,7 @@ namespace LiteNetLib
                 if (IPv6Mode == IPv6Mode.DualMode)
                 {
                     try { socket.DualMode = true; }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         NetDebug.WriteError($"[B]Bind exception (dualmode setting): {e}");
                     }
@@ -533,20 +533,20 @@ namespace LiteNetLib
                         bool ipv4 = remoteEndPoint.AddressFamily == AddressFamily.InterNetwork;
                         short addressFamily = NativeSocket.GetNativeAddressFamily(remoteEndPoint);
 
-                        socketAddress[0] = (byte) (addressFamily);
-                        socketAddress[1] = (byte) (addressFamily >> 8);
-                        socketAddress[2] = (byte) (remoteEndPoint.Port >> 8);
-                        socketAddress[3] = (byte) (remoteEndPoint.Port);
+                        socketAddress[0] = (byte)(addressFamily);
+                        socketAddress[1] = (byte)(addressFamily >> 8);
+                        socketAddress[2] = (byte)(remoteEndPoint.Port >> 8);
+                        socketAddress[3] = (byte)(remoteEndPoint.Port);
 
                         if (ipv4)
                         {
 #pragma warning disable 618
                             long addr = remoteEndPoint.Address.Address;
 #pragma warning restore 618
-                            socketAddress[4] = (byte) (addr);
-                            socketAddress[5] = (byte) (addr >> 8);
-                            socketAddress[6] = (byte) (addr >> 16);
-                            socketAddress[7] = (byte) (addr >> 24);
+                            socketAddress[4] = (byte)(addr);
+                            socketAddress[5] = (byte)(addr >> 8);
+                            socketAddress[6] = (byte)(addr >> 16);
+                            socketAddress[7] = (byte)(addr >> 24);
                         }
                         else
                         {

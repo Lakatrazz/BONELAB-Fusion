@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Data {
-    public class MineDiveDMData : DMLevelDataHandler {
+namespace LabFusion.Data
+{
+    public class MineDiveDMData : DMLevelDataHandler
+    {
         public override string LevelTitle => "04 - Mine Dive";
 
         protected override Vector3[] DeathmatchSpawnPoints => new Vector3[6] {

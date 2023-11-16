@@ -10,8 +10,10 @@ using SLZ.Bonelab;
 
 using LabFusion.Extensions;
 
-namespace LabFusion.Data {
-    public class ArenaData : LevelDataHandler {
+namespace LabFusion.Data
+{
+    public class ArenaData : LevelDataHandler
+    {
         // This may apply to multiple levels.
         public override string LevelTitle => null;
 
@@ -21,10 +23,12 @@ namespace LabFusion.Data {
         public static GeoManager GeoManager;
         public static ChallengeSelectMenu[] ChallengeSelections;
 
-        protected override void MainSceneInitialized() {
+        protected override void MainSceneInitialized()
+        {
             GameController = GameObject.FindObjectOfType<Arena_GameController>();
 
-            if (GameController != null) {
+            if (GameController != null)
+            {
                 ChallengeSelections = GameObject.FindObjectsOfType<ChallengeSelectMenu>(true);
                 GameControlDisplay = GameObject.FindObjectOfType<GenGameControl_Display>(true);
                 MenuController = GameObject.FindObjectOfType<ArenaMenuController>(true);
@@ -34,9 +38,12 @@ namespace LabFusion.Data {
 
         public static bool IsInArena => !GameController.IsNOC();
 
-        public static byte? GetIndex(ChallengeSelectMenu menu) {
-            for (byte i = 0; i < ChallengeSelections.Length; i++) {
-                if (ChallengeSelections[i] == menu) {
+        public static byte? GetIndex(ChallengeSelectMenu menu)
+        {
+            for (byte i = 0; i < ChallengeSelections.Length; i++)
+            {
+                if (ChallengeSelections[i] == menu)
+                {
                     return i;
                 }
             }

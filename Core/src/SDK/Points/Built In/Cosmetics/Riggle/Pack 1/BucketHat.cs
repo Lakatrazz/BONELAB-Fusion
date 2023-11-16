@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class BucketHat : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class BucketHat : AccessoryItem
+    {
         public override string Title => "Bucket Hat";
 
         public override string Author => BitEconomy.RiggleAuthor;

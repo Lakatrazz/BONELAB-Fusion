@@ -6,143 +6,143 @@ using System.Threading.Tasks;
 
 namespace Steamworks.Data
 {
-	public struct Achievement
-	{
-		internal string Value;
+    public struct Achievement
+    {
+        internal string Value;
 
-		public Achievement( string name )
-		{
-			Value = name;
-		}
+        public Achievement(string name)
+        {
+            Value = name;
+        }
 
-		public override string ToString() => Value;
+        public override string ToString() => Value;
 
-		/// <summary>
-		/// True if unlocked
-		/// </summary>
-		public bool State
-		{
-			get
-			{
-				var state = false;
-				SteamUserStats.Internal.GetAchievement( Value, ref state );
-				return state;
-			}
-		}
+        /// <summary>
+        /// True if unlocked
+        /// </summary>
+        public bool State
+        {
+            get
+            {
+                var state = false;
+                SteamUserStats.Internal.GetAchievement(Value, ref state);
+                return state;
+            }
+        }
 
-		public string Identifier => Value;
+        public string Identifier => Value;
 
-		public string Name => SteamUserStats.Internal.GetAchievementDisplayAttribute( Value, "name" );
+        public string Name => SteamUserStats.Internal.GetAchievementDisplayAttribute(Value, "name");
 
-		public string Description => SteamUserStats.Internal.GetAchievementDisplayAttribute( Value, "desc" );
-
-
-		/// <summary>
-		/// Should hold the unlock time if State is true
-		/// </summary>
-		public DateTime? UnlockTime
-		{
-			get
-			{
-				var state = false;
-				uint time = 0;
-
-				if ( !SteamUserStats.Internal.GetAchievementAndUnlockTime( Value, ref state, ref time ) || !state )
-					return null;
-
-				return Epoch.ToDateTime( time );
-			}
-		}
-
-		/// <summary>
-		/// Gets the icon of the achievement. This can return a null image even though the image exists if the image
-		/// hasn't been downloaded by Steam yet. You can use GetIconAsync if you want to wait for the image to be downloaded.
-		/// </summary>
-		public Image? GetIcon()
-		{
-			return SteamUtils.GetImage( SteamUserStats.Internal.GetAchievementIcon( Value ) );
-		}
+        public string Description => SteamUserStats.Internal.GetAchievementDisplayAttribute(Value, "desc");
 
 
-		/// <summary>
-		/// Gets the icon of the achievement, waits for it to load if we have to
-		/// </summary>
-		public async Task<Image?> GetIconAsync( int timeout = 5000 )
-		{
-			var i = SteamUserStats.Internal.GetAchievementIcon( Value );
-			if ( i != 0 ) return SteamUtils.GetImage( i );
+        /// <summary>
+        /// Should hold the unlock time if State is true
+        /// </summary>
+        public DateTime? UnlockTime
+        {
+            get
+            {
+                var state = false;
+                uint time = 0;
 
-			var ident = Identifier;
-			bool gotCallback = false;
+                if (!SteamUserStats.Internal.GetAchievementAndUnlockTime(Value, ref state, ref time) || !state)
+                    return null;
 
-			void f( string x, int icon )
-			{
-				if ( x != ident ) return;
-				i = icon;
-				gotCallback = true;
-			}
+                return Epoch.ToDateTime(time);
+            }
+        }
 
-			try
-			{
-				SteamUserStats.OnAchievementIconFetched += f;
+        /// <summary>
+        /// Gets the icon of the achievement. This can return a null image even though the image exists if the image
+        /// hasn't been downloaded by Steam yet. You can use GetIconAsync if you want to wait for the image to be downloaded.
+        /// </summary>
+        public Image? GetIcon()
+        {
+            return SteamUtils.GetImage(SteamUserStats.Internal.GetAchievementIcon(Value));
+        }
 
-				int waited = 0;
-				while ( !gotCallback )
-				{
-					await Task.Delay( 10 );
-					waited += 10;
 
-					// Time out after x milliseconds
-					if ( waited > timeout )
-						return null;
-				}
+        /// <summary>
+        /// Gets the icon of the achievement, waits for it to load if we have to
+        /// </summary>
+        public async Task<Image?> GetIconAsync(int timeout = 5000)
+        {
+            var i = SteamUserStats.Internal.GetAchievementIcon(Value);
+            if (i != 0) return SteamUtils.GetImage(i);
 
-				if ( i == 0 ) return null;
-				return SteamUtils.GetImage( i );
-			}
-			finally
-			{
-				SteamUserStats.OnAchievementIconFetched -= f;
-			}
-		}
+            var ident = Identifier;
+            bool gotCallback = false;
 
-		/// <summary>
-		/// Returns the fraction (0-1) of users who have unlocked the specified achievement, or -1 if no data available.
-		/// </summary>
-		public float GlobalUnlocked
-		{
-			get
-			{
-				float pct = 0;
+            void f(string x, int icon)
+            {
+                if (x != ident) return;
+                i = icon;
+                gotCallback = true;
+            }
 
-				if ( !SteamUserStats.Internal.GetAchievementAchievedPercent( Value, ref pct ) )
-					return -1.0f;
+            try
+            {
+                SteamUserStats.OnAchievementIconFetched += f;
 
-				return pct / 100.0f;
-			}
-		}
+                int waited = 0;
+                while (!gotCallback)
+                {
+                    await Task.Delay(10);
+                    waited += 10;
 
-		/// <summary>
-		/// Make this achievement earned
-		/// </summary>
-		public bool Trigger( bool apply = true )
-		{
-			var r = SteamUserStats.Internal.SetAchievement( Value );
+                    // Time out after x milliseconds
+                    if (waited > timeout)
+                        return null;
+                }
 
-			if ( apply && r )
-			{
-				SteamUserStats.Internal.StoreStats();
-			}
+                if (i == 0) return null;
+                return SteamUtils.GetImage(i);
+            }
+            finally
+            {
+                SteamUserStats.OnAchievementIconFetched -= f;
+            }
+        }
 
-			return r;
-		}
+        /// <summary>
+        /// Returns the fraction (0-1) of users who have unlocked the specified achievement, or -1 if no data available.
+        /// </summary>
+        public float GlobalUnlocked
+        {
+            get
+            {
+                float pct = 0;
 
-		/// <summary>
-		/// Reset this achievement to not achieved
-		/// </summary>
-		public bool Clear()
-		{
-			return SteamUserStats.Internal.ClearAchievement( Value );
-		}
-	}
+                if (!SteamUserStats.Internal.GetAchievementAchievedPercent(Value, ref pct))
+                    return -1.0f;
+
+                return pct / 100.0f;
+            }
+        }
+
+        /// <summary>
+        /// Make this achievement earned
+        /// </summary>
+        public bool Trigger(bool apply = true)
+        {
+            var r = SteamUserStats.Internal.SetAchievement(Value);
+
+            if (apply && r)
+            {
+                SteamUserStats.Internal.StoreStats();
+            }
+
+            return r;
+        }
+
+        /// <summary>
+        /// Reset this achievement to not achieved
+        /// </summary>
+        public bool Clear()
+        {
+            return SteamUserStats.Internal.ClearAchievement(Value);
+        }
+    }
 }

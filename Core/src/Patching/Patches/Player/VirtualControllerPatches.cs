@@ -27,8 +27,10 @@ using LabFusion.Data;
 namespace LabFusion.Patching
 {
     // Since some methods here use structs, we native patch thanks to IL2CPP nonsense
-    public static class VirtualControllerPatches {
-        public static void Patch() {
+    public static class VirtualControllerPatches
+    {
+        public static void Patch()
+        {
             PatchCheckHandDesync();
         }
 
@@ -37,7 +39,8 @@ namespace LabFusion.Patching
 
         public delegate bool CheckHandDesyncPatchDelegate(IntPtr instance, IntPtr pair, IntPtr contHandle, IntPtr rigHandle, IntPtr method);
 
-        private unsafe static void PatchCheckHandDesync() {
+        private unsafe static void PatchCheckHandDesync()
+        {
             var tgtPtr = NativeUtilities.GetNativePtr<VirtualController>("NativeMethodInfoPtr_CheckHandDesync_Private_Boolean_HandGripPair_SimpleTransform_SimpleTransform_0");
             var dstPtr = NativeUtilities.GetDestPtr<CheckHandDesyncPatchDelegate>(CheckHandDesync);
 
@@ -45,8 +48,10 @@ namespace LabFusion.Patching
             _original = NativeUtilities.GetOriginal<CheckHandDesyncPatchDelegate>(tgtPtr);
         }
 
-        private static bool CheckHandDesync(IntPtr instance, IntPtr pair, IntPtr contHandle, IntPtr rigHandle, IntPtr method) {
-            try {
+        private static bool CheckHandDesync(IntPtr instance, IntPtr pair, IntPtr contHandle, IntPtr rigHandle, IntPtr method)
+        {
+            try
+            {
                 if (NetworkInfo.HasServer)
                 {
                     unsafe
@@ -64,7 +69,8 @@ namespace LabFusion.Patching
 
                 return _original(instance, pair, contHandle, rigHandle, method);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
 #if DEBUG
                 FusionLogger.LogException("executing native patch VirtualController.CheckHandDesync", e);
 #endif

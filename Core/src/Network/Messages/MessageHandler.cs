@@ -8,10 +8,12 @@ using System.Threading.Tasks;
 
 namespace LabFusion.Network
 {
-    public abstract class MessageHandler {
+    public abstract class MessageHandler
+    {
         public Net.NetAttribute[] NetAttributes { get; set; }
 
-        protected virtual void Internal_HandleMessage(byte[] bytes, bool isServerHandled = false) {
+        protected virtual void Internal_HandleMessage(byte[] bytes, bool isServerHandled = false)
+        {
             // If there are no attributes, just handle the message
             if (NetAttributes.Length <= 0)
             {
@@ -27,7 +29,8 @@ namespace LabFusion.Network
             }
 
             // Check if we should already stop handling
-            for (var i = 0; i < NetAttributes.Length; i++) {
+            for (var i = 0; i < NetAttributes.Length; i++)
+            {
                 var attribute = NetAttributes[i];
 
                 if (attribute.StopHandling())
@@ -37,29 +40,35 @@ namespace LabFusion.Network
             // Check for any awaitable attributes
             Net.NetAttribute awaitable = null;
 
-            for (var i = 0; i < NetAttributes.Length; i++) {
+            for (var i = 0; i < NetAttributes.Length; i++)
+            {
                 var attribute = NetAttributes[i];
 
-                if (attribute.IsAwaitable()) {
+                if (attribute.IsAwaitable())
+                {
                     awaitable = attribute;
                     break;
                 }
             }
 
             // Hook the awaitable attribute so that we can handle the message when its ready
-            if (awaitable != null) {
+            if (awaitable != null)
+            {
                 awaitable.HookComplete(() => { Internal_FinishMessage(bytes, isServerHandled); });
             }
             else
                 Internal_FinishMessage(bytes, isServerHandled);
         }
 
-        protected virtual void Internal_FinishMessage(byte[] bytes, bool isServerHandled = false) {
-            try {
+        protected virtual void Internal_FinishMessage(byte[] bytes, bool isServerHandled = false)
+        {
+            try
+            {
                 // Now handle the message info
                 HandleMessage(bytes, isServerHandled);
             }
-            catch (Exception e)  {
+            catch (Exception e)
+            {
                 FusionLogger.LogException("handling message", e);
             }
 

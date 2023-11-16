@@ -62,29 +62,24 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<FlashlightToggleData>();
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
             {
-                using (var data = reader.ReadFusionSerializable<FlashlightToggleData>())
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+            }
+            else
+            {
+                if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable && propSyncable.TryGetExtender<PropFlashlightExtender>(out var extender))
                 {
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled)
-                    {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes))
-                        {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-                        }
-                    }
-                    else
-                    {
-                        if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable && propSyncable.TryGetExtender<PropFlashlightExtender>(out var extender)) {
-                            var flashlight = extender.Component;
-                            flashlight.lightOn = !data.isEnabled;
+                    var flashlight = extender.Component;
+                    flashlight.lightOn = !data.isEnabled;
 
-                            PropFlashlightPatches.IgnorePatches = true;
-                            flashlight.SwitchLight();
-                            PropFlashlightPatches.IgnorePatches = false;
-                        }
-                    }
+                    PropFlashlightPatches.IgnorePatches = true;
+                    flashlight.SwitchLight();
+                    PropFlashlightPatches.IgnorePatches = false;
                 }
             }
         }

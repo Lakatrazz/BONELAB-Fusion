@@ -20,19 +20,23 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Avatar = SLZ.VRMK.Avatar;
 
-namespace LabFusion.Utilities {
-    public static class FusionPlayer {
+namespace LabFusion.Utilities
+{
+    public static class FusionPlayer
+    {
         public static byte? LastAttacker { get; internal set; }
         public static readonly List<Transform> SpawnPoints = new List<Transform>();
 
         public static float? VitalityOverride { get; internal set; } = null;
         public static string AvatarOverride { get; internal set; } = null;
 
-        internal static void OnMainSceneInitialized() {
+        internal static void OnMainSceneInitialized()
+        {
             LastAttacker = null;
         }
 
-        internal static void Internal_OnAvatarChanged(RigManager rigManager, Avatar avatar, string barcode) {
+        internal static void Internal_OnAvatarChanged(RigManager rigManager, Avatar avatar, string barcode)
+        {
             // Save the stats
             RigData.RigAvatarStats = new SerializedAvatarStats(avatar);
             RigData.RigAvatarId = barcode;
@@ -51,11 +55,14 @@ namespace LabFusion.Utilities {
             if (AvatarOverride != null && !FusionAvatar.IsMatchingAvatar(barcode, AvatarOverride))
                 Internal_ChangeAvatar();
             // If we don't have an avatar override set, check if we are allowed to use custom avatars
-            else if (crate != null && !crate.Pallet.Internal) {
-                if (PlayerIdManager.LocalId != null && PlayerIdManager.LocalId.TryGetPermissionLevel(out var level)) {
+            else if (crate != null && !crate.Pallet.Internal)
+            {
+                if (PlayerIdManager.LocalId != null && PlayerIdManager.LocalId.TryGetPermissionLevel(out var level))
+                {
                     var requirement = FusionPreferences.ActiveServerSettings.CustomAvatarsAllowed.GetValue();
 
-                    if (!FusionPermissions.HasSufficientPermissions(level, requirement)) {
+                    if (!FusionPermissions.HasSufficientPermissions(level, requirement))
+                    {
                         // Change to polyblank, we don't have permission
                         rigManager.SwapAvatarCrate(FusionAvatar.POLY_BLANK_BARCODE, true);
                     }
@@ -70,7 +77,8 @@ namespace LabFusion.Utilities {
         /// Tries to get the player that we were last attacked by.
         /// </summary>
         /// <returns></returns>
-        public static bool TryGetLastAttacker(out PlayerId id) {
+        public static bool TryGetLastAttacker(out PlayerId id)
+        {
             id = null;
 
             if (!LastAttacker.HasValue)
@@ -85,7 +93,8 @@ namespace LabFusion.Utilities {
         /// </summary>
         /// <param name="rigManager"></param>
         /// <returns></returns>
-        public static bool IsSelf(this RigManager rigManager) {
+        public static bool IsSelf(this RigManager rigManager)
+        {
             if (!RigData.HasPlayer)
                 return true;
 
@@ -96,10 +105,12 @@ namespace LabFusion.Utilities {
         /// Sets the ammo count of the local player for all types.
         /// </summary>
         /// <param name="count"></param>
-        public static void SetAmmo(int count) {
+        public static void SetAmmo(int count)
+        {
             var rm = RigData.RigReferences.RigManager;
 
-            if (!rm.IsNOC()) {
+            if (!rm.IsNOC())
+            {
                 var ammo = rm.AmmoInventory;
                 ammo.ClearAmmo();
 
@@ -113,7 +124,8 @@ namespace LabFusion.Utilities {
         /// Checks if we are allowed to unragdoll.
         /// </summary>
         /// <returns></returns>
-        public static bool CanUnragdoll() {
+        public static bool CanUnragdoll()
+        {
             // Check gamemode
             if (Gamemode.ActiveGamemode != null)
             {
@@ -130,16 +142,20 @@ namespace LabFusion.Utilities {
         /// Sets the mortality of the player.
         /// </summary>
         /// <param name="isMortal"></param>
-        public static void SetMortality(bool isMortal) {
+        public static void SetMortality(bool isMortal)
+        {
             var rm = RigData.RigReferences.RigManager;
 
-            if (!rm.IsNOC()) {
+            if (!rm.IsNOC())
+            {
                 var playerHealth = rm.health.TryCast<Player_Health>();
 
-                if (isMortal) {
+                if (isMortal)
+                {
                     playerHealth.healthMode = Health.HealthMode.Mortal;
                 }
-                else {
+                else
+                {
                     playerHealth.healthMode = Health.HealthMode.Invincible;
                 }
             }
@@ -148,7 +164,8 @@ namespace LabFusion.Utilities {
         /// <summary>
         /// Resets the mortality to the server settings.
         /// </summary>
-        public static void ResetMortality() {
+        public static void ResetMortality()
+        {
             if (!NetworkInfo.HasServer)
                 return;
 
@@ -160,7 +177,8 @@ namespace LabFusion.Utilities {
         /// </summary>
         /// <param name="position"></param>
         /// <param name=""></param>
-        public static void Teleport(Vector3 position, Vector3 fwdSnap, bool zeroVelocity = true) {
+        public static void Teleport(Vector3 position, Vector3 fwdSnap, bool zeroVelocity = true)
+        {
             if (!RigData.HasPlayer)
                 return;
 
@@ -174,7 +192,8 @@ namespace LabFusion.Utilities {
         /// Sets the custom spawn points for the player.
         /// </summary>
         /// <param name="points"></param>
-        public static void SetSpawnPoints(params Transform[] points) {
+        public static void SetSpawnPoints(params Transform[] points)
+        {
             SpawnPoints.Clear();
             SpawnPoints.AddRange(points);
         }
@@ -182,39 +201,49 @@ namespace LabFusion.Utilities {
         /// <summary>
         /// Clears all spawn points.
         /// </summary>
-        public static void ResetSpawnPoints() {
+        public static void ResetSpawnPoints()
+        {
             SpawnPoints.Clear();
         }
 
-        public static void SetAvatarOverride(string barcode) {
+        public static void SetAvatarOverride(string barcode)
+        {
             AvatarOverride = barcode;
             Internal_ChangeAvatar();
         }
 
-        public static void ClearAvatarOverride() {
+        public static void ClearAvatarOverride()
+        {
             AvatarOverride = null;
         }
 
-        public static void SetPlayerVitality(float vitality) {
+        public static void SetPlayerVitality(float vitality)
+        {
             VitalityOverride = vitality;
             Internal_ChangePlayerHealth();
         }
 
-        public static void ClearPlayerVitality() {
+        public static void ClearPlayerVitality()
+        {
             VitalityOverride = null;
             Internal_ChangePlayerHealth();
         }
 
-        private static void Internal_ChangeAvatar() {
+        private static void Internal_ChangeAvatar()
+        {
             // Check avatar override
-            if (RigData.HasPlayer && AssetWarehouse.ready && AvatarOverride != null) {
+            if (RigData.HasPlayer && AssetWarehouse.ready && AvatarOverride != null)
+            {
                 var avatarCrate = AssetWarehouse.Instance.GetCrate<AvatarCrate>(AvatarOverride);
 
-                if (avatarCrate != null) {
+                if (avatarCrate != null)
+                {
                     var rm = RigData.RigReferences.RigManager;
-                    rm.SwapAvatarCrate(AvatarOverride, true, (Action<bool>)((success) => {
+                    rm.SwapAvatarCrate(AvatarOverride, true, (Action<bool>)((success) =>
+                    {
                         // If the avatar forcing doesn't work, change into polyblank
-                        if (!success) {
+                        if (!success)
+                        {
                             rm.SwapAvatarCrate(FusionAvatar.POLY_BLANK_BARCODE, true);
                         }
                     }));
@@ -222,16 +251,20 @@ namespace LabFusion.Utilities {
             }
         }
 
-        private static void Internal_ChangePlayerHealth() {
-            if (RigData.HasPlayer) {
+        private static void Internal_ChangePlayerHealth()
+        {
+            if (RigData.HasPlayer)
+            {
                 var rm = RigData.RigReferences.RigManager;
                 var avatar = rm._avatar;
 
-                if (VitalityOverride.HasValue) {
+                if (VitalityOverride.HasValue)
+                {
                     avatar._vitality = VitalityOverride.Value;
                     rm.health.SetAvatar(avatar);
                 }
-                else {
+                else
+                {
                     avatar.RefreshBodyMeasurements();
                     rm.health.SetAvatar(avatar);
                 }
@@ -243,12 +276,14 @@ namespace LabFusion.Utilities {
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
-        public static bool TryGetSpawnPoint(out Transform point) {
+        public static bool TryGetSpawnPoint(out Transform point)
+        {
             point = null;
 
             SpawnPoints.RemoveAll((t) => t == null);
-            
-            if (SpawnPoints.Count > 0) {
+
+            if (SpawnPoints.Count > 0)
+            {
                 point = SpawnPoints.GetRandom();
                 return true;
             }

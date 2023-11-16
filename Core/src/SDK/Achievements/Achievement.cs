@@ -13,7 +13,8 @@ using UnityEngine;
 
 namespace LabFusion.SDK.Achievements
 {
-    public abstract class Achievement : IXMLPackable {
+    public abstract class Achievement : IXMLPackable
+    {
         public static event Action<Achievement> OnAchievementUpdated;
         public static event Action<Achievement> OnAchievementCompleted;
 
@@ -47,28 +48,33 @@ namespace LabFusion.SDK.Achievements
         // The total number of tasks required.
         public virtual int MaxTasks => 1;
 
-        public void Register() {
+        public void Register()
+        {
             OnRegister();
         }
 
         protected virtual void OnRegister() { }
 
-        public void Unregister() {
+        public void Unregister()
+        {
             OnUnregister();
         }
 
         protected virtual void OnUnregister() { }
 
-        public virtual void Pack(XElement element) {
+        public virtual void Pack(XElement element)
+        {
             element.SetAttributeValue(nameof(CompletedTasks), CompletedTasks);
         }
 
-        public virtual void Unpack(XElement element) {
+        public virtual void Unpack(XElement element)
+        {
             if (element.TryGetAttribute(nameof(CompletedTasks), out var rawTasks) && int.TryParse(rawTasks, out var number))
                 CompletedTasks = number;
         }
 
-        public virtual void IncrementTask() {
+        public virtual void IncrementTask()
+        {
             if (IsComplete)
                 return;
 
@@ -80,7 +86,8 @@ namespace LabFusion.SDK.Achievements
             OnAchievementUpdated?.Invoke(this);
         }
 
-        private void Complete() {
+        private void Complete()
+        {
             PointItemManager.RewardBits(BitReward);
             OnAchievementCompleted?.Invoke(this);
 

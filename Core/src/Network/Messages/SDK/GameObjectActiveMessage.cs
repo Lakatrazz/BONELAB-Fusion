@@ -58,21 +58,25 @@ namespace LabFusion.Network
 
         public static GameObjectActiveData Create(byte smallId, bool value, SyncGameObjectEnabled script)
         {
-            var data = new GameObjectActiveData() {
+            var data = new GameObjectActiveData()
+            {
                 smallId = smallId,
                 value = value,
             };
 
-            if (script.PropSyncable != null) {
+            if (script.PropSyncable != null)
+            {
                 var syncable = script.PropSyncable;
 
                 data.syncId = syncable.GetId();
 
-                if (syncable.TryGetExtender<SyncGameObjectEnabledExtender>(out var extender)) {
+                if (syncable.TryGetExtender<SyncGameObjectEnabledExtender>(out var extender))
+                {
                     data.scriptIndex = extender.GetIndex(script);
                 }
             }
-            else {
+            else
+            {
                 data.gameObject = script.gameObject;
             }
 
@@ -86,30 +90,30 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<GameObjectActiveData>();
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
             {
-                using (var data = reader.ReadFusionSerializable<GameObjectActiveData>())
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+            }
+            else
+            {
+                // Check what gameobject to search for
+                if (data.gameObject != null)
                 {
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled) {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-                        }
-                    }
-                    else {
-                        // Check what gameobject to search for
-                        if (data.gameObject != null) {
-                            data.gameObject.SetActive(data.value);
-                        }
-                        else if (data.syncId.HasValue && data.scriptIndex.HasValue 
-                            && SyncManager.TryGetSyncable(data.syncId.Value, out var syncable) && syncable is PropSyncable prop && prop.TryGetExtender<SyncGameObjectEnabledExtender>(out var extender)) {
+                    data.gameObject.SetActive(data.value);
+                }
+                else if (data.syncId.HasValue && data.scriptIndex.HasValue
+                    && SyncManager.TryGetSyncable(data.syncId.Value, out var syncable) && syncable is PropSyncable prop && prop.TryGetExtender<SyncGameObjectEnabledExtender>(out var extender))
+                {
 
-                            var script = extender.GetComponent(data.scriptIndex.Value);
+                    var script = extender.GetComponent(data.scriptIndex.Value);
 
-                            if (script != null) {
-                                script.gameObject.SetActive(data.value);
-                            }
-                        }
+                    if (script != null)
+                    {
+                        script.gameObject.SetActive(data.value);
                     }
                 }
             }

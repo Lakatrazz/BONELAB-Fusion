@@ -11,44 +11,56 @@ using LabFusion.Utilities;
 using SLZ.Marrow.Warehouse;
 #endif
 
-namespace LabFusion.MarrowIntegration {
+namespace LabFusion.MarrowIntegration
+{
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
     [AddComponentMenu("BONELAB Fusion/Gamemodes/Deathmatch Proxy")]
     [DisallowMultipleComponent]
 #endif
-    public sealed class DeathmatchProxy : FusionMarrowBehaviour {
+    public sealed class DeathmatchProxy : FusionMarrowBehaviour
+    {
 #if MELONLOADER
         public DeathmatchProxy(IntPtr intPtr) : base(intPtr) { }
 
-        public void StartGamemode() {
-            if (Deathmatch.Instance != null) {
+        public void StartGamemode()
+        {
+            if (Deathmatch.Instance != null)
+            {
                 Deathmatch.Instance.StartGamemode(true);
             }
         }
 
-        public void StopGamemode() {
-            if (Deathmatch.Instance != null) {
+        public void StopGamemode()
+        {
+            if (Deathmatch.Instance != null)
+            {
                 Deathmatch.Instance.StopGamemode();
             }
         }
 
-        public void SetRoundLength(int minutes) {
-            if (Deathmatch.Instance != null) {
+        public void SetRoundLength(int minutes)
+        {
+            if (Deathmatch.Instance != null)
+            {
                 Deathmatch.Instance.SetOverriden();
                 Deathmatch.Instance.SetRoundLength(minutes);
             }
         }
 
-        public void SetDefaultValues() {
-            if (Deathmatch.Instance != null) {
+        public void SetDefaultValues()
+        {
+            if (Deathmatch.Instance != null)
+            {
                 Deathmatch.Instance.SetDefaultValues();
             }
         }
 
-        public void SetAvatarOverride(string barcode) {
-            if (Deathmatch.Instance != null) {
+        public void SetAvatarOverride(string barcode)
+        {
+            if (Deathmatch.Instance != null)
+            {
                 Deathmatch.Instance.SetOverriden();
                 Deathmatch.Instance.SetAvatarOverride(barcode);
             }
@@ -63,7 +75,8 @@ namespace LabFusion.MarrowIntegration {
             }
         }
 
-        public void SetLateJoining(bool enabled) {
+        public void SetLateJoining(bool enabled)
+        {
             if (Deathmatch.Instance != null)
             {
                 Deathmatch.Instance.SetOverriden();
@@ -77,8 +90,10 @@ namespace LabFusion.MarrowIntegration {
         public void SetPlaylist(AudioClip clip1, AudioClip clip2, AudioClip clip3, AudioClip clip4) => Internal_SetPlaylist(clip1, clip2, clip3, clip4);
 
         [HideFromIl2Cpp]
-        private void Internal_SetPlaylist(params AudioClip[] clips) {
-            if (Deathmatch.Instance != null) {
+        private void Internal_SetPlaylist(params AudioClip[] clips)
+        {
+            if (Deathmatch.Instance != null)
+            {
                 Deathmatch.Instance.SetOverriden();
                 Deathmatch.Instance.SetPlaylist(Gamemode.DefaultMusicVolume, clips);
             }

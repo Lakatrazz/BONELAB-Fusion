@@ -4,9 +4,11 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-namespace LabFusion.MarrowIntegration {
+namespace LabFusion.MarrowIntegration
+{
 #if MELONLOADER
-    public class FusionMarrowBehaviour : MonoBehaviour {
+    public class FusionMarrowBehaviour : MonoBehaviour
+    {
 #else
     public abstract class FusionMarrowBehaviour : MonoBehaviour {
 #endif
@@ -15,9 +17,12 @@ namespace LabFusion.MarrowIntegration {
 
         private Transform _transform;
         private bool _hasTransform = false;
-        public Transform Transform {
-            get {
-                if (!_hasTransform) {
+        public Transform Transform
+        {
+            get
+            {
+                if (!_hasTransform)
+                {
                     _transform = transform;
                     _hasTransform = true;
                 }

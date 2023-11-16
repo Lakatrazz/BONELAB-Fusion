@@ -21,17 +21,21 @@ namespace LabFusion.Utilities
         public static readonly Vector3 LocalPosition = new(0.319f, -0.198f, 0.783f);
         public static readonly Quaternion LocalRotation = Quaternion.Euler(0f, 17.252f, 0f);
 
-        internal static void OnUpdate() {
-            if (FusionSceneManager.HasTargetLoaded() && !FusionSceneManager.IsDelayedLoading() && RigData.HasPlayer && _bitQueue.Count > 0) {
+        internal static void OnUpdate()
+        {
+            if (FusionSceneManager.HasTargetLoaded() && !FusionSceneManager.IsDelayedLoading() && RigData.HasPlayer && _bitQueue.Count > 0)
+            {
                 DequeueBit();
             }
         }
 
-        public static void Send(int amount) {
+        public static void Send(int amount)
+        {
             _bitQueue.Enqueue(amount);
         }
 
-        private static void DequeueBit() {
+        private static void DequeueBit()
+        {
             int amount = _bitQueue.Dequeue();
 
             var camera = RigData.RigReferences.ControllerRig.m_head;

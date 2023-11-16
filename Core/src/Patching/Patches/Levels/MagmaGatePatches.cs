@@ -10,9 +10,11 @@ using LabFusion.Network;
 using LabFusion.Senders;
 using SLZ.Bonelab;
 
-namespace LabFusion.Patching {
+namespace LabFusion.Patching
+{
     [HarmonyPatch(typeof(GameControl_MagmaGate))]
-    public static class MagmaGatePatches {
+    public static class MagmaGatePatches
+    {
         public static bool IgnorePatches = false;
 
         [HarmonyPrefix]
@@ -26,7 +28,8 @@ namespace LabFusion.Patching {
             {
                 if (!NetworkInfo.IsServer)
                     return false;
-                else {
+                else
+                {
                     CampaignSender.SendMagmaGateEvent(MagmaGateEventType.BUTTONS_SETUP);
                 }
             }

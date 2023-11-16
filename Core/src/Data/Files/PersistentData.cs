@@ -22,7 +22,8 @@ namespace LabFusion.Data
 
         private static bool _initialized = false;
 
-        public static void OnPathInitialize() {
+        public static void OnPathInitialize()
+        {
             if (_initialized)
                 return;
 
@@ -35,13 +36,16 @@ namespace LabFusion.Data
             _initialized = true;
         }
 
-        public static void ValidateDirectory(string path) {
+        public static void ValidateDirectory(string path)
+        {
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
         }
 
-        public static string GetPath(string appended) {
-            if (!_initialized) {
+        public static string GetPath(string appended)
+        {
+            if (!_initialized)
+            {
 #if DEBUG
                 FusionLogger.Warn("Tried getting a persistent path before it was initialized!\n" +
                     "Forcing initialization!");
@@ -50,7 +54,7 @@ namespace LabFusion.Data
                 OnPathInitialize();
             }
 
-            return PersistentPath + appended; 
+            return PersistentPath + appended;
         }
     }
 }

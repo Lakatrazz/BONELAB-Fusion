@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Data {
-    public class HubDMData : DMLevelDataHandler {
+namespace LabFusion.Data
+{
+    public class HubDMData : DMLevelDataHandler
+    {
         public override string LevelTitle => "02 - BONELAB Hub";
 
         protected override Vector3[] DeathmatchSpawnPoints => new Vector3[15] {

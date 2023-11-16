@@ -41,12 +41,14 @@ namespace LabFusion.Syncables
         {
             var list = new List<IPropExtender>();
 
-            for (var i = 0; i < _lastExtenderIndex; i++) {
+            for (var i = 0; i < _lastExtenderIndex; i++)
+            {
                 var type = ExtenderTypes[i];
 
                 var instance = Activator.CreateInstance(type) as IPropExtender;
 
-                if (instance.ValidateExtender(syncable)) {
+                if (instance.ValidateExtender(syncable))
+                {
                     list.Add(instance);
                 }
             }

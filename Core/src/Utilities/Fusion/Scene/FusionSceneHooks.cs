@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace LabFusion.Utilities
 {
-    public static partial class FusionSceneManager {
+    public static partial class FusionSceneManager
+    {
         private static Action _onTargetLevelLoad = null;
 
         private static Action _onLevelLoad = null;
@@ -18,11 +19,14 @@ namespace LabFusion.Utilities
         /// If there is no server, it just waits until level load.
         /// </summary>
         /// <param name="action"></param>
-        public static void HookOnTargetLevelLoad(Action action) {
-            if (!HasTargetLoaded()) {
+        public static void HookOnTargetLevelLoad(Action action)
+        {
+            if (!HasTargetLoaded())
+            {
                 _onTargetLevelLoad += action;
             }
-            else {
+            else
+            {
                 action?.Invoke();
             }
         }
@@ -31,11 +35,14 @@ namespace LabFusion.Utilities
         /// Waits until the level has loaded to invoke an action.
         /// </summary>
         /// <param name="action"></param>
-        public static void HookOnLevelLoad(Action action) {
-            if (IsLoading()) {
+        public static void HookOnLevelLoad(Action action)
+        {
+            if (IsLoading())
+            {
                 _onLevelLoad += action;
             }
-            else {
+            else
+            {
                 action?.Invoke();
             }
         }
@@ -44,11 +51,14 @@ namespace LabFusion.Utilities
         /// Waits until the level has loaded with a bit of delay to invoke an action.
         /// </summary>
         /// <param name="action"></param>
-        public static void HookOnDelayedLevelLoad(Action action) {
-            if (IsDelayedLoading()) {
+        public static void HookOnDelayedLevelLoad(Action action)
+        {
+            if (IsDelayedLoading())
+            {
                 _onDelayedLevelLoad += action;
             }
-            else {
+            else
+            {
                 action?.Invoke();
             }
         }

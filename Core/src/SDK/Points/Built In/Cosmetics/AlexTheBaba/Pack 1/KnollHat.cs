@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class KnollHat : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class KnollHat : AccessoryItem
+    {
         public override string Title => "Gray Cap";
 
         public override string Author => BitEconomy.BaBaAuthor;

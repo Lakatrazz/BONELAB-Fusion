@@ -56,7 +56,7 @@ namespace LabFusion.SDK.Gamemodes
 
         public void AddPlayer(PlayerId playerId)
         {
-            if(PlayerCount > MaxPlayers)
+            if (PlayerCount > MaxPlayers)
             {
                 return;
             }
@@ -68,7 +68,7 @@ namespace LabFusion.SDK.Gamemodes
 
         public void RemovePlayer(PlayerId playerId)
         {
-            if(PlayerCount <= 0)
+            if (PlayerCount <= 0)
             {
                 return;
             }

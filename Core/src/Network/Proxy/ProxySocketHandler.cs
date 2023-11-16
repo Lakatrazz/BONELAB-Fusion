@@ -19,7 +19,8 @@ using UnityEngine.UIElements;
 
 namespace LabFusion.Network
 {
-    public static class ProxySocketHandler {
+    public static class ProxySocketHandler
+    {
         public static void BroadcastToClients(NetworkChannel channel, FusionMessage message)
         {
             MessageTypes type = channel == NetworkChannel.Reliable ? MessageTypes.ReliableBroadcastToClients : MessageTypes.UnreliableBroadcastToClients;
@@ -45,11 +46,14 @@ namespace LabFusion.Network
             }
         }
 
-        public static void OnSocketMessageReceived(byte[] message, bool isServerHandled = false) {
-            try {
+        public static void OnSocketMessageReceived(byte[] message, bool isServerHandled = false)
+        {
+            try
+            {
                 FusionMessageHandler.ReadMessage(message, isServerHandled);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 FusionLogger.Error($"Failed reading message from socket server with reason: {e.Message}\nTrace:{e.StackTrace}");
             }
         }

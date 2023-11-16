@@ -12,12 +12,15 @@ using System.Xml.Linq;
 
 namespace LabFusion.SDK.Achievements
 {
-    public static class AchievementSaveManager {
+    public static class AchievementSaveManager
+    {
         [Serializable]
-        public class AchievementPointer : IXMLPackable {
+        public class AchievementPointer : IXMLPackable
+        {
             public string data;
 
-            public AchievementPointer(Achievement achievement) {
+            public AchievementPointer(Achievement achievement)
+            {
                 XElement entry = new(nameof(data));
                 achievement.Pack(entry);
                 data = entry.ToString();
@@ -25,20 +28,24 @@ namespace LabFusion.SDK.Achievements
 
             public AchievementPointer() { }
 
-            public void Pack(XElement element) {
+            public void Pack(XElement element)
+            {
                 element.SetAttributeValue(nameof(data), data);
             }
 
-            public void Unpack(XElement element) {
+            public void Unpack(XElement element)
+            {
                 element.TryGetAttribute(nameof(data), out data);
             }
         }
 
         [Serializable]
-        public class AchievementSaveData {
+        public class AchievementSaveData
+        {
             public Dictionary<string, AchievementPointer> pointers;
 
-            public static AchievementSaveData CreateCurrent() {
+            public static AchievementSaveData CreateCurrent()
+            {
                 var data = new AchievementSaveData()
                 {
                     pointers = _achievementPointers,
@@ -50,7 +57,8 @@ namespace LabFusion.SDK.Achievements
         private const string _filePath = "achievements.dat";
         private const string _backupPath = "achievements.dat.bak";
 
-        public static void OnInitializeMelon() {
+        public static void OnInitializeMelon()
+        {
             Achievement.OnAchievementUpdated += SaveAchievement;
         }
 
@@ -72,13 +80,15 @@ namespace LabFusion.SDK.Achievements
         {
             var data = DataSaver.ReadBinary<AchievementSaveData>(_filePath);
 
-            if (data != null) {
+            if (data != null)
+            {
                 if (data.pointers != null)
                     _achievementPointers = data.pointers;
             }
         }
 
-        public static void SaveAchievement(Achievement achievement) {
+        public static void SaveAchievement(Achievement achievement)
+        {
             if (!_achievementPointers.ContainsKey(achievement.Barcode))
                 _achievementPointers.Add(achievement.Barcode, null);
 

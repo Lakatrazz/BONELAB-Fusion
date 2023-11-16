@@ -10,18 +10,23 @@ using LabFusion.Data;
 using LabFusion.SDK.Achievements;
 using UnityEngine;
 
-namespace LabFusion.Utilities {
-    public class AchievementPair {
+namespace LabFusion.Utilities
+{
+    public class AchievementPair
+    {
         public Texture2D Preview { get; private set; }
 
-        public static AchievementPair LoadFromBundle(AssetBundle bundle, string name) {
-            return new AchievementPair() {
+        public static AchievementPair LoadFromBundle(AssetBundle bundle, string name)
+        {
+            return new AchievementPair()
+            {
                 Preview = bundle.LoadPersistentAsset<Texture2D>(ResourcePaths.PreviewPrefix + name),
             };
         }
     }
 
-    public static class FusionAchievementLoader {
+    public static class FusionAchievementLoader
+    {
         public static AssetBundle AchievementBundle { get; private set; }
 
         private static readonly string[] _achievementNames = new string[] {
@@ -58,11 +63,14 @@ namespace LabFusion.Utilities {
 
         private static readonly Dictionary<string, AchievementPair> _achievementPairs = new();
 
-        public static void OnBundleLoad() {
+        public static void OnBundleLoad()
+        {
             AchievementBundle = FusionBundleLoader.LoadAssetBundle(ResourcePaths.AchievementBundle);
 
-            if (AchievementBundle != null) {
-                foreach (var achievement in _achievementNames) {
+            if (AchievementBundle != null)
+            {
+                foreach (var achievement in _achievementNames)
+                {
                     _achievementPairs.Add(achievement, AchievementPair.LoadFromBundle(AchievementBundle, achievement));
                 }
             }
@@ -70,13 +78,15 @@ namespace LabFusion.Utilities {
                 FusionLogger.Error("Achievement bundle failed to load!");
         }
 
-        public static void OnBundleUnloaded() {
+        public static void OnBundleUnloaded()
+        {
             // Unload item bundle
             if (AchievementBundle != null)
                 AchievementBundle.Unload(true);
         }
 
-        public static AchievementPair GetPair(string name) {
+        public static AchievementPair GetPair(string name)
+        {
             return _achievementPairs[name];
         }
     }

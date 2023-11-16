@@ -3,57 +3,59 @@ using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Utilities;
 
-namespace LabFusion.Senders {
-    public static class ConnectionSender {
-        public static void SendDisconnectToAll(string reason = "") {
-            if (NetworkInfo.IsServer) {
-                foreach (var id in PlayerIdManager.PlayerIds) {
+namespace LabFusion.Senders
+{
+    public static class ConnectionSender
+    {
+        public static void SendDisconnectToAll(string reason = "")
+        {
+            if (NetworkInfo.IsServer)
+            {
+                foreach (var id in PlayerIdManager.PlayerIds)
+                {
                     if (id.IsSelf)
                         continue;
 
-                    using (FusionWriter writer = FusionWriter.Create()) {
-                        using (var disconnect = DisconnectMessageData.Create(id.LongId, reason)) {
-                            writer.Write(disconnect);
+                    using FusionWriter writer = FusionWriter.Create();
+                    using var disconnect = DisconnectMessageData.Create(id.LongId, reason);
+                    writer.Write(disconnect);
 
-                            using (var message = FusionMessage.Create(NativeMessageTag.Disconnect, writer)) {
-                                MessageSender.SendFromServer(id.LongId, NetworkChannel.Reliable, message);
-                            }
-                        }
-                    }
+                    using var message = FusionMessage.Create(NativeMessageTag.Disconnect, writer);
+                    MessageSender.SendFromServer(id.LongId, NetworkChannel.Reliable, message);
                 }
             }
         }
 
-        public static void SendDisconnect(ulong userId, string reason = "") {
-            if (NetworkInfo.IsServer) {
-                using (FusionWriter writer = FusionWriter.Create()) {
-                    using (var disconnect = DisconnectMessageData.Create(userId, reason)) {
-                        writer.Write(disconnect);
+        public static void SendDisconnect(ulong userId, string reason = "")
+        {
+            if (NetworkInfo.IsServer)
+            {
+                using FusionWriter writer = FusionWriter.Create();
+                using var disconnect = DisconnectMessageData.Create(userId, reason);
+                writer.Write(disconnect);
 
-                        using (var message = FusionMessage.Create(NativeMessageTag.Disconnect, writer)) {
-                            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
+                using var message = FusionMessage.Create(NativeMessageTag.Disconnect, writer);
+                MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
             }
         }
 
-        public static void SendConnectionDeny(ulong userId, string reason = "") {
-            if (NetworkInfo.IsServer) {
-                using (FusionWriter writer = FusionWriter.Create()) {
-                    using (var disconnect = DisconnectMessageData.Create(userId, reason)) {
-                        writer.Write(disconnect);
+        public static void SendConnectionDeny(ulong userId, string reason = "")
+        {
+            if (NetworkInfo.IsServer)
+            {
+                using FusionWriter writer = FusionWriter.Create();
+                using var disconnect = DisconnectMessageData.Create(userId, reason);
+                writer.Write(disconnect);
 
-                        using (var message = FusionMessage.Create(NativeMessageTag.Disconnect, writer)) {
-                            MessageSender.SendFromServer(userId, NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
+                using var message = FusionMessage.Create(NativeMessageTag.Disconnect, writer);
+                MessageSender.SendFromServer(userId, NetworkChannel.Reliable, message);
             }
         }
 
-        public static void SendConnectionRequest() {
-            if (NetworkInfo.HasServer) {
+        public static void SendConnectionRequest()
+        {
+            if (NetworkInfo.HasServer)
+            {
                 using FusionWriter writer = FusionWriter.Create();
                 using ConnectionRequestData data = ConnectionRequestData.Create(PlayerIdManager.LocalLongId, FusionMod.Version, RigData.GetAvatarBarcode(), RigData.RigAvatarStats);
                 writer.Write(data);
@@ -61,7 +63,8 @@ namespace LabFusion.Senders {
                 using FusionMessage message = FusionMessage.Create(NativeMessageTag.ConnectionRequest, writer);
                 MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
             }
-            else {
+            else
+            {
                 FusionLogger.Error("Attempted to send a connection request, but we are not connected to anyone!");
             }
         }

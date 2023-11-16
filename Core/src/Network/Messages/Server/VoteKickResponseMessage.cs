@@ -11,7 +11,8 @@ using LabFusion.Extensions;
 
 namespace LabFusion.Network
 {
-    public class VoteKickResponseData : IFusionSerializable, IDisposable {
+    public class VoteKickResponseData : IFusionSerializable, IDisposable
+    {
         public const int Size = sizeof(byte) * 2 + sizeof(int) * 2;
 
         public byte smallId;
@@ -22,7 +23,8 @@ namespace LabFusion.Network
 
         public bool wasKicked;
 
-        public void Serialize(FusionWriter writer) {
+        public void Serialize(FusionWriter writer)
+        {
             writer.Write(smallId);
             writer.Write(username);
 
@@ -32,7 +34,8 @@ namespace LabFusion.Network
             writer.Write(wasKicked);
         }
 
-        public void Deserialize(FusionReader reader) {
+        public void Deserialize(FusionReader reader)
+        {
             smallId = reader.ReadByte();
             username = reader.ReadString();
 
@@ -42,12 +45,15 @@ namespace LabFusion.Network
             wasKicked = reader.ReadBoolean();
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
 
-        public static VoteKickResponseData Create(byte smallId, string username, int votes, int requiredVotes, bool wasKicked) {
-            return new VoteKickResponseData() {
+        public static VoteKickResponseData Create(byte smallId, string username, int votes, int requiredVotes, bool wasKicked)
+        {
+            return new VoteKickResponseData()
+            {
                 smallId = smallId,
                 username = username,
                 votes = votes,
@@ -61,9 +67,11 @@ namespace LabFusion.Network
     {
         public override byte? Tag => NativeMessageTag.VoteKickResponse;
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
+        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        {
             // This should only ever be handled by clients
-            if (!isServerHandled) {
+            if (!isServerHandled)
+            {
                 using FusionReader reader = FusionReader.Create(bytes);
                 using var data = reader.ReadFusionSerializable<VoteKickResponseData>();
 
@@ -74,7 +82,8 @@ namespace LabFusion.Network
 
                 // Send notifications
                 // Was kicked
-                if (data.wasKicked) {
+                if (data.wasKicked)
+                {
                     FusionNotifier.Send(new FusionNotification()
                     {
                         title = "Vote Kick",
@@ -86,8 +95,10 @@ namespace LabFusion.Network
                     });
                 }
                 // Kick in progress
-                else {
-                    FusionNotifier.Send(new FusionNotification() {
+                else
+                {
+                    FusionNotifier.Send(new FusionNotification()
+                    {
                         title = "Vote Kick",
                         message = $"A player has voted to kick {data.username}. ({data.votes}/{data.requiredVotes} Votes)",
                         type = NotificationType.INFORMATION,

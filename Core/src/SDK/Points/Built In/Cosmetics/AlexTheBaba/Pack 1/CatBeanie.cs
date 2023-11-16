@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
+namespace LabFusion.SDK.Points
+{
     public class CatBeanie : AccessoryItem
     {
         public override string Title => "Cat Beanie";

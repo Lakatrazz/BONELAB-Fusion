@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class Monocle : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class Monocle : AccessoryItem
+    {
         public override string Title => "Monocle";
 
         public override string Author => BitEconomy.BaBaAuthor;

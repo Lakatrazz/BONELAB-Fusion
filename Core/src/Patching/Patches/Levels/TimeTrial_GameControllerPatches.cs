@@ -25,10 +25,12 @@ namespace LabFusion.Patching
             if (IgnorePatches)
                 return true;
 
-            if (NetworkInfo.HasServer) {
+            if (NetworkInfo.HasServer)
+            {
                 if (!NetworkInfo.IsServer)
                     return false;
-                else {
+                else
+                {
                     TrialSender.SendTimeTrialEvent(TimeTrialGameControllerType.UpdateDifficulty, difficulty);
                 }
             }

@@ -14,16 +14,21 @@ using UnityEngine;
 
 using Avatar = SLZ.VRMK.Avatar;
 
-namespace LabFusion.Extensions {
-    public static class RigManagerExtensions {
-        public static void SwapAvatarCrate(this RigReferenceCollection references, string barcode, Action<bool> callback = null, Action<string, GameObject> preSwapAvatar = null) {
+namespace LabFusion.Extensions
+{
+    public static class RigManagerExtensions
+    {
+        public static void SwapAvatarCrate(this RigReferenceCollection references, string barcode, Action<bool> callback = null, Action<string, GameObject> preSwapAvatar = null)
+        {
             AvatarCrateReference crateRef = new(barcode);
             var crate = crateRef.Crate;
 
-            if (crate == null) {
+            if (crate == null)
+            {
                 callback?.Invoke(false);
             }
-            else {
+            else
+            {
                 MelonCoroutines.Start(CoWaitAndSwapAvatarRoutine(references, crate, callback, preSwapAvatar));
             }
         }
@@ -64,7 +69,7 @@ namespace LabFusion.Extensions {
 
                 var avatarComponent = instance.GetComponentInParent<Avatar>(true);
                 rm.SwapAvatar(avatarComponent);
-                
+
                 while (references.IsValid && rm.avatar != avatarComponent)
                     yield return null;
 

@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class GloopTrail : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class GloopTrail : AccessoryItem
+    {
         public override string Title => "Gloop Trail";
 
         public override string Author => BitEconomy.BaBaAuthor;

@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class VirtuallyInsane : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class VirtuallyInsane : AccessoryItem
+    {
         public override string Title => "Virtually Insane";
 
         public override string Author => BitEconomy.RiggleAuthor;

@@ -17,7 +17,8 @@ using SLZ.Props.Weapons;
 
 namespace LabFusion.Network
 {
-    public enum MagmaGateEventType {
+    public enum MagmaGateEventType
+    {
         UNKNOWN = 0,
         BUTTONS_SETUP = 1,
         OBJECTIVE_COMPLETE_SETUP = 2,
@@ -60,39 +61,35 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<MagmaGateEventData>();
+            var controller = MagmaGateData.GameController;
+            MagmaGatePatches.IgnorePatches = true;
+
+            // We ONLY handle this for clients, this message should only ever be sent by the server!
+            if (!NetworkInfo.IsServer && controller)
             {
-                using (var data = reader.ReadFusionSerializable<MagmaGateEventData>())
+                switch (data.type)
                 {
-                    var controller = MagmaGateData.GameController;
-                    MagmaGatePatches.IgnorePatches = true;
-
-                    // We ONLY handle this for clients, this message should only ever be sent by the server!
-                    if (!NetworkInfo.IsServer && controller)
-                    {
-                        switch (data.type)
-                        {
-                            default:
-                            case MagmaGateEventType.UNKNOWN:
-                                break;
-                            case MagmaGateEventType.BUTTONS_SETUP:
-                                controller.ButtonsSetup();
-                                break;
-                            case MagmaGateEventType.OBJECTIVE_COMPLETE_SETUP:
-                                controller.ObjectiveCompleteSetup();
-                                break;
-                            case MagmaGateEventType.LOSE_SEQUENCE:
-                                controller.LoseSequence();
-                                break;
-                            case MagmaGateEventType.DOOR_DISSOLVE:
-                                controller.DoorDissolve();
-                                break;
-                        }
-                    }
-
-                    MagmaGatePatches.IgnorePatches = false;
+                    default:
+                    case MagmaGateEventType.UNKNOWN:
+                        break;
+                    case MagmaGateEventType.BUTTONS_SETUP:
+                        controller.ButtonsSetup();
+                        break;
+                    case MagmaGateEventType.OBJECTIVE_COMPLETE_SETUP:
+                        controller.ObjectiveCompleteSetup();
+                        break;
+                    case MagmaGateEventType.LOSE_SEQUENCE:
+                        controller.LoseSequence();
+                        break;
+                    case MagmaGateEventType.DOOR_DISSOLVE:
+                        controller.DoorDissolve();
+                        break;
                 }
             }
+
+            MagmaGatePatches.IgnorePatches = false;
         }
     }
 }

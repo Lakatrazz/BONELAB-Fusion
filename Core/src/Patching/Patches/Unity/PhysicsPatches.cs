@@ -12,13 +12,17 @@ using LabFusion.Utilities;
 
 using UnityEngine;
 
-namespace LabFusion.Patching {
+namespace LabFusion.Patching
+{
     [HarmonyPatch(typeof(Physics))]
-    public static class PhysicsPatches {
+    public static class PhysicsPatches
+    {
         [HarmonyPatch(nameof(Physics.gravity), MethodType.Setter)]
         [HarmonyPrefix]
-        public static bool SetGravityPrefix(Vector3 value) {
-            if (NetworkInfo.HasServer && !NetworkInfo.IsServer && !PhysicsUtilities.CanModifyGravity) {
+        public static bool SetGravityPrefix(Vector3 value)
+        {
+            if (NetworkInfo.HasServer && !NetworkInfo.IsServer && !PhysicsUtilities.CanModifyGravity)
+            {
                 return false;
             }
 
@@ -27,10 +31,12 @@ namespace LabFusion.Patching {
 
         [HarmonyPatch(nameof(Physics.gravity), MethodType.Setter)]
         [HarmonyPostfix]
-        public static void SetGravityPostfix(Vector3 value) {
+        public static void SetGravityPostfix(Vector3 value)
+        {
             var output = value.ToSystemVector3();
 
-            if (NetworkInfo.IsServer) {
+            if (NetworkInfo.IsServer)
+            {
                 PhysicsUtilities.SendGravity(output);
             }
 

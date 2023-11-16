@@ -4,14 +4,17 @@ using System.Reflection;
 
 using LabFusion.Utilities;
 
-namespace LabFusion.SDK.Modules {
+namespace LabFusion.SDK.Modules
+{
     /// <summary>
     /// Logger for Fusion modules.
     /// </summary>
-    public class ModuleLogger {
+    public class ModuleLogger
+    {
         internal string _moduleName;
 
-        public ModuleLogger(string moduleName) {
+        public ModuleLogger(string moduleName)
+        {
             _moduleName = moduleName;
         }
 

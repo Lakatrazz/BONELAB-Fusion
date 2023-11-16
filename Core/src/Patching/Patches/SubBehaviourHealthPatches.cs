@@ -18,9 +18,11 @@ using PuppetMasta;
 
 using SLZ;
 
-namespace LabFusion.Patching {
+namespace LabFusion.Patching
+{
     // Since some methods here use structs, we native patch thanks to IL2CPP nonsense
-    public static class SubBehaviourHealthPatches {
+    public static class SubBehaviourHealthPatches
+    {
         public static void Patch()
         {
             PatchTakeDamage();
@@ -42,7 +44,8 @@ namespace LabFusion.Patching {
 
         private static float TakeDamage(IntPtr instance, int m, IntPtr attack, IntPtr method)
         {
-            try {
+            try
+            {
                 if (NetworkInfo.HasServer)
                 {
                     SubBehaviourHealth subBehaviourHealth = null;
@@ -50,14 +53,16 @@ namespace LabFusion.Patching {
                     if (instance != IntPtr.Zero)
                         subBehaviourHealth = new SubBehaviourHealth(instance);
 
-                    if (subBehaviourHealth != null && PuppetMasterExtender.Cache.TryGet(subBehaviourHealth.behaviour.puppetMaster, out var syncable) && !syncable.IsOwner()) {
+                    if (subBehaviourHealth != null && PuppetMasterExtender.Cache.TryGet(subBehaviourHealth.behaviour.puppetMaster, out var syncable) && !syncable.IsOwner())
+                    {
                         return 0f;
                     }
                 }
 
                 return _original(instance, m, attack, method);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
 #if DEBUG
                 FusionLogger.LogException("executing native patch SubBehaviourHealth.TakeDamage", e);
 #endif

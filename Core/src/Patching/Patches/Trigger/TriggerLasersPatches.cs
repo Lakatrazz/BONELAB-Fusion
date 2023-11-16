@@ -17,7 +17,8 @@ namespace LabFusion.Patching
     {
         public static bool Prefix(TriggerLasers __instance, Collider other)
         {
-            if (other.CompareTag("Player")) {
+            if (other.CompareTag("Player"))
+            {
                 if (TriggerUtilities.VerifyLevelTrigger(__instance, other, out bool runMethod))
                     return runMethod;
 
@@ -30,7 +31,8 @@ namespace LabFusion.Patching
             return true;
         }
 
-        public static void Postfix(TriggerLasers __instance, Collider other) {
+        public static void Postfix(TriggerLasers __instance, Collider other)
+        {
             if (__instance.rigManager != null && __instance.rigManager != RigData.RigReferences.RigManager)
                 __instance.rigManager = RigData.RigReferences.RigManager;
         }
@@ -41,7 +43,8 @@ namespace LabFusion.Patching
     {
         public static bool Prefix(TriggerLasers __instance, Collider other)
         {
-            if (other.CompareTag("Player")) {
+            if (other.CompareTag("Player"))
+            {
                 if (TriggerUtilities.VerifyLevelTrigger(__instance, other, out bool runMethod))
                     return runMethod;
 
@@ -54,7 +57,8 @@ namespace LabFusion.Patching
             return true;
         }
 
-        public static void Postfix(TriggerLasers __instance, Collider other) {
+        public static void Postfix(TriggerLasers __instance, Collider other)
+        {
             if (__instance.rigManager != null && __instance.rigManager != RigData.RigReferences.RigManager)
                 __instance.rigManager = RigData.RigReferences.RigManager;
         }

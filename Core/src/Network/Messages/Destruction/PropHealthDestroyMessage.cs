@@ -62,39 +62,37 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<PropHealthDestroyData>();
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
             {
-                using (var data = reader.ReadFusionSerializable<PropHealthDestroyData>())
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+            }
+            else
+            {
+                if (SyncManager.TryGetSyncable(data.syncId, out var health) && health is PropSyncable healthSyncable && healthSyncable.TryGetExtender<PropHealthExtender>(out var extender))
                 {
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled) {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-                        }
-                    }
-                    else
+                    var propHealth = extender.GetComponent(data.healthIndex);
+                    PropHealthPatches.IgnorePatches = true;
+
+                    propHealth.hits = propHealth.req_hit_count + 1;
+                    propHealth.bloodied = true;
+
+                    try
                     {
-                        if (SyncManager.TryGetSyncable(data.syncId, out var health) && health is PropSyncable healthSyncable && healthSyncable.TryGetExtender<PropHealthExtender>(out var extender))
-                        {
-                            var propHealth = extender.GetComponent(data.healthIndex);
-                            PropHealthPatches.IgnorePatches = true;
-
-                            propHealth.hits = propHealth.req_hit_count + 1;
-                            propHealth.bloodied = true;
-
-                            try {
-                                propHealth.TIMEDKILL();
-                                propHealth.SETPROP();
-                            }
-                            catch {
-#if DEBUG
-                                FusionLogger.Warn("Got error trying to destroy a PropHealth. This is probably caused by the item.");
-#endif
-                            }
-
-                            PropHealthPatches.IgnorePatches = false;
-                        }
+                        propHealth.TIMEDKILL();
+                        propHealth.SETPROP();
                     }
+                    catch
+                    {
+#if DEBUG
+                        FusionLogger.Warn("Got error trying to destroy a PropHealth. This is probably caused by the item.");
+#endif
+                    }
+
+                    PropHealthPatches.IgnorePatches = false;
                 }
             }
         }

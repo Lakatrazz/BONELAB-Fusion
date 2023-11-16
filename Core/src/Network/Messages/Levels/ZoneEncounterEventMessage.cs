@@ -21,7 +21,8 @@ using SLZ.Zones;
 
 namespace LabFusion.Network
 {
-    public enum ZoneEncounterEventType {
+    public enum ZoneEncounterEventType
+    {
         UNKNOWN = 0,
         COMPLETE_ENCOUNTER = 1,
         START_ENCOUNTER = 2,
@@ -67,37 +68,35 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<ZoneEncounterEventData>();
+            // We ONLY handle this if we are a client!
+            if (!NetworkInfo.IsServer && data.zoneEncounter != null)
             {
-                using (var data = reader.ReadFusionSerializable<ZoneEncounterEventData>())
+                var encounter = data.zoneEncounter.GetComponent<ZoneEncounter>();
+
+                ZoneEncounterPatches.IgnorePatches = true;
+
+                if (encounter != null)
                 {
-                    // We ONLY handle this if we are a client!
-                    if (!NetworkInfo.IsServer && data.zoneEncounter != null) {
-                        var encounter = data.zoneEncounter.GetComponent<ZoneEncounter>();
-
-                        ZoneEncounterPatches.IgnorePatches = true;
-
-                        if (encounter != null) {
-                            switch (data.type)
-                            {
-                                default:
-                                case ZoneEncounterEventType.UNKNOWN:
-                                    break;
-                                case ZoneEncounterEventType.COMPLETE_ENCOUNTER:
-                                    encounter.CompleteEncounter();
-                                    break;
-                                case ZoneEncounterEventType.START_ENCOUNTER:
-                                    encounter.StartEncounter();
-                                    break;
-                                case ZoneEncounterEventType.PAUSE_ENCOUNTER:
-                                    encounter.PauseEncounter();
-                                    break;
-                            }
-                        }
-
-                        ZoneEncounterPatches.IgnorePatches = false;
+                    switch (data.type)
+                    {
+                        default:
+                        case ZoneEncounterEventType.UNKNOWN:
+                            break;
+                        case ZoneEncounterEventType.COMPLETE_ENCOUNTER:
+                            encounter.CompleteEncounter();
+                            break;
+                        case ZoneEncounterEventType.START_ENCOUNTER:
+                            encounter.StartEncounter();
+                            break;
+                        case ZoneEncounterEventType.PAUSE_ENCOUNTER:
+                            encounter.PauseEncounter();
+                            break;
                     }
                 }
+
+                ZoneEncounterPatches.IgnorePatches = false;
             }
         }
     }

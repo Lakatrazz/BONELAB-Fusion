@@ -8,7 +8,8 @@ using UltEvents;
 using MelonLoader;
 #endif
 
-namespace LabFusion.MarrowIntegration {
+namespace LabFusion.MarrowIntegration
+{
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
@@ -16,17 +17,20 @@ namespace LabFusion.MarrowIntegration {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(UltEventHolder))]
 #endif
-    public sealed class InvokeUltEventOnLocalOwnership : FusionMarrowBehaviour {
+    public sealed class InvokeUltEventOnLocalOwnership : FusionMarrowBehaviour
+    {
 #if MELONLOADER
         public InvokeUltEventOnLocalOwnership(IntPtr intPtr) : base(intPtr) { }
 
         private UltEventHolder holder;
 
-        private void Awake() {
+        private void Awake()
+        {
             holder = GetComponent<UltEventHolder>();
         }
 
-        public void Invoke() {
+        public void Invoke()
+        {
             holder.Invoke();
         }
 #else

@@ -15,7 +15,8 @@ namespace LabFusion.Network
     /// <summary>
     /// Privacy type for a server.
     /// </summary>
-    public enum ServerPrivacy {
+    public enum ServerPrivacy
+    {
         PUBLIC = 0,
         PRIVATE = 1,
         FRIENDS_ONLY = 2,
@@ -25,21 +26,25 @@ namespace LabFusion.Network
     /// <summary>
     /// The foundational class for a server's networking system.
     /// </summary>
-    public abstract class NetworkLayer {
+    public abstract class NetworkLayer
+    {
         private Type _type;
         private bool _hasType;
 
         /// <summary>
         /// The Type of this NetworkLayer.
         /// </summary>
-        internal Type Type { 
-            get {
-                if (!_hasType) {
+        internal Type Type
+        {
+            get
+            {
+                if (!_hasType)
+                {
                     _type = GetType();
                     _hasType = true;
                 }
                 return _type;
-            } 
+            }
         }
 
         /// <summary>
@@ -89,7 +94,8 @@ namespace LabFusion.Network
         /// </summary>
         /// <param name="fallback"></param>
         /// <returns></returns>
-        internal virtual bool TryGetFallback(out NetworkLayer fallback) {
+        internal virtual bool TryGetFallback(out NetworkLayer fallback)
+        {
             fallback = null;
             return false;
         }
@@ -154,8 +160,10 @@ namespace LabFusion.Network
         /// <param name="userId"></param>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        internal virtual void BroadcastMessageExcept(byte userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true) {
-            for (var i = 0; i < PlayerIdManager.PlayerIds.Count; i++) {
+        internal virtual void BroadcastMessageExcept(byte userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
+        {
+            for (var i = 0; i < PlayerIdManager.PlayerIds.Count; i++)
+            {
                 var id = PlayerIdManager.PlayerIds[i];
 
                 if (id.SmallId != userId && (id.SmallId != 0 || !ignoreHost))
@@ -171,7 +179,8 @@ namespace LabFusion.Network
         /// <param name="message"></param>
         internal virtual void BroadcastMessageExcept(ulong userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
         {
-            for (var i = 0; i < PlayerIdManager.PlayerIds.Count; i++) {
+            for (var i = 0; i < PlayerIdManager.PlayerIds.Count; i++)
+            {
                 var id = PlayerIdManager.PlayerIds[i];
                 if (id.LongId != userId && (id.SmallId != 0 || !ignoreHost))
                     SendFromServer(id.SmallId, channel, message);
@@ -217,10 +226,12 @@ namespace LabFusion.Network
         {
             NetworkLayer layer = Activator.CreateInstance(type) as NetworkLayer;
 
-            if (string.IsNullOrWhiteSpace(layer.Title)) {
+            if (string.IsNullOrWhiteSpace(layer.Title))
+            {
                 FusionLogger.Warn($"Didn't register {type.Name} because its Title was invalid!");
             }
-            else {
+            else
+            {
                 if (LayerLookup.ContainsKey(layer.Title)) throw new Exception($"{type.Name} has the same Title as {LayerLookup[layer.Title].GetType().Name}, we can't replace layers!");
 
 #if DEBUG

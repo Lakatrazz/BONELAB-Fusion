@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class WeirdShades : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class WeirdShades : AccessoryItem
+    {
         public override string Title => "Shiny Shades";
 
         public override string Author => BitEconomy.BaBaAuthor;

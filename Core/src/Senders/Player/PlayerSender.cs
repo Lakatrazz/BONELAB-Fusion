@@ -14,8 +14,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Senders {
-    public enum PlayerActionType {
+namespace LabFusion.Senders
+{
+    public enum PlayerActionType
+    {
         /// <summary>
         /// No event.
         /// </summary>
@@ -57,14 +59,17 @@ namespace LabFusion.Senders {
         DEATH_BY_OTHER_PLAYER = 1 << 7,
     }
 
-    public enum NicknameVisibility {
+    public enum NicknameVisibility
+    {
         SHOW = 1 << 0,
         SHOW_WITH_PREFIX = 1 << 1,
         HIDE = 1 << 2,
     }
 
-    public static class PlayerSender {
-        public static void SendPlayerAvatar(SerializedAvatarStats stats, string barcode) {
+    public static class PlayerSender
+    {
+        public static void SendPlayerAvatar(SerializedAvatarStats stats, string barcode)
+        {
             if (!NetworkInfo.HasServer)
                 return;
 
@@ -76,7 +81,8 @@ namespace LabFusion.Senders {
             MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
         }
 
-        public static void SendPlayerVoiceChat(byte[] voiceData) {
+        public static void SendPlayerVoiceChat(byte[] voiceData)
+        {
             if (!NetworkInfo.HasServer)
                 return;
 
@@ -101,7 +107,8 @@ namespace LabFusion.Senders {
             MessageSender.SendFromServer(target, NetworkChannel.Reliable, message);
         }
 
-        public static void SendPlayerDamage(byte target, float damage) {
+        public static void SendPlayerDamage(byte target, float damage)
+        {
             using var writer = FusionWriter.Create(PlayerRepDamageData.Size);
             using var data = PlayerRepDamageData.Create(PlayerIdManager.LocalSmallId, target, damage);
             writer.Write(data);
@@ -110,7 +117,8 @@ namespace LabFusion.Senders {
             MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
 
-        public static void SendPlayerMetadataRequest(byte smallId, string key, string value) {
+        public static void SendPlayerMetadataRequest(byte smallId, string key, string value)
+        {
             using var writer = FusionWriter.Create(PlayerMetadataRequestData.GetSize(key, value));
             using var data = PlayerMetadataRequestData.Create(smallId, key, value);
             writer.Write(data);
@@ -119,9 +127,11 @@ namespace LabFusion.Senders {
             MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
 
-        public static void SendPlayerMetadataResponse(byte smallId, string key, string value) {
+        public static void SendPlayerMetadataResponse(byte smallId, string key, string value)
+        {
             // Make sure this is the server
-            if (NetworkInfo.IsServer) {
+            if (NetworkInfo.IsServer)
+            {
                 using var writer = FusionWriter.Create(PlayerMetadataResponseData.GetSize(key, value));
                 using var data = PlayerMetadataResponseData.Create(smallId, key, value);
                 writer.Write(data);
@@ -133,7 +143,8 @@ namespace LabFusion.Senders {
                 throw new ExpectedClientException();
         }
 
-        public static void SendVoteKickRequest(byte target) {
+        public static void SendVoteKickRequest(byte target)
+        {
             using var writer = FusionWriter.Create(VoteKickRequestData.Size);
             using var data = VoteKickRequestData.Create(PlayerIdManager.LocalId, target);
             writer.Write(data);
@@ -142,7 +153,8 @@ namespace LabFusion.Senders {
             MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
 
-        public static void SendPlayerAction(PlayerActionType type, byte? otherPlayer = null) {
+        public static void SendPlayerAction(PlayerActionType type, byte? otherPlayer = null)
+        {
             using var writer = FusionWriter.Create(PlayerRepActionData.Size);
             using var data = PlayerRepActionData.Create(PlayerIdManager.LocalSmallId, type, otherPlayer);
             writer.Write(data);

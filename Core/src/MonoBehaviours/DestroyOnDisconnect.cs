@@ -12,14 +12,17 @@ using LabFusion.Utilities;
 namespace LabFusion.MonoBehaviours
 {
     [RegisterTypeInIl2Cpp]
-    public class DestroyOnDisconnect : MonoBehaviour {
+    public class DestroyOnDisconnect : MonoBehaviour
+    {
         public DestroyOnDisconnect(IntPtr intPtr) : base(intPtr) { }
 
-        private void Awake() {
+        private void Awake()
+        {
             MultiplayerHooking.OnDisconnect += OnDisconnect;
         }
 
-        private void OnDestroy()  {
+        private void OnDestroy()
+        {
             MultiplayerHooking.OnDisconnect -= OnDisconnect;
         }
 

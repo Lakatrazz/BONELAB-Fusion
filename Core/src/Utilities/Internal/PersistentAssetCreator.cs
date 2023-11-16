@@ -16,8 +16,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
 
-namespace LabFusion.Utilities {
-    internal static class PersistentAssetCreator {
+namespace LabFusion.Utilities
+{
+    internal static class PersistentAssetCreator
+    {
         // ALL FONTS AT THE START:
         // - arlon-medium SDF
         // - nasalization-rg SDF
@@ -35,25 +37,30 @@ namespace LabFusion.Utilities {
 
         private static Action<HandPose> _onSoftGrabLoaded = null;
 
-        internal static void OnLateInitializeMelon() {
+        internal static void OnLateInitializeMelon()
+        {
             CreateSurfaceData();
             CreateTextFont();
         }
 
-        internal static void OnMainSceneInitialized() {
+        internal static void OnMainSceneInitialized()
+        {
             GetAllMixers();
             GetHandPose();
         }
 
         // Thanks to https://bonelab.thunderstore.io/package/Maranara/Mixer_Fixer/
-        private static void GetAllMixers() {
+        private static void GetAllMixers()
+        {
             if (SFXMixer != null && MusicMixer != null)
                 return;
 
             AudioMixerGroup[] groups = Resources.FindObjectsOfTypeAll<AudioMixerGroup>();
 
-            foreach (var group in groups) {
-                switch (group.name) {
+            foreach (var group in groups)
+            {
+                switch (group.name)
+                {
                     case "Music":
                         MusicMixer = group;
                         break;
@@ -73,7 +80,8 @@ namespace LabFusion.Utilities {
             _onSFXMixerLoaded = null;
         }
 
-        private static void GetHandPose() {
+        private static void GetHandPose()
+        {
             SoftGrabPose = RigData.RigReferences.RigManager.worldGripHandPose;
 
             if (SoftGrabPose != null)
@@ -82,48 +90,60 @@ namespace LabFusion.Utilities {
             _onSoftGrabLoaded = null;
         }
 
-        public static void HookOnMusicMixerLoaded(Action<AudioMixerGroup> action) {
-            if (MusicMixer != null) {
+        public static void HookOnMusicMixerLoaded(Action<AudioMixerGroup> action)
+        {
+            if (MusicMixer != null)
+            {
                 action?.Invoke(MusicMixer);
             }
-            else {
+            else
+            {
                 _onMusicMixerLoaded += action;
             }
         }
 
         public static void HookOnSFXMixerLoaded(Action<AudioMixerGroup> action)
         {
-            if (SFXMixer != null) {
+            if (SFXMixer != null)
+            {
                 action?.Invoke(SFXMixer);
             }
-            else {
+            else
+            {
                 _onSFXMixerLoaded += action;
             }
         }
 
-        public static void HookOnSoftGrabLoaded(Action<HandPose> action) {
-            if (SoftGrabPose != null) {
+        public static void HookOnSoftGrabLoaded(Action<HandPose> action)
+        {
+            if (SoftGrabPose != null)
+            {
                 action?.Invoke(SoftGrabPose);
             }
-            else {
+            else
+            {
                 _onSoftGrabLoaded += action;
             }
         }
 
-        private static void CreateTextFont() {
+        private static void CreateTextFont()
+        {
             // I don't want to use asset bundles in this mod.
             // Is this a bad method? Sure, but it only runs once.
             // So WHO CARES!
             var fonts = Resources.FindObjectsOfTypeAll<TMP_FontAsset>();
-            foreach (var font in fonts) {
-                if (font.name.ToLower().Contains(_targetFont)) {
+            foreach (var font in fonts)
+            {
+                if (font.name.ToLower().Contains(_targetFont))
+                {
                     Font = font;
                     break;
                 }
             }
 
             // Make sure we at least have a font
-            if (Font == null) {
+            if (Font == null)
+            {
 #if DEBUG
                 FusionLogger.Error($"Failed finding the {_targetFont} font! Defaulting to the first font in the game!");
 #endif
@@ -132,7 +152,8 @@ namespace LabFusion.Utilities {
             }
         }
 
-        private static void CreateSurfaceData() {
+        private static void CreateSurfaceData()
+        {
             BloodSurfaceData = ScriptableObject.CreateInstance<SurfaceData>();
             BloodSurfaceData.name = "Fusion Blood Surface";
             BloodSurfaceData.PenetrationResistance = 0.59f;
@@ -152,20 +173,24 @@ namespace LabFusion.Utilities {
             BloodSurfaceData.physicMaterial = physMaterial;
         }
 
-        internal static void SetupImpactProperties(RigManager rig) {
+        internal static void SetupImpactProperties(RigManager rig)
+        {
             var physRig = rig.physicsRig;
             var rigidbodies = physRig.GetComponentsInChildren<Rigidbody>(true);
 
-            for (var i = 0; i < rigidbodies.Length; i++) {
+            for (var i = 0; i < rigidbodies.Length; i++)
+            {
                 var rb = rigidbodies[i];
 
                 // Ignore specific rigidbodies
                 var go = rb.gameObject;
-                if (go == physRig.knee || go == physRig.feet) {
+                if (go == physRig.knee || go == physRig.feet)
+                {
                     continue;
                 }
 
-                if (i == 0) {
+                if (i == 0)
+                {
                     var impactManager = go.AddComponent<ImpactPropertiesManager>();
                     impactManager.surfaceData = BloodSurfaceData;
                     impactManager.DecalMeshObj = null;

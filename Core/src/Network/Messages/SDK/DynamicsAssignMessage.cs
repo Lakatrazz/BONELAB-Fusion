@@ -30,7 +30,8 @@ namespace LabFusion.Network
             writer.Write(length);
 
             // Write all metadata
-            for (var i = 0; i < length; i++) {
+            for (var i = 0; i < length; i++)
+            {
                 writer.Write(gamemodeMetadatas[i]);
             }
         }
@@ -46,7 +47,8 @@ namespace LabFusion.Network
 
             // Read all active metadata info
             gamemodeMetadatas = new FusionDictionary<string, string>[length];
-            for (var i = 0; i < length; i++) {
+            for (var i = 0; i < length; i++)
+            {
                 gamemodeMetadatas[i] = reader.ReadStringDictionary();
             }
         }
@@ -56,8 +58,10 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static DynamicsAssignData Create() {
-            return new DynamicsAssignData() {
+        public static DynamicsAssignData Create()
+        {
+            return new DynamicsAssignData()
+            {
                 moduleHandlerNames = ModuleMessageHandler.GetExistingTypeNames(),
                 gamemodeNames = GamemodeRegistration.GetExistingTypeNames(),
                 gamemodeMetadatas = GamemodeRegistration.GetExistingMetadata(),

@@ -10,8 +10,10 @@ using UnityEngine;
 
 namespace LabFusion.Extensions
 {
-    public static class GripExtensions {
-        public static void TryAutoHolster(this Grip grip, RigReferenceCollection collection) {
+    public static class GripExtensions
+    {
+        public static void TryAutoHolster(this Grip grip, RigReferenceCollection collection)
+        {
             if (!grip.HasHost)
                 return;
 
@@ -21,20 +23,23 @@ namespace LabFusion.Extensions
             if (!weaponSlot)
                 return;
 
-            for (var i = 0; i < collection.RigSlots.Length; i++) {
+            for (var i = 0; i < collection.RigSlots.Length; i++)
+            {
                 var slot = collection.RigSlots[i];
 
                 if (slot._slottedWeapon != null)
                     continue;
 
-                if ((slot.slotType & weaponSlot.slotType) != 0) {
+                if ((slot.slotType & weaponSlot.slotType) != 0)
+                {
                     slot.OnHandDrop(host);
                     break;
                 }
             }
         }
 
-        public static SerializedTransform GetRelativeHand(this GripPair pair) {
+        public static SerializedTransform GetRelativeHand(this GripPair pair)
+        {
             var handTransform = pair.hand.transform;
             var gripTransform = pair.grip.Host.GetTransform();
 
@@ -48,11 +53,12 @@ namespace LabFusion.Extensions
             {
                 var gripTransform = grip.Host.GetTransform();
 
-                hand.transform.SetPositionAndRotation(gripTransform.TransformPoint(transform.position.ToUnityVector3()), gripTransform.TransformRotation(transform.rotation.Expand().ToUnityQuaternion()));
+                hand.transform.SetPositionAndRotation(gripTransform.TransformPoint(transform.position.ToUnityVector3()), gripTransform.TransformRotation(transform.rotation.ToUnityQuaternion()));
             }
         }
 
-        public static void MoveIntoHand(this Grip grip, Hand hand) {
+        public static void MoveIntoHand(this Grip grip, Hand hand)
+        {
             var host = grip.Host.GetTransform();
             var handTarget = grip.SolveHandTarget(hand);
 
@@ -62,7 +68,8 @@ namespace LabFusion.Extensions
             host.position = worldHost.position;
             host.rotation = worldHost.rotation;
 
-            if (grip.HasRigidbody) {
+            if (grip.HasRigidbody)
+            {
                 var rb = grip.Host.Rb;
 
                 rb.velocity = hand.rb.velocity;
@@ -70,7 +77,8 @@ namespace LabFusion.Extensions
             }
         }
 
-        public static void TryAttach(this Grip grip, Hand hand, bool isInstant = false, SimpleTransform? targetInBase = null) {
+        public static void TryAttach(this Grip grip, Hand hand, bool isInstant = false, SimpleTransform? targetInBase = null)
+        {
             // Detach an existing grip
             hand.TryDetach();
 
@@ -78,7 +86,8 @@ namespace LabFusion.Extensions
             hand.GrabLock = false;
 
             var inventoryHand = InventoryHand.Cache.Get(hand.gameObject);
-            if (inventoryHand) {
+            if (inventoryHand)
+            {
                 inventoryHand.IgnoreUnlock();
             }
 
@@ -92,7 +101,8 @@ namespace LabFusion.Extensions
             grip.ValidateGripScore(hand, handTransform);
 
             // Modify the target grab point
-            if (targetInBase.HasValue) {
+            if (targetInBase.HasValue)
+            {
                 SetTargetInBase(grip, hand, targetInBase.Value.position, targetInBase.Value.rotation);
             }
 
@@ -101,12 +111,14 @@ namespace LabFusion.Extensions
             grip.OnGrabConfirm(hand, isInstant);
 
             // Re-apply the target grab point
-            if (targetInBase.HasValue) {
+            if (targetInBase.HasValue)
+            {
                 SetTargetInBase(grip, hand, targetInBase.Value.position, targetInBase.Value.rotation);
             }
         }
 
-        private static void SetTargetInBase(Grip grip, Hand hand, Vector3 position, Quaternion rotation) {
+        private static void SetTargetInBase(Grip grip, Hand hand, Vector3 position, Quaternion rotation)
+        {
             grip.SetTargetInBase(hand, position, rotation);
 
             var handState = grip.GetHandState(hand);
@@ -114,9 +126,11 @@ namespace LabFusion.Extensions
             handState.targetRotationInBase = rotation;
         }
 
-        public static void TryDetach(this Grip grip, Hand hand) {
+        public static void TryDetach(this Grip grip, Hand hand)
+        {
             // Make sure the hand is attached to this grip
-            if (hand.m_CurrentAttachedGO == grip.gameObject) {
+            if (hand.m_CurrentAttachedGO == grip.gameObject)
+            {
                 // Begin the initial detach
                 grip.ForceDetach(hand);
 

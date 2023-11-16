@@ -9,19 +9,24 @@ using MelonLoader;
 using LabFusion.Utilities;
 using LabFusion.Network;
 
-namespace LabFusion.SDK.Modules {
-    public static class ModuleHandler {
+namespace LabFusion.SDK.Modules
+{
+    public static class ModuleHandler
+    {
         internal static readonly List<Module> _loadedModules = new List<Module>();
 
-        internal static void Internal_HookAssemblies() {
+        internal static void Internal_HookAssemblies()
+        {
             AppDomain.CurrentDomain.AssemblyLoad += Internal_AssemblyLoad;
         }
 
-        internal static void Internal_UnhookAssemblies() {
+        internal static void Internal_UnhookAssemblies()
+        {
             AppDomain.CurrentDomain.AssemblyLoad -= Internal_AssemblyLoad;
         }
 
-        private static void Internal_AssemblyLoad(object sender, AssemblyLoadEventArgs args) {
+        private static void Internal_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
+        {
             LoadModule(args.LoadedAssembly);
         }
 
@@ -29,11 +34,14 @@ namespace LabFusion.SDK.Modules {
         /// Searches for a module in an assembly and attempts to load it.
         /// </summary>
         /// <param name="moduleAssembly"></param>
-        public static void LoadModule(Assembly moduleAssembly) {
-            if (moduleAssembly != null) {
+        public static void LoadModule(Assembly moduleAssembly)
+        {
+            if (moduleAssembly != null)
+            {
                 var moduleInfo = moduleAssembly.GetCustomAttribute<ModuleInfo>();
 
-                if (moduleInfo != null && moduleInfo.moduleType != null) {
+                if (moduleInfo != null && moduleInfo.moduleType != null)
+                {
                     ModuleMessageHandler.LoadHandlers(moduleAssembly);
 
                     Internal_SetupModule(moduleInfo);
@@ -41,8 +49,10 @@ namespace LabFusion.SDK.Modules {
             }
         }
 
-        private static void Internal_SetupModule(ModuleInfo info) {
-            if (Activator.CreateInstance(info.moduleType) is Module module) {
+        private static void Internal_SetupModule(ModuleInfo info)
+        {
+            if (Activator.CreateInstance(info.moduleType) is Module module)
+            {
                 Internal_PrintDescription(info);
 
                 _loadedModules.Add(module);
@@ -50,7 +60,8 @@ namespace LabFusion.SDK.Modules {
             }
         }
 
-        internal static void Internal_PrintDescription(ModuleInfo info) {
+        internal static void Internal_PrintDescription(ModuleInfo info)
+        {
             FusionLogger.Log("--==== Loaded Fusion Module ====--", info.color);
 
             FusionLogger.Log($"{info.name} - v{info.version}");

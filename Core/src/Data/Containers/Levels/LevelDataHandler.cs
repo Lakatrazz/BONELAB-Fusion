@@ -11,11 +11,14 @@ using LabFusion.Data;
 using LabFusion.Network;
 using BoneLib;
 
-namespace LabFusion.Data {
-    public abstract class LevelDataHandler {
+namespace LabFusion.Data
+{
+    public abstract class LevelDataHandler
+    {
         public virtual string LevelTitle => null;
 
-        protected virtual bool IsMatchingScene() {
+        protected virtual bool IsMatchingScene()
+        {
             if (string.IsNullOrEmpty(LevelTitle))
                 return true;
 
@@ -26,8 +29,10 @@ namespace LabFusion.Data {
         protected virtual void MainSceneInitialized() { }
         protected virtual void PlayerCatchup(ulong longId) { }
 
-        private static void OnSceneAwake() {
-            for (var i = 0; i < Handlers.Count; i++) {
+        private static void OnSceneAwake()
+        {
+            for (var i = 0; i < Handlers.Count; i++)
+            {
                 var handler = Handlers[i];
 
                 if (handler.IsMatchingScene())
@@ -35,8 +40,10 @@ namespace LabFusion.Data {
             }
         }
 
-        private static void OnMainSceneInitialized() {
-            for (var i = 0; i < Handlers.Count; i++) {
+        private static void OnMainSceneInitialized()
+        {
+            for (var i = 0; i < Handlers.Count; i++)
+            {
                 var handler = Handlers[i];
 
                 if (handler.IsMatchingScene())
@@ -44,13 +51,16 @@ namespace LabFusion.Data {
             }
         }
 
-        private static void OnPlayerCatchup(ulong longId) {
-            for (var i = 0; i < Handlers.Count; i++) {
+        private static void OnPlayerCatchup(ulong longId)
+        {
+            for (var i = 0; i < Handlers.Count; i++)
+            {
                 Handlers[i].PlayerCatchup(longId);
             }
         }
 
-        public static void OnInitializeMelon() {
+        public static void OnInitializeMelon()
+        {
             // Hook functions
             Hooking.OnLevelInitialized += (_) => { OnSceneAwake(); };
             MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;

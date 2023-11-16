@@ -5,27 +5,34 @@ using SLZ.Interaction;
 
 using System.Collections.Generic;
 
-namespace LabFusion.Data {
-    public class GrabbedGripList {
+namespace LabFusion.Data
+{
+    public class GrabbedGripList
+    {
         private readonly FusionDictionary<Grip, int> _grips;
 
         private PropSyncable _syncable;
 
-        public GrabbedGripList(PropSyncable syncable, int count = 32) {
+        public GrabbedGripList(PropSyncable syncable, int count = 32)
+        {
             _syncable = syncable;
             _grips = new FusionDictionary<Grip, int>(count, new UnityComparer());
         }
 
-        public void OnPushUpdate() {
+        public void OnPushUpdate()
+        {
             // Check for seats
             List<Grip> gripsToRemove = null;
 
-            foreach (var grip in _grips.Keys) {
+            foreach (var grip in _grips.Keys)
+            {
                 var hands = grip.attachedHands;
-                for (var i = 0; i < hands.Count; i++) {
+                for (var i = 0; i < hands.Count; i++)
+                {
                     var hand = hands[i];
 
-                    if (hand.manager.activeSeat) {
+                    if (hand.manager.activeSeat)
+                    {
                         gripsToRemove ??= new List<Grip>();
 
                         gripsToRemove.Add(grip);
@@ -35,8 +42,10 @@ namespace LabFusion.Data {
             }
 
             // Remove all grips
-            if (gripsToRemove != null) {
-                for (var i = 0; i < gripsToRemove.Count; i++) {
+            if (gripsToRemove != null)
+            {
+                for (var i = 0; i < gripsToRemove.Count; i++)
+                {
                     _grips.Remove(gripsToRemove[i]);
                 }
             }
@@ -46,13 +55,16 @@ namespace LabFusion.Data {
                 _syncable.IsHeld = false;
         }
 
-        public void OnGripAttach(Hand hand, Grip grip) {
+        public void OnGripAttach(Hand hand, Grip grip)
+        {
             // Make sure the hand wasn't already attached
             if (grip.attachedHands.Has(hand))
                 return;
 
-            if (!hand.manager.activeSeat) {
-                if (!_grips.ContainsKey(grip)) {
+            if (!hand.manager.activeSeat)
+            {
+                if (!_grips.ContainsKey(grip))
+                {
                     _grips.Add(grip, 0);
                 }
 
@@ -60,13 +72,15 @@ namespace LabFusion.Data {
                 _syncable.IsHeld = true;
             }
         }
-        
-        public void OnGripDetach(Hand hand, Grip grip) {
+
+        public void OnGripDetach(Hand hand, Grip grip)
+        {
             // Make sure the hand was actually attached when detaching
             if (!grip.attachedHands.Has(hand))
                 return;
 
-            if (_grips.ContainsKey(grip)) {
+            if (_grips.ContainsKey(grip))
+            {
                 _grips[grip]--;
 
                 if (_grips[grip] <= 0)

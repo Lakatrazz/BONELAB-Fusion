@@ -10,16 +10,20 @@ using UnityEngine;
 
 namespace LabFusion.Syncables
 {
-    public abstract class PropComponentArrayExtender<T> : IPropExtender where T : Component {
+    public abstract class PropComponentArrayExtender<T> : IPropExtender where T : Component
+    {
         public PropSyncable PropSyncable { get; set; }
-        
+
         public T[] Components;
 
-        public bool ValidateExtender(PropSyncable syncable) {
+        public bool ValidateExtender(PropSyncable syncable)
+        {
             Components = syncable.GameObject.GetComponentsInChildren<T>(true);
 
-            if (Components.Length > 0) {
-                foreach (var comp in Components) {
+            if (Components.Length > 0)
+            {
+                foreach (var comp in Components)
+                {
                     RemoveFromCache(comp);
                     AddToCache(comp, syncable);
                     PropSyncable = syncable;
@@ -30,22 +34,27 @@ namespace LabFusion.Syncables
             return false;
         }
 
-        public void OnCleanup() {
-            foreach (var comp in Components) {
+        public void OnCleanup()
+        {
+            foreach (var comp in Components)
+            {
                 if (comp != null)
                     RemoveFromCache(comp);
             }
         }
 
-        public byte? GetIndex(T component) {
-            for (byte i = 0; i < Components.Length; i++) {
+        public byte? GetIndex(T component)
+        {
+            for (byte i = 0; i < Components.Length; i++)
+            {
                 if (Components[i] == component)
                     return i;
             }
             return null;
         }
 
-        public T GetComponent(byte index) {
+        public T GetComponent(byte index)
+        {
             if (Components != null && Components.Length > index)
                 return Components[index];
             return null;

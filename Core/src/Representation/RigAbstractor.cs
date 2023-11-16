@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Representation {
+namespace LabFusion.Representation
+{
     /// <summary>
     /// Helper class for abstracting synced transforms between rigs for easy updating.
     /// </summary>
@@ -17,7 +18,8 @@ namespace LabFusion.Representation {
         public const int TransformSyncCount = 5;
         public const int GameworldRigTransformCount = 10;
 
-        public static Transform GetSmoothTurnTransform(this RigManager manager) {
+        public static Transform GetSmoothTurnTransform(this RigManager manager)
+        {
             return manager.remapHeptaRig.transform;
         }
 

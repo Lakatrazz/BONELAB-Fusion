@@ -10,12 +10,14 @@ using System.Xml.Linq;
 
 namespace LabFusion.Data
 {
-    public sealed class Contact {
+    public sealed class Contact
+    {
         public ulong id;
         public string username;
         public float volume;
 
-        public XElement CreateElement() {
+        public XElement CreateElement()
+        {
             XElement element = new(nameof(Contact));
 
             element.SetAttributeValue(nameof(id), id);
@@ -25,30 +27,36 @@ namespace LabFusion.Data
             return element;
         }
 
-        public Contact(PlayerId id) {
+        public Contact(PlayerId id)
+        {
             Update(id);
             volume = 1f;
         }
 
-        public void Update(PlayerId id) {
+        public void Update(PlayerId id)
+        {
             this.id = id;
             username = id.GetMetadata(MetadataHelper.UsernameKey);
         }
 
-        public Contact(XElement element) {
+        public Contact(XElement element)
+        {
             id = 0;
             username = string.Empty;
             volume = 1f;
 
-            if (element.TryGetAttribute(nameof(id), out var rawId)) {
+            if (element.TryGetAttribute(nameof(id), out var rawId))
+            {
                 ulong.TryParse(rawId, out id);
             }
 
-            if (element.TryGetAttribute(nameof(username), out var rawUser)) {
+            if (element.TryGetAttribute(nameof(username), out var rawUser))
+            {
                 username = rawUser;
             }
 
-            if (element.TryGetAttribute(nameof(volume), out var rawVolume)) { 
+            if (element.TryGetAttribute(nameof(volume), out var rawVolume))
+            {
                 float.TryParse(rawVolume, out volume);
             }
         }
@@ -71,8 +79,10 @@ namespace LabFusion.Data
             _contacts.Clear();
 
             _file = new XMLFile(_fileName, _rootName);
-            _file.ReadFile((d) => {
-                d.Descendants(nameof(Contact)).ForEach((element) => {
+            _file.ReadFile((d) =>
+            {
+                d.Descendants(nameof(Contact)).ForEach((element) =>
+                {
                     _contacts.Add(new Contact(element));
                 });
             });
@@ -82,19 +92,23 @@ namespace LabFusion.Data
         {
             List<object> entries = new();
 
-            foreach (var contact in Contacts) {
+            foreach (var contact in Contacts)
+            {
                 entries.Add(contact.CreateElement());
             }
 
             _file.WriteFile(entries);
         }
 
-        public static Contact GetContact(PlayerId id) {
+        public static Contact GetContact(PlayerId id)
+        {
             Contact contact;
 
-            for (var i = 0; i < Contacts.Count; i++) {
+            for (var i = 0; i < Contacts.Count; i++)
+            {
                 contact = Contacts[i];
-                if (contact.id == id) {
+                if (contact.id == id)
+                {
                     contact.Update(id);
                     return contact;
                 }
@@ -104,11 +118,14 @@ namespace LabFusion.Data
             return contact;
         }
 
-        public static void UpdateContact(Contact contact) {
+        public static void UpdateContact(Contact contact)
+        {
             bool updated = false;
 
-            for (var i = 0; i < Contacts.Count; i++) {
-                if (Contacts[i].id == contact.id) {
+            for (var i = 0; i < Contacts.Count; i++)
+            {
+                if (Contacts[i].id == contact.id)
+                {
                     _contacts[i] = contact;
                     updated = true;
                     break;

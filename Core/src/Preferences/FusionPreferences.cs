@@ -15,9 +15,12 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Preferences {
-    public static class FusionPreferences {
-        public class ServerSettings {
+namespace LabFusion.Preferences
+{
+    public static class FusionPreferences
+    {
+        public class ServerSettings
+        {
             // General settings
             public IFusionPref<bool> NametagsEnabled;
             public IFusionPref<bool> VoicechatEnabled;
@@ -49,7 +52,8 @@ namespace LabFusion.Preferences {
 
             public IFusionPref<PermissionLevel> Teleportation;
 
-            public static ServerSettings CreateMelonPrefs() {
+            public static ServerSettings CreateMelonPrefs()
+            {
                 // Server settings
                 var settings = new ServerSettings
                 {
@@ -89,7 +93,8 @@ namespace LabFusion.Preferences {
             }
         }
 
-        public struct ClientSettings {
+        public struct ClientSettings
+        {
             // Selected network layer
             public static FusionPref<string> NetworkLayerTitle { get; internal set; }
             public static FusionPref<int> ProxyPort { get; internal set; }
@@ -126,8 +131,10 @@ namespace LabFusion.Preferences {
 
         internal static Action OnFusionPreferencesLoaded;
 
-        internal static void SendServerSettings() {
-            if (NetworkInfo.HasServer && NetworkInfo.IsServer) {
+        internal static void SendServerSettings()
+        {
+            if (NetworkInfo.HasServer && NetworkInfo.IsServer)
+            {
                 using var writer = FusionWriter.Create();
                 using var data = ServerSettingsData.Create(SerializedServerSettings.Create());
                 writer.Write(data);
@@ -137,8 +144,10 @@ namespace LabFusion.Preferences {
             }
         }
 
-        internal static void SendServerSettings(ulong longId) {
-            if (NetworkInfo.HasServer && NetworkInfo.IsServer) {
+        internal static void SendServerSettings(ulong longId)
+        {
+            if (NetworkInfo.HasServer && NetworkInfo.IsServer)
+            {
                 using var writer = FusionWriter.Create(ServerSettingsData.Size);
                 using var data = ServerSettingsData.Create(SerializedServerSettings.Create());
                 writer.Write(data);
@@ -148,8 +157,10 @@ namespace LabFusion.Preferences {
             }
         }
 
-        internal static void SendClientSettings() {
-            if (NetworkInfo.HasServer) {
+        internal static void SendClientSettings()
+        {
+            if (NetworkInfo.HasServer)
+            {
                 using var writer = FusionWriter.Create(PlayerSettingsData.Size);
                 using var data = PlayerSettingsData.Create(PlayerIdManager.LocalSmallId, SerializedPlayerSettings.Create());
                 writer.Write(data);
@@ -159,7 +170,8 @@ namespace LabFusion.Preferences {
             }
         }
 
-        internal static void OnInitializePreferences() {
+        internal static void OnInitializePreferences()
+        {
             // Create preferences
             prefCategory = MelonPreferences.CreateCategory("BONELAB Fusion");
 
@@ -192,14 +204,16 @@ namespace LabFusion.Preferences {
             prefCategory.SaveToFile(false);
         }
 
-        internal static void OnPrepareBoneMenuCategory() {
+        internal static void OnPrepareBoneMenuCategory()
+        {
             // We create this here so that its one of the first categories
             fusionCategory = MenuManager.CreateCategory("BONELAB Fusion", Color.white);
         }
 
         private static int _lastIndex;
 
-        internal static void OnCreateBoneMenu() {
+        internal static void OnCreateBoneMenu()
+        {
             // Create category for changing network layer
             var networkLayerManager = fusionCategory.CreateCategory("Network Layer Manager", Color.yellow);
             networkLayerManager.CreateFunctionElement("Players need to be on the same layer!", Color.yellow, null);
@@ -207,9 +221,10 @@ namespace LabFusion.Preferences {
             _lastIndex = NetworkLayer.SupportedLayers.IndexOf(NetworkLayerDeterminer.LoadedLayer);
 
             networkLayerManager.CreateFunctionElement($"Active Layer: {NetworkLayerDeterminer.LoadedTitle}", Color.white, null);
-            
+
             var targetPanel = networkLayerManager.CreateSubPanel($"Target Layer: {ClientSettings.NetworkLayerTitle.GetValue()}", Color.white);
-            targetPanel.CreateFunctionElement("Cycle", Color.white, () => {
+            targetPanel.CreateFunctionElement("Cycle", Color.white, () =>
+            {
                 int count = NetworkLayer.SupportedLayers.Count;
                 if (count <= 0)
                     return;
@@ -220,7 +235,8 @@ namespace LabFusion.Preferences {
 
                 ClientSettings.NetworkLayerTitle.SetValue(NetworkLayer.SupportedLayers[_lastIndex].Title);
             });
-            ClientSettings.NetworkLayerTitle.OnValueChanged += (v) => {
+            ClientSettings.NetworkLayerTitle.OnValueChanged += (v) =>
+            {
                 targetPanel.SetName($"Target Layer: {v}");
             };
 
@@ -230,7 +246,8 @@ namespace LabFusion.Preferences {
             InternalLayerHelpers.OnSetupBoneMenuLayer(fusionCategory);
         }
 
-        internal static void OnPreferencesLoaded() {
+        internal static void OnPreferencesLoaded()
+        {
             OnFusionPreferencesLoaded?.Invoke();
         }
     }

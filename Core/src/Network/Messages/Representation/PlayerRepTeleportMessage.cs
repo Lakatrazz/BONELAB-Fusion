@@ -58,18 +58,16 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (var reader = FusionReader.Create(bytes)) {
-                using (var data = reader.ReadFusionSerializable<PlayerRepTeleportData>()) {
-                    // Only teleport if we aren't the server
-                    if (!isServerHandled && data.teleportedUser == PlayerIdManager.LocalSmallId)
-                    {
-                        // Teleport the player
-                        FusionPlayer.Teleport(data.position, Vector3Extensions.forward);
-                    }
-                    else
-                        throw new ExpectedClientException();
-                }
+            using var reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<PlayerRepTeleportData>();
+            // Only teleport if we aren't the server
+            if (!isServerHandled && data.teleportedUser == PlayerIdManager.LocalSmallId)
+            {
+                // Teleport the player
+                FusionPlayer.Teleport(data.position, Vector3Extensions.forward);
             }
+            else
+                throw new ExpectedClientException();
         }
     }
 }

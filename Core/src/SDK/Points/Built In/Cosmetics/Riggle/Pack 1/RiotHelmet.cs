@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class RiotHelmet : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class RiotHelmet : AccessoryItem
+    {
         public override string Title => "Riot Helmet";
 
         public override string Author => BitEconomy.RiggleAuthor;

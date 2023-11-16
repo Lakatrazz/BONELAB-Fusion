@@ -13,34 +13,41 @@ using UnityEngine;
 namespace LabFusion.MonoBehaviours
 {
     [RegisterTypeInIl2Cpp]
-    public class NotifyOnEnable : MonoBehaviour {
+    public class NotifyOnEnable : MonoBehaviour
+    {
         public NotifyOnEnable(IntPtr intPtr) : base(intPtr) { }
 
         private Action _hook = null;
         private bool _isEnabled = false;
 
         [HideFromIl2Cpp]
-        public void Hook(Action hook) {
-            if (_isEnabled) {
+        public void Hook(Action hook)
+        {
+            if (_isEnabled)
+            {
                 hook();
             }
-            else {
+            else
+            {
                 _hook += hook;
             }
         }
 
-        public void OnEnable() {
+        public void OnEnable()
+        {
             _isEnabled = true;
 
             _hook?.Invoke();
             _hook = null;
         }
 
-        public void OnDisable() {
+        public void OnDisable()
+        {
             _isEnabled = false;
         }
 
-        public void OnDestroy() {
+        public void OnDestroy()
+        {
             _hook = null;
         }
     }

@@ -142,7 +142,8 @@ namespace LabFusion.Network
             if (NetworkInfo.IsServer && isServerHandled)
             {
                 // Make sure we have a constrainer server side (and it's being held)
-                if (hasConstrainer && constrainer.IsHeld && constrainer.HasExtender<ConstrainerExtender>()) {
+                if (hasConstrainer && constrainer.IsHeld && constrainer.HasExtender<ConstrainerExtender>())
+                {
                     // Recreate the message so we can assign server-side sync ids
                     using var writer = FusionWriter.Create();
                     data.point1Id = SyncManager.AllocateSyncID();
@@ -166,7 +167,8 @@ namespace LabFusion.Network
                         return;
                 }
 
-                if (ConstrainerUtilities.HasConstrainer) {
+                if (ConstrainerUtilities.HasConstrainer)
+                {
                     // Get the synced constrainer
                     // This isn't required for client constraint creation, but is used for SFX and VFX
                     Constrainer syncedComp = null;
@@ -201,8 +203,8 @@ namespace LabFusion.Network
                     Quaternion go2Rot = tran2.rotation;
 
                     // Force positions
-                    tran1.SetPositionAndRotation(data.tracker1Transform.position.ToUnityVector3(), data.tracker1Transform.rotation.Expand().ToUnityQuaternion());
-                    tran2.SetPositionAndRotation(data.tracker2Transform.position.ToUnityVector3(), data.tracker2Transform.rotation.Expand().ToUnityQuaternion());
+                    tran1.SetPositionAndRotation(data.tracker1Transform.position.ToUnityVector3(), data.tracker1Transform.rotation.ToUnityQuaternion());
+                    tran2.SetPositionAndRotation(data.tracker2Transform.position.ToUnityVector3(), data.tracker2Transform.rotation.ToUnityQuaternion());
 
                     // Create the constraint
                     ConstrainerPatches.IsReceivingConstraints = true;
@@ -223,16 +225,20 @@ namespace LabFusion.Network
                     tran2.SetPositionAndRotation(go2Pos, go2Rot);
 
                     // Events when the constrainer is from another player
-                    if (data.smallId != PlayerIdManager.LocalSmallId) {
-                        if (hasConstrainer) {
+                    if (data.smallId != PlayerIdManager.LocalSmallId)
+                    {
+                        if (hasConstrainer)
+                        {
                             // Play sound
                             syncedComp.sfx.GravLocked();
                             syncedComp.sfx.Release();
                         }
 
                         // Check for host constraint achievement
-                        if (data.smallId == 0 && AchievementManager.TryGetAchievement<ClassStruggle>(out var achievement)) {
-                            if (!achievement.IsComplete && (tran1.IsPartOfSelf() || tran2.IsPartOfSelf())) {
+                        if (data.smallId == 0 && AchievementManager.TryGetAchievement<ClassStruggle>(out var achievement))
+                        {
+                            if (!achievement.IsComplete && (tran1.IsPartOfSelf() || tran2.IsPartOfSelf()))
+                            {
                                 achievement.IncrementTask();
                             }
                         }

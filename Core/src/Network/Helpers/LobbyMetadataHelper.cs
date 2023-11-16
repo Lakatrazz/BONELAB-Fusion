@@ -13,8 +13,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace LabFusion.Network {
-    public struct LobbyMetadataInfo {
+namespace LabFusion.Network
+{
+    public struct LobbyMetadataInfo
+    {
         // Lobby info
         public ulong LobbyId;
         public string LobbyOwner;
@@ -43,11 +45,13 @@ namespace LabFusion.Network {
 
         public bool ClientHasLevel;
 
-        public static LobbyMetadataInfo Create() {
+        public static LobbyMetadataInfo Create()
+        {
             var playerList = new PlayerList();
             playerList.ReadPlayerList();
 
-            return new LobbyMetadataInfo() {
+            return new LobbyMetadataInfo()
+            {
                 // Lobby info
                 LobbyId = PlayerIdManager.LocalLongId,
                 LobbyOwner = PlayerIdManager.LocalUsername,
@@ -75,7 +79,8 @@ namespace LabFusion.Network {
             };
         }
 
-        public void Write(INetworkLobby lobby) {
+        public void Write(INetworkLobby lobby)
+        {
             // Lobby info
             lobby.SetMetadata(nameof(LobbyId), LobbyId.ToString());
             lobby.SetMetadata(nameof(LobbyOwner), LobbyOwner);
@@ -105,8 +110,10 @@ namespace LabFusion.Network {
             lobby.WriteKeyCollection();
         }
 
-        public static LobbyMetadataInfo Read(INetworkLobby lobby) {
-            var info = new LobbyMetadataInfo() {
+        public static LobbyMetadataInfo Read(INetworkLobby lobby)
+        {
+            var info = new LobbyMetadataInfo()
+            {
                 // Lobby info
                 LobbyOwner = lobby.GetMetadata(nameof(LobbyOwner)),
                 LobbyName = lobby.GetMetadata(nameof(LobbyName)),
@@ -125,22 +132,27 @@ namespace LabFusion.Network {
                 IsGamemodeRunning = lobby.GetMetadata(nameof(IsGamemodeRunning)) == bool.TrueString,
             };
             // Check if we have a player list
-            if (lobby.TryGetMetadata(nameof(PlayerList), out var playerXML)) {
+            if (lobby.TryGetMetadata(nameof(PlayerList), out var playerXML))
+            {
                 info.PlayerList = new PlayerList();
                 info.PlayerList.ReadDocument(XDocument.Parse(playerXML));
             }
-            else {
-                info.PlayerList = new() {
+            else
+            {
+                info.PlayerList = new()
+                {
                     players = new PlayerList.PlayerInfo[0]
                 };
             }
 
             // Check if we have the level the host has
-            if (lobby.TryGetMetadata(nameof(LevelBarcode), out var barcode)) {
+            if (lobby.TryGetMetadata(nameof(LevelBarcode), out var barcode))
+            {
                 info.LevelBarcode = barcode;
                 info.ClientHasLevel = FusionSceneManager.HasLevel(barcode);
             }
-            else {
+            else
+            {
                 // Incase the server is on a slightly older version without this feature, we just return true
                 info.ClientHasLevel = true;
             }
@@ -172,12 +184,16 @@ namespace LabFusion.Network {
             return info;
         }
 
-        public Action CreateJoinDelegate(INetworkLobby lobby) {
-            if (!ClientHasLevel) {
+        public Action CreateJoinDelegate(INetworkLobby lobby)
+        {
+            if (!ClientHasLevel)
+            {
                 string levelName = LevelName;
 
-                return () => {
-                    FusionNotifier.Send(new FusionNotification() {
+                return () =>
+                {
+                    FusionNotifier.Send(new FusionNotification()
+                    {
                         title = "Failed to Join",
                         showTitleOnPopup = true,
                         isMenuItem = false,
@@ -192,16 +208,21 @@ namespace LabFusion.Network {
         }
     }
 
-    public static class LobbyMetadataHelper {
-        public static void WriteInfo(INetworkLobby lobby) {
+    public static class LobbyMetadataHelper
+    {
+        public static void WriteInfo(INetworkLobby lobby)
+        {
             LobbyMetadataInfo.Create().Write(lobby);
         }
 
-        public static LobbyMetadataInfo ReadInfo(INetworkLobby lobby) {
-            try {
+        public static LobbyMetadataInfo ReadInfo(INetworkLobby lobby)
+        {
+            try
+            {
                 return LobbyMetadataInfo.Read(lobby);
             }
-            catch {
+            catch
+            {
                 return new LobbyMetadataInfo() { HasServerOpen = false };
             }
         }

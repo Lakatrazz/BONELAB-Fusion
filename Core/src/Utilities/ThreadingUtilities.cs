@@ -7,17 +7,24 @@ using System.Threading.Tasks;
 
 using UnhollowerBaseLib;
 
-namespace LabFusion.Utilities {
-    public static class ThreadingUtilities {
+namespace LabFusion.Utilities
+{
+    public static class ThreadingUtilities
+    {
         public static readonly ConcurrentQueue<Action> SynchronousEvents = new();
 
-        internal static void Internal_OnUpdate() {
-            if (SynchronousEvents.Count > 0) {
-                while (SynchronousEvents.TryDequeue(out Action action)) {
-                    try {
+        internal static void Internal_OnUpdate()
+        {
+            if (SynchronousEvents.Count > 0)
+            {
+                while (SynchronousEvents.TryDequeue(out Action action))
+                {
+                    try
+                    {
                         action();
                     }
-                    catch (Exception e) {
+                    catch (Exception e)
+                    {
                         FusionLogger.LogException("executing CompleteEvent", e);
                     }
                 }
@@ -28,7 +35,8 @@ namespace LabFusion.Utilities {
         /// Enqueues a complete event for a thread to be ran synchronously.
         /// </summary>
         /// <param name="action"></param>
-        public static void RunSynchronously(Action action) {
+        public static void RunSynchronously(Action action)
+        {
             if (action != null)
                 SynchronousEvents.Enqueue(action);
         }
@@ -37,7 +45,8 @@ namespace LabFusion.Utilities {
         /// Registers the active domain in il2cpp in order to prevent GC errors.
         /// <para>This should be called when the current thread is changed and you want to use IL2 objects.</para>
         /// </summary>
-        public static void IL2PrepareThread(out IntPtr thread) {
+        public static void IL2PrepareThread(out IntPtr thread)
+        {
             thread = IL2CPP.il2cpp_thread_attach(IL2CPP.il2cpp_domain_get());
         }
 
@@ -54,7 +63,8 @@ namespace LabFusion.Utilities {
         /// Detaches the active domain from il2cpp.
         /// <para>This should be called in a thread after you are done using IL2 objects.</para>
         /// </summary>
-        public static void IL2DetachThread(in IntPtr thread) {
+        public static void IL2DetachThread(in IntPtr thread)
+        {
             IL2CPP.il2cpp_thread_detach(thread);
         }
     }

@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class SignalingSpiral : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class SignalingSpiral : AccessoryItem
+    {
         public override string Title => "Signaling Spiral";
 
         public override string Author => BitEconomy.BaBaAuthor;

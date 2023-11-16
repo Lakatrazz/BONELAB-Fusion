@@ -34,19 +34,23 @@ namespace LabFusion.SDK.Achievements
             MultiplayerHooking.OnPlayerAction -= OnPlayerAction;
         }
 
-        protected override void OnComplete() {
+        protected override void OnComplete()
+        {
             FusionAudio.Play2D(FusionContentLoader.BouncingStrong, 0.6f);
         }
 
-        private void OnPlayerAction(PlayerId player, PlayerActionType type, PlayerId otherPlayer) {
+        private void OnPlayerAction(PlayerId player, PlayerActionType type, PlayerId otherPlayer)
+        {
             // Make sure there's other players
             if (!PlayerIdManager.HasOtherPlayers)
                 return;
 
             // Make sure this is us, and that we jumped
-            if (player.IsSelf && type == PlayerActionType.JUMP) {
+            if (player.IsSelf && type == PlayerActionType.JUMP)
+            {
                 // Check current avatar
-                if (RigData.RigAvatarId == CommonBarcodes.STRONG_BARCODE) {
+                if (RigData.RigAvatarId == CommonBarcodes.STRONG_BARCODE)
+                {
                     IncrementTask();
                 }
             }

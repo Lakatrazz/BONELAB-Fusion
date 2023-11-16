@@ -58,29 +58,25 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<PuppetMasterKillData>();
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
             {
-                using (var data = reader.ReadFusionSerializable<PuppetMasterKillData>())
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+            }
+            else
+            {
+                if (SyncManager.TryGetSyncable<PropSyncable>(data.puppetId, out var syncable) && syncable.TryGetExtender<PuppetMasterExtender>(out var extender))
                 {
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled) {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-                        }
-                    }
-                    else
-                    {
-                        if (SyncManager.TryGetSyncable<PropSyncable>(data.puppetId, out var syncable) && syncable.TryGetExtender<PuppetMasterExtender>(out var extender))
-                        {
-                            // Save the most recent killed NPC
-                            PuppetMasterExtender.LastKilled = syncable;
+                    // Save the most recent killed NPC
+                    PuppetMasterExtender.LastKilled = syncable;
 
-                            // Kill the puppet
-                            PuppetMasterPatches.IgnorePatches = true;
-                            extender.Component.Kill();
-                            PuppetMasterPatches.IgnorePatches = false;
-                        }
-                    }
+                    // Kill the puppet
+                    PuppetMasterPatches.IgnorePatches = true;
+                    extender.Component.Kill();
+                    PuppetMasterPatches.IgnorePatches = false;
                 }
             }
         }

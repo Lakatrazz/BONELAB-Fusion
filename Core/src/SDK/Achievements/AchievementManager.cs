@@ -10,7 +10,8 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using UnityEngine;
 
-namespace LabFusion.SDK.Achievements {
+namespace LabFusion.SDK.Achievements
+{
     public static class AchievementManager
     {
         public static void LoadAchievements(Assembly assembly)
@@ -34,7 +35,8 @@ namespace LabFusion.SDK.Achievements {
                 Achievements.Add(achievement);
                 AchievementLookup.Add(achievement.Barcode, achievement);
 
-                if (AchievementSaveManager.Pointers.TryGetValue(achievement.Barcode, out var pointer)) {
+                if (AchievementSaveManager.Pointers.TryGetValue(achievement.Barcode, out var pointer))
+                {
                     achievement.Unpack(XElement.Parse(pointer.data));
                 }
 
@@ -53,29 +55,37 @@ namespace LabFusion.SDK.Achievements {
             return AchievementLookup.TryGetValue(barcode, out achievement);
         }
 
-        public static bool TryGetAchievement<T>(out T achievement) where T : Achievement {
-            foreach (var found in Achievements) {
-                if (found is T result) {
+        public static bool TryGetAchievement<T>(out T achievement) where T : Achievement
+        {
+            foreach (var found in Achievements)
+            {
+                if (found is T result)
+                {
                     achievement = result;
                     return true;
                 }
             }
-            
+
             achievement = null;
             return false;
         }
 
-        public static void IncrementAchievements<T>() where T : Achievement {
-            foreach (var achievement in GetAchievements<T>()) {
+        public static void IncrementAchievements<T>() where T : Achievement
+        {
+            foreach (var achievement in GetAchievements<T>())
+            {
                 achievement.IncrementTask();
             }
         }
 
-        public static List<T> GetAchievements<T>() where T : Achievement {
+        public static List<T> GetAchievements<T>() where T : Achievement
+        {
             List<T> list = new();
 
-            foreach (var found in Achievements) {
-                if (found is T result) {
+            foreach (var found in Achievements)
+            {
+                if (found is T result)
+                {
                     list.Add(result);
                 }
             }
@@ -84,15 +94,18 @@ namespace LabFusion.SDK.Achievements {
             return list;
         }
 
-        public static bool IsCompleted() {
+        public static bool IsCompleted()
+        {
             return GetAchievementProgress() >= 1f;
         }
 
-        public static float GetAchievementProgress() {
+        public static float GetAchievementProgress()
+        {
             int totalAchievements = 0;
             int completedAchievements = 0;
 
-            foreach (var achievement in LoadedAchievements) {
+            foreach (var achievement in LoadedAchievements)
+            {
                 // Ignore redacted achievements
                 if (achievement.Redacted)
                     continue;
@@ -107,7 +120,8 @@ namespace LabFusion.SDK.Achievements {
             return ManagedMathf.Clamp01((float)completedAchievements / (float)totalAchievements);
         }
 
-        public static IReadOnlyList<Achievement> GetSortedAchievements() {
+        public static IReadOnlyList<Achievement> GetSortedAchievements()
+        {
             var list = LoadedAchievements.OrderBy(a => a.IsComplete).ThenBy(a => a.BitReward).ToList();
             list.RemoveAll((a) => a.Redacted && !a.IsComplete);
             return list;

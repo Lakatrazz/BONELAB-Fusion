@@ -14,17 +14,21 @@ using LabFusion.Utilities;
 
 using SLZ.Rig;
 
-namespace LabFusion.Patching {
+namespace LabFusion.Patching
+{
     [HarmonyPatch(typeof(RemapRig))]
-    public static class RemapRigPatches {
+    public static class RemapRigPatches
+    {
         private static bool _wasChargingInput = false;
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(RemapRig.JumpCharge))]
         public static void JumpCharge(RemapRig __instance, float deltaTime, bool chargeInput, bool __state)
         {
-            if (NetworkInfo.HasServer && __instance.manager.IsSelf()) {
-                if (_wasChargingInput && !chargeInput) {
+            if (NetworkInfo.HasServer && __instance.manager.IsSelf())
+            {
+                if (_wasChargingInput && !chargeInput)
+                {
                     PlayerSender.SendPlayerAction(PlayerActionType.JUMP);
                 }
 

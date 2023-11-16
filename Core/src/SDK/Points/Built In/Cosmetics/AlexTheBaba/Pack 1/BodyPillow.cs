@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class BodyPillow : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class BodyPillow : AccessoryItem
+    {
         public override string Title => "Null Pillow";
 
         public override string Author => BitEconomy.BaBaAuthor;

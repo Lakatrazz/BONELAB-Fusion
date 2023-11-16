@@ -29,10 +29,12 @@ namespace LabFusion.MarrowIntegration
 
         public void ClearInventory()
         {
-            if (RigData.HasPlayer && NetworkInfo.HasServer) {
+            if (RigData.HasPlayer && NetworkInfo.HasServer)
+            {
                 var slots = RigData.RigReferences.RigSlots;
 
-                for (var i = 0; i < slots.Length; i++) {
+                for (var i = 0; i < slots.Length; i++)
+                {
                     var slot = slots[i];
 
                     if (!slot._slottedWeapon)
@@ -43,7 +45,8 @@ namespace LabFusion.MarrowIntegration
 
                     var assetPoolee = AssetPoolee.Cache.Get(host.GetHostGameObject());
 
-                    if (assetPoolee != null) {
+                    if (assetPoolee != null)
+                    {
                         var syncable = PropSyncable.Cache.Get(assetPoolee.gameObject);
 
                         if (syncable != null)

@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class PartyHat : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class PartyHat : AccessoryItem
+    {
         public override string Title => "Party Hat";
 
         public override string Author => BitEconomy.BaBaAuthor;

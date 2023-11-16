@@ -6,18 +6,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabFusion.Network {
+namespace LabFusion.Network
+{
     /// <summary>
     /// A set of variables for Network Lobbies that should never change.
     /// </summary>
-    public static class LobbyConstants {
+    public static class LobbyConstants
+    {
         private const string _internalPrefix = "BONELAB_FUSION_";
         public const string HasServerOpenKey = _internalPrefix + "HasServerOpen";
 
         public const string KeyCollectionKey = _internalPrefix + "KeyCollection";
     }
 
-    public interface INetworkLobby {
+    public interface INetworkLobby
+    {
         /// <summary>
         /// Writes a list of all keys to the metadata.
         /// </summary>
@@ -57,7 +60,8 @@ namespace LabFusion.Network {
     {
         private readonly List<string> _keyCollection = new();
 
-        public void WriteKeyCollection() {
+        public void WriteKeyCollection()
+        {
             SetMetadata(LobbyConstants.KeyCollectionKey, _keyCollection.Contract());
         }
 
@@ -65,7 +69,8 @@ namespace LabFusion.Network {
         /// Saves the key to the key collection. Should be called on every SetMetadata.
         /// </summary>
         /// <param name="key"></param>
-        protected void SaveKey(string key) {
+        protected void SaveKey(string key)
+        {
             // Don't save the key collection
             if (key == LobbyConstants.KeyCollectionKey)
                 return;

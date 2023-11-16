@@ -17,7 +17,8 @@ namespace LabFusion.MarrowIntegration
     [AddComponentMenu("BONELAB Fusion/Cosmetics/Marrow Cosmetic Eye Left")]
     [DisallowMultipleComponent]
 #endif
-    public sealed class MarrowCosmeticEyeLeft : MarrowCosmeticPoint {
+    public sealed class MarrowCosmeticEyeLeft : MarrowCosmeticPoint
+    {
 #if MELONLOADER
         public MarrowCosmeticEyeLeft(IntPtr intPtr) : base(intPtr) { }
 

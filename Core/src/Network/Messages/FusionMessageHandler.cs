@@ -11,10 +11,12 @@ using MelonLoader;
 
 namespace LabFusion.Network
 {
-    public abstract class FusionMessageHandlerAsync : FusionMessageHandler {
+    public abstract class FusionMessageHandlerAsync : FusionMessageHandler
+    {
         public abstract Task HandleMessageAsync(byte[] bytes, bool isServerHandled = false);
 
-        public sealed override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
+        public sealed override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        {
             throw new NotImplementedException();
         }
 
@@ -22,11 +24,13 @@ namespace LabFusion.Network
         {
             Task task = null;
 
-            try {
+            try
+            {
                 // Now handle the message info
                 task = HandleMessageAsync(bytes, isServerHandled);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 FusionLogger.LogException("handling message", e);
             }
 
@@ -35,11 +39,13 @@ namespace LabFusion.Network
 
             if (task != null)
             {
-                task.ContinueWith((t) => {
+                task.ContinueWith((t) =>
+                {
                     ThreadingUtilities.RunSynchronously(OnFinish);
                 });
             }
-            else {
+            else
+            {
                 OnFinish();
             }
         }
@@ -95,14 +101,15 @@ namespace LabFusion.Network
             {
                 byte tag = buffer[0];
                 byte[] message = ByteRetriever.Rent(size - 1);
-                
+
                 for (var i = 0; i < message.Length; i++)
                     message[i] = buffer[i + 1];
 
                 if (Handlers[tag] != null)
                     Handlers[tag].Internal_HandleMessage(message, isServerHandled);
 #if DEBUG
-                else {
+                else
+                {
                     FusionLogger.Warn($"Received message with invalid tag {tag}!");
                 }
 #endif

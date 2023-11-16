@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabFusion.Utilities {
+namespace LabFusion.Utilities
+{
     // Taken from https://github.com/Unity-Technologies/UnityCsReference/blob/master/Runtime/Export/Math/Mathf.cs
-    internal static class ManagedMathf {
+    internal static class ManagedMathf
+    {
         private struct MathfInternal
         {
             public static volatile float FloatMinNormal = 1.17549435E-38f;
@@ -25,11 +27,18 @@ namespace LabFusion.Utilities {
         // Deg2Rad is inverse Rad2Deg
         public const float Deg2Rad = 1f / Rad2Deg;
 
-        public static float Acos(float f) {
+        public static float Sin(float f)
+        {
+            return (float)Math.Sin(f);
+        }
+
+        public static float Acos(float f)
+        {
             return (float)Math.Acos(f);
         }
 
-        public static float Clamp(float value, float min, float max) {
+        public static float Clamp(float value, float min, float max)
+        {
             if (value < min)
                 value = min;
             else if (value > max)
@@ -70,7 +79,8 @@ namespace LabFusion.Utilities {
 
         public static int CeilToInt(float f) { return (int)Math.Ceiling(f); }
 
-        public static bool Approximately(float a, float b) {
+        public static bool Approximately(float a, float b)
+        {
             return Math.Abs(b - a) < Math.Max(0.000001f * Math.Max(Math.Abs(a), Math.Abs(b)), Epsilon * 8);
         }
     }

@@ -33,7 +33,8 @@ using SystemQuaternion = System.Numerics.Quaternion;
 
 namespace LabFusion.Representation
 {
-    public class PlayerRep : IDisposable {
+    public class PlayerRep : IDisposable
+    {
         public const float NametagHeight = 0.23f;
         public const float NameTagDivider = 250f;
 
@@ -153,31 +154,36 @@ namespace LabFusion.Representation
             StartRepCreation();
         }
 
-        public void InsertVoiceSource(AudioSource source) {
+        public void InsertVoiceSource(AudioSource source)
+        {
             _voiceSource = source;
             _hasVoice = true;
         }
 
         public float GetVoiceLoudness() => _voiceLoudness;
 
-        private void OnUpdateVoiceSource() {
+        private void OnUpdateVoiceSource()
+        {
             if (!_hasVoice)
                 return;
 
             // Modify the source settings
             var rm = RigReferences.RigManager;
-            if (IsCreated) {
+            if (IsCreated)
+            {
                 var mouthSource = rm.physicsRig.headSfx.mouthSrc;
                 _voiceSource.transform.position = mouthSource.transform.position;
 
-                if (!_spatialized) {
+                if (!_spatialized)
+                {
                     UpdateVoiceSourceSettings();
                     _spatialized = true;
                 }
 
                 MicrophoneDisabled = DistanceSqr > (_maxMicrophoneDistance * _maxMicrophoneDistance) * 1.2f;
             }
-            else {
+            else
+            {
                 _voiceSource.spatialBlend = 0f;
                 _voiceSource.minDistance = 0f;
                 _voiceSource.maxDistance = 30f;
@@ -189,15 +195,18 @@ namespace LabFusion.Representation
             }
 
             // Update the jaw movement
-            if (MicrophoneDisabled) {
+            if (MicrophoneDisabled)
+            {
                 _voiceLoudness = 0f;
             }
-            else {
+            else
+            {
                 OnUpdateVoiceLoudness();
             }
         }
 
-        private void OnUpdateVoiceLoudness() {
+        private void OnUpdateVoiceLoudness()
+        {
             // Update the amplitude
             _voiceUpdateTime += TimeUtilities.DeltaTime;
             if (_voiceUpdateTime >= _voiceUpdateStep)
@@ -205,15 +214,16 @@ namespace LabFusion.Representation
                 _voiceUpdateTime = 0f;
 
                 var spectrum = _voiceSource.GetSpectrumData(256, 0, FFTWindow.Rectangular);
+                int length = spectrum.Length;
 
                 float gain = 0f;
-                for (var i = 0; i < spectrum.Length; i++)
+                for (var i = 0; i < length; i++)
                 {
                     gain += Math.Abs(spectrum[i]);
                 }
 
-                if (spectrum.Length > 0)
-                    gain /= (float)spectrum.Length;
+                if (length > 0)
+                    gain /= (float)length;
 
                 _targetLoudness = gain;
 
@@ -223,43 +233,51 @@ namespace LabFusion.Representation
             }
 
             // Lerp towards the desired value
-            float sin = Math.Abs(_sinAmplitude * (float)Math.Sin(_sinOmega * TimeUtilities.TimeSinceStartup));
+            float sin = Math.Abs(_sinAmplitude * ManagedMathf.Sin(_sinOmega * TimeUtilities.TimeSinceStartup));
             sin = ManagedMathf.Clamp01(sin);
 
             _voiceLoudness = ManagedMathf.LerpUnclamped(_voiceLoudness * sin, _targetLoudness, TimeUtilities.DeltaTime * 12f);
         }
 
-        private void OnMetadataChanged(PlayerId id) {
+        private void OnMetadataChanged(PlayerId id)
+        {
             // Read display name
-            if (id.TryGetDisplayName(out var name)) {
+            if (id.TryGetDisplayName(out var name))
+            {
                 Username = name;
             }
 
             UpdateNametagSettings();
         }
 
-        private void OnOverridesChanged() {
+        private void OnOverridesChanged()
+        {
             _isServerDirty = true;
         }
 
-        public void ResetSerializedTransforms() {
-            for (var i = 0; i < RigAbstractor.TransformSyncCount; i++) {
+        public void ResetSerializedTransforms()
+        {
+            for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
+            {
                 serializedLocalTransforms[i] = SerializedLocalTransform.Default;
             }
         }
 
-        private void OnServerSettingsChanged() {
+        private void OnServerSettingsChanged()
+        {
             _isServerDirty = true;
 
             OnMetadataChanged(PlayerId);
         }
 
-        public void AttachObject(Handedness handedness, Grip grip, SimpleTransform? targetInBase = null) {
+        public void AttachObject(Handedness handedness, Grip grip, SimpleTransform? targetInBase = null)
+        {
             var hand = RigReferences.GetHand(handedness);
             if (hand == null)
                 return;
 
-            if (grip) {
+            if (grip)
+            {
                 // Detach existing grip
                 hand.TryDetach();
 
@@ -272,7 +290,8 @@ namespace LabFusion.Representation
             }
         }
 
-        public void DetachObject(Handedness handedness) {
+        public void DetachObject(Handedness handedness)
+        {
             var hand = RigReferences.GetHand(handedness);
             if (hand == null)
                 return;
@@ -280,8 +299,10 @@ namespace LabFusion.Representation
             hand.TryDetach();
         }
 
-        public void OnHandUpdate(Hand hand) {
-            switch (hand.handedness) {
+        public void OnHandUpdate(Hand hand)
+        {
+            switch (hand.handedness)
+            {
                 case Handedness.RIGHT:
                     serializedRightHand?.CopyTo(hand, hand.Controller);
                     break;
@@ -291,60 +312,73 @@ namespace LabFusion.Representation
             }
         }
 
-        public void SwapAvatar(SerializedAvatarStats stats, string barcode) {
+        public void SwapAvatar(SerializedAvatarStats stats, string barcode)
+        {
             avatarStats = stats;
             avatarId = barcode;
             _isAvatarDirty = true;
         }
 
-        public void SetRagdoll(bool isRagdolled) {
+        public void SetRagdoll(bool isRagdolled)
+        {
             _ragdollState = isRagdolled;
             _isRagdollDirty = true;
         }
 
-        public void SetSettings(SerializedPlayerSettings settings) {
+        public void SetSettings(SerializedPlayerSettings settings)
+        {
             playerSettings = settings;
             _isSettingsDirty = true;
         }
 
-        private void OnSwapAvatar(bool success) {
+        private void OnSwapAvatar(bool success)
+        {
             var rm = RigReferences.RigManager;
 
-            if (!success) {
+            if (!success)
+            {
                 RigReferences.SwapAvatarCrate(FusionAvatar.POLY_BLANK_BARCODE, OnSwapFallback, OnPrepareAvatar);
             }
-            else {
+            else
+            {
                 UpdateAvatarSettings();
             }
         }
 
-        private void OnPrepareAvatar(string barcode, GameObject avatar) {
+        private void OnPrepareAvatar(string barcode, GameObject avatar)
+        {
             // If we have synced avatar stats, set the scale properly
-            if (avatarStats != null) {
+            if (avatarStats != null)
+            {
                 Transform transform = avatar.transform;
 
                 // Polyblank should just scale based on the custom avatar height
-                if (barcode == FusionAvatar.POLY_BLANK_BARCODE) {
+                if (barcode == FusionAvatar.POLY_BLANK_BARCODE)
+                {
                     float newHeight = avatarStats.height;
                     transform.localScale = Vector3Extensions.one * (newHeight / 1.76f);
                 }
                 // Otherwise, apply the synced scale
-                else {
+                else
+                {
                     transform.localScale = avatarStats.localScale;
                 }
             }
         }
 
-        private void OnSwapFallback(bool success) {
+        private void OnSwapFallback(bool success)
+        {
             UpdateAvatarSettings();
         }
 
-        internal void Internal_OnAvatarChanged(string barcode) {
+        internal void Internal_OnAvatarChanged(string barcode)
+        {
             if (!FusionAvatar.IsMatchingAvatar(barcode, avatarId))
                 _isAvatarDirty = true;
         }
 
-        public void PlayPullCordEffects() {
+        public void PlayPullCordEffects()
+        {
             if (!IsCreated)
                 return;
 
@@ -352,26 +386,31 @@ namespace LabFusion.Representation
             pullCord.PlayClip(pullCord.switchAvatar, pullCord.ap3, pullCord.switchVolume, 4f, false);
         }
 
-        public void SetBallEnabled(bool isEnabled) {
+        public void SetBallEnabled(bool isEnabled)
+        {
             if (!IsCreated)
                 return;
 
             // If the ball should be enabled, make the distance required infinity so it always shows
-            if (isEnabled) {
+            if (isEnabled)
+            {
                 pullCord.handShowDist = float.PositiveInfinity;
             }
             // If it should be disabled, make the distance zero so that it disables itself
-            else {
+            else
+            {
                 pullCord.handShowDist = 0f;
             }
         }
 
-        public void SetVitals(SerializedBodyVitals vitals) {
+        public void SetVitals(SerializedBodyVitals vitals)
+        {
             this.vitals = vitals;
             _isVitalsDirty = true;
         }
 
-        private void CreateRep() {
+        private void CreateRep()
+        {
             // Make sure we don't have any extra objects
             DestroyRep();
 
@@ -380,7 +419,8 @@ namespace LabFusion.Representation
             PlayerRepUtilities.CreateNewRig(OnRigCreated);
         }
 
-        private void CreateNametag() {
+        private void CreateNametag()
+        {
             repCanvas = new GameObject("RepCanvas");
             repCanvasComponent = repCanvas.AddComponent<Canvas>();
 
@@ -402,7 +442,8 @@ namespace LabFusion.Representation
             repNameText.font = PersistentAssetCreator.Font;
         }
 
-        public float GetNametagOffset() {
+        public float GetNametagOffset()
+        {
             float offset = NametagHeight;
 
             var rm = RigReferences.RigManager;
@@ -412,14 +453,17 @@ namespace LabFusion.Representation
             return offset;
         }
 
-        private void UpdateAvatarSettings() {
+        private void UpdateAvatarSettings()
+        {
             UpdateNametagSettings();
             UpdateVoiceSourceSettings();
         }
 
-        private void UpdateNametagSettings() {
+        private void UpdateNametagSettings()
+        {
             var rm = RigReferences.RigManager;
-            if (IsCreated && rm.avatar) {
+            if (IsCreated && rm.avatar)
+            {
                 float height = rm.avatar.height / 1.76f;
                 repCanvasTransform.localScale = Vector3Extensions.one / NameTagDivider * height;
 
@@ -432,12 +476,14 @@ namespace LabFusion.Representation
             }
         }
 
-        private void UpdateVoiceSourceSettings() {
+        private void UpdateVoiceSourceSettings()
+        {
             if (_voiceSource == null)
                 return;
 
             var rm = RigReferences.RigManager;
-            if (IsCreated && rm._avatar) {
+            if (IsCreated && rm._avatar)
+            {
                 float heightMult = rm._avatar.height / 1.76f;
 
                 _voiceSource.spatialBlend = 1f;
@@ -453,7 +499,8 @@ namespace LabFusion.Representation
             }
         }
 
-        public void OnRigCreated(RigManager rig) {
+        public void OnRigCreated(RigManager rig)
+        {
             // Get the pull cord and prevent it from enabling
             pullCord = rig.GetComponentInChildren<PullCordDevice>(true);
 
@@ -489,8 +536,10 @@ namespace LabFusion.Representation
             RigReferences = new RigReferenceCollection(rig);
 
             // Shrink holster hitboxes for easier grabbing
-            foreach (var slot in RigReferences.RigSlots) {
-                foreach (var box in slot.GetComponentsInChildren<BoxCollider>()) {
+            foreach (var slot in RigReferences.RigSlots)
+            {
+                foreach (var box in slot.GetComponentsInChildren<BoxCollider>())
+                {
                     // Only affect trigger colliders just incase
                     if (box.isTrigger)
                         box.size *= 0.4f;
@@ -508,7 +557,8 @@ namespace LabFusion.Representation
             MultiplayerHooking.Internal_OnPlayerRepCreated(rig);
         }
 
-        public void MarkDirty() {
+        public void MarkDirty()
+        {
             _isAvatarDirty = true;
             _isVitalsDirty = true;
 
@@ -519,19 +569,24 @@ namespace LabFusion.Representation
             _ragdollState = false;
         }
 
-        public static void OnRecreateReps() {
-            for (var i = 0; i < PlayerRepManager.PlayerReps.Count; i++) {
+        public static void OnRecreateReps()
+        {
+            for (var i = 0; i < PlayerRepManager.PlayerReps.Count; i++)
+            {
                 PlayerRepManager.PlayerReps[i].StartRepCreation();
             }
         }
 
-        public void StartRepCreation() {
+        public void StartRepCreation()
+        {
             MelonCoroutines.Start(Co_DelayCreateRep());
         }
 
-        private IEnumerator Co_DelayCreateRep() {
+        private IEnumerator Co_DelayCreateRep()
+        {
             // Delay some extra time
-            for (var i = 0; i < 120; i++) {
+            for (var i = 0; i < 120; i++)
+            {
                 if (FusionSceneManager.IsLoading())
                     yield break;
 
@@ -539,7 +594,8 @@ namespace LabFusion.Representation
             }
 
             // Wait for loading
-            while (FusionSceneManager.IsDelayedLoading() || PlayerId.GetMetadata(MetadataHelper.LoadingKey) == bool.TrueString) {
+            while (FusionSceneManager.IsDelayedLoading() || PlayerId.GetMetadata(MetadataHelper.LoadingKey) == bool.TrueString)
+            {
                 if (FusionSceneManager.IsLoading())
                     yield break;
 
@@ -553,8 +609,10 @@ namespace LabFusion.Representation
             CreateRep();
         }
 
-        public void OnHeptaBody2Update() {
-            try {
+        public void OnHeptaBody2Update()
+        {
+            try
+            {
                 if (!IsCreated)
                     return;
 
@@ -566,7 +624,7 @@ namespace LabFusion.Representation
                         break;
 
                     var pos = localTransform.position;
-                    var rot = localTransform.rotation.Expand();
+                    var rot = localTransform.rotation;
 
                     var gameworldTransform = gameworldRigTransforms[i];
 
@@ -579,18 +637,21 @@ namespace LabFusion.Representation
             }
         }
 
-        public void OnUpdateNametags() {
+        public void OnUpdateNametags()
+        {
             // Update nametag
             var rm = RigReferences.RigManager;
 
-            if (IsCreated) {
+            if (IsCreated)
+            {
                 var physHead = rm.physicsRig.m_head;
                 repCanvasTransform.position = physHead.position + Vector3Extensions.up * GetNametagOffset();
                 repCanvasTransform.LookAtPlayer();
             }
         }
 
-        public void OnControllerRigUpdate() {
+        public void OnControllerRigUpdate()
+        {
             try
             {
                 if (!IsCreated)
@@ -599,10 +660,11 @@ namespace LabFusion.Representation
                 for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
                 {
                     repTransforms[i].localPosition = serializedLocalTransforms[i].position.ToUnityVector3();
-                    repTransforms[i].localRotation = serializedLocalTransforms[i].rotation.Expand().ToUnityQuaternion();
+                    repTransforms[i].localRotation = serializedLocalTransforms[i].rotation.ToUnityQuaternion();
                 }
             }
-            catch {
+            catch
+            {
                 // Literally no reason this should happen but it does
                 // Doesn't cause anything soooo
 
@@ -611,10 +673,13 @@ namespace LabFusion.Representation
             }
         }
 
-        public void OnPelvisPin() {
-            try {
+        public void OnPelvisPin()
+        {
+            try
+            {
                 // Stop pelvis
-                if (!IsCreated || serializedPelvis == null) {
+                if (!IsCreated || serializedPelvis == null)
+                {
                     pelvisPDController.Reset();
                     return;
                 }
@@ -622,7 +687,8 @@ namespace LabFusion.Representation
                 // Check for seating
                 var rigManager = RigReferences.RigManager;
 
-                if (rigManager.activeSeat) {
+                if (rigManager.activeSeat)
+                {
                     pelvisPDController.Reset();
                     return;
                 }
@@ -632,12 +698,14 @@ namespace LabFusion.Representation
                 SystemQuaternion pelvisRotation = pelvisTransform.rotation.ToSystemQuaternion();
 
                 // Move position with prediction
-                if (TimeUtilities.TimeSinceStartup - timeSincePelvisSent <= 1.5f) {
+                if (TimeUtilities.TimeSinceStartup - timeSincePelvisSent <= 1.5f)
+                {
                     serializedPelvis.position += predictVelocity * TimeUtilities.FixedDeltaTime;
 
                     _hasLockedPosition = false;
                 }
-                else if (!_hasLockedPosition) {
+                else if (!_hasLockedPosition)
+                {
                     serializedPelvis.position = pelvisPosition;
                     predictVelocity = SystemVector3.Zero;
                     predictAngularVelocity = SystemVector3.Zero;
@@ -649,11 +717,12 @@ namespace LabFusion.Representation
                 if (SafetyUtilities.IsValidTime)
                 {
                     var pos = serializedPelvis.position;
-                    var rot = serializedPelvis.rotation.Expand();
+                    var rot = serializedPelvis.rotation;
 
                     repPelvis.AddForce(pelvisPDController.GetForce(repPelvis, pelvisPosition, repPelvis.velocity.ToSystemVector3(), pos, predictVelocity).ToUnityVector3(), ForceMode.Acceleration);
                     // We only want to apply angular force when ragdolled
-                    if (rigManager.physicsRig.torso.spineInternalMult <= 0f) {
+                    if (rigManager.physicsRig.torso.spineInternalMult <= 0f)
+                    {
                         repPelvis.AddTorque(pelvisPDController.GetTorque(repPelvis, pelvisRotation, repPelvis.angularVelocity.ToSystemVector3(), rot, predictAngularVelocity).ToUnityVector3(), ForceMode.Acceleration);
                     }
                     else
@@ -662,7 +731,8 @@ namespace LabFusion.Representation
 
                 // Check for stability teleport
                 float distSqr = (pelvisPosition - serializedPelvis.position).LengthSquared();
-                if (distSqr > (2f * (predictVelocity.Length() + 1f))) {
+                if (distSqr > (2f * (predictVelocity.Length() + 1f)))
+                {
                     // Get teleport position
                     var pos = serializedPelvis.position.ToUnityVector3();
                     var physRig = RigReferences.RigManager.physicsRig;
@@ -674,7 +744,8 @@ namespace LabFusion.Representation
                     RigReferences.RigManager.Teleport(pos);
 
                     // Zero our teleport velocity, cause the rig doesn't seem to do that on its own?
-                    foreach (var rb in RigReferences.RigManager.physicsRig.GetComponentsInChildren<Rigidbody>()) {
+                    foreach (var rb in RigReferences.RigManager.physicsRig.GetComponentsInChildren<Rigidbody>())
+                    {
                         rb.velocity = Vector3Extensions.zero;
                         rb.angularVelocity = Vector3Extensions.zero;
                     }
@@ -686,7 +757,8 @@ namespace LabFusion.Representation
                     pelvisPDController.Reset();
                 }
             }
-            catch {
+            catch
+            {
                 // Just ignore these. Don't really matter.
             }
         }
@@ -718,12 +790,15 @@ namespace LabFusion.Representation
             return false;
         }
 
-        private static bool TrySendRep() {
-            try {
+        private static bool TrySendRep()
+        {
+            try
+            {
                 if (syncedPoints == null || PlayerIdManager.LocalId == null)
                     return false;
 
-                using (var writer = FusionWriter.Create(PlayerRepTransformData.Size)) {
+                using (var writer = FusionWriter.Create(PlayerRepTransformData.Size))
+                {
                     using var data = PlayerRepTransformData.Create(PlayerIdManager.LocalSmallId, syncedPoints, syncedPelvis, syncedPlayspace, syncedLeftHand, syncedRightHand);
                     writer.Write(data);
 
@@ -732,8 +807,9 @@ namespace LabFusion.Representation
                 }
 
                 return true;
-            } 
-            catch (Exception e) {
+            }
+            catch (Exception e)
+            {
 #if DEBUG
                 FusionLogger.Error($"Failed sending player transforms with reason: {e.Message}\nTrace:{e.StackTrace}");
 #endif
@@ -741,21 +817,26 @@ namespace LabFusion.Representation
             return false;
         }
 
-        public static void OnSyncRep() {
-            if (NetworkInfo.HasServer && RigData.HasPlayer) {
+        public static void OnSyncRep()
+        {
+            if (NetworkInfo.HasServer && RigData.HasPlayer)
+            {
                 if (!TrySendRep())
                     OnCachePlayerTransforms();
-                else if (RigData.RigReferences.RigManager.activeSeat) {
+                else if (RigData.RigReferences.RigManager.activeSeat)
+                {
                     TrySendGameworldRep();
                 }
             }
-            else {
+            else
+            {
                 syncedPoints = null;
                 gameworldPoints = null;
             }
         }
 
-        private void OnRepUpdate() {
+        private void OnRepUpdate()
+        {
             if (!IsCreated)
                 return;
 
@@ -765,16 +846,20 @@ namespace LabFusion.Representation
             OnUpdateVoiceSource();
         }
 
-        private void OnRepFixedUpdate() {
-            if (!IsCreated) {
+        private void OnRepFixedUpdate()
+        {
+            if (!IsCreated)
+            {
                 return;
             }
 
             OnPelvisPin();
         }
 
-        private void OnRepLateUpdate() {
-            if (!IsCreated) {
+        private void OnRepLateUpdate()
+        {
+            if (!IsCreated)
+            {
                 serializedPelvis = null;
                 return;
             }
@@ -785,7 +870,8 @@ namespace LabFusion.Representation
             var rm = RigReferences.RigManager;
 
             // Swap the avatar
-            if (_isAvatarDirty) {
+            if (_isAvatarDirty)
+            {
                 RigReferences.SwapAvatarCrate(avatarId, OnSwapAvatar, OnPrepareAvatar);
                 _isAvatarDirty = false;
 
@@ -793,16 +879,19 @@ namespace LabFusion.Representation
             }
 
             // Change body vitals
-            if (_isVitalsDirty) {
-                if (vitals != null) {
+            if (_isVitalsDirty)
+            {
+                if (vitals != null)
+                {
                     vitals.CopyTo(rm.bodyVitals);
                 }
 
                 _isVitalsDirty = false;
             }
-            
+
             // Toggle ragdoll mode
-            if (_isRagdollDirty) {
+            if (_isRagdollDirty)
+            {
                 if (_ragdollState)
                     rm.physicsRig.RagdollRig();
                 else
@@ -812,8 +901,10 @@ namespace LabFusion.Representation
             }
 
             // Update settings
-            if (_isSettingsDirty) {
-                if (playerSettings != null) {
+            if (_isSettingsDirty)
+            {
+                if (playerSettings != null)
+                {
                     // Make sure the alpha is 1 so that people cannot create invisible names
                     var color = playerSettings.nametagColor;
                     color.a = 1f;
@@ -822,9 +913,10 @@ namespace LabFusion.Representation
 
                 _isSettingsDirty = false;
             }
-            
+
             // Update server side settings
-            if (_isServerDirty) {
+            if (_isServerDirty)
+            {
                 repCanvas.gameObject.SetActive(FusionPreferences.NametagsEnabled && FusionOverrides.ValidateNametag(PlayerId));
 
                 _isServerDirty = false;
@@ -834,12 +926,14 @@ namespace LabFusion.Representation
             DistanceSqr = (RigReferences.Head.position - RigData.RigReferences.Head.position).sqrMagnitude;
         }
 
-        public static void OnUpdate() {
+        public static void OnUpdate()
+        {
             for (var i = 0; i < PlayerRepManager.PlayerReps.Count; i++)
                 PlayerRepManager.PlayerReps[i].OnRepUpdate();
         }
 
-        public static void OnFixedUpdate() {
+        public static void OnFixedUpdate()
+        {
             for (var i = 0; i < PlayerRepManager.PlayerReps.Count; i++)
                 PlayerRepManager.PlayerReps[i].OnRepFixedUpdate();
         }
@@ -853,7 +947,8 @@ namespace LabFusion.Representation
         /// <summary>
         /// Destroys anything about the PlayerRep and frees it from memory.
         /// </summary>
-        public void Dispose() {
+        public void Dispose()
+        {
             PlayerRepManager.Internal_RemovePlayerRep(this);
 
             DestroyRep();
@@ -870,8 +965,10 @@ namespace LabFusion.Representation
         /// <summary>
         /// Destroys the GameObjects of the PlayerRep. Does not free it from memory or remove it from its slots. Use Dispose for that.
         /// </summary>
-        public void DestroyRep() {
-            if (IsCreated) {
+        public void DestroyRep()
+        {
+            if (IsCreated)
+            {
                 RigReferences.LeftHand.TryDetach();
                 RigReferences.RightHand.TryDetach();
 
@@ -882,7 +979,8 @@ namespace LabFusion.Representation
                 GameObject.Destroy(repCanvas.gameObject);
         }
 
-        public static void OnCachePlayerTransforms() {
+        public static void OnCachePlayerTransforms()
+        {
             if (!RigData.HasPlayer)
                 return;
 

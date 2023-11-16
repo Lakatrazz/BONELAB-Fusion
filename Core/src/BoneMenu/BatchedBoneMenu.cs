@@ -6,20 +6,24 @@ using System;
 
 namespace LabFusion.BoneMenu
 {
-    public sealed class BatchedBoneMenu : IDisposable {
+    public sealed class BatchedBoneMenu : IDisposable
+    {
         private Action<MenuCategory, MenuElement> _action;
 
-        private BatchedBoneMenu(Action<MenuCategory, MenuElement> action) { 
+        private BatchedBoneMenu(Action<MenuCategory, MenuElement> action)
+        {
             _action = action;
         }
 
-        public static BatchedBoneMenu Create() {
+        public static BatchedBoneMenu Create()
+        {
             var instance = new BatchedBoneMenu(MenuCategory.OnElementCreated);
             MenuCategory.OnElementCreated = null;
             return instance;
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
 
             MenuCategory.OnElementCreated = _action;

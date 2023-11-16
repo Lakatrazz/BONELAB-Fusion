@@ -17,7 +17,8 @@ using SLZ.Props.Weapons;
 
 namespace LabFusion.Network
 {
-    public enum SimpleGripEventType {
+    public enum SimpleGripEventType
+    {
         TRIGGER_DOWN = 0,
         MENU_TAP = 1,
         ATTACH = 2,
@@ -73,40 +74,37 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<SimpleGripEventData>();
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
             {
-                using (var data = reader.ReadFusionSerializable<SimpleGripEventData>())
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+            }
+            else
+            {
+                if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable && propSyncable.TryGetExtender<SimpleGripEventsExtender>(out var extender))
                 {
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled)
-                    {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes))
-                        {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-                        }
-                    }
-                    else
-                    {
-                        if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable && propSyncable.TryGetExtender<SimpleGripEventsExtender>(out var extender)) {
-                            var gripEvent = extender.GetComponent(data.gripEventIndex);
+                    var gripEvent = extender.GetComponent(data.gripEventIndex);
 
-                            if (gripEvent) {
-                                switch (data.type) {
-                                    default:
-                                    case SimpleGripEventType.TRIGGER_DOWN:
-                                        gripEvent.OnIndexDown.Invoke();
-                                        break;
-                                    case SimpleGripEventType.MENU_TAP:
-                                        gripEvent.OnMenuTapDown.Invoke();
-                                        break;
-                                    case SimpleGripEventType.ATTACH:
-                                        gripEvent.OnAttach.Invoke();
-                                        break;
-                                    case SimpleGripEventType.DETACH:
-                                        gripEvent.OnDetach.Invoke();
-                                        break;
-                                }
-                            }
+                    if (gripEvent)
+                    {
+                        switch (data.type)
+                        {
+                            default:
+                            case SimpleGripEventType.TRIGGER_DOWN:
+                                gripEvent.OnIndexDown.Invoke();
+                                break;
+                            case SimpleGripEventType.MENU_TAP:
+                                gripEvent.OnMenuTapDown.Invoke();
+                                break;
+                            case SimpleGripEventType.ATTACH:
+                                gripEvent.OnAttach.Invoke();
+                                break;
+                            case SimpleGripEventType.DETACH:
+                                gripEvent.OnDetach.Invoke();
+                                break;
                         }
                     }
                 }

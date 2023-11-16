@@ -23,8 +23,10 @@ namespace LabFusion.Network
         public byte smallId;
         public bool isDecrease;
 
-        public static SlowMoButtonMessageData Create(byte smallId, bool isDecrease) {
-            return new SlowMoButtonMessageData() {
+        public static SlowMoButtonMessageData Create(byte smallId, bool isDecrease)
+        {
+            return new SlowMoButtonMessageData()
+            {
                 smallId = smallId,
                 isDecrease = isDecrease
             };
@@ -42,7 +44,8 @@ namespace LabFusion.Network
             isDecrease = reader.ReadBoolean();
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
     }
@@ -54,31 +57,32 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (var reader = FusionReader.Create(bytes)) {
-                using (var data = reader.ReadFusionSerializable<SlowMoButtonMessageData>()) {
-                    if (NetworkInfo.IsServer && isServerHandled) {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-                        }
-                    }
-                    else {
-                        Control_GlobalTimePatches.IgnorePatches = true;
+            using var reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<SlowMoButtonMessageData>();
+            if (NetworkInfo.IsServer && isServerHandled)
+            {
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+            }
+            else
+            {
+                Control_GlobalTimePatches.IgnorePatches = true;
 
-                        if (RigData.HasPlayer) {
-                            var rm = RigData.RigReferences.RigManager;
-                            var controlTime = rm.openControllerRig.globalTimeControl;
+                if (RigData.HasPlayer)
+                {
+                    var rm = RigData.RigReferences.RigManager;
+                    var controlTime = rm.openControllerRig.globalTimeControl;
 
-                            if (controlTime != null) {
-                                if (data.isDecrease)
-                                    controlTime.DECREASE_TIMESCALE();
-                                else
-                                    controlTime.TOGGLE_TIMESCALE();
-                            }
-                        }
-
-                        Control_GlobalTimePatches.IgnorePatches = false;
+                    if (controlTime != null)
+                    {
+                        if (data.isDecrease)
+                            controlTime.DECREASE_TIMESCALE();
+                        else
+                            controlTime.TOGGLE_TIMESCALE();
                     }
                 }
+
+                Control_GlobalTimePatches.IgnorePatches = false;
             }
         }
     }

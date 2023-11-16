@@ -12,7 +12,8 @@ using LabFusion.Senders;
 
 using SLZ.Rig;
 
-namespace LabFusion.Utilities {
+namespace LabFusion.Utilities
+{
     public delegate bool UserAccessEvent(PlayerId playerId, out string reason);
     public delegate void ServerEvent();
     public delegate void UpdateEvent();
@@ -26,7 +27,8 @@ namespace LabFusion.Utilities {
     /// Hooks for getting events from the server, players, etc.
     /// <para> All hooks are events. You cannot invoke them yourself. </para>
     /// </summary>
-    public static class MultiplayerHooking {
+    public static class MultiplayerHooking
+    {
         // Confirmation hooks
         public static event UserAccessEvent OnShouldAllowConnection;
 
@@ -38,13 +40,15 @@ namespace LabFusion.Utilities {
         public static event LobbyMenuAction OnLobbyCategoryCreated;
         public static event RigManagerEvent OnLocalPlayerCreated, OnPlayerRepCreated;
 
-        internal static bool Internal_OnShouldAllowConnection(PlayerId playerId, out string reason) {
+        internal static bool Internal_OnShouldAllowConnection(PlayerId playerId, out string reason)
+        {
             reason = "";
 
             if (OnShouldAllowConnection == null)
                 return true;
 
-            foreach (var invocation in OnShouldAllowConnection.GetInvocationList()) {
+            foreach (var invocation in OnShouldAllowConnection.GetInvocationList())
+            {
                 var accessEvent = (UserAccessEvent)invocation;
 
                 if (!accessEvent.Invoke(playerId, out reason))

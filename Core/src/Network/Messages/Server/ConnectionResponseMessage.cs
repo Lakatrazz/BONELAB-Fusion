@@ -12,32 +12,38 @@ using LabFusion.Utilities;
 
 namespace LabFusion.Network
 {
-    public class ConnectionResponseData : IFusionSerializable, IDisposable {
+    public class ConnectionResponseData : IFusionSerializable, IDisposable
+    {
         public PlayerId playerId = null;
         public string avatarBarcode = null;
         public SerializedAvatarStats avatarStats = null;
         public bool isInitialJoin = false;
 
-        public void Serialize(FusionWriter writer) {
+        public void Serialize(FusionWriter writer)
+        {
             writer.Write(playerId);
             writer.Write(avatarBarcode);
             writer.Write(avatarStats);
             writer.Write(isInitialJoin);
         }
-        
-        public void Deserialize(FusionReader reader) {
+
+        public void Deserialize(FusionReader reader)
+        {
             playerId = reader.ReadFusionSerializable<PlayerId>();
             avatarBarcode = reader.ReadString();
             avatarStats = reader.ReadFusionSerializable<SerializedAvatarStats>();
             isInitialJoin = reader.ReadBoolean();
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
 
-        public static ConnectionResponseData Create(PlayerId id, string avatarBarcode, SerializedAvatarStats stats, bool isInitialJoin) {
-            return new ConnectionResponseData() {
+        public static ConnectionResponseData Create(PlayerId id, string avatarBarcode, SerializedAvatarStats stats, bool isInitialJoin)
+        {
+            return new ConnectionResponseData()
+            {
                 playerId = id,
                 avatarBarcode = avatarBarcode,
                 avatarStats = stats,
@@ -50,7 +56,8 @@ namespace LabFusion.Network
     {
         public override byte? Tag => NativeMessageTag.ConnectionResponse;
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
+        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        {
             using FusionReader reader = FusionReader.Create(bytes);
             // This should only ever be handled client side!
             if (isServerHandled)

@@ -16,12 +16,15 @@ using SLZ.UI;
 namespace LabFusion.Patching
 {
     [HarmonyPatch(typeof(LevelsPanelView), "SelectItem")]
-    public class LevelsPanelViewPatches {
-        public static bool Prefix(LevelsPanelView __instance, int idx) {
+    public class LevelsPanelViewPatches
+    {
+        public static bool Prefix(LevelsPanelView __instance, int idx)
+        {
             try
             {
                 // Prevent the menu from loading a different level if we aren't the host
-                if (NetworkInfo.HasServer && !NetworkInfo.IsServer) {
+                if (NetworkInfo.HasServer && !NetworkInfo.IsServer)
+                {
                     // Send level request
                     LevelCrate crate = __instance.m_LevelCrates[idx + (__instance.m_CurrentPage * __instance.items.Count)];
                     LoadSender.SendLevelRequest(crate);

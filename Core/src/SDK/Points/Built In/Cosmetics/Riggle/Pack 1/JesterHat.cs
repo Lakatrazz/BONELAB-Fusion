@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class JesterHat : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class JesterHat : AccessoryItem
+    {
         public override string Title => "The Jester";
 
         public override string Author => BitEconomy.RiggleAuthor;

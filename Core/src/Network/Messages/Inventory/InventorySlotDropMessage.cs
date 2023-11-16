@@ -76,53 +76,58 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<InventorySlotDropData>();
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
             {
-                using (var data = reader.ReadFusionSerializable<InventorySlotDropData>()) {
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled) {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessageExcept(data.grabber, NetworkChannel.Reliable, message, false);
-                        }
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.grabber, NetworkChannel.Reliable, message, false);
+            }
+            else
+            {
+                RigReferenceCollection references = null;
+
+                if (data.smallId == PlayerIdManager.LocalSmallId)
+                {
+                    references = RigData.RigReferences;
+                }
+                else if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep))
+                {
+                    references = rep.RigReferences;
+                }
+
+                if (references != null)
+                {
+                    var slotReceiver = references.GetSlot(data.slotIndex, data.isAvatarSlot);
+                    WeaponSlot weaponSlot = null;
+
+                    if (slotReceiver != null && slotReceiver._weaponHost != null)
+                    {
+                        weaponSlot = slotReceiver._slottedWeapon;
+
+                        slotReceiver._weaponHost.TryDetach();
                     }
-                    else {
-                        RigReferenceCollection references = null;
 
-                        if (data.smallId == PlayerIdManager.LocalSmallId) {
-                            references = RigData.RigReferences;
+                    InventorySlotReceiverPatches.IgnorePatches = true;
+                    slotReceiver.DropWeapon();
+                    InventorySlotReceiverPatches.IgnorePatches = false;
+
+                    if (data.handedness == Handedness.UNDEFINED)
+                        return;
+
+                    if (PlayerRepManager.TryGetPlayerRep(data.grabber, out var grabber))
+                    {
+                        if (weaponSlot && weaponSlot.grip)
+                        {
+                            weaponSlot.grip.MoveIntoHand(grabber.RigReferences.GetHand(data.handedness));
+                            grabber.AttachObject(data.handedness, weaponSlot.grip);
                         }
-                        else if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep)) {
-                            references = rep.RigReferences;
-                        }
 
-                        if (references != null) {
-                            var slotReceiver = references.GetSlot(data.slotIndex, data.isAvatarSlot);
-                            WeaponSlot weaponSlot = null;
-
-                            if (slotReceiver != null && slotReceiver._weaponHost != null) {
-                                weaponSlot = slotReceiver._slottedWeapon;
-
-                                slotReceiver._weaponHost.TryDetach();
-                            }
-
-                            InventorySlotReceiverPatches.IgnorePatches = true;
-                            slotReceiver.DropWeapon();
-                            InventorySlotReceiverPatches.IgnorePatches = false;
-
-                            if (data.handedness == Handedness.UNDEFINED)
-                                return;
-
-                            if (PlayerRepManager.TryGetPlayerRep(data.grabber, out var grabber)) {
-                                if (weaponSlot && weaponSlot.grip) {
-                                    weaponSlot.grip.MoveIntoHand(grabber.RigReferences.GetHand(data.handedness));
-                                    grabber.AttachObject(data.handedness, weaponSlot.grip);
-                                }
-
-                                var hand = grabber.RigReferences.GetHand(data.handedness);
-                                if (hand) {
-                                    HandSFX.Cache.Get(hand.gameObject).BodySlot();
-                                }
-                            }
+                        var hand = grabber.RigReferences.GetHand(data.handedness);
+                        if (hand)
+                        {
+                            HandSFX.Cache.Get(hand.gameObject).BodySlot();
                         }
                     }
                 }

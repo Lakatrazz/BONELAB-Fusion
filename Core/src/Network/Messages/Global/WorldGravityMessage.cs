@@ -21,8 +21,10 @@ namespace LabFusion.Network
 
         public SystemVector3 gravity;
 
-        public static WorldGravityMessageData Create(SystemVector3 gravity) {
-            return new WorldGravityMessageData() {
+        public static WorldGravityMessageData Create(SystemVector3 gravity)
+        {
+            return new WorldGravityMessageData()
+            {
                 gravity = gravity,
             };
         }
@@ -37,7 +39,8 @@ namespace LabFusion.Network
             gravity = reader.ReadSystemVector3();
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
     }
@@ -48,7 +51,8 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            if (!NetworkInfo.IsServer) {
+            if (!NetworkInfo.IsServer)
+            {
                 using var reader = FusionReader.Create(bytes);
                 using var data = reader.ReadFusionSerializable<WorldGravityMessageData>();
 

@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class MissedAWideHat : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class MissedAWideHat : AccessoryItem
+    {
         public override string Title => "Missed A Wide Hat";
 
         public override string Author => BitEconomy.RiggleAuthor;

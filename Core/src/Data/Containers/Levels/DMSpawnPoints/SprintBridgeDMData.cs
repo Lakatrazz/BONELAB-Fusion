@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.Data {
-    public class SprintBridgeDMData : DMLevelDataHandler {
+namespace LabFusion.Data
+{
+    public class SprintBridgeDMData : DMLevelDataHandler
+    {
         public override string LevelTitle => "07 - Sprint Bridge 04";
 
         protected override Vector3[] DeathmatchSpawnPoints => new Vector3[8] {

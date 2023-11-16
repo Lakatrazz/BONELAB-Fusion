@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class NESGuitar : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class NESGuitar : AccessoryItem
+    {
         public override string Title => "Retro Guitar";
 
         public override string Author => BitEconomy.BaBaAuthor;

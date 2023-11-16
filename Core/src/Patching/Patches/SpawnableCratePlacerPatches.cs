@@ -17,12 +17,15 @@ using SLZ.Marrow.Warehouse;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace LabFusion.Patching {
+namespace LabFusion.Patching
+{
     [HarmonyPatch(typeof(SpawnableCratePlacer))]
-    public static class SpawnableCratePlacerPatches {
+    public static class SpawnableCratePlacerPatches
+    {
         [HarmonyPrefix]
         [HarmonyPatch(nameof(SpawnableCratePlacer.Awake))]
-        public static void Awake(SpawnableCratePlacer __instance) {
+        public static void Awake(SpawnableCratePlacer __instance)
+        {
             var action = (UnityAction)(() => { Internal_OnPlace(__instance); });
             var del = UnityEvent.GetDelegate(action);
 
@@ -30,15 +33,18 @@ namespace LabFusion.Patching {
                 __instance.OnPlaceEvent.AddCall(del);
         }
 
-        private static void Internal_OnPlace(SpawnableCratePlacer scp) {
+        private static void Internal_OnPlace(SpawnableCratePlacer scp)
+        {
             // Get the last spawned object
             // placedSpawnable is always null
-            if (NetworkInfo.IsServer && scp.spawnableCrateReference.Crate != null) {
+            if (NetworkInfo.IsServer && scp.spawnableCrateReference.Crate != null)
+            {
                 var crate = scp.spawnableCrateReference.Crate;
 
                 var barcodeToPool = AssetSpawner._instance._barcodeToPool;
 
-                if (barcodeToPool.ContainsKey(crate.Barcode)) {
+                if (barcodeToPool.ContainsKey(crate.Barcode))
+                {
                     var pool = barcodeToPool[crate.Barcode];
 
                     var lastSpawned = pool.spawned[pool.spawned.Count - 1];

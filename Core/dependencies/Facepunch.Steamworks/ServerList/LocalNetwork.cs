@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Steamworks.ServerList
 {
-	public class LocalNetwork : Base
-	{
-		internal override void LaunchQuery()
-		{
-			request = Internal.RequestLANServerList( AppId.Value, IntPtr.Zero );
-		}
-	}
+    public class LocalNetwork : Base
+    {
+        internal override void LaunchQuery()
+        {
+            request = Internal.RequestLANServerList(AppId.Value, IntPtr.Zero);
+        }
+    }
 }

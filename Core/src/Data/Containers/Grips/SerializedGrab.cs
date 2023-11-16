@@ -13,8 +13,10 @@ using SLZ;
 using SLZ.Interaction;
 using SLZ.Marrow.Utilities;
 
-namespace LabFusion.Data {
-    public abstract class SerializedGrab : IFusionSerializable {
+namespace LabFusion.Data
+{
+    public abstract class SerializedGrab : IFusionSerializable
+    {
         public const int Size = sizeof(byte) + SerializedTransform.Size;
 
         public bool isGrabbed;
@@ -25,7 +27,8 @@ namespace LabFusion.Data {
         private bool _hasWrittenDefaultGrip = false;
 #endif
 
-        public virtual void WriteDefaultGrip(Hand hand, Grip grip) {
+        public virtual void WriteDefaultGrip(Hand hand, Grip grip)
+        {
             // Check if this is actually grabbed
             isGrabbed = hand.m_CurrentAttachedGO == grip.gameObject;
 
@@ -40,11 +43,13 @@ namespace LabFusion.Data {
 #endif
         }
 
-        public virtual int GetSize() {
+        public virtual int GetSize()
+        {
             return Size;
         }
 
-        public virtual void Serialize(FusionWriter writer) {
+        public virtual void Serialize(FusionWriter writer)
+        {
 #if DEBUG
             if (!_hasWrittenDefaultGrip)
                 FusionLogger.Warn("Serializing a grab but the default grip values weren't written!");
@@ -54,19 +59,21 @@ namespace LabFusion.Data {
             writer.Write(targetInBase);
         }
 
-        public virtual void Deserialize(FusionReader reader) {
+        public virtual void Deserialize(FusionReader reader)
+        {
             isGrabbed = reader.ReadBoolean();
             targetInBase = reader.ReadFusionSerializable<SerializedTransform>();
         }
 
         public abstract Grip GetGrip();
 
-        public virtual void RequestGrab(PlayerRep rep, Handedness handedness, Grip grip) {
+        public virtual void RequestGrab(PlayerRep rep, Handedness handedness, Grip grip)
+        {
             // Don't do anything if this isn't grabbed anymore
             if (!isGrabbed || grip == null)
                 return;
 
-            rep.AttachObject(handedness, grip, SimpleTransform.Create(targetInBase.position.ToUnityVector3(), targetInBase.rotation.Expand().ToUnityQuaternion()));
+            rep.AttachObject(handedness, grip, SimpleTransform.Create(targetInBase.position.ToUnityVector3(), targetInBase.rotation.ToUnityQuaternion()));
         }
     }
 }

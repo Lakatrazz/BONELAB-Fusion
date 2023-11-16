@@ -26,18 +26,25 @@ using IL2ChunkList = Il2CppSystem.Collections.Generic.List<SLZ.Marrow.SceneStrea
 namespace LabFusion.Patching
 {
     [HarmonyPatch(typeof(SceneLoadQueue))]
-    public static class SceneLoadQueuePatches {
+    public static class SceneLoadQueuePatches
+    {
         [HarmonyPrefix]
         [HarmonyPatch(nameof(SceneLoadQueue.AddUnload))]
-        public static bool AddUnload(string address) {
-            if (NetworkInfo.HasServer) {
+        public static bool AddUnload(string address)
+        {
+            if (NetworkInfo.HasServer)
+            {
                 var loader = SceneStreamer.Session.ChunkLoader;
 
                 // Ew, nested foreach loops
-                foreach (var pair in TriggerUtilities.PlayerChunks) {
-                    foreach (var chunk in pair.Value) {
-                        foreach (var layer in chunk.sceneLayers) {
-                            if (layer.AssetGUID == address && loader._activeChunks.Has(chunk)) {
+                foreach (var pair in TriggerUtilities.PlayerChunks)
+                {
+                    foreach (var chunk in pair.Value)
+                    {
+                        foreach (var layer in chunk.sceneLayers)
+                        {
+                            if (layer.AssetGUID == address && loader._activeChunks.Has(chunk))
+                            {
                                 return false;
                             }
                         }
@@ -50,21 +57,25 @@ namespace LabFusion.Patching
     }
 
     [HarmonyPatch(typeof(ChunkTrigger))]
-    public static class ChunkTriggerPatches {
+    public static class ChunkTriggerPatches
+    {
         [HarmonyPrefix]
         [HarmonyPatch(nameof(ChunkTrigger.OnUnload))]
-        public static bool OnUnload(ChunkTrigger __instance) {
+        public static bool OnUnload(ChunkTrigger __instance)
+        {
             if (!FusionSceneManager.IsDelayedLoadDone())
                 return true;
 
-            if (NetworkInfo.HasServer) {
+            if (NetworkInfo.HasServer)
+            {
                 var loader = SceneStreamer.Session.ChunkLoader;
                 var chunk = __instance.chunk;
                 bool canUnload = true;
 
-                if (!TriggerUtilities.CanUnload(chunk)) {
+                if (!TriggerUtilities.CanUnload(chunk))
+                {
                     canUnload = false;
-                
+
                     if (loader._chunksToUnload.Has(chunk) && !loader._activeChunks.Has(chunk))
                     {
                         loader._chunksToUnload.Remove(chunk);
@@ -104,7 +115,8 @@ namespace LabFusion.Patching
             return true;
         }
 
-        public static void Postfix(ChunkTrigger __instance, Collider other, IL2ChunkList __state) {
+        public static void Postfix(ChunkTrigger __instance, Collider other, IL2ChunkList __state)
+        {
             if (__state == null)
                 return;
 

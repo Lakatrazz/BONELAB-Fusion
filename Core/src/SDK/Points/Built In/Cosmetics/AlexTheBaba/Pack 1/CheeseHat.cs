@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class CheeseHat : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class CheeseHat : AccessoryItem
+    {
         public override string Title => "The Big Cheese";
 
         public override string Author => BitEconomy.BaBaAuthor;

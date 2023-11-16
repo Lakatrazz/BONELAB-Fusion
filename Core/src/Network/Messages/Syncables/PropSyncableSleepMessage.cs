@@ -31,20 +31,23 @@ namespace LabFusion.Network
             syncId = reader.ReadUInt16();
         }
 
-        public PropSyncable GetPropSyncable() {
+        public PropSyncable GetPropSyncable()
+        {
             if (SyncManager.TryGetSyncable(syncId, out var syncable) && syncable is PropSyncable propSyncable)
                 return propSyncable;
 
             return null;
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
 
         public static PropSyncableSleepData Create(byte ownerId, ushort syncId)
         {
-            return new PropSyncableSleepData {
+            return new PropSyncableSleepData
+            {
                 ownerId = ownerId,
                 syncId = syncId,
             };
@@ -58,21 +61,20 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (var reader = FusionReader.Create(bytes)) {
-                using (var data = reader.ReadFusionSerializable<PropSyncableSleepData>()) {
-                    // Find the prop syncable and notify it to sleep
-                    var syncable = data.GetPropSyncable();
-                    if (syncable != null && syncable.IsRegistered() && syncable.Owner.HasValue && syncable.Owner.Value == data.ownerId) {
-                        syncable.IsSleeping = true;
-                    }
+            using var reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<PropSyncableSleepData>();
+            // Find the prop syncable and notify it to sleep
+            var syncable = data.GetPropSyncable();
+            if (syncable != null && syncable.IsRegistered() && syncable.Owner.HasValue && syncable.Owner.Value == data.ownerId)
+            {
+                syncable.IsSleeping = true;
+            }
 
-                    // Send message to other clients if server
-                    if (NetworkInfo.IsServer && isServerHandled) {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessageExcept(data.ownerId, NetworkChannel.Reliable, message);
-                        }
-                    }
-                }
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
+            {
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.ownerId, NetworkChannel.Reliable, message);
             }
         }
     }

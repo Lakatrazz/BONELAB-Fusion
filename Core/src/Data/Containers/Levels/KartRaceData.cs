@@ -21,7 +21,8 @@ using UnityEngine.Events;
 using LabFusion.Utilities;
 using MelonLoader;
 
-namespace LabFusion.Data {
+namespace LabFusion.Data
+{
     public class KartRaceData : LevelDataHandler
     {
         public override string LevelTitle => "10 - Monogon Motorway";
@@ -37,7 +38,8 @@ namespace LabFusion.Data {
 
         public static GameControl_KartRace GameController;
 
-        protected override void MainSceneInitialized() {
+        protected override void MainSceneInitialized()
+        {
             GameController = GameObject.FindObjectOfType<GameControl_KartRace>();
             SpawnExtraKarts();
         }
@@ -57,7 +59,8 @@ namespace LabFusion.Data {
                 var resetButtonGo = GameObject.Find("prop_bigButton_RESETRACE");
 
                 ButtonToggle resetButton = null;
-                if (resetButtonGo != null) {
+                if (resetButtonGo != null)
+                {
                     resetButton = resetButtonGo.GetComponent<ButtonToggle>();
                 }
 
@@ -76,7 +79,8 @@ namespace LabFusion.Data {
                         newPlacerScript.RePlaceSpawnable();
 
                         // Add to reset button
-                        if (resetButton != null) {
+                        if (resetButton != null)
+                        {
                             resetButton.onDepress.AddListener((UnityAction)newPlacerScript.RePlaceSpawnable);
                         }
                     }

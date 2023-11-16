@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class GP5 : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class GP5 : AccessoryItem
+    {
         public override string Title => "GP-5 Gas Mask";
 
         public override string Author => BitEconomy.RiggleAuthor;

@@ -63,58 +63,54 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<HomeEventData>();
+            var controller = HomeData.GameController;
+            HomePatches.IgnorePatches = true;
+            TaxiControllerPatches.IgnorePatches = true;
+
+            // We ONLY handle this for clients, this message should only ever be sent by the server!
+            if (!NetworkInfo.IsServer && controller)
             {
-                using (var data = reader.ReadFusionSerializable<HomeEventData>())
+                switch (data.type)
                 {
-                    var controller = HomeData.GameController;
-                    HomePatches.IgnorePatches = true;
-                    TaxiControllerPatches.IgnorePatches = true;
+                    default:
+                    case HomeEventType.UNKNOWN:
+                        break;
+                    case HomeEventType.WARMUP_JIMMY_ARM:
+                        controller.WarmUpJimmyArm();
+                        break;
+                    case HomeEventType.REACH_WINDMILL:
+                        controller.ReachWindmill();
+                        break;
+                    case HomeEventType.REACHED_TAXI:
+                        controller.ReachedTaxi();
+                        break;
+                    case HomeEventType.ARM_HIDE:
+                        controller.ArmHide();
 
-                    // We ONLY handle this for clients, this message should only ever be sent by the server!
-                    if (!NetworkInfo.IsServer && controller)
-                    {
-                        switch (data.type)
-                        {
-                            default:
-                            case HomeEventType.UNKNOWN:
-                                break;
-                            case HomeEventType.WARMUP_JIMMY_ARM:
-                                controller.WarmUpJimmyArm();
-                                break;
-                            case HomeEventType.REACH_WINDMILL:
-                                controller.ReachWindmill();
-                                break;
-                            case HomeEventType.REACHED_TAXI:
-                                controller.ReachedTaxi();
-                                break;
-                            case HomeEventType.ARM_HIDE:
-                                controller.ArmHide();
-
-                                HomeData.TeleportToJimmyFinger();
-                                break;
-                            case HomeEventType.VOID_DRIVING:
-                                controller.VoidDriving();
-                                break;
-                            case HomeEventType.DRIVING_END:
-                                controller.DrivingEnd();
-                                break;
-                            case HomeEventType.COMPLETE_GAME:
-                                controller.CompleteGame();
-                                break;
-                            case HomeEventType.SEQUENCE_PROGRESS:
-                                controller.SequenceProgress(data.selectionNumber);
-                                break;
-                            case HomeEventType.SPLINE_LOOP_COUNTER:
-                                HomeData.TaxiController.SplineLoopCounter();
-                                break;
-                        }
-                    }
-
-                    HomePatches.IgnorePatches = false;
-                    TaxiControllerPatches.IgnorePatches = false;
+                        HomeData.TeleportToJimmyFinger();
+                        break;
+                    case HomeEventType.VOID_DRIVING:
+                        controller.VoidDriving();
+                        break;
+                    case HomeEventType.DRIVING_END:
+                        controller.DrivingEnd();
+                        break;
+                    case HomeEventType.COMPLETE_GAME:
+                        controller.CompleteGame();
+                        break;
+                    case HomeEventType.SEQUENCE_PROGRESS:
+                        controller.SequenceProgress(data.selectionNumber);
+                        break;
+                    case HomeEventType.SPLINE_LOOP_COUNTER:
+                        HomeData.TaxiController.SplineLoopCounter();
+                        break;
                 }
             }
+
+            HomePatches.IgnorePatches = false;
+            TaxiControllerPatches.IgnorePatches = false;
         }
     }
 }

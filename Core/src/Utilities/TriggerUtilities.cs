@@ -19,20 +19,24 @@ using SLZ.Marrow.SceneStreaming;
 using MelonLoader;
 using LabFusion.MarrowIntegration;
 
-namespace LabFusion.Utilities {
-    public static class TriggerUtilities {
+namespace LabFusion.Utilities
+{
+    public static class TriggerUtilities
+    {
         public static readonly FusionDictionary<TriggerLasers, int> TriggerCount = new(new UnityComparer());
         public static readonly FusionDictionary<GenGameControl_Trigger, int> GenTriggerCount = new(new UnityComparer());
         public static readonly FusionDictionary<TriggerRefProxy, List<Chunk>> PlayerChunks = new(new UnityComparer());
 
-        internal static void Increment(TriggerLasers trigger) {
+        internal static void Increment(TriggerLasers trigger)
+        {
             if (!TriggerCount.ContainsKey(trigger))
                 TriggerCount.Add(trigger, 0);
 
             TriggerCount[trigger]++;
         }
 
-        internal static void Decrement(TriggerLasers trigger) {
+        internal static void Decrement(TriggerLasers trigger)
+        {
             if (!TriggerCount.ContainsKey(trigger))
                 TriggerCount.Add(trigger, 0);
 
@@ -57,29 +61,34 @@ namespace LabFusion.Utilities {
             GenTriggerCount[trigger] = ManagedMathf.Clamp(GenTriggerCount[trigger], 0, int.MaxValue);
         }
 
-        internal static void SetChunk(Collider other, Chunk chunk) {
+        internal static void SetChunk(Collider other, Chunk chunk)
+        {
             var proxy = TriggerRefProxy.Cache.Get(other.gameObject);
             if (!proxy)
                 return;
 
-            if (!PlayerChunks.ContainsKey(proxy)) {
+            if (!PlayerChunks.ContainsKey(proxy))
+            {
                 PlayerChunks.Add(proxy, new List<Chunk>());
             }
 
             PlayerChunks[proxy] = chunk.GetChunks();
         }
 
-        internal static void AddChunk(Collider other, Chunk chunk) {
+        internal static void AddChunk(Collider other, Chunk chunk)
+        {
             var proxy = TriggerRefProxy.Cache.Get(other.gameObject);
             if (!proxy)
                 return;
 
-            if (!PlayerChunks.ContainsKey(proxy)) {
+            if (!PlayerChunks.ContainsKey(proxy))
+            {
                 PlayerChunks.Add(proxy, new List<Chunk>());
             }
 
             var chunks = chunk.GetChunks();
-            for (var i = 0; i < chunks.Count; i++) {
+            for (var i = 0; i < chunks.Count; i++)
+            {
                 var found = chunks[i];
 
                 if (!PlayerChunks[proxy].Has(found))
@@ -87,20 +96,24 @@ namespace LabFusion.Utilities {
             }
         }
 
-        internal static List<Chunk> GetChunks(Collider other) {
+        internal static List<Chunk> GetChunks(Collider other)
+        {
             var proxy = TriggerRefProxy.Cache.Get(other.gameObject);
             if (!proxy)
                 return new List<Chunk>();
 
-            if (!PlayerChunks.ContainsKey(proxy)) {
+            if (!PlayerChunks.ContainsKey(proxy))
+            {
                 PlayerChunks.Add(proxy, new List<Chunk>());
             }
 
             return PlayerChunks[proxy];
         }
 
-        internal static bool CanUnload(Chunk chunk) {
-            foreach (var pair in PlayerChunks) {
+        internal static bool CanUnload(Chunk chunk)
+        {
+            foreach (var pair in PlayerChunks)
+            {
                 if (pair.Value.Has(chunk))
                     return false;
             }
@@ -140,19 +153,22 @@ namespace LabFusion.Utilities {
             return GenTriggerCount[trigger] <= 0;
         }
 
-        public static bool VerifyLevelTrigger(TriggerLasers trigger, Collider other, out bool runMethod) {
+        public static bool VerifyLevelTrigger(TriggerLasers trigger, Collider other, out bool runMethod)
+        {
             runMethod = false;
 
             // Get transform of trigger
             var transform = trigger.transform;
 
             // Check if this has a marrow sdk addon
-            if (OnlyTriggerOnLocalPlayer.Cache.ContainsSource(trigger.gameObject)) {
+            if (OnlyTriggerOnLocalPlayer.Cache.ContainsSource(trigger.gameObject))
+            {
                 runMethod = IsMainRig(other);
                 return true;
             }
             // Check if this is a lap trigger for Monogon Motorway
-            else if (KartRaceData.GameController != null && KartRaceData.GameController.transform == transform.parent) {
+            else if (KartRaceData.GameController != null && KartRaceData.GameController.transform == transform.parent)
+            {
                 runMethod = IsMainRig(other);
                 return true;
             }
@@ -168,12 +184,14 @@ namespace LabFusion.Utilities {
             var transform = trigger.transform;
 
             // Check if this has a marrow sdk addon
-            if (OnlyTriggerOnLocalPlayer.Cache.ContainsSource(trigger.gameObject)) {
+            if (OnlyTriggerOnLocalPlayer.Cache.ContainsSource(trigger.gameObject))
+            {
                 runMethod = IsMainRig(other);
                 return true;
             }
             // Check if this is part of a launch pad/link data
-            else if (transform.GetComponentInParent<LinkData>() != null) {
+            else if (transform.GetComponentInParent<LinkData>() != null)
+            {
                 runMethod = IsMainRig(other);
                 return true;
             }
@@ -181,11 +199,13 @@ namespace LabFusion.Utilities {
             else if (HomeData.GameController != null && transform.parent.name.Contains("TaxiSequence_EnableWithTaxiStartChunk"))
             {
                 var seat = HomeData.TaxiSeat;
-                if (seat.rigManager != null) {
+                if (seat.rigManager != null)
+                {
                     var proxy = TriggerRefProxy.Cache.Get(other.gameObject);
                     RigManager rig;
 
-                    if (proxy && proxy.root && (rig = RigManager.Cache.Get(proxy.root))) {
+                    if (proxy && proxy.root && (rig = RigManager.Cache.Get(proxy.root)))
+                    {
                         runMethod = seat.rigManager == rig;
                         return true;
                     }

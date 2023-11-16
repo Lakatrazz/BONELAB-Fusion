@@ -13,9 +13,12 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Gamemodes {
-    public class Entangled : Gamemode {
-        public class EntangledTether {
+namespace LabFusion.SDK.Gamemodes
+{
+    public class Entangled : Gamemode
+    {
+        public class EntangledTether
+        {
             public PlayerId player1;
             public PlayerId player2;
 
@@ -25,7 +28,8 @@ namespace LabFusion.SDK.Gamemodes {
 
             public GameObject lineInstance;
 
-            public EntangledTether(PlayerId player1, PlayerId player2) {
+            public EntangledTether(PlayerId player1, PlayerId player2)
+            {
                 this.player1 = player1;
                 this.player2 = player2;
 
@@ -34,7 +38,8 @@ namespace LabFusion.SDK.Gamemodes {
                 lineInstance.hideFlags = HideFlags.DontUnloadUnusedAsset;
             }
 
-            public void Dispose() {
+            public void Dispose()
+            {
                 if (!joint.IsNOC())
                     GameObject.Destroy(joint);
 
@@ -42,11 +47,13 @@ namespace LabFusion.SDK.Gamemodes {
                     GameObject.Destroy(lineInstance);
             }
 
-            public bool IsValid() {
+            public bool IsValid()
+            {
                 return !PlayerId.IsNullOrInvalid(player1) && !PlayerId.IsNullOrInvalid(player2);
             }
 
-            public void OnUpdate() {
+            public void OnUpdate()
+            {
                 // Make sure we aren't loading
                 if (FusionSceneManager.IsLoading() || !IsValid())
                     return;
@@ -59,7 +66,8 @@ namespace LabFusion.SDK.Gamemodes {
                     otherPelvis = ref2.RigManager.physicsRig.torso._pelvisRb;
 
                 // If we have both pelvises, update them
-                if (selfPelvis != null && otherPelvis != null) {
+                if (selfPelvis != null && otherPelvis != null)
+                {
                     // Create joint if missing
                     if (joint.IsNOC())
                         CreateJoint();
@@ -77,12 +85,14 @@ namespace LabFusion.SDK.Gamemodes {
                     lineInstance.transform.localScale = scale;
                 }
                 // Otherwise, hide the line
-                else {
+                else
+                {
                     lineInstance.SetActive(false);
                 }
             }
 
-            private void CreateJoint() {
+            private void CreateJoint()
+            {
                 joint = selfPelvis.gameObject.AddComponent<ConfigurableJoint>();
 
                 joint.xMotion = joint.yMotion = joint.zMotion = ConfigurableJointMotion.Limited;
@@ -121,7 +131,8 @@ namespace LabFusion.SDK.Gamemodes {
 
         private bool _hasOverridenValues = false;
 
-        public override void OnGamemodeRegistered() {
+        public override void OnGamemodeRegistered()
+        {
             Instance = this;
 
             // Add hooks
@@ -131,21 +142,27 @@ namespace LabFusion.SDK.Gamemodes {
             SetDefaultValues();
         }
 
-        public override void OnMainSceneInitialized() {
-            if (!_hasOverridenValues) {
+        public override void OnMainSceneInitialized()
+        {
+            if (!_hasOverridenValues)
+            {
                 SetDefaultValues();
             }
-            else {
+            else
+            {
                 _hasOverridenValues = false;
             }
         }
 
-        public void SetDefaultValues() {
+        public void SetDefaultValues()
+        {
             SetPlaylist(DefaultMusicVolume, FusionContentLoader.GeoGrpFellDownTheStairs);
         }
 
-        public void SetOverriden() {
-            if (FusionSceneManager.IsLoading()) {
+        public void SetOverriden()
+        {
+            if (FusionSceneManager.IsLoading())
+            {
                 if (!_hasOverridenValues)
                     SetDefaultValues();
 
@@ -153,18 +170,21 @@ namespace LabFusion.SDK.Gamemodes {
             }
         }
 
-        public override void OnLoadingBegin() {
+        public override void OnLoadingBegin()
+        {
             _hasOverridenValues = false;
         }
 
-        public override void OnGamemodeUnregistered() {
+        public override void OnGamemodeUnregistered()
+        {
             if (Instance == this)
                 Instance = null;
 
             // Cleanup partner
             _partner = null;
 
-            foreach (var tether in _tethers) {
+            foreach (var tether in _tethers)
+            {
                 tether.Dispose();
             }
 
@@ -175,20 +195,26 @@ namespace LabFusion.SDK.Gamemodes {
             MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
         }
 
-        protected override void OnUpdate() {
+        protected override void OnUpdate()
+        {
             // Update all tethers
-            if (IsActive()) {
-                foreach (var tether in _tethers) {
+            if (IsActive())
+            {
+                foreach (var tether in _tethers)
+                {
                     tether.OnUpdate();
                 }
             }
         }
 
-        protected void OnPlayerJoin(PlayerId id) {
-            if (IsActive()) {
+        protected void OnPlayerJoin(PlayerId id)
+        {
+            if (IsActive())
+            {
                 var unassignedPlayers = GetUnassignedPlayers();
 
-                if (unassignedPlayers.Count > 0) {
+                if (unassignedPlayers.Count > 0)
+                {
                     AssignPartners(unassignedPlayers[0], id);
                 }
                 else
@@ -196,19 +222,23 @@ namespace LabFusion.SDK.Gamemodes {
             }
         }
 
-        protected void OnPlayerLeave(PlayerId id) {
+        protected void OnPlayerLeave(PlayerId id)
+        {
             RemovePartners(id);
         }
 
-        protected override void OnStartGamemode() {
+        protected override void OnStartGamemode()
+        {
             base.OnStartGamemode();
 
             // Recursively assign players until there are no more pairs left
-            if (NetworkInfo.IsServer) {
+            if (NetworkInfo.IsServer)
+            {
                 var unassignedPlayers = GetUnassignedPlayers();
 
                 // Make sure there are always at least 2 players
-                while (unassignedPlayers.Count > 1) {
+                while (unassignedPlayers.Count > 1)
+                {
                     unassignedPlayers.Shuffle();
 
                     var player1 = unassignedPlayers[0];
@@ -221,13 +251,15 @@ namespace LabFusion.SDK.Gamemodes {
                 }
 
                 // Check if there are any left
-                if (unassignedPlayers.Count > 0) {
+                if (unassignedPlayers.Count > 0)
+                {
                     AssignPartners(unassignedPlayers[0], null);
                 }
             }
         }
 
-        protected override void OnStopGamemode() {
+        protected override void OnStopGamemode()
+        {
             base.OnStopGamemode();
 
             // Send notification of gamemode stop
@@ -242,8 +274,10 @@ namespace LabFusion.SDK.Gamemodes {
             });
 
             // Remove all player partnerships
-            if (NetworkInfo.IsServer) {
-                foreach (var player in PlayerIdManager.PlayerIds) {
+            if (NetworkInfo.IsServer)
+            {
+                foreach (var player in PlayerIdManager.PlayerIds)
+                {
                     RemovePartners(player);
                 }
             }
@@ -251,17 +285,20 @@ namespace LabFusion.SDK.Gamemodes {
             // Remove self partner
             _partner = null;
 
-            foreach (var tether in _tethers) {
+            foreach (var tether in _tethers)
+            {
                 tether.Dispose();
             }
 
             _tethers.Clear();
         }
 
-        protected List<PlayerId> GetUnassignedPlayers() {
+        protected List<PlayerId> GetUnassignedPlayers()
+        {
             List<PlayerId> unassignedPlayers = new List<PlayerId>();
 
-            foreach (var player in PlayerIdManager.PlayerIds) {
+            foreach (var player in PlayerIdManager.PlayerIds)
+            {
                 if (GetPartner(player) == null)
                     unassignedPlayers.Add(player);
             }
@@ -269,9 +306,11 @@ namespace LabFusion.SDK.Gamemodes {
             return unassignedPlayers;
         }
 
-        protected void AssignPartners(PlayerId player1, PlayerId player2) {
+        protected void AssignPartners(PlayerId player1, PlayerId player2)
+        {
             // Check if the second player is null
-            if (player2 == null) {
+            if (player2 == null)
+            {
                 TrySetMetadata(GetPartnerKey(player1), "-1");
                 return;
             }
@@ -281,12 +320,14 @@ namespace LabFusion.SDK.Gamemodes {
             TrySetMetadata(GetPartnerKey(player2), player1.LongId.ToString());
 
             // Teleport the first player to the second
-            if (PlayerRepManager.TryGetPlayerRep(player2, out var rep) && rep.IsCreated) {
-                PlayerSender.SendPlayerTeleport(player1, rep.RigReferences.RigManager.physicsRig._feetRb.position); 
+            if (PlayerRepManager.TryGetPlayerRep(player2, out var rep) && rep.IsCreated)
+            {
+                PlayerSender.SendPlayerTeleport(player1, rep.RigReferences.RigManager.physicsRig._feetRb.position);
             }
         }
 
-        protected void RemovePartners(PlayerId player1) {
+        protected void RemovePartners(PlayerId player1)
+        {
             var player2 = GetPartner(player1);
 
             TryRemoveMetadata(GetPartnerKey(player1));
@@ -295,20 +336,25 @@ namespace LabFusion.SDK.Gamemodes {
                 TryRemoveMetadata(GetPartnerKey(player2));
         }
 
-        protected string GetPartnerKey(PlayerId id) {
+        protected string GetPartnerKey(PlayerId id)
+        {
             return $"{PlayerPartnerKey}.{id.LongId}";
         }
 
-        protected PlayerId GetPartner(PlayerId id) {
-            if (TryGetMetadata(GetPartnerKey(id), out var value) && ulong.TryParse(value, out var other)) {
+        protected PlayerId GetPartner(PlayerId id)
+        {
+            if (TryGetMetadata(GetPartnerKey(id), out var value) && ulong.TryParse(value, out var other))
+            {
                 return PlayerIdManager.GetPlayerId(other);
             }
 
             return null;
         }
 
-        protected void OnReceivePartner(PlayerId id) {
-            if (id == null) {
+        protected void OnReceivePartner(PlayerId id)
+        {
+            if (id == null)
+            {
                 FusionNotifier.Send(new FusionNotification()
                 {
                     title = "Entangled Partner Assignment",
@@ -323,7 +369,8 @@ namespace LabFusion.SDK.Gamemodes {
 
                 EntangledTether localTether = GetTether(PlayerIdManager.LocalId);
 
-                if (localTether != null) {
+                if (localTether != null)
+                {
                     localTether.Dispose();
                     _tethers.RemoveInstance(localTether);
                 }
@@ -347,42 +394,54 @@ namespace LabFusion.SDK.Gamemodes {
             });
         }
 
-        protected override void OnMetadataChanged(string key, string value) {
+        protected override void OnMetadataChanged(string key, string value)
+        {
             // Check if we are being assigned a partner
-            if (GetPartnerKey(PlayerIdManager.LocalId) == key) {
-                if (value == "-1") {
+            if (GetPartnerKey(PlayerIdManager.LocalId) == key)
+            {
+                if (value == "-1")
+                {
                     OnReceivePartner(null);
                 }
-                else if (ulong.TryParse(value, out var partnerId)) {
+                else if (ulong.TryParse(value, out var partnerId))
+                {
                     OnReceivePartner(PlayerIdManager.GetPlayerId(partnerId));
                 }
             }
-            else if (value != "-1" && key.StartsWith(PlayerPartnerKey)) {
+            else if (value != "-1" && key.StartsWith(PlayerPartnerKey))
+            {
                 var id = GetPlayerId(key);
 
-                if (id != null && ulong.TryParse(value, out var partnerId)) {
+                if (id != null && ulong.TryParse(value, out var partnerId))
+                {
                     _tethers.Add(new EntangledTether(id, PlayerIdManager.GetPlayerId(partnerId)));
                 }
             }
         }
 
-        protected override void OnMetadataRemoved(string key) {
-            if (GetPartnerKey(PlayerIdManager.LocalId) == key) {
+        protected override void OnMetadataRemoved(string key)
+        {
+            if (GetPartnerKey(PlayerIdManager.LocalId) == key)
+            {
                 _partner = null;
                 var localTether = GetTether(PlayerIdManager.LocalId);
 
-                if (localTether != null) {
+                if (localTether != null)
+                {
                     localTether.Dispose();
                     _tethers.RemoveInstance(localTether);
                 }
             }
-            else if (key.StartsWith(PlayerPartnerKey)) {
+            else if (key.StartsWith(PlayerPartnerKey))
+            {
                 var id = GetPlayerId(key);
 
-                if (id != null) {
+                if (id != null)
+                {
                     var tether = GetTether(id);
 
-                    if (tether != null) {
+                    if (tether != null)
+                    {
                         tether.Dispose();
                         _tethers.RemoveInstance(tether);
                     }
@@ -390,9 +449,12 @@ namespace LabFusion.SDK.Gamemodes {
             }
         }
 
-        protected PlayerId GetPlayerId(string partnerKey) {
-            foreach (var id in PlayerIdManager.PlayerIds) {
-                if (GetPartnerKey(id) == partnerKey) {
+        protected PlayerId GetPlayerId(string partnerKey)
+        {
+            foreach (var id in PlayerIdManager.PlayerIds)
+            {
+                if (GetPartnerKey(id) == partnerKey)
+                {
                     return id;
                 }
             }
@@ -400,8 +462,10 @@ namespace LabFusion.SDK.Gamemodes {
             return null;
         }
 
-        protected EntangledTether GetTether(PlayerId id) {
-            foreach (var tether in _tethers) {
+        protected EntangledTether GetTether(PlayerId id)
+        {
+            foreach (var tether in _tethers)
+            {
                 if (tether.player1 == id || tether.player2 == id)
                     return tether;
             }

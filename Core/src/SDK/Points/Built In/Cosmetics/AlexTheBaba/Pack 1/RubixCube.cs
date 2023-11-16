@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class RubixCube : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class RubixCube : AccessoryItem
+    {
         public override string Title => "Puzzle Cube";
 
         public override string Author => BitEconomy.BaBaAuthor;

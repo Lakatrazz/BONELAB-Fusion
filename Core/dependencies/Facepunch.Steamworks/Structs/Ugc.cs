@@ -4,10 +4,10 @@
 
 namespace Steamworks.Data
 {
-	public struct Ugc
-	{
-		internal UGCHandle_t Handle;
-	}
+    public struct Ugc
+    {
+        internal UGCHandle_t Handle;
+    }
 }
 
 #pragma warning restore 649

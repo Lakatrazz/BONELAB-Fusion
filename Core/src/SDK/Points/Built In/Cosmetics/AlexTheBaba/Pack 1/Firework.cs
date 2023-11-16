@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace LabFusion.SDK.Points {
-    public class Firework : AccessoryItem {
+namespace LabFusion.SDK.Points
+{
+    public class Firework : AccessoryItem
+    {
         public override string Title => "Firework Backpack";
 
         public override string Author => BitEconomy.BaBaAuthor;

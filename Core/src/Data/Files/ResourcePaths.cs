@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace LabFusion.Data
 {
-    public static class ResourcePaths {
+    public static class ResourcePaths
+    {
         public const string SteamAPIPath = "LabFusion.Core.resources.lib.x86_64.steam_api64.dll";
 
         public const string RawChangelogPath = "LabFusion.Core.resources.text.raw_changelog.txt";

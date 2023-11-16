@@ -130,27 +130,32 @@ namespace LabFusion.Network
         }
     }
 
-    public class PlayerRepVitalsData : IFusionSerializable, IDisposable {
+    public class PlayerRepVitalsData : IFusionSerializable, IDisposable
+    {
         public const int Size = SerializedBodyVitals.Size + sizeof(byte);
 
         public byte smallId;
         public SerializedBodyVitals bodyVitals;
 
-        public void Serialize(FusionWriter writer) {
+        public void Serialize(FusionWriter writer)
+        {
             writer.Write(smallId);
             writer.Write(bodyVitals);
         }
 
-        public void Deserialize(FusionReader reader) {
+        public void Deserialize(FusionReader reader)
+        {
             smallId = reader.ReadByte();
             bodyVitals = reader.ReadFusionSerializable<SerializedBodyVitals>();
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
 
-        public static PlayerRepVitalsData Create(byte smallId, BodyVitals vitals) {
+        public static PlayerRepVitalsData Create(byte smallId, BodyVitals vitals)
+        {
             return new PlayerRepVitalsData()
             {
                 smallId = smallId,
@@ -158,24 +163,25 @@ namespace LabFusion.Network
             };
         }
     }
-    
+
     public class PlayerRepVitalsMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.PlayerRepVitals;
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
-            using (var reader = FusionReader.Create(bytes)) {
-                var data = reader.ReadFusionSerializable<PlayerRepVitalsData>();
+        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        {
+            using var reader = FusionReader.Create(bytes);
+            var data = reader.ReadFusionSerializable<PlayerRepVitalsData>();
 
-                if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep)) {
-                    rep.SetVitals(data.bodyVitals);
-                }
+            if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep))
+            {
+                rep.SetVitals(data.bodyVitals);
+            }
 
-                if (NetworkInfo.IsServer) {
-                    using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                        MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
-                    }
-                }
+            if (NetworkInfo.IsServer)
+            {
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
             }
         }
     }

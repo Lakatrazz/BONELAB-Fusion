@@ -11,7 +11,8 @@ using SystemVector3 = System.Numerics.Vector3;
 
 namespace LabFusion.Network
 {
-    public class FusionReader : IDisposable {
+    public class FusionReader : IDisposable
+    {
         private byte[] buffer;
 
         private int Offset = 0;
@@ -36,13 +37,15 @@ namespace LabFusion.Network
             return reader;
         }
 
-        public T ReadFusionSerializable<T>() where T : IFusionSerializable, new() {
+        public T ReadFusionSerializable<T>() where T : IFusionSerializable, new()
+        {
             T instance = new();
             instance.Deserialize(this);
             return instance;
         }
 
-        public void ReadFusionSerializable<T>(ref T value) where T : IFusionSerializable {
+        public void ReadFusionSerializable<T>(ref T value) where T : IFusionSerializable
+        {
             value.Deserialize(this);
         }
 
@@ -53,7 +56,8 @@ namespace LabFusion.Network
             return instance;
         }
 
-        public void ReadFusionSerializable(ref IFusionSerializable value) {
+        public void ReadFusionSerializable(ref IFusionSerializable value)
+        {
             value.Deserialize(this);
         }
 
@@ -61,9 +65,11 @@ namespace LabFusion.Network
         /// Reads a gameObject from the reader. This is not always accurate.
         /// </summary>
         /// <returns></returns>
-        public GameObject ReadGameObject() {
+        public GameObject ReadGameObject()
+        {
             string path = ReadString();
-            if (path == "null") {
+            if (path == "null")
+            {
                 return null;
             }
             else
@@ -74,7 +80,8 @@ namespace LabFusion.Network
         /// Reads a version from the reader.
         /// </summary>
         /// <returns></returns>
-        public Version ReadVersion() {
+        public Version ReadVersion()
+        {
             return new Version(
                 ReadInt32(),
                 ReadInt32(),
@@ -113,7 +120,8 @@ namespace LabFusion.Network
         /// Reads a nullable byte from the reader.
         /// </summary>
         /// <returns></returns>
-        public byte? ReadByteNullable() {
+        public byte? ReadByteNullable()
+        {
             bool hasValue = ReadBoolean();
 
             if (hasValue)
@@ -126,7 +134,8 @@ namespace LabFusion.Network
         /// Reads a nullable unsigned 16 bit integer from the reader.
         /// </summary>
         /// <returns></returns>
-        public ushort? ReadUInt16Nullable() {
+        public ushort? ReadUInt16Nullable()
+        {
             bool hasValue = ReadBoolean();
 
             if (hasValue)
@@ -228,15 +237,18 @@ namespace LabFusion.Network
             return result;
         }
 
-        public Vector3 ReadVector3() {
+        public Vector3 ReadVector3()
+        {
             return new Vector3(ReadSingle(), ReadSingle(), ReadSingle());
         }
 
-        public SystemVector3 ReadSystemVector3() {
+        public SystemVector3 ReadSystemVector3()
+        {
             return new SystemVector3(ReadSingle(), ReadSingle(), ReadSingle());
         }
 
-        public Vector2 ReadVector2() {
+        public Vector2 ReadVector2()
+        {
             return new Vector2(ReadSingle(), ReadSingle());
         }
 
@@ -846,7 +858,8 @@ namespace LabFusion.Network
             var keys = ReadStrings();
             var values = ReadStrings();
 
-            for (var i = 0; i < keys.Length; i++) {
+            for (var i = 0; i < keys.Length; i++)
+            {
                 dictionary.Add(keys[i], values[i]);
             }
 
@@ -1052,7 +1065,8 @@ namespace LabFusion.Network
         }
 
 
-        public void Dispose() {
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
     }

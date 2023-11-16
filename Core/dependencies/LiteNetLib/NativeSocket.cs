@@ -77,7 +77,7 @@ namespace LiteNetLib
             Buffer.BlockCopy(address, 0, NativeAddress, 0, address.Length);
 
             short family = (short)((address[1] << 8) | address[0]);
-            Port         =(ushort)((address[2] << 8) | address[3]);
+            Port = (ushort)((address[2] << 8) | address[3]);
 
             if ((NativeSocket.UnixMode && family == NativeSocket.AF_INET6) || (!NativeSocket.UnixMode && (AddressFamily)family == AddressFamily.InterNetworkV6))
             {

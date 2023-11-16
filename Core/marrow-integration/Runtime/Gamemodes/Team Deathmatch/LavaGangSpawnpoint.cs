@@ -14,24 +14,28 @@ using SLZ.Marrow.Utilities;
 using SLZ.Marrow;
 #endif
 
-namespace LabFusion.MarrowIntegration {
+namespace LabFusion.MarrowIntegration
+{
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
     [AddComponentMenu("BONELAB Fusion/Gamemodes/Lava Gang Spawnpoint")]
     [DisallowMultipleComponent]
 #endif
-    public sealed class LavaGangSpawnpoint : FusionMarrowBehaviour {
+    public sealed class LavaGangSpawnpoint : FusionMarrowBehaviour
+    {
 #if MELONLOADER
         public LavaGangSpawnpoint(IntPtr intPtr) : base(intPtr) { }
 
         public static readonly FusionComponentCache<GameObject, LavaGangSpawnpoint> Cache = new FusionComponentCache<GameObject, LavaGangSpawnpoint>();
 
-        private void OnEnable() {
+        private void OnEnable()
+        {
             Cache.Add(gameObject, this);
         }
 
-        private void OnDisable() {
+        private void OnDisable()
+        {
             Cache.Remove(gameObject);
         }
 #else

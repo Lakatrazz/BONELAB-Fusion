@@ -23,7 +23,8 @@ namespace LabFusion.Patching
     // Since some methods here use structs, we native patch thanks to IL2CPP nonsense
     public static class ImpactPropertiesPatches
     {
-        public static void Patch() {
+        public static void Patch()
+        {
             PatchReceiveAttack();
         }
 
@@ -59,7 +60,8 @@ namespace LabFusion.Patching
                             proxy = new TriggerRefProxy(_attack.proxy);
 
                         // Check if this was a bullet attack + it was us who shot the bullet
-                        if (proxy == RigData.RigReferences.Proxy && _attack.attackType == AttackType.Piercing) {
+                        if (proxy == RigData.RigReferences.Proxy && _attack.attackType == AttackType.Piercing)
+                        {
                             var rb = collider.attachedRigidbody;
                             if (!rb)
                                 return;

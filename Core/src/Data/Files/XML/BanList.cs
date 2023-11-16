@@ -23,12 +23,15 @@ namespace LabFusion.Data
 
         private static XMLFile _file;
 
-        public static void ReadFile() {
+        public static void ReadFile()
+        {
             _bannedUsers.Clear();
 
             _file = new XMLFile(_fileName, _rootName);
-            _file.ReadFile((d) => {
-                d.Descendants(_elementName).ForEach((element) => {
+            _file.ReadFile((d) =>
+            {
+                d.Descendants(_elementName).ForEach((element) =>
+                {
                     if (element.TryGetAttribute(_idName, out string rawId) && element.TryGetAttribute(_userName, out string rawUser) && element.TryGetAttribute(_reasonName, out string rawReason))
                     {
                         if (ulong.TryParse(rawId, out ulong id))
@@ -40,10 +43,12 @@ namespace LabFusion.Data
             });
         }
 
-        private static void WriteFile() {
+        private static void WriteFile()
+        {
             List<object> entries = new();
 
-            foreach (var tuple in _bannedUsers) {
+            foreach (var tuple in _bannedUsers)
+            {
                 XElement entry = new(_elementName);
 
                 entry.SetAttributeValue(_idName, tuple.Item1);
@@ -56,11 +61,14 @@ namespace LabFusion.Data
             _file.WriteFile(entries);
         }
 
-        public static void Ban(ulong longId, string username, string reason) {
+        public static void Ban(ulong longId, string username, string reason)
+        {
             var tuple = new Tuple<ulong, string, string>(longId, username, reason);
 
-            foreach (var user in _bannedUsers.ToArray()) {
-                if (user.Item1 == longId) {
+            foreach (var user in _bannedUsers.ToArray())
+            {
+                if (user.Item1 == longId)
+                {
                     _bannedUsers.Remove(user);
                     break;
                 }
@@ -71,9 +79,12 @@ namespace LabFusion.Data
             WriteFile();
         }
 
-        public static void Pardon(ulong longId) {
-            foreach (var user in _bannedUsers.ToArray()) {
-                if (user.Item1 == longId) {
+        public static void Pardon(ulong longId)
+        {
+            foreach (var user in _bannedUsers.ToArray())
+            {
+                if (user.Item1 == longId)
+                {
                     _bannedUsers.Remove(user);
                     break;
                 }

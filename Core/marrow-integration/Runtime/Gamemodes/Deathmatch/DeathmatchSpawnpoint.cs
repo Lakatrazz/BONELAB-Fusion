@@ -14,24 +14,28 @@ using SLZ.Marrow.Utilities;
 using SLZ.Marrow;
 #endif
 
-namespace LabFusion.MarrowIntegration {
+namespace LabFusion.MarrowIntegration
+{
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
     [AddComponentMenu("BONELAB Fusion/Gamemodes/Deathmatch Spawnpoint")]
     [DisallowMultipleComponent]
 #endif
-    public sealed class DeathmatchSpawnpoint : FusionMarrowBehaviour {
+    public sealed class DeathmatchSpawnpoint : FusionMarrowBehaviour
+    {
 #if MELONLOADER
         public DeathmatchSpawnpoint(IntPtr intPtr) : base(intPtr) { }
 
         public static readonly FusionComponentCache<GameObject, DeathmatchSpawnpoint> Cache = new FusionComponentCache<GameObject, DeathmatchSpawnpoint>();
 
-        private void Awake() {
+        private void Awake()
+        {
             Cache.Add(gameObject, this);
         }
 
-        private void OnDestroy() {
+        private void OnDestroy()
+        {
             Cache.Remove(gameObject);
         }
 #else

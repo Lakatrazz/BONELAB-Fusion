@@ -22,13 +22,15 @@ using SLZ.Props.Weapons;
 using SLZ.Rig;
 using SLZ.VRMK;
 
-namespace LabFusion.Patching {
+namespace LabFusion.Patching
+{
     [HarmonyPatch(typeof(InventorySlotReceiver))]
     public class InventorySlotReceiverPatches
     {
         public static bool IgnorePatches = false;
 
-        private static void OnDropWeapon(InventorySlotReceiver __instance, Hand hand = null) {
+        private static void OnDropWeapon(InventorySlotReceiver __instance, Hand hand = null)
+        {
             if (IgnorePatches)
                 return;
 
@@ -65,11 +67,13 @@ namespace LabFusion.Patching {
                             return;
 
                         var handedness = Handedness.UNDEFINED;
-                        if (hand != null) {
+                        if (hand != null)
+                        {
                             handedness = hand.handedness;
 
                             // Reward achievement
-                            if (!rigManager.IsSelf() && AchievementManager.TryGetAchievement<HighwayMan>(out var achievement)) {
+                            if (!rigManager.IsSelf() && AchievementManager.TryGetAchievement<HighwayMan>(out var achievement))
+                            {
                                 achievement.IncrementTask();
                             }
                         }
@@ -93,13 +97,15 @@ namespace LabFusion.Patching {
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(InventorySlotReceiver.DropWeapon))]
-        public static void DropWeaponPrefix(InventorySlotReceiver __instance) {
+        public static void DropWeaponPrefix(InventorySlotReceiver __instance)
+        {
             OnDropWeapon(__instance);
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(InventorySlotReceiver.OnHandGrab))]
-        public static void OnHandGrabPrefix(InventorySlotReceiver __instance, Hand hand) {
+        public static void OnHandGrabPrefix(InventorySlotReceiver __instance, Hand hand)
+        {
             OnDropWeapon(__instance, hand);
         }
     }
@@ -116,26 +122,30 @@ namespace LabFusion.Patching {
 
             try
             {
-                if (NetworkInfo.HasServer && __instance._slottedWeapon && WeaponSlotExtender.Cache.TryGet(__instance._slottedWeapon, out var syncable)) {
+                if (NetworkInfo.HasServer && __instance._slottedWeapon && WeaponSlotExtender.Cache.TryGet(__instance._slottedWeapon, out var syncable))
+                {
                     var rigManager = __instance.GetComponentInParent<RigManager>();
 
-                    if (rigManager != null) {
+                    if (rigManager != null)
+                    {
                         bool isAvatarSlot = __instance.GetComponentInParent<Avatar>() != null;
 
                         byte? smallId = null;
                         RigReferenceCollection references = null;
 
-                        if (rigManager == RigData.RigReferences.RigManager) {
+                        if (rigManager == RigData.RigReferences.RigManager)
+                        {
                             smallId = PlayerIdManager.LocalSmallId;
                             references = RigData.RigReferences;
                         }
-                        else if (PlayerRepManager.TryGetPlayerRep(rigManager, out var rep)) {
+                        else if (PlayerRepManager.TryGetPlayerRep(rigManager, out var rep))
+                        {
                             smallId = rep.PlayerId.SmallId;
                             references = rep.RigReferences;
                         }
 
                         if (!smallId.HasValue)
-                            return; 
+                            return;
 
                         byte? index = references.GetIndex(__instance, isAvatarSlot);
 

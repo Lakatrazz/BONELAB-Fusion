@@ -14,7 +14,8 @@ using UnityEngine;
 
 namespace LabFusion.BoneMenu
 {
-    internal static partial class BoneMenuCreator {
+    internal static partial class BoneMenuCreator
+    {
         private static MenuCategory _playerListCategory;
 
         public static void CreatePlayerListMenu(MenuCategory category)
@@ -25,20 +26,23 @@ namespace LabFusion.BoneMenu
             _playerListCategory.CreateFunctionElement("Select Refresh to load players!", Color.yellow, null);
         }
 
-        private static void RefreshPlayerList() {
+        private static void RefreshPlayerList()
+        {
             // Clear existing lobbies
             _playerListCategory.Elements.Clear();
             _playerListCategory.CreateFunctionElement("Refresh", Color.white, RefreshPlayerList);
 
             // Add an item for every player
-            foreach (var id in PlayerIdManager.PlayerIds) {
+            foreach (var id in PlayerIdManager.PlayerIds)
+            {
                 CreatePlayer(id);
             }
 
             MenuManager.SelectCategory(_playerListCategory);
         }
 
-        private static void CreatePlayer(PlayerId id) {
+        private static void CreatePlayer(PlayerId id)
+        {
             // Get the name for the category
             string username = id.GetMetadata(MetadataHelper.UsernameKey);
             string nickname = id.GetMetadata(MetadataHelper.NicknameKey);
@@ -63,22 +67,29 @@ namespace LabFusion.BoneMenu
             byte smallId = id.SmallId;
 
             // Set permission display
-            if (NetworkInfo.IsServer && !id.IsSelf) {
-                var permSetter = category.CreateEnumElement($"Permissions", Color.yellow, level, (v) => {
+            if (NetworkInfo.IsServer && !id.IsSelf)
+            {
+                var permSetter = category.CreateEnumElement($"Permissions", Color.yellow, level, (v) =>
+                {
                     FusionPermissions.TrySetPermission(longId, username, v);
                 });
 
-                id.OnMetadataChanged += (player) => {
-                    if (player.TryGetMetadata(MetadataHelper.PermissionKey, out string rawLevel) && Enum.TryParse(rawLevel, out PermissionLevel newLevel)) {
+                id.OnMetadataChanged += (player) =>
+                {
+                    if (player.TryGetMetadata(MetadataHelper.PermissionKey, out string rawLevel) && Enum.TryParse(rawLevel, out PermissionLevel newLevel))
+                    {
                         permSetter.SetValue(newLevel);
                     }
                 };
             }
-            else {
+            else
+            {
                 var permDisplay = category.CreateFunctionElement($"Permissions: {level}", Color.yellow, null);
 
-                id.OnMetadataChanged += (player) => {
-                    if (player.TryGetMetadata(MetadataHelper.PermissionKey, out string rawLevel)) {
+                id.OnMetadataChanged += (player) =>
+                {
+                    if (player.TryGetMetadata(MetadataHelper.PermissionKey, out string rawLevel))
+                    {
                         permDisplay.SetName($"Permissions: {rawLevel}");
                     }
                 };
@@ -90,12 +101,15 @@ namespace LabFusion.BoneMenu
             var serverSettings = FusionPreferences.ActiveServerSettings;
 
             // Create vote options
-            if (!id.IsSelf && FusionPermissions.HasSufficientPermissions(selfLevel, level)) {
+            if (!id.IsSelf && FusionPermissions.HasSufficientPermissions(selfLevel, level))
+            {
                 var votingCategory = category.CreateCategory("Voting", Color.white);
 
                 // Vote kick
-                if (serverSettings.VoteKickingEnabled.GetValue()) {
-                    votingCategory.CreateFunctionElement("Vote Kick", Color.red, () => {
+                if (serverSettings.VoteKickingEnabled.GetValue())
+                {
+                    votingCategory.CreateFunctionElement("Vote Kick", Color.red, () =>
+                    {
                         PlayerSender.SendVoteKickRequest(id);
                     }, "Are you sure?");
                 }
@@ -103,18 +117,22 @@ namespace LabFusion.BoneMenu
 
             // Create moderation options
             // If we are the server then we have full auth. Otherwise, check perm level
-            if (!id.IsSelf && (NetworkInfo.IsServer || FusionPermissions.HasHigherPermissions(selfLevel, level))) {
+            if (!id.IsSelf && (NetworkInfo.IsServer || FusionPermissions.HasHigherPermissions(selfLevel, level)))
+            {
                 var moderationCategory = category.CreateCategory("Moderation", Color.white);
 
                 // Kick button
-                if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.KickingAllowed.GetValue())) {
-                    moderationCategory.CreateFunctionElement("Kick", Color.red, () => {
+                if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.KickingAllowed.GetValue()))
+                {
+                    moderationCategory.CreateFunctionElement("Kick", Color.red, () =>
+                    {
                         PermissionSender.SendPermissionRequest(PermissionCommandType.KICK, id);
                     }, "Are you sure?");
                 }
 
                 // Ban button
-                if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.BanningAllowed.GetValue())) {
+                if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.BanningAllowed.GetValue()))
+                {
                     moderationCategory.CreateFunctionElement("Ban", Color.red, () =>
                     {
                         PermissionSender.SendPermissionRequest(PermissionCommandType.BAN, id);
@@ -136,10 +154,12 @@ namespace LabFusion.BoneMenu
                 }
             }
 
-            category.CreateFunctionElement($"Platform ID: {longId}", Color.yellow, () => {
+            category.CreateFunctionElement($"Platform ID: {longId}", Color.yellow, () =>
+            {
                 Clipboard.SetText(longId.ToString());
             });
-            category.CreateFunctionElement($"Instance ID: {smallId}", Color.yellow, () => {
+            category.CreateFunctionElement($"Instance ID: {smallId}", Color.yellow, () =>
+            {
                 Clipboard.SetText(smallId.ToString());
             });
 

@@ -14,17 +14,22 @@ using SLZ.Interaction;
 using SLZ.Marrow.Warehouse;
 using SLZ.Props;
 
-namespace LabFusion.Patching {
+namespace LabFusion.Patching
+{
     [HarmonyPatch(typeof(PullCordDevice))]
-    public static class PullCordDevicePatches {
+    public static class PullCordDevicePatches
+    {
         [HarmonyPrefix]
         [HarmonyPatch(nameof(PullCordDevice.Update))]
-        public static void Update(PullCordDevice __instance) {
+        public static void Update(PullCordDevice __instance)
+        {
             // If this is a player rep,
             // We need to disable the avatars inside the body log
             // This way, the player reps won't accidentally change their avatar
-            if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(__instance.rm)) {
-                for (var i = 0; i < __instance.avatarCrateRefs.Length; i++) {
+            if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(__instance.rm))
+            {
+                for (var i = 0; i < __instance.avatarCrateRefs.Length; i++)
+                {
                     __instance.avatarCrateRefs[i].Barcode = (Barcode)"";
                 }
             }
@@ -32,36 +37,45 @@ namespace LabFusion.Patching {
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(PullCordDevice.EnableBall))]
-        public static void EnableBall(PullCordDevice __instance) {
-            if (NetworkInfo.HasServer && __instance.rm == RigData.RigReferences.RigManager) {
+        public static void EnableBall(PullCordDevice __instance)
+        {
+            if (NetworkInfo.HasServer && __instance.rm == RigData.RigReferences.RigManager)
+            {
                 PullCordSender.SendBodyLogToggle(true);
             }
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(PullCordDevice.DisableBall))]
-        public static void DisableBall(PullCordDevice __instance) {
-            if (NetworkInfo.HasServer && __instance.rm == RigData.RigReferences.RigManager) {
+        public static void DisableBall(PullCordDevice __instance)
+        {
+            if (NetworkInfo.HasServer && __instance.rm == RigData.RigReferences.RigManager)
+            {
                 PullCordSender.SendBodyLogToggle(false);
             }
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(PullCordDevice.PlayAvatarParticleEffects))]
-        public static void PlayAvatarParticleEffects(PullCordDevice __instance) {
-            if (NetworkInfo.HasServer && __instance.rm == RigData.RigReferences.RigManager) {
+        public static void PlayAvatarParticleEffects(PullCordDevice __instance)
+        {
+            if (NetworkInfo.HasServer && __instance.rm == RigData.RigReferences.RigManager)
+            {
                 PullCordSender.SendBodyLogEffect();
             }
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(PullCordDevice.OnBallGripDetached))]
-        public static void OnBallGripDetached(PullCordDevice __instance, Hand hand) {
+        public static void OnBallGripDetached(PullCordDevice __instance, Hand hand)
+        {
             // Prevent player rep body logs from inserting into the body mall
-            if (NetworkInfo.HasServer && __instance.rm != RigData.RigReferences.RigManager) {
+            if (NetworkInfo.HasServer && __instance.rm != RigData.RigReferences.RigManager)
+            {
                 var apv = __instance.apv;
 
-                if (apv != null && apv.bodyLog == __instance) {
+                if (apv != null && apv.bodyLog == __instance)
+                {
                     apv.bodyLog = null;
                 }
 

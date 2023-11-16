@@ -25,7 +25,8 @@ namespace LabFusion.Network
             if (message == null)
                 return;
 
-            if (NetworkInfo.CurrentNetworkLayer != null) {
+            if (NetworkInfo.CurrentNetworkLayer != null)
+            {
                 NetworkInfo.BytesUp += message.Length;
 
                 NetworkInfo.CurrentNetworkLayer.SendFromServer(userId, channel, message);
@@ -43,7 +44,8 @@ namespace LabFusion.Network
             if (message == null)
                 return;
 
-            if (NetworkInfo.CurrentNetworkLayer != null) {
+            if (NetworkInfo.CurrentNetworkLayer != null)
+            {
                 NetworkInfo.BytesUp += message.Length;
 
                 NetworkInfo.CurrentNetworkLayer.SendFromServer(userId, channel, message);
@@ -55,17 +57,21 @@ namespace LabFusion.Network
         /// </summary>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        public static void SendToServer(NetworkChannel channel, FusionMessage message) {
+        public static void SendToServer(NetworkChannel channel, FusionMessage message)
+        {
             if (message == null)
                 return;
 
-            if (NetworkInfo.CurrentNetworkLayer != null) {
+            if (NetworkInfo.CurrentNetworkLayer != null)
+            {
                 NetworkInfo.BytesUp += message.Length;
 
                 if (!NetworkInfo.IsServer)
                     NetworkInfo.CurrentNetworkLayer.SendToServer(channel, message);
-                else {
-                    unsafe {
+                else
+                {
+                    unsafe
+                    {
                         FusionMessageHandler.ReadMessage(message.Buffer, message.Length, true);
                     }
                 }
@@ -82,14 +88,17 @@ namespace LabFusion.Network
             if (message == null)
                 return;
 
-            if (NetworkInfo.CurrentNetworkLayer != null) {
+            if (NetworkInfo.CurrentNetworkLayer != null)
+            {
                 NetworkInfo.BytesUp += message.Length;
 
                 NetworkInfo.CurrentNetworkLayer.BroadcastMessage(channel, message);
 
                 // Backup incase the message cannot be sent to the host, which this targets.
-                if (!NetworkInfo.ServerCanSendToHost && NetworkInfo.IsServer) {
-                    unsafe {
+                if (!NetworkInfo.ServerCanSendToHost && NetworkInfo.IsServer)
+                {
+                    unsafe
+                    {
                         FusionMessageHandler.ReadMessage(message.Buffer, message.Length, false);
                     }
                 }
@@ -107,14 +116,17 @@ namespace LabFusion.Network
             if (message == null)
                 return;
 
-            if (NetworkInfo.CurrentNetworkLayer != null) {
+            if (NetworkInfo.CurrentNetworkLayer != null)
+            {
                 NetworkInfo.BytesUp += message.Length;
 
                 NetworkInfo.CurrentNetworkLayer.BroadcastMessageExcept(userId, channel, message, ignoreHost);
 
                 // Backup incase the message cannot be sent to the host, which this targets.
-                if (!ignoreHost && userId != PlayerIdManager.LocalSmallId && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsServer) {
-                    unsafe {
+                if (!ignoreHost && userId != PlayerIdManager.LocalSmallId && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsServer)
+                {
+                    unsafe
+                    {
                         FusionMessageHandler.ReadMessage(message.Buffer, message.Length, false);
                     }
                 }
@@ -132,14 +144,17 @@ namespace LabFusion.Network
             if (message == null)
                 return;
 
-            if (NetworkInfo.CurrentNetworkLayer != null) {
+            if (NetworkInfo.CurrentNetworkLayer != null)
+            {
                 NetworkInfo.BytesUp += message.Length;
 
                 NetworkInfo.CurrentNetworkLayer.BroadcastMessageExcept(userId, channel, message, ignoreHost);
 
                 // Backup incase the message cannot be sent to the host, which this targets.
-                if (!ignoreHost && userId != PlayerIdManager.LocalLongId && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsServer) {
-                    unsafe {
+                if (!ignoreHost && userId != PlayerIdManager.LocalLongId && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsServer)
+                {
+                    unsafe
+                    {
                         FusionMessageHandler.ReadMessage(message.Buffer, message.Length, false);
                     }
                 }
@@ -151,14 +166,17 @@ namespace LabFusion.Network
         /// </summary>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        public static void BroadcastMessageExceptSelf(NetworkChannel channel, FusionMessage message) {
+        public static void BroadcastMessageExceptSelf(NetworkChannel channel, FusionMessage message)
+        {
             if (message == null)
                 return;
 
-            if (NetworkInfo.IsServer) {
+            if (NetworkInfo.IsServer)
+            {
                 BroadcastMessageExcept(0, channel, message);
             }
-            else {
+            else
+            {
                 BroadcastMessage(channel, message);
             }
         }

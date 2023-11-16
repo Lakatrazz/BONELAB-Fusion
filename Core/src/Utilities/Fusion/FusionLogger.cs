@@ -5,7 +5,8 @@ namespace LabFusion.Utilities
 {
     internal static class FusionLogger
     {
-        internal static void LogLine([CallerLineNumber] int lineNumber = default) {
+        internal static void LogLine([CallerLineNumber] int lineNumber = default)
+        {
 #if DEBUG
             Log($"DEBUG: Line {lineNumber}", ConsoleColor.Cyan);
 #else
@@ -48,7 +49,8 @@ namespace LabFusion.Utilities
             FusionMod.Instance.LoggerInstance.Error(obj);
         }
 
-        internal static void LogException(string task, Exception e) {
+        internal static void LogException(string task, Exception e)
+        {
             if (e.InnerException != null)
                 e = e.InnerException;
 

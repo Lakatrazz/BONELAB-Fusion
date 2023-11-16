@@ -52,23 +52,20 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (FusionReader reader = FusionReader.Create(bytes))
+            using FusionReader reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<GeoSelectData>();
+            var manager = ArenaData.GeoManager;
+
+            GeoManagerPatches.IgnorePatches = true;
+
+            // We ONLY handle this for clients, this message should only ever be sent by the server!
+            if (!NetworkInfo.IsServer && manager)
             {
-                using (var data = reader.ReadFusionSerializable<GeoSelectData>())
-                {
-                    var manager = ArenaData.GeoManager;
-
-                    GeoManagerPatches.IgnorePatches = true;
-
-                    // We ONLY handle this for clients, this message should only ever be sent by the server!
-                    if (!NetworkInfo.IsServer && manager) {
-                        manager.ClearCurrentGeo();
-                        manager.ToggleGeo(data.geoIndex);
-                    }
-
-                    GeoManagerPatches.IgnorePatches = false;
-                }
+                manager.ClearCurrentGeo();
+                manager.ToggleGeo(data.geoIndex);
             }
+
+            GeoManagerPatches.IgnorePatches = false;
         }
     }
 }

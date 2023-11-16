@@ -7,12 +7,14 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabFusion.Syncables {
-    public interface IPropExtender {
+namespace LabFusion.Syncables
+{
+    public interface IPropExtender
+    {
         PropSyncable PropSyncable { get; set; }
 
         bool ValidateExtender(PropSyncable syncable);
-        
+
         void OnCleanup();
 
         void OnOwnedUpdate();

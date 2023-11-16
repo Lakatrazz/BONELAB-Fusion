@@ -8,15 +8,20 @@ using UnityEngine;
 
 namespace LabFusion.Debugging
 {
-    public class FusionUnityLogger {
+    public class FusionUnityLogger
+    {
         public const bool EnableUnityLogs = false;
         public const bool EnableArrayResizeLogs = false;
 
-        public static void OnInitializeMelon() {
-            if (EnableUnityLogs) {
+        public static void OnInitializeMelon()
+        {
+            if (EnableUnityLogs)
+            {
 #pragma warning disable CS0162 // Unreachable code detected
-                Application.add_logMessageReceived((Application.LogCallback)((a, b, c) => {
-                    switch (c) {
+                Application.add_logMessageReceived((Application.LogCallback)((a, b, c) =>
+                {
+                    switch (c)
+                    {
                         default:
                         case LogType.Log:
                             FusionLogger.Log($"UNITY -> {a}");
