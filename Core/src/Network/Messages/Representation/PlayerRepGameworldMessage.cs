@@ -60,22 +60,22 @@ namespace LabFusion.Network {
         public override byte? Tag => NativeMessageTag.PlayerRepGameworld;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
-            using (var reader = FusionReader.Create(bytes)) {
-                var data = reader.ReadFusionSerializable<PlayerRepGameworldData>();
+            using var reader = FusionReader.Create(bytes);
+            var data = reader.ReadFusionSerializable<PlayerRepGameworldData>();
 
-                // Send message to other clients if server
-                if (NetworkInfo.IsServer && isServerHandled) {
-                    if (data.smallId != 0) {
-                        using (var message = FusionMessage.Create(Tag.Value, bytes)) {
-                            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Unreliable, message);
-                        }
-                    }
+            // Send message to other clients if server
+            if (NetworkInfo.IsServer && isServerHandled)
+            {
+                if (data.smallId != 0)
+                {
+                    using var message = FusionMessage.Create(Tag.Value, bytes);
+                    MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Unreliable, message);
                 }
+            }
 
-                // Apply player rep data
-                if (data.smallId != PlayerIdManager.LocalSmallId && PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep) && rep.IsCreated) {
-                    rep.serializedGameworldLocalTransforms = data.serializedGameworldLocalTransforms;
-                }
+            // Apply player rep data
+            if (data.smallId != PlayerIdManager.LocalSmallId && PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep) && rep.IsCreated) {
+                rep.serializedGameworldLocalTransforms = data.serializedGameworldLocalTransforms;
             }
         }
     }

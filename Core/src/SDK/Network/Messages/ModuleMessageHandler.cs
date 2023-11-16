@@ -100,7 +100,7 @@ namespace LabFusion.Network
              
                 for (var i = 0; i < buffer.Length; i++)
                     buffer[i] = bytes[i + 2];
-             
+
                 // Since modules cannot be assumed to exist for everyone, we need to null check
                 if (Handlers.Length > tag && Handlers[tag] != null) {
                     Handlers[tag].Internal_HandleMessage(buffer, isServerHandled);

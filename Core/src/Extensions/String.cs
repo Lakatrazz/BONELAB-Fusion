@@ -24,7 +24,7 @@ namespace LabFusion.Extensions {
 
         public static string[] Expand(this string value) {
             if (string.IsNullOrEmpty(value))
-                return new string[0];
+                return Array.Empty<string>();
 
             return value.Split(UniqueSeparator);
         }

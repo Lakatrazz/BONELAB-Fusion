@@ -201,8 +201,8 @@ namespace LabFusion.Network
                     Quaternion go2Rot = tran2.rotation;
 
                     // Force positions
-                    tran1.SetPositionAndRotation(data.tracker1Transform.position, data.tracker1Transform.rotation.Expand());
-                    tran2.SetPositionAndRotation(data.tracker2Transform.position, data.tracker2Transform.rotation.Expand());
+                    tran1.SetPositionAndRotation(data.tracker1Transform.position.ToUnityVector3(), data.tracker1Transform.rotation.Expand().ToUnityQuaternion());
+                    tran2.SetPositionAndRotation(data.tracker2Transform.position.ToUnityVector3(), data.tracker2Transform.rotation.Expand().ToUnityQuaternion());
 
                     // Create the constraint
                     ConstrainerPatches.IsReceivingConstraints = true;

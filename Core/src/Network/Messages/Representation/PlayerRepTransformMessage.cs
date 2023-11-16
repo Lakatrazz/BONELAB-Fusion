@@ -15,6 +15,8 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
+using SystemVector3 = System.Numerics.Vector3;
+
 namespace LabFusion.Network {
     public class PlayerRepTransformData : IFusionSerializable, IDisposable
     {
@@ -29,8 +31,8 @@ namespace LabFusion.Network {
         public SerializedTransform serializedPelvis;
         public SerializedSmallQuaternion serializedPlayspace;
 
-        public Vector3 predictVelocity;
-        public Vector3 predictAngularVelocity;
+        public SystemVector3 predictVelocity;
+        public SystemVector3 predictAngularVelocity;
 
         public SerializedHand leftHand;
         public SerializedHand rightHand;
@@ -59,8 +61,8 @@ namespace LabFusion.Network {
         {
             smallId = reader.ReadByte();
 
-            predictVelocity = reader.ReadVector3();
-            predictAngularVelocity = reader.ReadVector3();
+            predictVelocity = reader.ReadSystemVector3();
+            predictAngularVelocity = reader.ReadSystemVector3();
 
             curr_Health = reader.ReadSingle();
 
@@ -85,14 +87,14 @@ namespace LabFusion.Network {
             var data = new PlayerRepTransformData {
                 smallId = smallId,
 
-                predictVelocity = RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.velocity * TimeUtilities.TimeScale,
-                predictAngularVelocity = RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.angularVelocity * TimeUtilities.TimeScale,
+                predictVelocity = RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.velocity.ToSystemVector3() * TimeUtilities.TimeScale,
+                predictAngularVelocity = RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.angularVelocity.ToSystemVector3() * TimeUtilities.TimeScale,
 
                 curr_Health = health.curr_Health,
 
                 serializedPelvis = new SerializedTransform(syncedPelvis),
 
-                serializedPlayspace = SerializedSmallQuaternion.Compress(syncedPlayspace.rotation),
+                serializedPlayspace = SerializedSmallQuaternion.Compress(syncedPlayspace.rotation.ToSystemQuaternion()),
 
                 leftHand = new SerializedHand(leftHand, leftHand.Controller),
                 rightHand = new SerializedHand(rightHand, rightHand.Controller)
@@ -117,11 +119,8 @@ namespace LabFusion.Network {
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {
-                if (data.smallId != 0)
-                {
-                    using var message = FusionMessage.Create(Tag.Value, bytes);
-                    MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Unreliable, message);
-                }
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Unreliable, message);
             }
 
             // Apply player rep data
@@ -129,7 +128,7 @@ namespace LabFusion.Network {
             {
                 rep.serializedLocalTransforms = data.serializedLocalTransforms;
                 rep.serializedPelvis = data.serializedPelvis;
-                rep.repPlayspace.rotation = data.serializedPlayspace.Expand();
+                rep.repPlayspace.rotation = data.serializedPlayspace.Expand().ToUnityQuaternion();
                 rep.predictVelocity = data.predictVelocity;
                 rep.predictAngularVelocity = data.predictAngularVelocity;
                 rep.timeSincePelvisSent = TimeUtilities.TimeSinceStartup;

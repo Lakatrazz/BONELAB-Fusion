@@ -93,7 +93,7 @@ namespace LabFusion
             SyncManager.OnInitializeMelon();
 
             FusionPopupManager.OnInitializeMelon();
-
+            
             PhysicsUtilities.OnInitializeMelon();
 
             // Create prefs
@@ -241,12 +241,12 @@ namespace LabFusion
 
             // Send players based on player count
             int playerSendRate = SendRateTable.GetPlayerSendRate();
-            if (TimeUtilities.FrameCount % playerSendRate == 0) {
+            if (TimeUtilities.IsMatchingFrame(playerSendRate)) {
                 PlayerRep.OnSyncRep();
             }
 
             // Send syncables based on byte amount
-            if (TimeUtilities.FrameCount % _nextSyncableSendRate == 0) {
+            if (TimeUtilities.IsMatchingFrame(_nextSyncableSendRate)) {
                 var lastBytes = NetworkInfo.BytesUp;
 
                 SyncManager.OnUpdate();

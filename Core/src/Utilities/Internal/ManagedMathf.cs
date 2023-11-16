@@ -10,7 +10,7 @@ namespace LabFusion.Utilities {
         private struct MathfInternal
         {
             public static volatile float FloatMinNormal = 1.17549435E-38f;
-            public static volatile float FloatMinDenormal = Single.Epsilon;
+            public static volatile float FloatMinDenormal = float.Epsilon;
 
             public static bool IsFlushToZeroEnabled = (FloatMinDenormal == 0);
         }
@@ -18,6 +18,16 @@ namespace LabFusion.Utilities {
         public static readonly float Epsilon =
     MathfInternal.IsFlushToZeroEnabled ? MathfInternal.FloatMinNormal
     : MathfInternal.FloatMinDenormal;
+
+        // Rad2Deg is 360 / (PI * 2) Aka 180 / PI
+        public const float Rad2Deg = 57.2957795131f;
+
+        // Deg2Rad is inverse Rad2Deg
+        public const float Deg2Rad = 1f / Rad2Deg;
+
+        public static float Acos(float f) {
+            return (float)Math.Acos(f);
+        }
 
         public static float Clamp(float value, float min, float max) {
             if (value < min)

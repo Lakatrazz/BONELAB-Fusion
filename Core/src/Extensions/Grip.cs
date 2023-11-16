@@ -48,7 +48,7 @@ namespace LabFusion.Extensions
             {
                 var gripTransform = grip.Host.GetTransform();
 
-                hand.transform.SetPositionAndRotation(gripTransform.TransformPoint(transform.position), gripTransform.TransformRotation(transform.rotation.Expand()));
+                hand.transform.SetPositionAndRotation(gripTransform.TransformPoint(transform.position.ToUnityVector3()), gripTransform.TransformRotation(transform.rotation.Expand().ToUnityQuaternion()));
             }
         }
 

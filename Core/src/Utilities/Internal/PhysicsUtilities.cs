@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Preferences;
 using LabFusion.Senders;
@@ -11,13 +12,15 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
+using SystemVector3 = System.Numerics.Vector3;
+
 namespace LabFusion.Utilities {
     internal static class PhysicsUtilities {
         internal static bool CanModifyGravity = false;
 
-        private static readonly Vector3 DefaultGravity = new(0f, -9.81f, 0f);
+        private static readonly SystemVector3 DefaultGravity = new(0f, -9.81f, 0f);
 
-        public static Vector3 Gravity = DefaultGravity;
+        public static SystemVector3 Gravity = DefaultGravity;
 
         internal static void OnInitializeMelon() {
             MultiplayerHooking.OnPlayerCatchup += OnPlayerCatchup;
@@ -32,7 +35,7 @@ namespace LabFusion.Utilities {
             MessageSender.SendFromServer(id, NetworkChannel.Reliable, message);
         }
 
-        internal static void SendGravity(Vector3 value) {
+        internal static void SendGravity(SystemVector3 value) {
             using var writer = FusionWriter.Create(WorldGravityMessageData.Size);
             using var data = WorldGravityMessageData.Create(value);
             writer.Write(data);
@@ -63,7 +66,7 @@ namespace LabFusion.Utilities {
 
                             float mult = 1f - (1f / controlTime.cur_intensity);
 
-                            Vector3 force = -Gravity * mult;
+                            SystemVector3 force = -Gravity * mult;
 
                             if (references.RigRigidbodies == null)
                                 references.GetRigidbodies();
@@ -75,7 +78,7 @@ namespace LabFusion.Utilities {
                                     continue;
 
                                 if (rb.useGravity) {
-                                    rb.AddForce(force, ForceMode.Acceleration);
+                                    rb.AddForce(force.ToUnityVector3(), ForceMode.Acceleration);
                                 }
                             }
                         }

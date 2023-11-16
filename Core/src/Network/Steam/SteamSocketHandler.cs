@@ -50,9 +50,11 @@ namespace LabFusion.Network
             int sizeOfMessage = message.Length;
 
             unsafe {
+                IntPtr messagePtr = (IntPtr)message.Buffer;
+
                 for (var i = 0; i < socketManager.Connected.Count; i++) {
                     var connection = socketManager.Connected[i];
-                    connection.SendMessage((IntPtr)message.Buffer, sizeOfMessage, sendType);
+                    connection.SendMessage(messagePtr, sizeOfMessage, sendType);
                 }
             }
         }
@@ -66,10 +68,13 @@ namespace LabFusion.Network
                 int sizeOfMessage = message.Length;
 
                 unsafe {
-                    Result success = SteamNetworkLayer.SteamConnection.Connection.SendMessage((IntPtr)message.Buffer, sizeOfMessage, sendType);
+                    IntPtr messagePtr = (IntPtr)message.Buffer;
+                    Connection connection = SteamNetworkLayer.SteamConnection.Connection;
+
+                    Result success = connection.SendMessage(messagePtr, sizeOfMessage, sendType);
                     if (success != Result.OK) {
                         // RETRY
-                        Result retry = SteamNetworkLayer.SteamConnection.Connection.SendMessage((IntPtr)message.Buffer, sizeOfMessage, sendType);
+                        Result retry = connection.SendMessage(messagePtr, sizeOfMessage, sendType);
 
                         if (retry != Result.OK) {
                             throw new Exception($"Steam result was {retry}.");

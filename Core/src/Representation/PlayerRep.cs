@@ -28,6 +28,9 @@ using SLZ.VRMK;
 
 using Avatar = SLZ.VRMK.Avatar;
 
+using SystemVector3 = System.Numerics.Vector3;
+using SystemQuaternion = System.Numerics.Quaternion;
+
 namespace LabFusion.Representation
 {
     public class PlayerRep : IDisposable {
@@ -65,8 +68,8 @@ namespace LabFusion.Representation
         public SerializedLocalTransform[] serializedGameworldLocalTransforms = new SerializedLocalTransform[RigAbstractor.GameworldRigTransformCount];
         public SerializedTransform serializedPelvis;
 
-        public Vector3 predictVelocity;
-        public Vector3 predictAngularVelocity;
+        public SystemVector3 predictVelocity;
+        public SystemVector3 predictAngularVelocity;
 
         public PDController pelvisPDController;
         public float timeSincePelvisSent;
@@ -114,6 +117,7 @@ namespace LabFusion.Representation
         private float _maxMicrophoneDistance = 30f;
 
         private AudioSource _voiceSource = null;
+        private bool _hasVoice = false;
 
         private bool _spatialized = false;
 
@@ -151,12 +155,13 @@ namespace LabFusion.Representation
 
         public void InsertVoiceSource(AudioSource source) {
             _voiceSource = source;
+            _hasVoice = true;
         }
 
         public float GetVoiceLoudness() => _voiceLoudness;
 
         private void OnUpdateVoiceSource() {
-            if (_voiceSource.IsNOC())
+            if (!_hasVoice)
                 return;
 
             // Modify the source settings
@@ -239,7 +244,7 @@ namespace LabFusion.Representation
 
         public void ResetSerializedTransforms() {
             for (var i = 0; i < RigAbstractor.TransformSyncCount; i++) {
-                serializedLocalTransforms[i] = new SerializedLocalTransform(Vector3Extensions.zero, Quaternion.identity);
+                serializedLocalTransforms[i] = SerializedLocalTransform.Default;
             }
         }
 
@@ -278,12 +283,10 @@ namespace LabFusion.Representation
         public void OnHandUpdate(Hand hand) {
             switch (hand.handedness) {
                 case Handedness.RIGHT:
-                    if (serializedRightHand != null)
-                        serializedRightHand.CopyTo(hand, hand.Controller);
+                    serializedRightHand?.CopyTo(hand, hand.Controller);
                     break;
                 case Handedness.LEFT:
-                    if (serializedLeftHand != null)
-                        serializedLeftHand.CopyTo(hand, hand.Controller);
+                    serializedLeftHand?.CopyTo(hand, hand.Controller);
                     break;
             }
         }
@@ -445,7 +448,7 @@ namespace LabFusion.Representation
                 _voiceSource.SetRealisticRolloff(0.5f, _maxMicrophoneDistance);
 
                 // Set the mixer
-                if (_voiceSource.outputAudioMixerGroup == null && !pullCord.IsNOC())
+                if (_voiceSource.outputAudioMixerGroup == null)
                     _voiceSource.outputAudioMixerGroup = pullCord.mixerGroup;
             }
         }
@@ -557,14 +560,18 @@ namespace LabFusion.Representation
 
                 for (var i = 0; i < RigAbstractor.GameworldRigTransformCount; i++)
                 {
-                    if (serializedGameworldLocalTransforms[i] == null)
+                    var localTransform = serializedGameworldLocalTransforms[i];
+
+                    if (localTransform == null)
                         break;
 
-                    var pos = serializedGameworldLocalTransforms[i].position;
-                    var rot = serializedGameworldLocalTransforms[i].rotation.Expand();
+                    var pos = localTransform.position;
+                    var rot = localTransform.rotation.Expand();
 
-                    gameworldRigTransforms[i].localPosition = pos;
-                    gameworldRigTransforms[i].localRotation = rot;
+                    var gameworldTransform = gameworldRigTransforms[i];
+
+                    gameworldTransform.localPosition = pos.ToUnityVector3();
+                    gameworldTransform.localRotation = rot.ToUnityQuaternion();
                 }
             }
             catch
@@ -589,18 +596,18 @@ namespace LabFusion.Representation
                 if (!IsCreated)
                     return;
 
-                if (serializedLocalTransforms == null)
-                    return;
-
                 for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
                 {
-                    repTransforms[i].localPosition = serializedLocalTransforms[i].position;
-                    repTransforms[i].localRotation = serializedLocalTransforms[i].rotation.Expand();
+                    repTransforms[i].localPosition = serializedLocalTransforms[i].position.ToUnityVector3();
+                    repTransforms[i].localRotation = serializedLocalTransforms[i].rotation.Expand().ToUnityQuaternion();
                 }
             }
             catch {
                 // Literally no reason this should happen but it does
                 // Doesn't cause anything soooo
+
+                // POST NOTE: actually yea it would happen if an item in serializedLocalTransforms is null
+                // cleanup that functionality later so you can remove this try catch
             }
         }
 
@@ -621,8 +628,8 @@ namespace LabFusion.Representation
                 }
 
                 Transform pelvisTransform = repPelvis.transform;
-                Vector3 pelvisPosition = pelvisTransform.position;
-                Quaternion pelvisRotation = pelvisTransform.rotation;
+                SystemVector3 pelvisPosition = pelvisTransform.position.ToSystemVector3();
+                SystemQuaternion pelvisRotation = pelvisTransform.rotation.ToSystemQuaternion();
 
                 // Move position with prediction
                 if (TimeUtilities.TimeSinceStartup - timeSincePelvisSent <= 1.5f) {
@@ -632,8 +639,8 @@ namespace LabFusion.Representation
                 }
                 else if (!_hasLockedPosition) {
                     serializedPelvis.position = pelvisPosition;
-                    predictVelocity = Vector3Extensions.zero;
-                    predictAngularVelocity = Vector3Extensions.zero;
+                    predictVelocity = SystemVector3.Zero;
+                    predictAngularVelocity = SystemVector3.Zero;
 
                     _hasLockedPosition = true;
                 }
@@ -644,20 +651,20 @@ namespace LabFusion.Representation
                     var pos = serializedPelvis.position;
                     var rot = serializedPelvis.rotation.Expand();
 
-                    repPelvis.AddForce(pelvisPDController.GetForce(repPelvis, pelvisPosition, repPelvis.velocity, pos, predictVelocity), ForceMode.Acceleration);
+                    repPelvis.AddForce(pelvisPDController.GetForce(repPelvis, pelvisPosition, repPelvis.velocity.ToSystemVector3(), pos, predictVelocity).ToUnityVector3(), ForceMode.Acceleration);
                     // We only want to apply angular force when ragdolled
                     if (rigManager.physicsRig.torso.spineInternalMult <= 0f) {
-                        repPelvis.AddTorque(pelvisPDController.GetTorque(repPelvis, pelvisRotation, repPelvis.angularVelocity, rot, predictAngularVelocity), ForceMode.Acceleration);
+                        repPelvis.AddTorque(pelvisPDController.GetTorque(repPelvis, pelvisRotation, repPelvis.angularVelocity.ToSystemVector3(), rot, predictAngularVelocity).ToUnityVector3(), ForceMode.Acceleration);
                     }
                     else
                         pelvisPDController.ResetRotation();
                 }
 
                 // Check for stability teleport
-                float distSqr = (pelvisPosition - serializedPelvis.position).sqrMagnitude;
-                if (distSqr > (2f * (Vector3Extensions.GetMagnitude(predictVelocity) + 1f))) {
+                float distSqr = (pelvisPosition - serializedPelvis.position).LengthSquared();
+                if (distSqr > (2f * (predictVelocity.Length() + 1f))) {
                     // Get teleport position
-                    var pos = serializedPelvis.position;
+                    var pos = serializedPelvis.position.ToUnityVector3();
                     var physRig = RigReferences.RigManager.physicsRig;
 
                     // Offset
@@ -673,8 +680,8 @@ namespace LabFusion.Representation
                     }
 
                     // Reset locosphere and knee pos so the rig doesn't get stuck
-                    physRig.knee.transform.position = serializedPelvis.position;
-                    physRig.feet.transform.position = serializedPelvis.position;
+                    physRig.knee.transform.position = pos;
+                    physRig.feet.transform.position = pos;
 
                     pelvisPDController.Reset();
                 }
@@ -759,14 +766,8 @@ namespace LabFusion.Representation
         }
 
         private void OnRepFixedUpdate() {
-            if (!IsCreated || !RigReferences.RigManager.activeSeat) {
-                // Remove old values from the gameworld transforms
-                for (var i = 0; i < serializedGameworldLocalTransforms.Length; i++)
-                    serializedGameworldLocalTransforms[i] = null;
-
-                // Only return if the first argument is true
-                if (!IsCreated)
-                    return;
+            if (!IsCreated) {
+                return;
             }
 
             OnPelvisPin();

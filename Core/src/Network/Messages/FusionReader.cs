@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+using SystemVector3 = System.Numerics.Vector3;
+
 namespace LabFusion.Network
 {
     public class FusionReader : IDisposable {
@@ -228,6 +230,10 @@ namespace LabFusion.Network
 
         public Vector3 ReadVector3() {
             return new Vector3(ReadSingle(), ReadSingle(), ReadSingle());
+        }
+
+        public SystemVector3 ReadSystemVector3() {
+            return new SystemVector3(ReadSingle(), ReadSingle(), ReadSingle());
         }
 
         public Vector2 ReadVector2() {

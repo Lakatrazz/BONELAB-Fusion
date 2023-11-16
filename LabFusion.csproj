@@ -298,7 +298,6 @@
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\HubDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\VoidG114DMData.cs" />
     <Compile Include="Core\src\Data\Containers\FusionDictionary.cs" />
-    <Compile Include="Core\src\Data\Containers\Syncables\FrameSkipper.cs" />
     <Compile Include="Core\src\Data\Containers\FusionArrayPool.cs" />
     <Compile Include="Core\src\Data\Containers\Syncables\GrabbedGripList.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\GameControllerData.cs" />
@@ -310,7 +309,6 @@
     <Compile Include="Core\src\Data\Containers\Levels\TimeTrialData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\KartRaceData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\ArenaData.cs" />
-    <Compile Include="Core\src\Data\Containers\ConfigurableJointDriveData.cs" />
     <Compile Include="Core\src\Data\Containers\DataCorruptionException.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\HubData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DescentData.cs" />
@@ -373,7 +371,6 @@
     <Compile Include="Core\src\Extensions\Int32.cs" />
     <Compile Include="Core\src\Extensions\InteractableHost.cs" />
     <Compile Include="Core\src\Extensions\Joint.cs" />
-    <Compile Include="Core\src\Extensions\Math.cs" />
     <Compile Include="Core\src\Extensions\PullCordDevice.cs" />
     <Compile Include="Core\src\Extensions\Quaternion.cs" />
     <Compile Include="Core\src\Extensions\RigManager.cs" />

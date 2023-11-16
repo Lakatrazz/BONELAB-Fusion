@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 using LabFusion.Network;
+using LabFusion.Extensions;
+
+using SystemQuaternion = System.Numerics.Quaternion;
 
 namespace LabFusion.Data
 {
@@ -34,55 +37,55 @@ namespace LabFusion.Data
             loss = reader.ReadByte();
         }
 
-        public static SerializedQuaternion Compress(Quaternion quat)
+        public static SerializedQuaternion Compress(SystemQuaternion quat)
         {
-            SerializedQuaternion serialized = new SerializedQuaternion();
+            SerializedQuaternion serialized = new();
 
             // Based on https://gafferongames.com/post/snapshot_compression/
             // Basically compression works by dropping a component that is the lowest absolute value
             // We first add each component to an array, then sort said array from largest to smallest absolute value
 
-            float[] components = { quat.x, quat.y, quat.z, quat.w };
+            unsafe {
+                float* components = stackalloc float[4] { quat.X, quat.Y, quat.Z, quat.W };
 
-            byte dropped = 0;
-            float biggest = 0.0f;
-            float sign = 0.0f;
-            for (byte c = 0; c < 4; c++)
-            {
-                if (Math.Abs(components[c]) > biggest)
+                byte dropped = 0;
+                float biggest = 0.0f;
+                float sign = 0.0f;
+                for (byte c = 0; c < 4; c++)
                 {
-                    sign = (components[c] < 0) ? -1 : 1;
+                    if (Math.Abs(components[c]) > biggest)
+                    {
+                        sign = (components[c] < 0) ? -1 : 1;
 
-                    dropped = c;
-                    biggest = components[c];
+                        dropped = c;
+                        biggest = components[c];
+                    }
                 }
+
+                short* compressed = stackalloc short[3];
+
+                int compIndex = 0;
+                for (int c = 0; c < 4; c++) {
+                    if (c == dropped)
+                        continue;
+
+                    compressed[compIndex++] = (short)(components[c] * sign * PRECISION_OFFSET);
+                }
+
+                serialized.c1 = compressed[0];
+                serialized.c2 = compressed[1];
+                serialized.c3 = compressed[2];
+                serialized.loss = dropped;
             }
-
-            short[] compressed = new short[3];
-
-            int compIndex = 0;
-            for (int c = 0; c < 4; c++)
-            {
-                if (c == dropped)
-                    continue;
-
-                compressed[compIndex++] = (short)(components[c] * sign * PRECISION_OFFSET);
-            }
-
-            serialized.c1 = compressed[0];
-            serialized.c2 = compressed[1];
-            serialized.c3 = compressed[2];
-            serialized.loss = dropped;
 
             return serialized;
         }
 
-        public Quaternion Expand()
-        {
+        public SystemQuaternion Expand() {
             if (loss >= 4)
                 throw new DataCorruptionException($"Expanding a quaternion led to a lost component of {loss}!");
 
-            float Pow(float x) => x * x;
+            static float Pow(float x) => x * x;
 
             float f1 = c1 / PRECISION_OFFSET;
             float f2 = c2 / PRECISION_OFFSET;
@@ -91,22 +94,14 @@ namespace LabFusion.Data
             float f4 = (float)Math.Sqrt(1f - Pow(f1) - Pow(f2) - Pow(f3));
 
             // Still dumb...
-            switch (loss)
+            return loss switch
             {
-                case 0:
-                    return new Quaternion(f4, f1, f2, f3);
-
-                case 1:
-                    return new Quaternion(f1, f4, f2, f3);
-
-                case 2:
-                    return new Quaternion(f1, f2, f4, f3);
-
-                case 3:
-                    return new Quaternion(f1, f2, f3, f4);
-            }
-
-            return Quaternion.identity;
+                0 => new SystemQuaternion(f4, f1, f2, f3),
+                1 => new SystemQuaternion(f1, f4, f2, f3),
+                2 => new SystemQuaternion(f1, f2, f4, f3),
+                3 => new SystemQuaternion(f1, f2, f3, f4),
+                _ => SystemQuaternion.Identity,
+            };
         }
     }
 }

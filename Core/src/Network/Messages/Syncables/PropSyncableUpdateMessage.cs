@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 using UnityEngine;
 using LabFusion.Extensions;
 
+using SystemVector3 = System.Numerics.Vector3;
+using SystemQuaternion = System.Numerics.Quaternion;
+
 namespace LabFusion.Network
 {
     public class PropSyncableUpdateData : IFusionSerializable, IDisposable
@@ -20,11 +23,11 @@ namespace LabFusion.Network
         public byte ownerId;
         public ushort syncId;
         public byte length;
-        public Vector3[] serializedPositions;
+        public SystemVector3[] serializedPositions;
         public SerializedSmallQuaternion[] serializedQuaternions;
 
-        public Vector3[] serializedVelocities;
-        public Vector3[] serializedAngularVelocities;
+        public SystemVector3[] serializedVelocities;
+        public SystemVector3[] serializedAngularVelocities;
 
         public void Serialize(FusionWriter writer)
         {
@@ -46,16 +49,16 @@ namespace LabFusion.Network
             syncId = reader.ReadUInt16();
             length = reader.ReadByte();
 
-            serializedPositions = new Vector3[length];
+            serializedPositions = new SystemVector3[length];
             serializedQuaternions = new SerializedSmallQuaternion[length];
-            serializedVelocities = new Vector3[length];
-            serializedAngularVelocities = new Vector3[length];
+            serializedVelocities = new SystemVector3[length];
+            serializedAngularVelocities = new SystemVector3[length];
 
             for (var i = 0; i < length; i++) {
-                serializedPositions[i] = reader.ReadVector3();
+                serializedPositions[i] = reader.ReadSystemVector3();
                 serializedQuaternions[i] = reader.ReadFusionSerializable<SerializedSmallQuaternion>();
-                serializedVelocities[i] = reader.ReadVector3();
-                serializedAngularVelocities[i] = reader.ReadVector3();
+                serializedVelocities[i] = reader.ReadSystemVector3();
+                serializedAngularVelocities[i] = reader.ReadSystemVector3();
             }
         }
 
@@ -82,10 +85,10 @@ namespace LabFusion.Network
                 ownerId = ownerId,
                 syncId = syncId,
                 length = (byte)length,
-                serializedPositions = new Vector3[length],
+                serializedPositions = new SystemVector3[length],
                 serializedQuaternions = new SerializedSmallQuaternion[length],
-                serializedVelocities = new Vector3[length],
-                serializedAngularVelocities = new Vector3[length],
+                serializedVelocities = new SystemVector3[length],
+                serializedAngularVelocities = new SystemVector3[length],
             };
 
             for (var i = 0; i < length; i++) {

@@ -6,6 +6,9 @@ using System;
 
 using UnityEngine;
 
+using SystemVector3 = System.Numerics.Vector3;
+using SystemQuaternion = System.Numerics.Quaternion;
+
 namespace LabFusion.Data
 {
     public class PDController {
@@ -37,11 +40,11 @@ namespace LabFusion.Data
         private bool _validPosition = false;
         private bool _validRotation = false;
 
-        private Vector3 _lastVelocity = Vector3Extensions.zero;
-        private Vector3 _lastAngularVelocity = Vector3Extensions.zero;
+        private SystemVector3 _lastVelocity = SystemVector3.Zero;
+        private SystemVector3 _lastAngularVelocity = SystemVector3.Zero;
 
-        private Vector3 _lastPosition = Vector3Extensions.zero;
-        private Quaternion _lastRotation = QuaternionExtensions.identity;
+        private SystemVector3 _lastPosition = SystemVector3.Zero;
+        private SystemQuaternion _lastRotation = SystemQuaternion.Identity;
 
         public static void OnInitializeMelon() {
             _positionKp = CalculateKP(PositionFrequency);
@@ -93,24 +96,24 @@ namespace LabFusion.Data
             ResetRotation();
         }
 
-        public Vector3 GetForce(in Rigidbody rb, in Vector3 position, in Vector3 velocity, in Vector3 targetPos, in Vector3 targetVel) {
+        public SystemVector3 GetForce(in Rigidbody rb, in SystemVector3 position, in SystemVector3 velocity, in SystemVector3 targetPos, in SystemVector3 targetVel) {
             // Update derivatives if needed
             if (!_validPosition) {
                 _lastPosition = targetPos;
                 _lastVelocity = targetVel;
                 _validPosition = true;
             }
-            
+
             // Get gravity so we can apply a counter force
-            Vector3 gravity = Vector3Extensions.zero;
+            SystemVector3 gravity = SystemVector3.Zero;
             if (rb.useGravity)
                 gravity = PhysicsUtilities.Gravity;
 
-            Vector3 Pt0 = position;
-            Vector3 Vt0 = velocity;
+            SystemVector3 Pt0 = position;
+            SystemVector3 Vt0 = velocity;
 
-            Vector3 Pt1 = _lastPosition;
-            Vector3 Vt1 = _lastVelocity;
+            SystemVector3 Pt1 = _lastPosition;
+            SystemVector3 Vt1 = _lastVelocity;
 
             var force = (Pt1 - Pt0) * _positionKsg + (Vt1 - Vt0) * _positionKdg - gravity;
 
@@ -122,12 +125,12 @@ namespace LabFusion.Data
 
             // Safety check
             if (force.IsNanOrInf())
-                force = Vector3Extensions.zero;
+                force = SystemVector3.Zero;
 
             return force;
         }
 
-        public Vector3 GetTorque(Rigidbody rb, in Quaternion rotation, in Vector3 angularVelocity, in Quaternion targetRot, in Vector3 targetVel)
+        public SystemVector3 GetTorque(Rigidbody rb, in SystemQuaternion rotation, in SystemVector3 angularVelocity, in SystemQuaternion targetRot, in SystemVector3 targetVel)
         {
             // Update derivatives if needed
             if (!_validRotation) {
@@ -136,21 +139,21 @@ namespace LabFusion.Data
                 _validRotation = true;
             }
 
-            Quaternion Qt1 = _lastRotation;
-            Vector3 Vt1 = _lastAngularVelocity;
+            SystemQuaternion Qt1 = _lastRotation;
+            SystemVector3 Vt1 = _lastAngularVelocity;
 
-            Quaternion q = Qt1 * Quaternion.Inverse(rotation);
-            if (q.w < 0)
+            SystemQuaternion q = Qt1 * SystemQuaternion.Inverse(rotation);
+            if (q.W < 0)
             {
-                q.x = -q.x;
-                q.y = -q.y;
-                q.z = -q.z;
-                q.w = -q.w;
+                q.X = -q.X;
+                q.Y = -q.Y;
+                q.Z = -q.Z;
+                q.W = -q.W;
             }
-            q.ToAngleAxis(out float xMag, out Vector3 x);
-            x = Vector3Extensions.Normalize(x);
+            q.ToAngleAxis(out float xMag, out SystemVector3 x);
+            x = SystemVector3.Normalize(x);
             
-            x *= MathExtensions.Deg2Rad;
+            x *= ManagedMathf.Deg2Rad;
             var torque = _rotationKsg * x * xMag + _rotationKdg * (Vt1 - angularVelocity);
 
             // Acceleration
@@ -161,7 +164,7 @@ namespace LabFusion.Data
 
             // Safety check
             if (torque.IsNanOrInf())
-                torque = Vector3Extensions.zero;
+                torque = SystemVector3.Zero;
 
             return torque;
         }

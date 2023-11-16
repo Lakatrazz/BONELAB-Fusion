@@ -66,7 +66,7 @@ namespace LabFusion.Data {
             if (!isGrabbed || grip == null)
                 return;
 
-            rep.AttachObject(handedness, grip, SimpleTransform.Create(targetInBase.position, targetInBase.rotation.Expand()));
+            rep.AttachObject(handedness, grip, SimpleTransform.Create(targetInBase.position.ToUnityVector3(), targetInBase.rotation.Expand().ToUnityQuaternion()));
         }
     }
 }

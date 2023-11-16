@@ -40,5 +40,9 @@ namespace LabFusion.Utilities
         internal static void OnEarlyFixedUpdate() {
             _fixedDeltaTime = Time.fixedDeltaTime;
         }
+
+        public static bool IsMatchingFrame(int interval) {
+            return FrameCount % interval == 0;
+        }
     }
 }

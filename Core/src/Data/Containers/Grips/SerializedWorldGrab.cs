@@ -13,6 +13,7 @@ using SLZ.Interaction;
 
 using UnityEngine;
 using SLZ;
+using LabFusion.Extensions;
 
 namespace LabFusion.Data
 {
@@ -87,7 +88,7 @@ namespace LabFusion.Data
             Quaternion rotation = handTransform.rotation;
 
             // Move the hand into its world position
-            handTransform.SetPositionAndRotation(worldHand.position, worldHand.rotation.Expand());
+            handTransform.SetPositionAndRotation(worldHand.position.ToUnityVector3(), worldHand.rotation.Expand().ToUnityQuaternion());
 
             // Apply the grab
             base.RequestGrab(rep, handedness, grip);

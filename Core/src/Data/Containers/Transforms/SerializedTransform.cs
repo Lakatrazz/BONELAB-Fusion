@@ -7,6 +7,8 @@ using UnityEngine;
 using LabFusion.Extensions;
 using LabFusion.Network;
 
+using SystemVector3 = System.Numerics.Vector3;
+
 namespace LabFusion.Data
 {
     public class SerializedTransform : IFusionSerializable
@@ -14,7 +16,7 @@ namespace LabFusion.Data
         public const ushort Size = sizeof(float) * 3 + SerializedQuaternion.Size;
         public static readonly SerializedTransform Default = new(Vector3Extensions.zero, Quaternion.identity);
 
-        public Vector3 position;
+        public SystemVector3 position;
         public SerializedQuaternion rotation;
 
         public void Serialize(FusionWriter writer) {
@@ -23,7 +25,7 @@ namespace LabFusion.Data
         }
 
         public void Deserialize(FusionReader reader) {
-            position = reader.ReadVector3();
+            position = reader.ReadSystemVector3();
             rotation = reader.ReadFusionSerializable<SerializedQuaternion>();
         }
 
@@ -31,14 +33,14 @@ namespace LabFusion.Data
 
         public SerializedTransform(Vector3 position, Quaternion rotation)
         {
-            this.position = position;
-            this.rotation = SerializedQuaternion.Compress(rotation);
+            this.position = position.ToSystemVector3();
+            this.rotation = SerializedQuaternion.Compress(rotation.ToSystemQuaternion());
         }
 
         public SerializedTransform(Transform transform)
         {
-            this.position = transform.position;
-            this.rotation = SerializedQuaternion.Compress(transform.rotation);
+            this.position = transform.position.ToSystemVector3();
+            this.rotation = SerializedQuaternion.Compress(transform.rotation.ToSystemQuaternion());
         }
     }
 }

@@ -14,6 +14,8 @@ using UnityEngine;
 using LabFusion.Debugging;
 #endif
 
+using SystemVector3 = System.Numerics.Vector3;
+
 namespace LabFusion.Network
 {
     public class FusionWriter : IDisposable
@@ -156,6 +158,12 @@ namespace LabFusion.Network
         public void Write(Vector2 value) {
             Write(value.x);
             Write(value.y);
+        }
+
+        public void Write(SystemVector3 value) {
+            Write(value.X);
+            Write(value.Y);
+            Write(value.Z);
         }
 
         public void Write(ushort value)

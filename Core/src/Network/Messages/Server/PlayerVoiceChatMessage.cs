@@ -52,27 +52,23 @@ namespace LabFusion.Network
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            using (var reader = FusionReader.Create(bytes))
+            using var reader = FusionReader.Create(bytes);
+            using var data = reader.ReadFusionSerializable<PlayerVoiceChatData>();
+            // Check if voice chat is active
+            if (!FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue())
+                return;
+
+            // Read the voice chat
+            var id = PlayerIdManager.GetPlayerId(data.smallId);
+
+            if (id != null)
+                InternalLayerHelpers.OnVoiceBytesReceived(id, data.bytes);
+
+            // Bounce the message back
+            if (NetworkInfo.IsServer)
             {
-                using (var data = reader.ReadFusionSerializable<PlayerVoiceChatData>())
-                {
-                    // Check if voice chat is active
-                    if (!FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue())
-                        return;
-
-                    // Read the voice chat
-                    var id = PlayerIdManager.GetPlayerId(data.smallId);
-
-                    if (id != null)
-                        InternalLayerHelpers.OnVoiceBytesReceived(id, data.bytes);
-
-                    // Bounce the message back
-                    if (NetworkInfo.IsServer)
-                    {
-                        using var message = FusionMessage.Create(Tag.Value, bytes);
-                        MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.VoiceChat, message);
-                    }
-                }
+                using var message = FusionMessage.Create(Tag.Value, bytes);
+                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.VoiceChat, message);
             }
         }
     }

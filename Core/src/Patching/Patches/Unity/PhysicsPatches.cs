@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using HarmonyLib;
 
+using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Utilities;
 
@@ -27,11 +28,13 @@ namespace LabFusion.Patching {
         [HarmonyPatch(nameof(Physics.gravity), MethodType.Setter)]
         [HarmonyPostfix]
         public static void SetGravityPostfix(Vector3 value) {
+            var output = value.ToSystemVector3();
+
             if (NetworkInfo.IsServer) {
-                PhysicsUtilities.SendGravity(value);
+                PhysicsUtilities.SendGravity(output);
             }
 
-            PhysicsUtilities.Gravity = value;
+            PhysicsUtilities.Gravity = output;
         }
     }
 }
