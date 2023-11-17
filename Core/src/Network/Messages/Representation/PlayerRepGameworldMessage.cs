@@ -8,6 +8,7 @@ using SLZ.VRMK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,13 +16,14 @@ using UnityEngine;
 
 namespace LabFusion.Network
 {
-    public class PlayerRepGameworldData : IFusionSerializable, IDisposable
+    public unsafe class PlayerRepGameworldData : IFusionSerializable, IDisposable
     {
         public const int Size = sizeof(byte) + SerializedLocalTransform.Size * RigAbstractor.GameworldRigTransformCount;
 
         public byte smallId;
-        public SerializedLocalTransform[] serializedGameworldLocalTransforms = new SerializedLocalTransform[RigAbstractor.GameworldRigTransformCount];
+        public SerializedLocalTransform* serializedGameworldLocalTransforms;
 
+        private bool _disposed;
 
         public void Serialize(FusionWriter writer)
         {
@@ -33,13 +35,22 @@ namespace LabFusion.Network
         public void Deserialize(FusionReader reader)
         {
             smallId = reader.ReadByte();
+
+            serializedGameworldLocalTransforms = (SerializedLocalTransform*)Marshal.AllocHGlobal(RigAbstractor.GameworldRigTransformCount * sizeof(SerializedLocalTransform));
+
             for (var i = 0; i < RigAbstractor.GameworldRigTransformCount; i++)
                 serializedGameworldLocalTransforms[i] = reader.ReadFusionSerializable<SerializedLocalTransform>();
         }
 
         public void Dispose()
         {
+            if (_disposed)
+                return;
+
             GC.SuppressFinalize(this);
+            Marshal.FreeHGlobal((IntPtr)serializedGameworldLocalTransforms);
+
+            _disposed = true;
         }
 
         public static PlayerRepGameworldData Create(byte smallId, Transform[] syncTransforms)
@@ -47,6 +58,8 @@ namespace LabFusion.Network
             var data = new PlayerRepGameworldData
             {
                 smallId = smallId,
+
+                serializedGameworldLocalTransforms = (SerializedLocalTransform*)Marshal.AllocHGlobal(RigAbstractor.GameworldRigTransformCount * sizeof(SerializedLocalTransform))
             };
 
             for (var i = 0; i < RigAbstractor.GameworldRigTransformCount; i++)
@@ -81,7 +94,11 @@ namespace LabFusion.Network
             // Apply player rep data
             if (data.smallId != PlayerIdManager.LocalSmallId && PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep) && rep.IsCreated)
             {
-                rep.serializedGameworldLocalTransforms = data.serializedGameworldLocalTransforms;
+                unsafe {
+                    for (var i = 0; i < RigAbstractor.GameworldRigTransformCount; i++) {
+                        rep.serializedGameworldLocalTransforms[i] = data.serializedGameworldLocalTransforms[i];
+                    }
+                }
             }
         }
     }

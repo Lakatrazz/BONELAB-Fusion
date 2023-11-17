@@ -31,7 +31,7 @@ namespace LabFusion.Data
         public string fullPath;
         public ushort index;
         public ushort id;
-        public SerializedTransform relativeHand = null;
+        public SerializedTransform relativeHand = default;
 
         public SerializedPropGrab() { }
 

@@ -13,12 +13,12 @@ using SystemQuaternion = System.Numerics.Quaternion;
 
 namespace LabFusion.Data
 {
-    public class SerializedSmallQuaternion : IFusionSerializable
+    public readonly struct SerializedSmallQuaternion : IFusionWritable
     {
         public const int Size = sizeof(byte) * 4;
         public static readonly SerializedSmallQuaternion Default = Compress(SystemQuaternion.Identity);
 
-        public sbyte c1, c2, c3, c4;
+        public readonly sbyte c1, c2, c3, c4;
 
         public void Serialize(FusionWriter writer)
         {
@@ -28,23 +28,31 @@ namespace LabFusion.Data
             writer.Write(c4.ToByte());
         }
 
-        public void Deserialize(FusionReader reader)
+        public static SerializedSmallQuaternion Create(FusionReader reader)
         {
-            c1 = reader.ReadByte().ToSByte();
-            c2 = reader.ReadByte().ToSByte();
-            c3 = reader.ReadByte().ToSByte();
-            c4 = reader.ReadByte().ToSByte();
+            return new SerializedSmallQuaternion(
+                reader.ReadByte().ToSByte(),
+                reader.ReadByte().ToSByte(),
+                reader.ReadByte().ToSByte(),
+                reader.ReadByte().ToSByte()
+            );
+        }
+
+        private SerializedSmallQuaternion(sbyte c1, sbyte c2, sbyte c3, sbyte c4) {
+            this.c1 = c1;
+            this.c2 = c2;
+            this.c3 = c3;
+            this.c4 = c4;
         }
 
         public static SerializedSmallQuaternion Compress(SystemQuaternion quat)
         {
-            return new SerializedSmallQuaternion
-            {
-                c1 = quat.X.ToSByte(),
-                c2 = quat.Y.ToSByte(),
-                c3 = quat.Z.ToSByte(),
-                c4 = quat.W.ToSByte()
-            };
+            return new SerializedSmallQuaternion(
+                quat.X.ToSByte(),
+                quat.Y.ToSByte(),
+                quat.Z.ToSByte(),
+                quat.W.ToSByte()
+            );
         }
 
         public SystemQuaternion Expand()

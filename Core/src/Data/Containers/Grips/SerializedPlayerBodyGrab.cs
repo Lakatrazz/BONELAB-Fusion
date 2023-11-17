@@ -29,7 +29,7 @@ namespace LabFusion.Data
         public byte grabbedUser;
         public byte gripIndex;
         public bool isAvatarGrip;
-        public SerializedTransform relativeHand = null;
+        public SerializedTransform relativeHand = default;
 
         public SerializedPlayerBodyGrab(byte grabbedUser, byte gripIndex, bool isAvatarGrip)
         {

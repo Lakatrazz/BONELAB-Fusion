@@ -10,6 +10,7 @@ using SLZ.VRMK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,7 +20,7 @@ using SystemVector3 = System.Numerics.Vector3;
 
 namespace LabFusion.Network
 {
-    public class PlayerRepTransformData : IFusionSerializable, IDisposable
+    public unsafe class PlayerRepTransformData : IFusionSerializable, IDisposable
     {
         public const int Size = sizeof(byte) + sizeof(float) * 7 + SerializedLocalTransform.Size
             * RigAbstractor.TransformSyncCount + SerializedTransform.Size + SerializedSmallQuaternion.Size + SerializedHand.Size * 2;
@@ -28,7 +29,7 @@ namespace LabFusion.Network
 
         public float curr_Health;
 
-        public SerializedLocalTransform[] serializedLocalTransforms = new SerializedLocalTransform[RigAbstractor.TransformSyncCount];
+        public SerializedLocalTransform* serializedLocalTransforms;
         public SerializedTransform serializedPelvis;
         public SerializedSmallQuaternion serializedPlayspace;
 
@@ -38,6 +39,7 @@ namespace LabFusion.Network
         public SerializedHand leftHand;
         public SerializedHand rightHand;
 
+        private bool _disposed;
 
         public void Serialize(FusionWriter writer)
         {
@@ -67,11 +69,13 @@ namespace LabFusion.Network
 
             curr_Health = reader.ReadSingle();
 
+            serializedLocalTransforms = (SerializedLocalTransform*)Marshal.AllocHGlobal(RigAbstractor.TransformSyncCount * sizeof(SerializedLocalTransform));
+
             for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
                 serializedLocalTransforms[i] = reader.ReadFusionSerializable<SerializedLocalTransform>();
 
             serializedPelvis = reader.ReadFusionSerializable<SerializedTransform>();
-            serializedPlayspace = reader.ReadFusionSerializable<SerializedSmallQuaternion>();
+            serializedPlayspace = reader.ReadFromFactory(SerializedSmallQuaternion.Create);
 
             leftHand = reader.ReadFusionSerializable<SerializedHand>();
             rightHand = reader.ReadFusionSerializable<SerializedHand>();
@@ -79,7 +83,13 @@ namespace LabFusion.Network
 
         public void Dispose()
         {
+            if (_disposed)
+                return;
+
             GC.SuppressFinalize(this);
+            Marshal.FreeHGlobal((IntPtr)serializedLocalTransforms);
+
+            _disposed = true;
         }
 
         public static PlayerRepTransformData Create(byte smallId, Transform[] syncTransforms, Transform syncedPelvis, Transform syncedPlayspace, Hand leftHand, Hand rightHand)
@@ -100,7 +110,9 @@ namespace LabFusion.Network
                 serializedPlayspace = SerializedSmallQuaternion.Compress(syncedPlayspace.rotation.ToSystemQuaternion()),
 
                 leftHand = new SerializedHand(leftHand, leftHand.Controller),
-                rightHand = new SerializedHand(rightHand, rightHand.Controller)
+                rightHand = new SerializedHand(rightHand, rightHand.Controller),
+
+                serializedLocalTransforms = (SerializedLocalTransform*)Marshal.AllocHGlobal(RigAbstractor.TransformSyncCount * sizeof(SerializedLocalTransform)),
             };
 
             for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
@@ -132,7 +144,12 @@ namespace LabFusion.Network
             // Apply player rep data
             if (data.smallId != PlayerIdManager.LocalSmallId && PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep) && rep.IsCreated)
             {
-                rep.serializedLocalTransforms = data.serializedLocalTransforms;
+                unsafe {
+                    for (var i = 0; i < RigAbstractor.TransformSyncCount; i++) {
+                        rep.serializedLocalTransforms[i] = data.serializedLocalTransforms[i];
+                    }
+                }
+
                 rep.serializedPelvis = data.serializedPelvis;
                 rep.repPlayspace.rotation = data.serializedPlayspace.Expand().ToUnityQuaternion();
                 rep.predictVelocity = data.predictVelocity;

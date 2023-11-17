@@ -620,7 +620,7 @@ namespace LabFusion.Representation
                 {
                     var localTransform = serializedGameworldLocalTransforms[i];
 
-                    if (localTransform == null)
+                    if (!localTransform.IsValid)
                         break;
 
                     var pos = localTransform.position;
@@ -678,7 +678,7 @@ namespace LabFusion.Representation
             try
             {
                 // Stop pelvis
-                if (!IsCreated || serializedPelvis == null)
+                if (!IsCreated || !serializedPelvis.IsValid)
                 {
                     pelvisPDController.Reset();
                     return;
@@ -860,7 +860,7 @@ namespace LabFusion.Representation
         {
             if (!IsCreated)
             {
-                serializedPelvis = null;
+                serializedPelvis = default;
                 return;
             }
 

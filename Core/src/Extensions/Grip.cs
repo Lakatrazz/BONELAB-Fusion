@@ -49,7 +49,7 @@ namespace LabFusion.Extensions
         public static void SetRelativeHand(this Grip grip, Hand hand, SerializedTransform transform)
         {
             // Set the hand position so that the grip is created in the right spot
-            if (transform != null)
+            if (transform.IsValid)
             {
                 var gripTransform = grip.Host.GetTransform();
 

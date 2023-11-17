@@ -37,26 +37,30 @@ namespace LabFusion.Network
             return reader;
         }
 
-        public T ReadFusionSerializable<T>() where T : IFusionSerializable, new()
+        public T ReadFusionSerializable<T>() where T : IFusionReadable, new()
         {
             T instance = new();
             instance.Deserialize(this);
             return instance;
         }
 
-        public void ReadFusionSerializable<T>(ref T value) where T : IFusionSerializable
+        public T ReadFromFactory<T>(Func<FusionReader, T> factory) {
+            return factory(this);
+        }
+
+        public void ReadFusionSerializable<T>(ref T value) where T : IFusionReadable
         {
             value.Deserialize(this);
         }
 
-        public IFusionSerializable ReadFusionSerializable(Type type)
+        public IFusionReadable ReadFusionSerializable(Type type)
         {
-            var instance = Activator.CreateInstance(type) as IFusionSerializable;
+            var instance = Activator.CreateInstance(type) as IFusionReadable;
             instance.Deserialize(this);
             return instance;
         }
 
-        public void ReadFusionSerializable(ref IFusionSerializable value)
+        public void ReadFusionSerializable(ref IFusionReadable value)
         {
             value.Deserialize(this);
         }

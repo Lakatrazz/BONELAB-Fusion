@@ -63,7 +63,7 @@ namespace LabFusion.Network
             };
         }
 
-        public void Write<T>(T value) where T : IFusionSerializable
+        public void Write<T>(T value) where T : IFusionWritable
         {
             value.Serialize(this);
         }

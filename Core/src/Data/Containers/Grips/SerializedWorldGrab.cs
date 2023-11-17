@@ -27,7 +27,7 @@ namespace LabFusion.Data
         public new const int Size = SerializedGrab.Size + sizeof(byte) + SerializedTransform.Size;
 
         public byte grabberId;
-        public SerializedTransform worldHand = null;
+        public SerializedTransform worldHand = default;
 
         public SerializedWorldGrab() { }
 

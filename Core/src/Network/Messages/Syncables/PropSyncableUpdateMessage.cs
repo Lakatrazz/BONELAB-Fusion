@@ -11,11 +11,11 @@ using UnityEngine;
 using LabFusion.Extensions;
 
 using SystemVector3 = System.Numerics.Vector3;
-using SystemQuaternion = System.Numerics.Quaternion;
+using System.Runtime.InteropServices;
 
 namespace LabFusion.Network
 {
-    public class PropSyncableUpdateData : IFusionSerializable, IDisposable
+    public unsafe class PropSyncableUpdateData : IFusionSerializable, IDisposable
     {
         public const int DefaultSize = sizeof(byte) * 2 + sizeof(ushort);
         public const int RigidbodySize = sizeof(float) * 9 + SerializedSmallQuaternion.Size;
@@ -23,11 +23,13 @@ namespace LabFusion.Network
         public byte ownerId;
         public ushort syncId;
         public byte length;
-        public SystemVector3[] serializedPositions;
-        public SerializedSmallQuaternion[] serializedQuaternions;
+        public SystemVector3* serializedPositions;
+        public SerializedSmallQuaternion* serializedQuaternions;
 
-        public SystemVector3[] serializedVelocities;
-        public SystemVector3[] serializedAngularVelocities;
+        public SystemVector3* serializedVelocities;
+        public SystemVector3* serializedAngularVelocities;
+
+        private bool _disposed;
 
         public void Serialize(FusionWriter writer)
         {
@@ -50,15 +52,15 @@ namespace LabFusion.Network
             syncId = reader.ReadUInt16();
             length = reader.ReadByte();
 
-            serializedPositions = new SystemVector3[length];
-            serializedQuaternions = new SerializedSmallQuaternion[length];
-            serializedVelocities = new SystemVector3[length];
-            serializedAngularVelocities = new SystemVector3[length];
+            serializedPositions = (SystemVector3*)Marshal.AllocHGlobal(length * sizeof(SystemVector3));
+            serializedQuaternions = (SerializedSmallQuaternion*)Marshal.AllocHGlobal(length * sizeof(SerializedSmallQuaternion));
+            serializedVelocities = (SystemVector3*)Marshal.AllocHGlobal(length * sizeof(SystemVector3));
+            serializedAngularVelocities = (SystemVector3*)Marshal.AllocHGlobal(length * sizeof(SystemVector3));
 
             for (var i = 0; i < length; i++)
             {
                 serializedPositions[i] = reader.ReadSystemVector3();
-                serializedQuaternions[i] = reader.ReadFusionSerializable<SerializedSmallQuaternion>();
+                serializedQuaternions[i] = reader.ReadFromFactory(SerializedSmallQuaternion.Create);
                 serializedVelocities[i] = reader.ReadSystemVector3();
                 serializedAngularVelocities[i] = reader.ReadSystemVector3();
             }
@@ -74,7 +76,16 @@ namespace LabFusion.Network
 
         public void Dispose()
         {
+            if (_disposed)
+                return;
+
             GC.SuppressFinalize(this);
+            Marshal.FreeHGlobal((IntPtr)serializedPositions);
+            Marshal.FreeHGlobal((IntPtr)serializedQuaternions);
+            Marshal.FreeHGlobal((IntPtr)serializedVelocities);
+            Marshal.FreeHGlobal((IntPtr)serializedAngularVelocities);
+
+            _disposed = true;
         }
 
         public static PropSyncableUpdateData Create(byte ownerId, PropSyncable syncable)
@@ -90,10 +101,10 @@ namespace LabFusion.Network
                 ownerId = ownerId,
                 syncId = syncId,
                 length = (byte)length,
-                serializedPositions = new SystemVector3[length],
-                serializedQuaternions = new SerializedSmallQuaternion[length],
-                serializedVelocities = new SystemVector3[length],
-                serializedAngularVelocities = new SystemVector3[length],
+                serializedPositions = (SystemVector3*)Marshal.AllocHGlobal(length * sizeof(SystemVector3)),
+                serializedQuaternions = (SerializedSmallQuaternion*)Marshal.AllocHGlobal(length * sizeof(SerializedSmallQuaternion)),
+                serializedVelocities = (SystemVector3*)Marshal.AllocHGlobal(length * sizeof(SystemVector3)),
+                serializedAngularVelocities = (SystemVector3*)Marshal.AllocHGlobal(length * sizeof(SystemVector3)),
             };
 
             for (var i = 0; i < length; i++)
@@ -130,16 +141,17 @@ namespace LabFusion.Network
             {
                 syncable.RefreshMessageTime();
 
-                for (var i = 0; i < data.length; i++)
-                {
-                    syncable.InitialPositions[i] = data.serializedPositions[i];
-                    syncable.InitialRotations[i] = data.serializedQuaternions[i].Expand();
+                unsafe {
+                    for (var i = 0; i < data.length; i++) {
+                        syncable.InitialPositions[i] = data.serializedPositions[i];
+                        syncable.InitialRotations[i] = data.serializedQuaternions[i].Expand();
 
-                    syncable.DesiredPositions[i] = data.serializedPositions[i];
-                    syncable.DesiredRotations[i] = data.serializedQuaternions[i].Expand();
+                        syncable.DesiredPositions[i] = data.serializedPositions[i];
+                        syncable.DesiredRotations[i] = data.serializedQuaternions[i].Expand();
 
-                    syncable.DesiredVelocities[i] = data.serializedVelocities[i];
-                    syncable.DesiredAngularVelocities[i] = data.serializedAngularVelocities[i];
+                        syncable.DesiredVelocities[i] = data.serializedVelocities[i];
+                        syncable.DesiredAngularVelocities[i] = data.serializedAngularVelocities[i];
+                    }
                 }
             }
 

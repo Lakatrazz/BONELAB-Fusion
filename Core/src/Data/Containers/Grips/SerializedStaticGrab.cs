@@ -27,7 +27,7 @@ namespace LabFusion.Data
         public new const int Size = SerializedGrab.Size + SerializedTransform.Size;
 
         public string fullPath;
-        public SerializedTransform worldHand = null;
+        public SerializedTransform worldHand = default;
 
         public SerializedStaticGrab() { }
 

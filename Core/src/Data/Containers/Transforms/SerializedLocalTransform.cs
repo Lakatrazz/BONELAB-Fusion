@@ -12,7 +12,7 @@ using SystemQuaternion = System.Numerics.Quaternion;
 
 namespace LabFusion.Data
 {
-    public class SerializedLocalTransform : IFusionSerializable
+    public struct SerializedLocalTransform : IFusionSerializable
     {
         public const int Size = sizeof(float) * 3 + SerializedSmallQuaternion.Size;
         public static readonly SerializedLocalTransform Default = new(Vector3Extensions.zero, Quaternion.identity);
@@ -21,6 +21,10 @@ namespace LabFusion.Data
         public SystemQuaternion rotation;
 
         private SerializedSmallQuaternion _compressedRotation;
+
+        private bool _isValid;
+
+        public bool IsValid => _isValid;
 
         public void Serialize(FusionWriter writer)
         {
@@ -32,11 +36,11 @@ namespace LabFusion.Data
         {
             position = reader.ReadSystemVector3();
 
-            _compressedRotation = reader.ReadFusionSerializable<SerializedSmallQuaternion>();
+            _compressedRotation = reader.ReadFromFactory(SerializedSmallQuaternion.Create);
             rotation = _compressedRotation.Expand();
-        }
 
-        public SerializedLocalTransform() { }
+            _isValid = true;
+        }
 
         public SerializedLocalTransform(Vector3 localPosition, Quaternion localRotation)
             : this(localPosition.ToSystemVector3(), localRotation.ToSystemQuaternion()) { }
@@ -50,6 +54,8 @@ namespace LabFusion.Data
             this.rotation = localRotation;
 
             this._compressedRotation = SerializedSmallQuaternion.Compress(this.rotation);
+
+            _isValid = true;
         }
     }
 }
