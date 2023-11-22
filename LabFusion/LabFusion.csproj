@@ -1,0 +1,1468 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <LangVersion>9.0</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{945622A5-4786-4C52-87F3-624BC6542A09}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>LabFusion</RootNamespace>
+    <AssemblyName>LabFusion</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MELONLOADER</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;MELONLOADER</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony, Version=2.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="BoneLib, Version=1.3.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>dependencies\BoneLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2Cppmscorlib, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Il2Cppmscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Il2CppSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem.Core, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Il2CppSystem.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="MelonLoader, Version=0.5.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\MelonLoader.dll</HintPath>
+    </Reference>
+    <Reference Include="SLZ.Algorithms, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\SLZ.Algorithms.dll</HintPath>
+    </Reference>
+    <Reference Include="SLZ.Marrow, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\SLZ.Marrow.dll</HintPath>
+    </Reference>
+    <Reference Include="SLZ.Marrow.SDK, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\SLZ.Marrow.SDK.dll</HintPath>
+    </Reference>
+    <Reference Include="SLZ.Serialize, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\SLZ.Serialize.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Data.OracleClient" />
+    <Reference Include="System.Data.Services" />
+    <Reference Include="System.Data.Services.Client" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.DirectoryServices.Protocols" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.IdentityModel.Selectors" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Json">
+      <HintPath>managed\System.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Management" />
+    <Reference Include="System.Messaging" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection.Context" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.DurableInstancing" />
+    <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Activation" />
+    <Reference Include="System.ServiceModel.Discovery" />
+    <Reference Include="System.ServiceModel.Internals, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\System.ServiceModel.Internals.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceModel.Routing" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Extensions.Design" />
+    <Reference Include="System.Web.Http">
+      <HintPath>managed\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.SelfHost">
+      <HintPath>managed\System.Web.Http.SelfHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost">
+      <HintPath>managed\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc">
+      <HintPath>managed\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor">
+      <HintPath>managed\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.RegularExpressions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Web.WebPages">
+      <HintPath>managed\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment">
+      <HintPath>managed\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor">
+      <HintPath>managed\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="UltEvents">
+      <HintPath>managed\UltEvents.dll</HintPath>
+    </Reference>
+    <Reference Include="UnhollowerBaseLib, Version=0.4.18.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnhollowerBaseLib.dll</HintPath>
+    </Reference>
+    <Reference Include="UnhollowerRuntimeLib, Version=0.4.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnhollowerRuntimeLib.dll</HintPath>
+    </Reference>
+    <Reference Include="UniTask, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UniTask.dll</HintPath>
+    </Reference>
+    <Reference Include="UniTask.Addressables, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UniTask.Addressables.dll</HintPath>
+    </Reference>
+    <Reference Include="UniTask.Linq, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UniTask.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Addressables, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.Addressables.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Animation.Rigging, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.Animation.Rigging.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Barracuda, Version=2.3.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.Barracuda.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Barracuda.BurstBLAS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.Barracuda.BurstBLAS.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Burst, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.Burst.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Burst.Unsafe, Version=4.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.Burst.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Collections, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.InputSystem, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.InputSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Mathematics, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.Mathematics.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ML-Agents, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.ML-Agents.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ML-Agents.CommunicatorObjects, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.ML-Agents.CommunicatorObjects.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ProBuilder">
+      <HintPath>managed\Unity.ProBuilder.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ProBuilder.KdTree">
+      <HintPath>managed\Unity.ProBuilder.KdTree.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ProBuilder.Poly2Tri">
+      <HintPath>managed\Unity.ProBuilder.Poly2Tri.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Profiling.Core, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.Profiling.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RenderPipeline.Universal.ShaderLibrary, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.RenderPipeline.Universal.ShaderLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.Core.Runtime, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.Universal.Runtime, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.RenderPipelines.Universal.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.Universal.StressLevelZero.VRS">
+      <HintPath>managed\Unity.RenderPipelines.Universal.StressLevelZero.VRS.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ResourceManager, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.ResourceManager.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Splines, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.Splines.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Splines.Examples, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.Splines.Examples.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Timeline, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.Timeline.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.XR.ARFoundation">
+      <HintPath>managed\Unity.XR.ARFoundation.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.XR.ARSubsystems">
+      <HintPath>managed\Unity.XR.ARSubsystems.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.XR.CoreUtils">
+      <HintPath>managed\Unity.XR.CoreUtils.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.XR.Interaction.Toolkit">
+      <HintPath>managed\Unity.XR.Interaction.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.XR.Management, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.XR.Management.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.XR.MockHMD, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.XR.MockHMD.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.XR.Oculus, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.XR.Oculus.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.XR.OpenXR, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.XR.OpenXR.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.XR.OpenXR.Features.ConformanceAutomation, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.XR.OpenXR.Features.ConformanceAutomation.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.XR.OpenXR.Features.MockRuntime, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.XR.OpenXR.Features.MockRuntime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.XR.OpenXR.Features.OculusQuestSupport, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.XR.OpenXR.Features.OculusQuestSupport.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.XR.OpenXR.Features.RuntimeDebugger, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\Unity.XR.OpenXR.Features.RuntimeDebugger.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AccessibilityModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.AccessibilityModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.AIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AndroidJNIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.AndroidJNIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.AnimationModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ARModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.ARModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.AssetBundleModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.AudioModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClothModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.ClothModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClusterInputModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.ClusterInputModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClusterRendererModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.ClusterRendererModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CrashReportingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.CrashReportingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.DirectorModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.DirectorModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.DSPGraphModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.DSPGraphModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.GameCenterModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.GameCenterModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.GIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.GIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.GridModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.GridModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.HotReloadModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.HotReloadModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Il2CppAssetBundleManager, Version=0.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.Il2CppAssetBundleManager.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Il2CppImageConversionManager, Version=0.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.Il2CppImageConversionManager.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.ImageConversionModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.InputLegacyModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.InputModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.JSONSerializeModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.JSONSerializeModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.LocalizationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.LocalizationModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.NVIDIAModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.NVIDIAModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PerformanceReportingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.PerformanceReportingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Physics2DModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.Physics2DModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ProfilerModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.ProfilerModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ScreenCaptureModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.ScreenCaptureModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SharedInternalsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.SharedInternalsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SpatialTracking, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.SpatialTracking.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SpriteMaskModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.SpriteMaskModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SpriteShapeModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.SpriteShapeModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.StreamingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.StreamingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SubstanceModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.SubstanceModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SubsystemsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.SubsystemsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TerrainModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.TerrainModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TerrainPhysicsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.TerrainPhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextCoreFontEngineModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.TextCoreFontEngineModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextCoreTextEngineModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.TextCoreTextEngineModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TilemapModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.TilemapModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TLSModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.TLSModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIElementsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.UIElementsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIElementsNativeModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.UIElementsNativeModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UmbraModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.UmbraModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UNETModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.UNETModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityAnalyticsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.UnityAnalyticsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityConnectModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.UnityConnectModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityCurlModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.UnityCurlModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityTestProtocolModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.UnityTestProtocolModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestAudioModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestTextureModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestWWWModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VehiclesModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.VehiclesModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VFXModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.VFXModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VideoModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.VideoModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VirtualTexturingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.VirtualTexturingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VRModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.VRModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.WindModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.WindModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.XRModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>managed\UnityEngine.XRModule.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".editorconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="dependencies\Facepunch.Steamworks\Callbacks\CallResult.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Callbacks\ICallbackData.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Classes\AuthTicket.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Classes\Dispatch.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Classes\SteamApi.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Classes\SteamGameServer.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Classes\SteamInternal.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Enum\LeaderboardDisplay.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Enum\LeaderboardSort.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Enum\SendType.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\CustomEnums.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamAppList.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamApps.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamClient.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamController.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamFriends.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamGameSearch.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamGameServer.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamGameServerStats.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamHTMLSurface.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamHTTP.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamInput.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamInventory.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamMatchmaking.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamMatchmakingPingResponse.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamMatchmakingPlayersResponse.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamMatchmakingRulesResponse.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamMatchmakingServerListResponse.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamMatchmakingServers.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamMusic.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamMusicRemote.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamNetworking.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamNetworkingConnectionCustomSignaling.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamNetworkingCustomSignalingRecvContext.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamNetworkingSockets.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamNetworkingUtils.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamParentalSettings.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamParties.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamRemotePlay.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamRemoteStorage.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamScreenshots.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamTV.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamUGC.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamUser.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamUserStats.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamUtils.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\Interfaces\ISteamVideo.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\SteamCallbacks.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\SteamConstants.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\SteamEnums.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\SteamStructFunctions.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\SteamStructs.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Generated\SteamTypes.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Networking\Connection.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Networking\ConnectionInfo.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Networking\ConnectionManager.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Networking\IConnectionManager.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Networking\ISocketManager.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Networking\NetAddress.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Networking\NetDebugFunc.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Networking\NetErrorMessage.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Networking\NetIdentity.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Networking\NetKeyValue.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Networking\NetMsg.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Networking\NetPingLocation.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Networking\Socket.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Networking\SocketManager.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Networking\SteamDatagramRelayAuthTicket.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\ServerList\Base.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\ServerList\Favourites.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\ServerList\Friends.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\ServerList\History.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\ServerList\Internet.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\ServerList\IpList.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\ServerList\LocalNetwork.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\SteamApps.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\SteamClient.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\SteamFriends.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\SteamInput.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\SteamInventory.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\SteamMatchmaking.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\SteamMatchmakingServers.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\SteamMusic.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\SteamNetworking.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\SteamNetworkingSockets.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\SteamNetworkingUtils.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\SteamParental.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\SteamParties.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\SteamRemotePlay.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\SteamRemoteStorage.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\SteamScreenshots.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\SteamServer.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\SteamServerStats.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\SteamUgc.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\SteamUser.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\SteamUserStats.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\SteamUtils.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\SteamVideo.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\Achievement.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\AppId.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\Controller.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\DepotId.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\DlcInformation.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\DownloadProgress.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\DurationControl.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\FileDetails.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\Friend.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\GameId.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\Image.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\InventoryDef.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\InventoryItem.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\InventoryPurchaseResult.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\InventoryRecipe.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\InventoryResult.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\Leaderboard.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\LeaderboardEntry.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\LeaderboardUpdate.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\Lobby.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\LobbyQuery.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\MatchMakingKeyValuePair.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\NumericalFilter.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\OutgoingPacket.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\P2Packet.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\PartyBeacon.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\RemotePlaySession.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\Screenshot.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\Server.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\ServerInit.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\Stat.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\SteamId.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\SteamIpAddress.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\SteamParamStringArray.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\Ugc.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\UgcEditor.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\UgcItem.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\UgcQuery.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\UgcResultPage.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Structs\UserItemVote.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Utility\Epoch.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Utility\Helpers.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Utility\Platform.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Utility\SourceServerQuery.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Utility\SteamInterface.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Utility\Utf8String.cs" />
+    <Compile Include="dependencies\Facepunch.Steamworks\Utility\Utility.cs" />
+    <Compile Include="dependencies\LiteNetLib\BaseChannel.cs" />
+    <Compile Include="dependencies\LiteNetLib\ConnectionRequest.cs" />
+    <Compile Include="dependencies\LiteNetLib\INetEventListener.cs" />
+    <Compile Include="dependencies\LiteNetLib\InternalPackets.cs" />
+    <Compile Include="dependencies\LiteNetLib\Layers\Crc32cLayer.cs" />
+    <Compile Include="dependencies\LiteNetLib\Layers\PacketLayerBase.cs" />
+    <Compile Include="dependencies\LiteNetLib\Layers\XorEncryptLayer.cs" />
+    <Compile Include="dependencies\LiteNetLib\NativeSocket.cs" />
+    <Compile Include="dependencies\LiteNetLib\NatPunchModule.cs" />
+    <Compile Include="dependencies\LiteNetLib\NetConstants.cs" />
+    <Compile Include="dependencies\LiteNetLib\NetDebug.cs" />
+    <Compile Include="dependencies\LiteNetLib\NetManager.cs" />
+    <Compile Include="dependencies\LiteNetLib\NetManager.PacketPool.cs" />
+    <Compile Include="dependencies\LiteNetLib\NetManager.Socket.cs" />
+    <Compile Include="dependencies\LiteNetLib\NetPacket.cs" />
+    <Compile Include="dependencies\LiteNetLib\NetPeer.cs" />
+    <Compile Include="dependencies\LiteNetLib\NetStatistics.cs" />
+    <Compile Include="dependencies\LiteNetLib\NetUtils.cs" />
+    <Compile Include="dependencies\LiteNetLib\PausedSocketFix.cs" />
+    <Compile Include="dependencies\LiteNetLib\PooledPacket.cs" />
+    <Compile Include="dependencies\LiteNetLib\ReliableChannel.cs" />
+    <Compile Include="dependencies\LiteNetLib\SequencedChannel.cs" />
+    <Compile Include="dependencies\LiteNetLib\Utils\CRC32C.cs" />
+    <Compile Include="dependencies\LiteNetLib\Utils\FastBitConverter.cs" />
+    <Compile Include="dependencies\LiteNetLib\Utils\INetSerializable.cs" />
+    <Compile Include="dependencies\LiteNetLib\Utils\NetDataReader.cs" />
+    <Compile Include="dependencies\LiteNetLib\Utils\NetDataWriter.cs" />
+    <Compile Include="dependencies\LiteNetLib\Utils\NetPacketProcessor.cs" />
+    <Compile Include="dependencies\LiteNetLib\Utils\NetSerializer.cs" />
+    <Compile Include="dependencies\LiteNetLib\Utils\NtpPacket.cs" />
+    <Compile Include="dependencies\LiteNetLib\Utils\NtpRequest.cs" />
+    <Compile Include="..\FusionHelper\Network\MessageTypes.cs" />
+    <Compile Include="marrow-integration\Runtime\Cosmetics\MarrowCosmeticChest.cs" />
+    <Compile Include="marrow-integration\Runtime\Cosmetics\MarrowCosmeticChestBack.cs" />
+    <Compile Include="marrow-integration\Runtime\Cosmetics\MarrowCosmeticEyeCenter.cs" />
+    <Compile Include="marrow-integration\Runtime\Cosmetics\MarrowCosmeticEyeLeft.cs" />
+    <Compile Include="marrow-integration\Runtime\Cosmetics\MarrowCosmeticEyeRight.cs" />
+    <Compile Include="marrow-integration\Runtime\Cosmetics\MarrowCosmeticHead.cs" />
+    <Compile Include="marrow-integration\Runtime\Cosmetics\MarrowCosmeticHeadTop.cs" />
+    <Compile Include="marrow-integration\Runtime\Cosmetics\MarrowCosmeticHips.cs" />
+    <Compile Include="marrow-integration\Runtime\Cosmetics\MarrowCosmeticNose.cs" />
+    <Compile Include="marrow-integration\Runtime\Cosmetics\MarrowCosmeticPoint.cs" />
+    <Compile Include="marrow-integration\Runtime\Gamemodes\Deathmatch\DeathmatchProxy.cs" />
+    <Compile Include="marrow-integration\Runtime\Gamemodes\Deathmatch\DeathmatchSpawnpoint.cs" />
+    <Compile Include="marrow-integration\Runtime\Gamemodes\Entangled\EntangledProxy.cs" />
+    <Compile Include="marrow-integration\Runtime\Gamemodes\GamemodeEndEvent.cs" />
+    <Compile Include="marrow-integration\Runtime\Gamemodes\GamemodeStartEvent.cs" />
+    <Compile Include="marrow-integration\Runtime\Gamemodes\Team Deathmatch\LavaGangSpawnpoint.cs" />
+    <Compile Include="marrow-integration\Runtime\Gamemodes\Team Deathmatch\SabrelakeSpawnpoint.cs" />
+    <Compile Include="marrow-integration\Runtime\Gamemodes\Team Deathmatch\TeamDeathmatchProxy.cs" />
+    <Compile Include="marrow-integration\Runtime\Gamemodes\Team Deathmatch\TeamSpawnpoint.cs" />
+    <Compile Include="marrow-integration\Runtime\Internal\FusionMarrowBehaviour.cs" />
+    <Compile Include="marrow-integration\Runtime\Misc\AlwaysAllowImpactDamage.cs" />
+    <Compile Include="marrow-integration\Runtime\Misc\AutoSyncOnStart.cs" />
+    <Compile Include="marrow-integration\Runtime\Misc\BitRewardProxy.cs" />
+    <Compile Include="marrow-integration\Runtime\Misc\CrateSpawnerProxy.cs" />
+    <Compile Include="marrow-integration\Runtime\Misc\DisableSyncing.cs" />
+    <Compile Include="marrow-integration\Runtime\Misc\NotificationProxy.cs" />
+    <Compile Include="marrow-integration\Runtime\Misc\OnlyTriggerOnLocalPlayer.cs" />
+    <Compile Include="marrow-integration\Runtime\Misc\PlayerProxy.cs" />
+    <Compile Include="marrow-integration\Runtime\Misc\SyncGameObjectEnabled.cs" />
+    <Compile Include="marrow-integration\Runtime\Spawners\CupBoardPlacer.cs" />
+    <Compile Include="marrow-integration\Runtime\Spawners\InfoBoxPlacer.cs" />
+    <Compile Include="marrow-integration\Runtime\Spawners\PointShopPlacer.cs" />
+    <Compile Include="marrow-integration\Runtime\UltEvents\InvokeUltEventIfClient.cs" />
+    <Compile Include="marrow-integration\Runtime\UltEvents\InvokeUltEventIfHost.cs" />
+    <Compile Include="marrow-integration\Runtime\UltEvents\InvokeUltEventIfTeam.cs" />
+    <Compile Include="marrow-integration\Runtime\UltEvents\InvokeUltEventIfTeamLavaGang.cs" />
+    <Compile Include="marrow-integration\Runtime\UltEvents\InvokeUltEventIfTeamSabrelake.cs" />
+    <Compile Include="marrow-integration\Runtime\UltEvents\InvokeUltEventInServer.cs" />
+    <Compile Include="marrow-integration\Runtime\UltEvents\InvokeUltEventOnLocalOwnership.cs" />
+    <Compile Include="marrow-integration\Runtime\UltEvents\InvokeUltEventOnOtherOwnership.cs" />
+    <Compile Include="src\AssemblyInfo.cs">
+      <DependentUpon>AssemblyInfo.tt</DependentUpon>
+    </Compile>
+    <Compile Include="src\BoneMenu\AdminActionsCreator.cs" />
+    <Compile Include="src\BoneMenu\BanListCreator.cs" />
+    <Compile Include="src\BoneMenu\BatchedBoneMenu.cs" />
+    <Compile Include="src\BoneMenu\BoneMenuCreator.cs" />
+    <Compile Include="src\BoneMenu\DebugCreator.cs" />
+    <Compile Include="src\BoneMenu\GamemodesCreator.cs" />
+    <Compile Include="src\BoneMenu\LobbyCreator.cs" />
+    <Compile Include="src\BoneMenu\NotificationCreator.cs" />
+    <Compile Include="src\BoneMenu\PlayerListCreator.cs" />
+    <Compile Include="src\BoneMenu\ServerInfoCreator.cs" />
+    <Compile Include="src\BoneMenu\SettingsCreator.cs" />
+    <Compile Include="src\Data\Containers\DataCorruptionException.cs" />
+    <Compile Include="src\Data\Containers\FusionArrayPool.cs" />
+    <Compile Include="src\Data\Containers\FusionDictionary.cs" />
+    <Compile Include="src\Data\Containers\Grips\SerializedGrab.cs" />
+    <Compile Include="src\Data\Containers\Grips\SerializedPlayerBodyGrab.cs" />
+    <Compile Include="src\Data\Containers\Grips\SerializedPropGrab.cs" />
+    <Compile Include="src\Data\Containers\Grips\SerializedStaticGrab.cs" />
+    <Compile Include="src\Data\Containers\Grips\SerializedWorldGrab.cs" />
+    <Compile Include="src\Data\Containers\Levels\ArenaData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DescentData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\AscentDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\BigAnomalyBDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\BigAnomalyDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\BigBoneBowlingDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\ContainerYardDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\DescentDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\DMLevelDataHandler.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\DropPitDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\DungeonWarriorDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\GunRangeDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\HalfwayParkDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\HoloChamberDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\HomeDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\HubDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\LongRunDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\MagmaGateDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\MainMenuDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\MineDiveDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\MirrorDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\MonogonMotorwayDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\MoonBaseDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\NeonDistrictParkourDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\PillarClimbDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\RooftopsDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\SprintBridgeDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\StreetPuncherDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\TunnelTipperDMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\TuscanyDataDM.cs" />
+    <Compile Include="src\Data\Containers\Levels\DMSpawnPoints\VoidG114DMData.cs" />
+    <Compile Include="src\Data\Containers\Levels\GameControllerData.cs" />
+    <Compile Include="src\Data\Containers\Levels\HolodeckData.cs" />
+    <Compile Include="src\Data\Containers\Levels\HomeData.cs" />
+    <Compile Include="src\Data\Containers\Levels\HubData.cs" />
+    <Compile Include="src\Data\Containers\Levels\KartRaceData.cs" />
+    <Compile Include="src\Data\Containers\Levels\LevelDataHandler.cs" />
+    <Compile Include="src\Data\Containers\Levels\MagmaGateData.cs" />
+    <Compile Include="src\Data\Containers\Levels\MineDiveData.cs" />
+    <Compile Include="src\Data\Containers\Levels\ResetButtonRemover.cs" />
+    <Compile Include="src\Data\Containers\Levels\SprintBridgeData.cs" />
+    <Compile Include="src\Data\Containers\Levels\TimeTrialData.cs" />
+    <Compile Include="src\Data\Containers\Levels\VoidG114Data.cs" />
+    <Compile Include="src\Data\Containers\PDController.cs" />
+    <Compile Include="src\Data\Containers\Player\RigData.cs" />
+    <Compile Include="src\Data\Containers\Player\RigLifeCycleEvents.cs" />
+    <Compile Include="src\Data\Containers\SerializedAvatarStats.cs" />
+    <Compile Include="src\Data\Containers\SerializedGameObjectReference.cs" />
+    <Compile Include="src\Data\Containers\SerializedHand.cs" />
+    <Compile Include="src\Data\Containers\SerializedPlayerSettings.cs" />
+    <Compile Include="src\Data\Containers\SerializedServerSettings.cs" />
+    <Compile Include="src\Data\Containers\SerializedSoftEllipse.cs" />
+    <Compile Include="src\Data\Containers\SerializedTriggerRefReference.cs" />
+    <Compile Include="src\Data\Containers\Syncables\GrabbedGripList.cs" />
+    <Compile Include="src\Data\Containers\Syncables\GripPair.cs" />
+    <Compile Include="src\Data\Containers\Syncables\RigidbodyCache.cs" />
+    <Compile Include="src\Data\Containers\Syncables\TempRigidbodyList.cs" />
+    <Compile Include="src\Data\Containers\Syncables\TransformCache.cs" />
+    <Compile Include="src\Data\Containers\Transforms\SerializedLocalTransform.cs" />
+    <Compile Include="src\Data\Containers\Transforms\SerializedQuaternion.cs" />
+    <Compile Include="src\Data\Containers\Transforms\SerializedSmallQuaternion.cs" />
+    <Compile Include="src\Data\Containers\Transforms\SerializedTransform.cs" />
+    <Compile Include="src\Data\Containers\XML\IXMLPackable.cs" />
+    <Compile Include="src\Data\Containers\XML\PlayerList.cs" />
+    <Compile Include="src\Data\Files\ChangelogLoader.cs" />
+    <Compile Include="src\Data\Files\DataSaver.cs" />
+    <Compile Include="src\Data\Files\EmbeddedAssetBundle.cs" />
+    <Compile Include="src\Data\Files\EmbeddedResource.cs" />
+    <Compile Include="src\Data\Files\FusionFileLoader.cs" />
+    <Compile Include="src\Data\Files\PersistentData.cs" />
+    <Compile Include="src\Data\Files\ResourcePaths.cs" />
+    <Compile Include="src\Data\Files\SteamAPILoader.cs" />
+    <Compile Include="src\Data\Files\XML\BanList.cs" />
+    <Compile Include="src\Data\Files\XML\ContactsList.cs" />
+    <Compile Include="src\Data\Files\XML\PermissionList.cs" />
+    <Compile Include="src\Data\Files\XML\XMLFile.cs" />
+    <Compile Include="src\Data\Interfaces\IFusionSerializable.cs" />
+    <Compile Include="src\Debugging\FusionDevMode.cs" />
+    <Compile Include="src\Debugging\FusionStopwatch.cs" />
+    <Compile Include="src\Debugging\FusionUnityLogger.cs" />
+    <Compile Include="src\Exceptions\ExpectedClientException.cs" />
+    <Compile Include="src\Exceptions\ExpectedServerException.cs" />
+    <Compile Include="src\Extensions\AlignPlug.cs" />
+    <Compile Include="src\Extensions\Array.cs" />
+    <Compile Include="src\Extensions\AudioSource.cs" />
+    <Compile Include="src\Extensions\Byte.cs" />
+    <Compile Include="src\Extensions\Chunk.cs" />
+    <Compile Include="src\Extensions\Component.cs" />
+    <Compile Include="src\Extensions\Grip.cs" />
+    <Compile Include="src\Extensions\Hand.cs" />
+    <Compile Include="src\Extensions\IEnumerable.cs" />
+    <Compile Include="src\Extensions\Int32.cs" />
+    <Compile Include="src\Extensions\InteractableHost.cs" />
+    <Compile Include="src\Extensions\Joint.cs" />
+    <Compile Include="src\Extensions\PullCordDevice.cs" />
+    <Compile Include="src\Extensions\Quaternion.cs" />
+    <Compile Include="src\Extensions\RigManager.cs" />
+    <Compile Include="src\Extensions\String.cs" />
+    <Compile Include="src\Extensions\SyncableComparer.cs" />
+    <Compile Include="src\Extensions\Transform.cs" />
+    <Compile Include="src\Extensions\UnityComparer.cs" />
+    <Compile Include="src\Extensions\UnityObject.cs" />
+    <Compile Include="src\Extensions\Vector3.cs" />
+    <Compile Include="src\Extensions\XElement.cs" />
+    <Compile Include="src\Extensions\ZoneSpawner.cs" />
+    <Compile Include="src\Grabbables\GrabHelper.cs" />
+    <Compile Include="src\Grabbables\InteractableHelpers.cs" />
+    <Compile Include="src\Grabbables\SerializedGrabHandler.cs" />
+    <Compile Include="src\Mod.cs" />
+    <Compile Include="src\MonoBehaviours\CollisionSyncer.cs" />
+    <Compile Include="src\MonoBehaviours\DestroyOnDisconnect.cs" />
+    <Compile Include="src\MonoBehaviours\MirrorIdentifier.cs" />
+    <Compile Include="src\MonoBehaviours\NotifyOnEnable.cs" />
+    <Compile Include="src\MonoBehaviours\PropCollisionSyncer.cs" />
+    <Compile Include="src\MonoBehaviours\TimedDespawner.cs" />
+    <Compile Include="src\Network\Fallback\EmptyNetworkLayer.cs" />
+    <Compile Include="src\Network\Helpers\LobbyMetadataHelper.cs" />
+    <Compile Include="src\Network\Helpers\MessageSender.cs" />
+    <Compile Include="src\Network\Helpers\MetadataHelper.cs" />
+    <Compile Include="src\Network\Helpers\Net.cs" />
+    <Compile Include="src\Network\Helpers\NetworkHelper.cs" />
+    <Compile Include="src\Network\Helpers\NetworkInfo.cs" />
+    <Compile Include="src\Network\Helpers\NetworkVerification.cs" />
+    <Compile Include="src\Network\Helpers\SendRateTable.cs" />
+    <Compile Include="src\Network\Helpers\VoiceHelper.cs" />
+    <Compile Include="src\Network\Helpers\VoteKickHelper.cs" />
+    <Compile Include="src\Network\INetworkLobby.cs" />
+    <Compile Include="src\Network\Internal\InternalLayerHelpers.cs" />
+    <Compile Include="src\Network\Internal\InternalServerHelpers.cs" />
+    <Compile Include="src\Network\IVoiceHandler.cs" />
+    <Compile Include="src\Network\IVoiceManager.cs" />
+    <Compile Include="src\Network\Messages\Arena\ArenaMenuMessage.cs" />
+    <Compile Include="src\Network\Messages\Arena\ArenaTransitionMessage.cs" />
+    <Compile Include="src\Network\Messages\Arena\BaseGameControllerMessage.cs" />
+    <Compile Include="src\Network\Messages\Arena\ChallengeSelectMessage.cs" />
+    <Compile Include="src\Network\Messages\Arena\GeoSelectMessage.cs" />
+    <Compile Include="src\Network\Messages\Arena\TimeTrialGameControllerMessage.cs" />
+    <Compile Include="src\Network\Messages\Campaign\BonelabHubMessage.cs" />
+    <Compile Include="src\Network\Messages\Campaign\DescentElevatorMessage.cs" />
+    <Compile Include="src\Network\Messages\Campaign\DescentIntroMessage.cs" />
+    <Compile Include="src\Network\Messages\Campaign\DescentNooseMessage.cs" />
+    <Compile Include="src\Network\Messages\Campaign\HomeMessage.cs" />
+    <Compile Include="src\Network\Messages\Campaign\KartRaceMessage.cs" />
+    <Compile Include="src\Network\Messages\Campaign\MagmaGateMessage.cs" />
+    <Compile Include="src\Network\Messages\Campaign\MineDiveCartMessage.cs" />
+    <Compile Include="src\Network\Messages\Combat\GunShotMessage.cs" />
+    <Compile Include="src\Network\Messages\Combat\PuppetMasterKillMessage.cs" />
+    <Compile Include="src\Network\Messages\Destruction\ObjectDestructableDestroyMessage.cs" />
+    <Compile Include="src\Network\Messages\Destruction\PropHealthDestroyMessage.cs" />
+    <Compile Include="src\Network\Messages\Entities\BehaviourBaseNavLocoMessage.cs" />
+    <Compile Include="src\Network\Messages\Entities\BehaviourBaseNavMentalMessage.cs" />
+    <Compile Include="src\Network\Messages\FusionMessage.cs" />
+    <Compile Include="src\Network\Messages\FusionMessageHandler.cs" />
+    <Compile Include="src\Network\Messages\FusionReader.cs" />
+    <Compile Include="src\Network\Messages\FusionWriter.cs" />
+    <Compile Include="src\Network\Messages\Gamemodes\GamemodeMetadataRemoveMessage.cs" />
+    <Compile Include="src\Network\Messages\Gamemodes\GamemodeMetadataSetMessage.cs" />
+    <Compile Include="src\Network\Messages\Gamemodes\GamemodeTriggerResponseMessage.cs" />
+    <Compile Include="src\Network\Messages\Global\SlowMoButtonMessage.cs" />
+    <Compile Include="src\Network\Messages\Global\WorldGravityMessage.cs" />
+    <Compile Include="src\Network\Messages\Interaction\BoardCreateMessage.cs" />
+    <Compile Include="src\Network\Messages\Interaction\ConstrainerModeMessage.cs" />
+    <Compile Include="src\Network\Messages\Interaction\ConstraintCreateMessage.cs" />
+    <Compile Include="src\Network\Messages\Interaction\ConstraintDeleteMessage.cs" />
+    <Compile Include="src\Network\Messages\Interaction\FlashlightToggleMessage.cs" />
+    <Compile Include="src\Network\Messages\Interaction\FunicularControllerEventMessage.cs" />
+    <Compile Include="src\Network\Messages\Interaction\NimbusGunNoclipMessage.cs" />
+    <Compile Include="src\Network\Messages\Interaction\PlayerRepGrabMessage.cs" />
+    <Compile Include="src\Network\Messages\Interaction\PlayerRepReleaseMessage.cs" />
+    <Compile Include="src\Network\Messages\Interaction\PlayerRepSeatMessage.cs" />
+    <Compile Include="src\Network\Messages\Interaction\PowerableJointVoltageMessage.cs" />
+    <Compile Include="src\Network\Messages\Interaction\SimpleGripEventMessage.cs" />
+    <Compile Include="src\Network\Messages\Interaction\SpawnGunPreviewMeshMessage.cs" />
+    <Compile Include="src\Network\Messages\Interaction\TwoButtonRemoteControllerEventMessage.cs" />
+    <Compile Include="src\Network\Messages\Inventory\InventorySlotDropMessage.cs" />
+    <Compile Include="src\Network\Messages\Inventory\InventorySlotInsertMessage.cs" />
+    <Compile Include="src\Network\Messages\Levels\HolodeckEventMessage.cs" />
+    <Compile Include="src\Network\Messages\Levels\LevelRequestMessage.cs" />
+    <Compile Include="src\Network\Messages\Levels\SceneLoadMessage.cs" />
+    <Compile Include="src\Network\Messages\Levels\ZoneEncounterEventMessage.cs" />
+    <Compile Include="src\Network\Messages\Magazines\KeySlotMessage.cs" />
+    <Compile Include="src\Network\Messages\Magazines\MagazineEjectMessage.cs" />
+    <Compile Include="src\Network\Messages\Magazines\MagazineInsertMessage.cs" />
+    <Compile Include="src\Network\Messages\MessageHandler.cs" />
+    <Compile Include="src\Network\Messages\NativeMessageTag.cs" />
+    <Compile Include="src\Network\Messages\PointShop\PointItemEquipStateMessage.cs" />
+    <Compile Include="src\Network\Messages\PointShop\PointItemTriggerMessage.cs" />
+    <Compile Include="src\Network\Messages\PointShop\PointItemTriggerValueMessage.cs" />
+    <Compile Include="src\Network\Messages\Representation\BodyLogEffectMessage.cs" />
+    <Compile Include="src\Network\Messages\Representation\BodyLogToggleMessage.cs" />
+    <Compile Include="src\Network\Messages\Representation\PlayerRepActionMessage.cs" />
+    <Compile Include="src\Network\Messages\Representation\PlayerRepAvatarMessage.cs" />
+    <Compile Include="src\Network\Messages\Representation\PlayerRepDamageMessage.cs" />
+    <Compile Include="src\Network\Messages\Representation\PlayerRepGameworldMessage.cs" />
+    <Compile Include="src\Network\Messages\Representation\PlayerRepRagdollMessage.cs" />
+    <Compile Include="src\Network\Messages\Representation\PlayerRepTeleportMessage.cs" />
+    <Compile Include="src\Network\Messages\Representation\PlayerRepTransformMessage.cs" />
+    <Compile Include="src\Network\Messages\Representation\PlayerRepVitalsMessage.cs" />
+    <Compile Include="src\Network\Messages\SDK\DynamicsAssignMessage.cs" />
+    <Compile Include="src\Network\Messages\SDK\GameObjectActiveMessage.cs" />
+    <Compile Include="src\Network\Messages\SDK\ModuleMessage.cs" />
+    <Compile Include="src\Network\Messages\Server\ConnectionRequestMessage.cs" />
+    <Compile Include="src\Network\Messages\Server\ConnectionResponseMessage.cs" />
+    <Compile Include="src\Network\Messages\Server\DisconnectMessage.cs" />
+    <Compile Include="src\Network\Messages\Server\PermissionCommandRequestMessage.cs" />
+    <Compile Include="src\Network\Messages\Server\PlayerMetadataRequestMessage.cs" />
+    <Compile Include="src\Network\Messages\Server\PlayerMetadataResponseMessage.cs" />
+    <Compile Include="src\Network\Messages\Server\PlayerSettingsMessage.cs" />
+    <Compile Include="src\Network\Messages\Server\PlayerVoiceChatMessage.cs" />
+    <Compile Include="src\Network\Messages\Server\ServerSettingsMessage.cs" />
+    <Compile Include="src\Network\Messages\Server\VoteKickRequestMessage.cs" />
+    <Compile Include="src\Network\Messages\Server\VoteKickResponseMessage.cs" />
+    <Compile Include="src\Network\Messages\Spawning\DespawnRequestMessage.cs" />
+    <Compile Include="src\Network\Messages\Spawning\DespawnResponseMessage.cs" />
+    <Compile Include="src\Network\Messages\Spawning\SpawnableCratePlacerMessage.cs" />
+    <Compile Include="src\Network\Messages\Spawning\SpawnRequestMessage.cs" />
+    <Compile Include="src\Network\Messages\Spawning\SpawnResponseMessage.cs" />
+    <Compile Include="src\Network\Messages\Syncables\PropSyncableCreateMessage.cs" />
+    <Compile Include="src\Network\Messages\Syncables\PropSyncableSleepMessage.cs" />
+    <Compile Include="src\Network\Messages\Syncables\PropSyncableUpdateMessage.cs" />
+    <Compile Include="src\Network\Messages\Syncables\SyncableIDRequestMessage.cs" />
+    <Compile Include="src\Network\Messages\Syncables\SyncableIDResponseMessage.cs" />
+    <Compile Include="src\Network\Messages\Syncables\SyncableOwnershipRequest.cs" />
+    <Compile Include="src\Network\Messages\Syncables\SyncableOwnershipResponse.cs" />
+    <Compile Include="src\Network\Messages\Trials\TrialSpawnerEventsMessage.cs" />
+    <Compile Include="src\Network\NetworkLayer.cs" />
+    <Compile Include="src\Network\NetworkLayerDeterminer.cs" />
+    <Compile Include="src\Network\Proxy\ProxyLobbyManager.cs" />
+    <Compile Include="src\Network\Proxy\ProxyNetworkLayer.cs" />
+    <Compile Include="src\Network\Proxy\ProxyNetworkLobby.cs" />
+    <Compile Include="src\Network\Proxy\ProxySocketHandler.cs" />
+    <Compile Include="src\Network\Proxy\ProxySpacewarNetworkLayer.cs" />
+    <Compile Include="src\Network\Proxy\ProxySteamVRNetworkLayer.cs" />
+    <Compile Include="src\Network\Proxy\ProxyVoiceHandler.cs" />
+    <Compile Include="src\Network\Proxy\ProxyVoiceManager.cs" />
+    <Compile Include="src\Network\Steam\SpacewarNetworkLayer.cs" />
+    <Compile Include="src\Network\Steam\SteamConnectionManager.cs" />
+    <Compile Include="src\Network\Steam\SteamLobby.cs" />
+    <Compile Include="src\Network\Steam\SteamNetworkLayer.cs" />
+    <Compile Include="src\Network\Steam\SteamSocketHandler.cs" />
+    <Compile Include="src\Network\Steam\SteamSocketManager.cs" />
+    <Compile Include="src\Network\Steam\SteamVoiceHandler.cs" />
+    <Compile Include="src\Network\Steam\SteamVoiceManager.cs" />
+    <Compile Include="src\Network\Steam\SteamVRNetworkLayer.cs" />
+    <Compile Include="src\Patching\CommonDelegates.cs" />
+    <Compile Include="src\Patching\ManualPatcher.cs" />
+    <Compile Include="src\Patching\NativeStructs\Attack_.cs" />
+    <Compile Include="src\Patching\NativeStructs\HandGripPair_.cs" />
+    <Compile Include="src\Patching\Patches\AssetPooleePatches.cs" />
+    <Compile Include="src\Patching\Patches\Attacks\ImpactPropertiesPatches.cs" />
+    <Compile Include="src\Patching\Patches\Attacks\ImpactSFXPatches.cs" />
+    <Compile Include="src\Patching\Patches\Attacks\StabSlashPatches.cs" />
+    <Compile Include="src\Patching\Patches\AvatarDicePatches.cs" />
+    <Compile Include="src\Patching\Patches\AvatarPatches.cs" />
+    <Compile Include="src\Patching\Patches\BoardGeneratorPatches.cs" />
+    <Compile Include="src\Patching\Patches\BonelabProgressionHelperPatches.cs" />
+    <Compile Include="src\Patching\Patches\ChunkTriggerPatches.cs" />
+    <Compile Include="src\Patching\Patches\ConstrainerPatches.cs" />
+    <Compile Include="src\Patching\Patches\ConstraintTrackerPatches.cs" />
+    <Compile Include="src\Patching\Patches\Control_GlobalTimePatches.cs" />
+    <Compile Include="src\Patching\Patches\DescentPatches.cs" />
+    <Compile Include="src\Patching\Patches\DevManipulatorPatches.cs" />
+    <Compile Include="src\Patching\Patches\Enemies\BehaviourBaseNavPatches.cs" />
+    <Compile Include="src\Patching\Patches\Enemies\BehaviourOmniwheelPatches.cs" />
+    <Compile Include="src\Patching\Patches\Enemies\BehaviourPowerLegsPatches.cs" />
+    <Compile Include="src\Patching\Patches\GachaPlacerPatches.cs" />
+    <Compile Include="src\Patching\Patches\GrabPatches.cs" />
+    <Compile Include="src\Patching\Patches\GunPatches.cs" />
+    <Compile Include="src\Patching\Patches\HandJointConfigurationPatches.cs" />
+    <Compile Include="src\Patching\Patches\InventoryAmmoReceiverPatches.cs" />
+    <Compile Include="src\Patching\Patches\InventorySlotReceiverPatches.cs" />
+    <Compile Include="src\Patching\Patches\Levels\ArenaPatches.cs" />
+    <Compile Include="src\Patching\Patches\Levels\BaseGameControllerPatches.cs" />
+    <Compile Include="src\Patching\Patches\Levels\BonelabHubPatches.cs" />
+    <Compile Include="src\Patching\Patches\Levels\GameControl_HolodeckPatches.cs" />
+    <Compile Include="src\Patching\Patches\Levels\HomePatches.cs" />
+    <Compile Include="src\Patching\Patches\Levels\KartRacePatches.cs" />
+    <Compile Include="src\Patching\Patches\Levels\MagmaGatePatches.cs" />
+    <Compile Include="src\Patching\Patches\Levels\TimeTrial_GameControllerPatches.cs" />
+    <Compile Include="src\Patching\Patches\Levels\Trial_SpawnerEventsPatches.cs" />
+    <Compile Include="src\Patching\Patches\Levels\ZoneEncounterPatches.cs" />
+    <Compile Include="src\Patching\Patches\ObjectDestructablePatches.cs" />
+    <Compile Include="src\Patching\Patches\OpenControllerRigPatches.cs" />
+    <Compile Include="src\Patching\Patches\Player\ArtRigPatches.cs" />
+    <Compile Include="src\Patching\Patches\Player\GameworldSkeletonRigPatches.cs" />
+    <Compile Include="src\Patching\Patches\Player\JimmyDoorControllerPatches.cs" />
+    <Compile Include="src\Patching\Patches\Player\PhysicsRigPatches.cs" />
+    <Compile Include="src\Patching\Patches\Player\PlayerDamageReceiverPatches.cs" />
+    <Compile Include="src\Patching\Patches\Player\PlayerHealthPatches.cs" />
+    <Compile Include="src\Patching\Patches\Player\RemapRigPatches.cs" />
+    <Compile Include="src\Patching\Patches\Player\VirtualControllerPatches.cs" />
+    <Compile Include="src\Patching\Patches\Plugs\KeyRecieverPatches.cs" />
+    <Compile Include="src\Patching\Patches\Plugs\PlugPatches.cs" />
+    <Compile Include="src\Patching\Patches\PopUpMenuPatches.cs" />
+    <Compile Include="src\Patching\Patches\PropFlashlightPatches.cs" />
+    <Compile Include="src\Patching\Patches\PropHealthPatches.cs" />
+    <Compile Include="src\Patching\Patches\Props\AmmoPickupPatches.cs" />
+    <Compile Include="src\Patching\Patches\Props\FlyingGunPatches.cs" />
+    <Compile Include="src\Patching\Patches\Props\FunicularControllerPatches.cs" />
+    <Compile Include="src\Patching\Patches\Props\PowerableJointPatches.cs" />
+    <Compile Include="src\Patching\Patches\Props\SpawnEventsPatches.cs" />
+    <Compile Include="src\Patching\Patches\Props\TwoButtonRemoteControllerPatches.cs" />
+    <Compile Include="src\Patching\Patches\PullCordDevicePatches.cs" />
+    <Compile Include="src\Patching\Patches\PullCordForceChangePatches.cs" />
+    <Compile Include="src\Patching\Patches\PuppetMasterPatches.cs" />
+    <Compile Include="src\Patching\Patches\SceneStreamerPatches.cs" />
+    <Compile Include="src\Patching\Patches\SeatPatches.cs" />
+    <Compile Include="src\Patching\Patches\SimpleGripEventsPatches.cs" />
+    <Compile Include="src\Patching\Patches\SpawnableCratePlacerPatches.cs" />
+    <Compile Include="src\Patching\Patches\SubBehaviourHealthPatches.cs" />
+    <Compile Include="src\Patching\Patches\Trigger\GenGameControl_TriggerPatches.cs" />
+    <Compile Include="src\Patching\Patches\Trigger\MirrorPatches.cs" />
+    <Compile Include="src\Patching\Patches\Trigger\TriggerLasersPatches.cs" />
+    <Compile Include="src\Patching\Patches\UI\LevelsPanelViewPatches.cs" />
+    <Compile Include="src\Patching\Patches\Unity\PhysicsPatches.cs" />
+    <Compile Include="src\Patching\Patches\ZonePatches.cs" />
+    <Compile Include="src\Preferences\FusionPref.cs" />
+    <Compile Include="src\Preferences\FusionPreferences.cs" />
+    <Compile Include="src\Representation\FusionBlessings.cs" />
+    <Compile Include="src\Representation\FusionMasterList.cs" />
+    <Compile Include="src\Representation\FusionPermissions.cs" />
+    <Compile Include="src\Representation\PlayerId.cs" />
+    <Compile Include="src\Representation\PlayerIdManager.cs" />
+    <Compile Include="src\Representation\PlayerRep.cs" />
+    <Compile Include="src\Representation\PlayerRepManager.cs" />
+    <Compile Include="src\Representation\PlayerRepUtilities.cs" />
+    <Compile Include="src\Representation\RigAbstractor.cs" />
+    <Compile Include="src\SDK\Achievements\Achievement.cs" />
+    <Compile Include="src\SDK\Achievements\AchievementManager.cs" />
+    <Compile Include="src\SDK\Achievements\AchievementSaveManager.cs" />
+    <Compile Include="src\SDK\Achievements\Built In\AroundTheWorld.cs" />
+    <Compile Include="src\SDK\Achievements\Built In\Bitmart\StyleAchievement.cs" />
+    <Compile Include="src\SDK\Achievements\Built In\Bitmart\StyleAddict.cs" />
+    <Compile Include="src\SDK\Achievements\Built In\Bitmart\StyleBaby.cs" />
+    <Compile Include="src\SDK\Achievements\Built In\Bitmart\StyleMan.cs" />
+    <Compile Include="src\SDK\Achievements\Built In\BouncingStrong.cs" />
+    <Compile Include="src\SDK\Achievements\Built In\Campaign\Betrayal.cs" />
+    <Compile Include="src\SDK\Achievements\Built In\Campaign\OneMoreTime.cs" />
+    <Compile Include="src\SDK\Achievements\Built In\ClassStruggle.cs" />
+    <Compile Include="src\SDK\Achievements\Built In\CleanupCrew.cs" />
+    <Compile Include="src\SDK\Achievements\Built In\DaycareAttendant.cs" />
+    <Compile Include="src\SDK\Achievements\Built In\Deathmatch\ExperiencedExecutioner.cs" />
+    <Compile Include="src\SDK\Achievements\Built In\Deathmatch\KillerAchievement.cs" />
+    <Compile Include="src\SDK\Achievements\Built In\Deathmatch\MediocreMarksman.cs" />
+    <Compile Include="src\SDK\Achievements\Built In\Deathmatch\Rampage.cs" />
+    <Compile Include="src\SDK\Achievements\Built In\Deathmatch\RookieAssassin.cs" />
+    <Compile Include="src\SDK\Achievements\Built In\GuardianAngel.cs" />
+    <Compile Include="src\SDK\Achievements\Built In\HeadOfHouse.cs" />
+    <Compile Include="src\SDK\Achievements\Built In\HelloThere.cs" />
+    <Compile Include="src\SDK\Achievements\Built In\HighwayMan.cs" />
+    <Compile Include="src\SDK\Achievements\Built In\LavaGang.cs" />
+    <Compile Include="src\SDK\Achievements\Built In\WarmWelcome.cs" />
+    <Compile Include="src\SDK\Gamemodes\Built In\BoneBall.cs" />
+    <Compile Include="src\SDK\Gamemodes\Built In\Deathmatch.cs" />
+    <Compile Include="src\SDK\Gamemodes\Built In\Entangled.cs" />
+    <Compile Include="src\SDK\Gamemodes\Built In\KartRace.cs" />
+    <Compile Include="src\SDK\Gamemodes\Built In\SuperSmashBoners.cs" />
+    <Compile Include="src\SDK\Gamemodes\Built In\TeamDeathmatch.cs" />
+    <Compile Include="src\SDK\Gamemodes\Built In\TugOWar.cs" />
+    <Compile Include="src\SDK\Gamemodes\Gamemode.cs" />
+    <Compile Include="src\SDK\Gamemodes\GamemodeHelper.cs" />
+    <Compile Include="src\SDK\Gamemodes\GamemodeManager.cs" />
+    <Compile Include="src\SDK\Gamemodes\GamemodePlaylist.cs" />
+    <Compile Include="src\SDK\Gamemodes\GamemodeRegistration.cs" />
+    <Compile Include="src\SDK\Gamemodes\Team.cs" />
+    <Compile Include="src\SDK\Gamemodes\TeamLogoInstance.cs" />
+    <Compile Include="src\SDK\Modules\Module.cs" />
+    <Compile Include="src\SDK\Modules\ModuleHandler.cs" />
+    <Compile Include="src\SDK\Modules\ModuleInfo.cs" />
+    <Compile Include="src\SDK\Modules\ModuleLogger.cs" />
+    <Compile Include="src\SDK\Network\Messages\ModuleMessageHandler.cs" />
+    <Compile Include="src\SDK\Points\AccessoryItem.cs" />
+    <Compile Include="src\SDK\Points\AccessoryItemHelper.cs" />
+    <Compile Include="src\SDK\Points\BitEconomy.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\AdventureHat.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\BitsTrail.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\BodyPillow.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\BritishHelm.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\CardboardDisguise.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\CardboardTophat.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\CatBeanie.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\CheeseHat.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\ConstructionHat.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\Cooler.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\EltonGlasses.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\EnaHat.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\Fez.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\Firework.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\Fren.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\FryCookHat.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\Gearhead.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\Gemstone.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\Glasses3D.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\GloopTrail.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\GuardHelmet.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\Junktion.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\KickMeSign.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\KnollHat.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\LaytonHat.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\LegoHead.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\LightningHead.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\Monocle.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\NyanTrail.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\PartyHat.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\PieceOfResistance.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\PulsatingMass.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\RubixCube.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\SorcererHat.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\StormyHead.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\TestItem.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\TheBeacon.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\WaistRing.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 1\WeirdShades.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 2\AncientTablet.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 2\BitBackpack.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 2\Briefcase.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 2\CirclingBit.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 2\Floatie.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 2\Headset.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 2\HotHead.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 2\Jetpack.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 2\NESGuitar.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 2\OctoSpecs.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 2\Potion.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 2\PsychicPerception.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 2\RetroMind.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 2\SignalingSpiral.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 2\Speaker.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 2\VioletVortex.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Special\VictoryTrophy.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\Riggle\Pack 1\ArrowHead.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\Riggle\Pack 1\BucketHat.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\Riggle\Pack 1\CBRNGasMask.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\Riggle\Pack 1\Crown.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\Riggle\Pack 1\Fedoral.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\Riggle\Pack 1\FlinchsJinjle.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\Riggle\Pack 1\GP5.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\Riggle\Pack 1\JesterHat.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\Riggle\Pack 1\MissedAWideGlasses.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\Riggle\Pack 1\MissedAWideHat.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\Riggle\Pack 1\OldTimeyPipe.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\Riggle\Pack 1\RiotHelmet.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\Riggle\Pack 1\Smitty.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\Riggle\Pack 1\VirtuallyInsane.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\Riggle\Pack 1\Wonker.cs" />
+    <Compile Include="src\SDK\Points\Built In\Cosmetics\Riggle\Pack 1\ZestySwagShades.cs" />
+    <Compile Include="src\SDK\Points\Built In\Passive\BitMiner.cs" />
+    <Compile Include="src\SDK\Points\PointItem.cs" />
+    <Compile Include="src\SDK\Points\PointItemManager.cs" />
+    <Compile Include="src\SDK\Points\PointSaveManager.cs" />
+    <Compile Include="src\SDK\Points\PointShop.cs" />
+    <Compile Include="src\SDK\Points\PointShopHelper.cs" />
+    <Compile Include="src\SDK\Points\PointShopPanelView.cs" />
+    <Compile Include="src\Senders\Gamemode\GamemodeSender.cs" />
+    <Compile Include="src\Senders\Level\ArenaSender.cs" />
+    <Compile Include="src\Senders\Level\CampaignSender.cs" />
+    <Compile Include="src\Senders\Level\GameControllerSender.cs" />
+    <Compile Include="src\Senders\Level\HolodeckSender.cs" />
+    <Compile Include="src\Senders\Level\TrialSender.cs" />
+    <Compile Include="src\Senders\Level\ZoneSender.cs" />
+    <Compile Include="src\Senders\Misc\PointItemSender.cs" />
+    <Compile Include="src\Senders\Misc\SDKSender.cs" />
+    <Compile Include="src\Senders\Player\PlayerSender.cs" />
+    <Compile Include="src\Senders\Player\PullCordSender.cs" />
+    <Compile Include="src\Senders\Props\EnemySender.cs" />
+    <Compile Include="src\Senders\Props\KeySender.cs" />
+    <Compile Include="src\Senders\Props\PowerableSender.cs" />
+    <Compile Include="src\Senders\Props\PropSender.cs" />
+    <Compile Include="src\Senders\Props\SpawnSender.cs" />
+    <Compile Include="src\Senders\QuickSender.cs" />
+    <Compile Include="src\Senders\Server\ConnectionSender.cs" />
+    <Compile Include="src\Senders\Server\LoadSender.cs" />
+    <Compile Include="src\Senders\Server\PermissionSender.cs" />
+    <Compile Include="src\Senders\Server\TimeScaleSender.cs" />
+    <Compile Include="src\Syncables\ConstraintSyncable.cs" />
+    <Compile Include="src\Syncables\IOwnerLocker.cs" />
+    <Compile Include="src\Syncables\ISyncable.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\AIBrainExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\AmmoSocketExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\AtvExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\BehaviourBaseNavExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\BehaviourOmniwheelExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\BehaviourPowerLegsExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\BoardGeneratorExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\ConstrainerExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\EscalatorExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\FlyingGunExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\FunicularControllerExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\GripExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\GunExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\IPropExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\KeyExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\KeyRecieverExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\MagazineExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\ObjectDestructableExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\PowerableJointExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\PropExtenderManager.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\PropFlashlightExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\PropHealthExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\PuppetMasterExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\SeatExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\SimpleGripEventsExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\SpawnGunExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\SyncGameObjectEnabledExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\TriggerRefProxyExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\TwoButtonRemoteControllerExtender.cs" />
+    <Compile Include="src\Syncables\Prop\Extenders\WeaponSlotExtender.cs" />
+    <Compile Include="src\Syncables\Prop\PropCollisionSyncerExtender.cs" />
+    <Compile Include="src\Syncables\Prop\PropComponentArrayExtender.cs" />
+    <Compile Include="src\Syncables\Prop\PropComponentExtender.cs" />
+    <Compile Include="src\Syncables\Prop\PropLifeCycleEvents.cs" />
+    <Compile Include="src\Syncables\Prop\PropSyncable.cs" />
+    <Compile Include="src\Syncables\SyncBlacklist.cs" />
+    <Compile Include="src\Syncables\SyncManager.cs" />
+    <Compile Include="src\UI\Cup Board\CupBoard.cs" />
+    <Compile Include="src\UI\Cup Board\CupBoardHelper.cs" />
+    <Compile Include="src\UI\Cup Board\CupBoardPanelView.cs" />
+    <Compile Include="src\UI\FusionPanelView.cs" />
+    <Compile Include="src\UI\FusionUIMachine.cs" />
+    <Compile Include="src\UI\FusionUITrigger.cs" />
+    <Compile Include="src\UI\Info Box\InfoBox.cs" />
+    <Compile Include="src\UI\Info Box\InfoBoxHelper.cs" />
+    <Compile Include="src\UI\Info Box\InfoBoxPanelView.cs" />
+    <Compile Include="src\Utilities\AssemblyUtilities.cs" />
+    <Compile Include="src\Utilities\ByteRetriever.cs" />
+    <Compile Include="src\Utilities\CommonBarcodes.cs" />
+    <Compile Include="src\Utilities\ConstrainerUtilities.cs" />
+    <Compile Include="src\Utilities\DelayUtilities.cs" />
+    <Compile Include="src\Utilities\DllTools.cs" />
+    <Compile Include="src\Utilities\Fusion\FusionAchievementLoader.cs" />
+    <Compile Include="src\Utilities\Fusion\FusionAudio.cs" />
+    <Compile Include="src\Utilities\Fusion\FusionAvatar.cs" />
+    <Compile Include="src\Utilities\Fusion\FusionBundleLoader.cs" />
+    <Compile Include="src\Utilities\Fusion\FusionComponentCache.cs" />
+    <Compile Include="src\Utilities\Fusion\FusionContentLoader.cs" />
+    <Compile Include="src\Utilities\Fusion\FusionDevTools.cs" />
+    <Compile Include="src\Utilities\Fusion\FusionLogger.cs" />
+    <Compile Include="src\Utilities\Fusion\FusionOverrides.cs" />
+    <Compile Include="src\Utilities\Fusion\FusionPlayer.cs" />
+    <Compile Include="src\Utilities\Fusion\FusionPointItemLoader.cs" />
+    <Compile Include="src\Utilities\Fusion\MultiplayerHooking.cs" />
+    <Compile Include="src\Utilities\Fusion\Popups\FusionAchievementPopup.cs" />
+    <Compile Include="src\Utilities\Fusion\Popups\FusionBitPopup.cs" />
+    <Compile Include="src\Utilities\Fusion\Popups\FusionNotifier.cs" />
+    <Compile Include="src\Utilities\Fusion\Popups\FusionPopupManager.cs" />
+    <Compile Include="src\Utilities\Fusion\Scene\FusionSceneHooks.cs" />
+    <Compile Include="src\Utilities\Fusion\Scene\FusionSceneManager.cs" />
+    <Compile Include="src\Utilities\Fusion\Scene\FusionSceneStatus.cs" />
+    <Compile Include="src\Utilities\GameObjectUtilities.cs" />
+    <Compile Include="src\Utilities\GameObjectUtilitiesAsync.cs" />
+    <Compile Include="src\Utilities\ImpactUtilities.cs" />
+    <Compile Include="src\Utilities\Internal\BigEndianHelper.cs" />
+    <Compile Include="src\Utilities\Internal\ManagedMathf.cs" />
+    <Compile Include="src\Utilities\Internal\NativeUtilities.cs" />
+    <Compile Include="src\Utilities\Internal\PersistentAssetCreator.cs" />
+    <Compile Include="src\Utilities\Internal\PhysicsUtilities.cs" />
+    <Compile Include="src\Utilities\Internal\PooleePusher.cs" />
+    <Compile Include="src\Utilities\Internal\SafeEvents.cs" />
+    <Compile Include="src\Utilities\Internal\StaticGripFixer.cs" />
+    <Compile Include="src\Utilities\Internal\TimeUtilities.cs" />
+    <Compile Include="src\Utilities\MuteUIHelper.cs" />
+    <Compile Include="src\Utilities\PlayerAdditionsHelper.cs" />
+    <Compile Include="src\Utilities\PooleeUtilities.cs" />
+    <Compile Include="src\Utilities\SafetyUtilities.cs" />
+    <Compile Include="src\Utilities\ThreadingUtilities.cs" />
+    <Compile Include="src\Utilities\TriggerUtilities.cs" />
+    <Compile Include="src\Utilities\UI\LaserCursorUtilities.cs" />
+    <Compile Include="src\Utilities\UI\UIMachineUtilities.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="src\AssemblyInfo.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>AssemblyInfo.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\bundles\Android\achievement_bundle.fusion" />
+    <EmbeddedResource Include="resources\bundles\Android\content_bundle.fusion" />
+    <EmbeddedResource Include="resources\bundles\Android\item_bundle.fusion" />
+    <EmbeddedResource Include="resources\bundles\StandaloneWindows64\achievement_bundle.fusion" />
+    <EmbeddedResource Include="resources\bundles\StandaloneWindows64\content_bundle.fusion" />
+    <EmbeddedResource Include="resources\bundles\StandaloneWindows64\item_bundle.fusion" />
+    <EmbeddedResource Include="resources\lib\x86_64\steam_api64.dll" />
+    <EmbeddedResource Include="resources\text\credits\raw_credits_01.txt" />
+    <EmbeddedResource Include="resources\text\credits\raw_credits_02.txt" />
+    <EmbeddedResource Include="resources\text\credits\raw_credits_03.txt" />
+    <EmbeddedResource Include="resources\text\raw_changelog.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>
