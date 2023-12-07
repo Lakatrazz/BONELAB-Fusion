@@ -26,6 +26,7 @@ namespace LabFusion.Network
         public bool HasServerOpen;
         public int PlayerCount;
         public PlayerList PlayerList;
+        public bool IsQuestLobby;
 
         // Lobby settings
         public bool NametagsEnabled;
@@ -61,6 +62,7 @@ namespace LabFusion.Network
                 HasServerOpen = NetworkInfo.IsServer,
                 PlayerCount = PlayerIdManager.PlayerCount,
                 PlayerList = playerList,
+                IsQuestLobby = PlayerIdManager.LocalId.GetMetadata(MetadataHelper.PlatformKey) == "QUEST",
 
                 // Lobby settings
                 NametagsEnabled = FusionPreferences.LocalServerSettings.NametagsEnabled.GetValue(),
@@ -90,6 +92,7 @@ namespace LabFusion.Network
             lobby.SetMetadata(LobbyConstants.HasServerOpenKey, HasServerOpen.ToString());
             lobby.SetMetadata(nameof(PlayerCount), PlayerCount.ToString());
             lobby.SetMetadata(nameof(PlayerList), PlayerList.WriteDocument().ToString());
+            lobby.SetMetadata(nameof(IsQuestLobby), IsQuestLobby.ToString());
 
             // Lobby settings
             lobby.SetMetadata(nameof(NametagsEnabled), NametagsEnabled.ToString());
@@ -162,6 +165,10 @@ namespace LabFusion.Network
                 info.LobbyVersion = version;
             else
                 info.LobbyVersion = new Version(0, 0, 0);
+
+            // Get lobby platform
+            if (bool.TryParse(lobby.GetMetadata(nameof(IsQuestLobby)), out bool isQuestLobby))
+                info.IsQuestLobby = isQuestLobby;
 
             // Get longs
             if (ulong.TryParse(lobby.GetMetadata(nameof(LobbyId)), out var lobbyId))

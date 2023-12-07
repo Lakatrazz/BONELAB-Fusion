@@ -330,6 +330,23 @@ namespace FusionHelper.Network
                         SteamHandler.SetMetadata(dataReader.GetString(), dataReader.GetString());
                         break;
                     }
+                case (ulong)MessageTypes.FriendsList:
+                    {
+                        int friendCount = SteamFriends.GetFriendCount(EFriendFlags.k_EFriendFlagImmediate);
+                        List<ulong> friendIds = new List<ulong>();
+                        List<string> friendNames = new List<string>();
+                        for (int i = 0; i < friendCount; ++i)
+                        {
+                            CSteamID friendSteamID = SteamFriends.GetFriendByIndex(i, EFriendFlags.k_EFriendFlagImmediate);
+                            friendIds.Add(friendSteamID.m_SteamID);
+                            friendNames.Add(SteamFriends.GetFriendPersonaName(friendSteamID));
+                        }
+                        NetDataWriter writer = NewWriter(MessageTypes.FriendsList);
+                        writer.PutArray(friendIds.ToArray());
+                        writer.PutArray(friendNames.ToArray());
+                        SendToClient(writer);
+                        break;
+                    }
             }
 
             dataReader.Recycle();

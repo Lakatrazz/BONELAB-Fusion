@@ -114,6 +114,9 @@ namespace LabFusion.BoneMenu
             // Show their version
             generalInfoPanel.CreateFunctionElement($"Version: {info.LobbyVersion}", versionColor, null);
 
+            // Show their platform
+            generalInfoPanel.CreateFunctionElement($"Platform: {(info.IsQuestLobby ? "Quest" : "PC")}", Color.white, null);
+
             // Show their active level
             Color levelColor = info.ClientHasLevel ? Color.white : Color.red;
 

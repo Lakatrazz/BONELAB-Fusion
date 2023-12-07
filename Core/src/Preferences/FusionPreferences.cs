@@ -116,6 +116,13 @@ namespace LabFusion.Preferences
             // Gamemode settings
             public static FusionPref<bool> GamemodeMusic { get; internal set; }
             public static FusionPref<bool> GamemodeLateJoining { get; internal set; }
+
+            // Lobby Filtering
+            public static FusionPref<bool> ShowFullLobbies { get; internal set; }
+            public static FusionPref<byte> MinimumMaxPlayers { get; internal set; }
+            public static FusionPref<byte> MaximumMaxPlayers { get; internal set; }
+            public static FusionPref<bool> ShowQuestLobbies { get; internal set; }
+            public static FusionPref<bool> ShowPcLobbies { get; internal set; }
         }
 
         internal static ServerSettings LocalServerSettings;
@@ -199,6 +206,13 @@ namespace LabFusion.Preferences
             // Gamemodes
             ClientSettings.GamemodeMusic = new FusionPref<bool>(prefCategory, "Gamemode Music", true, PrefUpdateMode.IGNORE);
             ClientSettings.GamemodeLateJoining = new FusionPref<bool>(prefCategory, "Gamemode Late Joining", true, PrefUpdateMode.IGNORE);
+
+            // Lobby Filtering
+            ClientSettings.ShowFullLobbies = new FusionPref<bool>(prefCategory, "Show Full Lobbies", false, PrefUpdateMode.IGNORE);
+            ClientSettings.MinimumMaxPlayers = new FusionPref<byte>(prefCategory, "Minimum Max Players", 2, PrefUpdateMode.IGNORE);
+            ClientSettings.MaximumMaxPlayers = new FusionPref<byte>(prefCategory, "Maximum Max Players", 10, PrefUpdateMode.IGNORE);
+            ClientSettings.ShowQuestLobbies = new FusionPref<bool>(prefCategory, "Show Quest Lobbies", true, PrefUpdateMode.IGNORE);
+            ClientSettings.ShowPcLobbies = new FusionPref<bool>(prefCategory, "Show PC Lobbies", true, PrefUpdateMode.IGNORE);
 
             // Save category
             prefCategory.SaveToFile(false);

@@ -70,6 +70,9 @@ namespace LabFusion.Network
         private NetPeer serverConnection;
         private ProxyLobbyManager _lobbyManager;
 
+        // Friend Stuff
+        private ulong[] friendIds;
+
         // VC Stuff
         private int lastSample;
         private const int FREQUENCY = 22100;
@@ -114,6 +117,9 @@ namespace LabFusion.Network
                 };
 
                 writer.Put(ApplicationID);
+                SendToProxyServer(writer);
+
+                writer = NewWriter(MessageTypes.FriendsList);
                 SendToProxyServer(writer);
             };
 
@@ -269,6 +275,11 @@ namespace LabFusion.Network
                         handler?.OnDecompressedVoiceBytesReceived(data);
                         break;
                     }
+                case (ulong)MessageTypes.FriendsList:
+                    {
+                        friendIds = dataReader.GetULongArray();
+                        break;
+                    }
             }
 
             dataReader.Recycle();
@@ -405,7 +416,9 @@ namespace LabFusion.Network
         // so just always return true.
         internal override bool IsFriend(ulong userId)
         {
-            return true;
+            if (friendIds.Contains(userId))
+                return true;
+            else return false;
         }
 
         internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message)
@@ -562,6 +575,11 @@ namespace LabFusion.Network
 
             // Update bonemenu items
             OnUpdateCreateServerText();
+
+            // Update the friends list
+            NetDataWriter writer = NewWriter(MessageTypes.FriendsList);
+            SendToProxyServer(writer);
+
         }
 
         internal override void OnSetupBoneMenu(MenuCategory category)
@@ -583,7 +601,7 @@ namespace LabFusion.Network
         private MenuCategory _serverInfoCategory;
         private MenuCategory _manualJoiningCategory;
         private MenuCategory _publicLobbiesCategory;
-        //private MenuCategory _friendsCategory;
+        private MenuCategory _friendsCategory;
 
         private void CreateMatchmakingMenu(MenuCategory category)
         {
@@ -600,13 +618,22 @@ namespace LabFusion.Network
 
             // Public lobbies list
             _publicLobbiesCategory = matchmaking.CreateCategory("Public Lobbies", Color.white);
+
+            /// Lobby Filtering
+            var filteringCategory = _publicLobbiesCategory.CreateSubPanel("Filters", Color.white);
+            BoneMenuCreator.CreateBoolPreference(filteringCategory, "Show Full Lobbies", FusionPreferences.ClientSettings.ShowFullLobbies);
+            BoneMenuCreator.CreateBoolPreference(filteringCategory, "Show Quest Lobbies", FusionPreferences.ClientSettings.ShowQuestLobbies);
+            BoneMenuCreator.CreateBoolPreference(filteringCategory, "Show PC Lobbies", FusionPreferences.ClientSettings.ShowPcLobbies);
+            BoneMenuCreator.CreateBytePreference(filteringCategory, "Maximum Max Players", 1, 2, 255, FusionPreferences.ClientSettings.MaximumMaxPlayers);
+            BoneMenuCreator.CreateBytePreference(filteringCategory, "Minimum Max Players", 1, 2, 255, FusionPreferences.ClientSettings.MinimumMaxPlayers);
+
             _publicLobbiesCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshPublicLobbies);
             _publicLobbiesCategory.CreateFunctionElement("Select Refresh to load servers!", Color.yellow, null);
 
             // Steam friends list
-            //_friendsCategory = matchmaking.CreateCategory("Steam Friends", Color.white);
-            //_friendsCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshFriendLobbies);
-            //_friendsCategory.CreateFunctionElement("Select Refresh to load servers!", Color.yellow, null);
+            _friendsCategory = matchmaking.CreateCategory("Steam Friends", Color.white);
+            _friendsCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshFriendLobbies);
+            _friendsCategory.CreateFunctionElement("Select Refresh to load servers!", Color.yellow, null);
         }
 
         private FunctionElement _createServerElement;
@@ -684,6 +711,15 @@ namespace LabFusion.Network
 
             // Clear existing lobbies
             _publicLobbiesCategory.Elements.Clear();
+
+            /// Lobby Filtering
+            var filteringCategory = _publicLobbiesCategory.CreateSubPanel("Filters", Color.white);
+            BoneMenuCreator.CreateBoolPreference(filteringCategory, "Show Full Lobbies", FusionPreferences.ClientSettings.ShowFullLobbies);
+            BoneMenuCreator.CreateBoolPreference(filteringCategory, "Show Quest Lobbies", FusionPreferences.ClientSettings.ShowQuestLobbies);
+            BoneMenuCreator.CreateBoolPreference(filteringCategory, "Show PC Lobbies", FusionPreferences.ClientSettings.ShowPcLobbies);
+            BoneMenuCreator.CreateBytePreference(filteringCategory, "Maximum Max Players", 1, 2, 255, FusionPreferences.ClientSettings.MaximumMaxPlayers);
+            BoneMenuCreator.CreateBytePreference(filteringCategory, "Minimum Max Players", 1, 2, 255, FusionPreferences.ClientSettings.MinimumMaxPlayers);
+
             _publicLobbiesCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshPublicLobbies);
             _publicLobbiesCategory.CreateEnumElement("Sort By", Color.white, _publicLobbySortMode, (v) =>
             {
@@ -700,8 +736,20 @@ namespace LabFusion.Network
             if (!info.HasServerOpen)
                 return false;
 
-            // Decide if this server is too private
+            // Lobby Filtering Options
+            if (!FusionPreferences.ClientSettings.ShowFullLobbies.GetValue())
+                if (info.PlayerCount == info.MaxPlayers)
+                    return false;
+            if (!FusionPreferences.ClientSettings.ShowQuestLobbies.GetValue() && info.IsQuestLobby)
+                return false;
+            if (!FusionPreferences.ClientSettings.ShowPcLobbies.GetValue() && !info.IsQuestLobby)
+                return false;
+            if (info.MaxPlayers < FusionPreferences.ClientSettings.MinimumMaxPlayers.GetValue())
+                return false;
+            if (info.MaxPlayers > FusionPreferences.ClientSettings.MaximumMaxPlayers.GetValue())
+                return false;
 
+            // Decide if this server is too private
             switch (info.Privacy)
             {
                 default:
@@ -794,6 +842,106 @@ namespace LabFusion.Network
             MenuManager.SelectCategory(_publicLobbiesCategory);
 
             _isPublicLobbySearching = false;
+        }
+
+        private bool _isFriendLobbySearching = false;
+
+        private void Menu_RefreshFriendLobbies()
+        {
+            // Make sure we arent searching for lobbies already
+            if (_isFriendLobbySearching)
+                return;
+
+            // Clear existing lobbies
+            _friendsCategory.Elements.Clear();
+            _friendsCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshFriendLobbies);
+
+            MelonCoroutines.Start(CoAwaitFriendListRoutine());
+        }
+
+        private IEnumerator CoAwaitFriendListRoutine()
+        {
+            _isPublicLobbySearching = true;
+            LobbySortMode sortMode = _publicLobbySortMode;
+
+            // Fetch lobbies
+            var task = _lobbyManager.RequestLobbyIds();
+
+            float timeTaken = 0f;
+
+            while (!task.IsCompleted)
+            {
+                yield return null;
+                timeTaken += TimeUtilities.DeltaTime;
+
+                if (timeTaken >= 20f)
+                {
+                    FusionNotifier.Send(new FusionNotification()
+                    {
+                        title = "Timed Out",
+                        showTitleOnPopup = true,
+                        message = "Timed out when requesting lobby ids.",
+                        isMenuItem = false,
+                        isPopup = true,
+                    });
+                    _isPublicLobbySearching = false;
+                    yield break;
+                }
+            }
+
+
+            var lobbies = task.Result;
+
+            using (BatchedBoneMenu.Create())
+            {
+                foreach (var lobby in lobbies)
+                {
+                    var metadataTask = _lobbyManager.RequestLobbyMetadataInfo(lobby);
+
+                    timeTaken = 0f;
+
+                    while (!metadataTask.IsCompleted)
+                    {
+                        yield return null;
+                        timeTaken += TimeUtilities.DeltaTime;
+
+                        if (timeTaken >= 20f)
+                        {
+                            FusionNotifier.Send(new FusionNotification()
+                            {
+                                title = "Timed Out",
+                                showTitleOnPopup = true,
+                                message = "Timed out when requesting lobby ids.",
+                                isMenuItem = false,
+                                isPopup = true,
+                            });
+                            _isPublicLobbySearching = false;
+                            yield break;
+                        }
+                    }
+
+                    LobbyMetadataInfo info = metadataTask.Result;
+
+                    if (Internal_CanShowLobby(info))
+                    {
+                        // Add to list
+                        ProxyNetworkLobby networkLobby = new()
+                        {
+                            info = info
+                        };
+
+                        if (!IsFriend(networkLobby.info.LobbyId))
+                            continue;
+
+                        BoneMenuCreator.CreateLobby(_friendsCategory, info, networkLobby, sortMode);
+                    }
+                }
+            }
+
+            // Select the updated category
+            MenuManager.SelectCategory(_friendsCategory);
+
+            _isFriendLobbySearching = false;
         }
     }
 }

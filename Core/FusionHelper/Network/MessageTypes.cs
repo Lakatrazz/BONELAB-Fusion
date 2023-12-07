@@ -23,5 +23,6 @@
         UpdateConnectPresence = 18,
         DecompressVoice = 19,
         SetLobbyMetadata = 20,
+        FriendsList = 21,
     }
 }

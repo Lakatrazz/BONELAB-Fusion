@@ -468,6 +468,15 @@ namespace LabFusion.Network
 
             // Public lobbies list
             _publicLobbiesCategory = matchmaking.CreateCategory("Public Lobbies", Color.white);
+
+            /// Lobby Filtering
+            var filteringCategory = _publicLobbiesCategory.CreateSubPanel("Filters", Color.white);
+            BoneMenuCreator.CreateBoolPreference(filteringCategory, "Show Full Lobbies", FusionPreferences.ClientSettings.ShowFullLobbies);
+            BoneMenuCreator.CreateBoolPreference(filteringCategory, "Show Quest Lobbies", FusionPreferences.ClientSettings.ShowQuestLobbies);
+            BoneMenuCreator.CreateBoolPreference(filteringCategory, "Show PC Lobbies", FusionPreferences.ClientSettings.ShowPcLobbies);
+            BoneMenuCreator.CreateBytePreference(filteringCategory, "Maximum Max Players", 1, 2, 255, FusionPreferences.ClientSettings.MaximumMaxPlayers);
+            BoneMenuCreator.CreateBytePreference(filteringCategory, "Minimum Max Players", 1, 2, 255, FusionPreferences.ClientSettings.MinimumMaxPlayers);
+
             _publicLobbiesCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshPublicLobbies);
             _publicLobbiesCategory.CreateFunctionElement("Select Refresh to load servers!", Color.yellow, null);
 
@@ -556,6 +565,15 @@ namespace LabFusion.Network
 
             // Clear existing lobbies
             _publicLobbiesCategory.Elements.Clear();
+
+            /// Lobby Filtering
+            var filteringCategory = _publicLobbiesCategory.CreateSubPanel("Filters", Color.white);
+            BoneMenuCreator.CreateBoolPreference(filteringCategory, "Show Full Lobbies", FusionPreferences.ClientSettings.ShowFullLobbies);
+            BoneMenuCreator.CreateBoolPreference(filteringCategory, "Show Quest Lobbies", FusionPreferences.ClientSettings.ShowQuestLobbies);
+            BoneMenuCreator.CreateBoolPreference(filteringCategory, "Show PC Lobbies", FusionPreferences.ClientSettings.ShowPcLobbies);
+            BoneMenuCreator.CreateBytePreference(filteringCategory, "Maximum Max Players", 1, 2, 255, FusionPreferences.ClientSettings.MaximumMaxPlayers);
+            BoneMenuCreator.CreateBytePreference(filteringCategory, "Minimum Max Players", 1, 2, 255, FusionPreferences.ClientSettings.MinimumMaxPlayers);
+
             _publicLobbiesCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshPublicLobbies);
             _publicLobbiesCategory.CreateEnumElement("Sort By", Color.white, _publicLobbySortMode, (v) =>
             {
@@ -570,6 +588,19 @@ namespace LabFusion.Network
         {
             // Make sure the lobby is actually open
             if (!info.HasServerOpen)
+                return false;
+
+            // Lobby Filtering Options
+            if (!FusionPreferences.ClientSettings.ShowFullLobbies.GetValue())
+                if (info.PlayerCount == info.MaxPlayers)
+                    return false;
+            if (!FusionPreferences.ClientSettings.ShowQuestLobbies.GetValue() && info.IsQuestLobby)
+                return false;
+            if (!FusionPreferences.ClientSettings.ShowPcLobbies.GetValue() && !info.IsQuestLobby)
+                return false;
+            if (info.MaxPlayers < FusionPreferences.ClientSettings.MinimumMaxPlayers.GetValue())
+                return false;
+            if (info.MaxPlayers > FusionPreferences.ClientSettings.MaximumMaxPlayers.GetValue())
                 return false;
 
             // Decide if this server is too private
