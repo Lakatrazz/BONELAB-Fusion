@@ -62,7 +62,8 @@ namespace LabFusion.SDK.Gamemodes
             }
 
             Players.Add(playerId);
-
+            PlayerCount++;
+            
             ConstructLogoInstance(playerId);
         }
 
