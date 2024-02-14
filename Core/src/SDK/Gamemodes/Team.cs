@@ -46,7 +46,7 @@ namespace LabFusion.SDK.Gamemodes
 
         public List<PlayerId> Players { get; }
 
-        public int PlayerCount { get; private set; }
+        public int PlayerCount => Players.Count;
         public int MaxPlayers { get; }
 
         public AudioClip WinMusic { get; private set; }
@@ -62,7 +62,7 @@ namespace LabFusion.SDK.Gamemodes
             }
 
             Players.Add(playerId);
-
+            
             ConstructLogoInstance(playerId);
         }
 
@@ -74,7 +74,6 @@ namespace LabFusion.SDK.Gamemodes
             }
 
             Players.Remove(playerId);
-            PlayerCount--;
 
             TeamLogoInstance playerLogo = LogoInstances.Find((logo) => logo.playerId == playerId);
             LogoInstances.Remove(playerLogo);
