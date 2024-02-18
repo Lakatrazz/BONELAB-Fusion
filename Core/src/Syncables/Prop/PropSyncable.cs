@@ -19,6 +19,7 @@ using UnityEngine;
 
 using SystemVector3 = System.Numerics.Vector3;
 using SystemQuaternion = System.Numerics.Quaternion;
+using SLZ.Rig;
 
 namespace LabFusion.Syncables
 {
@@ -313,7 +314,7 @@ namespace LabFusion.Syncables
 
             // Determine the manager
             // Main player
-            if (hand.manager == RigData.RigReferences.RigManager)
+            if (hand.manager.IsSelf())
             {
                 PropSender.SendOwnershipTransfer(this);
             }
@@ -390,6 +391,20 @@ namespace LabFusion.Syncables
             if (PropGrips != null && PropGrips.Length > index)
                 return PropGrips[index];
             return null;
+        }
+
+        public bool IsGrabbedBy(RigManager rigManager)
+        {
+            foreach (var grip in PropGrips)
+            {
+                foreach (var hand in grip.attachedHands)
+                {
+                    if (hand.manager == rigManager)
+                        return true;
+                }
+            }
+
+            return false;
         }
 
         public override bool IsGrabbed()

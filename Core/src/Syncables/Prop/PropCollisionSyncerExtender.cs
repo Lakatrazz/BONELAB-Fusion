@@ -1,6 +1,6 @@
 ﻿using LabFusion.Extensions;
 using LabFusion.MonoBehaviours;
-
+using LabFusion.Utilities;
 using SLZ.Interaction;
 using UnityEngine;
 
@@ -18,6 +18,7 @@ namespace LabFusion.Syncables
             {
                 PropSyncable = syncable;
                 Component = PropSyncable.TempRigidbodies.Items[0].GameObject.AddComponent<PropCollisionSyncer>();
+                Component.enabled = false;
                 Component.syncable = PropSyncable;
                 return true;
             }
@@ -41,9 +42,21 @@ namespace LabFusion.Syncables
 
         public virtual void OnUpdate() { }
 
-        public virtual void OnAttach(Hand hand, Grip grip) { }
+        public virtual void OnAttach(Hand hand, Grip grip) 
+        {
+            if (hand.manager.IsSelf())
+            {
+                Component.enabled = true;
+            }
+        }
 
-        public virtual void OnDetach(Hand hand, Grip grip) { }
+        public virtual void OnDetach(Hand hand, Grip grip) 
+        { 
+            if (!PropSyncable.IsGrabbedBy(hand.manager))
+            {
+                Component.enabled = false;
+            }
+        }
 
         public virtual void OnHeld() { }
     }

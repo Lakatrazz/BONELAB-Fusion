@@ -24,10 +24,7 @@ namespace LabFusion.MonoBehaviours
 
         private void OnCollisionEnter(Collision collision)
         {
-            // Make sure the syncable exists, is held, and is owned by us
-            if (!(syncable != null && syncable.IsHeld && syncable.IsOwner()))
-                return;
-
+            // The syncable extender will automatically disable this component when it's not held, so no need to check
             if (NetworkInfo.HasServer)
             {
                 var rb = collision.rigidbody;
@@ -36,6 +33,11 @@ namespace LabFusion.MonoBehaviours
 
                 ImpactUtilities.OnHitRigidbody(rb);
             }
+        }
+
+        private void OnDestroy()
+        {
+            syncable = null;
         }
     }
 }
