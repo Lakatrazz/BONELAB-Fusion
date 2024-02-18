@@ -12,8 +12,6 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
-using SLZ.Interaction;
-using SLZ.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
 
@@ -37,14 +35,14 @@ namespace LabFusion.UI
             {
                 eventID = EventTriggerType.PointerClick
             };
-            click.callback.AddListener((UnityAction<BaseEventData>)((eventData) => { FusionAudio.Play3D(transform.position, FusionContentLoader.UIConfirm, InteractionVolume); button.onClick?.Invoke(); }));
+            click.callback.AddListener((UnityAction<BaseEventData>)((eventData) => { FusionAudio.Play3D(transform.position, FusionContentLoader.UIConfirm.Asset, InteractionVolume); button.onClick?.Invoke(); }));
 
             // Hovering
             EventTrigger.Entry hover = new()
             {
                 eventID = EventTriggerType.PointerEnter
             };
-            hover.callback.AddListener((UnityAction<BaseEventData>)((eventData) => { FusionAudio.Play3D(transform.position, FusionContentLoader.UISelect, InteractionVolume); }));
+            hover.callback.AddListener((UnityAction<BaseEventData>)((eventData) => { FusionAudio.Play3D(transform.position, FusionContentLoader.UISelect.Asset, InteractionVolume); }));
 
 
             eventTrigger.delegates.Add(click);

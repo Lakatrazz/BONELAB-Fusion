@@ -1,4 +1,5 @@
 ﻿using BoneLib.BoneMenu.Elements;
+
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.MarrowIntegration;
@@ -13,8 +14,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Rendering.Universal.LibTessDotNet;
-using UnityEngine.SocialPlatforms.Impl;
 
 namespace LabFusion.SDK.Gamemodes
 {
@@ -149,11 +148,11 @@ namespace LabFusion.SDK.Gamemodes
             Team sabrelake = new Team(DefaultSabrelakeName, Color.yellow);
             Team lavaGang = new Team(DefaultLavaGangName, Color.magenta);
 
-            sabrelake.SetMusic(FusionContentLoader.SabrelakeVictory, FusionContentLoader.SabrelakeFailure);
-            lavaGang.SetMusic(FusionContentLoader.LavaGangVictory, FusionContentLoader.LavaGangFailure);
+            sabrelake.SetMusic(FusionContentLoader.SabrelakeVictory.Asset, FusionContentLoader.SabrelakeFailure.Asset);
+            lavaGang.SetMusic(FusionContentLoader.LavaGangVictory.Asset, FusionContentLoader.LavaGangFailure.Asset);
 
-            sabrelake.SetLogo(FusionContentLoader.SabrelakeLogo);
-            lavaGang.SetLogo(FusionContentLoader.LavaGangLogo);
+            sabrelake.SetLogo(FusionContentLoader.SabrelakeLogo.Asset);
+            lavaGang.SetLogo(FusionContentLoader.LavaGangLogo.Asset);
 
             AddTeam(sabrelake);
             AddTeam(lavaGang);
@@ -607,7 +606,7 @@ namespace LabFusion.SDK.Gamemodes
 
         protected void OnTeamVictory(Team team)
         {
-            AudioClip randomChoice = UnityEngine.Random.Range(0, 4) % 2 == 0 ? FusionContentLoader.LavaGangVictory : FusionContentLoader.SabrelakeVictory;
+            AudioClip randomChoice = UnityEngine.Random.Range(0, 4) % 2 == 0 ? FusionContentLoader.LavaGangVictory.Asset : FusionContentLoader.SabrelakeVictory.Asset;
 
             AudioClip winMusic = team.WinMusic != null ? team.WinMusic : randomChoice;
             FusionAudio.Play2D(winMusic, DefaultMusicVolume);
@@ -615,7 +614,7 @@ namespace LabFusion.SDK.Gamemodes
 
         protected void OnTeamLost(Team team)
         {
-            AudioClip randomChoice = UnityEngine.Random.Range(0, 4) % 2 == 0 ? FusionContentLoader.LavaGangFailure : FusionContentLoader.SabrelakeFailure;
+            AudioClip randomChoice = UnityEngine.Random.Range(0, 4) % 2 == 0 ? FusionContentLoader.LavaGangFailure.Asset : FusionContentLoader.SabrelakeFailure.Asset;
 
             AudioClip lossMusic = team.LossMusic != null ? team.LossMusic : randomChoice;
             FusionAudio.Play2D(lossMusic, DefaultMusicVolume);
@@ -623,7 +622,7 @@ namespace LabFusion.SDK.Gamemodes
 
         protected void OnTeamTied()
         {
-            FusionAudio.Play2D(FusionContentLoader.DMTie, DefaultMusicVolume);
+            FusionAudio.Play2D(FusionContentLoader.DMTie.Asset, DefaultMusicVolume);
         }
 
         /// <summary>

@@ -23,13 +23,17 @@ namespace LabFusion.Utilities
         private static float _loadingTimer = 0f;
 
         // Target scene logic
-        private static string _targetServerScene = null;
+        private static string _targetServerScene = string.Empty;
+        private static string _targetServerLoadScene = string.Empty;
         private static bool _hasStartedLoadingTarget = false;
         private static bool _hasEnteredTargetLoadingScreen = false;
 
         public static LevelCrate Level => SceneStreamer.Session.Level;
         public static string Barcode => Level != null ? Level.Barcode : "";
         public static string Title => Level != null ? Level.Title : "";
+
+        public static LevelCrate LoadLevel => SceneStreamer.Session.LoadLevel;
+        public static string LoadBarcode => LoadLevel != null ? LoadLevel.Barcode : "";
 
         public static bool HasLevel(string barcode)
         {

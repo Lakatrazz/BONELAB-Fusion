@@ -59,14 +59,12 @@ namespace LabFusion.Representation
         public bool MicrophoneDisabled { get; private set; }
 
         public static Transform[] syncedPoints = null;
-        public static Transform[] gameworldPoints = null;
         public static Transform syncedPlayspace;
         public static Transform syncedPelvis;
         public static Hand syncedLeftHand;
         public static Hand syncedRightHand;
 
         public SerializedLocalTransform[] serializedLocalTransforms = new SerializedLocalTransform[RigAbstractor.TransformSyncCount];
-        public SerializedLocalTransform[] serializedGameworldLocalTransforms = new SerializedLocalTransform[RigAbstractor.GameworldRigTransformCount];
         public SerializedTransform serializedPelvis;
 
         public SystemVector3 predictVelocity;
@@ -76,7 +74,6 @@ namespace LabFusion.Representation
         public float timeSincePelvisSent;
 
         public Transform[] repTransforms = new Transform[RigAbstractor.TransformSyncCount];
-        public Transform[] gameworldRigTransforms = new Transform[RigAbstractor.GameworldRigTransformCount];
 
         public OpenControllerRig repControllerRig;
         public Transform repPlayspace;
@@ -548,7 +545,6 @@ namespace LabFusion.Representation
 
             // Get the synced transform arrays so we can set tracked positions later
             RigAbstractor.FillTransformArray(ref repTransforms, rig);
-            RigAbstractor.FillGameworldArray(ref gameworldRigTransforms, rig);
 
             // Make sure the rig gets its initial avatar and settings
             MarkDirty();
@@ -607,34 +603,6 @@ namespace LabFusion.Representation
                 yield break;
 
             CreateRep();
-        }
-
-        public void OnHeptaBody2Update()
-        {
-            try
-            {
-                if (!IsCreated)
-                    return;
-
-                for (var i = 0; i < RigAbstractor.GameworldRigTransformCount; i++)
-                {
-                    var localTransform = serializedGameworldLocalTransforms[i];
-
-                    if (!localTransform.IsValid)
-                        break;
-
-                    var pos = localTransform.position;
-                    var rot = localTransform.rotation;
-
-                    var gameworldTransform = gameworldRigTransforms[i];
-
-                    gameworldTransform.localPosition = pos.ToUnityVector3();
-                    gameworldTransform.localRotation = rot.ToUnityQuaternion();
-                }
-            }
-            catch
-            {
-            }
         }
 
         public void OnUpdateNametags()
@@ -763,33 +731,6 @@ namespace LabFusion.Representation
             }
         }
 
-        private static bool TrySendGameworldRep()
-        {
-            try
-            {
-                if (gameworldPoints == null || PlayerIdManager.LocalId == null)
-                    return false;
-
-                using (var writer = FusionWriter.Create(PlayerRepGameworldData.Size))
-                {
-                    using var data = PlayerRepGameworldData.Create(PlayerIdManager.LocalSmallId, gameworldPoints);
-                    writer.Write(data);
-
-                    using var message = FusionMessage.Create(NativeMessageTag.PlayerRepGameworld, writer);
-                    MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Unreliable, message);
-                }
-
-                return true;
-            }
-            catch (Exception e)
-            {
-#if DEBUG
-                FusionLogger.Error($"Failed sending gameworld transforms with reason: {e.Message}\nTrace:{e.StackTrace}");
-#endif
-            }
-            return false;
-        }
-
         private static bool TrySendRep()
         {
             try
@@ -823,15 +764,10 @@ namespace LabFusion.Representation
             {
                 if (!TrySendRep())
                     OnCachePlayerTransforms();
-                else if (RigData.RigReferences.RigManager.activeSeat)
-                {
-                    TrySendGameworldRep();
-                }
             }
             else
             {
                 syncedPoints = null;
-                gameworldPoints = null;
             }
         }
 
@@ -991,7 +927,6 @@ namespace LabFusion.Representation
             syncedRightHand = rm.physicsRig.rightHand;
 
             RigAbstractor.FillTransformArray(ref syncedPoints, rm);
-            RigAbstractor.FillGameworldArray(ref gameworldPoints, rm);
         }
     }
 }

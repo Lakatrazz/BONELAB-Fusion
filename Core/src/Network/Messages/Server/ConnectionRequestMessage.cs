@@ -200,7 +200,7 @@ namespace LabFusion.Network
                     }
 
                     // Now, make sure the player loads into the scene
-                    LoadSender.SendLevelLoad(FusionSceneManager.Barcode, data.longId);
+                    LoadSender.SendLevelLoad(FusionSceneManager.Barcode, FusionSceneManager.LoadBarcode, data.longId);
 
                     // Send the dynamics list
                     using (var writer = FusionWriter.Create())

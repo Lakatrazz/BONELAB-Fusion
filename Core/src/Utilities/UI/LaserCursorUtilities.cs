@@ -1,6 +1,4 @@
-﻿using SLZ.UI;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,13 +6,15 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
+using SLZ.UI;
+
 namespace LabFusion.Utilities
 {
     public static class LaserCursorUtilities
     {
         public static LaserCursor CreateLaserCursor(Action<LaserCursor> onSetupRegions = null)
         {
-            var instance = GameObject.Instantiate(FusionContentLoader.LaserCursor);
+            var instance = GameObject.Instantiate(FusionContentLoader.LaserCursor.Asset);
             var transform = instance.transform;
             instance.SetActive(false);
 
@@ -60,7 +60,7 @@ namespace LabFusion.Utilities
             prismaticSFX.pitchMod = 1f;
             prismaticSFX.enableModulatedAudio = true;
             prismaticSFX.loopClips = true;
-            prismaticSFX.modulatedClips = new AudioClip[] { FusionContentLoader.LaserPrismaticSFX };
+            prismaticSFX.modulatedClips = new AudioClip[] { FusionContentLoader.LaserPrismaticSFX.Asset };
             prismaticSFX.SpatialBlend = 0.98f;
 
             // Fill out the laser cursor
@@ -75,9 +75,9 @@ namespace LabFusion.Utilities
             cursor.bezCurve = drawBezierCurve;
             cursor.pulseLength = 0.2f;
             cursor.pulseAceleration = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
-            cursor.pulseSound = new AudioClip[] { FusionContentLoader.LaserPulseSound };
-            cursor.raySpawn = new AudioClip[] { FusionContentLoader.LaserRaySpawn };
-            cursor.rayDespawn = new AudioClip[] { FusionContentLoader.LaserRayDespawn };
+            cursor.pulseSound = new AudioClip[] { FusionContentLoader.LaserPulseSound.Asset };
+            cursor.raySpawn = new AudioClip[] { FusionContentLoader.LaserRaySpawn.Asset };
+            cursor.rayDespawn = new AudioClip[] { FusionContentLoader.LaserRayDespawn.Asset };
             cursor.prismaticSFX = prismaticSFX;
             cursor.spatialBlend = 1f;
             cursor._sourceVolume = 0.3f;

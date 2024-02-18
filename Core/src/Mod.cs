@@ -54,7 +54,7 @@ namespace LabFusion
         public override void OnEarlyInitializeMelon()
         {
             Instance = this;
-            FusionAssembly = Assembly.GetExecutingAssembly();
+            FusionAssembly = MelonAssembly.Assembly;
 
             // Prepare the data path for writing files
             PersistentData.OnPathInitialize();

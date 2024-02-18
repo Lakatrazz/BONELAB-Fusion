@@ -29,16 +29,18 @@ namespace LabFusion.Utilities
         private static void Internal_OnCleanup()
         {
             // Reset target scenes
-            _targetServerScene = null;
+            _targetServerScene = string.Empty;
+            _targetServerLoadScene = string.Empty;
             _hasStartedLoadingTarget = false;
             _hasEnteredTargetLoadingScreen = false;
         }
 
-        private static void Internal_SetServerScene(string barcode)
+        private static void Internal_SetServerScene(string barcode, string loadBarcode)
         {
             // Here we set the target server scene
             // This is the scene barcode sent by the server to the client, which we want to load
             _targetServerScene = barcode;
+            _targetServerLoadScene = loadBarcode;
             _hasStartedLoadingTarget = false;
             _hasEnteredTargetLoadingScreen = false;
         }
@@ -57,7 +59,7 @@ namespace LabFusion.Utilities
 
                     // Send level load
                     if (NetworkInfo.IsServer)
-                        LoadSender.SendLevelLoad(Barcode);
+                        LoadSender.SendLevelLoad(Barcode, LoadBarcode);
 
                     MultiplayerHooking.Internal_OnLoadingBegin();
                 }
@@ -126,7 +128,7 @@ namespace LabFusion.Utilities
             if (IsDelayedLoadDone() && !_hasStartedLoadingTarget && !string.IsNullOrEmpty(_targetServerScene))
             {
                 SceneLoadPatch.IgnorePatches = true;
-                SceneStreamer.Load(_targetServerScene);
+                SceneStreamer.Load(_targetServerScene, _targetServerLoadScene);
                 SceneLoadPatch.IgnorePatches = false;
 
                 _hasStartedLoadingTarget = true;
@@ -145,9 +147,9 @@ namespace LabFusion.Utilities
             Internal_UpdateTargetScene();
         }
 
-        public static void SetTargetScene(string barcode)
+        public static void SetTargetScene(string barcode, string loadBarcode)
         {
-            Internal_SetServerScene(barcode);
+            Internal_SetServerScene(barcode, loadBarcode);
         }
     }
 }

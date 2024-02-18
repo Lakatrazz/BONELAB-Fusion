@@ -6,10 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using TMPro;
-
 using UnityEngine;
 using UnityEngine.UI;
+
+using TMPro;
 
 namespace LabFusion.Utilities
 {
@@ -39,29 +39,32 @@ namespace LabFusion.Utilities
             int amount = _bitQueue.Dequeue();
 
             var camera = RigData.RigReferences.ControllerRig.m_head;
-            GameObject instance = GameObject.Instantiate(FusionContentLoader.BitPopupPrefab, camera);
-            UIMachineUtilities.OverrideFonts(instance.transform);
-
-            instance.transform.localPosition = LocalPosition;
-            instance.transform.localRotation = LocalRotation;
-
-            Transform canvas = instance.transform.Find("Offset/Canvas");
-
-            string text = amount < 0 ? $"{amount}" : $"+{amount}";
-            canvas.Find("text_shadow").GetComponent<TMP_Text>().text = text;
-
-            var amountText = canvas.Find("amount").GetComponent<TMP_Text>();
-            amountText.text = text;
-
-            if (amount < 0)
+            FusionContentLoader.BitPopupPrefab.Load((go) =>
             {
-                amountText.color = Color.red;
-                canvas.Find("bit").GetComponent<RawImage>().color = Color.red;
-            }
+                GameObject instance = GameObject.Instantiate(go, camera);
+                UIMachineUtilities.OverrideFonts(instance.transform);
 
-            FusionAudio.Play2D(FusionContentLoader.BitGet, 1f);
+                instance.transform.localPosition = LocalPosition;
+                instance.transform.localRotation = LocalRotation;
 
-            GameObject.Destroy(instance, DefaultDuration + 0.1f);
+                Transform canvas = instance.transform.Find("Offset/Canvas");
+
+                string text = amount < 0 ? $"{amount}" : $"+{amount}";
+                canvas.Find("text_shadow").GetComponent<TMP_Text>().text = text;
+
+                var amountText = canvas.Find("amount").GetComponent<TMP_Text>();
+                amountText.text = text;
+
+                if (amount < 0)
+                {
+                    amountText.color = Color.red;
+                    canvas.Find("bit").GetComponent<RawImage>().color = Color.red;
+                }
+
+                FusionAudio.Play2D(FusionContentLoader.BitGet.Asset, 1f);
+
+                GameObject.Destroy(instance, DefaultDuration + 0.1f);
+            });
         }
     }
 }

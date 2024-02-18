@@ -339,6 +339,7 @@
     <Compile Include="Core\src\Data\Containers\Grips\SerializedStaticGrab.cs" />
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedLocalTransform.cs" />
     <Compile Include="Core\src\Data\Containers\Transforms\SerializedTransform.cs" />
+    <Compile Include="Core\src\Data\Containers\WeakAssetReference.cs" />
     <Compile Include="Core\src\Data\Containers\XML\IXMLPackable.cs" />
     <Compile Include="Core\src\Data\Containers\XML\PlayerList.cs" />
     <Compile Include="Core\src\Data\Files\ChangelogLoader.cs" />
@@ -723,7 +724,6 @@
     <Compile Include="Core\src\Network\Messages\NativeMessageTag.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\PlayerRepAvatarMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\PlayerRepRagdollMessage.cs" />
-    <Compile Include="Core\src\Network\Messages\Representation\PlayerRepGameworldMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\PlayerRepTransformMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Representation\PlayerRepVitalsMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Server\ConnectionResponseMessage.cs" />
@@ -760,7 +760,6 @@
     <Compile Include="Core\src\Patching\Patches\Levels\MagmaGatePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ObjectDestructablePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\OpenControllerRigPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\Player\GameworldSkeletonRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\PhysicsRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\PlayerHealthPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Plugs\PlugPatches.cs" />

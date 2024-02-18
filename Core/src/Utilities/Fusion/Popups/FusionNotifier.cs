@@ -188,19 +188,32 @@ namespace LabFusion.Utilities
 
                 string incomingSubTitle = notification.message.text;
 
-                Texture2D incomingTexture = notification.type switch
-                {
-                    NotificationType.WARNING => FusionContentLoader.NotificationWarning,
-                    NotificationType.ERROR => FusionContentLoader.NotificationError,
-                    NotificationType.SUCCESS => FusionContentLoader.NotificationSuccess,
-                    _ => FusionContentLoader.NotificationInformation,
-                };
-                Sprite incomingSprite = Sprite.Create(incomingTexture, new Rect(0.0f, 0.0f, incomingTexture.width, incomingTexture.height), new Vector2(0.5f, 0.5f), 100.0f);
+                Sprite incomingSprite = GetPopupSprite(notification);
 
                 float holdTime = notification.popupLength;
 
                 headTitles.CUSTOMDISPLAY(incomingTitle, incomingSubTitle, incomingSprite, holdTime);
                 headTitles.sr_element.sprite = incomingSprite;
+            }
+        }
+
+        private static Sprite GetPopupSprite(FusionNotification notification)
+        {
+            Texture2D incomingTexture = notification.type switch
+            {
+                NotificationType.WARNING => FusionContentLoader.NotificationWarning.Asset,
+                NotificationType.ERROR => FusionContentLoader.NotificationError.Asset,
+                NotificationType.SUCCESS => FusionContentLoader.NotificationSuccess.Asset,
+                _ => FusionContentLoader.NotificationInformation.Asset,
+            };
+
+            if (incomingTexture != null)
+            {
+                return Sprite.Create(incomingTexture, new Rect(0.0f, 0.0f, incomingTexture.width, incomingTexture.height), new Vector2(0.5f, 0.5f), 100.0f);
+            }
+            else
+            {
+                return null;
             }
         }
 

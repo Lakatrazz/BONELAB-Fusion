@@ -36,7 +36,7 @@ namespace LabFusion.SDK.Achievements
 
         protected override void OnComplete()
         {
-            FusionAudio.Play2D(FusionContentLoader.BouncingStrong, 0.6f);
+            FusionAudio.Play2D(FusionContentLoader.BouncingStrong.Asset, 0.6f);
         }
 
         private void OnPlayerAction(PlayerId player, PlayerActionType type, PlayerId otherPlayer)

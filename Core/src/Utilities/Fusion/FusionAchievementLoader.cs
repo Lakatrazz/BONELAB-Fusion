@@ -14,20 +14,21 @@ namespace LabFusion.Utilities
 {
     public class AchievementPair
     {
-        public Texture2D Preview { get; private set; }
+        public WeakAssetReference<Texture2D> Preview { get; private set; } = new();
 
         public static AchievementPair LoadFromBundle(AssetBundle bundle, string name)
         {
-            return new AchievementPair()
-            {
-                Preview = bundle.LoadPersistentAsset<Texture2D>(ResourcePaths.PreviewPrefix + name),
-            };
+            var pair = new AchievementPair();
+
+            bundle.LoadPersistentAssetAsync<Texture2D>(ResourcePaths.PreviewPrefix + name, (v) => { pair.Preview.SetAsset(v); });
+
+            return pair;
         }
     }
 
     public static class FusionAchievementLoader
     {
-        public static AssetBundle AchievementBundle { get; private set; }
+        public static WeakAssetReference<AssetBundle> AchievementBundle { get; private set; } = new();
 
         private static readonly string[] _achievementNames = new string[] {
             // Deathmatch
@@ -63,16 +64,26 @@ namespace LabFusion.Utilities
 
         private static readonly Dictionary<string, AchievementPair> _achievementPairs = new();
 
+        private static AssetBundleCreateRequest _achievementBundleRequest = null;
+
+        private static void OnBundleCompleted(AsyncOperation operation)
+        {
+            var bundle = _achievementBundleRequest.assetBundle;
+            AchievementBundle.SetAsset(bundle);
+
+            foreach (var achievement in _achievementNames)
+            {
+                _achievementPairs.Add(achievement, AchievementPair.LoadFromBundle(bundle, achievement));
+            }
+        }
+
         public static void OnBundleLoad()
         {
-            AchievementBundle = FusionBundleLoader.LoadAssetBundle(ResourcePaths.AchievementBundle);
+            _achievementBundleRequest = FusionBundleLoader.LoadAssetBundleAsync(ResourcePaths.AchievementBundle);
 
-            if (AchievementBundle != null)
+            if (_achievementBundleRequest != null)
             {
-                foreach (var achievement in _achievementNames)
-                {
-                    _achievementPairs.Add(achievement, AchievementPair.LoadFromBundle(AchievementBundle, achievement));
-                }
+                _achievementBundleRequest.add_completed((Il2CppSystem.Action<AsyncOperation>)OnBundleCompleted);
             }
             else
                 FusionLogger.Error("Achievement bundle failed to load!");
@@ -81,8 +92,11 @@ namespace LabFusion.Utilities
         public static void OnBundleUnloaded()
         {
             // Unload item bundle
-            if (AchievementBundle != null)
-                AchievementBundle.Unload(true);
+            if (AchievementBundle.HasAsset)
+            {
+                AchievementBundle.Asset.Unload(true);
+                AchievementBundle.UnloadAsset();
+            }
         }
 
         public static AchievementPair GetPair(string name)

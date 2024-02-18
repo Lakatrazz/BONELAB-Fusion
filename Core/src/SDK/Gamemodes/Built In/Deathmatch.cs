@@ -345,11 +345,11 @@ namespace LabFusion.SDK.Gamemodes
         {
             if (isVictory)
             {
-                FusionAudio.Play2D(FusionContentLoader.LavaGangVictory, DefaultMusicVolume);
+                FusionAudio.Play2D(FusionContentLoader.LavaGangVictory.Asset, DefaultMusicVolume);
             }
             else
             {
-                FusionAudio.Play2D(FusionContentLoader.LavaGangFailure, DefaultMusicVolume);
+                FusionAudio.Play2D(FusionContentLoader.LavaGangFailure.Asset, DefaultMusicVolume);
             }
         }
 

@@ -20,13 +20,13 @@ namespace LabFusion.Senders
             MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
 
-        public static void SendLevelLoad(string barcode, ulong userId)
+        public static void SendLevelLoad(string barcode, string loadBarcode, ulong userId)
         {
             if (!NetworkInfo.IsServer)
                 return;
 
-            using FusionWriter writer = FusionWriter.Create(SceneLoadData.GetSize(barcode));
-            using var data = SceneLoadData.Create(barcode);
+            using FusionWriter writer = FusionWriter.Create(SceneLoadData.GetSize(barcode, loadBarcode));
+            using var data = SceneLoadData.Create(barcode, loadBarcode);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.SceneLoad, writer);
@@ -42,13 +42,13 @@ namespace LabFusion.Senders
             PlayerIdManager.LocalId.TrySetMetadata(MetadataHelper.LoadingKey, isLoading.ToString());
         }
 
-        public static void SendLevelLoad(string barcode)
+        public static void SendLevelLoad(string barcode, string loadBarcode)
         {
             if (!NetworkInfo.IsServer)
                 return;
 
-            using FusionWriter writer = FusionWriter.Create(SceneLoadData.GetSize(barcode));
-            using var data = SceneLoadData.Create(barcode);
+            using FusionWriter writer = FusionWriter.Create(SceneLoadData.GetSize(barcode, loadBarcode));
+            using var data = SceneLoadData.Create(barcode, loadBarcode);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.SceneLoad, writer);

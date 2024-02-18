@@ -2,14 +2,14 @@
 using LabFusion.Network;
 using LabFusion.Preferences;
 
-using SLZ.Rig;
-using SLZ.UI;
-
 using System;
 
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+
+using SLZ.Rig;
+using SLZ.UI;
 
 namespace LabFusion.Utilities
 {
@@ -103,15 +103,21 @@ namespace LabFusion.Utilities
 
                 // Add mute icon
                 Transform playerHead = manager.openControllerRig.m_head;
-                _muteIcon = GameObject.Instantiate(FusionContentLoader.MutePopupPrefab, playerHead);
-                _muteIcon.name = "Mute Icon [FUSION]";
-                _muteRenderer = _muteIcon.GetComponentInChildren<Renderer>();
-                _muteRenderer.enabled = false;
-                _muteCamera = _muteIcon.GetComponent<Camera>();
-                var cameraData = playerHead.GetComponent<UniversalAdditionalCameraData>();
-                cameraData.cameraStack.Add(_muteCamera);
+                FusionContentLoader.MutePopupPrefab.Load((go) =>
+                {
+                    if (playerHead == null)
+                        return;
 
-                _muteIcon.SetActive(VoiceHelper.ShowIndicator);
+                    _muteIcon = GameObject.Instantiate(go, playerHead);
+                    _muteIcon.name = "Mute Icon [FUSION]";
+                    _muteRenderer = _muteIcon.GetComponentInChildren<Renderer>();
+                    _muteRenderer.enabled = false;
+                    _muteCamera = _muteIcon.GetComponent<Camera>();
+                    var cameraData = playerHead.GetComponent<UniversalAdditionalCameraData>();
+                    cameraData.cameraStack.Add(_muteCamera);
+
+                    _muteIcon.SetActive(VoiceHelper.ShowIndicator);
+                });
             }
         }
 

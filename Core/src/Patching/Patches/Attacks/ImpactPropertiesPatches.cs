@@ -80,13 +80,5 @@ namespace LabFusion.Patching
 #endif
             }
         }
-
-        private static IEnumerator CoWaitAndSync(Rigidbody rb)
-        {
-            for (var i = 0; i < 4; i++)
-                yield return null;
-
-            PropSender.SendPropCreation(rb.gameObject);
-        }
     }
 }

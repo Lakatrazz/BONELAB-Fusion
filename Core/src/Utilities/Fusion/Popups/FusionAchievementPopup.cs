@@ -6,9 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TMPro;
+
 using UnityEngine;
 using UnityEngine.UI;
+
+using TMPro;
 
 namespace LabFusion.Utilities
 {
@@ -37,22 +39,25 @@ namespace LabFusion.Utilities
             var achievement = _queuedAchievements.Dequeue();
 
             var camera = RigData.RigReferences.ControllerRig.m_head;
-            GameObject instance = GameObject.Instantiate(FusionContentLoader.AchievementPopupPrefab, camera);
-            UIMachineUtilities.OverrideFonts(instance.transform);
+            FusionContentLoader.AchievementPopupPrefab.Load((go) =>
+            {
+                GameObject instance = GameObject.Instantiate(go, camera);
+                UIMachineUtilities.OverrideFonts(instance.transform);
 
-            instance.transform.localPosition = LocalPosition;
+                instance.transform.localPosition = LocalPosition;
 
-            Transform canvas = instance.transform.Find("Offset/Canvas");
+                Transform canvas = instance.transform.Find("Offset/Canvas");
 
-            if (achievement.PreviewImage != null)
-                canvas.Find("icon").GetComponent<RawImage>().texture = achievement.PreviewImage;
+                if (achievement.PreviewImage != null)
+                    canvas.Find("icon").GetComponent<RawImage>().texture = achievement.PreviewImage;
 
-            canvas.Find("title").GetComponent<TMP_Text>().text = achievement.Title;
-            canvas.Find("description").GetComponent<TMP_Text>().text = achievement.Description;
+                canvas.Find("title").GetComponent<TMP_Text>().text = achievement.Title;
+                canvas.Find("description").GetComponent<TMP_Text>().text = achievement.Description;
 
-            FusionAudio.Play2D(FusionContentLoader.UITurnOn, 1f);
+                FusionAudio.Play2D(FusionContentLoader.UITurnOn.Asset, 1f);
 
-            GameObject.Destroy(instance, DefaultDuration + 0.1f);
+                GameObject.Destroy(instance, DefaultDuration + 0.1f);
+            });
         }
 
         internal static bool IsPlayingPopup()

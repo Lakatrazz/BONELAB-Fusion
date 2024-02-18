@@ -1,19 +1,21 @@
 ﻿using LabFusion.Extensions;
 using LabFusion.UI;
-using SLZ.Bonelab;
-using SLZ.UI;
-using SLZ.Utilities;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using TMPro;
-
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+
+using SLZ.Bonelab;
+using SLZ.UI;
+using SLZ.Utilities;
+
+using TMPro;
 
 namespace LabFusion.Utilities
 {
@@ -53,13 +55,13 @@ namespace LabFusion.Utilities
             triggerLasers.OnTriggerEnterEvent.AddCall(UnityEvent.GetDelegate((UnityAction)(() =>
             {
                 canvas.SetActive(true);
-                FusionAudio.Play3D(canvas.transform.position, FusionContentLoader.UITurnOn);
+                FusionAudio.Play3D(canvas.transform.position, FusionContentLoader.UITurnOn.Asset);
             })));
 
             triggerLasers.OnTriggerExitEvent.AddCall(UnityEvent.GetDelegate((UnityAction)(() =>
             {
                 canvas.SetActive(false);
-                FusionAudio.Play3D(canvas.transform.position, FusionContentLoader.UITurnOff);
+                FusionAudio.Play3D(canvas.transform.position, FusionContentLoader.UITurnOff.Asset);
             })));
 
         }

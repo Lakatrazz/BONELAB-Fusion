@@ -33,7 +33,7 @@ namespace LabFusion.SDK.Gamemodes
                 this.player1 = player1;
                 this.player2 = player2;
 
-                lineInstance = GameObject.Instantiate(FusionContentLoader.EntangledLinePrefab);
+                lineInstance = GameObject.Instantiate(FusionContentLoader.EntangledLinePrefab.Asset);
                 GameObject.DontDestroyOnLoad(lineInstance);
                 lineInstance.hideFlags = HideFlags.DontUnloadUnusedAsset;
             }
@@ -156,7 +156,7 @@ namespace LabFusion.SDK.Gamemodes
 
         public void SetDefaultValues()
         {
-            SetPlaylist(DefaultMusicVolume, FusionContentLoader.GeoGrpFellDownTheStairs);
+            SetPlaylist(DefaultMusicVolume, FusionContentLoader.GeoGrpFellDownTheStairs.Asset);
         }
 
         public void SetOverriden()
