@@ -79,6 +79,9 @@ namespace LabFusion.SDK.Points
                 {
                     IncomeTax.CollectTax();
                     _totalBits = 69;
+                    _unlockedItems.Clear();
+                    _equippedItems.Clear();
+                    _itemUpgrades.Clear();
                     WriteToFile();
                 }
             }
