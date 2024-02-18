@@ -633,6 +633,7 @@
     <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\Riggle\Pack 1\BucketHat.cs" />
     <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\Riggle\Pack 1\ArrowHead.cs" />
     <Compile Include="Core\src\SDK\Points\Built In\Passive\BitMiner.cs" />
+    <Compile Include="Core\src\SDK\Points\IncomeTax.cs" />
     <Compile Include="Core\src\SDK\Points\PointItem.cs" />
     <Compile Include="Core\src\SDK\Points\PointItemManager.cs" />
     <Compile Include="Core\src\SDK\Points\PointSaveManager.cs" />

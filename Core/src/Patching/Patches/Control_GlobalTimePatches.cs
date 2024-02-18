@@ -24,7 +24,10 @@ namespace LabFusion.Patching
         {
             // Recalibrate player
             // With multiple RigManagers in the scene, the player scale will become 0 when unpausing
-            RigData.RigReferences.RigManager.bodyVitals.CalibratePlayerBodyScale();
+            if (RigData.HasPlayer)
+            {
+                RigData.RigReferences.RigManager.bodyVitals.CalibratePlayerBodyScale();
+            }
         }
 
         [HarmonyPrefix]

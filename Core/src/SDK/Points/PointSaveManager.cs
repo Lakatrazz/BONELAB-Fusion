@@ -73,6 +73,14 @@ namespace LabFusion.SDK.Points
                     _itemUpgrades = data._upgradedItems;
 
                 _totalBits = data._bitCount;
+
+                // Tax collection
+                if (IncomeTax.CheckForIncomeTax(_totalBits))
+                {
+                    IncomeTax.CollectTax();
+                    _totalBits = 69;
+                    WriteToFile();
+                }
             }
         }
 

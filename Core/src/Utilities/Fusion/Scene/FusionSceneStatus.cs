@@ -13,13 +13,13 @@ namespace LabFusion.Utilities
     public static partial class FusionSceneManager
     {
         // Loading logic
-        private static bool _isLoading = false;
-        private static bool _wasLoading = false;
+        private static bool _isLoading = true;
+        private static bool _wasLoading = true;
         private static string _prevLevelBarcode = "NONE";
 
         // Delayed load logic
         public const float LEVEL_LOAD_WINDOW = 0.5f;
-        private static bool _isDelayedLoading = false;
+        private static bool _isDelayedLoading = true;
         private static float _loadingTimer = 0f;
 
         // Target scene logic
