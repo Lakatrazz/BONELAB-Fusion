@@ -410,7 +410,6 @@
     <Compile Include="Core\src\MonoBehaviours\DestroyOnDisconnect.cs" />
     <Compile Include="Core\src\MonoBehaviours\MirrorIdentifier.cs" />
     <Compile Include="Core\src\MonoBehaviours\NotifyOnEnable.cs" />
-    <Compile Include="Core\src\MonoBehaviours\PropCollisionSyncer.cs" />
     <Compile Include="Core\src\MonoBehaviours\CollisionSyncer.cs" />
     <Compile Include="Core\src\MonoBehaviours\TimedDespawner.cs" />
     <Compile Include="Core\src\Network\Fallback\EmptyNetworkLayer.cs" />
