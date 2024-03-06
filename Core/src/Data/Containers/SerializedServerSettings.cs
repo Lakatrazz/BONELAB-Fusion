@@ -39,12 +39,12 @@ namespace LabFusion.Data
             writer.Write(settings.ServerMortality.GetValue());
 
             // Server permissions
-            writer.Write((byte)settings.DevToolsAllowed.GetValue());
-            writer.Write((byte)settings.ConstrainerAllowed.GetValue());
-            writer.Write((byte)settings.CustomAvatarsAllowed.GetValue());
-            writer.Write((byte)settings.KickingAllowed.GetValue());
-            writer.Write((byte)settings.BanningAllowed.GetValue());
-            writer.Write((byte)settings.Teleportation.GetValue());
+            writer.Write((sbyte)settings.DevToolsAllowed.GetValue());
+            writer.Write((sbyte)settings.ConstrainerAllowed.GetValue());
+            writer.Write((sbyte)settings.CustomAvatarsAllowed.GetValue());
+            writer.Write((sbyte)settings.KickingAllowed.GetValue());
+            writer.Write((sbyte)settings.BanningAllowed.GetValue());
+            writer.Write((sbyte)settings.Teleportation.GetValue());
         }
 
         public void Deserialize(FusionReader reader)
@@ -68,12 +68,12 @@ namespace LabFusion.Data
                 ServerMortality = new ReadonlyFusionPrev<bool>(reader.ReadBoolean()),
 
                 // Server permissions
-                DevToolsAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadByte()),
-                ConstrainerAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadByte()),
-                CustomAvatarsAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadByte()),
-                KickingAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadByte()),
-                BanningAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadByte()),
-                Teleportation = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadByte()),
+                DevToolsAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
+                ConstrainerAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
+                CustomAvatarsAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
+                KickingAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
+                BanningAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
+                Teleportation = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
             };
         }
 

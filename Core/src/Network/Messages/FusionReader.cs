@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Extensions;
 using LabFusion.Utilities;
 using System;
 using System.Collections.Generic;
@@ -223,7 +224,7 @@ namespace LabFusion.Network
         /// <returns>The signed byte read.</returns>
         public sbyte ReadSByte()
         {
-            return (sbyte)ReadByte();
+            return ReadByte().ToSByte();
         }
 
         /// <summary>

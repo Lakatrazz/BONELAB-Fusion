@@ -146,7 +146,7 @@ namespace LabFusion.Network
 
         public void Write(sbyte value)
         {
-            Write((byte)value);
+            Write(value.ToByte());
         }
 
         public void Write(float value)

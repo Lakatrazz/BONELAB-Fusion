@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace LabFusion.Representation
 {
-    public enum PermissionLevel
+    public enum PermissionLevel : sbyte
     {
         /// <summary>
         /// Someone with less permissions than the normal user.
