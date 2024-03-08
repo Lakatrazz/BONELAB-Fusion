@@ -5,7 +5,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "7963eb921feca52df3c1e822343f0a5b5638e7b7"
+      "hash": "ca60bd0ac77735b4862c5dae5be106316e371c26"
     },
     "com.stresslevelzero.marrow.sdk": {
       "version": "https://github.com/StressLevelZero/MarrowSDK.git",
@@ -147,7 +147,7 @@
         "com.unity.modules.physics": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0"
       },
-      "hash": "0aac92ccdb8a108053f5e141e5c8c2eded5718b7"
+      "hash": "72e4d27b328d7c0c257f2495876d0194d45bb30d"
     },
     "com.unity.render-pipelines.universal": {
       "version": "https://github.com/StressLevelZero/Custom-URP.git#Bonelab",

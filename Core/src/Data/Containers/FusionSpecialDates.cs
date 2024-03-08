@@ -47,16 +47,16 @@ namespace LabFusion.Data
             {
                 case Month.MARCH:
                     // Fusion birthday is March 14th
-                    // 1 day of leeway
-                    if (Math.Abs(time.Day - 14) <= 1)
+                    // 4 days of leeway
+                    if (Math.Abs(time.Day - 14) <= 4)
                     {
                         return FusionDate.FUSION_BIRTHDAY;
                     }
                     break;
                 case Month.SEPTEMBER:
                     // Bonelab birthday is September 29th
-                    // 1 day of leeway
-                    if (Math.Abs(time.Day - 29) <= 1)
+                    // 4 days of leeway
+                    if (Math.Abs(time.Day - 29) <= 4)
                     {
                         return FusionDate.BONELAB_BIRTHDAY;
                     }
