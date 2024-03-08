@@ -121,7 +121,7 @@ namespace LabFusion.Network
             }
             else
             {
-                if (SyncManager.TryGetSyncable(data.boardGunId, out var syncable) && syncable is PropSyncable boardGun && boardGun.TryGetExtender<BoardGeneratorExtender>(out var extender))
+                if (SyncManager.TryGetSyncable<PropSyncable>(data.boardGunId, out var syncable) && syncable.TryGetExtender<BoardGeneratorExtender>(out var extender))
                 {
                     var comp = extender.Component;
 

@@ -72,7 +72,7 @@ namespace LabFusion.Network
             }
             else
             {
-                if (SyncManager.TryGetSyncable(data.magazineId, out var mag) && mag is PropSyncable magazineSyncable && magazineSyncable.TryGetExtender<MagazineExtender>(out var magExtender) && SyncManager.TryGetSyncable(data.gunId, out var gun) && gun is PropSyncable gunSyncable && gunSyncable.TryGetExtender<AmmoSocketExtender>(out var socketExtender))
+                if (SyncManager.TryGetSyncable<PropSyncable>(data.magazineId, out var mag) && mag.TryGetExtender<MagazineExtender>(out var magExtender) && SyncManager.TryGetSyncable<PropSyncable>(data.gunId, out var gun) && gun.TryGetExtender<AmmoSocketExtender>(out var socketExtender))
                 {
                     // Insert mag into gun
                     if (socketExtender.Component._magazinePlug)

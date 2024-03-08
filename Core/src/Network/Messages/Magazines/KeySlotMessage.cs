@@ -105,7 +105,7 @@ namespace LabFusion.Network
             else
             {
 
-                if (SyncManager.TryGetSyncable(data.keyId, out var key) && key is PropSyncable keySyncable && keySyncable.TryGetExtender<KeyExtender>(out var keyExtender))
+                if (SyncManager.TryGetSyncable<PropSyncable>(data.keyId, out var key) && key.TryGetExtender<KeyExtender>(out var keyExtender))
                 {
                     KeyRecieverPatches.IgnorePatches = true;
 
@@ -131,9 +131,9 @@ namespace LabFusion.Network
                             }
                             break;
                         case KeySlotType.INSERT_PROP:
-                            if (SyncManager.TryGetSyncable(data.receiverId.Value, out var receiverSyncable) && receiverSyncable is PropSyncable receiverProp)
+                            if (SyncManager.TryGetSyncable<PropSyncable>(data.receiverId.Value, out var syncable))
                             {
-                                if (receiverProp.TryGetExtender<KeyRecieverExtender>(out var receiverExtender))
+                                if (syncable.TryGetExtender<KeyRecieverExtender>(out var receiverExtender))
                                 {
                                     var keyReceiver = receiverExtender.GetComponent(data.receiverIndex.Value);
 

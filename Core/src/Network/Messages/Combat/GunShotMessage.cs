@@ -76,7 +76,7 @@ namespace LabFusion.Network
             }
             else
             {
-                if (SyncManager.TryGetSyncable(data.gunId, out var gun) && gun is PropSyncable gunSyncable && gunSyncable.TryGetExtender<GunExtender>(out var extender))
+                if (SyncManager.TryGetSyncable<PropSyncable>(data.gunId, out var gun) && gun.TryGetExtender<GunExtender>(out var extender))
                 {
                     // Fire the gun, make sure it has ammo in its mag so it can fire properly
                     var comp = extender.GetComponent(data.gunIndex);

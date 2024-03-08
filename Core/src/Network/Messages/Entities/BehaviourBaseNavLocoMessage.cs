@@ -40,8 +40,8 @@ namespace LabFusion.Network
 
         public PropSyncable GetPropSyncable()
         {
-            if (SyncManager.TryGetSyncable(syncId, out var syncable) && syncable is PropSyncable propSyncable)
-                return propSyncable;
+            if (SyncManager.TryGetSyncable<PropSyncable>(syncId, out var syncable))
+                return syncable;
 
             return null;
         }

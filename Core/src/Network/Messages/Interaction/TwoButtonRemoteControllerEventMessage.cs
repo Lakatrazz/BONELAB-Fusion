@@ -80,7 +80,7 @@ namespace LabFusion.Network
             }
             else
             {
-                if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable && propSyncable.TryGetExtender<TwoButtonRemoteControllerExtender>(out var extender))
+                if (SyncManager.TryGetSyncable<PropSyncable>(data.syncId, out var syncable) && syncable.TryGetExtender<TwoButtonRemoteControllerExtender>(out var extender))
                 {
                     TwoButtonRemoteControllerPatches.IgnorePatches = true;
 

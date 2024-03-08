@@ -72,7 +72,7 @@ namespace LabFusion.Network
             }
             else
             {
-                if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable && propSyncable.TryGetExtender<PowerableJointExtender>(out var extender))
+                if (SyncManager.TryGetSyncable<PropSyncable>(data.syncId, out var syncable) && syncable.TryGetExtender<PowerableJointExtender>(out var extender))
                 {
                     PowerableJointPatches.IgnorePatches = true;
                     extender.Component.SETJOINT(data.voltage);

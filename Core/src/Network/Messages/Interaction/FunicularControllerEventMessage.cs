@@ -70,9 +70,9 @@ namespace LabFusion.Network
         {
             using FusionReader reader = FusionReader.Create(bytes);
             using var data = reader.ReadFusionSerializable<FunicularControllerEventData>();
-            if (!NetworkInfo.IsServer && SyncManager.TryGetSyncable(data.syncId, out var syncable))
+            if (!NetworkInfo.IsServer && SyncManager.TryGetSyncable<PropSyncable>(data.syncId, out var syncable))
             {
-                if (syncable is PropSyncable prop && prop.TryGetExtender<FunicularControllerExtender>(out var extender))
+                if (syncable.TryGetExtender<FunicularControllerExtender>(out var extender))
                 {
                     FunicularControllerPatches.IgnorePatches = true;
 

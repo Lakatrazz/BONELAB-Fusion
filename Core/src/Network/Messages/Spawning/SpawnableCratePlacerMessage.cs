@@ -87,7 +87,7 @@ namespace LabFusion.Network
         private static IEnumerator Internal_WaitForSyncable(GameObject placer, ushort spawnId)
         {
             float startTime = TimeUtilities.TimeSinceStartup;
-            ISyncable syncable = null;
+            PropSyncable syncable = null;
             while (syncable == null && TimeUtilities.TimeSinceStartup - startTime <= 1f)
             {
                 yield return null;
@@ -101,7 +101,7 @@ namespace LabFusion.Network
             var cratePlacer = placer.GetComponentInChildren<SpawnableCratePlacer>(true);
 
             if (cratePlacer)
-                cratePlacer.OnPlaceEvent?.Invoke(cratePlacer, ((PropSyncable)syncable).GameObject);
+                cratePlacer.OnPlaceEvent?.Invoke(cratePlacer, syncable.GameObject);
         }
     }
 }

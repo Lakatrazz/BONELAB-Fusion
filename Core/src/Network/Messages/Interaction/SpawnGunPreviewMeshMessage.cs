@@ -73,7 +73,7 @@ namespace LabFusion.Network
             }
             else
             {
-                if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable && propSyncable.TryGetExtender<SpawnGunExtender>(out var extender))
+                if (SyncManager.TryGetSyncable<PropSyncable>(data.syncId, out var syncable) && syncable.TryGetExtender<SpawnGunExtender>(out var extender))
                 {
                     var crateRef = new SpawnableCrateReference(data.barcode);
 

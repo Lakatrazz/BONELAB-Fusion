@@ -85,7 +85,7 @@ namespace LabFusion.Data
                 case ReferenceType.PROP_SYNCABLE:
                     var id = reader.ReadUInt16();
 
-                    if (SyncManager.TryGetSyncable(id, out var syncable) && syncable is PropSyncable prop && prop.TryGetExtender<TriggerRefProxyExtender>(out var extender))
+                    if (SyncManager.TryGetSyncable<PropSyncable>(id, out var syncable) && syncable.TryGetExtender<TriggerRefProxyExtender>(out var extender))
                     {
                         proxy = extender.Component;
                     }

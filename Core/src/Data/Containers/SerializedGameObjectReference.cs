@@ -100,9 +100,9 @@ namespace LabFusion.Data
                     var id = reader.ReadUInt16();
                     var index = reader.ReadUInt16();
 
-                    if (SyncManager.TryGetSyncable(id, out var syncable) && syncable is PropSyncable prop)
+                    if (SyncManager.TryGetSyncable<PropSyncable>(id, out var syncable))
                     {
-                        gameObject = prop.GetHost(index);
+                        gameObject = syncable.GetHost(index);
                     }
                     break;
                 case ReferenceType.RIG_MANAGER:

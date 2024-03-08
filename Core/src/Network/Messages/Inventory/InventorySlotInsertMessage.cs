@@ -84,7 +84,7 @@ namespace LabFusion.Network
             }
             else
             {
-                if (SyncManager.TryGetSyncable(data.syncId, out var syncable) && syncable is PropSyncable propSyncable && propSyncable.TryGetExtender<WeaponSlotExtender>(out var extender))
+                if (SyncManager.TryGetSyncable<PropSyncable>(data.syncId, out var syncable) && syncable.TryGetExtender<WeaponSlotExtender>(out var extender))
                 {
                     RigReferenceCollection references = null;
 

@@ -80,14 +80,10 @@ namespace LabFusion.Data
             InteractableHost host;
             syncable = null;
 
-            if (SyncManager.TryGetSyncable(id, out var foundSyncable))
+            if (SyncManager.TryGetSyncable<PropSyncable>(id, out var foundSyncable))
             {
-
-                if (foundSyncable is PropSyncable prop)
-                {
-                    syncable = prop;
-                    return syncable.GetGrip(index);
-                }
+                syncable = foundSyncable;
+                return foundSyncable.GetGrip(index);
             }
             else if (fullPath != "_" && (go = GameObjectUtilities.GetGameObject(fullPath)) && (host = InteractableHost.Cache.Get(go)))
             {

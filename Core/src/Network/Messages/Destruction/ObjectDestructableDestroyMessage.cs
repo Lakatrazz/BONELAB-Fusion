@@ -75,7 +75,7 @@ namespace LabFusion.Network
             }
             else
             {
-                if (SyncManager.TryGetSyncable(data.syncId, out var destructable) && destructable is PropSyncable destructableSyncable && destructableSyncable.TryGetExtender<ObjectDestructableExtender>(out var extender))
+                if (SyncManager.TryGetSyncable<PropSyncable>(data.syncId, out var destructable) && destructable.TryGetExtender<ObjectDestructableExtender>(out var extender))
                 {
                     var objectDestructable = extender.GetComponent(data.destructableIndex);
                     ObjectDestructablePatches.IgnorePatches = true;

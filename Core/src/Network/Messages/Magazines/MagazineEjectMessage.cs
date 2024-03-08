@@ -72,7 +72,7 @@ namespace LabFusion.Network
                 using var message = FusionMessage.Create(Tag.Value, bytes);
                 MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
             }
-            else if (SyncManager.TryGetSyncable(data.gunId, out var gun) && gun is PropSyncable gunSyncable && gunSyncable.TryGetExtender<AmmoSocketExtender>(out var extender))
+            else if (SyncManager.TryGetSyncable<PropSyncable>(data.gunId, out var gun) && gun.TryGetExtender<AmmoSocketExtender>(out var extender))
             {
                 // Eject mag from gun
                 if (extender.Component._magazinePlug)

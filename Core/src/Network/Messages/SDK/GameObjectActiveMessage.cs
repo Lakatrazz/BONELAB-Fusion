@@ -106,7 +106,7 @@ namespace LabFusion.Network
                     data.gameObject.SetActive(data.value);
                 }
                 else if (data.syncId.HasValue && data.scriptIndex.HasValue
-                    && SyncManager.TryGetSyncable(data.syncId.Value, out var syncable) && syncable is PropSyncable prop && prop.TryGetExtender<SyncGameObjectEnabledExtender>(out var extender))
+                    && SyncManager.TryGetSyncable<PropSyncable>(data.syncId.Value, out var syncable) && syncable.TryGetExtender<SyncGameObjectEnabledExtender>(out var extender))
                 {
 
                     var script = extender.GetComponent(data.scriptIndex.Value);

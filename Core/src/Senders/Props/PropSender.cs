@@ -15,10 +15,7 @@ using LabFusion.Syncables;
 
 using MelonLoader;
 
-using SLZ.Marrow.Warehouse;
-using SLZ.Rig;
 using LabFusion.MonoBehaviours;
-using static RootMotion.FinalIK.GrounderQuadruped;
 
 namespace LabFusion.Senders
 {
@@ -28,7 +25,7 @@ namespace LabFusion.Senders
         /// Sends an ownership transfer request for a syncable.
         /// </summary>
         /// <param name="syncable"></param>
-        public static void SendOwnershipTransfer(ISyncable syncable)
+        public static void SendOwnershipTransfer<TSyncable>(TSyncable syncable) where TSyncable : ISyncable
         {
             ushort id = syncable.GetId();
 

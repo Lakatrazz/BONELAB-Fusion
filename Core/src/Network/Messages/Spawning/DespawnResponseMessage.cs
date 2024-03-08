@@ -77,11 +77,11 @@ namespace LabFusion.Network
             }
 
             // Get the syncable from the valid id
-            if (SyncManager.TryGetSyncable(syncId, out var syncable) && syncable is PropSyncable propSyncable)
+            if (SyncManager.TryGetSyncable<PropSyncable>(syncId, out var syncable))
             {
                 PooleeUtilities.CanDespawn = true;
 
-                if (propSyncable.AssetPoolee && propSyncable.AssetPoolee.gameObject.activeInHierarchy)
+                if (syncable.AssetPoolee && syncable.AssetPoolee.gameObject.activeInHierarchy)
                 {
                     if (isMag)
                     {
@@ -94,11 +94,11 @@ namespace LabFusion.Network
 
                         NullableMethodExtensions.AudioPlayer_PlayAtPoint(ammoInventory.ammoReceiver.grabClips, ammoInventory.ammoReceiver.transform.position, null, null, false, null, null);
 
-                        propSyncable.AssetPoolee.gameObject.SetActive(false);
+                        syncable.AssetPoolee.gameObject.SetActive(false);
                     }
                     else
                     {
-                        propSyncable.AssetPoolee.Despawn();
+                        syncable.AssetPoolee.Despawn();
                     }
                 }
 
