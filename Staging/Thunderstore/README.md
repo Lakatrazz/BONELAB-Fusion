@@ -3,6 +3,9 @@ Having been in development for 5 months, the long awaited multiplayer mod FUSION
 
 ![](https://i.imgur.com/1ZpMfei.png)
 
+# NOTICE
+Thunderstore now prevents mods being uploaded with auto updaters, so if you want the Fusion autoupdater you'll have to find it [here](github.com/Lakatrazz/BONELAB-Fusion/releases/latest).
+
 # Installation
 ## How To Install (PCVR)
 1. Make sure you are on BONELAB Patch 3. This is the "public beta" branch.
