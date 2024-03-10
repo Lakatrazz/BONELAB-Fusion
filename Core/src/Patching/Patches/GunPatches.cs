@@ -28,17 +28,45 @@ namespace LabFusion.Patching
         public static bool Fire(Gun __instance)
         {
             if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer && __instance.cartridgeState == Gun.CartridgeStates.UNSPENT && __instance.triggerGrip)
             {
-                var hand = __instance.triggerGrip.GetHand();
+                return true;
+            }
 
-                if (hand == null)
-                    return true;
+            if (!NetworkInfo.HasServer)
+            {
+                return true;
+            }
 
-                if (PlayerRepManager.HasPlayerId(hand.manager))
-                    return false;
+            var grip = __instance.triggerGrip;
+
+            if (grip == null)
+            {
+                return true;
+            }
+
+            var hand = grip.GetHand();
+
+            if (hand == null) 
+            {
+                return true;
+            }
+
+            var manager = hand.manager;
+
+            bool isPlayerRep = PlayerRepManager.HasPlayerId(manager);
+
+            if (isPlayerRep && __instance.cartridgeState == Gun.CartridgeStates.UNSPENT)
+            {
+                return false;
+            }
+
+            var health = manager.health.TryCast<Player_Health>();
+
+            bool isDead = health.deathIsImminent;
+
+            if (isDead)
+            {
+                return false;
             }
 
             return true;

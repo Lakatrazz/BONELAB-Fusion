@@ -75,9 +75,11 @@ namespace LabFusion.Patching
                 if (rm.health._testRagdollOnDeath)
                 {
                     PhysicsRigPatches.ForceAllowUnragdoll = true;
+
                     rm.physicsRig.UnRagdollRig();
                     rm.physicsRig.ResetHands(Handedness.BOTH);
                     rm.physicsRig.TeleportToPose();
+
                     PhysicsRigPatches.ForceAllowUnragdoll = false;
                 }
 
@@ -105,10 +107,12 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(Player_Health.LifeSavingDamgeDealt))]
         public static void LifeSavingDamgeDealt(Player_Health __instance)
         {
-            if (__instance._rigManager == RigData.RigReferences.RigManager && __instance._testRagdollOnDeath)
+            if (__instance._rigManager.IsSelf() && __instance._testRagdollOnDeath)
             {
                 PhysicsRigPatches.ForceAllowUnragdoll = true;
+
                 __instance._rigManager.physicsRig.UnRagdollRig();
+
                 PhysicsRigPatches.ForceAllowUnragdoll = false;
             }
         }
@@ -118,17 +122,21 @@ namespace LabFusion.Patching
         public static void TAKEDAMAGEPrefix(Player_Health __instance, float damage)
         {
             if (__instance.healthMode == Health.HealthMode.Invincible && __instance._testRagdollOnDeath)
+            {
                 __instance._testRagdollOnDeath = false;
+            }
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(Player_Health.TAKEDAMAGE))]
         public static void TAKEDAMAGEPostfix(Player_Health __instance, float damage)
         {
-            if (__instance._rigManager == RigData.RigReferences.RigManager && __instance._testRagdollOnDeath && !__instance.alive)
+            if (__instance._rigManager.IsSelf() && __instance._testRagdollOnDeath && !__instance.alive)
             {
                 PhysicsRigPatches.ForceAllowUnragdoll = true;
+
                 __instance._rigManager.physicsRig.UnRagdollRig();
+
                 PhysicsRigPatches.ForceAllowUnragdoll = false;
             }
         }
