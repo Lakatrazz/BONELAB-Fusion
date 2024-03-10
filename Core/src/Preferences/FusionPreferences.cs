@@ -118,18 +118,18 @@ namespace LabFusion.Preferences
             public static FusionPref<bool> GamemodeLateJoining { get; internal set; }
         }
 
-        internal static ServerSettings LocalServerSettings;
-        internal static ServerSettings ReceivedServerSettings { get; set; } = null;
-        internal static ServerSettings ActiveServerSettings => ReceivedServerSettings ?? LocalServerSettings;
+        public static ServerSettings LocalServerSettings;
+        public static ServerSettings ReceivedServerSettings { get; set; } = null;
+        public static ServerSettings ActiveServerSettings => ReceivedServerSettings ?? LocalServerSettings;
 
-        internal static bool NametagsEnabled => ActiveServerSettings.NametagsEnabled.GetValue() && ClientSettings.NametagsEnabled;
-        internal static bool IsMortal => ActiveServerSettings.ServerMortality.GetValue();
-        internal static TimeScaleMode TimeScaleMode => ActiveServerSettings.TimeScaleMode.GetValue();
+        public static bool NametagsEnabled => ActiveServerSettings.NametagsEnabled.GetValue() && ClientSettings.NametagsEnabled;
+        public static bool IsMortal => ActiveServerSettings.ServerMortality.GetValue();
+        public static TimeScaleMode TimeScaleMode => ActiveServerSettings.TimeScaleMode.GetValue();
 
-        internal static MenuCategory fusionCategory;
-        internal static MelonPreferences_Category prefCategory;
+        public static MenuCategory fusionCategory;
+        public static MelonPreferences_Category prefCategory;
 
-        internal static Action OnFusionPreferencesLoaded;
+        public static Action OnFusionPreferencesLoaded;
 
         internal static void SendServerSettings()
         {
