@@ -1,5 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Extensions;
+using LabFusion.Utilities;
 using LabFusion.XML;
 
 using System;
@@ -80,11 +81,22 @@ namespace LabFusion.SDK.Achievements
         {
             var data = DataSaver.ReadBinary<AchievementSaveData>(_filePath);
 
-            if (data != null)
+            if (data == null)
             {
-                if (data.pointers != null)
-                    _achievementPointers = data.pointers;
+                FusionNotifier.Send(new FusionNotification()
+                {
+                    isMenuItem = false,
+                    isPopup = true,
+                    message = "Failed to load achievement data!",
+                    popupLength = 6f,
+                    type = NotificationType.WARNING,
+                });
+
+                return;
             }
+
+            if (data.pointers != null)
+                _achievementPointers = data.pointers;
         }
 
         public static void SaveAchievement(Achievement achievement)

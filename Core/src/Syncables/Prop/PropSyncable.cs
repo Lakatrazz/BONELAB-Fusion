@@ -399,7 +399,7 @@ namespace LabFusion.Syncables
             {
                 foreach (var hand in grip.attachedHands)
                 {
-                    if (hand.manager == rigManager)
+                    if (hand.HasAttachedObject() && hand.manager == rigManager)
                         return true;
                 }
             }

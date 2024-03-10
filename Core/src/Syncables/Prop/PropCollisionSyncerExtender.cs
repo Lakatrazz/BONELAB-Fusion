@@ -10,19 +10,38 @@ namespace LabFusion.Syncables
     {
         public PropSyncable PropSyncable { get; set; }
 
-        public CollisionSyncer Component;
+        public CollisionSyncer Component = null;
+
+        private bool _hasComponent = false;
 
         public bool ValidateExtender(PropSyncable syncable)
         {
             if (syncable.GameObjectCount > 0)
             {
                 PropSyncable = syncable;
-                Component = PropSyncable.TempRigidbodies.Items[0].GameObject.AddComponent<CollisionSyncer>();
-                Component.enabled = false;
                 return true;
             }
 
             return false;
+        }
+
+        public void ToggleComponent(bool enabled)
+        {
+            if (enabled == _hasComponent)
+            {
+                return;
+            }
+
+            if (enabled)
+            {
+                Component = PropSyncable.TempRigidbodies.Items[0].GameObject.AddComponent<CollisionSyncer>();
+                _hasComponent = true;
+            }
+            else
+            {
+                GameObject.Destroy(Component);
+                _hasComponent = false;
+            }
         }
 
         public void OnCleanup()
@@ -30,6 +49,7 @@ namespace LabFusion.Syncables
             if (!Component.IsNOC())
             {
                 GameObject.Destroy(Component);
+                _hasComponent = false;
             }
         }
 
@@ -45,7 +65,7 @@ namespace LabFusion.Syncables
         {
             if (hand.manager.IsSelf())
             {
-                Component.enabled = true;
+                ToggleComponent(true);
             }
         }
 
@@ -53,7 +73,7 @@ namespace LabFusion.Syncables
         { 
             if (!PropSyncable.IsGrabbedBy(hand.manager))
             {
-                Component.enabled = false;
+                ToggleComponent(false);
             }
         }
 

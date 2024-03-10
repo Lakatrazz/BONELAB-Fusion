@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using LabFusion.Utilities;
 
 namespace LabFusion.Data
 {
@@ -32,7 +33,17 @@ namespace LabFusion.Data
             if (!File.Exists(fullPath))
                 return default;
 
-            FileStream file = File.Open(fullPath, FileMode.Open);
+            FileStream file;
+
+            try
+            {
+                file = File.Open(fullPath, FileMode.Open);
+            }
+            catch (UnauthorizedAccessException e)
+            {
+                FusionLogger.LogException($"reading save data at {path}", e);
+                return default;
+            }
 
             try
             {
