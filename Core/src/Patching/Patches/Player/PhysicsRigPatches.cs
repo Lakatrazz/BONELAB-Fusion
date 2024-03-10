@@ -42,6 +42,20 @@ namespace LabFusion.Patching
         public static bool ForceAllowUnragdoll = false;
 
         [HarmonyPrefix]
+        [HarmonyPatch(nameof(PhysicsRig.TeleportToPose))]
+        public static void TeleportToPosePrefix(PhysicsRig __instance, ref Vector3 __state)
+        {
+            __state = __instance.feet.transform.position;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(PhysicsRig.TeleportToPose))]
+        public static void TeleportToPosePostfix(PhysicsRig __instance, ref Vector3 __state)
+        {
+            __instance.transform.position += __state - __instance.feet.transform.position;
+        }
+
+        [HarmonyPrefix]
         [HarmonyPatch(nameof(PhysicsRig.RagdollRig))]
         public static bool RagdollRig(PhysicsRig __instance)
         {

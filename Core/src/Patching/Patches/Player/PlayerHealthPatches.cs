@@ -70,19 +70,6 @@ namespace LabFusion.Patching
                     rm.physicsRig.rightHand.TryAutoHolsterGrip(RigData.RigReferences);
                 }
 
-                // If the player is ragdoll on death, reset them
-                // This prevents them spawning in the ground
-                if (rm.health._testRagdollOnDeath)
-                {
-                    PhysicsRigPatches.ForceAllowUnragdoll = true;
-
-                    rm.physicsRig.UnRagdollRig();
-                    rm.physicsRig.ResetHands(Handedness.BOTH);
-                    rm.physicsRig.TeleportToPose();
-
-                    PhysicsRigPatches.ForceAllowUnragdoll = false;
-                }
-
                 // Update the spawn point
                 if (FusionPlayer.TryGetSpawnPoint(out var point))
                 {
