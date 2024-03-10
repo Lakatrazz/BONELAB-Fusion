@@ -24,37 +24,23 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(StabSlash.ProcessCollision))]
         public static bool ProcessCollision(StabSlash __instance, Collision c, bool isStay)
         {
-            if (NetworkInfo.HasServer && __instance._host != null)
+            var host = __instance._host;
+
+            if (NetworkInfo.HasServer && host != null)
             {
                 var properties = ImpactProperties.Cache.Get(c.gameObject);
 
                 if (properties)
                 {
-                    var physRig = properties.GetComponentInParent<PhysicsRig>();
+                    bool valid = ImpactAttackValidator.ValidateAttack(__instance.gameObject, host, properties);
 
-                    // Was a player stabbed? Make sure another player is holding the weapon
-                    if (physRig != null)
+                    // Play the impact audio
+                    if (!valid && !isStay)
                     {
-                        // Check if we can force enable
-                        if (AlwaysAllowImpactDamage.Cache.ContainsSource(__instance.gameObject))
-                            return true;
-
-                        var host = __instance._host;
-
-                        foreach (var hand in host._hands)
-                        {
-                            if (hand.manager != physRig.manager)
-                                return true;
-                        }
-
-                        // Play the impact audio
-                        if (!isStay)
-                        {
-                            __instance.bladeAudio.CollisionEnterSfx(c, null, host.Rb);
-                        }
-
-                        return false;
+                        __instance.bladeAudio.CollisionEnterSfx(c, null, host.Rb);
                     }
+
+                    return valid;
                 }
             }
 

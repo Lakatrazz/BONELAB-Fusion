@@ -490,6 +490,7 @@
     <Compile Include="Core\src\Network\Steam\SteamVoiceHandler.cs" />
     <Compile Include="Core\src\Patching\CommonDelegates.cs" />
     <Compile Include="Core\src\Patching\NativeStructs\Attack_.cs" />
+    <Compile Include="Core\src\Patching\Patches\Attacks\ImpactAttackValidator.cs" />
     <Compile Include="Core\src\Patching\Patches\Attacks\ImpactPropertiesPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\AvatarDicePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\AvatarPatches.cs" />

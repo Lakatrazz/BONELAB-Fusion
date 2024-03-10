@@ -109,8 +109,13 @@ namespace LabFusion.Senders
 
         public static void SendPlayerDamage(byte target, float damage)
         {
+            SendPlayerDamage(target, damage, PlayerDamageReceiver.BodyPart.Chest);
+        }
+
+        public static void SendPlayerDamage(byte target, float damage, PlayerDamageReceiver.BodyPart part)
+        {
             using var writer = FusionWriter.Create(PlayerRepDamageData.Size);
-            using var data = PlayerRepDamageData.Create(PlayerIdManager.LocalSmallId, target, damage);
+            using var data = PlayerRepDamageData.Create(PlayerIdManager.LocalSmallId, target, damage, part);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.PlayerRepDamage, writer);
