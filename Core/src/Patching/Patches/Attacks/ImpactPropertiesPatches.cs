@@ -40,6 +40,29 @@ namespace LabFusion.Patching
             _original = NativeUtilities.GetOriginal<ReceiveAttackPatchDelegate>(tgtPtr);
         }
 
+        private static unsafe void OnProcessAttack(Attack_ attack)
+        {
+            Collider collider = null;
+            TriggerRefProxy proxy = null;
+
+            if (attack.collider != IntPtr.Zero)
+                collider = new Collider(attack.collider);
+
+            if (attack.proxy != IntPtr.Zero)
+                proxy = new TriggerRefProxy(attack.proxy);
+
+            // Check if this was a bullet attack + it was us who shot the bullet
+            if (proxy == RigData.RigReferences.Proxy && attack.attackType == AttackType.Piercing)
+            {
+                var rb = collider.attachedRigidbody;
+
+                if (rb != null)
+                {
+                    ImpactUtilities.OnHitRigidbody(rb);
+                }
+            }
+        }
+
         private static void ReceiveAttack(IntPtr instance, IntPtr attack, IntPtr method)
         {
             try
@@ -50,24 +73,7 @@ namespace LabFusion.Patching
                     {
                         var _attack = *(Attack_*)attack;
 
-                        Collider collider = null;
-                        TriggerRefProxy proxy = null;
-
-                        if (_attack.collider != IntPtr.Zero)
-                            collider = new Collider(_attack.collider);
-
-                        if (_attack.proxy != IntPtr.Zero)
-                            proxy = new TriggerRefProxy(_attack.proxy);
-
-                        // Check if this was a bullet attack + it was us who shot the bullet
-                        if (proxy == RigData.RigReferences.Proxy && _attack.attackType == AttackType.Piercing)
-                        {
-                            var rb = collider.attachedRigidbody;
-                            if (!rb)
-                                return;
-
-                            ImpactUtilities.OnHitRigidbody(rb);
-                        }
+                        OnProcessAttack(_attack);
                     }
                 }
 
