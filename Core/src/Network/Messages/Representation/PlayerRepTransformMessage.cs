@@ -16,11 +16,11 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-using SystemVector3 = System.Numerics.Vector3;
+ 
 
 namespace LabFusion.Network
 {
-    public unsafe class PlayerRepTransformData : IFusionSerializable, IDisposable
+    public class PlayerRepTransformData : IFusionSerializable, IDisposable
     {
         public const int Size = sizeof(byte) + sizeof(float) * 7 + SerializedLocalTransform.Size
             * RigAbstractor.TransformSyncCount + SerializedTransform.Size + SerializedSmallQuaternion.Size + SerializedHand.Size * 2;
@@ -29,17 +29,15 @@ namespace LabFusion.Network
 
         public float curr_Health;
 
-        public SerializedLocalTransform* serializedLocalTransforms;
+        public SerializedLocalTransform[] serializedLocalTransforms;
         public SerializedTransform serializedPelvis;
         public SerializedSmallQuaternion serializedPlayspace;
 
-        public SystemVector3 predictVelocity;
-        public SystemVector3 predictAngularVelocity;
+        public Vector3 predictVelocity;
+        public Vector3 predictAngularVelocity;
 
         public SerializedHand leftHand;
         public SerializedHand rightHand;
-
-        private bool _disposed;
 
         public void Serialize(FusionWriter writer)
         {
@@ -64,18 +62,18 @@ namespace LabFusion.Network
         {
             smallId = reader.ReadByte();
 
-            predictVelocity = reader.ReadSystemVector3();
-            predictAngularVelocity = reader.ReadSystemVector3();
+            predictVelocity = reader.ReadVector3();
+            predictAngularVelocity = reader.ReadVector3();
 
             curr_Health = reader.ReadSingle();
 
-            serializedLocalTransforms = (SerializedLocalTransform*)Marshal.AllocHGlobal(RigAbstractor.TransformSyncCount * sizeof(SerializedLocalTransform));
+            serializedLocalTransforms = new SerializedLocalTransform[RigAbstractor.TransformSyncCount];
 
             for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
                 serializedLocalTransforms[i] = reader.ReadFusionSerializable<SerializedLocalTransform>();
 
             serializedPelvis = reader.ReadFusionSerializable<SerializedTransform>();
-            serializedPlayspace = reader.ReadFromFactory(SerializedSmallQuaternion.Create);
+            serializedPlayspace = reader.ReadFusionSerializable<SerializedSmallQuaternion>();
 
             leftHand = reader.ReadFusionSerializable<SerializedHand>();
             rightHand = reader.ReadFusionSerializable<SerializedHand>();
@@ -83,13 +81,7 @@ namespace LabFusion.Network
 
         public void Dispose()
         {
-            if (_disposed)
-                return;
-
             GC.SuppressFinalize(this);
-            Marshal.FreeHGlobal((IntPtr)serializedLocalTransforms);
-
-            _disposed = true;
         }
 
         public static PlayerRepTransformData Create(byte smallId, Transform[] syncTransforms, Transform syncedPelvis, Transform syncedPlayspace, Hand leftHand, Hand rightHand)
@@ -100,19 +92,19 @@ namespace LabFusion.Network
             {
                 smallId = smallId,
 
-                predictVelocity = RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.velocity.ToSystemVector3() * TimeUtilities.TimeScale,
-                predictAngularVelocity = RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.angularVelocity.ToSystemVector3() * TimeUtilities.TimeScale,
+                predictVelocity = RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.velocity * TimeUtilities.TimeScale,
+                predictAngularVelocity = RigData.RigReferences.RigManager.physicsRig.torso._pelvisRb.angularVelocity * TimeUtilities.TimeScale,
 
                 curr_Health = health.curr_Health,
 
                 serializedPelvis = new SerializedTransform(syncedPelvis),
 
-                serializedPlayspace = SerializedSmallQuaternion.Compress(syncedPlayspace.rotation.ToSystemQuaternion()),
+                serializedPlayspace = SerializedSmallQuaternion.Compress(syncedPlayspace.rotation),
 
                 leftHand = new SerializedHand(leftHand, leftHand.Controller),
                 rightHand = new SerializedHand(rightHand, rightHand.Controller),
 
-                serializedLocalTransforms = (SerializedLocalTransform*)Marshal.AllocHGlobal(RigAbstractor.TransformSyncCount * sizeof(SerializedLocalTransform)),
+                serializedLocalTransforms = new SerializedLocalTransform[RigAbstractor.TransformSyncCount],
             };
 
             for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
@@ -144,14 +136,12 @@ namespace LabFusion.Network
             // Apply player rep data
             if (data.smallId != PlayerIdManager.LocalSmallId && PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep) && rep.IsCreated)
             {
-                unsafe {
-                    for (var i = 0; i < RigAbstractor.TransformSyncCount; i++) {
-                        rep.serializedLocalTransforms[i] = data.serializedLocalTransforms[i];
-                    }
+                for (var i = 0; i < RigAbstractor.TransformSyncCount; i++) {
+                    rep.serializedLocalTransforms[i] = data.serializedLocalTransforms[i];
                 }
 
                 rep.serializedPelvis = data.serializedPelvis;
-                rep.repPlayspace.rotation = data.serializedPlayspace.Expand().ToUnityQuaternion();
+                rep.repPlayspace.rotation = data.serializedPlayspace.Expand();
                 rep.predictVelocity = data.predictVelocity;
                 rep.predictAngularVelocity = data.predictAngularVelocity;
                 rep.timeSincePelvisSent = TimeUtilities.TimeSinceStartup;

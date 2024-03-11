@@ -8,8 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-using SystemVector3 = System.Numerics.Vector3;
-
 namespace LabFusion.Network
 {
     public class FusionReader : IDisposable
@@ -38,7 +36,7 @@ namespace LabFusion.Network
             return reader;
         }
 
-        public T ReadFusionSerializable<T>() where T : IFusionReadable, new()
+        public T ReadFusionSerializable<T>() where T : IFusionSerializable, new()
         {
             T instance = new();
             instance.Deserialize(this);
@@ -49,19 +47,19 @@ namespace LabFusion.Network
             return factory(this);
         }
 
-        public void ReadFusionSerializable<T>(ref T value) where T : IFusionReadable
+        public void ReadFusionSerializable<T>(ref T value) where T : IFusionSerializable
         {
             value.Deserialize(this);
         }
 
-        public IFusionReadable ReadFusionSerializable(Type type)
+        public IFusionSerializable ReadFusionSerializable(Type type)
         {
-            var instance = Activator.CreateInstance(type) as IFusionReadable;
+            var instance = Activator.CreateInstance(type) as IFusionSerializable;
             instance.Deserialize(this);
             return instance;
         }
 
-        public void ReadFusionSerializable(ref IFusionReadable value)
+        public void ReadFusionSerializable(ref IFusionSerializable value)
         {
             value.Deserialize(this);
         }
@@ -245,11 +243,6 @@ namespace LabFusion.Network
         public Vector3 ReadVector3()
         {
             return new Vector3(ReadSingle(), ReadSingle(), ReadSingle());
-        }
-
-        public SystemVector3 ReadSystemVector3()
-        {
-            return new SystemVector3(ReadSingle(), ReadSingle(), ReadSingle());
         }
 
         public Vector2 ReadVector2()

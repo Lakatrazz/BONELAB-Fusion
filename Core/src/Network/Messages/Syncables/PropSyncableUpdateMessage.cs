@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 using UnityEngine;
 using LabFusion.Extensions;
 
-using SystemVector3 = System.Numerics.Vector3;
+ 
 using System.Runtime.InteropServices;
 
 namespace LabFusion.Network
 {
-    public unsafe class PropSyncableUpdateData : IFusionSerializable, IDisposable
+    public class PropSyncableUpdateData : IFusionSerializable, IDisposable
     {
         public const int DefaultSize = sizeof(byte) * 2 + sizeof(ushort);
         public const int RigidbodySize = sizeof(float) * 9 + SerializedSmallQuaternion.Size;
@@ -23,13 +23,11 @@ namespace LabFusion.Network
         public byte ownerId;
         public ushort syncId;
         public byte length;
-        public SystemVector3* serializedPositions;
-        public SerializedSmallQuaternion* serializedQuaternions;
+        public Vector3[] serializedPositions;
+        public SerializedSmallQuaternion[] serializedQuaternions;
 
-        public SystemVector3* serializedVelocities;
-        public SystemVector3* serializedAngularVelocities;
-
-        private bool _disposed;
+        public Vector3[] serializedVelocities;
+        public Vector3[] serializedAngularVelocities;
 
         public void Serialize(FusionWriter writer)
         {
@@ -52,17 +50,17 @@ namespace LabFusion.Network
             syncId = reader.ReadUInt16();
             length = reader.ReadByte();
 
-            serializedPositions = (SystemVector3*)Marshal.AllocHGlobal(length * sizeof(SystemVector3));
-            serializedQuaternions = (SerializedSmallQuaternion*)Marshal.AllocHGlobal(length * sizeof(SerializedSmallQuaternion));
-            serializedVelocities = (SystemVector3*)Marshal.AllocHGlobal(length * sizeof(SystemVector3));
-            serializedAngularVelocities = (SystemVector3*)Marshal.AllocHGlobal(length * sizeof(SystemVector3));
+            serializedPositions = new Vector3[length];
+            serializedQuaternions = new SerializedSmallQuaternion[length];
+            serializedVelocities = new Vector3[length];
+            serializedAngularVelocities = new Vector3[length];
 
             for (var i = 0; i < length; i++)
             {
-                serializedPositions[i] = reader.ReadSystemVector3();
-                serializedQuaternions[i] = reader.ReadFromFactory(SerializedSmallQuaternion.Create);
-                serializedVelocities[i] = reader.ReadSystemVector3();
-                serializedAngularVelocities[i] = reader.ReadSystemVector3();
+                serializedPositions[i] = reader.ReadVector3();
+                serializedQuaternions[i] = reader.ReadFusionSerializable<SerializedSmallQuaternion>();
+                serializedVelocities[i] = reader.ReadVector3();
+                serializedAngularVelocities[i] = reader.ReadVector3();
             }
         }
 
@@ -76,16 +74,7 @@ namespace LabFusion.Network
 
         public void Dispose()
         {
-            if (_disposed)
-                return;
-
             GC.SuppressFinalize(this);
-            Marshal.FreeHGlobal((IntPtr)serializedPositions);
-            Marshal.FreeHGlobal((IntPtr)serializedQuaternions);
-            Marshal.FreeHGlobal((IntPtr)serializedVelocities);
-            Marshal.FreeHGlobal((IntPtr)serializedAngularVelocities);
-
-            _disposed = true;
         }
 
         public static PropSyncableUpdateData Create(byte ownerId, PropSyncable syncable)
@@ -101,10 +90,10 @@ namespace LabFusion.Network
                 ownerId = ownerId,
                 syncId = syncId,
                 length = (byte)length,
-                serializedPositions = (SystemVector3*)Marshal.AllocHGlobal(length * sizeof(SystemVector3)),
-                serializedQuaternions = (SerializedSmallQuaternion*)Marshal.AllocHGlobal(length * sizeof(SerializedSmallQuaternion)),
-                serializedVelocities = (SystemVector3*)Marshal.AllocHGlobal(length * sizeof(SystemVector3)),
-                serializedAngularVelocities = (SystemVector3*)Marshal.AllocHGlobal(length * sizeof(SystemVector3)),
+                serializedPositions = new Vector3[length],
+                serializedQuaternions = new SerializedSmallQuaternion[length],
+                serializedVelocities = new Vector3[length],
+                serializedAngularVelocities = new Vector3[length],
             };
 
             for (var i = 0; i < length; i++)
@@ -135,23 +124,22 @@ namespace LabFusion.Network
         {
             using var reader = FusionReader.Create(bytes);
             using var data = reader.ReadFusionSerializable<PropSyncableUpdateData>();
+
             // Find the prop syncable and update its info
             var syncable = data.GetPropSyncable();
             if (syncable != null && syncable.IsRegistered() && syncable.Owner.HasValue && syncable.Owner.Value == data.ownerId && syncable.GameObjectCount == data.length)
             {
                 syncable.RefreshMessageTime();
 
-                unsafe {
-                    for (var i = 0; i < data.length; i++) {
-                        syncable.InitialPositions[i] = data.serializedPositions[i];
-                        syncable.InitialRotations[i] = data.serializedQuaternions[i].Expand();
+                for (var i = 0; i < data.length; i++) {
+                    syncable.InitialPositions[i] = data.serializedPositions[i];
+                    syncable.InitialRotations[i] = data.serializedQuaternions[i].Expand();
 
-                        syncable.DesiredPositions[i] = data.serializedPositions[i];
-                        syncable.DesiredRotations[i] = data.serializedQuaternions[i].Expand();
+                    syncable.DesiredPositions[i] = data.serializedPositions[i];
+                    syncable.DesiredRotations[i] = data.serializedQuaternions[i].Expand();
 
-                        syncable.DesiredVelocities[i] = data.serializedVelocities[i];
-                        syncable.DesiredAngularVelocities[i] = data.serializedAngularVelocities[i];
-                    }
+                    syncable.DesiredVelocities[i] = data.serializedVelocities[i];
+                    syncable.DesiredAngularVelocities[i] = data.serializedAngularVelocities[i];
                 }
             }
 

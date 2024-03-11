@@ -17,8 +17,6 @@ using SLZ.Utilities;
 
 using UnityEngine;
 
-using SystemVector3 = System.Numerics.Vector3;
-using SystemQuaternion = System.Numerics.Quaternion;
 using SLZ.Rig;
 
 namespace LabFusion.Syncables
@@ -68,17 +66,17 @@ namespace LabFusion.Syncables
         public byte? Owner = null;
 
         // Target info
-        public SystemVector3?[] InitialPositions;
-        public SystemQuaternion?[] InitialRotations;
+        public Vector3?[] InitialPositions;
+        public Quaternion?[] InitialRotations;
 
-        public SystemVector3?[] DesiredPositions;
-        public SystemQuaternion?[] DesiredRotations;
-        public SystemVector3?[] DesiredVelocities;
-        public SystemVector3?[] DesiredAngularVelocities;
+        public Vector3?[] DesiredPositions;
+        public Quaternion?[] DesiredRotations;
+        public Vector3?[] DesiredVelocities;
+        public Vector3?[] DesiredAngularVelocities;
 
         // Last sent info
-        public SystemVector3[] LastSentPositions;
-        public SystemQuaternion[] LastSentRotations;
+        public Vector3[] LastSentPositions;
+        public Quaternion[] LastSentRotations;
 
         private bool _verifyRigidbodies;
 
@@ -135,15 +133,15 @@ namespace LabFusion.Syncables
         private void OnInitRigidbodies()
         {
             // Setup target arrays
-            InitialPositions = new SystemVector3?[GameObjectCount];
-            InitialRotations = new SystemQuaternion?[GameObjectCount];
-            DesiredPositions = new SystemVector3?[GameObjectCount];
-            DesiredRotations = new SystemQuaternion?[GameObjectCount];
-            DesiredVelocities = new SystemVector3?[GameObjectCount];
-            DesiredAngularVelocities = new SystemVector3?[GameObjectCount];
+            InitialPositions = new Vector3?[GameObjectCount];
+            InitialRotations = new Quaternion?[GameObjectCount];
+            DesiredPositions = new Vector3?[GameObjectCount];
+            DesiredRotations = new Quaternion?[GameObjectCount];
+            DesiredVelocities = new Vector3?[GameObjectCount];
+            DesiredAngularVelocities = new Vector3?[GameObjectCount];
 
-            LastSentPositions = new SystemVector3[GameObjectCount];
-            LastSentRotations = new SystemQuaternion[GameObjectCount];
+            LastSentPositions = new Vector3[GameObjectCount];
+            LastSentRotations = new Quaternion[GameObjectCount];
 
             // Setup gameobject arrays
             TransformCaches = new TransformCache[GameObjectCount];
@@ -474,8 +472,8 @@ namespace LabFusion.Syncables
 
                 DesiredPositions[i] = transform.Position;
                 DesiredRotations[i] = transform.Rotation;
-                DesiredVelocities[i] = SystemVector3.Zero;
-                DesiredAngularVelocities[i] = SystemVector3.Zero;
+                DesiredVelocities[i] = Vector3Extensions.zero;
+                DesiredAngularVelocities[i] = Vector3Extensions.zero;
                 InitialPositions[i] = transform.Position;
                 InitialRotations[i] = transform.Rotation;
             }
@@ -555,7 +553,7 @@ namespace LabFusion.Syncables
                     if (rb && _lockedState && lockPos.HasValue && lockRot.HasValue)
                     {
 
-                        transform.SetPositionAndRotation(lockPos.Value.ToUnityVector3(), lockRot.Value.ToUnityQuaternion());
+                        transform.SetPositionAndRotation(lockPos.Value, lockRot.Value);
 
                         LockJoints[i] = gameObject.AddComponent<FixedJoint>();
                     }
@@ -695,7 +693,7 @@ namespace LabFusion.Syncables
             var lastPosition = LastSentPositions[index];
             var lastRotation = LastSentRotations[index];
 
-            return (cache.Position - lastPosition).LengthSquared() > MinMoveSqrMagnitude || QuaternionExtensions.Angle(cache.Rotation, lastRotation) > MinMoveAngle;
+            return (cache.Position - lastPosition).sqrMagnitude > MinMoveSqrMagnitude || Quaternion.Angle(cache.Rotation, lastRotation) > MinMoveAngle;
         }
 
         public bool IsMissingRigidbodies()
@@ -921,11 +919,11 @@ namespace LabFusion.Syncables
                 }
 
                 // Teleport check
-                float distSqr = (cache.Position - pos).LengthSquared();
-                if (distSqr > (2f * (vel.LengthSquared() + 1f)) && allowPosition)
+                float distSqr = (cache.Position - pos).sqrMagnitude;
+                if (distSqr > (2f * (vel.sqrMagnitude + 1f)) && allowPosition)
                 {
-                    transform.position = pos.ToUnityVector3();
-                    transform.rotation = rot.ToUnityQuaternion();
+                    transform.position = pos;
+                    transform.rotation = rot;
 
                     rb.velocity = Vector3Extensions.zero;
                     rb.angularVelocity = Vector3Extensions.zero;
@@ -937,17 +935,17 @@ namespace LabFusion.Syncables
                 {
                     if (allowPosition)
                     {
-                        rb.AddForce(pdController.GetForce(rb, cache.Position, rbCache.Velocity, pos, vel).ToUnityVector3(), ForceMode.Acceleration);
+                        rb.AddForce(pdController.GetForce(rb, cache.Position, rbCache.Velocity, pos, vel), ForceMode.Acceleration);
                     }
                     else
                     {
                         if (rb.useGravity)
-                            rb.AddForce(-PhysicsUtilities.Gravity.ToUnityVector3(), ForceMode.Acceleration);
+                            rb.AddForce(-PhysicsUtilities.Gravity, ForceMode.Acceleration);
 
                         pdController.ResetPosition();
                     }
 
-                    rb.AddTorque(pdController.GetTorque(rb, cache.Rotation, rbCache.AngularVelocity, rot, angVel).ToUnityVector3(), ForceMode.Acceleration);
+                    rb.AddTorque(pdController.GetTorque(rb, cache.Rotation, rbCache.AngularVelocity, rot, angVel), ForceMode.Acceleration);
                 }
             }
         }

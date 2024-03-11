@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-using SystemVector3 = System.Numerics.Vector3;
+ 
 
 namespace LabFusion.Utilities
 {
@@ -20,9 +20,9 @@ namespace LabFusion.Utilities
     {
         internal static bool CanModifyGravity = false;
 
-        private static readonly SystemVector3 DefaultGravity = new(0f, -9.81f, 0f);
+        private static readonly Vector3 DefaultGravity = new(0f, -9.81f, 0f);
 
-        public static SystemVector3 Gravity = DefaultGravity;
+        public static Vector3 Gravity = DefaultGravity;
 
         internal static void OnInitializeMelon()
         {
@@ -39,7 +39,7 @@ namespace LabFusion.Utilities
             MessageSender.SendFromServer(id, NetworkChannel.Reliable, message);
         }
 
-        internal static void SendGravity(SystemVector3 value)
+        internal static void SendGravity(Vector3 value)
         {
             using var writer = FusionWriter.Create(WorldGravityMessageData.Size);
             using var data = WorldGravityMessageData.Create(value);
@@ -74,7 +74,7 @@ namespace LabFusion.Utilities
 
                             float mult = 1f - (1f / controlTime.cur_intensity);
 
-                            SystemVector3 force = -Gravity * mult;
+                            Vector3 force = -Gravity * mult;
 
                             if (references.RigRigidbodies == null)
                                 references.GetRigidbodies();
@@ -88,7 +88,7 @@ namespace LabFusion.Utilities
 
                                 if (rb.useGravity)
                                 {
-                                    rb.AddForce(force.ToUnityVector3(), ForceMode.Acceleration);
+                                    rb.AddForce(force, ForceMode.Acceleration);
                                 }
                             }
                         }

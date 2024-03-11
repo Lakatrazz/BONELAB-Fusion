@@ -9,14 +9,12 @@ using UnityEngine;
 using LabFusion.Network;
 using LabFusion.Extensions;
 
-using SystemQuaternion = System.Numerics.Quaternion;
-
 namespace LabFusion.Data
 {
-    public readonly struct SerializedQuaternion : IFusionWritable
+    public class SerializedQuaternion : IFusionSerializable
     {
-        public readonly short c1, c2, c3;
-        public readonly byte loss; // Lost component in compression
+        public short c1, c2, c3;
+        public byte loss; // Lost component in compression
 
         public const ushort Size = sizeof(short) * 3 + sizeof(byte);
 
@@ -31,26 +29,15 @@ namespace LabFusion.Data
             writer.Write(loss);
         }
 
-        public static SerializedQuaternion Create(FusionReader reader)
+        public void Deserialize(FusionReader reader)
         {
-            return new SerializedQuaternion(reader);
-        }
-
-        private SerializedQuaternion(FusionReader reader) {
             c1 = reader.ReadInt16();
             c2 = reader.ReadInt16();
             c3 = reader.ReadInt16();
             loss = reader.ReadByte();
         }
 
-        private SerializedQuaternion(short c1, short c2, short c3, byte loss) {
-            this.c1 = c1;
-            this.c2 = c2;
-            this.c3 = c3;
-            this.loss = loss;
-        }
-
-        public static SerializedQuaternion Compress(SystemQuaternion quat)
+        public static SerializedQuaternion Compress(Quaternion quat)
         {
             // Based on https://gafferongames.com/post/snapshot_compression/
             // Basically compression works by dropping a component that is the lowest absolute value
@@ -58,7 +45,7 @@ namespace LabFusion.Data
 
             unsafe
             {
-                float* components = stackalloc float[4] { quat.X, quat.Y, quat.Z, quat.W };
+                float* components = stackalloc float[4] { quat.x, quat.y, quat.z, quat.w };
 
                 byte dropped = 0;
                 float biggest = 0.0f;
@@ -85,13 +72,19 @@ namespace LabFusion.Data
                     compressed[compIndex++] = (short)(components[c] * sign * PRECISION_OFFSET);
                 }
 
-                SerializedQuaternion serialized = new(compressed[0], compressed[1], compressed[2], dropped);
+                SerializedQuaternion serialized = new()
+                {
+                    c1 = compressed[0],
+                    c2 = compressed[1],
+                    c3 = compressed[2],
+                    loss = dropped
+                };
 
                 return serialized;
             }
         }
 
-        public SystemQuaternion Expand()
+        public Quaternion Expand()
         {
             if (loss >= 4)
                 throw new DataCorruptionException($"Expanding a quaternion led to a lost component of {loss}!");
@@ -107,11 +100,11 @@ namespace LabFusion.Data
             // Still dumb...
             return loss switch
             {
-                0 => new SystemQuaternion(f4, f1, f2, f3),
-                1 => new SystemQuaternion(f1, f4, f2, f3),
-                2 => new SystemQuaternion(f1, f2, f4, f3),
-                3 => new SystemQuaternion(f1, f2, f3, f4),
-                _ => SystemQuaternion.Identity,
+                0 => new Quaternion(f4, f1, f2, f3),
+                1 => new Quaternion(f1, f4, f2, f3),
+                2 => new Quaternion(f1, f2, f4, f3),
+                3 => new Quaternion(f1, f2, f3, f4),
+                _ => Quaternion.identity,
             };
         }
     }

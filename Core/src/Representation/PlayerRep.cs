@@ -11,25 +11,13 @@ using SLZ.Rig;
 using SLZ.Marrow.Utilities;
 
 using System;
-using System.Collections.Generic;
 using System.Collections;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using TMPro;
 
 using UnityEngine;
 
 using MelonLoader;
-
-using SLZ.Marrow.Warehouse;
-using SLZ.VRMK;
-
-using Avatar = SLZ.VRMK.Avatar;
-
-using SystemVector3 = System.Numerics.Vector3;
-using SystemQuaternion = System.Numerics.Quaternion;
 
 namespace LabFusion.Representation
 {
@@ -67,8 +55,8 @@ namespace LabFusion.Representation
         public SerializedLocalTransform[] serializedLocalTransforms = new SerializedLocalTransform[RigAbstractor.TransformSyncCount];
         public SerializedTransform serializedPelvis;
 
-        public SystemVector3 predictVelocity;
-        public SystemVector3 predictAngularVelocity;
+        public Vector3 predictVelocity;
+        public Vector3 predictAngularVelocity;
 
         public PDController pelvisPDController;
         public float timeSincePelvisSent;
@@ -627,8 +615,8 @@ namespace LabFusion.Representation
 
                 for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
                 {
-                    repTransforms[i].localPosition = serializedLocalTransforms[i].position.ToUnityVector3();
-                    repTransforms[i].localRotation = serializedLocalTransforms[i].rotation.ToUnityQuaternion();
+                    repTransforms[i].localPosition = serializedLocalTransforms[i].position;
+                    repTransforms[i].localRotation = serializedLocalTransforms[i].rotation;
                 }
             }
             catch
@@ -646,7 +634,7 @@ namespace LabFusion.Representation
             try
             {
                 // Stop pelvis
-                if (!IsCreated || !serializedPelvis.IsValid)
+                if (!IsCreated || serializedPelvis == null)
                 {
                     pelvisPDController.Reset();
                     return;
@@ -662,8 +650,8 @@ namespace LabFusion.Representation
                 }
 
                 Transform pelvisTransform = repPelvis.transform;
-                SystemVector3 pelvisPosition = pelvisTransform.position.ToSystemVector3();
-                SystemQuaternion pelvisRotation = pelvisTransform.rotation.ToSystemQuaternion();
+                Vector3 pelvisPosition = pelvisTransform.position;
+                Quaternion pelvisRotation = pelvisTransform.rotation;
 
                 // Move position with prediction
                 if (TimeUtilities.TimeSinceStartup - timeSincePelvisSent <= 1.5f)
@@ -675,8 +663,8 @@ namespace LabFusion.Representation
                 else if (!_hasLockedPosition)
                 {
                     serializedPelvis.position = pelvisPosition;
-                    predictVelocity = SystemVector3.Zero;
-                    predictAngularVelocity = SystemVector3.Zero;
+                    predictVelocity = Vector3Extensions.zero;
+                    predictAngularVelocity = Vector3Extensions.zero;
 
                     _hasLockedPosition = true;
                 }
@@ -687,22 +675,22 @@ namespace LabFusion.Representation
                     var pos = serializedPelvis.position;
                     var rot = serializedPelvis.rotation;
 
-                    repPelvis.AddForce(pelvisPDController.GetForce(repPelvis, pelvisPosition, repPelvis.velocity.ToSystemVector3(), pos, predictVelocity).ToUnityVector3(), ForceMode.Acceleration);
+                    repPelvis.AddForce(pelvisPDController.GetForce(repPelvis, pelvisPosition, repPelvis.velocity, pos, predictVelocity), ForceMode.Acceleration);
                     // We only want to apply angular force when ragdolled
                     if (rigManager.physicsRig.torso.spineInternalMult <= 0f)
                     {
-                        repPelvis.AddTorque(pelvisPDController.GetTorque(repPelvis, pelvisRotation, repPelvis.angularVelocity.ToSystemVector3(), rot, predictAngularVelocity).ToUnityVector3(), ForceMode.Acceleration);
+                        repPelvis.AddTorque(pelvisPDController.GetTorque(repPelvis, pelvisRotation, repPelvis.angularVelocity, rot, predictAngularVelocity), ForceMode.Acceleration);
                     }
                     else
                         pelvisPDController.ResetRotation();
                 }
 
                 // Check for stability teleport
-                float distSqr = (pelvisPosition - serializedPelvis.position).LengthSquared();
-                if (distSqr > (2f * (predictVelocity.Length() + 1f)))
+                float distSqr = (pelvisPosition - serializedPelvis.position).sqrMagnitude;
+                if (distSqr > (2f * (predictVelocity.magnitude + 1f)))
                 {
                     // Get teleport position
-                    var pos = serializedPelvis.position.ToUnityVector3();
+                    var pos = serializedPelvis.position;
                     var physRig = RigReferences.RigManager.physicsRig;
 
                     // Offset

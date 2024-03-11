@@ -8,19 +8,17 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-using SystemVector3 = System.Numerics.Vector3;
-
 namespace LabFusion.Data
 {
     public sealed class RigidbodyCache
     {
-        private SystemVector3 _velocity;
-        private SystemVector3 _angularVelocity;
+        private Vector3 _velocity;
+        private Vector3 _angularVelocity;
         private bool _isSleeping;
         private bool _isNull;
 
-        public SystemVector3 Velocity => _velocity;
-        public SystemVector3 AngularVelocity => _angularVelocity;
+        public Vector3 Velocity => _velocity;
+        public Vector3 AngularVelocity => _angularVelocity;
         public bool IsSleeping => _isSleeping;
         public bool IsNull => _isNull;
 
@@ -43,13 +41,13 @@ namespace LabFusion.Data
 
             if (_isSleeping)
             {
-                _velocity = SystemVector3.Zero;
-                _angularVelocity = SystemVector3.Zero;
+                _velocity = Vector3Extensions.zero;
+                _angularVelocity = Vector3Extensions.zero;
             }
             else
             {
-                _velocity = rigidbody.velocity.ToSystemVector3();
-                _angularVelocity = rigidbody.angularVelocity.ToSystemVector3();
+                _velocity = rigidbody.velocity;
+                _angularVelocity = rigidbody.angularVelocity;
             }
         }
     }

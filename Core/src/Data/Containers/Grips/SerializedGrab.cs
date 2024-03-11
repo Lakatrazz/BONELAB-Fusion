@@ -73,7 +73,7 @@ namespace LabFusion.Data
             if (!isGrabbed || grip == null)
                 return;
 
-            rep.AttachObject(handedness, grip, SimpleTransform.Create(targetInBase.position.ToUnityVector3(), targetInBase.rotation.ToUnityQuaternion()));
+            rep.AttachObject(handedness, grip, SimpleTransform.Create(targetInBase.position, targetInBase.rotation));
         }
     }
 }

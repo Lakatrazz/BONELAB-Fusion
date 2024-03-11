@@ -119,7 +119,7 @@ namespace LabFusion.Network
                 string path = data.spawnerPath;
                 var hand = data.hand;
 
-                NullableMethodExtensions.PoolManager_Spawn(spawnable, data.serializedTransform.position.ToUnityVector3(), data.serializedTransform.rotation.ToUnityQuaternion(), null,
+                NullableMethodExtensions.PoolManager_Spawn(spawnable, data.serializedTransform.position, data.serializedTransform.rotation, null,
                     true, null, (Action<GameObject>)((go) => { OnSpawnFinished(owner, barcode, syncId, go, path, hand); }), null);
             }
             else

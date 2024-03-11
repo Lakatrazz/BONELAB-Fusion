@@ -49,11 +49,11 @@ namespace LabFusion.Extensions
         public static void SetRelativeHand(this Grip grip, Hand hand, SerializedTransform transform)
         {
             // Set the hand position so that the grip is created in the right spot
-            if (transform.IsValid)
+            if (transform != null)
             {
                 var gripTransform = grip.Host.GetTransform();
 
-                hand.transform.SetPositionAndRotation(gripTransform.TransformPoint(transform.position.ToUnityVector3()), gripTransform.TransformRotation(transform.rotation.ToUnityQuaternion()));
+                hand.transform.SetPositionAndRotation(gripTransform.TransformPoint(transform.position), gripTransform.TransformRotation(transform.rotation));
             }
         }
 

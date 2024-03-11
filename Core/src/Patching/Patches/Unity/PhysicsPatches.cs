@@ -33,7 +33,7 @@ namespace LabFusion.Patching
         [HarmonyPostfix]
         public static void SetGravityPostfix(Vector3 value)
         {
-            var output = value.ToSystemVector3();
+            var output = value;
 
             if (NetworkInfo.IsServer)
             {

@@ -8,23 +8,23 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-using SystemVector3 = System.Numerics.Vector3;
-using SystemQuaternion = System.Numerics.Quaternion;
+ 
+ 
 
 namespace LabFusion.Data
 {
     public sealed class TransformCache
     {
-        private SystemVector3 _position;
-        private SystemQuaternion _rotation;
+        private Vector3 _position;
+        private Quaternion _rotation;
 
-        public SystemVector3 Position => _position;
-        public SystemQuaternion Rotation => _rotation;
+        public Vector3 Position => _position;
+        public Quaternion Rotation => _rotation;
 
         public void FixedUpdate(Transform transform)
         {
-            _position = transform.position.ToSystemVector3();
-            _rotation = transform.rotation.ToSystemQuaternion();
+            _position = transform.position;
+            _rotation = transform.rotation;
         }
     }
 }

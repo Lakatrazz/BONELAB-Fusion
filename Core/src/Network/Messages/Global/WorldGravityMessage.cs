@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-using SystemVector3 = System.Numerics.Vector3;
+ 
 
 namespace LabFusion.Network
 {
@@ -19,9 +19,9 @@ namespace LabFusion.Network
     {
         public const int Size = sizeof(float) * 3;
 
-        public SystemVector3 gravity;
+        public Vector3 gravity;
 
-        public static WorldGravityMessageData Create(SystemVector3 gravity)
+        public static WorldGravityMessageData Create(Vector3 gravity)
         {
             return new WorldGravityMessageData()
             {
@@ -36,7 +36,7 @@ namespace LabFusion.Network
 
         public void Deserialize(FusionReader reader)
         {
-            gravity = reader.ReadSystemVector3();
+            gravity = reader.ReadVector3();
         }
 
         public void Dispose()
@@ -57,7 +57,7 @@ namespace LabFusion.Network
                 using var data = reader.ReadFusionSerializable<WorldGravityMessageData>();
 
                 PhysicsUtilities.CanModifyGravity = true;
-                Physics.gravity = data.gravity.ToUnityVector3();
+                Physics.gravity = data.gravity;
                 PhysicsUtilities.CanModifyGravity = false;
             }
         }
