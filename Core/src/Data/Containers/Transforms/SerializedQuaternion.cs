@@ -104,7 +104,7 @@ namespace LabFusion.Data
                 1 => new Quaternion(f1, f4, f2, f3),
                 2 => new Quaternion(f1, f2, f4, f3),
                 3 => new Quaternion(f1, f2, f3, f4),
-                _ => Quaternion.identity,
+                _ => QuaternionExtensions.identity,
             };
         }
     }

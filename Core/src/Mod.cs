@@ -273,6 +273,8 @@ namespace LabFusion
             // Update reps
             PlayerRep.OnUpdate();
 
+            FusionPlayer.OnUpdate();
+
             // Update and push all network messages
             InternalLayerHelpers.OnVoiceChatUpdate();
             InternalLayerHelpers.OnUpdateLayer();

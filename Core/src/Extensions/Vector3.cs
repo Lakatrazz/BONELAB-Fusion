@@ -17,8 +17,12 @@ namespace LabFusion.Extensions
 
         public static readonly Vector3 left = Vector3.left;
         public static readonly Vector3 right = Vector3.right;
+
         public static readonly Vector3 forward = Vector3.forward;
+        public static readonly Vector3 back = Vector3.back;
+
         public static readonly Vector3 up = Vector3.up;
+        public static readonly Vector3 down = Vector3.down;
 
         public static bool IsNanOrInf(this Vector3 vector)
         {

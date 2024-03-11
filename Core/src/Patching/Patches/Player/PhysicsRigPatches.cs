@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using HarmonyLib;
 
 using LabFusion.Data;
+using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Utilities;
@@ -52,7 +53,14 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(PhysicsRig.TeleportToPose))]
         public static void TeleportToPosePostfix(PhysicsRig __instance, ref Vector3 __state)
         {
-            __instance.transform.position += __state - __instance.feet.transform.position;
+            var kneeTransform = __instance.knee.transform;
+            var feetTransform = __instance.feet.transform;
+
+            var localFeet = kneeTransform.InverseTransformPoint(feetTransform.position);
+            kneeTransform.localRotation = QuaternionExtensions.identity;
+            feetTransform.position = kneeTransform.TransformPoint(localFeet);
+
+            __instance.transform.position += __state - feetTransform.position;
         }
 
         [HarmonyPrefix]

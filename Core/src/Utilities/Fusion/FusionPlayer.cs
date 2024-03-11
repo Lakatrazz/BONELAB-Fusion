@@ -8,6 +8,7 @@ using LabFusion.Representation;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Senders;
 using SLZ;
+using SLZ.Marrow.SceneStreaming;
 using SLZ.Marrow.Warehouse;
 using SLZ.Rig;
 
@@ -25,7 +26,7 @@ namespace LabFusion.Utilities
     public static class FusionPlayer
     {
         public static byte? LastAttacker { get; internal set; }
-        public static readonly List<Transform> SpawnPoints = new List<Transform>();
+        public static readonly List<Transform> SpawnPoints = new();
 
         public static float? VitalityOverride { get; internal set; } = null;
         public static string AvatarOverride { get; internal set; } = null;
@@ -33,6 +34,53 @@ namespace LabFusion.Utilities
         internal static void OnMainSceneInitialized()
         {
             LastAttacker = null;
+        }
+
+        internal static void OnUpdate()
+        {
+            if (FusionSceneManager.IsLoading())
+            {
+                return;
+            }
+
+            if (!RigData.HasPlayer)
+            {
+                return;
+            }
+
+            CheckFloatingPoint();
+        }
+
+        private static void CheckFloatingPoint()
+        {
+            var rm = RigData.RigReferences.RigManager;
+            var position = rm.physicsRig.feet.transform.position;
+
+            if (!position.IsNanOrInf())
+            {
+                return;
+            }
+
+#if DEBUG
+            FusionLogger.Warn("Player was sent out of floating point, reloading scene.");
+#endif
+
+            if (NetworkInfo.HasServer && !NetworkInfo.IsServer)
+            {
+                NetworkHelper.Disconnect("Game Crash");
+            }
+
+            SceneStreamer.Reload();
+
+            FusionNotifier.Send(new FusionNotification()
+            {
+                isPopup = true,
+                showTitleOnPopup = true,
+                title = "Whoops! Sorry about that!",
+                type = NotificationType.WARNING,
+                message = "The scene was reloaded due to a physics crash.",
+                popupLength = 6f,
+            });
         }
 
         internal static void Internal_OnAvatarChanged(RigManager rigManager, Avatar avatar, string barcode)

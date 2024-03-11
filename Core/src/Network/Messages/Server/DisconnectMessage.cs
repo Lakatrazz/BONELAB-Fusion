@@ -54,6 +54,7 @@ namespace LabFusion.Network
             {
                 using var reader = FusionReader.Create(bytes);
                 using var data = reader.ReadFusionSerializable<DisconnectMessageData>();
+
                 // If this is our id, disconnect ourselves
                 if (data.longId == PlayerIdManager.LocalLongId)
                 {

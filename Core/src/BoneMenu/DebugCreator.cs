@@ -2,6 +2,7 @@
 using BoneLib.BoneMenu.Elements;
 
 using LabFusion.Data;
+using LabFusion.Extensions;
 using LabFusion.Representation;
 
 using UnityEngine;
@@ -19,6 +20,21 @@ namespace LabFusion.BoneMenu
                 {
                     rig.transform.position = RigData.RigReferences.RigManager.physicsRig.feet.transform.position;
                 });
+            });
+
+            debugCategory.CreateFunctionElement("Send To Floating Point", Color.red, () =>
+            {
+                var physRig = RigData.RigReferences.RigManager.physicsRig;
+
+                float force = 100000000000000f;
+
+                for (var i = 0; i < 10; i++)
+                {
+                    physRig.rbFeet.AddForce(Vector3Extensions.left * force, ForceMode.VelocityChange);
+                    physRig.rbKnee.AddForce(Vector3Extensions.right * force, ForceMode.VelocityChange);
+                    physRig.rightHand.rb.AddForce(Vector3Extensions.up * force, ForceMode.VelocityChange);
+                    physRig.leftHand.rb.AddForce(Vector3Extensions.down * force, ForceMode.VelocityChange);
+                }
             });
         }
     }
