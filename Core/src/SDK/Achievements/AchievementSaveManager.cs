@@ -83,15 +83,6 @@ namespace LabFusion.SDK.Achievements
 
             if (data == null)
             {
-                FusionNotifier.Send(new FusionNotification()
-                {
-                    isMenuItem = false,
-                    isPopup = true,
-                    message = "Failed to load achievement data!",
-                    popupLength = 6f,
-                    type = NotificationType.WARNING,
-                });
-
                 return;
             }
 
