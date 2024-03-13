@@ -35,6 +35,7 @@ using System.IO;
 using UnhollowerBaseLib;
 using LabFusion.SDK.Gamemodes;
 using BoneLib;
+using System.IO.Compression;
 
 namespace LabFusion.Network
 {
@@ -173,35 +174,10 @@ namespace LabFusion.Network
             }
         }
 
-        internal override void OnVoiceChatUpdate()
+
+        internal override void OnVoiceChatUpdate(byte[] voiceData)
         {
-            if (NetworkInfo.HasServer)
-            {
-                bool voiceEnabled = VoiceHelper.IsVoiceEnabled;
-
-                // Update voice record
-                if (SteamUser.VoiceRecord != voiceEnabled)
-                    SteamUser.VoiceRecord = voiceEnabled;
-
-                // Read voice data
-                if (voiceEnabled && SteamUser.HasVoiceData)
-                {
-                    // yea yea creates a new array every call.
-                    // if you find this and are bothered to replace it with the mem stream version then go ahead
-                    byte[] voiceData = SteamUser.ReadVoiceDataBytes();
-
-                    PlayerSender.SendPlayerVoiceChat(voiceData);
-                }
-
-                // Update the manager
-                VoiceManager.Update();
-            }
-            else
-            {
-                // Disable voice recording
-                if (SteamUser.VoiceRecord)
-                    SteamUser.VoiceRecord = false;
-            }
+            PlayerSender.SendPlayerVoiceChat(VoiceHelper.CompressVoiceData(voiceData));
         }
 
         internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes)
@@ -346,8 +322,22 @@ namespace LabFusion.Network
             MultiplayerHooking.OnServerSettingsChanged += OnUpdateLobby;
             MultiplayerHooking.OnDisconnect += OnDisconnect;
 
+            FusionPreferences.ClientSettings.MicrophoneName.OnValueChanged += OnVoiceChatUpdate;
+
             // Create a local lobby
             AwaitLobbyCreation();
+        }
+
+        private void OnVoiceChatUpdate(string microphoneName)
+        {
+            foreach (var mic in Microphone.devices)
+            {
+                if (Microphone.IsRecording(mic))
+                    Microphone.End(mic);
+            }
+
+            if (VoiceHelper.IsVoiceEnabled)
+                _voiceManager.VoiceClip = Microphone.Start(microphoneName, true, 1, 41000);
         }
 
         private void OnGamemodeChanged(Gamemode gamemode)

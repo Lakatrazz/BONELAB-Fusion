@@ -199,7 +199,11 @@ namespace LabFusion.Network
 
         internal virtual void OnGUILayer() { }
 
-        internal virtual void OnVoiceChatUpdate() { }
+        /// <summary>
+        /// OnUpdate if in a server, server voice chat is enabled, and the user isn't muted, this will be called. VoiceData is *uncompressed* audio data that must be sent. HIGHLY recommeneded to use VoiceHelper.CompressVoiceData to compress the data, then use PlayerSender.SendPlayerVoiceChat to send the data.
+        /// </summary>
+        /// <param name="voiceData"></param>
+        internal virtual void OnVoiceChatUpdate(byte[] voiceData) { }
 
         internal virtual void OnVoiceBytesReceived(PlayerId id, byte[] bytes) { }
 

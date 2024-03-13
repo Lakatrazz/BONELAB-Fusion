@@ -112,6 +112,7 @@ namespace LabFusion.Preferences
             public static FusionPref<bool> MutedIndicator { get; internal set; }
             public static FusionPref<bool> Deafened { get; internal set; }
             public static FusionPref<float> GlobalVolume { get; internal set; }
+            public static FusionPref<string> MicrophoneName { get; internal set; }
 
             // Gamemode settings
             public static FusionPref<bool> GamemodeMusic { get; internal set; }
@@ -195,6 +196,7 @@ namespace LabFusion.Preferences
             ClientSettings.MutedIndicator = new FusionPref<bool>(prefCategory, "Muted Indicator", true, PrefUpdateMode.IGNORE);
             ClientSettings.Deafened = new FusionPref<bool>(prefCategory, "Deafened", false, PrefUpdateMode.IGNORE);
             ClientSettings.GlobalVolume = new FusionPref<float>(prefCategory, "GlobalMicVolume", 1f, PrefUpdateMode.IGNORE);
+            ClientSettings.MicrophoneName = new FusionPref<string>(prefCategory, "Microphone Name", Microphone.devices[0], PrefUpdateMode.IGNORE);
 
             // Gamemodes
             ClientSettings.GamemodeMusic = new FusionPref<bool>(prefCategory, "Gamemode Music", true, PrefUpdateMode.IGNORE);

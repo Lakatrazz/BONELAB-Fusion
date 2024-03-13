@@ -190,6 +190,40 @@ namespace LabFusion.BoneMenu
                 CreateFloatPreference(voiceChatSubPanel, "Global Volume", 0.1f, 0f, 10f, FusionPreferences.ClientSettings.GlobalVolume);
             }
 
+            if (VoiceHelper.CanTalk)
+            {
+                void RefreshMicrophones(MenuCategory category)
+                {
+                    category.Elements.Clear();
+
+                    category.CreateFunctionElement("Refresh Microphones", Color.yellow, () => RefreshMicrophones(category));
+
+                    foreach (var microphone in Microphone.devices)
+                    {
+                        category.CreateFunctionElement(microphone, Color.white, () =>
+                        {
+                            if (Microphone.devices.Contains(microphone))
+                                FusionPreferences.ClientSettings.MicrophoneName.SetValue(microphone);
+                            else
+                            {
+                                FusionPreferences.ClientSettings.MicrophoneName.SetValue(Microphone.devices[0]);
+                                FusionNotifier.Send(new FusionNotification()
+                                {
+                                    title = "Microphone Error",
+                                    message = "The selected microphone is not available. The default microphone has been selected instead.",
+                                    type = NotificationType.ERROR,
+                                    showTitleOnPopup = true,
+                                    isMenuItem = false
+                                });
+                            }
+                        });
+                    }
+                }
+
+                var microphoneCategory = category.CreateCategory("Change Microphone", Color.white);
+                microphoneCategory.CreateFunctionElement("Refresh Microphones", Color.yellow, () => RefreshMicrophones(microphoneCategory));
+            }
+
             RemoveEmptySubPanel(category, voiceChatSubPanel);
         }
 

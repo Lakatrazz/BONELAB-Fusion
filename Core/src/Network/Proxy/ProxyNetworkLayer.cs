@@ -35,6 +35,13 @@ using FusionHelper.Network;
 using LiteNetLib;
 using LiteNetLib.Utils;
 using BoneLib;
+using UnhollowerBaseLib;
+using System.IO;
+using System.IO.Compression;
+
+using PCMReaderCallback = UnityEngine.AudioClip.PCMReaderCallback;
+using SLZ.Bonelab;
+using Unity.MLAgents.CommunicatorObjects;
 
 namespace LabFusion.Network
 {
@@ -69,13 +76,6 @@ namespace LabFusion.Network
         private NetManager client;
         private NetPeer serverConnection;
         private ProxyLobbyManager _lobbyManager;
-
-        // VC Stuff
-        private int lastSample;
-        private const int FREQUENCY = 22100;
-        private bool notRecording = true;
-        private bool sending = false;
-        private AudioClip sendingClip;
 
         internal override bool CheckSupported()
         {
@@ -261,14 +261,6 @@ namespace LabFusion.Network
                         _lobbyManager.HandleLobbyMessage((MessageTypes)id, dataReader);
                         break;
                     }
-                case (ulong)MessageTypes.DecompressVoice:
-                    {
-                        ulong playerLong = dataReader.GetULong();
-                        byte[] data = dataReader.GetBytesWithLength();
-                        var handler = _voiceManager.GetVoiceHandler(PlayerIdManager.GetPlayerId(playerLong)) as ProxyVoiceHandler;
-                        handler?.OnDecompressedVoiceBytesReceived(data);
-                        break;
-                    }
             }
 
             dataReader.Recycle();
@@ -332,63 +324,9 @@ namespace LabFusion.Network
             serverConnection.Send(writer, DeliveryMethod.ReliableOrdered);
         }
 
-        internal override void OnVoiceChatUpdate()
+        internal override void OnVoiceChatUpdate(byte[] voiceData)
         {
-            if (NetworkInfo.HasServer)
-            {
-                /*bool voiceEnabled = FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue() && !FusionPreferences.ClientSettings.Muted && !FusionPreferences.ClientSettings.Deafened;
-
-                // Read voice data
-                if (voiceEnabled)
-                {
-                    if (notRecording)
-                    {
-                        notRecording = false;
-                        sendingClip = Microphone.Start(null, true, 100, FREQUENCY);
-                        sending = true;
-                    }
-                    else if (sending)
-                    {
-                        int pos = Microphone.GetPosition(null);
-                        int diff = pos - lastSample;
-
-                        if (diff > 0)
-                        {
-                            float[] samples = new float[diff * sendingClip.channels];
-                            sendingClip.GetData(samples, lastSample);
-                            byte[] ba = ToByteArray(samples);
-                            PlayerSender.SendPlayerVoiceChat(ba, false);
-                        }
-                        lastSample = pos;
-                    }
-                }*/
-
-                // Update the manager
-                VoiceManager.Update();
-            }
-            else
-            {
-                // Disable voice recording
-                //Microphone.End(null);
-            }
-        }
-
-        public byte[] ToByteArray(float[] floatArray)
-        {
-            short[] shortArray = new short[floatArray.Length];
-
-            // Convert float array to short array
-            for (int i = 0; i < floatArray.Length; i++)
-            {
-                shortArray[i] = (short)(floatArray[i] * short.MaxValue);
-            }
-
-            byte[] byteArray = new byte[shortArray.Length * 2]; // Each short requires 2 bytes
-
-            // Convert short array to byte array
-            Buffer.BlockCopy(shortArray, 0, byteArray, 0, byteArray.Length);
-
-            return byteArray;
+            PlayerSender.SendPlayerVoiceChat(VoiceHelper.CompressVoiceData(voiceData));
         }
 
         internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes)
@@ -510,7 +448,21 @@ namespace LabFusion.Network
             MultiplayerHooking.OnServerSettingsChanged += OnUpdateLobby;
             MultiplayerHooking.OnDisconnect += OnDisconnect;
 
+            FusionPreferences.ClientSettings.MicrophoneName.OnValueChanged += OnVoiceChatUpdate;
+
             _currentLobby = new ProxyNetworkLobby();
+        }
+
+        private void OnVoiceChatUpdate(string microphoneName)
+        {
+            foreach (var mic in Microphone.devices)
+            {
+                if (Microphone.IsRecording(mic))
+                    Microphone.End(mic);
+            }
+
+            if (VoiceHelper.IsVoiceEnabled)
+                _voiceManager.VoiceClip = Microphone.Start(microphoneName, true, 1, 41000);
         }
 
         private void OnPlayerJoin(PlayerId id)

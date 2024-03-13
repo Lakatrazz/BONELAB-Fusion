@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace LabFusion.Network
 {
@@ -14,6 +15,7 @@ namespace LabFusion.Network
 
         public bool CanTalk { get; }
         public bool CanHear { get; }
+        public AudioClip VoiceClip { get; internal set; }
 
         public VoiceHandler GetVoiceHandler(PlayerId id);
 
@@ -27,6 +29,8 @@ namespace LabFusion.Network
     {
         protected List<VoiceHandler> _voiceHandlers = new();
         public List<VoiceHandler> VoiceHandlers => _voiceHandlers;
+
+        public AudioClip VoiceClip { get; set; }
 
         public virtual bool CanTalk => true;
         public virtual bool CanHear => true;

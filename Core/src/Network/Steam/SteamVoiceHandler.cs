@@ -9,6 +9,7 @@ using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,11 +24,9 @@ namespace LabFusion.Network
 {
     public class SteamVoiceHandler : VoiceHandler
     {
-        private const float _defaultVolumeMultiplier = 10f;
+        private Queue<float> readingQueue = new();
 
-        private readonly MemoryStream _compressedVoiceStream = new();
-        private readonly MemoryStream _decompressedVoiceStream = new();
-        private readonly Queue<float> _streamingReadQueue = new();
+        private const float _defaultVolumeMultiplier = 10f;
 
         public SteamVoiceHandler(PlayerId id)
         {
@@ -41,8 +40,8 @@ namespace LabFusion.Network
             // Create the audio source and clip
             CreateAudioSource();
 
-            Source.clip = AudioClip.Create("SteamVoice", Convert.ToInt32(SteamUser.SampleRate),
-                        1, Convert.ToInt32(SteamUser.SampleRate), true, (PCMReaderCallback)PcmReaderCallback);
+            _source.clip = AudioClip.Create("ProxyVoice", Convert.ToInt32(41000),
+                        1, Convert.ToInt32(41000), true, (PCMReaderCallback)PcmReaderCallback);
 
             _source.Play();
 
@@ -65,6 +64,7 @@ namespace LabFusion.Network
 
         public override void OnVoiceBytesReceived(byte[] bytes)
         {
+
             if (MicrophoneDisabled)
             {
                 return;
@@ -72,33 +72,14 @@ namespace LabFusion.Network
 
             VerifyRep();
 
-            // Decompress the voice data
-            _compressedVoiceStream.Position = 0;
-            _compressedVoiceStream.Write(bytes, 0, bytes.Length);
+            byte[] voiceData = VoiceHelper.DecompressVoiceData(bytes);
 
-            _compressedVoiceStream.Position = 0;
-            _decompressedVoiceStream.Position = 0;
-
-            int numBytesWritten = 0;
-            if (true) // TODO: quest vc stuff pt 2
-                numBytesWritten = SteamUser.DecompressVoice(_compressedVoiceStream, bytes.Length, _decompressedVoiceStream);
-            else
+            // Convert the byte array back to a float array and enqueue it
+            for (int i = 0; i < voiceData.Length; i += 4)
             {
-                _decompressedVoiceStream.Write(bytes, 0, bytes.Length);
-                numBytesWritten = bytes.Length;
-            }
+                float value = BitConverter.ToSingle(voiceData, i);
 
-            _decompressedVoiceStream.Position = 0;
-
-            while (_decompressedVoiceStream.Position < numBytesWritten)
-            {
-                byte byte1 = (byte)_decompressedVoiceStream.ReadByte();
-                byte byte2 = (byte)_decompressedVoiceStream.ReadByte();
-
-                short pcmShort = (short)((byte2 << 8) | (byte1 << 0));
-                float pcmFloat = Convert.ToSingle(pcmShort) / short.MaxValue;
-
-                _streamingReadQueue.Enqueue(pcmFloat);
+                readingQueue.Enqueue(value);
             }
         }
 
@@ -117,17 +98,16 @@ namespace LabFusion.Network
 
         private void PcmReaderCallback(Il2CppStructArray<float> data)
         {
-            float mult = GetVoiceMultiplier();
-
+            // Fill the data array with the received audio data
             for (int i = 0; i < data.Length; i++)
             {
-                if (_streamingReadQueue.Count > 0)
+                if (readingQueue.Count > 0)
                 {
-                    data[i] = _streamingReadQueue.Dequeue() * mult;
+                    data[i] = readingQueue.Dequeue() * GetVoiceMultiplier();
                 }
                 else
                 {
-                    data[i] = 0.0f;  // Nothing in the queue means we should just play silence
+                    data[i] = 0f;
                 }
             }
         }
