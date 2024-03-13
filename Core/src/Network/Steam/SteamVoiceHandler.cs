@@ -40,8 +40,8 @@ namespace LabFusion.Network
             // Create the audio source and clip
             CreateAudioSource();
 
-            _source.clip = AudioClip.Create("ProxyVoice", Convert.ToInt32(41000),
-                        1, Convert.ToInt32(41000), true, (PCMReaderCallback)PcmReaderCallback);
+            _source.clip = AudioClip.Create("ProxyVoice", 41000,
+                        1, 41000, true, (PCMReaderCallback)PcmReaderCallback);
 
             _source.Play();
 
@@ -107,7 +107,7 @@ namespace LabFusion.Network
                 }
                 else
                 {
-                    data[i] = 0f;
+                    data[i] = 0.0f;
                 }
             }
         }
