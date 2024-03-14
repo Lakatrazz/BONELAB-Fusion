@@ -55,7 +55,7 @@ namespace LabFusion.Network
         private INetworkLobby _currentLobby;
         internal override INetworkLobby CurrentLobby => _currentLobby;
 
-        private readonly ProxyVoiceManager _voiceManager = new();
+        private IVoiceManager _voiceManager;
         internal override IVoiceManager VoiceManager => _voiceManager;
 
         protected bool _isServerActive = false;
@@ -91,6 +91,9 @@ namespace LabFusion.Network
         internal override void OnInitializeLayer()
         {
             Instance = this;
+
+            _voiceManager = new ProxyVoiceManager();
+            _voiceManager.Enable();
 
             EventBasedNetListener listener = new EventBasedNetListener();
             client = new NetManager(listener)
@@ -286,6 +289,9 @@ namespace LabFusion.Network
             Disconnect();
 
             UnHookSteamEvents();
+
+            _voiceManager.Disable();
+            _voiceManager = null;
         }
 
         internal override void OnUpdateLayer()
@@ -333,47 +339,6 @@ namespace LabFusion.Network
             serverConnection.Send(writer, DeliveryMethod.ReliableOrdered);
         }
 
-        internal override void OnVoiceChatUpdate()
-        {
-            if (NetworkInfo.HasServer)
-            {
-                /*bool voiceEnabled = FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue() && !FusionPreferences.ClientSettings.Muted && !FusionPreferences.ClientSettings.Deafened;
-
-                // Read voice data
-                if (voiceEnabled)
-                {
-                    if (notRecording)
-                    {
-                        notRecording = false;
-                        sendingClip = Microphone.Start(null, true, 100, FREQUENCY);
-                        sending = true;
-                    }
-                    else if (sending)
-                    {
-                        int pos = Microphone.GetPosition(null);
-                        int diff = pos - lastSample;
-
-                        if (diff > 0)
-                        {
-                            float[] samples = new float[diff * sendingClip.channels];
-                            sendingClip.GetData(samples, lastSample);
-                            byte[] ba = ToByteArray(samples);
-                            PlayerSender.SendPlayerVoiceChat(ba, false);
-                        }
-                        lastSample = pos;
-                    }
-                }*/
-
-                // Update the manager
-                VoiceManager.Update();
-            }
-            else
-            {
-                // Disable voice recording
-                //Microphone.End(null);
-            }
-        }
-
         public byte[] ToByteArray(float[] floatArray)
         {
             short[] shortArray = new short[floatArray.Length];
@@ -390,16 +355,6 @@ namespace LabFusion.Network
             Buffer.BlockCopy(shortArray, 0, byteArray, 0, byteArray.Length);
 
             return byteArray;
-        }
-
-        internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes)
-        {
-            // If we are deafened, no need to deal with voice chat
-            if (VoiceInfo.IsDeafened)
-                return;
-
-            var handler = _voiceManager.GetSpeaker(id);
-            handler?.OnVoiceBytesReceived(bytes);
         }
 
         // We currently cant tell if this user is our friend or not,
@@ -524,14 +479,14 @@ namespace LabFusion.Network
 
         private void OnPlayerLeave(PlayerId id)
         {
-            _voiceManager.Remove(id);
+            _voiceManager.RemoveSpeaker(id);
 
             OnUpdateLobby();
         }
 
         private void OnDisconnect()
         {
-            _voiceManager.RemoveAll();
+            _voiceManager.ClearManager();
         }
 
         private void UnHookSteamEvents()

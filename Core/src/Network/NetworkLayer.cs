@@ -200,10 +200,6 @@ namespace LabFusion.Network
 
         internal virtual void OnGUILayer() { }
 
-        internal virtual void OnVoiceChatUpdate() { }
-
-        internal virtual void OnVoiceBytesReceived(PlayerId id, byte[] bytes) { }
-
         internal virtual void OnUserJoin(PlayerId id) { }
 
         internal virtual void OnSetupBoneMenu(MenuCategory category) { }

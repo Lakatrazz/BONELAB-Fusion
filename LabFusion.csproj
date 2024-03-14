@@ -419,6 +419,10 @@
     <Compile Include="Core\src\Network\Helpers\MetadataHelper.cs" />
     <Compile Include="Core\src\Network\Helpers\NetworkVerification.cs" />
     <Compile Include="Core\src\Network\Helpers\SendRateTable.cs" />
+    <Compile Include="Core\src\Voice\IVoiceReceiver.cs" />
+    <Compile Include="Core\src\Voice\Steam\SteamVoiceReceiver.cs" />
+    <Compile Include="Core\src\Voice\VoiceCompressor.cs" />
+    <Compile Include="Core\src\Voice\VoiceHelper.cs" />
     <Compile Include="Core\src\Voice\VoiceInfo.cs" />
     <Compile Include="Core\src\Network\Helpers\VoteKickHelper.cs" />
     <Compile Include="Core\src\Network\INetworkLobby.cs" />
@@ -867,6 +871,7 @@
     <Compile Include="Core\src\Utilities\ThreadingUtilities.cs" />
     <Compile Include="Core\src\Utilities\TriggerUtilities.cs" />
     <Compile Include="Core\src\Utilities\UI\UIMachineUtilities.cs" />
+    <Compile Include="Core\src\Voice\VoiceVolume.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Core\resources\lib\x86_64\steam_api64.dll" />

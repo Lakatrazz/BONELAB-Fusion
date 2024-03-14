@@ -57,7 +57,7 @@ namespace LabFusion.Network
         private INetworkLobby _currentLobby;
         internal override INetworkLobby CurrentLobby => _currentLobby;
 
-        private readonly SteamVoiceManager _voiceManager = new();
+        private IVoiceManager _voiceManager = null;
         internal override IVoiceManager VoiceManager => _voiceManager;
 
         public SteamId SteamId;
@@ -115,6 +115,9 @@ namespace LabFusion.Network
             {
                 FusionLogger.Error($"Failed to initialize Steamworks! \n{e}");
             }
+
+            _voiceManager = new SteamVoiceManager();
+            _voiceManager.Enable();
         }
 
         internal override void OnLateInitializeLayer()
@@ -144,6 +147,9 @@ namespace LabFusion.Network
             Disconnect();
 
             UnHookSteamEvents();
+
+            _voiceManager.Disable();
+            _voiceManager = null;
         }
 
         internal override void OnUpdateLayer()
@@ -159,60 +165,14 @@ namespace LabFusion.Network
             // Receive any needed messages
             try
             {
-                if (SteamSocket != null)
-                {
-                    SteamSocket.Receive(ReceiveBufferSize);
-                }
-                if (SteamConnection != null)
-                {
-                    SteamConnection.Receive(ReceiveBufferSize);
-                }
+                SteamSocket?.Receive(ReceiveBufferSize);
+
+                SteamConnection?.Receive(ReceiveBufferSize);
             }
             catch (Exception e)
             {
                 FusionLogger.LogException("receiving data on Socket and Connection", e);
             }
-        }
-
-        internal override void OnVoiceChatUpdate()
-        {
-            if (NetworkInfo.HasServer)
-            {
-                bool voiceEnabled = VoiceInfo.IsVoiceEnabled;
-
-                // Update voice record
-                if (SteamUser.VoiceRecord != voiceEnabled)
-                    SteamUser.VoiceRecord = voiceEnabled;
-
-                // Read voice data
-                if (voiceEnabled && SteamUser.HasVoiceData)
-                {
-                    // yea yea creates a new array every call.
-                    // if you find this and are bothered to replace it with the mem stream version then go ahead
-                    byte[] voiceData = SteamUser.ReadVoiceDataBytes();
-
-                    PlayerSender.SendPlayerVoiceChat(voiceData);
-                }
-
-                // Update the manager
-                VoiceManager.Update();
-            }
-            else
-            {
-                // Disable voice recording
-                if (SteamUser.VoiceRecord)
-                    SteamUser.VoiceRecord = false;
-            }
-        }
-
-        internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes)
-        {
-            // If we are deafened, no need to deal with voice chat
-            if (VoiceInfo.IsDeafened)
-                return;
-
-            var handler = VoiceManager.GetSpeaker(id);
-            handler?.OnVoiceBytesReceived(bytes);
         }
 
         internal override string GetUsername(ulong userId)
@@ -302,11 +262,9 @@ namespace LabFusion.Network
 
             try
             {
-                if (SteamConnection != null)
-                    SteamConnection.Close();
+                SteamConnection?.Close();
 
-                if (SteamSocket != null)
-                    SteamSocket.Close();
+                SteamSocket?.Close();
             }
             catch
             {
@@ -366,14 +324,14 @@ namespace LabFusion.Network
 
         private void OnPlayerLeave(PlayerId id)
         {
-            VoiceManager.Remove(id);
+            VoiceManager.RemoveSpeaker(id);
 
             OnUpdateLobby();
         }
 
         private void OnDisconnect()
         {
-            VoiceManager.RemoveAll();
+            VoiceManager.ClearManager();
         }
 
         private void UnHookSteamEvents()

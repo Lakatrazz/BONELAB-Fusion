@@ -12,6 +12,11 @@ public sealed class ProxyVoiceManager : VoiceManager
 {
     public override bool CanTalk => false;
 
+    protected override IVoiceReceiver OnCreateReceiver()
+    {
+        return null;
+    }
+
     protected override IVoiceSpeaker OnCreateSpeaker(PlayerId id)
     {
         return new ProxyVoiceSpeaker(id);

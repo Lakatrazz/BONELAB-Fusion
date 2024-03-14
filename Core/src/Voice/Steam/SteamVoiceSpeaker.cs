@@ -1,17 +1,11 @@
 ﻿using LabFusion.Data;
-using LabFusion.Extensions;
-using LabFusion.Preferences;
 using LabFusion.Representation;
-using LabFusion.Utilities;
 
 using Steamworks;
 
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using UnhollowerBaseLib;
 
@@ -63,7 +57,7 @@ public class SteamVoiceSpeaker : VoiceSpeaker
         Volume = contact.volume;
     }
 
-    public override void OnVoiceBytesReceived(byte[] bytes)
+    public override void OnVoiceDataReceived(byte[] bytes)
     {
         if (MicrophoneDisabled)
         {
@@ -79,14 +73,7 @@ public class SteamVoiceSpeaker : VoiceSpeaker
         _compressedVoiceStream.Position = 0;
         _decompressedVoiceStream.Position = 0;
 
-        int numBytesWritten = 0;
-        if (true) // TODO: quest vc stuff pt 2
-            numBytesWritten = SteamUser.DecompressVoice(_compressedVoiceStream, bytes.Length, _decompressedVoiceStream);
-        else
-        {
-            _decompressedVoiceStream.Write(bytes, 0, bytes.Length);
-            numBytesWritten = bytes.Length;
-        }
+        int numBytesWritten = SteamUser.DecompressVoice(_compressedVoiceStream, bytes.Length, _decompressedVoiceStream);
 
         _decompressedVoiceStream.Position = 0;
 
@@ -104,7 +91,7 @@ public class SteamVoiceSpeaker : VoiceSpeaker
 
     private float GetVoiceMultiplier()
     {
-        float mult = VoiceVolume.GetGlobalVolumeMultiplier();
+        float mult = _defaultVolumeMultiplier * VoiceVolume.GetGlobalVolumeMultiplier();
 
         // If the audio is 2D, lower the volume
         if (_source.spatialBlend <= 0f)

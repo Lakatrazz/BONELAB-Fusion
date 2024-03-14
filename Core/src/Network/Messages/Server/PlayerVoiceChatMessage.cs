@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using LabFusion.Data;
 using LabFusion.Preferences;
 using LabFusion.Representation;
 using LabFusion.Utilities;
+using LabFusion.Voice;
 
 namespace LabFusion.Network
 {
@@ -62,7 +59,7 @@ namespace LabFusion.Network
             var id = PlayerIdManager.GetPlayerId(data.smallId);
 
             if (id != null)
-                InternalLayerHelpers.OnVoiceBytesReceived(id, data.bytes);
+                VoiceHelper.OnVoiceDataReceived(id, data.bytes);
 
             // Bounce the message back
             if (NetworkInfo.IsServer)

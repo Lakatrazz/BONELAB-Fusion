@@ -66,19 +66,12 @@ public class ProxyVoiceSpeaker : VoiceSpeaker
         Volume = contact.volume;
     }
 
-    public override void OnVoiceBytesReceived(byte[] bytes)
+    public override void OnVoiceDataReceived(byte[] bytes)
     {
-        if (true) // TODO: sending vc
-        {
-            NetDataWriter writer = ProxyNetworkLayer.NewWriter(FusionHelper.Network.MessageTypes.DecompressVoice);
-            writer.Put(_id.LongId);
-            writer.PutBytesWithLength(bytes);
-            ProxyNetworkLayer.Instance.SendToProxyServer(writer);
-        }
-        else
-        {
-            OnDecompressedVoiceBytesReceived(bytes);
-        }
+        NetDataWriter writer = ProxyNetworkLayer.NewWriter(FusionHelper.Network.MessageTypes.DecompressVoice);
+        writer.Put(_id.LongId);
+        writer.PutBytesWithLength(bytes);
+        ProxyNetworkLayer.Instance.SendToProxyServer(writer);
     }
 
     public void OnDecompressedVoiceBytesReceived(byte[] bytes)
@@ -111,7 +104,7 @@ public class ProxyVoiceSpeaker : VoiceSpeaker
 
     private float GetVoiceMultiplier()
     {
-        float mult = VoiceVolume.GetGlobalVolumeMultiplier();
+        float mult = _defaultVolumeMultiplier * VoiceVolume.GetGlobalVolumeMultiplier();
 
         // If the audio is 2D, lower the volume
         if (_source.spatialBlend <= 0f)

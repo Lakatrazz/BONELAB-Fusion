@@ -1,5 +1,6 @@
-﻿using LabFusion.Representation;
-
+﻿using LabFusion.Network;
+using LabFusion.Representation;
+using LabFusion.Senders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,13 +17,15 @@ public interface IVoiceManager
     bool CanHear { get; }
 
     IVoiceSpeaker GetSpeaker(PlayerId id);
+    void RemoveSpeaker(PlayerId id);
 
     IVoiceReceiver GetReceiver();
 
-    void Update();
-    void Remove(PlayerId id);
+    void Enable();
+    void Disable();
 
-    void RemoveAll();
+    void UpdateManager();
+    void ClearManager();
 }
 
 public abstract class VoiceManager : IVoiceManager
@@ -32,6 +35,28 @@ public abstract class VoiceManager : IVoiceManager
 
     public virtual bool CanTalk => true;
     public virtual bool CanHear => true;
+
+    private IVoiceReceiver _receiver = null;
+
+    public void Enable()
+    {
+        _receiver = OnCreateReceiver();
+
+        if (_receiver != null)
+        {
+            
+        }
+    }
+
+    public void Disable()
+    {
+        if (_receiver != null)
+        {
+            _receiver = null;
+        } 
+
+        ClearManager();
+    }
 
     protected bool TryGetSpeaker(PlayerId id, out IVoiceSpeaker speaker)
     {
@@ -53,6 +78,8 @@ public abstract class VoiceManager : IVoiceManager
 
     protected abstract IVoiceSpeaker OnCreateSpeaker(PlayerId id);
 
+    protected abstract IVoiceReceiver OnCreateReceiver();
+
     public IVoiceSpeaker GetSpeaker(PlayerId id)
     {
         if (TryGetSpeaker(id, out var handler))
@@ -66,10 +93,16 @@ public abstract class VoiceManager : IVoiceManager
 
     public IVoiceReceiver GetReceiver()
     {
-        return null;
+        return _receiver;
     }
 
-    public void Update()
+    public void UpdateManager()
+    {
+        UpdateSpeakers();
+        UpdateReceiver();
+    }
+
+    private void UpdateSpeakers()
     {
         for (var i = 0; i < VoiceSpeakers.Count; i++)
         {
@@ -77,7 +110,24 @@ public abstract class VoiceManager : IVoiceManager
         }
     }
 
-    public void Remove(PlayerId id)
+    private void UpdateReceiver()
+    {
+        if (_receiver == null || !CanTalk)
+        {
+            return;
+        }
+
+        bool voiceEnabled = NetworkInfo.HasServer && VoiceInfo.IsVoiceEnabled;
+
+        _receiver.UpdateVoice(voiceEnabled);
+
+        if (_receiver.HasVoiceActivity())
+        {
+            PlayerSender.SendPlayerVoiceChat(_receiver.GetCompressedVoiceData());
+        }
+    }
+
+    public void RemoveSpeaker(PlayerId id)
     {
         IVoiceSpeaker playerHandler = null;
 
@@ -97,7 +147,7 @@ public abstract class VoiceManager : IVoiceManager
         }
     }
 
-    public void RemoveAll()
+    public void ClearManager()
     {
         foreach (var handler in VoiceSpeakers)
         {

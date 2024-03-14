@@ -23,7 +23,7 @@ public interface IVoiceSpeaker
 
     public void CreateAudioSource();
     public void VerifyRep();
-    public void OnVoiceBytesReceived(byte[] bytes);
+    public void OnVoiceDataReceived(byte[] data);
 
     public void Cleanup();
     public void Update();
@@ -92,5 +92,5 @@ public abstract class VoiceSpeaker : IVoiceSpeaker
 
     public virtual void Update() { }
 
-    public abstract void OnVoiceBytesReceived(byte[] bytes);
+    public abstract void OnVoiceDataReceived(byte[] bytes);
 }
