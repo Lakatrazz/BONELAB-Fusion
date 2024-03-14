@@ -35,6 +35,7 @@ using FusionHelper.Network;
 using LiteNetLib;
 using LiteNetLib.Utils;
 using BoneLib;
+using LabFusion.Voice;
 
 namespace LabFusion.Network
 {
@@ -265,7 +266,7 @@ namespace LabFusion.Network
                     {
                         ulong playerLong = dataReader.GetULong();
                         byte[] data = dataReader.GetBytesWithLength();
-                        var handler = _voiceManager.GetVoiceHandler(PlayerIdManager.GetPlayerId(playerLong)) as ProxyVoiceHandler;
+                        var handler = _voiceManager.GetSpeaker(PlayerIdManager.GetPlayerId(playerLong)) as ProxyVoiceSpeaker;
                         handler?.OnDecompressedVoiceBytesReceived(data);
                         break;
                     }
@@ -394,10 +395,10 @@ namespace LabFusion.Network
         internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes)
         {
             // If we are deafened, no need to deal with voice chat
-            if (VoiceHelper.IsDeafened)
+            if (VoiceInfo.IsDeafened)
                 return;
 
-            var handler = _voiceManager.GetVoiceHandler(id);
+            var handler = _voiceManager.GetSpeaker(id);
             handler?.OnVoiceBytesReceived(bytes);
         }
 
@@ -516,7 +517,7 @@ namespace LabFusion.Network
         private void OnPlayerJoin(PlayerId id)
         {
             if (!id.IsSelf)
-                _voiceManager.GetVoiceHandler(id);
+                _voiceManager.GetSpeaker(id);
 
             OnUpdateLobby();
         }

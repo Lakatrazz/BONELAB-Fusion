@@ -2,7 +2,7 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>10.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -419,11 +419,11 @@
     <Compile Include="Core\src\Network\Helpers\MetadataHelper.cs" />
     <Compile Include="Core\src\Network\Helpers\NetworkVerification.cs" />
     <Compile Include="Core\src\Network\Helpers\SendRateTable.cs" />
-    <Compile Include="Core\src\Network\Helpers\VoiceHelper.cs" />
+    <Compile Include="Core\src\Voice\VoiceInfo.cs" />
     <Compile Include="Core\src\Network\Helpers\VoteKickHelper.cs" />
     <Compile Include="Core\src\Network\INetworkLobby.cs" />
-    <Compile Include="Core\src\Network\IVoiceHandler.cs" />
-    <Compile Include="Core\src\Network\IVoiceManager.cs" />
+    <Compile Include="Core\src\Voice\IVoiceSpeaker.cs" />
+    <Compile Include="Core\src\Voice\IVoiceManager.cs" />
     <Compile Include="Core\src\Network\Messages\Arena\BaseGameControllerMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Arena\TimeTrialGameControllerMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\MineDiveCartMessage.cs" />
@@ -481,13 +481,13 @@
     <Compile Include="Core\src\Network\Proxy\ProxyNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxyNetworkLobby.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxySocketHandler.cs" />
-    <Compile Include="Core\src\Network\Proxy\ProxyVoiceManager.cs" />
-    <Compile Include="Core\src\Network\Proxy\ProxyVoiceHandler.cs" />
+    <Compile Include="Core\src\Voice\Proxy\ProxyVoiceManager.cs" />
+    <Compile Include="Core\src\Voice\Proxy\ProxyVoiceSpeaker.cs" />
     <Compile Include="Core\src\Network\Steam\SpacewarNetworkLayer.cs" />
-    <Compile Include="Core\src\Network\Steam\SteamVoiceManager.cs" />
+    <Compile Include="Core\src\Voice\Steam\SteamVoiceManager.cs" />
     <Compile Include="Core\src\Network\Steam\SteamVRNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Steam\SteamLobby.cs" />
-    <Compile Include="Core\src\Network\Steam\SteamVoiceHandler.cs" />
+    <Compile Include="Core\src\Voice\Steam\SteamVoiceSpeaker.cs" />
     <Compile Include="Core\src\Patching\CommonDelegates.cs" />
     <Compile Include="Core\src\Patching\NativeStructs\Attack_.cs" />
     <Compile Include="Core\src\Patching\Patches\Attacks\ImpactAttackValidator.cs" />

@@ -35,6 +35,7 @@ using System.IO;
 using UnhollowerBaseLib;
 using LabFusion.SDK.Gamemodes;
 using BoneLib;
+using LabFusion.Voice;
 
 namespace LabFusion.Network
 {
@@ -177,7 +178,7 @@ namespace LabFusion.Network
         {
             if (NetworkInfo.HasServer)
             {
-                bool voiceEnabled = VoiceHelper.IsVoiceEnabled;
+                bool voiceEnabled = VoiceInfo.IsVoiceEnabled;
 
                 // Update voice record
                 if (SteamUser.VoiceRecord != voiceEnabled)
@@ -207,10 +208,10 @@ namespace LabFusion.Network
         internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes)
         {
             // If we are deafened, no need to deal with voice chat
-            if (VoiceHelper.IsDeafened)
+            if (VoiceInfo.IsDeafened)
                 return;
 
-            var handler = VoiceManager.GetVoiceHandler(id);
+            var handler = VoiceManager.GetSpeaker(id);
             handler?.OnVoiceBytesReceived(bytes);
         }
 
@@ -358,7 +359,7 @@ namespace LabFusion.Network
         private void OnPlayerJoin(PlayerId id)
         {
             if (!id.IsSelf)
-                VoiceManager.GetVoiceHandler(id);
+                VoiceManager.GetSpeaker(id);
 
             OnUpdateLobby();
         }

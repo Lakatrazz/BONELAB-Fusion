@@ -7,7 +7,7 @@ using LabFusion.Representation;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Senders;
 using LabFusion.Utilities;
-
+using LabFusion.Voice;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -178,13 +178,13 @@ namespace LabFusion.BoneMenu
             // Voice chat
             var voiceChatSubPanel = category.CreateSubPanel("Voice Chat Settings", Color.white);
 
-            if (VoiceHelper.CanTalk)
+            if (VoiceInfo.CanTalk)
             {
                 CreateBoolPreference(voiceChatSubPanel, "Muted", FusionPreferences.ClientSettings.Muted);
                 CreateBoolPreference(voiceChatSubPanel, "Muted Indicator", FusionPreferences.ClientSettings.MutedIndicator);
             }
 
-            if (VoiceHelper.CanHear)
+            if (VoiceInfo.CanHear)
             {
                 CreateBoolPreference(voiceChatSubPanel, "Deafened", FusionPreferences.ClientSettings.Deafened);
                 CreateFloatPreference(voiceChatSubPanel, "Global Volume", 0.1f, 0f, 10f, FusionPreferences.ClientSettings.GlobalVolume);
