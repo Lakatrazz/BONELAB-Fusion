@@ -10,17 +10,19 @@ namespace LabFusion.Voice;
 
 public interface IVoiceManager
 {
-    public List<IVoiceSpeaker> VoiceSpeakers { get; }
+    List<IVoiceSpeaker> VoiceSpeakers { get; }
 
-    public bool CanTalk { get; }
-    public bool CanHear { get; }
+    bool CanTalk { get; }
+    bool CanHear { get; }
 
-    public IVoiceSpeaker GetSpeaker(PlayerId id);
+    IVoiceSpeaker GetSpeaker(PlayerId id);
 
-    public void Update();
-    public void Remove(PlayerId id);
+    IVoiceReceiver GetReceiver();
 
-    public void RemoveAll();
+    void Update();
+    void Remove(PlayerId id);
+
+    void RemoveAll();
 }
 
 public abstract class VoiceManager : IVoiceManager
@@ -60,6 +62,11 @@ public abstract class VoiceManager : IVoiceManager
         VoiceSpeakers.Add(newSpeaker);
 
         return newSpeaker;
+    }
+
+    public IVoiceReceiver GetReceiver()
+    {
+        return null;
     }
 
     public void Update()

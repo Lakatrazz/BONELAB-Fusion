@@ -27,6 +27,7 @@ public static class VoiceInfo
         get
         {
             bool isDying = false;
+
             if (RigData.HasPlayer)
             {
                 isDying = RigData.RigReferences.Health.deathIsImminent;
