@@ -18,6 +18,8 @@ using TMPro;
 using UnityEngine;
 
 using MelonLoader;
+using LabFusion.Voice;
+using LabFusion.SDK.Points;
 
 namespace LabFusion.Representation
 {
@@ -102,6 +104,7 @@ namespace LabFusion.Representation
 
         private float _maxMicrophoneDistance = 30f;
 
+        private IVoiceSpeaker _speaker = null;
         private AudioSource _voiceSource = null;
         private bool _hasVoice = false;
 
@@ -139,8 +142,9 @@ namespace LabFusion.Representation
             StartRepCreation();
         }
 
-        public void InsertVoiceSource(AudioSource source)
+        public void InsertVoiceSource(IVoiceSpeaker speaker, AudioSource source)
         {
+            _speaker = speaker;
             _voiceSource = source;
             _hasVoice = true;
         }
@@ -172,7 +176,7 @@ namespace LabFusion.Representation
                 _voiceSource.spatialBlend = 0f;
                 _voiceSource.minDistance = 0f;
                 _voiceSource.maxDistance = 30f;
-                _voiceSource.reverbZoneMix = 0.35f;
+                _voiceSource.reverbZoneMix = 0f;
                 _voiceSource.dopplerLevel = 0.5f;
 
                 _spatialized = false;
@@ -198,19 +202,7 @@ namespace LabFusion.Representation
             {
                 _voiceUpdateTime = 0f;
 
-                var spectrum = _voiceSource.GetSpectrumData(256, 0, FFTWindow.Rectangular);
-                int length = spectrum.Length;
-
-                float gain = 0f;
-                for (var i = 0; i < length; i++)
-                {
-                    gain += Math.Abs(spectrum[i]);
-                }
-
-                if (length > 0)
-                    gain /= (float)length;
-
-                _targetLoudness = gain;
+                _targetLoudness = _speaker.AverageSample;
 
                 // Add affectors
                 _targetLoudness *= 100f;
@@ -472,7 +464,7 @@ namespace LabFusion.Representation
                 float heightMult = rm._avatar.height / 1.76f;
 
                 _voiceSource.spatialBlend = 1f;
-                _voiceSource.reverbZoneMix = ManagedMathf.Clamp(0.35f * heightMult, 0f, 1.02f);
+                _voiceSource.reverbZoneMix = 0.1f;
 
                 _maxMicrophoneDistance = 30f * heightMult;
 

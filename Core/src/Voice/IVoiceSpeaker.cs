@@ -13,20 +13,22 @@ namespace LabFusion.Voice;
 
 public interface IVoiceSpeaker
 {
-    public PlayerId ID { get; }
-    public PlayerRep Rep { get; }
-    public AudioSource Source { get; }
+    PlayerId ID { get; }
+    PlayerRep Rep { get; }
+    AudioSource Source { get; }
 
-    public bool IsDestroyed { get; }
+    bool IsDestroyed { get; }
 
-    public float Volume { get; set; }
+    float Volume { get; set; }
 
-    public void CreateAudioSource();
-    public void VerifyRep();
-    public void OnVoiceDataReceived(byte[] data);
+    float AverageSample { get; }
 
-    public void Cleanup();
-    public void Update();
+    void CreateAudioSource();
+    void VerifyRep();
+    void OnVoiceDataReceived(byte[] data);
+
+    void Cleanup();
+    void Update();
 }
 
 public abstract class VoiceSpeaker : IVoiceSpeaker
@@ -47,6 +49,8 @@ public abstract class VoiceSpeaker : IVoiceSpeaker
 
     protected float _volume = 1f;
     public float Volume { get { return _volume; } set { _volume = value; } }
+
+    public virtual float AverageSample { get; } = 0f;
 
     public bool MicrophoneDisabled { get { return _hasRep && Rep.MicrophoneDisabled; } }
 
@@ -69,11 +73,13 @@ public abstract class VoiceSpeaker : IVoiceSpeaker
         {
             if (PlayerRepManager.TryGetPlayerRep(ID, out _rep))
             {
-                _rep.InsertVoiceSource(Source);
+                _rep.InsertVoiceSource(this, Source);
                 _hasRep = true;
             }
         }
     }
+
+    public virtual void Update() { }
 
     public virtual void Cleanup()
     {
@@ -89,8 +95,6 @@ public abstract class VoiceSpeaker : IVoiceSpeaker
 
         _isDestroyed = true;
     }
-
-    public virtual void Update() { }
 
     public abstract void OnVoiceDataReceived(byte[] data);
 }

@@ -17,6 +17,12 @@ public class UnityVoiceSpeaker : VoiceSpeaker
 {
     private readonly Queue<float> _readingQueue = new();
 
+    private float _averageSample = 0f;
+
+    public override float AverageSample => _averageSample;
+
+    private bool _clearedAudio = false;
+
     public UnityVoiceSpeaker(PlayerId id)
     {
         // Save the id
@@ -56,6 +62,21 @@ public class UnityVoiceSpeaker : VoiceSpeaker
         _readingQueue.Clear();
     }
 
+    public override void Update()
+    {
+        float absSample = Math.Abs(_averageSample);
+
+        if (!_clearedAudio && absSample <= VoiceVolume.SilencingVolume)
+        {
+            _clearedAudio = true;
+            ClearVoiceData();
+        }
+        else if (_clearedAudio && absSample >= VoiceVolume.MinimumVoiceVolume)
+        {
+            _clearedAudio = false;
+        }
+    }
+
     public override void OnVoiceDataReceived(byte[] data)
     {
         if (MicrophoneDisabled)
@@ -69,9 +90,11 @@ public class UnityVoiceSpeaker : VoiceSpeaker
         byte[] decompressed = VoiceCompressor.DecompressVoiceData(data);
 
         // Convert the byte array back to a float array and enqueue it
+        float volumeMultiplier = GetVoiceMultiplier();
+
         for (int i = 0; i < decompressed.Length; i += sizeof(float))
         {
-            float value = BitConverter.ToSingle(decompressed, i);
+            float value = BitConverter.ToSingle(decompressed, i) * volumeMultiplier;
 
             _readingQueue.Enqueue(value);
         }
@@ -92,18 +115,22 @@ public class UnityVoiceSpeaker : VoiceSpeaker
 
     private void PcmReaderCallback(Il2CppStructArray<float> data)
     {
-        float mult = GetVoiceMultiplier();
+        _averageSample = 0f;
 
         for (int i = 0; i < data.Length; i++)
         {
+            float output = 0f;
+
             if (_readingQueue.Count > 0)
             {
-                data[i] = _readingQueue.Dequeue() * mult;
+                output = _readingQueue.Dequeue();
             }
-            else
-            {
-                data[i] = 0.0f;
-            }
+
+            data[i] = output;
+
+            _averageSample += output;
         }
+
+        _averageSample /= data.Length;
     }
 }
