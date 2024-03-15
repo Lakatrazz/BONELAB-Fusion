@@ -1,15 +1,7 @@
-﻿using LabFusion.Network;
-using LabFusion.Preferences;
-using LabFusion.Senders;
+﻿using System;
 
-using Steamworks;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnhollowerBaseLib;
+
 using UnityEngine;
 
 namespace LabFusion.Voice.Unity;
@@ -41,7 +33,7 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
 
     public void UpdateVoice(bool enabled)
     {
-        if (Microphone.devices.Count <= 0)
+        if (!UnityVoice.IsSupported())
         {
             _uncompressedData = null;
             _hasVoiceActivity = false;
@@ -80,19 +72,32 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
 
         _lastSample = position;
 
-        byte[] byteArray = new byte[audioData.Length * sizeof(float)];
+        int elementSize = sizeof(float);
+        byte[] byteArray = new byte[audioData.Length * elementSize];
 
         bool isTalking = false;
         for (int i = 0; i < audioData.Length; i++)
         {
-            byte[] converted = BitConverter.GetBytes(audioData[i]);
-            Array.Copy(converted, 0, byteArray, i * sizeof(float), sizeof(float));
+            float sample = audioData[i];
+            int elementPosition = i * elementSize;
+
+            unsafe
+            {
+                byte* p = (byte*)&sample;
+
+                for (var j = 0; j < elementSize; j++)
+                {
+                    byteArray[j + elementPosition] = *p++;
+                }
+            }
 
             // Check for talking
-            if (Math.Abs(audioData[i]) > 0.0001f)
+            if (isTalking)
             {
-                isTalking = true;
+                continue;
             }
+
+            isTalking = Math.Abs(sample) > 0.0001f;
         }
 
         _uncompressedData = byteArray;

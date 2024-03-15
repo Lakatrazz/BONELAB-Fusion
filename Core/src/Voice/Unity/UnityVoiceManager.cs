@@ -11,7 +11,7 @@ public sealed class UnityVoiceManager : VoiceManager
         get
         {
             // If there are no microphones, or the device has been patched without adding microphone permissions, we cannot talk
-            if (Microphone.devices.Count <= 0)
+            if (!UnityVoice.IsSupported())
             {
                 return false;
             }

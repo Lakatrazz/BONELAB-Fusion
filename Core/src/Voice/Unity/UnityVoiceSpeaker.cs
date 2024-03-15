@@ -53,10 +53,16 @@ public class UnityVoiceSpeaker : VoiceSpeaker
         Volume = contact.volume;
     }
 
+    private void ClearVoiceData()
+    {
+        _readingQueue.Clear();
+    }
+
     public override void OnVoiceDataReceived(byte[] data)
     {
         if (MicrophoneDisabled)
         {
+            ClearVoiceData();
             return;
         }
 
