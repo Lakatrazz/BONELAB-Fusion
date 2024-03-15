@@ -1,8 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Representation;
 
-using Steamworks;
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,17 +11,15 @@ using UnityEngine;
 
 using PCMReaderCallback = UnityEngine.AudioClip.PCMReaderCallback;
 
-namespace LabFusion.Voice;
+namespace LabFusion.Voice.Unity;
 
-public class SteamVoiceSpeaker : VoiceSpeaker
+public class UnityVoiceSpeaker : VoiceSpeaker
 {
     private const float _defaultVolumeMultiplier = 10f;
 
-    private readonly MemoryStream _compressedVoiceStream = new();
-    private readonly MemoryStream _decompressedVoiceStream = new();
-    private readonly Queue<float> _streamingReadQueue = new();
+    private readonly Queue<float> _readingQueue = new();
 
-    public SteamVoiceSpeaker(PlayerId id)
+    public UnityVoiceSpeaker(PlayerId id)
     {
         // Save the id
         _id = id;
@@ -35,8 +31,8 @@ public class SteamVoiceSpeaker : VoiceSpeaker
         // Create the audio source and clip
         CreateAudioSource();
 
-        Source.clip = AudioClip.Create("SteamVoice", Convert.ToInt32(SteamUser.SampleRate),
-                    1, Convert.ToInt32(SteamUser.SampleRate), true, (PCMReaderCallback)PcmReaderCallback);
+        Source.clip = AudioClip.Create("UnityVoice", UnityVoice.SampleRate,
+                    1, UnityVoice.SampleRate, true, (PCMReaderCallback)PcmReaderCallback);
 
         _source.Play();
 
@@ -66,26 +62,14 @@ public class SteamVoiceSpeaker : VoiceSpeaker
 
         VerifyRep();
 
-        // Decompress the voice data
-        _compressedVoiceStream.Position = 0;
-        _compressedVoiceStream.Write(data, 0, data.Length);
+        byte[] decompressed = VoiceCompressor.DecompressVoiceData(data);
 
-        _compressedVoiceStream.Position = 0;
-        _decompressedVoiceStream.Position = 0;
-
-        int numBytesWritten = SteamUser.DecompressVoice(_compressedVoiceStream, data.Length, _decompressedVoiceStream);
-
-        _decompressedVoiceStream.Position = 0;
-
-        while (_decompressedVoiceStream.Position < numBytesWritten)
+        // Convert the byte array back to a float array and enqueue it
+        for (int i = 0; i < decompressed.Length; i += sizeof(float))
         {
-            byte byte1 = (byte)_decompressedVoiceStream.ReadByte();
-            byte byte2 = (byte)_decompressedVoiceStream.ReadByte();
+            float value = BitConverter.ToSingle(decompressed, i);
 
-            short pcmShort = (short)((byte2 << 8) | (byte1 << 0));
-            float pcmFloat = Convert.ToSingle(pcmShort) / short.MaxValue;
-
-            _streamingReadQueue.Enqueue(pcmFloat);
+            _readingQueue.Enqueue(value);
         }
     }
 
@@ -108,14 +92,16 @@ public class SteamVoiceSpeaker : VoiceSpeaker
 
         for (int i = 0; i < data.Length; i++)
         {
-            if (_streamingReadQueue.Count > 0)
+            if (_readingQueue.Count > 0)
             {
-                data[i] = _streamingReadQueue.Dequeue() * mult;
+                data[i] = _readingQueue.Dequeue() * mult;
             }
             else
             {
-                data[i] = 0.0f;  // Nothing in the queue means we should just play silence
+                data[i] = 0.0f;
             }
         }
+
+        _readingQueue.Clear();
     }
 }

@@ -4,7 +4,7 @@ namespace LabFusion.Voice;
 
 public sealed class SteamVoiceManager : VoiceManager
 {
-    protected override IVoiceReceiver OnCreateReceiver()
+    protected override IVoiceReceiver OnCreateReceiverOrDefault()
     {
         return new SteamVoiceReceiver();
     }

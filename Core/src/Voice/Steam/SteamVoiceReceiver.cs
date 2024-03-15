@@ -17,6 +17,19 @@ public sealed class SteamVoiceReceiver : IVoiceReceiver
 
     private bool _hasVoiceActivity = false;
 
+    public void Enable()
+    {
+        
+    }
+
+    public void Disable()
+    {
+        _hasVoiceActivity = false;
+        _compressedData = null;
+
+        SteamUser.VoiceRecord = false;
+    }
+
     public byte[] GetCompressedVoiceData()
     {
         return _compressedData;

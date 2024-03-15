@@ -12,7 +12,7 @@ public sealed class ProxyVoiceManager : VoiceManager
 {
     public override bool CanTalk => false;
 
-    protected override IVoiceReceiver OnCreateReceiver()
+    protected override IVoiceReceiver OnCreateReceiverOrDefault()
     {
         return null;
     }

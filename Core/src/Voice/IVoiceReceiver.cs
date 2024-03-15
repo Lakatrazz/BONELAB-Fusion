@@ -13,4 +13,8 @@ public interface IVoiceReceiver
     byte[] GetCompressedVoiceData();
 
     void UpdateVoice(bool enabled);
+
+    void Enable();
+
+    void Disable();
 }

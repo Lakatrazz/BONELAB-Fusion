@@ -66,15 +66,15 @@ public class ProxyVoiceSpeaker : VoiceSpeaker
         Volume = contact.volume;
     }
 
-    public override void OnVoiceDataReceived(byte[] bytes)
+    public override void OnVoiceDataReceived(byte[] data)
     {
         NetDataWriter writer = ProxyNetworkLayer.NewWriter(FusionHelper.Network.MessageTypes.DecompressVoice);
         writer.Put(_id.LongId);
-        writer.PutBytesWithLength(bytes);
+        writer.PutBytesWithLength(data);
         ProxyNetworkLayer.Instance.SendToProxyServer(writer);
     }
 
-    public void OnDecompressedVoiceBytesReceived(byte[] bytes)
+    public void OnDecompressedVoiceBytesReceived(byte[] data)
     {
         if (MicrophoneDisabled)
         {
@@ -85,8 +85,8 @@ public class ProxyVoiceSpeaker : VoiceSpeaker
 
         _decompressedVoiceStream.Position = 0;
 
-        int length = bytes.Length;
-        _decompressedVoiceStream.Write(bytes, 0, length);
+        int length = data.Length;
+        _decompressedVoiceStream.Write(data, 0, length);
 
         _decompressedVoiceStream.Position = 0;
 

@@ -36,6 +36,7 @@ using LiteNetLib;
 using LiteNetLib.Utils;
 using BoneLib;
 using LabFusion.Voice;
+using LabFusion.Voice.Unity;
 
 namespace LabFusion.Network
 {
@@ -92,7 +93,7 @@ namespace LabFusion.Network
         {
             Instance = this;
 
-            _voiceManager = new ProxyVoiceManager();
+            _voiceManager = new UnityVoiceManager();
             _voiceManager.Enable();
 
             EventBasedNetListener listener = new EventBasedNetListener();

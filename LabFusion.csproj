@@ -421,6 +421,10 @@
     <Compile Include="Core\src\Network\Helpers\SendRateTable.cs" />
     <Compile Include="Core\src\Voice\IVoiceReceiver.cs" />
     <Compile Include="Core\src\Voice\Steam\SteamVoiceReceiver.cs" />
+    <Compile Include="Core\src\Voice\Unity\UnityVoice.cs" />
+    <Compile Include="Core\src\Voice\Unity\UnityVoiceManager.cs" />
+    <Compile Include="Core\src\Voice\Unity\UnityVoiceReceiver.cs" />
+    <Compile Include="Core\src\Voice\Unity\UnityVoiceSpeaker.cs" />
     <Compile Include="Core\src\Voice\VoiceCompressor.cs" />
     <Compile Include="Core\src\Voice\VoiceHelper.cs" />
     <Compile Include="Core\src\Voice\VoiceInfo.cs" />

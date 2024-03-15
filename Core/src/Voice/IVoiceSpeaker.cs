@@ -92,5 +92,5 @@ public abstract class VoiceSpeaker : IVoiceSpeaker
 
     public virtual void Update() { }
 
-    public abstract void OnVoiceDataReceived(byte[] bytes);
+    public abstract void OnVoiceDataReceived(byte[] data);
 }

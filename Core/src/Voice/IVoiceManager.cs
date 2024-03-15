@@ -40,18 +40,17 @@ public abstract class VoiceManager : IVoiceManager
 
     public void Enable()
     {
-        _receiver = OnCreateReceiver();
+        _receiver = OnCreateReceiverOrDefault();
 
-        if (_receiver != null)
-        {
-            
-        }
+        _receiver?.Enable();
     }
 
     public void Disable()
     {
         if (_receiver != null)
         {
+            _receiver.Disable();
+
             _receiver = null;
         } 
 
@@ -78,7 +77,7 @@ public abstract class VoiceManager : IVoiceManager
 
     protected abstract IVoiceSpeaker OnCreateSpeaker(PlayerId id);
 
-    protected abstract IVoiceReceiver OnCreateReceiver();
+    protected abstract IVoiceReceiver OnCreateReceiverOrDefault();
 
     public IVoiceSpeaker GetSpeaker(PlayerId id)
     {

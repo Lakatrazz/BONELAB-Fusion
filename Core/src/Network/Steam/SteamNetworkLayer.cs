@@ -36,6 +36,7 @@ using UnhollowerBaseLib;
 using LabFusion.SDK.Gamemodes;
 using BoneLib;
 using LabFusion.Voice;
+using LabFusion.Voice.Unity;
 
 namespace LabFusion.Network
 {
@@ -116,7 +117,7 @@ namespace LabFusion.Network
                 FusionLogger.Error($"Failed to initialize Steamworks! \n{e}");
             }
 
-            _voiceManager = new SteamVoiceManager();
+            _voiceManager = new UnityVoiceManager();
             _voiceManager.Enable();
         }
 
