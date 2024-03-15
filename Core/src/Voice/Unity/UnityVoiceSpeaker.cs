@@ -15,8 +15,6 @@ namespace LabFusion.Voice.Unity;
 
 public class UnityVoiceSpeaker : VoiceSpeaker
 {
-    private const float _defaultVolumeMultiplier = 10f;
-
     private readonly Queue<float> _readingQueue = new();
 
     public UnityVoiceSpeaker(PlayerId id)
@@ -81,7 +79,7 @@ public class UnityVoiceSpeaker : VoiceSpeaker
 
     private float GetVoiceMultiplier()
     {
-        float mult = _defaultVolumeMultiplier * VoiceVolume.GetGlobalVolumeMultiplier();
+        float mult = VoiceVolume.GetGlobalVolumeMultiplier();
 
         // If the audio is 2D, lower the volume
         if (_source.spatialBlend <= 0f)

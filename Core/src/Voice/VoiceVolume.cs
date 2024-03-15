@@ -11,6 +11,10 @@ namespace LabFusion.Voice;
 
 public static class VoiceVolume
 {
+    public const float DefaultSampleMultiplier = 10f;
+
+    public const float MinimumVoiceVolume = 0.01f;
+
     public static float GetGlobalVolumeMultiplier()
     {
         float volume = FusionPreferences.ClientSettings.GlobalVolume;

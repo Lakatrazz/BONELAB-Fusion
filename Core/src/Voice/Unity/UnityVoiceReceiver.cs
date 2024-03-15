@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LabFusion.Utilities;
+using System;
 
 using UnhollowerBaseLib;
 
@@ -76,9 +77,10 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
         byte[] byteArray = new byte[audioData.Length * elementSize];
 
         bool isTalking = false;
+
         for (int i = 0; i < audioData.Length; i++)
         {
-            float sample = audioData[i];
+            float sample = audioData[i] * VoiceVolume.DefaultSampleMultiplier;
             int elementPosition = i * elementSize;
 
             unsafe
@@ -97,7 +99,7 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
                 continue;
             }
 
-            isTalking = Math.Abs(sample) > 0.0001f;
+            isTalking = Math.Abs(sample) >= VoiceVolume.MinimumVoiceVolume;
         }
 
         _uncompressedData = byteArray;
