@@ -101,7 +101,5 @@ public class UnityVoiceSpeaker : VoiceSpeaker
                 data[i] = 0.0f;
             }
         }
-
-        _readingQueue.Clear();
     }
 }
