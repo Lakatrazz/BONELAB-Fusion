@@ -21,7 +21,7 @@
         LobbyIds = 16,
         LobbyMetadata = 17,
         UpdateConnectPresence = 18,
-        DecompressVoice = 19,
+
         SetLobbyMetadata = 20,
     }
 }

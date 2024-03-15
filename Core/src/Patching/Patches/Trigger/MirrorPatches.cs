@@ -20,6 +20,32 @@ namespace LabFusion.Patching
     [HarmonyPatch(typeof(Mirror))]
     public static class MirrorPatches
     {
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(Mirror.WriteTransforms))]
+        public static void WriteTransforms(Mirror __instance)
+        {
+            if (!NetworkInfo.HasServer)
+            {
+                return;
+            }
+
+            var playerJaw = __instance.rigManager.avatar.animator.GetBoneTransform(HumanBodyBones.Jaw);
+
+            if (playerJaw == null)
+            {
+                return;
+            }
+
+            var reflectionJaw = __instance.Reflection.animator.GetBoneTransform(HumanBodyBones.Jaw);
+
+            if (reflectionJaw == null)
+            {
+                return;
+            }
+
+            reflectionJaw.localRotation = playerJaw.localRotation;
+        }
+
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Mirror.OnTriggerEnter))]
         public static bool OnTriggerEnter(Mirror __instance, Collider c)

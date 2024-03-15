@@ -17,9 +17,7 @@ public class UnityVoiceSpeaker : VoiceSpeaker
 {
     private readonly Queue<float> _readingQueue = new();
 
-    private float _averageSample = 0f;
-
-    public override float AverageSample => _averageSample;
+    private float _amplitude = 0f;
 
     private bool _clearedAudio = false;
 
@@ -44,6 +42,11 @@ public class UnityVoiceSpeaker : VoiceSpeaker
         VerifyRep();
     }
 
+    public override float GetVoiceAmplitude()
+    {
+        return _amplitude;
+    }
+
     public override void Cleanup()
     {
         // Unhook contact updating
@@ -64,14 +67,12 @@ public class UnityVoiceSpeaker : VoiceSpeaker
 
     public override void Update()
     {
-        float absSample = Math.Abs(_averageSample);
-
-        if (!_clearedAudio && absSample <= VoiceVolume.SilencingVolume)
+        if (!_clearedAudio && _amplitude <= VoiceVolume.SilencingVolume)
         {
             _clearedAudio = true;
             ClearVoiceData();
         }
-        else if (_clearedAudio && absSample >= VoiceVolume.MinimumVoiceVolume)
+        else if (_clearedAudio && _amplitude >= VoiceVolume.MinimumVoiceVolume)
         {
             _clearedAudio = false;
         }
@@ -115,7 +116,7 @@ public class UnityVoiceSpeaker : VoiceSpeaker
 
     private void PcmReaderCallback(Il2CppStructArray<float> data)
     {
-        _averageSample = 0f;
+        _amplitude = 0f;
 
         for (int i = 0; i < data.Length; i++)
         {
@@ -128,9 +129,9 @@ public class UnityVoiceSpeaker : VoiceSpeaker
 
             data[i] = output;
 
-            _averageSample += output;
+            _amplitude += Math.Abs(output);
         }
 
-        _averageSample /= data.Length;
+        _amplitude /= data.Length;
     }
 }

@@ -100,8 +100,6 @@ namespace LabFusion.Representation
         private bool _isQuestUser = false;
 
         // Voice chat integration
-        private const float _voiceUpdateStep = 0.3f;
-
         private float _maxMicrophoneDistance = 30f;
 
         private IVoiceSpeaker _speaker = null;
@@ -110,13 +108,9 @@ namespace LabFusion.Representation
 
         private bool _spatialized = false;
 
-        private float _voiceUpdateTime = 0f;
+        private readonly JawFlapper _flapper = new();
 
-        private float _voiceLoudness = 0f;
-        private float _targetLoudness = 0f;
-
-        private const float _sinAmplitude = 5f;
-        private const float _sinOmega = 10f;
+        public JawFlapper JawFlapper => _flapper;
 
         public PlayerRep(PlayerId playerId)
         {
@@ -148,8 +142,6 @@ namespace LabFusion.Representation
             _voiceSource = source;
             _hasVoice = true;
         }
-
-        public float GetVoiceLoudness() => _voiceLoudness;
 
         private void OnUpdateVoiceSource()
         {
@@ -186,34 +178,12 @@ namespace LabFusion.Representation
             // Update the jaw movement
             if (MicrophoneDisabled)
             {
-                _voiceLoudness = 0f;
+                _flapper.ClearJaw();
             }
             else
             {
-                OnUpdateVoiceLoudness();
+                _flapper.UpdateJaw(_speaker.GetVoiceAmplitude());
             }
-        }
-
-        private void OnUpdateVoiceLoudness()
-        {
-            // Update the amplitude
-            _voiceUpdateTime += TimeUtilities.DeltaTime;
-            if (_voiceUpdateTime >= _voiceUpdateStep)
-            {
-                _voiceUpdateTime = 0f;
-
-                _targetLoudness = _speaker.AverageSample;
-
-                // Add affectors
-                _targetLoudness *= 100f;
-                _targetLoudness = ManagedMathf.Clamp(_targetLoudness, 0f, 2f);
-            }
-
-            // Lerp towards the desired value
-            float sin = Math.Abs(_sinAmplitude * ManagedMathf.Sin(_sinOmega * TimeUtilities.TimeSinceStartup));
-            sin = ManagedMathf.Clamp01(sin);
-
-            _voiceLoudness = ManagedMathf.LerpUnclamped(_voiceLoudness * sin, _targetLoudness, TimeUtilities.DeltaTime * 12f);
         }
 
         private void OnMetadataChanged(PlayerId id)

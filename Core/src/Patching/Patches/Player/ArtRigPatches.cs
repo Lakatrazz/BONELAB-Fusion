@@ -11,8 +11,12 @@ using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Utilities;
+using LabFusion.Voice;
+
 using MelonLoader;
+
 using SLZ.Rig;
+
 using UnityEngine;
 
 using Avatar = SLZ.VRMK.Avatar;
@@ -27,27 +31,42 @@ namespace LabFusion.Patching
         public static void OnUpdate(ArtRig __instance)
         {
             // Check if we have a player rep to animate the jaw on here
-            if (NetworkInfo.HasServer && PlayerRepManager.TryGetPlayerRep(__instance.manager, out var rep))
+            if (!NetworkInfo.HasServer)
             {
-                var jaw = __instance.m_jaw;
-                jaw.localRotation = Quaternion.AngleAxis(20f * rep.GetVoiceLoudness(), Vector3Extensions.right);
+                return;
             }
+
+            float angle = 0f;
+
+            if (PlayerRepManager.TryGetPlayerRep(__instance.manager, out var rep))
+            {
+                angle = rep.JawFlapper.GetAngle();
+            }
+            else if (__instance.manager.IsSelf())
+            {
+                angle = VoiceHelper.LocalJaw.GetAngle();
+            }
+
+            var jaw = __instance.m_jaw;
+            jaw.localRotation = Quaternion.AngleAxis(angle, Vector3Extensions.right);
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(ArtRig.OnLateUpdate))]
         public static void OnLateUpdate(ArtRig __instance)
         {
-            // If this is a player rep, match the avatar jaw to the simulated jaw
-            if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(__instance.manager))
+            // Match the avatar jaw to the simulated jaw
+            if (!NetworkInfo.HasServer)
             {
-                var avatar = __instance.manager._avatar;
-
-                var animatorJaw = avatar.animator.GetBoneTransform(HumanBodyBones.Jaw);
-
-                if (animatorJaw != null)
-                    animatorJaw.rotation = __instance.artJaw.rotation;
+                return;
             }
+
+            var avatar = __instance.manager._avatar;
+
+            var animatorJaw = avatar.animator.GetBoneTransform(HumanBodyBones.Jaw);
+
+            if (animatorJaw != null)
+                animatorJaw.rotation = __instance.artJaw.rotation;
         }
 
         [HarmonyPostfix]

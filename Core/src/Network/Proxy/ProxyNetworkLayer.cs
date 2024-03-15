@@ -266,14 +266,6 @@ namespace LabFusion.Network
                         _lobbyManager.HandleLobbyMessage((MessageTypes)id, dataReader);
                         break;
                     }
-                case (ulong)MessageTypes.DecompressVoice:
-                    {
-                        ulong playerLong = dataReader.GetULong();
-                        byte[] data = dataReader.GetBytesWithLength();
-                        var handler = _voiceManager.GetSpeaker(PlayerIdManager.GetPlayerId(playerLong)) as ProxyVoiceSpeaker;
-                        handler?.OnDecompressedVoiceBytesReceived(data);
-                        break;
-                    }
             }
 
             dataReader.Recycle();

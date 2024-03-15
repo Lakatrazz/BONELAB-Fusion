@@ -21,7 +21,7 @@ public interface IVoiceSpeaker
 
     float Volume { get; set; }
 
-    float AverageSample { get; }
+    float GetVoiceAmplitude();
 
     void CreateAudioSource();
     void VerifyRep();
@@ -49,8 +49,6 @@ public abstract class VoiceSpeaker : IVoiceSpeaker
 
     protected float _volume = 1f;
     public float Volume { get { return _volume; } set { _volume = value; } }
-
-    public virtual float AverageSample { get; } = 0f;
 
     public bool MicrophoneDisabled { get { return _hasRep && Rep.MicrophoneDisabled; } }
 
@@ -97,4 +95,6 @@ public abstract class VoiceSpeaker : IVoiceSpeaker
     }
 
     public abstract void OnVoiceDataReceived(byte[] data);
+
+    public abstract float GetVoiceAmplitude();
 }

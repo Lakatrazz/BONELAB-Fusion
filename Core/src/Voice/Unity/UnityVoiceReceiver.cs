@@ -17,6 +17,13 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
 
     private int _lastSample = 0;
 
+    private float _amplitude = 0f;
+
+    public float GetVoiceAmplitude()
+    {
+        return _amplitude;
+    }
+
     public byte[] GetCompressedVoiceData()
     {
         return VoiceCompressor.CompressVoiceData(_uncompressedData);
@@ -32,12 +39,18 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
         return string.Empty;
     }
 
+    private void ClearData()
+    {
+        _uncompressedData = null;
+        _hasVoiceActivity = false;
+        _amplitude = 0f;
+    }
+
     public void UpdateVoice(bool enabled)
     {
         if (!UnityVoice.IsSupported())
         {
-            _uncompressedData = null;
-            _hasVoiceActivity = false;
+            ClearData();
             return;
         }
 
@@ -54,8 +67,7 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
 
         if (!enabled || _voiceClip == null)
         {
-            _uncompressedData = null;
-            _hasVoiceActivity = false;
+            ClearData();
             return;
         }
 
@@ -77,10 +89,13 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
         byte[] byteArray = new byte[audioData.Length * elementSize];
 
         bool isTalking = false;
+        _amplitude = 0f;
 
         for (int i = 0; i < audioData.Length; i++)
         {
             float sample = audioData[i] * VoiceVolume.DefaultSampleMultiplier;
+            _amplitude += Mathf.Abs(sample);
+
             int elementPosition = i * elementSize;
 
             unsafe
@@ -102,8 +117,18 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
             isTalking = Math.Abs(sample) >= VoiceVolume.MinimumVoiceVolume;
         }
 
+        if (audioData.Length > 0)
+        {
+            _amplitude /= audioData.Length;
+        }
+
         _uncompressedData = byteArray;
         _hasVoiceActivity = isTalking;
+
+        if (!isTalking)
+        {
+            _amplitude = 0f;
+        }
     }
 
     public void Enable()

@@ -420,7 +420,7 @@
     <Compile Include="Core\src\Network\Helpers\NetworkVerification.cs" />
     <Compile Include="Core\src\Network\Helpers\SendRateTable.cs" />
     <Compile Include="Core\src\Voice\IVoiceReceiver.cs" />
-    <Compile Include="Core\src\Voice\Steam\SteamVoiceReceiver.cs" />
+    <Compile Include="Core\src\Voice\JawFlapper.cs" />
     <Compile Include="Core\src\Voice\Unity\UnityVoice.cs" />
     <Compile Include="Core\src\Voice\Unity\UnityVoiceManager.cs" />
     <Compile Include="Core\src\Voice\Unity\UnityVoiceReceiver.cs" />
@@ -489,13 +489,9 @@
     <Compile Include="Core\src\Network\Proxy\ProxyNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxyNetworkLobby.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxySocketHandler.cs" />
-    <Compile Include="Core\src\Voice\Proxy\ProxyVoiceManager.cs" />
-    <Compile Include="Core\src\Voice\Proxy\ProxyVoiceSpeaker.cs" />
     <Compile Include="Core\src\Network\Steam\SpacewarNetworkLayer.cs" />
-    <Compile Include="Core\src\Voice\Steam\SteamVoiceManager.cs" />
     <Compile Include="Core\src\Network\Steam\SteamVRNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Steam\SteamLobby.cs" />
-    <Compile Include="Core\src\Voice\Steam\SteamVoiceSpeaker.cs" />
     <Compile Include="Core\src\Patching\CommonDelegates.cs" />
     <Compile Include="Core\src\Patching\NativeStructs\Attack_.cs" />
     <Compile Include="Core\src\Patching\Patches\Attacks\ImpactAttackValidator.cs" />
