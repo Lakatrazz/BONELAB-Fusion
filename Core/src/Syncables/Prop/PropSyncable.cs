@@ -18,6 +18,7 @@ using SLZ.Utilities;
 using UnityEngine;
 
 using SLZ.Rig;
+using System.Security.Cryptography.Xml;
 
 namespace LabFusion.Syncables
 {
@@ -99,8 +100,6 @@ namespace LabFusion.Syncables
         private Action<ulong> _catchupDelegate;
 
         private bool _initialized = false;
-
-        private const int _targetFrame = 3;
 
         public PropSyncable(InteractableHost host = null, GameObject root = null)
         {
@@ -616,7 +615,7 @@ namespace LabFusion.Syncables
 #if !DEBUG
                 else {
 #endif
-                throw e;
+                    throw e;
 #if !DEBUG
                 }
 #endif
@@ -675,7 +674,7 @@ namespace LabFusion.Syncables
 #if !DEBUG
                 else {
 #endif
-                throw e;
+                    throw e;
 #if !DEBUG
                 }
 #endif
@@ -793,6 +792,20 @@ namespace LabFusion.Syncables
             IsSleeping = false;
         }
 
+        private void CheckForTeleport(Vector3 position, Vector3 velocity, Vector3 targetPosition)
+        {
+            // Teleport check
+            var offset = targetPosition - position;
+
+            float distSqr = offset.sqrMagnitude;
+            if (distSqr > (2f * (velocity.sqrMagnitude + 1f)))
+            {
+                var rootTransform = GameObject.transform;
+
+                rootTransform.position += offset;
+            }
+        }
+
         private void OnReceivedUpdate()
         {
             if (!SafetyUtilities.IsValidTime)
@@ -832,8 +845,6 @@ namespace LabFusion.Syncables
                 _isIgnoringForces = false;
             }
 
-            bool canPredict = TimeUtilities.IsMatchingFrame(_targetFrame);
-
             for (var i = 0; i < GameObjectCount; i++)
             {
                 var rbCache = RigidbodyCaches[i];
@@ -847,26 +858,9 @@ namespace LabFusion.Syncables
                 }
 
                 var rb = TempRigidbodies.Items[i].Rigidbody;
-                var transform = TempRigidbodies.Items[i].Transform;
                 var cache = TransformCaches[i];
 
-                bool isGrabbed = false;
-
-                if (IsHeld)
-                {
-                    foreach (var grip in _grabbedGrips.GetGrabbedGrips())
-                    {
-                        if (grip.Host.Rb == rb)
-                        {
-                            DesiredPositions[i] = null;
-                            DesiredRotations[i] = null;
-                            isGrabbed = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (isGrabbed || !DesiredPositions[i].HasValue || !DesiredRotations[i].HasValue)
+                if (!DesiredPositions[i].HasValue || !DesiredRotations[i].HasValue)
                 {
                     pdController.Reset();
                     continue;
@@ -888,7 +882,7 @@ namespace LabFusion.Syncables
                 }
 
                 // Don't over predict
-                if (timeSinceMessage <= 0.6f)
+                if (timeSinceMessage <= 0.6f && !IsSleeping)
                 {
                     // Move position with prediction
                     if (allowPosition)
@@ -896,57 +890,28 @@ namespace LabFusion.Syncables
                         pos += vel * dt;
                         DesiredPositions[i] = pos;
                     }
+                }
 
-                    // Only predict rotation every so often
-                    if (canPredict)
-                    {
-                        // Move rotation with prediction
-                        rot = (angVel * dt * _targetFrame).GetQuaternionDisplacement() * rot;
-                        DesiredRotations[i] = rot;
-                    }
+                // Check for teleport
+                if (i == 0 && allowPosition)
+                {
+                    CheckForTeleport(cache.Position, rbCache.Velocity, pos);
+                }
+
+                // Add proper forces
+                if (allowPosition)
+                {
+                    rb.AddForce(pdController.GetForce(rb, cache.Position, rbCache.Velocity, pos, vel), ForceMode.Acceleration);
                 }
                 else
                 {
-                    // Reset transform values
-                    if (allowPosition)
-                    {
-                        pos = InitialPositions[i].Value;
-                        DesiredPositions[i] = pos;
-                    }
+                    if (rb.useGravity)
+                        rb.AddForce(-PhysicsUtilities.Gravity, ForceMode.Acceleration);
 
-                    rot = InitialRotations[i].Value;
-                    DesiredRotations[i] = rot;
+                    pdController.ResetPosition();
                 }
 
-                // Teleport check
-                float distSqr = (cache.Position - pos).sqrMagnitude;
-                if (distSqr > (2f * (vel.sqrMagnitude + 1f)) && allowPosition)
-                {
-                    transform.position = pos;
-                    transform.rotation = rot;
-
-                    rb.velocity = Vector3Extensions.zero;
-                    rb.angularVelocity = Vector3Extensions.zero;
-
-                    pdController.Reset();
-                }
-                // Instead calculate velocity stuff
-                else
-                {
-                    if (allowPosition)
-                    {
-                        rb.AddForce(pdController.GetForce(rb, cache.Position, rbCache.Velocity, pos, vel), ForceMode.Acceleration);
-                    }
-                    else
-                    {
-                        if (rb.useGravity)
-                            rb.AddForce(-PhysicsUtilities.Gravity, ForceMode.Acceleration);
-
-                        pdController.ResetPosition();
-                    }
-
-                    rb.AddTorque(pdController.GetTorque(rb, cache.Rotation, rbCache.AngularVelocity, rot, angVel), ForceMode.Acceleration);
-                }
+                rb.AddTorque(pdController.GetTorque(rb, cache.Rotation, rbCache.AngularVelocity, rot, angVel), ForceMode.Acceleration);
             }
         }
     }
