@@ -1,11 +1,12 @@
 ## **Fusion**
 #### Added:
-- Automatic scene reloading if the screen becomes black
-#### Fixed:
-- Major crashing bugs from 1.6.0
-- Broken static impact properties while in a server
+- Quest 2 Voice Chat
+- Jaw Movement in Mirrors
+#### Rewrote:
+- Microphone System
 #### Improved:
-- Spawning in the ground (likely)
+- Microphone Quality
+- Object Physics
 
 ## **Fusion Auto Updater**
 - No changes
