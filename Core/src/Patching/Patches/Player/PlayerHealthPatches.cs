@@ -30,7 +30,7 @@ namespace LabFusion.Patching
         {
             // Is this our player?
             var rm = __instance.physRig.manager;
-            if (NetworkInfo.HasServer && rm == RigData.RigReferences.RigManager)
+            if (NetworkInfo.HasServer && rm.IsSelf())
             {
                 // Notify the server about the recovery
                 PlayerSender.SendPlayerAction(PlayerActionType.RECOVERY);
@@ -43,7 +43,7 @@ namespace LabFusion.Patching
         {
             // Is this our player?
             var rm = __instance.physRig.manager;
-            if (NetworkInfo.HasServer && rm == RigData.RigReferences.RigManager)
+            if (NetworkInfo.HasServer && rm.IsSelf())
             {
                 // Notify the server about the death beginning
                 if (FusionPlayer.LastAttacker.HasValue)

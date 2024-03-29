@@ -159,7 +159,7 @@ namespace LabFusion.Patching
                     if (NetworkInfo.IsServer)
                         newSyncable.InsertCatchupDelegate((id) =>
                         {
-                            SpawnSender.SendCatchupSpawn(0, barcode, syncId, new SerializedTransform(__instance.transform), spawner, Handedness.UNDEFINED, id);
+                            SpawnSender.SendCatchupSpawn(0, barcode, syncId, new SerializedTransform(__instance.transform), spawner, id);
                         });
                 }
             }

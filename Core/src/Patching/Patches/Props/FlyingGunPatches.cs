@@ -10,7 +10,7 @@ using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Syncables;
-
+using LabFusion.Utilities;
 using SLZ.Interaction;
 using SLZ.Props;
 
@@ -52,7 +52,7 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(FlyingGun.OnTriggerGripUpdate))]
         public static void OnTriggerGripUpdatePostfix(FlyingGun __instance, Hand hand, bool __state)
         {
-            if (NetworkInfo.HasServer && hand.manager == RigData.RigReferences.RigManager && __state != __instance._noClipping && FlyingGunExtender.Cache.TryGet(__instance, out var syncable))
+            if (NetworkInfo.HasServer && hand.manager.IsSelf() && __state != __instance._noClipping && FlyingGunExtender.Cache.TryGet(__instance, out var syncable))
             {
                 using var writer = FusionWriter.Create(NimbusGunNoclipData.Size);
                 using var data = NimbusGunNoclipData.Create(PlayerIdManager.LocalSmallId, syncable.GetId(), __instance._noClipping);

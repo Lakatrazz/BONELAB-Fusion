@@ -44,7 +44,7 @@ namespace LabFusion.Representation
             smallId = 0;
             references = null;
 
-            if (rig == RigData.RigReferences.RigManager)
+            if (rig.IsSelf())
             {
                 smallId = PlayerIdManager.LocalSmallId;
                 references = RigData.RigReferences;

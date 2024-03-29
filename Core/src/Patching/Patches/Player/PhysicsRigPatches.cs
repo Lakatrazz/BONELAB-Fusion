@@ -69,7 +69,7 @@ namespace LabFusion.Patching
         {
             try
             {
-                if (NetworkInfo.HasServer && __instance.manager == RigData.RigReferences.RigManager)
+                if (NetworkInfo.HasServer && __instance.manager.IsSelf())
                 {
                     var health = __instance.manager.health;
 
@@ -99,7 +99,7 @@ namespace LabFusion.Patching
         {
             try
             {
-                if (NetworkInfo.HasServer && __instance.manager == RigData.RigReferences.RigManager)
+                if (NetworkInfo.HasServer && __instance.manager.IsSelf())
                 {
                     // Check if we can unragdoll
                     var playerHealth = __instance.manager.health.TryCast<Player_Health>();

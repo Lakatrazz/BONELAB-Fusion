@@ -87,7 +87,7 @@ namespace LabFusion.Senders
         /// Sends a catchup sync message for a pool spawned object.
         /// </summary>
         /// <param name="syncable"></param>
-        public static void SendCatchupSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, ZoneSpawner spawner, Handedness hand, ulong userId)
+        public static void SendCatchupSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, ZoneSpawner spawner, ulong userId)
         {
             if (NetworkInfo.IsServer)
             {
@@ -96,7 +96,7 @@ namespace LabFusion.Senders
                     spawnerPath = spawner.gameObject.GetFullPath();
 
                 using var writer = FusionWriter.Create(SpawnResponseData.GetSize(barcode, spawnerPath));
-                using var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, spawnerPath, hand);
+                using var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, spawnerPath);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.SpawnResponse, writer);

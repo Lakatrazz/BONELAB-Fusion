@@ -33,6 +33,8 @@ namespace LabFusion.Utilities
     {
         public static WeakAssetReference<AssetBundle> ItemBundle { get; private set; } = new();
 
+        private static readonly ItemPair _nullItemPair = new();
+
         private static readonly string[] _itemNames = new string[] {
             // BaBa Corp Cosmetics
             // Pack 1
@@ -157,7 +159,14 @@ namespace LabFusion.Utilities
 
         public static ItemPair GetPair(string name)
         {
-            return _itemPairs[name];
+            if (_itemPairs.TryGetValue(name, out var pair))
+            {
+                return pair;
+            }
+            else
+            {
+                return _nullItemPair;
+            }
         }
     }
 }

@@ -55,21 +55,23 @@ namespace LabFusion.Patching
             if (IgnorePatches)
                 return true;
 
-            if (NetworkInfo.HasServer)
+            if (!NetworkInfo.HasServer)
             {
-                try
+                return true;
+            }
+
+            try
+            {
+                if (rM.IsSelf())
                 {
-                    if (rM == RigData.RigReferences.RigManager)
-                    {
-                        MelonCoroutines.Start(Internal_SyncSeat(__instance));
-                    }
-                    else if (PlayerRepManager.HasPlayerId(rM))
-                        return false;
+                    MelonCoroutines.Start(Internal_SyncSeat(__instance));
                 }
-                catch (Exception e)
-                {
-                    FusionLogger.LogException("patching Seat.Register", e);
-                }
+                else if (PlayerRepManager.HasPlayerId(rM))
+                    return false;
+            }
+            catch (Exception e)
+            {
+                FusionLogger.LogException("patching Seat.Register", e);
             }
 
             return true;
@@ -93,7 +95,7 @@ namespace LabFusion.Patching
             yield return null;
 
             // Send seat request
-            if (__instance.rigManager == RigData.RigReferences.RigManager && SeatExtender.Cache.TryGet(__instance, out var syncable) && syncable.TryGetExtender<SeatExtender>(out var extender))
+            if (__instance.rigManager.IsSelf() && SeatExtender.Cache.TryGet(__instance, out var syncable) && syncable.TryGetExtender<SeatExtender>(out var extender))
             {
                 using var writer = FusionWriter.Create(PlayerRepSeatData.Size);
                 using var data = PlayerRepSeatData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value, true);
@@ -110,7 +112,7 @@ namespace LabFusion.Patching
         {
             try
             {
-                if (NetworkInfo.HasServer && __instance._rig == RigData.RigReferences.RigManager && SeatExtender.Cache.TryGet(__instance, out var syncable) && syncable.TryGetExtender<SeatExtender>(out var extender))
+                if (NetworkInfo.HasServer && __instance._rig.IsSelf() && SeatExtender.Cache.TryGet(__instance, out var syncable) && syncable.TryGetExtender<SeatExtender>(out var extender))
                 {
                     using var writer = FusionWriter.Create(PlayerRepSeatData.Size);
                     using var data = PlayerRepSeatData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value, false);

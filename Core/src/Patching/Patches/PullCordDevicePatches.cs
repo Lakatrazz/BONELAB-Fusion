@@ -10,6 +10,7 @@ using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Senders;
+using LabFusion.Utilities;
 using SLZ.Interaction;
 using SLZ.Marrow.Warehouse;
 using SLZ.Props;
@@ -39,7 +40,7 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(PullCordDevice.EnableBall))]
         public static void EnableBall(PullCordDevice __instance)
         {
-            if (NetworkInfo.HasServer && __instance.rm == RigData.RigReferences.RigManager)
+            if (NetworkInfo.HasServer && __instance.rm.IsSelf())
             {
                 PullCordSender.SendBodyLogToggle(true);
             }
@@ -49,7 +50,7 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(PullCordDevice.DisableBall))]
         public static void DisableBall(PullCordDevice __instance)
         {
-            if (NetworkInfo.HasServer && __instance.rm == RigData.RigReferences.RigManager)
+            if (NetworkInfo.HasServer && __instance.rm.IsSelf())
             {
                 PullCordSender.SendBodyLogToggle(false);
             }
@@ -59,7 +60,7 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(PullCordDevice.PlayAvatarParticleEffects))]
         public static void PlayAvatarParticleEffects(PullCordDevice __instance)
         {
-            if (NetworkInfo.HasServer && __instance.rm == RigData.RigReferences.RigManager)
+            if (NetworkInfo.HasServer && __instance.rm.IsSelf())
             {
                 PullCordSender.SendBodyLogEffect();
             }

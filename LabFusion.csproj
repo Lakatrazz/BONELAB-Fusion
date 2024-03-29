@@ -417,6 +417,9 @@
     <Compile Include="Core\src\Network\Helpers\MetadataHelper.cs" />
     <Compile Include="Core\src\Network\Helpers\NetworkVerification.cs" />
     <Compile Include="Core\src\Network\Helpers\SendRateTable.cs" />
+    <Compile Include="Core\src\Network\Messages\Magazines\MagazineClaimMessage.cs" />
+    <Compile Include="Core\src\RPC\NetworkAssetSpawner.cs" />
+    <Compile Include="Core\src\Utilities\MagazineUtilities.cs" />
     <Compile Include="Core\src\Voice\IVoiceReceiver.cs" />
     <Compile Include="Core\src\Voice\JawFlapper.cs" />
     <Compile Include="Core\src\Voice\Unity\UnityVoice.cs" />

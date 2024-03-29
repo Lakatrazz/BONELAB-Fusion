@@ -128,24 +128,24 @@ namespace LabFusion.Utilities
             MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
 
-        public static void RequestSpawn(string barcode, SerializedTransform serializedTransform, byte? owner = null, Handedness hand = Handedness.UNDEFINED)
+        public static void RequestSpawn(string barcode, SerializedTransform serializedTransform, uint trackerId)
         {
             using var writer = FusionWriter.Create(SpawnRequestData.Size);
-            using var data = SpawnRequestData.Create(owner.HasValue ? owner.Value : PlayerIdManager.LocalSmallId, barcode, serializedTransform, hand);
+            using var data = SpawnRequestData.Create(PlayerIdManager.LocalSmallId, barcode, serializedTransform, trackerId);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.SpawnRequest, writer);
             MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
 
-        public static void SendSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, bool ignoreSelf = false, ZoneSpawner spawner = null, Handedness hand = Handedness.UNDEFINED)
+        public static void SendSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, bool ignoreSelf = false, ZoneSpawner spawner = null, uint trackerId = 0)
         {
             string spawnerPath = "_";
             if (spawner != null)
                 spawnerPath = spawner.gameObject.GetFullPath();
 
             using var writer = FusionWriter.Create(SpawnResponseData.GetSize(barcode, spawnerPath));
-            using var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, spawnerPath, hand);
+            using var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, spawnerPath, trackerId);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.SpawnResponse, writer);

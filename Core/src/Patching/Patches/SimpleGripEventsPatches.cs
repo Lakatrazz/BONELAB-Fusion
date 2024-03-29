@@ -10,6 +10,7 @@ using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Syncables;
+using LabFusion.Utilities;
 using SLZ;
 using SLZ.Interaction;
 
@@ -110,7 +111,7 @@ namespace LabFusion.Patching
 
         private static bool GetExtender(SimpleGripEvents __instance, Hand hand, out PropSyncable syncable, out SimpleGripEventsExtender extender)
         {
-            if (NetworkInfo.HasServer && hand.manager == RigData.RigReferences.RigManager && SimpleGripEventsExtender.Cache.TryGet(__instance, out syncable) && syncable.TryGetExtender(out extender))
+            if (NetworkInfo.HasServer && hand.manager.IsSelf() && SimpleGripEventsExtender.Cache.TryGet(__instance, out syncable) && syncable.TryGetExtender(out extender))
                 return true;
             else
             {

@@ -18,14 +18,16 @@ namespace LabFusion.Network
         public byte owner;
         public string barcode;
         public SerializedTransform serializedTransform;
-        public Handedness hand;
+
+        public uint trackerId;
 
         public void Serialize(FusionWriter writer)
         {
             writer.Write(owner);
             writer.Write(barcode);
             writer.Write(serializedTransform);
-            writer.Write((byte)hand);
+
+            writer.Write(trackerId);
         }
 
         public void Deserialize(FusionReader reader)
@@ -33,7 +35,8 @@ namespace LabFusion.Network
             owner = reader.ReadByte();
             barcode = reader.ReadString();
             serializedTransform = reader.ReadFusionSerializable<SerializedTransform>();
-            hand = (Handedness)reader.ReadByte();
+
+            trackerId = reader.ReadUInt32();
         }
 
         public void Dispose()
@@ -41,14 +44,15 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static SpawnRequestData Create(byte owner, string barcode, SerializedTransform serializedTransform, Handedness hand)
+        public static SpawnRequestData Create(byte owner, string barcode, SerializedTransform serializedTransform, uint trackerId)
         {
             return new SpawnRequestData()
             {
                 owner = owner,
                 barcode = barcode,
                 serializedTransform = serializedTransform,
-                hand = hand,
+
+                trackerId = trackerId,
             };
         }
     }
@@ -67,14 +71,14 @@ namespace LabFusion.Network
                 var playerId = PlayerIdManager.GetPlayerId(data.owner);
 
                 // Check if we should ignore the spawn gun request
-                if (data.hand == Handedness.UNDEFINED && playerId != null && !playerId.IsSelf && FusionDevTools.PreventSpawnGun(playerId))
+                if (playerId != null && !playerId.IsSelf && FusionDevTools.PreventSpawnGun(playerId))
                 {
                     return;
                 }
 
                 var syncId = SyncManager.AllocateSyncID();
 
-                PooleeUtilities.SendSpawn(data.owner, data.barcode, syncId, data.serializedTransform, false, null, data.hand);
+                PooleeUtilities.SendSpawn(data.owner, data.barcode, syncId, data.serializedTransform, false, null, data.trackerId);
             }
             else
                 throw new ExpectedServerException();

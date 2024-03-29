@@ -31,6 +31,7 @@ using SLZ;
 using LabFusion.Exceptions;
 using SLZ.Marrow.Utilities;
 using LabFusion.Senders;
+using LabFusion.RPC;
 
 namespace LabFusion.Network
 {
@@ -46,7 +47,7 @@ namespace LabFusion.Network
 
         public string spawnerPath;
 
-        public Handedness hand;
+        public uint trackerId;
 
         public static int GetSize(string barcode, string spawnerPath)
         {
@@ -60,7 +61,8 @@ namespace LabFusion.Network
             writer.Write(syncId);
             writer.Write(serializedTransform);
             writer.Write(spawnerPath);
-            writer.Write((byte)hand);
+
+            writer.Write(trackerId);
         }
 
         public void Deserialize(FusionReader reader)
@@ -70,7 +72,8 @@ namespace LabFusion.Network
             syncId = reader.ReadUInt16();
             serializedTransform = reader.ReadFusionSerializable<SerializedTransform>();
             spawnerPath = reader.ReadString();
-            hand = (Handedness)reader.ReadByte();
+
+            trackerId = reader.ReadUInt32();
         }
 
         public void Dispose()
@@ -78,7 +81,7 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static SpawnResponseData Create(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, string spawnerPath = "_", Handedness hand = Handedness.UNDEFINED)
+        public static SpawnResponseData Create(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, string spawnerPath = "_", uint trackerId = 0)
         {
             return new SpawnResponseData()
             {
@@ -87,7 +90,7 @@ namespace LabFusion.Network
                 syncId = syncId,
                 serializedTransform = serializedTransform,
                 spawnerPath = spawnerPath,
-                hand = hand,
+                trackerId = trackerId,
             };
         }
     }
@@ -117,24 +120,17 @@ namespace LabFusion.Network
                 string barcode = data.barcode;
                 ushort syncId = data.syncId;
                 string path = data.spawnerPath;
-                var hand = data.hand;
+                var trackerId = data.trackerId;
 
                 NullableMethodExtensions.PoolManager_Spawn(spawnable, data.serializedTransform.position, data.serializedTransform.rotation, null,
-                    true, null, (Action<GameObject>)((go) => { OnSpawnFinished(owner, barcode, syncId, go, path, hand); }), null);
+                    true, null, (Action<GameObject>)((go) => { OnSpawnFinished(owner, barcode, syncId, go, path, trackerId); }), null);
             }
             else
                 throw new ExpectedClientException();
         }
 
-        public static void OnSpawnFinished(byte owner, string barcode, ushort syncId, GameObject go, string spawnerPath = "_", Handedness hand = Handedness.UNDEFINED)
+        public static void OnSpawnFinished(byte owner, string barcode, ushort syncId, GameObject go, string spawnerPath = "_", uint trackerId = 0)
         {
-            // Make sure this has no blacklisted components
-            if (go.HasBlacklistedComponents())
-            {
-                go.SetActive(false);
-                return;
-            }
-
             ZoneSpawner spawner = null;
             if (spawnerPath != "_")
             {
@@ -215,83 +211,84 @@ namespace LabFusion.Network
             if (NetworkInfo.IsServer)
                 newSyncable.InsertCatchupDelegate((id) =>
                 {
-                    SpawnSender.SendCatchupSpawn(owner, barcode, syncId, new SerializedTransform(go.transform), spawner, hand, id);
+                    SpawnSender.SendCatchupSpawn(owner, barcode, syncId, new SerializedTransform(go.transform), spawner, id);
                 });
 
             // Force the object active
-            Grip grip = null;
             go.SetActive(true);
             PooleeUtilities.ForceEnabled.Push(poolee);
 
-            // Setup magazine info
-            var magazine = go.GetComponent<Magazine>();
-            if (magazine)
+            // Invoke spawn callback
+            if (owner == PlayerIdManager.LocalSmallId)
             {
-                grip = magazine.grip;
-
-                var ammoInventory = RigData.RigReferences.RigManager.AmmoInventory;
-
-                CartridgeData cart = ammoInventory.ammoReceiver.defaultLightCart;
-
-                if (owner == PlayerIdManager.LocalSmallId)
+                NetworkAssetSpawner.OnSpawnComplete(trackerId, new NetworkAssetSpawner.SpawnCallbackInfo()
                 {
-                    if (ammoInventory.ammoReceiver._selectedCartridgeData != null)
-                        cart = ammoInventory.ammoReceiver._selectedCartridgeData;
-                }
-                else if (PlayerRepManager.TryGetPlayerRep(owner, out var rep))
-                {
-                    if (rep.RigReferences.RigManager.AmmoInventory.ammoReceiver._selectedCartridgeData != null)
-                    {
-                        ammoInventory = rep.RigReferences.RigManager.AmmoInventory;
-
-                        cart = ammoInventory.ammoReceiver._selectedCartridgeData;
-                    }
-                }
-
-                magazine.Initialize(cart, ammoInventory.GetCartridgeCount(cart));
-                magazine.Claim();
-
-                NullableMethodExtensions.AudioPlayer_PlayAtPoint(ammoInventory.ammoReceiver.grabClips, ammoInventory.ammoReceiver.transform.position, null, null, false, null, null);
-
-                // Attach the object to the hand
-                if (owner == PlayerIdManager.LocalSmallId)
-                {
-                    var found = RigData.RigReferences.GetHand(hand);
-
-                    if (found)
-                    {
-                        found.GrabLock = false;
-
-                        if (found.HasAttachedObject())
-                        {
-                            var current = Grip.Cache.Get(found.m_CurrentAttachedGO);
-                            if (current)
-                                current.TryDetach(found);
-                        }
-
-                        DelayUtilities.Delay(() => { Internal_ForceGrabConfirm(found, grip); }, 1);
-                    }
-                }
-                else if (PlayerRepManager.TryGetPlayerRep(owner, out var rep))
-                {
-                    var repHand = rep.RigReferences.GetHand(hand);
-                    grip.MoveIntoHand(repHand);
-
-                    rep.AttachObject(hand, grip);
-                }
+                    spawned = go,
+                    syncable = newSyncable,
+                });
             }
 
-            DelayUtilities.Delay(() => { Internal_PostSpawn(poolee, owner, grip, hand); }, 3);
+            // var magazine = go.GetComponent<Magazine>();
+            // if (magazine)
+            // {
+            //     grip = magazine.grip;
+            // 
+            //     var ammoInventory = RigData.RigReferences.RigManager.AmmoInventory;
+            // 
+            //     CartridgeData cart = ammoInventory.ammoReceiver.defaultLightCart;
+            // 
+            //     if (owner == PlayerIdManager.LocalSmallId)
+            //     {
+            //         if (ammoInventory.ammoReceiver._selectedCartridgeData != null)
+            //             cart = ammoInventory.ammoReceiver._selectedCartridgeData;
+            //     }
+            //     else if (PlayerRepManager.TryGetPlayerRep(owner, out var rep))
+            //     {
+            //         if (rep.RigReferences.RigManager.AmmoInventory.ammoReceiver._selectedCartridgeData != null)
+            //         {
+            //             ammoInventory = rep.RigReferences.RigManager.AmmoInventory;
+            // 
+            //             cart = ammoInventory.ammoReceiver._selectedCartridgeData;
+            //         }
+            //     }
+            // 
+            //     magazine.Initialize(cart, ammoInventory.GetCartridgeCount(cart));
+            //     magazine.Claim();
+            // 
+            //     NullableMethodExtensions.AudioPlayer_PlayAtPoint(ammoInventory.ammoReceiver.grabClips, ammoInventory.ammoReceiver.transform.position, null, null, false, null, null);
+            // 
+            //     // Attach the object to the hand
+            //     if (owner == PlayerIdManager.LocalSmallId)
+            //     {
+            //         var found = RigData.RigReferences.GetHand(hand);
+            // 
+            //         if (found)
+            //         {
+            //             found.GrabLock = false;
+            // 
+            //             if (found.HasAttachedObject())
+            //             {
+            //                 var current = Grip.Cache.Get(found.m_CurrentAttachedGO);
+            //                 if (current)
+            //                     current.TryDetach(found);
+            //             }
+            // 
+            //             DelayUtilities.Delay(() => { Internal_ForceGrabConfirm(found, grip); }, 1);
+            //         }
+            //     }
+            //     else if (PlayerRepManager.TryGetPlayerRep(owner, out var rep))
+            //     {
+            //         var repHand = rep.RigReferences.GetHand(hand);
+            //         grip.MoveIntoHand(repHand);
+            // 
+            //         rep.AttachObject(hand, grip);
+            //     }
+            // }
+
+            DelayUtilities.Delay(() => { Internal_PostSpawn(poolee); }, 3);
         }
 
-        private static void Internal_ForceGrabConfirm(Hand hand, Grip grip)
-        {
-            grip.MoveIntoHand(hand);
-
-            grip.TryAttach(hand, true);
-        }
-
-        private static void Internal_PostSpawn(AssetPoolee __instance, byte owner, Grip grip = null, Handedness hand = Handedness.UNDEFINED)
+        private static void Internal_PostSpawn(AssetPoolee __instance)
         {
             PooleeUtilities.CanSpawnList.Pull(__instance);
             PooleeUtilities.ForceEnabled.Pull(__instance);

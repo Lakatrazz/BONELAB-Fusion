@@ -11,6 +11,8 @@ using SLZ.UI;
 using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Utilities;
+using LabFusion.RPC;
+using SLZ.Marrow.Data;
 
 namespace LabFusion.Patching
 {
@@ -25,11 +27,29 @@ namespace LabFusion.Patching
 
         public static void OnSpawnDelegate(PopUpMenuView __instance)
         {
-            if (NetworkInfo.HasServer && !NetworkInfo.IsServer && RigData.RigReferences.RigManager && RigData.RigReferences.RigManager.uiRig.popUpMenu == __instance)
+            if (NetworkInfo.HasServer && !NetworkInfo.IsServer && RigData.HasPlayer && RigData.RigReferences.RigManager.uiRig.popUpMenu == __instance)
             {
-                var transform = new SerializedTransform(__instance.radialPageView.transform);
-                PooleeUtilities.RequestSpawn(__instance.crate_SpawnGun.Barcode, transform);
-                PooleeUtilities.RequestSpawn(__instance.crate_Nimbus.Barcode, transform);
+                var transform = __instance.radialPageView.transform;
+
+                var spawnGun = new Spawnable() { crateRef = new(__instance.crate_SpawnGun.Barcode) };
+                var nimbusGun = new Spawnable() { crateRef = new(__instance.crate_Nimbus.Barcode) };
+
+                var spawnGunInfo = new NetworkAssetSpawner.SpawnRequestInfo()
+                {
+                    spawnable = spawnGun,
+                    position = transform.position,
+                    rotation = transform.rotation
+                };
+
+                var nimbusGunInfo = new NetworkAssetSpawner.SpawnRequestInfo()
+                {
+                    spawnable = nimbusGun,
+                    position = transform.position,
+                    rotation = transform.rotation
+                };
+
+                NetworkAssetSpawner.Spawn(spawnGunInfo);
+                NetworkAssetSpawner.Spawn(nimbusGunInfo);
             }
         }
     }

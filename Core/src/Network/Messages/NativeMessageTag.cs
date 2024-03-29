@@ -143,6 +143,8 @@ namespace LabFusion.Network
             VoteKickRequest = 81,
             VoteKickResponse = 82,
 
+            MagazineClaim = 83,
+
             // SDK messages
             // Module setup
             Module = 200,

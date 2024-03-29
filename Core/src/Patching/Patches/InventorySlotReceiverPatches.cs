@@ -47,7 +47,7 @@ namespace LabFusion.Patching
                         byte? smallId = null;
                         RigReferenceCollection references = null;
 
-                        if (rigManager == RigData.RigReferences.RigManager)
+                        if (rigManager.IsSelf())
                         {
                             smallId = PlayerIdManager.LocalSmallId;
                             references = RigData.RigReferences;
@@ -133,7 +133,7 @@ namespace LabFusion.Patching
                         byte? smallId = null;
                         RigReferenceCollection references = null;
 
-                        if (rigManager == RigData.RigReferences.RigManager)
+                        if (rigManager.IsSelf())
                         {
                             smallId = PlayerIdManager.LocalSmallId;
                             references = RigData.RigReferences;
