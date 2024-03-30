@@ -3,6 +3,7 @@ using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Preferences;
 using LabFusion.Representation;
+using LabFusion.SDK.Lobbies;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 
@@ -27,6 +28,26 @@ namespace LabFusion.BoneMenu
     internal static partial class BoneMenuCreator
     {
         private static ulong _lobbyIndex = 0;
+
+        private static MenuCategory _filterCategory = null;
+
+        public static void CreateFilters(MenuCategory category)
+        {
+            _filterCategory = category.CreateCategory("Filters", Color.white);
+
+            foreach (var filter in LobbyFilterManager.LobbyFilters)
+            {
+                AddFilter(filter);
+            }
+        }
+
+        private static void AddFilter(ILobbyFilter filter)
+        {
+            _filterCategory.CreateBoolElement(filter.GetTitle(), Color.white, filter.IsActive(), (v) =>
+            {
+                filter.SetActive(v);
+            });
+        }
 
         public static void CreateLobby(MenuCategory category, LobbyMetadataInfo info, INetworkLobby lobby, LobbySortMode sortMode = LobbySortMode.NONE)
         {

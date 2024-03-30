@@ -24,6 +24,7 @@ using MelonLoader;
 using System.Linq;
 
 using BoneLib;
+using LabFusion.SDK.Lobbies;
 
 namespace LabFusion;
 
@@ -92,6 +93,8 @@ public class FusionMod : MelonMod
         GamemodeRegistration.LoadGamemodes(FusionAssembly);
         PointItemManager.LoadItems(FusionAssembly);
         AchievementManager.LoadAchievements(FusionAssembly);
+
+        LobbyFilterManager.LoadBuiltInFilters();
 
         SyncManager.OnInitializeMelon();
 

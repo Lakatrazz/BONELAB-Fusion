@@ -1,16 +1,13 @@
 ﻿using BoneLib.BoneMenu.Elements;
+
 using LabFusion.BoneMenu;
 using LabFusion.Data;
-using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Senders;
 using LabFusion.Utilities;
-using System;
-using System.Collections.Generic;
 
 using UnityEngine;
-using static SLZ.Bonelab.BaseGameController;
 
 namespace LabFusion.SDK.Gamemodes
 {

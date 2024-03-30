@@ -37,6 +37,7 @@ using LabFusion.SDK.Gamemodes;
 using BoneLib;
 using LabFusion.Voice;
 using LabFusion.Voice.Unity;
+using LabFusion.SDK.Lobbies;
 
 namespace LabFusion.Network
 {
@@ -517,6 +518,9 @@ namespace LabFusion.Network
             // Clear existing lobbies
             _publicLobbiesCategory.Elements.Clear();
             _publicLobbiesCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshPublicLobbies);
+
+            BoneMenuCreator.CreateFilters(_publicLobbiesCategory);
+
             _publicLobbiesCategory.CreateEnumElement("Sort By", Color.white, _publicLobbySortMode, (v) =>
             {
                 _publicLobbySortMode = v;
@@ -533,17 +537,12 @@ namespace LabFusion.Network
                 return false;
 
             // Decide if this server is too private
-            switch (info.Privacy)
+            return info.Privacy switch
             {
-                default:
-                case ServerPrivacy.LOCKED:
-                case ServerPrivacy.PRIVATE:
-                    return false;
-                case ServerPrivacy.PUBLIC:
-                    return true;
-                case ServerPrivacy.FRIENDS_ONLY:
-                    return IsFriend(info.LobbyId);
-            }
+                ServerPrivacy.PUBLIC => true,
+                ServerPrivacy.FRIENDS_ONLY => IsFriend(info.LobbyId),
+                _ => false,
+            };
         }
 
         private Task<Lobby[]> FetchLobbies()
@@ -582,7 +581,7 @@ namespace LabFusion.Network
                     var networkLobby = new SteamLobby(lobby);
                     var info = LobbyMetadataHelper.ReadInfo(networkLobby);
 
-                    if (Internal_CanShowLobby(info))
+                    if (Internal_CanShowLobby(info) && LobbyFilterManager.FilterLobby(networkLobby, info))
                     {
                         // Add to list
                         BoneMenuCreator.CreateLobby(_publicLobbiesCategory, info, networkLobby, sortMode);
