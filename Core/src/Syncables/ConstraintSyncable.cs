@@ -25,11 +25,6 @@ namespace LabFusion.Syncables
             Cache.Add(tracker, this);
         }
 
-        // Catchup not implemented yet
-        public override void InsertCatchupDelegate(Action<ulong> catchup) { }
-
-        public override void InvokeCatchup(ulong user) { }
-
         public override void Cleanup()
         {
             if (!Tracker.IsNOC())

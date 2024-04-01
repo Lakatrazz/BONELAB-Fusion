@@ -97,8 +97,6 @@ namespace LabFusion.Syncables
 
         public bool IsHeld = false;
 
-        private Action<ulong> _catchupDelegate;
-
         private bool _initialized = false;
 
         public PropSyncable(InteractableHost host = null, GameObject root = null)
@@ -230,17 +228,6 @@ namespace LabFusion.Syncables
                 if (LockJoints[i] != null)
                     GameObject.Destroy(LockJoints[i]);
             }
-        }
-
-        public override void InsertCatchupDelegate(Action<ulong> catchup)
-        {
-            _catchupDelegate += catchup;
-        }
-
-        public override void InvokeCatchup(ulong user)
-        {
-            // Send any stored catchup info for our object
-            _catchupDelegate?.InvokeSafe(user, "executing Catchup Delegate");
         }
 
         public void AddOwnerLocker(IOwnerLocker locker)

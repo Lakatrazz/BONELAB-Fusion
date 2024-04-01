@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using LabFusion.Utilities;
 using SLZ.Interaction;
 
 namespace LabFusion.Syncables
@@ -11,6 +11,8 @@ namespace LabFusion.Syncables
     public interface ISyncable
     {
         void InsertCatchupDelegate(Action<ulong> catchup);
+
+        void ClearCatchupDelegate();
 
         void InvokeCatchup(ulong user);
 
@@ -59,12 +61,27 @@ namespace LabFusion.Syncables
 
         private Action _onRegistered = null;
 
+        private Action<ulong> _catchupDelegate;
+
         public abstract bool IsGrabbed();
         public abstract Grip GetGrip(ushort index);
         public abstract ushort? GetIndex(Grip grip);
 
-        public abstract void InsertCatchupDelegate(Action<ulong> catchup);
-        public abstract void InvokeCatchup(ulong user);
+        public void InsertCatchupDelegate(Action<ulong> catchup)
+        {
+            _catchupDelegate += catchup;
+        }
+
+        public void ClearCatchupDelegate()
+        {
+            _catchupDelegate = null;
+        }
+
+        public void InvokeCatchup(ulong user)
+        {
+            // Send any stored catchup info for our object
+            _catchupDelegate?.InvokeSafe(user, "executing Catchup Delegate");
+        }
 
         public abstract byte? GetOwner();
         public abstract bool IsOwner();
@@ -79,6 +96,8 @@ namespace LabFusion.Syncables
         public virtual void Cleanup()
         {
             _wasDisposed = true;
+
+            ClearCatchupDelegate();
         }
 
         public virtual void OnRegister(ushort id)
