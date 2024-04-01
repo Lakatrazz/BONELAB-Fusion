@@ -42,7 +42,10 @@ namespace LabFusion.Syncables
 
         ushort GetId();
 
+        void OnPreFixedUpdate();
         void OnFixedUpdate();
+
+        void OnParallelFixedUpdate();
 
         void OnUpdate();
 
@@ -91,6 +94,9 @@ namespace LabFusion.Syncables
         public abstract void OnFixedUpdate();
         public abstract void OnUpdate();
 
+        public virtual void OnPreFixedUpdate() { }
+
+        public virtual void OnParallelFixedUpdate() { }
         public virtual void OnParallelUpdate() { }
 
         public virtual void Cleanup()

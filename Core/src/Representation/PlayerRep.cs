@@ -637,11 +637,11 @@ namespace LabFusion.Representation
                     var pos = serializedPelvis.position;
                     var rot = serializedPelvis.rotation;
 
-                    repPelvis.AddForce(pelvisPDController.GetForce(repPelvis, pelvisPosition, repPelvis.velocity, pos, predictVelocity), ForceMode.Acceleration);
+                    repPelvis.AddForce(pelvisPDController.GetForce(pelvisPosition, repPelvis.velocity, pos, predictVelocity), ForceMode.Acceleration);
                     // We only want to apply angular force when ragdolled
                     if (rigManager.physicsRig.torso.spineInternalMult <= 0f)
                     {
-                        repPelvis.AddTorque(pelvisPDController.GetTorque(repPelvis, pelvisRotation, repPelvis.angularVelocity, rot, predictAngularVelocity), ForceMode.Acceleration);
+                        repPelvis.AddTorque(pelvisPDController.GetTorque(pelvisRotation, repPelvis.angularVelocity, rot, predictAngularVelocity), ForceMode.Acceleration);
                     }
                     else
                         pelvisPDController.ResetRotation();

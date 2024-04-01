@@ -16,11 +16,13 @@ namespace LabFusion.Data
         private Vector3 _angularVelocity;
         private bool _isSleeping;
         private bool _isNull;
+        private bool _isKinematic;
 
         public Vector3 Velocity => _velocity;
         public Vector3 AngularVelocity => _angularVelocity;
         public bool IsSleeping => _isSleeping;
         public bool IsNull => _isNull;
+        public bool IsKinematic => _isKinematic;
 
         public void VerifyNull(Rigidbody rigidbody)
         {
@@ -38,6 +40,8 @@ namespace LabFusion.Data
             }
 
             _isSleeping = rigidbody.IsSleeping();
+
+            _isKinematic = rigidbody.isKinematic;
 
             if (_isSleeping)
             {

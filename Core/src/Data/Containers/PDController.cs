@@ -47,6 +47,13 @@ namespace LabFusion.Data
         private Vector3 _lastPosition = Vector3Extensions.zero;
         private Quaternion _lastRotation = QuaternionExtensions.identity;
 
+        public Vector3 SavedForce { get; set; }
+        public Vector3 SavedTorque { get; set; }
+
+        public bool ValidPosition => _validPosition;
+
+        public bool ValidRotation => _validRotation;
+
         public static void OnInitializeMelon()
         {
             _positionKp = CalculateKP(PositionFrequency);
@@ -92,11 +99,15 @@ namespace LabFusion.Data
         public void ResetPosition()
         {
             _validPosition = false;
+
+            SavedForce = Vector3.zero;
         }
 
         public void ResetRotation()
         {
             _validRotation = false;
+
+            SavedTorque = Vector3.zero;
         }
 
         public void Reset()
@@ -105,7 +116,7 @@ namespace LabFusion.Data
             ResetRotation();
         }
 
-        public Vector3 GetForce(in Rigidbody rb, in Vector3 position, in Vector3 velocity, in Vector3 targetPos, in Vector3 targetVel)
+        public Vector3 GetForce(in Vector3 position, in Vector3 velocity, in Vector3 targetPos, in Vector3 targetVel)
         {
             // Update derivatives if needed
             if (!_validPosition)
@@ -115,18 +126,13 @@ namespace LabFusion.Data
                 _validPosition = true;
             }
 
-            // Get gravity so we can apply a counter force
-            Vector3 gravity = Vector3Extensions.zero;
-            if (rb.useGravity)
-                gravity = PhysicsUtilities.Gravity;
-
             Vector3 Pt0 = position;
             Vector3 Vt0 = velocity;
 
             Vector3 Pt1 = _lastPosition;
             Vector3 Vt1 = _lastVelocity;
 
-            var force = (Pt1 - Pt0) * _positionKsg + (Vt1 - Vt0) * _positionKdg - gravity;
+            var force = (Pt1 - Pt0) * _positionKsg + (Vt1 - Vt0) * _positionKdg;
 
             // Acceleration
             force += (targetVel - _lastVelocity) / _lastFixedDelta;
@@ -141,7 +147,7 @@ namespace LabFusion.Data
             return force;
         }
 
-        public Vector3 GetTorque(Rigidbody rb, in Quaternion rotation, in Vector3 angularVelocity, in Quaternion targetRot, in Vector3 targetVel)
+        public Vector3 GetTorque(in Quaternion rotation, in Vector3 angularVelocity, in Quaternion targetRot, in Vector3 targetVel)
         {
             // Update derivatives if needed
             if (!_validRotation)

@@ -578,6 +578,17 @@ namespace LabFusion.Syncables
 
         private bool HasValidParameters() => !DisableSyncing && IsRegistered() && FusionSceneManager.IsLoadDone() && IsRootEnabled;
 
+        public override void OnPreFixedUpdate()
+        {
+            if (!_initialized)
+                return;
+
+            if (!HasValidParameters())
+                return;
+            
+            OnFixedUpdateCache();
+        }
+
         public override void OnFixedUpdate()
         {
             if (!_initialized)
@@ -587,8 +598,6 @@ namespace LabFusion.Syncables
             {
                 if (!HasValidParameters())
                     return;
-
-                OnFixedUpdateCache();
 
                 if (!Owner.HasValue || Owner.Value == PlayerIdManager.LocalSmallId)
                     return;
@@ -697,9 +706,6 @@ namespace LabFusion.Syncables
 
         private void OnOwnedUpdate()
         {
-            foreach (var extender in _extenders)
-                extender.OnOwnedUpdate();
-
             NullValues();
 
             bool hasMovingBody = false;
@@ -793,7 +799,9 @@ namespace LabFusion.Syncables
             IsSleeping = false;
         }
 
-        private void CheckForTeleport(Vector3 position, Vector3 velocity, Vector3 targetPosition)
+        private Vector3 _teleportOffset;
+
+        private bool CheckForTeleport(Vector3 position, Vector3 velocity, Vector3 targetPosition)
         {
             // Teleport check
             var offset = targetPosition - position;
@@ -801,22 +809,51 @@ namespace LabFusion.Syncables
             float distSqr = offset.sqrMagnitude;
             if (distSqr > (2f * (velocity.sqrMagnitude + 1f)))
             {
-                var rootTransform = GameObject.transform;
+                _teleportOffset = offset;
 
-                rootTransform.position += offset;
+                return true;
             }
+
+            return false;
         }
 
-        private void OnReceivedUpdate()
+        private void Teleport(Vector3 offset)
         {
-            if (!SafetyUtilities.IsValidTime)
+            var rootTransform = GameObject.transform;
+
+            rootTransform.position += offset;
+        }
+
+        private bool _readyForForces = false;
+        private bool _teleportThisFrame = false;
+
+        public override void OnParallelFixedUpdate()
+        {
+            _readyForForces = false;
+            _teleportThisFrame = false;
+
+            if (!_initialized)
+            {
                 return;
+            }
+
+            if (!HasValidParameters())
+            {
+                return;
+            }
+
+            if (!Owner.HasValue || Owner.Value == PlayerIdManager.LocalSmallId)
+            {
+                return;
+            }
+
+            if (!SafetyUtilities.IsValidTime)
+            {
+                return;
+            }
 
             float dt = TimeUtilities.FixedDeltaTime;
             float timeSinceMessage = TimeUtilities.TimeSinceStartup - TimeOfMessage;
-
-            foreach (var extender in _extenders)
-                extender.OnReceivedUpdate();
 
             // Check if anything is being grabbed
             if (!IsHeld && (IsSleeping || timeSinceMessage >= 1f))
@@ -858,7 +895,6 @@ namespace LabFusion.Syncables
                     continue;
                 }
 
-                var rb = TempRigidbodies.Items[i].Rigidbody;
                 var cache = TransformCaches[i];
 
                 if (!DesiredPositions[i].HasValue || !DesiredRotations[i].HasValue)
@@ -876,7 +912,7 @@ namespace LabFusion.Syncables
 
                 // Check if this is kinematic
                 // If so, just ignore values
-                if (rb.isKinematic)
+                if (rbCache.IsKinematic)
                 {
                     pdController.Reset();
                     continue;
@@ -896,23 +932,57 @@ namespace LabFusion.Syncables
                 // Check for teleport
                 if (i == 0 && allowPosition)
                 {
-                    CheckForTeleport(cache.Position, rbCache.Velocity, pos);
+                    _teleportThisFrame = CheckForTeleport(cache.Position, rbCache.Velocity, pos);
                 }
 
                 // Add proper forces
                 if (allowPosition)
                 {
-                    rb.AddForce(pdController.GetForce(rb, cache.Position, rbCache.Velocity, pos, vel), ForceMode.Acceleration);
+                    pdController.SavedForce = pdController.GetForce(cache.Position, rbCache.Velocity, pos, vel);
                 }
                 else
                 {
-                    if (rb.useGravity)
-                        rb.AddForce(-PhysicsUtilities.Gravity, ForceMode.Acceleration);
-
                     pdController.ResetPosition();
                 }
 
-                rb.AddTorque(pdController.GetTorque(rb, cache.Rotation, rbCache.AngularVelocity, rot, angVel), ForceMode.Acceleration);
+                pdController.SavedTorque = pdController.GetTorque(cache.Rotation, rbCache.AngularVelocity, rot, angVel);
+
+                _readyForForces = true;
+            }
+        }
+
+        private void OnReceivedUpdate()
+        {
+            if (_teleportThisFrame)
+            {
+                Teleport(_teleportOffset);
+            }
+
+            if (_readyForForces)
+            {
+                for (var i = 0; i < GameObjectCount; i++)
+                {
+                    var rbCache = RigidbodyCaches[i];
+
+                    if (rbCache.IsNull)
+                    {
+                        continue;
+                    }
+
+                    var rb = TempRigidbodies.Items[i].Rigidbody;
+
+                    var pdController = PDControllers[i];
+
+                    if (pdController.ValidPosition)
+                    {
+                        rb.AddForce(pdController.SavedForce, ForceMode.Acceleration);
+                    }
+
+                    if (pdController.ValidRotation)
+                    {
+                        rb.AddTorque(pdController.SavedTorque, ForceMode.Acceleration);
+                    }
+                }
             }
         }
     }

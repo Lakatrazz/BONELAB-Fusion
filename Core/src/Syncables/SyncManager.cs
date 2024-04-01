@@ -111,7 +111,25 @@ namespace LabFusion.Syncables
 
         internal static void OnFixedUpdate()
         {
-            // Here we update the positions/etc of all of our synced objects
+            // Cache variables
+            foreach (var syncable in Syncables)
+            {
+                try
+                {
+                    syncable.Value.OnPreFixedUpdate();
+                }
+                catch (Exception e)
+                {
+#if DEBUG
+                    FusionLogger.LogException("executing OnPreFixedUpdate for syncable", e);
+#endif
+                }
+            }
+
+            // Run in parallel to calculate forces/etc
+            Parallel.ForEach(Syncables.Values, OnParallelFixedUpdate);
+
+            // Now apply forces
             foreach (var syncable in Syncables)
             {
                 try
@@ -124,6 +142,20 @@ namespace LabFusion.Syncables
                     FusionLogger.LogException("executing OnFixedUpdate for syncable", e);
 #endif
                 }
+            }
+        }
+
+        private static void OnParallelFixedUpdate(ISyncable syncable)
+        {
+            try
+            {
+                syncable.OnParallelFixedUpdate();
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                FusionLogger.LogException("executing OnParallelFixedUpdate for syncable", e);
+#endif
             }
         }
 

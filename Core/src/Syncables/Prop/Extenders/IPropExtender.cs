@@ -17,10 +17,6 @@ namespace LabFusion.Syncables
 
         void OnCleanup();
 
-        void OnOwnedUpdate();
-
-        void OnReceivedUpdate();
-
         void OnOwnershipTransfer();
 
         void OnUpdate();
