@@ -1,5 +1,6 @@
 ﻿using LabFusion.Extensions;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,16 +10,23 @@ namespace LabFusion.Data
 {
     public class FusionArrayPool<T>
     {
-        private readonly FusionDictionary<int, Queue<T[]>> _pool = new();
+        private readonly ConcurrentDictionary<int, ConcurrentQueue<T[]>> _pool = new();
 
         public T[] Rent(int size)
         {
-            if (!_pool.TryGetValue(size, out Queue<T[]> queue) || queue.Count == 0)
+            if (!_pool.TryGetValue(size, out ConcurrentQueue<T[]> queue))
             {
                 return new T[size];
             }
 
-            return queue.Dequeue();
+            if (queue.TryDequeue(out var result))
+            {
+                return result;
+            }
+            else
+            {
+                return new T[size];
+            }
         }
 
         public void Return(T[] buffer)
@@ -29,10 +37,10 @@ namespace LabFusion.Data
             }
 
             int size = buffer.Length;
-            if (!_pool.TryGetValue(size, out Queue<T[]> queue))
+            if (!_pool.TryGetValue(size, out ConcurrentQueue<T[]> queue))
             {
-                queue = new Queue<T[]>();
-                _pool.Add(size, queue);
+                queue = new ConcurrentQueue<T[]>();
+                _pool.TryAdd(size, queue);
             }
 
             queue.Enqueue(buffer);

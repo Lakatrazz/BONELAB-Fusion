@@ -97,16 +97,20 @@ namespace LabFusion.Network
         {
             NetworkInfo.BytesDown += size;
 
+            byte tag = 0;
+
             try
             {
-                byte tag = buffer[0];
+                tag = buffer[0];
                 byte[] message = ByteRetriever.Rent(size - 1);
 
                 for (var i = 0; i < message.Length; i++)
                     message[i] = buffer[i + 1];
 
                 if (Handlers[tag] != null)
+                {
                     Handlers[tag].Internal_HandleMessage(message, isServerHandled);
+                }
 #if DEBUG
                 else
                 {
@@ -116,7 +120,7 @@ namespace LabFusion.Network
             }
             catch (Exception e)
             {
-                FusionLogger.Error($"Failed handling network message with reason: {e.Message}\nTrace:{e.StackTrace}");
+                FusionLogger.Error($"Failed handling network message of tag {tag} with reason: {e.Message}\nTrace:{e.StackTrace}");
             }
         }
 

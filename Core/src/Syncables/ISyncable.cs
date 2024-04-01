@@ -44,6 +44,8 @@ namespace LabFusion.Syncables
 
         void OnUpdate();
 
+        void OnParallelUpdate();
+
         bool IsDestroyed();
     }
 
@@ -71,6 +73,8 @@ namespace LabFusion.Syncables
 
         public abstract void OnFixedUpdate();
         public abstract void OnUpdate();
+
+        public virtual void OnParallelUpdate() { }
 
         public virtual void Cleanup()
         {

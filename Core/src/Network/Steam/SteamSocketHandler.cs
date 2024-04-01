@@ -20,20 +20,12 @@ namespace LabFusion.Network
     {
         public static SendType ConvertToSendType(NetworkChannel channel)
         {
-            SendType sendType;
-            switch (channel)
+            var sendType = channel switch
             {
-                case NetworkChannel.Unreliable:
-                default:
-                    sendType = SendType.Unreliable;
-                    break;
-                case NetworkChannel.VoiceChat:
-                    sendType = SendType.Unreliable | SendType.NoDelay;
-                    break;
-                case NetworkChannel.Reliable:
-                    sendType = SendType.Reliable;
-                    break;
-            }
+                NetworkChannel.VoiceChat => SendType.Unreliable | SendType.NoDelay,
+                NetworkChannel.Reliable => SendType.Reliable,
+                _ => SendType.Unreliable,
+            };
             return sendType;
         }
 
@@ -59,11 +51,12 @@ namespace LabFusion.Network
             {
                 IntPtr messagePtr = (IntPtr)message.Buffer;
 
-                for (var i = 0; i < socketManager.Connected.Count; i++)
+                void SendMessage(Connection connection)
                 {
-                    var connection = socketManager.Connected[i];
                     connection.SendMessage(messagePtr, sizeOfMessage, sendType);
                 }
+
+                Parallel.ForEach(socketManager.Connected, SendMessage);
             }
         }
 

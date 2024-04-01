@@ -90,6 +90,23 @@ namespace LabFusion.Syncables
 #endif
                 }
             }
+
+            // Now, run in parallel
+            Parallel.ForEach(Syncables.Values, OnParallelUpdate);
+        }
+
+        private static void OnParallelUpdate(ISyncable syncable)
+        {
+            try
+            {
+                syncable.OnParallelUpdate();
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                FusionLogger.LogException("executing OnParallelUpdate for syncable", e);
+#endif
+            }
         }
 
         internal static void OnFixedUpdate()

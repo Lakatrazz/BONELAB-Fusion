@@ -639,6 +639,8 @@ namespace LabFusion.Syncables
             }
         }
 
+        private bool _readyToSend = false;
+
         public override void OnUpdate()
         {
             if (!_initialized)
@@ -745,11 +747,21 @@ namespace LabFusion.Syncables
             if (TimeUtilities.TimeSinceStartup - _timeOfLastSend >= 0.5f)
             {
                 SetSendState(SendState.IDLE);
+                _readyToSend = false;
                 return;
             }
             else
             {
                 SetSendState(SendState.SENDING);
+                _readyToSend = true;
+            }
+        }
+
+        public override void OnParallelUpdate()
+        {
+            if (!_readyToSend)
+            {
+                return;
             }
 
             for (var i = 0; i < TransformCaches.Length; i++)
@@ -766,6 +778,8 @@ namespace LabFusion.Syncables
 
             using var message = FusionMessage.Create(NativeMessageTag.PropSyncableUpdate, writer);
             MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Unreliable, message);
+
+            _readyToSend = false;
         }
 
         private void SetSendState(SendState state)
