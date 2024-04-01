@@ -165,6 +165,8 @@ namespace LabFusion.Network
         {
             void Send(PlayerId id)
             {
+                ThreadingUtilities.IL2PrepareThread();
+
                 if (id.SmallId != userId && (id.SmallId != 0 || !ignoreHost))
                     SendFromServer(id.SmallId, channel, message);
             }
@@ -182,6 +184,8 @@ namespace LabFusion.Network
         {
             void Send(PlayerId id)
             {
+                ThreadingUtilities.IL2PrepareThread();
+
                 if (id.LongId != userId && (id.SmallId != 0 || !ignoreHost))
                     SendFromServer(id.SmallId, channel, message);
             }

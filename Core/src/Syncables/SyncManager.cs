@@ -97,6 +97,8 @@ namespace LabFusion.Syncables
 
         private static void OnParallelUpdate(ISyncable syncable)
         {
+            ThreadingUtilities.IL2PrepareThread();
+
             try
             {
                 syncable.OnParallelUpdate();
@@ -147,6 +149,8 @@ namespace LabFusion.Syncables
 
         private static void OnParallelFixedUpdate(ISyncable syncable)
         {
+            ThreadingUtilities.IL2PrepareThread();
+
             try
             {
                 syncable.OnParallelFixedUpdate();

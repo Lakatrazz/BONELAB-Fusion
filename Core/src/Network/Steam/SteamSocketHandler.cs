@@ -53,6 +53,8 @@ namespace LabFusion.Network
 
                 void SendMessage(Connection connection)
                 {
+                    ThreadingUtilities.IL2PrepareThread();
+
                     connection.SendMessage(messagePtr, sizeOfMessage, sendType);
                 }
 
