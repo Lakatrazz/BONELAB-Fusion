@@ -25,6 +25,8 @@ using System.Linq;
 
 using BoneLib;
 using LabFusion.SDK.Lobbies;
+using UnityEngine;
+using UnhollowerBaseLib;
 
 namespace LabFusion;
 
@@ -328,5 +330,14 @@ public class FusionMod : MelonMod
     public override void OnGUI()
     {
         InternalLayerHelpers.OnGUILayer();
+
+#if DEBUG
+        var emptyOptions = new GUILayoutOption[0];
+
+        GUILayout.Label($"Bytes Up: {NetworkInfo.BytesUp}", emptyOptions);
+        GUILayout.Label($"Bytes Down: {NetworkInfo.BytesDown}", emptyOptions);
+
+        GUILayout.Label($"Syncable Count: {SyncManager.Syncables.Count}", emptyOptions);
+#endif
     }
 }
