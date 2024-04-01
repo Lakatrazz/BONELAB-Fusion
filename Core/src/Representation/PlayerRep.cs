@@ -688,14 +688,12 @@ namespace LabFusion.Representation
                 if (syncedPoints == null || PlayerIdManager.LocalId == null)
                     return false;
 
-                using (var writer = FusionWriter.Create(PlayerRepTransformData.Size))
-                {
-                    using var data = PlayerRepTransformData.Create(PlayerIdManager.LocalSmallId, syncedPoints, syncedPelvis, syncedPlayspace, syncedLeftHand, syncedRightHand);
-                    writer.Write(data);
+                using var writer = FusionWriter.Create(PlayerRepTransformData.Size);
+                using var data = PlayerRepTransformData.Create(PlayerIdManager.LocalSmallId, syncedPoints, syncedPelvis, syncedPlayspace, syncedLeftHand, syncedRightHand);
+                writer.Write(data);
 
-                    using var message = FusionMessage.Create(NativeMessageTag.PlayerRepTransform, writer);
-                    MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Unreliable, message);
-                }
+                using var message = FusionMessage.Create(NativeMessageTag.PlayerRepTransform, writer);
+                MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Unreliable, message);
 
                 return true;
             }
