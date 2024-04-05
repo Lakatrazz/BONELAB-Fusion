@@ -51,8 +51,8 @@ namespace LabFusion.Patching
                 // Send object destroy
                 if (syncable.IsOwner() && !__state && __instance._isDead)
                 {
-                    using var writer = FusionWriter.Create(ObjectDestructableDestroyData.Size);
-                    using var data = ObjectDestructableDestroyData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value);
+                    using var writer = FusionWriter.Create(ComponentIndexData.Size);
+                    using var data = ComponentIndexData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value);
                     writer.Write(data);
 
                     using var message = FusionMessage.Create(NativeMessageTag.ObjectDestructableDestroy, writer);

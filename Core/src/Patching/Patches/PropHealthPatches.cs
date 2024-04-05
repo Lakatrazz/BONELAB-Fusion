@@ -47,14 +47,12 @@ namespace LabFusion.Patching
                 // Send object destroy
                 else
                 {
-                    using (var writer = FusionWriter.Create(PropHealthDestroyData.Size))
-                    {
-                        using var data = PropHealthDestroyData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value);
-                        writer.Write(data);
+                    using var writer = FusionWriter.Create(ComponentIndexData.Size);
+                    using var data = ComponentIndexData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value);
+                    writer.Write(data);
 
-                        using var message = FusionMessage.Create(NativeMessageTag.PropHealthDestroy, writer);
-                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                    }
+                    using var message = FusionMessage.Create(NativeMessageTag.PropHealthDestroy, writer);
+                    MessageSender.SendToServer(NetworkChannel.Reliable, message);
                     return true;
                 }
             }

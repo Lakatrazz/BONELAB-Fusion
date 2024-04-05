@@ -17,40 +17,6 @@ using SLZ.Props.Weapons;
 
 namespace LabFusion.Network
 {
-    public class PuppetMasterKillData : IFusionSerializable, IDisposable
-    {
-        public const int Size = sizeof(byte) + sizeof(ushort);
-
-        public byte smallId;
-        public ushort puppetId;
-
-        public void Serialize(FusionWriter writer)
-        {
-            writer.Write(smallId);
-            writer.Write(puppetId);
-        }
-
-        public void Deserialize(FusionReader reader)
-        {
-            smallId = reader.ReadByte();
-            puppetId = reader.ReadUInt16();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
-        public static PuppetMasterKillData Create(byte smallId, ushort puppetId)
-        {
-            return new PuppetMasterKillData()
-            {
-                smallId = smallId,
-                puppetId = puppetId,
-            };
-        }
-    }
-
     [Net.DelayWhileTargetLoading]
     public class PuppetMasterKillMessage : FusionMessageHandler
     {
@@ -59,7 +25,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<PuppetMasterKillData>();
+            using var data = reader.ReadFusionSerializable<PropReferenceData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {
@@ -68,7 +34,7 @@ namespace LabFusion.Network
             }
             else
             {
-                if (SyncManager.TryGetSyncable<PropSyncable>(data.puppetId, out var syncable) && syncable.TryGetExtender<PuppetMasterExtender>(out var extender))
+                if (SyncManager.TryGetSyncable<PropSyncable>(data.syncId, out var syncable) && syncable.TryGetExtender<PuppetMasterExtender>(out var extender))
                 {
                     // Save the most recent killed NPC
                     PuppetMasterExtender.LastKilled = syncable;

@@ -17,44 +17,6 @@ using SLZ.Props.Weapons;
 
 namespace LabFusion.Network
 {
-    public class PropHealthDestroyData : IFusionSerializable, IDisposable
-    {
-        public const int Size = sizeof(byte) * 2 + sizeof(ushort);
-
-        public byte smallId;
-        public ushort syncId;
-        public byte healthIndex;
-
-        public void Serialize(FusionWriter writer)
-        {
-            writer.Write(smallId);
-            writer.Write(syncId);
-            writer.Write(healthIndex);
-        }
-
-        public void Deserialize(FusionReader reader)
-        {
-            smallId = reader.ReadByte();
-            syncId = reader.ReadUInt16();
-            healthIndex = reader.ReadByte();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
-        public static PropHealthDestroyData Create(byte smallId, ushort syncId, byte healthIndex)
-        {
-            return new PropHealthDestroyData()
-            {
-                smallId = smallId,
-                syncId = syncId,
-                healthIndex = healthIndex,
-            };
-        }
-    }
-
     [Net.DelayWhileTargetLoading]
     public class PropHealthDestroyMessage : FusionMessageHandler
     {
@@ -63,7 +25,8 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<PropHealthDestroyData>();
+            using var data = reader.ReadFusionSerializable<ComponentIndexData>();
+
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {
@@ -74,7 +37,7 @@ namespace LabFusion.Network
             {
                 if (SyncManager.TryGetSyncable<PropSyncable>(data.syncId, out var health) && health.TryGetExtender<PropHealthExtender>(out var extender))
                 {
-                    var propHealth = extender.GetComponent(data.healthIndex);
+                    var propHealth = extender.GetComponent(data.componentIndex);
                     PropHealthPatches.IgnorePatches = true;
 
                     propHealth.hits = propHealth.req_hit_count + 1;

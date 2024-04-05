@@ -412,6 +412,7 @@
     <Compile Include="Core\src\MonoBehaviours\NotifyOnEnable.cs" />
     <Compile Include="Core\src\MonoBehaviours\CollisionSyncer.cs" />
     <Compile Include="Core\src\MonoBehaviours\TimedDespawner.cs" />
+    <Compile Include="Core\src\Network\Data\ComponentIndexData.cs" />
     <Compile Include="Core\src\Network\Fallback\EmptyNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Helpers\LobbyMetadataHelper.cs" />
     <Compile Include="Core\src\Network\Helpers\MetadataHelper.cs" />

@@ -20,44 +20,6 @@ using LabFusion.Extensions;
 
 namespace LabFusion.Network
 {
-    public class ObjectDestructableDestroyData : IFusionSerializable, IDisposable
-    {
-        public const int Size = sizeof(byte) * 2 + sizeof(ushort);
-
-        public byte smallId;
-        public ushort syncId;
-        public byte destructableIndex;
-
-        public void Serialize(FusionWriter writer)
-        {
-            writer.Write(smallId);
-            writer.Write(syncId);
-            writer.Write(destructableIndex);
-        }
-
-        public void Deserialize(FusionReader reader)
-        {
-            smallId = reader.ReadByte();
-            syncId = reader.ReadUInt16();
-            destructableIndex = reader.ReadByte();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
-        public static ObjectDestructableDestroyData Create(byte smallId, ushort syncId, byte destructableIndex)
-        {
-            return new ObjectDestructableDestroyData()
-            {
-                smallId = smallId,
-                syncId = syncId,
-                destructableIndex = destructableIndex,
-            };
-        }
-    }
-
     [Net.DelayWhileTargetLoading]
     public class ObjectDestructableDestroyMessage : FusionMessageHandler
     {
@@ -66,7 +28,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<ObjectDestructableDestroyData>();
+            using var data = reader.ReadFusionSerializable<ComponentIndexData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {
@@ -77,7 +39,7 @@ namespace LabFusion.Network
             {
                 if (SyncManager.TryGetSyncable<PropSyncable>(data.syncId, out var destructable) && destructable.TryGetExtender<ObjectDestructableExtender>(out var extender))
                 {
-                    var objectDestructable = extender.GetComponent(data.destructableIndex);
+                    var objectDestructable = extender.GetComponent(data.componentIndex);
                     ObjectDestructablePatches.IgnorePatches = true;
                     PooleeDespawnPatch.IgnorePatch = true;
 
