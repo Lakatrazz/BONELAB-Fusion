@@ -1,6 +1,6 @@
 # BONELAB Fusion Installation Guide (PCVR)
 ---
-Please keep in mind STANDALONE Oculus Quest (Aka running on quest with absolutely zero computer involved) is currently NOT supported, EVEN with lemonloader.
+Please keep in mind this guide is made for PCVR only. If you are looking for a Quest guide, you can currently find some on YouTube.
 1. Enter BONELAB Patch 3 on Steam or the Oculus App 
     - On Steam, go to your Library, click on "BONELAB", and click on the gear on the right. Then press "properties", betas, and then set your BONELAB version to "public_beta".
     - On Oculus, please see Issue (https://github.com/Lakatrazz/BONELAB-Fusion/issues/4)
@@ -24,6 +24,6 @@ Please keep in mind STANDALONE Oculus Quest (Aka running on quest with absolutel
 
 **Q: Is this supported on Standalone Quest/Quest 2?**
 
-**A: No, only PCVR is currently supported and Standalone will most likely come in a future update, but no promises!**
+**A: Yes, and it has been since update v1.5.0. If you do not have a computer at all for networking, you can use the unofficial TideFusion.**
 
 If you encounter a bug or an issue, please submit it at https://github.com/Lakatrazz/BONELAB-Fusion/issues with screenshots or videos clearly describing what your issue is, and what occured in order for it to occur.
