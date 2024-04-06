@@ -118,48 +118,13 @@ namespace LabFusion.Patching
                     var syncId = SyncManager.AllocateSyncID();
                     PooleeUtilities.OnServerLocalSpawn(syncId, __instance.gameObject, out PropSyncable newSyncable);
 
-                    var zoneTracker = ZoneTracker.Cache.Get(__instance.gameObject);
-                    ZoneSpawner spawner = null;
-
-                    if (zoneTracker)
-                    {
-                        var collection = ZoneSpawner.Cache.m_Cache.Values;
-
-                        // I have to do this garbage, because the ZoneTracker doesn't ever set ZoneTracker.spawner!
-                        // Meaning we don't actually know where the fuck this was spawned from!
-                        bool breakList = false;
-
-                        foreach (var list in collection)
-                        {
-                            foreach (var otherSpawner in list)
-                            {
-                                foreach (var spawnedObj in otherSpawner.spawns)
-                                {
-                                    if (spawnedObj == __instance.gameObject)
-                                    {
-                                        spawner = otherSpawner;
-
-                                        breakList = true;
-                                        break;
-                                    }
-                                }
-
-                                if (breakList)
-                                    break;
-                            }
-
-                            if (breakList)
-                                break;
-                        }
-                    }
-
-                    PooleeUtilities.SendSpawn(0, barcode, syncId, new SerializedTransform(__instance.transform), true, spawner);
+                    PooleeUtilities.SendSpawn(0, barcode, syncId, new SerializedTransform(__instance.transform), true);
 
                     // Insert catchup hook for future users
                     if (NetworkInfo.IsServer)
                         newSyncable.InsertCatchupDelegate((id) =>
                         {
-                            SpawnSender.SendCatchupSpawn(0, barcode, syncId, new SerializedTransform(__instance.transform), spawner, id);
+                            SpawnSender.SendCatchupSpawn(0, barcode, syncId, new SerializedTransform(__instance.transform), id);
                         });
                 }
             }

@@ -138,14 +138,10 @@ namespace LabFusion.Utilities
             MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
 
-        public static void SendSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, bool ignoreSelf = false, ZoneSpawner spawner = null, uint trackerId = 0)
+        public static void SendSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, bool ignoreSelf = false, uint trackerId = 0)
         {
-            string spawnerPath = "_";
-            if (spawner != null)
-                spawnerPath = spawner.gameObject.GetFullPath();
-
-            using var writer = FusionWriter.Create(SpawnResponseData.GetSize(barcode, spawnerPath));
-            using var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, spawnerPath, trackerId);
+            using var writer = FusionWriter.Create(SpawnResponseData.GetSize(barcode));
+            using var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, trackerId);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.SpawnResponse, writer);

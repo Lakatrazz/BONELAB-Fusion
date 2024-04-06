@@ -78,7 +78,7 @@ namespace LabFusion.Network
 
                 var syncId = SyncManager.AllocateSyncID();
 
-                PooleeUtilities.SendSpawn(data.owner, data.barcode, syncId, data.serializedTransform, false, null, data.trackerId);
+                PooleeUtilities.SendSpawn(data.owner, data.barcode, syncId, data.serializedTransform, false, data.trackerId);
             }
             else
                 throw new ExpectedServerException();

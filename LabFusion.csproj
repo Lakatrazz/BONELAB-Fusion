@@ -412,13 +412,16 @@
     <Compile Include="Core\src\MonoBehaviours\NotifyOnEnable.cs" />
     <Compile Include="Core\src\MonoBehaviours\CollisionSyncer.cs" />
     <Compile Include="Core\src\MonoBehaviours\TimedDespawner.cs" />
+    <Compile Include="Core\src\Network\Data\PropReferenceData.cs" />
     <Compile Include="Core\src\Network\Data\ComponentIndexData.cs" />
     <Compile Include="Core\src\Network\Fallback\EmptyNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Helpers\LobbyMetadataHelper.cs" />
     <Compile Include="Core\src\Network\Helpers\MetadataHelper.cs" />
     <Compile Include="Core\src\Network\Helpers\NetworkVerification.cs" />
     <Compile Include="Core\src\Network\Helpers\SendRateTable.cs" />
+    <Compile Include="Core\src\Network\Messages\Levels\ZoneSpawnerMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Magazines\MagazineClaimMessage.cs" />
+    <Compile Include="Core\src\Patching\Patches\Levels\ZoneSpawnerPatches.cs" />
     <Compile Include="Core\src\RPC\NetworkAssetSpawner.cs" />
     <Compile Include="Core\src\SDK\Lobbies\GenericLobbyFilter.cs" />
     <Compile Include="Core\src\SDK\Lobbies\ILobbyFilter.cs" />

@@ -1,24 +1,22 @@
-﻿using SLZ.AI;
-using SLZ.Zones;
+﻿using SLZ.Zones;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using UnityEngine;
 
 namespace LabFusion.Extensions
 {
     public static class ZoneSpawnerExtensions
     {
-        public static void InsertNPC(this ZoneSpawner spawner, AIBrain brain)
+        public static void InvokeSpawnEvent(this ZoneSpawner spawner, GameObject spawned)
         {
-            // Call spawn event
-            spawner.onSpawnNPCDelegate?.Invoke(spawner, brain, spawner.currEnemyProfile, false);
+            // This is the compiler generated method for the ZoneSpawner's OnSpawn event
+            // Creating an instance with all the variables and calling the method works
+            var onSpawn = new ZoneSpawner.__c__DisplayClass76_0
+            {
+                __4__this = spawner,
+                playerObject = SceneZone.PlayerObject
+            };
 
-            // Hook brain events
-            brain.onDeathDelegate += (Action)(() => { spawner.OnDeath(); });
-            brain.onResurrectDelegate += (Action)(() => { spawner.OnResurrect(); });
+            onSpawn._Spawn_b__0(spawned);
         }
     }
 }

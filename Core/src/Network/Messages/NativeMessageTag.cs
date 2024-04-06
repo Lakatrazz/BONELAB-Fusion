@@ -145,6 +145,8 @@ namespace LabFusion.Network
 
             MagazineClaim = 83,
 
+            ZoneSpawner = 84,
+
             // SDK messages
             // Module setup
             Module = 200,
