@@ -41,7 +41,12 @@ namespace LabFusion.Extensions
             {
                 return obj is null || obj.WasCollected || obj == null;
             }
-            catch { }
+            catch (Exception e)
+            {
+#if DEBUG
+                FusionLogger.LogException("checking IsNOC", e);
+#endif
+            }
 
             return true;
         }

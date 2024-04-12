@@ -28,13 +28,7 @@ namespace LabFusion.Network
     {
         private static void DisposeUser(PlayerId id)
         {
-            if (id != null)
-            {
-                if (PlayerRepManager.TryGetPlayerRep(id.SmallId, out var rep))
-                    rep.Dispose();
-
-                id.Dispose();
-            }
+            id?.Cleanup();
         }
 
         private static void DisposeUsers()

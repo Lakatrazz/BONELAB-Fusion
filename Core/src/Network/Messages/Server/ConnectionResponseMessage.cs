@@ -85,7 +85,7 @@ namespace LabFusion.Network
             }
 
             // Update our vitals to everyone
-            if (RigData.RigReferences.RigManager)
+            if (RigData.HasPlayer)
                 RigData.OnSendVitals();
         }
     }

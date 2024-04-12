@@ -221,8 +221,12 @@ namespace LabFusion.Network
             {
                 return LobbyMetadataInfo.Read(lobby);
             }
-            catch
+            catch (Exception e)
             {
+#if DEBUG
+                FusionLogger.LogException("reading lobby info", e);
+#endif
+
                 return new LobbyMetadataInfo() { HasServerOpen = false };
             }
         }

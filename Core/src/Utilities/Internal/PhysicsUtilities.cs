@@ -76,16 +76,8 @@ namespace LabFusion.Utilities
 
                             Vector3 force = -Gravity * mult;
 
-                            if (references.RigRigidbodies == null)
-                                references.GetRigidbodies();
-
-                            var rbs = references.RigRigidbodies;
-
-                            foreach (var rb in rbs)
+                            foreach (var rb in rm.physicsRig.selfRbs)
                             {
-                                if (rb == null)
-                                    continue;
-
                                 if (rb.useGravity)
                                 {
                                     rb.AddForce(force, ForceMode.Acceleration);

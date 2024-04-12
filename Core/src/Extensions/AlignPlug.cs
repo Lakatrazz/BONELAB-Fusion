@@ -1,4 +1,5 @@
-﻿using SLZ.Interaction;
+﻿using LabFusion.Utilities;
+using SLZ.Interaction;
 
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,12 @@ namespace LabFusion.Extensions
                         plug.Update();
                 }
             }
-            catch { }
+            catch (Exception e) 
+            {
+#if DEBUG
+                FusionLogger.LogException("running ForceEject on AlignPlug", e);
+#endif
+            }
         }
     }
 }

@@ -109,6 +109,8 @@ public abstract class VoiceManager : IVoiceManager
         }
     }
 
+    private bool _hasDisabledVoice = true;
+
     private void UpdateReceiver()
     {
         if (_receiver == null || !CanTalk)
@@ -118,7 +120,17 @@ public abstract class VoiceManager : IVoiceManager
 
         bool voiceEnabled = NetworkInfo.HasServer && VoiceInfo.IsVoiceEnabled;
 
-        _receiver.UpdateVoice(voiceEnabled);
+        // Only disable voice when state changes to not conflict with other uses of the microphone
+        if (voiceEnabled)
+        {
+            _receiver.UpdateVoice(true);
+            _hasDisabledVoice = false;
+        }
+        else if (!_hasDisabledVoice)
+        {
+            _receiver.UpdateVoice(false);
+            _hasDisabledVoice = true;
+        }
 
         if (_receiver.HasVoiceActivity())
         {

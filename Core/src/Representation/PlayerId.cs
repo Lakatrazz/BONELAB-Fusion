@@ -15,10 +15,11 @@ using SLZ.Rig;
 
 namespace LabFusion.Representation
 {
-    public class PlayerId : IFusionSerializable, IDisposable, IEquatable<PlayerId>
+    public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
     {
         public bool IsSelf => LongId == PlayerIdManager.LocalLongId;
-        public bool IsValid => PlayerIdManager.PlayerIds.Contains(this);
+        public bool IsValid => _isValid;
+        private bool _isValid = false;
 
         public ulong LongId { get; private set; }
         public byte SmallId { get; private set; }
@@ -34,13 +35,36 @@ namespace LabFusion.Representation
         /// </summary>
         public event Action<PlayerId, string, string> OnMetadataPairChanged;
 
+        private Action _onDestroyedEvent = null;
+        public event Action OnDestroyedEvent
+        {
+            add
+            {
+                if (!_isValid)
+                {
+                    value();
+                }
+                else
+                {
+                    _onDestroyedEvent += value;
+                }
+            }
+            remove
+            {
+                _onDestroyedEvent -= value;
+            }
+        }
+
         private readonly FusionDictionary<string, string> _internalMetadata = new();
         public FusionDictionary<string, string> Metadata => _internalMetadata;
 
         private List<string> _internalEquippedItems = new List<string>();
         public List<string> EquippedItems => _internalEquippedItems;
 
-        public PlayerId() { }
+        public PlayerId() 
+        {
+            _isValid = false;
+        }
 
         public PlayerId(ulong longId, byte smallId, FusionDictionary<string, string> metadata, List<string> equippedItems)
         {
@@ -48,6 +72,8 @@ namespace LabFusion.Representation
             SmallId = smallId;
             _internalMetadata = metadata;
             _internalEquippedItems = equippedItems;
+
+            _isValid = true;
         }
 
         public bool Equals(PlayerId other)
@@ -130,19 +156,28 @@ namespace LabFusion.Representation
             {
                 var list = PlayerIdManager.PlayerIds.FindAll((id) => id.SmallId == SmallId);
                 for (var i = 0; i < list.Count; i++)
-                    list[i].Dispose();
+                    list[i].Cleanup();
             }
 
             PlayerIdManager.PlayerIds.Add(this);
         }
 
-        public void Dispose()
+        public void Cleanup()
         {
+            if (!_isValid)
+            {
+                FusionLogger.Warn("Attempted to cleanup a PlayerId that was not valid!");
+                return;
+            }
+
             PlayerIdManager.PlayerIds.RemoveInstance(this);
             if (PlayerIdManager.LocalId == this)
                 PlayerIdManager.RemoveLocalId();
 
-            GC.SuppressFinalize(this);
+            _isValid = false;
+
+            _onDestroyedEvent?.Invoke();
+            _onDestroyedEvent = null;
         }
 
         public void Serialize(FusionWriter writer)
@@ -174,6 +209,8 @@ namespace LabFusion.Representation
             {
                 Internal_ForceSetEquipped(item, true);
             }
+
+            _isValid = true;
         }
     }
 }

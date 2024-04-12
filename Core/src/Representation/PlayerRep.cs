@@ -20,10 +20,11 @@ using UnityEngine;
 using MelonLoader;
 using LabFusion.Voice;
 using LabFusion.SDK.Points;
+using BoneLib;
 
 namespace LabFusion.Representation
 {
-    public class PlayerRep : IDisposable
+    public class PlayerRep
     {
         public const float NametagHeight = 0.23f;
         public const float NameTagDivider = 250f;
@@ -117,23 +118,40 @@ namespace LabFusion.Representation
             // Store our ID
             PlayerId = playerId;
 
-            // Hook into metadata changes
-            playerId.OnMetadataChanged += OnMetadataChanged;
             OnMetadataChanged(playerId);
 
-            // Insert the PlayerRep into the global list
-            PlayerRepManager.Internal_InsertPlayerRep(this);
+            // Hook important methods
+            HookMethods();
 
             _isQuestUser = PlayerId.GetMetadata(MetadataHelper.PlatformKey) == "QUEST";
 
             pelvisPDController = new PDController();
 
-            MultiplayerHooking.OnServerSettingsChanged += OnServerSettingsChanged;
-            FusionOverrides.OnOverridesChanged += OnOverridesChanged;
-
             ResetSerializedTransforms();
 
             StartRepCreation();
+        }
+
+        private void HookMethods()
+        {
+            PlayerId.OnMetadataChanged += OnMetadataChanged;
+            PlayerId.OnDestroyedEvent += Cleanup;
+
+            PlayerRepManager.Internal_InsertPlayerRep(this);
+
+            MultiplayerHooking.OnServerSettingsChanged += OnServerSettingsChanged;
+            FusionOverrides.OnOverridesChanged += OnOverridesChanged;
+        }
+
+        private void UnhookMethods()
+        {
+            PlayerId.OnMetadataChanged -= OnMetadataChanged;
+            PlayerId.OnDestroyedEvent -= Cleanup;
+
+            PlayerRepManager.Internal_RemovePlayerRep(this);
+
+            MultiplayerHooking.OnServerSettingsChanged -= OnServerSettingsChanged;
+            FusionOverrides.OnOverridesChanged -= OnOverridesChanged;
         }
 
         public void InsertVoiceSource(IVoiceSpeaker speaker, AudioSource source)
@@ -570,24 +588,13 @@ namespace LabFusion.Representation
 
         public void OnControllerRigUpdate()
         {
-            try
-            {
-                if (!IsCreated)
-                    return;
+            if (!IsCreated)
+                return;
 
-                for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
-                {
-                    repTransforms[i].localPosition = serializedLocalTransforms[i].position;
-                    repTransforms[i].localRotation = serializedLocalTransforms[i].rotation;
-                }
-            }
-            catch
+            for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
             {
-                // Literally no reason this should happen but it does
-                // Doesn't cause anything soooo
-
-                // POST NOTE: actually yea it would happen if an item in serializedLocalTransforms is null
-                // cleanup that functionality later so you can remove this try catch
+                repTransforms[i].localPosition = serializedLocalTransforms[i].position;
+                repTransforms[i].localRotation = serializedLocalTransforms[i].rotation;
             }
         }
 
@@ -662,7 +669,7 @@ namespace LabFusion.Representation
                     RigReferences.RigManager.Teleport(pos);
 
                     // Zero our teleport velocity, cause the rig doesn't seem to do that on its own?
-                    foreach (var rb in RigReferences.RigManager.physicsRig.GetComponentsInChildren<Rigidbody>())
+                    foreach (var rb in RigReferences.RigManager.physicsRig.selfRbs)
                     {
                         rb.velocity = Vector3Extensions.zero;
                         rb.angularVelocity = Vector3Extensions.zero;
@@ -675,8 +682,12 @@ namespace LabFusion.Representation
                     pelvisPDController.Reset();
                 }
             }
-            catch
+            catch (Exception e)
             {
+#if DEBUG
+                FusionLogger.LogException("executing OnPelvisPin", e);
+#endif
+
                 // Just ignore these. Don't really matter.
             }
         }
@@ -829,25 +840,21 @@ namespace LabFusion.Representation
         }
 
         /// <summary>
-        /// Destroys anything about the PlayerRep and frees it from memory.
+        /// Completely destroys the PlayerRep.
         /// </summary>
-        public void Dispose()
+        public void Cleanup()
         {
-            PlayerRepManager.Internal_RemovePlayerRep(this);
+            UnhookMethods();
 
             DestroyRep();
 
-            GC.SuppressFinalize(this);
-
-            MultiplayerHooking.OnServerSettingsChanged -= OnServerSettingsChanged;
-
 #if DEBUG
-            FusionLogger.Log($"Disposed PlayerRep with small id {PlayerId.SmallId}");
+            FusionLogger.Log($"Cleaned up PlayerRep with small id {PlayerId.SmallId}");
 #endif
         }
 
         /// <summary>
-        /// Destroys the GameObjects of the PlayerRep. Does not free it from memory or remove it from its slots. Use Dispose for that.
+        /// Destroys the GameObjects of the PlayerRep. Does not destroy the PlayerRep in its entirety.
         /// </summary>
         public void DestroyRep()
         {
