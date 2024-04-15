@@ -74,7 +74,7 @@ namespace LabFusion.Senders
                 return;
 
             using FusionWriter writer = FusionWriter.Create(PlayerRepAvatarData.DefaultSize + barcode.GetSize());
-            using PlayerRepAvatarData data = PlayerRepAvatarData.Create(PlayerIdManager.LocalSmallId, stats, barcode);
+            PlayerRepAvatarData data = PlayerRepAvatarData.Create(PlayerIdManager.LocalSmallId, stats, barcode);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.PlayerRepAvatar, writer);
@@ -100,7 +100,7 @@ namespace LabFusion.Senders
                 return;
 
             using var writer = FusionWriter.Create(PlayerRepTeleportData.Size);
-            using var data = PlayerRepTeleportData.Create(target, position);
+            var data = PlayerRepTeleportData.Create(target, position);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.PlayerRepTeleport, writer);
@@ -115,7 +115,7 @@ namespace LabFusion.Senders
         public static void SendPlayerDamage(byte target, float damage, PlayerDamageReceiver.BodyPart part)
         {
             using var writer = FusionWriter.Create(PlayerRepDamageData.Size);
-            using var data = PlayerRepDamageData.Create(PlayerIdManager.LocalSmallId, target, damage, part);
+            var data = PlayerRepDamageData.Create(PlayerIdManager.LocalSmallId, target, damage, part);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.PlayerRepDamage, writer);
@@ -125,7 +125,7 @@ namespace LabFusion.Senders
         public static void SendPlayerMetadataRequest(byte smallId, string key, string value)
         {
             using var writer = FusionWriter.Create(PlayerMetadataRequestData.GetSize(key, value));
-            using var data = PlayerMetadataRequestData.Create(smallId, key, value);
+            var data = PlayerMetadataRequestData.Create(smallId, key, value);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.PlayerMetadataRequest, writer);
@@ -138,7 +138,7 @@ namespace LabFusion.Senders
             if (NetworkInfo.IsServer)
             {
                 using var writer = FusionWriter.Create(PlayerMetadataResponseData.GetSize(key, value));
-                using var data = PlayerMetadataResponseData.Create(smallId, key, value);
+                var data = PlayerMetadataResponseData.Create(smallId, key, value);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.PlayerMetadataResponse, writer);
@@ -151,7 +151,7 @@ namespace LabFusion.Senders
         public static void SendVoteKickRequest(byte target)
         {
             using var writer = FusionWriter.Create(VoteKickRequestData.Size);
-            using var data = VoteKickRequestData.Create(PlayerIdManager.LocalId, target);
+            var data = VoteKickRequestData.Create(PlayerIdManager.LocalId, target);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.VoteKickRequest, writer);
@@ -161,7 +161,7 @@ namespace LabFusion.Senders
         public static void SendPlayerAction(PlayerActionType type, byte? otherPlayer = null)
         {
             using var writer = FusionWriter.Create(PlayerRepActionData.Size);
-            using var data = PlayerRepActionData.Create(PlayerIdManager.LocalSmallId, type, otherPlayer);
+            var data = PlayerRepActionData.Create(PlayerIdManager.LocalSmallId, type, otherPlayer);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.PlayerRepAction, writer);

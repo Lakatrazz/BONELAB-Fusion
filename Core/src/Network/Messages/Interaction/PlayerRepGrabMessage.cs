@@ -17,7 +17,7 @@ using MelonLoader;
 
 namespace LabFusion.Network
 {
-    public class PlayerRepGrabData : IFusionSerializable, IDisposable
+    public class PlayerRepGrabData : IFusionSerializable
     {
         public const int Size = sizeof(byte) * 3;
 
@@ -55,11 +55,6 @@ namespace LabFusion.Network
             return null;
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static PlayerRepGrabData Create(byte smallId, Handedness handedness, GrabGroup group, SerializedGrab serializedGrab)
         {
             return new PlayerRepGrabData()
@@ -80,7 +75,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<PlayerRepGrabData>();
+            var data = reader.ReadFusionSerializable<PlayerRepGrabData>();
 
             if (data.smallId != PlayerIdManager.LocalSmallId)
             {

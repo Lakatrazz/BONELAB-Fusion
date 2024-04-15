@@ -11,7 +11,7 @@ using LabFusion.Representation;
 
 namespace LabFusion.Network
 {
-    public class PlayerMetadataResponseData : IFusionSerializable, IDisposable
+    public class PlayerMetadataResponseData : IFusionSerializable
     {
         public const int DefaultSize = sizeof(byte);
 
@@ -38,11 +38,6 @@ namespace LabFusion.Network
             value = reader.ReadString();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static PlayerMetadataResponseData Create(byte smallId, string key, string value)
         {
             return new PlayerMetadataResponseData()
@@ -63,7 +58,7 @@ namespace LabFusion.Network
             if (NetworkInfo.IsClient || !isServerHandled)
             {
                 using var reader = FusionReader.Create(bytes);
-                using var data = reader.ReadFusionSerializable<PlayerMetadataResponseData>();
+                var data = reader.ReadFusionSerializable<PlayerMetadataResponseData>();
                 var playerId = PlayerIdManager.GetPlayerId(data.smallId);
 
                 if (playerId != null)

@@ -33,7 +33,7 @@ namespace LabFusion.Senders
             if (NetworkInfo.IsServer)
             {
                 using var writer = FusionWriter.Create(SpawnableCratePlacerData.Size);
-                using var data = SpawnableCratePlacerData.Create(syncable.GetId(), placer.gameObject);
+                var data = SpawnableCratePlacerData.Create(syncable.GetId(), placer.gameObject);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.SpawnableCratePlacer, writer);
@@ -67,7 +67,7 @@ namespace LabFusion.Senders
             {
                 using (var writer = FusionWriter.Create(SpawnableCratePlacerData.Size))
                 {
-                    using var data = SpawnableCratePlacerData.Create(syncable.GetId(), placer.gameObject);
+                    var data = SpawnableCratePlacerData.Create(syncable.GetId(), placer.gameObject);
                     writer.Write(data);
 
                     using var message = FusionMessage.Create(NativeMessageTag.SpawnableCratePlacer, writer);
@@ -92,7 +92,7 @@ namespace LabFusion.Senders
             if (NetworkInfo.IsServer)
             {
                 using var writer = FusionWriter.Create(SpawnResponseData.GetSize(barcode));
-                using var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform);
+                var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.SpawnResponse, writer);

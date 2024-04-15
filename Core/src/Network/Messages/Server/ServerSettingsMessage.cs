@@ -13,7 +13,7 @@ using LabFusion.Preferences;
 
 namespace LabFusion.Network
 {
-    public class ServerSettingsData : IFusionSerializable, IDisposable
+    public class ServerSettingsData : IFusionSerializable
     {
         public const int Size = SerializedServerSettings.Size;
 
@@ -27,11 +27,6 @@ namespace LabFusion.Network
         public void Deserialize(FusionReader reader)
         {
             settings = reader.ReadFusionSerializable<SerializedServerSettings>();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static ServerSettingsData Create(SerializedServerSettings settings)
@@ -50,7 +45,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<ServerSettingsData>();
+            var data = reader.ReadFusionSerializable<ServerSettingsData>();
             // ONLY clients should receive this!
             if (!NetworkInfo.IsServer)
             {

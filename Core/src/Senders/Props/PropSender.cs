@@ -37,7 +37,7 @@ namespace LabFusion.Senders
                 syncable.SetOwner(owner);
 
                 using var writer = FusionWriter.Create(SyncableOwnershipResponseData.Size);
-                using var response = SyncableOwnershipResponseData.Create(owner, id);
+                var response = SyncableOwnershipResponseData.Create(owner, id);
                 writer.Write(response);
 
                 using var message = FusionMessage.Create(NativeMessageTag.SyncableOwnershipResponse, writer);
@@ -47,7 +47,7 @@ namespace LabFusion.Senders
             else
             {
                 using var writer = FusionWriter.Create(SyncableOwnershipRequestData.Size);
-                using var response = SyncableOwnershipRequestData.Create(owner, id);
+                var response = SyncableOwnershipRequestData.Create(owner, id);
                 writer.Write(response);
 
                 using var message = FusionMessage.Create(NativeMessageTag.SyncableOwnershipRequest, writer);
@@ -76,7 +76,7 @@ namespace LabFusion.Senders
             if (NetworkInfo.HasServer)
             {
                 using var writer = FusionWriter.Create(PropSyncableSleepData.Size);
-                using var data = PropSyncableSleepData.Create(syncable.GetOwner().Value, syncable.GetId());
+                var data = PropSyncableSleepData.Create(syncable.GetOwner().Value, syncable.GetId());
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.PropSyncableSleep, writer);
@@ -93,7 +93,7 @@ namespace LabFusion.Senders
             if (NetworkInfo.IsServer)
             {
                 using var writer = FusionWriter.Create(PropSyncableCreateData.Size);
-                using var data = PropSyncableCreateData.Create(syncable.GetOwner().Value, syncable.GameObject.GetFullPath(), syncable.Id);
+                var data = PropSyncableCreateData.Create(syncable.GetOwner().Value, syncable.GameObject.GetFullPath(), syncable.Id);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.PropSyncableCreate, writer);
@@ -186,7 +186,7 @@ namespace LabFusion.Senders
                     return;
 
                 using var writer = FusionWriter.Create(PropSyncableCreateData.Size);
-                using var data = PropSyncableCreateData.Create(PlayerIdManager.LocalSmallId, result, newSyncable.Id);
+                var data = PropSyncableCreateData.Create(PlayerIdManager.LocalSmallId, result, newSyncable.Id);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.PropSyncableCreate, writer);

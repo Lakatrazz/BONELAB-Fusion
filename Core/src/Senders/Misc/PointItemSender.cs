@@ -11,7 +11,7 @@ namespace LabFusion.Senders
                 return;
 
             using var writer = FusionWriter.Create();
-            using var data = PointItemEquipStateData.Create(PlayerIdManager.LocalSmallId, barcode, isEquipped);
+            var data = PointItemEquipStateData.Create(PlayerIdManager.LocalSmallId, barcode, isEquipped);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.PointItemEquipState, writer);
@@ -24,7 +24,7 @@ namespace LabFusion.Senders
                 return;
 
             using var writer = FusionWriter.Create();
-            using var data = PointItemTriggerData.Create(PlayerIdManager.LocalSmallId, barcode);
+            var data = PointItemTriggerData.Create(PlayerIdManager.LocalSmallId, barcode);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.PointItemTrigger, writer);
@@ -37,7 +37,7 @@ namespace LabFusion.Senders
                 return;
 
             using var writer = FusionWriter.Create(PointItemTriggerValueData.GetSize(barcode, value));
-            using var data = PointItemTriggerValueData.Create(PlayerIdManager.LocalSmallId, barcode, value);
+            var data = PointItemTriggerValueData.Create(PlayerIdManager.LocalSmallId, barcode, value);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.PointItemTriggerValue, writer);

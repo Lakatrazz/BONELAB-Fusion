@@ -35,7 +35,7 @@ using LabFusion.RPC;
 
 namespace LabFusion.Network
 {
-    public class SpawnResponseData : IFusionSerializable, IDisposable
+    public class SpawnResponseData : IFusionSerializable
     {
         public const int DefaultSize = sizeof(byte) * 2 + sizeof(ushort) + SerializedTransform.Size;
 
@@ -72,11 +72,6 @@ namespace LabFusion.Network
             trackerId = reader.ReadUInt32();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static SpawnResponseData Create(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, uint trackerId = 0)
         {
             return new SpawnResponseData()
@@ -100,7 +95,7 @@ namespace LabFusion.Network
             if (!isServerHandled)
             {
                 using var reader = FusionReader.Create(bytes);
-                using var data = reader.ReadFusionSerializable<SpawnResponseData>();
+                var data = reader.ReadFusionSerializable<SpawnResponseData>();
                 var crateRef = new SpawnableCrateReference(data.barcode);
 
                 var spawnable = new Spawnable()

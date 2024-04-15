@@ -93,7 +93,7 @@ namespace LabFusion.Patching
                         using var writer = FusionWriter.Create(GunShotData.Size);
                         var ammoCount = __instance._magState != null ? (byte)__instance._magState.AmmoCount : (byte)0;
 
-                        using var data = GunShotData.Create(PlayerIdManager.LocalSmallId, ammoCount, gunSyncable.Id, extender.GetIndex(__instance).Value);
+                        var data = GunShotData.Create(PlayerIdManager.LocalSmallId, ammoCount, gunSyncable.Id, extender.GetIndex(__instance).Value);
                         writer.Write(data);
 
                         using var message = FusionMessage.Create(NativeMessageTag.GunShot, writer);
@@ -125,7 +125,7 @@ namespace LabFusion.Patching
                 string barcode = __instance._selectedCrate.Barcode;
 
                 using var writer = FusionWriter.Create(SpawnGunPreviewMeshData.GetSize(barcode));
-                using var data = SpawnGunPreviewMeshData.Create(PlayerIdManager.LocalSmallId, syncable.GetId(), barcode);
+                var data = SpawnGunPreviewMeshData.Create(PlayerIdManager.LocalSmallId, syncable.GetId(), barcode);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.SpawnGunPreviewMesh, writer);

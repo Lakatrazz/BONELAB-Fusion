@@ -11,7 +11,7 @@ using LabFusion.Extensions;
 
 namespace LabFusion.Network
 {
-    public class VoteKickResponseData : IFusionSerializable, IDisposable
+    public class VoteKickResponseData : IFusionSerializable
     {
         public const int Size = sizeof(byte) * 2 + sizeof(int) * 2;
 
@@ -45,11 +45,6 @@ namespace LabFusion.Network
             wasKicked = reader.ReadBoolean();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static VoteKickResponseData Create(byte smallId, string username, int votes, int requiredVotes, bool wasKicked)
         {
             return new VoteKickResponseData()
@@ -73,7 +68,7 @@ namespace LabFusion.Network
             if (!isServerHandled)
             {
                 using FusionReader reader = FusionReader.Create(bytes);
-                using var data = reader.ReadFusionSerializable<VoteKickResponseData>();
+                var data = reader.ReadFusionSerializable<VoteKickResponseData>();
 
                 // Don't show if we are the one being vote kicked
                 // This message should not be sent to us but just incase

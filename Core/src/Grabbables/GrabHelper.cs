@@ -193,7 +193,7 @@ namespace LabFusion.Grabbables
 
                                 using (var writer = FusionWriter.Create(SyncableIDRequestData.Size))
                                 {
-                                    using var data = SyncableIDRequestData.Create(smallId, queuedId);
+                                    var data = SyncableIDRequestData.Create(smallId, queuedId);
                                     writer.Write(data);
 
                                     using var message = FusionMessage.Create(NativeMessageTag.SyncableIDRequest, writer);
@@ -223,7 +223,7 @@ namespace LabFusion.Grabbables
                     serializedGrab.WriteDefaultGrip(hand, grip);
 
                     using var writer = FusionWriter.Create(PlayerRepGrabData.Size + serializedGrab.GetSize());
-                    using var data = PlayerRepGrabData.Create(smallId, handedness, group, serializedGrab);
+                    var data = PlayerRepGrabData.Create(smallId, handedness, group, serializedGrab);
                     writer.Write(data);
 
                     using var message = FusionMessage.Create(NativeMessageTag.PlayerRepGrab, writer);
@@ -250,7 +250,7 @@ namespace LabFusion.Grabbables
             if (NetworkInfo.HasServer)
             {
                 using var writer = FusionWriter.Create(PlayerRepReleaseData.Size);
-                using var data = PlayerRepReleaseData.Create(PlayerIdManager.LocalSmallId, handedness);
+                var data = PlayerRepReleaseData.Create(PlayerIdManager.LocalSmallId, handedness);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.PlayerRepRelease, writer);

@@ -124,7 +124,7 @@ namespace LabFusion.Patching
         private static void SendGripEvent(ushort syncId, byte gripEventIndex, SimpleGripEventType type)
         {
             using var writer = FusionWriter.Create(SimpleGripEventData.Size);
-            using var data = SimpleGripEventData.Create(PlayerIdManager.LocalSmallId, syncId, gripEventIndex, type);
+            var data = SimpleGripEventData.Create(PlayerIdManager.LocalSmallId, syncId, gripEventIndex, type);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.SimpleGripEvent, writer);

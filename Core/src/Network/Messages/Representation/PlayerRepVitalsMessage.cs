@@ -130,7 +130,7 @@ namespace LabFusion.Network
         }
     }
 
-    public class PlayerRepVitalsData : IFusionSerializable, IDisposable
+    public class PlayerRepVitalsData : IFusionSerializable
     {
         public const int Size = SerializedBodyVitals.Size + sizeof(byte);
 
@@ -147,11 +147,6 @@ namespace LabFusion.Network
         {
             smallId = reader.ReadByte();
             bodyVitals = reader.ReadFusionSerializable<SerializedBodyVitals>();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static PlayerRepVitalsData Create(byte smallId, BodyVitals vitals)

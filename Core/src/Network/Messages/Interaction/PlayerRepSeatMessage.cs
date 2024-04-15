@@ -17,7 +17,7 @@ using UnityEngine;
 
 namespace LabFusion.Network
 {
-    public class PlayerRepSeatData : IFusionSerializable, IDisposable
+    public class PlayerRepSeatData : IFusionSerializable
     {
         public const int Size = sizeof(byte) * 3 + sizeof(ushort);
 
@@ -40,11 +40,6 @@ namespace LabFusion.Network
             syncId = reader.ReadUInt16();
             seatIndex = reader.ReadByte();
             isIngress = reader.ReadBoolean();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static PlayerRepSeatData Create(byte smallId, ushort syncId, byte seatIndex, bool isIngress)

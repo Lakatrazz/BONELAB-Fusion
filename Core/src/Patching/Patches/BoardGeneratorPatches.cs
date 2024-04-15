@@ -46,14 +46,13 @@ namespace LabFusion.Patching
                     if (syncable.IsOwner())
                     {
                         // Send board create message
-                        using (var writer = FusionWriter.Create(BoardCreateData.Size))
-                        {
-                            using var data = BoardCreateData.Create(PlayerIdManager.LocalSmallId, syncable.GetId(), __instance, idx, mass);
-                            writer.Write(data);
+                        using var writer = FusionWriter.Create(BoardCreateData.Size);
 
-                            using var message = FusionMessage.Create(NativeMessageTag.BoardCreate, writer);
-                            MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                        }
+                        var data = BoardCreateData.Create(PlayerIdManager.LocalSmallId, syncable.GetId(), __instance, idx, mass);
+                        writer.Write(data);
+
+                        using var message = FusionMessage.Create(NativeMessageTag.BoardCreate, writer);
+                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
 
                         return true;
                     }

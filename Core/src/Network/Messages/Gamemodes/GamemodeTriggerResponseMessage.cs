@@ -11,7 +11,7 @@ using LabFusion.SDK.Gamemodes;
 
 namespace LabFusion.Network
 {
-    public class GamemodeTriggerResponseData : IFusionSerializable, IDisposable
+    public class GamemodeTriggerResponseData : IFusionSerializable
     {
         public ushort gamemodeId;
         public string value;
@@ -26,11 +26,6 @@ namespace LabFusion.Network
         {
             gamemodeId = reader.ReadUInt16();
             value = reader.ReadString();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static GamemodeTriggerResponseData Create(ushort gamemodeId, string value)
@@ -61,7 +56,7 @@ namespace LabFusion.Network
             if (NetworkInfo.IsClient || !isServerHandled)
             {
                 using var reader = FusionReader.Create(bytes);
-                using var data = reader.ReadFusionSerializable<GamemodeTriggerResponseData>();
+                var data = reader.ReadFusionSerializable<GamemodeTriggerResponseData>();
                 if (GamemodeManager.TryGetGamemode(data.gamemodeId, out var gamemode))
                 {
                     gamemode.Internal_TriggerEvent(data.value);

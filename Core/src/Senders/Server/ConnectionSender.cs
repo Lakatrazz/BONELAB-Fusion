@@ -17,7 +17,7 @@ namespace LabFusion.Senders
                         continue;
 
                     using FusionWriter writer = FusionWriter.Create();
-                    using var disconnect = DisconnectMessageData.Create(id.LongId, reason);
+                    var disconnect = DisconnectMessageData.Create(id.LongId, reason);
                     writer.Write(disconnect);
 
                     using var message = FusionMessage.Create(NativeMessageTag.Disconnect, writer);
@@ -31,7 +31,7 @@ namespace LabFusion.Senders
             if (NetworkInfo.IsServer)
             {
                 using FusionWriter writer = FusionWriter.Create();
-                using var disconnect = DisconnectMessageData.Create(userId, reason);
+                var disconnect = DisconnectMessageData.Create(userId, reason);
                 writer.Write(disconnect);
 
                 using var message = FusionMessage.Create(NativeMessageTag.Disconnect, writer);
@@ -44,7 +44,7 @@ namespace LabFusion.Senders
             if (NetworkInfo.IsServer)
             {
                 using FusionWriter writer = FusionWriter.Create();
-                using var disconnect = DisconnectMessageData.Create(userId, reason);
+                var disconnect = DisconnectMessageData.Create(userId, reason);
                 writer.Write(disconnect);
 
                 using var message = FusionMessage.Create(NativeMessageTag.Disconnect, writer);
@@ -57,7 +57,7 @@ namespace LabFusion.Senders
             if (NetworkInfo.HasServer)
             {
                 using FusionWriter writer = FusionWriter.Create();
-                using ConnectionRequestData data = ConnectionRequestData.Create(PlayerIdManager.LocalLongId, FusionMod.Version, RigData.GetAvatarBarcode(), RigData.RigAvatarStats);
+                var data = ConnectionRequestData.Create(PlayerIdManager.LocalLongId, FusionMod.Version, RigData.GetAvatarBarcode(), RigData.RigAvatarStats);
                 writer.Write(data);
 
                 using FusionMessage message = FusionMessage.Create(NativeMessageTag.ConnectionRequest, writer);
@@ -72,7 +72,7 @@ namespace LabFusion.Senders
         public static void SendPlayerCatchup(ulong newUser, PlayerId id, string avatar, SerializedAvatarStats stats)
         {
             using FusionWriter writer = FusionWriter.Create();
-            using var response = ConnectionResponseData.Create(id, avatar, stats, false);
+            var response = ConnectionResponseData.Create(id, avatar, stats, false);
             writer.Write(response);
 
             using var message = FusionMessage.Create(NativeMessageTag.ConnectionResponse, writer);
@@ -82,7 +82,7 @@ namespace LabFusion.Senders
         public static void SendPlayerJoin(PlayerId id, string avatar, SerializedAvatarStats stats)
         {
             using FusionWriter writer = FusionWriter.Create();
-            using var response = ConnectionResponseData.Create(id, avatar, stats, true);
+            var response = ConnectionResponseData.Create(id, avatar, stats, true);
             writer.Write(response);
 
             using var message = FusionMessage.Create(NativeMessageTag.ConnectionResponse, writer);

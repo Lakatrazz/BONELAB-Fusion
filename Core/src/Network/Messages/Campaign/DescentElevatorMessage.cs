@@ -29,7 +29,7 @@ namespace LabFusion.Network
         CLOSE_DOORS = 7,
     }
 
-    public class DescentElevatorData : IFusionSerializable, IDisposable
+    public class DescentElevatorData : IFusionSerializable
     {
         public byte smallId;
         public DescentElevatorType type;
@@ -44,11 +44,6 @@ namespace LabFusion.Network
         {
             smallId = reader.ReadByte();
             type = (DescentElevatorType)reader.ReadByte();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static DescentElevatorData Create(byte smallId, DescentElevatorType type)
@@ -69,7 +64,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<DescentElevatorData>();
+            var data = reader.ReadFusionSerializable<DescentElevatorData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {

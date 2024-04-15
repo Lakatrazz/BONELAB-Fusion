@@ -4,16 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using LabFusion.Data;
-using LabFusion.Representation;
-using LabFusion.Utilities;
-using LabFusion.Grabbables;
 using LabFusion.Syncables;
 using LabFusion.Patching;
-
-using SLZ;
-using SLZ.Interaction;
-using SLZ.Props.Weapons;
 
 namespace LabFusion.Network
 {
@@ -25,7 +17,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<ComponentIndexData>();
+            var data = reader.ReadFusionSerializable<ComponentIndexData>();
 
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)

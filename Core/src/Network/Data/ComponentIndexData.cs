@@ -4,7 +4,7 @@ using LabFusion.Data;
 
 namespace LabFusion.Network
 {
-    public class ComponentIndexData : IFusionSerializable, IDisposable
+    public class ComponentIndexData : IFusionSerializable
     {
         public const int Size = sizeof(byte) * 2 + sizeof(ushort);
 
@@ -24,11 +24,6 @@ namespace LabFusion.Network
             smallId = reader.ReadByte();
             syncId = reader.ReadUInt16();
             componentIndex = reader.ReadByte();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static ComponentIndexData Create(byte smallId, ushort syncId, byte componentIndex)

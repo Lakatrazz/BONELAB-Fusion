@@ -12,7 +12,7 @@ using LabFusion.Utilities;
 
 namespace LabFusion.Network
 {
-    public class ConnectionResponseData : IFusionSerializable, IDisposable
+    public class ConnectionResponseData : IFusionSerializable
     {
         public PlayerId playerId = null;
         public string avatarBarcode = null;
@@ -35,11 +35,6 @@ namespace LabFusion.Network
             isInitialJoin = reader.ReadBoolean();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static ConnectionResponseData Create(PlayerId id, string avatarBarcode, SerializedAvatarStats stats, bool isInitialJoin)
         {
             return new ConnectionResponseData()
@@ -59,6 +54,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
+
             // This should only ever be handled client side!
             if (isServerHandled)
                 throw new ExpectedClientException();

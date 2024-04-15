@@ -63,7 +63,7 @@ namespace LabFusion.Patching
 
             // Send spawn message
             using var writer = FusionWriter.Create();
-            using var data = ZoneSpawnerData.Create(info.syncable.GetId(), spawner);
+            var data = ZoneSpawnerData.Create(info.syncable.GetId(), spawner);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.ZoneSpawner, writer);

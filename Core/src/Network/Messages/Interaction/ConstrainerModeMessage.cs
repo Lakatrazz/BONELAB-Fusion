@@ -11,7 +11,7 @@ using SLZ.Props;
 
 namespace LabFusion.Network
 {
-    public class ConstrainerModeData : IFusionSerializable, IDisposable
+    public class ConstrainerModeData : IFusionSerializable
     {
         public const int Size = sizeof(byte) * 2 + sizeof(ushort);
 
@@ -33,11 +33,6 @@ namespace LabFusion.Network
             mode = (Constrainer.ConstraintMode)reader.ReadByte();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static ConstrainerModeData Create(byte smallId, ushort constrainerId, Constrainer.ConstraintMode mode)
         {
             return new ConstrainerModeData()
@@ -57,7 +52,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<ConstrainerModeData>();
+            var data = reader.ReadFusionSerializable<ConstrainerModeData>();
 
             // Send message to all clients if server
             if (NetworkInfo.IsServer && isServerHandled)

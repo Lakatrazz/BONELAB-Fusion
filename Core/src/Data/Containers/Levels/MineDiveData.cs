@@ -32,7 +32,7 @@ namespace LabFusion.Data
             if (Minecart != null && _hasCreatedCarts)
             {
                 using var writer = FusionWriter.Create();
-                using var data = MineDiveCartData.Create(_cartAmount);
+                var data = MineDiveCartData.Create(_cartAmount);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.MineDiveCart, writer);
@@ -69,7 +69,7 @@ namespace LabFusion.Data
                 CreateExtraCarts(_cartAmount);
 
                 using var writer = FusionWriter.Create();
-                using var data = MineDiveCartData.Create(_cartAmount);
+                var data = MineDiveCartData.Create(_cartAmount);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.MineDiveCart, writer);

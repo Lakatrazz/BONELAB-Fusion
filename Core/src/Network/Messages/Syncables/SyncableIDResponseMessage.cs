@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace LabFusion.Network
 {
-    public class SyncableIDResponseData : IFusionSerializable, IDisposable
+    public class SyncableIDResponseData : IFusionSerializable
     {
         public const int Size = sizeof(ushort) * 2;
 
@@ -27,11 +27,6 @@ namespace LabFusion.Network
         {
             queuedId = reader.ReadUInt16();
             newId = reader.ReadUInt16();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static SyncableIDResponseData Create(ushort queuedId, ushort newId)
@@ -54,7 +49,7 @@ namespace LabFusion.Network
             if (!NetworkInfo.IsServer && !isServerHandled)
             {
                 using var reader = FusionReader.Create(bytes);
-                using var data = reader.ReadFusionSerializable<SyncableIDResponseData>();
+                var data = reader.ReadFusionSerializable<SyncableIDResponseData>();
                 var result = SyncManager.UnqueueSyncable(data.queuedId, data.newId, out var syncable);
 
 #if DEBUG

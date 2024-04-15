@@ -11,7 +11,7 @@ namespace LabFusion.Senders
         public static void SendGameObjectActive(bool value, SyncGameObjectEnabled script)
         {
             using FusionWriter writer = FusionWriter.Create();
-            using var data = GameObjectActiveData.Create(PlayerIdManager.LocalSmallId, value, script);
+            var data = GameObjectActiveData.Create(PlayerIdManager.LocalSmallId, value, script);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.GameObjectActive, writer);

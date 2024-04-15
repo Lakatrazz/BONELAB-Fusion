@@ -17,7 +17,7 @@ using SLZ.Props.Weapons;
 
 namespace LabFusion.Network
 {
-    public class FlashlightToggleData : IFusionSerializable, IDisposable
+    public class FlashlightToggleData : IFusionSerializable
     {
         public const int Size = sizeof(byte) * 2 + sizeof(ushort);
 
@@ -39,11 +39,6 @@ namespace LabFusion.Network
             isEnabled = reader.ReadBoolean();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static FlashlightToggleData Create(byte smallId, ushort syncId, bool isEnabled)
         {
             return new FlashlightToggleData()
@@ -63,7 +58,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<FlashlightToggleData>();
+            var data = reader.ReadFusionSerializable<FlashlightToggleData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {

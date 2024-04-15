@@ -125,7 +125,7 @@ namespace LabFusion.Patching
                     {
 
                         using var writer = FusionWriter.Create(MagazineInsertData.Size);
-                        using var data = MagazineInsertData.Create(PlayerIdManager.LocalSmallId, magSyncable.Id, gunSyncable.Id);
+                        var data = MagazineInsertData.Create(PlayerIdManager.LocalSmallId, magSyncable.Id, gunSyncable.Id);
                         writer.Write(data);
 
                         using var message = FusionMessage.Create(NativeMessageTag.MagazineInsert, writer);
@@ -162,7 +162,7 @@ namespace LabFusion.Patching
                         Hand hand = ammoPlug.host.GetHand(0);
                         Handedness handedness = hand != null ? hand.handedness : Handedness.UNDEFINED;
 
-                        using var data = MagazineEjectData.Create(PlayerIdManager.LocalSmallId, magSyncable.Id, gunSyncable.Id, handedness);
+                        var data = MagazineEjectData.Create(PlayerIdManager.LocalSmallId, magSyncable.Id, gunSyncable.Id, handedness);
                         writer.Write(data);
 
                         using var message = FusionMessage.Create(NativeMessageTag.MagazineEject, writer);

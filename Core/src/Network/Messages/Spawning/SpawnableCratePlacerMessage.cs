@@ -29,7 +29,7 @@ using LabFusion.Senders;
 
 namespace LabFusion.Network
 {
-    public class SpawnableCratePlacerData : IFusionSerializable, IDisposable
+    public class SpawnableCratePlacerData : IFusionSerializable
     {
         public const int Size = sizeof(ushort);
 
@@ -46,11 +46,6 @@ namespace LabFusion.Network
         {
             spawnId = reader.ReadUInt16();
             placer = reader.ReadGameObject();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static SpawnableCratePlacerData Create(ushort spawnId, GameObject placer)
@@ -71,7 +66,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<SpawnableCratePlacerData>();
+            var data = reader.ReadFusionSerializable<SpawnableCratePlacerData>();
             // This should only be handled by clients
             if (!NetworkInfo.IsServer && !isServerHandled)
             {

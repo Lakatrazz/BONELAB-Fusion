@@ -37,7 +37,7 @@ namespace LabFusion.Network
         CLOSE_BIG_DOORS = 14,
     }
 
-    public class BonelabHubEventData : IFusionSerializable, IDisposable
+    public class BonelabHubEventData : IFusionSerializable
     {
         public BonelabHubEventType type;
 
@@ -49,11 +49,6 @@ namespace LabFusion.Network
         public void Deserialize(FusionReader reader)
         {
             type = (BonelabHubEventType)reader.ReadByte();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static BonelabHubEventData Create(BonelabHubEventType type)
@@ -73,7 +68,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<BonelabHubEventData>();
+            var data = reader.ReadFusionSerializable<BonelabHubEventData>();
             GameControl_HubPatches.IgnorePatches = true;
             var controller = HubData.GameController;
 

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace LabFusion.Network
 {
-    public class SyncableOwnershipRequestData : IFusionSerializable, IDisposable
+    public class SyncableOwnershipRequestData : IFusionSerializable
     {
         public const int Size = sizeof(byte) + sizeof(ushort);
 
@@ -27,11 +27,6 @@ namespace LabFusion.Network
         {
             smallId = reader.ReadByte();
             syncId = reader.ReadUInt16();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static SyncableOwnershipRequestData Create(byte smallId, ushort syncId)
@@ -53,9 +48,10 @@ namespace LabFusion.Network
             if (NetworkInfo.IsServer && isServerHandled)
             {
                 using var reader = FusionReader.Create(bytes);
-                using var data = reader.ReadFusionSerializable<SyncableOwnershipRequestData>();
+                var data = reader.ReadFusionSerializable<SyncableOwnershipRequestData>();
+
                 using var writer = FusionWriter.Create(SyncableOwnershipResponseData.Size);
-                using var response = SyncableOwnershipResponseData.Create(data.smallId, data.syncId);
+                var response = SyncableOwnershipResponseData.Create(data.smallId, data.syncId);
                 writer.Write(response);
 
                 using var message = FusionMessage.Create(NativeMessageTag.SyncableOwnershipResponse, writer);

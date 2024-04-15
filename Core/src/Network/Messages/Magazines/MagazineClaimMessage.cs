@@ -35,7 +35,7 @@ using LabFusion.RPC;
 
 namespace LabFusion.Network
 {
-    public class MagazineClaimData : IFusionSerializable, IDisposable
+    public class MagazineClaimData : IFusionSerializable
     {
         public const int Size = sizeof(byte) + sizeof(ushort);
 
@@ -57,11 +57,6 @@ namespace LabFusion.Network
             handedness = (Handedness)reader.ReadByte();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static MagazineClaimData Create(byte owner, ushort syncId, Handedness handedness)
         {
             return new MagazineClaimData()
@@ -81,7 +76,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using var reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<MagazineClaimData>();
+            var data = reader.ReadFusionSerializable<MagazineClaimData>();
 
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)

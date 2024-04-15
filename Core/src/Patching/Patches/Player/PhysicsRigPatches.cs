@@ -78,7 +78,7 @@ namespace LabFusion.Patching
                         return false;
 
                     using var writer = FusionWriter.Create(PlayerRepRagdollData.Size);
-                    using var data = PlayerRepRagdollData.Create(PlayerIdManager.LocalSmallId, true);
+                    var data = PlayerRepRagdollData.Create(PlayerIdManager.LocalSmallId, true);
                     writer.Write(data);
 
                     using var message = FusionMessage.Create(NativeMessageTag.PlayerRepRagdoll, writer);
@@ -110,7 +110,7 @@ namespace LabFusion.Patching
                     }
 
                     using var writer = FusionWriter.Create(PlayerRepRagdollData.Size);
-                    using var data = PlayerRepRagdollData.Create(PlayerIdManager.LocalSmallId, false);
+                    var data = PlayerRepRagdollData.Create(PlayerIdManager.LocalSmallId, false);
                     writer.Write(data);
 
                     using var message = FusionMessage.Create(NativeMessageTag.PlayerRepRagdoll, writer);

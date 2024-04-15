@@ -10,7 +10,7 @@ using SLZ.Zones;
 
 namespace LabFusion.Network
 {
-    public class ZoneSpawnerData : IFusionSerializable, IDisposable
+    public class ZoneSpawnerData : IFusionSerializable
     {
         public ushort syncId;
 
@@ -28,11 +28,6 @@ namespace LabFusion.Network
             syncId = reader.ReadUInt16();
 
             zoneSpawner = reader.ReadGameObject();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static ZoneSpawnerData Create(ushort syncId, ZoneSpawner zoneSpawner)
@@ -53,7 +48,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<ZoneSpawnerData>();
+            var data = reader.ReadFusionSerializable<ZoneSpawnerData>();
 
             // We ONLY handle this if we are a client!
             if (!NetworkInfo.IsServer && SyncManager.TryGetSyncable<PropSyncable>(data.syncId, out var syncable) && data.zoneSpawner != null)

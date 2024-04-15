@@ -27,7 +27,7 @@ namespace LabFusion.Network
         INSERT_PROP = 2,
     }
 
-    public class KeySlotData : IFusionSerializable, IDisposable
+    public class KeySlotData : IFusionSerializable
     {
         public const int Size = sizeof(byte) * 2 + sizeof(ushort);
 
@@ -66,11 +66,6 @@ namespace LabFusion.Network
             receiverIndex = reader.ReadByteNullable();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static KeySlotData Create(byte smallId, KeySlotType type, ushort keyId, GameObject receiver = null, ushort? receiverId = null, byte? receiverIndex = null)
         {
             return new KeySlotData()
@@ -95,7 +90,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<KeySlotData>();
+            var data = reader.ReadFusionSerializable<KeySlotData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {

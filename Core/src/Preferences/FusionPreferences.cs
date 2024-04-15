@@ -136,7 +136,7 @@ namespace LabFusion.Preferences
             if (NetworkInfo.HasServer && NetworkInfo.IsServer)
             {
                 using var writer = FusionWriter.Create();
-                using var data = ServerSettingsData.Create(SerializedServerSettings.Create());
+                var data = ServerSettingsData.Create(SerializedServerSettings.Create());
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.ServerSettings, writer);
@@ -149,7 +149,7 @@ namespace LabFusion.Preferences
             if (NetworkInfo.HasServer && NetworkInfo.IsServer)
             {
                 using var writer = FusionWriter.Create(ServerSettingsData.Size);
-                using var data = ServerSettingsData.Create(SerializedServerSettings.Create());
+                var data = ServerSettingsData.Create(SerializedServerSettings.Create());
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.ServerSettings, writer);
@@ -162,7 +162,7 @@ namespace LabFusion.Preferences
             if (NetworkInfo.HasServer)
             {
                 using var writer = FusionWriter.Create(PlayerSettingsData.Size);
-                using var data = PlayerSettingsData.Create(PlayerIdManager.LocalSmallId, SerializedPlayerSettings.Create());
+                var data = PlayerSettingsData.Create(PlayerIdManager.LocalSmallId, SerializedPlayerSettings.Create());
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.PlayerSettings, writer);

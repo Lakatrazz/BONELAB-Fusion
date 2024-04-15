@@ -13,7 +13,7 @@ using UnityEngine;
 
 namespace LabFusion.Network
 {
-    public class GameObjectActiveData : IFusionSerializable, IDisposable
+    public class GameObjectActiveData : IFusionSerializable
     {
         public byte smallId;
         public bool value;
@@ -51,11 +51,6 @@ namespace LabFusion.Network
             scriptIndex = reader.ReadByteNullable();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static GameObjectActiveData Create(byte smallId, bool value, SyncGameObjectEnabled script)
         {
             var data = new GameObjectActiveData()
@@ -91,7 +86,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<GameObjectActiveData>();
+            var data = reader.ReadFusionSerializable<GameObjectActiveData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {

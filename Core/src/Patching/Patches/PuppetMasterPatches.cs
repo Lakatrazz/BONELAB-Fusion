@@ -36,7 +36,7 @@ namespace LabFusion.Patching
                 {
                     using (var writer = FusionWriter.Create(PropReferenceData.Size))
                     {
-                        using var data = PropReferenceData.Create(PlayerIdManager.LocalSmallId, syncable.Id);
+                        var data = PropReferenceData.Create(PlayerIdManager.LocalSmallId, syncable.Id);
                         writer.Write(data);
 
                         using var message = FusionMessage.Create(NativeMessageTag.PuppetMasterKill, writer);

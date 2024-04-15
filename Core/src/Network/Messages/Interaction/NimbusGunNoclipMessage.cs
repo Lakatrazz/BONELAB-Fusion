@@ -9,7 +9,7 @@ using LabFusion.Syncables;
 
 namespace LabFusion.Network
 {
-    public class NimbusGunNoclipData : IFusionSerializable, IDisposable
+    public class NimbusGunNoclipData : IFusionSerializable
     {
         public const int Size = sizeof(byte) * 2 + sizeof(ushort);
 
@@ -31,11 +31,6 @@ namespace LabFusion.Network
             isEnabled = reader.ReadBoolean();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static NimbusGunNoclipData Create(byte smallId, ushort syncId, bool isEnabled)
         {
             return new NimbusGunNoclipData()
@@ -55,7 +50,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<NimbusGunNoclipData>();
+            var data = reader.ReadFusionSerializable<NimbusGunNoclipData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {

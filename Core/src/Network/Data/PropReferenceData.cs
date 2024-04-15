@@ -4,7 +4,7 @@ using LabFusion.Data;
 
 namespace LabFusion.Network
 {
-    public class PropReferenceData : IFusionSerializable, IDisposable
+    public class PropReferenceData : IFusionSerializable
     {
         public const int Size = sizeof(byte) + sizeof(ushort);
 
@@ -21,11 +21,6 @@ namespace LabFusion.Network
         {
             smallId = reader.ReadByte();
             syncId = reader.ReadUInt16();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static PropReferenceData Create(byte smallId, ushort syncId)

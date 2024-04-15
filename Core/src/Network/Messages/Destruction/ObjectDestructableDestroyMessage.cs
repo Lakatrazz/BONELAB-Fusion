@@ -28,7 +28,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<ComponentIndexData>();
+            var data = reader.ReadFusionSerializable<ComponentIndexData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {

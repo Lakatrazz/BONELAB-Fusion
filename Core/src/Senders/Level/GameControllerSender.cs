@@ -15,7 +15,7 @@ namespace LabFusion.Senders
             if (NetworkInfo.IsServer)
             {
                 using var writer = FusionWriter.Create();
-                using var data = BaseGameControllerData.Create(type);
+                var data = BaseGameControllerData.Create(type);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.BaseGameController, writer);

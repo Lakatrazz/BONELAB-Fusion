@@ -700,7 +700,7 @@ namespace LabFusion.Representation
                     return false;
 
                 using var writer = FusionWriter.Create(PlayerRepTransformData.Size);
-                using var data = PlayerRepTransformData.Create(PlayerIdManager.LocalSmallId, syncedPoints, syncedPelvis, syncedPlayspace, syncedLeftHand, syncedRightHand);
+                var data = PlayerRepTransformData.Create(PlayerIdManager.LocalSmallId, syncedPoints, syncedPelvis, syncedPlayspace, syncedLeftHand, syncedRightHand);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.PlayerRepTransform, writer);

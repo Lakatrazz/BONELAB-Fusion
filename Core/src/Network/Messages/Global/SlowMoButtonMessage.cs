@@ -16,7 +16,7 @@ using UnityEngine;
 
 namespace LabFusion.Network
 {
-    public class SlowMoButtonMessageData : IFusionSerializable, IDisposable
+    public class SlowMoButtonMessageData : IFusionSerializable
     {
         public const int Size = sizeof(byte) * 2;
 
@@ -43,11 +43,6 @@ namespace LabFusion.Network
             smallId = reader.ReadByte();
             isDecrease = reader.ReadBoolean();
         }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
     }
 
     [Net.SkipHandleWhileLoading]
@@ -58,7 +53,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using var reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<SlowMoButtonMessageData>();
+            var data = reader.ReadFusionSerializable<SlowMoButtonMessageData>();
             if (NetworkInfo.IsServer && isServerHandled)
             {
                 using var message = FusionMessage.Create(Tag.Value, bytes);

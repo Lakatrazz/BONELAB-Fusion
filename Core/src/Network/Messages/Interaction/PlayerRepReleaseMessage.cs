@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace LabFusion.Network
 {
-    public class PlayerRepReleaseData : IFusionSerializable, IDisposable
+    public class PlayerRepReleaseData : IFusionSerializable
     {
         public const int Size = sizeof(byte) * 2;
 
@@ -39,11 +39,6 @@ namespace LabFusion.Network
             return null;
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static PlayerRepReleaseData Create(byte smallId, Handedness handedness)
         {
             return new PlayerRepReleaseData()
@@ -62,7 +57,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<PlayerRepReleaseData>();
+            var data = reader.ReadFusionSerializable<PlayerRepReleaseData>();
             var rep = data.GetRep();
 
             if (rep != null)

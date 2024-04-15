@@ -15,7 +15,7 @@ using System.Runtime.InteropServices;
 
 namespace LabFusion.Network
 {
-    public class PropSyncableUpdateData : IFusionSerializable, IDisposable
+    public class PropSyncableUpdateData : IFusionSerializable
     {
         public const int DefaultSize = sizeof(byte) * 2 + sizeof(ushort);
         public const int RigidbodySize = sizeof(float) * 9 + SerializedSmallQuaternion.Size;
@@ -72,11 +72,6 @@ namespace LabFusion.Network
             return null;
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static PropSyncableUpdateData Create(byte ownerId, PropSyncable syncable)
         {
             var syncId = syncable.GetId();
@@ -123,7 +118,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using var reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<PropSyncableUpdateData>();
+            var data = reader.ReadFusionSerializable<PropSyncableUpdateData>();
 
             // Find the prop syncable and update its info
             var syncable = data.GetPropSyncable();

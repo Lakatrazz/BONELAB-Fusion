@@ -33,7 +33,7 @@ namespace LabFusion.Network
         SPAWN_LOOT = 11,
     }
 
-    public class ArenaTransitionData : IFusionSerializable, IDisposable
+    public class ArenaTransitionData : IFusionSerializable
     {
         public ArenaTransitionType type;
 
@@ -45,11 +45,6 @@ namespace LabFusion.Network
         public void Deserialize(FusionReader reader)
         {
             type = (ArenaTransitionType)reader.ReadByte();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static ArenaTransitionData Create(ArenaTransitionType type)
@@ -69,7 +64,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<ArenaTransitionData>();
+            var data = reader.ReadFusionSerializable<ArenaTransitionData>();
             ArenaPatches.IgnorePatches = true;
 
             // We ONLY handle this for clients, this message should only ever be sent by the server!

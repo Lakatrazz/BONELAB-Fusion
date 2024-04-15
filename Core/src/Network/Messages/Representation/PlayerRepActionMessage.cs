@@ -16,7 +16,7 @@ using UnityEngine;
 
 namespace LabFusion.Network
 {
-    public class PlayerRepActionData : IFusionSerializable, IDisposable
+    public class PlayerRepActionData : IFusionSerializable
     {
         public const int Size = sizeof(byte) * 3;
 
@@ -38,11 +38,6 @@ namespace LabFusion.Network
             otherPlayer = reader.ReadByteNullable();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static PlayerRepActionData Create(byte smallId, PlayerActionType type, byte? otherPlayer = null)
         {
             return new PlayerRepActionData
@@ -61,7 +56,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using var reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<PlayerRepActionData>();
+            var data = reader.ReadFusionSerializable<PlayerRepActionData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {

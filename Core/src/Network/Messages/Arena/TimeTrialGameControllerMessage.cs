@@ -19,7 +19,7 @@ namespace LabFusion.Network
         SetRequiredKillCount = 5,
     }
 
-    public class TimeTrialGameControllerData : IFusionSerializable, IDisposable
+    public class TimeTrialGameControllerData : IFusionSerializable
     {
         public TimeTrialGameControllerType type;
         public byte value;
@@ -34,11 +34,6 @@ namespace LabFusion.Network
         {
             type = (TimeTrialGameControllerType)reader.ReadByte();
             value = reader.ReadByte();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static TimeTrialGameControllerData Create(TimeTrialGameControllerType type, int value)
@@ -59,7 +54,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<TimeTrialGameControllerData>();
+            var data = reader.ReadFusionSerializable<TimeTrialGameControllerData>();
             TimeTrial_GameControllerPatches.IgnorePatches = true;
 
             // We ONLY handle this for clients, this message should only ever be sent by the server!

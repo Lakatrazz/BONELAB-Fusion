@@ -13,7 +13,7 @@ using LabFusion.Utilities;
 
 namespace LabFusion.Network
 {
-    public class DynamicsAssignData : IFusionSerializable, IDisposable
+    public class DynamicsAssignData : IFusionSerializable
     {
         public string[] moduleHandlerNames;
         public string[] gamemodeNames;
@@ -53,11 +53,6 @@ namespace LabFusion.Network
             }
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static DynamicsAssignData Create()
         {
             return new DynamicsAssignData()
@@ -79,7 +74,7 @@ namespace LabFusion.Network
                 throw new ExpectedClientException();
 
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<DynamicsAssignData>();
+            var data = reader.ReadFusionSerializable<DynamicsAssignData>();
 
             // Modules
             ModuleMessageHandler.PopulateHandlerTable(data.moduleHandlerNames);

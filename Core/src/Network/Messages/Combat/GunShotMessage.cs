@@ -17,7 +17,7 @@ using SLZ.Props.Weapons;
 
 namespace LabFusion.Network
 {
-    public class GunShotData : IFusionSerializable, IDisposable
+    public class GunShotData : IFusionSerializable
     {
         public const int Size = sizeof(byte) * 2 + sizeof(ushort);
 
@@ -42,11 +42,6 @@ namespace LabFusion.Network
             gunIndex = reader.ReadByte();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static GunShotData Create(byte smallId, byte ammoCount, ushort gunId, byte gunIndex)
         {
             return new GunShotData()
@@ -67,7 +62,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<GunShotData>();
+            var data = reader.ReadFusionSerializable<GunShotData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {

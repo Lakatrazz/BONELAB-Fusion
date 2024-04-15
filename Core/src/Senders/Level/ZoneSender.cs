@@ -17,7 +17,7 @@ namespace LabFusion.Senders
             if (NetworkInfo.IsServer)
             {
                 using var writer = FusionWriter.Create();
-                using var data = ZoneEncounterEventData.Create(zoneEncounter, type);
+                var data = ZoneEncounterEventData.Create(zoneEncounter, type);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.ZoneEncounterEvent, writer);

@@ -17,7 +17,7 @@ using SLZ.Props.Weapons;
 
 namespace LabFusion.Network
 {
-    public class PowerableJointVoltageData : IFusionSerializable, IDisposable
+    public class PowerableJointVoltageData : IFusionSerializable
     {
         public const int Size = sizeof(byte) + sizeof(ushort) + sizeof(float);
 
@@ -39,11 +39,6 @@ namespace LabFusion.Network
             voltage = reader.ReadSingle();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static PowerableJointVoltageData Create(byte smallId, ushort syncId, float voltage)
         {
             return new PowerableJointVoltageData()
@@ -63,7 +58,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<PowerableJointVoltageData>();
+            var data = reader.ReadFusionSerializable<PowerableJointVoltageData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {

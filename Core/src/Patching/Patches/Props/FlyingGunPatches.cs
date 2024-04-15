@@ -55,7 +55,7 @@ namespace LabFusion.Patching
             if (NetworkInfo.HasServer && hand.manager.IsSelf() && __state != __instance._noClipping && FlyingGunExtender.Cache.TryGet(__instance, out var syncable))
             {
                 using var writer = FusionWriter.Create(NimbusGunNoclipData.Size);
-                using var data = NimbusGunNoclipData.Create(PlayerIdManager.LocalSmallId, syncable.GetId(), __instance._noClipping);
+                var data = NimbusGunNoclipData.Create(PlayerIdManager.LocalSmallId, syncable.GetId(), __instance._noClipping);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.NimbusGunNoclip, writer);

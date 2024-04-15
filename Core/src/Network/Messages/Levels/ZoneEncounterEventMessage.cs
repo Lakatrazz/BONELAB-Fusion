@@ -29,7 +29,7 @@ namespace LabFusion.Network
         PAUSE_ENCOUNTER = 3,
     }
 
-    public class ZoneEncounterEventData : IFusionSerializable, IDisposable
+    public class ZoneEncounterEventData : IFusionSerializable
     {
         public GameObject zoneEncounter;
         public ZoneEncounterEventType type;
@@ -44,11 +44,6 @@ namespace LabFusion.Network
         {
             zoneEncounter = reader.ReadGameObject();
             type = (ZoneEncounterEventType)reader.ReadByte();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static ZoneEncounterEventData Create(ZoneEncounter zoneEncounter, ZoneEncounterEventType type)
@@ -69,7 +64,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<ZoneEncounterEventData>();
+            var data = reader.ReadFusionSerializable<ZoneEncounterEventData>();
             // We ONLY handle this if we are a client!
             if (!NetworkInfo.IsServer && data.zoneEncounter != null)
             {

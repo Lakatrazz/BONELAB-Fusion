@@ -25,7 +25,7 @@ namespace LabFusion.Network
         CONFIRM_FORCE_GRAB = 3,
     }
 
-    public class DescentIntroData : IFusionSerializable, IDisposable
+    public class DescentIntroData : IFusionSerializable
     {
         public byte smallId;
         public byte selectionNumber;
@@ -43,11 +43,6 @@ namespace LabFusion.Network
             smallId = reader.ReadByte();
             selectionNumber = reader.ReadByte();
             type = (DescentIntroType)reader.ReadByte();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static DescentIntroData Create(byte smallId, byte selectionNumber, DescentIntroType type)
@@ -69,7 +64,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<DescentIntroData>();
+            var data = reader.ReadFusionSerializable<DescentIntroData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {

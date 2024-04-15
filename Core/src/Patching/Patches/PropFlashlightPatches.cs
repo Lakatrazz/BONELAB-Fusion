@@ -42,7 +42,7 @@ namespace LabFusion.Patching
             if (NetworkInfo.HasServer && PropFlashlightExtender.Cache.TryGet(__instance, out var syncable))
             {
                 using var writer = FusionWriter.Create(FlashlightToggleData.Size);
-                using var data = FlashlightToggleData.Create(PlayerIdManager.LocalSmallId, syncable.Id, __instance.lightOn);
+                var data = FlashlightToggleData.Create(PlayerIdManager.LocalSmallId, syncable.Id, __instance.lightOn);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.FlashlightToggle, writer);

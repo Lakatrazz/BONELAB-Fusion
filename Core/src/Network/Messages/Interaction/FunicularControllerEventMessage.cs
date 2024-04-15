@@ -27,7 +27,7 @@ namespace LabFusion.Network
         CARTBACKWARDS = 3,
     }
 
-    public class FunicularControllerEventData : IFusionSerializable, IDisposable
+    public class FunicularControllerEventData : IFusionSerializable
     {
         public const int Size = sizeof(byte) + sizeof(ushort);
 
@@ -44,11 +44,6 @@ namespace LabFusion.Network
         {
             syncId = reader.ReadUInt16();
             type = (FunicularControllerEventType)reader.ReadByte();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static FunicularControllerEventData Create(ushort syncId, FunicularControllerEventType type)
@@ -69,7 +64,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<FunicularControllerEventData>();
+            var data = reader.ReadFusionSerializable<FunicularControllerEventData>();
             if (!NetworkInfo.IsServer && SyncManager.TryGetSyncable<PropSyncable>(data.syncId, out var syncable))
             {
                 if (syncable.TryGetExtender<FunicularControllerExtender>(out var extender))

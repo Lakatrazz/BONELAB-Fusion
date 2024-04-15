@@ -11,7 +11,7 @@ using LabFusion.Extensions;
 
 namespace LabFusion.Network
 {
-    public class PlayerMetadataRequestData : IFusionSerializable, IDisposable
+    public class PlayerMetadataRequestData : IFusionSerializable
     {
         public const int DefaultSize = sizeof(byte);
 
@@ -38,11 +38,6 @@ namespace LabFusion.Network
             value = reader.ReadString();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static PlayerMetadataRequestData Create(byte smallId, string key, string value)
         {
             return new PlayerMetadataRequestData()
@@ -64,7 +59,7 @@ namespace LabFusion.Network
             if (NetworkInfo.IsServer && isServerHandled)
             {
                 using FusionReader reader = FusionReader.Create(bytes);
-                using var data = reader.ReadFusionSerializable<PlayerMetadataRequestData>();
+                var data = reader.ReadFusionSerializable<PlayerMetadataRequestData>();
 
                 // Send the response to all clients
                 PlayerSender.SendPlayerMetadataResponse(data.smallId, data.key, data.value);

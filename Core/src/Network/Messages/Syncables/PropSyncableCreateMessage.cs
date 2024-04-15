@@ -20,7 +20,7 @@ using LabFusion.Senders;
 
 namespace LabFusion.Network
 {
-    public class PropSyncableCreateData : IFusionSerializable, IDisposable
+    public class PropSyncableCreateData : IFusionSerializable
     {
         public const int Size = sizeof(byte) + sizeof(ushort);
 
@@ -40,11 +40,6 @@ namespace LabFusion.Network
             smallId = reader.ReadByte();
             gameObjectPath = reader.ReadString();
             id = reader.ReadUInt16();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static PropSyncableCreateData Create(byte smallId, string gameObjectPath, ushort id)
@@ -69,7 +64,7 @@ namespace LabFusion.Network
             ThreadingUtilities.IL2PrepareThread();
 
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<PropSyncableCreateData>();
+            var data = reader.ReadFusionSerializable<PropSyncableCreateData>();
             GameObject gameObject = await GameObjectUtilities.GetGameObjectAsync(data.gameObjectPath);
 
             // Send message to other clients if server

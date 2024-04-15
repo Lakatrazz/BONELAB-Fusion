@@ -11,7 +11,7 @@ using System.Collections;
 
 namespace LabFusion.Network
 {
-    public class DespawnResponseData : IFusionSerializable, IDisposable
+    public class DespawnResponseData : IFusionSerializable
     {
         public const int Size = sizeof(ushort) + sizeof(byte) * 2;
 
@@ -31,11 +31,6 @@ namespace LabFusion.Network
             syncId = reader.ReadUInt16();
             despawnerId = reader.ReadByte();
             isMag = reader.ReadBoolean();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static DespawnResponseData Create(ushort syncId, byte despawnerId, bool isMag = false)
@@ -58,7 +53,7 @@ namespace LabFusion.Network
         {
             // Despawn the poolee if it exists
             using var reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<DespawnResponseData>();
+            var data = reader.ReadFusionSerializable<DespawnResponseData>();
             MelonCoroutines.Start(Internal_WaitForValidDespawn(data.syncId, data.despawnerId, data.isMag));
         }
 

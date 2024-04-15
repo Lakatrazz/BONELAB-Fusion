@@ -10,7 +10,7 @@ using LabFusion.Representation;
 
 namespace LabFusion.Network
 {
-    public class PointItemEquipStateData : IFusionSerializable, IDisposable
+    public class PointItemEquipStateData : IFusionSerializable
     {
         public byte smallId;
         public string barcode;
@@ -28,11 +28,6 @@ namespace LabFusion.Network
             smallId = reader.ReadByte();
             barcode = reader.ReadString();
             isEquipped = reader.ReadBoolean();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static PointItemEquipStateData Create(byte smallId, string barcode, bool isEquipped)
@@ -53,7 +48,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using var reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<PointItemEquipStateData>();
+            var data = reader.ReadFusionSerializable<PointItemEquipStateData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {

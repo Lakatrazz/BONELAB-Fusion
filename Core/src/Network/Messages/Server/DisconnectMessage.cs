@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace LabFusion.Network
 {
-    public class DisconnectMessageData : IFusionSerializable, IDisposable
+    public class DisconnectMessageData : IFusionSerializable
     {
         public ulong longId;
         public string reason;
@@ -36,11 +36,6 @@ namespace LabFusion.Network
             longId = reader.ReadUInt64();
             reason = reader.ReadString();
         }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
     }
 
     public class DisconnectMessage : FusionMessageHandler
@@ -53,7 +48,7 @@ namespace LabFusion.Network
             if (!isServerHandled)
             {
                 using var reader = FusionReader.Create(bytes);
-                using var data = reader.ReadFusionSerializable<DisconnectMessageData>();
+                var data = reader.ReadFusionSerializable<DisconnectMessageData>();
 
                 // If this is our id, disconnect ourselves
                 if (data.longId == PlayerIdManager.LocalLongId)

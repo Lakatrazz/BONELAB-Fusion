@@ -14,7 +14,7 @@ namespace LabFusion.Senders
             if (NetworkInfo.IsServer)
             {
                 using var writer = FusionWriter.Create();
-                using var data = ArenaTransitionData.Create(type);
+                var data = ArenaTransitionData.Create(type);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.ArenaTransition, writer);
@@ -27,7 +27,7 @@ namespace LabFusion.Senders
             if (NetworkInfo.IsServer)
             {
                 using var writer = FusionWriter.Create();
-                using var data = ChallengeSelectData.Create(menuIndex, challengeNumber, type);
+                var data = ChallengeSelectData.Create(menuIndex, challengeNumber, type);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.ChallengeSelect, writer);
@@ -40,7 +40,7 @@ namespace LabFusion.Senders
             if (NetworkInfo.IsServer)
             {
                 using var writer = FusionWriter.Create();
-                using var data = GeoSelectData.Create(geoIndex);
+                var data = GeoSelectData.Create(geoIndex);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.GeoSelect, writer);
@@ -53,7 +53,7 @@ namespace LabFusion.Senders
             if (NetworkInfo.IsServer)
             {
                 using var writer = FusionWriter.Create();
-                using var data = ArenaMenuData.Create(selectionNumber, type);
+                var data = ArenaMenuData.Create(selectionNumber, type);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.ArenaMenu, writer);

@@ -16,7 +16,7 @@ namespace LabFusion.Network
         EndSession = 2,
     }
 
-    public class BaseGameControllerData : IFusionSerializable, IDisposable
+    public class BaseGameControllerData : IFusionSerializable
     {
         public BaseGameControllerType type;
 
@@ -28,11 +28,6 @@ namespace LabFusion.Network
         public void Deserialize(FusionReader reader)
         {
             type = (BaseGameControllerType)reader.ReadByte();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static BaseGameControllerData Create(BaseGameControllerType type)
@@ -52,7 +47,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<BaseGameControllerData>();
+            var data = reader.ReadFusionSerializable<BaseGameControllerData>();
             BaseGameControllerPatches.IgnorePatches = true;
 
             // We ONLY handle this for clients, this message should only ever be sent by the server!

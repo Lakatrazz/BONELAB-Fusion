@@ -10,7 +10,7 @@ using System;
 
 namespace LabFusion.Network
 {
-    public class SceneLoadData : IFusionSerializable, IDisposable
+    public class SceneLoadData : IFusionSerializable
     {
         public string levelBarcode;
         public string loadBarcode;
@@ -32,11 +32,6 @@ namespace LabFusion.Network
             loadBarcode = reader.ReadString();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static SceneLoadData Create(string levelBarcode, string loadBarcode)
         {
             return new SceneLoadData()
@@ -56,7 +51,7 @@ namespace LabFusion.Network
             if (!NetworkInfo.IsServer && !isServerHandled)
             {
                 using var reader = FusionReader.Create(bytes);
-                using var data = reader.ReadFusionSerializable<SceneLoadData>();
+                var data = reader.ReadFusionSerializable<SceneLoadData>();
 #if DEBUG
                 FusionLogger.Log($"Received level load for {data.levelBarcode}!");
 #endif

@@ -32,7 +32,7 @@ namespace LabFusion.Utilities
         private static void OnPlayerCatchup(ulong id)
         {
             using var writer = FusionWriter.Create(WorldGravityMessageData.Size);
-            using var data = WorldGravityMessageData.Create(Gravity);
+            var data = WorldGravityMessageData.Create(Gravity);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.WorldGravity, writer);
@@ -42,7 +42,7 @@ namespace LabFusion.Utilities
         internal static void SendGravity(Vector3 value)
         {
             using var writer = FusionWriter.Create(WorldGravityMessageData.Size);
-            using var data = WorldGravityMessageData.Create(value);
+            var data = WorldGravityMessageData.Create(value);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.WorldGravity, writer);

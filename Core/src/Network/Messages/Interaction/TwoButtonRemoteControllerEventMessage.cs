@@ -25,7 +25,7 @@ namespace LabFusion.Network
         ENERGIZEJOINTNEGATIVE = 3,
     }
 
-    public class TwoButtonRemoteControllerEventData : IFusionSerializable, IDisposable
+    public class TwoButtonRemoteControllerEventData : IFusionSerializable
     {
         public const int Size = sizeof(byte) * 2 + sizeof(ushort);
 
@@ -47,11 +47,6 @@ namespace LabFusion.Network
             type = (TwoButtonRemoteControllerEventType)reader.ReadByte();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static TwoButtonRemoteControllerEventData Create(byte smallId, ushort syncId, TwoButtonRemoteControllerEventType type)
         {
             return new TwoButtonRemoteControllerEventData()
@@ -71,7 +66,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<TwoButtonRemoteControllerEventData>();
+            var data = reader.ReadFusionSerializable<TwoButtonRemoteControllerEventData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {

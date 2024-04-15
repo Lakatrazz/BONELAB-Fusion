@@ -8,7 +8,7 @@ using System;
 
 namespace LabFusion.Network
 {
-    public class DespawnRequestData : IFusionSerializable, IDisposable
+    public class DespawnRequestData : IFusionSerializable
     {
         public const int Size = sizeof(ushort) + sizeof(byte) * 2;
 
@@ -28,11 +28,6 @@ namespace LabFusion.Network
             syncId = reader.ReadUInt16();
             despawnerId = reader.ReadByte();
             isMag = reader.ReadBoolean();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static DespawnRequestData Create(ushort syncId, byte despawnerId, bool isMag = false)
@@ -57,9 +52,9 @@ namespace LabFusion.Network
             if (isServerHandled)
             {
                 using var reader = FusionReader.Create(bytes);
-                using var readData = reader.ReadFusionSerializable<DespawnRequestData>();
+                var readData = reader.ReadFusionSerializable<DespawnRequestData>();
                 using var writer = FusionWriter.Create(DespawnResponseData.Size);
-                using var data = DespawnResponseData.Create(readData.syncId, readData.despawnerId, readData.isMag);
+                var data = DespawnResponseData.Create(readData.syncId, readData.despawnerId, readData.isMag);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.DespawnResponse, writer);

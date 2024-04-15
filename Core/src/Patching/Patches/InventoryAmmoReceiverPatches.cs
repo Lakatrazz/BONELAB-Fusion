@@ -98,7 +98,7 @@ namespace LabFusion.Patching
 
             // Send claim message
             using var writer = FusionWriter.Create(MagazineClaimData.Size);
-            using var data = MagazineClaimData.Create(PlayerIdManager.LocalSmallId, info.syncable.GetId(), handedness);
+            var data = MagazineClaimData.Create(PlayerIdManager.LocalSmallId, info.syncable.GetId(), handedness);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.MagazineClaim, writer);

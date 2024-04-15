@@ -9,7 +9,7 @@ using LabFusion.Representation;
 
 namespace LabFusion.Network
 {
-    public class PlayerRepAvatarData : IFusionSerializable, IDisposable
+    public class PlayerRepAvatarData : IFusionSerializable
     {
         public const int DefaultSize = sizeof(byte) + SerializedAvatarStats.Size;
 
@@ -31,11 +31,6 @@ namespace LabFusion.Network
             barcode = reader.ReadString();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static PlayerRepAvatarData Create(byte smallId, SerializedAvatarStats stats, string barcode)
         {
             return new PlayerRepAvatarData()
@@ -54,7 +49,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using var reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<PlayerRepAvatarData>();
+            var data = reader.ReadFusionSerializable<PlayerRepAvatarData>();
             // Swap the avatar for the rep
             if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep))
             {

@@ -18,7 +18,7 @@ using LabFusion.Exceptions;
 
 namespace LabFusion.Network
 {
-    public class MineDiveCartData : IFusionSerializable, IDisposable
+    public class MineDiveCartData : IFusionSerializable
     {
         public int amount;
 
@@ -30,11 +30,6 @@ namespace LabFusion.Network
         public void Deserialize(FusionReader reader)
         {
             amount = reader.ReadInt32();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static MineDiveCartData Create(int amount)
@@ -54,7 +49,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<MineDiveCartData>();
+            var data = reader.ReadFusionSerializable<MineDiveCartData>();
 
             if (!NetworkInfo.IsServer)
             {

@@ -98,7 +98,7 @@ namespace LabFusion.Patching
             if (__instance.rigManager.IsSelf() && SeatExtender.Cache.TryGet(__instance, out var syncable) && syncable.TryGetExtender<SeatExtender>(out var extender))
             {
                 using var writer = FusionWriter.Create(PlayerRepSeatData.Size);
-                using var data = PlayerRepSeatData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value, true);
+                var data = PlayerRepSeatData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value, true);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.PlayerRepSeat, writer);
@@ -115,7 +115,7 @@ namespace LabFusion.Patching
                 if (NetworkInfo.HasServer && __instance._rig.IsSelf() && SeatExtender.Cache.TryGet(__instance, out var syncable) && syncable.TryGetExtender<SeatExtender>(out var extender))
                 {
                     using var writer = FusionWriter.Create(PlayerRepSeatData.Size);
-                    using var data = PlayerRepSeatData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value, false);
+                    var data = PlayerRepSeatData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value, false);
                     writer.Write(data);
 
                     using var message = FusionMessage.Create(NativeMessageTag.PlayerRepSeat, writer);

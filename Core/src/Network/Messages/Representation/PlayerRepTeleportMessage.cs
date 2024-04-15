@@ -17,7 +17,7 @@ using UnityEngine;
 
 namespace LabFusion.Network
 {
-    public class PlayerRepTeleportData : IFusionSerializable, IDisposable
+    public class PlayerRepTeleportData : IFusionSerializable
     {
         public const int Size = sizeof(byte) + sizeof(float) * 3;
 
@@ -34,11 +34,6 @@ namespace LabFusion.Network
         {
             teleportedUser = reader.ReadByte();
             position = reader.ReadVector3();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static PlayerRepTeleportData Create(byte teleportedUser, Vector3 position)
@@ -59,7 +54,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using var reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<PlayerRepTeleportData>();
+            var data = reader.ReadFusionSerializable<PlayerRepTeleportData>();
             // Only teleport if we aren't the server
             if (!isServerHandled && data.teleportedUser == PlayerIdManager.LocalSmallId)
             {

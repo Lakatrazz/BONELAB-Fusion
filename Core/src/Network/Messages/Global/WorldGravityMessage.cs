@@ -15,7 +15,7 @@ using UnityEngine;
 
 namespace LabFusion.Network
 {
-    public class WorldGravityMessageData : IFusionSerializable, IDisposable
+    public class WorldGravityMessageData : IFusionSerializable
     {
         public const int Size = sizeof(float) * 3;
 
@@ -38,11 +38,6 @@ namespace LabFusion.Network
         {
             gravity = reader.ReadVector3();
         }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
     }
 
     public class WorldGravityMessage : FusionMessageHandler
@@ -54,7 +49,7 @@ namespace LabFusion.Network
             if (!NetworkInfo.IsServer)
             {
                 using var reader = FusionReader.Create(bytes);
-                using var data = reader.ReadFusionSerializable<WorldGravityMessageData>();
+                var data = reader.ReadFusionSerializable<WorldGravityMessageData>();
 
                 PhysicsUtilities.CanModifyGravity = true;
                 Physics.gravity = data.gravity;

@@ -15,7 +15,7 @@ using SLZ;
 
 namespace LabFusion.Network
 {
-    public class MagazineEjectData : IFusionSerializable, IDisposable
+    public class MagazineEjectData : IFusionSerializable
     {
         public const int Size = sizeof(byte) * 2 + sizeof(ushort) * 2;
 
@@ -40,11 +40,6 @@ namespace LabFusion.Network
             hand = (Handedness)reader.ReadByte();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static MagazineEjectData Create(byte smallId, ushort magazineId, ushort gunId, Handedness hand)
         {
             return new MagazineEjectData()
@@ -65,7 +60,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<MagazineEjectData>();
+            var data = reader.ReadFusionSerializable<MagazineEjectData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {

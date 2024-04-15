@@ -766,7 +766,7 @@ namespace LabFusion.Syncables
             }
 
             using var writer = FusionWriter.Create(PropSyncableUpdateData.DefaultSize + (PropSyncableUpdateData.RigidbodySize * GameObjectCount));
-            using var data = PropSyncableUpdateData.Create(PlayerIdManager.LocalSmallId, this);
+            var data = PropSyncableUpdateData.Create(PlayerIdManager.LocalSmallId, this);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.PropSyncableUpdate, writer);

@@ -11,7 +11,7 @@ using LabFusion.Utilities;
 
 namespace LabFusion.Network
 {
-    public class PlayerSettingsData : IFusionSerializable, IDisposable
+    public class PlayerSettingsData : IFusionSerializable
     {
         public const int Size = sizeof(byte) + SerializedPlayerSettings.Size;
 
@@ -28,11 +28,6 @@ namespace LabFusion.Network
         {
             smallId = reader.ReadByte();
             settings = reader.ReadFusionSerializable<SerializedPlayerSettings>();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static PlayerSettingsData Create(byte smallId, SerializedPlayerSettings settings)
@@ -52,7 +47,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<PlayerSettingsData>();
+            var data = reader.ReadFusionSerializable<PlayerSettingsData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {

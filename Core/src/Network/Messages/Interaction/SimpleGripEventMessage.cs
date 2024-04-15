@@ -25,7 +25,7 @@ namespace LabFusion.Network
         DETACH = 3,
     }
 
-    public class SimpleGripEventData : IFusionSerializable, IDisposable
+    public class SimpleGripEventData : IFusionSerializable
     {
         public const int Size = sizeof(byte) * 3 + sizeof(ushort);
 
@@ -50,11 +50,6 @@ namespace LabFusion.Network
             type = (SimpleGripEventType)reader.ReadByte();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static SimpleGripEventData Create(byte smallId, ushort syncId, byte gripEventIndex, SimpleGripEventType type)
         {
             return new SimpleGripEventData()
@@ -75,7 +70,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<SimpleGripEventData>();
+            var data = reader.ReadFusionSerializable<SimpleGripEventData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {

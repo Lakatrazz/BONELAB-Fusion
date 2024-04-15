@@ -9,7 +9,7 @@ using LabFusion.Representation;
 
 namespace LabFusion.Network
 {
-    public class BodyLogEffectData : IFusionSerializable, IDisposable
+    public class BodyLogEffectData : IFusionSerializable
     {
         public const int Size = sizeof(byte);
 
@@ -23,11 +23,6 @@ namespace LabFusion.Network
         public void Deserialize(FusionReader reader)
         {
             smallId = reader.ReadByte();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static BodyLogEffectData Create(byte smallId)
@@ -47,7 +42,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using var reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<BodyLogEffectData>();
+            var data = reader.ReadFusionSerializable<BodyLogEffectData>();
             // Play the effect
             if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep))
             {

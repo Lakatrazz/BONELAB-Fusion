@@ -21,7 +21,7 @@ using SLZ.Bonelab;
 
 namespace LabFusion.Network
 {
-    public class TrialSpawnerEventsData : IFusionSerializable, IDisposable
+    public class TrialSpawnerEventsData : IFusionSerializable
     {
         public GameObject trialSpawnerEvents;
 
@@ -33,11 +33,6 @@ namespace LabFusion.Network
         public void Deserialize(FusionReader reader)
         {
             trialSpawnerEvents = reader.ReadGameObject();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static TrialSpawnerEventsData Create(Trial_SpawnerEvents trialSpawnerEvents)
@@ -57,7 +52,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<TrialSpawnerEventsData>();
+            var data = reader.ReadFusionSerializable<TrialSpawnerEventsData>();
             var go = data.trialSpawnerEvents;
 
             // We ONLY handle this for clients, this message should only ever be sent by the server!

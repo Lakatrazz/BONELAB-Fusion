@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace LabFusion.Network
 {
-    public class LevelRequestData : IFusionSerializable, IDisposable
+    public class LevelRequestData : IFusionSerializable
     {
         public byte smallId;
         public string barcode;
@@ -26,11 +26,6 @@ namespace LabFusion.Network
             smallId = reader.ReadByte();
             barcode = reader.ReadString();
             title = reader.ReadString();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static LevelRequestData Create(byte smallId, string barcode, string title)
@@ -62,7 +57,7 @@ namespace LabFusion.Network
             if (NetworkInfo.IsServer && isServerHandled)
             {
                 using var reader = FusionReader.Create(bytes);
-                using var data = reader.ReadFusionSerializable<LevelRequestData>();
+                var data = reader.ReadFusionSerializable<LevelRequestData>();
 
                 // Get player and their username
                 var id = PlayerIdManager.GetPlayerId(data.smallId);

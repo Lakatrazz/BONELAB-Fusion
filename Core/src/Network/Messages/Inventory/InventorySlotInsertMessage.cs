@@ -17,7 +17,7 @@ using LabFusion.Extensions;
 
 namespace LabFusion.Network
 {
-    public class InventorySlotInsertData : IFusionSerializable, IDisposable
+    public class InventorySlotInsertData : IFusionSerializable
     {
         public const int Size = sizeof(byte) * 4 + sizeof(ushort);
 
@@ -48,11 +48,6 @@ namespace LabFusion.Network
             isAvatarSlot = reader.ReadBoolean();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static InventorySlotInsertData Create(byte smallId, byte inserter, ushort syncId, byte slotIndex, bool isAvatarSlot = false)
         {
             return new InventorySlotInsertData()
@@ -75,7 +70,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<InventorySlotInsertData>();
+            var data = reader.ReadFusionSerializable<InventorySlotInsertData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {

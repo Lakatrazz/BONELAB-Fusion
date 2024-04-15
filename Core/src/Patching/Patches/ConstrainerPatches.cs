@@ -147,7 +147,7 @@ namespace LabFusion.Patching
 
                     // Send create message
                     using var writer = FusionWriter.Create(ConstraintCreateData.Size);
-                    using var data = ConstraintCreateData.Create(PlayerIdManager.LocalSmallId, syncable.Id, new ConstrainerPointPair(__instance));
+                    var data = ConstraintCreateData.Create(PlayerIdManager.LocalSmallId, syncable.Id, new ConstrainerPointPair(__instance));
                     writer.Write(data);
 
                     using var message = FusionMessage.Create(NativeMessageTag.ConstraintCreate, writer);
@@ -188,7 +188,7 @@ namespace LabFusion.Patching
                             nextMode++;
 
                         using var writer = FusionWriter.Create(ConstrainerModeData.Size);
-                        using var data = ConstrainerModeData.Create(PlayerIdManager.LocalSmallId, syncable.Id, nextMode);
+                        var data = ConstrainerModeData.Create(PlayerIdManager.LocalSmallId, syncable.Id, nextMode);
                         writer.Write(data);
 
                         using var message = FusionMessage.Create(NativeMessageTag.ConstrainerMode, writer);

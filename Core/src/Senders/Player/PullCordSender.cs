@@ -19,7 +19,7 @@ namespace LabFusion.Senders
                 return;
 
             using var writer = FusionWriter.Create(BodyLogToggleData.Size);
-            using var data = BodyLogToggleData.Create(PlayerIdManager.LocalSmallId, isEnabled);
+            var data = BodyLogToggleData.Create(PlayerIdManager.LocalSmallId, isEnabled);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.BodyLogToggle, writer);
@@ -32,7 +32,7 @@ namespace LabFusion.Senders
                 return;
 
             using var writer = FusionWriter.Create(BodyLogEffectData.Size);
-            using var data = BodyLogEffectData.Create(PlayerIdManager.LocalSmallId);
+            var data = BodyLogEffectData.Create(PlayerIdManager.LocalSmallId);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.BodyLogEffect, writer);

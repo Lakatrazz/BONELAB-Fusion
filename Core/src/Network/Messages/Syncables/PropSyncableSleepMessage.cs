@@ -12,7 +12,7 @@ using LabFusion.Extensions;
 
 namespace LabFusion.Network
 {
-    public class PropSyncableSleepData : IFusionSerializable, IDisposable
+    public class PropSyncableSleepData : IFusionSerializable
     {
         public const int Size = sizeof(byte) + sizeof(ushort);
 
@@ -39,11 +39,6 @@ namespace LabFusion.Network
             return null;
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static PropSyncableSleepData Create(byte ownerId, ushort syncId)
         {
             return new PropSyncableSleepData
@@ -62,7 +57,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using var reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<PropSyncableSleepData>();
+            var data = reader.ReadFusionSerializable<PropSyncableSleepData>();
             // Find the prop syncable and notify it to sleep
             var syncable = data.GetPropSyncable();
             if (syncable != null && syncable.IsRegistered() && syncable.Owner.HasValue && syncable.Owner.Value == data.ownerId)

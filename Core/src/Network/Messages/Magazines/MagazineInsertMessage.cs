@@ -17,7 +17,7 @@ using LabFusion.Extensions;
 
 namespace LabFusion.Network
 {
-    public class MagazineInsertData : IFusionSerializable, IDisposable
+    public class MagazineInsertData : IFusionSerializable
     {
         public const int Size = sizeof(byte) + sizeof(ushort) * 2;
 
@@ -39,11 +39,6 @@ namespace LabFusion.Network
             gunId = reader.ReadUInt16();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static MagazineInsertData Create(byte smallId, ushort magazineId, ushort gunId)
         {
             return new MagazineInsertData()
@@ -63,7 +58,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<MagazineInsertData>();
+            var data = reader.ReadFusionSerializable<MagazineInsertData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {

@@ -16,7 +16,7 @@ namespace LabFusion.Senders
                 return;
 
             using var writer = FusionWriter.Create(PowerableJointVoltageData.Size);
-            using var data = PowerableJointVoltageData.Create(PlayerIdManager.LocalSmallId, syncId, voltage);
+            var data = PowerableJointVoltageData.Create(PlayerIdManager.LocalSmallId, syncId, voltage);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.PowerableJointVoltage, writer);
@@ -29,7 +29,7 @@ namespace LabFusion.Senders
                 return;
 
             using var writer = FusionWriter.Create(TwoButtonRemoteControllerEventData.Size);
-            using var data = TwoButtonRemoteControllerEventData.Create(PlayerIdManager.LocalSmallId, syncId, type);
+            var data = TwoButtonRemoteControllerEventData.Create(PlayerIdManager.LocalSmallId, syncId, type);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.TwoButtonRemoteControllerEvent, writer);
@@ -41,7 +41,7 @@ namespace LabFusion.Senders
             if (NetworkInfo.IsServer)
             {
                 using var writer = FusionWriter.Create(FunicularControllerEventData.Size);
-                using var data = FunicularControllerEventData.Create(syncId, type);
+                var data = FunicularControllerEventData.Create(syncId, type);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.FunicularControllerEvent, writer);

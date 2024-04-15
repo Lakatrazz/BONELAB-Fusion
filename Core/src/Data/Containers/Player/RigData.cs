@@ -292,7 +292,7 @@ namespace LabFusion.Data
             if (NetworkInfo.HasServer)
             {
                 using FusionWriter writer = FusionWriter.Create(PlayerRepVitalsData.Size);
-                using PlayerRepVitalsData data = PlayerRepVitalsData.Create(PlayerIdManager.LocalSmallId, RigReferences.RigManager.bodyVitals);
+                var data = PlayerRepVitalsData.Create(PlayerIdManager.LocalSmallId, RigReferences.RigManager.bodyVitals);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.PlayerRepVitals, writer);

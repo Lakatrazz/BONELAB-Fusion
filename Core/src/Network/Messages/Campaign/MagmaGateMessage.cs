@@ -26,7 +26,7 @@ namespace LabFusion.Network
         DOOR_DISSOLVE = 4,
     }
 
-    public class MagmaGateEventData : IFusionSerializable, IDisposable
+    public class MagmaGateEventData : IFusionSerializable
     {
         public MagmaGateEventType type;
 
@@ -38,11 +38,6 @@ namespace LabFusion.Network
         public void Deserialize(FusionReader reader)
         {
             type = (MagmaGateEventType)reader.ReadByte();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static MagmaGateEventData Create(MagmaGateEventType type)
@@ -62,7 +57,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<MagmaGateEventData>();
+            var data = reader.ReadFusionSerializable<MagmaGateEventData>();
             var controller = MagmaGateData.GameController;
             MagmaGatePatches.IgnorePatches = true;
 

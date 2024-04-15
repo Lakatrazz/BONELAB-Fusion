@@ -15,7 +15,7 @@ using MelonLoader;
 
 namespace LabFusion.Network
 {
-    public class ConnectionRequestData : IFusionSerializable, IDisposable
+    public class ConnectionRequestData : IFusionSerializable
     {
         public ulong longId;
         public Version version;
@@ -51,11 +51,6 @@ namespace LabFusion.Network
             {
                 IsValid = false;
             }
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static ConnectionRequestData Create(ulong longId, Version version, string avatarBarcode, SerializedAvatarStats stats)
@@ -205,7 +200,7 @@ namespace LabFusion.Network
                     // Send the dynamics list
                     using (var writer = FusionWriter.Create())
                     {
-                        using var assignData = DynamicsAssignData.Create();
+                        var assignData = DynamicsAssignData.Create();
                         writer.Write(assignData);
 
                         using var message = FusionMessage.Create(NativeMessageTag.DynamicsAssignment, writer);

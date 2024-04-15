@@ -24,7 +24,7 @@ namespace LabFusion.Network
         CUT_NOOSE = 2,
     }
 
-    public class DescentNooseData : IFusionSerializable, IDisposable
+    public class DescentNooseData : IFusionSerializable
     {
         public byte smallId;
         public DescentNooseType type;
@@ -39,11 +39,6 @@ namespace LabFusion.Network
         {
             smallId = reader.ReadByte();
             type = (DescentNooseType)reader.ReadByte();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static DescentNooseData Create(byte smallId, DescentNooseType type)
@@ -64,7 +59,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<DescentNooseData>();
+            var data = reader.ReadFusionSerializable<DescentNooseData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {

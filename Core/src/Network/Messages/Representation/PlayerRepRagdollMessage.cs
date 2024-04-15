@@ -15,7 +15,7 @@ using UnityEngine;
 
 namespace LabFusion.Network
 {
-    public class PlayerRepRagdollData : IFusionSerializable, IDisposable
+    public class PlayerRepRagdollData : IFusionSerializable
     {
         public const int Size = sizeof(byte) * 2;
 
@@ -32,11 +32,6 @@ namespace LabFusion.Network
         {
             smallId = reader.ReadByte();
             isRagdoll = reader.ReadBoolean();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static PlayerRepRagdollData Create(byte smallId, bool isRagdoll)

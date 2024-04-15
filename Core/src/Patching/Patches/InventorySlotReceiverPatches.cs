@@ -79,7 +79,7 @@ namespace LabFusion.Patching
                         }
 
                         using var writer = FusionWriter.Create(InventorySlotDropData.Size);
-                        using var data = InventorySlotDropData.Create(smallId.Value, PlayerIdManager.LocalSmallId, index.Value, handedness, isAvatarSlot);
+                        var data = InventorySlotDropData.Create(smallId.Value, PlayerIdManager.LocalSmallId, index.Value, handedness, isAvatarSlot);
                         writer.Write(data);
 
                         using var message = FusionMessage.Create(NativeMessageTag.InventorySlotDrop, writer);
@@ -154,7 +154,7 @@ namespace LabFusion.Patching
 
 
                         using var writer = FusionWriter.Create(InventorySlotInsertData.Size);
-                        using var data = InventorySlotInsertData.Create(smallId.Value, PlayerIdManager.LocalSmallId, syncable.Id, index.Value, isAvatarSlot);
+                        var data = InventorySlotInsertData.Create(smallId.Value, PlayerIdManager.LocalSmallId, syncable.Id, index.Value, isAvatarSlot);
                         writer.Write(data);
 
                         using var message = FusionMessage.Create(NativeMessageTag.InventorySlotInsert, writer);

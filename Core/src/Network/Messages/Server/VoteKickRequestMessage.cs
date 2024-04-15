@@ -11,7 +11,7 @@ using LabFusion.Extensions;
 
 namespace LabFusion.Network
 {
-    public class VoteKickRequestData : IFusionSerializable, IDisposable
+    public class VoteKickRequestData : IFusionSerializable
     {
         public const int Size = sizeof(byte) * 2;
 
@@ -28,11 +28,6 @@ namespace LabFusion.Network
         {
             smallId = reader.ReadByte();
             target = reader.ReadByte();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static VoteKickRequestData Create(byte smallId, byte target)
@@ -55,7 +50,7 @@ namespace LabFusion.Network
             if (isServerHandled)
             {
                 using FusionReader reader = FusionReader.Create(bytes);
-                using var data = reader.ReadFusionSerializable<VoteKickRequestData>();
+                var data = reader.ReadFusionSerializable<VoteKickRequestData>();
 
                 // Try applying the vote
                 if (VoteKickHelper.Vote(data.target, data.smallId))
@@ -73,7 +68,7 @@ namespace LabFusion.Network
 
                     // Send response to all players
                     using var writer = FusionWriter.Create(VoteKickResponseData.Size);
-                    using var responseData = VoteKickResponseData.Create(data.target, username, count, required, kick);
+                    var responseData = VoteKickResponseData.Create(data.target, username, count, required, kick);
                     writer.Write(responseData);
 
                     using var message = FusionMessage.Create(NativeMessageTag.VoteKickResponse, writer);

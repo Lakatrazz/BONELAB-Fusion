@@ -26,7 +26,7 @@ namespace LabFusion.Network
         END_RACE = 4,
     }
 
-    public class KartRaceEventData : IFusionSerializable, IDisposable
+    public class KartRaceEventData : IFusionSerializable
     {
         public byte smallId;
         public KartRaceEventType type;
@@ -41,11 +41,6 @@ namespace LabFusion.Network
         {
             smallId = reader.ReadByte();
             type = (KartRaceEventType)reader.ReadByte();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static KartRaceEventData Create(byte smallId, KartRaceEventType type)
@@ -66,7 +61,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<KartRaceEventData>();
+            var data = reader.ReadFusionSerializable<KartRaceEventData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {

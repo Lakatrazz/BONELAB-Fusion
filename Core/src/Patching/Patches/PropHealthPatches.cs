@@ -48,7 +48,7 @@ namespace LabFusion.Patching
                 else
                 {
                     using var writer = FusionWriter.Create(ComponentIndexData.Size);
-                    using var data = ComponentIndexData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value);
+                    var data = ComponentIndexData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(__instance).Value);
                     writer.Write(data);
 
                     using var message = FusionMessage.Create(NativeMessageTag.PropHealthDestroy, writer);

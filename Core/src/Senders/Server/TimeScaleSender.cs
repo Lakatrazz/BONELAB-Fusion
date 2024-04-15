@@ -23,7 +23,7 @@ namespace LabFusion.Senders
         public static void SendSlowMoButton(bool isDecrease)
         {
             using var writer = FusionWriter.Create(SlowMoButtonMessageData.Size);
-            using var data = SlowMoButtonMessageData.Create(PlayerIdManager.LocalSmallId, isDecrease);
+            var data = SlowMoButtonMessageData.Create(PlayerIdManager.LocalSmallId, isDecrease);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.SlowMoButton, writer);

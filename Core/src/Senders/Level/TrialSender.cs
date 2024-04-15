@@ -15,7 +15,7 @@ namespace LabFusion.Senders
             if (NetworkInfo.IsServer)
             {
                 using var writer = FusionWriter.Create();
-                using var data = TimeTrialGameControllerData.Create(type, value);
+                var data = TimeTrialGameControllerData.Create(type, value);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.TimeTrial_GameController, writer);
@@ -28,7 +28,7 @@ namespace LabFusion.Senders
             if (NetworkInfo.IsServer)
             {
                 using var writer = FusionWriter.Create();
-                using var data = TrialSpawnerEventsData.Create(spawnerEvent);
+                var data = TrialSpawnerEventsData.Create(spawnerEvent);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.TrialSpawnerEvents, writer);

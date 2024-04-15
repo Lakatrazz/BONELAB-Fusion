@@ -19,7 +19,7 @@ using LabFusion.Extensions;
 
 namespace LabFusion.Network
 {
-    public class InventorySlotDropData : IFusionSerializable, IDisposable
+    public class InventorySlotDropData : IFusionSerializable
     {
         public const int Size = sizeof(byte) * 5;
 
@@ -50,11 +50,6 @@ namespace LabFusion.Network
             isAvatarSlot = reader.ReadBoolean();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static InventorySlotDropData Create(byte smallId, byte grabber, byte slotIndex, Handedness handedness, bool isAvatarSlot = false)
         {
             return new InventorySlotDropData()
@@ -77,7 +72,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<InventorySlotDropData>();
+            var data = reader.ReadFusionSerializable<InventorySlotDropData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {

@@ -13,7 +13,7 @@ using SLZ.Marrow.Warehouse;
 
 namespace LabFusion.Network
 {
-    public class SpawnGunPreviewMeshData : IFusionSerializable, IDisposable
+    public class SpawnGunPreviewMeshData : IFusionSerializable
     {
         public const int Size = sizeof(byte) + sizeof(ushort);
 
@@ -40,11 +40,6 @@ namespace LabFusion.Network
             barcode = reader.ReadString();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static SpawnGunPreviewMeshData Create(byte smallId, ushort syncId, string barcode)
         {
             return new SpawnGunPreviewMeshData()
@@ -64,7 +59,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<SpawnGunPreviewMeshData>();
+            var data = reader.ReadFusionSerializable<SpawnGunPreviewMeshData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {

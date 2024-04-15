@@ -17,7 +17,7 @@ namespace LabFusion.Senders
             if (NetworkInfo.HasServer)
             {
                 using var writer = FusionWriter.Create();
-                using var data = HolodeckEventData.Create(PlayerIdManager.LocalSmallId, type, selectionIndex, toggleValue);
+                var data = HolodeckEventData.Create(PlayerIdManager.LocalSmallId, type, selectionIndex, toggleValue);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.HolodeckEvent, writer);

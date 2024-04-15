@@ -31,7 +31,7 @@ namespace LabFusion.Network
         RESUME_SURVIVAL_FROM_ROUND = 7,
     }
 
-    public class ArenaMenuData : IFusionSerializable, IDisposable
+    public class ArenaMenuData : IFusionSerializable
     {
         public byte selectionNumber;
         public ArenaMenuType type;
@@ -46,11 +46,6 @@ namespace LabFusion.Network
         {
             selectionNumber = reader.ReadByte();
             type = (ArenaMenuType)reader.ReadByte();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static ArenaMenuData Create(byte selectionNumber, ArenaMenuType type)
@@ -71,7 +66,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<ArenaMenuData>();
+            var data = reader.ReadFusionSerializable<ArenaMenuData>();
             var menu = ArenaData.MenuController;
 
             ArenaMenuPatches.IgnorePatches = true;

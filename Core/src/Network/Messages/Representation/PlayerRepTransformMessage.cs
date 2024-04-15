@@ -20,7 +20,7 @@ using UnityEngine;
 
 namespace LabFusion.Network
 {
-    public class PlayerRepTransformData : IFusionSerializable, IDisposable
+    public class PlayerRepTransformData : IFusionSerializable
     {
         public const int Size = sizeof(byte) + sizeof(float) * 7 + SerializedLocalTransform.Size
             * RigAbstractor.TransformSyncCount + SerializedTransform.Size + SerializedSmallQuaternion.Size + SerializedHand.Size * 2;
@@ -77,11 +77,6 @@ namespace LabFusion.Network
 
             leftHand = reader.ReadFusionSerializable<SerializedHand>();
             rightHand = reader.ReadFusionSerializable<SerializedHand>();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static PlayerRepTransformData Create(byte smallId, Transform[] syncTransforms, Transform syncedPelvis, Transform syncedPlayspace, Hand leftHand, Hand rightHand)

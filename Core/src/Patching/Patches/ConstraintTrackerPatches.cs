@@ -33,7 +33,7 @@ namespace LabFusion.Patching
                 if (ConstrainerExtender.Cache.TryGet(__instance.source, out var constrainer))
                 {
                     using var writer = FusionWriter.Create(ConstraintDeleteData.Size);
-                    using var data = ConstraintDeleteData.Create(PlayerIdManager.LocalSmallId, constrainer.GetId(), syncable.GetId());
+                    var data = ConstraintDeleteData.Create(PlayerIdManager.LocalSmallId, constrainer.GetId(), syncable.GetId());
                     writer.Write(data);
 
                     using var message = FusionMessage.Create(NativeMessageTag.ConstraintDelete, writer);

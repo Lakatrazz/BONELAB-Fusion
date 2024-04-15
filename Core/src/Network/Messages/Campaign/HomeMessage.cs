@@ -24,7 +24,7 @@ namespace LabFusion.Network
         SPLINE_LOOP_COUNTER = 9,
     }
 
-    public class HomeEventData : IFusionSerializable, IDisposable
+    public class HomeEventData : IFusionSerializable
     {
         public byte selectionNumber;
         public HomeEventType type;
@@ -39,11 +39,6 @@ namespace LabFusion.Network
         {
             selectionNumber = reader.ReadByte();
             type = (HomeEventType)reader.ReadByte();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static HomeEventData Create(byte selectionNumber, HomeEventType type)
@@ -64,7 +59,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<HomeEventData>();
+            var data = reader.ReadFusionSerializable<HomeEventData>();
             var controller = HomeData.GameController;
             HomePatches.IgnorePatches = true;
             TaxiControllerPatches.IgnorePatches = true;

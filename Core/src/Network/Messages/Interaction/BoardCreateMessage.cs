@@ -22,7 +22,7 @@ using SLZ.Bonelab;
 
 namespace LabFusion.Network
 {
-    public class BoardCreateData : IFusionSerializable, IDisposable
+    public class BoardCreateData : IFusionSerializable
     {
         public const int Size = sizeof(byte) + sizeof(ushort) + sizeof(int) + sizeof(float) * 7;
 
@@ -71,11 +71,6 @@ namespace LabFusion.Network
             endRb = reader.ReadFusionSerializable<SerializedGameObjectReference>();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static BoardCreateData Create(byte smallId, ushort boardGunId, BoardGenerator generator, int idx, float mass)
         {
             var data = new BoardCreateData()
@@ -112,7 +107,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<BoardCreateData>();
+            var data = reader.ReadFusionSerializable<BoardCreateData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {

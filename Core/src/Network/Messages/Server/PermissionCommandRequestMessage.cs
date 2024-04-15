@@ -21,7 +21,7 @@ namespace LabFusion.Network
         TELEPORT_TO_US = 4,
     }
 
-    public class PermissionCommandRequestData : IFusionSerializable, IDisposable
+    public class PermissionCommandRequestData : IFusionSerializable
     {
         public byte smallId;
         public PermissionCommandType type;
@@ -39,11 +39,6 @@ namespace LabFusion.Network
             smallId = reader.ReadByte();
             type = (PermissionCommandType)reader.ReadByte();
             otherPlayer = reader.ReadByteNullable();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static PermissionCommandRequestData Create(byte smallId, PermissionCommandType type, byte? otherPlayer = null)
@@ -67,7 +62,7 @@ namespace LabFusion.Network
             if (NetworkInfo.IsServer && isServerHandled)
             {
                 using FusionReader reader = FusionReader.Create(bytes);
-                using var data = reader.ReadFusionSerializable<PermissionCommandRequestData>();
+                var data = reader.ReadFusionSerializable<PermissionCommandRequestData>();
                 // Get the user and their permissions
                 PlayerId playerId = PlayerIdManager.GetPlayerId(data.smallId);
                 PlayerId otherPlayer = null;

@@ -100,7 +100,7 @@ namespace LabFusion.Utilities
             if (NetworkInfo.IsServer)
             {
                 using var writer = FusionWriter.Create(DespawnResponseData.Size);
-                using var data = DespawnResponseData.Create(syncId, PlayerIdManager.LocalSmallId);
+                var data = DespawnResponseData.Create(syncId, PlayerIdManager.LocalSmallId);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.DespawnResponse, writer);
@@ -110,7 +110,7 @@ namespace LabFusion.Utilities
             else
             {
                 using var writer = FusionWriter.Create(DespawnRequestData.Size);
-                using var data = DespawnRequestData.Create(syncId, PlayerIdManager.LocalSmallId);
+                var data = DespawnRequestData.Create(syncId, PlayerIdManager.LocalSmallId);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.DespawnRequest, writer);
@@ -121,7 +121,7 @@ namespace LabFusion.Utilities
         public static void RequestDespawn(ushort syncId, bool isMag = false)
         {
             using var writer = FusionWriter.Create(DespawnRequestData.Size);
-            using var data = DespawnRequestData.Create(syncId, PlayerIdManager.LocalSmallId, isMag);
+            var data = DespawnRequestData.Create(syncId, PlayerIdManager.LocalSmallId, isMag);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.DespawnRequest, writer);
@@ -131,7 +131,7 @@ namespace LabFusion.Utilities
         public static void RequestSpawn(string barcode, SerializedTransform serializedTransform, uint trackerId)
         {
             using var writer = FusionWriter.Create(SpawnRequestData.Size);
-            using var data = SpawnRequestData.Create(PlayerIdManager.LocalSmallId, barcode, serializedTransform, trackerId);
+            var data = SpawnRequestData.Create(PlayerIdManager.LocalSmallId, barcode, serializedTransform, trackerId);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.SpawnRequest, writer);
@@ -141,7 +141,7 @@ namespace LabFusion.Utilities
         public static void SendSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, bool ignoreSelf = false, uint trackerId = 0)
         {
             using var writer = FusionWriter.Create(SpawnResponseData.GetSize(barcode));
-            using var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, trackerId);
+            var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, trackerId);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.SpawnResponse, writer);

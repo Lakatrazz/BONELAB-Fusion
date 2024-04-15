@@ -16,7 +16,7 @@ using UnityEngine;
 
 namespace LabFusion.Network
 {
-    public class PlayerRepDamageData : IFusionSerializable, IDisposable
+    public class PlayerRepDamageData : IFusionSerializable
     {
         public const int Size = sizeof(byte) * 2 + sizeof(float);
 
@@ -44,11 +44,6 @@ namespace LabFusion.Network
             part = (PlayerDamageReceiver.BodyPart)reader.ReadUInt16();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static PlayerRepDamageData Create(byte damagerId, byte damagedId, float damage, PlayerDamageReceiver.BodyPart part)
         {
             return new PlayerRepDamageData
@@ -69,7 +64,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using var reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<PlayerRepDamageData>();
+            var data = reader.ReadFusionSerializable<PlayerRepDamageData>();
 
             // If we are the server, relay it to the desired user
             if (isServerHandled)
@@ -89,10 +84,10 @@ namespace LabFusion.Network
                     attackType = SLZ.Marrow.Data.AttackType.Piercing,
                 };
 
-                rm.health.OnReceivedDamage(attack, data.part);
-
                 // Track the damager
                 FusionPlayer.LastAttacker = data.damagerId;
+
+                rm.health.OnReceivedDamage(attack, data.part);
             }
         }
     }

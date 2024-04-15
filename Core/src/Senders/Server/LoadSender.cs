@@ -13,7 +13,7 @@ namespace LabFusion.Senders
                 return;
 
             using FusionWriter writer = FusionWriter.Create();
-            using var data = LevelRequestData.Create(PlayerIdManager.LocalSmallId, crate.Barcode, crate.Title);
+            var data = LevelRequestData.Create(PlayerIdManager.LocalSmallId, crate.Barcode, crate.Title);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.LevelRequest, writer);
@@ -26,7 +26,7 @@ namespace LabFusion.Senders
                 return;
 
             using FusionWriter writer = FusionWriter.Create(SceneLoadData.GetSize(barcode, loadBarcode));
-            using var data = SceneLoadData.Create(barcode, loadBarcode);
+            var data = SceneLoadData.Create(barcode, loadBarcode);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.SceneLoad, writer);
@@ -48,7 +48,7 @@ namespace LabFusion.Senders
                 return;
 
             using FusionWriter writer = FusionWriter.Create(SceneLoadData.GetSize(barcode, loadBarcode));
-            using var data = SceneLoadData.Create(barcode, loadBarcode);
+            var data = SceneLoadData.Create(barcode, loadBarcode);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.SceneLoad, writer);

@@ -16,7 +16,7 @@ namespace LabFusion.Network
         SELECT_MATERIAL = 2,
     }
 
-    public class HolodeckEventData : IFusionSerializable, IDisposable
+    public class HolodeckEventData : IFusionSerializable
     {
         public byte smallId;
         public HolodeckEventType type;
@@ -39,11 +39,6 @@ namespace LabFusion.Network
             toggleValue = reader.ReadBoolean();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static HolodeckEventData Create(byte smallId, HolodeckEventType type, int selectionIndex, bool toggleValue)
         {
             return new HolodeckEventData()
@@ -64,7 +59,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<HolodeckEventData>();
+            var data = reader.ReadFusionSerializable<HolodeckEventData>();
             if (NetworkInfo.IsServer && isServerHandled)
             {
                 using var message = FusionMessage.Create(Tag.Value, bytes);

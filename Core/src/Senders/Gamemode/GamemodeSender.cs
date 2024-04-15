@@ -11,7 +11,7 @@ namespace LabFusion.Senders
             if (NetworkInfo.IsServer)
             {
                 using var writer = FusionWriter.Create();
-                using var data = GamemodeTriggerResponseData.Create(gamemodeId, value);
+                var data = GamemodeTriggerResponseData.Create(gamemodeId, value);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.GamemodeTriggerResponse, writer);
@@ -27,7 +27,7 @@ namespace LabFusion.Senders
             if (NetworkInfo.IsServer)
             {
                 using var writer = FusionWriter.Create();
-                using var data = GamemodeMetadataSetData.Create(gamemodeId, key, value);
+                var data = GamemodeMetadataSetData.Create(gamemodeId, key, value);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.GamemodeMetadataSet, writer);
@@ -43,7 +43,7 @@ namespace LabFusion.Senders
             if (NetworkInfo.IsServer)
             {
                 using var writer = FusionWriter.Create();
-                using var data = GamemodeMetadataRemoveData.Create(gamemodeId, key);
+                var data = GamemodeMetadataRemoveData.Create(gamemodeId, key);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.GamemodeMetadataRemove, writer);

@@ -24,7 +24,7 @@ namespace LabFusion.Network
         ON_CHALLENGE_SELECT = 2,
     }
 
-    public class ChallengeSelectData : IFusionSerializable, IDisposable
+    public class ChallengeSelectData : IFusionSerializable
     {
         public byte menuIndex;
         public byte challengeNumber;
@@ -42,11 +42,6 @@ namespace LabFusion.Network
             menuIndex = reader.ReadByte();
             challengeNumber = reader.ReadByte();
             type = (ChallengeSelectType)reader.ReadByte();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static ChallengeSelectData Create(byte menuIndex, byte challengeNumber, ChallengeSelectType type)
@@ -68,7 +63,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<ChallengeSelectData>();
+            var data = reader.ReadFusionSerializable<ChallengeSelectData>();
             var menu = ArenaData.GetMenu(data.menuIndex);
 
             ChallengePatches.IgnorePatches = true;

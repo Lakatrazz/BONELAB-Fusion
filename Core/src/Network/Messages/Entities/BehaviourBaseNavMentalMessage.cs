@@ -14,7 +14,7 @@ using SLZ.AI;
 
 namespace LabFusion.Network
 {
-    public class BehaviourBaseNavMentalData : IFusionSerializable, IDisposable
+    public class BehaviourBaseNavMentalData : IFusionSerializable
     {
         public const int Size = sizeof(byte) * 2 + sizeof(ushort);
 
@@ -63,11 +63,6 @@ namespace LabFusion.Network
             return null;
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static BehaviourBaseNavMentalData Create(byte ownerId, PropSyncable syncable, BehaviourBaseNav.MentalState mentalState, TriggerRefProxy proxy)
         {
             var syncId = syncable.GetId();
@@ -92,7 +87,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using var reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<BehaviourBaseNavMentalData>();
+            var data = reader.ReadFusionSerializable<BehaviourBaseNavMentalData>();
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {

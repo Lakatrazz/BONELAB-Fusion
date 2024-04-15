@@ -25,7 +25,7 @@ using LabFusion.SDK.Achievements;
 
 namespace LabFusion.Network
 {
-    public class ConstraintCreateData : IFusionSerializable, IDisposable
+    public class ConstraintCreateData : IFusionSerializable
     {
         public const int Size = sizeof(byte) * 2 + sizeof(ushort) * 3 + sizeof(float) * 12;
 
@@ -98,11 +98,6 @@ namespace LabFusion.Network
             point2Id = reader.ReadUInt16();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static ConstraintCreateData Create(byte smallId, ushort constrainerId, ConstrainerPointPair pair)
         {
             return new ConstraintCreateData()
@@ -134,7 +129,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<ConstraintCreateData>();
+            var data = reader.ReadFusionSerializable<ConstraintCreateData>();
 
             bool hasConstrainer = SyncManager.TryGetSyncable<PropSyncable>(data.constrainerId, out var constrainer);
 

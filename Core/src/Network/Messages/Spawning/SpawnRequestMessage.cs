@@ -11,7 +11,7 @@ using System;
 
 namespace LabFusion.Network
 {
-    public class SpawnRequestData : IFusionSerializable, IDisposable
+    public class SpawnRequestData : IFusionSerializable
     {
         public const int Size = sizeof(byte) * 2 + SerializedTransform.Size;
 
@@ -39,11 +39,6 @@ namespace LabFusion.Network
             trackerId = reader.ReadUInt32();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static SpawnRequestData Create(byte owner, string barcode, SerializedTransform serializedTransform, uint trackerId)
         {
             return new SpawnRequestData()
@@ -67,7 +62,7 @@ namespace LabFusion.Network
             if (NetworkInfo.IsServer && isServerHandled)
             {
                 using var reader = FusionReader.Create(bytes);
-                using var data = reader.ReadFusionSerializable<SpawnRequestData>();
+                var data = reader.ReadFusionSerializable<SpawnRequestData>();
                 var playerId = PlayerIdManager.GetPlayerId(data.owner);
 
                 // Check if we should ignore the spawn gun request

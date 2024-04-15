@@ -17,7 +17,7 @@ using SLZ.Props.Weapons;
 
 namespace LabFusion.Network
 {
-    public class GeoSelectData : IFusionSerializable, IDisposable
+    public class GeoSelectData : IFusionSerializable
     {
         public byte geoIndex;
 
@@ -29,11 +29,6 @@ namespace LabFusion.Network
         public void Deserialize(FusionReader reader)
         {
             geoIndex = reader.ReadByte();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
 
         public static GeoSelectData Create(byte geoIndex)
@@ -53,7 +48,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<GeoSelectData>();
+            var data = reader.ReadFusionSerializable<GeoSelectData>();
             var manager = ArenaData.GeoManager;
 
             GeoManagerPatches.IgnorePatches = true;

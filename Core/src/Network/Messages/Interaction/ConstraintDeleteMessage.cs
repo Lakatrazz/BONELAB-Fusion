@@ -21,7 +21,7 @@ using SLZ.Props;
 
 namespace LabFusion.Network
 {
-    public class ConstraintDeleteData : IFusionSerializable, IDisposable
+    public class ConstraintDeleteData : IFusionSerializable
     {
         public const int Size = sizeof(byte) + sizeof(ushort) * 2;
 
@@ -43,11 +43,6 @@ namespace LabFusion.Network
             constraintId = reader.ReadUInt16();
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-
         public static ConstraintDeleteData Create(byte smallId, ushort constrainerId, ushort constraintId)
         {
             return new ConstraintDeleteData()
@@ -67,7 +62,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             using FusionReader reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<ConstraintDeleteData>();
+            var data = reader.ReadFusionSerializable<ConstraintDeleteData>();
 
             bool hasConstrainer = SyncManager.TryGetSyncable<PropSyncable>(data.constrainerId, out var constrainer);
 
