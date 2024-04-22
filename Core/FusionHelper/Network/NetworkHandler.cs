@@ -12,6 +12,7 @@ using LiteNetLib.Utils;
 
 using FusionHelper.Extensions;
 using FusionHelper.Steamworks;
+using System.Xml.Linq;
 
 namespace FusionHelper.Network
 {
@@ -314,20 +315,22 @@ namespace FusionHelper.Network
                         SteamFriends.SetRichPresence("connect", data);
                         break;
                     }
-                case (ulong)MessageTypes.DecompressVoice:
-                    {
-                        ulong playerId = dataReader.GetULong();
-                        byte[] audioData = dataReader.GetBytesWithLength();
-                        byte[] decompressed = SteamHandler.DecompressVoice(audioData);
-                        NetDataWriter writer = NewWriter(MessageTypes.DecompressVoice);
-                        writer.Put(playerId);
-                        writer.PutBytesWithLength(decompressed);
-                        SendToClient(writer);
-                        break;
-                    }
                 case (ulong)MessageTypes.SetLobbyMetadata:
                     {
                         SteamHandler.SetMetadata(dataReader.GetString(), dataReader.GetString());
+                        break;
+                    }
+                case (ulong)MessageTypes.SteamFriends:
+                    {
+                        List<ulong> friendList = new List<ulong>();
+                        for (int i = 0; i < SteamFriends.GetFriendCount(EFriendFlags.k_EFriendFlagImmediate); i++)
+                        {
+                            CSteamID friendId = SteamFriends.GetFriendByIndex(i, EFriendFlags.k_EFriendFlagImmediate);
+                            friendList.Add(friendId.m_SteamID);
+                        }
+                        NetDataWriter writer = NewWriter(MessageTypes.SteamFriends);
+                        writer.PutArray(friendList.ToArray());
+                        SendToClient(writer);
                         break;
                     }
             }

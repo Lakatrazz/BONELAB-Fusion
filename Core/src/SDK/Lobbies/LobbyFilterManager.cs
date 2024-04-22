@@ -34,6 +34,23 @@ namespace LabFusion.SDK.Lobbies
             outdatedFilter.SetActive(true);
 
             AddLobbyFilter(outdatedFilter);
+
+            // Platform filters
+            var pcFilter = new GenericLobbyFilter("Hide PC Lobbies", (l, i) =>
+            {
+                return i.IsAndroid;
+            });
+            pcFilter.SetActive(true);
+
+            AddLobbyFilter(pcFilter);
+
+            var questFilter = new GenericLobbyFilter("Hide Quest Lobbies", (l, i) =>
+            {
+                return !i.IsAndroid;
+            });
+            questFilter.SetActive(true);
+
+            AddLobbyFilter(questFilter);
         }
 
         public static void AddLobbyFilter(ILobbyFilter filter)

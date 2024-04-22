@@ -73,13 +73,6 @@ namespace LabFusion.Network
         private NetPeer serverConnection;
         private ProxyLobbyManager _lobbyManager;
 
-        // VC Stuff
-        private int lastSample;
-        private const int FREQUENCY = 22100;
-        private bool notRecording = true;
-        private bool sending = false;
-        private AudioClip sendingClip;
-
         internal override bool CheckSupported()
         {
             return HelperMethods.IsAndroid();
@@ -97,7 +90,7 @@ namespace LabFusion.Network
             _voiceManager = new UnityVoiceManager();
             _voiceManager.Enable();
 
-            EventBasedNetListener listener = new EventBasedNetListener();
+            EventBasedNetListener listener = new();
             client = new NetManager(listener)
             {
                 UnconnectedMessagesEnabled = true,
@@ -152,7 +145,7 @@ namespace LabFusion.Network
 
             float timeElapsed;
 
-            NetDataWriter writer = new NetDataWriter();
+            NetDataWriter writer = new();
             writer.Put("FUSION_SERVER_DISCOVERY");
 
             while (serverConnection == null)
@@ -267,6 +260,11 @@ namespace LabFusion.Network
                         _lobbyManager.HandleLobbyMessage((MessageTypes)id, dataReader);
                         break;
                     }
+                case (ulong)MessageTypes.SteamFriends:
+                    {
+                        FriendIds = dataReader.GetULongArray().ToList();
+                        break;
+                    }
             }
 
             dataReader.Recycle();
@@ -278,9 +276,10 @@ namespace LabFusion.Network
 
         internal override void OnCleanupLayer()
         {
-            client.Stop();
-
             Disconnect();
+
+            client.Stop();
+            serverConnection = null;
 
             UnHookSteamEvents();
 
@@ -295,7 +294,7 @@ namespace LabFusion.Network
 
         internal static NetDataWriter NewWriter(MessageTypes type)
         {
-            NetDataWriter writer = new NetDataWriter();
+            NetDataWriter writer = new();
             writer.Put((byte)type);
             return writer;
         }
@@ -351,11 +350,13 @@ namespace LabFusion.Network
             return byteArray;
         }
 
-        // We currently cant tell if this user is our friend or not,
-        // so just always return true.
+        internal static List<ulong> FriendIds = new();
         internal override bool IsFriend(ulong userId)
         {
-            return true;
+            if (FriendIds.Contains(userId))
+                return true;
+            else
+                return false;
         }
 
         internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message)
@@ -512,6 +513,10 @@ namespace LabFusion.Network
 
             // Update bonemenu items
             OnUpdateCreateServerText();
+
+            // Request Steam Friends
+            NetDataWriter writer = NewWriter(MessageTypes.SteamFriends);
+            SendToProxyServer(writer);
         }
 
         internal override void OnSetupBoneMenu(MenuCategory category)
@@ -531,7 +536,6 @@ namespace LabFusion.Network
 
         // Matchmaking menu
         private MenuCategory _serverInfoCategory;
-        private MenuCategory _manualJoiningCategory;
         private MenuCategory _publicLobbiesCategory;
         //private MenuCategory _friendsCategory;
 
@@ -545,8 +549,8 @@ namespace LabFusion.Network
             CreateServerInfoMenu(_serverInfoCategory);
 
             // Manual joining
-            _manualJoiningCategory = matchmaking.CreateCategory("Manual Joining", Color.white);
-            CreateManualJoiningMenu(_manualJoiningCategory);
+            //_manualJoiningCategory = matchmaking.CreateCategory("Manual Joining", Color.white);
+            //CreateManualJoiningMenu(_manualJoiningCategory);
 
             // Public lobbies list
             _publicLobbiesCategory = matchmaking.CreateCategory("Public Lobbies", Color.white);
@@ -601,13 +605,6 @@ namespace LabFusion.Network
 
         private FunctionElement _targetServerElement;
 
-        private void CreateManualJoiningMenu(MenuCategory category)
-        {
-            category.CreateFunctionElement("Join Server", Color.white, OnClickJoinServer);
-            _targetServerElement = category.CreateFunctionElement("Server ID:", Color.white, null);
-            category.CreateFunctionElement("Paste Server ID from Clipboard", Color.white, OnPasteServerID);
-        }
-
         private void OnClickJoinServer()
         {
             JoinServer(_targetServerId);
@@ -654,7 +651,6 @@ namespace LabFusion.Network
                 return false;
 
             // Decide if this server is too private
-
             return info.Privacy switch
             {
                 ServerPrivacy.PUBLIC => true,

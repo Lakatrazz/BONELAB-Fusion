@@ -1,5 +1,6 @@
 ﻿using BoneLib.BoneMenu.Elements;
-
+using LabFusion.BoneMenu;
+using LabFusion.Preferences;
 using LabFusion.Representation;
 using LabFusion.Utilities;
 
@@ -22,6 +23,29 @@ namespace LabFusion.Network
         {
             CurrentNetworkLayer = layer;
             CurrentNetworkLayer.OnInitializeLayer();
+        }
+
+        internal static void UpdateLoadedLayer()
+        {
+            // Make sure the layer being loaded isn't already loaded
+            var title = FusionPreferences.ClientSettings.NetworkLayerTitle.GetValue();
+            if (!NetworkLayer.LayerLookup.TryGetValue(title, out var layer))
+                return;
+            layer = NetworkLayerDeterminer.VerifyLayer(layer);
+            if (CurrentNetworkLayer == layer) 
+                return;
+
+            // Cleanup the network layer
+            OnCleanupLayer();
+
+            // We're just going to *assume* that the layer that is being loaded isn't null since the layer title loaded fine...
+            NetworkLayerDeterminer.LoadLayer();
+
+            SetLayer(NetworkLayerDeterminer.LoadedLayer);
+
+            // Recreate Bonemenu
+            BoneLib.BoneMenu.MenuManager.SelectCategory(FusionPreferences.fusionCategory);
+            FusionPreferences.OnCreateBoneMenu();
         }
 
         internal static void OnLateInitializeLayer()

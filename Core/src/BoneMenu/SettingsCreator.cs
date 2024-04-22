@@ -52,6 +52,7 @@ namespace LabFusion.BoneMenu
 
         private static void CreateServerTagsMenu(MenuCategory category)
         {
+            _tagElements.Clear();
             var tagsCategory = category.CreateCategory("Server Tags", Color.white);
             tagsCategory.CreateFunctionElement("Clear Tags", Color.white, () =>
             {

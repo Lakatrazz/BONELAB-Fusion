@@ -214,6 +214,9 @@ namespace LabFusion.Preferences
 
         internal static void OnCreateBoneMenu()
         {
+            // Make sure the Fusion category is empty
+            fusionCategory.Elements.Clear();
+
             // Create category for changing network layer
             var networkLayerManager = fusionCategory.CreateCategory("Network Layer Manager", Color.yellow);
             networkLayerManager.CreateFunctionElement("Players need to be on the same layer!", Color.yellow, null);
@@ -240,7 +243,7 @@ namespace LabFusion.Preferences
                 targetPanel.SetName($"Target Layer: {v}");
             };
 
-            targetPanel.CreateFunctionElement("Changing this setting requires a game restart!", Color.red, null);
+            targetPanel.CreateFunctionElement("SET NETWORK LAYER", Color.green, () => InternalLayerHelpers.UpdateLoadedLayer());
 
             // Setup bonemenu for the network layer
             InternalLayerHelpers.OnSetupBoneMenuLayer(fusionCategory);
