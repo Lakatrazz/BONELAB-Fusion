@@ -519,7 +519,7 @@ namespace LabFusion.Network
         // Matchmaking menu
         private MenuCategory _serverInfoCategory;
         private MenuCategory _publicLobbiesCategory;
-        //private MenuCategory _friendsCategory;
+        private MenuCategory _friendsCategory;
 
         private void CreateMatchmakingMenu(MenuCategory category)
         {
@@ -540,9 +540,9 @@ namespace LabFusion.Network
             _publicLobbiesCategory.CreateFunctionElement("Select Refresh to load servers!", Color.yellow, null);
 
             // Steam friends list
-            //_friendsCategory = matchmaking.CreateCategory("Steam Friends", Color.white);
-            //_friendsCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshFriendLobbies);
-            //_friendsCategory.CreateFunctionElement("Select Refresh to load servers!", Color.yellow, null);
+            _friendsCategory = matchmaking.CreateCategory("Steam Friends", Color.white);
+            _friendsCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshFriendLobbies);
+            _friendsCategory.CreateFunctionElement("Select Refresh to load servers!", Color.yellow, null);
         }
 
         private FunctionElement _createServerElement;
@@ -619,6 +619,20 @@ namespace LabFusion.Network
             });
 
             MelonCoroutines.Start(CoAwaitLobbyListRoutine());
+        }
+
+        private bool _isFriendLobbySearching = false;
+        private void Menu_RefreshFriendLobbies()
+        {
+            // Make sure we arent searching for lobbies already
+            if (_isFriendLobbySearching)
+                return;
+
+            // Clear existing lobbies
+            _friendsCategory.Elements.Clear();
+            _friendsCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshFriendLobbies);
+
+            MelonCoroutines.Start(CoAwaitFriendListRoutine());
         }
 
         private bool Internal_CanShowLobby(LobbyMetadataInfo info)
@@ -711,6 +725,91 @@ namespace LabFusion.Network
                         {
                             BoneMenuCreator.CreateLobby(_publicLobbiesCategory, info, networkLobby, sortMode);
                         }
+                    }
+                }
+            }
+
+            // Select the updated category
+            MenuManager.SelectCategory(_publicLobbiesCategory);
+
+            _isPublicLobbySearching = false;
+        }
+
+        private IEnumerator CoAwaitFriendListRoutine()
+        {
+            _isFriendLobbySearching = true;
+            LobbySortMode sortMode = LobbySortMode.NONE;
+
+            // Fetch lobbies
+            var task = _lobbyManager.RequestLobbyIds();
+
+            float timeTaken = 0f;
+
+            while (!task.IsCompleted)
+            {
+                yield return null;
+                timeTaken += TimeUtilities.DeltaTime;
+
+                if (timeTaken >= 20f)
+                {
+                    FusionNotifier.Send(new FusionNotification()
+                    {
+                        title = "Timed Out",
+                        showTitleOnPopup = true,
+                        message = "Timed out when requesting lobby ids.",
+                        isMenuItem = false,
+                        isPopup = true,
+                    });
+                    _isFriendLobbySearching = false;
+                    yield break;
+                }
+            }
+
+
+            var lobbies = task.Result;
+
+            using (BatchedBoneMenu.Create())
+            {
+                foreach (var lobby in lobbies)
+                {
+                    var metadataTask = _lobbyManager.RequestLobbyMetadataInfo(lobby);
+
+                    timeTaken = 0f;
+
+                    while (!metadataTask.IsCompleted)
+                    {
+                        yield return null;
+                        timeTaken += TimeUtilities.DeltaTime;
+
+                        if (timeTaken >= 20f)
+                        {
+                            FusionNotifier.Send(new FusionNotification()
+                            {
+                                title = "Timed Out",
+                                showTitleOnPopup = true,
+                                message = "Timed out when requesting lobby ids.",
+                                isMenuItem = false,
+                                isPopup = true,
+                            });
+                            _isFriendLobbySearching = false;
+                            yield break;
+                        }
+                    }
+
+                    LobbyMetadataInfo info = metadataTask.Result;
+
+                    if (!IsFriend(info.LobbyId))
+                        continue;
+
+                    if (Internal_CanShowLobby(info))
+                    {
+                        // Add to list
+                        ProxyNetworkLobby networkLobby = new()
+                        {
+                            info = info
+                        };
+
+                        BoneMenuCreator.CreateLobby(_publicLobbiesCategory, info, networkLobby, sortMode);
                     }
                 }
             }
