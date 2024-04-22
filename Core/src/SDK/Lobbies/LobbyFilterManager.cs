@@ -40,7 +40,7 @@ namespace LabFusion.SDK.Lobbies
             {
                 return i.IsAndroid;
             });
-            pcFilter.SetActive(true);
+            pcFilter.SetActive(false);
 
             AddLobbyFilter(pcFilter);
 
@@ -48,7 +48,7 @@ namespace LabFusion.SDK.Lobbies
             {
                 return !i.IsAndroid;
             });
-            questFilter.SetActive(true);
+            questFilter.SetActive(false);
 
             AddLobbyFilter(questFilter);
         }

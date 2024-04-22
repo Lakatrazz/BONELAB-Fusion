@@ -332,24 +332,6 @@ namespace LabFusion.Network
             serverConnection.Send(writer, DeliveryMethod.ReliableOrdered);
         }
 
-        public byte[] ToByteArray(float[] floatArray)
-        {
-            short[] shortArray = new short[floatArray.Length];
-
-            // Convert float array to short array
-            for (int i = 0; i < floatArray.Length; i++)
-            {
-                shortArray[i] = (short)(floatArray[i] * short.MaxValue);
-            }
-
-            byte[] byteArray = new byte[shortArray.Length * 2]; // Each short requires 2 bytes
-
-            // Convert short array to byte array
-            Buffer.BlockCopy(shortArray, 0, byteArray, 0, byteArray.Length);
-
-            return byteArray;
-        }
-
         internal static List<ulong> FriendIds = new();
         internal override bool IsFriend(ulong userId)
         {
@@ -604,11 +586,6 @@ namespace LabFusion.Network
         }
 
         private FunctionElement _targetServerElement;
-
-        private void OnClickJoinServer()
-        {
-            JoinServer(_targetServerId);
-        }
 
         private void OnPasteServerID()
         {
