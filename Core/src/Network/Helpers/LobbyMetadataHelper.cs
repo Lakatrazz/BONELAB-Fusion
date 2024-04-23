@@ -1,4 +1,5 @@
-﻿using LabFusion.Extensions;
+﻿using BoneLib;
+using LabFusion.Extensions;
 using LabFusion.Preferences;
 using LabFusion.Representation;
 using LabFusion.SDK.Gamemodes;
@@ -26,6 +27,7 @@ namespace LabFusion.Network
         public bool HasServerOpen;
         public int PlayerCount;
         public PlayerList PlayerList;
+        public bool IsAndroid;
 
         // Lobby settings
         public bool NametagsEnabled;
@@ -49,7 +51,6 @@ namespace LabFusion.Network
         {
             var playerList = new PlayerList();
             playerList.ReadPlayerList();
-
             return new LobbyMetadataInfo()
             {
                 // Lobby info
@@ -61,6 +62,7 @@ namespace LabFusion.Network
                 HasServerOpen = NetworkInfo.IsServer,
                 PlayerCount = PlayerIdManager.PlayerCount,
                 PlayerList = playerList,
+                IsAndroid = HelperMethods.IsAndroid(),
 
                 // Lobby settings
                 NametagsEnabled = FusionPreferences.LocalServerSettings.NametagsEnabled.GetValue(),
@@ -90,6 +92,7 @@ namespace LabFusion.Network
             lobby.SetMetadata(LobbyConstants.HasServerOpenKey, HasServerOpen.ToString());
             lobby.SetMetadata(nameof(PlayerCount), PlayerCount.ToString());
             lobby.SetMetadata(nameof(PlayerList), PlayerList.WriteDocument().ToString());
+            lobby.SetMetadata(nameof(IsAndroid), IsAndroid.ToString());
 
             // Lobby settings
             lobby.SetMetadata(nameof(NametagsEnabled), NametagsEnabled.ToString());
@@ -119,6 +122,7 @@ namespace LabFusion.Network
                 LobbyName = lobby.GetMetadata(nameof(LobbyName)),
                 LobbyTags = lobby.GetMetadata(nameof(LobbyTags)),
                 HasServerOpen = lobby.GetMetadata(LobbyConstants.HasServerOpenKey) == bool.TrueString,
+                IsAndroid = lobby.GetMetadata(nameof(IsAndroid)) == bool.TrueString,
 
                 // Lobby settings
                 NametagsEnabled = lobby.GetMetadata(nameof(NametagsEnabled)) == bool.TrueString,

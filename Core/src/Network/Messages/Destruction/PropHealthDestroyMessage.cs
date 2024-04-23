@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using LabFusion.Syncables;
 using LabFusion.Patching;
+using LabFusion.Utilities;
 
 namespace LabFusion.Network
 {

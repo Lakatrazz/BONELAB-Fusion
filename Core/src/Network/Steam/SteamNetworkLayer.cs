@@ -152,6 +152,8 @@ namespace LabFusion.Network
 
             _voiceManager.Disable();
             _voiceManager = null;
+
+            SteamAPI.Shutdown();
         }
 
         internal override void OnUpdateLayer()
@@ -159,9 +161,7 @@ namespace LabFusion.Network
             // Run callbacks for our client
             if (!AsyncCallbacks)
             {
-#pragma warning disable CS0162 // Unreachable code detected
                 SteamClient.RunCallbacks();
-#pragma warning restore CS0162 // Unreachable code detected
             }
 
             // Receive any needed messages

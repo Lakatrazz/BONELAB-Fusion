@@ -23,5 +23,6 @@
         UpdateConnectPresence = 18,
 
         SetLobbyMetadata = 20,
+        SteamFriends = 21,
     }
 }

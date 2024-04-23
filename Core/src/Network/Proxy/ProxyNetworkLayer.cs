@@ -73,13 +73,6 @@ namespace LabFusion.Network
         private NetPeer serverConnection;
         private ProxyLobbyManager _lobbyManager;
 
-        // VC Stuff
-        private int lastSample;
-        private const int FREQUENCY = 22100;
-        private bool notRecording = true;
-        private bool sending = false;
-        private AudioClip sendingClip;
-
         internal override bool CheckSupported()
         {
             return HelperMethods.IsAndroid();
@@ -97,7 +90,7 @@ namespace LabFusion.Network
             _voiceManager = new UnityVoiceManager();
             _voiceManager.Enable();
 
-            EventBasedNetListener listener = new EventBasedNetListener();
+            EventBasedNetListener listener = new();
             client = new NetManager(listener)
             {
                 UnconnectedMessagesEnabled = true,
@@ -152,7 +145,7 @@ namespace LabFusion.Network
 
             float timeElapsed;
 
-            NetDataWriter writer = new NetDataWriter();
+            NetDataWriter writer = new();
             writer.Put("FUSION_SERVER_DISCOVERY");
 
             while (serverConnection == null)
@@ -267,6 +260,11 @@ namespace LabFusion.Network
                         _lobbyManager.HandleLobbyMessage((MessageTypes)id, dataReader);
                         break;
                     }
+                case (ulong)MessageTypes.SteamFriends:
+                    {
+                        FriendIds = dataReader.GetULongArray().ToList();
+                        break;
+                    }
             }
 
             dataReader.Recycle();
@@ -278,9 +276,10 @@ namespace LabFusion.Network
 
         internal override void OnCleanupLayer()
         {
-            client.Stop();
-
             Disconnect();
+
+            client.Stop();
+            serverConnection = null;
 
             UnHookSteamEvents();
 
@@ -295,7 +294,7 @@ namespace LabFusion.Network
 
         internal static NetDataWriter NewWriter(MessageTypes type)
         {
-            NetDataWriter writer = new NetDataWriter();
+            NetDataWriter writer = new();
             writer.Put((byte)type);
             return writer;
         }
@@ -333,29 +332,13 @@ namespace LabFusion.Network
             serverConnection.Send(writer, DeliveryMethod.ReliableOrdered);
         }
 
-        public byte[] ToByteArray(float[] floatArray)
-        {
-            short[] shortArray = new short[floatArray.Length];
-
-            // Convert float array to short array
-            for (int i = 0; i < floatArray.Length; i++)
-            {
-                shortArray[i] = (short)(floatArray[i] * short.MaxValue);
-            }
-
-            byte[] byteArray = new byte[shortArray.Length * 2]; // Each short requires 2 bytes
-
-            // Convert short array to byte array
-            Buffer.BlockCopy(shortArray, 0, byteArray, 0, byteArray.Length);
-
-            return byteArray;
-        }
-
-        // We currently cant tell if this user is our friend or not,
-        // so just always return true.
+        internal static List<ulong> FriendIds = new();
         internal override bool IsFriend(ulong userId)
         {
-            return true;
+            if (FriendIds.Contains(userId))
+                return true;
+            else
+                return false;
         }
 
         internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message)
@@ -512,6 +495,10 @@ namespace LabFusion.Network
 
             // Update bonemenu items
             OnUpdateCreateServerText();
+
+            // Request Steam Friends
+            NetDataWriter writer = NewWriter(MessageTypes.SteamFriends);
+            SendToProxyServer(writer);
         }
 
         internal override void OnSetupBoneMenu(MenuCategory category)
@@ -531,9 +518,8 @@ namespace LabFusion.Network
 
         // Matchmaking menu
         private MenuCategory _serverInfoCategory;
-        private MenuCategory _manualJoiningCategory;
         private MenuCategory _publicLobbiesCategory;
-        //private MenuCategory _friendsCategory;
+        private MenuCategory _friendsCategory;
 
         private void CreateMatchmakingMenu(MenuCategory category)
         {
@@ -545,8 +531,8 @@ namespace LabFusion.Network
             CreateServerInfoMenu(_serverInfoCategory);
 
             // Manual joining
-            _manualJoiningCategory = matchmaking.CreateCategory("Manual Joining", Color.white);
-            CreateManualJoiningMenu(_manualJoiningCategory);
+            //_manualJoiningCategory = matchmaking.CreateCategory("Manual Joining", Color.white);
+            //CreateManualJoiningMenu(_manualJoiningCategory);
 
             // Public lobbies list
             _publicLobbiesCategory = matchmaking.CreateCategory("Public Lobbies", Color.white);
@@ -554,9 +540,9 @@ namespace LabFusion.Network
             _publicLobbiesCategory.CreateFunctionElement("Select Refresh to load servers!", Color.yellow, null);
 
             // Steam friends list
-            //_friendsCategory = matchmaking.CreateCategory("Steam Friends", Color.white);
-            //_friendsCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshFriendLobbies);
-            //_friendsCategory.CreateFunctionElement("Select Refresh to load servers!", Color.yellow, null);
+            _friendsCategory = matchmaking.CreateCategory("Steam Friends", Color.white);
+            _friendsCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshFriendLobbies);
+            _friendsCategory.CreateFunctionElement("Select Refresh to load servers!", Color.yellow, null);
         }
 
         private FunctionElement _createServerElement;
@@ -601,18 +587,6 @@ namespace LabFusion.Network
 
         private FunctionElement _targetServerElement;
 
-        private void CreateManualJoiningMenu(MenuCategory category)
-        {
-            category.CreateFunctionElement("Join Server", Color.white, OnClickJoinServer);
-            _targetServerElement = category.CreateFunctionElement("Server ID:", Color.white, null);
-            category.CreateFunctionElement("Paste Server ID from Clipboard", Color.white, OnPasteServerID);
-        }
-
-        private void OnClickJoinServer()
-        {
-            JoinServer(_targetServerId);
-        }
-
         private void OnPasteServerID()
         {
             var text = Clipboard.GetText();
@@ -647,6 +621,20 @@ namespace LabFusion.Network
             MelonCoroutines.Start(CoAwaitLobbyListRoutine());
         }
 
+        private bool _isFriendLobbySearching = false;
+        private void Menu_RefreshFriendLobbies()
+        {
+            // Make sure we arent searching for lobbies already
+            if (_isFriendLobbySearching)
+                return;
+
+            // Clear existing lobbies
+            _friendsCategory.Elements.Clear();
+            _friendsCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshFriendLobbies);
+
+            MelonCoroutines.Start(CoAwaitFriendListRoutine());
+        }
+
         private bool Internal_CanShowLobby(LobbyMetadataInfo info)
         {
             // Make sure the lobby is actually open
@@ -654,7 +642,6 @@ namespace LabFusion.Network
                 return false;
 
             // Decide if this server is too private
-
             return info.Privacy switch
             {
                 ServerPrivacy.PUBLIC => true,
@@ -738,6 +725,91 @@ namespace LabFusion.Network
                         {
                             BoneMenuCreator.CreateLobby(_publicLobbiesCategory, info, networkLobby, sortMode);
                         }
+                    }
+                }
+            }
+
+            // Select the updated category
+            MenuManager.SelectCategory(_publicLobbiesCategory);
+
+            _isPublicLobbySearching = false;
+        }
+
+        private IEnumerator CoAwaitFriendListRoutine()
+        {
+            _isFriendLobbySearching = true;
+            LobbySortMode sortMode = LobbySortMode.NONE;
+
+            // Fetch lobbies
+            var task = _lobbyManager.RequestLobbyIds();
+
+            float timeTaken = 0f;
+
+            while (!task.IsCompleted)
+            {
+                yield return null;
+                timeTaken += TimeUtilities.DeltaTime;
+
+                if (timeTaken >= 20f)
+                {
+                    FusionNotifier.Send(new FusionNotification()
+                    {
+                        title = "Timed Out",
+                        showTitleOnPopup = true,
+                        message = "Timed out when requesting lobby ids.",
+                        isMenuItem = false,
+                        isPopup = true,
+                    });
+                    _isFriendLobbySearching = false;
+                    yield break;
+                }
+            }
+
+
+            var lobbies = task.Result;
+
+            using (BatchedBoneMenu.Create())
+            {
+                foreach (var lobby in lobbies)
+                {
+                    var metadataTask = _lobbyManager.RequestLobbyMetadataInfo(lobby);
+
+                    timeTaken = 0f;
+
+                    while (!metadataTask.IsCompleted)
+                    {
+                        yield return null;
+                        timeTaken += TimeUtilities.DeltaTime;
+
+                        if (timeTaken >= 20f)
+                        {
+                            FusionNotifier.Send(new FusionNotification()
+                            {
+                                title = "Timed Out",
+                                showTitleOnPopup = true,
+                                message = "Timed out when requesting lobby ids.",
+                                isMenuItem = false,
+                                isPopup = true,
+                            });
+                            _isFriendLobbySearching = false;
+                            yield break;
+                        }
+                    }
+
+                    LobbyMetadataInfo info = metadataTask.Result;
+
+                    if (!IsFriend(info.LobbyId))
+                        continue;
+
+                    if (Internal_CanShowLobby(info))
+                    {
+                        // Add to list
+                        ProxyNetworkLobby networkLobby = new()
+                        {
+                            info = info
+                        };
+
+                        BoneMenuCreator.CreateLobby(_publicLobbiesCategory, info, networkLobby, sortMode);
                     }
                 }
             }

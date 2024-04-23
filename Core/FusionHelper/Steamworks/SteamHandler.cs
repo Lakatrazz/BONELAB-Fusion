@@ -160,26 +160,6 @@ namespace FusionHelper.Steamworks
             SteamMatchmaking.SetLobbyData(_localLobby.Value, key, value);
         }
 
-        public static byte[] DecompressVoice(byte[] from)
-        {
-            // TODO: does not handle if decompressed is over buffer size
-            unsafe
-            {
-                var to = new byte[1024 * 64];
-                uint szWritten = 0;
-
-                if (SteamUser.DecompressVoice(from, (uint)from.Length, to, (uint)to.Length, out szWritten, SteamUser.GetVoiceOptimalSampleRate()) != EVoiceResult.k_EVoiceResultOK)
-                    return Array.Empty<byte>();
-
-                if (szWritten == 0)
-                    return Array.Empty<byte>();
-
-                Array.Resize(ref to, (int)szWritten);
-
-                return to;
-            }
-        }
-
         public static bool CheckSteamRunning()
         {
             var procs = System.Diagnostics.Process.GetProcesses();
