@@ -17,17 +17,17 @@ namespace LabFusion.Network
     /// </summary>
     public class EmptyNetworkLayer : NetworkLayer
     {
-        internal override string Title => "Empty";
+        public override string Title => "Empty";
 
-        internal override void Disconnect(string reason = "") { }
+        public override void Disconnect(string reason = "") { }
 
-        internal override void StartServer() { }
+        public override void StartServer() { }
 
-        internal override void OnCleanupLayer() { }
+        public override void OnCleanupLayer() { }
 
-        internal override void OnUpdateLobby() { }
+        public override void OnUpdateLobby() { }
 
-        internal override bool CheckSupported()
+        public override bool CheckSupported()
         {
 #if DEBUG
             return true;
@@ -36,12 +36,12 @@ namespace LabFusion.Network
 #endif
         }
 
-        internal override bool CheckValidation()
+        public override bool CheckValidation()
         {
             return true;
         }
 
-        internal override void OnInitializeLayer()
+        public override void OnInitializeLayer()
         {
             FusionLogger.Log("Initialized mod with an empty networking layer!", ConsoleColor.Magenta);
 #if DEBUG
@@ -51,7 +51,7 @@ namespace LabFusion.Network
 #endif
         }
 
-        internal override void OnSetupBoneMenu(MenuCategory category)
+        public override void OnSetupBoneMenu(MenuCategory category)
         {
             base.OnSetupBoneMenu(category);
 

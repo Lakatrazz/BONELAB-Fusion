@@ -45,20 +45,20 @@ namespace LabFusion.Network
     {
         public abstract uint ApplicationID { get; }
 
-        internal static ProxyNetworkLayer Instance { get; private set; }
+        public static ProxyNetworkLayer Instance { get; private set; }
 
-        internal override string Title => "Proxy";
+        public override string Title => "Proxy";
 
-        internal override bool IsServer => _isServerActive;
-        internal override bool IsClient => _isConnectionActive;
+        public override bool IsServer => _isServerActive;
+        public override bool IsClient => _isConnectionActive;
 
         public SteamId SteamId;
 
         private INetworkLobby _currentLobby;
-        internal override INetworkLobby CurrentLobby => _currentLobby;
+        public override INetworkLobby CurrentLobby => _currentLobby;
 
         private IVoiceManager _voiceManager;
-        internal override IVoiceManager VoiceManager => _voiceManager;
+        public override IVoiceManager VoiceManager => _voiceManager;
 
         protected bool _isServerActive = false;
         protected bool _isConnectionActive = false;
@@ -73,17 +73,17 @@ namespace LabFusion.Network
         private NetPeer serverConnection;
         private ProxyLobbyManager _lobbyManager;
 
-        internal override bool CheckSupported()
+        public override bool CheckSupported()
         {
             return HelperMethods.IsAndroid();
         }
 
-        internal override bool CheckValidation()
+        public override bool CheckValidation()
         {
             return true;
         }
 
-        internal override void OnInitializeLayer()
+        public override void OnInitializeLayer()
         {
             Instance = this;
 
@@ -134,7 +134,7 @@ namespace LabFusion.Network
             _lobbyManager = new ProxyLobbyManager(this);
         }
 
-        internal IEnumerator DiscoverServer()
+        public IEnumerator DiscoverServer()
         {
             int port = FusionPreferences.ClientSettings.ProxyPort.GetValue();
             if (!(port >= 1024 && port <= 65535))
@@ -161,7 +161,7 @@ namespace LabFusion.Network
             }
         }
 
-        internal void EvaluateMessage(NetPeer fromPeer, NetPacketReader dataReader, byte channel, DeliveryMethod deliveryMethod)
+        public void EvaluateMessage(NetPeer fromPeer, NetPacketReader dataReader, byte channel, DeliveryMethod deliveryMethod)
         {
             ulong id = dataReader.GetByte();
             switch (id)
@@ -270,11 +270,11 @@ namespace LabFusion.Network
             dataReader.Recycle();
         }
 
-        internal override void OnLateInitializeLayer()
+        public override void OnLateInitializeLayer()
         {
         }
 
-        internal override void OnCleanupLayer()
+        public override void OnCleanupLayer()
         {
             Disconnect();
 
@@ -287,7 +287,7 @@ namespace LabFusion.Network
             _voiceManager = null;
         }
 
-        internal override void OnUpdateLayer()
+        public override void OnUpdateLayer()
         {
             client.PollEvents();
         }
@@ -299,7 +299,7 @@ namespace LabFusion.Network
             return writer;
         }
 
-        internal void SendToProxyServer(NetDataWriter writer)
+        public void SendToProxyServer(NetDataWriter writer)
         {
             if (serverConnection == null)
             {
@@ -332,8 +332,8 @@ namespace LabFusion.Network
             serverConnection.Send(writer, DeliveryMethod.ReliableOrdered);
         }
 
-        internal static List<ulong> FriendIds = new();
-        internal override bool IsFriend(ulong userId)
+        public static List<ulong> FriendIds = new();
+        public override bool IsFriend(ulong userId)
         {
             if (FriendIds.Contains(userId))
                 return true;
@@ -341,7 +341,7 @@ namespace LabFusion.Network
                 return false;
         }
 
-        internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message)
+        public override void BroadcastMessage(NetworkChannel channel, FusionMessage message)
         {
             if (IsServer)
             {
@@ -353,19 +353,19 @@ namespace LabFusion.Network
             }
         }
 
-        internal override void SendToServer(NetworkChannel channel, FusionMessage message)
+        public override void SendToServer(NetworkChannel channel, FusionMessage message)
         {
             ProxySocketHandler.BroadcastToServer(channel, message);
         }
 
-        internal override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message)
+        public override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message)
         {
             var id = PlayerIdManager.GetPlayerId(userId);
             if (id != null)
                 SendFromServer(id.LongId, channel, message);
         }
 
-        internal override void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message)
+        public override void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message)
         {
             if (IsServer)
             {
@@ -378,7 +378,7 @@ namespace LabFusion.Network
             }
         }
 
-        internal override void StartServer()
+        public override void StartServer()
         {
             SendToProxyServer(MessageTypes.StartServer);
         }
@@ -402,7 +402,7 @@ namespace LabFusion.Network
             OnUpdateRichPresence();
         }
 
-        internal override void Disconnect(string reason = "")
+        public override void Disconnect(string reason = "")
         {
             // Make sure we are currently in a server
             if (!_isServerActive && !_isConnectionActive)
@@ -479,7 +479,7 @@ namespace LabFusion.Network
             MultiplayerHooking.OnDisconnect -= OnDisconnect;
         }
 
-        internal override void OnUpdateLobby()
+        public override void OnUpdateLobby()
         {
             // Make sure the lobby exists
             if (CurrentLobby == null)
@@ -501,7 +501,7 @@ namespace LabFusion.Network
             SendToProxyServer(writer);
         }
 
-        internal override void OnSetupBoneMenu(MenuCategory category)
+        public override void OnSetupBoneMenu(MenuCategory category)
         {
             // Create the basic options
             CreateMatchmakingMenu(category);

@@ -51,16 +51,16 @@ namespace LabFusion.Network
         // In Unity/Melonloader, they can cause random crashes, especially when making a lot of calls
         public const bool AsyncCallbacks = false;
 
-        internal override string Title => "Steam";
+        public override string Title => "Steam";
 
-        internal override bool IsServer => _isServerActive;
-        internal override bool IsClient => _isConnectionActive;
+        public override bool IsServer => _isServerActive;
+        public override bool IsClient => _isConnectionActive;
 
         private INetworkLobby _currentLobby;
-        internal override INetworkLobby CurrentLobby => _currentLobby;
+        public override INetworkLobby CurrentLobby => _currentLobby;
 
         private IVoiceManager _voiceManager = null;
-        internal override IVoiceManager VoiceManager => _voiceManager;
+        public override IVoiceManager VoiceManager => _voiceManager;
 
         public SteamId SteamId;
 
@@ -80,12 +80,12 @@ namespace LabFusion.Network
         // This isn't actually used for joining servers, just for matchmaking
         protected Lobby _localLobby;
 
-        internal override bool CheckSupported()
+        public override bool CheckSupported()
         {
             return !HelperMethods.IsAndroid();
         }
 
-        internal override bool CheckValidation()
+        public override bool CheckValidation()
         {
             // Make sure the API actually loaded
             if (!SteamAPILoader.HasSteamAPI)
@@ -106,7 +106,7 @@ namespace LabFusion.Network
             }
         }
 
-        internal override void OnInitializeLayer()
+        public override void OnInitializeLayer()
         {
             try
             {
@@ -122,7 +122,7 @@ namespace LabFusion.Network
             _voiceManager.Enable();
         }
 
-        internal override void OnLateInitializeLayer()
+        public override void OnLateInitializeLayer()
         {
             if (SteamClient.IsValid)
             {
@@ -144,7 +144,7 @@ namespace LabFusion.Network
             }
         }
 
-        internal override void OnCleanupLayer()
+        public override void OnCleanupLayer()
         {
             Disconnect();
 
@@ -156,7 +156,7 @@ namespace LabFusion.Network
             SteamAPI.Shutdown();
         }
 
-        internal override void OnUpdateLayer()
+        public override void OnUpdateLayer()
         {
             // Run callbacks for our client
             if (!AsyncCallbacks)
@@ -177,17 +177,17 @@ namespace LabFusion.Network
             }
         }
 
-        internal override string GetUsername(ulong userId)
+        public override string GetUsername(ulong userId)
         {
             return new Friend(userId).Name;
         }
 
-        internal override bool IsFriend(ulong userId)
+        public override bool IsFriend(ulong userId)
         {
             return userId == PlayerIdManager.LocalLongId || new Friend(userId).IsFriend;
         }
 
-        internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message)
+        public override void BroadcastMessage(NetworkChannel channel, FusionMessage message)
         {
             if (IsServer)
             {
@@ -199,19 +199,19 @@ namespace LabFusion.Network
             }
         }
 
-        internal override void SendToServer(NetworkChannel channel, FusionMessage message)
+        public override void SendToServer(NetworkChannel channel, FusionMessage message)
         {
             SteamSocketHandler.BroadcastToServer(channel, message);
         }
 
-        internal override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message)
+        public override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message)
         {
             var id = PlayerIdManager.GetPlayerId(userId);
             if (id != null)
                 SendFromServer(id.LongId, channel, message);
         }
 
-        internal override void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message)
+        public override void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message)
         {
             if (IsServer)
             {
@@ -222,7 +222,7 @@ namespace LabFusion.Network
             }
         }
 
-        internal override void StartServer()
+        public override void StartServer()
         {
             SteamSocket = SteamNetworkingSockets.CreateRelaySocket<SteamSocketManager>(0);
 
@@ -256,7 +256,7 @@ namespace LabFusion.Network
             OnUpdateRichPresence();
         }
 
-        internal override void Disconnect(string reason = "")
+        public override void Disconnect(string reason = "")
         {
             // Make sure we are currently in a server
             if (!_isServerActive && !_isConnectionActive)
@@ -375,7 +375,7 @@ namespace LabFusion.Network
             JoinServer(friend.Id);
         }
 
-        internal override void OnUpdateLobby()
+        public override void OnUpdateLobby()
         {
             // Make sure the lobby exists
             if (CurrentLobby == null)
@@ -393,7 +393,7 @@ namespace LabFusion.Network
             OnUpdateCreateServerText();
         }
 
-        internal override void OnSetupBoneMenu(MenuCategory category)
+        public override void OnSetupBoneMenu(MenuCategory category)
         {
             // Create the basic options
             CreateMatchmakingMenu(category);

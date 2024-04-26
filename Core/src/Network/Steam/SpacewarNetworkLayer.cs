@@ -12,6 +12,6 @@ namespace LabFusion.Network
 
         public override uint ApplicationID => SpacewarId;
 
-        internal override string Title => "Spacewar";
+        public override string Title => "Spacewar";
     }
 }

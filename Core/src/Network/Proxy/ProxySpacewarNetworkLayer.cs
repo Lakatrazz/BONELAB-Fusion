@@ -8,6 +8,6 @@ namespace LabFusion.Network
     {
         public override uint ApplicationID => SpacewarNetworkLayer.SpacewarId;
 
-        internal override string Title => "Proxy Spacewar";
+        public override string Title => "Proxy Spacewar";
     }
 }

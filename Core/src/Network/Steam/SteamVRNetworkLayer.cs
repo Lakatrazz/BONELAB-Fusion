@@ -9,9 +9,9 @@ namespace LabFusion.Network
 
         public override uint ApplicationID => SteamVRId;
 
-        internal override string Title => "SteamVR";
+        public override string Title => "SteamVR";
 
-        internal override bool TryGetFallback(out NetworkLayer fallback)
+        public override bool TryGetFallback(out NetworkLayer fallback)
         {
             fallback = GetLayer<SpacewarNetworkLayer>();
             return fallback != null;

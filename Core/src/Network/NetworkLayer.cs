@@ -35,7 +35,7 @@ namespace LabFusion.Network
         /// <summary>
         /// The Type of this NetworkLayer.
         /// </summary>
-        internal Type Type
+        public Type Type
         {
             get
             {
@@ -51,51 +51,51 @@ namespace LabFusion.Network
         /// <summary>
         /// The Title of this NetworkLayer. Used for saving preferences.
         /// </summary>
-        internal virtual string Title => Type.AssemblyQualifiedName;
+        public virtual string Title => Type.AssemblyQualifiedName;
 
         /// <summary>
         /// Returns true if this layer is hosting a server.
         /// </summary>
-        internal virtual bool IsServer => false;
+        public virtual bool IsServer => false;
 
         /// <summary>
         /// Returns true if this layer is a client inside of a server (still returns true if this is the host!)
         /// </summary>
-        internal virtual bool IsClient => false;
+        public virtual bool IsClient => false;
 
         /// <summary>
         /// Returns true if the networking solution allows the server to send messages to the host (Actual Server Logic vs P2P).
         /// </summary>
-        internal virtual bool ServerCanSendToHost => true;
+        public virtual bool ServerCanSendToHost => true;
 
         /// <summary>
         /// Returns the current active lobby.
         /// </summary>
-        internal virtual INetworkLobby CurrentLobby => null;
+        public virtual INetworkLobby CurrentLobby => null;
 
         /// <summary>
         /// Returns the used voice manager.
         /// </summary>
-        internal virtual IVoiceManager VoiceManager => null;
+        public virtual IVoiceManager VoiceManager => null;
 
         /// <summary>
         /// Returns true if this NetworkLayer is supported on the current platform.
         /// </summary>
         /// <returns></returns>
-        internal abstract bool CheckSupported();
+        public abstract bool CheckSupported();
 
         /// <summary>
         /// Returns true if this NetworkLayer is valid and able to be ran.
         /// </summary>
         /// <returns></returns>
-        internal abstract bool CheckValidation();
+        public abstract bool CheckValidation();
 
         /// <summary>
         /// Returns a fallback layer if it exists in the event this layer fails.
         /// </summary>
         /// <param name="fallback"></param>
         /// <returns></returns>
-        internal virtual bool TryGetFallback(out NetworkLayer fallback)
+        public virtual bool TryGetFallback(out NetworkLayer fallback)
         {
             fallback = null;
             return false;
@@ -104,26 +104,26 @@ namespace LabFusion.Network
         /// <summary>
         /// Starts the server.
         /// </summary>
-        internal abstract void StartServer();
+        public abstract void StartServer();
 
         /// <summary>
         /// Disconnects the client from the connection and/or server.
         /// </summary>
-        internal abstract void Disconnect(string reason = "");
+        public abstract void Disconnect(string reason = "");
 
         /// <summary>
         /// Returns the username of the player with id userId.
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        internal virtual string GetUsername(ulong userId) => "Unknown";
+        public virtual string GetUsername(ulong userId) => "Unknown";
 
         /// <summary>
         /// Returns true if this is a friend (ex. steam friends).
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        internal virtual bool IsFriend(ulong userId) => false;
+        public virtual bool IsFriend(ulong userId) => false;
 
         /// <summary>
         /// Sends the message to the specified user if this is a server.
@@ -131,7 +131,7 @@ namespace LabFusion.Network
         /// <param name="userId"></param>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        internal virtual void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message) { }
+        public virtual void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message) { }
 
         /// <summary>
         /// Sends the message to the specified user if this is a server.
@@ -139,21 +139,21 @@ namespace LabFusion.Network
         /// <param name="userId"></param>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        internal virtual void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message) { }
+        public virtual void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message) { }
 
         /// <summary>
         /// Sends the message to the dedicated server.
         /// </summary>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        internal virtual void SendToServer(NetworkChannel channel, FusionMessage message) { }
+        public virtual void SendToServer(NetworkChannel channel, FusionMessage message) { }
 
         /// <summary>
         /// Sends the message to the server if this is a client. Sends to all clients if this is a server.
         /// </summary>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        internal virtual void BroadcastMessage(NetworkChannel channel, FusionMessage message) { }
+        public virtual void BroadcastMessage(NetworkChannel channel, FusionMessage message) { }
 
         /// <summary>
         /// If this is a server, sends this message back to all users except for the provided id.
@@ -161,7 +161,7 @@ namespace LabFusion.Network
         /// <param name="userId"></param>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        internal virtual void BroadcastMessageExcept(byte userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
+        public virtual void BroadcastMessageExcept(byte userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
         {
             void Send(PlayerId id)
             {
@@ -180,7 +180,7 @@ namespace LabFusion.Network
         /// <param name="userId"></param>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        internal virtual void BroadcastMessageExcept(ulong userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
+        public virtual void BroadcastMessageExcept(ulong userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
         {
             void Send(PlayerId id)
             {
@@ -193,23 +193,23 @@ namespace LabFusion.Network
             Parallel.ForEach(PlayerIdManager.PlayerIds, Send);
         }
 
-        internal abstract void OnInitializeLayer();
+        public abstract void OnInitializeLayer();
 
-        internal virtual void OnLateInitializeLayer() { }
+        public virtual void OnLateInitializeLayer() { }
 
-        internal abstract void OnCleanupLayer();
+        public abstract void OnCleanupLayer();
 
-        internal virtual void OnUpdateLayer() { }
+        public virtual void OnUpdateLayer() { }
 
-        internal virtual void OnLateUpdateLayer() { }
+        public virtual void OnLateUpdateLayer() { }
 
-        internal virtual void OnGUILayer() { }
+        public virtual void OnGUILayer() { }
 
-        internal virtual void OnUserJoin(PlayerId id) { }
+        public virtual void OnUserJoin(PlayerId id) { }
 
-        internal virtual void OnSetupBoneMenu(MenuCategory category) { }
+        public virtual void OnSetupBoneMenu(MenuCategory category) { }
 
-        internal abstract void OnUpdateLobby();
+        public abstract void OnUpdateLobby();
 
         public static void RegisterLayersFromAssembly(Assembly targetAssembly)
         {
