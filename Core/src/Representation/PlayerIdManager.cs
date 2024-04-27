@@ -70,12 +70,12 @@ namespace LabFusion.Representation
             LocalId = null;
         }
 
-        internal static void SetLongId(ulong longId)
+        public static void SetLongId(ulong longId)
         {
             LocalLongId = longId;
         }
 
-        internal static void SetUsername(string username)
+        public static void SetUsername(string username)
         {
             LocalUsername = username;
         }
