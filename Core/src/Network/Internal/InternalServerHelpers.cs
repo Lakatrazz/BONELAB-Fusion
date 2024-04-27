@@ -24,7 +24,7 @@ namespace LabFusion.Network
     /// <summary>
     /// Internal class used for cleaning up servers, executing events on disconnect, etc.
     /// </summary>
-    internal static class InternalServerHelpers
+    public static class InternalServerHelpers
     {
         private static void DisposeUser(PlayerId id)
         {
@@ -42,7 +42,7 @@ namespace LabFusion.Network
         /// <summary>
         /// Initializes information about the server, such as module types.
         /// </summary>
-        internal static void OnStartServer()
+        public static void OnStartServer()
         {
             // Create local id
             var id = new PlayerId(PlayerIdManager.LocalLongId, 0, GetInitialMetadata(), GetInitialEquippedItems());
@@ -81,7 +81,7 @@ namespace LabFusion.Network
         /// <summary>
         /// Called when the user joins a server.
         /// </summary>
-        internal static void OnJoinServer()
+        public static void OnJoinServer()
         {
             // Send settings
             FusionPreferences.SendClientSettings();
@@ -107,7 +107,7 @@ namespace LabFusion.Network
         /// <summary>
         /// Cleans up the scene from all users. ONLY call this from within a network layer!
         /// </summary>
-        internal static void OnDisconnect(string reason = "")
+        public static void OnDisconnect(string reason = "")
         {
             // Cleanup gamemodes
             GamemodeRegistration.ClearGamemodeTable();
@@ -153,7 +153,7 @@ namespace LabFusion.Network
         /// Updates information about the new user.
         /// </summary>
         /// <param name="id"></param>
-        internal static void OnUserJoin(PlayerId id, bool isInitialJoin)
+        public static void OnUserJoin(PlayerId id, bool isInitialJoin)
         {
             // Send client info
             FusionPreferences.SendClientSettings();
@@ -181,7 +181,7 @@ namespace LabFusion.Network
         /// Cleans up a single user after they have left.
         /// </summary>
         /// <param name="longId"></param>
-        internal static void OnUserLeave(ulong longId)
+        public static void OnUserLeave(ulong longId)
         {
             var playerId = PlayerIdManager.GetPlayerId(longId);
 
@@ -210,7 +210,7 @@ namespace LabFusion.Network
         /// Gets the default metadata for the local player.
         /// </summary>
         /// <returns></returns>
-        internal static FusionDictionary<string, string> GetInitialMetadata()
+        public static FusionDictionary<string, string> GetInitialMetadata()
         {
             // Create the dict
             var metadata = new FusionDictionary<string, string> {
@@ -234,7 +234,7 @@ namespace LabFusion.Network
         /// Gets the default list of equipped items.
         /// </summary>
         /// <returns></returns>
-        internal static List<string> GetInitialEquippedItems()
+        public static List<string> GetInitialEquippedItems()
         {
             List<string> list = new List<string>();
 
