@@ -19,7 +19,7 @@ using UnityEngine;
 
 namespace LabFusion.BoneMenu
 {
-    internal static partial class BoneMenuCreator
+    public static partial class BoneMenuCreator
     {
         // List of all possible tags
         private static readonly string[] _tagsList = new string[] {

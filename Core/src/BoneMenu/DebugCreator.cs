@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace LabFusion.BoneMenu
 {
-    internal static partial class BoneMenuCreator
+    public static partial class BoneMenuCreator
     {
         public static void CreateDebugMenu(MenuCategory category)
         {

@@ -25,7 +25,7 @@ namespace LabFusion.BoneMenu
         LEVEL = 2,
     }
 
-    internal static partial class BoneMenuCreator
+    public static partial class BoneMenuCreator
     {
         private static ulong _lobbyIndex = 0;
 

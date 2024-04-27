@@ -16,7 +16,7 @@ using UnityEngine;
 
 namespace LabFusion.BoneMenu
 {
-    internal static partial class BoneMenuCreator
+    public static partial class BoneMenuCreator
     {
         #region REMOVAL
         public static void RemoveEmptyCategory(MenuCategory parent, MenuCategory child)

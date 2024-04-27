@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace LabFusion.BoneMenu
 {
-    internal static partial class BoneMenuCreator
+    public static partial class BoneMenuCreator
     {
         private static MenuCategory _gamemodesCategory;
         private static FunctionElement _gamemodeElement;
