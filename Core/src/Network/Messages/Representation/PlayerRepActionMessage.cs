@@ -79,7 +79,7 @@ namespace LabFusion.Network
                             break;
                         case PlayerActionType.JUMP:
                             Il2CppSystem.Action onJump = null;
-                            onJump = (Il2CppSystem.Action)Il2CppSystem.Delegate.Combine(onJump, RemapRig.onPlayerJump);
+                            onJump = Il2CppSystem.Delegate.Combine(onJump, RemapRig.onPlayerJump).TryCast<Il2CppSystem.Action>();
 
                             RemapRig.onPlayerJump = null;
 

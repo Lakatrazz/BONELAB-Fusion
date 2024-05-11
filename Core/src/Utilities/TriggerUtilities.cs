@@ -25,7 +25,6 @@ namespace LabFusion.Utilities
     {
         public static readonly FusionDictionary<TriggerLasers, int> TriggerCount = new(new UnityComparer());
         public static readonly FusionDictionary<GenGameControl_Trigger, int> GenTriggerCount = new(new UnityComparer());
-        public static readonly FusionDictionary<TriggerRefProxy, List<Chunk>> PlayerChunks = new(new UnityComparer());
 
         internal static void Increment(TriggerLasers trigger)
         {
@@ -59,66 +58,6 @@ namespace LabFusion.Utilities
 
             GenTriggerCount[trigger]--;
             GenTriggerCount[trigger] = ManagedMathf.Clamp(GenTriggerCount[trigger], 0, int.MaxValue);
-        }
-
-        internal static void SetChunk(Collider other, Chunk chunk)
-        {
-            var proxy = TriggerRefProxy.Cache.Get(other.gameObject);
-            if (!proxy)
-                return;
-
-            if (!PlayerChunks.ContainsKey(proxy))
-            {
-                PlayerChunks.Add(proxy, new List<Chunk>());
-            }
-
-            PlayerChunks[proxy] = chunk.GetChunks();
-        }
-
-        internal static void AddChunk(Collider other, Chunk chunk)
-        {
-            var proxy = TriggerRefProxy.Cache.Get(other.gameObject);
-            if (!proxy)
-                return;
-
-            if (!PlayerChunks.ContainsKey(proxy))
-            {
-                PlayerChunks.Add(proxy, new List<Chunk>());
-            }
-
-            var chunks = chunk.GetChunks();
-            for (var i = 0; i < chunks.Count; i++)
-            {
-                var found = chunks[i];
-
-                if (!PlayerChunks[proxy].Has(found))
-                    PlayerChunks[proxy].Add(found);
-            }
-        }
-
-        internal static List<Chunk> GetChunks(Collider other)
-        {
-            var proxy = TriggerRefProxy.Cache.Get(other.gameObject);
-            if (!proxy)
-                return new List<Chunk>();
-
-            if (!PlayerChunks.ContainsKey(proxy))
-            {
-                PlayerChunks.Add(proxy, new List<Chunk>());
-            }
-
-            return PlayerChunks[proxy];
-        }
-
-        internal static bool CanUnload(Chunk chunk)
-        {
-            foreach (var pair in PlayerChunks)
-            {
-                if (pair.Value.Has(chunk))
-                    return false;
-            }
-
-            return true;
         }
 
         public static bool CanEnter(TriggerLasers trigger)
@@ -219,7 +158,7 @@ namespace LabFusion.Utilities
 
         public static bool IsMatchingRig(Collider other, RigManager rig)
         {
-            if (!NetworkInfo.HasServer || RigData.RigReferences.RigManager.IsNOC())
+            if (!NetworkInfo.HasServer || !RigData.HasPlayer)
                 return true;
 
             var trigger = TriggerRefProxy.Cache.Get(other.gameObject);

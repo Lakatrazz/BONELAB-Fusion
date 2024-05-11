@@ -422,6 +422,7 @@
     <Compile Include="Core\src\Network\Messages\Levels\ZoneSpawnerMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Magazines\MagazineClaimMessage.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\ZoneSpawnerPatches.cs" />
+    <Compile Include="Core\src\Representation\LocalPlayer.cs" />
     <Compile Include="Core\src\RPC\NetworkAssetSpawner.cs" />
     <Compile Include="Core\src\SDK\Lobbies\GenericLobbyFilter.cs" />
     <Compile Include="Core\src\SDK\Lobbies\ILobbyFilter.cs" />
@@ -524,7 +525,6 @@
     <Compile Include="Core\src\Patching\Patches\Player\ArtRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\JimmyDoorControllerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\PlayerDamageReceiverPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\Player\RemapRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Props\AmmoPickupPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Props\FlyingGunPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\KartRacePatches.cs" />
@@ -784,7 +784,7 @@
     <Compile Include="Core\src\Patching\NativeStructs\HandGripPair_.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\ArenaPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\AssetPooleePatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\ChunkTriggerPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Trigger\ChunkTriggerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\DescentPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\GrabPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\GunPatches.cs" />

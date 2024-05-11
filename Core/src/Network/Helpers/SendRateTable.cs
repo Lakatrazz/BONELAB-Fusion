@@ -65,6 +65,5 @@ namespace LabFusion.Network
 
             return tableLength + 1;
         }
-
     }
 }

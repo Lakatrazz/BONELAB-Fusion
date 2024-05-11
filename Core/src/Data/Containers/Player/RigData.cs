@@ -1,12 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using MelonLoader;
-
 
 using SLZ.VRMK;
 using SLZ;
@@ -22,14 +14,9 @@ using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Extensions;
 
-using SLZ.Combat;
-using SLZ.Data;
-using SLZ.Marrow.Data;
-using SLZ.Marrow.Warehouse;
 using SLZ.AI;
 using SLZ.UI;
-using LabFusion.Debugging;
-using LabFusion.Patching;
+using LabFusion.Senders;
 
 namespace LabFusion.Data
 {
@@ -260,6 +247,19 @@ namespace LabFusion.Data
 
         public static Vector3 RigSpawn { get; private set; }
         public static Quaternion RigSpawnRot { get; private set; }
+
+        public static void OnInitializeMelon()
+        {
+            RemapRig.onPlayerJump += (Il2CppSystem.Action)OnJump;
+        }
+
+        private static void OnJump()
+        {
+            if (NetworkInfo.HasServer)
+            {
+                PlayerSender.SendPlayerAction(PlayerActionType.JUMP);
+            }
+        }
 
         public static void OnCacheRigInfo()
         {

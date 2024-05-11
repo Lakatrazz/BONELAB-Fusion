@@ -32,7 +32,16 @@ namespace LabFusion.Data
 
             // Extracts steam api 64 and loads it into the game
             string sdkPath = PersistentData.GetPath($"steam_api64.dll");
-            File.WriteAllBytes(sdkPath, EmbeddedResource.LoadFromAssembly(FusionMod.FusionAssembly, ResourcePaths.SteamAPIPath));
+
+            // Make sure the file doesn't already exist
+            if (!File.Exists(sdkPath))
+            {
+                File.WriteAllBytes(sdkPath, EmbeddedResource.LoadFromAssembly(FusionMod.FusionAssembly, ResourcePaths.SteamAPIPath));
+            }
+            else
+            {
+                FusionLogger.Log("steam_api64.dll already exists, skipping extraction.");
+            }
 
             _libraryPtr = DllTools.LoadLibrary(sdkPath);
 

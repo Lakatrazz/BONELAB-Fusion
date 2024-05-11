@@ -50,9 +50,9 @@ public class FusionMod : MelonMod
     public static FusionMod Instance { get; private set; }
     public static Assembly FusionAssembly { get; private set; }
 
-    private static int _nextSyncableSendRate = 1;
-
     private static bool _hasAutoUpdater = false;
+
+    private static int _nextSyncableSendRate = 1;
 
     public override void OnEarlyInitializeMelon()
     {
@@ -109,6 +109,8 @@ public class FusionMod : MelonMod
 
         // Initialize level loading
         FusionSceneManager.Internal_OnInitializeMelon();
+
+        RigData.OnInitializeMelon();
 
         // Finally, initialize the network layer
         OnInitializeNetworking();
@@ -261,7 +263,7 @@ public class FusionMod : MelonMod
         int playerSendRate = SendRateTable.GetPlayerSendRate();
         if (TimeUtilities.IsMatchingFrame(playerSendRate))
         {
-            PlayerRep.OnSyncRep();
+            LocalPlayer.OnSyncRep();
         }
 
         // Send syncables based on byte amount
