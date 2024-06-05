@@ -319,10 +319,16 @@
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\VoidG114DMData.cs" />
     <Compile Include="Core\src\Data\Containers\FusionDictionary.cs" />
     <Compile Include="Core\src\Data\Containers\FusionArrayPool.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\Sandboxes\GunRangeData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\Sandboxes\BigBoneBowlingData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\Sandboxes\MirrorData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\Sandboxes\MuseumBasementData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\Sandboxes\TuscanyData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\Sandboxes\HalfwayParkData.cs" />
     <Compile Include="Core\src\Data\Containers\Syncables\GrabbedGripList.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\GameControllerData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\HalfwayParkDMData.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\HolodeckData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\Sandboxes\HolodeckData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\LevelDataHandler.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\ResetButtonRemover.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\VoidG114Data.cs" />

@@ -1,19 +1,10 @@
-﻿using LabFusion.Network;
-using LabFusion.Senders;
-using LabFusion.SDK.Points;
-
-using SLZ.Bonelab;
-using SLZ.UI;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SLZ.Bonelab;
 
 using UnityEngine;
+
 using LabFusion.UI;
 using LabFusion.Extensions;
+using LabFusion.SDK.Points;
 
 namespace LabFusion.Data
 {
@@ -43,28 +34,30 @@ namespace LabFusion.Data
         {
             GameController = GameObject.FindObjectOfType<GameControl_MenuVoidG114>(true);
 
-            if (GameController != null)
-            {
-                // Point shop
-                PointShopHelper.SetupPointShop(PointShopPosition, PointShopRotation, Vector3Extensions.one * 0.8f);
+            CreateSupportCube();
 
-                GameObject supportCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                supportCube.name = "Point Shop Support Cube";
-                supportCube.transform.position = SupportCubePosition;
-                supportCube.transform.rotation = SupportCubeRotation;
-                supportCube.transform.localScale = SupportCubeScale;
+            // Point shop
+            PointShopHelper.SetupPointShop(PointShopPosition, PointShopRotation, Vector3Extensions.one * 0.8f);
 
-                var meshRenderer = supportCube.GetComponentInChildren<MeshRenderer>();
-                var planeRenderer = GameObject.Find("plane_1x6").GetComponentInChildren<MeshRenderer>();
+            // Info box
+            InfoBoxHelper.SetupInfoBox(InfoBoxPosition, InfoBoxRotation, Vector3Extensions.one);
 
-                meshRenderer.material = planeRenderer.material;
+            // Cup board
+            CupBoardHelper.SetupCupBoard(CupBoardPosition, CupBoardRotation, Vector3Extensions.one);
+        }
 
-                // Info box
-                InfoBoxHelper.SetupInfoBox(InfoBoxPosition, InfoBoxRotation, Vector3Extensions.one);
+        private void CreateSupportCube()
+        {
+            GameObject supportCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            supportCube.name = "Point Shop Support Cube";
+            supportCube.transform.position = SupportCubePosition;
+            supportCube.transform.rotation = SupportCubeRotation;
+            supportCube.transform.localScale = SupportCubeScale;
 
-                // Cup board
-                CupBoardHelper.SetupCupBoard(CupBoardPosition, CupBoardRotation, Vector3Extensions.one);
-            }
+            var meshRenderer = supportCube.GetComponentInChildren<MeshRenderer>();
+            var planeRenderer = GameObject.Find("plane_1x6").GetComponentInChildren<MeshRenderer>();
+
+            meshRenderer.material = planeRenderer.material;
         }
     }
 }
