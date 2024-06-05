@@ -1,13 +1,8 @@
-﻿using BoneLib;
-using LabFusion.Extensions;
+﻿using LabFusion.Extensions;
 using LabFusion.Preferences;
 using LabFusion.Representation;
 using LabFusion.Senders;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LabFusion.Network
 {

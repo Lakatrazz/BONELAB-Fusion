@@ -1,6 +1,5 @@
 ﻿using LabFusion.Data;
 using LabFusion.Extensions;
-using LabFusion.Utilities;
 using SLZ.Rig;
 
 using System.Collections.Generic;

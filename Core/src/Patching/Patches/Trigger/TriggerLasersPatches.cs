@@ -1,8 +1,5 @@
 ﻿using HarmonyLib;
 
-using System;
-using System.Collections.Generic;
-
 using UnityEngine;
 
 using LabFusion.Utilities;
@@ -12,7 +9,7 @@ using SLZ.Bonelab;
 
 namespace LabFusion.Patching
 {
-    [HarmonyPatch(typeof(TriggerLasers), "OnTriggerEnter")]
+    [HarmonyPatch(typeof(TriggerLasers), nameof(TriggerLasers.OnTriggerEnter))]
     public static class PlayerTriggerEnterPatch
     {
         public static bool Prefix(TriggerLasers __instance, Collider other)
@@ -38,7 +35,7 @@ namespace LabFusion.Patching
         }
     }
 
-    [HarmonyPatch(typeof(TriggerLasers), "OnTriggerExit")]
+    [HarmonyPatch(typeof(TriggerLasers), nameof(TriggerLasers.OnTriggerExit))]
     public static class PlayerTriggerExitPatch
     {
         public static bool Prefix(TriggerLasers __instance, Collider other)

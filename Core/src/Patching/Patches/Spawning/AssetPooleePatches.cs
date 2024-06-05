@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using HarmonyLib;
 
@@ -15,8 +11,6 @@ using LabFusion.Extensions;
 using LabFusion.Senders;
 
 using SLZ.Marrow.Pool;
-using SLZ.Zones;
-using SLZ;
 
 using MelonLoader;
 

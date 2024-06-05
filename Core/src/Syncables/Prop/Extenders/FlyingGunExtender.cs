@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using LabFusion.Extensions;
+﻿using LabFusion.Extensions;
 using LabFusion.MonoBehaviours;
 using LabFusion.Network;
 using LabFusion.Representation;

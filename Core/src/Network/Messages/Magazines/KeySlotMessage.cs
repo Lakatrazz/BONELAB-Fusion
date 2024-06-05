@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using LabFusion.Data;
-using LabFusion.Representation;
-using LabFusion.Utilities;
-using LabFusion.Grabbables;
+﻿using LabFusion.Data;
 using LabFusion.Syncables;
 using LabFusion.Patching;
-
-using SLZ;
 using SLZ.Interaction;
 
 using LabFusion.Extensions;

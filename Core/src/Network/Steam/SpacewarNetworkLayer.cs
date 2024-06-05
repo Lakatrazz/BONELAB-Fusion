@@ -1,10 +1,4 @@
-﻿using LabFusion.Data;
-using LabFusion.Utilities;
-using Steamworks;
-using System;
-using System.Collections.Generic;
-
-namespace LabFusion.Network
+﻿namespace LabFusion.Network
 {
     public class SpacewarNetworkLayer : SteamNetworkLayer
     {

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using HarmonyLib;
 
@@ -16,7 +12,6 @@ using LabFusion.Utilities;
 using LabFusion.Network;
 
 using SLZ.Marrow.Input;
-using LabFusion.Senders;
 using UnityEngine.Rendering;
 
 namespace LabFusion.Patching

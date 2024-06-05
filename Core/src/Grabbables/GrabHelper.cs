@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using SLZ.Rig;
-using SLZ.Marrow.Pool;
-
-using UnhollowerRuntimeLib;
+﻿using SLZ.Rig;
 
 using UnityEngine;
 
@@ -16,13 +6,8 @@ using LabFusion.Utilities;
 using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Syncables;
-using LabFusion.Extensions;
 using LabFusion.Representation;
-
-using SLZ;
 using SLZ.Interaction;
-
-using MelonLoader;
 using LabFusion.Senders;
 
 namespace LabFusion.Grabbables

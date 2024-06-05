@@ -1,19 +1,10 @@
 ﻿using LabFusion.Data;
 using LabFusion.Debugging;
-using LabFusion.Extensions;
-using LabFusion.SDK.Gamemodes;
-using LabFusion.Utilities;
-
-using SLZ.Bonelab;
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using UnityEngine;
 
 namespace LabFusion.SDK.Points
 {

@@ -1,7 +1,5 @@
 ﻿using System;
 
-using UnityEngine;
-
 #if MELONLOADER
 using MelonLoader;
 #endif

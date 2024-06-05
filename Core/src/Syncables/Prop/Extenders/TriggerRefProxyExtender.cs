@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LabFusion.Network;
-using LabFusion.Patching;
-using LabFusion.Representation;
-using LabFusion.Utilities;
-using PuppetMasta;
+﻿using LabFusion.Utilities;
 
 using SLZ.AI;
-
-using UnityEngine;
 
 namespace LabFusion.Syncables
 {

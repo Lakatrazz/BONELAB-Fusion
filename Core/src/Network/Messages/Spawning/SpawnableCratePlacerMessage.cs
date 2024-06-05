@@ -1,20 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using LabFusion.Data;
-using LabFusion.Representation;
+﻿using LabFusion.Data;
 using LabFusion.Utilities;
-using LabFusion.Grabbables;
 using LabFusion.Syncables;
-using LabFusion.Patching;
-
-using SLZ;
-using SLZ.Interaction;
-
-using LabFusion.Extensions;
 
 using UnityEngine;
 
@@ -24,8 +10,6 @@ using SLZ.Marrow.Warehouse;
 using System.Collections;
 
 using MelonLoader;
-
-using LabFusion.Senders;
 
 namespace LabFusion.Network
 {

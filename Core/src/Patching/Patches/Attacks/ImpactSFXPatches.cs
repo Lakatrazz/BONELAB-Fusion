@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using HarmonyLib;
-
-using LabFusion.Data;
-using LabFusion.MarrowIntegration;
+﻿using HarmonyLib;
 using LabFusion.Network;
 
 using SLZ.Combat;
-using SLZ.Rig;
 using SLZ.SFX;
 
 using UnityEngine;

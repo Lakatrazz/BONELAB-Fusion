@@ -1,13 +1,5 @@
 ﻿using SLZ.Interaction;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using UnityEngine;
-
 using HarmonyLib;
 
 using LabFusion.Data;
@@ -15,9 +7,6 @@ using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Grabbables;
 using LabFusion.Network;
-using LabFusion.Extensions;
-
-using Il2ActionHandReceiver = Il2CppSystem.Action<SLZ.Interaction.HandReciever>;
 
 namespace LabFusion.Patching
 {

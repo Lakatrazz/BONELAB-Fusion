@@ -1,18 +1,9 @@
 ﻿using System;
-using System.Runtime.InteropServices;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-
-using LabFusion.Data;
-using LabFusion.Representation;
 using LabFusion.Utilities;
 
 using Steamworks;
 using Steamworks.Data;
-
-using UnityEngine;
 
 namespace LabFusion.Network
 {

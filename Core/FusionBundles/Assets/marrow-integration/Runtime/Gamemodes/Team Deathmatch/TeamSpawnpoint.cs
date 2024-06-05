@@ -6,7 +6,6 @@ using UnityEngine;
 using MelonLoader;
 
 using LabFusion.Utilities;
-using LabFusion.SDK.Gamemodes;
 #endif
 
 #if UNITY_EDITOR

@@ -1,5 +1,4 @@
 ﻿using LabFusion.Network;
-using LabFusion.Senders;
 using LabFusion.Syncables;
 using LabFusion.Utilities;
 using MelonLoader;
@@ -7,10 +6,6 @@ using MelonLoader;
 using SLZ.Marrow.Pool;
 
 using System;
-using System.Collections;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using UnityEngine;
 

@@ -1,11 +1,5 @@
 ﻿using LabFusion.Data;
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace LabFusion.Utilities
 {
     public static class ByteRetriever

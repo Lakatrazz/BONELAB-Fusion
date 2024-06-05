@@ -1,6 +1,4 @@
-﻿using System;
-
-using SLZ.VRMK;
+﻿using SLZ.VRMK;
 using SLZ;
 using SLZ.Rig;
 using SLZ.Interaction;

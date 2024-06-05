@@ -1,9 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using LabFusion.Representation;
-using SLZ.VRMK;
 using Avatar = SLZ.VRMK.Avatar;
-using BoneLib;
 
 namespace LabFusion.SDK.Gamemodes
 {

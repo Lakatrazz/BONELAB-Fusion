@@ -3,28 +3,12 @@ using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Syncables;
-using LabFusion.Utilities;
 
 using SLZ.Marrow.Pool;
-using SLZ.Zones;
-using SLZ.Interaction;
-using SLZ;
-using SLZ.Combat;
-using SLZ.VFX;
-using SLZ.Bonelab;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using UnityEngine;
 using SLZ.Props.Weapons;
 using SLZ.Rig;
-using SLZ.Props;
-using LabFusion.Senders;
-using SLZ.Marrow.Warehouse;
 
 namespace LabFusion.Utilities
 {

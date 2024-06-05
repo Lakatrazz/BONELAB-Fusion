@@ -1,8 +1,4 @@
 ﻿using Il2CppSystem;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using HarmonyLib;
 
@@ -10,7 +6,6 @@ using SLZ.UI;
 
 using LabFusion.Data;
 using LabFusion.Network;
-using LabFusion.Utilities;
 using LabFusion.RPC;
 using SLZ.Marrow.Data;
 

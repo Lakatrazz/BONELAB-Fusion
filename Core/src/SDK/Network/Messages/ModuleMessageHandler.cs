@@ -3,9 +3,6 @@ using System.Linq;
 using System.Reflection;
 using LabFusion.Data;
 using LabFusion.Utilities;
-using LabFusion.Extensions;
-
-using MelonLoader;
 
 namespace LabFusion.Network
 {

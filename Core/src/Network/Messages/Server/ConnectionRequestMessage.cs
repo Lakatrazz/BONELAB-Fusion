@@ -1,5 +1,4 @@
 ﻿using LabFusion.Data;
-using LabFusion.Patching;
 using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Preferences;
@@ -8,10 +7,7 @@ using LabFusion.Syncables;
 
 using System;
 using System.Collections.Generic;
-using System.Collections;
 using System.Linq;
-
-using MelonLoader;
 
 namespace LabFusion.Network
 {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections;
-
-namespace LabFusion.Network
+﻿namespace LabFusion.Network
 {
     public sealed class ProxySteamVRNetworkLayer : ProxyNetworkLayer
     {

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using LabFusion.Data;
 using LabFusion.Extensions;
@@ -10,8 +8,6 @@ using LabFusion.Network;
 using LabFusion.SDK.Points;
 using LabFusion.Senders;
 using LabFusion.Utilities;
-
-using SLZ.Rig;
 
 namespace LabFusion.Representation
 {

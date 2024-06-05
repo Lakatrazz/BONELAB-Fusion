@@ -1,14 +1,11 @@
 ﻿using System;
 
-using UnityEngine;
-
 #if MELONLOADER
 using MelonLoader;
 
 using LabFusion.Network;
 
 using SLZ.Marrow.Pool;
-using SLZ.Marrow.Warehouse;
 #endif
 
 namespace LabFusion.MarrowIntegration

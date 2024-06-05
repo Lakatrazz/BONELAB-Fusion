@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using UnityEngine;
 
@@ -12,8 +7,6 @@ using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Syncables;
-
-using MelonLoader;
 
 using LabFusion.MonoBehaviours;
 

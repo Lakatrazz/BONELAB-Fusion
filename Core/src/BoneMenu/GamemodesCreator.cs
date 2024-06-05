@@ -1,5 +1,4 @@
-﻿using BoneLib.BoneMenu;
-using BoneLib.BoneMenu.Elements;
+﻿using BoneLib.BoneMenu.Elements;
 using LabFusion.Preferences;
 using LabFusion.SDK.Gamemodes;
 

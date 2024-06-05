@@ -1,5 +1,4 @@
-﻿using BoneLib;
-using BoneLib.BoneMenu.Elements;
+﻿using BoneLib.BoneMenu.Elements;
 using LabFusion.Extensions;
 using LabFusion.MarrowIntegration;
 using LabFusion.Network;
@@ -12,8 +11,6 @@ using LabFusion.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using UnityEngine;
 

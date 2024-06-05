@@ -1,20 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using LabFusion.Data;
-using LabFusion.Representation;
-using LabFusion.Utilities;
-using LabFusion.Grabbables;
-using LabFusion.Syncables;
+﻿using LabFusion.Data;
 using LabFusion.Patching;
 using LabFusion.Exceptions;
-
-using SLZ;
-using SLZ.Interaction;
-using SLZ.Props.Weapons;
 
 using UnityEngine;
 using SLZ.Bonelab;

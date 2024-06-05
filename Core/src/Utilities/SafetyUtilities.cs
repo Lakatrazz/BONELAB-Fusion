@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using UnityEngine;
-
-namespace LabFusion.Utilities
+﻿namespace LabFusion.Utilities
 {
     public static class SafetyUtilities
     {

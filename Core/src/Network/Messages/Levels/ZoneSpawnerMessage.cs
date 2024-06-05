@@ -1,6 +1,4 @@
-﻿using System;
-
-using LabFusion.Data;
+﻿using LabFusion.Data;
 using LabFusion.Syncables;
 using LabFusion.Extensions;
 

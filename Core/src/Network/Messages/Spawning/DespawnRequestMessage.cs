@@ -1,10 +1,4 @@
 ﻿using LabFusion.Data;
-using LabFusion.Patching;
-using LabFusion.Representation;
-using LabFusion.Syncables;
-using LabFusion.Utilities;
-
-using System;
 
 namespace LabFusion.Network
 {

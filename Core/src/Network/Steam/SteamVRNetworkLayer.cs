@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace LabFusion.Network
+﻿namespace LabFusion.Network
 {
     public class SteamVRNetworkLayer : SteamNetworkLayer
     {

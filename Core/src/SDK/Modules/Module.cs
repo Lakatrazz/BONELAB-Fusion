@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using LabFusion.Representation;
-
-namespace LabFusion.SDK.Modules
+﻿namespace LabFusion.SDK.Modules
 {
     /// <summary>
     /// The class to inherit from when creating a Fusion module.

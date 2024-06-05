@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnhollowerBaseLib.Attributes;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace LabFusion.UI

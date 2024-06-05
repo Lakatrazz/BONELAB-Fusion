@@ -4,7 +4,6 @@ using HarmonyLib;
 
 using LabFusion.Network;
 using LabFusion.Utilities;
-using LabFusion.Data;
 using LabFusion.Representation;
 using LabFusion.SDK.Achievements;
 using LabFusion.Syncables;
@@ -13,12 +12,9 @@ using SLZ.Marrow.Pool;
 using SLZ.Props;
 using SLZ.Props.Weapons;
 using SLZ.Interaction;
-
-using MelonLoader;
 using LabFusion.RPC;
 using SLZ.Marrow.Data;
 using SLZ.Marrow.Warehouse;
-using BoneLib;
 
 namespace LabFusion.Patching
 {

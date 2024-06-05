@@ -2,8 +2,6 @@
 
 using System.Collections.Generic;
 
-using UnityEngine;
-
 namespace LabFusion.Extensions
 {
     public class SyncableComparer : IEqualityComparer<ISyncable>, IEqualityComparer<ushort>

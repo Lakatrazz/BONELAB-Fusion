@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using HarmonyLib;
 
@@ -13,12 +9,8 @@ using LabFusion.SDK.Achievements;
 using LabFusion.Syncables;
 using LabFusion.Utilities;
 
-using Newtonsoft.Json.Linq;
 using SLZ;
-using SLZ.Bonelab;
 using SLZ.Interaction;
-using SLZ.Player;
-using SLZ.Props.Weapons;
 using SLZ.Rig;
 using SLZ.VRMK;
 

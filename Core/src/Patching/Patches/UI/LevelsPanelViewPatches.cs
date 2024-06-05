@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using HarmonyLib;
 
@@ -15,7 +11,7 @@ using SLZ.UI;
 
 namespace LabFusion.Patching
 {
-    [HarmonyPatch(typeof(LevelsPanelView), "SelectItem")]
+    [HarmonyPatch(typeof(LevelsPanelView), nameof(LevelsPanelView.SelectItem))]
     public class LevelsPanelViewPatches
     {
         public static bool Prefix(LevelsPanelView __instance, int idx)

@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using HarmonyLib;
-
-using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Syncables;
@@ -15,7 +8,6 @@ using LabFusion.Utilities;
 
 using SLZ;
 using SLZ.Interaction;
-using SLZ.Props.Weapons;
 
 namespace LabFusion.Patching
 {

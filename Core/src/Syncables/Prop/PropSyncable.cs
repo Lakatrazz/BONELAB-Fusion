@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.DirectoryServices.Protocols;
 
 using LabFusion.Data;
-using LabFusion.Debugging;
 using LabFusion.Extensions;
 using LabFusion.Grabbables;
 using LabFusion.Network;
@@ -18,7 +16,6 @@ using SLZ.Utilities;
 using UnityEngine;
 
 using SLZ.Rig;
-using System.Security.Cryptography.Xml;
 
 namespace LabFusion.Syncables
 {

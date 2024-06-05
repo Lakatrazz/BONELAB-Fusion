@@ -2,24 +2,15 @@
 using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using BoneLib.BoneMenu;
 using BoneLib.BoneMenu.Elements;
-
-using LabFusion.Data;
-using LabFusion.Extensions;
 using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Preferences;
 
-using SLZ.Rig;
-
 //using Steamworks;
 //using Steamworks.Data;
-
-using UnityEngine;
 
 using Color = UnityEngine.Color;
 

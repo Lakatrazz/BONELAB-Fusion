@@ -1,12 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Extensions;
-using LabFusion.Patching;
-using LabFusion.Representation;
 using LabFusion.Utilities;
-using SLZ.Bonelab;
-using SLZ.Marrow.SceneStreaming;
-using SLZ.Marrow.Warehouse;
-using System;
 
 namespace LabFusion.Network
 {

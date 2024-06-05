@@ -8,7 +8,6 @@ using MelonLoader;
 
 using LabFusion.SDK.Gamemodes;
 using UnhollowerBaseLib.Attributes;
-using LabFusion.Utilities;
 #endif
 
 namespace LabFusion.MarrowIntegration

@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using LabFusion.Utilities;
+﻿using LabFusion.Utilities;
 using PuppetMasta;
-using SLZ.AI;
 
 namespace LabFusion.Syncables
 {

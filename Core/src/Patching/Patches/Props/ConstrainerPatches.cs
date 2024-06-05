@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using HarmonyLib;
 using LabFusion.Extensions;
 using LabFusion.Network;
-using LabFusion.Preferences;
 using LabFusion.Representation;
 using LabFusion.Syncables;
 using LabFusion.Utilities;
-using MelonLoader;
 using SLZ.Interaction;
 using SLZ.Props;
-using SLZ.Rig;
 using UnityEngine;
 
 namespace LabFusion.Patching

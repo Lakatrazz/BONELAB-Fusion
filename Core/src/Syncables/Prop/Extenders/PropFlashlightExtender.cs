@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using LabFusion.Utilities;
+﻿using LabFusion.Utilities;
 
 using SLZ.Props;
-using SLZ.Props.Weapons;
 
 namespace LabFusion.Syncables
 {

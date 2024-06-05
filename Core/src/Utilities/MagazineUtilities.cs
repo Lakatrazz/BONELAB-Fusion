@@ -1,17 +1,9 @@
 ﻿using BoneLib.Nullables;
-using LabFusion.Data;
 using LabFusion.Extensions;
 using SLZ;
-using SLZ.Interaction;
 using SLZ.Marrow.Data;
 using SLZ.Props.Weapons;
 using SLZ.Rig;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LabFusion.Utilities
 {

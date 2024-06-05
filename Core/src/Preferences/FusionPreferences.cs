@@ -1,6 +1,5 @@
 ﻿using BoneLib.BoneMenu;
 using BoneLib.BoneMenu.Elements;
-using LabFusion.BoneMenu;
 using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Representation;
@@ -9,9 +8,6 @@ using MelonLoader;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using UnityEngine;
 

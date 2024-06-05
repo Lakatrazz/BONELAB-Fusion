@@ -3,7 +3,6 @@ using LabFusion.Exceptions;
 using LabFusion.Representation;
 using LabFusion.Utilities;
 using SLZ.Marrow.SceneStreaming;
-using System;
 using UnityEngine;
 
 namespace LabFusion.Network

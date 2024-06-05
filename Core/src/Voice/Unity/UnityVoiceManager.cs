@@ -1,7 +1,5 @@
 ﻿using LabFusion.Representation;
 
-using UnityEngine;
-
 namespace LabFusion.Voice.Unity;
 
 public sealed class UnityVoiceManager : VoiceManager

@@ -1,28 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using BoneLib;
-using HarmonyLib;
 
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.NativeStructs;
 
 using MelonLoader;
-
-using SLZ;
-using SLZ.Combat;
 using SLZ.Interaction;
-using SLZ.Marrow.Data;
-using SLZ.Marrow.Utilities;
-
-using UnityEngine;
 using LabFusion.Utilities;
-using LabFusion.Data;
 
 namespace LabFusion.Patching
 {

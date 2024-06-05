@@ -1,14 +1,9 @@
-﻿using LabFusion.Data;
-using LabFusion.Representation;
+﻿using LabFusion.Representation;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 using SLZ.Rig;
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using UnityEngine;
 
