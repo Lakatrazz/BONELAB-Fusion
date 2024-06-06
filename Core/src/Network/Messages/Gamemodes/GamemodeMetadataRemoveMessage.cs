@@ -43,7 +43,7 @@ namespace LabFusion.Network
                 var data = reader.ReadFusionSerializable<GamemodeMetadataRemoveData>();
                 if (GamemodeManager.TryGetGamemode(data.gamemodeId, out var gamemode))
                 {
-                    gamemode.Internal_ForceRemoveMetadata(data.key);
+                    gamemode.Metadata.ForceRemoveLocalMetadata(data.key);
                 }
             }
             else

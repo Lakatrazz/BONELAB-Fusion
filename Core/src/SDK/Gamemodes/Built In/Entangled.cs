@@ -305,13 +305,13 @@ namespace LabFusion.SDK.Gamemodes
             // Check if the second player is null
             if (player2 == null)
             {
-                TrySetMetadata(GetPartnerKey(player1), "-1");
+                Metadata.TrySetMetadata(GetPartnerKey(player1), "-1");
                 return;
             }
 
             // Set partners both ways
-            TrySetMetadata(GetPartnerKey(player1), player2.LongId.ToString());
-            TrySetMetadata(GetPartnerKey(player2), player1.LongId.ToString());
+            Metadata.TrySetMetadata(GetPartnerKey(player1), player2.LongId.ToString());
+            Metadata.TrySetMetadata(GetPartnerKey(player2), player1.LongId.ToString());
 
             // Teleport the first player to the second
             if (PlayerRepManager.TryGetPlayerRep(player2, out var rep) && rep.IsCreated)
@@ -324,10 +324,10 @@ namespace LabFusion.SDK.Gamemodes
         {
             var player2 = GetPartner(player1);
 
-            TryRemoveMetadata(GetPartnerKey(player1));
+            Metadata.TryRemoveMetadata(GetPartnerKey(player1));
 
             if (player2 != null)
-                TryRemoveMetadata(GetPartnerKey(player2));
+                Metadata.TryRemoveMetadata(GetPartnerKey(player2));
         }
 
         protected string GetPartnerKey(PlayerId id)
@@ -337,7 +337,7 @@ namespace LabFusion.SDK.Gamemodes
 
         protected PlayerId GetPartner(PlayerId id)
         {
-            if (TryGetMetadata(GetPartnerKey(id), out var value) && ulong.TryParse(value, out var other))
+            if (Metadata.TryGetMetadata(GetPartnerKey(id), out var value) && ulong.TryParse(value, out var other))
             {
                 return PlayerIdManager.GetPlayerId(other);
             }

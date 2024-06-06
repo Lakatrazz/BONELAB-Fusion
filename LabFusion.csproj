@@ -430,6 +430,8 @@
     <Compile Include="Core\src\Patching\Patches\Spawning\ZoneSpawnerPatches.cs" />
     <Compile Include="Core\src\Representation\LocalPlayer.cs" />
     <Compile Include="Core\src\RPC\NetworkAssetSpawner.cs" />
+    <Compile Include="Core\src\SDK\Gamemodes\MetadataVariable.cs" />
+    <Compile Include="Core\src\SDK\Gamemodes\NetworkMetadata.cs" />
     <Compile Include="Core\src\SDK\Lobbies\GenericLobbyFilter.cs" />
     <Compile Include="Core\src\SDK\Lobbies\ILobbyFilter.cs" />
     <Compile Include="Core\src\SDK\Lobbies\LobbyFilterManager.cs" />

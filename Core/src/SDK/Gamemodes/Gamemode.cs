@@ -62,8 +62,9 @@ namespace LabFusion.SDK.Gamemodes
         public virtual bool DisableSpawnGun { get; } = false;
         public virtual bool DisableManualUnragdoll { get; } = false;
 
-        private readonly FusionDictionary<string, string> _internalMetadata = new();
-        public FusionDictionary<string, string> Metadata => _internalMetadata;
+
+        private readonly NetworkMetadata _metadata = new();
+        public NetworkMetadata Metadata => _metadata;
 
         // Music
         public virtual bool MusicEnabled => MusicToggled;
@@ -76,6 +77,13 @@ namespace LabFusion.SDK.Gamemodes
             MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
             MultiplayerHooking.OnLoadingBegin += OnLoadingBegin;
 
+            Metadata.OnTrySetMetadata += OnTrySetMetadata;
+            Metadata.OnTryRemoveMetadata += OnTryRemoveMetadata;
+
+            Metadata.OnMetadataChanged += OnMetadataChanged;
+            Metadata.OnMetadataChanged += OnInternalMetadataChanged;
+            Metadata.OnMetadataRemoved += OnMetadataRemoved;
+
             OnGamemodeRegistered();
         }
 
@@ -84,7 +92,38 @@ namespace LabFusion.SDK.Gamemodes
             MultiplayerHooking.OnMainSceneInitialized -= OnMainSceneInitialized;
             MultiplayerHooking.OnLoadingBegin -= OnLoadingBegin;
 
+            Metadata.OnTrySetMetadata -= OnTrySetMetadata;
+            Metadata.OnTryRemoveMetadata -= OnTryRemoveMetadata;
+
+            Metadata.OnMetadataChanged += OnMetadataChanged;
+            Metadata.OnMetadataChanged += OnInternalMetadataChanged;
+            Metadata.OnMetadataRemoved -= OnMetadataRemoved;
+
             OnGamemodeUnregistered();
+        }
+
+        private bool OnTrySetMetadata(string key, string value)
+        {
+            // We can only change metadata as the server!
+            if (NetworkInfo.IsServer)
+            {
+                GamemodeSender.SendGamemodeMetadataSet(Tag.Value, key, value);
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool OnTryRemoveMetadata(string key)
+        {
+            // We can only remove metadata as the server!
+            if (NetworkInfo.IsServer)
+            {
+                GamemodeSender.SendGamemodeMetadataRemove(Tag.Value, key);
+                return true;
+            }
+
+            return false;
         }
 
         public void SetPlaylist(float volume = 1f, params AudioClip[] clips)
@@ -209,7 +248,7 @@ namespace LabFusion.SDK.Gamemodes
                 ActiveGamemode.StopGamemode();
             }
 
-            TrySetMetadata(GamemodeHelper.IsStartedKey, "True");
+            Metadata.TrySetMetadata(GamemodeHelper.IsStartedKey, "True");
             return true;
         }
 
@@ -225,7 +264,7 @@ namespace LabFusion.SDK.Gamemodes
             if (!IsActive())
                 return false;
 
-            TrySetMetadata(GamemodeHelper.IsStartedKey, "False");
+            Metadata.TrySetMetadata(GamemodeHelper.IsStartedKey, "False");
             return true;
         }
 
@@ -357,30 +396,6 @@ namespace LabFusion.SDK.Gamemodes
         }
         protected virtual void OnLateUpdate() { }
 
-        public bool TrySetMetadata(string key, string value)
-        {
-            // We can only change metadata as the server!
-            if (NetworkInfo.IsServer)
-            {
-                GamemodeSender.SendGamemodeMetadataSet(Tag.Value, key, value);
-                return true;
-            }
-
-            return false;
-        }
-
-        public bool TryRemoveMetadata(string key)
-        {
-            // We can only remove metadata as the server!
-            if (NetworkInfo.IsServer && _internalMetadata.ContainsKey(key))
-            {
-                GamemodeSender.SendGamemodeMetadataRemove(Tag.Value, key);
-                return true;
-            }
-
-            return false;
-        }
-
         public bool TryInvokeTrigger(string value)
         {
             // We can only invoke triggers as the server!
@@ -391,40 +406,6 @@ namespace LabFusion.SDK.Gamemodes
             }
 
             return false;
-        }
-
-        public bool TryGetMetadata(string key, out string value)
-        {
-            return _internalMetadata.TryGetValue(key, out value);
-        }
-
-        public string GetMetadata(string key)
-        {
-            if (_internalMetadata.TryGetValue(key, out string value))
-                return value;
-
-            return null;
-        }
-
-        internal void Internal_ForceSetMetadata(string key, string value)
-        {
-            if (_internalMetadata.ContainsKey(key))
-                _internalMetadata[key] = value;
-            else
-                _internalMetadata.Add(key, value);
-
-            OnMetadataChanged(key, value);
-            OnInternalMetadataChanged(key, value);
-        }
-
-        internal void Internal_ForceRemoveMetadata(string key)
-        {
-            if (_internalMetadata.ContainsKey(key))
-            {
-                OnMetadataRemoved(key);
-
-                _internalMetadata.Remove(key);
-            }
         }
 
         internal void Internal_TriggerEvent(string value)

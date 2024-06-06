@@ -59,7 +59,7 @@ namespace LabFusion.SDK.Gamemodes
 
             for (var i = 0; i < metadata.Length; i++)
             {
-                metadata[i] = Gamemodes[i].Metadata;
+                metadata[i] = Gamemodes[i].Metadata.LocalDictionary;
             }
 
             return metadata;
@@ -94,7 +94,7 @@ namespace LabFusion.SDK.Gamemodes
                 {
                     foreach (var pair in metadata)
                     {
-                        gamemode.Internal_ForceSetMetadata(pair.Key, pair.Value);
+                        gamemode.Metadata.ForceSetLocalMetadata(pair.Key, pair.Value);
                     }
                 }
             }

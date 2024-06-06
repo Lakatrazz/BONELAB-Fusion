@@ -9,8 +9,10 @@ using LabFusion.SDK.Achievements;
 using LabFusion.SDK.Points;
 using LabFusion.Senders;
 using LabFusion.Utilities;
+
 using System.Collections.Generic;
 using System.Linq;
+
 using UnityEngine;
 
 namespace LabFusion.SDK.Gamemodes
@@ -863,7 +865,7 @@ namespace LabFusion.SDK.Gamemodes
             if (team == null)
                 return;
 
-            TrySetMetadata(GetScoreKey(team), score.ToString());
+            Metadata.TrySetMetadata(GetScoreKey(team), score.ToString());
         }
 
         protected void SetTeam(PlayerId id, Team team)
@@ -873,12 +875,12 @@ namespace LabFusion.SDK.Gamemodes
                 return;
             }
 
-            TrySetMetadata(GetTeamMemberKey(id), team.TeamName);
+            Metadata.TrySetMetadata(GetTeamMemberKey(id), team.TeamName);
         }
 
         public int GetScoreFromTeam(Team team)
         {
-            TryGetMetadata(GetScoreKey(team), out string teamKey);
+            Metadata.TryGetMetadata(GetScoreKey(team), out string teamKey);
             int score = int.Parse(teamKey);
 
             return score;
@@ -899,7 +901,7 @@ namespace LabFusion.SDK.Gamemodes
 
         protected Team GetTeamFromMember(PlayerId id)
         {
-            TryGetMetadata(GetTeamMemberKey(id), out string teamName);
+            Metadata.TryGetMetadata(GetTeamMemberKey(id), out string teamName);
 
             foreach (Team team in teams)
             {

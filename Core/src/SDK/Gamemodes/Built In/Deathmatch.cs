@@ -521,7 +521,7 @@ namespace LabFusion.SDK.Gamemodes
         {
             foreach (var player in PlayerIdManager.PlayerIds)
             {
-                TrySetMetadata(GetScoreKey(player), "0");
+                Metadata.TrySetMetadata(GetScoreKey(player), "0");
             }
         }
 
@@ -530,7 +530,7 @@ namespace LabFusion.SDK.Gamemodes
             var score = GetScore(id);
             score++;
 
-            TrySetMetadata(GetScoreKey(id), score.ToString());
+            Metadata.TrySetMetadata(GetScoreKey(id), score.ToString());
         }
 
         protected string GetScoreKey(PlayerId id)
@@ -546,7 +546,7 @@ namespace LabFusion.SDK.Gamemodes
             if (id == null)
                 return 0;
 
-            if (TryGetMetadata(GetScoreKey(id), out var value) && int.TryParse(value, out var score))
+            if (Metadata.TryGetMetadata(GetScoreKey(id), out var value) && int.TryParse(value, out var score))
             {
                 return score;
             }
