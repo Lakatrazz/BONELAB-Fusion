@@ -3,32 +3,32 @@
 using LabFusion.Utilities;
 
 using Il2CppSLZ.Marrow.Warehouse;
+using Il2CppSLZ.Marrow.Data;
+using Il2CppSLZ.Marrow.Pool;
 
 namespace LabFusion.UI
 {
     public static class CupBoardHelper
     {
-        public static void SetupCupBoard(Vector3 position, Quaternion rotation, Vector3 scale)
+        public const string AchievementBoardBarcode = "Lakatrazz.FusionContent.Spawnable.AchievementBoard";
+
+        public static void CompleteAchievementBoard(GameObject gameObject)
         {
-            // Create the GameObject
-            LevelCrate level = FusionSceneManager.Level;
+            // Currently just needs to add the CupBoard script
+            gameObject.AddComponent<CupBoard>();
+        }
 
-            FusionContentLoader.CupBoardPrefab.Load((go) =>
+        public static void SpawnAchievementBoard(Vector3 position, Quaternion rotation)
+        {
+            var spawnable = new Spawnable()
             {
-                // Make sure the level hasn't changed
-                if (level != FusionSceneManager.Level)
-                    return;
+                crateRef = new SpawnableCrateReference(AchievementBoardBarcode),
+                policyData = null,
+            };
 
-                GameObject board = GameObject.Instantiate(go);
-                board.SetActive(false);
-                board.transform.position = position;
-                board.transform.rotation = rotation;
-                board.transform.localScale = scale;
-                board.SetActive(true);
+            AssetSpawner.Register(spawnable);
 
-                // Add the cup board script
-                board.gameObject.AddComponent<CupBoard>();
-            });
+            AssetSpawner.Spawn(spawnable, position, rotation, new Il2CppSystem.Nullable<Vector3>(Vector3.one), true, new Il2CppSystem.Nullable<int>(0), null, null);
         }
     }
 }

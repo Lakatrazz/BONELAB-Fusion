@@ -37,19 +37,19 @@ namespace LabFusion.Data
             CreateSupportCube();
 
             // Point shop
-            PointShopHelper.SetupPointShop(PointShopPosition, PointShopRotation, Vector3Extensions.one * 0.8f);
+            PointShopHelper.SpawnBitMart(PointShopPosition, PointShopRotation);
 
             // Info box
-            InfoBoxHelper.SetupInfoBox(InfoBoxPosition, InfoBoxRotation, Vector3Extensions.one);
+            InfoBoxHelper.SpawnInfoBoard(InfoBoxPosition, InfoBoxRotation);
 
             // Cup board
-            CupBoardHelper.SetupCupBoard(CupBoardPosition, CupBoardRotation, Vector3Extensions.one);
+            CupBoardHelper.SpawnAchievementBoard(CupBoardPosition, CupBoardRotation);
         }
 
-        private void CreateSupportCube()
+        private static void CreateSupportCube()
         {
             GameObject supportCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            supportCube.name = "Point Shop Support Cube";
+            supportCube.name = "BitMart Support Cube";
             supportCube.transform.position = SupportCubePosition;
             supportCube.transform.rotation = SupportCubeRotation;
             supportCube.transform.localScale = SupportCubeScale;

@@ -24,10 +24,6 @@
         // Content bundle
         public const string ContentBundle = "content_bundle.fusion";
 
-        public const string PointShopPrefab = "machine_PointShop";
-        public const string InfoBoxPrefab = "machine_InfoBox";
-        public const string CupBoardPrefab = "machine_CupBoard";
-
         public const string EntangledLinePrefab = "renderer_EntangledLine";
 
         public const string AchievementPopupPrefab = "achievement_Popup";

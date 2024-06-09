@@ -26,7 +26,7 @@ namespace LabFusion.Data
 
             if (GameController != null)
             {
-                PointShopHelper.SetupPointShop(PointShopPosition, PointShopRotation, Vector3Extensions.one * 0.8f);
+                PointShopHelper.SpawnBitMart(PointShopPosition, PointShopRotation);
             }
 
             if (NetworkInfo.IsServer && Funicular != null)

@@ -3,32 +3,32 @@
 using LabFusion.Utilities;
 
 using Il2CppSLZ.Marrow.Warehouse;
+using Il2CppSLZ.Marrow.Data;
+using Il2CppSLZ.Marrow.Pool;
 
 namespace LabFusion.UI
 {
     public static class InfoBoxHelper
     {
-        public static void SetupInfoBox(Vector3 position, Quaternion rotation, Vector3 scale)
+        public const string InfoBoardBarcode = "Lakatrazz.FusionContent.Spawnable.InfoBoard";
+
+        public static void CompleteInfoBoard(GameObject gameObject)
         {
-            // Create the GameObject
-            LevelCrate level = FusionSceneManager.Level;
+            // Currently just needs to add the InfoBox script
+            gameObject.AddComponent<InfoBox>();
+        }
 
-            FusionContentLoader.InfoBoxPrefab.Load((go) =>
+        public static void SpawnInfoBoard(Vector3 position, Quaternion rotation)
+        {
+            var spawnable = new Spawnable()
             {
-                // Make sure the level hasn't changed
-                if (level != FusionSceneManager.Level)
-                    return;
+                crateRef = new SpawnableCrateReference(InfoBoardBarcode),
+                policyData = null,
+            };
 
-                GameObject shop = GameObject.Instantiate(go);
-                shop.SetActive(false);
-                shop.transform.position = position;
-                shop.transform.rotation = rotation;
-                shop.transform.localScale = scale;
-                shop.SetActive(true);
+            AssetSpawner.Register(spawnable);
 
-                // Add the info box script
-                shop.gameObject.AddComponent<InfoBox>();
-            });
+            AssetSpawner.Spawn(spawnable, position, rotation, new Il2CppSystem.Nullable<Vector3>(Vector3.one), true, new Il2CppSystem.Nullable<int>(0), null, null);
         }
     }
 }

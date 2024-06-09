@@ -19,10 +19,12 @@ MonoBehaviour:
   _slimCode:
     _byteArray: 
   _title: Achievement Board
-  _description: 
+  _description: Challenge board containing multiple objectives completable with pals
+    in MythOS.
   _unlockable: 0
   _redacted: 0
-  _tags: []
+  _tags:
+  - Fusion
   _boneTags:
     _tags: []
   _mainAsset:

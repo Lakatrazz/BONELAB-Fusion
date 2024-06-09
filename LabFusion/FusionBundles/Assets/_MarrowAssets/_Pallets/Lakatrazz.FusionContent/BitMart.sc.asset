@@ -19,10 +19,12 @@ MonoBehaviour:
   _slimCode:
     _byteArray: 
   _title: BitMart
-  _description: 
+  _description: Void-powered shop connected directly to all of MythOS's clothing
+    centers.
   _unlockable: 0
   _redacted: 0
-  _tags: []
+  _tags:
+  - Fusion
   _boneTags:
     _tags: []
   _mainAsset:
@@ -35,5 +37,5 @@ MonoBehaviour:
   _previewMeshQuality: 0.5
   _maxLODLevel: 0
   _colliderBounds:
-    m_Center: {x: -0.1861242, y: 2.1769814, z: 0.064932644}
-    m_Extent: {x: 1.2190678, y: 2.1949058, z: 0.6060532}
+    m_Center: {x: -0.24489945, y: 1.7405452, z: 0.051946163}
+    m_Extent: {x: 0.97525424, y: 1.7559246, z: 0.48484248}

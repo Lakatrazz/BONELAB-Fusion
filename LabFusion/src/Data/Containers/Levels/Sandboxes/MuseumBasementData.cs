@@ -16,7 +16,7 @@ namespace LabFusion.Data
         protected override void MainSceneInitialized()
         {
             // Point shop
-            PointShopHelper.SetupPointShop(PointShopPosition, PointShopRotation, Vector3Extensions.one * 0.8f);
+            PointShopHelper.SpawnBitMart(PointShopPosition, PointShopRotation);
         }
     }
 }

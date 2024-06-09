@@ -8,10 +8,6 @@ namespace LabFusion.Utilities
     {
         public static WeakAssetReference<AssetBundle> ContentBundle { get; private set; } = new();
 
-        public static WeakAssetReference<GameObject> PointShopPrefab { get; private set; } = new();
-        public static WeakAssetReference<GameObject> InfoBoxPrefab { get; private set; } = new();
-        public static WeakAssetReference<GameObject> CupBoardPrefab { get; private set; } = new();
-
         public static WeakAssetReference<GameObject> EntangledLinePrefab { get; private set; } = new();
 
         public static WeakAssetReference<GameObject> AchievementPopupPrefab { get; private set; } = new();
@@ -76,10 +72,6 @@ namespace LabFusion.Utilities
         {
             var bundle = _contentBundleRequest.assetBundle;
             ContentBundle.SetAsset(bundle);
-
-            bundle.LoadPersistentAssetAsync<GameObject>(ResourcePaths.PointShopPrefab, (v) => { PointShopPrefab.SetAsset(v); });
-            bundle.LoadPersistentAssetAsync<GameObject>(ResourcePaths.InfoBoxPrefab, (v) => { InfoBoxPrefab.SetAsset(v); });
-            bundle.LoadPersistentAssetAsync<GameObject>(ResourcePaths.CupBoardPrefab, (v) => { CupBoardPrefab.SetAsset(v); });
 
             bundle.LoadPersistentAssetAsync<GameObject>(ResourcePaths.EntangledLinePrefab, (v) => { EntangledLinePrefab.SetAsset(v); });
 

@@ -1,34 +1,32 @@
-﻿using UnityEngine;
-
-using LabFusion.Utilities;
-
+﻿using Il2CppSLZ.Marrow.Data;
+using Il2CppSLZ.Marrow.Pool;
 using Il2CppSLZ.Marrow.Warehouse;
+
+using UnityEngine;
 
 namespace LabFusion.SDK.Points
 {
     public static class PointShopHelper
     {
-        public static void SetupPointShop(Vector3 position, Quaternion rotation, Vector3 scale)
+        public const string BitMartBarcode = "Lakatrazz.FusionContent.Spawnable.BitMart";
+
+        public static void CompleteBitMart(GameObject gameObject)
         {
-            // Create the GameObject
-            LevelCrate level = FusionSceneManager.Level;
+            // Currently just needs to add the PointShop script
+            gameObject.AddComponent<PointShop>();
+        }
 
-            FusionContentLoader.PointShopPrefab.Load((go) =>
+        public static void SpawnBitMart(Vector3 position, Quaternion rotation)
+        {
+            var spawnable = new Spawnable()
             {
-                // Make sure the level hasn't changed
-                if (level != FusionSceneManager.Level)
-                    return;
+                crateRef = new SpawnableCrateReference(BitMartBarcode),
+                policyData = null,
+            };
 
-                GameObject shop = GameObject.Instantiate(go);
-                shop.SetActive(false);
-                shop.transform.position = position;
-                shop.transform.rotation = rotation;
-                shop.transform.localScale = scale;
-                shop.SetActive(true);
+            AssetSpawner.Register(spawnable);
 
-                // Add the point shop script
-                shop.gameObject.AddComponent<PointShop>();
-            });
+            AssetSpawner.Spawn(spawnable, position, rotation, new Il2CppSystem.Nullable<Vector3>(Vector3.one), true, new Il2CppSystem.Nullable<int>(0), null, null);
         }
     }
 }
