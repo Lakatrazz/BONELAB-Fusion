@@ -22,12 +22,6 @@ namespace LabFusion.Utilities
         internal static TMP_FontAsset Font { get; private set; }
         internal static HandPose SoftGrabPose { get; private set; }
 
-        internal static AudioMixerGroup MusicMixer { get; private set; }
-        internal static AudioMixerGroup SFXMixer { get; private set; }
-
-        private static Action<AudioMixerGroup> _onMusicMixerLoaded = null;
-        private static Action<AudioMixerGroup> _onSFXMixerLoaded = null;
-
         private static Action<HandPose> _onSoftGrabLoaded = null;
 
         internal static void OnLateInitializeMelon()
@@ -38,39 +32,7 @@ namespace LabFusion.Utilities
 
         internal static void OnMainSceneInitialized()
         {
-            GetAllMixers();
             GetHandPose();
-        }
-
-        // Thanks to https://bonelab.thunderstore.io/package/Maranara/Mixer_Fixer/
-        private static void GetAllMixers()
-        {
-            if (SFXMixer != null && MusicMixer != null)
-                return;
-
-            AudioMixerGroup[] groups = Resources.FindObjectsOfTypeAll<AudioMixerGroup>();
-
-            foreach (var group in groups)
-            {
-                switch (group.name)
-                {
-                    case "Music":
-                        MusicMixer = group;
-                        break;
-                    case "SFX":
-                        SFXMixer = group;
-                        break;
-                }
-            }
-
-            if (MusicMixer != null)
-                _onMusicMixerLoaded?.Invoke(MusicMixer);
-
-            if (SFXMixer != null)
-                _onSFXMixerLoaded?.Invoke(SFXMixer);
-
-            _onMusicMixerLoaded = null;
-            _onSFXMixerLoaded = null;
         }
 
         private static void GetHandPose()
@@ -81,30 +43,6 @@ namespace LabFusion.Utilities
                 _onSoftGrabLoaded?.Invoke(SoftGrabPose);
 
             _onSoftGrabLoaded = null;
-        }
-
-        public static void HookOnMusicMixerLoaded(Action<AudioMixerGroup> action)
-        {
-            if (MusicMixer != null)
-            {
-                action?.Invoke(MusicMixer);
-            }
-            else
-            {
-                _onMusicMixerLoaded += action;
-            }
-        }
-
-        public static void HookOnSFXMixerLoaded(Action<AudioMixerGroup> action)
-        {
-            if (SFXMixer != null)
-            {
-                action?.Invoke(SFXMixer);
-            }
-            else
-            {
-                _onSFXMixerLoaded += action;
-            }
         }
 
         public static void HookOnSoftGrabLoaded(Action<HandPose> action)

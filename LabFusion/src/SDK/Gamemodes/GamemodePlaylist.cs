@@ -1,4 +1,5 @@
-﻿using LabFusion.Extensions;
+﻿using Il2CppSLZ.Marrow.Audio;
+using LabFusion.Extensions;
 using LabFusion.Utilities;
 
 using UnityEngine;
@@ -32,11 +33,7 @@ namespace LabFusion.SDK.Gamemodes
             source.spatialBlend = 0f;
             source.volume = volume;
 
-            PersistentAssetCreator.HookOnMusicMixerLoaded((m) =>
-            {
-                if (source != null)
-                    source.outputAudioMixerGroup = m;
-            });
+            source.outputAudioMixerGroup = Audio3dManager.nonDiegeticMusic;
 
             // Store the clips
             clips.Shuffle();

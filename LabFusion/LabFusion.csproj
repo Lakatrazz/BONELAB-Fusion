@@ -22,6 +22,7 @@
     <Compile Remove="FusionBundles\Assets\Achievements\**" />
     <Compile Remove="FusionBundles\Assets\AddressableAssetsData\**" />
     <Compile Remove="FusionBundles\Assets\Content\**" />
+    <Compile Remove="FusionBundles\Assets\FusionMarrow\**" />
     <Compile Remove="FusionBundles\Assets\marrow-integration\Editor\**" />
     <Compile Remove="FusionBundles\Assets\Point Items\**" />
     <Compile Remove="FusionBundles\Assets\Scenes\**" />
@@ -47,6 +48,7 @@
     <EmbeddedResource Remove="FusionBundles\Assets\Achievements\**" />
     <EmbeddedResource Remove="FusionBundles\Assets\AddressableAssetsData\**" />
     <EmbeddedResource Remove="FusionBundles\Assets\Content\**" />
+    <EmbeddedResource Remove="FusionBundles\Assets\FusionMarrow\**" />
     <EmbeddedResource Remove="FusionBundles\Assets\marrow-integration\Editor\**" />
     <EmbeddedResource Remove="FusionBundles\Assets\Point Items\**" />
     <EmbeddedResource Remove="FusionBundles\Assets\Scenes\**" />
@@ -72,6 +74,7 @@
     <None Remove="FusionBundles\Assets\Achievements\**" />
     <None Remove="FusionBundles\Assets\AddressableAssetsData\**" />
     <None Remove="FusionBundles\Assets\Content\**" />
+    <None Remove="FusionBundles\Assets\FusionMarrow\**" />
     <None Remove="FusionBundles\Assets\marrow-integration\Editor\**" />
     <None Remove="FusionBundles\Assets\Point Items\**" />
     <None Remove="FusionBundles\Assets\Scenes\**" />
@@ -119,6 +122,7 @@
     <None Remove="FusionBundles\Assets\AddressableAssetsData.meta" />
     <None Remove="FusionBundles\Assets\AssetBundles.meta" />
     <None Remove="FusionBundles\Assets\Content.meta" />
+    <None Remove="FusionBundles\Assets\FusionMarrow.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Machines.meta" />

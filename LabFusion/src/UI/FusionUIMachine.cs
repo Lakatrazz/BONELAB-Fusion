@@ -4,6 +4,7 @@ using Il2CppSLZ.Interaction;
 
 using UnityEngine;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using Il2CppSLZ.Marrow.Audio;
 
 namespace LabFusion.UI
 {
@@ -51,18 +52,12 @@ namespace LabFusion.UI
             UIMachineUtilities.CreateUITrigger(panel.Find("CANVAS").gameObject, transform.Find("uiTrigger").gameObject);
 
             // Setup audio
-            PersistentAssetCreator.HookOnSFXMixerLoaded((m) =>
-            {
-                if (gameObject != null)
-                {
-                    AudioSource[] sources = gameObject.GetComponentsInChildren<AudioSource>(true);
+            AudioSource[] sources = gameObject.GetComponentsInChildren<AudioSource>(true);
 
-                    foreach (var source in sources)
-                    {
-                        source.outputAudioMixerGroup = m;
-                    }
-                }
-            });
+            foreach (var source in sources)
+            {
+                source.outputAudioMixerGroup = Audio3dManager.diegeticMusic;
+            }
 
             OnAwake();
         }
