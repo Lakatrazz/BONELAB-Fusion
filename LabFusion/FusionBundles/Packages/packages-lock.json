@@ -8,29 +8,31 @@
       "hash": "ca60bd0ac77735b4862c5dae5be106316e371c26"
     },
     "com.stresslevelzero.marrow.sdk": {
-      "version": "https://github.com/StressLevelZero/MarrowSDK.git",
+      "version": "0.6.0",
       "depth": 0,
-      "source": "git",
+      "source": "registry",
       "dependencies": {
-        "com.unity.addressables": "1.19.18",
-        "com.unity.nuget.newtonsoft-json": "2.0.0",
-        "com.unity.scriptablebuildpipeline": "1.19.6",
-        "com.unity.subsystemregistration": "1.1.0",
-        "com.unity.profiling.core": "1.0.2",
-        "com.unity.splines": "1.0.1",
+        "com.unity.addressables": "1.21.12",
         "com.unity.mathematics": "1.2.6",
+        "com.unity.nuget.newtonsoft-json": "2.0.2",
+        "com.unity.profiling.core": "1.0.2",
+        "com.unity.render-pipelines.core": "8148.0.3",
+        "com.unity.render-pipelines.universal": "8148.0.7",
+        "com.unity.scriptablebuildpipeline": "1.21.5",
+        "com.unity.splines": "1.0.1",
+        "com.unity.subsystemregistration": "1.1.0",
         "com.unity.xr.management": "4.2.1",
-        "com.unity.xr.oculus": "3.0.1",
-        "com.unity.xr.mock-hmd": "1.3.0-preview.1"
+        "com.unity.xr.mock-hmd": "1.3.0-preview.1",
+        "com.unity.xr.oculus": "4.0.0"
       },
-      "hash": "b6bc405d3d1cf45fc5462fae8db96a5d11b279ab"
+      "url": "https://registry.stresslevelzero.com"
     },
     "com.unity.addressables": {
-      "version": "1.19.19",
+      "version": "1.21.12",
       "depth": 1,
       "source": "registry",
       "dependencies": {
-        "com.unity.scriptablebuildpipeline": "1.19.6",
+        "com.unity.scriptablebuildpipeline": "1.21.5",
         "com.unity.modules.assetbundle": "1.0.0",
         "com.unity.modules.imageconversion": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0",
@@ -139,31 +141,31 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.render-pipelines.core": {
-      "version": "https://github.com/StressLevelZero/Custom-RenderPipelineCore.git",
-      "depth": 0,
-      "source": "git",
+      "version": "8148.0.3",
+      "depth": 1,
+      "source": "registry",
       "dependencies": {
         "com.unity.ugui": "1.0.0",
         "com.unity.modules.physics": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0"
       },
-      "hash": "72e4d27b328d7c0c257f2495876d0194d45bb30d"
+      "url": "https://registry.stresslevelzero.com"
     },
     "com.unity.render-pipelines.universal": {
-      "version": "https://github.com/StressLevelZero/Custom-URP.git#Bonelab",
+      "version": "8148.0.7",
       "depth": 0,
-      "source": "git",
+      "source": "registry",
       "dependencies": {
         "com.unity.mathematics": "1.2.1",
         "com.unity.burst": "1.5.0",
-        "com.unity.render-pipelines.core": "12.1.6",
-        "com.unity.shadergraph": "12.1.6",
+        "com.unity.render-pipelines.core": "8148.0.3",
+        "com.unity.shadergraph": "8148.12.1-8",
         "com.unity.nuget.newtonsoft-json": "2.0.2"
       },
-      "hash": "f57d7bd6b76259150c1074f45bf0356ceae1a413"
+      "url": "https://registry.stresslevelzero.com"
     },
     "com.unity.scriptablebuildpipeline": {
-      "version": "1.20.1",
+      "version": "1.21.5",
       "depth": 1,
       "source": "registry",
       "dependencies": {},
@@ -195,13 +197,13 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.shadergraph": {
-      "version": "12.1.8",
+      "version": "8148.12.1-8",
       "depth": 1,
-      "source": "builtin",
+      "source": "registry",
       "dependencies": {
-        "com.unity.render-pipelines.core": "12.1.8",
         "com.unity.searcher": "4.9.1"
-      }
+      },
+      "url": "https://registry.stresslevelzero.com"
     },
     "com.unity.splines": {
       "version": "1.0.1",
@@ -317,7 +319,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.oculus": {
-      "version": "3.2.2",
+      "version": "4.0.0",
       "depth": 1,
       "source": "registry",
       "dependencies": {

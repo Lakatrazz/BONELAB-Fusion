@@ -1,14 +1,13 @@
 {
   "dependencies": {
     "com.lakatrazz.marrowextrashaders": "https://github.com/Lakatrazz/Marrow-Extra-Shaders.git",
-    "com.stresslevelzero.marrow.sdk": "https://github.com/StressLevelZero/MarrowSDK.git",
+    "com.stresslevelzero.marrow.sdk": "0.6.0",
     "com.unity.collab-proxy": "1.17.7",
     "com.unity.feature.development": "1.0.1",
     "com.unity.ide.rider": "3.0.16",
     "com.unity.ide.visualstudio": "2.0.16",
     "com.unity.ide.vscode": "1.2.5",
-    "com.unity.render-pipelines.core": "https://github.com/StressLevelZero/Custom-RenderPipelineCore.git",
-    "com.unity.render-pipelines.universal": "https://github.com/StressLevelZero/Custom-URP.git#Bonelab",
+    "com.unity.render-pipelines.universal": "8148.0.7",
     "com.unity.test-framework": "1.1.31",
     "com.unity.textmeshpro": "3.0.6",
     "com.unity.timeline": "1.6.4",
@@ -45,5 +44,16 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
-  }
+  },
+  "scopedRegistries": [
+    {
+      "name": "SLZ",
+      "url": "https://registry.stresslevelzero.com",
+      "scopes": [
+        "com.stresslevelzero",
+        "com.unity.render-pipelines",
+        "com.unity.shadergraph"
+      ]
+    }
+  ]
 }
