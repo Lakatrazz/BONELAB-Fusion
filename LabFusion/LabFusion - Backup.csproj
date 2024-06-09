@@ -1,0 +1,253 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="dependencies\managed\**" />
+    <Compile Remove="FusionBundles\Assets\Achievements\**" />
+    <Compile Remove="FusionBundles\Assets\AddressableAssetsData\**" />
+    <Compile Remove="FusionBundles\Assets\Content\**" />
+    <Compile Remove="FusionBundles\Assets\marrow-integration\Editor\**" />
+    <Compile Remove="FusionBundles\Assets\Point Items\**" />
+    <Compile Remove="FusionBundles\Assets\Scenes\**" />
+    <Compile Remove="FusionBundles\Assets\Scripts\**" />
+    <Compile Remove="FusionBundles\Assets\SLZShaders\**" />
+    <Compile Remove="FusionBundles\Assets\TextMesh Pro\**" />
+    <Compile Remove="FusionBundles\Assets\XR\**" />
+    <Compile Remove="FusionBundles\Assets\_MarrowAssets\**" />
+    <Compile Remove="FusionBundles\Library\**" />
+    <Compile Remove="FusionBundles\Logs\**" />
+    <Compile Remove="FusionBundles\obj\**" />
+    <Compile Remove="FusionBundles\Packages\**" />
+    <Compile Remove="FusionBundles\ProjectSettings\**" />
+    <Compile Remove="FusionBundles\UserSettings\**" />
+    <Compile Remove="FusionHelper\Extensions\**" />
+    <Compile Remove="FusionHelper\obj\**" />
+    <Compile Remove="FusionHelper\Resources\**" />
+    <Compile Remove="FusionHelper\Steamworks.NET\**" />
+    <Compile Remove="FusionHelper\Steamworks\**" />
+    <EmbeddedResource Remove="dependencies\managed\**" />
+    <EmbeddedResource Remove="FusionBundles\Assets\Achievements\**" />
+    <EmbeddedResource Remove="FusionBundles\Assets\AddressableAssetsData\**" />
+    <EmbeddedResource Remove="FusionBundles\Assets\Content\**" />
+    <EmbeddedResource Remove="FusionBundles\Assets\marrow-integration\Editor\**" />
+    <EmbeddedResource Remove="FusionBundles\Assets\Point Items\**" />
+    <EmbeddedResource Remove="FusionBundles\Assets\Scenes\**" />
+    <EmbeddedResource Remove="FusionBundles\Assets\Scripts\**" />
+    <EmbeddedResource Remove="FusionBundles\Assets\SLZShaders\**" />
+    <EmbeddedResource Remove="FusionBundles\Assets\TextMesh Pro\**" />
+    <EmbeddedResource Remove="FusionBundles\Assets\XR\**" />
+    <EmbeddedResource Remove="FusionBundles\Assets\_MarrowAssets\**" />
+    <EmbeddedResource Remove="FusionBundles\Library\**" />
+    <EmbeddedResource Remove="FusionBundles\Logs\**" />
+    <EmbeddedResource Remove="FusionBundles\obj\**" />
+    <EmbeddedResource Remove="FusionBundles\Packages\**" />
+    <EmbeddedResource Remove="FusionBundles\ProjectSettings\**" />
+    <EmbeddedResource Remove="FusionBundles\UserSettings\**" />
+    <EmbeddedResource Remove="FusionHelper\Extensions\**" />
+    <EmbeddedResource Remove="FusionHelper\obj\**" />
+    <EmbeddedResource Remove="FusionHelper\Resources\**" />
+    <EmbeddedResource Remove="FusionHelper\Steamworks.NET\**" />
+    <EmbeddedResource Remove="FusionHelper\Steamworks\**" />
+    <None Remove="dependencies\managed\**" />
+    <None Remove="FusionBundles\Assets\Achievements\**" />
+    <None Remove="FusionBundles\Assets\AddressableAssetsData\**" />
+    <None Remove="FusionBundles\Assets\Content\**" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Editor\**" />
+    <None Remove="FusionBundles\Assets\Point Items\**" />
+    <None Remove="FusionBundles\Assets\Scenes\**" />
+    <None Remove="FusionBundles\Assets\Scripts\**" />
+    <None Remove="FusionBundles\Assets\SLZShaders\**" />
+    <None Remove="FusionBundles\Assets\TextMesh Pro\**" />
+    <None Remove="FusionBundles\Assets\XR\**" />
+    <None Remove="FusionBundles\Assets\_MarrowAssets\**" />
+    <None Remove="FusionBundles\Library\**" />
+    <None Remove="FusionBundles\Logs\**" />
+    <None Remove="FusionBundles\obj\**" />
+    <None Remove="FusionBundles\Packages\**" />
+    <None Remove="FusionBundles\ProjectSettings\**" />
+    <None Remove="FusionBundles\UserSettings\**" />
+    <None Remove="FusionHelper\Extensions\**" />
+    <None Remove="FusionHelper\obj\**" />
+    <None Remove="FusionHelper\Resources\**" />
+    <None Remove="FusionHelper\Steamworks.NET\**" />
+    <None Remove="FusionHelper\Steamworks\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="FusionHelper\Network\NetworkHandler.cs" />
+    <Compile Remove="FusionHelper\Program.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="dependencies\BoneLib.dll" />
+    <None Remove="FusionBundles\.gitignore" />
+    <None Remove="FusionBundles\.vsconfig" />
+    <None Remove="FusionBundles\Assets\Achievements.meta" />
+    <None Remove="FusionBundles\Assets\AddressableAssetsData.meta" />
+    <None Remove="FusionBundles\Assets\AssetBundles.meta" />
+    <None Remove="FusionBundles\Assets\Content.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Editor.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Cosmetics.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Cosmetics\MarrowCosmeticChest.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Cosmetics\MarrowCosmeticChestBack.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Cosmetics\MarrowCosmeticEyeCenter.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Cosmetics\MarrowCosmeticEyeLeft.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Cosmetics\MarrowCosmeticEyeRight.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Cosmetics\MarrowCosmeticHead.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Cosmetics\MarrowCosmeticHeadTop.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Cosmetics\MarrowCosmeticHips.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Cosmetics\MarrowCosmeticNose.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Cosmetics\MarrowCosmeticPoint.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\Deathmatch.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\Deathmatch\DeathmatchProxy.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\Deathmatch\DeathmatchSpawnpoint.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\Entangled.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\Entangled\EntangledProxy.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\GamemodeEndEvent.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\GamemodeStartEvent.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\Team Deathmatch.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\Team Deathmatch\LavaGangSpawnpoint.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\Team Deathmatch\SabrelakeSpawnpoint.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\Team Deathmatch\TeamDeathmatchProxy.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\Team Deathmatch\TeamSpawnpoint.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Internal.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Internal\FusionMarrowBehaviour.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Misc.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Misc\AlwaysAllowImpactDamage.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Misc\AutoSyncOnStart.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Misc\BitRewardProxy.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Misc\CrateSpawnerProxy.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Misc\DisableSyncing.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Misc\NotificationProxy.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Misc\OnlyTriggerOnLocalPlayer.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Misc\PlayerProxy.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Misc\SyncGameObjectEnabled.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Spawners.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Spawners\CupBoardPlacer.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Spawners\InfoBoxPlacer.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Spawners\PointShopPlacer.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\UltEvents.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\UltEvents\Dates.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\UltEvents\Dates\InvokeUltEventOnFusionBirthday.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\UltEvents\InvokeUltEventIfClient.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\UltEvents\InvokeUltEventIfHost.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\UltEvents\InvokeUltEventIfTeam.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\UltEvents\InvokeUltEventIfTeamLavaGang.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\UltEvents\InvokeUltEventIfTeamSabrelake.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\UltEvents\InvokeUltEventInServer.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\UltEvents\InvokeUltEventOnLocalOwnership.cs.meta" />
+    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\UltEvents\InvokeUltEventOnOtherOwnership.cs.meta" />
+    <None Remove="FusionBundles\Assets\Point Items.meta" />
+    <None Remove="FusionBundles\Assets\Scenes.meta" />
+    <None Remove="FusionBundles\Assets\Scripts.meta" />
+    <None Remove="FusionBundles\Assets\SLZShaders.meta" />
+    <None Remove="FusionBundles\Assets\TextMesh Pro.meta" />
+    <None Remove="FusionBundles\Assets\UniversalRenderPipelineGlobalSettings.asset" />
+    <None Remove="FusionBundles\Assets\UniversalRenderPipelineGlobalSettings.asset.meta" />
+    <None Remove="FusionBundles\Assets\XR.meta" />
+    <None Remove="FusionBundles\Assets\_MarrowAssets.meta" />
+    <None Remove="FusionHelper\build-mac.sh" />
+    <None Remove="FusionHelper\libsteam_api.dylib" />
+    <None Remove="FusionHelper\libsteam_api.so" />
+    <None Remove="FusionHelper\steam_api64.dll" />
+    <None Remove="src\AssemblyInfo.tt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>dependencies\managed\net6\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>dependencies\managed\Il2CppAssemblies\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="BoneLib">
+      <HintPath>dependencies\BoneLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2Cppmscorlib">
+      <HintPath>dependencies\managed\Il2CppAssemblies\Il2Cppmscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppIl2CppSLZ.Algorithms">
+      <HintPath>dependencies\managed\Il2CppAssemblies\Il2CppIl2CppSLZ.Algorithms.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppIl2CppSLZ.Algorithms.Unity">
+      <HintPath>dependencies\managed\Il2CppAssemblies\Il2CppIl2CppSLZ.Algorithms.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppIl2CppSLZ.Marrow">
+      <HintPath>dependencies\managed\Il2CppAssemblies\Il2CppIl2CppSLZ.Marrow.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppIl2CppSLZ.Marrow.VoidLogic.Core">
+      <HintPath>dependencies\managed\Il2CppAssemblies\Il2CppIl2CppSLZ.Marrow.VoidLogic.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppIl2CppSLZ.Marrow.VoidLogic.Engine">
+      <HintPath>dependencies\managed\Il2CppAssemblies\Il2CppIl2CppSLZ.Marrow.VoidLogic.Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppIl2CppSLZ.ModIO">
+      <HintPath>dependencies\managed\Il2CppAssemblies\Il2CppIl2CppSLZ.ModIO.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppIl2CppSLZ.Serialize">
+      <HintPath>dependencies\managed\Il2CppAssemblies\Il2CppIl2CppSLZ.Serialize.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem">
+      <HintPath>dependencies\managed\Il2CppAssemblies\Il2CppSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppSystem.Core">
+      <HintPath>dependencies\managed\Il2CppAssemblies\Il2CppSystem.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppUltEvents">
+      <HintPath>dependencies\managed\Il2CppAssemblies\Il2CppUltEvents.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppUniTask">
+      <HintPath>dependencies\managed\Il2CppAssemblies\Il2CppUniTask.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppUniTask.Addressables">
+      <HintPath>dependencies\managed\Il2CppAssemblies\Il2CppUniTask.Addressables.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppUniTask.Linq">
+      <HintPath>dependencies\managed\Il2CppAssemblies\Il2CppUniTask.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppURPUnsafe">
+      <HintPath>dependencies\managed\Il2CppAssemblies\Il2CppURPUnsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppWave.OpenXR">
+      <HintPath>dependencies\managed\Il2CppAssemblies\Il2CppWave.OpenXR.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2Cppwebsocket-sharp">
+      <HintPath>dependencies\managed\Il2CppAssemblies\Il2Cppwebsocket-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppWhinarn.UnityMeshSimplifier.Runtime">
+      <HintPath>dependencies\managed\Il2CppAssemblies\Il2CppWhinarn.UnityMeshSimplifier.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppZLogger">
+      <HintPath>dependencies\managed\Il2CppAssemblies\Il2CppZLogger.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppZString">
+      <HintPath>dependencies\managed\Il2CppAssemblies\Il2CppZString.dll</HintPath>
+    </Reference>
+    <Reference Include="MelonLoader">
+      <HintPath>dependencies\managed\net6\MelonLoader.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>dependencies\managed\Il2CppAssemblies\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>dependencies\managed\Il2CppAssemblies\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
