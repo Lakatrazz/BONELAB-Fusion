@@ -30,42 +30,44 @@ namespace LabFusion.Patching
             if (PooleeUtilities.IsPlayer(__instance))
                 return;
 
+            if (!NetworkInfo.HasServer || !__instance.SpawnableCrate)
+            {
+                return;
+            }
+
             try
             {
-                if (NetworkInfo.HasServer && __instance.SpawnableCrate)
+                var barcode = __instance.SpawnableCrate.Barcode;
+
+                if (!NetworkInfo.IsServer)
                 {
-                    var barcode = __instance.SpawnableCrate.Barcode;
-
-                    if (!NetworkInfo.IsServer)
+                    // Check if we should prevent this object from spawning
+                    if (barcode == CommonBarcodes.FADE_OUT_BARCODE)
                     {
-                        // Check if we should prevent this object from spawning
-                        if (barcode == CommonBarcodes.FADE_OUT_BARCODE)
-                        {
-                            __instance.gameObject.SetActive(false);
-                        }
-                        else if (!PooleeUtilities.ForceEnabled.Contains(__instance) && PooleeUtilities.CanForceDespawn(__instance))
-                        {
-                            CheckRemoveSyncable(__instance);
-
-                            __instance.gameObject.SetActive(false);
-                            MelonCoroutines.Start(CoForceDespawnRoutine(__instance));
-                        }
+                        __instance.gameObject.SetActive(false);
                     }
-                    else
+                    else if (!PooleeUtilities.ForceEnabled.Contains(__instance) && PooleeUtilities.CanForceDespawn(__instance))
                     {
-                        if (PooleeUtilities.CanSendSpawn(__instance))
-                        {
-                            CheckRemoveSyncable(__instance);
+                        CheckRemoveSyncable(__instance);
 
-                            PooleeUtilities.CheckingForSpawn.Push(__instance);
-                            FusionSceneManager.HookOnLevelLoad(() =>
+                        __instance.gameObject.SetActive(false);
+                        MelonCoroutines.Start(CoForceDespawnRoutine(__instance));
+                    }
+                }
+                else
+                {
+                    if (PooleeUtilities.CanSendSpawn(__instance))
+                    {
+                        CheckRemoveSyncable(__instance);
+
+                        PooleeUtilities.CheckingForSpawn.Push(__instance);
+                        FusionSceneManager.HookOnLevelLoad(() =>
+                        {
+                            DelayUtilities.Delay(() =>
                             {
-                                DelayUtilities.Delay(() =>
-                                {
-                                    OnVerifySpawned(__instance);
-                                }, 4);
-                            });
-                        }
+                                OnVerifySpawned(__instance);
+                            }, 4);
+                        });
                     }
                 }
             }

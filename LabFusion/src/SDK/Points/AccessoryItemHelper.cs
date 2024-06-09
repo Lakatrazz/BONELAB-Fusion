@@ -60,31 +60,34 @@ namespace LabFusion.SDK.Points
 
         public static void GetTransform(AccessoryPoint itemPoint, AccessoryScaleMode mode, RigManager rig, out Vector3 position, out Quaternion rotation, out Vector3 scale)
         {
-            ArtRig artRig = rig.physicsRig.artOutput;
+            PhysicsRig inRig = rig.physicsRig;
+            ArtRig artRig = inRig.artOutput;
             Avatar avatar = rig._avatar;
 
             scale = GetScale(avatar, mode);
+
+            var head = inRig.m_head;
 
             switch (itemPoint)
             {
                 default:
                 case AccessoryPoint.HEAD:
-                    position = artRig.artHead.position;
-                    rotation = artRig.artHead.rotation;
+                    position = head.position;
+                    rotation = head.rotation;
                     break;
                 case AccessoryPoint.HEAD_TOP:
                     Vector3 eyeCenter = GetEyeCenter(rig, artRig);
 
-                    eyeCenter += artRig.artHead.up * (avatar._headTop * avatar.height);
-                    eyeCenter = artRig.artHead.InverseTransformPoint(eyeCenter);
-
-                    position = artRig.artHead.position;
-                    position = artRig.artHead.InverseTransformPoint(position);
+                    eyeCenter += head.up * (avatar.HeadTop * 1.5f * avatar.height);
+                    eyeCenter = head.InverseTransformPoint(eyeCenter);
+                    
+                    position = head.position;
+                    position = head.InverseTransformPoint(position);
 
                     position.y = eyeCenter.y;
-                    position = artRig.artHead.TransformPoint(position);
+                    position = head.TransformPoint(position);
 
-                    rotation = artRig.artHead.rotation;
+                    rotation = head.rotation;
                     break;
                 case AccessoryPoint.EYE_LEFT:
                     position = artRig.eyeLf.position;
@@ -92,37 +95,37 @@ namespace LabFusion.SDK.Points
                     break;
                 case AccessoryPoint.EYE_CENTER:
                     position = GetEyeCenter(rig, artRig);
-                    rotation = artRig.artHead.rotation;
+                    rotation = inRig.m_head.rotation;
                     break;
                 case AccessoryPoint.NOSE:
                     Vector3 noseCenter = GetEyeCenter(rig, artRig);
-                    position = artRig.artHead.position + artRig.artHead.forward * (avatar.ForeheadEllipseZ * avatar.height);
+                    position = inRig.m_head.position + inRig.m_head.forward * (avatar.ForeheadEllipseZ * avatar.height);
 
-                    noseCenter = artRig.artHead.InverseTransformPoint(noseCenter);
-                    position = artRig.artHead.InverseTransformPoint(position);
+                    noseCenter = inRig.m_head.InverseTransformPoint(noseCenter);
+                    position = inRig.m_head.InverseTransformPoint(position);
 
                     position.y = noseCenter.y;
 
-                    position = artRig.artHead.TransformPoint(position);
+                    position = inRig.m_head.TransformPoint(position);
 
-                    rotation = artRig.artHead.rotation;
+                    rotation = inRig.m_head.rotation;
                     break;
                 case AccessoryPoint.EYE_RIGHT:
                     position = artRig.eyeRt.position;
                     rotation = artRig.eyeRt.rotation;
                     break;
                 case AccessoryPoint.CHEST:
-                    position = artRig.artChest.position;
-                    rotation = artRig.artChest.rotation;
+                    position = inRig.m_chest.position;
+                    rotation = inRig.m_chest.rotation;
                     break;
                 case AccessoryPoint.CHEST_BACK:
-                    Transform chest = artRig.artChest;
+                    Transform chest = inRig.m_chest;
                     position = chest.position - chest.forward * avatar.ChestEllipseNegZ;
                     rotation = chest.rotation;
                     break;
                 case AccessoryPoint.HIPS:
-                    position = artRig.artHips.position;
-                    rotation = artRig.artHips.rotation;
+                    position = inRig.m_pelvis.position;
+                    rotation = inRig.m_pelvis.rotation;
                     break;
                 case AccessoryPoint.LOCOSPHERE:
                     Transform physG = rig.physicsRig.physG.transform;

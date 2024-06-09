@@ -9,6 +9,10 @@ using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Utilities;
 
 using Il2CppTMPro;
+using Il2CppSLZ.Marrow.Zones;
+using Il2CppSLZ.Marrow.Interaction;
+using LabFusion.Data;
+using Il2CppSLZ.Marrow.Warehouse;
 
 namespace LabFusion.Utilities
 {
@@ -39,23 +43,35 @@ namespace LabFusion.Utilities
 
         public static void CreateUITrigger(GameObject canvas, GameObject trigger)
         {
-            var genericTrigger = trigger.AddComponent<GenericTrigger>();
-            genericTrigger.LayerFilter = LayerMask.GetMask(new string[] { "Trigger", });
-            genericTrigger.Tag = "Player";
-            genericTrigger.OnTriggerEnterEvent = new UnityEventTrigger();
-            genericTrigger.OnTriggerExitEvent = new UnityEventTrigger();
+            trigger.SetActive(false);
+            trigger.layer = (int)MarrowLayers.EntityTrigger;
+            var zone = trigger.AddComponent<Zone>();
+            var zoneEvent = trigger.AddComponent<ZoneEvents>();
 
-            genericTrigger.OnTriggerEnterEvent.AddCall(UnityEvent.GetDelegate((UnityAction)(() =>
+            zoneEvent._zone = zone;
+
+            zoneEvent.onZoneEnter = new ZoneEvents.ZoneEventCallback();
+            zoneEvent.onZoneEnterOneShot = new ZoneEvents.ZoneEventCallback();
+            zoneEvent.onZoneExit = new ZoneEvents.ZoneEventCallback();
+
+            var tagQuery = new TagQuery
             {
+                BoneTag = new BoneTagReference("SLZ.Marrow.BoneTag.Player")
+            };
+
+            zoneEvent.activatorTags.Tags.Add(tagQuery);
+
+            zoneEvent.onZoneEnter.add_DynamicCalls((Il2CppSystem.Action<MarrowEntity>)((e) => {
                 canvas.SetActive(true);
                 FusionAudio.Play3D(canvas.transform.position, FusionContentLoader.UITurnOn.Asset);
-            })));
+            }));
 
-            genericTrigger.OnTriggerExitEvent.AddCall(UnityEvent.GetDelegate((UnityAction)(() =>
-            {
+            zoneEvent.onZoneExit.add_DynamicCalls((Il2CppSystem.Action<MarrowEntity>)((e) => {
                 canvas.SetActive(false);
                 FusionAudio.Play3D(canvas.transform.position, FusionContentLoader.UITurnOff.Asset);
-            })));
+            }));
+
+            trigger.SetActive(true);
         }
 
         public static void OverrideFonts(Transform root)

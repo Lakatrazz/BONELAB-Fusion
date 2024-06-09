@@ -10,7 +10,6 @@ using LabFusion.Preferences;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Points;
 using LabFusion.SDK.Achievements;
-using LabFusion.Patching;
 using LabFusion.Voice;
 using LabFusion.SDK.Lobbies;
 

@@ -12,6 +12,7 @@ using LabFusion.SDK.Points;
 using LabFusion.Representation;
 using LabFusion.Network;
 using LabFusion.MonoBehaviours;
+using static Il2CppSLZ.Marrow.PuppetMasta.Muscle;
 
 namespace LabFusion.Patching
 {
@@ -48,20 +49,27 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(Mirror.OnTriggerEnter))]
         public static bool OnTriggerEnter(Mirror __instance, Collider c)
         {
-            if (c.CompareTag("Player"))
+            var rb = c.attachedRigidbody;
+            if (!rb)
             {
-                if (NetworkInfo.HasServer)
-                    return OnEnterMultiplayer(__instance, c);
-                else
-                    return OnEnterSingleplayer(__instance, c);
+                return true;
             }
 
-            return true;
+            var triggerRefProxy = rb.GetComponent<TriggerRefProxy>();
+            if (!triggerRefProxy || triggerRefProxy.triggerType != TriggerRefProxy.TriggerType.Player)
+            {
+                return true;
+            }
+
+            if (NetworkInfo.HasServer)
+                return OnEnterMultiplayer(__instance, triggerRefProxy);
+            else
+                return OnEnterSingleplayer(__instance, triggerRefProxy);
         }
 
-        private static bool OnEnterSingleplayer(Mirror __instance, Collider c)
+        private static bool OnEnterSingleplayer(Mirror __instance, TriggerRefProxy proxy)
         {
-            var rigManager = RigManager.Cache.Get(c.gameObject.GetComponent<TriggerRefProxy>().root);
+            var rigManager = RigManager.Cache.Get(proxy.root);
 
             foreach (var item in PointItemManager.LoadedItems)
             {
@@ -80,7 +88,7 @@ namespace LabFusion.Patching
             return true;
         }
 
-        private static bool OnEnterMultiplayer(Mirror __instance, Collider c)
+        private static bool OnEnterMultiplayer(Mirror __instance, TriggerRefProxy proxy)
         {
             // Check if we have a identifier
             RigManager rig = null;
@@ -98,12 +106,7 @@ namespace LabFusion.Patching
             // Otherwise, clone the mirror and setup IDs
             else
             {
-                // Get trigger ref proxy
-                var triggerRef = c.gameObject.GetComponent<TriggerRefProxy>();
-                if (triggerRef == null || triggerRef.root == null)
-                    return true;
-
-                if (!PlayerRepUtilities.TryGetRigInfo(RigManager.Cache.Get(triggerRef.root), out byte targetId, out _))
+                if (!PlayerRepUtilities.TryGetRigInfo(RigManager.Cache.Get(proxy.root), out byte targetId, out _))
                     return true;
 
                 // Add identifiers
@@ -153,7 +156,7 @@ namespace LabFusion.Patching
             if (rig == null || playerId == null)
                 return false;
 
-            bool isTarget = TriggerUtilities.IsMatchingRig(c, rig);
+            bool isTarget = TriggerUtilities.IsMatchingRig(proxy, rig);
 
             if (isTarget)
             {
@@ -179,19 +182,25 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(Mirror.OnTriggerExit))]
         public static bool OnTriggerExit(Mirror __instance, Collider c)
         {
-            if (c.CompareTag("Player"))
+            var rb = c.attachedRigidbody;
+            if (!rb)
             {
-                if (NetworkInfo.HasServer)
-                    return OnExitMultiplayer(__instance, c);
-                else
-                    return OnExitSingleplayer(__instance, c);
+                return true;
             }
 
+            var triggerRefProxy = rb.GetComponent<TriggerRefProxy>();
+            if (!triggerRefProxy || triggerRefProxy.triggerType != TriggerRefProxy.TriggerType.Player)
+            {
+                return true;
+            }
 
-            return true;
+            if (NetworkInfo.HasServer)
+                return OnExitMultiplayer(__instance, triggerRefProxy);
+            else
+                return OnExitSingleplayer(__instance, triggerRefProxy);
         }
 
-        private static bool OnExitMultiplayer(Mirror __instance, Collider c)
+        private static bool OnExitMultiplayer(Mirror __instance, TriggerRefProxy proxy)
         {
             // Check if we have a identifier
             RigManager rig = null;
@@ -210,7 +219,7 @@ namespace LabFusion.Patching
             if (rig == null || playerId == null)
                 return false;
 
-            bool isTarget = TriggerUtilities.IsMatchingRig(c, rig);
+            bool isTarget = TriggerUtilities.IsMatchingRig(proxy, rig);
 
             if (isTarget)
             {
@@ -232,9 +241,9 @@ namespace LabFusion.Patching
             return isTarget;
         }
 
-        private static bool OnExitSingleplayer(Mirror __instance, Collider c)
+        private static bool OnExitSingleplayer(Mirror __instance, TriggerRefProxy proxy)
         {
-            var rigManager = RigManager.Cache.Get(c.gameObject.GetComponent<TriggerRefProxy>().root);
+            var rigManager = RigManager.Cache.Get(proxy.root);
 
             foreach (var item in PointItemManager.LoadedItems)
             {

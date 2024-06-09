@@ -5,6 +5,7 @@ using LabFusion.Senders;
 
 using Il2CppSLZ.Marrow.Pool;
 using Il2CppSLZ.Marrow.Warehouse;
+using UnityEngine;
 
 namespace LabFusion.Patching
 {
@@ -15,10 +16,10 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(CrateSpawner.Awake))]
         public static void Awake(CrateSpawner __instance)
         {
-            var action = (Il2CppSystem.Action)(() => { Internal_OnPlace(__instance); });
+            var action = (Il2CppSystem.Action<CrateSpawner, GameObject>)((c, g) => { Internal_OnPlace(__instance); });
 
             if (__instance.onSpawnEvent != null)
-                __instance.onSpawnEvent.AddPersistentCall(action);
+                __instance.onSpawnEvent.add_DynamicCalls(action);
         }
 
         private static void Internal_OnPlace(CrateSpawner scp)

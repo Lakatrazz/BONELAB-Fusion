@@ -76,23 +76,6 @@ namespace LabFusion.Patching
                 rep.OnControllerRigUpdate();
             }
 
-            try
-            {
-                // Check to make sure this isn't the main rig
-                if (!__instance.manager.IsSelf())
-                {
-                    // Return false if we are paused
-                    if (TimeUtilities.TimeScale <= 0f)
-                        return false;
-                }
-            }
-            catch (Exception e)
-            {
-#if DEBUG
-                FusionLogger.LogException("to execute patch OpenControllerRig.OnEarlyUpdate", e);
-#endif
-            }
-
             return true;
         }
     }

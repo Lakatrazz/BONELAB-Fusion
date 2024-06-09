@@ -103,5 +103,21 @@ namespace LabFusion.Utilities
 
             return false;
         }
+
+
+        public static bool IsMatchingRig(TriggerRefProxy proxy, RigManager rig)
+        {
+            if (!NetworkInfo.HasServer || !RigData.HasPlayer)
+                return true;
+
+            RigManager found;
+
+            if (proxy.root && (found = RigManager.Cache.Get(proxy.root)))
+            {
+                return found == rig;
+            }
+
+            return false;
+        }
     }
 }
