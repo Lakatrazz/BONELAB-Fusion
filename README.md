@@ -35,10 +35,10 @@ https://github.com/Lakatrazz/Fusion-Module-Example
 
 ## Setting up the Source Code
 1. Clone the git repo into a folder
-2. Setup a "managed" folder in the "Core" folder.
+2. Setup a "managed" folder in the "LabFusion" folder.
 3. Drag the dlls from Melonloader/Managed into the managed folder.
-4. Drag MelonLoader.dll and 0Harmony.dll into the managed folder.
-5. You're done!
+6. Drag MelonLoader.dll and 0Harmony.dll into the managed folder.
+7. You're done!
 
 ## Disclaimer
 
