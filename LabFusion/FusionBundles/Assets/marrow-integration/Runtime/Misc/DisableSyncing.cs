@@ -1,5 +1,7 @@
 ﻿#if MELONLOADER
 using MelonLoader;
+#else
+using UnityEngine;
 #endif
 
 namespace LabFusion.MarrowIntegration

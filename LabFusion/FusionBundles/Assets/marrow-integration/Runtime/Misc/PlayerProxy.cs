@@ -8,6 +8,8 @@ using Il2CppSLZ.Marrow.Pool;
 
 using LabFusion.Utilities;
 using LabFusion.Syncables;
+#else
+using UnityEngine;
 #endif
 
 namespace LabFusion.MarrowIntegration

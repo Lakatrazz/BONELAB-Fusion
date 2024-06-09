@@ -6,6 +6,7 @@ using LabFusion.Network;
 using Il2CppUltEvents;
 #else
 using UltEvents;
+using UnityEngine;
 #endif
 
 namespace LabFusion.MarrowIntegration

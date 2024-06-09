@@ -3,12 +3,18 @@ using MelonLoader;
 
 using LabFusion.UI;
 using LabFusion.Utilities;
+
+using Il2CppSLZ.Marrow.Utilities;
+using Il2CppSLZ.Marrow;
 #endif
 
 #if UNITY_EDITOR
+using SLZ.Marrow;
+using SLZ.Marrow.Utilities;
+
 using UnityEditor;
-using Il2CppSLZ.Marrow.Utilities;
-using Il2CppSLZ.Marrow;
+
+using UnityEngine;
 #endif
 
 namespace LabFusion.MarrowIntegration

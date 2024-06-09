@@ -1,12 +1,15 @@
-﻿using Il2CppSLZ.Marrow.Warehouse;
-
-using UnityEngine;
+﻿using UnityEngine;
 
 #if MELONLOADER
 using MelonLoader;
 
 using LabFusion.SDK.Gamemodes;
+
 using Il2CppInterop.Runtime.Attributes;
+
+using Il2CppSLZ.Marrow.Warehouse;
+#else
+using SLZ.Marrow.Warehouse;
 #endif
 
 namespace LabFusion.MarrowIntegration

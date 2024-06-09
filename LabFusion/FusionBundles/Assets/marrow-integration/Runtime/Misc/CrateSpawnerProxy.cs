@@ -4,6 +4,8 @@ using MelonLoader;
 using LabFusion.Network;
 
 using Il2CppSLZ.Marrow.Pool;
+#else
+using UnityEngine;
 #endif
 
 namespace LabFusion.MarrowIntegration

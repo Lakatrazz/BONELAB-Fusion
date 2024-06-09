@@ -2,6 +2,9 @@
 using MelonLoader;
 
 using LabFusion.SDK.Points;
+
+#else
+using UnityEngine;
 #endif
 
 namespace LabFusion.MarrowIntegration

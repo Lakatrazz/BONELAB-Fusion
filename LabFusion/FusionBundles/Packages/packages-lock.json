@@ -40,7 +40,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.burst": {
-      "version": "1.6.5",
+      "version": "1.6.6",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -76,13 +76,13 @@
       "depth": 0,
       "source": "builtin",
       "dependencies": {
-        "com.unity.ide.visualstudio": "2.0.15",
-        "com.unity.ide.rider": "3.0.14",
+        "com.unity.ide.visualstudio": "2.0.16",
+        "com.unity.ide.rider": "3.0.16",
         "com.unity.ide.vscode": "1.2.5",
         "com.unity.editorcoroutines": "1.0.0",
         "com.unity.performance.profile-analyzer": "1.1.1",
         "com.unity.test-framework": "1.1.31",
-        "com.unity.testtools.codecoverage": "1.0.1"
+        "com.unity.testtools.codecoverage": "1.2.2"
       }
     },
     "com.unity.ide.rider": {
@@ -177,7 +177,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.services.core": {
-      "version": "1.4.0",
+      "version": "1.6.0",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -195,11 +195,11 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.shadergraph": {
-      "version": "12.1.7",
+      "version": "12.1.8",
       "depth": 1,
       "source": "builtin",
       "dependencies": {
-        "com.unity.render-pipelines.core": "12.1.7",
+        "com.unity.render-pipelines.core": "12.1.8",
         "com.unity.searcher": "4.9.1"
       }
     },
@@ -235,7 +235,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.testtools.codecoverage": {
-      "version": "1.0.1",
+      "version": "1.2.2",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -285,7 +285,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.legacyinputhelpers": {
-      "version": "2.1.9",
+      "version": "2.1.10",
       "depth": 2,
       "source": "registry",
       "dependencies": {
@@ -317,7 +317,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.oculus": {
-      "version": "3.0.1",
+      "version": "3.2.2",
       "depth": 1,
       "source": "registry",
       "dependencies": {

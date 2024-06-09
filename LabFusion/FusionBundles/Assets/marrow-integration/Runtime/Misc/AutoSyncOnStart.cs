@@ -3,6 +3,8 @@ using MelonLoader;
 
 using LabFusion.Network;
 using LabFusion.Senders;
+#else
+using UnityEngine;
 #endif
 
 namespace LabFusion.MarrowIntegration

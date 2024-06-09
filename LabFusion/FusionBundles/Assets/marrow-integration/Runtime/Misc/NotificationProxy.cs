@@ -2,6 +2,8 @@
 using MelonLoader;
 
 using LabFusion.Utilities;
+#else
+using UnityEngine;
 #endif
 
 namespace LabFusion.MarrowIntegration
