@@ -15,9 +15,9 @@ MonoBehaviour:
   m_DefaultGroup: 4d882dacb0cf54c449d94345cde2d533
   m_currentHash:
     serializedVersion: 2
-    Hash: 00000000000000000000000000000000
+    Hash: b921639fedb7f686821f687ba8ba01d7
   m_OptimizeCatalogSize: 0
-  m_BuildRemoteCatalog: 0
+  m_BuildRemoteCatalog: 1
   m_BundleLocalCatalog: 0
   m_CatalogRequestsTimeout: 0
   m_DisableCatalogUpdateOnStart: 0
@@ -30,21 +30,23 @@ MonoBehaviour:
   m_StripUnityVersionFromBundleBuild: 0
   m_DisableVisibleSubAssetRepresentations: 0
   m_ShaderBundleNaming: 2
-  m_ShaderBundleCustomNaming: PALLET_NAME_HERE
+  m_ShaderBundleCustomNaming: Lakatrazz.FusionContent
   m_MonoScriptBundleNaming: 3
   m_CheckForContentUpdateRestrictionsOption: 0
-  m_MonoScriptBundleCustomNaming: MARROW
+  m_MonoScriptBundleCustomNaming: Lakatrazz.FusionContent
   m_RemoteCatalogBuildPath:
-    m_Id: f03d2a55457fa6e4f8d499c42217628e
+    m_Id: BuiltPallets/StandaloneWindows64/Lakatrazz.FusionContent
   m_RemoteCatalogLoadPath:
-    m_Id: c379e54b5a3413b4e95ede99b7df5856
+    m_Id: 'PALLET_BARCODE:Lakatrazz.FusionContent:'
   m_ContentStateBuildPathProfileVariableName: <default settings path>
   m_CustomContentStateBuildPath: 
   m_ContentStateBuildPath: 
   m_BuildAddressablesWithPlayerBuild: 2
-  m_overridePlayerVersion: 
+  m_overridePlayerVersion: Lakatrazz.FusionContent
   m_GroupAssets:
   - {fileID: 11400000, guid: 8b5ee8ae1bae6794692e05c65f209650, type: 2}
+  - {fileID: 11400000, guid: 84fba15efdfa0b14b88566e4244e7200, type: 2}
+  - {fileID: 11400000, guid: 1e774a01b8a38fb4bb449ec1ecc87d25, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -176,7 +178,7 @@ MonoBehaviour:
   m_ActiveProfileId: fbad295727b3dec49ba750485b9465e7
   m_HostingServicesManager:
     m_HostingServiceInfos: []
-    m_Settings: {fileID: 0}
+    m_Settings: {fileID: 11400000}
     m_NextInstanceId: 0
     m_RegisteredServiceTypeRefs: []
     m_PingTimeoutInMilliseconds: 5000

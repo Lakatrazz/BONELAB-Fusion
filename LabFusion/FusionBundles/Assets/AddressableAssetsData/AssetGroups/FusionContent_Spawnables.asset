@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: FusionContent_Spawnables
+  m_EditorClassIdentifier: 
+  m_GroupName: FusionContent_Spawnables
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 0a6dbbbe785fe83489caf674a40c779b
+  m_SerializeEntries:
+  - m_GUID: 6d0197f34937bb849b28d98d27baedd6
+    m_Address: Spawnable/BitMart
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9b1b9af6d6b583c4fa4b59903eefb7f4
+    m_Address: PreviewMesh/BitMart
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 848410be2c3510e4c97a8cebcedb8865
+    m_Address: Spawnable/Achievement Board
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0f8d05635cd6e674d9ddbec183dbac42
+    m_Address: PreviewMesh/Achievement Board
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d83d8915bf1f8e844a31f3db81a580ae
+    m_Address: Spawnable/Info Board
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6084f5de170558c48a17b564c5e48d43
+    m_Address: PreviewMesh/Info Board
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 9feda70c59f9cda489cd3a23e7f14dd9, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: bc0159dd86272e64daeed1105d5be45b, type: 2}
+    - {fileID: 11400000, guid: 3016a4eab2c9df34a9cf7e594cfc680c, type: 2}
+    - {fileID: 11400000, guid: 6aaad23d1e01165498871572f05f93ac, type: 2}

@@ -865,7 +865,7 @@ MeshRenderer:
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!95 &1711176988934626243
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -882,7 +882,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
 --- !u!1 &2834704530697540707
 GameObject:
   m_ObjectHideFlags: 0
@@ -894,7 +894,7 @@ GameObject:
   - component: {fileID: 7109553133821722781}
   - component: {fileID: 8672414721089244682}
   m_Layer: 0
-  m_Name: machine_PointShop
+  m_Name: machine_BitMart
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

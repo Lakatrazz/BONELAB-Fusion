@@ -6,6 +6,8 @@ using LabFusion.Utilities;
 
 using Il2CppSLZ.Marrow.Utilities;
 using Il2CppSLZ.Marrow;
+#else
+using UnityEngine;
 #endif
 
 #if UNITY_EDITOR
@@ -13,7 +15,6 @@ using SLZ.Marrow;
 using SLZ.Marrow.Utilities;
 
 using UnityEditor;
-using UnityEngine;
 #endif
 
 namespace LabFusion.MarrowIntegration

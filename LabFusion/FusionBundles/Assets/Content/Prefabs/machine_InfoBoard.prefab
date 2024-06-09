@@ -1310,7 +1310,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7367666248741473637}
   m_Layer: 0
-  m_Name: machine_InfoBox
+  m_Name: machine_InfoBoard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

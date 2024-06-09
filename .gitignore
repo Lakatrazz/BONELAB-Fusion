@@ -15,9 +15,6 @@
 *.userosscache
 *.sln.docstates
 
-# Staging
-Entanglement.zip
-
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
@@ -353,5 +350,6 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 
-# Other Things
+# Fusion build results
 LabFusion/FusionBundles/Assets/AssetBundles/
+[Bb]uilt[Pp]allets

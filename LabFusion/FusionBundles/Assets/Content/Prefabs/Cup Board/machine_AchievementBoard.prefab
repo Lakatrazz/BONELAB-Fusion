@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3587674881652322386}
   m_Layer: 0
-  m_Name: machine_CupBoard
+  m_Name: machine_AchievementBoard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
