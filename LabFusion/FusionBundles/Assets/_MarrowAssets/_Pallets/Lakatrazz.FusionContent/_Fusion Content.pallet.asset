@@ -45,6 +45,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3e660a20b56c0bd47a0f856fc039e366, type: 2}
   - {fileID: 11400000, guid: e1c9657b3d244a148b5541b3deb1ca6b, type: 2}
   - {fileID: 11400000, guid: 778fde2ef685b2a4499998b042feac01, type: 2}
+  - {fileID: 11400000, guid: 855b2547999c5e44b9621f4426dcbd23, type: 2}
   _tags: []
   _changeLogs: []
   _crateTitles:
@@ -66,4 +67,5 @@ MonoBehaviour:
   - MonoDisc  Sabrelake Fails
   - MonoDisc  Sabrelake Triumphs
   - MonoDisc  Erm...
+  - BoneTag  Fusion Player
   _palletDependencies: []
