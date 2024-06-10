@@ -122,26 +122,6 @@ namespace LabFusion.Patching
         }
 
         [HarmonyPrefix]
-        [HarmonyPatch(nameof(GameControl_Outro.VoidDriving))]
-        public static bool VoidDriving(GameControl_Outro __instance)
-        {
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer)
-            {
-                if (!NetworkInfo.IsServer)
-                    return false;
-                else
-                {
-                    CampaignSender.SendHomeEvent(0, HomeEventType.VOID_DRIVING);
-                }
-            }
-
-            return true;
-        }
-
-        [HarmonyPrefix]
         [HarmonyPatch(nameof(GameControl_Outro.DrivingEnd))]
         public static bool DrivingEnd(GameControl_Outro __instance)
         {
@@ -175,26 +155,6 @@ namespace LabFusion.Patching
                 else
                 {
                     CampaignSender.SendHomeEvent(0, HomeEventType.COMPLETE_GAME);
-                }
-            }
-
-            return true;
-        }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(GameControl_Outro.SequenceProgress))]
-        public static bool SequenceProgress(GameControl_Outro __instance, int progress)
-        {
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer)
-            {
-                if (!NetworkInfo.IsServer)
-                    return false;
-                else
-                {
-                    CampaignSender.SendHomeEvent(progress, HomeEventType.SEQUENCE_PROGRESS);
                 }
             }
 

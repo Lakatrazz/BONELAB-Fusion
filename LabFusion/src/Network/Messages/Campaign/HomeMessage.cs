@@ -10,11 +10,9 @@ namespace LabFusion.Network
         REACH_WINDMILL = 2,
         REACHED_TAXI = 3,
         ARM_HIDE = 4,
-        VOID_DRIVING = 5,
-        DRIVING_END = 6,
-        COMPLETE_GAME = 7,
-        SEQUENCE_PROGRESS = 8,
-        SPLINE_LOOP_COUNTER = 9,
+        DRIVING_END = 5,
+        COMPLETE_GAME = 6,
+        SPLINE_LOOP_COUNTER = 7,
     }
 
     public class HomeEventData : IFusionSerializable
@@ -79,17 +77,11 @@ namespace LabFusion.Network
 
                         HomeData.TeleportToJimmyFinger();
                         break;
-                    case HomeEventType.VOID_DRIVING:
-                        controller.VoidDriving();
-                        break;
                     case HomeEventType.DRIVING_END:
                         controller.DrivingEnd();
                         break;
                     case HomeEventType.COMPLETE_GAME:
                         controller.CompleteGame();
-                        break;
-                    case HomeEventType.SEQUENCE_PROGRESS:
-                        controller.SequenceProgress(data.selectionNumber);
                         break;
                     case HomeEventType.SPLINE_LOOP_COUNTER:
                         HomeData.TaxiController.SplineLoopCounter();
