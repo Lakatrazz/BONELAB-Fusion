@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e5d17a21594effb4e9591490b009e7aa, type: 3}
-  m_Name: FusionContent_MonoDiscs_BundledAssetGroupSchema
+  m_Name: FusionCosmetics_Spawnables_BundledAssetGroupSchema
   m_EditorClassIdentifier: 
-  m_Group: {fileID: 11400000, guid: 10ab7c0d8a9224b44a2658ba21811021, type: 2}
+  m_Group: {fileID: 11400000, guid: d2780bd2a9d83804d8f18a73afeb584d, type: 2}
   m_InternalBundleIdMode: 1
   m_Compression: 1
   m_IncludeAddressInCatalog: 0
@@ -34,9 +34,9 @@ MonoBehaviour:
   m_RedirectLimit: -1
   m_RetryCount: 0
   m_BuildPath:
-    m_Id: BuiltPallets/StandaloneWindows64/Lakatrazz.FusionContent
+    m_Id: BuiltPallets/StandaloneWindows64/Lakatrazz.FusionCosmetics
   m_LoadPath:
-    m_Id: 'PALLET_BARCODE:Lakatrazz.FusionContent:'
+    m_Id: 'PALLET_BARCODE:Lakatrazz.FusionCosmetics:'
   m_BundleMode: 1
   m_AssetBundleProviderType:
     m_AssemblyName: Unity.ResourceManager, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null

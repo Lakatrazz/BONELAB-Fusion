@@ -26,10 +26,12 @@ MonoBehaviour:
   _version: 1.0.0
   _sdkVersion: 0.6.0
   _internal: 0
-  _crates: []
+  _crates:
+  - {fileID: 11400000, guid: 57ec9825418fd634eaae55bb88e6cf6b, type: 2}
   _dataCards: []
   _tags: []
   _changeLogs: []
-  _crateTitles: []
+  _crateTitles:
+  - Spawnable  Adventurers Hat
   _datacardTitles: []
   _palletDependencies: []

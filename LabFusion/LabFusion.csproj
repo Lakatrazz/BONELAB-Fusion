@@ -197,6 +197,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Cosmetics\CosmeticRoot.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="dependencies\resources\bundles\Android\achievement_bundle.fusion" />
     <EmbeddedResource Include="dependencies\resources\bundles\Android\content_bundle.fusion" />
     <EmbeddedResource Include="dependencies\resources\bundles\Android\item_bundle.fusion" />

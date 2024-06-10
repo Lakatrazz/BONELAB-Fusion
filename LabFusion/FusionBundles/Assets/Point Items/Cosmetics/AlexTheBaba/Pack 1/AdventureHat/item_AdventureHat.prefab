@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1984555545950578706}
   - component: {fileID: 104638428904574025}
+  - component: {fileID: 3590732034221628055}
   m_Layer: 0
   m_Name: item_AdventureHat
   m_TagString: Untagged
@@ -52,6 +53,20 @@ LODGroup:
     renderers:
     - renderer: {fileID: 6106210639733434157}
   m_Enabled: 1
+--- !u!114 &3590732034221628055
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4707419617021433557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rawPrice: 400
+  previewIcon: {fileID: 2800000, guid: 8951005725010b049b4b6a9200738d12, type: 3}
 --- !u!1001 &3985128780923671026
 PrefabInstance:
   m_ObjectHideFlags: 0

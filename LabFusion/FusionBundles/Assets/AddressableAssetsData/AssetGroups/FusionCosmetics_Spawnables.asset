@@ -10,15 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Pallets
+  m_Name: FusionCosmetics_Spawnables
   m_EditorClassIdentifier: 
-  m_GroupName: Pallets
+  m_GroupName: FusionCosmetics_Spawnables
   m_Data:
     m_SerializedData: []
-  m_GUID: ccd79f4d913c57f47aabbf99589ac807
+  m_GUID: aa59eaade1f60d74d808679933ad0616
   m_SerializeEntries:
-  - m_GUID: 6a83bc969688b3d40a9e2078a768fd00
-    m_Address: Lakatrazz.FusionCosmetics
+  - m_GUID: 81687bf37e32a2e459bb2d3333c0eb69
+    m_Address: Spawnable/Adventurers Hat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a18bdf6f1ed788041830ca7ef6926834
+    m_Address: PreviewMesh/Adventurers Hat
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -26,4 +31,6 @@ MonoBehaviour:
   m_Settings: {fileID: 11400000, guid: 9feda70c59f9cda489cd3a23e7f14dd9, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 5e20190195e34274790e19e34b860990, type: 2}
+    - {fileID: 11400000, guid: c2d1e797f38fab64495ac67d7da6d3e8, type: 2}
+    - {fileID: 11400000, guid: 6142f0cc4ee29ae4dae5c5260e9b1d4f, type: 2}
+    - {fileID: 11400000, guid: e4af417db4ba50d4fb651ab62b901d7b, type: 2}
