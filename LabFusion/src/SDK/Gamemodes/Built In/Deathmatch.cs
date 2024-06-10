@@ -2,6 +2,7 @@
 using Il2CppSLZ.Marrow.Audio;
 using Il2CppSLZ.Marrow.Warehouse;
 using LabFusion.Extensions;
+using LabFusion.Marrow;
 using LabFusion.MarrowIntegration;
 using LabFusion.Network;
 using LabFusion.Representation;
@@ -86,7 +87,11 @@ namespace LabFusion.SDK.Gamemodes
         public void SetDefaultValues()
         {
             _totalMinutes = _savedMinutes;
-            SetPlaylist(DefaultMusicVolume, FusionContentLoader.CombatPlaylist);
+
+            AudioLoader.LoadMonoDiscs(FusionMonoDiscReferences.CombatSongReferences, (clips) =>
+            {
+                SetPlaylist(DefaultMusicVolume, clips);
+            });
 
             _avatarOverride = null;
             _vitalityOverride = null;

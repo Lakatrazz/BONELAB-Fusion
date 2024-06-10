@@ -60,7 +60,7 @@ public class ExtraToolsEditor : EditorWindow
     static void CopyAssetBundles() {
         var assetsPath = Application.dataPath;
         var builtBundlesPath = Path.Combine(assetsPath, "AssetBundles");
-        var fusionBundlesPath = Path.Combine(assetsPath, @"..\..\resources\bundles");
+        var fusionBundlesPath = Path.Combine(assetsPath, @"..\..\dependencies\resources\bundles");
 
         var allDirectories = Directory.GetDirectories(builtBundlesPath, "*", SearchOption.AllDirectories);
 

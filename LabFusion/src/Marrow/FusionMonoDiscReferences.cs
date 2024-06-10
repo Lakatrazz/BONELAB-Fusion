@@ -24,5 +24,15 @@ namespace LabFusion.Marrow
 
         public static readonly MonoDiscReference GeoGrpFellDownTheStairsReference = new("Lakatrazz.FusionContent.MonoDisc.GeoGrpFellDownTheStairs");
 
+        public static readonly MonoDiscReference[] CombatSongReferences = new MonoDiscReference[]
+        {
+            new("Lakatrazz.FusionContent.MonoDisc.BuggyPhysics"),
+            new("Lakatrazz.FusionContent.MonoDisc.SicklyBugInitiative"),
+            new("Lakatrazz.FusionContent.MonoDisc.SyntheticCaverns"),
+            new("Lakatrazz.FusionContent.MonoDisc.WackyWillysWonderland"),
+            new("Lakatrazz.FusionContent.MonoDisc.SmigglesInDespair"),
+            new("Lakatrazz.FusionContent.MonoDisc.AppenBeyuge"),
+        };
+
     }
 }

@@ -37,5 +37,5 @@ MonoBehaviour:
   _previewMeshQuality: 0.5
   _maxLODLevel: 0
   _colliderBounds:
-    m_Center: {x: -0.24489945, y: 1.7405452, z: 0.051946163}
-    m_Extent: {x: 0.97525424, y: 1.7559246, z: 0.48484248}
+    m_Center: {x: -0.24489945, y: 1.740545, z: 0.051946223}
+    m_Extent: {x: 0.97525424, y: 1.7559245, z: 0.48484248}

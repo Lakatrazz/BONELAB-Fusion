@@ -50,18 +50,6 @@ namespace LabFusion.Utilities
         public static WeakAssetReference<AudioClip> LaserRayDespawn { get; private set; } = new();
         public static WeakAssetReference<AudioClip> LaserPrismaticSFX { get; private set; } = new();
 
-        private static readonly string[] _combatSongNames = new string[6] {
-            "music_FreqCreepInModulationBuggyPhysics",
-            "music_SicklyBugInitiative",
-            "music_SyntheticCavernsRemix",
-            "music_WWWonderlan",
-            "music_SmigglesInDespair",
-            "music_AppenBeyuge",
-        };
-
-        private static readonly List<AudioClip> _combatPlaylist = new();
-        public static AudioClip[] CombatPlaylist => _combatPlaylist.ToArray();
-
         private static AssetBundleCreateRequest _contentBundleRequest = null;
 
         private static void OnBundleCompleted(AsyncOperation operation)
@@ -77,11 +65,6 @@ namespace LabFusion.Utilities
 
             bundle.LoadPersistentAssetAsync<Texture2D>(ResourcePaths.SabrelakeLogo, (v) => { SabrelakeLogo.SetAsset(v); });
             bundle.LoadPersistentAssetAsync<Texture2D>(ResourcePaths.LavaGangLogo, (v) => { LavaGangLogo.SetAsset(v); });
-
-            foreach (var song in _combatSongNames)
-            {
-                bundle.LoadPersistentAssetAsync<AudioClip>(song, (v) => { _combatPlaylist.Add(v); });
-            }
 
             bundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.BitGet, (v) => { BitGet.SetAsset(v); });
 

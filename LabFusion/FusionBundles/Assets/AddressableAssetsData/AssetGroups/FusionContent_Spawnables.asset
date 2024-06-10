@@ -15,10 +15,15 @@ MonoBehaviour:
   m_GroupName: FusionContent_Spawnables
   m_Data:
     m_SerializedData: []
-  m_GUID: d4f45ba47ae0cf14784ab695afc9d898
+  m_GUID: 8da6f4bcea9aec2479fcc4db3d89dc82
   m_SerializeEntries:
   - m_GUID: 6d0197f34937bb849b28d98d27baedd6
     m_Address: Spawnable/BitMart
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9b1b9af6d6b583c4fa4b59903eefb7f4
+    m_Address: PreviewMesh/BitMart
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -27,8 +32,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0f8d05635cd6e674d9ddbec183dbac42
+    m_Address: PreviewMesh/Achievement Board
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d83d8915bf1f8e844a31f3db81a580ae
     m_Address: Spawnable/Info Board
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6084f5de170558c48a17b564c5e48d43
+    m_Address: PreviewMesh/Info Board
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

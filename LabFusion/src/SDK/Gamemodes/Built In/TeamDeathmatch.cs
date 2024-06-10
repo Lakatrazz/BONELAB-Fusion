@@ -243,7 +243,11 @@ namespace LabFusion.SDK.Gamemodes
         public void SetDefaultValues()
         {
             _totalMinutes = _savedMinutes;
-            SetPlaylist(DefaultMusicVolume, FusionContentLoader.CombatPlaylist);
+
+            AudioLoader.LoadMonoDiscs(FusionMonoDiscReferences.CombatSongReferences, (clips) =>
+            {
+                SetPlaylist(DefaultMusicVolume, clips);
+            });
 
             AddDefaultTeams();
 
