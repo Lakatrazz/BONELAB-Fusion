@@ -1,4 +1,6 @@
 ﻿using BoneLib.BoneMenu.Elements;
+using Il2CppSLZ.Marrow.Audio;
+using Il2CppSLZ.Marrow.Warehouse;
 using LabFusion.Extensions;
 using LabFusion.MarrowIntegration;
 using LabFusion.Network;
@@ -334,16 +336,27 @@ namespace LabFusion.SDK.Gamemodes
             });
         }
 
-        protected void OnVictoryStatus(bool isVictory = false)
+        protected static void OnVictoryStatus(bool isVictory = false)
         {
+            MonoDiscReference stingerReference;
             if (isVictory)
             {
-                FusionAudio.Play2D(FusionContentLoader.LavaGangVictory.Asset, DefaultMusicVolume);
+                stingerReference = FusionContentLoader.LavaGangVictoryReference;
             }
             else
             {
-                FusionAudio.Play2D(FusionContentLoader.LavaGangFailure.Asset, DefaultMusicVolume);
+                stingerReference = FusionContentLoader.LavaGangFailureReference;
             }
+
+            var dataCard = stingerReference.DataCard;
+            if (dataCard == null)
+            {
+                return;
+            }
+
+            dataCard.AudioClip.LoadAsset((Il2CppSystem.Action<AudioClip>)((c) => {
+                Audio3dManager.Play2dOneShot(c, Audio3dManager.nonDiegeticMusic, new Il2CppSystem.Nullable<float>(Audio3dManager.audio_MusicVolume), new Il2CppSystem.Nullable<float>(1f));
+            }));
         }
 
         protected override void OnStopGamemode()

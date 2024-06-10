@@ -1,17 +1,15 @@
 ﻿using UnityEngine;
 
-using LabFusion.Utilities;
-
 using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.Marrow.Pool;
+
+using LabFusion.Marrow;
 
 namespace LabFusion.UI
 {
     public static class CupBoardHelper
     {
-        public const string AchievementBoardBarcode = "Lakatrazz.FusionContent.Spawnable.AchievementBoard";
-
         public static void CompleteAchievementBoard(GameObject gameObject)
         {
             // Currently just needs to add the CupBoard script
@@ -22,7 +20,7 @@ namespace LabFusion.UI
         {
             var spawnable = new Spawnable()
             {
-                crateRef = new SpawnableCrateReference(AchievementBoardBarcode),
+                crateRef = FusionSpawnableReferences.AchievementBoardReference,
                 policyData = null,
             };
 

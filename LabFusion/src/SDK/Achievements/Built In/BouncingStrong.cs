@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Marrow;
 using LabFusion.Representation;
 using LabFusion.Senders;
 using LabFusion.Utilities;
@@ -31,7 +32,10 @@ namespace LabFusion.SDK.Achievements
 
         protected override void OnComplete()
         {
-            FusionAudio.Play2D(FusionContentLoader.BouncingStrong.Asset, 0.6f);
+            AudioLoader.LoadMonoDisc(FusionMonoDiscReferences.FistfightFusionReference, (c) =>
+            {
+                FusionAudio.Play2D(c, 0.6f);
+            });
         }
 
         private void OnPlayerAction(PlayerId player, PlayerActionType type, PlayerId otherPlayer)

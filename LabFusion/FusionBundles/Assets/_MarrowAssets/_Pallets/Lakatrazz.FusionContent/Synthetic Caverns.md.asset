@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31fee4a281eed89449118a9e046e7890, type: 3}
+  m_Name: Synthetic Caverns.md
+  m_EditorClassIdentifier: 
+  _barcode:
+    _id: Lakatrazz.FusionContent.MonoDisc.SyntheticCaverns
+  _barcodeOld:
+    _id: null.empty.barcode
+  _slimCode:
+    _byteArray: 
+  _title: Synthetic Caverns
+  _description: 
+  _unlockable: 0
+  _redacted: 0
+  _dataCardAsset:
+    _assetGUID: 9cc6b265cb9b1204ab65ccdd755d1307
+    _editorAssetChanged: 0
+  _audioClip:
+    _assetGUID: 428f2aed77b6cc740ad3873548ccd2b4
+    _editorAssetChanged: 0

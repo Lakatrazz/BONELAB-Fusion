@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31fee4a281eed89449118a9e046e7890, type: 3}
+  m_Name: Appen Beyuge.md
+  m_EditorClassIdentifier: 
+  _barcode:
+    _id: Lakatrazz.FusionContent.MonoDisc.AppenBeyuge
+  _barcodeOld:
+    _id: null.empty.barcode
+  _slimCode:
+    _byteArray: 
+  _title: Appen Beyuge
+  _description: 
+  _unlockable: 0
+  _redacted: 0
+  _dataCardAsset:
+    _assetGUID: a5491b0dbbcbdb0488e0d00b312c3874
+    _editorAssetChanged: 0
+  _audioClip:
+    _assetGUID: 7269c1d995d35ae42bde376a0a1c6b02
+    _editorAssetChanged: 0

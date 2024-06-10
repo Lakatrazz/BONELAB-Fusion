@@ -2,14 +2,14 @@
 using Il2CppSLZ.Marrow.Pool;
 using Il2CppSLZ.Marrow.Warehouse;
 
+using LabFusion.Marrow;
+
 using UnityEngine;
 
 namespace LabFusion.SDK.Points
 {
     public static class PointShopHelper
     {
-        public const string BitMartBarcode = "Lakatrazz.FusionContent.Spawnable.BitMart";
-
         public static void CompleteBitMart(GameObject gameObject)
         {
             // Currently just needs to add the PointShop script
@@ -20,7 +20,7 @@ namespace LabFusion.SDK.Points
         {
             var spawnable = new Spawnable()
             {
-                crateRef = new SpawnableCrateReference(BitMartBarcode),
+                crateRef = FusionSpawnableReferences.BitMartReference,
                 policyData = null,
             };
 

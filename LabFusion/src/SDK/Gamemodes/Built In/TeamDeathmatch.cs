@@ -1,7 +1,8 @@
 ﻿using BoneLib.BoneMenu.Elements;
-
+using Il2CppSLZ.Marrow.Warehouse;
 using LabFusion.Data;
 using LabFusion.Extensions;
+using LabFusion.Marrow;
 using LabFusion.MarrowIntegration;
 using LabFusion.Network;
 using LabFusion.Representation;
@@ -142,11 +143,24 @@ namespace LabFusion.SDK.Gamemodes
         {
             teams.Clear();
 
-            Team sabrelake = new Team(DefaultSabrelakeName, Color.yellow);
-            Team lavaGang = new Team(DefaultLavaGangName, Color.magenta);
+            Team sabrelake = new(DefaultSabrelakeName, Color.yellow);
+            Team lavaGang = new(DefaultLavaGangName, Color.magenta);
 
-            sabrelake.SetMusic(FusionContentLoader.SabrelakeVictory.Asset, FusionContentLoader.SabrelakeFailure.Asset);
-            lavaGang.SetMusic(FusionContentLoader.LavaGangVictory.Asset, FusionContentLoader.LavaGangFailure.Asset);
+            AudioLoader.LoadMonoDisc(FusionMonoDiscReferences.SabrelakeVictoryReference, (victory) =>
+            {
+                AudioLoader.LoadMonoDisc(FusionMonoDiscReferences.SabrelakeFailureReference, (failure) =>
+                {
+                    sabrelake.SetMusic(victory, failure);
+                });
+            });
+
+            AudioLoader.LoadMonoDisc(FusionMonoDiscReferences.LavaGangVictoryReference, (victory) =>
+            {
+                AudioLoader.LoadMonoDisc(FusionMonoDiscReferences.LavaGangFailureReference, (failure) =>
+                {
+                    lavaGang.SetMusic(victory, failure);
+                });
+            });
 
             sabrelake.SetLogo(FusionContentLoader.SabrelakeLogo.Asset);
             lavaGang.SetLogo(FusionContentLoader.LavaGangLogo.Asset);
@@ -603,23 +617,42 @@ namespace LabFusion.SDK.Gamemodes
 
         protected void OnTeamVictory(Team team)
         {
-            AudioClip randomChoice = UnityEngine.Random.Range(0, 4) % 2 == 0 ? FusionContentLoader.LavaGangVictory.Asset : FusionContentLoader.SabrelakeVictory.Asset;
+            if (team.WinMusic != null)
+            {
+                FusionAudio.Play2D(team.WinMusic);
+                return;
+            }
 
-            AudioClip winMusic = team.WinMusic != null ? team.WinMusic : randomChoice;
-            FusionAudio.Play2D(winMusic, DefaultMusicVolume);
+            MonoDiscReference randomChoice = UnityEngine.Random.Range(0, 4) % 2 == 0 ? FusionMonoDiscReferences.LavaGangVictoryReference : FusionMonoDiscReferences.SabrelakeVictoryReference;
+
+            AudioLoader.LoadMonoDisc(randomChoice, (c) =>
+            {
+                FusionAudio.Play2D(c, DefaultMusicVolume);
+            });
         }
 
         protected void OnTeamLost(Team team)
         {
-            AudioClip randomChoice = UnityEngine.Random.Range(0, 4) % 2 == 0 ? FusionContentLoader.LavaGangFailure.Asset : FusionContentLoader.SabrelakeFailure.Asset;
+            if (team.LossMusic != null)
+            {
+                FusionAudio.Play2D(team.LossMusic);
+                return;
+            }
 
-            AudioClip lossMusic = team.LossMusic != null ? team.LossMusic : randomChoice;
-            FusionAudio.Play2D(lossMusic, DefaultMusicVolume);
+            MonoDiscReference randomChoice = UnityEngine.Random.Range(0, 4) % 2 == 0 ? FusionMonoDiscReferences.LavaGangFailureReference : FusionMonoDiscReferences.SabrelakeFailureReference;
+
+            AudioLoader.LoadMonoDisc(randomChoice, (c) =>
+            {
+                FusionAudio.Play2D(c, DefaultMusicVolume);
+            });
         }
 
         protected void OnTeamTied()
         {
-            FusionAudio.Play2D(FusionContentLoader.DMTie.Asset, DefaultMusicVolume);
+            AudioLoader.LoadMonoDisc(FusionMonoDiscReferences.ErmReference, (c) =>
+            {
+                FusionAudio.Play2D(c, DefaultMusicVolume);
+            });
         }
 
         /// <summary>

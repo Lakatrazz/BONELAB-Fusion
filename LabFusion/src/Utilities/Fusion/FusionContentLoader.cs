@@ -1,4 +1,6 @@
-﻿using LabFusion.Data;
+﻿using Il2CppSLZ.Marrow.Warehouse;
+
+using LabFusion.Data;
 
 using UnityEngine;
 
@@ -6,6 +8,11 @@ namespace LabFusion.Utilities
 {
     public static class FusionContentLoader
     {
+        public static readonly MonoDiscReference LavaGangVictoryReference = new("Lakatrazz.FusionContent.MonoDisc.LavaGangTriumphs");
+        public static readonly MonoDiscReference LavaGangFailureReference = new("Lakatrazz.FusionContent.MonoDisc.LavaGangFails");
+
+        public static readonly MonoDiscReference FistfightFusionReference = new("Lakatrazz.FusionContent.MonoDisc.FistfightFusion");
+
         public static WeakAssetReference<AssetBundle> ContentBundle { get; private set; } = new();
 
         public static WeakAssetReference<GameObject> EntangledLinePrefab { get; private set; } = new();
@@ -16,17 +23,6 @@ namespace LabFusion.Utilities
 
         public static WeakAssetReference<Texture2D> SabrelakeLogo { get; private set; } = new();
         public static WeakAssetReference<Texture2D> LavaGangLogo { get; private set; } = new();
-
-        public static WeakAssetReference<AudioClip> GeoGrpFellDownTheStairs { get; private set; } = new();
-        public static WeakAssetReference<AudioClip> BouncingStrong { get; private set; } = new();
-
-        public static WeakAssetReference<AudioClip> LavaGangVictory { get; private set; } = new();
-        public static WeakAssetReference<AudioClip> SabrelakeVictory { get; private set; } = new();
-
-        public static WeakAssetReference<AudioClip> LavaGangFailure { get; private set; } = new();
-        public static WeakAssetReference<AudioClip> SabrelakeFailure { get; private set; } = new();
-
-        public static WeakAssetReference<AudioClip> DMTie { get; private set; } = new();
 
         public static WeakAssetReference<AudioClip> BitGet { get; private set; } = new();
 
@@ -86,17 +82,6 @@ namespace LabFusion.Utilities
             {
                 bundle.LoadPersistentAssetAsync<AudioClip>(song, (v) => { _combatPlaylist.Add(v); });
             }
-
-            bundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.GeoGrpFellDownTheStairs, (v) => { GeoGrpFellDownTheStairs.SetAsset(v); });
-            bundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.BouncingStrong, (v) => { BouncingStrong.SetAsset(v); });
-
-            bundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.LavaGangVictory, (v) => { LavaGangVictory.SetAsset(v); });
-            bundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.SabrelakeVictory, (v) => { SabrelakeVictory.SetAsset(v); });
-
-            bundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.LavaGangFailure, (v) => { LavaGangFailure.SetAsset(v); });
-            bundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.SabrelakeFailure, (v) => { SabrelakeFailure.SetAsset(v); });
-
-            bundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.DMTie, (v) => { DMTie.SetAsset(v); });
 
             bundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.BitGet, (v) => { BitGet.SetAsset(v); });
 

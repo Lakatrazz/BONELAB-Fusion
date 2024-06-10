@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31fee4a281eed89449118a9e046e7890, type: 3}
+  m_Name: Phantasmagorical Appliances.md
+  m_EditorClassIdentifier: 
+  _barcode:
+    _id: Lakatrazz.FusionContent.MonoDisc.PhantasmagoricalAppliances
+  _barcodeOld:
+    _id: null.empty.barcode
+  _slimCode:
+    _byteArray: 
+  _title: Phantasmagorical Appliances
+  _description: 
+  _unlockable: 0
+  _redacted: 0
+  _dataCardAsset:
+    _assetGUID: 391bcea53f62c9d4983ac21ae088574b
+    _editorAssetChanged: 0
+  _audioClip:
+    _assetGUID: 739d59fd10b43b24dace7299385d6f7f
+    _editorAssetChanged: 0

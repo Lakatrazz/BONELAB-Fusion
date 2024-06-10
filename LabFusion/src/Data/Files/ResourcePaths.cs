@@ -33,18 +33,7 @@
         public const string SabrelakeLogo = "tex_sabreLakeLogo";
         public const string LavaGangLogo = "tex_lavaGangLogo";
 
-        public const string LavaGangVictory = "sting_LavaGangVictory";
-        public const string SabrelakeVictory = "sting_sabrelakeVictory";
-
-        public const string LavaGangFailure = "sting_LavaGangFailure";
-        public const string SabrelakeFailure = "sting_sabrelakeFailure";
-
-        public const string DMTie = "sting_DMTie";
-
         public const string BitGet = "stinger_BitGet";
-
-        public const string GeoGrpFellDownTheStairs = "music_GeoGrpFellDownTheStairs";
-        public const string BouncingStrong = "music_BouncingStrong";
 
         // UI sounds
         public const string UISelect = "UI_Beep_Bend_Short_stereo";

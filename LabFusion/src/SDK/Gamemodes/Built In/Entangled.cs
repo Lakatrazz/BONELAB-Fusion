@@ -1,4 +1,5 @@
 ﻿using LabFusion.Extensions;
+using LabFusion.Marrow;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Senders;
@@ -149,7 +150,10 @@ namespace LabFusion.SDK.Gamemodes
 
         public void SetDefaultValues()
         {
-            SetPlaylist(DefaultMusicVolume, FusionContentLoader.GeoGrpFellDownTheStairs.Asset);
+            AudioLoader.LoadMonoDisc(FusionMonoDiscReferences.GeoGrpFellDownTheStairsReference, (c) =>
+            {
+                SetPlaylist(DefaultMusicVolume, c);
+            });
         }
 
         public void SetOverriden()

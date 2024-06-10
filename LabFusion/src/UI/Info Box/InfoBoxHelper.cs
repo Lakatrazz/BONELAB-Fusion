@@ -1,17 +1,15 @@
 ﻿using UnityEngine;
 
-using LabFusion.Utilities;
-
 using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.Marrow.Pool;
+
+using LabFusion.Marrow;
 
 namespace LabFusion.UI
 {
     public static class InfoBoxHelper
     {
-        public const string InfoBoardBarcode = "Lakatrazz.FusionContent.Spawnable.InfoBoard";
-
         public static void CompleteInfoBoard(GameObject gameObject)
         {
             // Currently just needs to add the InfoBox script
@@ -22,7 +20,7 @@ namespace LabFusion.UI
         {
             var spawnable = new Spawnable()
             {
-                crateRef = new SpawnableCrateReference(InfoBoardBarcode),
+                crateRef = FusionSpawnableReferences.InfoBoardReference,
                 policyData = null,
             };
 

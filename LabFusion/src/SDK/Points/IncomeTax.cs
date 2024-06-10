@@ -1,4 +1,5 @@
-﻿using LabFusion.Utilities;
+﻿using LabFusion.Marrow;
+using LabFusion.Utilities;
 
 using UnityEngine;
 
@@ -36,7 +37,7 @@ namespace LabFusion.SDK.Points
                     isPopup = true,
                 });
 
-                FusionContentLoader.BouncingStrong.Load((c) =>
+                AudioLoader.LoadMonoDisc(FusionMonoDiscReferences.FistfightFusionReference, (c) =>
                 {
                     FusionAudio.Play2D(c, 1f);
                 });
