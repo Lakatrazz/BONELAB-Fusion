@@ -214,9 +214,6 @@ public class FusionMod : MelonMod
 #if DEBUG
         FusionLogger.Log($"Main scene {sceneName} was initialized.");
 #endif
-        // Fix random static grips in the scene
-        StaticGripFixer.OnMainSceneInitialized();
-
         // Cache info
         SyncManager.OnCleanup();
         RigData.OnCacheRigInfo();
