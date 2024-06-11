@@ -61,10 +61,7 @@ public static class CosmeticLoader
         List<string> tags = crate.Tags.ToArray().ToList();
         tags.RemoveAll((t) => RequiredTags.Contains(t));
 
-        var palletAuthor = crate.Pallet.Author;
-        var overrideAuthor = cosmeticRoot.authorOverride.Get();
-
-        var author = string.IsNullOrWhiteSpace(overrideAuthor) ? palletAuthor : overrideAuthor;
+        var author = crate.Pallet.Author;
 
         var point = (RigPoint)cosmeticRoot.cosmeticPoint.Get();
 

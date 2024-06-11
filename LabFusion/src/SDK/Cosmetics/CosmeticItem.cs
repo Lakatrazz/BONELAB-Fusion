@@ -22,6 +22,8 @@ public class CosmeticItem : PointItem
 
     public override string[] Tags => Variables.tags;
 
+    public override string Barcode => Variables.barcode;
+
     // We use LateUpdate to cleanup accessories, so it should be hooked
     public override bool ImplementLateUpdate => true;
 
