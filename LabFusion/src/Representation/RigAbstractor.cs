@@ -9,7 +9,7 @@ namespace LabFusion.Representation
     /// </summary>
     public static class RigAbstractor
     {
-        public const int TransformSyncCount = 5;
+        public const int TransformSyncCount = 3;
 
         public static Transform GetSmoothTurnTransform(this RigManager manager)
         {
@@ -20,13 +20,11 @@ namespace LabFusion.Representation
         {
             array = new Transform[TransformSyncCount];
 
-            var rig = manager.ControllerRig;
+            var rig = manager.ControllerRig.TryCast<OpenControllerRig>();
 
-            array[0] = rig.m_head;
+            array[0] = rig.headset;
             array[1] = rig.m_handLf;
             array[2] = rig.m_handRt;
-            array[3] = rig.leftController.transform;
-            array[4] = rig.rightController.transform;
         }
     }
 }

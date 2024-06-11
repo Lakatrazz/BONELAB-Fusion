@@ -26,29 +26,6 @@ namespace LabFusion.Patching
         }
     }
 
-//     [HarmonyPatch(typeof(ControllerRig))]
-//     public static class ControllerRigPatches
-//     {
-//         [HarmonyPrefix]
-//         [HarmonyPatch(nameof(ControllerRig.OnFixedUpdate))]
-//         public static void OnFixedUpdate(ControllerRig __instance, float deltaTime)
-//         {
-//             try
-//             {
-//                 if (PlayerRepManager.TryGetPlayerRep(__instance.manager, out var rep))
-//                 {
-//                     rep.OnControllerRigUpdate();
-//                 }
-//             }
-//             catch (Exception e)
-//             {
-// #if DEBUG
-//                 FusionLogger.LogException("to execute patch ControllerRig.OnFixedUpdate", e);
-// #endif
-//             }
-//         }
-//     }
-
     [HarmonyPatch(typeof(OpenControllerRig))]
     public static class OpenControllerRigPatches
     {
@@ -65,18 +42,16 @@ namespace LabFusion.Patching
         }
     }
 
-    // This patch fixes the rig becoming confused due to multiple OnPause state changes.
-    [HarmonyPatch(typeof(OpenControllerRig), nameof(OpenControllerRig.OnEarlyUpdate))]
+    // Syncs hand and headset positions for player reps
+    [HarmonyPatch(typeof(OpenControllerRig), nameof(OpenControllerRig.UpdateHeptaBody))]
     public class OpenEarlyUpdatePatch
     {
-        public static bool Prefix(OpenControllerRig __instance)
+        public static void Prefix(OpenControllerRig __instance, float deltaTime)
         {
             if (PlayerRepManager.TryGetPlayerRep(__instance.manager, out var rep))
             {
                 rep.OnControllerRigUpdate();
             }
-
-            return true;
         }
     }
 }
