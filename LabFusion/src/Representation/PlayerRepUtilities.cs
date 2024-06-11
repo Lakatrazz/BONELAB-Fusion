@@ -178,21 +178,6 @@ namespace LabFusion.Representation
             GameObject.DestroyImmediate(screenOptions);
 
             uiRig.gameObject.SetActive(false);
-            //uiRig.Start();
-            //uiRig.popUpMenu.radialPageView.Start();
-
-            //try
-            //{
-            //    uiRig.popUpMenu.Start();
-            //}
-            //catch { }
-
-            //var tutorialRig = rigManager.GetComponentInChildren<TutorialRig>();
-
-            //tutorialRig.gameObject.SetActive(false);
-
-            //var spawnGunUI = rigManager.GetComponentInChildren<SpawnGunUI>().gameObject;
-            //spawnGunUI.SetActive(false);
 
             var avatarManager = rigManager.GetComponentInChildren<PlayerAvatarManager>();
             avatarManager.loadAvatarFromSaveData = false;
@@ -218,7 +203,7 @@ namespace LabFusion.Representation
             openControllerRig.cameras = new Il2CppReferenceArray<Camera>(0);
             openControllerRig.OnLastCameraUpdate = new UnityEvent();
 
-            openControllerRig.m_head.tag = "Untagged";
+            headset.tag = "Untagged";
 
             // Remove unnecessary player art manager
             GameObject.DestroyImmediate(rigManager.GetComponentInChildren<PlayerAvatarArt>(true));
