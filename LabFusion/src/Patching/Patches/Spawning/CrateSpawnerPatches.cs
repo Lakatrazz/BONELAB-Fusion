@@ -10,7 +10,7 @@ using UnityEngine;
 namespace LabFusion.Patching
 {
     [HarmonyPatch(typeof(CrateSpawner))]
-    public static class SpawnableCratePlacerPatches
+    public static class CrateSpawnerPatches
     {
         [HarmonyPrefix]
         [HarmonyPatch(nameof(CrateSpawner.Awake))]

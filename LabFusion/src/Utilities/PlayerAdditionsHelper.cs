@@ -5,17 +5,14 @@ using LabFusion.Network;
 
 using Il2CppSLZ.Combat;
 using Il2CppSLZ.Rig;
+using Il2CppSLZ.Bonelab;
 
 using UnityEngine;
-using Il2CppSLZ.Bonelab;
 
 namespace LabFusion.Utilities
 {
     public static class PlayerAdditionsHelper
     {
-        private static int _feetLayer;
-        private static int _playerLayer;
-
         public static void OnInitializeMelon()
         {
             // Hook multiplayer events
@@ -32,37 +29,18 @@ namespace LabFusion.Utilities
                 }
             };
 
-            // Setup layers
-            _feetLayer = LayerMask.NameToLayer("Feet");
-            _playerLayer = LayerMask.NameToLayer("Player");
-
-            Physics.IgnoreLayerCollision(_feetLayer, _playerLayer, false);
-
             // Invoke extras
             MuteUIHelper.OnInitializeMelon();
         }
 
         public static void OnDeinitializeMelon()
         {
-            // Undo layer changes
-            Physics.IgnoreLayerCollision(_feetLayer, _playerLayer, true);
-
             // Invoke extras
             MuteUIHelper.OnDeinitializeMelon();
         }
 
         public static void OnAvatarChanged(RigManager manager)
         {
-            // Ignore collisions between the player and its locosphere/knee due to our layer changes
-            var physRig = manager.physicsRig;
-
-            var kneeColliders = physRig.knee.GetComponentsInChildren<Collider>();
-            var feetColliders = physRig.feet.GetComponentsInChildren<Collider>();
-
-            var playerColliders = physRig.GetComponentsInChildren<Collider>();
-
-            Internal_IgnoreCollisions(kneeColliders, playerColliders);
-            Internal_IgnoreCollisions(feetColliders, playerColliders);
         }
 
         public static void OnCreatedLocalPlayer(RigManager manager)
@@ -74,17 +52,6 @@ namespace LabFusion.Utilities
         public static void OnCreatedRig(RigManager manager)
         {
             OnAvatarChanged(manager);
-        }
-
-        private static void Internal_IgnoreCollisions(Collider[] first, Collider[] second)
-        {
-            foreach (var col1 in first)
-            {
-                foreach (var col2 in second)
-                {
-                    Physics.IgnoreCollision(col1, col2, true);
-                }
-            }
         }
 
         public static void OnEnterServer(RigManager manager)

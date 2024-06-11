@@ -16,7 +16,7 @@ using MelonLoader;
 
 namespace LabFusion.Patching
 {
-    [HarmonyPatch(typeof(Poolee), nameof(Poolee.OnSpawn))]
+    [HarmonyPatch(typeof(Poolee), nameof(Poolee.OnSpawnEvent))]
     public class PooleeOnSpawnPatch
     {
         private static void CheckRemoveSyncable(Poolee __instance)

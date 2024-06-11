@@ -18,7 +18,8 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(MobileEncounter.Awake))]
         public static void Awake(MobileEncounter __instance)
         {
-            __instance.OnComplete.AddPersistentCall((UnityAction)(() => { OnComplete(__instance); }));
+            var onComplete = () => { OnComplete(__instance); };
+            __instance.OnComplete.add_DynamicCalls(onComplete);
         }
 
         // CompleteEncounter is inlined into the coroutine, so we manually use the UnityEvent
