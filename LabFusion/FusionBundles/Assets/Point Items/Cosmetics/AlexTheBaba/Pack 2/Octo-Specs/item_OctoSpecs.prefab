@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 443532821190031141}
+  - component: {fileID: 78392375877992330}
   m_Layer: 0
   m_Name: item_OctoSpecs
   m_TagString: Untagged
@@ -32,6 +33,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &78392375877992330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7149069292768178268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cosmeticPoint: 5
+  hiddenInView: 1
+  rawPrice: 700
+  previewIcon: {fileID: 2800000, guid: 1d1a7733f8e7a934c9b2eae32401d3e2, type: 3}
+  authorOverride: BaBaCorp
 --- !u!1001 &7808219835869758663
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6360909966302125287}
   - component: {fileID: 5166944104561826488}
+  - component: {fileID: 4688232202419253669}
   m_Layer: 0
   m_Name: item_PartyHat
   m_TagString: Untagged
@@ -52,6 +53,23 @@ LODGroup:
     renderers:
     - renderer: {fileID: 13327684747006210}
   m_Enabled: 1
+--- !u!114 &4688232202419253669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2770222577700686121}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cosmeticPoint: 1
+  hiddenInView: 1
+  rawPrice: 100
+  previewIcon: {fileID: 2800000, guid: d2a478af5daecd842afed53300e0f2b6, type: 3}
+  authorOverride: BaBaCorp
 --- !u!1001 &1724540921349180806
 PrefabInstance:
   m_ObjectHideFlags: 0

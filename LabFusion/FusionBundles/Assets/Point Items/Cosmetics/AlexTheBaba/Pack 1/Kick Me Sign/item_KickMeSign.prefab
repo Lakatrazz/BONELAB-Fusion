@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3031581902841493343}
   - component: {fileID: 5593523458222059286}
+  - component: {fileID: 145104552907423213}
   m_Layer: 0
   m_Name: item_KickMeSign
   m_TagString: Untagged
@@ -52,6 +53,23 @@ LODGroup:
     renderers:
     - renderer: {fileID: 3432403649536556878}
   m_Enabled: 1
+--- !u!114 &145104552907423213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6063503736484749969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cosmeticPoint: 7
+  hiddenInView: 1
+  rawPrice: 100
+  previewIcon: {fileID: 2800000, guid: 79e97c045c6201b4cb0951f868ab1280, type: 3}
+  authorOverride: BaBaCorp
 --- !u!1001 &4063317027245515722
 PrefabInstance:
   m_ObjectHideFlags: 0

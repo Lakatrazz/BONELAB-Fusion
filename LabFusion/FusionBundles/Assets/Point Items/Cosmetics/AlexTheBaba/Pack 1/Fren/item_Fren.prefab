@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5006912656697482546}
   - component: {fileID: 6960454476839008389}
   - component: {fileID: 7574039427972742678}
+  - component: {fileID: 5101801705947054800}
   m_Layer: 0
   m_Name: item_Fren
   m_TagString: Untagged
@@ -36,7 +37,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &6960454476839008389
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -53,7 +54,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
 --- !u!205 &7574039427972742678
 LODGroup:
   m_ObjectHideFlags: 0
@@ -73,6 +74,23 @@ LODGroup:
     renderers:
     - renderer: {fileID: 1307441260920609242}
   m_Enabled: 1
+--- !u!114 &5101801705947054800
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4272670990836664572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cosmeticPoint: 1
+  hiddenInView: 1
+  rawPrice: 1000
+  previewIcon: {fileID: 2800000, guid: d0c000ddbbc727d44b0dd91e9d3c3406, type: 3}
+  authorOverride: BaBaCorp
 --- !u!1001 &3252924333955075861
 PrefabInstance:
   m_ObjectHideFlags: 0

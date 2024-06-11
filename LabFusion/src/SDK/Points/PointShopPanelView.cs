@@ -419,6 +419,12 @@ namespace LabFusion.SDK.Points
         }
 
         [HideFromIl2Cpp]
+        private void OnPreviewIconLoaded(Texture2D icon)
+        {
+            _infoPreviewImage.texture = icon;
+        }
+
+        [HideFromIl2Cpp]
         private void LoadInfoPage(PointItem item)
         {
             _infoTitle.text = item.Title;
@@ -453,16 +459,10 @@ namespace LabFusion.SDK.Points
                 _infoTags.text = tags;
             }
 
-            if (item.PreviewImage != null)
-            {
-                _infoPreviewImage.texture = item.PreviewImage;
-                _infoPreviewImage.gameObject.SetActive(true);
-            }
-            else
-            {
-                _infoPreviewImage.texture = _defaultPreview;
-                _infoPreviewImage.gameObject.SetActive(true);
-            }
+            _infoPreviewImage.texture = _defaultPreview;
+            _infoPreviewImage.gameObject.SetActive(true);
+
+            item.LoadPreviewIcon(OnPreviewIconLoaded);
 
             _targetInfoItem = item;
 

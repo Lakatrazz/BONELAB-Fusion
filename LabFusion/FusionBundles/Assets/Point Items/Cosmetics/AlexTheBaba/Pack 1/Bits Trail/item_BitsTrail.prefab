@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3983884726102677032}
   - component: {fileID: 8395566945444898877}
   - component: {fileID: 6547601314554234823}
+  - component: {fileID: -7110523802172780336}
   m_Layer: 0
   m_Name: item_BitsTrail
   m_TagString: Untagged
@@ -4850,3 +4851,20 @@ LODGroup:
     renderers:
     - renderer: {fileID: 8395566945444898877}
   m_Enabled: 1
+--- !u!114 &-7110523802172780336
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4854792534790217113}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cosmeticPoint: 8
+  hiddenInView: 0
+  rawPrice: 5000
+  previewIcon: {fileID: 2800000, guid: 4a3d77c75118bc84e80cb5e023551c0d, type: 3}
+  authorOverride: BaBaCorp

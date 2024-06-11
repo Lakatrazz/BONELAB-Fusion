@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 317152834758887713}
+  - component: {fileID: 7317060287136208501}
   m_Layer: 0
   m_Name: item_AncientTablet
   m_TagString: Untagged
@@ -32,6 +33,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7317060287136208501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8065195582456931981}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cosmeticPoint: 7
+  hiddenInView: 1
+  rawPrice: 1400
+  previewIcon: {fileID: 2800000, guid: 03355d0996832a24d959e590a0a630b3, type: 3}
+  authorOverride: BaBaCorp
 --- !u!1001 &1063135422281187634
 PrefabInstance:
   m_ObjectHideFlags: 0

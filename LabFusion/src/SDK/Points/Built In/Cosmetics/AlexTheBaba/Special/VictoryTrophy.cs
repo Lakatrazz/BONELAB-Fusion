@@ -1,7 +1,6 @@
 ﻿using LabFusion.SDK.Achievements;
 
 using LabFusion.Utilities;
-
 using UnityEngine;
 
 namespace LabFusion.SDK.Points
@@ -10,7 +9,7 @@ namespace LabFusion.SDK.Points
     {
         public override string Title => "Victory Trophy";
 
-        public override string Author => BitEconomy.BaBaAuthor;
+        public override string Author => "BaBaCorp";
 
         public override string Description => "YOU WON! YOU DID IT! YOU WON <b>THE GAME!</b>";
 
@@ -21,10 +20,6 @@ namespace LabFusion.SDK.Points
         public override bool Priceless => true;
 
         public override bool IsUnlocked => AchievementManager.IsCompleted();
-
-        public override RarityLevel Rarity => RarityLevel.Purple;
-
-        public override Texture2D PreviewImage => FusionPointItemLoader.GetPair(nameof(VictoryTrophy)).Preview;
 
         public override GameObject AccessoryPrefab => FusionPointItemLoader.GetPair(nameof(VictoryTrophy)).GameObject;
 
@@ -39,5 +34,10 @@ namespace LabFusion.SDK.Points
             "Cosmetic",
             "Completionist",
         };
+
+        public override void LoadPreviewIcon(Action<Texture2D> onLoaded)
+        {
+            onLoaded(FusionPointItemLoader.GetPair(nameof(VictoryTrophy)).Preview);
+        }
     }
 }

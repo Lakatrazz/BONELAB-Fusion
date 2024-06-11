@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1086156627609617884}
   - component: {fileID: 3941809150621547495}
+  - component: {fileID: 3007631473951842068}
   m_Layer: 0
   m_Name: item_BodyPillow
   m_TagString: Untagged
@@ -52,6 +53,23 @@ LODGroup:
     renderers:
     - renderer: {fileID: 7062000464142143679}
   m_Enabled: 1
+--- !u!114 &3007631473951842068
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6166960695911467094}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cosmeticPoint: 7
+  hiddenInView: 0
+  rawPrice: 600
+  previewIcon: {fileID: 2800000, guid: 16d8851410cdb954f9dba0c8095128eb, type: 3}
+  authorOverride: BaBaCorp
 --- !u!1001 &8485012184675683387
 PrefabInstance:
   m_ObjectHideFlags: 0

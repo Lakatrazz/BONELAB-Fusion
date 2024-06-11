@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34569ddb84e20304981812b1c448d930, type: 3}
+  m_Name: Floatie.sc
+  m_EditorClassIdentifier: 
+  _barcode:
+    _id: Lakatrazz.FusionCosmetics.Spawnable.Floatie
+  _barcodeOld:
+    _id: null.empty.barcode
+  _slimCode:
+    _byteArray: 
+  _title: Floatie
+  _description: Approximate weight of 240 KG
+  _unlockable: 0
+  _redacted: 1
+  _tags:
+  - Fusion
+  - Cosmetic
+  - Ring
+  - Pool
+  _boneTags:
+    _tags: []
+  _mainAsset:
+    _assetGUID: b3275823c86f5014f95a7e86bd9f1a88
+    _editorAssetChanged: 0
+  _previewMesh:
+    _assetGUID: 584c998d68d154c4994e328421193e03
+    _editorAssetChanged: 1
+  _customQuality: 0
+  _previewMeshQuality: 0.5
+  _maxLODLevel: 0
+  _colliderBounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}

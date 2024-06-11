@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8437885458471259028}
   - component: {fileID: 4707885011442786251}
+  - component: {fileID: 6896647757782293103}
   m_Layer: 0
   m_Name: item_LegoHead
   m_TagString: Untagged
@@ -52,6 +53,23 @@ LODGroup:
     renderers:
     - renderer: {fileID: 1534839092181250006}
   m_Enabled: 1
+--- !u!114 &6896647757782293103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 805818010923097690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cosmeticPoint: 0
+  hiddenInView: 1
+  rawPrice: 1000
+  previewIcon: {fileID: 2800000, guid: c45bc91e7eb3abe45af632edd3b43f72, type: 3}
+  authorOverride: BaBaCorp
 --- !u!1001 &183888528415535954
 PrefabInstance:
   m_ObjectHideFlags: 0

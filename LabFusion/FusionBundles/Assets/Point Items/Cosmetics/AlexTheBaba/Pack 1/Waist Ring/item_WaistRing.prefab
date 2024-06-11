@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5268771734237633543}
   - component: {fileID: 9007087111740664228}
+  - component: {fileID: 8541479600246268442}
   m_Layer: 0
   m_Name: item_WaistRing
   m_TagString: Untagged
@@ -52,6 +53,23 @@ LODGroup:
     renderers:
     - renderer: {fileID: 5664496645078369982}
   m_Enabled: 1
+--- !u!114 &8541479600246268442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1659166775954201656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cosmeticPoint: 8
+  hiddenInView: 0
+  rawPrice: 3200
+  previewIcon: {fileID: 2800000, guid: 8caf7a08e2ba2114b959dc386dd3a7bf, type: 3}
+  authorOverride: BaBaCorp
 --- !u!1 &3472337929447092200
 GameObject:
   m_ObjectHideFlags: 0

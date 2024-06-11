@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9050017612854913155}
   - component: {fileID: 5887372454330457396}
+  - component: {fileID: -7358961425244079768}
   m_Layer: 0
   m_Name: item_FryCookHat
   m_TagString: Untagged
@@ -52,6 +53,23 @@ LODGroup:
     renderers:
     - renderer: {fileID: 8699279188802646521}
   m_Enabled: 1
+--- !u!114 &-7358961425244079768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 265620266402266445}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cosmeticPoint: 1
+  hiddenInView: 1
+  rawPrice: 400
+  previewIcon: {fileID: 2800000, guid: b3737c30c6f53644597773291b6ee6a0, type: 3}
+  authorOverride: BaBaCorp
 --- !u!1001 &5168531212268398390
 PrefabInstance:
   m_ObjectHideFlags: 0

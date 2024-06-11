@@ -27,6 +27,8 @@ using Il2CppSLZ.Rig;
 using ModuleHandler = LabFusion.SDK.Modules.ModuleHandler;
 
 using UnityEngine;
+using Il2CppSLZ.Marrow.Warehouse;
+using LabFusion.SDK.Cosmetics;
 
 namespace LabFusion;
 
@@ -93,7 +95,7 @@ public class FusionMod : MelonMod
         PropExtenderManager.RegisterExtendersFromAssembly(FusionAssembly);
         NetworkLayer.RegisterLayersFromAssembly(FusionAssembly);
         GamemodeRegistration.LoadGamemodes(FusionAssembly);
-        PointItemManager.LoadItems(FusionAssembly);
+        //PointItemManager.LoadItems(FusionAssembly);
         AchievementManager.LoadAchievements(FusionAssembly);
 
         LobbyFilterManager.LoadBuiltInFilters();
@@ -103,6 +105,13 @@ public class FusionMod : MelonMod
         FusionPopupManager.OnInitializeMelon();
 
         PhysicsUtilities.OnInitializeMelon();
+
+        // Hook into asset warehouse
+        var onReady = () =>
+        {
+            CosmeticLoader.LoadAllCosmetics();
+        };
+        AssetWarehouse.OnReady(onReady);
 
         // Create prefs
         FusionPreferences.OnInitializePreferences();

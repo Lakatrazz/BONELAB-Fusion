@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8410554152580244331}
   - component: {fileID: 265820652815678420}
+  - component: {fileID: 7811114267994223474}
   m_Layer: 0
   m_Name: item_CheeseHat
   m_TagString: Untagged
@@ -52,6 +53,23 @@ LODGroup:
     renderers:
     - renderer: {fileID: 8668672798774047297}
   m_Enabled: 1
+--- !u!114 &7811114267994223474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 761101021312759461}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cosmeticPoint: 1
+  hiddenInView: 1
+  rawPrice: 800
+  previewIcon: {fileID: 2800000, guid: 57c734af6fed53b449ebf4ac21c6bdb6, type: 3}
+  authorOverride: BaBaCorp
 --- !u!1001 &8038039517441437381
 PrefabInstance:
   m_ObjectHideFlags: 0

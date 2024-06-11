@@ -54,14 +54,8 @@ namespace LabFusion.Utilities
             // Get transform of trigger
             var transform = trigger.transform;
 
-            // Check if this has a marrow sdk addon
-            if (OnlyTriggerOnLocalPlayer.Cache.ContainsSource(trigger.gameObject))
-            {
-                runMethod = IsMainRig(other);
-                return true;
-            }
             // Check if this is part of a launch pad/link data
-            else if (transform.GetComponentInParent<LinkData>() != null)
+            if (transform.GetComponentInParent<LinkData>() != null)
             {
                 runMethod = IsMainRig(other);
                 return true;

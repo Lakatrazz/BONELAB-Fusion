@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5425617775958208958}
   - component: {fileID: 1748149296838473482}
+  - component: {fileID: 5723792651215145266}
   m_Layer: 0
   m_Name: item_Monocle
   m_TagString: Untagged
@@ -52,6 +53,23 @@ LODGroup:
     renderers:
     - renderer: {fileID: 6006318055768518157}
   m_Enabled: 1
+--- !u!114 &5723792651215145266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3853983652849083504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cosmeticPoint: 3
+  hiddenInView: 1
+  rawPrice: 100
+  previewIcon: {fileID: 2800000, guid: 5b513835d60b94842bb0cacd2f8a7a8b, type: 3}
+  authorOverride: BaBaCorp
 --- !u!1001 &4943597600205599369
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -46,38 +46,78 @@ namespace LabFusion.SDK.Points
         public static event Action OnBitCountChanged = null;
         public static event Action<PointItem> OnItemUnlocked = null;
 
+        public static RarityLevel CalculateLevel(int price)
+        {
+            if (price >= 5000)
+            {
+                return RarityLevel.Purple;
+            }
+            else if (price >= 4000)
+            {
+                return RarityLevel.Red;
+            }
+            else if (price >= 3000)
+            {
+                return RarityLevel.Cyan;
+            }
+            else if (price >= 2500)
+            {
+                return RarityLevel.Yellow;
+            }
+            else if (price >= 2000)
+            {
+                return RarityLevel.Lime;
+            }
+            else if (price >= 1500)
+            {
+                return RarityLevel.LightPurple;
+            }
+            else if (price >= 1200)
+            {
+                return RarityLevel.Pink;
+            }
+            else if (price >= 1000)
+            {
+                return RarityLevel.LightRed;
+            }
+            else if (price >= 800)
+            {
+                return RarityLevel.Orange;
+            }
+            else if (price >= 300)
+            {
+                return RarityLevel.Green;
+            }
+            else if (price >= 200)
+            {
+                return RarityLevel.Blue;
+            }
+            else if (price >= 120)
+            {
+                return RarityLevel.White;
+            }
+
+            return RarityLevel.Gray;
+        }
+
         public static Color ParseColor(RarityLevel level)
         {
-            switch (level)
+            return level switch
             {
-                case RarityLevel.Gray:
-                    return Color.gray;
-                default:
-                case RarityLevel.White:
-                    return Color.white;
-                case RarityLevel.Blue:
-                    return Color.blue;
-                case RarityLevel.Green:
-                    return Color.green;
-                case RarityLevel.Orange:
-                    return new Color(1f, 0.647f, 0f);
-                case RarityLevel.LightRed:
-                    return new Color(1f, 0.447f, 0.462f);
-                case RarityLevel.Pink:
-                    return new Color(1f, 0.411f, 0.7f);
-                case RarityLevel.LightPurple:
-                    return new Color(0.796f, 0.764f, 0.89f);
-                case RarityLevel.Lime:
-                    return new Color(0.749f, 1f, 0f);
-                case RarityLevel.Yellow:
-                    return Color.yellow;
-                case RarityLevel.Cyan:
-                    return Color.cyan;
-                case RarityLevel.Red:
-                    return Color.red;
-                case RarityLevel.Purple:
-                    return new Color(0.5f, 0f, 0.5f);
-            }
+                RarityLevel.Gray => Color.gray,
+                RarityLevel.Blue => Color.blue,
+                RarityLevel.Green => Color.green,
+                RarityLevel.Orange => new Color(1f, 0.647f, 0f),
+                RarityLevel.LightRed => new Color(1f, 0.447f, 0.462f),
+                RarityLevel.Pink => new Color(1f, 0.411f, 0.7f),
+                RarityLevel.LightPurple => new Color(0.796f, 0.764f, 0.89f),
+                RarityLevel.Lime => new Color(0.749f, 1f, 0f),
+                RarityLevel.Yellow => Color.yellow,
+                RarityLevel.Cyan => Color.cyan,
+                RarityLevel.Red => Color.red,
+                RarityLevel.Purple => new Color(0.5f, 0f, 0.5f),
+                _ => Color.white,
+            };
         }
 
         internal static void Internal_HookAssemblies()
@@ -150,18 +190,24 @@ namespace LabFusion.SDK.Points
         {
             var item = Activator.CreateInstance(type) as PointItem;
 
+            RegisterPointItem(item);
+        }
+
+        public static void RegisterPointItem(PointItem item)
+        {
             if (PointItemLookup.ContainsKey(item.Barcode))
-                throw new ArgumentException($"Point Item with barcode {item.Barcode} was already registered.");
-            else
             {
-                PointItems.Add(item);
-                PointItemLookup.Add(item.Barcode, item);
-
-                item.Register();
-
-                if (item.IsEquipped)
-                    Internal_OnEquipChange(PlayerIdManager.LocalId, item.Barcode, true);
+                Debug.LogError($"Tried registering PointItem with barcode {item.Barcode}, but that barcode was already registered!");
+                return;
             }
+
+            PointItems.Add(item);
+            PointItemLookup.Add(item.Barcode, item);
+
+            item.Register();
+
+            if (item.IsEquipped)
+                Internal_OnEquipChange(PlayerIdManager.LocalId, item.Barcode, true);
         }
 
         public static bool TryGetPointItem(string barcode, out PointItem item)
@@ -383,7 +429,7 @@ namespace LabFusion.SDK.Points
 
         public static IReadOnlyList<PointItem> GetUnlockedItems(SortMode sort = SortMode.PRICE)
         {
-            List<PointItem> items = new List<PointItem>(LoadedItems.Count);
+            List<PointItem> items = new(LoadedItems.Count);
 
             foreach (var item in LoadedItems)
             {

@@ -116,12 +116,6 @@ namespace LabFusion.SDK.Points
             }
         }
 
-        // The rarity level of the item.
-        public virtual RarityLevel Rarity => RarityLevel.White;
-
-        // The preview image of the item in the menu. (Optional)
-        public virtual Texture2D PreviewImage => null;
-
         // Can the item be equipped?
         public virtual bool CanEquip => true;
 
@@ -181,6 +175,10 @@ namespace LabFusion.SDK.Points
         public bool IsEquipped => PointSaveManager.IsEquipped(Barcode);
 
         public string MainTag => Tags == null || Tags.Length <= 0 ? "Misc" : Tags[0];
+
+        public RarityLevel Rarity => PointItemManager.CalculateLevel(ActivePrice);
+
+        public abstract void LoadPreviewIcon(Action<Texture2D> onLoaded);
 
         internal void Register()
         {

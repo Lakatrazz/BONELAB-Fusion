@@ -62,17 +62,6 @@ namespace LabFusion.SDK.Points
                 _itemUpgrades = data._upgradedItems;
 
             _totalBits = data._bitCount;
-
-            // Tax collection
-            if (IncomeTax.CheckForIncomeTax(_totalBits))
-            {
-                IncomeTax.CollectTax();
-                _totalBits = 69;
-                _unlockedItems.Clear();
-                _equippedItems.Clear();
-                _itemUpgrades.Clear();
-                WriteToFile();
-            }
         }
 
         public static int GetUpgradeLevel(string barcode)

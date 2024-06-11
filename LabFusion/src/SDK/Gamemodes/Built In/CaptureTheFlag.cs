@@ -10,5 +10,7 @@ namespace LabFusion.Core.Gamemodes
 
         public Team RedTeam => new Team("Red", Color.red, 6);
         public Team BlueTeam => new Team("Blue", Color.blue, 6);
+
+        public override bool VisibleInBonemenu => false;
     }
 }

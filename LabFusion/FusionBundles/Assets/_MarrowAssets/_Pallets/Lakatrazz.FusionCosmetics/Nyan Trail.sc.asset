@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34569ddb84e20304981812b1c448d930, type: 3}
+  m_Name: Nyan Trail.sc
+  m_EditorClassIdentifier: 
+  _barcode:
+    _id: Lakatrazz.FusionCosmetics.Spawnable.NyanTrail
+  _barcodeOld:
+    _id: null.empty.barcode
+  _slimCode:
+    _byteArray: 
+  _title: Nyan Trail
+  _description: nyaynyanmewmew, do you feel filled with strawberries? or rainbows?
+  _unlockable: 0
+  _redacted: 1
+  _tags:
+  - Fusion
+  - Cosmetic
+  - Trail
+  - Rainbow
+  - Nostalgic
+  _boneTags:
+    _tags: []
+  _mainAsset:
+    _assetGUID: f34c95837739bd347946a677f58139b1
+    _editorAssetChanged: 0
+  _previewMesh:
+    _assetGUID: ba83fc3c6f09b1b4990363a8c278f50a
+    _editorAssetChanged: 1
+  _customQuality: 0
+  _previewMeshQuality: 0.5
+  _maxLODLevel: 0
+  _colliderBounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}

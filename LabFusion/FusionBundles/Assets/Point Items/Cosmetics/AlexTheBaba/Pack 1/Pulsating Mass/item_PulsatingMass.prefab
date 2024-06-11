@@ -99,6 +99,7 @@ GameObject:
   - component: {fileID: 5758003882074517786}
   - component: {fileID: 754469138391101564}
   - component: {fileID: 2295356471577362565}
+  - component: {fileID: 5370831513854200168}
   m_Layer: 0
   m_Name: item_PulsatingMass
   m_TagString: Untagged
@@ -124,7 +125,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &754469138391101564
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -141,7 +142,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
 --- !u!205 &2295356471577362565
 LODGroup:
   m_ObjectHideFlags: 0
@@ -161,3 +162,20 @@ LODGroup:
     renderers:
     - renderer: {fileID: 7067619904358539584}
   m_Enabled: 1
+--- !u!114 &5370831513854200168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7946880639778444938}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cosmeticPoint: 0
+  hiddenInView: 1
+  rawPrice: 1700
+  previewIcon: {fileID: 2800000, guid: 3b8ffb2a478492d41a76f00dca518d64, type: 3}
+  authorOverride: BaBaCorp

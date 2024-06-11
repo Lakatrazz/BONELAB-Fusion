@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34569ddb84e20304981812b1c448d930, type: 3}
+  m_Name: Gearhead.sc
+  m_EditorClassIdentifier: 
+  _barcode:
+    _id: Lakatrazz.FusionCosmetics.Spawnable.Gearhead
+  _barcodeOld:
+    _id: null.empty.barcode
+  _slimCode:
+    _byteArray: 
+  _title: Gearhead
+  _description: Become one with the mechanical Machinations
+  _unlockable: 0
+  _redacted: 1
+  _tags:
+  - Fusion
+  - Cosmetic
+  - Hat
+  - Mechanical
+  _boneTags:
+    _tags: []
+  _mainAsset:
+    _assetGUID: 3f5e51cbc38dc8349bdf89f9e166cfdc
+    _editorAssetChanged: 0
+  _previewMesh:
+    _assetGUID: 2152959d2e2ef4e45b41d3c86cb34e85
+    _editorAssetChanged: 1
+  _customQuality: 0
+  _previewMeshQuality: 0.5
+  _maxLODLevel: 0
+  _colliderBounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}

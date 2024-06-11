@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4716883467201057630}
   - component: {fileID: 2624072474379718068}
+  - component: {fileID: 8170092752703575512}
   m_Layer: 0
   m_Name: item_TheBeacon
   m_TagString: Untagged
@@ -53,6 +54,23 @@ LODGroup:
     - renderer: {fileID: 6373996167435126077}
     - renderer: {fileID: 2966859591977289504}
   m_Enabled: 1
+--- !u!114 &8170092752703575512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4558223011984787088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cosmeticPoint: 1
+  hiddenInView: 1
+  rawPrice: 2000
+  previewIcon: {fileID: 2800000, guid: 7d3cb3bdf0b98c1408f855f033cb435b, type: 3}
+  authorOverride: BaBaCorp
 --- !u!1001 &8798371842890068991
 PrefabInstance:
   m_ObjectHideFlags: 0

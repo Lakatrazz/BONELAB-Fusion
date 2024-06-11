@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1180299555100862095}
   - component: {fileID: 8619841666915783707}
+  - component: {fileID: 1405325904143028106}
   m_Layer: 0
   m_Name: item_ConstructionHat
   m_TagString: Untagged
@@ -52,6 +53,23 @@ LODGroup:
     renderers:
     - renderer: {fileID: 3217832633440578396}
   m_Enabled: 1
+--- !u!114 &1405325904143028106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7950813880650134337}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cosmeticPoint: 1
+  hiddenInView: 1
+  rawPrice: 300
+  previewIcon: {fileID: 2800000, guid: 328438b7e6d484a4d8015d203290143c, type: 3}
+  authorOverride: BaBaCorp
 --- !u!1001 &4281124560104863704
 PrefabInstance:
   m_ObjectHideFlags: 0

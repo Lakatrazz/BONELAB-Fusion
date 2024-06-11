@@ -1,7 +1,6 @@
 ﻿using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Utilities;
-
 using UnityEngine;
 
 namespace LabFusion.SDK.Points
@@ -14,11 +13,7 @@ namespace LabFusion.SDK.Points
 
         public override string Description => Internal_CreateDescription(1);
 
-        public override RarityLevel Rarity => RarityLevel.Purple;
-
         public override int Price => 600;
-
-        public override Texture2D PreviewImage => FusionPointItemLoader.GetPair(nameof(BitMiner)).Preview;
 
         public override string[] Tags => new string[2] {
             "Utility",
@@ -26,10 +21,10 @@ namespace LabFusion.SDK.Points
         };
 
         public override PointItemUpgrade[] Upgrades => new PointItemUpgrade[] {
-            new PointItemUpgrade(Description + Internal_CreateNextLevelDescription(1), 1000),
-            new PointItemUpgrade(Internal_CreateDescription(2) + Internal_CreateNextLevelDescription(2), 1200),
-            new PointItemUpgrade(Internal_CreateDescription(3) + Internal_CreateNextLevelDescription(3), 3000),
-            new PointItemUpgrade(Internal_CreateDescription(4) + Internal_CreateNextLevelDescription(4), 4200, Internal_CreateDescription(5) + "\n\nLevel: 4"),
+            new(Description + Internal_CreateNextLevelDescription(1), 1000),
+            new(Internal_CreateDescription(2) + Internal_CreateNextLevelDescription(2), 1200),
+            new(Internal_CreateDescription(3) + Internal_CreateNextLevelDescription(3), 3000),
+            new(Internal_CreateDescription(4) + Internal_CreateNextLevelDescription(4), 4200, Internal_CreateDescription(5) + "\n\nLevel: 4"),
         };
 
         public override bool ImplementLateUpdate => true;
@@ -70,6 +65,11 @@ namespace LabFusion.SDK.Points
                     _bitTime = 0f;
                 }
             }
+        }
+
+        public override void LoadPreviewIcon(Action<Texture2D> onLoaded)
+        {
+            onLoaded(FusionPointItemLoader.GetPair(nameof(BitMiner)).Preview);
         }
     }
 }

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8069759084471267511}
   - component: {fileID: 4841325259274911733}
+  - component: {fileID: 6085901861105492428}
   m_Layer: 0
   m_Name: item_CardboardDisguise
   m_TagString: Untagged
@@ -52,6 +53,23 @@ LODGroup:
     renderers:
     - renderer: {fileID: 6564056958995475423}
   m_Enabled: 1
+--- !u!114 &6085901861105492428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3671627838027797814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cosmeticPoint: 0
+  hiddenInView: 1
+  rawPrice: 300
+  previewIcon: {fileID: 2800000, guid: 78038d77f66ae2a4a83d8a032035ff09, type: 3}
+  authorOverride: BaBaCorp
 --- !u!1001 &5537636056800278363
 PrefabInstance:
   m_ObjectHideFlags: 0

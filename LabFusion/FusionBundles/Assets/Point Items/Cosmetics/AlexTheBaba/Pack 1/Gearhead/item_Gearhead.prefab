@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6681561806150536250}
   - component: {fileID: 6251302664250506395}
+  - component: {fileID: 713978958640302906}
   m_Layer: 0
   m_Name: item_Gearhead
   m_TagString: Untagged
@@ -52,6 +53,23 @@ LODGroup:
     renderers:
     - renderer: {fileID: 818125957882055632}
   m_Enabled: 1
+--- !u!114 &713978958640302906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2489960799139289588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cosmeticPoint: 1
+  hiddenInView: 1
+  rawPrice: 800
+  previewIcon: {fileID: 2800000, guid: 2d979acc18d949b4fa5522dd6d714ed6, type: 3}
+  authorOverride: BaBaCorp
 --- !u!1001 &2061246307744651092
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3058198806984415548}
   - component: {fileID: 158492001110735697}
+  - component: {fileID: 3682326522309639020}
   m_Layer: 0
   m_Name: item_GuardHelmet
   m_TagString: Untagged
@@ -52,6 +53,23 @@ LODGroup:
     renderers:
     - renderer: {fileID: 3064692676687947392}
   m_Enabled: 1
+--- !u!114 &3682326522309639020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6072915758359743730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cosmeticPoint: 1
+  hiddenInView: 1
+  rawPrice: 500
+  previewIcon: {fileID: 2800000, guid: f7121c7cf38f0df41bf03b4a91f98197, type: 3}
+  authorOverride: BaBaCorp
 --- !u!1001 &4415335649911732740
 PrefabInstance:
   m_ObjectHideFlags: 0

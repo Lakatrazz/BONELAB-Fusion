@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6944238872996183342}
+  - component: {fileID: 3867280055532806975}
   m_Layer: 0
   m_Name: item_RetroMind
   m_TagString: Untagged
@@ -32,6 +33,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3867280055532806975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3217162450475356974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cosmeticPoint: 0
+  hiddenInView: 1
+  rawPrice: 6000
+  previewIcon: {fileID: 2800000, guid: 82d77d445c6f7624f915e93694ebdfff, type: 3}
+  authorOverride: BaBaCorp
 --- !u!1001 &494715743511010845
 PrefabInstance:
   m_ObjectHideFlags: 0

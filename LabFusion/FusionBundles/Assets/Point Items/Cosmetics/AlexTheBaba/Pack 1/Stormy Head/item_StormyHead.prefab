@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4978845162443450595}
   - component: {fileID: 2140558510565675166}
+  - component: {fileID: 5548968518682562205}
   m_Layer: 0
   m_Name: item_StormyHead
   m_TagString: Untagged
@@ -53,6 +54,23 @@ LODGroup:
     - renderer: {fileID: 8894178554345031034}
     - renderer: {fileID: 6634179502981851413}
   m_Enabled: 1
+--- !u!114 &5548968518682562205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4264867493734972717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cosmeticPoint: 0
+  hiddenInView: 1
+  rawPrice: 2200
+  previewIcon: {fileID: 2800000, guid: 1592112c99f98e540a5ee3f0a3b77e96, type: 3}
+  authorOverride: BaBaCorp
 --- !u!1001 &8747117587289577798
 PrefabInstance:
   m_ObjectHideFlags: 0

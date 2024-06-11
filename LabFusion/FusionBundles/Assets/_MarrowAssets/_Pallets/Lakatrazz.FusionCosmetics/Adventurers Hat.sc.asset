@@ -21,7 +21,7 @@ MonoBehaviour:
   _title: Adventurers Hat
   _description: The perfect hat for the exploration of any temple!
   _unlockable: 0
-  _redacted: 0
+  _redacted: 1
   _tags:
   - Fusion
   - Cosmetic

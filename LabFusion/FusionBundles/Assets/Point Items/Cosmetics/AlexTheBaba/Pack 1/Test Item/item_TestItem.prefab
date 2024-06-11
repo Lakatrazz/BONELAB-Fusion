@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5351792948882150902}
   - component: {fileID: 5014533416848696257}
+  - component: {fileID: 1453690067060773698}
   m_Layer: 0
   m_Name: item_TestItem
   m_TagString: Untagged
@@ -52,6 +53,23 @@ LODGroup:
     renderers:
     - renderer: {fileID: 1762250088783144568}
   m_Enabled: 1
+--- !u!114 &1453690067060773698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3779312270538719288}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cosmeticPoint: 1
+  hiddenInView: 1
+  rawPrice: 3200
+  previewIcon: {fileID: 2800000, guid: 3e13ed4fe9e409f419e647021a033cb5, type: 3}
+  authorOverride: BaBaCorp
 --- !u!1001 &1131899665339611900
 PrefabInstance:
   m_ObjectHideFlags: 0

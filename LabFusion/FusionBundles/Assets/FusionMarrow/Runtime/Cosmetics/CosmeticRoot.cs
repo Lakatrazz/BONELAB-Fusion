@@ -19,13 +19,25 @@ namespace LabFusion.Marrow.Integration
 #if MELONLOADER
         public CosmeticRoot(IntPtr intPtr) : base(intPtr) { }
 
+        public Il2CppValueField<int> cosmeticPoint;
+
+        public Il2CppValueField<bool> hiddenInView;
+
         public Il2CppValueField<int> rawPrice;
 
         public Il2CppReferenceField<Texture2D> previewIcon;
+
+        public Il2CppStringField authorOverride;
 #else
+        public RigPoint cosmeticPoint = RigPoint.HEAD;
+
+        public bool hiddenInView = false;
+
         public int rawPrice = 100;
 
-        public Texture2D previewIcon;
+        public Texture2D previewIcon = null;
+
+        public string authorOverride = null;
 #endif
     }
 }
