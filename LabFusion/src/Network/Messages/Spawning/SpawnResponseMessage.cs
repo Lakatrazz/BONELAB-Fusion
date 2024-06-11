@@ -94,8 +94,8 @@ namespace LabFusion.Network
                 ushort syncId = data.syncId;
                 var trackerId = data.trackerId;
 
-                AssetSpawner.Spawn(spawnable, data.serializedTransform.position, data.serializedTransform.rotation, null,
-                    true, null, (Action<GameObject>)((go) => { OnSpawnFinished(owner, barcode, syncId, go, trackerId); }), null);
+                AssetSpawner.Spawn(spawnable, data.serializedTransform.position, data.serializedTransform.rotation, new Il2CppSystem.Nullable<Vector3>(Vector3.one),
+                    true, new Il2CppSystem.Nullable<int>(0), (Action<GameObject>)((go) => { OnSpawnFinished(owner, barcode, syncId, go, trackerId); }), null);
             }
             else
                 throw new ExpectedClientException();

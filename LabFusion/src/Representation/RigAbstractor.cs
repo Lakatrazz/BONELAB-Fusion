@@ -13,7 +13,7 @@ namespace LabFusion.Representation
 
         public static Transform GetSmoothTurnTransform(this RigManager manager)
         {
-            return manager.remapHeptaRig.transform;
+            return manager.ControllerRig.TryCast<OpenControllerRig>().vrRoot.transform;
         }
 
         public static void FillTransformArray(ref Transform[] array, RigManager manager)
@@ -23,8 +23,8 @@ namespace LabFusion.Representation
             var rig = manager.ControllerRig.TryCast<OpenControllerRig>();
 
             array[0] = rig.headset;
-            array[1] = rig.m_handLf;
-            array[2] = rig.m_handRt;
+            array[1] = rig.leftController.transform;
+            array[2] = rig.rightController.transform;
         }
     }
 }

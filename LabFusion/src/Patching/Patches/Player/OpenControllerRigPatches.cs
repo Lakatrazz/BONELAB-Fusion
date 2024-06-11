@@ -43,7 +43,7 @@ namespace LabFusion.Patching
     }
 
     // Syncs hand and headset positions for player reps
-    [HarmonyPatch(typeof(OpenControllerRig), nameof(OpenControllerRig.UpdateHeptaBody))]
+    [HarmonyPatch(typeof(OpenControllerRig), nameof(OpenControllerRig.OnRealHeptaEarlyUpdate))]
     public class OpenEarlyUpdatePatch
     {
         public static void Prefix(OpenControllerRig __instance, float deltaTime)
