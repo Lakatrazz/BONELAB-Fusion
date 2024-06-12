@@ -38,7 +38,7 @@ namespace LabFusion.Patching
                 angle = VoiceHelper.LocalJaw.GetAngle();
             }
 
-            var jaw = __instance.artJaw;
+            var jaw = inRig.m_jaw;
             jaw.localRotation = Quaternion.AngleAxis(angle, Vector3Extensions.right);
         }
 

@@ -131,10 +131,6 @@ namespace LabFusion.Patching
             if (hand.manager.IsSelf())
             {
                 GrabHelper.SendObjectDetach(hand);
-
-                // Fix broken UI
-                var uiInput = RigData.RigReferences.GetUIInput(hand.handedness);
-                uiInput._cursorTargetOverrides.Clear();
             }
         }
     }

@@ -39,9 +39,6 @@ namespace LabFusion.Data
         public Hand LeftHand { get; private set; }
         public Hand RightHand { get; private set; }
 
-        public UIControllerInput LeftUIInput { get; private set; }
-        public UIControllerInput RightUIInput { get; private set; }
-
         public TriggerRefProxy Proxy { get; private set; }
 
         public BaseController LeftController { get; private set; }
@@ -160,16 +157,6 @@ namespace LabFusion.Data
             };
         }
 
-        public UIControllerInput GetUIInput(Handedness handedness)
-        {
-            return handedness switch
-            {
-                Handedness.LEFT => LeftUIInput,
-                Handedness.RIGHT => RightUIInput,
-                _ => null,
-            };
-        }
-
         public void DisableInteraction()
         {
             if (RigGrips == null)
@@ -223,9 +210,6 @@ namespace LabFusion.Data
 
             LeftHand = rigManager.physicsRig.m_handLf.GetComponent<Hand>();
             RightHand = rigManager.physicsRig.m_handRt.GetComponent<Hand>();
-
-            LeftUIInput = LeftHand.Controller.GetComponent<UIControllerInput>();
-            RightUIInput = RightHand.Controller.GetComponent<UIControllerInput>();
 
             Proxy = rigManager.GetComponentInChildren<TriggerRefProxy>(true);
 
