@@ -104,18 +104,19 @@ public static class MuteUIHelper
         homePage.items.Add(_mutePage);
 
         // Add mute icon
-        Transform playerHead = manager.ControllerRig.m_head;
+        var openControllerRig = manager.ControllerRig.TryCast<OpenControllerRig>();
+        Transform headset = openControllerRig.headset;
         FusionContentLoader.MutePopupPrefab.Load((go) =>
         {
-            if (playerHead == null)
+            if (headset == null)
                 return;
 
-            _muteIcon = GameObject.Instantiate(go, playerHead);
+            _muteIcon = GameObject.Instantiate(go, headset);
             _muteIcon.name = "Mute Icon [FUSION]";
             _muteRenderer = _muteIcon.GetComponentInChildren<Renderer>();
             _muteRenderer.enabled = false;
             _muteCamera = _muteIcon.GetComponent<Camera>();
-            var cameraData = playerHead.GetComponent<UniversalAdditionalCameraData>();
+            var cameraData = headset.GetComponent<UniversalAdditionalCameraData>();
             cameraData.cameraStack.Add(_muteCamera);
 
             _muteIcon.SetActive(VoiceInfo.ShowMuteIndicator);

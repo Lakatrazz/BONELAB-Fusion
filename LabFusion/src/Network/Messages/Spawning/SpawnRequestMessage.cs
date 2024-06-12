@@ -60,12 +60,6 @@ namespace LabFusion.Network
                 var data = reader.ReadFusionSerializable<SpawnRequestData>();
                 var playerId = PlayerIdManager.GetPlayerId(data.owner);
 
-                // Check if we should ignore the spawn gun request
-                if (playerId != null && !playerId.IsSelf && FusionDevTools.PreventSpawnGun(playerId))
-                {
-                    return;
-                }
-
                 var syncId = SyncManager.AllocateSyncID();
 
                 PooleeUtilities.SendSpawn(data.owner, data.barcode, syncId, data.serializedTransform, false, data.trackerId);
