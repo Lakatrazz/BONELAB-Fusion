@@ -15,6 +15,7 @@ using LabFusion.Extensions;
 using LabFusion.Exceptions;
 using LabFusion.Senders;
 using LabFusion.RPC;
+using LabFusion.Marrow;
 
 namespace LabFusion.Network
 {
@@ -73,42 +74,44 @@ namespace LabFusion.Network
     {
         public override byte? Tag => NativeMessageTag.SpawnResponse;
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        public override async void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
-            if (!isServerHandled)
+            if (isServerHandled)
             {
-                using var reader = FusionReader.Create(bytes);
-                var data = reader.ReadFusionSerializable<SpawnResponseData>();
-                var crateRef = new SpawnableCrateReference(data.barcode);
-
-                var spawnable = new Spawnable()
-                {
-                    crateRef = crateRef,
-                    policyData = null
-                };
-
-                AssetSpawner.Register(spawnable);
-
-                byte owner = data.owner;
-                string barcode = data.barcode;
-                ushort syncId = data.syncId;
-                var trackerId = data.trackerId;
-
-                AssetSpawner.Spawn(spawnable, data.serializedTransform.position, data.serializedTransform.rotation, new Il2CppSystem.Nullable<Vector3>(Vector3.one),
-                    true, new Il2CppSystem.Nullable<int>(0), (Action<GameObject>)((go) => { OnSpawnFinished(owner, barcode, syncId, go, trackerId); }), null);
-            }
-            else
                 throw new ExpectedClientException();
+            }
+
+            using var reader = FusionReader.Create(bytes);
+            var data = reader.ReadFusionSerializable<SpawnResponseData>();
+            var crateRef = new SpawnableCrateReference(data.barcode);
+
+            var spawnable = new Spawnable()
+            {
+                crateRef = crateRef,
+                policyData = null
+            };
+
+            AssetSpawner.Register(spawnable);
+
+            byte owner = data.owner;
+            string barcode = data.barcode;
+            ushort syncId = data.syncId;
+            var trackerId = data.trackerId;
+
+            Action<Poolee> onSpawnFinished = (go) =>
+            {
+                OnSpawnFinished(owner, barcode, syncId, go, trackerId);
+            };
+
+            SafeAssetSpawner.Spawn(spawnable, data.serializedTransform.position, data.serializedTransform.rotation, onSpawnFinished);
         }
 
-        public static void OnSpawnFinished(byte owner, string barcode, ushort syncId, GameObject go, uint trackerId = 0)
+        public static void OnSpawnFinished(byte owner, string barcode, ushort syncId, Poolee poolee, uint trackerId = 0)
         {
+            var go = poolee.gameObject;
+
             if (PropSyncable.Cache.TryGet(go, out var syncable))
                 SyncManager.RemoveSyncable(syncable);
-
-            var poolee = Poolee.Cache.Get(go);
-            if (poolee == null)
-                poolee = go.AddComponent<Poolee>();
 
             if (!NetworkInfo.IsServer)
                 PooleeUtilities.CanSpawnList.Push(poolee);

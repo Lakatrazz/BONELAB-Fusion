@@ -9,6 +9,7 @@ using System.Collections;
 
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Audio;
+using LabFusion.Marrow;
 
 namespace LabFusion.Network
 {
@@ -88,7 +89,7 @@ namespace LabFusion.Network
                             ammoInventory = rep.RigReferences.RigManager.GetComponentInChildren<AmmoInventory>(true);
                         }
 
-                        Audio3dManager.PlayAtPoint(ammoInventory.ammoReceiver.grabClips, ammoInventory.ammoReceiver.transform.position, null, 1f, 1f, null, null, null);
+                        SafeAudio3dPlayer.PlayAtPoint(ammoInventory.ammoReceiver.grabClips, ammoInventory.ammoReceiver.transform.position, Audio3dManager.softInteraction, 0.2f);
 
                         syncable.Poolee.gameObject.SetActive(false);
                     }

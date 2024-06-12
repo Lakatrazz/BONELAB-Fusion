@@ -42,14 +42,6 @@ namespace LabFusion.Patching
                 if (cartridgeData == null || __instance._AmmoInventory.GetCartridgeCount(cartridgeData) <= 0)
                     return false;
 
-                var inventoryHand = hand.gameObject.GetComponent<InventoryHand>();
-                if (inventoryHand)
-                {
-                    inventoryHand.IgnoreUnlock();
-                }
-
-                hand.SetGrabLock();
-
                 Handedness handedness = hand.handedness;
 
                 var transform = __instance.transform;

@@ -4,9 +4,9 @@ using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.Rig;
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Interaction;
+
+using LabFusion.Marrow;
 using Il2CppSLZ.Marrow.Audio;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using UnityEngine;
 
 namespace LabFusion.Utilities
 {
@@ -24,7 +24,7 @@ namespace LabFusion.Utilities
             magazine.Initialize(cart, ammoInventory.GetCartridgeCount(cart));
             magazine.Claim();
 
-            Audio3dManager.PlayAtPoint(ammoInventory.ammoReceiver.grabClips, ammoInventory.ammoReceiver.transform.position, null, 1f, 1f, null, null, null);
+            SafeAudio3dPlayer.PlayAtPoint(ammoInventory.ammoReceiver.grabClips, ammoInventory.ammoReceiver.transform.position, Audio3dManager.softInteraction, 0.2f);
         }
 
         public static void GrabMagazine(Magazine magazine, RigManager rigManager, Handedness handedness)
@@ -38,8 +38,6 @@ namespace LabFusion.Utilities
 
             if (found)
             {
-                found.GrabLock = false;
-
                 // Delay by one frame to fix weird grabbing
                 DelayUtilities.Delay(() =>
                 {

@@ -3,6 +3,7 @@
 using LabFusion.Utilities;
 using LabFusion.Data;
 using LabFusion.Extensions;
+using LabFusion.Marrow;
 
 using Il2Cpp;
 
@@ -20,6 +21,7 @@ using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using UnityEngine.Events;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using Il2CppSLZ.Marrow.Interaction;
 
 namespace LabFusion.Representation
 {
@@ -128,7 +130,12 @@ namespace LabFusion.Representation
             // Destroy is "safe", and waits for the next frame to destroy the object.
             // However, this means methods on that object will be called, even if we want it to have never existed in the first place.
             // Using regular Destroy may cause weird effects!
-           
+
+            // Set the bone tag to the fusion player tag instead of the default player tag
+            var entity = rigManager.GetComponent<MarrowEntity>();
+            entity.Tags.Tags.RemoveAt(0);
+            entity.Tags.Tags.Add(FusionBoneTagReferences.FusionPlayerReference);
+
             // Add ammo. If theres no ammo in each category it wont set cartridges properly when grabbing guns
             var ammoInventory = rigManager.GetComponentInChildren<AmmoInventory>();
             var count = 100000;

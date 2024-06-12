@@ -26,7 +26,7 @@ namespace LabFusion.SDK.Points
 
             AssetSpawner.Register(spawnable);
 
-            AssetSpawner.Spawn(spawnable, position, rotation, new Il2CppSystem.Nullable<Vector3>(Vector3.one), true, new Il2CppSystem.Nullable<int>(0), null, null);
+            SafeAssetSpawner.Spawn(spawnable, position, rotation);
         }
     }
 }
