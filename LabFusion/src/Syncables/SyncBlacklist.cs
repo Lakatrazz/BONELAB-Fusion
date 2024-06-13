@@ -61,10 +61,6 @@ namespace LabFusion.Syncables
 
             bool spawnableProperties = true;
 
-            var assetPoolee = go.GetComponentInChildren<Poolee>();
-            if (assetPoolee)
-                spawnableProperties = assetPoolee.SpawnableCrate.Barcode != CommonBarcodes.BOARD_BARCODE;
-
             bool isValid = hasRigidbody && hasGunProperties && spawnableProperties;
 
             return isValid;

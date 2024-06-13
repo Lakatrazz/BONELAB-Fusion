@@ -120,7 +120,17 @@ namespace LabFusion.Representation
 
             go.SetActive(true);
 
+            OnSetupAfterAwake(rigManager);
+
             onRigCreated?.Invoke(rigManager);
+        }
+
+        private static void OnSetupAfterAwake(RigManager rigManager)
+        {
+            // Re-enable disable culling for the entity.
+            // Other players should be fully cullable.
+            var entity = rigManager.marrowEntity;
+            entity._isDisableOnCullPrevented = false;
         }
 
         private static void Internal_SetupPlayerRep(RigManager rigManager)
@@ -135,6 +145,21 @@ namespace LabFusion.Representation
             var entity = rigManager.GetComponent<MarrowEntity>();
             entity.Tags.Tags.RemoveAt(0);
             entity.Tags.Tags.Add(FusionBoneTagReferences.FusionPlayerReference);
+
+            // Remove the player rep's observer.
+            // This is what triggers chunks and physics culling, but player reps should NOT do this
+            var physHead = rigManager.physicsRig.m_head.GetComponent<MarrowBody>();
+
+            // Get the observer tracker out of the array, and preserve the Entity and Being trackers
+            var observerTracker = physHead._trackers[2];
+            physHead._trackers = new Tracker[]
+            {
+                physHead._trackers[0],
+                physHead._trackers[1],
+            };
+
+            // Delete the tracker GameObject
+            GameObject.DestroyImmediate(observerTracker.gameObject);
 
             // Add ammo. If theres no ammo in each category it wont set cartridges properly when grabbing guns
             var ammoInventory = rigManager.GetComponentInChildren<AmmoInventory>();

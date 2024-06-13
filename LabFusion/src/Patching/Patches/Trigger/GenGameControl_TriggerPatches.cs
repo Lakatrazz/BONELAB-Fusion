@@ -5,6 +5,7 @@ using LabFusion.Utilities;
 using Il2CppSLZ.Bonelab;
 
 using UnityEngine;
+using Il2CppSLZ.Marrow.AI;
 
 namespace LabFusion.Patching
 {
@@ -15,7 +16,19 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(GenGameControl_Trigger.OnTriggerEnter))]
         public static bool OnTriggerEnter(GenGameControl_Trigger __instance, Collider other)
         {
-            if (NetworkInfo.HasServer && other.CompareTag("Player"))
+            if (!NetworkInfo.HasServer)
+            {
+                return true;
+            }
+
+            var proxy = other.GetComponent<TriggerRefProxy>();
+
+            if (proxy == null)
+            {
+                return true;
+            }
+
+            if (proxy.triggerType == TriggerRefProxy.TriggerType.Player)
             {
                 if (TriggerUtilities.VerifyLevelTrigger(__instance, other, out bool runMethod))
                     return runMethod;
@@ -33,7 +46,19 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(GenGameControl_Trigger.OnTriggerExit))]
         public static bool OnTriggerExit(GenGameControl_Trigger __instance, Collider other)
         {
-            if (NetworkInfo.HasServer && other.CompareTag("Player"))
+            if (!NetworkInfo.HasServer)
+            {
+                return true;
+            }
+
+            var proxy = other.GetComponent<TriggerRefProxy>();
+
+            if (proxy == null)
+            {
+                return true;
+            }
+
+            if (proxy.triggerType == TriggerRefProxy.TriggerType.Player)
             {
                 if (TriggerUtilities.VerifyLevelTrigger(__instance, other, out bool runMethod))
                     return runMethod;

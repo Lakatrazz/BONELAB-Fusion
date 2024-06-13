@@ -11,13 +11,13 @@ namespace LabFusion.Grabbables
     {
         public static GameObject GetSyncRoot(this GameObject go)
         {
-            var marrowEntity = go.GetComponentInParent<MarrowEntity>();
-            var poolee = go.GetComponentInParent<Poolee>();
-            var blip = go.GetComponentInParent<Blip>();
+            var marrowEntity = go.GetComponentInParent<MarrowEntity>(true);
+            var poolee = go.GetComponentInParent<Poolee>(true);
+            var blip = go.GetComponentInParent<Blip>(true);
 
-            var host = go.GetComponentInParent<InteractableHost>();
+            var host = go.GetComponentInParent<InteractableHost>(true);
             if (!host)
-                host = go.GetComponentInChildren<InteractableHost>();
+                host = go.GetComponentInChildren<InteractableHost>(true);
 
             go = host ? host.gameObject : go;
 
