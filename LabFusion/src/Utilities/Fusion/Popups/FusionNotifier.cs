@@ -173,7 +173,7 @@ namespace LabFusion.Utilities
 
             if (notification.isPopup && !rm.IsNOC())
             {
-                var tutorialRig = rm.GetComponentInChildren<TutorialRig>();
+                var tutorialRig = rm.GetComponentInChildren<TutorialRig>(true);
                 var headTitles = tutorialRig.headTitles;
 
                 EnableTutorialRig();
@@ -220,7 +220,7 @@ namespace LabFusion.Utilities
 
             if (!rm.IsNOC())
             {
-                var tutorialRig = rm.GetComponentInChildren<TutorialRig>();
+                var tutorialRig = rm.GetComponentInChildren<TutorialRig>(true);
                 var headTitles = tutorialRig.headTitles;
 
                 // Make sure the tutorial rig/head titles are enabled
@@ -235,7 +235,7 @@ namespace LabFusion.Utilities
 
             if (!rm.IsNOC())
             {
-                var tutorialRig = rm.GetComponentInChildren<TutorialRig>();
+                var tutorialRig = rm.GetComponentInChildren<TutorialRig>(true);
                 var headTitles = tutorialRig.headTitles;
 
                 return headTitles.headFollower.gameObject.activeInHierarchy;

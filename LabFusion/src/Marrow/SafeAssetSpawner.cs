@@ -21,12 +21,16 @@ namespace LabFusion.Marrow
         {
             var spawnerInstance = AssetSpawner._instance;
 
-            var success = spawnerInstance._barcodeToPool.TryGetValue(barcode, out var pool);
+            var barcodeToPool = spawnerInstance._barcodeToPool;
 
-            if (!success)
+            // Make sure the pool exists in the dictionary
+            if (!barcodeToPool.ContainsKey(barcode))
             {
                 return;
             }
+
+            // Get the pool from the barcode
+            var pool = barcodeToPool[barcode];
 
             var spawnTask = pool.Spawn(position, rotation, new(Vector3.one));
             var awaiter = spawnTask.GetAwaiter();
