@@ -2,9 +2,9 @@
 
 using LabFusion.Network;
 using LabFusion.RPC;
-using LabFusion.Utilities;
 
 using Il2CppSLZ.Marrow.Warehouse;
+using Il2CppSLZ.Marrow.Pool;
 
 using UnityEngine;
 
@@ -50,8 +50,12 @@ namespace LabFusion.Patching
         private static void OnNetworkSpawn(CrateSpawner spawner, NetworkAssetSpawner.SpawnCallbackInfo info)
         {
             var spawned = info.spawned;
+            var poolee = Poolee.Cache.Get(spawned);
 
             spawner.OnPooleeSpawn(spawned);
+
+            poolee.OnSpawnDelegate += (Action<GameObject>)spawner.OnPooleeSpawn;
+            poolee.OnDespawnDelegate += (Action<GameObject>)spawner.OnPooleeDespawn;
         }
     }
 }

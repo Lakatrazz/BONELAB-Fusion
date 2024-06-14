@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using Il2CppSLZ.Marrow.Data;
+﻿using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.Marrow.Pool;
-using Il2CppSLZ.Marrow.Warehouse;
 
 using UnityEngine;
 
@@ -14,25 +9,10 @@ namespace LabFusion.Marrow
     {
         public static void Spawn(Spawnable spawnable, Vector3 position, Quaternion rotation, Action<Poolee> spawnCallback = null)
         {
-            Spawn(spawnable.crateRef.Barcode, position, rotation, spawnCallback);
-        }
-
-        public static void Spawn(Barcode barcode, Vector3 position, Quaternion rotation, Action<Poolee> spawnCallback = null)
-        {
-            var spawnerInstance = AssetSpawner._instance;
-
-            var barcodeToPool = spawnerInstance._barcodeToPool;
-
-            // Make sure the pool exists in the dictionary
-            if (!barcodeToPool.ContainsKey(barcode))
-            {
-                return;
-            }
-
-            // Get the pool from the barcode
-            var pool = barcodeToPool[barcode];
-
-            var spawnTask = pool.Spawn(position, rotation, new(Vector3.one));
+            // spawnCallback and despawnCallback no longer seem to work in patch 4 through MelonLoader
+            // Instead, we use the async variant and simply continue when the method finishes
+            // This originally spawned directly from the pool, however that seemed to have strange effects on spawned objects
+            var spawnTask = AssetSpawner.SpawnAsync(spawnable, position, rotation, new(Vector3.one), false, new(0), null, null);
             var awaiter = spawnTask.GetAwaiter();
 
             var continuation = () =>
