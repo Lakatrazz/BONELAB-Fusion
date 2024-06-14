@@ -19,11 +19,7 @@ namespace LabFusion.Utilities
 
         internal static PooleePusher CheckingForSpawn = new();
 
-        internal static PooleePusher CanSpawnList = new();
-
         internal static bool CanDespawn = false;
-
-        internal static PooleePusher ServerSpawnedList = new();
 
         public static void DespawnAll()
         {
@@ -50,25 +46,6 @@ namespace LabFusion.Utilities
                     }
                 }
             }
-        }
-
-        public static void OnServerLocalSpawn(ushort syncId, GameObject go, out PropSyncable newSyncable)
-        {
-            newSyncable = null;
-
-            if (!NetworkInfo.IsServer)
-                return;
-
-            if (PropSyncable.Cache.TryGet(go, out var syncable))
-                SyncManager.RemoveSyncable(syncable);
-
-            if (!Poolee.Cache.Get(go))
-                go.AddComponent<Poolee>();
-
-            newSyncable = new PropSyncable(null, go.gameObject);
-            newSyncable.SetOwner(0);
-
-            SyncManager.RegisterSyncable(newSyncable, syncId);
         }
 
         public static bool IsPlayer(Poolee poolee)
@@ -134,16 +111,6 @@ namespace LabFusion.Utilities
                 MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
             else
                 MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-        }
-
-        public static bool CanForceDespawn(Poolee instance)
-        {
-            return !CanSpawnList.Pull(instance) && instance.gameObject.IsSyncWhitelisted();
-        }
-
-        public static bool CanSendSpawn(Poolee instance)
-        {
-            return instance.gameObject.IsSyncWhitelisted();
         }
     }
 }

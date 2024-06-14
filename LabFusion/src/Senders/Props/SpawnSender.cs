@@ -20,8 +20,8 @@ namespace LabFusion.Senders
         {
             if (NetworkInfo.IsServer)
             {
-                using var writer = FusionWriter.Create(SpawnableCratePlacerData.Size);
-                var data = SpawnableCratePlacerData.Create(syncable.GetId(), placer.gameObject);
+                using var writer = FusionWriter.Create(CrateSpawnerData.Size);
+                var data = CrateSpawnerData.Create(syncable.GetId(), placer.gameObject);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.CrateSpawner, writer);
@@ -34,7 +34,7 @@ namespace LabFusion.Senders
         /// </summary>
         /// <param name="placer"></param>
         /// <param name="go"></param>
-        public static void SendCratePlacerEvent(CrateSpawner placer, GameObject go)
+        public static void SendCratePlacerEvent(CrateSpawner placer, ushort spawnedId)
         {
             if (NetworkInfo.IsServer)
             {
@@ -43,29 +43,29 @@ namespace LabFusion.Senders
                 {
                     DelayUtilities.Delay(() =>
                     {
-                        Internal_OnSendCratePlacer(placer, go);
+                        Internal_OnSendCratePlacer(placer, spawnedId);
                     }, 5);
                 });
             }
         }
 
-        private static void Internal_OnSendCratePlacer(CrateSpawner placer, GameObject go)
+        private static void Internal_OnSendCratePlacer(CrateSpawner placer, ushort spawnedId)
         {
-            if (PropSyncable.Cache.TryGet(go, out var syncable))
+            using (var writer = FusionWriter.Create(CrateSpawnerData.Size))
             {
-                using (var writer = FusionWriter.Create(SpawnableCratePlacerData.Size))
-                {
-                    var data = SpawnableCratePlacerData.Create(syncable.GetId(), placer.gameObject);
-                    writer.Write(data);
+                var data = CrateSpawnerData.Create(spawnedId, placer.gameObject);
+                writer.Write(data);
 
-                    using var message = FusionMessage.Create(NativeMessageTag.CrateSpawner, writer);
-                    MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                }
+                using var message = FusionMessage.Create(NativeMessageTag.CrateSpawner, writer);
+                MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+            }
 
-                // Insert the catchup hook for future users
-                syncable.InsertCatchupDelegate((id) =>
+            // Insert the catchup hook for future users
+            if (SyncManager.TryGetSyncable<PropSyncable>(spawnedId, out var propSyncable))
+            {
+                propSyncable.InsertCatchupDelegate((id) =>
                 {
-                    SendCratePlacerCatchup(placer, syncable, id);
+                    SendCratePlacerCatchup(placer, propSyncable, id);
                 });
             }
         }

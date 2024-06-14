@@ -74,7 +74,7 @@ namespace LabFusion.Network
     {
         public override byte? Tag => NativeMessageTag.SpawnResponse;
 
-        public override async void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             if (isServerHandled)
             {
@@ -113,13 +113,6 @@ namespace LabFusion.Network
             if (PropSyncable.Cache.TryGet(go, out var syncable))
                 SyncManager.RemoveSyncable(syncable);
 
-            if (!NetworkInfo.IsServer)
-                PooleeUtilities.CanSpawnList.Push(poolee);
-            else
-            {
-                PooleeUtilities.ServerSpawnedList.Push(poolee);
-            }
-
             PooleeUtilities.CheckingForSpawn.Push(poolee);
 
             PropSyncable newSyncable = new(null, go.gameObject);
@@ -133,10 +126,6 @@ namespace LabFusion.Network
                 {
                     SpawnSender.SendCatchupSpawn(owner, barcode, syncId, new SerializedTransform(go.transform), id);
                 });
-
-            // Force the object active
-            go.SetActive(true);
-            PooleeUtilities.ForceEnabled.Push(poolee);
 
             // Invoke spawn callback
             if (owner == PlayerIdManager.LocalSmallId)
@@ -153,8 +142,6 @@ namespace LabFusion.Network
 
         private static void Internal_PostSpawn(Poolee __instance)
         {
-            PooleeUtilities.CanSpawnList.Pull(__instance);
-            PooleeUtilities.ForceEnabled.Pull(__instance);
             PooleeUtilities.CheckingForSpawn.Pull(__instance);
         }
     }
