@@ -104,8 +104,6 @@ public class FusionMod : MelonMod
 
         FusionPopupManager.OnInitializeMelon();
 
-        PhysicsUtilities.OnInitializeMelon();
-
         // Hook into asset warehouse
         var onReady = () =>
         {

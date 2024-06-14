@@ -6,43 +6,10 @@ using LabFusion.Senders;
 
 using UnityEngine;
 
-
-
 namespace LabFusion.Utilities
 {
     internal static class PhysicsUtilities
     {
-        internal static bool CanModifyGravity = false;
-
-        private static readonly Vector3 DefaultGravity = new(0f, -9.81f, 0f);
-
-        public static Vector3 Gravity = DefaultGravity;
-
-        internal static void OnInitializeMelon()
-        {
-            MultiplayerHooking.OnPlayerCatchup += OnPlayerCatchup;
-        }
-
-        private static void OnPlayerCatchup(ulong id)
-        {
-            using var writer = FusionWriter.Create(WorldGravityMessageData.Size);
-            var data = WorldGravityMessageData.Create(Gravity);
-            writer.Write(data);
-
-            using var message = FusionMessage.Create(NativeMessageTag.WorldGravity, writer);
-            MessageSender.SendFromServer(id, NetworkChannel.Reliable, message);
-        }
-
-        internal static void SendGravity(Vector3 value)
-        {
-            using var writer = FusionWriter.Create(WorldGravityMessageData.Size);
-            var data = WorldGravityMessageData.Create(value);
-            writer.Write(data);
-
-            using var message = FusionMessage.Create(NativeMessageTag.WorldGravity, writer);
-            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-        }
-
         internal static void OnUpdateTimescale()
         {
             if (NetworkInfo.HasServer)
@@ -67,7 +34,7 @@ namespace LabFusion.Utilities
 
                             float mult = 1f - (1f / TimeManager.cur_intensity);
 
-                            Vector3 force = -Gravity * mult;
+                            Vector3 force = -Physics.gravity * mult;
 
                             foreach (var rb in rm.physicsRig.selfRbs)
                             {
