@@ -14,6 +14,7 @@ namespace LabFusion.Network
         {
             using FusionReader reader = FusionReader.Create(bytes);
             var data = reader.ReadFusionSerializable<ComponentIndexData>();
+
             // Send message to other clients if server
             if (NetworkInfo.IsServer && isServerHandled)
             {
@@ -25,13 +26,13 @@ namespace LabFusion.Network
                 if (SyncManager.TryGetSyncable<PropSyncable>(data.syncId, out var destructable) && destructable.TryGetExtender<ObjectDestructableExtender>(out var extender))
                 {
                     var objectDestructable = extender.GetComponent(data.componentIndex);
-                    ObjectDestructablePatches.IgnorePatches = true;
+                    ObjectDestructiblePatches.IgnorePatches = true;
                     PooleeDespawnPatch.IgnorePatch = true;
 
                     objectDestructable._hits = objectDestructable.reqHitCount + 1;
                     objectDestructable.TakeDamage(Vector3Extensions.up, objectDestructable._health + 1f, false, AttackType.Blunt);
 
-                    ObjectDestructablePatches.IgnorePatches = false;
+                    ObjectDestructiblePatches.IgnorePatches = false;
                     PooleeDespawnPatch.IgnorePatch = false;
                 }
             }
