@@ -6,12 +6,13 @@ using LabFusion.Representation;
 using LabFusion.SDK.Achievements;
 using LabFusion.Syncables;
 using LabFusion.RPC;
+using LabFusion.Marrow;
 
-using Il2CppSLZ.Marrow.Pool;
 using Il2CppSLZ.Interaction;
 using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Bonelab;
+using Il2CppSLZ.Marrow.Interaction;
 
 namespace LabFusion.Patching
 {
@@ -128,15 +129,23 @@ namespace LabFusion.Patching
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(SpawnGun.OnFire))]
-        public static void OnFirePrefix(SpawnGun __instance, ref SpawnableCrate __state)
+        public static bool OnFirePrefix(SpawnGun __instance, ref SpawnableCrate __state)
         {
             if (!NetworkInfo.HasServer)
             {
-                return;
+                return true;
             }
 
             __state = __instance._selectedCrate;
             __instance._selectedCrate = null;
+
+            if (__instance._selectedMode == UtilityModes.REMOVER)
+            {
+                OnFireDespawn(__instance);
+                return false;
+            }
+
+            return true;
         }
 
         private static void OnFireSpawn(SpawnGun spawnGun)
@@ -172,6 +181,59 @@ namespace LabFusion.Patching
             NetworkAssetSpawner.Spawn(info);
         }
 
+        private static void OnFireDespawn(SpawnGun spawnGun)
+        {
+            var rigidbody = spawnGun._hitInfo.rigidbody;
+
+            if (rigidbody == null)
+            {
+                return;
+            }
+
+            var marrowBody = MarrowBody.Cache.Get(rigidbody.gameObject);
+
+            if (marrowBody == null)
+            {
+                return;
+            }
+
+            var marrowEntity = marrowBody.Entity;
+
+            // Check if it's a player and prevent despawn
+            var tags = marrowEntity.Tags;
+
+            foreach (var tag in tags.Tags)
+            {
+                var barcode = tag.Barcode;
+
+                if (barcode == spawnGun.playerTag.Barcode)
+                {
+                    return;
+                }
+
+                if (barcode == FusionBoneTagReferences.FusionPlayerReference.Barcode)
+                {
+                    return;
+                }
+            }
+
+            // Reward achievement
+            if (PlayerIdManager.HasOtherPlayers && AchievementManager.TryGetAchievement<CleanupCrew>(out var achievement))
+            {
+                achievement.IncrementTask();
+            }
+
+            // Send a despawn request if there's a syncable
+            if (PropSyncable.Cache.TryGet(marrowEntity.gameObject, out var syncable))
+            {
+                PooleeUtilities.RequestDespawn(syncable.GetId());
+            }
+
+            // Flash the spawn gun
+            spawnGun.Flash();
+            spawnGun.SpawnFlareAsync().Forget();
+        }
+
         [HarmonyPostfix]
         [HarmonyPatch(nameof(SpawnGun.OnFire))]
         public static void OnFirePostfix(SpawnGun __instance, ref SpawnableCrate __state)
@@ -186,24 +248,6 @@ namespace LabFusion.Patching
             if (__instance._selectedMode == UtilityModes.SPAWNER)
             {
                 OnFireSpawn(__instance);
-            }
-            else if (__instance._selectedMode == UtilityModes.REMOVER && __instance._hitInfo.rigidbody != null)
-            {
-                var hitBody = __instance._hitInfo.rigidbody;
-                Poolee poolee = hitBody.GetComponentInParent<Poolee>();
-
-                if (poolee != null)
-                {
-                    // Reward achievement
-                    if (PlayerIdManager.HasOtherPlayers && AchievementManager.TryGetAchievement<CleanupCrew>(out var achievement))
-                        achievement.IncrementTask();
-
-                    // No need to send a despawn request if we are the server
-                    if (!NetworkInfo.IsServer && PropSyncable.Cache.TryGet(poolee.gameObject, out var syncable))
-                    {
-                        PooleeUtilities.SendDespawn(syncable.GetId());
-                    }
-                }
             }
         }
     }
