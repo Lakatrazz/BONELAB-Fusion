@@ -190,6 +190,9 @@ namespace LabFusion.Representation
             bodyVitals.bodyLogFlipped = true;
             bodyVitals.bodyLogEnabled = true;
 
+            var health = rigManager.health;
+            health._testVisualDamage = true;
+
             // Destroy unnecessary data manager
             var uiRig = rigManager.GetComponentInChildren<UIRig>();
 

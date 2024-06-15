@@ -66,12 +66,6 @@ namespace LabFusion.Patching
             {
                 if (NetworkInfo.HasServer && __instance.manager.IsSelf())
                 {
-                    var health = __instance.manager.health;
-
-                    // Prevent re-ragdolling when dead/respawning
-                    if (!health.alive)
-                        return false;
-
                     using var writer = FusionWriter.Create(PlayerRepRagdollData.Size);
                     var data = PlayerRepRagdollData.Create(PlayerIdManager.LocalSmallId, true);
                     writer.Write(data);
@@ -83,6 +77,13 @@ namespace LabFusion.Patching
             catch (Exception e)
             {
                 FusionLogger.LogException("patching PhysicsRig.RagdollRig", e);
+            }
+
+            // If not already shutdown, shutdown the rig
+            // This is required for patch 4 ragdolling
+            if (!__instance.shutdown)
+            {
+                __instance.ShutdownRig();
             }
 
             return true;
@@ -115,6 +116,12 @@ namespace LabFusion.Patching
             catch (Exception e)
             {
                 FusionLogger.LogException("patching PhysicsRig.UnRagdollRig", e);
+            }
+
+            // Unshutdown the rig if needed
+            if (__instance.shutdown)
+            {
+                __instance.TurnOnRig();
             }
 
             return true;

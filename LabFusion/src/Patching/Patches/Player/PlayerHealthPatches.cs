@@ -33,27 +33,56 @@ namespace LabFusion.Patching
         [HarmonyPrefix]
         public static void DyingVocal(HeadSFX __instance)
         {
-            // Is this our player?
-            var rm = __instance._physRig.manager;
-            if (NetworkInfo.HasServer && rm.IsSelf())
+            // If there's no server, ignore
+            if (!NetworkInfo.HasServer)
             {
-                // Notify the server about the death beginning
-                if (FusionPlayer.LastAttacker.HasValue)
-                {
-                    PlayerSender.SendPlayerAction(PlayerActionType.DYING_BY_OTHER_PLAYER, FusionPlayer.LastAttacker.Value);
-                }
-
-                PlayerSender.SendPlayerAction(PlayerActionType.DYING);
+                return;
             }
+
+            var rm = __instance._physRig.manager;
+
+            // Make sure this is the local player
+            if (!rm.IsSelf())
+            {
+                return;
+            }
+
+            // If the player has ragdoll on death enabled, ragdoll them
+            var health = rm.health;
+            if (health._testRagdollOnDeath)
+            {
+                rm.physicsRig.RagdollRig();
+            }
+
+            // Notify the server about the death beginning
+            if (FusionPlayer.LastAttacker.HasValue)
+            {
+                PlayerSender.SendPlayerAction(PlayerActionType.DYING_BY_OTHER_PLAYER, FusionPlayer.LastAttacker.Value);
+            }
+
+            PlayerSender.SendPlayerAction(PlayerActionType.DYING);
         }
 
         [HarmonyPatch(nameof(HeadSFX.DeathVocal))]
         [HarmonyPrefix]
         public static void DeathVocal(HeadSFX __instance)
         {
-            // Is this our player? Did they actually die?
+            // If there's no server, ignore
+            if (!NetworkInfo.HasServer)
+            {
+                return;
+            }
+
             var rm = __instance._physRig.manager;
-            if (NetworkInfo.HasServer && rm.IsSelf() && !rm.health.alive)
+
+            // Make sure this is the local player
+            if (!rm.IsSelf())
+            {
+                return;
+            }
+
+            // Did they actually die?
+            if (!rm.health.alive)
             {
                 // If in a gamemode with auto holstering, then do it
                 if (Gamemode.ActiveGamemode != null && Gamemode.ActiveGamemode.AutoHolsterOnDeath)

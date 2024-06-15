@@ -65,8 +65,9 @@ namespace LabFusion.Utilities
             // Setup impact properties
             PersistentAssetCreator.SetupImpactProperties(manager);
 
-            // Setup ragdoll on death
+            // Enable unused experimental features
             manager.health._testRagdollOnDeath = true;
+            manager.health._testVisualDamage = true;
 
             // Remove level reloading on death
             var playerHealth = manager.health.TryCast<Player_Health>();
@@ -115,8 +116,9 @@ namespace LabFusion.Utilities
             foreach (var syncer in collisionSyncers)
                 GameObject.Destroy(syncer);
 
-            // Remove ragdoll on death
+            // Remove experimental features
             manager.health._testRagdollOnDeath = false;
+            manager.health._testVisualDamage = false;
 
             // Add back slowmo on death
             var playerHealth = manager.health.TryCast<Player_Health>();
