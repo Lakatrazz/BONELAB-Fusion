@@ -9,120 +9,119 @@ using Il2CppSLZ.Bonelab;
 
 using UnityEngine;
 
-namespace LabFusion.Utilities
+namespace LabFusion.Utilities;
+
+public static class PlayerAdditionsHelper
 {
-    public static class PlayerAdditionsHelper
+    public static void OnInitializeMelon()
     {
-        public static void OnInitializeMelon()
+        // Hook multiplayer events
+        MultiplayerHooking.OnJoinServer += () => { OnEnterServer(RigData.RigReferences.RigManager); };
+        MultiplayerHooking.OnStartServer += () => { OnEnterServer(RigData.RigReferences.RigManager); };
+        MultiplayerHooking.OnDisconnect += () => { OnExitServer(RigData.RigReferences.RigManager); };
+        MultiplayerHooking.OnLocalPlayerCreated += (rig) =>
         {
-            // Hook multiplayer events
-            MultiplayerHooking.OnJoinServer += () => { OnEnterServer(RigData.RigReferences.RigManager); };
-            MultiplayerHooking.OnStartServer += () => { OnEnterServer(RigData.RigReferences.RigManager); };
-            MultiplayerHooking.OnDisconnect += () => { OnExitServer(RigData.RigReferences.RigManager); };
-            MultiplayerHooking.OnLocalPlayerCreated += (rig) =>
+            OnCreatedLocalPlayer(rig);
+
+            if (NetworkInfo.HasServer)
             {
-                OnCreatedLocalPlayer(rig);
+                OnEnterServer(rig);
+            }
+        };
 
-                if (NetworkInfo.HasServer)
-                {
-                    OnEnterServer(rig);
-                }
-            };
+        // Invoke extras
+        MuteUIHelper.OnInitializeMelon();
+    }
 
-            // Invoke extras
-            MuteUIHelper.OnInitializeMelon();
-        }
+    public static void OnDeinitializeMelon()
+    {
+        // Invoke extras
+        MuteUIHelper.OnDeinitializeMelon();
+    }
 
-        public static void OnDeinitializeMelon()
-        {
-            // Invoke extras
-            MuteUIHelper.OnDeinitializeMelon();
-        }
+    public static void OnAvatarChanged(RigManager manager)
+    {
+    }
 
-        public static void OnAvatarChanged(RigManager manager)
-        {
-        }
+    public static void OnCreatedLocalPlayer(RigManager manager)
+    {
+        // Forward to the regular method
+        OnCreatedRig(manager);
+    }
 
-        public static void OnCreatedLocalPlayer(RigManager manager)
-        {
-            // Forward to the regular method
-            OnCreatedRig(manager);
-        }
+    public static void OnCreatedRig(RigManager manager)
+    {
+        OnAvatarChanged(manager);
+    }
 
-        public static void OnCreatedRig(RigManager manager)
-        {
-            OnAvatarChanged(manager);
-        }
+    public static void OnEnterServer(RigManager manager)
+    {
+        if (manager.IsNOC())
+            return;
 
-        public static void OnEnterServer(RigManager manager)
-        {
-            if (manager.IsNOC())
-                return;
+        // Create mute icon
+        MuteUIHelper.OnCreateMuteUI(manager);
 
-            // Create mute icon
-            MuteUIHelper.OnCreateMuteUI(manager);
+        // Setup impact properties
+        PersistentAssetCreator.SetupImpactProperties(manager);
 
-            // Setup impact properties
-            PersistentAssetCreator.SetupImpactProperties(manager);
+        // Enable unused experimental features
+        manager.health._testRagdollOnDeath = true;
+        manager.health._testVisualDamage = true;
 
-            // Enable unused experimental features
-            manager.health._testRagdollOnDeath = true;
-            manager.health._testVisualDamage = true;
+        // Remove level reloading on death
+        var playerHealth = manager.health.TryCast<Player_Health>();
+        playerHealth.reloadLevelOnDeath = false;
+        playerHealth.slowMoOnDeath = false;
 
-            // Remove level reloading on death
-            var playerHealth = manager.health.TryCast<Player_Health>();
-            playerHealth.reloadLevelOnDeath = false;
-            playerHealth.slowMoOnDeath = false;
+        // Add syncers for player collision
+        var physRig = manager.physicsRig;
 
-            // Add syncers for player collision
-            var physRig = manager.physicsRig;
+        // Left arm
+        physRig.m_handLf.gameObject.AddComponent<CollisionSyncer>();
+        physRig.m_elbowLf.gameObject.AddComponent<CollisionSyncer>();
+        physRig.m_shoulderLf.gameObject.AddComponent<CollisionSyncer>();
 
-            // Left arm
-            physRig.m_handLf.gameObject.AddComponent<CollisionSyncer>();
-            physRig.m_elbowLf.gameObject.AddComponent<CollisionSyncer>();
-            physRig.m_shoulderLf.gameObject.AddComponent<CollisionSyncer>();
+        // Right arm
+        physRig.m_handRt.gameObject.AddComponent<CollisionSyncer>();
+        physRig.m_elbowRt.gameObject.AddComponent<CollisionSyncer>();
+        physRig.m_shoulderRt.gameObject.AddComponent<CollisionSyncer>();
 
-            // Right arm
-            physRig.m_handRt.gameObject.AddComponent<CollisionSyncer>();
-            physRig.m_elbowRt.gameObject.AddComponent<CollisionSyncer>();
-            physRig.m_shoulderRt.gameObject.AddComponent<CollisionSyncer>();
+        // Head and feet
+        physRig.feet.gameObject.AddComponent<CollisionSyncer>();
+        physRig.m_head.gameObject.AddComponent<CollisionSyncer>();
 
-            // Head and feet
-            physRig.feet.gameObject.AddComponent<CollisionSyncer>();
-            physRig.m_head.gameObject.AddComponent<CollisionSyncer>();
+        // Apply mortality
+        FusionPlayer.ResetMortality();
+    }
 
-            // Apply mortality
-            FusionPlayer.ResetMortality();
-        }
+    public static void OnExitServer(RigManager manager)
+    {
+        if (manager.IsNOC())
+            return;
 
-        public static void OnExitServer(RigManager manager)
-        {
-            if (manager.IsNOC())
-                return;
+        // Disable mute icons
+        MuteUIHelper.OnDestroyMuteUI(manager);
 
-            // Disable mute icons
-            MuteUIHelper.OnDestroyMuteUI(manager);
+        // Remove impact properties
+        var impactProperties = manager.GetComponentsInChildren<ImpactProperties>(true);
+        foreach (var properties in impactProperties)
+            GameObject.Destroy(properties);
 
-            // Remove impact properties
-            var impactProperties = manager.GetComponentsInChildren<ImpactProperties>(true);
-            foreach (var properties in impactProperties)
-                GameObject.Destroy(properties);
+        var impactManager = manager.GetComponentInChildren<ImpactPropertiesManager>(true);
+        GameObject.Destroy(impactManager);
 
-            var impactManager = manager.GetComponentInChildren<ImpactPropertiesManager>(true);
-            GameObject.Destroy(impactManager);
+        // Remove collision syncers
+        var collisionSyncers = manager.GetComponentsInChildren<CollisionSyncer>(true);
+        foreach (var syncer in collisionSyncers)
+            GameObject.Destroy(syncer);
 
-            // Remove collision syncers
-            var collisionSyncers = manager.GetComponentsInChildren<CollisionSyncer>(true);
-            foreach (var syncer in collisionSyncers)
-                GameObject.Destroy(syncer);
+        // Remove experimental features
+        manager.health._testRagdollOnDeath = false;
+        manager.health._testVisualDamage = false;
 
-            // Remove experimental features
-            manager.health._testRagdollOnDeath = false;
-            manager.health._testVisualDamage = false;
-
-            // Add back slowmo on death
-            var playerHealth = manager.health.TryCast<Player_Health>();
-            playerHealth.slowMoOnDeath = true;
-        }
+        // Add back slowmo on death
+        var playerHealth = manager.health.TryCast<Player_Health>();
+        playerHealth.slowMoOnDeath = true;
     }
 }

@@ -11,142 +11,141 @@ using Il2CppSLZ.SFX;
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Player;
 
-namespace LabFusion.Patching
+namespace LabFusion.Patching;
+
+[HarmonyPatch(typeof(HeadSFX))]
+public static class HeadSFXPatches
 {
-    [HarmonyPatch(typeof(HeadSFX))]
-    public static class HeadSFXPatches
+    [HarmonyPatch(nameof(HeadSFX.RecoveryVocal))]
+    [HarmonyPrefix]
+    public static void RecoveryVocal(HeadSFX __instance)
     {
-        [HarmonyPatch(nameof(HeadSFX.RecoveryVocal))]
-        [HarmonyPrefix]
-        public static void RecoveryVocal(HeadSFX __instance)
+        // Is this our player?
+        var rm = __instance._physRig.manager;
+        if (NetworkInfo.HasServer && rm.IsSelf())
         {
-            // Is this our player?
-            var rm = __instance._physRig.manager;
-            if (NetworkInfo.HasServer && rm.IsSelf())
-            {
-                // Notify the server about the recovery
-                PlayerSender.SendPlayerAction(PlayerActionType.RECOVERY);
-            }
-        }
-
-        [HarmonyPatch(nameof(HeadSFX.DyingVocal))]
-        [HarmonyPrefix]
-        public static void DyingVocal(HeadSFX __instance)
-        {
-            // If there's no server, ignore
-            if (!NetworkInfo.HasServer)
-            {
-                return;
-            }
-
-            var rm = __instance._physRig.manager;
-
-            // Make sure this is the local player
-            if (!rm.IsSelf())
-            {
-                return;
-            }
-
-            // If the player has ragdoll on death enabled, ragdoll them
-            var health = rm.health;
-            if (health._testRagdollOnDeath)
-            {
-                rm.physicsRig.RagdollRig();
-            }
-
-            // Notify the server about the death beginning
-            if (FusionPlayer.LastAttacker.HasValue)
-            {
-                PlayerSender.SendPlayerAction(PlayerActionType.DYING_BY_OTHER_PLAYER, FusionPlayer.LastAttacker.Value);
-            }
-
-            PlayerSender.SendPlayerAction(PlayerActionType.DYING);
-        }
-
-        [HarmonyPatch(nameof(HeadSFX.DeathVocal))]
-        [HarmonyPrefix]
-        public static void DeathVocal(HeadSFX __instance)
-        {
-            // If there's no server, ignore
-            if (!NetworkInfo.HasServer)
-            {
-                return;
-            }
-
-            var rm = __instance._physRig.manager;
-
-            // Make sure this is the local player
-            if (!rm.IsSelf())
-            {
-                return;
-            }
-
-            // Did they actually die?
-            if (!rm.health.alive)
-            {
-                // If in a gamemode with auto holstering, then do it
-                if (Gamemode.ActiveGamemode != null && Gamemode.ActiveGamemode.AutoHolsterOnDeath)
-                {
-                    rm.physicsRig.leftHand.TryAutoHolsterGrip(RigData.RigReferences);
-                    rm.physicsRig.rightHand.TryAutoHolsterGrip(RigData.RigReferences);
-                }
-
-                // Update the spawn point
-                if (FusionPlayer.TryGetSpawnPoint(out var point))
-                {
-                    rm.checkpointPosition = point.position;
-                    rm.checkpointFwd = point.forward;
-                }
-
-                // Notify the server about the death
-                PlayerSender.SendPlayerAction(PlayerActionType.DEATH);
-
-                // If another player killed us, notify the server about that
-                if (FusionPlayer.LastAttacker.HasValue)
-                    PlayerSender.SendPlayerAction(PlayerActionType.DEATH_BY_OTHER_PLAYER, FusionPlayer.LastAttacker.Value);
-            }
+            // Notify the server about the recovery
+            PlayerSender.SendPlayerAction(PlayerActionType.RECOVERY);
         }
     }
 
-    [HarmonyPatch(typeof(Player_Health))]
-    public static class PlayerHealthPatches
+    [HarmonyPatch(nameof(HeadSFX.DyingVocal))]
+    [HarmonyPrefix]
+    public static void DyingVocal(HeadSFX __instance)
     {
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(Player_Health.LifeSavingDamgeDealt))]
-        public static void LifeSavingDamgeDealt(Player_Health __instance)
+        // If there's no server, ignore
+        if (!NetworkInfo.HasServer)
         {
-            if (__instance._rigManager.IsSelf() && __instance._testRagdollOnDeath)
-            {
-                PhysicsRigPatches.ForceAllowUnragdoll = true;
-
-                __instance._rigManager.physicsRig.UnRagdollRig();
-
-                PhysicsRigPatches.ForceAllowUnragdoll = false;
-            }
+            return;
         }
 
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(Player_Health.TAKEDAMAGE))]
-        public static void TAKEDAMAGEPrefix(Player_Health __instance, float damage)
+        var rm = __instance._physRig.manager;
+
+        // Make sure this is the local player
+        if (!rm.IsSelf())
         {
-            if (__instance.healthMode == Health.HealthMode.Invincible && __instance._testRagdollOnDeath)
-            {
-                __instance._testRagdollOnDeath = false;
-            }
+            return;
         }
 
-        [HarmonyPostfix]
-        [HarmonyPatch(nameof(Player_Health.TAKEDAMAGE))]
-        public static void TAKEDAMAGEPostfix(Player_Health __instance, float damage)
+        // If the player has ragdoll on death enabled, ragdoll them
+        var health = rm.health;
+        if (health._testRagdollOnDeath)
         {
-            if (__instance._rigManager.IsSelf() && __instance._testRagdollOnDeath && !__instance.alive)
+            rm.physicsRig.RagdollRig();
+        }
+
+        // Notify the server about the death beginning
+        if (FusionPlayer.LastAttacker.HasValue)
+        {
+            PlayerSender.SendPlayerAction(PlayerActionType.DYING_BY_OTHER_PLAYER, FusionPlayer.LastAttacker.Value);
+        }
+
+        PlayerSender.SendPlayerAction(PlayerActionType.DYING);
+    }
+
+    [HarmonyPatch(nameof(HeadSFX.DeathVocal))]
+    [HarmonyPrefix]
+    public static void DeathVocal(HeadSFX __instance)
+    {
+        // If there's no server, ignore
+        if (!NetworkInfo.HasServer)
+        {
+            return;
+        }
+
+        var rm = __instance._physRig.manager;
+
+        // Make sure this is the local player
+        if (!rm.IsSelf())
+        {
+            return;
+        }
+
+        // Did they actually die?
+        if (!rm.health.alive)
+        {
+            // If in a gamemode with auto holstering, then do it
+            if (Gamemode.ActiveGamemode != null && Gamemode.ActiveGamemode.AutoHolsterOnDeath)
             {
-                PhysicsRigPatches.ForceAllowUnragdoll = true;
-
-                __instance._rigManager.physicsRig.UnRagdollRig();
-
-                PhysicsRigPatches.ForceAllowUnragdoll = false;
+                rm.physicsRig.leftHand.TryAutoHolsterGrip(RigData.RigReferences);
+                rm.physicsRig.rightHand.TryAutoHolsterGrip(RigData.RigReferences);
             }
+
+            // Update the spawn point
+            if (FusionPlayer.TryGetSpawnPoint(out var point))
+            {
+                rm.checkpointPosition = point.position;
+                rm.checkpointFwd = point.forward;
+            }
+
+            // Notify the server about the death
+            PlayerSender.SendPlayerAction(PlayerActionType.DEATH);
+
+            // If another player killed us, notify the server about that
+            if (FusionPlayer.LastAttacker.HasValue)
+                PlayerSender.SendPlayerAction(PlayerActionType.DEATH_BY_OTHER_PLAYER, FusionPlayer.LastAttacker.Value);
+        }
+    }
+}
+
+[HarmonyPatch(typeof(Player_Health))]
+public static class PlayerHealthPatches
+{
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(Player_Health.LifeSavingDamgeDealt))]
+    public static void LifeSavingDamgeDealt(Player_Health __instance)
+    {
+        if (__instance._rigManager.IsSelf() && __instance._testRagdollOnDeath)
+        {
+            PhysicsRigPatches.ForceAllowUnragdoll = true;
+
+            __instance._rigManager.physicsRig.UnRagdollRig();
+
+            PhysicsRigPatches.ForceAllowUnragdoll = false;
+        }
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(Player_Health.TAKEDAMAGE))]
+    public static void TAKEDAMAGEPrefix(Player_Health __instance, float damage)
+    {
+        if (__instance.healthMode == Health.HealthMode.Invincible && __instance._testRagdollOnDeath)
+        {
+            __instance._testRagdollOnDeath = false;
+        }
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(nameof(Player_Health.TAKEDAMAGE))]
+    public static void TAKEDAMAGEPostfix(Player_Health __instance, float damage)
+    {
+        if (__instance._rigManager.IsSelf() && __instance._testRagdollOnDeath && !__instance.alive)
+        {
+            PhysicsRigPatches.ForceAllowUnragdoll = true;
+
+            __instance._rigManager.physicsRig.UnRagdollRig();
+
+            PhysicsRigPatches.ForceAllowUnragdoll = false;
         }
     }
 }
