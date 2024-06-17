@@ -1,130 +1,99 @@
 ﻿using LabFusion.Network;
 using LabFusion.Representation;
-using LabFusion.Syncables;
+using LabFusion.Entities;
 using LabFusion.Utilities;
-
-using Il2CppSLZ.Rig;
 
 using UnityEngine;
 
-namespace LabFusion.Data
+using Il2CppSLZ.Marrow.Interaction;
+
+namespace LabFusion.Data;
+
+public class SerializedGameObjectReference : IFusionSerializable
 {
-    public class SerializedGameObjectReference : IFusionSerializable
+    private enum ReferenceType
     {
-        private enum ReferenceType
+        UNKNOWN = 0,
+        FULL_PATH = 1,
+        NETWORK_ENTITY = 2,
+        NULL = 3,
+    }
+
+    // Base gameobject reference
+    public GameObject gameObject;
+
+    public SerializedGameObjectReference() { }
+
+    public SerializedGameObjectReference(GameObject go)
+    {
+        gameObject = go;
+    }
+
+    public void Serialize(FusionWriter writer)
+    {
+        if (gameObject == null)
         {
-            UNKNOWN = 0,
-            FULL_PATH = 1,
-            PROP_SYNCABLE = 2,
-            RIG_MANAGER = 3,
-            NULL = 4,
+            writer.Write((byte)ReferenceType.NULL);
+            return;
         }
 
-        // Base gameobject reference
-        public GameObject gameObject;
-
-        public SerializedGameObjectReference() { }
-
-        public SerializedGameObjectReference(GameObject go)
+        // Check if there is an entity, and write it
+        var marrowBody = MarrowBody.Cache.Get(gameObject);
+        if (marrowBody != null && MarrowBodyExtender.Cache.TryGet(marrowBody, out var entity))
         {
-            gameObject = go;
+            var extender = entity.GetExtender<MarrowBodyExtender>();
+
+            writer.Write((byte)ReferenceType.NETWORK_ENTITY);
+            writer.Write(entity.Id);
+            writer.Write(extender.GetIndex(marrowBody).Value);
         }
-
-        public void Serialize(FusionWriter writer)
+        // Write the full path to the object
+        else
         {
-            if (gameObject == null)
-            {
-                writer.Write((byte)ReferenceType.NULL);
-                return;
-            }
+            writer.Write((byte)ReferenceType.FULL_PATH);
+            writer.Write(gameObject);
+        }
+    }
 
-            PhysicsRig physRig;
+    public void Deserialize(FusionReader reader)
+    {
+        var type = (ReferenceType)reader.ReadByte();
 
-            // Check if there is a syncable, and write it
-            if (PropSyncable.HostCache.TryGet(gameObject, out var syncable))
-            {
-                writer.Write((byte)ReferenceType.PROP_SYNCABLE);
-                writer.Write(syncable.GetId());
-                writer.Write(syncable.GetIndex(gameObject).Value);
-            }
-            // Check if this is attached to a rigmanager
-            else if ((physRig = gameObject.GetComponentInParent<PhysicsRig>()) != null)
-            {
-                if (PlayerRepUtilities.TryGetRigInfo(physRig.manager, out var smallId, out var references))
+        switch (type)
+        {
+            default:
+            case ReferenceType.UNKNOWN:
+            case ReferenceType.NULL:
+                // Do nothing for null
+                break;
+            case ReferenceType.NETWORK_ENTITY:
+                var id = reader.ReadUInt16();
+                var index = reader.ReadUInt16();
+
+                var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(id);
+
+                if (entity == null)
                 {
-                    writer.Write((byte)ReferenceType.RIG_MANAGER);
-                    writer.Write(smallId);
-
-                    var rbIndex = references.GetIndex(gameObject.GetComponent<Rigidbody>()).Value;
-                    writer.Write(rbIndex);
-
-#if DEBUG
-                    FusionLogger.Log($"Got rig info for a constraint with small id {smallId} and rb index {rbIndex}!");
-#endif
+                    break;
                 }
-                else
+
+                var extender = entity.GetExtender<MarrowBodyExtender>();
+
+                if (extender == null)
                 {
-                    writer.Write((byte)ReferenceType.UNKNOWN);
-
-#if DEBUG
-                    FusionLogger.Warn("Failed to get rig info for a constraint!");
-#endif
+                    break;
                 }
-            }
-            // Write the full path to the object
-            else
-            {
-                writer.Write((byte)ReferenceType.FULL_PATH);
-                writer.Write(gameObject);
-            }
-        }
 
-        public void Deserialize(FusionReader reader)
-        {
-            var type = (ReferenceType)reader.ReadByte();
+                var body = extender.GetComponent(index);
 
-            switch (type)
-            {
-                default:
-                case ReferenceType.UNKNOWN:
-                    // This should never happen
-                    break;
-                case ReferenceType.NULL:
-                    // Do nothing for null
-                    break;
-                case ReferenceType.PROP_SYNCABLE:
-                    var id = reader.ReadUInt16();
-                    var index = reader.ReadUInt16();
-
-                    if (SyncManager.TryGetSyncable<PropSyncable>(id, out var syncable))
-                    {
-                        gameObject = syncable.GetHost(index);
-                    }
-                    break;
-                case ReferenceType.RIG_MANAGER:
-                    var smallId = reader.ReadByte();
-                    var rbIndex = reader.ReadByte();
-
-                    if (PlayerRepUtilities.TryGetReferences(smallId, out var references))
-                    {
-                        var rb = references.GetRigidbody(rbIndex);
-                        gameObject = rb.gameObject;
-
-#if DEBUG
-                        FusionLogger.Log($"Got constrained rig with small id {smallId} and rb index {rbIndex}!");
-#endif
-                    }
-                    else
-                    {
-#if DEBUG
-                        FusionLogger.Warn($"Failed constraining Rig with small id {smallId} and rb index {rbIndex}!");
-#endif
-                    }
-                    break;
-                case ReferenceType.FULL_PATH:
-                    gameObject = reader.ReadGameObject();
-                    break;
-            }
+                if (body != null)
+                {
+                    gameObject = body.gameObject;
+                }
+                break;
+            case ReferenceType.FULL_PATH:
+                gameObject = reader.ReadGameObject();
+                break;
         }
     }
 }

@@ -1,82 +1,93 @@
 ﻿using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Patching;
-using LabFusion.Syncables;
+using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow.Warehouse;
 
-namespace LabFusion.Network
+namespace LabFusion.Network;
+
+public class SpawnGunPreviewMeshData : IFusionSerializable
 {
-    public class SpawnGunPreviewMeshData : IFusionSerializable
+    public const int Size = sizeof(byte) + sizeof(ushort);
+
+    public byte smallId;
+    public ushort syncId;
+    public string barcode;
+
+    public static int GetSize(string barcode)
     {
-        public const int Size = sizeof(byte) + sizeof(ushort);
-
-        public byte smallId;
-        public ushort syncId;
-        public string barcode;
-
-        public static int GetSize(string barcode)
-        {
-            return Size + barcode.GetSize();
-        }
-
-        public void Serialize(FusionWriter writer)
-        {
-            writer.Write(smallId);
-            writer.Write(syncId);
-            writer.Write(barcode);
-        }
-
-        public void Deserialize(FusionReader reader)
-        {
-            smallId = reader.ReadByte();
-            syncId = reader.ReadUInt16();
-            barcode = reader.ReadString();
-        }
-
-        public static SpawnGunPreviewMeshData Create(byte smallId, ushort syncId, string barcode)
-        {
-            return new SpawnGunPreviewMeshData()
-            {
-                smallId = smallId,
-                syncId = syncId,
-                barcode = barcode,
-            };
-        }
+        return Size + barcode.GetSize();
     }
 
-    [Net.DelayWhileTargetLoading]
-    public class SpawnGunPreviewMeshMessage : FusionMessageHandler
+    public void Serialize(FusionWriter writer)
     {
-        public override byte? Tag => NativeMessageTag.SpawnGunPreviewMesh;
+        writer.Write(smallId);
+        writer.Write(syncId);
+        writer.Write(barcode);
+    }
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    public void Deserialize(FusionReader reader)
+    {
+        smallId = reader.ReadByte();
+        syncId = reader.ReadUInt16();
+        barcode = reader.ReadString();
+    }
+
+    public static SpawnGunPreviewMeshData Create(byte smallId, ushort syncId, string barcode)
+    {
+        return new SpawnGunPreviewMeshData()
         {
-            using FusionReader reader = FusionReader.Create(bytes);
-            var data = reader.ReadFusionSerializable<SpawnGunPreviewMeshData>();
-            // Send message to other clients if server
-            if (NetworkInfo.IsServer && isServerHandled)
-            {
-                using var message = FusionMessage.Create(Tag.Value, bytes);
-                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-            }
-            else
-            {
-                if (SyncManager.TryGetSyncable<PropSyncable>(data.syncId, out var syncable) && syncable.TryGetExtender<SpawnGunExtender>(out var extender))
-                {
-                    var crateRef = new SpawnableCrateReference(data.barcode);
+            smallId = smallId,
+            syncId = syncId,
+            barcode = barcode,
+        };
+    }
+}
 
-                    if (crateRef.Crate != null)
-                    {
-                        SpawnGunPatches.IgnorePatches = true;
+[Net.DelayWhileTargetLoading]
+public class SpawnGunPreviewMeshMessage : FusionMessageHandler
+{
+    public override byte? Tag => NativeMessageTag.SpawnGunPreviewMesh;
 
-                        extender.Component._selectedCrate = crateRef.Crate;
-                        extender.Component.SetPreviewMesh();
+    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    {
+        using FusionReader reader = FusionReader.Create(bytes);
+        var data = reader.ReadFusionSerializable<SpawnGunPreviewMeshData>();
 
-                        SpawnGunPatches.IgnorePatches = false;
-                    }
-                }
-            }
+        // Send message to other clients if server
+        if (isServerHandled)
+        {
+            using var message = FusionMessage.Create(Tag.Value, bytes);
+            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+
+            return;
+        }
+
+        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.syncId);
+
+        if (entity == null)
+        {
+            return;
+        }
+
+        var extender = entity.GetExtender<SpawnGunExtender>();
+
+        if (extender == null)
+        {
+            return;
+        }
+
+        var crateRef = new SpawnableCrateReference(data.barcode);
+
+        if (crateRef.Crate != null)
+        {
+            SpawnGunPatches.IgnorePatches = true;
+
+            extender.Component._selectedCrate = crateRef.Crate;
+            extender.Component.SetPreviewMesh();
+
+            SpawnGunPatches.IgnorePatches = false;
         }
     }
 }

@@ -1,156 +1,142 @@
-﻿namespace LabFusion.Network
+﻿namespace LabFusion.Network;
+
+public static class NativeMessageTag
 {
-    public static class NativeMessageTag
-    {
-        public static readonly byte
-            // Built in messages
-            Unknown = 0,
+    public static readonly byte
+        // Built in messages
+        Unknown = 0,
 
-            ConnectionRequest = 1,
-            ConnectionResponse = 2,
-            Disconnect = 3,
+        ConnectionRequest = 1,
+        ConnectionResponse = 2,
+        Disconnect = 3,
 
-            PlayerRepTransform = 4,
-            PlayerRepAvatar = 6,
-            PlayerRepVitals = 7,
-            PlayerRepRagdoll = 8,
-            PlayerRepSeat = 9,
+        PlayerRepTransform = 4,
+        PlayerRepAvatar = 6,
+        PlayerRepVitals = 7,
+        PlayerRepRagdoll = 8,
+        PlayerRepSeat = 9,
 
-            PlayerRepGrab = 10,
-            PlayerRepRelease = 12,
-            PlayerRepAnchors = 13,
+        PlayerRepGrab = 10,
+        PlayerRepRelease = 12,
+        PlayerRepAnchors = 13,
 
-            SceneLoad = 14,
+        SceneLoad = 14,
 
-            SyncableIDRequest = 15,
-            SyncableIDResponse = 16,
-            SyncableOwnershipRequest = 17,
-            SyncableOwnershipResponse = 18,
+        EntityUnqueueRequest = 15,
+        EntityUnqueueResponse = 16,
+        EntityOwnershipRequest = 17,
+        EntityOwnershipResponse = 18,
 
-            PropSyncableUpdate = 19,
-            PropSyncableCreate = 20,
+        EntityPoseUpdate = 19,
+        PropSyncableCreate = 20,
 
-            SpawnRequest = 22,
-            SpawnResponse = 23,
-            DespawnRequest = 24,
-            DespawnResponse = 25,
+        SpawnRequest = 22,
+        SpawnResponse = 23,
+        DespawnRequest = 24,
+        DespawnResponse = 25,
 
-            InventorySlotInsert = 26,
-            InventorySlotDrop = 27,
+        InventorySlotInsert = 26,
+        InventorySlotDrop = 27,
 
-            MagazineInsert = 28,
-            MagazineEject = 29,
+        MagazineInsert = 28,
+        MagazineEject = 29,
 
-            GunShot = 30,
+        GunShot = 30,
 
-            PuppetMasterKill = 31,
+        PuppetMasterKill = 31,
 
-            SimpleGripEvent = 32,
+        SimpleGripEvent = 32,
 
-            ObjectDestructableDestroy = 34,
+        ObjectDestructableDestroy = 34,
 
-            ArenaTransition = 35,
-            ChallengeSelect = 36,
-            ArenaMenu = 37,
-            GeoSelect = 38,
+        ArenaTransition = 35,
+        ChallengeSelect = 36,
+        ArenaMenu = 37,
+        GeoSelect = 38,
 
-            DescentNoose = 39,
-            DescentElevator = 40,
+        DescentNoose = 39,
+        DescentElevator = 40,
 
-            FunicularControllerEvent = 41,
+        FunicularControllerEvent = 41,
 
-            MagmaGateEvent = 42,
+        MagmaGateEvent = 42,
 
-            DescentIntro = 43,
+        DescentIntro = 43,
 
-            BodyLogEffect = 44,
+        BodyLogEffect = 44,
 
-            BonelabHubEvent = 45,
+        BonelabHubEvent = 45,
 
-            PlayerSettings = 46,
-            ServerSettings = 47,
+        PlayerSettings = 46,
+        ServerSettings = 47,
 
-            KartRaceEvent = 48,
+        KartRaceEvent = 48,
 
-            FlashlightToggle = 49,
+        FlashlightToggle = 49,
 
-            TwoButtonRemoteControllerEvent = 50,
+        KeySlot = 51,
 
-            KeySlot = 51,
+        NimbusGunNoclip = 52,
 
-            NimbusGunNoclip = 52,
+        PlayerRepAction = 53,
 
-            PlayerRepAction = 53,
+        ConstrainerMode = 54,
+        ConstraintCreate = 55,
+        ConstraintDelete = 56,
 
-            ConstrainerMode = 54,
-            ConstraintCreate = 55,
-            ConstraintDelete = 56,
+        HomeEvent = 58,
 
-            HomeEvent = 58,
+        CrateSpawner = 60,
 
-            PowerableJointVoltage = 59,
+        TimeScale = 61,
+        SlowMoButton = 62,
 
-            CrateSpawner = 60,
+        PlayerMetadataRequest = 65,
+        PlayerMetadataResponse = 66,
 
-            TimeScale = 61,
-            SlowMoButton = 62,
+        TrialSpawnerEvents = 67,
 
-            BehaviourBaseNavLoco = 63,
-            BehaviourBaseNavMental = 64,
+        LevelRequest = 68,
 
-            PlayerMetadataRequest = 65,
-            PlayerMetadataResponse = 66,
+        BodyLogToggle = 70,
 
-            TrialSpawnerEvents = 67,
+        PlayerRepDamage = 71,
 
-            LevelRequest = 68,
+        TimeTrial_GameController = 72,
+        BaseGameController = 73,
 
-            PropSyncableSleep = 69,
+        PlayerVoiceChat = 74,
 
-            BodyLogToggle = 70,
+        PermissionCommandRequest = 75,
 
-            PlayerRepDamage = 71,
+        PlayerRepTeleport = 76,
 
-            TimeTrial_GameController = 72,
-            BaseGameController = 73,
+        ZoneEncounterEvent = 77,
 
-            PlayerVoiceChat = 74,
+        HolodeckEvent = 78,
 
-            PermissionCommandRequest = 75,
+        SpawnGunPreviewMesh = 79,
 
-            PlayerRepTeleport = 76,
+        MineDiveCart = 80,
 
-            ZoneEncounterEvent = 77,
+        // Vote kicking
+        VoteKickRequest = 81,
+        VoteKickResponse = 82,
 
-            HolodeckEvent = 78,
+        MagazineClaim = 83,
 
-            SpawnGunPreviewMesh = 79,
+        // SDK messages
+        // Module setup
+        Module = 200,
+        DynamicsAssignment = 201,
 
-            MineDiveCart = 80,
+        // Gamemodes
+        GamemodeMetadataSet = 202,
+        GamemodeMetadataRemove = 203,
+        GamemodeTriggerResponse = 204,
 
-            // Vote kicking
-            VoteKickRequest = 81,
-            VoteKickResponse = 82,
-
-            MagazineClaim = 83,
-
-            // SDK messages
-            // Module setup
-            Module = 200,
-            DynamicsAssignment = 201,
-
-            // Gamemodes
-            GamemodeMetadataSet = 202,
-            GamemodeMetadataRemove = 203,
-            GamemodeTriggerResponse = 204,
-
-            // SDK scripts
-            GameObjectActive = 205,
-
-            // Point items
-            PointItemEquipState = 206,
-            PointItemTrigger = 207,
-            PointItemTriggerValue = 208;
-    }
-
+        // Point items
+        PointItemEquipState = 206,
+        PointItemTrigger = 207,
+        PointItemTriggerValue = 208;
 }

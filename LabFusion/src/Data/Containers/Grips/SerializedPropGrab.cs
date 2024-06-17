@@ -9,6 +9,7 @@ using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Interaction;
 
 using UnityEngine;
+using LabFusion.Entities;
 
 namespace LabFusion.Data
 {
@@ -67,23 +68,38 @@ namespace LabFusion.Data
             relativeHand = reader.ReadFusionSerializable<SerializedTransform>();
         }
 
-        public Grip GetGrip(out PropSyncable syncable)
+        public Grip GetGrip(out NetworkProp prop)
         {
             GameObject go;
             InteractableHost host;
-            syncable = null;
+            prop = null;
 
-            if (SyncManager.TryGetSyncable<PropSyncable>(id, out var foundSyncable))
+            var foundEntity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(id);
+            var foundProp = foundEntity?.GetExtender<NetworkProp>();
+
+            if (foundProp != null)
             {
-                syncable = foundSyncable;
-                return foundSyncable.GetGrip(index);
+                prop = foundProp;
+                var gripExtender = foundEntity.GetExtender<Entities.GripExtender>();
+
+                if (gripExtender != null)
+                {
+                    return gripExtender.GetComponent(index);
+                }
             }
             else if (fullPath != "_" && (go = GameObjectUtilities.GetGameObject(fullPath)) && (host = InteractableHost.Cache.Get(go)))
             {
-                syncable = new PropSyncable(host);
-                SyncManager.RegisterSyncable(syncable, id);
+                NetworkEntity entity = new();
+                prop = new NetworkProp(entity, host.GetComponentInParent<MarrowEntity>());
 
-                return syncable.GetGrip(index);
+                NetworkEntityManager.IdManager.RegisterEntity(id, entity);
+
+                var gripExtender = entity.GetExtender<Entities.GripExtender>();
+
+                if (gripExtender != null)
+                {
+                    return gripExtender.GetComponent(index);
+                }
             }
 
             return null;

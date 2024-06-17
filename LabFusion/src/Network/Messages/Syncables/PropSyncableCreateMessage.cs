@@ -5,6 +5,9 @@ using LabFusion.Syncables;
 
 using UnityEngine;
 using LabFusion.Senders;
+using Il2CppSLZ.Marrow.Interaction;
+using LabFusion.Entities;
+using LabFusion.Representation;
 
 namespace LabFusion.Network
 {
@@ -56,7 +59,7 @@ namespace LabFusion.Network
             GameObject gameObject = await GameObjectUtilities.GetGameObjectAsync(data.gameObjectPath);
 
             // Send message to other clients if server
-            if (NetworkInfo.IsServer && isServerHandled)
+            if (isServerHandled)
             {
                 bool isCompleted = false;
                 ThreadingUtilities.RunSynchronously(() =>
@@ -95,24 +98,19 @@ namespace LabFusion.Network
                             return;
                         }
 
-                        var host = InteractableHost.Cache.Get(gameObject);
-                        PropSyncable syncable;
+                        var marrowEntity = gameObject.GetComponentInParent<MarrowEntity>(true);
+                        NetworkEntity networkEntity = new();
+                        NetworkProp networkProp = new(networkEntity, marrowEntity);
 
-                        if (host)
-                            syncable = new PropSyncable(host);
-                        else
-                            syncable = new PropSyncable(null, gameObject);
+                        NetworkEntityManager.IdManager.RegisterEntity(data.id, networkEntity);
 
-                        SyncManager.RegisterSyncable(syncable, data.id);
-
-                        syncable.SetOwner(data.smallId);
+                        networkEntity.SetOwner(PlayerIdManager.GetPlayerId(data.id));
 
                         // Insert catchup hook for future users
-                        if (NetworkInfo.IsServer)
-                            syncable.InsertCatchupDelegate((id) =>
-                            {
-                                PropSender.SendCatchupCreation(syncable, id);
-                            });
+                        networkEntity.OnEntityCatchup += ((entity, player) =>
+                        {
+                            PropSender.SendCatchupCreation(networkProp, player);
+                        });
 
                         isCompleted = true;
                     }

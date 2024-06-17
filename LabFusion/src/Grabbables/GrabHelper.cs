@@ -9,6 +9,8 @@ using LabFusion.Syncables;
 using LabFusion.Representation;
 using Il2CppSLZ.Interaction;
 using LabFusion.Senders;
+using LabFusion.Entities;
+using Il2CppSLZ.Marrow.Interaction;
 
 namespace LabFusion.Grabbables
 {
@@ -61,31 +63,28 @@ namespace LabFusion.Grabbables
 
         internal static void Internal_ObjectForcePull(Hand hand, Grip grip)
         {
-            if (NetworkInfo.HasServer)
+            if (!NetworkInfo.HasServer)
             {
-                // Check to see if this has a rigidbody
-                if (grip.HasRigidbody && !grip.GetComponentInParent<RigManager>())
+                return;
+            }
+
+            // Check to see if this has a rigidbody
+            if (grip.HasRigidbody && !grip.GetComponentInParent<RigManager>())
+            {
+                // Get base values for the message
+                byte smallId = PlayerIdManager.LocalSmallId;
+
+                GetGripInfo(grip, out var host);
+
+                // Do we already have a synced object?
+                if (GripExtender.Cache.TryGet(grip, out var entity))
                 {
-                    // Get base values for the message
-                    byte smallId = PlayerIdManager.LocalSmallId;
-
-                    GetGripInfo(grip, out var host);
-
-                    GameObject root = host.GetSyncRoot();
-
-                    // Do we already have a synced object?
-                    if (GripExtender.Cache.TryGet(grip, out var syncable) || PropSyncable.HostCache.TryGet(host.gameObject, out syncable) || PropSyncable.Cache.TryGet(root, out syncable))
-                    {
-                        syncable.HookOnRegistered(() =>
-                        {
-                            PropSender.SendOwnershipTransfer(syncable);
-                        });
-                    }
-                    // Create a new one
-                    else
-                    {
-                        PropSender.SendPropCreation(root, null, false);
-                    }
+                    NetworkEntityManager.TakeOwnership(entity);
+                }
+                // Create a new one
+                else
+                {
+                    PropSender.SendPropCreation(host.marrowEntity, null, false);
                 }
             }
         }
@@ -151,9 +150,11 @@ namespace LabFusion.Grabbables
                         GameObject root = host.GetSyncRoot();
 
                         // Do we already have a synced object?
-                        if (GripExtender.Cache.TryGet(grip, out var syncable) || PropSyncable.HostCache.TryGet(host.gameObject, out syncable) || PropSyncable.Cache.TryGet(root, out syncable))
+                        if (Entities.GripExtender.Cache.TryGet(grip, out var entity))
                         {
-                            serializedGrab = new SerializedPropGrab("_", syncable.GetIndex(grip).Value, syncable.GetId());
+                            var gripExtender = entity.GetExtender<Entities.GripExtender>();
+
+                            serializedGrab = new SerializedPropGrab("_", gripExtender.GetIndex(grip).Value, entity.Id);
                             OnFinish();
                         }
                         else
@@ -162,41 +163,23 @@ namespace LabFusion.Grabbables
                             if (!root.IsSyncWhitelisted())
                                 return;
 
-                            // Invoked when a PropSyncable is finished gathering its pathed
-                            void OnPropFinish(PropSyncable syncable, string path)
+                            // Invoked when the NetworkProp is finished gathering its path
+                            void OnEntityFinish(NetworkProp prop, string path)
                             {
-                                serializedGrab = new SerializedPropGrab(path, syncable.GetIndex(grip).Value, syncable.Id);
-                                OnFinish();
+                                var gripExtender = prop.NetworkEntity.GetExtender<Entities.GripExtender>();
+                                serializedGrab = new SerializedPropGrab(path, gripExtender.GetIndex(grip).Value, prop.NetworkEntity.Id);
                             }
 
-                            // Create a new one
-                            if (!NetworkInfo.IsServer)
+                            entity = new();
+                            NetworkProp prop = new(entity, host.GetComponentInParent<MarrowEntity>());
+                            ushort queuedId = NetworkEntityManager.IdManager.QueueEntity(entity);
+
+                            NetworkEntityManager.RequestUnqueue(queuedId);
+
+                            entity.HookOnRegistered((entity) =>
                             {
-                                syncable = new PropSyncable(host);
-
-                                ushort queuedId = SyncManager.QueueSyncable(syncable);
-
-                                using (var writer = FusionWriter.Create(SyncableIDRequestData.Size))
-                                {
-                                    var data = SyncableIDRequestData.Create(smallId, queuedId);
-                                    writer.Write(data);
-
-                                    using var message = FusionMessage.Create(NativeMessageTag.SyncableIDRequest, writer);
-                                    MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-                                }
-
-                                syncable.HookOnRegistered(() =>
-                                {
-                                    _ = host.gameObject.GetFullPathAsync((p) => { OnPropFinish(syncable, p); });
-                                });
-                            }
-                            else if (NetworkInfo.IsServer)
-                            {
-                                syncable = new PropSyncable(host);
-                                SyncManager.RegisterSyncable(syncable, SyncManager.AllocateSyncID());
-
-                                _ = host.gameObject.GetFullPathAsync((p) => { OnPropFinish(syncable, p); });
-                            }
+                                _ = host.gameObject.GetFullPathAsync((p) => { OnEntityFinish(prop, p); });
+                            });
                         }
                     }
                 }

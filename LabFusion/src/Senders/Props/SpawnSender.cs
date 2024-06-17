@@ -5,6 +5,7 @@ using LabFusion.Data;
 using LabFusion.Syncables;
 using LabFusion.Utilities;
 using Il2CppSLZ.Marrow.Warehouse;
+using LabFusion.Entities;
 
 namespace LabFusion.Senders
 {
@@ -16,17 +17,19 @@ namespace LabFusion.Senders
         /// <param name="placer"></param>
         /// <param name="syncable"></param>
         /// <param name="userId"></param>
-        public static void SendCratePlacerCatchup(CrateSpawner placer, PropSyncable syncable, ulong userId)
+        public static void SendCratePlacerCatchup(CrateSpawner placer, NetworkEntity entity, ulong userId)
         {
-            if (NetworkInfo.IsServer)
+            if (!NetworkInfo.IsServer)
             {
-                using var writer = FusionWriter.Create(CrateSpawnerData.Size);
-                var data = CrateSpawnerData.Create(syncable.GetId(), placer.gameObject);
-                writer.Write(data);
-
-                using var message = FusionMessage.Create(NativeMessageTag.CrateSpawner, writer);
-                MessageSender.SendFromServer(userId, NetworkChannel.Reliable, message);
+                return;
             }
+
+            using var writer = FusionWriter.Create(CrateSpawnerData.Size);
+            var data = CrateSpawnerData.Create(entity.Id, placer.gameObject);
+            writer.Write(data);
+
+            using var message = FusionMessage.Create(NativeMessageTag.CrateSpawner, writer);
+            MessageSender.SendFromServer(userId, NetworkChannel.Reliable, message);
         }
 
         /// <summary>
@@ -36,17 +39,19 @@ namespace LabFusion.Senders
         /// <param name="go"></param>
         public static void SendCratePlacerEvent(CrateSpawner placer, ushort spawnedId)
         {
-            if (NetworkInfo.IsServer)
+            if (!NetworkInfo.IsServer)
             {
-                // Wait for the level to load and for 5 frames before sending messages
-                FusionSceneManager.HookOnLevelLoad(() =>
-                {
-                    DelayUtilities.Delay(() =>
-                    {
-                        Internal_OnSendCratePlacer(placer, spawnedId);
-                    }, 5);
-                });
+                return;
             }
+
+            // Wait for the level to load and for 5 frames before sending messages
+            FusionSceneManager.HookOnLevelLoad(() =>
+            {
+                DelayUtilities.Delay(() =>
+                {
+                    Internal_OnSendCratePlacer(placer, spawnedId);
+                }, 5);
+            });
         }
 
         private static void Internal_OnSendCratePlacer(CrateSpawner placer, ushort spawnedId)
@@ -61,15 +66,16 @@ namespace LabFusion.Senders
             }
 
             // Insert the catchup hook for future users
-            if (SyncManager.TryGetSyncable<PropSyncable>(spawnedId, out var propSyncable))
+            var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(spawnedId);
+
+            if (entity != null)
             {
-                propSyncable.InsertCatchupDelegate((id) =>
+                entity.OnEntityCatchup += (entity, player) =>
                 {
-                    SendCratePlacerCatchup(placer, propSyncable, id);
-                });
+                    SendCratePlacerCatchup(placer, entity, player);
+                };
             }
         }
-
 
         /// <summary>
         /// Sends a catchup sync message for a pool spawned object.
@@ -77,15 +83,17 @@ namespace LabFusion.Senders
         /// <param name="syncable"></param>
         public static void SendCatchupSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, ulong userId)
         {
-            if (NetworkInfo.IsServer)
+            if (!NetworkInfo.IsServer)
             {
-                using var writer = FusionWriter.Create(SpawnResponseData.GetSize(barcode));
-                var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform);
-                writer.Write(data);
-
-                using var message = FusionMessage.Create(NativeMessageTag.SpawnResponse, writer);
-                MessageSender.SendFromServer(userId, NetworkChannel.Reliable, message);
+                return;
             }
+
+            using var writer = FusionWriter.Create(SpawnResponseData.GetSize(barcode));
+            var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform);
+            writer.Write(data);
+
+            using var message = FusionMessage.Create(NativeMessageTag.SpawnResponse, writer);
+            MessageSender.SendFromServer(userId, NetworkChannel.Reliable, message);
         }
     }
 }

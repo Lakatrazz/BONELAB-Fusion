@@ -1,7 +1,8 @@
 ﻿using HarmonyLib;
+
 using LabFusion.Network;
 using LabFusion.Senders;
-using LabFusion.Syncables;
+using LabFusion.Entities;
 
 using Il2CppSLZ.Interaction;
 
@@ -20,23 +21,39 @@ namespace LabFusion.Patching
             if (IgnorePatches)
                 return;
 
+            if (!NetworkInfo.HasServer)
+            {
+                return;
+            }
+
             // Check if this key is synced
             var key = host.gameObject.GetComponentInChildren<Key>(true);
 
-            if (NetworkInfo.HasServer && key && KeyExtender.Cache.TryGet(key, out var syncable))
+            if (!key)
             {
-                // Make sure the key is inserting
-                if (__instance._State == KeyReceiver._States.HOVERING && __instance._keyHost == host)
+                return;
+            }
+
+            var keyEntity = KeyExtender.Cache.Get(key);
+
+            if (keyEntity == null)
+            {
+                return;
+            }
+
+            // Make sure the key is inserting
+            if (__instance._State == KeyReceiver._States.HOVERING && __instance._keyHost == host)
+            {
+                // Check if this is static or synced
+                if (KeyRecieverExtender.Cache.TryGet(__instance, out var receiverEntity))
                 {
-                    // Check if this is static or synced
-                    if (KeyRecieverExtender.Cache.TryGet(__instance, out var receiverSyncable) && receiverSyncable.TryGetExtender<KeyRecieverExtender>(out var receiverExtender))
-                    {
-                        KeySender.SendPropKeySlot(syncable.GetId(), receiverSyncable.GetId(), receiverExtender.GetIndex(__instance).Value);
-                    }
-                    else
-                    {
-                        KeySender.SendStaticKeySlot(syncable.GetId(), __instance.gameObject);
-                    }
+                    var receiverExtender = receiverEntity.GetExtender<KeyRecieverExtender>();
+
+                    KeySender.SendPropKeySlot(keyEntity.Id, receiverEntity.Id, (byte)receiverExtender.GetIndex(__instance).Value);
+                }
+                else
+                {
+                    KeySender.SendStaticKeySlot(keyEntity.Id, __instance.gameObject);
                 }
             }
         }

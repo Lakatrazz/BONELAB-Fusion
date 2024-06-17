@@ -4,7 +4,7 @@ using LabFusion.Network;
 using LabFusion.Utilities;
 using LabFusion.Representation;
 using LabFusion.SDK.Achievements;
-using LabFusion.Syncables;
+using LabFusion.Entities;
 using LabFusion.RPC;
 using LabFusion.Marrow;
 
@@ -13,6 +13,7 @@ using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Interaction;
+using Il2CppSLZ.Marrow.Pool;
 
 namespace LabFusion.Patching
 {
@@ -75,24 +76,37 @@ namespace LabFusion.Patching
         public static void OnFire(Gun __instance)
         {
             if (IgnorePatches)
+            {
                 return;
+            }
+
+            if (!NetworkInfo.HasServer)
+            {
+                return;
+            }
+
+            var gunEntity = GunExtender.Cache.Get(__instance);
+
+            if (gunEntity == null)
+            {
+                return;
+            }
+
+            var gunExtender = gunEntity.GetExtender<GunExtender>();
 
             try
             {
-                if (NetworkInfo.HasServer && GunExtender.Cache.TryGet(__instance, out var gunSyncable) && gunSyncable.TryGetExtender<GunExtender>(out var extender))
+                // Make sure this is being grabbed by our main player
+                if (__instance.triggerGrip && __instance.triggerGrip.attachedHands.Find((Il2CppSystem.Predicate<Hand>)((h) => h.manager.IsSelf())))
                 {
-                    // Make sure this is being grabbed by our main player
-                    if (__instance.triggerGrip && __instance.triggerGrip.attachedHands.Find((Il2CppSystem.Predicate<Hand>)((h) => h.manager.IsSelf())))
-                    {
-                        using var writer = FusionWriter.Create(GunShotData.Size);
-                        var ammoCount = __instance._magState != null ? (byte)__instance._magState.AmmoCount : (byte)0;
+                    using var writer = FusionWriter.Create(GunShotData.Size);
+                    var ammoCount = __instance._magState != null ? (byte)__instance._magState.AmmoCount : (byte)0;
 
-                        var data = GunShotData.Create(PlayerIdManager.LocalSmallId, ammoCount, gunSyncable.Id, extender.GetIndex(__instance).Value);
-                        writer.Write(data);
+                    var data = GunShotData.Create(PlayerIdManager.LocalSmallId, ammoCount, gunEntity.Id, (byte)gunExtender.GetIndex(__instance).Value);
+                    writer.Write(data);
 
-                        using var message = FusionMessage.Create(NativeMessageTag.GunShot, writer);
-                        MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                    }
+                    using var message = FusionMessage.Create(NativeMessageTag.GunShot, writer);
+                    MessageSender.SendToServer(NetworkChannel.Reliable, message);
                 }
             }
             catch (Exception e)
@@ -112,19 +126,35 @@ namespace LabFusion.Patching
         public static void SetPreviewMesh(SpawnGun __instance)
         {
             if (IgnorePatches)
-                return;
-
-            if (__instance._selectedCrate != null && NetworkInfo.HasServer && SpawnGunExtender.Cache.TryGet(__instance, out var syncable))
             {
-                string barcode = __instance._selectedCrate.Barcode;
-
-                using var writer = FusionWriter.Create(SpawnGunPreviewMeshData.GetSize(barcode));
-                var data = SpawnGunPreviewMeshData.Create(PlayerIdManager.LocalSmallId, syncable.GetId(), barcode);
-                writer.Write(data);
-
-                using var message = FusionMessage.Create(NativeMessageTag.SpawnGunPreviewMesh, writer);
-                MessageSender.SendToServer(NetworkChannel.Reliable, message);
+                return;
             }
+
+            if (!NetworkInfo.HasServer)
+            {
+                return;
+            }
+
+            if (__instance._selectedCrate == null)
+            {
+                return;
+            }
+
+            var entity = SpawnGunExtender.Cache.Get(__instance);
+
+            if (entity == null || !entity.IsOwner)
+            {
+                return;
+            }
+
+            string barcode = __instance._selectedCrate.Barcode;
+
+            using var writer = FusionWriter.Create(SpawnGunPreviewMeshData.GetSize(barcode));
+            var data = SpawnGunPreviewMeshData.Create(PlayerIdManager.LocalSmallId, entity.Id, barcode);
+            writer.Write(data);
+
+            using var message = FusionMessage.Create(NativeMessageTag.SpawnGunPreviewMesh, writer);
+            MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
 
         [HarmonyPrefix]
@@ -224,9 +254,11 @@ namespace LabFusion.Patching
             }
 
             // Send a despawn request if there's a syncable
-            if (PropSyncable.Cache.TryGet(marrowEntity.gameObject, out var syncable))
+            var poolee = Poolee.Cache.Get(marrowEntity.gameObject);
+
+            if (PooleeExtender.Cache.TryGet(poolee, out var entity))
             {
-                PooleeUtilities.RequestDespawn(syncable.GetId());
+                PooleeUtilities.RequestDespawn(entity.Id);
             }
 
             // Flash the spawn gun

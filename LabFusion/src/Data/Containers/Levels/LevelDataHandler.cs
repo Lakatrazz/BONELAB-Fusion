@@ -4,6 +4,7 @@ using LabFusion.Utilities;
 using LabFusion.Network;
 
 using BoneLib;
+using LabFusion.Representation;
 
 namespace LabFusion.Data
 {
@@ -21,7 +22,7 @@ namespace LabFusion.Data
 
         protected virtual void SceneAwake() { }
         protected virtual void MainSceneInitialized() { }
-        protected virtual void PlayerCatchup(ulong longId) { }
+        protected virtual void PlayerCatchup(PlayerId playerId) { }
 
         private static void OnSceneAwake()
         {
@@ -45,11 +46,11 @@ namespace LabFusion.Data
             }
         }
 
-        private static void OnPlayerCatchup(ulong longId)
+        private static void OnPlayerCatchup(PlayerId playerId)
         {
             for (var i = 0; i < Handlers.Count; i++)
             {
-                Handlers[i].PlayerCatchup(longId);
+                Handlers[i].PlayerCatchup(playerId);
             }
         }
 

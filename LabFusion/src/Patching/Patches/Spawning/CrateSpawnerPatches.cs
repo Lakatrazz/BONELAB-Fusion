@@ -38,7 +38,7 @@ namespace LabFusion.Patching
             spawner.OnFinishNetworkSpawn(spawned);
 
             // Send spawn message
-            var spawnedId = info.syncable.GetId();
+            var spawnedId = info.entity.Id;
 
             SpawnSender.SendCratePlacerEvent(spawner, spawnedId);
         }

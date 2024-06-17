@@ -1,8 +1,9 @@
 ﻿using LabFusion.Data;
 using LabFusion.Representation;
-using LabFusion.Syncables;
 using LabFusion.Patching;
 using LabFusion.Extensions;
+using LabFusion.Entities;
+
 using Il2CppSLZ.Marrow.Interaction;
 
 namespace LabFusion.Network
@@ -53,34 +54,47 @@ namespace LabFusion.Network
         {
             using FusionReader reader = FusionReader.Create(bytes);
             var data = reader.ReadFusionSerializable<MagazineEjectData>();
+
             // Send message to other clients if server
-            if (NetworkInfo.IsServer && isServerHandled)
+            if (isServerHandled)
             {
                 using var message = FusionMessage.Create(Tag.Value, bytes);
                 MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+                return;
             }
-            else if (SyncManager.TryGetSyncable<PropSyncable>(data.gunId, out var gun) && gun.TryGetExtender<AmmoSocketExtender>(out var extender))
+
+            var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.gunId);
+
+            if (entity == null)
             {
-                // Eject mag from gun
-                if (extender.Component._magazinePlug)
+                return;
+            }
+
+            var ammoSocketExtender = entity.GetExtender<AmmoSocketExtender>();
+
+            if (ammoSocketExtender == null)
+            {
+                return;
+            }
+
+            // Eject mag from gun
+            if (ammoSocketExtender.Component._magazinePlug)
+            {
+                AmmoSocketPatches.IgnorePatch = true;
+
+                var ammoPlug = ammoSocketExtender.Component._magazinePlug;
+
+                if (ammoPlug.magazine && MagazineExtender.Cache.TryGet(ammoPlug.magazine, out var magEntity) && magEntity.Id == data.magazineId)
                 {
-                    AmmoSocketPatches.IgnorePatch = true;
+                    ammoPlug.ForceEject();
 
-                    var ammoPlug = extender.Component._magazinePlug;
-                    if (ammoPlug.magazine && MagazineExtender.Cache.TryGet(ammoPlug.magazine, out var magSyncable) && magSyncable.Id == data.magazineId)
+                    if (data.hand != Handedness.UNDEFINED && PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep))
                     {
-                        ammoPlug.ForceEject();
-
-                        magSyncable.SetRigidbodiesDirty();
-
-                        if (data.hand != Handedness.UNDEFINED && PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep))
-                        {
-                            rep.AttachObject(data.hand, ammoPlug.magazine.grip);
-                        }
+                        rep.AttachObject(data.hand, ammoPlug.magazine.grip);
                     }
-
-                    AmmoSocketPatches.IgnorePatch = false;
                 }
+
+                AmmoSocketPatches.IgnorePatch = false;
             }
         }
     }

@@ -10,6 +10,7 @@ using LabFusion.Utilities;
 using Il2CppSLZ.Interaction;
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Interaction;
+using LabFusion.Entities;
 
 
 namespace LabFusion.Patching
@@ -82,7 +83,7 @@ namespace LabFusion.Patching
 
             // Send claim message
             using var writer = FusionWriter.Create(MagazineClaimData.Size);
-            var data = MagazineClaimData.Create(PlayerIdManager.LocalSmallId, info.syncable.GetId(), handedness);
+            var data = MagazineClaimData.Create(PlayerIdManager.LocalSmallId, info.entity.Id, handedness);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.MagazineClaim, writer);
@@ -95,26 +96,43 @@ namespace LabFusion.Patching
     {
         public static bool Prefix(InventoryAmmoReceiver __instance, IGrippable host)
         {
-            try
+            if (!NetworkInfo.HasServer)
             {
-                if (NetworkInfo.HasServer && __instance.rigManager.IsSelf() && host.GetHostGameObject().GetComponent<Magazine>() && PropSyncable.Cache.TryGet(host.GetHostGameObject(), out var syncable))
-                {
-                    // Make sure this magazine isn't currently locked in a socket
-                    // The base game doesn't check for this and bugs occur in the base game, but due to latency said bugs are more common
-                    if (syncable.TryGetExtender<MagazineExtender>(out var extender) && !extender.Component.magazinePlug._isLocked)
-                        PooleeUtilities.RequestDespawn(syncable.Id, true);
-
-                    return false;
-                }
-            }
-            catch (Exception e)
-            {
-#if DEBUG
-                FusionLogger.LogException("patching InventoryAmmoReceiver.OnHandDrop", e);
-#endif
+                return true;
             }
 
-            return true;
+            if (!__instance.rigManager.IsSelf())
+            {
+                return true;
+            }
+
+            var interactableHost = host.TryCast<InteractableHost>();
+
+            if (interactableHost == null)
+            {
+                return true;
+            }
+
+            if (!InteractableHostExtender.Cache.TryGet(interactableHost, out var entity))
+            {
+                return true;
+            }
+
+            var magazineExtender = entity.GetExtender<Entities.MagazineExtender>();
+
+            if (magazineExtender == null)
+            {
+                return true;
+            }
+
+            // Make sure this magazine isn't currently locked in a socket
+            // The base game doesn't check for this and bugs occur in the base game, but due to latency said bugs are more common
+            if (!magazineExtender.Component.magazinePlug._isLocked)
+            {
+                PooleeUtilities.RequestDespawn(entity.Id, true);
+            }
+
+            return false;
         }
     }
 }

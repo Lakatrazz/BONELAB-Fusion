@@ -7,6 +7,7 @@ using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Interaction;
 
 using UnityEngine;
+using LabFusion.Representation;
 
 namespace LabFusion.Data
 {
@@ -141,24 +142,24 @@ namespace LabFusion.Data
 
         public void CacheValues() => MainSceneInitialized();
 
-        protected override void PlayerCatchup(ulong longId)
+        protected override void PlayerCatchup(PlayerId playerId)
         {
             // Send all intro events
             foreach (var intro in _introEvents)
             {
-                CampaignSender.SendDescentIntro(intro, longId);
+                CampaignSender.SendDescentIntro(intro, playerId);
             }
 
             // Send all noose events
             foreach (var noose in _nooseEvents)
             {
-                CampaignSender.SendDescentNoose(noose, longId);
+                CampaignSender.SendDescentNoose(noose, playerId);
             }
 
             // Send all elevator events
             foreach (var elevator in _elevatorEvents)
             {
-                CampaignSender.SendDescentElevator(elevator, longId);
+                CampaignSender.SendDescentElevator(elevator, playerId);
             }
         }
     }

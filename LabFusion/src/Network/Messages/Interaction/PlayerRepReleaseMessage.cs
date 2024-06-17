@@ -58,7 +58,7 @@ namespace LabFusion.Network
             }
 
             // Send message to other clients if server
-            if (NetworkInfo.IsServer && isServerHandled)
+            if (isServerHandled)
             {
                 if (data.smallId != 0)
                 {

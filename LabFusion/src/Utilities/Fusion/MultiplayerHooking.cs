@@ -14,7 +14,6 @@ namespace LabFusion.Utilities
     public delegate void PlayerUpdate(PlayerId playerId);
     public delegate void PlayerAction(PlayerId playerId, PlayerActionType type, PlayerId otherPlayer = null);
     public delegate void RigManagerEvent(RigManager rig);
-    public delegate void CatchupAction(ulong longId);
     public delegate void LobbyMenuAction(MenuCategory category, INetworkLobby lobby);
 
     /// <summary>
@@ -30,7 +29,7 @@ namespace LabFusion.Utilities
         public static event ServerEvent OnStartServer, OnJoinServer, OnDisconnect;
         public static event PlayerUpdate OnPlayerJoin, OnPlayerLeave;
         public static event PlayerAction OnPlayerAction;
-        public static event CatchupAction OnPlayerCatchup;
+        public static event PlayerUpdate OnPlayerCatchup;
         public static event LobbyMenuAction OnLobbyCategoryCreated;
         public static event RigManagerEvent OnLocalPlayerCreated, OnPlayerRepCreated;
 
@@ -64,7 +63,7 @@ namespace LabFusion.Utilities
 
         internal static void Internal_OnPlayerAction(PlayerId id, PlayerActionType type, PlayerId otherPlayer = null) => OnPlayerAction.InvokeSafe(id, type, otherPlayer, "executing OnPlayerAction hook");
 
-        internal static void Internal_OnPlayerCatchup(ulong longId) => OnPlayerCatchup.InvokeSafe(longId, "executing OnPlayerCatchup hook");
+        internal static void Internal_OnPlayerCatchup(PlayerId playerId) => OnPlayerCatchup.InvokeSafe(playerId, "executing OnPlayerCatchup hook");
 
         internal static void Internal_OnLobbyCategoryCreated(MenuCategory category, INetworkLobby lobby) => OnLobbyCategoryCreated.InvokeSafe(category, lobby, "executing OnLobbyCategoryCreated");
 

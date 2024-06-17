@@ -1,6 +1,7 @@
 ﻿using LabFusion.Data;
-using LabFusion.Syncables;
 using LabFusion.Utilities;
+using LabFusion.Entities;
+
 using Il2CppSLZ.Marrow.Data;
 
 using UnityEngine;
@@ -13,7 +14,7 @@ namespace LabFusion.RPC
         {
             public GameObject spawned;
 
-            public PropSyncable syncable;
+            public NetworkEntity entity;
         }
 
         public struct SpawnRequestInfo

@@ -2,7 +2,7 @@
 
 using LabFusion.Network;
 using LabFusion.Representation;
-using LabFusion.Syncables;
+using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow.PuppetMasta;
 
@@ -27,20 +27,20 @@ public static class PuppetMasterPatches
             return;
         }
 
-        if (!PuppetMasterExtender.Cache.TryGet(__instance, out var syncable) || !syncable.IsOwner())
+        if (!PuppetMasterExtender.Cache.TryGet(__instance, out var entity) || !entity.IsOwner)
         {
             return;
         }
 
         using (var writer = FusionWriter.Create(PropReferenceData.Size))
         {
-            var data = PropReferenceData.Create(PlayerIdManager.LocalSmallId, syncable.Id);
+            var data = PropReferenceData.Create(PlayerIdManager.LocalSmallId, entity.Id);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.PuppetMasterKill, writer);
             MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
 
-        PuppetMasterExtender.LastKilled = syncable;
+        PuppetMasterExtender.LastKilled = entity;
     }
 }

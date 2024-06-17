@@ -2,7 +2,7 @@
 
 using LabFusion.Network;
 using LabFusion.Representation;
-using LabFusion.Syncables;
+using LabFusion.Entities;
 
 using Il2CppSLZ.Bonelab;
 
@@ -20,7 +20,7 @@ namespace LabFusion.Patching
             if (IgnorePatches)
                 return true;
 
-            if (NetworkInfo.HasServer && PropFlashlightExtender.Cache.TryGet(__instance, out var syncable) && !syncable.IsOwner())
+            if (NetworkInfo.HasServer && PropFlashlightExtender.Cache.TryGet(__instance, out var entity) && !entity.IsOwner)
                 return false;
 
             return true;
@@ -33,10 +33,10 @@ namespace LabFusion.Patching
             if (IgnorePatches)
                 return;
 
-            if (NetworkInfo.HasServer && PropFlashlightExtender.Cache.TryGet(__instance, out var syncable))
+            if (NetworkInfo.HasServer && PropFlashlightExtender.Cache.TryGet(__instance, out var entity))
             {
                 using var writer = FusionWriter.Create(FlashlightToggleData.Size);
-                var data = FlashlightToggleData.Create(PlayerIdManager.LocalSmallId, syncable.Id, __instance.lightOn);
+                var data = FlashlightToggleData.Create(PlayerIdManager.LocalSmallId, entity.Id, __instance.lightOn);
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.FlashlightToggle, writer);

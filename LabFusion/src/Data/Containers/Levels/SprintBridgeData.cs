@@ -4,6 +4,7 @@ using LabFusion.Utilities;
 using Il2CppSLZ.Bonelab;
 
 using UnityEngine;
+using Il2CppSLZ.Marrow.Interaction;
 
 namespace LabFusion.Data
 {
@@ -17,20 +18,24 @@ namespace LabFusion.Data
         {
             GameController = GameObject.FindObjectOfType<GameControl_SprintBridge04>();
 
-            if (GameController != null)
+            if (GameController == null)
             {
-                var copter = GameObject.Find("TrashCopter");
+                return;
+            }
 
-                if (copter != null)
-                {
-                    PropSender.SendPropCreation(copter);
-                }
-                else
-                {
+            var copter = GameObject.Find("TrashCopter");
+
+            if (copter != null)
+            {
+                var marrowEntity = copter.GetComponentInParent<MarrowEntity>();
+
+                PropSender.SendPropCreation(marrowEntity);
+            }
+            else
+            {
 #if DEBUG
-                    FusionLogger.Warn("Failed to find TrashCopter in Sprint Bridge!");
+                FusionLogger.Warn("Failed to find TrashCopter in Sprint Bridge!");
 #endif
-                }
             }
         }
     }

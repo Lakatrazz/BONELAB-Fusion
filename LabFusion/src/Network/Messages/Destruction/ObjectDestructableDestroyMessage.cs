@@ -1,41 +1,52 @@
-﻿using LabFusion.Syncables;
-using LabFusion.Patching;
-using Il2CppSLZ.Marrow.Data;
+﻿using LabFusion.Patching;
 using LabFusion.Extensions;
+using LabFusion.Entities;
 
-namespace LabFusion.Network
+using Il2CppSLZ.Marrow.Data;
+
+namespace LabFusion.Network;
+
+[Net.DelayWhileTargetLoading]
+public class ObjectDestructableDestroyMessage : FusionMessageHandler
 {
-    [Net.DelayWhileTargetLoading]
-    public class ObjectDestructableDestroyMessage : FusionMessageHandler
+    public override byte? Tag => NativeMessageTag.ObjectDestructableDestroy;
+
+    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
-        public override byte? Tag => NativeMessageTag.ObjectDestructableDestroy;
+        using FusionReader reader = FusionReader.Create(bytes);
+        var data = reader.ReadFusionSerializable<ComponentIndexData>();
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        // Send message to other clients if server
+        if (isServerHandled)
         {
-            using FusionReader reader = FusionReader.Create(bytes);
-            var data = reader.ReadFusionSerializable<ComponentIndexData>();
+            using var message = FusionMessage.Create(Tag.Value, bytes);
+            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
 
-            // Send message to other clients if server
-            if (NetworkInfo.IsServer && isServerHandled)
-            {
-                using var message = FusionMessage.Create(Tag.Value, bytes);
-                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-            }
-            else
-            {
-                if (SyncManager.TryGetSyncable<PropSyncable>(data.syncId, out var destructable) && destructable.TryGetExtender<ObjectDestructableExtender>(out var extender))
-                {
-                    var objectDestructable = extender.GetComponent(data.componentIndex);
-                    ObjectDestructiblePatches.IgnorePatches = true;
-                    PooleeDespawnPatch.IgnorePatch = true;
-
-                    objectDestructable._hits = objectDestructable.reqHitCount + 1;
-                    objectDestructable.TakeDamage(Vector3Extensions.up, objectDestructable._health + 1f, false, AttackType.Blunt);
-
-                    ObjectDestructiblePatches.IgnorePatches = false;
-                    PooleeDespawnPatch.IgnorePatch = false;
-                }
-            }
+            return;
         }
+
+        var destructible = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.syncId);
+
+        if (destructible == null)
+        {
+            return;
+        }
+
+        var extender = destructible.GetExtender<ObjectDestructibleExtender>();
+
+        if (extender == null)
+        {
+            return;
+        }
+
+        var objectDestructible = extender.GetComponent(data.componentIndex);
+        ObjectDestructiblePatches.IgnorePatches = true;
+        PooleeDespawnPatch.IgnorePatch = true;
+
+        objectDestructible._hits = objectDestructible.reqHitCount + 1;
+        objectDestructible.TakeDamage(Vector3Extensions.up, objectDestructible._health + 1f, false, AttackType.Blunt);
+
+        ObjectDestructiblePatches.IgnorePatches = false;
+        PooleeDespawnPatch.IgnorePatch = false;
     }
 }

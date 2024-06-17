@@ -1,6 +1,6 @@
 ﻿using LabFusion.Representation;
 using LabFusion.Senders;
-using LabFusion.Syncables;
+using LabFusion.Entities;
 using LabFusion.Utilities;
 
 using UnityEngine;
@@ -34,7 +34,7 @@ namespace LabFusion.SDK.Achievements
             {
                 // Check the most recently killed NPC
                 // If we are the owner, we probably saved them
-                if (PuppetMasterExtender.LastKilled != null && PuppetMasterExtender.LastKilled.IsOwner())
+                if (PuppetMasterExtender.LastKilled != null && PuppetMasterExtender.LastKilled.IsOwner)
                 {
                     IncrementTask();
                 }

@@ -16,6 +16,8 @@ using LabFusion.Exceptions;
 using LabFusion.Senders;
 using LabFusion.RPC;
 using LabFusion.Marrow;
+using LabFusion.Entities;
+using Il2CppSLZ.Marrow.Interaction;
 
 namespace LabFusion.Network
 {
@@ -110,22 +112,30 @@ namespace LabFusion.Network
         {
             var go = poolee.gameObject;
 
-            if (PropSyncable.Cache.TryGet(go, out var syncable))
-                SyncManager.RemoveSyncable(syncable);
+            // Remove the existing entity on this poolee if it exists
+            if (PooleeExtender.Cache.TryGet(poolee, out var conflictingEntity))
+            {
+                NetworkEntityManager.IdManager.UnregisterEntity(conflictingEntity);
+            }
 
             PooleeUtilities.CheckingForSpawn.Push(poolee);
 
-            PropSyncable newSyncable = new(null, go.gameObject);
-            newSyncable.SetOwner(owner);
+            // Create a network entity
+            NetworkEntity newEntity = new();
+            newEntity.SetOwner(PlayerIdManager.GetPlayerId(owner));
 
-            SyncManager.RegisterSyncable(newSyncable, syncId);
+            // Setup a network prop
+            var marrowEntity = MarrowEntity.Cache.Get(go);
+            NetworkProp newProp = new(newEntity, marrowEntity);
 
-            // If we are the server, insert the catchup hook for future users
-            if (NetworkInfo.IsServer)
-                newSyncable.InsertCatchupDelegate((id) =>
-                {
-                    SpawnSender.SendCatchupSpawn(owner, barcode, syncId, new SerializedTransform(go.transform), id);
-                });
+            // Register this entity
+            NetworkEntityManager.IdManager.RegisterEntity(syncId, newEntity);
+
+            // Insert the catchup hook for future users
+            newEntity.OnEntityCatchup += (entity, player) =>
+            {
+                SpawnSender.SendCatchupSpawn(owner, barcode, syncId, new SerializedTransform(go.transform), player);
+            };
 
             // Invoke spawn callback
             if (owner == PlayerIdManager.LocalSmallId)
@@ -133,7 +143,7 @@ namespace LabFusion.Network
                 NetworkAssetSpawner.OnSpawnComplete(trackerId, new NetworkAssetSpawner.SpawnCallbackInfo()
                 {
                     spawned = go,
-                    syncable = newSyncable,
+                    entity = newEntity,
                 });
             }
 

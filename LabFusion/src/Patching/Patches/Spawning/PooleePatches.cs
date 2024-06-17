@@ -3,9 +3,9 @@
 using HarmonyLib;
 
 using LabFusion.Network;
-using LabFusion.Syncables;
 using LabFusion.Utilities;
 using LabFusion.Extensions;
+using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow.Pool;
 
@@ -20,11 +20,18 @@ namespace LabFusion.Patching
         public static void Postfix(Poolee __instance)
         {
             if (PooleeUtilities.IsPlayer(__instance) || __instance.IsNOC())
-                return;
-
-            if (NetworkInfo.HasServer && PropSyncable.Cache.TryGet(__instance.gameObject, out var syncable))
             {
-                SyncManager.RemoveSyncable(syncable);
+                return;
+            }
+
+            if (!NetworkInfo.HasServer)
+            {
+                return;
+            }
+
+            if (PooleeExtender.Cache.TryGet(__instance, out var entity))
+            {
+                NetworkEntityManager.IdManager.UnregisterEntity(entity);
             }
         }
     }
@@ -36,21 +43,27 @@ namespace LabFusion.Patching
 
         public static bool Prefix(Poolee __instance)
         {
-            if (PooleeUtilities.IsPlayer(__instance) || IgnorePatch || __instance.IsNOC())
+            if (!NetworkInfo.HasServer)
+            {
                 return true;
+            }
+
+            if (PooleeUtilities.IsPlayer(__instance) || IgnorePatch || __instance.IsNOC())
+            {
+                return true;
+            }
 
             try
             {
-                if (NetworkInfo.HasServer)
+                if (!NetworkInfo.IsServer && !PooleeUtilities.CanDespawn && PooleeExtender.Cache.ContainsSource(__instance))
                 {
-                    if (!NetworkInfo.IsServer && !PooleeUtilities.CanDespawn && PropSyncable.Cache.TryGet(__instance.gameObject, out var syncable))
+                    return false;
+                }
+                else if (NetworkInfo.IsServer)
+                {
+                    if (!CheckNetworkEntity(__instance) && PooleeUtilities.CheckingForSpawn.Contains(__instance))
                     {
-                        return false;
-                    }
-                    else if (NetworkInfo.IsServer)
-                    {
-                        if (!CheckPropSyncable(__instance) && PooleeUtilities.CheckingForSpawn.Contains(__instance))
-                            MelonCoroutines.Start(CoVerifyDespawnCoroutine(__instance));
+                        MelonCoroutines.Start(CoVerifyDespawnCoroutine(__instance));
                     }
                 }
             }
@@ -64,12 +77,12 @@ namespace LabFusion.Patching
             return true;
         }
 
-        private static bool CheckPropSyncable(Poolee __instance)
+        private static bool CheckNetworkEntity(Poolee __instance)
         {
-            if (PropSyncable.Cache.TryGet(__instance.gameObject, out var syncable))
+            if (PooleeExtender.Cache.TryGet(__instance, out var entity))
             {
-                PooleeUtilities.SendDespawn(syncable.Id);
-                SyncManager.RemoveSyncable(syncable);
+                PooleeUtilities.SendDespawn(entity.Id);
+                NetworkEntityManager.IdManager.UnregisterEntity(entity);
                 return true;
             }
             return false;
@@ -82,7 +95,7 @@ namespace LabFusion.Patching
                 yield return null;
             }
 
-            CheckPropSyncable(__instance);
+            CheckNetworkEntity(__instance);
         }
     }
 }

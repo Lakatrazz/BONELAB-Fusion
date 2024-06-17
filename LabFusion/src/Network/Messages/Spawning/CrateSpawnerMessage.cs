@@ -1,7 +1,8 @@
 ﻿using LabFusion.Data;
 using LabFusion.Utilities;
-using LabFusion.Syncables;
 using LabFusion.Exceptions;
+using LabFusion.Patching;
+using LabFusion.Entities;
 
 using UnityEngine;
 
@@ -10,81 +11,90 @@ using Il2CppSLZ.Marrow.Warehouse;
 using System.Collections;
 
 using MelonLoader;
-using LabFusion.Patching;
 
-namespace LabFusion.Network
+namespace LabFusion.Network;
+
+public class CrateSpawnerData : IFusionSerializable
 {
-    public class CrateSpawnerData : IFusionSerializable
+    public const int Size = sizeof(ushort);
+
+    public ushort spawnedId;
+    public GameObject placer;
+
+    public void Serialize(FusionWriter writer)
     {
-        public const int Size = sizeof(ushort);
+        writer.Write(spawnedId);
+        writer.Write(placer);
+    }
 
-        public ushort spawnedId;
-        public GameObject placer;
+    public void Deserialize(FusionReader reader)
+    {
+        spawnedId = reader.ReadUInt16();
+        placer = reader.ReadGameObject();
+    }
 
-        public void Serialize(FusionWriter writer)
+    public static CrateSpawnerData Create(ushort spawnedId, GameObject placer)
+    {
+        return new CrateSpawnerData()
         {
-            writer.Write(spawnedId);
-            writer.Write(placer);
+            spawnedId = spawnedId,
+            placer = placer,
+        };
+    }
+}
+
+[Net.DelayWhileTargetLoading]
+public class CrateSpawnerMessage : FusionMessageHandler
+{
+    public override byte? Tag => NativeMessageTag.CrateSpawner;
+
+    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    {
+        using FusionReader reader = FusionReader.Create(bytes);
+        var data = reader.ReadFusionSerializable<CrateSpawnerData>();
+
+        // This should only be handled by clients
+        if (isServerHandled)
+        {
+            throw new ExpectedClientException();
         }
 
-        public void Deserialize(FusionReader reader)
+        if (data.placer != null)
         {
-            spawnedId = reader.ReadUInt16();
-            placer = reader.ReadGameObject();
-        }
-
-        public static CrateSpawnerData Create(ushort spawnedId, GameObject placer)
-        {
-            return new CrateSpawnerData()
-            {
-                spawnedId = spawnedId,
-                placer = placer,
-            };
+            MelonCoroutines.Start(Internal_WaitForSyncable(data.placer, data.spawnedId));
         }
     }
 
-    [Net.DelayWhileTargetLoading]
-    public class CrateSpawnerMessage : FusionMessageHandler
+    private static IEnumerator Internal_WaitForSyncable(GameObject placer, ushort spawnId)
     {
-        public override byte? Tag => NativeMessageTag.CrateSpawner;
+        float startTime = TimeUtilities.TimeSinceStartup;
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        NetworkEntity entity = null;
+
+        while (entity == null && TimeUtilities.TimeSinceStartup - startTime <= 1f)
         {
-            using FusionReader reader = FusionReader.Create(bytes);
-            var data = reader.ReadFusionSerializable<CrateSpawnerData>();
+            yield return null;
 
-            // This should only be handled by clients
-            if (isServerHandled)
-            {
-                throw new ExpectedClientException();
-            }
-
-            if (data.placer != null)
-            {
-                MelonCoroutines.Start(Internal_WaitForSyncable(data.placer, data.spawnedId));
-            }
+            entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(spawnId);
         }
 
-        private static IEnumerator Internal_WaitForSyncable(GameObject placer, ushort spawnId)
+        if (entity == null)
         {
-            float startTime = TimeUtilities.TimeSinceStartup;
-            PropSyncable syncable = null;
-            while (syncable == null && TimeUtilities.TimeSinceStartup - startTime <= 1f)
-            {
-                yield return null;
+            yield break;
+        }
 
-                SyncManager.TryGetSyncable(spawnId, out syncable);
-            }
+        var pooleeExtender = entity.GetExtender<PooleeExtender>();
 
-            if (syncable == null)
-                yield break;
+        if (pooleeExtender == null)
+        {
+            yield break;
+        }
 
-            var crateSpawner = placer.GetComponentInChildren<CrateSpawner>(true);
+        var crateSpawner = placer.GetComponentInChildren<CrateSpawner>(true);
 
-            if (crateSpawner)
-            {
-                crateSpawner.OnFinishNetworkSpawn(syncable.Poolee.gameObject);
-            }
+        if (crateSpawner)
+        {
+            crateSpawner.OnFinishNetworkSpawn(pooleeExtender.Component.gameObject);
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using LabFusion.Data;
 using LabFusion.Representation;
 using LabFusion.Utilities;
+using LabFusion.Entities;
 
-using LabFusion.Syncables;
 using Il2CppSLZ.Marrow.Interaction;
 
 namespace LabFusion.Network
@@ -51,14 +51,30 @@ namespace LabFusion.Network
             var data = reader.ReadFusionSerializable<MagazineClaimData>();
 
             // Send message to other clients if server
-            if (NetworkInfo.IsServer && isServerHandled)
+            if (isServerHandled)
             {
                 using var message = FusionMessage.Create(Tag.Value, bytes);
                 MessageSender.BroadcastMessageExcept(data.owner, NetworkChannel.Reliable, message, false);
+                return;
             }
-            else if (SyncManager.TryGetSyncable<PropSyncable>(data.syncId, out var syncable) && syncable.TryGetExtender<MagazineExtender>(out var extender) && PlayerRepManager.TryGetPlayerRep(data.owner, out var rep))
+
+            var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.syncId);
+
+            if (entity == null)
             {
-                MagazineUtilities.GrabMagazine(extender.Component, rep.RigReferences.RigManager, data.handedness);
+                return;
+            }
+
+            var magazineExtender = entity.GetExtender<MagazineExtender>();
+
+            if (magazineExtender == null)
+            {
+                return;
+            }
+
+            if (PlayerRepManager.TryGetPlayerRep(data.owner, out var rep))
+            {
+                MagazineUtilities.GrabMagazine(magazineExtender.Component, rep.RigReferences.RigManager, data.handedness);
             }
         }
     }

@@ -36,6 +36,8 @@ namespace LabFusion.Data
 
                 TaxiController = GameObject.FindObjectOfType<TaxiController>(true);
                 TaxiSeat = TaxiController.rearSeat;
+                var taxiEntity = TaxiController.GetComponentInParent<MarrowEntity>();
+
                 ArmController = GameObject.FindObjectOfType<ArticulatedArmController>(true);
                 ArmFinale = GameObject.FindObjectOfType<ArmFinale>(true);
 
@@ -58,12 +60,14 @@ namespace LabFusion.Data
                 if (NetworkInfo.IsServer)
                 {
                     // Taxi
-                    PropSender.SendPropCreation(TaxiController.gameObject, null, true);
+                    PropSender.SendPropCreation(taxiEntity, null, true);
 
                     // Windmill
                     var windmill = ArmFinale.transform.Find("WindMill (2)");
                     if (windmill != null)
-                        PropSender.SendPropCreation(windmill.gameObject);
+                    {
+                        PropSender.SendPropCreation(windmill.GetComponentInParent<MarrowEntity>());
+                    }
                     else
                     {
 #if DEBUG

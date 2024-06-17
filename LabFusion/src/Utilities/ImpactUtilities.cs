@@ -1,4 +1,7 @@
-﻿using LabFusion.Senders;
+﻿using Il2CppSLZ.Marrow.Interaction;
+
+using LabFusion.Entities;
+using LabFusion.Senders;
 using LabFusion.Syncables;
 
 using UnityEngine;
@@ -11,21 +14,29 @@ namespace LabFusion.Utilities
         {
             var go = rb.gameObject;
 
-            // Already has a syncable?
-            if (PropSyncable.HostCache.TryGet(go, out var syncable))
+            var marrowBody = MarrowBody.Cache.Get(go);
+
+            if (marrowBody == null)
             {
-                // Only transfer ownership if this is not currently held and not a vehicle
-                if (!syncable.IsHeld && !syncable.IsVehicle)
-                    PropSender.SendOwnershipTransfer(syncable);
+                return;
             }
-            // Create a new synced object
+
+            // Check if the body already has an entity attached
+            if (MarrowBodyExtender.Cache.TryGet(marrowBody, out var entity))
+            {
+                // Transfer ownership
+                NetworkEntityManager.TakeOwnership(entity);
+            }
+            // Create a new network entity
             else
             {
                 // Check the blacklist
                 if (!go.IsSyncWhitelisted())
+                {
                     return;
+                }
 
-                DelayUtilities.Delay(() => { PropSender.SendPropCreation(go); }, 4);
+                DelayUtilities.Delay(() => { PropSender.SendPropCreation(marrowBody.Entity); }, 4);
             }
         }
     }

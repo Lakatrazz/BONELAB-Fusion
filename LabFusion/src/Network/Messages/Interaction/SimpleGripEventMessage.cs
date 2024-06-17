@@ -1,95 +1,108 @@
 ﻿using LabFusion.Data;
-using LabFusion.Syncables;
+using LabFusion.Entities;
 
-namespace LabFusion.Network
+namespace LabFusion.Network;
+
+public enum SimpleGripEventType
 {
-    public enum SimpleGripEventType
+    TRIGGER_DOWN = 0,
+    MENU_TAP = 1,
+    ATTACH = 2,
+    DETACH = 3,
+}
+
+public class SimpleGripEventData : IFusionSerializable
+{
+    public const int Size = sizeof(byte) * 3 + sizeof(ushort);
+
+    public byte smallId;
+    public ushort syncId;
+    public byte gripEventIndex;
+    public SimpleGripEventType type;
+
+    public void Serialize(FusionWriter writer)
     {
-        TRIGGER_DOWN = 0,
-        MENU_TAP = 1,
-        ATTACH = 2,
-        DETACH = 3,
+        writer.Write(smallId);
+        writer.Write(syncId);
+        writer.Write(gripEventIndex);
+        writer.Write((byte)type);
     }
 
-    public class SimpleGripEventData : IFusionSerializable
+    public void Deserialize(FusionReader reader)
     {
-        public const int Size = sizeof(byte) * 3 + sizeof(ushort);
-
-        public byte smallId;
-        public ushort syncId;
-        public byte gripEventIndex;
-        public SimpleGripEventType type;
-
-        public void Serialize(FusionWriter writer)
-        {
-            writer.Write(smallId);
-            writer.Write(syncId);
-            writer.Write(gripEventIndex);
-            writer.Write((byte)type);
-        }
-
-        public void Deserialize(FusionReader reader)
-        {
-            smallId = reader.ReadByte();
-            syncId = reader.ReadUInt16();
-            gripEventIndex = reader.ReadByte();
-            type = (SimpleGripEventType)reader.ReadByte();
-        }
-
-        public static SimpleGripEventData Create(byte smallId, ushort syncId, byte gripEventIndex, SimpleGripEventType type)
-        {
-            return new SimpleGripEventData()
-            {
-                smallId = smallId,
-                syncId = syncId,
-                gripEventIndex = gripEventIndex,
-                type = type
-            };
-        }
+        smallId = reader.ReadByte();
+        syncId = reader.ReadUInt16();
+        gripEventIndex = reader.ReadByte();
+        type = (SimpleGripEventType)reader.ReadByte();
     }
 
-    [Net.DelayWhileTargetLoading]
-    public class SimpleGripEventMessage : FusionMessageHandler
+    public static SimpleGripEventData Create(byte smallId, ushort syncId, byte gripEventIndex, SimpleGripEventType type)
     {
-        public override byte? Tag => NativeMessageTag.SimpleGripEvent;
-
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        return new SimpleGripEventData()
         {
-            using FusionReader reader = FusionReader.Create(bytes);
-            var data = reader.ReadFusionSerializable<SimpleGripEventData>();
-            // Send message to other clients if server
-            if (NetworkInfo.IsServer && isServerHandled)
-            {
-                using var message = FusionMessage.Create(Tag.Value, bytes);
-                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-            }
-            else
-            {
-                if (SyncManager.TryGetSyncable<PropSyncable>(data.syncId, out var syncable) && syncable.TryGetExtender<SimpleGripEventsExtender>(out var extender))
-                {
-                    var gripEvent = extender.GetComponent(data.gripEventIndex);
+            smallId = smallId,
+            syncId = syncId,
+            gripEventIndex = gripEventIndex,
+            type = type
+        };
+    }
+}
 
-                    if (gripEvent)
-                    {
-                        switch (data.type)
-                        {
-                            default:
-                            case SimpleGripEventType.TRIGGER_DOWN:
-                                gripEvent.OnIndexDown.Invoke();
-                                break;
-                            case SimpleGripEventType.MENU_TAP:
-                                gripEvent.OnMenuTapDown.Invoke();
-                                break;
-                            case SimpleGripEventType.ATTACH:
-                                gripEvent.OnAttach.Invoke();
-                                break;
-                            case SimpleGripEventType.DETACH:
-                                gripEvent.OnDetach.Invoke();
-                                break;
-                        }
-                    }
-                }
-            }
+[Net.DelayWhileTargetLoading]
+public class SimpleGripEventMessage : FusionMessageHandler
+{
+    public override byte? Tag => NativeMessageTag.SimpleGripEvent;
+
+    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    {
+        using FusionReader reader = FusionReader.Create(bytes);
+        var data = reader.ReadFusionSerializable<SimpleGripEventData>();
+
+        // Send message to other clients if server
+        if (isServerHandled)
+        {
+            using var message = FusionMessage.Create(Tag.Value, bytes);
+            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+
+            return;
+        }
+
+        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.syncId);
+
+        if (entity == null)
+        {
+            return;
+        }
+
+        var extender = entity.GetExtender<SimpleGripEventsExtender>();
+
+        if (extender == null)
+        {
+            return;
+        }
+
+        var gripEvent = extender.GetComponent(data.gripEventIndex);
+
+        if (gripEvent == null)
+        {
+            return;
+        }
+
+        switch (data.type)
+        {
+            default:
+            case SimpleGripEventType.TRIGGER_DOWN:
+                gripEvent.OnIndexDown.Invoke();
+                break;
+            case SimpleGripEventType.MENU_TAP:
+                gripEvent.OnMenuTapDown.Invoke();
+                break;
+            case SimpleGripEventType.ATTACH:
+                gripEvent.OnAttach.Invoke();
+                break;
+            case SimpleGripEventType.DETACH:
+                gripEvent.OnDetach.Invoke();
+                break;
         }
     }
 }

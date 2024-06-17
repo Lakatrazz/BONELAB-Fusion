@@ -2,7 +2,7 @@
 using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Representation;
-using LabFusion.Syncables;
+using LabFusion.Entities;
 using LabFusion.Utilities;
 using Il2CppSLZ.Interaction;
 using UnityEngine;
@@ -98,43 +98,54 @@ namespace LabFusion.Patching
         {
             var go1 = __instance._gO1;
             var go2 = __instance._gO2;
+
             if (__instance.mode == Constrainer.ConstraintMode.Remove || !go1 || !go2 || go1 == go2)
+            {
+                return;
+            }
+
+            if (!NetworkInfo.HasServer)
+            {
+                return;
+            }
+
+            var firstTracker = __instance._gO1.GetComponents<ConstraintTracker>().LastOrDefault();
+
+            if (firstTracker == null)
                 return;
 
-            if (NetworkInfo.HasServer)
+            var secondTracker = firstTracker.otherTracker;
+
+            // See if the constrainer is synced
+            if (!IsReceivingConstraints && ConstrainerExtender.Cache.TryGet(__instance, out var entity))
             {
-                var firstTracker = __instance._gO1.GetComponents<ConstraintTracker>().LastOrDefault();
+                // Delete the constraints and send a creation request
+                ConstraintTrackerPatches.IgnorePatches = true;
+                firstTracker.DeleteConstraint();
+                ConstraintTrackerPatches.IgnorePatches = false;
 
-                if (firstTracker == null)
-                    return;
+                // Send create message
+                using var writer = FusionWriter.Create(ConstraintCreateData.Size);
+                var data = ConstraintCreateData.Create(PlayerIdManager.LocalSmallId, entity.Id, new ConstrainerPointPair(__instance));
+                writer.Write(data);
 
-                var secondTracker = firstTracker.otherTracker;
+                using var message = FusionMessage.Create(NativeMessageTag.ConstraintCreate, writer);
+                MessageSender.SendToServer(NetworkChannel.Reliable, message);
+            }
+            // If this is a received message, setup the constraints
+            else
+            {
+                // Register first tracker
+                var firstEntity = new NetworkEntity();
+                var firstConstraint = new NetworkConstraint(firstEntity, firstTracker);
 
-                // See if the constrainer is synced
-                if (!IsReceivingConstraints && ConstrainerExtender.Cache.TryGet(__instance, out var syncable))
-                {
-                    // Delete the constraints and send a creation request
-                    ConstraintTrackerPatches.IgnorePatches = true;
-                    firstTracker.DeleteConstraint();
-                    ConstraintTrackerPatches.IgnorePatches = false;
+                NetworkEntityManager.IdManager.RegisterEntity(FirstId, firstEntity);
 
-                    // Send create message
-                    using var writer = FusionWriter.Create(ConstraintCreateData.Size);
-                    var data = ConstraintCreateData.Create(PlayerIdManager.LocalSmallId, syncable.Id, new ConstrainerPointPair(__instance));
-                    writer.Write(data);
+                // Register second tracker
+                var secondEntity = new NetworkEntity();
+                var secondConstraint = new NetworkConstraint(secondEntity, secondTracker);
 
-                    using var message = FusionMessage.Create(NativeMessageTag.ConstraintCreate, writer);
-                    MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                }
-                // If this is a received message, setup the constraints
-                else
-                {
-                    var firstSyncable = new ConstraintSyncable(firstTracker);
-                    SyncManager.RegisterSyncable(firstSyncable, FirstId);
-
-                    var secondSyncable = new ConstraintSyncable(secondTracker);
-                    SyncManager.RegisterSyncable(secondSyncable, SecondId);
-                }
+                NetworkEntityManager.IdManager.RegisterEntity(SecondId, secondEntity);
             }
         }
 

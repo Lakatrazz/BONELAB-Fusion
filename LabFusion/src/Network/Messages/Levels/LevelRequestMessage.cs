@@ -53,7 +53,7 @@ namespace LabFusion.Network
 
             _timeOfRequest = TimeUtilities.TimeSinceStartup;
 
-            if (NetworkInfo.IsServer && isServerHandled)
+            if (isServerHandled)
             {
                 using var reader = FusionReader.Create(bytes);
                 var data = reader.ReadFusionSerializable<LevelRequestData>();

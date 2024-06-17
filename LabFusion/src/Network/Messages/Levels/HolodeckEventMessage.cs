@@ -54,7 +54,7 @@ namespace LabFusion.Network
         {
             using FusionReader reader = FusionReader.Create(bytes);
             var data = reader.ReadFusionSerializable<HolodeckEventData>();
-            if (NetworkInfo.IsServer && isServerHandled)
+            if (isServerHandled)
             {
                 using var message = FusionMessage.Create(Tag.Value, bytes);
                 MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);

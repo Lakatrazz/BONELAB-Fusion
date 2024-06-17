@@ -44,7 +44,7 @@ namespace LabFusion.Network
             using var reader = FusionReader.Create(bytes);
             var data = reader.ReadFusionSerializable<PointItemEquipStateData>();
             // Send message to other clients if server
-            if (NetworkInfo.IsServer && isServerHandled)
+            if (isServerHandled)
             {
                 using var message = FusionMessage.Create(Tag.Value, bytes);
                 MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);

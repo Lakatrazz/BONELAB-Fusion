@@ -29,6 +29,7 @@ using ModuleHandler = LabFusion.SDK.Modules.ModuleHandler;
 using UnityEngine;
 using Il2CppSLZ.Marrow.Warehouse;
 using LabFusion.SDK.Cosmetics;
+using LabFusion.Entities;
 
 namespace LabFusion;
 
@@ -92,15 +93,16 @@ public class FusionMod : MelonMod
         LevelDataHandler.OnInitializeMelon();
         FusionMessageHandler.RegisterHandlersFromAssembly(FusionAssembly);
         GrabGroupHandler.RegisterHandlersFromAssembly(FusionAssembly);
-        PropExtenderManager.RegisterExtendersFromAssembly(FusionAssembly);
         NetworkLayer.RegisterLayersFromAssembly(FusionAssembly);
         GamemodeRegistration.LoadGamemodes(FusionAssembly);
         //PointItemManager.LoadItems(FusionAssembly);
         AchievementManager.LoadAchievements(FusionAssembly);
 
+        EntityComponentManager.RegisterComponentsFromAssembly(FusionAssembly);
+
         LobbyFilterManager.LoadBuiltInFilters();
 
-        SyncManager.OnInitializeMelon();
+        NetworkEntityManager.OnInitializeManager();
 
         FusionPopupManager.OnInitializeMelon();
 
@@ -153,7 +155,7 @@ public class FusionMod : MelonMod
         }
     }
 
-    protected void OnInitializeNetworking()
+    protected static void OnInitializeNetworking()
     {
         // If a layer is already set, don't initialize
         if (NetworkInfo.CurrentNetworkLayer != null)
@@ -213,7 +215,8 @@ public class FusionMod : MelonMod
         FusionLogger.Log($"Main scene {sceneName} was initialized.");
 #endif
         // Cache info
-        SyncManager.OnCleanup();
+        NetworkEntityManager.OnCleanupIds();
+
         RigData.OnCacheRigInfo();
         PersistentAssetCreator.OnMainSceneInitialized();
         ConstrainerUtilities.OnMainSceneInitialized();
@@ -272,7 +275,7 @@ public class FusionMod : MelonMod
         {
             var lastBytes = NetworkInfo.BytesUp;
 
-            SyncManager.OnUpdate();
+            NetworkEntityManager.OnUpdate(TimeUtilities.DeltaTime);
 
             var byteDifference = NetworkInfo.BytesUp - lastBytes;
             _nextSyncableSendRate = SendRateTable.GetObjectSendRate(byteDifference);
@@ -306,7 +309,8 @@ public class FusionMod : MelonMod
 
         PDController.OnFixedUpdate();
         PlayerRep.OnFixedUpdate();
-        SyncManager.OnFixedUpdate();
+
+        NetworkEntityManager.OnFixedUpdate(TimeUtilities.FixedDeltaTime);
 
         // Update hooks
         MultiplayerHooking.Internal_OnFixedUpdate();
@@ -340,7 +344,7 @@ public class FusionMod : MelonMod
         GUILayout.Label($"Bytes Up: {NetworkInfo.BytesUp}", emptyOptions);
         GUILayout.Label($"Bytes Down: {NetworkInfo.BytesDown}", emptyOptions);
 
-        GUILayout.Label($"Syncable Count: {SyncManager.Syncables.Count}", emptyOptions);
+        GUILayout.Label($"Network Entity Count: {NetworkEntityManager.IdManager.RegisteredEntities.EntityIdLookup.Count}", emptyOptions);
 #endif
     }
 }

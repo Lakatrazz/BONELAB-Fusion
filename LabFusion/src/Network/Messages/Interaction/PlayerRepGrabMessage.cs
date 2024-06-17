@@ -74,7 +74,7 @@ namespace LabFusion.Network
                 MelonCoroutines.Start(CoWaitAndGrab(data));
 
                 // Send message to other clients if server
-                if (NetworkInfo.IsServer && isServerHandled)
+                if (isServerHandled)
                 {
                     using var message = FusionMessage.Create(Tag.Value, bytes);
                     MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);

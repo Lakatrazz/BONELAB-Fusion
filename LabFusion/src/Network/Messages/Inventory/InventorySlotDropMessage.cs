@@ -64,7 +64,7 @@ namespace LabFusion.Network
             using FusionReader reader = FusionReader.Create(bytes);
             var data = reader.ReadFusionSerializable<InventorySlotDropData>();
             // Send message to other clients if server
-            if (NetworkInfo.IsServer && isServerHandled)
+            if (isServerHandled)
             {
                 using var message = FusionMessage.Create(Tag.Value, bytes);
                 MessageSender.BroadcastMessageExcept(data.grabber, NetworkChannel.Reliable, message, false);

@@ -24,7 +24,7 @@ namespace LabFusion.Data
         private static int _cartAmount = 0;
         private static bool _hasCreatedCarts = false;
 
-        protected override void PlayerCatchup(ulong longId)
+        protected override void PlayerCatchup(PlayerId playerId)
         {
             if (Minecart != null && _hasCreatedCarts)
             {
@@ -33,7 +33,7 @@ namespace LabFusion.Data
                 writer.Write(data);
 
                 using var message = FusionMessage.Create(NativeMessageTag.MineDiveCart, writer);
-                MessageSender.SendFromServer(longId, NetworkChannel.Reliable, message);
+                MessageSender.SendFromServer(playerId, NetworkChannel.Reliable, message);
             }
         }
 

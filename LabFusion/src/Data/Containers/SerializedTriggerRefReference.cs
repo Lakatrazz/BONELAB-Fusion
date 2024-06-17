@@ -1,98 +1,79 @@
 ﻿using LabFusion.Network;
-using LabFusion.Representation;
-using LabFusion.Syncables;
-using LabFusion.Utilities;
+using LabFusion.Entities;
 
-using Il2CppSLZ.Rig;
 using Il2CppSLZ.Marrow.AI;
 
-namespace LabFusion.Data
+namespace LabFusion.Data;
+
+public class SerializedTriggerRefReference : IFusionSerializable
 {
-    public class SerializedTriggerRefReference : IFusionSerializable
+    private enum ReferenceType
     {
-        private enum ReferenceType
+        UNKNOWN = 0,
+        NETWORK_ENTITY = 1,
+        NULL = 2,
+    }
+
+    // Base trigger ref reference
+    public TriggerRefProxy proxy;
+
+    public SerializedTriggerRefReference() { }
+
+    public SerializedTriggerRefReference(TriggerRefProxy proxy)
+    {
+        this.proxy = proxy;
+    }
+
+    public void Serialize(FusionWriter writer)
+    {
+        if (proxy == null)
         {
-            UNKNOWN = 0,
-            PROP_SYNCABLE = 1,
-            RIG_MANAGER = 2,
-            NULL = 3,
+            writer.Write((byte)ReferenceType.NULL);
+            return;
         }
 
-        // Base trigger ref reference
-        public TriggerRefProxy proxy;
-
-        public SerializedTriggerRefReference() { }
-
-        public SerializedTriggerRefReference(TriggerRefProxy proxy)
+        // Check if there is an entity, and write it
+        if (TriggerRefProxyExtender.Cache.TryGet(proxy, out var entity))
         {
-            this.proxy = proxy;
+            writer.Write((byte)ReferenceType.NETWORK_ENTITY);
+            writer.Write(entity.Id);
+            return;
         }
 
-        public void Serialize(FusionWriter writer)
+        // No entity? Just write unknown
+        writer.Write((byte)ReferenceType.UNKNOWN);
+    }
+
+    public void Deserialize(FusionReader reader)
+    {
+        var type = (ReferenceType)reader.ReadByte();
+
+        switch (type)
         {
-            if (proxy == null)
-            {
-                writer.Write((byte)ReferenceType.NULL);
-                return;
-            }
+            default:
+            case ReferenceType.UNKNOWN:
+            case ReferenceType.NULL:
+                // Do nothing for null
+                break;
+            case ReferenceType.NETWORK_ENTITY:
+                var id = reader.ReadUInt16();
 
-            PhysicsRig physRig;
+                var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(id);
 
-            // Check if there is a syncable, and write it
-            if (TriggerRefProxyExtender.Cache.TryGet(proxy, out var syncable))
-            {
-                writer.Write((byte)ReferenceType.PROP_SYNCABLE);
-                writer.Write(syncable.GetId());
-            }
-            // Check if this is attached to a rigmanager
-            else if ((physRig = proxy.GetComponentInParent<PhysicsRig>()) != null)
-            {
-                if (PlayerRepUtilities.TryGetRigInfo(physRig.manager, out var smallId, out var references))
+                if (entity == null)
                 {
-                    writer.Write((byte)ReferenceType.RIG_MANAGER);
-                    writer.Write(smallId);
+                    break;
                 }
-                else
+
+                var extender = entity.GetExtender<TriggerRefProxyExtender>();
+
+                if (extender == null)
                 {
-                    writer.Write((byte)ReferenceType.UNKNOWN);
-
-#if DEBUG
-                    FusionLogger.Warn("Failed to get rig info for a trigger ref!");
-#endif
+                    break;
                 }
-            }
-        }
 
-        public void Deserialize(FusionReader reader)
-        {
-            var type = (ReferenceType)reader.ReadByte();
-
-            switch (type)
-            {
-                default:
-                case ReferenceType.UNKNOWN:
-                    // This should never happen
-                    break;
-                case ReferenceType.NULL:
-                    // Do nothing for null
-                    break;
-                case ReferenceType.PROP_SYNCABLE:
-                    var id = reader.ReadUInt16();
-
-                    if (SyncManager.TryGetSyncable<PropSyncable>(id, out var syncable) && syncable.TryGetExtender<TriggerRefProxyExtender>(out var extender))
-                    {
-                        proxy = extender.Component;
-                    }
-                    break;
-                case ReferenceType.RIG_MANAGER:
-                    var smallId = reader.ReadByte();
-
-                    if (PlayerRepUtilities.TryGetReferences(smallId, out var references))
-                    {
-                        proxy = references.Proxy;
-                    }
-                    break;
-            }
+                proxy = extender.Component;
+                break;
         }
     }
 }

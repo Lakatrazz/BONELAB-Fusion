@@ -1,7 +1,7 @@
 ﻿using LabFusion.Data;
+using LabFusion.Entities;
 using LabFusion.Patching;
 using LabFusion.Representation;
-using LabFusion.Syncables;
 
 namespace LabFusion.Network
 {
@@ -53,28 +53,48 @@ namespace LabFusion.Network
             var data = reader.ReadFusionSerializable<PlayerRepSeatData>();
 
             // Send message to other clients if server
-            if (NetworkInfo.IsServer && isServerHandled)
+            if (isServerHandled)
             {
                 using var message = FusionMessage.Create(Tag.Value, bytes);
                 MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+                return;
             }
-            else if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep) && SyncManager.TryGetSyncable<PropSyncable>(data.syncId, out var syncable) && syncable.TryGetExtender<SeatExtender>(out var extender))
+
+            if (!PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep))
             {
-                var seat = extender.GetComponent(data.seatIndex);
+                return;
+            }
 
-                if (seat)
+            var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.syncId);
+
+            if (entity == null)
+            {
+                return;
+            }
+
+            var seatExtender = entity.GetExtender<SeatExtender>();
+
+            if (seatExtender == null)
+            {
+                return;
+            }
+
+            var seat = seatExtender.GetComponent(data.seatIndex);
+
+            if (seat)
+            {
+                SeatPatches.IgnorePatches = true;
+
+                if (data.isIngress)
                 {
-                    SeatPatches.IgnorePatches = true;
-
-                    if (data.isIngress)
-                        seat.IngressRig(rep.RigReferences.RigManager);
-                    else if (rep.RigReferences.RigManager.activeSeat)
-                        rep.RigReferences.RigManager.activeSeat.EgressRig(true);
-
-                    syncable.PushUpdate();
-
-                    SeatPatches.IgnorePatches = false;
+                    seat.IngressRig(rep.RigReferences.RigManager);
                 }
+                else if (rep.RigReferences.RigManager.activeSeat)
+                {
+                    rep.RigReferences.RigManager.activeSeat.EgressRig(true);
+                }
+
+                SeatPatches.IgnorePatches = false;
             }
         }
     }

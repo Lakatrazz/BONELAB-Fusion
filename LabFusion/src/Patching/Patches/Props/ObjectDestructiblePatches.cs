@@ -2,7 +2,7 @@
 
 using LabFusion.Network;
 using LabFusion.Representation;
-using LabFusion.Syncables;
+using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.VFX;
@@ -39,18 +39,24 @@ namespace LabFusion.Patching
                 return;
             }
 
-            if (ObjectDestructableExtender.Cache.TryGet(destructible, out var syncable) && syncable.TryGetExtender<ObjectDestructableExtender>(out var extender))
-            {
-                // Send object destroy
-                if (syncable.IsOwner())
-                {
-                    using var writer = FusionWriter.Create(ComponentIndexData.Size);
-                    var data = ComponentIndexData.Create(PlayerIdManager.LocalSmallId, syncable.Id, extender.GetIndex(destructible).Value);
-                    writer.Write(data);
+            var entity = ObjectDestructibleExtender.Cache.Get(destructible);
 
-                    using var message = FusionMessage.Create(NativeMessageTag.ObjectDestructableDestroy, writer);
-                    MessageSender.SendToServer(NetworkChannel.Reliable, message);
-                }
+            if (entity == null)
+            {
+                return;
+            }
+
+            var extender = entity.GetExtender<ObjectDestructibleExtender>();
+
+            // Send object destroy
+            if (entity.IsOwner)
+            {
+                using var writer = FusionWriter.Create(ComponentIndexData.Size);
+                var data = ComponentIndexData.Create(PlayerIdManager.LocalSmallId, entity.Id, (byte)extender.GetIndex(destructible).Value);
+                writer.Write(data);
+
+                using var message = FusionMessage.Create(NativeMessageTag.ObjectDestructableDestroy, writer);
+                MessageSender.SendToServer(NetworkChannel.Reliable, message);
             }
         }
 
@@ -66,7 +72,7 @@ namespace LabFusion.Patching
                 return true;
             }
 
-            if (ObjectDestructableExtender.Cache.TryGet(__instance, out var syncable) && !syncable.IsOwner())
+            if (ObjectDestructibleExtender.Cache.TryGet(__instance, out var entity) && !entity.IsOwner)
             {
                 return false;
             }

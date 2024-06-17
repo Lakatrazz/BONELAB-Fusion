@@ -50,7 +50,7 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             // This should only ever be handled by the server
-            if (NetworkInfo.IsServer && isServerHandled)
+            if (isServerHandled)
             {
                 using FusionReader reader = FusionReader.Create(bytes);
                 var data = reader.ReadFusionSerializable<PlayerMetadataRequestData>();

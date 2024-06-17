@@ -3,9 +3,9 @@ using LabFusion.Senders;
 using LabFusion.SDK.Points;
 
 using Il2CppSLZ.Bonelab;
+using Il2CppSLZ.Marrow.Interaction;
 
 using UnityEngine;
-using LabFusion.Extensions;
 
 namespace LabFusion.Data
 {
@@ -24,17 +24,19 @@ namespace LabFusion.Data
             GameController = GameObject.FindObjectOfType<GameControl_Hub>(true);
             Funicular = GameObject.FindObjectOfType<FunicularController>(true);
 
-            if (GameController != null)
+            if (GameController == null)
             {
-                PointShopHelper.SpawnBitMart(PointShopPosition, PointShopRotation);
+                return;
             }
+
+            PointShopHelper.SpawnBitMart(PointShopPosition, PointShopRotation);
 
             if (NetworkInfo.IsServer && Funicular != null)
             {
-                PropSender.SendPropCreation(Funicular.gameObject);
+                var funicularEntity = Funicular.GetComponentInParent<MarrowEntity>();
+                
+                PropSender.SendPropCreation(funicularEntity);
             }
         }
-
-        public static bool IsInHub() => GameController != null;
     }
 }
