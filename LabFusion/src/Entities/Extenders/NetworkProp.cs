@@ -39,6 +39,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     private DestroySensor _destroySensor = null;
 
+    private bool _isCulled = false;
+
     private List<IEntityComponentExtender> _componentExtenders = null;
 
     public EntityPose EntityPose => _pose;
@@ -56,6 +58,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         InitializeComponents();
 
         IMarrowEntityExtender.Cache.Add(marrowEntity, networkEntity);
+
+        OnEntityCull(marrowEntity.IsCulled);
 
         networkEntity.HookOnRegistered(OnPropRegistered);
         networkEntity.OnEntityUnregistered += OnPropUnregistered;
@@ -94,6 +98,28 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         _lastReceivedTime = TimeUtilities.TimeSinceStartup;
     }
 
+    private void TeleportToPose()
+    {
+        for (var i = 0; i < _bodies.Length; i++)
+        {
+            var body = _bodies[i];
+
+            var transform = body.transform;
+            var pose = _pose.bodies[i];
+
+            transform.position = pose.position;
+            transform.rotation = pose.rotation;
+
+            if (body.HasRigidbody)
+            {
+                var rigidbody = body._rigidbody;
+
+                rigidbody.velocity = pose.velocity;
+                rigidbody.angularVelocity = pose.angularVelocity;
+            }
+        }
+    }
+
     private void CopyBodiesToPose() 
     {
         _receivedPose = false;
@@ -122,8 +148,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     {
         entity.ConnectExtender(this);
 
-        NetworkEntityManager.UpdateManager.Register(this);
-        NetworkEntityManager.FixedUpdateManager.Register(this);
+        OnReregisterUpdates();
 
         _destroySensor = MarrowEntity.gameObject.AddComponent<DestroySensor>();
         _destroySensor.Hook(OnSensorDestroyed);
@@ -137,8 +162,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         _networkEntity = null;
         _marrowEntity = null;
 
-        NetworkEntityManager.UpdateManager.Unregister(this);
-        NetworkEntityManager.FixedUpdateManager.Unregister(this);
+        OnUnregisterUpdates();
     }
 
     private void OnSensorDestroyed()
@@ -290,5 +314,37 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
         rigidbody.AddForce(pdController.SavedForce, ForceMode.Acceleration);
         rigidbody.AddTorque(pdController.SavedTorque, ForceMode.Acceleration);
+    }
+
+    public void OnEntityCull(bool isInactive)
+    {
+        // Culled
+        if (isInactive)
+        {
+            OnUnregisterUpdates();
+            return;
+        }
+
+        // Unculled
+        OnReregisterUpdates();
+
+        if (!NetworkEntity.IsOwner)
+        {
+            TeleportToPose();
+        }
+    }
+
+    private void OnReregisterUpdates()
+    {
+        OnUnregisterUpdates();
+
+        NetworkEntityManager.UpdateManager.Register(this);
+        NetworkEntityManager.FixedUpdateManager.Register(this);
+    }
+
+    private void OnUnregisterUpdates()
+    {
+        NetworkEntityManager.UpdateManager.Unregister(this);
+        NetworkEntityManager.FixedUpdateManager.Unregister(this);
     }
 }

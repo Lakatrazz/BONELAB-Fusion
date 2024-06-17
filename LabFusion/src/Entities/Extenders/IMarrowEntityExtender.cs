@@ -17,4 +17,6 @@ public interface IMarrowEntityExtender : IEntityExtender
     NetworkEntity NetworkEntity { get; }
 
     MarrowEntity MarrowEntity { get; }
+
+    void OnEntityCull(bool isInactive);
 }

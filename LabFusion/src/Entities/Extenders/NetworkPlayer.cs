@@ -48,4 +48,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     public void OnEntityFixedUpdate(float deltaTime)
     {
     }
+
+    public void OnEntityCull(bool isInactive)
+    {
+    }
 }
