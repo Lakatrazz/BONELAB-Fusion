@@ -15,8 +15,12 @@ public class EntityIdList<TEntity>
     private readonly FusionDictionary<ushort, TEntity> _idsToEntities = new();
     private readonly FusionDictionary<TEntity, ushort> _entitiesToIds = new();
 
+    private readonly List<ushort> _reservedIds = new();
+
     public FusionDictionary<ushort, TEntity> IdEntityLookup => _idsToEntities;
     public FusionDictionary<TEntity, ushort> EntityIdLookup => _entitiesToIds;
+
+    public List<ushort> ReservedIds => _reservedIds;
 
     public event EntityIdEvent<TEntity> OnEntityAdded, OnEntityRemoved;
 
@@ -24,14 +28,45 @@ public class EntityIdList<TEntity>
 
     public ushort LastId => _lastId;
 
+    public void ReserveId(ushort id)
+    {
+        if (_reservedIds.Contains(id))
+        {
+            return;
+        }
+
+        if (_lastId <= id)
+        {
+            _lastId = id;
+            _lastId++;
+        }
+
+        _reservedIds.Add(id);
+    }
+
+    public void Unreserve(ushort id)
+    {
+        _reservedIds.Remove(id);
+    }
+
+    public bool IsReserved(ushort id)
+    {
+        return _reservedIds.Contains(id);
+    }
+
+    private bool IsUsedId(ushort id)
+    {
+        return IdEntityLookup.ContainsKey(id) || IsReserved(id);
+    }
+
     public ushort AllocateNewId()
     {
         _lastId++;
 
         // Check if the id is already being used or reserved
-        if (IdEntityLookup.ContainsKey(LastId))
+        if (IsUsedId(LastId))
         {
-            while (IdEntityLookup.ContainsKey(LastId) && LastId < ushort.MaxValue)
+            while (IsUsedId(LastId) && LastId < ushort.MaxValue)
             {
                 _lastId++;
             }
@@ -97,13 +132,17 @@ public class EntityIdList<TEntity>
 
     public void ClearId()
     {
+        // Get highest unused id
         _lastId = 0;
+
+        while (IsUsedId(LastId) && LastId < ushort.MaxValue)
+        {
+            _lastId++;
+        }
     }
 
     public void Clear()
     {
-        ClearId();
-
         foreach (var entity in _idsToEntities)
         {
             OnEntityRemoved?.Invoke(entity.Key, entity.Value);
@@ -111,5 +150,9 @@ public class EntityIdList<TEntity>
 
         _idsToEntities.Clear();
         _entitiesToIds.Clear();
+
+        _reservedIds.Clear();
+
+        ClearId();
     }
 }

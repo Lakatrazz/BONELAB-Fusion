@@ -49,6 +49,8 @@ public static class NetworkEntityManager
             }
         }
 
+        IdManager.RegisteredEntities.Clear();
+
         // Clear queued entities
         var queuedEntities = IdManager.QueuedEntities.EntityIdLookup.Keys.ToList();
 
