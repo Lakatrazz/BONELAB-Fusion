@@ -37,7 +37,9 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
 
     public PlayerId OwnerId => _ownerId;
 
-    public bool IsOwner => _ownerId != null && _ownerId.IsSelf;
+    public bool IsOwner => HasOwner && _ownerId.IsSelf;
+
+    public bool HasOwner => _ownerId != null;
 
     public bool IsOwnerLocked => _isOwnerLocked;
 
