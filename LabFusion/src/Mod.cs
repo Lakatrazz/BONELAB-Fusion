@@ -4,7 +4,6 @@ using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Utilities;
-using LabFusion.Syncables;
 using LabFusion.Grabbables;
 using LabFusion.Preferences;
 using LabFusion.SDK.Gamemodes;

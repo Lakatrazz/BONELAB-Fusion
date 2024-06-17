@@ -27,8 +27,10 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     public MarrowEntity MarrowEntity => _marrowEntity;
 
     private MarrowBody[] _bodies = null;
-    private EntityPose _pose = null;
     private PDController[] _pdControllers = null;
+
+    private EntityPose _pose = null;
+    private EntityPose _sentPose = null;
 
     private bool _receivedPose = false;
     private float _lastReceivedTime = 0f;
@@ -40,6 +42,10 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     private List<IEntityComponentExtender> _componentExtenders = null;
 
     public EntityPose EntityPose => _pose;
+
+    public const float MinMoveMagnitude = 0.005f;
+    public const float MinMoveSqrMagnitude = MinMoveMagnitude * MinMoveMagnitude;
+    public const float MinMoveAngle = 0.15f;
 
     public NetworkProp(NetworkEntity networkEntity, MarrowEntity marrowEntity)
     {
@@ -60,6 +66,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         _bodies = MarrowEntity.Bodies;
 
         _pose = new EntityPose(_bodies.Length);
+        _sentPose = new EntityPose(_bodies.Length);
 
         _pdControllers = new PDController[_bodies.Length];
 
@@ -154,6 +161,14 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         OnOwnedUpdate();
     }
 
+    private bool HasBodyMoved(int index)
+    {
+        var currentPose = _pose.bodies[index];
+        var sentPose = _sentPose.bodies[index];
+
+        return (sentPose.position - currentPose.position).sqrMagnitude > MinMoveSqrMagnitude || Quaternion.Angle(sentPose.rotation, currentPose.rotation) > MinMoveAngle; 
+    }
+
     private void OnOwnedUpdate()
     {
         CopyBodiesToPose();
@@ -177,7 +192,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
                 continue;
             }
 
-            if (!rb.IsSleeping())
+            if (!rb.IsSleeping() && HasBodyMoved(i))
             {
                 isAwake = true;
                 break;
@@ -203,6 +218,9 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
         using var message = FusionMessage.Create(NativeMessageTag.EntityPoseUpdate, writer);
         MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Unreliable, message);
+
+        // Update sent pose
+        EntityPose.CopyTo(_sentPose);
     }
 
     public void OnEntityFixedUpdate(float deltaTime)
