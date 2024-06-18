@@ -2,55 +2,54 @@
 using LabFusion.Extensions;
 using Il2CppSLZ.Rig;
 
-namespace LabFusion.Representation
+namespace LabFusion.Representation;
+
+public static class PlayerRepManager
 {
-    public static class PlayerRepManager
+    // This should never change, incase other mods rely on it.
+    public const string PlayerRepName = "[RigManager (FUSION PlayerRep)]";
+
+    public static readonly List<PlayerRep> PlayerReps = new();
+    public static readonly FusionDictionary<byte, PlayerRep> IDLookup = new();
+    public static readonly FusionDictionary<RigManager, PlayerRep> ManagerLookup = new(new UnityComparer());
+
+    public static bool HasPlayerId(RigManager manager)
     {
-        // This should never change, incase other mods rely on it.
-        public const string PlayerRepName = "[RigManager (FUSION PlayerRep)]";
+        if (manager == null)
+            return false;
+        return ManagerLookup.ContainsKey(manager);
+    }
 
-        public static readonly List<PlayerRep> PlayerReps = new();
-        public static readonly FusionDictionary<byte, PlayerRep> IDLookup = new();
-        public static readonly FusionDictionary<RigManager, PlayerRep> ManagerLookup = new(new UnityComparer());
+    public static bool TryGetPlayerRep(byte id, out PlayerRep playerRep)
+    {
+        return IDLookup.TryGetValue(id, out playerRep);
+    }
 
-        public static bool HasPlayerId(RigManager manager)
+    public static bool TryGetPlayerRep(RigManager manager, out PlayerRep playerRep)
+    {
+        if (manager == null)
         {
-            if (manager == null)
-                return false;
-            return ManagerLookup.ContainsKey(manager);
+            playerRep = null;
+            return false;
         }
 
-        public static bool TryGetPlayerRep(byte id, out PlayerRep playerRep)
-        {
-            return IDLookup.TryGetValue(id, out playerRep);
-        }
+        return ManagerLookup.TryGetValue(manager, out playerRep);
+    }
 
-        public static bool TryGetPlayerRep(RigManager manager, out PlayerRep playerRep)
-        {
-            if (manager == null)
-            {
-                playerRep = null;
-                return false;
-            }
+    internal static void Internal_InsertPlayerRep(PlayerRep rep)
+    {
+        PlayerReps.Add(rep);
+        IDLookup.Add(rep.PlayerId.SmallId, rep);
+    }
 
-            return ManagerLookup.TryGetValue(manager, out playerRep);
-        }
+    internal static void Internal_RemovePlayerRep(PlayerRep rep)
+    {
+        PlayerReps.Remove(rep);
+        IDLookup.Remove(rep.PlayerId.SmallId);
+    }
 
-        internal static void Internal_InsertPlayerRep(PlayerRep rep)
-        {
-            PlayerReps.Add(rep);
-            IDLookup.Add(rep.PlayerId.SmallId, rep);
-        }
-
-        internal static void Internal_RemovePlayerRep(PlayerRep rep)
-        {
-            PlayerReps.Remove(rep);
-            IDLookup.Remove(rep.PlayerId.SmallId);
-        }
-
-        internal static void Internal_AddRigManager(RigManager manager, PlayerRep rep)
-        {
-            ManagerLookup.Add(manager, rep);
-        }
+    internal static void Internal_AddRigManager(RigManager manager, PlayerRep rep)
+    {
+        ManagerLookup.Add(manager, rep);
     }
 }

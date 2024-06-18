@@ -3,9 +3,13 @@ using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Utilities;
 using LabFusion.Preferences;
+
 using Il2CppSLZ.Interaction;
 using Il2CppSLZ.Rig;
 using Il2CppSLZ.Marrow.Utilities;
+using Il2CppSLZ.Marrow.Interaction;
+using Il2CppSLZ.Bonelab;
+
 using System.Collections;
 
 using Il2CppTMPro;
@@ -14,8 +18,6 @@ using UnityEngine;
 
 using MelonLoader;
 using LabFusion.Voice;
-using Il2CppSLZ.Marrow.Interaction;
-using Il2CppSLZ.Bonelab;
 
 namespace LabFusion.Representation
 {
