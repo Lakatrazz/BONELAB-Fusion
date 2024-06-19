@@ -104,19 +104,24 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         {
             var body = _bodies[i];
 
-            var transform = body.transform;
+            if (!body.HasRigidbody)
+            {
+                continue;
+            }
+
+            var rigidbody = body._rigidbody;
+
+            if (rigidbody.isKinematic)
+            {
+                continue;
+            }
+
             var pose = _pose.bodies[i];
 
-            transform.position = pose.position;
-            transform.rotation = pose.rotation;
-
-            if (body.HasRigidbody)
-            {
-                var rigidbody = body._rigidbody;
-
-                rigidbody.velocity = pose.velocity;
-                rigidbody.angularVelocity = pose.angularVelocity;
-            }
+            rigidbody.position = pose.position;
+            rigidbody.rotation = pose.rotation;
+            rigidbody.velocity = pose.velocity;
+            rigidbody.angularVelocity = pose.angularVelocity;
         }
     }
 
@@ -329,7 +334,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         // Unculled
         OnReregisterUpdates();
 
-        if (!NetworkEntity.IsOwner)
+        if (!NetworkEntity.IsOwner && NetworkEntity.HasOwner)
         {
             TeleportToPose();
         }
@@ -337,7 +342,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     public void OnEntityMigrate()
     {
-        if (NetworkEntity.IsOwner)
+        if (NetworkEntity.IsOwner || !NetworkEntity.HasOwner)
         {
             return;
         }
