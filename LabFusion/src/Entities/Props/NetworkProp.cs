@@ -335,6 +335,16 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         }
     }
 
+    public void OnEntityMigrate()
+    {
+        if (NetworkEntity.IsOwner)
+        {
+            return;
+        }
+
+        TeleportToPose();
+    }
+
     private void OnReregisterUpdates()
     {
         OnUnregisterUpdates();

@@ -412,9 +412,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         entity.ConnectExtender(this);
 
-        NetworkPlayerManager.UpdateManager.Register(this);
-        NetworkPlayerManager.FixedUpdateManager.Register(this);
-        NetworkPlayerManager.LateUpdateManager.Register(this);
+        OnReregisterUpdates();
 
         // Update metadata
         OnMetadataChanged(PlayerId);
@@ -429,9 +427,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         _networkEntity = null;
         _playerId = null;
 
-        NetworkPlayerManager.UpdateManager.Unregister(this);
-        NetworkPlayerManager.FixedUpdateManager.Unregister(this);
-        NetworkPlayerManager.LateUpdateManager.Unregister(this);
+        OnUnregisterUpdates();
     }
 
     public void OnHandUpdate(Hand hand)
@@ -536,7 +532,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Update server side settings
         if (_isServerDirty)
         {
-            _nametag.ToggleNametag(FusionPreferences.NametagsEnabled && FusionOverrides.ValidateNametag(PlayerId));
+            UpdateNametagVisibility();
 
             _isServerDirty = false;
         }
@@ -545,16 +541,66 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         DistanceSqr = (RigReferences.Head.position - RigData.RigReferences.Head.position).sqrMagnitude;
     }
 
+    private void OnCullExtras()
+    {
+        _nametag.ToggleNametag(false);
+    }
+
+    private void OnUncullExtras()
+    {
+        UpdateNametagVisibility();
+    }
+
+    private void UpdateNametagVisibility()
+    {
+        _nametag.ToggleNametag(FusionPreferences.NametagsEnabled && FusionOverrides.ValidateNametag(PlayerId));
+    }
+
     public void OnEntityCull(bool isInactive)
     {
+        if (NetworkEntity.IsOwner)
+        {
+            return;
+        }
+
         if (isInactive)
         {
-
+            OnCullExtras();
+            OnUnregisterUpdates();
         }
         else
         {
+            OnUncullExtras();
+            OnReregisterUpdates();
+
             TeleportToPose();
         }
+    }
+
+    public void OnEntityMigrate()
+    {
+        if (NetworkEntity.IsOwner)
+        {
+            return;
+        }
+
+        TeleportToPose();
+    }
+
+    private void OnReregisterUpdates()
+    {
+        OnUnregisterUpdates();
+
+        NetworkPlayerManager.UpdateManager.Register(this);
+        NetworkPlayerManager.FixedUpdateManager.Register(this);
+        NetworkPlayerManager.LateUpdateManager.Register(this);
+    }
+
+    private void OnUnregisterUpdates()
+    {
+        NetworkPlayerManager.UpdateManager.Unregister(this);
+        NetworkPlayerManager.FixedUpdateManager.Unregister(this);
+        NetworkPlayerManager.LateUpdateManager.Unregister(this);
     }
 
     private void TeleportToPose()
@@ -567,13 +613,13 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         // Get teleport position
         var pos = RigPose.pelvisPose.position;
-        var physRig = RigReferences.RigManager.physicsRig;
+        var physicsRig = RigReferences.RigManager.physicsRig;
 
-        // Offset
-        pos += physRig.feet.transform.position - physRig.m_pelvis.position;
-        pos += physRig.footballRadius * -physRig.m_pelvis.up;
+        // Get offset
+        var offset = pos - RigSkeleton.physicsPelvis.position;
 
-        RigReferences.RigManager.TeleportToPose(pos, RigPose.pelvisPose.rotation * Vector3.forward, true);
+        var displace = SimpleTransform.Create(offset, Quaternion.identity);
+        physicsRig.Teleport(displace, true);
 
         _pelvisPDController.Reset();
     }
