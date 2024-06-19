@@ -5,9 +5,11 @@ using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Senders;
 using LabFusion.Utilities;
+
 using Il2CppSLZ.Interaction;
 using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Bonelab;
+using LabFusion.Entities;
 
 namespace LabFusion.Patching
 {
@@ -21,7 +23,7 @@ namespace LabFusion.Patching
             // If this is a player rep,
             // We need to disable the avatars inside the body log
             // This way, the player reps won't accidentally change their avatar
-            if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(__instance.rm))
+            if (NetworkInfo.HasServer && NetworkPlayerManager.HasExternalPlayer(__instance.rm))
             {
                 for (var i = 0; i < __instance.avatarCrateRefs.Length; i++)
                 {

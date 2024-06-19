@@ -46,7 +46,15 @@ public abstract class EntityComponentArrayExtender<TComponent> : IEntityComponen
 
         OnRegister(NetworkEntity, Components);
     }
-    
+
+    public void Unregister()
+    {
+        if (NetworkEntity != null)
+        {
+            Unregister(NetworkEntity);
+        }
+    }
+
     public void Unregister(NetworkEntity networkEntity)
     {
         if (_networkEntity == null)

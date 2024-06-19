@@ -10,7 +10,7 @@ public static class NativeMessageTag
         ConnectionResponse = 2,
         Disconnect = 3,
 
-        PlayerRepTransform = 4,
+        PlayerPoseUpdate = 4,
         PlayerRepAvatar = 6,
         PlayerRepVitals = 7,
         PlayerRepRagdoll = 8,

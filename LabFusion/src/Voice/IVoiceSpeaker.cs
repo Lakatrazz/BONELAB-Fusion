@@ -1,4 +1,5 @@
-﻿using LabFusion.Representation;
+﻿using LabFusion.Entities;
+using LabFusion.Representation;
 
 using UnityEngine;
 
@@ -7,7 +8,7 @@ namespace LabFusion.Voice;
 public interface IVoiceSpeaker
 {
     PlayerId ID { get; }
-    PlayerRep Rep { get; }
+    NetworkPlayer Player { get; }
     AudioSource Source { get; }
 
     bool IsDestroyed { get; }
@@ -29,9 +30,9 @@ public abstract class VoiceSpeaker : IVoiceSpeaker
     protected PlayerId _id;
     public PlayerId ID { get { return _id; } }
 
-    protected PlayerRep _rep;
-    protected bool _hasRep;
-    public PlayerRep Rep { get { return _rep; } }
+    protected NetworkPlayer _player;
+    protected bool _hasPlayer;
+    public NetworkPlayer Player { get { return _player; } }
 
     protected AudioSource _source;
     protected GameObject _sourceGo;
@@ -43,7 +44,7 @@ public abstract class VoiceSpeaker : IVoiceSpeaker
     protected float _volume = 1f;
     public float Volume { get { return _volume; } set { _volume = value; } }
 
-    public bool MicrophoneDisabled { get { return _hasRep && Rep.MicrophoneDisabled; } }
+    public bool MicrophoneDisabled { get { return _hasPlayer && _player.MicrophoneDisabled; } }
 
     public virtual void CreateAudioSource()
     {
@@ -60,12 +61,12 @@ public abstract class VoiceSpeaker : IVoiceSpeaker
 
     public virtual void VerifyRep()
     {
-        if (!_hasRep && ID != null)
+        if (!_hasPlayer && ID != null)
         {
-            if (PlayerRepManager.TryGetPlayerRep(ID, out _rep))
+            if (NetworkPlayerManager.TryGetPlayer(ID, out _player))
             {
-                _rep.InsertVoiceSource(this, Source);
-                _hasRep = true;
+                _player.InsertVoiceSource(this, Source);
+                _hasPlayer = true;
             }
         }
     }

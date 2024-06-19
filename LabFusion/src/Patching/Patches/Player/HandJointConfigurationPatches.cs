@@ -6,6 +6,7 @@ using LabFusion.Representation;
 using Il2CppSLZ.Interaction;
 
 using UnityEngine;
+using LabFusion.Entities;
 
 namespace LabFusion.Patching
 {
@@ -21,7 +22,7 @@ namespace LabFusion.Patching
             {
                 var hand = Hand.Cache.Get(joint.gameObject);
 
-                if (hand && PlayerRepManager.HasPlayerId(hand.manager))
+                if (hand && NetworkPlayerManager.HasExternalPlayer(hand.manager))
                 {
                     joint.breakForce = float.PositiveInfinity;
                     joint.breakTorque = float.PositiveInfinity;

@@ -1,5 +1,7 @@
 ﻿using LabFusion.Extensions;
 using LabFusion.Representation;
+using LabFusion.Entities;
+
 using UnityEngine.UI;
 using UnityEngine;
 
@@ -16,7 +18,7 @@ namespace LabFusion.SDK.Gamemodes
         private Canvas canvas;
         private RawImage image;
 
-        private PlayerRep rep;
+        private NetworkPlayer player;
 
         public TeamLogoInstance(PlayerId id, Team team)
         {
@@ -33,7 +35,7 @@ namespace LabFusion.SDK.Gamemodes
             go.hideFlags = HideFlags.DontUnloadUnusedAsset;
 
             playerId = id;
-            PlayerRepManager.TryGetPlayerRep(id, out rep);
+            NetworkPlayerManager.TryGetPlayer(id, out player);
 
             this.team = team;
 
@@ -60,15 +62,15 @@ namespace LabFusion.SDK.Gamemodes
 
         public void Update()
         {
-            if (rep != null)
+            if (player != null)
             {
-                var rm = rep.RigReferences.RigManager;
+                var rm = player.RigReferences.RigManager;
 
                 if (!rm.IsNOC())
                 {
                     var head = rm.physicsRig.m_head;
 
-                    go.transform.position = head.position + Vector3Extensions.up * rep.GetNametagOffset();
+                    go.transform.position = head.position + Vector3Extensions.up * RigNametag.GetNametagOffset(rm);
                     go.transform.LookAtPlayer();
                 }
             }

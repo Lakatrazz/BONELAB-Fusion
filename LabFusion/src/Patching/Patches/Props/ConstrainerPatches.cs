@@ -155,7 +155,7 @@ namespace LabFusion.Patching
         {
             if (NetworkInfo.HasServer)
             {
-                if (PlayerRepManager.HasPlayerId(hand.manager))
+                if (NetworkPlayerManager.HasExternalPlayer(hand.manager))
                 {
                     return false;
                 }

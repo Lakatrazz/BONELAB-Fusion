@@ -2,6 +2,7 @@
 using LabFusion.Representation;
 
 using Il2CppSLZ.Marrow.Interaction;
+using LabFusion.Entities;
 
 namespace LabFusion.Network
 {
@@ -24,10 +25,10 @@ namespace LabFusion.Network
             handedness = (Handedness)reader.ReadByte();
         }
 
-        public PlayerRep GetRep()
+        public NetworkPlayer GetPlayer()
         {
-            if (PlayerRepManager.TryGetPlayerRep(smallId, out var rep))
-                return rep;
+            if (NetworkPlayerManager.TryGetPlayer(smallId, out var player))
+                return player;
             return null;
         }
 
@@ -50,11 +51,11 @@ namespace LabFusion.Network
         {
             using FusionReader reader = FusionReader.Create(bytes);
             var data = reader.ReadFusionSerializable<PlayerRepReleaseData>();
-            var rep = data.GetRep();
+            var player = data.GetPlayer();
 
-            if (rep != null)
+            if (player != null)
             {
-                rep.DetachObject(data.handedness);
+                player.Grabber.Detach(data.handedness);
             }
 
             // Send message to other clients if server

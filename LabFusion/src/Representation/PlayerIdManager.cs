@@ -6,6 +6,9 @@ namespace LabFusion.Representation
     {
         public const int MaxNameLength = 32;
 
+        public const int MinPlayerId = 0;
+        public const int MaxPlayerId = byte.MaxValue;
+
         public static readonly List<PlayerId> PlayerIds = new();
         public static int PlayerCount => PlayerIds.Count;
         public static bool HasOtherPlayers => PlayerCount > 1;

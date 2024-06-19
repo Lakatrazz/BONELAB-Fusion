@@ -15,3 +15,8 @@ public interface IEntityFixedUpdatable
 {
     void OnEntityFixedUpdate(float deltaTime);
 }
+
+public interface IEntityLateUpdatable
+{
+    void OnEntityLateUpdate(float deltaTime);
+}

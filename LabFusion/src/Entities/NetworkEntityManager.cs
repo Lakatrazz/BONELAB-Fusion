@@ -21,6 +21,9 @@ public static class NetworkEntityManager
     private static readonly EntityUpdateList<IEntityFixedUpdatable> _fixedUpdateManager = new();
     public static EntityUpdateList<IEntityFixedUpdatable> FixedUpdateManager => _fixedUpdateManager;
 
+    private static readonly EntityUpdateList<IEntityLateUpdatable> _lateUpdateManager = new();
+    public static EntityUpdateList<IEntityLateUpdatable> LateUpdateManager => _lateUpdateManager;
+
     public static void OnInitializeManager()
     {
         MultiplayerHooking.OnPlayerCatchup += OnPlayerCatchup;
@@ -110,6 +113,21 @@ public static class NetworkEntityManager
             catch (Exception e)
             {
                 FusionLogger.LogException("running entity FixedUpdate", e);
+            }
+        }
+    }
+
+    public static void OnLateUpdate(float deltaTime)
+    {
+        foreach (var entity in LateUpdateManager.Entities)
+        {
+            try
+            {
+                entity.OnEntityLateUpdate(deltaTime);
+            }
+            catch (Exception e)
+            {
+                FusionLogger.LogException("running entity LateUpdate", e);
             }
         }
     }

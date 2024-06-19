@@ -37,15 +37,10 @@ public class InventorySlotReceiverPatches
                     byte? smallId = null;
                     RigReferenceCollection references = null;
 
-                    if (rigManager.IsSelf())
+                    if (PlayerRepUtilities.TryGetRigInfo(rigManager, out var id, out var rigReferences))
                     {
-                        smallId = PlayerIdManager.LocalSmallId;
-                        references = RigData.RigReferences;
-                    }
-                    else if (PlayerRepManager.TryGetPlayerRep(rigManager, out var rep))
-                    {
-                        smallId = rep.PlayerId.SmallId;
-                        references = rep.RigReferences;
+                        smallId = id;
+                        references = rigReferences;
                     }
 
                     if (!smallId.HasValue)
@@ -141,15 +136,10 @@ public class InventorySlotReceiverDrop
         byte? smallId = null;
         RigReferenceCollection references = null;
 
-        if (rigManager.IsSelf())
+        if (PlayerRepUtilities.TryGetRigInfo(rigManager, out var id, out var rigReferences))
         {
-            smallId = PlayerIdManager.LocalSmallId;
-            references = RigData.RigReferences;
-        }
-        else if (PlayerRepManager.TryGetPlayerRep(rigManager, out var rep))
-        {
-            smallId = rep.PlayerId.SmallId;
-            references = rep.RigReferences;
+            smallId = id;
+            references = rigReferences;
         }
 
         if (!smallId.HasValue)

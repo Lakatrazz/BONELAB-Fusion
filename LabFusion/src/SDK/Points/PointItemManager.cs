@@ -8,6 +8,7 @@ using Il2CppSLZ.Rig;
 using System.Reflection;
 
 using UnityEngine;
+using LabFusion.Entities;
 
 namespace LabFusion.SDK.Points
 {
@@ -154,7 +155,7 @@ namespace LabFusion.SDK.Points
 
         private static void Internal_OnPlayerRepCreated(RigManager rigManager)
         {
-            if (!PlayerRepManager.TryGetPlayerRep(rigManager, out var rep))
+            if (!NetworkPlayerManager.TryGetPlayer(rigManager, out var rep) || rep.NetworkEntity.IsOwner)
                 return;
 
             foreach (var item in LoadedItems)
@@ -330,7 +331,7 @@ namespace LabFusion.SDK.Points
                     manager = RigData.RigReferences.RigManager;
                     type = PointItemPayloadType.SELF;
                 }
-                else if (PlayerRepManager.TryGetPlayerRep(id, out var rep))
+                else if (NetworkPlayerManager.TryGetPlayer(id, out var rep))
                 {
                     manager = rep.RigReferences.RigManager;
                     type = PointItemPayloadType.PLAYER_REP;
@@ -367,7 +368,7 @@ namespace LabFusion.SDK.Points
                     manager = RigData.RigReferences.RigManager;
                     type = PointItemPayloadType.SELF;
                 }
-                else if (PlayerRepManager.TryGetPlayerRep(id, out var rep))
+                else if (NetworkPlayerManager.TryGetPlayer(id, out var rep))
                 {
                     manager = rep.RigReferences.RigManager;
                     type = PointItemPayloadType.PLAYER_REP;

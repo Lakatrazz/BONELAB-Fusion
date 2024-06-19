@@ -23,8 +23,7 @@ namespace LabFusion.Utilities
             LaserCursorUtilities.CreateLaserCursor((cursor) =>
             {
                 cursor.transform.parent = canvas.parent;
-                cursor.transform.localPosition = Vector3Extensions.zero;
-                cursor.transform.localRotation = QuaternionExtensions.identity;
+                cursor.transform.SetLocalPositionAndRotation(Vector3Extensions.zero, QuaternionExtensions.identity);
 
                 LaserCursor.CursorRegion region = new()
                 {

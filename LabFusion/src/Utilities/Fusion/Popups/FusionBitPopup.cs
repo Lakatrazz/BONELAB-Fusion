@@ -38,8 +38,7 @@ namespace LabFusion.Utilities
                 GameObject instance = GameObject.Instantiate(go, camera);
                 UIMachineUtilities.OverrideFonts(instance.transform);
 
-                instance.transform.localPosition = LocalPosition;
-                instance.transform.localRotation = LocalRotation;
+                instance.transform.SetLocalPositionAndRotation(LocalPosition, LocalRotation);
 
                 Transform canvas = instance.transform.Find("Offset/Canvas");
 

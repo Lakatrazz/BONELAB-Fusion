@@ -4,83 +4,82 @@ using LabFusion.Utilities;
 
 using Il2CppSLZ.Player;
 using Il2CppSLZ.Marrow.Combat;
-using Il2CppSLZ.Marrow.Data;
+using Il2CppSLZ.Bonelab;
 
-namespace LabFusion.Network
+namespace LabFusion.Network;
+
+public class PlayerRepDamageData : IFusionSerializable
 {
-    public class PlayerRepDamageData : IFusionSerializable
+    public const int Size = sizeof(byte) * 2 + sizeof(float);
+
+    public byte damagerId;
+    public byte damagedId;
+
+    public SerializedAttack attack;
+    public PlayerDamageReceiver.BodyPart part;
+
+    public void Serialize(FusionWriter writer)
     {
-        public const int Size = sizeof(byte) * 2 + sizeof(float);
+        writer.Write(damagerId);
+        writer.Write(damagedId);
 
-        public byte damagerId;
-        public byte damagedId;
-
-        public float damage;
-        public PlayerDamageReceiver.BodyPart part;
-
-        public void Serialize(FusionWriter writer)
-        {
-            writer.Write(damagerId);
-            writer.Write(damagedId);
-
-            writer.Write(damage);
-            writer.Write((ushort)part);
-        }
-
-        public void Deserialize(FusionReader reader)
-        {
-            damagerId = reader.ReadByte();
-            damagedId = reader.ReadByte();
-
-            damage = reader.ReadSingle();
-            part = (PlayerDamageReceiver.BodyPart)reader.ReadUInt16();
-        }
-
-        public static PlayerRepDamageData Create(byte damagerId, byte damagedId, float damage, PlayerDamageReceiver.BodyPart part)
-        {
-            return new PlayerRepDamageData
-            {
-                damagerId = damagerId,
-                damagedId = damagedId,
-                damage = damage,
-                part = part,
-            };
-        }
+        writer.Write(attack);
+        writer.Write((ushort)part);
     }
 
-    [Net.SkipHandleWhileLoading]
-    public class PlayerRepDamageMessage : FusionMessageHandler
+    public void Deserialize(FusionReader reader)
     {
-        public override byte? Tag => NativeMessageTag.PlayerRepDamage;
+        damagerId = reader.ReadByte();
+        damagedId = reader.ReadByte();
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        attack = reader.ReadFusionSerializable<SerializedAttack>();
+        part = (PlayerDamageReceiver.BodyPart)reader.ReadUInt16();
+    }
+
+    public static PlayerRepDamageData Create(byte damagerId, byte damagedId, Attack attack, PlayerDamageReceiver.BodyPart part)
+    {
+        return new PlayerRepDamageData
         {
-            using var reader = FusionReader.Create(bytes);
-            var data = reader.ReadFusionSerializable<PlayerRepDamageData>();
+            damagerId = damagerId,
+            damagedId = damagedId,
+            attack = new(attack),
+            part = part,
+        };
+    }
+}
 
-            // If we are the server, relay it to the desired user
-            if (isServerHandled)
-            {
-                using var message = FusionMessage.Create(Tag.Value, bytes);
-                MessageSender.SendFromServer(data.damagedId, NetworkChannel.Reliable, message);
-            }
-            // Otherwise, take the damage
-            else if (data.damagedId == PlayerIdManager.LocalSmallId)
-            {
-                // Get player health
-                var rm = RigData.RigReferences.RigManager;
+[Net.SkipHandleWhileLoading]
+public class PlayerRepDamageMessage : FusionMessageHandler
+{
+    public override byte? Tag => NativeMessageTag.PlayerRepDamage;
 
-                var attack = new Attack()
-                {
-                    damage = data.damage,
-                    attackType = AttackType.Piercing,
-                };
+    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    {
+        using var reader = FusionReader.Create(bytes);
+        var data = reader.ReadFusionSerializable<PlayerRepDamageData>();
 
-                // Track the damager
-                FusionPlayer.LastAttacker = data.damagerId;
+        // If we are the server, relay it to the desired user
+        if (isServerHandled)
+        {
+            using var message = FusionMessage.Create(Tag.Value, bytes);
+            MessageSender.SendFromServer(data.damagedId, NetworkChannel.Reliable, message);
+            return;
+        }
 
-                rm.health.OnReceivedDamage(attack, data.part);
-            }
+        // Otherwise, take the damage
+        if (data.damagedId == PlayerIdManager.LocalSmallId)
+        {
+            // Get player health
+            var rm = RigData.RigReferences.RigManager;
+            var health = rm.health;
+
+            // Get attack and find the collider
+            var attack = data.attack.attack;
+
+            // Track the damager
+            FusionPlayer.LastAttacker = data.damagerId;
+
+            health.OnReceivedDamage(attack, data.part);
         }
     }
 }

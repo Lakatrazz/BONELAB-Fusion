@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using LabFusion.Representation;
+using LabFusion.Utilities;
 
 namespace LabFusion.Entities;
 
@@ -131,6 +132,14 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
 
     public void SetOwner(PlayerId ownerId)
     {
+        if (IsOwnerLocked)
+        {
+#if DEBUG
+            FusionLogger.Warn($"Tried setting the owner of a NetworkEntity at id {Id} to {ownerId.SmallId}, but it was locked!");
+#endif
+            return;
+        }
+
         _ownerId = ownerId;
 
         OnEntityOwnershipTransfer?.Invoke(this, ownerId);
@@ -138,6 +147,14 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
 
     public void RemoveOwner()
     {
+        if (IsOwnerLocked)
+        {
+#if DEBUG
+            FusionLogger.Warn($"Tried removing the owner of a NetworkEntity at id {Id}, but it was locked!");
+#endif
+            return;
+        }
+
         _ownerId = null;
 
         OnEntityOwnershipTransfer?.Invoke(this, null);

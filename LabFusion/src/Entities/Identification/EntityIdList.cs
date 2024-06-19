@@ -151,8 +151,6 @@ public class EntityIdList<TEntity>
         _idsToEntities.Clear();
         _entitiesToIds.Clear();
 
-        _reservedIds.Clear();
-
         ClearId();
     }
 }

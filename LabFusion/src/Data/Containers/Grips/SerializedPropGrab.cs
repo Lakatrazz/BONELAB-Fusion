@@ -110,14 +110,14 @@ namespace LabFusion.Data
             return GetGrip(out _);
         }
 
-        public override void RequestGrab(PlayerRep rep, Handedness handedness, Grip grip)
+        public override void RequestGrab(NetworkPlayer player, Handedness handedness, Grip grip)
         {
             // Don't do anything if this isn't grabbed anymore
             if (!isGrabbed)
                 return;
 
             // Get the hand and its starting values
-            Hand hand = rep.RigReferences.GetHand(handedness);
+            Hand hand = player.RigReferences.GetHand(handedness);
 
             Transform handTransform = hand.transform;
             Vector3 position = handTransform.position;
@@ -127,7 +127,7 @@ namespace LabFusion.Data
             grip.SetRelativeHand(hand, relativeHand);
 
             // Apply the grab
-            base.RequestGrab(rep, handedness, grip);
+            base.RequestGrab(player, handedness, grip);
 
             // Reset the hand position
             handTransform.SetPositionAndRotation(position, rotation);

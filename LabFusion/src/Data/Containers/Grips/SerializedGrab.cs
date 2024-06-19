@@ -5,6 +5,7 @@ using Il2CppSLZ.Interaction;
 using Il2CppSLZ.Marrow.Utilities;
 using Il2CppSLZ.Marrow.Interaction;
 using LabFusion.Utilities;
+using LabFusion.Entities;
 
 namespace LabFusion.Data
 {
@@ -60,13 +61,13 @@ namespace LabFusion.Data
 
         public abstract Grip GetGrip();
 
-        public virtual void RequestGrab(PlayerRep rep, Handedness handedness, Grip grip)
+        public virtual void RequestGrab(NetworkPlayer player, Handedness handedness, Grip grip)
         {
             // Don't do anything if this isn't grabbed anymore
             if (!isGrabbed || grip == null)
                 return;
 
-            rep.AttachObject(handedness, grip, SimpleTransform.Create(targetInBase.position, targetInBase.rotation));
+            player.Grabber.Attach(handedness, grip, SimpleTransform.Create(targetInBase.position, targetInBase.rotation));
         }
     }
 }

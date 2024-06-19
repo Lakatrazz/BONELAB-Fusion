@@ -99,7 +99,7 @@ public class DespawnResponseMessage : FusionMessageHandler
         {
             AmmoInventory ammoInventory = AmmoInventory.Instance;
 
-            if (PlayerRepManager.TryGetPlayerRep(despawnerId, out var rep))
+            if (NetworkPlayerManager.TryGetPlayer(despawnerId, out var rep))
             {
                 ammoInventory = rep.RigReferences.RigManager.GetComponentInChildren<AmmoInventory>(true);
             }

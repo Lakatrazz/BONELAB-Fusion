@@ -59,8 +59,7 @@ namespace LabFusion.Extensions
                 preSwapAvatar?.Invoke(crate.Barcode, instance);
 
                 instance.transform.parent = references.RigManager.transform;
-                instance.transform.localPosition = Vector3Extensions.zero;
-                instance.transform.localRotation = QuaternionExtensions.identity;
+                instance.transform.SetLocalPositionAndRotation(Vector3Extensions.zero, QuaternionExtensions.identity);
 
                 var avatarComponent = instance.GetComponentInParent<Avatar>(true);
                 rm.SwapAvatar(avatarComponent);

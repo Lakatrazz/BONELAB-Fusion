@@ -17,7 +17,7 @@ public static class AlignPlugPatches
     [HarmonyPatch(nameof(AlignPlug.OnHandAttached))]
     public static bool OnHandAttached(InteractableHost host, Hand hand)
     {
-        if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(hand.manager))
+        if (NetworkInfo.HasServer && NetworkPlayerManager.HasExternalPlayer(hand.manager))
             return false;
 
         return true;
@@ -27,7 +27,7 @@ public static class AlignPlugPatches
     [HarmonyPatch(nameof(AlignPlug.OnHandDetached))]
     public static bool OnHandDetached(InteractableHost host, Hand hand)
     {
-        if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(hand.manager))
+        if (NetworkInfo.HasServer && NetworkPlayerManager.HasExternalPlayer(hand.manager))
             return false;
 
         return true;
@@ -37,7 +37,7 @@ public static class AlignPlugPatches
     [HarmonyPrefix]
     public static bool OnProxyGrab(AlignPlug __instance, Hand hand)
     {
-        if (NetworkInfo.HasServer && __instance.TryCast<AmmoPlug>() && PlayerRepManager.HasPlayerId(hand.manager))
+        if (NetworkInfo.HasServer && __instance.TryCast<AmmoPlug>() && NetworkPlayerManager.HasExternalPlayer(hand.manager))
             return false;
 
         return true;
@@ -47,7 +47,7 @@ public static class AlignPlugPatches
     [HarmonyPrefix]
     public static bool OnProxyRelease(AlignPlug __instance, Hand hand)
     {
-        if (NetworkInfo.HasServer && __instance.TryCast<AmmoPlug>() && PlayerRepManager.HasPlayerId(hand.manager))
+        if (NetworkInfo.HasServer && __instance.TryCast<AmmoPlug>() && NetworkPlayerManager.HasExternalPlayer(hand.manager))
             return false;
 
         return true;
@@ -92,7 +92,7 @@ public static class AmmoSocketPatches
         {
             var hand = gun.triggerGrip.GetHand();
 
-            if (hand != null && PlayerRepManager.HasPlayerId(hand.manager))
+            if (hand != null && NetworkPlayerManager.HasExternalPlayer(hand.manager))
                 return false;
         }
 

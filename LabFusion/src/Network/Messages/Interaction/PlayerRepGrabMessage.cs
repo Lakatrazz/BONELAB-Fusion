@@ -6,6 +6,7 @@ using Il2CppSLZ.Interaction;
 using System.Collections;
 using MelonLoader;
 using Il2CppSLZ.Marrow.Interaction;
+using LabFusion.Entities;
 
 namespace LabFusion.Network
 {
@@ -40,10 +41,10 @@ namespace LabFusion.Network
             return serializedGrab.GetGrip();
         }
 
-        public PlayerRep GetRep()
+        public NetworkPlayer GetPlayer()
         {
-            if (PlayerRepManager.TryGetPlayerRep(smallId, out var rep))
-                return rep;
+            if (NetworkPlayerManager.TryGetPlayer(smallId, out var player))
+                return player;
             return null;
         }
 
@@ -84,9 +85,9 @@ namespace LabFusion.Network
 
         private IEnumerator CoWaitAndGrab(PlayerRepGrabData data)
         {
-            var rep = data.GetRep();
+            var player = data.GetPlayer();
 
-            if (rep == null)
+            if (player == null)
                 yield break;
 
             var grip = data.GetGrip();
@@ -103,7 +104,7 @@ namespace LabFusion.Network
                     yield break;
             }
 
-            data.serializedGrab.RequestGrab(rep, data.handedness, grip);
+            data.serializedGrab.RequestGrab(player, data.handedness, grip);
         }
     }
 }

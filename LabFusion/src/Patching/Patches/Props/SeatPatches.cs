@@ -35,7 +35,7 @@ public static class SeatPatches
 
         var grounder = other.GetComponent<PhysGrounder>();
 
-        if (grounder != null && PlayerRepManager.HasPlayerId(grounder.physRig.manager))
+        if (grounder != null && NetworkPlayerManager.HasExternalPlayer(grounder.physRig.manager))
         {
             return false;
         }
@@ -61,7 +61,7 @@ public static class SeatPatches
         {
             MelonCoroutines.Start(Internal_SyncSeat(__instance));
         }
-        else if (PlayerRepManager.HasPlayerId(rM))
+        else if (NetworkPlayerManager.HasExternalPlayer(rM))
         {
             return false;
         }

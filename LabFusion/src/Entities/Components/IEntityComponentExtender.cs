@@ -11,4 +11,6 @@ namespace LabFusion.Entities;
 public interface IEntityComponentExtender : IEntityExtender
 {
     bool TryRegister(NetworkEntity networkEntity, params GameObject[] parents);
+
+    void Unregister();
 }

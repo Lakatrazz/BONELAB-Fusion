@@ -1,6 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Representation;
 using LabFusion.Patching;
+using LabFusion.Entities;
 
 namespace LabFusion.Network
 {
@@ -66,7 +67,7 @@ namespace LabFusion.Network
                     case DescentNooseType.UNKNOWN:
                         break;
                     case DescentNooseType.ATTACH_NOOSE:
-                        if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep))
+                        if (NetworkPlayerManager.TryGetPlayer(data.smallId, out var rep))
                         {
                             // Assign the RigManager and Health to the noose
                             // We assign the rigmanager so the noose knows what neck to joint to

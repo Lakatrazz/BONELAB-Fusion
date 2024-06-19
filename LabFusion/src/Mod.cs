@@ -102,6 +102,7 @@ public class FusionMod : MelonMod
         LobbyFilterManager.LoadBuiltInFilters();
 
         NetworkEntityManager.OnInitializeManager();
+        NetworkPlayerManager.OnInitializeManager();
 
         FusionPopupManager.OnInitializeMelon();
 
@@ -220,9 +221,6 @@ public class FusionMod : MelonMod
         PersistentAssetCreator.OnMainSceneInitialized();
         ConstrainerUtilities.OnMainSceneInitialized();
 
-        // Create player reps
-        PlayerRep.OnRecreateReps();
-
         // Update hooks
         MultiplayerHooking.Internal_OnMainSceneInitialized();
 
@@ -262,26 +260,21 @@ public class FusionMod : MelonMod
         // Update popups
         FusionPopupManager.OnUpdate();
 
-        // Send players based on player count
-        int playerSendRate = SendRateTable.GetPlayerSendRate();
-        if (TimeUtilities.IsMatchingFrame(playerSendRate))
-        {
-            LocalPlayer.OnSyncRep();
-        }
+        // Update network players
+        float deltaTime = TimeUtilities.DeltaTime;
 
-        // Send syncables based on byte amount
+        NetworkPlayerManager.OnUpdate(deltaTime);
+
+        // Update network entities based on byte amount
         if (TimeUtilities.IsMatchingFrame(_nextSyncableSendRate))
         {
             var lastBytes = NetworkInfo.BytesUp;
 
-            NetworkEntityManager.OnUpdate(TimeUtilities.DeltaTime);
+            NetworkEntityManager.OnUpdate(deltaTime);
 
             var byteDifference = NetworkInfo.BytesUp - lastBytes;
             _nextSyncableSendRate = SendRateTable.GetObjectSendRate(byteDifference);
         }
-
-        // Update reps
-        PlayerRep.OnUpdate();
 
         FusionPlayer.OnUpdate();
 
@@ -307,9 +300,12 @@ public class FusionMod : MelonMod
         PhysicsUtilities.OnUpdateTimescale();
 
         PDController.OnFixedUpdate();
-        PlayerRep.OnFixedUpdate();
 
-        NetworkEntityManager.OnFixedUpdate(TimeUtilities.FixedDeltaTime);
+        var deltaTime = TimeUtilities.FixedDeltaTime;
+
+        NetworkPlayerManager.OnFixedUpdate(deltaTime);
+
+        NetworkEntityManager.OnFixedUpdate(deltaTime);
 
         // Update hooks
         MultiplayerHooking.Internal_OnFixedUpdate();
@@ -320,8 +316,10 @@ public class FusionMod : MelonMod
 
     public override void OnLateUpdate()
     {
-        // Update stuff like nametags
-        PlayerRep.OnLateUpdate();
+        // Update players and entity late updates
+        float deltaTime = TimeUtilities.DeltaTime;
+        NetworkPlayerManager.OnLateUpdate(deltaTime);
+        NetworkEntityManager.OnLateUpdate(deltaTime);
 
         // Flush any left over network messages
         InternalLayerHelpers.OnLateUpdateLayer();

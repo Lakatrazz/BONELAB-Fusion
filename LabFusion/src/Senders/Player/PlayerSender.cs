@@ -1,4 +1,6 @@
-﻿using Il2CppSLZ.Player;
+﻿using Il2CppSLZ.Marrow.Combat;
+using Il2CppSLZ.Player;
+
 using LabFusion.Data;
 using LabFusion.Exceptions;
 using LabFusion.Extensions;
@@ -14,42 +16,47 @@ namespace LabFusion.Senders
         /// <summary>
         /// No event.
         /// </summary>
-        UNKNOWN = 1 << 0,
+        UNKNOWN,
 
         /// <summary>
         /// Invoked when Player jumps.
         /// </summary>
-        JUMP = 1 << 1,
+        JUMP,
 
         /// <summary>
         /// Invoked when Player dies.
         /// </summary>
-        DEATH = 1 << 2,
+        DEATH,
 
         /// <summary>
         /// Invoked when Player plays the dying animation.
         /// </summary>
-        DYING = 1 << 3,
+        DYING,
 
         /// <summary>
         /// Invoked when Player deals damage to Other Player.
         /// </summary>
-        DEALT_DAMAGE_TO_OTHER_PLAYER = 1 << 4,
+        DEALT_DAMAGE_TO_OTHER_PLAYER,
 
         /// <summary>
         /// Invoked when Player plays the dying animation due to Other Player.
         /// </summary>
-        DYING_BY_OTHER_PLAYER = 1 << 5,
+        DYING_BY_OTHER_PLAYER,
 
         /// <summary>
         /// Invoked when Player saves themselves before the dying animation ends.
         /// </summary>
-        RECOVERY = 1 << 6,
+        RECOVERY,
 
         /// <summary>
         /// Invoked when Player is killed by Other Player.
         /// </summary>
-        DEATH_BY_OTHER_PLAYER = 1 << 7,
+        DEATH_BY_OTHER_PLAYER,
+
+        /// <summary>
+        /// Invoked when Player respawns.
+        /// </summary>
+        RESPAWN,
     }
 
     public enum NicknameVisibility
@@ -100,15 +107,15 @@ namespace LabFusion.Senders
             MessageSender.SendFromServer(target, NetworkChannel.Reliable, message);
         }
 
-        public static void SendPlayerDamage(byte target, float damage)
+        public static void SendPlayerDamage(byte target, Attack attack)
         {
-            SendPlayerDamage(target, damage, PlayerDamageReceiver.BodyPart.Chest);
+            SendPlayerDamage(target, attack, PlayerDamageReceiver.BodyPart.Chest);
         }
 
-        public static void SendPlayerDamage(byte target, float damage, PlayerDamageReceiver.BodyPart part)
+        public static void SendPlayerDamage(byte target, Attack attack, PlayerDamageReceiver.BodyPart part)
         {
             using var writer = FusionWriter.Create(PlayerRepDamageData.Size);
-            var data = PlayerRepDamageData.Create(PlayerIdManager.LocalSmallId, target, damage, part);
+            var data = PlayerRepDamageData.Create(PlayerIdManager.LocalSmallId, target, attack, part);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.PlayerRepDamage, writer);

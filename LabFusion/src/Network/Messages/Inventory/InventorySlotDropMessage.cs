@@ -6,6 +6,7 @@ using LabFusion.Extensions;
 using Il2CppSLZ.SFX;
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Interaction;
+using LabFusion.Entities;
 
 namespace LabFusion.Network
 {
@@ -77,7 +78,7 @@ namespace LabFusion.Network
                 {
                     references = RigData.RigReferences;
                 }
-                else if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep))
+                else if (NetworkPlayerManager.TryGetPlayer(data.smallId, out var rep))
                 {
                     references = rep.RigReferences;
                 }
@@ -101,12 +102,12 @@ namespace LabFusion.Network
                     if (data.handedness == Handedness.UNDEFINED)
                         return;
 
-                    if (PlayerRepManager.TryGetPlayerRep(data.grabber, out var grabber))
+                    if (NetworkPlayerManager.TryGetPlayer(data.grabber, out var grabber) && !grabber.NetworkEntity.IsOwner)
                     {
                         if (weaponSlot && weaponSlot.grip)
                         {
                             weaponSlot.grip.MoveIntoHand(grabber.RigReferences.GetHand(data.handedness));
-                            grabber.AttachObject(data.handedness, weaponSlot.grip);
+                            grabber.Grabber.Attach(data.handedness, weaponSlot.grip);
                         }
 
                         var hand = grabber.RigReferences.GetHand(data.handedness);

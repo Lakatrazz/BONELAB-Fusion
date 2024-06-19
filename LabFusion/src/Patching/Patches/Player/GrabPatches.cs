@@ -7,6 +7,7 @@ using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Grabbables;
 using LabFusion.Network;
+using LabFusion.Entities;
 
 namespace LabFusion.Patching
 {
@@ -57,7 +58,7 @@ namespace LabFusion.Patching
         {
             __state = __instance.pullCoroutine != null;
 
-            if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(hand.manager))
+            if (NetworkInfo.HasServer && NetworkPlayerManager.HasExternalPlayer(hand.manager))
             {
                 return false;
             }
@@ -90,7 +91,7 @@ namespace LabFusion.Patching
             {
                 foreach (var hand in __instance._hands)
                 {
-                    if (PlayerRepManager.HasPlayerId(hand.manager))
+                    if (NetworkPlayerManager.HasExternalPlayer(hand.manager))
                         return false;
                 }
             }
@@ -105,7 +106,7 @@ namespace LabFusion.Patching
         // This is just referenced by other grip patches, not actually a patch itself
         public static void UpdateJointConfiguration(Hand hand)
         {
-            if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(hand.manager))
+            if (NetworkInfo.HasServer && NetworkPlayerManager.HasExternalPlayer(hand.manager))
             {
                 var joint = hand.joint;
 

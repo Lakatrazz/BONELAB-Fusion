@@ -8,7 +8,9 @@ namespace LabFusion.Senders
         public static void SendBodyLogToggle(bool isEnabled)
         {
             if (!NetworkInfo.HasServer)
+            {
                 return;
+            }
 
             using var writer = FusionWriter.Create(BodyLogToggleData.Size);
             var data = BodyLogToggleData.Create(PlayerIdManager.LocalSmallId, isEnabled);
@@ -21,7 +23,9 @@ namespace LabFusion.Senders
         public static void SendBodyLogEffect()
         {
             if (!NetworkInfo.HasServer)
+            {
                 return;
+            }
 
             using var writer = FusionWriter.Create(BodyLogEffectData.Size);
             var data = BodyLogEffectData.Create(PlayerIdManager.LocalSmallId);

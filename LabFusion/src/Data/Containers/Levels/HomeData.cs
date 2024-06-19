@@ -96,8 +96,7 @@ namespace LabFusion.Data
             extraSeat.SetActive(true);
             extraSeat.name = $"Seat ({index})";
 
-            extraSeat.transform.localPosition = localPosition;
-            extraSeat.transform.localRotation = Quaternion.Euler(localRotation);
+            extraSeat.transform.SetLocalPositionAndRotation(localPosition, Quaternion.Euler(localRotation));
         }
 
         public static void TeleportToJimmyFinger()

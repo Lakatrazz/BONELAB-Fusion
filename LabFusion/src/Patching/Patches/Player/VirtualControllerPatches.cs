@@ -5,6 +5,7 @@ using Il2CppSLZ.Interaction;
 using Il2CppSLZ.Marrow.Utilities;
 
 using HarmonyLib;
+using LabFusion.Entities;
 
 namespace LabFusion.Patching
 {
@@ -19,7 +20,7 @@ namespace LabFusion.Patching
             {
                 var hand = pair.hand;
 
-                if (hand != null && PlayerRepManager.HasPlayerId(hand.manager))
+                if (hand != null && NetworkPlayerManager.HasExternalPlayer(hand.manager))
                 {
                     return false;
                 }

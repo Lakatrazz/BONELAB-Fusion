@@ -1,4 +1,5 @@
-﻿using LabFusion.Extensions;
+﻿using LabFusion.Entities;
+using LabFusion.Extensions;
 using LabFusion.Marrow;
 using LabFusion.Network;
 using LabFusion.Representation;
@@ -317,7 +318,7 @@ namespace LabFusion.SDK.Gamemodes
             Metadata.TrySetMetadata(GetPartnerKey(player2), player1.LongId.ToString());
 
             // Teleport the first player to the second
-            if (PlayerRepManager.TryGetPlayerRep(player2, out var rep) && rep.IsCreated)
+            if (NetworkPlayerManager.TryGetPlayer(player2, out var rep) && rep.HasRig)
             {
                 PlayerSender.SendPlayerTeleport(player1, rep.RigReferences.RigManager.physicsRig._feetRb.position);
             }

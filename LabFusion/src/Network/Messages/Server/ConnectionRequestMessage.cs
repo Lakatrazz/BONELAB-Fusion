@@ -4,6 +4,7 @@ using LabFusion.Utilities;
 using LabFusion.Preferences;
 using LabFusion.Senders;
 using LabFusion.Exceptions;
+using LabFusion.Entities;
 
 namespace LabFusion.Network;
 
@@ -198,10 +199,10 @@ public class ConnectionRequestMessage : FusionMessageHandler
                 barcode = RigData.RigAvatarId;
                 stats = RigData.RigAvatarStats;
             }
-            else if (PlayerRepManager.TryGetPlayerRep(id.SmallId, out var rep))
+            else if (NetworkPlayerManager.TryGetPlayer(id.SmallId, out var rep))
             {
-                barcode = rep.avatarId;
-                stats = rep.avatarStats;
+                barcode = rep.AvatarSetter.AvatarBarcode;
+                stats = rep.AvatarSetter.AvatarStats;
             }
 
             ConnectionSender.SendPlayerCatchup(data.longId, id, barcode, stats);

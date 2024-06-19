@@ -22,26 +22,24 @@ using UnityEngine.Events;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using Il2CppSLZ.Marrow.Interaction;
+using LabFusion.Entities;
 
 namespace LabFusion.Representation;
 
 public static class PlayerRepUtilities
 {
+    // This should never change, incase other mods rely on it.
+    public const string PlayerRepName = "[RigManager (FUSION PlayerRep)]";
+
     public static bool TryGetRigInfo(RigManager rig, out byte smallId, out RigReferenceCollection references)
     {
         smallId = 0;
         references = null;
 
-        if (rig.IsSelf())
+        if (NetworkPlayerManager.TryGetPlayer(rig, out var player))
         {
-            smallId = PlayerIdManager.LocalSmallId;
-            references = RigData.RigReferences;
-            return true;
-        }
-        else if (PlayerRepManager.TryGetPlayerRep(rig, out var rep))
-        {
-            smallId = rep.PlayerId.SmallId;
-            references = rep.RigReferences;
+            smallId = player.PlayerId.SmallId;
+            references = player.RigReferences;
             return true;
         }
 
@@ -52,14 +50,9 @@ public static class PlayerRepUtilities
     {
         references = null;
 
-        if (smallId == PlayerIdManager.LocalSmallId)
+        if (NetworkPlayerManager.TryGetPlayer(smallId, out var player))
         {
-            references = RigData.RigReferences;
-            return true;
-        }
-        else if (PlayerRepManager.TryGetPlayerRep(smallId, out var rep))
-        {
-            references = rep.RigReferences;
+            references = player.RigReferences;
             return true;
         }
 
@@ -103,7 +96,7 @@ public static class PlayerRepUtilities
         var rigAsset = asset.GetComponentInChildren<RigManager>().gameObject;
 
         var go = GameObject.Instantiate(rigAsset, tempParent.transform);
-        go.name = PlayerRepManager.PlayerRepName;
+        go.name = PlayerRepName;
         go.SetActive(false);
 
         if (RigData.RigReferences.RigManager)

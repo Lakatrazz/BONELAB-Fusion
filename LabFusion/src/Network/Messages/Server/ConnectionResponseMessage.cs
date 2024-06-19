@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Entities;
 using LabFusion.Exceptions;
 using LabFusion.Representation;
 
@@ -49,7 +50,9 @@ public class ConnectionResponseMessage : FusionMessageHandler
 
         // This should only ever be handled client side!
         if (isServerHandled)
+        {
             throw new ExpectedClientException();
+        }
 
         var data = reader.ReadFusionSerializable<ConnectionResponseData>();
 
@@ -62,14 +65,17 @@ public class ConnectionResponseMessage : FusionMessageHandler
         {
             PlayerIdManager.ApplyLocalId();
 
+            NetworkPlayerManager.CreateLocalPlayer();
+
             InternalServerHelpers.OnJoinServer();
         }
-        // Otherwise, create a player rep
+        // Otherwise, create a network player
         else
         {
             InternalServerHelpers.OnUserJoin(data.playerId, data.isInitialJoin);
-            var rep = new PlayerRep(data.playerId);
-            rep.SwapAvatar(data.avatarStats, data.avatarBarcode);
+
+            var networkPlayer = NetworkPlayerManager.CreateNetworkPlayer(data.playerId);
+            networkPlayer.AvatarSetter.SwapAvatar(data.avatarStats, data.avatarBarcode);
         }
 
         // Update our vitals to everyone

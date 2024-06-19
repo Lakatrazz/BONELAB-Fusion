@@ -5,9 +5,8 @@ using Il2CppSLZ.Marrow.Input;
 
 using UnityEngine;
 
-using LabFusion.Representation;
-using LabFusion.Utilities;
 using LabFusion.Network;
+using LabFusion.Entities;
 
 using UnityEngine.Rendering;
 
@@ -33,7 +32,7 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(OpenControllerRig.OnBeginCameraRendering))]
         public static bool OnBeginCameraRendering(OpenControllerRig __instance, ScriptableRenderContext ctx, Camera cam)
         {
-            if (PlayerRepManager.HasPlayerId(__instance.manager))
+            if (NetworkPlayerManager.HasExternalPlayer(__instance.manager))
             {
                 return false;
             }
@@ -48,9 +47,9 @@ namespace LabFusion.Patching
     {
         public static void Prefix(OpenControllerRig __instance, float deltaTime)
         {
-            if (PlayerRepManager.TryGetPlayerRep(__instance.manager, out var rep))
+            if (NetworkPlayerManager.TryGetPlayer(__instance.manager, out var player) && !player.NetworkEntity.IsOwner)
             {
-                rep.OnControllerRigUpdate();
+                player.OnOverrideControllerRig();
             }
         }
     }

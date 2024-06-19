@@ -90,7 +90,7 @@ public class InventorySlotInsertMessage : FusionMessageHandler
         {
             references = RigData.RigReferences;
         }
-        else if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep))
+        else if (NetworkPlayerManager.TryGetPlayer(data.smallId, out var rep))
         {
             references = rep.RigReferences;
         }

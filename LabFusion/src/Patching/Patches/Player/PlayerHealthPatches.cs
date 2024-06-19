@@ -108,6 +108,27 @@ public static class HeadSFXPatches
     }
 }
 
+[HarmonyPatch(typeof(Health))]
+public static class HealthPatches
+{
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(Health.Respawn))]
+    public static void Respawn(Health __instance)
+    {
+        if (!NetworkInfo.HasServer)
+        {
+            return;
+        }
+
+        if (!__instance._rigManager.IsSelf())
+        {
+            return;
+        }
+
+        PlayerSender.SendPlayerAction(PlayerActionType.RESPAWN);
+    }
+}
+
 [HarmonyPatch(typeof(Player_Health))]
 public static class PlayerHealthPatches
 {

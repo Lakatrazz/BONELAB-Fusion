@@ -52,7 +52,7 @@ namespace LabFusion.Patching
 
             var manager = hand.manager;
 
-            bool isPlayerRep = PlayerRepManager.HasPlayerId(manager);
+            bool isPlayerRep = NetworkPlayerManager.HasExternalPlayer(manager);
 
             if (isPlayerRep && __instance.cartridgeState == Gun.CartridgeStates.UNSPENT)
             {

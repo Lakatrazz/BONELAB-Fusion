@@ -72,7 +72,7 @@ namespace LabFusion.Network
                 return;
             }
 
-            if (PlayerRepManager.TryGetPlayerRep(data.owner, out var rep))
+            if (NetworkPlayerManager.TryGetPlayer(data.owner, out var rep))
             {
                 MagazineUtilities.GrabMagazine(magazineExtender.Component, rep.RigReferences.RigManager, data.handedness);
             }

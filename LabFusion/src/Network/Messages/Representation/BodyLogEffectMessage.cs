@@ -1,5 +1,5 @@
 ﻿using LabFusion.Data;
-using LabFusion.Representation;
+using LabFusion.Entities;
 
 namespace LabFusion.Network
 {
@@ -37,10 +37,11 @@ namespace LabFusion.Network
         {
             using var reader = FusionReader.Create(bytes);
             var data = reader.ReadFusionSerializable<BodyLogEffectData>();
+
             // Play the effect
-            if (PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep))
+            if (NetworkPlayerManager.TryGetPlayer(data.smallId, out var player) && !player.NetworkEntity.IsOwner)
             {
-                rep.PlayPullCordEffects();
+                player.PlayPullCordEffects();
             }
 
             // Bounce the message back

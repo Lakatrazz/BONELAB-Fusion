@@ -96,7 +96,7 @@ public static class SimpleGripEventsPatches
 
     private static bool IsPlayerRep(SimpleGripEvents __instance, Hand hand)
     {
-        if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(hand.manager) && SimpleGripEventsExtender.Cache.ContainsSource(__instance))
+        if (NetworkInfo.HasServer && NetworkPlayerManager.HasExternalPlayer(hand.manager) && SimpleGripEventsExtender.Cache.ContainsSource(__instance))
         {
             return true;
         }

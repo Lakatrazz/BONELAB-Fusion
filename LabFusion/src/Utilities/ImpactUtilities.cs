@@ -24,6 +24,13 @@ namespace LabFusion.Utilities
             // Check if the body already has an entity attached
             if (MarrowBodyExtender.Cache.TryGet(marrowBody, out var entity))
             {
+                var gripExtender = entity.GetExtender<GripExtender>();
+
+                if (gripExtender != null && gripExtender.CheckHeld())
+                {
+                    return;
+                }
+
                 // Transfer ownership
                 NetworkEntityManager.TakeOwnership(entity);
             }

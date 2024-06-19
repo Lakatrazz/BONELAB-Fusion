@@ -43,6 +43,8 @@ public static class InternalServerHelpers
         id.Insert();
         PlayerIdManager.ApplyLocalId();
 
+        NetworkPlayerManager.CreateLocalPlayer();
+
         // Register module message handlers so they can send messages
         var names = ModuleMessageHandler.GetExistingTypeNames();
         ModuleMessageHandler.PopulateHandlerTable(names);

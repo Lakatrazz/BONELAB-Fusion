@@ -60,7 +60,7 @@ namespace LabFusion.Network
                 return;
             }
 
-            if (!PlayerRepManager.TryGetPlayerRep(data.smallId, out var rep))
+            if (!NetworkPlayerManager.TryGetPlayer(data.smallId, out var rep))
             {
                 return;
             }
