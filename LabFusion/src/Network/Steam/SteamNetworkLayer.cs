@@ -201,9 +201,13 @@ namespace LabFusion.Network
             if (IsServer)
             {
                 if (SteamSocket.ConnectedSteamIds.ContainsKey(userId))
+                {
                     SteamSocket.SendToClient(SteamSocket.ConnectedSteamIds[userId], channel, message);
+                }
                 else if (userId == PlayerIdManager.LocalLongId)
+                {
                     SteamSocket.SendToClient(SteamConnection.Connection, channel, message);
+                }
             }
         }
 

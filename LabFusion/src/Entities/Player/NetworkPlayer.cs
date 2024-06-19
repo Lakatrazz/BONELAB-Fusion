@@ -250,7 +250,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Remove cache
         if (HasRig)
         {
-            RigCache.Remove(RigReferences.RigManager);
+            RemoveFromCache();
         }
 
         // Unhook from scene loading events
@@ -547,6 +547,35 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     public void OnEntityCull(bool isInactive)
     {
+        if (isInactive)
+        {
+
+        }
+        else
+        {
+            TeleportToPose();
+        }
+    }
+
+    private void TeleportToPose()
+    {
+        // Don't teleport if no pose
+        if (RigPose == null || !HasRig)
+        {
+            return;
+        }
+
+        // Get teleport position
+        var pos = RigPose.pelvisPose.position;
+        var physRig = RigReferences.RigManager.physicsRig;
+
+        // Offset
+        pos += physRig.feet.transform.position - physRig.m_pelvis.position;
+        pos += physRig.footballRadius * -physRig.m_pelvis.up;
+
+        RigReferences.RigManager.TeleportToPose(pos, RigPose.pelvisPose.rotation * Vector3.forward, true);
+
+        _pelvisPDController.Reset();
     }
 
     private void OnOwnedUpdate()
@@ -593,7 +622,15 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Move position with prediction
         pelvisPose.PredictPosition(deltaTime);
 
-        // Apply velocity
+        // Check for stability teleport
+        float distSqr = (pelvisPosition - pelvisPose.position).sqrMagnitude;
+        if (distSqr > (2f * (pelvisPose.velocity.magnitude + 1f)))
+        {
+            TeleportToPose();
+            return;
+        }
+
+        // Apply forces
         if (SafetyUtilities.IsValidTime)
         {
             pelvis.AddForce(_pelvisPDController.GetForce(pelvisPosition, pelvis.velocity, pelvisPose.position, pelvisPose.velocity), ForceMode.Acceleration);
@@ -607,34 +644,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             {
                 _pelvisPDController.ResetRotation();
             }
-        }
-
-        // Check for stability teleport
-        float distSqr = (pelvisPosition - pelvisPose.position).sqrMagnitude;
-        if (distSqr > (2f * (pelvisPose.velocity.magnitude + 1f)))
-        {
-            // Get teleport position
-            var pos = pelvisPose.position;
-            var physRig = RigReferences.RigManager.physicsRig;
-
-            // Offset
-            pos += physRig.feet.transform.position - physRig.m_pelvis.position;
-            pos += physRig.footballRadius * -physRig.m_pelvis.up;
-
-            RigReferences.RigManager.Teleport(pos);
-
-            // Zero our teleport velocity, cause the rig doesn't seem to do that on its own?
-            foreach (var rb in RigReferences.RigManager.physicsRig.selfRbs)
-            {
-                rb.velocity = Vector3Extensions.zero;
-                rb.angularVelocity = Vector3Extensions.zero;
-            }
-
-            // Reset locosphere and knee pos so the rig doesn't get stuck
-            physRig.knee.transform.position = pos;
-            physRig.feet.transform.position = pos;
-
-            _pelvisPDController.Reset();
         }
     }
 
@@ -671,15 +680,27 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         _rigSkeleton = new(rigManager);
         _rigReferences = new(rigManager);
 
-        RigCache.Add(rigManager, this);
-
         _pose = new();
 
         _grabber = new RigGrabber(RigReferences);
 
+        AddToCache();
+
         // Register components for the physics rig
         // TODO: register components for the avatar on avatar change
         RegisterComponents(rigManager.physicsRig.gameObject);
+    }
+
+    private void AddToCache()
+    {
+        RigCache.Add(RigReferences.RigManager, this);
+        IMarrowEntityExtender.Cache.Add(MarrowEntity, NetworkEntity);
+    }
+
+    private void RemoveFromCache()
+    {
+        RigCache.Remove(RigReferences.RigManager);
+        IMarrowEntityExtender.Cache.Remove(MarrowEntity);
     }
 
     private List<IEntityComponentExtender> _componentExtenders = null;

@@ -249,7 +249,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     public void OnEntityFixedUpdate(float deltaTime)
     {
-        if (NetworkEntity.IsOwner)
+        // If we are the owner, or the prop has no owner, return
+        if (NetworkEntity.IsOwner || !NetworkEntity.HasOwner)
         {
             return;
         }

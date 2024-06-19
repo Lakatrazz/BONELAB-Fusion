@@ -30,6 +30,8 @@ public static class NativeMessageTag
         EntityPoseUpdate = 19,
         PropSyncableCreate = 20,
 
+        EntityZoneRegister = 21,
+
         SpawnRequest = 22,
         SpawnResponse = 23,
         DespawnRequest = 24,
