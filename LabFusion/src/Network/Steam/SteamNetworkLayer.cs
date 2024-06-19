@@ -192,22 +192,25 @@ namespace LabFusion.Network
         public override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message)
         {
             var id = PlayerIdManager.GetPlayerId(userId);
+
             if (id != null)
+            {
                 SendFromServer(id.LongId, channel, message);
+            }
         }
 
         public override void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message)
         {
-            if (IsServer)
+            // Make sure this is actually the server
+            if (!IsServer)
             {
-                if (SteamSocket.ConnectedSteamIds.ContainsKey(userId))
-                {
-                    SteamSocket.SendToClient(SteamSocket.ConnectedSteamIds[userId], channel, message);
-                }
-                else if (userId == PlayerIdManager.LocalLongId)
-                {
-                    SteamSocket.SendToClient(SteamConnection.Connection, channel, message);
-                }
+                return;
+            }
+
+            // Get the connection from the userid dictionary
+            if (SteamSocket.ConnectedSteamIds.TryGetValue(userId, out var connection))
+            {
+                SteamSocket.SendToClient(connection, channel, message);
             }
         }
 
