@@ -17,16 +17,37 @@ public class RigGrabber
 {
     private RigReferenceCollection _references = null;
 
+    private bool _isCulled = false;
+
     public RigGrabber(RigReferenceCollection references)
     {
         _references = references;
     }
 
+    public void OnEntityCull(bool isInactive)
+    {
+        _isCulled = isInactive;
+
+        if (isInactive)
+        {
+            Detach(Handedness.LEFT);
+            Detach(Handedness.RIGHT);
+        }
+    }
+
     public void Attach(Handedness handedness, Grip grip, SimpleTransform? targetInBase = null)
     {
-        var hand = _references.GetHand(handedness);
-        if (hand == null)
+        if (_isCulled)
+        {
             return;
+        }
+
+        var hand = _references.GetHand(handedness);
+
+        if (hand == null)
+        {
+            return;
+        }
 
         if (grip)
         {
@@ -45,8 +66,11 @@ public class RigGrabber
     public void Detach(Handedness handedness)
     {
         var hand = _references.GetHand(handedness);
+
         if (hand == null)
+        {
             return;
+        }
 
         hand.TryDetach();
     }

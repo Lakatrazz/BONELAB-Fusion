@@ -575,6 +575,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
             TeleportToPose();
         }
+
+        Grabber.OnEntityCull(isInactive);
     }
 
     private void OnReregisterUpdates()

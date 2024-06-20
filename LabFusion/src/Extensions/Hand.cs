@@ -20,12 +20,18 @@ namespace LabFusion.Extensions
 
         public static void TryDetach(this Hand hand)
         {
-            if (hand.m_CurrentAttachedGO != null)
-            {
-                var grip = Grip.Cache.Get(hand.m_CurrentAttachedGO);
+            var attachedGo = hand.m_CurrentAttachedGO;
 
-                if (grip != null)
-                    grip.TryDetach(hand);
+            if (attachedGo == null)
+            {
+                return;
+            }
+
+            var grip = attachedGo.GetComponent<Grip>();
+
+            if (grip != null)
+            {
+                grip.TryDetach(hand);
             }
         }
     }

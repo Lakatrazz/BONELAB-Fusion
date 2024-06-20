@@ -7,7 +7,6 @@ using Il2CppSLZ.Bonelab;
 
 namespace LabFusion.Patching
 {
-    // Hub sync: The Larginator
     [HarmonyPatch(typeof(GameControl_Hub))]
     public static class GameControl_HubPatches
     {
@@ -51,116 +50,6 @@ namespace LabFusion.Patching
             return IgnorePatches || QuickSender.SendServerMessage(() =>
             {
                 CampaignSender.SendHubEvent(BonelabHubEventType.BW_BOX_DESTROYED);
-            });
-        }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(GameControl_Hub.AIRLOCKENTERNORTH))]
-        public static bool AIRLOCKENTERNORTH()
-        {
-            return IgnorePatches || QuickSender.SendServerMessage(() =>
-            {
-                CampaignSender.SendHubEvent(BonelabHubEventType.AIR_LOCK_ENTER_NORTH);
-            });
-        }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(GameControl_Hub.AIRLOCKENTERSOUTH))]
-        public static bool AIRLOCKENTERSOUTH()
-        {
-            return IgnorePatches || QuickSender.SendServerMessage(() =>
-            {
-                CampaignSender.SendHubEvent(BonelabHubEventType.AIR_LOCK_ENTER_SOUTH);
-            });
-        }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(GameControl_Hub.AIRLOCKOCCUPIED))]
-        public static bool AIRLOCKOCCUPIED(bool b)
-        {
-            if (b)
-            {
-                return OccupiedLogic();
-            }
-            else
-            {
-                return UnoccupiedLogic();
-            }
-        }
-
-        private static bool OccupiedLogic()
-        {
-            return IgnorePatches || QuickSender.SendServerMessage(() =>
-            {
-                CampaignSender.SendHubEvent(BonelabHubEventType.AIR_LOCK_OCCUPIED);
-            });
-        }
-
-        private static bool UnoccupiedLogic()
-        {
-            return IgnorePatches || QuickSender.SendServerMessage(() =>
-            {
-                CampaignSender.SendHubEvent(BonelabHubEventType.AIR_LOCK_UNOCCUPIED);
-            });
-        }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(GameControl_Hub.AIRLOCKCYCLE))]
-        public static bool AIRLOCKCYCLE()
-        {
-            return IgnorePatches || QuickSender.SendServerMessage(() =>
-            {
-                CampaignSender.SendHubEvent(BonelabHubEventType.AIR_LOCK_CYCLE);
-            });
-        }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(GameControl_Hub.CANCELCYCLE))]
-        public static bool CANCELCYCLE()
-        {
-            return IgnorePatches || QuickSender.SendServerMessage(() =>
-            {
-                CampaignSender.SendHubEvent(BonelabHubEventType.CANCEL_CYCLE);
-            });
-        }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(GameControl_Hub.OpenSmallDoor))]
-        public static bool OpenSmallDoor()
-        {
-            return IgnorePatches || QuickSender.SendServerMessage(() =>
-            {
-                CampaignSender.SendHubEvent(BonelabHubEventType.OPEN_SMALL_DOOR);
-            });
-        }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(GameControl_Hub.CloseSmallDoor))]
-        public static bool CloseSmallDoor()
-        {
-            return IgnorePatches || QuickSender.SendServerMessage(() =>
-            {
-                CampaignSender.SendHubEvent(BonelabHubEventType.CLOSE_SMALL_DOOR);
-            });
-        }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(GameControl_Hub.OpenBigDoors))]
-        public static bool OpenBigDoors()
-        {
-            return IgnorePatches || QuickSender.SendServerMessage(() =>
-            {
-                CampaignSender.SendHubEvent(BonelabHubEventType.OPEN_BIG_DOORS);
-            });
-        }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(GameControl_Hub.CloseBigDoors))]
-        public static bool CloseBigDoors()
-        {
-            return IgnorePatches || QuickSender.SendServerMessage(() =>
-            {
-                CampaignSender.SendHubEvent(BonelabHubEventType.CLOSE_BIG_DOORS);
             });
         }
     }
