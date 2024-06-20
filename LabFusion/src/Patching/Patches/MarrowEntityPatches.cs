@@ -18,8 +18,8 @@ namespace LabFusion.Patching;
 public static class MarrowEntityPatches
 {
     [HarmonyPostfix]
-    [HarmonyPatch(nameof(MarrowEntity.OnCullResolve))]
-    public static void OnCullResolve(MarrowEntity __instance, InactiveStatus status, bool isInactive)
+    [HarmonyPatch(nameof(MarrowEntity.OnCullApply))]
+    public static void OnCullApply(MarrowEntity __instance, InactiveStatus status, bool isInactive)
     {
         if (!NetworkInfo.HasServer)
         {
