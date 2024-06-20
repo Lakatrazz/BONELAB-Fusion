@@ -113,17 +113,7 @@ public static class PlayerRepUtilities
 
         go.SetActive(true);
 
-        OnSetupAfterAwake(rigManager);
-
         onRigCreated?.Invoke(rigManager);
-    }
-
-    private static void OnSetupAfterAwake(RigManager rigManager)
-    {
-        // Re-enable disable culling for the entity.
-        // Other players should be fully cullable.
-        var entity = rigManager.marrowEntity;
-        entity._isDisableOnCullPrevented = false;
     }
 
     private static void Internal_SetupPlayerRep(RigManager rigManager)
