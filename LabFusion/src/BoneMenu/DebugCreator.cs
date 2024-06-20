@@ -2,6 +2,7 @@
 using BoneLib.BoneMenu.Elements;
 
 using LabFusion.Data;
+using LabFusion.Debugging;
 using LabFusion.Extensions;
 using LabFusion.Representation;
 
@@ -35,6 +36,16 @@ namespace LabFusion.BoneMenu
                     physRig.rightHand.rb.AddForce(Vector3Extensions.up * force, ForceMode.VelocityChange);
                     physRig.leftHand.rb.AddForce(Vector3Extensions.down * force, ForceMode.VelocityChange);
                 }
+            });
+
+            debugCategory.CreateFunctionElement("Spawn Zone Migration Tester", Color.yellow, () =>
+            {
+                DebugChunkMigrator.SpawnMigrator();
+            });
+
+            debugCategory.CreateFunctionElement("Migrate To Zone", Color.yellow, () =>
+            {
+                DebugChunkMigrator.MigrateToZone();
             });
         }
     }
