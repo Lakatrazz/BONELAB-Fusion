@@ -613,13 +613,12 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         // Get teleport position
         var pos = RigPose.pelvisPose.position;
-        var physicsRig = RigReferences.RigManager.physicsRig;
 
         // Get offset
         var offset = pos - RigSkeleton.physicsPelvis.position;
+        var feetPos = RigReferences.RigManager.physicsRig.feet.transform.position + offset;
 
-        var displace = SimpleTransform.Create(offset, Quaternion.identity);
-        physicsRig.Teleport(displace, true);
+        RigReferences.RigManager.Teleport(feetPos, true);
 
         _pelvisPDController.Reset();
     }
