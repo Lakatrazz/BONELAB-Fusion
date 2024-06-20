@@ -724,6 +724,12 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Register components for the physics rig
         // TODO: register components for the avatar on avatar change
         RegisterComponents(rigManager.physicsRig.gameObject);
+
+        // Uncull
+        if (!MarrowEntity.IsCulled && !NetworkEntity.IsOwner)
+        {
+            OnEntityCull(false);
+        }
     }
 
     private void AddToCache()
