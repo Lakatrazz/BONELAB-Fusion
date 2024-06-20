@@ -8,8 +8,6 @@ namespace LabFusion.Extensions
     {
         public static void TryDetach(this InteractableHost host)
         {
-            InteractableHostPatches.IgnorePatches = true;
-
             List<Hand> handsToDetach = null;
             for (var i = 0; i < host._hands.Count; i++)
             {
@@ -26,8 +24,6 @@ namespace LabFusion.Extensions
                     handsToDetach[i].TryDetach();
                 }
             }
-
-            InteractableHostPatches.IgnorePatches = false;
         }
 
         public static void TryDetach(this IGrippable host)

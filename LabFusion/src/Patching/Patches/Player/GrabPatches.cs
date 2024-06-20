@@ -2,8 +2,6 @@
 
 using HarmonyLib;
 
-using LabFusion.Data;
-using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Grabbables;
 using LabFusion.Network;
@@ -72,31 +70,6 @@ namespace LabFusion.Patching
                 return;
 
             GrabHelper.SendObjectForcePull(hand, __instance._grip);
-        }
-    }
-
-    [HarmonyPatch(typeof(InteractableHost))]
-    public static class InteractableHostPatches
-    {
-        public static bool IgnorePatches = false;
-
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(InteractableHost.ForceDetach))]
-        public static bool ForceDetach(InteractableHost __instance)
-        {
-            if (IgnorePatches)
-                return true;
-
-            if (NetworkInfo.HasServer)
-            {
-                foreach (var hand in __instance._hands)
-                {
-                    if (NetworkPlayerManager.HasExternalPlayer(hand.manager))
-                        return false;
-                }
-            }
-
-            return true;
         }
     }
 
