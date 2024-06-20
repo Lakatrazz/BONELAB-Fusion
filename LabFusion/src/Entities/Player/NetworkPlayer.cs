@@ -577,16 +577,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
     }
 
-    public void OnEntityMigrate()
-    {
-        if (NetworkEntity.IsOwner)
-        {
-            return;
-        }
-
-        TeleportToPose();
-    }
-
     private void OnReregisterUpdates()
     {
         OnUnregisterUpdates();
@@ -616,9 +606,10 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         // Get offset
         var offset = pos - RigSkeleton.physicsPelvis.position;
-        var feetPos = RigReferences.RigManager.physicsRig.feet.transform.position + offset;
 
-        RigReferences.RigManager.Teleport(feetPos, true);
+        // Apply offset to physics rig
+        var physicsRig = RigReferences.RigManager.physicsRig;
+        physicsRig.transform.position += offset;
 
         _pelvisPDController.Reset();
     }

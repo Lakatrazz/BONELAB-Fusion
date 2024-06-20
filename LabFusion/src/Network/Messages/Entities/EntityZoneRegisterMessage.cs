@@ -85,9 +85,6 @@ public class EntityZoneRegisterMessage : FusionMessageHandler
 
         var cullerId = culler._zoneId;
 
-        // Let the extender know its migrating
-        marrowExtender.OnEntityMigrate();
-
         // Migrate entity
         ZoneCullHelper.MigrateEntity(cullerId, marrowExtender.MarrowEntity);
     }
