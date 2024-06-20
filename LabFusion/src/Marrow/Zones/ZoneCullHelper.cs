@@ -31,12 +31,7 @@ public static class ZoneCullHelper
         cullManager.Register(cullerId, entity);
 
         // Update cull state if needed
-        bool isCulled = cullManager.IsCulled(cullerId);
-
-        if (isCulled != entity.IsCulled)
-        {
-            inactiveStatus.Cull(isCulled);
-        }
+        cullManager.SolveCullState(inactiveStatus);
     }
 
     public static int? GetLastCullerId(MarrowEntity entity)
