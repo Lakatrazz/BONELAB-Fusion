@@ -607,9 +607,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Get offset
         var offset = pos - RigSkeleton.physicsPelvis.position;
 
-        // Apply offset to physics rig
-        var physicsRig = RigReferences.RigManager.physicsRig;
-        physicsRig.transform.position += offset;
+        // Apply offset to the marrow entity
+        MarrowEntity.transform.position += offset;
 
         _pelvisPDController.Reset();
     }
