@@ -3,6 +3,7 @@
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Entities;
+using LabFusion.RPC;
 
 using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.VFX;
@@ -15,6 +16,31 @@ namespace LabFusion.Patching
     [HarmonyPatch(typeof(ObjectDestructible))]
     public static class ObjectDestructiblePatches
     {
+        public class ObjectDestructibleState
+        {
+            public bool isDead;
+            public LootTableData lootTable;
+
+            public Vector3 spawnPosition;
+            public Quaternion spawnRotation;
+
+            public ObjectDestructibleState(ObjectDestructible destructible)
+            {
+                lootTable = destructible.lootTable;
+                isDead = destructible._isDead;
+
+                var spawnTarget = destructible.spawnTarget;
+
+                if (spawnTarget == null)
+                {
+                    spawnTarget = destructible.transform;
+                }
+
+                spawnPosition = spawnTarget.position;
+                spawnRotation = spawnTarget.rotation;
+            }
+        }
+
         public static bool IgnorePatches = false;
 
         [HarmonyPrefix]
@@ -62,10 +88,14 @@ namespace LabFusion.Patching
 
         [HarmonyPatch(nameof(ObjectDestructible.TakeDamage))]
         [HarmonyPrefix]
-        public static bool TakeDamagePrefix(ObjectDestructible __instance, Vector3 normal, float damage, bool crit, AttackType attackType)
+        public static bool TakeDamagePrefix(ObjectDestructible __instance, Vector3 normal, float damage, bool crit, AttackType attackType, ref ObjectDestructibleState __state)
         {
+            __state = new(__instance);
+
             if (IgnorePatches)
+            {
                 return true;
+            }
 
             if (!NetworkInfo.HasServer)
             {
@@ -77,15 +107,44 @@ namespace LabFusion.Patching
                 return false;
             }
 
+            // Clear loot table
+            __instance.lootTable = null;
+
             PooleeDespawnPatch.IgnorePatch = true;
             return true;
         }
 
         [HarmonyPatch(nameof(ObjectDestructible.TakeDamage))]
         [HarmonyPostfix]
-        public static void TakeDamagePostfix(ObjectDestructible __instance, Vector3 normal, float damage, bool crit, AttackType attackType)
+        public static void TakeDamagePostfix(ObjectDestructible __instance, Vector3 normal, float damage, bool crit, AttackType attackType, ref ObjectDestructibleState __state)
         {
             PooleeDespawnPatch.IgnorePatch = false;
+
+            if (!NetworkInfo.HasServer)
+            {
+                return;
+            }
+
+            // Reset loot table
+            __instance.lootTable = __state.lootTable;
+
+            // Check if we need to spawn loot
+            bool destroyed = __instance._isDead && !__state.isDead;
+            if (destroyed && __instance.lootTable != null)
+            {
+                var spawnable = __instance.lootTable.GetLootItem();
+
+                NetworkAssetSpawner.Spawn(new NetworkAssetSpawner.SpawnRequestInfo()
+                {
+                    spawnable = spawnable,
+                    position = __state.spawnPosition,
+                    rotation = __state.spawnRotation,
+                    spawnCallback = (info) =>
+                    {
+                        __instance.OnLootSpawn?.Invoke(__instance, spawnable, info.spawned);
+                    }
+                });
+            }
         }
     }
 }

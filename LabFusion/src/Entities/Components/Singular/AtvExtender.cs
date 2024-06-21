@@ -1,5 +1,4 @@
-﻿using LabFusion.Representation;
-using LabFusion.Utilities;
+﻿using LabFusion.Utilities;
 
 using Il2CppSLZ.Vehicle;
 
