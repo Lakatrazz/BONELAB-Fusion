@@ -47,4 +47,24 @@ public static class NetworkInfo
     /// The amount of bytes sent this frame.
     /// </summary>
     public static int BytesUp { get; internal set; }
+
+    /// <summary>
+    /// The userid from whoever sent the most recent message.
+    /// </summary>
+    public static ulong? LastReceivedUser = null;
+
+    /// <summary>
+    /// Checks if the message userId was spoofed based on the last received id. Only valid on the server's end.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    public static bool IsSpoofed(ulong userId)
+    {
+        if (!LastReceivedUser.HasValue)
+        {
+            return false;
+        }
+
+        return LastReceivedUser.Value != userId;
+    }
 }

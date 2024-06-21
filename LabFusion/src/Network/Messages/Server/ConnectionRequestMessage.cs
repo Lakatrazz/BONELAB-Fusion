@@ -73,6 +73,14 @@ public class ConnectionRequestMessage : FusionMessageHandler
 
         using FusionReader reader = FusionReader.Create(bytes);
         var data = reader.ReadFusionSerializable<ConnectionRequestData>();
+
+        // Make sure the id isn't spoofed.
+        if (NetworkInfo.IsSpoofed(data.longId))
+        {
+            ConnectionSender.SendConnectionDeny(data.longId, "Nice try.");
+            return;
+        }
+
         var newSmallId = PlayerIdManager.GetUnusedPlayerId();
 
         // No unused ids available

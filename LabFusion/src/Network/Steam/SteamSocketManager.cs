@@ -56,6 +56,8 @@ public class SteamSocketManager : SocketManager
 
         ConnectedSteamIds[identity.steamid] = connection;
 
+        NetworkInfo.LastReceivedUser = identity.steamid;
+
         SteamSocketHandler.OnSocketMessageReceived(data, size, true);
     }
 }

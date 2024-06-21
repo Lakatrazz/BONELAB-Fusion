@@ -40,36 +40,49 @@ namespace LabFusion.Network
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
             // This should only ever be handled by the server
-            if (isServerHandled)
+            if (!isServerHandled)
             {
-                using FusionReader reader = FusionReader.Create(bytes);
-                var data = reader.ReadFusionSerializable<VoteKickRequestData>();
-
-                // Try applying the vote
-                if (VoteKickHelper.Vote(data.target, data.smallId))
-                {
-                    int count = VoteKickHelper.GetVoteCount(data.target);
-                    int required = VoteKickHelper.GetRequiredVotes();
-
-                    bool kick = count >= required;
-
-                    var player = PlayerIdManager.GetPlayerId(data.target);
-                    player.TryGetDisplayName(out var username);
-
-                    if (kick)
-                        NetworkHelper.KickUser(player);
-
-                    // Send response to all players
-                    using var writer = FusionWriter.Create(VoteKickResponseData.Size);
-                    var responseData = VoteKickResponseData.Create(data.target, username, count, required, kick);
-                    writer.Write(responseData);
-
-                    using var message = FusionMessage.Create(NativeMessageTag.VoteKickResponse, writer);
-                    MessageSender.BroadcastMessageExcept(data.target, NetworkChannel.Reliable, message, false);
-                }
-            }
-            else
                 throw new ExpectedServerException();
+            }
+
+            using FusionReader reader = FusionReader.Create(bytes);
+            var data = reader.ReadFusionSerializable<VoteKickRequestData>();
+
+            // Make sure the id is valid and not spoofed
+            var playerId = PlayerIdManager.GetPlayerId(data.smallId);
+
+            if (playerId == null)
+            {
+                return;
+            }
+
+            if (NetworkInfo.IsSpoofed(playerId.LongId))
+            {
+                return;
+            }
+
+            // Try applying the vote
+            if (VoteKickHelper.Vote(data.target, data.smallId))
+            {
+                int count = VoteKickHelper.GetVoteCount(data.target);
+                int required = VoteKickHelper.GetRequiredVotes();
+
+                bool kick = count >= required;
+
+                var player = PlayerIdManager.GetPlayerId(data.target);
+                player.TryGetDisplayName(out var username);
+
+                if (kick)
+                    NetworkHelper.KickUser(player);
+
+                // Send response to all players
+                using var writer = FusionWriter.Create(VoteKickResponseData.Size);
+                var responseData = VoteKickResponseData.Create(data.target, username, count, required, kick);
+                writer.Write(responseData);
+
+                using var message = FusionMessage.Create(NativeMessageTag.VoteKickResponse, writer);
+                MessageSender.BroadcastMessageExcept(data.target, NetworkChannel.Reliable, message, false);
+            }
         }
     }
 }
