@@ -51,7 +51,7 @@ public static class NetworkInfo
     /// <summary>
     /// The userid from whoever sent the most recent message.
     /// </summary>
-    public static ulong? LastReceivedUser = null;
+    public static ulong? LastReceivedUser { get; internal set; } = null;
 
     /// <summary>
     /// Checks if the message userId was spoofed based on the last received id. Only valid on the server's end.
