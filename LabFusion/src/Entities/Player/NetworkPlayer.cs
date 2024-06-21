@@ -56,6 +56,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private RigNametag _nametag = null;
 
+    private RigArt _art = null;
+    private RigPhysics _physics = null;
+
     private RigGrabber _grabber = null;
     public RigGrabber Grabber => _grabber;
 
@@ -544,11 +547,23 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private void OnCullExtras()
     {
         _nametag.ToggleNametag(false);
+
+        if (HasRig)
+        {
+            _art.CullArt(true);
+            _physics.CullPhysics(true);
+        }
     }
 
     private void OnUncullExtras()
     {
         UpdateNametagVisibility();
+
+        if (HasRig)
+        {
+            _art.CullArt(false);
+            _physics.CullPhysics(false);
+        }
     }
 
     private void UpdateNametagVisibility()
@@ -720,6 +735,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         _pose = new();
 
         _grabber = new RigGrabber(RigReferences);
+
+        _art = new(rigManager);
+        _physics = new(rigManager);
 
         AddToCache();
 
