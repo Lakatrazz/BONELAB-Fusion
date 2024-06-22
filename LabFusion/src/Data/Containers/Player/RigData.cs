@@ -231,21 +231,11 @@ namespace LabFusion.Data
         public static Vector3 RigSpawn { get; private set; }
         public static Quaternion RigSpawnRot { get; private set; }
 
-        private static bool _hookedPauseEvent = false;
-
         private static void OnJump()
         {
             if (NetworkInfo.HasServer)
             {
                 PlayerSender.SendPlayerAction(PlayerActionType.JUMP);
-            }
-        }
-
-        private static void OnPauseStateChanged(bool paused)
-        {
-            if (HasPlayer && !paused)
-            {
-                RigReferences.RigManager.GetComponentInChildren<BodyVitals>().CalibratePlayerBodyScale();
             }
         }
 
@@ -256,11 +246,6 @@ namespace LabFusion.Data
             if (!manager)
             {
                 return;
-            }
-
-            if (!_hookedPauseEvent)
-            {
-                OpenControllerRig.OnPauseStateChange += (Il2CppSystem.Action<bool>)OnPauseStateChanged;
             }
 
             // Store spawn values
