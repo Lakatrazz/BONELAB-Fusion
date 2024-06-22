@@ -7,6 +7,7 @@ using Il2CppSLZ.Marrow.Zones;
 using LabFusion.Data;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Zones;
+using LabFusion.Representation;
 using LabFusion.Utilities;
 
 using UnityEngine;
@@ -22,17 +23,30 @@ public static class DebugZoneMigrator
     };
     private static MarrowEntity _migratorEntity = null;
 
+    private static readonly bool _isPlayerMode = true;
+
     public static void SpawnMigrator()
     {
         var rigManager = RigData.RigReferences.RigManager;
         var physicsRig = rigManager.physicsRig;
 
-        AssetSpawner.Register(_crowbarSpawnable);
-
-        SafeAssetSpawner.Spawn(_crowbarSpawnable, physicsRig.rightHand.transform.position, physicsRig.rightHand.transform.rotation, (p) =>
+        if (_isPlayerMode)
         {
-            _migratorEntity = p.GetComponent<MarrowEntity>();
-        });
+            PlayerRepUtilities.CreateNewRig((rig) =>
+            {
+                rig.transform.position = physicsRig.rightHand.transform.position;
+                _migratorEntity = rig.marrowEntity;
+            });
+        }
+        else
+        {
+            AssetSpawner.Register(_crowbarSpawnable);
+
+            SafeAssetSpawner.Spawn(_crowbarSpawnable, physicsRig.rightHand.transform.position, physicsRig.rightHand.transform.rotation, (p) =>
+            {
+                _migratorEntity = p.GetComponent<MarrowEntity>();
+            });
+        }
     }
 
     public static void MigrateToZone()
