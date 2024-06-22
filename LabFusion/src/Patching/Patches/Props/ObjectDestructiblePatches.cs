@@ -94,11 +94,7 @@ namespace LabFusion.Patching
         {
             __state = new(__instance);
 
-            if (IgnorePatches)
-            {
-                return true;
-            }
-
+            // Make sure we have a server
             if (!NetworkInfo.HasServer)
             {
                 return true;
@@ -106,6 +102,12 @@ namespace LabFusion.Patching
 
             // Clear loot table
             __instance.lootTable = null;
+
+            // Make sure patches aren't being ignored
+            if (IgnorePatches)
+            {
+                return true;
+            }
 
             if (ObjectDestructibleExtender.Cache.TryGet(__instance, out var entity) && !entity.IsOwner)
             {
@@ -123,11 +125,7 @@ namespace LabFusion.Patching
         {
             PooleeDespawnPatch.IgnorePatch = false;
 
-            if (IgnorePatches)
-            {
-                return;
-            }
-
+            // Make sure we have a server
             if (!NetworkInfo.HasServer)
             {
                 return;
@@ -136,7 +134,13 @@ namespace LabFusion.Patching
             // Reset loot table
             __instance.lootTable = __state.lootTable;
 
-            // Make sure we aren't ignoring the patch code
+            // Check if patches are being ignored
+            if (IgnorePatches)
+            {
+                return;
+            }
+
+            // Check if the prefix was ignored
             if (__state.ignoringPatch)
             {
                 return;
