@@ -24,6 +24,8 @@ namespace LabFusion.Patching
             public Vector3 spawnPosition;
             public Quaternion spawnRotation;
 
+            public bool ignoringPatch = false;
+
             public ObjectDestructibleState(ObjectDestructible destructible)
             {
                 lootTable = destructible.lootTable;
@@ -104,6 +106,7 @@ namespace LabFusion.Patching
 
             if (ObjectDestructibleExtender.Cache.TryGet(__instance, out var entity) && !entity.IsOwner)
             {
+                __state.ignoringPatch = true;
                 return false;
             }
 
@@ -120,6 +123,11 @@ namespace LabFusion.Patching
         {
             PooleeDespawnPatch.IgnorePatch = false;
 
+            if (IgnorePatches)
+            {
+                return;
+            }
+
             if (!NetworkInfo.HasServer)
             {
                 return;
@@ -127,6 +135,12 @@ namespace LabFusion.Patching
 
             // Reset loot table
             __instance.lootTable = __state.lootTable;
+
+            // Make sure we aren't ignoring the patch code
+            if (__state.ignoringPatch)
+            {
+                return;
+            }
 
             // Check if we need to spawn loot
             bool destroyed = __instance._isDead && !__state.isDead;
