@@ -1,19 +1,25 @@
 ﻿#if DEBUG
+using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.Marrow.Interaction;
+using Il2CppSLZ.Marrow.Pool;
 using Il2CppSLZ.Marrow.Zones;
-using Il2CppSLZ.Rig;
 
 using LabFusion.Data;
+using LabFusion.Marrow;
 using LabFusion.Marrow.Zones;
-using LabFusion.Representation;
 using LabFusion.Utilities;
 
 using UnityEngine;
 
 namespace LabFusion.Debugging;
 
-public static class DebugChunkMigrator
+public static class DebugZoneMigrator
 {
+    private static readonly Spawnable _crowbarSpawnable = new()
+    {
+        crateRef = new("c1534c5a-0c8a-4b82-9f8b-7a9543726f77"),
+        policyData = null,
+    };
     private static MarrowEntity _migratorEntity = null;
 
     public static void SpawnMigrator()
@@ -21,10 +27,11 @@ public static class DebugChunkMigrator
         var rigManager = RigData.RigReferences.RigManager;
         var physicsRig = rigManager.physicsRig;
 
-        PlayerRepUtilities.CreateNewRig((rig) =>
+        AssetSpawner.Register(_crowbarSpawnable);
+
+        SafeAssetSpawner.Spawn(_crowbarSpawnable, physicsRig.rightHand.transform.position, physicsRig.rightHand.transform.rotation, (p) =>
         {
-            rig.transform.position = physicsRig.rightHand.transform.position;
-            _migratorEntity = rig.marrowEntity;
+            _migratorEntity = p.GetComponent<MarrowEntity>();
         });
     }
 
@@ -66,11 +73,8 @@ public static class DebugChunkMigrator
 
         ZoneCullHelper.MigrateEntity(foundCuller._zoneId, _migratorEntity);
 
-        // Get rig from the migrator
-        var rig = _migratorEntity.GetComponent<RigManager>();
-
         // Offset marrow entity to teleport
-        var offset = rightHand.transform.position - rig.physicsRig.feet.transform.position;
+        var offset = rightHand.transform.position - _migratorEntity.Bodies[0].transform.position;
         _migratorEntity.transform.position += offset;
     }
 }

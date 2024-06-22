@@ -41,12 +41,12 @@ namespace LabFusion.BoneMenu
             var zoneMigration = debugCategory.CreateCategory("Zone Migration", Color.yellow);
             zoneMigration.CreateFunctionElement("Spawn Zone Migration Tester", Color.yellow, () =>
             {
-                DebugChunkMigrator.SpawnMigrator();
+                DebugZoneMigrator.SpawnMigrator();
             });
 
             zoneMigration.CreateFunctionElement("Migrate To Zone", Color.yellow, () =>
             {
-                DebugChunkMigrator.MigrateToZone();
+                DebugZoneMigrator.MigrateToZone();
             });
         }
     }
