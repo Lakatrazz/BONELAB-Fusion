@@ -2,6 +2,7 @@
 // https://github.com/yowchap/BoneLib/blob/main/BoneLib/BoneLibUpdater/Main.cs
 
 using MelonLoader;
+using MelonLoader.Utils;
 
 using System;
 using System.IO;
@@ -37,8 +38,8 @@ namespace LabFusionUpdater
         public const string PluginName = "LabFusionUpdater";
         public const string FileExtension = ".dll";
 
-        public static readonly string ModAssemblyPath = Path.Combine(MelonHandler.ModsDirectory, $"{ModName}{FileExtension}");
-        public static readonly string PluginAssemblyPath = Path.Combine(MelonHandler.PluginsDirectory, $"{PluginName}{FileExtension}");
+        public static readonly string ModAssemblyPath = Path.Combine(MelonEnvironment.ModsDirectory, $"{ModName}{FileExtension}");
+        public static readonly string PluginAssemblyPath = Path.Combine(MelonEnvironment.PluginsDirectory, $"{PluginName}{FileExtension}");
 
         public override void OnPreInitialization()
         {

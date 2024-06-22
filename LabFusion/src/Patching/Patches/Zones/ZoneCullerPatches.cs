@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using HarmonyLib;
+﻿using HarmonyLib;
 
 using Il2CppSLZ.Marrow.Zones;
 
@@ -26,7 +20,13 @@ public static class ZoneCullerPatches
     [HarmonyPatch(nameof(ZoneCuller.OnEnable))]
     public static void OnEnable(ZoneCuller __instance)
     {
-        var hash = GameObjectHasher.GetDeterministicHash(__instance.gameObject);
+        // Make sure the zone has its id
+        if (!__instance._hasZoneId)
+        {
+            return;
+        }
+
+        var hash = GameObjectHasher.GetFastHash(__instance.gameObject);
 
         if (HashToZone.TryGetValue(hash, out var conflict))
         {

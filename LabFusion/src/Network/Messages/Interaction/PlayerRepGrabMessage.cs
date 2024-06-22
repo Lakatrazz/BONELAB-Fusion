@@ -2,109 +2,123 @@
 using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Grabbables;
-using Il2CppSLZ.Interaction;
-using System.Collections;
-using MelonLoader;
-using Il2CppSLZ.Marrow.Interaction;
 using LabFusion.Entities;
 
-namespace LabFusion.Network
+using System.Collections;
+
+using MelonLoader;
+
+using Il2CppSLZ.Marrow.Interaction;
+using Il2CppSLZ.Interaction;
+
+namespace LabFusion.Network;
+
+public class PlayerRepGrabData : IFusionSerializable
 {
-    public class PlayerRepGrabData : IFusionSerializable
+    public const int Size = sizeof(byte) * 3;
+
+    public byte smallId;
+    public Handedness handedness;
+    public GrabGroup group;
+    public SerializedGrab serializedGrab;
+
+    public void Serialize(FusionWriter writer)
     {
-        public const int Size = sizeof(byte) * 3;
+        writer.Write(smallId);
 
-        public byte smallId;
-        public Handedness handedness;
-        public GrabGroup group;
-        public SerializedGrab serializedGrab;
+        writer.Write((byte)handedness);
+        writer.Write((byte)group);
 
-        public void Serialize(FusionWriter writer)
+        writer.Write(serializedGrab);
+    }
+
+    public void Deserialize(FusionReader reader)
+    {
+        smallId = reader.ReadByte();
+
+        handedness = (Handedness)reader.ReadByte();
+        group = (GrabGroup)reader.ReadByte();
+
+        GrabGroupHandler.ReadGrab(ref serializedGrab, reader, group);
+    }
+
+    public Grip GetGrip()
+    {
+        return serializedGrab.GetGrip();
+    }
+
+    public NetworkPlayer GetPlayer()
+    {
+        if (NetworkPlayerManager.TryGetPlayer(smallId, out var player))
         {
-            writer.Write(smallId);
-            writer.Write((byte)handedness);
-            writer.Write((byte)group);
-            writer.Write(serializedGrab);
+            return player;
         }
 
-        public void Deserialize(FusionReader reader)
-        {
-            smallId = reader.ReadByte();
-            handedness = (Handedness)reader.ReadByte();
-            group = (GrabGroup)reader.ReadByte();
+        return null;
+    }
 
-            GrabGroupHandler.ReadGrab(ref serializedGrab, reader, group);
+    public static PlayerRepGrabData Create(byte smallId, Handedness handedness, GrabGroup group, SerializedGrab serializedGrab)
+    {
+        return new PlayerRepGrabData()
+        {
+            smallId = smallId,
+            handedness = handedness,
+            group = group,
+            serializedGrab = serializedGrab
+        };
+    }
+}
+
+[Net.DelayWhileTargetLoading]
+public class PlayerRepGrabMessage : FusionMessageHandler
+{
+    public override byte? Tag => NativeMessageTag.PlayerRepGrab;
+
+    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    {
+        using FusionReader reader = FusionReader.Create(bytes);
+        var data = reader.ReadFusionSerializable<PlayerRepGrabData>();
+
+        if (data.smallId == PlayerIdManager.LocalSmallId)
+        {
+            return;
         }
 
-        public Grip GetGrip()
-        {
-            return serializedGrab.GetGrip();
-        }
+        MelonCoroutines.Start(CoWaitAndGrab(data));
 
-        public NetworkPlayer GetPlayer()
+        // Send message to other clients if server
+        if (isServerHandled)
         {
-            if (NetworkPlayerManager.TryGetPlayer(smallId, out var player))
-                return player;
-            return null;
-        }
-
-        public static PlayerRepGrabData Create(byte smallId, Handedness handedness, GrabGroup group, SerializedGrab serializedGrab)
-        {
-            return new PlayerRepGrabData()
-            {
-                smallId = smallId,
-                handedness = handedness,
-                group = group,
-                serializedGrab = serializedGrab
-            };
+            using var message = FusionMessage.Create(Tag.Value, bytes);
+            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
         }
     }
 
-    [Net.DelayWhileTargetLoading]
-    public class PlayerRepGrabMessage : FusionMessageHandler
+    private static IEnumerator CoWaitAndGrab(PlayerRepGrabData data)
     {
-        public override byte? Tag => NativeMessageTag.PlayerRepGrab;
+        var player = data.GetPlayer();
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        if (player == null)
+            yield break;
+
+        var grip = data.GetGrip();
+
+        if (grip == null)
         {
-            using FusionReader reader = FusionReader.Create(bytes);
-            var data = reader.ReadFusionSerializable<PlayerRepGrabData>();
+            float time = TimeUtilities.TimeSinceStartup;
 
-            if (data.smallId != PlayerIdManager.LocalSmallId)
+            while (grip == null && (TimeUtilities.TimeSinceStartup - time) <= 0.5f)
             {
-                MelonCoroutines.Start(CoWaitAndGrab(data));
-
-                // Send message to other clients if server
-                if (isServerHandled)
-                {
-                    using var message = FusionMessage.Create(Tag.Value, bytes);
-                    MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
-                }
+                yield return null;
+                grip = data.GetGrip();
             }
-        }
 
-        private IEnumerator CoWaitAndGrab(PlayerRepGrabData data)
-        {
-            var player = data.GetPlayer();
-
-            if (player == null)
-                yield break;
-
-            var grip = data.GetGrip();
             if (grip == null)
             {
-                float time = TimeUtilities.TimeSinceStartup;
-                while (grip == null && (TimeUtilities.TimeSinceStartup - time) <= 0.5f)
-                {
-                    yield return null;
-                    grip = data.GetGrip();
-                }
-
-                if (grip == null)
-                    yield break;
+                yield break;
             }
-
-            data.serializedGrab.RequestGrab(player, data.handedness, grip);
         }
+
+        data.serializedGrab.RequestGrab(player, data.handedness, grip);
     }
 }

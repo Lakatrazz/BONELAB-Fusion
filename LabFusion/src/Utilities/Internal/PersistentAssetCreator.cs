@@ -38,7 +38,9 @@ namespace LabFusion.Utilities
             SoftGrabPose = RigData.RigReferences.RigManager.worldGripHandPose;
 
             if (SoftGrabPose != null)
+            {
                 _onSoftGrabLoaded?.Invoke(SoftGrabPose);
+            }
 
             _onSoftGrabLoaded = null;
         }

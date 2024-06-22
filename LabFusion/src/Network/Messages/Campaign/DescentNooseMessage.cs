@@ -48,47 +48,47 @@ namespace LabFusion.Network
         {
             using FusionReader reader = FusionReader.Create(bytes);
             var data = reader.ReadFusionSerializable<DescentNooseData>();
+
             // Send message to other clients if server
             if (isServerHandled)
             {
                 using var message = FusionMessage.Create(Tag.Value, bytes);
                 MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
+                return;
             }
-            else
+
+            NoosePatches.IgnorePatches = true;
+
+            // Register a noose event for catchup
+            _ = DescentData.CreateNooseEvent(data.smallId, data.type);
+
+            switch (data.type)
             {
-                NoosePatches.IgnorePatches = true;
+                default:
+                case DescentNooseType.UNKNOWN:
+                    break;
+                case DescentNooseType.ATTACH_NOOSE:
+                    if (NetworkPlayerManager.TryGetPlayer(data.smallId, out var player))
+                    {
+                        // Assign the RigManager and Health to the noose
+                        // We assign the rigmanager so the noose knows what neck to joint to
+                        // The player health is also assigned so it doesn't damage the local player
+                        DescentData.Noose.rM = player.RigReferences.RigManager;
+                        DescentData.Noose.pH = player.RigReferences.Health;
 
-                // Register a noose event for catchup
-                _ = DescentData.CreateNooseEvent(data.smallId, data.type);
+                        // Now we actually attach the neck of the player
+                        DescentData.Noose.AttachNeck();
+                    }
+                    break;
+                case DescentNooseType.CUT_NOOSE:
+                    // This function is called to cut the noose as if a knife cut it
+                    DescentData.Noose.NooseCut();
 
-                switch (data.type)
-                {
-                    default:
-                    case DescentNooseType.UNKNOWN:
-                        break;
-                    case DescentNooseType.ATTACH_NOOSE:
-                        if (NetworkPlayerManager.TryGetPlayer(data.smallId, out var rep))
-                        {
-                            // Assign the RigManager and Health to the noose
-                            // We assign the rigmanager so the noose knows what neck to joint to
-                            // The player health is also assigned so it doesn't damage the local player
-                            DescentData.Noose.rM = rep.RigReferences.RigManager;
-                            DescentData.Noose.pH = rep.RigReferences.Health;
-
-                            // Now we actually attach the neck of the player
-                            DescentData.Noose.AttachNeck();
-                        }
-                        break;
-                    case DescentNooseType.CUT_NOOSE:
-                        // This function is called to cut the noose as if a knife cut it
-                        DescentData.Noose.NooseCut();
-
-                        DescentData.CheckAchievement();
-                        break;
-                }
-
-                NoosePatches.IgnorePatches = false;
+                    DescentData.CheckAchievement();
+                    break;
             }
+
+            NoosePatches.IgnorePatches = false;
         }
     }
 }

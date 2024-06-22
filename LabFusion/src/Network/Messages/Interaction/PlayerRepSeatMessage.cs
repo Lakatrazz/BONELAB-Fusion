@@ -60,7 +60,7 @@ namespace LabFusion.Network
                 return;
             }
 
-            if (!NetworkPlayerManager.TryGetPlayer(data.smallId, out var rep))
+            if (!NetworkPlayerManager.TryGetPlayer(data.smallId, out var player))
             {
                 return;
             }
@@ -87,11 +87,11 @@ namespace LabFusion.Network
 
                 if (data.isIngress)
                 {
-                    seat.IngressRig(rep.RigReferences.RigManager);
+                    seat.IngressRig(player.RigReferences.RigManager);
                 }
-                else if (rep.RigReferences.RigManager.activeSeat)
+                else if (player.RigReferences.RigManager.activeSeat)
                 {
-                    rep.RigReferences.RigManager.activeSeat.EgressRig(true);
+                    player.RigReferences.RigManager.activeSeat.EgressRig(true);
                 }
 
                 SeatPatches.IgnorePatches = false;

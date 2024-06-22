@@ -1,110 +1,119 @@
 ﻿using LabFusion.Data;
 using LabFusion.Representation;
 using LabFusion.Preferences;
-
 using LabFusion.Senders;
 using LabFusion.Exceptions;
 
-namespace LabFusion.Network
+namespace LabFusion.Network;
+
+public enum PermissionCommandType
 {
-    public enum PermissionCommandType
+    UNKNOWN = 0,
+    KICK = 1,
+    BAN = 2,
+    TELEPORT_TO_THEM = 3,
+    TELEPORT_TO_US = 4,
+}
+
+public class PermissionCommandRequestData : IFusionSerializable
+{
+    public byte smallId;
+    public PermissionCommandType type;
+    public byte? otherPlayer;
+
+    public void Serialize(FusionWriter writer)
     {
-        UNKNOWN = 0,
-        KICK = 1,
-        BAN = 2,
-        TELEPORT_TO_THEM = 3,
-        TELEPORT_TO_US = 4,
+        writer.Write(smallId);
+        writer.Write((byte)type);
+        writer.Write(otherPlayer);
     }
 
-    public class PermissionCommandRequestData : IFusionSerializable
+    public void Deserialize(FusionReader reader)
     {
-        public byte smallId;
-        public PermissionCommandType type;
-        public byte? otherPlayer;
-
-        public void Serialize(FusionWriter writer)
-        {
-            writer.Write(smallId);
-            writer.Write((byte)type);
-            writer.Write(otherPlayer);
-        }
-
-        public void Deserialize(FusionReader reader)
-        {
-            smallId = reader.ReadByte();
-            type = (PermissionCommandType)reader.ReadByte();
-            otherPlayer = reader.ReadByteNullable();
-        }
-
-        public static PermissionCommandRequestData Create(byte smallId, PermissionCommandType type, byte? otherPlayer = null)
-        {
-            return new PermissionCommandRequestData()
-            {
-                smallId = smallId,
-                type = type,
-                otherPlayer = otherPlayer,
-            };
-        }
+        smallId = reader.ReadByte();
+        type = (PermissionCommandType)reader.ReadByte();
+        otherPlayer = reader.ReadByteNullable();
     }
 
-    public class PermissionCommandRequestMessage : FusionMessageHandler
+    public static PermissionCommandRequestData Create(byte smallId, PermissionCommandType type, byte? otherPlayer = null)
     {
-        public override byte? Tag => NativeMessageTag.PermissionCommandRequest;
-
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        return new PermissionCommandRequestData()
         {
-            // This should only ever be handled by the server
-            if (isServerHandled)
-            {
-                using FusionReader reader = FusionReader.Create(bytes);
-                var data = reader.ReadFusionSerializable<PermissionCommandRequestData>();
-                // Get the user and their permissions
-                PlayerId playerId = PlayerIdManager.GetPlayerId(data.smallId);
-                PlayerId otherPlayer = null;
+            smallId = smallId,
+            type = type,
+            otherPlayer = otherPlayer,
+        };
+    }
+}
 
-                if (data.otherPlayer.HasValue)
-                    otherPlayer = PlayerIdManager.GetPlayerId(data.otherPlayer.Value);
+public class PermissionCommandRequestMessage : FusionMessageHandler
+{
+    public override byte? Tag => NativeMessageTag.PermissionCommandRequest;
 
-                FusionPermissions.FetchPermissionLevel(playerId, out var level, out _);
+    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    {
+        // This should only ever be handled by the server
+        if (!isServerHandled)
+        {
+            throw new ExpectedServerException();
+        }
 
-                switch (data.type)
+        using FusionReader reader = FusionReader.Create(bytes);
+        var data = reader.ReadFusionSerializable<PermissionCommandRequestData>();
+
+        // Get the user
+        PlayerId playerId = PlayerIdManager.GetPlayerId(data.smallId);
+
+        // Check for spoofing
+        if (NetworkInfo.IsSpoofed(playerId.LongId))
+        {
+            return;
+        }
+
+        // Get the user's permissions
+        PlayerId otherPlayer = null;
+
+        if (data.otherPlayer.HasValue)
+        {
+            otherPlayer = PlayerIdManager.GetPlayerId(data.otherPlayer.Value);
+        }
+
+        FusionPermissions.FetchPermissionLevel(playerId, out var level, out _);
+
+        switch (data.type)
+        {
+            case PermissionCommandType.UNKNOWN:
+                break;
+            case PermissionCommandType.KICK:
+                if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, FusionPreferences.ActiveServerSettings.KickingAllowed.GetValue()))
                 {
-                    case PermissionCommandType.UNKNOWN:
-                        break;
-                    case PermissionCommandType.KICK:
-                        if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, FusionPreferences.ActiveServerSettings.KickingAllowed.GetValue()))
-                        {
-                            NetworkHelper.KickUser(otherPlayer);
-                        }
-                        break;
-                    case PermissionCommandType.BAN:
-                        if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, FusionPreferences.ActiveServerSettings.BanningAllowed.GetValue()))
-                        {
-                            NetworkHelper.BanUser(otherPlayer);
-                        }
-                        break;
-                    case PermissionCommandType.TELEPORT_TO_THEM:
-                        if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, FusionPreferences.ActiveServerSettings.Teleportation.GetValue()))
-                        {
-                            PlayerRepUtilities.TryGetReferences(otherPlayer, out var references);
-
-                            if (references != null && references.IsValid)
-                                PlayerSender.SendPlayerTeleport(playerId, references.RigManager.physicsRig.feet.transform.position);
-                        }
-                        break;
-                    case PermissionCommandType.TELEPORT_TO_US:
-                        if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, FusionPreferences.ActiveServerSettings.Teleportation.GetValue()))
-                        {
-                            PlayerRepUtilities.TryGetReferences(playerId, out var references);
-
-                            if (references != null && references.IsValid)
-                                PlayerSender.SendPlayerTeleport(otherPlayer, references.RigManager.physicsRig.feet.transform.position);
-                        }
-                        break;
+                    NetworkHelper.KickUser(otherPlayer);
                 }
-            }
-            else
-                throw new ExpectedServerException();
+                break;
+            case PermissionCommandType.BAN:
+                if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, FusionPreferences.ActiveServerSettings.BanningAllowed.GetValue()))
+                {
+                    NetworkHelper.BanUser(otherPlayer);
+                }
+                break;
+            case PermissionCommandType.TELEPORT_TO_THEM:
+                if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, FusionPreferences.ActiveServerSettings.Teleportation.GetValue()))
+                {
+                    PlayerRepUtilities.TryGetReferences(otherPlayer, out var references);
+
+                    if (references != null && references.IsValid)
+                        PlayerSender.SendPlayerTeleport(playerId, references.RigManager.physicsRig.feet.transform.position);
+                }
+                break;
+            case PermissionCommandType.TELEPORT_TO_US:
+                if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, FusionPreferences.ActiveServerSettings.Teleportation.GetValue()))
+                {
+                    PlayerRepUtilities.TryGetReferences(playerId, out var references);
+
+                    if (references != null && references.IsValid)
+                        PlayerSender.SendPlayerTeleport(otherPlayer, references.RigManager.physicsRig.feet.transform.position);
+                }
+                break;
         }
     }
 }

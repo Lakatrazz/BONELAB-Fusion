@@ -5,77 +5,76 @@ using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow.Interaction;
 
-namespace LabFusion.Network
+namespace LabFusion.Network;
+
+public class MagazineClaimData : IFusionSerializable
 {
-    public class MagazineClaimData : IFusionSerializable
+    public const int Size = sizeof(byte) + sizeof(ushort);
+
+    public byte owner;
+    public ushort entityId;
+    public Handedness handedness;
+
+    public void Serialize(FusionWriter writer)
     {
-        public const int Size = sizeof(byte) + sizeof(ushort);
-
-        public byte owner;
-        public ushort syncId;
-        public Handedness handedness;
-
-        public void Serialize(FusionWriter writer)
-        {
-            writer.Write(owner);
-            writer.Write(syncId);
-            writer.Write((byte)handedness);
-        }
-
-        public void Deserialize(FusionReader reader)
-        {
-            owner = reader.ReadByte();
-            syncId = reader.ReadUInt16();
-            handedness = (Handedness)reader.ReadByte();
-        }
-
-        public static MagazineClaimData Create(byte owner, ushort syncId, Handedness handedness)
-        {
-            return new MagazineClaimData()
-            {
-                owner = owner,
-                syncId = syncId,
-                handedness = handedness,
-            };
-        }
+        writer.Write(owner);
+        writer.Write(entityId);
+        writer.Write((byte)handedness);
     }
 
-    [Net.DelayWhileTargetLoading]
-    public class MagazineClaimMessage : FusionMessageHandler
+    public void Deserialize(FusionReader reader)
     {
-        public override byte? Tag => NativeMessageTag.MagazineClaim;
+        owner = reader.ReadByte();
+        entityId = reader.ReadUInt16();
+        handedness = (Handedness)reader.ReadByte();
+    }
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    public static MagazineClaimData Create(byte owner, ushort entityId, Handedness handedness)
+    {
+        return new MagazineClaimData()
         {
-            using var reader = FusionReader.Create(bytes);
-            var data = reader.ReadFusionSerializable<MagazineClaimData>();
+            owner = owner,
+            entityId = entityId,
+            handedness = handedness,
+        };
+    }
+}
 
-            // Send message to other clients if server
-            if (isServerHandled)
-            {
-                using var message = FusionMessage.Create(Tag.Value, bytes);
-                MessageSender.BroadcastMessageExcept(data.owner, NetworkChannel.Reliable, message, false);
-                return;
-            }
+[Net.DelayWhileTargetLoading]
+public class MagazineClaimMessage : FusionMessageHandler
+{
+    public override byte? Tag => NativeMessageTag.MagazineClaim;
 
-            var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.syncId);
+    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    {
+        using var reader = FusionReader.Create(bytes);
+        var data = reader.ReadFusionSerializable<MagazineClaimData>();
 
-            if (entity == null)
-            {
-                return;
-            }
+        // Send message to other clients if server
+        if (isServerHandled)
+        {
+            using var message = FusionMessage.Create(Tag.Value, bytes);
+            MessageSender.BroadcastMessageExcept(data.owner, NetworkChannel.Reliable, message, false);
+            return;
+        }
 
-            var magazineExtender = entity.GetExtender<MagazineExtender>();
+        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.entityId);
 
-            if (magazineExtender == null)
-            {
-                return;
-            }
+        if (entity == null)
+        {
+            return;
+        }
 
-            if (NetworkPlayerManager.TryGetPlayer(data.owner, out var rep))
-            {
-                MagazineUtilities.GrabMagazine(magazineExtender.Component, rep.RigReferences.RigManager, data.handedness);
-            }
+        var magazineExtender = entity.GetExtender<MagazineExtender>();
+
+        if (magazineExtender == null)
+        {
+            return;
+        }
+
+        if (NetworkPlayerManager.TryGetPlayer(data.owner, out var player))
+        {
+            MagazineUtilities.GrabMagazine(magazineExtender.Component, player.RigReferences.RigManager, data.handedness);
         }
     }
 }

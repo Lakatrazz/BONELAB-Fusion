@@ -8,90 +8,86 @@ using UnityEngine;
 using Il2CppSLZ.Marrow.Interaction;
 using LabFusion.Entities;
 
-namespace LabFusion.Data
+namespace LabFusion.Data;
+
+public class WorldGrabGroupHandler : GrabGroupHandler<SerializedWorldGrab>
 {
-    public class WorldGrabGroupHandler : GrabGroupHandler<SerializedWorldGrab>
+    public override GrabGroup? Group => GrabGroup.WORLD;
+}
+
+public class SerializedWorldGrab : SerializedGrab
+{
+    public new const int Size = SerializedGrab.Size + sizeof(byte) + SerializedTransform.Size;
+
+    public byte grabberId;
+    public SerializedTransform worldHand = default;
+
+    public SerializedWorldGrab() { }
+
+    public SerializedWorldGrab(byte grabberId)
     {
-        public override GrabGroup? Group => GrabGroup.WORLD_GRIP;
+        this.grabberId = grabberId;
     }
 
-    public class SerializedWorldGrab : SerializedGrab
+    public override int GetSize()
     {
-        public new const int Size = SerializedGrab.Size + sizeof(byte) + SerializedTransform.Size;
+        return Size;
+    }
 
-        public byte grabberId;
-        public SerializedTransform worldHand = default;
+    public override void WriteDefaultGrip(Hand hand, Grip grip)
+    {
+        base.WriteDefaultGrip(hand, grip);
 
-        public SerializedWorldGrab() { }
+        worldHand = new SerializedTransform(hand.transform);
+    }
 
-        public SerializedWorldGrab(byte grabberId)
+    public override void Serialize(FusionWriter writer)
+    {
+        base.Serialize(writer);
+
+        writer.Write(grabberId);
+        writer.Write(worldHand);
+    }
+
+    public override void Deserialize(FusionReader reader)
+    {
+        base.Deserialize(reader);
+
+        grabberId = reader.ReadByte();
+        worldHand = reader.ReadFusionSerializable<SerializedTransform>();
+    }
+
+    public override Grip GetGrip()
+    {
+        if (NetworkPlayerManager.TryGetPlayer(grabberId, out var player) && player.HasRig)
         {
-            this.grabberId = grabberId;
+            var worldGrip = player.RigReferences.RigManager.worldGrip;
+            return worldGrip;
         }
 
-        public override int GetSize()
-        {
-            return Size;
-        }
+        return null;
+    }
 
-        public override void WriteDefaultGrip(Hand hand, Grip grip)
-        {
-            base.WriteDefaultGrip(hand, grip);
+    public override void RequestGrab(NetworkPlayer player, Handedness handedness, Grip grip)
+    {
+        // Don't do anything if this isn't grabbed anymore
+        if (!isGrabbed)
+            return;
 
-            worldHand = new SerializedTransform(hand.transform);
-        }
+        // Get the hand and its starting values
+        Hand hand = player.RigReferences.GetHand(handedness);
 
-        public override void Serialize(FusionWriter writer)
-        {
-            base.Serialize(writer);
+        Transform handTransform = hand.transform;
+        Vector3 position = handTransform.position;
+        Quaternion rotation = handTransform.rotation;
 
-            writer.Write(grabberId);
-            writer.Write(worldHand);
-        }
+        // Move the hand into its world position
+        handTransform.SetPositionAndRotation(worldHand.position, worldHand.rotation);
 
-        public override void Deserialize(FusionReader reader)
-        {
-            base.Deserialize(reader);
+        // Apply the grab
+        base.RequestGrab(player, handedness, grip);
 
-            grabberId = reader.ReadByte();
-            worldHand = reader.ReadFusionSerializable<SerializedTransform>();
-        }
-
-        public override Grip GetGrip()
-        {
-            if (NetworkPlayerManager.TryGetPlayer(grabberId, out var player))
-            {
-                if (player.RigReferences.RigManager)
-                {
-                    var worldGrip = player.RigReferences.RigManager.worldGrip;
-                    return worldGrip;
-                }
-            }
-
-            return null;
-        }
-
-        public override void RequestGrab(NetworkPlayer player, Handedness handedness, Grip grip)
-        {
-            // Don't do anything if this isn't grabbed anymore
-            if (!isGrabbed)
-                return;
-
-            // Get the hand and its starting values
-            Hand hand = player.RigReferences.GetHand(handedness);
-
-            Transform handTransform = hand.transform;
-            Vector3 position = handTransform.position;
-            Quaternion rotation = handTransform.rotation;
-
-            // Move the hand into its world position
-            handTransform.SetPositionAndRotation(worldHand.position, worldHand.rotation);
-
-            // Apply the grab
-            base.RequestGrab(player, handedness, grip);
-
-            // Reset the hand position
-            handTransform.SetPositionAndRotation(position, rotation);
-        }
+        // Reset the hand position
+        handTransform.SetPositionAndRotation(position, rotation);
     }
 }

@@ -320,73 +320,77 @@ namespace LabFusion.SDK.Points
 
         internal static void Internal_OnEquipChange(PlayerId id, string barcode, bool isEquipped)
         {
-            if (TryGetPointItem(barcode, out var item))
+            if (!TryGetPointItem(barcode, out var item))
             {
-                // Get the rig info
-                RigManager manager = null;
-                PointItemPayloadType type = PointItemPayloadType.SELF;
+                return;
+            }
 
-                if (id == null || id.IsSelf)
-                {
-                    manager = RigData.RigReferences.RigManager;
-                    type = PointItemPayloadType.SELF;
-                }
-                else if (NetworkPlayerManager.TryGetPlayer(id, out var rep))
-                {
-                    manager = rep.RigReferences.RigManager;
-                    type = PointItemPayloadType.PLAYER_REP;
-                }
+            // Get the rig info
+            RigManager manager = null;
+            PointItemPayloadType type = PointItemPayloadType.SELF;
 
-                // Update equip
-                var payload = new PointItemPayload()
-                {
-                    type = type,
-                    playerId = id,
-                    rigManager = manager,
-                };
+            if (id == null || id.IsSelf)
+            {
+                manager = RigData.RigReferences.RigManager;
+                type = PointItemPayloadType.SELF;
+            }
+            else if (NetworkPlayerManager.TryGetPlayer(id, out var rep))
+            {
+                manager = rep.RigReferences.RigManager;
+                type = PointItemPayloadType.PLAYER_REP;
+            }
 
-                item.OnEquipChanged(payload, isEquipped);
+            // Update equip
+            var payload = new PointItemPayload()
+            {
+                type = type,
+                playerId = id,
+                rigManager = manager,
+            };
 
-                // Update visibility
-                if (manager != null)
-                {
-                    item.OnUpdateObjects(payload, isEquipped);
-                }
+            item.OnEquipChanged(payload, isEquipped);
+
+            // Update visibility
+            if (manager != null)
+            {
+                item.OnUpdateObjects(payload, isEquipped);
             }
         }
 
         internal static void Internal_OnTriggerItem(PlayerId id, string barcode, string value = null)
         {
-            if (TryGetPointItem(barcode, out var item))
+            if (!TryGetPointItem(barcode, out var item))
             {
-                // Get the rig info
-                RigManager manager = null;
-                PointItemPayloadType type = PointItemPayloadType.SELF;
-
-                if (id == null || id.IsSelf)
-                {
-                    manager = RigData.RigReferences.RigManager;
-                    type = PointItemPayloadType.SELF;
-                }
-                else if (NetworkPlayerManager.TryGetPlayer(id, out var rep))
-                {
-                    manager = rep.RigReferences.RigManager;
-                    type = PointItemPayloadType.PLAYER_REP;
-                }
-
-                // Update equip
-                var payload = new PointItemPayload()
-                {
-                    type = type,
-                    playerId = id,
-                    rigManager = manager,
-                };
-
-                if (value != null)
-                    item.OnTrigger(payload, value);
-                else
-                    item.OnTrigger(payload);
+                return;
             }
+
+            // Get the rig info
+            RigManager manager = null;
+            PointItemPayloadType type = PointItemPayloadType.SELF;
+
+            if (id == null || id.IsSelf)
+            {
+                manager = RigData.RigReferences.RigManager;
+                type = PointItemPayloadType.SELF;
+            }
+            else if (NetworkPlayerManager.TryGetPlayer(id, out var rep))
+            {
+                manager = rep.RigReferences.RigManager;
+                type = PointItemPayloadType.PLAYER_REP;
+            }
+
+            // Update equip
+            var payload = new PointItemPayload()
+            {
+                type = type,
+                playerId = id,
+                rigManager = manager,
+            };
+
+            if (value != null)
+                item.OnTrigger(payload, value);
+            else
+                item.OnTrigger(payload);
         }
 
         public static void SetEquipped(PointItem item, bool isEquipped)

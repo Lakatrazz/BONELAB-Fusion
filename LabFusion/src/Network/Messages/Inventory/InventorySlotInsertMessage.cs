@@ -86,13 +86,9 @@ public class InventorySlotInsertMessage : FusionMessageHandler
 
         RigReferenceCollection references = null;
 
-        if (data.smallId == PlayerIdManager.LocalSmallId)
+        if (NetworkPlayerManager.TryGetPlayer(data.smallId, out var player))
         {
-            references = RigData.RigReferences;
-        }
-        else if (NetworkPlayerManager.TryGetPlayer(data.smallId, out var rep))
-        {
-            references = rep.RigReferences;
+            references = player.RigReferences;
         }
 
         if (references != null)

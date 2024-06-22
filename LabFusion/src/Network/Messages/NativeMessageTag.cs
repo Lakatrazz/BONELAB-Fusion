@@ -28,7 +28,7 @@ public static class NativeMessageTag
         EntityOwnershipResponse = 18,
 
         EntityPoseUpdate = 19,
-        PropSyncableCreate = 20,
+        NetworkPropCreate = 20,
 
         EntityZoneRegister = 21,
 

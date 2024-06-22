@@ -22,55 +22,71 @@ public class InventorySlotReceiverPatches
     private static void OnDropWeapon(InventorySlotReceiver __instance, Hand hand = null)
     {
         if (IgnorePatches)
+        {
             return;
+        }
+
+        if (!NetworkInfo.HasServer)
+        {
+            return;
+        }
+
+        if (!__instance._slottedWeapon)
+        {
+            return;
+        }
+
+        var rigManager = __instance.GetComponentInParent<RigManager>();
+
+        if (rigManager == null)
+        {
+            return;
+        }
 
         try
         {
-            if (NetworkInfo.HasServer && __instance._slottedWeapon)
+            bool isAvatarSlot = __instance.GetComponentInParent<Avatar>() != null;
+
+            byte? smallId = null;
+            RigReferenceCollection references = null;
+
+            if (PlayerRepUtilities.TryGetRigInfo(rigManager, out var id, out var rigReferences))
             {
-                var rigManager = __instance.GetComponentInParent<RigManager>();
+                smallId = id;
+                references = rigReferences;
+            }
 
-                if (rigManager != null)
+            if (!smallId.HasValue)
+            {
+                return;
+            }
+
+            byte? index = references.GetIndex(__instance, isAvatarSlot);
+
+            if (!index.HasValue)
+            {
+                return;
+            }
+
+            var handedness = Handedness.UNDEFINED;
+
+            if (hand != null)
+            {
+                handedness = hand.handedness;
+
+                // Reward achievement
+                if (!rigManager.IsSelf() && AchievementManager.TryGetAchievement<HighwayMan>(out var achievement))
                 {
-                    bool isAvatarSlot = __instance.GetComponentInParent<Avatar>() != null;
-
-                    byte? smallId = null;
-                    RigReferenceCollection references = null;
-
-                    if (PlayerRepUtilities.TryGetRigInfo(rigManager, out var id, out var rigReferences))
-                    {
-                        smallId = id;
-                        references = rigReferences;
-                    }
-
-                    if (!smallId.HasValue)
-                        return;
-
-                    byte? index = references.GetIndex(__instance, isAvatarSlot);
-
-                    if (!index.HasValue)
-                        return;
-
-                    var handedness = Handedness.UNDEFINED;
-                    if (hand != null)
-                    {
-                        handedness = hand.handedness;
-
-                        // Reward achievement
-                        if (!rigManager.IsSelf() && AchievementManager.TryGetAchievement<HighwayMan>(out var achievement))
-                        {
-                            achievement.IncrementTask();
-                        }
-                    }
-
-                    using var writer = FusionWriter.Create(InventorySlotDropData.Size);
-                    var data = InventorySlotDropData.Create(smallId.Value, PlayerIdManager.LocalSmallId, index.Value, handedness, isAvatarSlot);
-                    writer.Write(data);
-
-                    using var message = FusionMessage.Create(NativeMessageTag.InventorySlotDrop, writer);
-                    MessageSender.SendToServer(NetworkChannel.Reliable, message);
+                    achievement.IncrementTask();
                 }
             }
+
+            using var writer = FusionWriter.Create(InventorySlotDropData.Size);
+            var data = InventorySlotDropData.Create(smallId.Value, PlayerIdManager.LocalSmallId, index.Value, handedness, isAvatarSlot);
+            writer.Write(data);
+
+            using var message = FusionMessage.Create(NativeMessageTag.InventorySlotDrop, writer);
+            MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
         catch (Exception e)
         {
