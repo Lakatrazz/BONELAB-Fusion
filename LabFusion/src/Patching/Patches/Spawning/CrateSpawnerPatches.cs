@@ -37,6 +37,12 @@ namespace LabFusion.Patching
             var spawned = info.spawned;
             spawner.OnFinishNetworkSpawn(spawned);
 
+            // Make sure we actually have a network entity
+            if (info.entity == null)
+            {
+                return;
+            }
+
             // Send spawn message
             var spawnedId = info.entity.Id;
 

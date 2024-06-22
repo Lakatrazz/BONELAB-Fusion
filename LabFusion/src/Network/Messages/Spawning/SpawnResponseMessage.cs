@@ -120,22 +120,30 @@ namespace LabFusion.Network
 
             PooleeUtilities.CheckingForSpawn.Push(poolee);
 
-            // Create a network entity
-            NetworkEntity newEntity = new();
-            newEntity.SetOwner(PlayerIdManager.GetPlayerId(owner));
+            NetworkEntity newEntity = null;
 
-            // Setup a network prop
+            // Get the marrow entity on the spawned object
             var marrowEntity = MarrowEntity.Cache.Get(go);
-            NetworkProp newProp = new(newEntity, marrowEntity);
 
-            // Register this entity
-            NetworkEntityManager.IdManager.RegisterEntity(syncId, newEntity);
-
-            // Insert the catchup hook for future users
-            newEntity.OnEntityCatchup += (entity, player) =>
+            // Make sure we have a marrow entity before creating a prop
+            if (marrowEntity != null)
             {
-                SpawnSender.SendCatchupSpawn(owner, barcode, syncId, new SerializedTransform(go.transform), player);
-            };
+                // Create a network entity
+                newEntity = new();
+                newEntity.SetOwner(PlayerIdManager.GetPlayerId(owner));
+
+                // Setup a network prop
+                NetworkProp newProp = new(newEntity, marrowEntity);
+
+                // Register this entity
+                NetworkEntityManager.IdManager.RegisterEntity(syncId, newEntity);
+
+                // Insert the catchup hook for future users
+                newEntity.OnEntityCatchup += (entity, player) =>
+                {
+                    SpawnSender.SendCatchupSpawn(owner, barcode, syncId, new SerializedTransform(go.transform), player);
+                };
+            }
 
             // Invoke spawn callback
             if (owner == PlayerIdManager.LocalSmallId)
