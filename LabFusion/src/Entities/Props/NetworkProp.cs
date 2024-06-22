@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Il2CppSLZ.Marrow.Interaction;
 
 using LabFusion.Data;
+using LabFusion.Extensions;
 using LabFusion.MonoBehaviours;
 using LabFusion.Network;
 using LabFusion.Representation;
@@ -149,8 +150,20 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         }
     }
 
+    private bool IsMarrowEntityDestroyed()
+    {
+        return MarrowEntity.IsNOC() || MarrowEntity.IsDestroyed || MarrowEntity.IsDespawned;
+    }
+
     private void OnPropRegistered(NetworkEntity entity)
     {
+        // Make sure the entity wasn't destroyed while waiting for registration
+        if (IsMarrowEntityDestroyed())
+        {
+            OnSensorDestroyed();
+            return;
+        }
+
         entity.ConnectExtender(this);
 
         OnReregisterUpdates();
