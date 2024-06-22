@@ -86,6 +86,8 @@ public static class NativeMessageTag
         ConstraintCreate = 55,
         ConstraintDelete = 56,
 
+        BoardGenerator = 57,
+
         HomeEvent = 58,
 
         CrateSpawner = 60,

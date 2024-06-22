@@ -31,6 +31,8 @@ public class NetworkConstraint : IEntityExtender
 
     private void OnConstraintRegistered(NetworkEntity entity)
     {
+        entity.ConnectExtender(this);
+
         Cache.Add(Tracker, NetworkEntity);
 
         _destroySensor = Tracker.gameObject.AddComponent<DestroySensor>();
@@ -39,6 +41,8 @@ public class NetworkConstraint : IEntityExtender
 
     private void OnConstraintUnregistered(NetworkEntity entity)
     {
+        entity.DisconnectExtender(this);
+
         if (Tracker != null)
         {
             Cache.Remove(Tracker);

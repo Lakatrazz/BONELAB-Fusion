@@ -51,7 +51,6 @@ public class ConstraintDeleteMessage : FusionMessageHandler
         {
             using var message = FusionMessage.Create(Tag.Value, bytes);
             MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-
             return;
         }
 
