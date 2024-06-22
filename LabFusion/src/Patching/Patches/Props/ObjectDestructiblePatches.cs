@@ -104,14 +104,14 @@ namespace LabFusion.Patching
                 return true;
             }
 
+            // Clear loot table
+            __instance.lootTable = null;
+
             if (ObjectDestructibleExtender.Cache.TryGet(__instance, out var entity) && !entity.IsOwner)
             {
                 __state.ignoringPatch = true;
                 return false;
             }
-
-            // Clear loot table
-            __instance.lootTable = null;
 
             PooleeDespawnPatch.IgnorePatch = true;
             return true;
