@@ -37,8 +37,9 @@ https://github.com/Lakatrazz/Fusion-Module-Example
 0. Make sure you have a copy of BONELAB with MelonLoader 0.6.1 installed, and ran at least once.
 1. Clone the git repo into a folder.
 2. Setup a "managed" folder in the "LabFusion/dependencies" folder.
-3. Drag the "Il2CppAssemblies", "Managed", and "net6" folders from the MelonLoader folder in your game directory.
-4. You're done!
+3. Drag the "Il2CppAssemblies", "Managed", and "net6" folders from the MelonLoader folder in your game directory into the folder.
+4. Drag the most recent functional version of BoneLib into the "LabFusion/dependencies" folder.
+5. You're done!
 
 ## Disclaimer
 

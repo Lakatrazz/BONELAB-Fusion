@@ -353,3 +353,6 @@ MigrationBackup/
 # Fusion build results
 LabFusion/FusionBundles/Assets/AssetBundles/
 [Bb]uilt[Pp]allets
+
+# Fusion dependencies
+[Bb]one[Ll]ib.dll
