@@ -12,25 +12,29 @@ using LabFusion.Network;
 
 namespace LabFusion.Patching;
 
-[HarmonyPatch(typeof(FadeAndDespawnVolume._FadeOverTime_d__11))]
+[HarmonyPatch(typeof(FadeAndDespawnVolume))]
 public static class FadeAndDespawnVolumePatches
 {
     [HarmonyPrefix]
-    [HarmonyPatch(nameof(FadeAndDespawnVolume._FadeOverTime_d__11.MoveNext))]
-    public static bool MoveNext()
+    [HarmonyPatch(nameof(FadeAndDespawnVolume.Awake))]
+    public static void Awake(FadeAndDespawnVolume __instance)
     {
+        // Make sure we have a server
         if (!NetworkInfo.HasServer)
         {
-            return true;
+            return;
         }
 
+        // Make sure we aren't the server
         if (NetworkInfo.IsServer)
         {
-            return true;
+            return;
         }
 
         // If we aren't the server, we don't have load priority
-        // So, prevent load fading so we don't get stuck
-        return false;
+        // So, we'd get stuck in a load fade
+        // By disabling these components, we prevent the fade from actually visibly showing
+        __instance.volume.enabled = false;
+        __instance.meshRenderer.enabled = false;
     }
 }
