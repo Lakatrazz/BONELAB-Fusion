@@ -435,6 +435,10 @@ public sealed class PointShopPanelView : FusionPanelView
         {
             _infoPrice.text = "Priceless";
         }
+        else if (item.ActivePrice <= 0)
+        {
+            _infoPrice.text = "Free";
+        }
         else
         {
             _infoPrice.text = $"{item.ActivePrice} Bits";

@@ -10,6 +10,8 @@ using LabFusion.SDK.Points;
 using LabFusion.SDK.Achievements;
 using LabFusion.Voice;
 using LabFusion.SDK.Lobbies;
+using LabFusion.SDK.Cosmetics;
+using LabFusion.Entities;
 
 #if DEBUG
 using LabFusion.Debugging;
@@ -21,13 +23,11 @@ using BoneLib;
 
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Rig;
+using Il2CppSLZ.Marrow.Warehouse;
 
 using ModuleHandler = LabFusion.SDK.Modules.ModuleHandler;
 
 using UnityEngine;
-using Il2CppSLZ.Marrow.Warehouse;
-using LabFusion.SDK.Cosmetics;
-using LabFusion.Entities;
 
 namespace LabFusion;
 
