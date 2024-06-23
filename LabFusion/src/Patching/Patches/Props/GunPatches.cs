@@ -122,8 +122,8 @@ namespace LabFusion.Patching
         public static bool IgnorePatches = false;
 
         [HarmonyPostfix]
-        [HarmonyPatch(nameof(SpawnGun.SetPreviewMesh))]
-        public static void SetPreviewMesh(SpawnGun __instance)
+        [HarmonyPatch(nameof(SpawnGun.OnSpawnableSelected))]
+        public static void OnSpawnableSelected(SpawnGun __instance, SpawnableCrate crate)
         {
             if (IgnorePatches)
             {
@@ -135,11 +135,6 @@ namespace LabFusion.Patching
                 return;
             }
 
-            if (__instance._selectedCrate == null)
-            {
-                return;
-            }
-
             var entity = SpawnGunExtender.Cache.Get(__instance);
 
             if (entity == null || !entity.IsOwner)
@@ -147,13 +142,18 @@ namespace LabFusion.Patching
                 return;
             }
 
-            string barcode = __instance._selectedCrate.Barcode;
+            string barcode = Barcode.EMPTY;
 
-            using var writer = FusionWriter.Create(SpawnGunPreviewMeshData.GetSize(barcode));
-            var data = SpawnGunPreviewMeshData.Create(PlayerIdManager.LocalSmallId, entity.Id, barcode);
+            if (crate != null)
+            {
+                barcode = crate.Barcode;
+            }
+
+            using var writer = FusionWriter.Create(SpawnGunSelectData.GetSize(barcode));
+            var data = SpawnGunSelectData.Create(PlayerIdManager.LocalSmallId, entity.Id, barcode);
             writer.Write(data);
 
-            using var message = FusionMessage.Create(NativeMessageTag.SpawnGunPreviewMesh, writer);
+            using var message = FusionMessage.Create(NativeMessageTag.SpawnGunSelect, writer);
             MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
 

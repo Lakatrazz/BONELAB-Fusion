@@ -119,7 +119,7 @@ public static class NativeMessageTag
 
         HolodeckEvent = 78,
 
-        SpawnGunPreviewMesh = 79,
+        SpawnGunSelect = 79,
 
         MineDiveCart = 80,
 
