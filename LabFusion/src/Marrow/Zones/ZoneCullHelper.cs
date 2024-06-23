@@ -16,10 +16,18 @@ public static class ZoneCullHelper
 {
     private static void SimulateZoneExit(Zone zone, MarrowEntity entity) 
     {
+        // Exit all trackers
         foreach (var body in entity.Bodies)
         {
             foreach (var tracker in body.Trackers)
             {
+                // Make sure the zone still contains the entity
+                if (!zone._entityOverlapCounts.ContainsKey(entity))
+                {
+                    return;
+                }
+
+                // Make sure the zone contains the tracker
                 if (!zone._trackerOverlap.Contains(tracker))
                 {
                     continue;
@@ -35,8 +43,12 @@ public static class ZoneCullHelper
                     FusionLogger.LogException("simulating zone exit", e);
 #endif
                 }
+
+                zone._trackerOverlap.Remove(tracker);
             }
         }
+
+        zone._entityOverlapCounts.Remove(entity);
     }
 
     private static void SimulateZoneEnter(Zone zone, MarrowEntity entity) 
@@ -61,6 +73,16 @@ public static class ZoneCullHelper
 #endif
                 }
             }
+        }
+
+        // Make sure the zone's overlap count is only 1
+        if (!zone._entityOverlapCounts.ContainsKey(entity))
+        {
+            zone._entityOverlapCounts.Add(entity, 1);
+        }
+        else
+        {
+            zone._entityOverlapCounts[entity] = 1;
         }
     }
 

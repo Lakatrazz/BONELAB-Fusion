@@ -23,7 +23,7 @@ public static class DebugZoneMigrator
     };
     private static MarrowEntity _migratorEntity = null;
 
-    private static readonly bool _isPlayerMode = true;
+    private static readonly bool _isPlayerMode = false;
 
     public static void SpawnMigrator()
     {
