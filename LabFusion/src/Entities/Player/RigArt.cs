@@ -1,4 +1,5 @@
-﻿using Il2CppSLZ.Rig;
+﻿using Il2CppSLZ.Bonelab;
+using Il2CppSLZ.Rig;
 
 using UnityEngine;
 
@@ -8,10 +9,14 @@ public class RigArt
 {
     private RigManager _rigManager = null;
     private Renderer[] _physicsRenderers = null;
+    private InventoryAmmoReceiver _ammoReceiver = null;
 
     public RigArt(RigManager rigManager)
     {
         _rigManager = rigManager;
+
+        // Collect ammo receiver
+        _ammoReceiver = rigManager.physicsRig.GetComponentInChildren<InventoryAmmoReceiver>(true);
 
         // Collect physics renderers
         List<Renderer> renderers = new();
@@ -39,6 +44,9 @@ public class RigArt
 
             // Hide the avatar
             _rigManager.avatar.gameObject.SetActive(false);
+
+            // Hide the ammo pouch
+            _ammoReceiver.gameObject.SetActive(false);
         }
         else
         {
@@ -50,6 +58,9 @@ public class RigArt
 
             // Show the avatar
             _rigManager.avatar.gameObject.SetActive(true);
+
+            // Show the ammo pouch
+            _ammoReceiver.gameObject.SetActive(true);
         }
     }
 }
