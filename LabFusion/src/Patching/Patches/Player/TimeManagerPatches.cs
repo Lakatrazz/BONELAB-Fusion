@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
+
 using Il2CppSLZ.Bonelab;
-using LabFusion.Data;
+
 using LabFusion.Network;
 using LabFusion.Preferences;
 using LabFusion.Senders;
@@ -14,29 +15,35 @@ public static class TimeManagerPatches
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(TimeManager.DECREASE_TIMESCALE))]
-    public static bool DECREASE_TIMESCALE(TimeManager __instance)
+    public static bool DECREASE_TIMESCALE()
     {
         if (IgnorePatches)
-            return true;
-
-        if (NetworkInfo.HasServer)
         {
-            var mode = FusionPreferences.TimeScaleMode;
+            return true;
+        }
 
-            switch (mode)
-            {
-                case TimeScaleMode.DISABLED:
-                    return false;
-                case TimeScaleMode.CLIENT_SIDE_UNSTABLE:
-                    return true;
-                case TimeScaleMode.EVERYONE:
+        if (!NetworkInfo.HasServer)
+        {
+            return true;
+        }
+
+        var mode = FusionPreferences.TimeScaleMode;
+
+        switch (mode)
+        {
+            case TimeScaleMode.DISABLED:
+                return false;
+            case TimeScaleMode.CLIENT_SIDE_UNSTABLE:
+                return true;
+            case TimeScaleMode.EVERYONE:
+                TimeScaleSender.SendSlowMoButton(true);
+                break;
+            case TimeScaleMode.HOST_ONLY:
+                if (NetworkInfo.IsServer)
+                {
                     TimeScaleSender.SendSlowMoButton(true);
-                    break;
-                case TimeScaleMode.HOST_ONLY:
-                    if (NetworkInfo.IsServer)
-                        TimeScaleSender.SendSlowMoButton(true);
-                    break;
-            }
+                }
+                break;
         }
 
         return true;
@@ -44,47 +51,55 @@ public static class TimeManagerPatches
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(TimeManager.TOGGLE_TIMESCALE))]
-    public static void TOGGLE_TIMESCALE(TimeManager __instance)
+    public static void TOGGLE_TIMESCALE()
     {
         if (IgnorePatches)
-            return;
-
-        if (NetworkInfo.HasServer)
         {
-            var mode = FusionPreferences.TimeScaleMode;
+            return;
+        }
 
-            switch (mode)
-            {
-                case TimeScaleMode.EVERYONE:
+        if (!NetworkInfo.HasServer)
+        {
+            return;
+        }
+
+        var mode = FusionPreferences.TimeScaleMode;
+
+        switch (mode)
+        {
+            case TimeScaleMode.EVERYONE:
+                TimeScaleSender.SendSlowMoButton(false);
+                break;
+            case TimeScaleMode.HOST_ONLY:
+                if (NetworkInfo.IsServer)
                     TimeScaleSender.SendSlowMoButton(false);
-                    break;
-                case TimeScaleMode.HOST_ONLY:
-                    if (NetworkInfo.IsServer)
-                        TimeScaleSender.SendSlowMoButton(false);
-                    break;
-            }
+                break;
         }
     }
 
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(TimeManager.SET_TIMESCALE))]
-    public static void SET_TIMESCALE(TimeManager __instance, ref float intensity)
+    public static void SET_TIMESCALE(ref float intensity)
     {
         if (IgnorePatches)
-            return;
-
-        if (NetworkInfo.HasServer)
         {
-            var mode = FusionPreferences.TimeScaleMode;
+            return;
+        }
 
-            switch (mode)
-            {
-                case TimeScaleMode.LOW_GRAVITY:
-                case TimeScaleMode.DISABLED:
-                    intensity = 1f;
-                    break;
-            }
+        if (!NetworkInfo.HasServer)
+        {
+            return;
+        }
+
+        var mode = FusionPreferences.TimeScaleMode;
+
+        switch (mode)
+        {
+            case TimeScaleMode.LOW_GRAVITY:
+            case TimeScaleMode.DISABLED:
+                intensity = 1f;
+                break;
         }
     }
 }

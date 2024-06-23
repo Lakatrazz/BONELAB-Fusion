@@ -227,14 +227,18 @@ public class FusionMod : MelonMod
 
         // Stop the current gamemode
         if (NetworkInfo.IsServer && Gamemode.ActiveGamemode != null && Gamemode.ActiveGamemode.AutoStopOnSceneLoad)
+        {
             Gamemode.ActiveGamemode.StopGamemode();
+        }
     }
 
     public static void OnMainSceneInitializeDelayed()
     {
         // Make sure the rig exists
         if (!RigData.HasPlayer)
+        {
             return;
+        }
 
         // Force enable radial menu
         RigData.RigReferences.RigManager.GetComponentInChildren<BodyVitals>().quickmenuEnabled = true;
