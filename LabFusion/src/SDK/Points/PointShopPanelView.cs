@@ -7,9 +7,15 @@ using UnityEngine.UI;
 using LabFusion.Utilities;
 using LabFusion.UI;
 using LabFusion.Extensions;
+using LabFusion.Marrow;
 
 using Il2CppTMPro;
+
 using Il2CppInterop.Runtime.Attributes;
+
+using Il2CppSLZ.Marrow.Data;
+using Il2CppSLZ.Props;
+using Il2CppSLZ.Marrow.Warehouse;
 
 namespace LabFusion.SDK.Points;
 
@@ -30,6 +36,8 @@ public sealed class PointShopPanelView : FusionPanelView
     protected override Vector3 Bounds => new(1.3f, 1f, 0.1f);
 
     private Rigidbody _doorRigidbody;
+
+    private Transform _gachaSpawnPoint = null;
 
     private Transform _groupItemsRoot;
     private Transform _categorySelectionRoot;
@@ -105,6 +113,9 @@ public sealed class PointShopPanelView : FusionPanelView
         UpdateSortModeText();
         SelectPanel(ActivePanel.CATALOG);
         LoadCatalogPage();
+
+        // Get gacha spawn point
+        _gachaSpawnPoint = transform.parent.Find("spawn_Gacha");
 
         // Hook into bit update
         PointItemManager.OnBitCountChanged += UpdateBitCountText;
@@ -604,6 +615,45 @@ public sealed class PointShopPanelView : FusionPanelView
             LoadCatalogPage();
 
             FusionAudio.Play3D(transform.position, FusionContentLoader.PurchaseSuccess.Asset, 1f);
+
+            // Open the door
+            _doorRigidbody.AddRelativeTorque(Vector3Extensions.left * 100f, ForceMode.Impulse);
+
+            // Spawn a gachapon containing the item
+            var gachaSpawnable = new Spawnable()
+            {
+                crateRef = BONELABSpawnableReferences.GachaCapsuleReference,
+                policyData = null,
+            };
+
+            var barcode = _targetInfoItem.Barcode;
+
+            if (_gachaSpawnPoint != null)
+            {
+                SafeAssetSpawner.Spawn(gachaSpawnable, _gachaSpawnPoint.position, _gachaSpawnPoint.rotation, (p) =>
+                {
+                    var gachaCapsule = p.GetComponent<GachaCapsule>();
+
+                    if (gachaCapsule == null)
+                    {
+                        return;
+                    }
+
+                    gachaCapsule.selectedCrate = new GenericCrateReference(barcode);
+                    gachaCapsule.SetPreviewMesh();
+
+                    // Add a bunch of torque to get the ball out
+                    var rigidbody = p.GetComponentInChildren<Rigidbody>();
+
+                    if (rigidbody == null)
+                    {
+                        return;
+                    }
+
+                    rigidbody.velocity = _gachaSpawnPoint.forward * 0.1f;
+                    rigidbody.angularVelocity = _gachaSpawnPoint.right * 150f;
+                });
+            }
         }
         // Failure
         else
