@@ -1,10 +1,12 @@
 ﻿using HarmonyLib;
 
 using Il2CppSLZ.Bonelab;
-
+using Il2CppSLZ.Marrow.Utilities;
 using LabFusion.Network;
 using LabFusion.Preferences;
 using LabFusion.Senders;
+
+using UnityEngine;
 
 namespace LabFusion.Patching;
 
@@ -32,6 +34,16 @@ public static class TimeManagerPatches
         switch (mode)
         {
             case TimeScaleMode.DISABLED:
+                return false;
+            case TimeScaleMode.LOW_GRAVITY:
+
+                int step = Mathf.Min(TimeManager.CurrentTimeScaleStep + 1, TimeManager.max_timeScaleStep);
+                TimeManager.cur_timeScaleStep = step;
+                TimeManager.cur_intensity = Mathf.Pow(2f, step);
+
+                Time.timeScale = 1f;
+                Time.fixedDeltaTime = 1f / MarrowGame.xr.Display.GetRecommendedPhysFrequency();
+
                 return false;
             case TimeScaleMode.CLIENT_SIDE_UNSTABLE:
                 return true;
@@ -72,33 +84,15 @@ public static class TimeManagerPatches
                 break;
             case TimeScaleMode.HOST_ONLY:
                 if (NetworkInfo.IsServer)
+                {
                     TimeScaleSender.SendSlowMoButton(false);
+                }
                 break;
-        }
-    }
-
-
-    [HarmonyPrefix]
-    [HarmonyPatch(nameof(TimeManager.SET_TIMESCALE))]
-    public static void SET_TIMESCALE(ref float intensity)
-    {
-        if (IgnorePatches)
-        {
-            return;
-        }
-
-        if (!NetworkInfo.HasServer)
-        {
-            return;
-        }
-
-        var mode = FusionPreferences.TimeScaleMode;
-
-        switch (mode)
-        {
             case TimeScaleMode.LOW_GRAVITY:
-            case TimeScaleMode.DISABLED:
-                intensity = 1f;
+                TimeManager.cur_intensity = 1f;
+
+                Time.timeScale = 1f;
+                Time.fixedDeltaTime = 1f / MarrowGame.xr.Display.GetRecommendedPhysFrequency();
                 break;
         }
     }
