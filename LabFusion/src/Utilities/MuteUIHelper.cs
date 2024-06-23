@@ -10,6 +10,8 @@ using Il2CppSLZ.Bonelab;
 
 using LabFusion.Voice;
 
+using Il2Cpp;
+
 namespace LabFusion.Utilities;
 
 public static class MuteUIHelper
@@ -40,13 +42,17 @@ public static class MuteUIHelper
     private static void OnBeginCameraRendering(ScriptableRenderContext context, Camera camera)
     {
         if (camera == _muteCamera && _muteRenderer != null)
+        {
             _muteRenderer.enabled = true;
+        }
     }
 
     private static void OnEndCameraRendering(ScriptableRenderContext context, Camera camera)
     {
         if (camera == _muteCamera && _muteRenderer != null)
+        {
             _muteRenderer.enabled = false;
+        }
     }
 
     private static void OnMutedChanged(bool value)
@@ -109,13 +115,32 @@ public static class MuteUIHelper
         FusionContentLoader.MutePopupPrefab.Load((go) =>
         {
             if (headset == null)
+            {
                 return;
+            }
 
             _muteIcon = GameObject.Instantiate(go, headset);
+            _muteIcon.SetActive(false);
+
             _muteIcon.name = "Mute Icon [FUSION]";
+
             _muteRenderer = _muteIcon.GetComponentInChildren<Renderer>();
             _muteRenderer.enabled = false;
             _muteCamera = _muteIcon.GetComponent<Camera>();
+
+            // Configure the mute camera's data so that it only renders what it needs to
+            // Volume layer mask is also changed so that it does not affect volumetrics
+            var muteCameraData = _muteIcon.GetComponent<UniversalAdditionalCameraData>();
+            muteCameraData.volumeLayerMask = 8;
+            muteCameraData.renderPostProcessing = false;
+            muteCameraData.m_EnableVolumetrics = false;
+            muteCameraData.renderShadows = false;
+            muteCameraData.requiresColorOption = CameraOverrideOption.Off;
+            muteCameraData.requiresColorTexture = false;
+            muteCameraData.requiresDepthOption = CameraOverrideOption.Off;
+            muteCameraData.requiresDepthTexture = false;
+
+            // Add mute camera to the camera stack
             var cameraData = headset.GetComponent<UniversalAdditionalCameraData>();
             cameraData.cameraStack.Add(_muteCamera);
 
