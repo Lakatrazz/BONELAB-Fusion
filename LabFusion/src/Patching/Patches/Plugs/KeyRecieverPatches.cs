@@ -36,7 +36,7 @@ namespace LabFusion.Patching
 
             var keyEntity = KeyExtender.Cache.Get(key);
 
-            if (keyEntity == null)
+            if (keyEntity == null || !keyEntity.IsRegistered)
             {
                 return;
             }

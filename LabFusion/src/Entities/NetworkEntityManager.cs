@@ -155,6 +155,12 @@ public static class NetworkEntityManager
             return;
         }
 
+        if (!entity.IsRegistered)
+        {
+            FusionLogger.Warn($"Attempted to transfer ownership for NetworkEntity at id {entity.Id}, but it wasn't registered!");
+            return;
+        }
+
         using var writer = FusionWriter.Create(EntityPlayerData.Size);
         var request = EntityPlayerData.Create(ownerId.SmallId, entity.Id);
         writer.Write(request);

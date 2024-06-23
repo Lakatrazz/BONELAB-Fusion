@@ -256,7 +256,7 @@ namespace LabFusion.Patching
             // Send a despawn request if there's a syncable
             var poolee = Poolee.Cache.Get(marrowEntity.gameObject);
 
-            if (PooleeExtender.Cache.TryGet(poolee, out var entity))
+            if (PooleeExtender.Cache.TryGet(poolee, out var entity) && entity.IsRegistered)
             {
                 PooleeUtilities.RequestDespawn(entity.Id);
             }

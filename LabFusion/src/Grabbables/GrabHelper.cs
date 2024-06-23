@@ -53,7 +53,11 @@ public static class GrabHelper
         // Do we already have a synced object?
         if (GripExtender.Cache.TryGet(grip, out var entity))
         {
-            NetworkEntityManager.TakeOwnership(entity);
+            // Make sure to wait for the entity to be registered
+            entity.HookOnRegistered((entity) =>
+            {
+                NetworkEntityManager.TakeOwnership(entity);
+            });
         }
         // Create a new one
         else
@@ -127,16 +131,22 @@ public static class GrabHelper
             // Do we already have a synced object?
             if (GripExtender.Cache.TryGet(grip, out var entity))
             {
-                var gripExtender = entity.GetExtender<GripExtender>();
+                // Make sure to only run after the entity is registered
+                entity.HookOnRegistered((entity) =>
+                {
+                    var gripExtender = entity.GetExtender<GripExtender>();
 
-                serializedGrab = new SerializedEntityGrab(gripExtender.GetIndex(grip).Value, entity.Id);
-                OnFinish();
+                    serializedGrab = new SerializedEntityGrab(gripExtender.GetIndex(grip).Value, entity.Id);
+                    OnFinish();
+                });
             }
             else
             {
                 // Make sure the GameObject is whitelisted before syncing
                 if (!marrowEntity.gameObject.IsSyncWhitelisted())
+                {
                     return;
+                }
 
                 // Invoked when the NetworkProp is finished being created
                 void OnEntityFinish(NetworkProp prop)

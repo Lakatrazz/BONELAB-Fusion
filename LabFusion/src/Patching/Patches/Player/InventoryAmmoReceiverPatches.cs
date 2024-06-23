@@ -36,12 +36,16 @@ namespace LabFusion.Patching
                 var magazineData = __instance._selectedMagazineData;
 
                 if (magazineData == null)
+                {
                     return false;
+                }
 
                 var cartridgeData = __instance._selectedCartridgeData;
 
                 if (cartridgeData == null || __instance._AmmoInventory.GetCartridgeCount(cartridgeData) <= 0)
+                {
                     return false;
+                }
 
                 Handedness handedness = hand.handedness;
 
@@ -113,12 +117,12 @@ namespace LabFusion.Patching
                 return true;
             }
 
-            if (!InteractableHostExtender.Cache.TryGet(interactableHost, out var entity))
+            if (!InteractableHostExtender.Cache.TryGet(interactableHost, out var entity) || !entity.IsRegistered)
             {
                 return true;
             }
 
-            var magazineExtender = entity.GetExtender<Entities.MagazineExtender>();
+            var magazineExtender = entity.GetExtender<MagazineExtender>();
 
             if (magazineExtender == null)
             {
