@@ -5,7 +5,7 @@ Having been in development for 5 months, the long awaited multiplayer mod FUSION
 
 # Installation
 ## How To Install (PCVR)
-1. Make sure you are on BONELAB Patch 3. This is the "public beta" branch.
+1. Make sure you are on BONELAB Patch #4.
 2. Install MelonLoader (0.6.1 required).
 3. Install BoneLib.
 4. Download Fusion and drag the LabFusion.dll file into your MelonLoader Mods folder. This is not to be confused with the SLZ official mods folder.
@@ -14,7 +14,7 @@ Having been in development for 5 months, the long awaited multiplayer mod FUSION
 6. You're done!
 
 ## How To Install (Quest)
-1. Make sure you are on BONELAB Patch 3. This is the "public beta" branch.
+1. Make sure you are on BONELAB Patch #4.
 2. Install LemonLoader (latest version required).
 3. Install BoneLib.
 4. Download Fusion and drag the LabFusion.dll file into your Mods folder. Ignore the LabFusionUpdater.dll file, it does not work on Quest.
