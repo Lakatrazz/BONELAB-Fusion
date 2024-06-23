@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6608310410762459238}
+  - component: {fileID: 2459260755547476737}
   m_Layer: 0
   m_Name: item_VictoryTrophy
   m_TagString: Untagged
@@ -33,6 +34,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2459260755547476737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2973350464119299050}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cosmeticPoint: 1
+  hiddenInView: 1
+  hiddenInShop: 1
+  rawPrice: 99999999
+  previewIcon: {fileID: 2800000, guid: 71a9c3616d4c0864abcb18618afc6c83, type: 3}
 --- !u!1001 &84210815288095453
 PrefabInstance:
   m_ObjectHideFlags: 0

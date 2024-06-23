@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using LabFusion.Marrow.Integration;
-
-using UnityEngine;
+﻿using LabFusion.Marrow.Integration;
 
 namespace LabFusion.SDK.Cosmetics;
 
@@ -27,4 +19,6 @@ public struct CosmeticVariables
     public RigPoint cosmeticPoint;
 
     public bool hiddenInView;
+
+    public bool hiddenInShop;
 }

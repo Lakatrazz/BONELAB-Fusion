@@ -24,6 +24,8 @@ public class CosmeticItem : PointItem
 
     public override string Barcode => Variables.barcode;
 
+    public override bool Redacted => Variables.hiddenInShop;
+
     // We use LateUpdate to cleanup accessories, so it should be hooked
     public override bool ImplementLateUpdate => true;
 

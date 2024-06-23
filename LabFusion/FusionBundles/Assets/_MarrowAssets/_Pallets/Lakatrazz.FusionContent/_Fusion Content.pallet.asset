@@ -30,6 +30,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 978b050c32ef248479bd34fb391923eb, type: 2}
   - {fileID: 11400000, guid: 4e5cbc908b199324c99407f16ce1561d, type: 2}
   - {fileID: 11400000, guid: 7a19ee3ad972289479562a9278bcc256, type: 2}
+  - {fileID: 11400000, guid: 50523ab32d2918543816621a3b940d3e, type: 2}
   _dataCards:
   - {fileID: 11400000, guid: 391bcea53f62c9d4983ac21ae088574b, type: 2}
   - {fileID: 11400000, guid: a5491b0dbbcbdb0488e0d00b312c3874, type: 2}
@@ -52,6 +53,7 @@ MonoBehaviour:
   - Spawnable  BitMart
   - Spawnable  Achievement Board
   - Spawnable  Info Board
+  - Spawnable  Victory Trophy
   _datacardTitles:
   - MonoDisc  Phantasmagorical Appliances
   - MonoDisc  Appen Beyuge

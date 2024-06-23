@@ -133,16 +133,6 @@
     <None Remove="FusionBundles\Assets\marrow-integration\Editor.meta" />
     <None Remove="FusionBundles\Assets\marrow-integration\Runtime.meta" />
     <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Cosmetics.meta" />
-    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Cosmetics\MarrowCosmeticChest.cs.meta" />
-    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Cosmetics\MarrowCosmeticChestBack.cs.meta" />
-    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Cosmetics\MarrowCosmeticEyeCenter.cs.meta" />
-    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Cosmetics\MarrowCosmeticEyeLeft.cs.meta" />
-    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Cosmetics\MarrowCosmeticEyeRight.cs.meta" />
-    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Cosmetics\MarrowCosmeticHead.cs.meta" />
-    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Cosmetics\MarrowCosmeticHeadTop.cs.meta" />
-    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Cosmetics\MarrowCosmeticHips.cs.meta" />
-    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Cosmetics\MarrowCosmeticNose.cs.meta" />
-    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Cosmetics\MarrowCosmeticPoint.cs.meta" />
     <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes.meta" />
     <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\Deathmatch.meta" />
     <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\Deathmatch\DeathmatchProxy.cs.meta" />

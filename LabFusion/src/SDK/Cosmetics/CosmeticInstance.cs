@@ -4,7 +4,6 @@ using Il2CppSLZ.VRMK;
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Marrow.Integration;
-using LabFusion.MarrowIntegration;
 using LabFusion.SDK.Points;
 
 using UnityEngine;
@@ -30,7 +29,6 @@ public class CosmeticInstance
     public RigPoint itemPoint;
 
     public FusionDictionary<Mirror, GameObject> mirrors = new(new UnityComparer());
-    public FusionDictionary<RigPoint, MarrowCosmeticPoint> points = new();
 
     private bool _destroyed = false;
     public bool IsDestroyed => _destroyed;
@@ -91,17 +89,6 @@ public class CosmeticInstance
     private void UpdateAvatar(Avatar avatar)
     {
         this.avatar = avatar;
-        points = new();
-
-        //foreach (var component in avatar.GetComponentsInChildren<MarrowCosmeticPoint>())
-        //{
-        //    var casted = component.TryCast<MarrowCosmeticPoint>();
-        //
-        //    if (!points.ContainsKey(casted.Point))
-        //    {
-        //        points.Add(casted.Point, casted);
-        //    }
-        //}
     }
 
     private void UpdateVisibility(bool paused)
@@ -124,16 +111,9 @@ public class CosmeticInstance
         Vector3 position;
         Quaternion rotation;
         Vector3 scale;
-        // SDK offset transform
-        if (points.TryGetValue(itemPoint, out var component))
-        {
-            AccessoryItemHelper.GetTransform(component, out position, out rotation, out scale);
-        }
+
         // Auto calculated transform
-        else
-        {
-            AccessoryItemHelper.GetTransform(itemPoint, rigManager, out position, out rotation, out scale);
-        }
+        CosmeticItemHelper.GetTransform(itemPoint, rigManager, out position, out rotation, out scale);
 
         transform.SetPositionAndRotation(position, rotation);
         transform.localScale = scale;
@@ -142,7 +122,9 @@ public class CosmeticInstance
     public void InsertMirror(Mirror mirror, GameObject accessory)
     {
         if (mirrors.ContainsKey(mirror))
+        {
             return;
+        }
 
         mirrors.Add(mirror, accessory);
     }

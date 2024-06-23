@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Il2CppSLZ.Marrow.Warehouse;
+﻿using Il2CppSLZ.Marrow.Warehouse;
 
 using LabFusion.Marrow;
 using LabFusion.Marrow.Integration;
@@ -68,6 +62,7 @@ public static class CosmeticLoader
         var price = cosmeticRoot.rawPrice.Get();
 
         var hiddenInView = cosmeticRoot.hiddenInView.Get();
+        var hiddenInShop = cosmeticRoot.hiddenInShop.Get();
 
         var variables = new CosmeticVariables()
         {
@@ -79,6 +74,7 @@ public static class CosmeticLoader
             cosmeticPoint = point,
             price = price,
             hiddenInView = hiddenInView,
+            hiddenInShop = hiddenInShop,
         };
 
         var cosmeticItem = new CosmeticItem(variables);

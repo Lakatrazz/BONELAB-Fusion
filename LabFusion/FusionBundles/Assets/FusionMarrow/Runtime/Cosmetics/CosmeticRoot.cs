@@ -23,6 +23,8 @@ namespace LabFusion.Marrow.Integration
 
         public Il2CppValueField<bool> hiddenInView;
 
+        public Il2CppValueField<bool> hiddenInShop;
+
         public Il2CppValueField<int> rawPrice;
 
         public Il2CppReferenceField<Texture2D> previewIcon;
@@ -30,6 +32,8 @@ namespace LabFusion.Marrow.Integration
         public RigPoint cosmeticPoint = RigPoint.HEAD;
 
         public bool hiddenInView = false;
+
+        public bool hiddenInShop = false;
 
         public int rawPrice = 100;
 

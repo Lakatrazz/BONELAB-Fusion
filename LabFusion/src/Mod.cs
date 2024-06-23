@@ -71,7 +71,7 @@ public class FusionMod : MelonMod
         PDController.OnInitializeMelon();
         ModuleHandler.Internal_HookAssemblies();
         GamemodeRegistration.Internal_HookAssemblies();
-        PointItemManager.Internal_HookAssemblies();
+        PointItemManager.HookEvents();
 
         VoteKickHelper.Internal_OnInitializeMelon();
     }
@@ -93,7 +93,7 @@ public class FusionMod : MelonMod
         GrabGroupHandler.RegisterHandlersFromAssembly(FusionAssembly);
         NetworkLayer.RegisterLayersFromAssembly(FusionAssembly);
         GamemodeRegistration.LoadGamemodes(FusionAssembly);
-        //PointItemManager.LoadItems(FusionAssembly);
+        PointItemManager.LoadItems(FusionAssembly);
         AchievementManager.LoadAchievements(FusionAssembly);
 
         EntityComponentManager.RegisterComponentsFromAssembly(FusionAssembly);
@@ -189,7 +189,7 @@ public class FusionMod : MelonMod
         // Unhook assembly loads
         ModuleHandler.Internal_UnhookAssemblies();
         GamemodeRegistration.Internal_UnhookAssemblies();
-        PointItemManager.Internal_UnhookAssemblies();
+        PointItemManager.UnhookEvents();
 
         // Unload assetbundles
         FusionBundleLoader.OnBundleUnloaded();
