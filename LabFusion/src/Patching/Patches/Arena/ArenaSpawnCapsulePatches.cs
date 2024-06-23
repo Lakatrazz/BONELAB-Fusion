@@ -22,32 +22,47 @@ public static class SpawnCapsuleLaunchSequencePatches
     [HarmonyPatch(nameof(Arena_SpawnCapsule._CoLaunchSequenceArena_d__9.MoveNext))]
     public static bool MoveNext(Arena_SpawnCapsule._CoLaunchSequenceArena_d__9 __instance)
     {
+        // Make sure we have a server
         if (!NetworkInfo.HasServer)
         {
             return true;
         }
 
-        // Manually sync spawn
-        if (NetworkInfo.IsServer)
+        // If we aren't the host, don't allow a spawn
+        if (!NetworkInfo.IsServer)
         {
-            var arenaGameController = __instance.arenaGameController;
-            var spawnCapsule = __instance.__4__this;
-            var transform = spawnCapsule.transform;
-
-            var enemyProfile = __instance.enemyProfile;
-
-            // In the future, add this to the game controller
-            NetworkAssetSpawner.Spawn(new NetworkAssetSpawner.SpawnRequestInfo()
-            {
-                spawnable = enemyProfile.spawnable,
-                position = spawnCapsule.transform.position,
-                rotation = Quaternion.identity,
-                spawnCallback = (info) =>
-                {
-                    spawnCapsule.OnSpawn?.Invoke();
-                }
-            });
+            return false;
         }
+
+        // Manually sync spawn
+        var arenaGameController = __instance.arenaGameController;
+        var spawnCapsule = __instance.__4__this;
+        var transform = spawnCapsule.transform;
+
+        var enemyProfile = __instance.enemyProfile;
+
+        NetworkAssetSpawner.Spawn(new NetworkAssetSpawner.SpawnRequestInfo()
+        {
+            spawnable = enemyProfile.spawnable,
+            position = spawnCapsule.transform.position,
+            rotation = Quaternion.identity,
+            spawnCallback = (info) =>
+            {
+                spawnCapsule.OnSpawn?.Invoke();
+
+                // Call spawn event for the spawned NPC
+                var spawnEvent = new Arena_SpawnCapsule.__c__DisplayClass9_0()
+                {
+                    arenaGameController = arenaGameController,
+                    enemyProfile = __instance.enemyProfile,
+                };
+
+                spawnEvent._CoLaunchSequenceArena_b__0(info.spawned);
+
+                // Disable the hoi-poi
+                spawnCapsule.gameObject.SetActive(false);
+            }
+        });
 
         return false;
     }

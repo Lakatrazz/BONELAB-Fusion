@@ -49,14 +49,14 @@ namespace LabFusion.Network
             }
             else
             {
-                Control_GlobalTimePatches.IgnorePatches = true;
+                TimeManagerPatches.IgnorePatches = true;
 
                 if (data.isDecrease)
                     TimeManager.DECREASE_TIMESCALE();
                 else
                     TimeManager.TOGGLE_TIMESCALE();
 
-                Control_GlobalTimePatches.IgnorePatches = false;
+                TimeManagerPatches.IgnorePatches = false;
             }
         }
     }
