@@ -20,7 +20,6 @@ using UnityEngine;
 using System.Collections;
 using BoneLib;
 using LabFusion.Marrow;
-using BoneLib.Nullables;
 
 namespace LabFusion.Entities;
 
@@ -172,8 +171,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         var pullCord = RigReferences.RigManager.GetComponentInChildren<PullCordDevice>(true);
         pullCord.PlayAvatarParticleEffects();
 
-        var pitchRng = new BoxedNullable<float>(null);
-        pullCord._map3.PlayAtPoint(pullCord.switchAvatar, pullCord.transform.position, null, pullCord.switchVolume, 1f, pitchRng, 1f, 1f);
+        pullCord._map3.PlayAtPoint(pullCord.switchAvatar, pullCord.transform.position, null, pullCord.switchVolume, 1f, new(0f), 1f, 1f);
     }
 
     public void SetBallEnabled(bool isEnabled)

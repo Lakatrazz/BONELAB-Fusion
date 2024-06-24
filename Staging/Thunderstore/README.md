@@ -6,7 +6,7 @@ Having been in development for 5 months, the long awaited multiplayer mod FUSION
 # Installation
 ## How To Install (PCVR)
 1. Make sure you are on BONELAB Patch #4.
-2. Install MelonLoader (0.6.3 required).
+2. Install MelonLoader (0.6.1 required).
 3. Install BoneLib.
 4. Download Fusion and drag the LabFusion.dll file into your MelonLoader Mods folder. This is not to be confused with the SLZ official mods folder.
 5. Drag the LabFusionUpdater.dll file into your MelonLoader Plugins folder. This will automatically update the mod for you.
