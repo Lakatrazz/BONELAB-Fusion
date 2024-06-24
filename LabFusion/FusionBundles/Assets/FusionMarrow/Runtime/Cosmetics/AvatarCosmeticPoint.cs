@@ -1,4 +1,6 @@
 #if MELONLOADER
+using Il2CppInterop.Runtime.InteropTypes.Fields;
+
 using MelonLoader;
 #else
 using SLZ.Marrow.Warehouse;
