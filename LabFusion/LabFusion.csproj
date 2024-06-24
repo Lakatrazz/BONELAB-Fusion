@@ -188,6 +188,7 @@
 
   <ItemGroup>
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Cosmetics\CosmeticRoot.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Cosmetics\RigPoint.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\RigPoint.cs" />
   </ItemGroup>
 
