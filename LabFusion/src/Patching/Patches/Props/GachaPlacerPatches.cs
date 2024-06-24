@@ -7,42 +7,53 @@ using Il2CppSLZ.Props;
 
 using UnityEngine;
 
-namespace LabFusion.Patching
+namespace LabFusion.Patching;
+
+[HarmonyPatch(typeof(GachaPlacer))]
+public static class GachaPlacerPatches
 {
-    [HarmonyPatch(typeof(GachaPlacer))]
-    public static class GachaPlacerPatches
+    public static bool IgnorePatches = false;
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(GachaPlacer.OnPersistentLoad))]
+    public static bool OnPersistentLoad(GachaPlacer __instance)
     {
-        public static bool IgnorePatches = false;
-
-        [HarmonyPostfix]
-        [HarmonyPatch(nameof(GachaPlacer.ShouldSpawn))]
-        public static void ShouldSpawn(ref bool __result)
+        if (IgnorePatches)
         {
-            if (!IgnorePatches && NetworkInfo.HasServer)
-            {
-                __result = true;
-            }
+            return true;
+        }
+        
+        if (!NetworkInfo.HasServer)
+        {
+            return true;
         }
 
-        [HarmonyPostfix]
-        [HarmonyPatch(nameof(GachaPlacer.OnSpawn))]
-        public static void OnSpawn(GachaPlacer __instance, GameObject go)
+        // If we're in a server, make sure the capsule always spawns
+        __instance._crateSpawner.SpawnSpawnable();
+
+        return false;
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(nameof(GachaPlacer.OnSpawn))]
+    public static void OnSpawn(GachaPlacer __instance, GameObject go)
+    {
+        if (!NetworkInfo.HasServer)
         {
-            if (NetworkInfo.HasServer)
-            {
-                IgnorePatches = true;
-
-                bool notUnlocked = __instance.ShouldSpawn();
-
-                if (!notUnlocked)
-                {
-                    MeshRenderer mesh = go.GetComponent<GachaCapsule>().previewMesh.GetComponent<MeshRenderer>();
-                    mesh.material.SetColor("_EmissionColor", Color.gray);
-                    mesh.material.SetColor("_HologramEdgeColor", Color.gray);
-                }
-
-                IgnorePatches = false;
-            }
+            return;
         }
+
+        IgnorePatches = true;
+
+        bool notUnlocked = __instance.ShouldSpawn();
+
+        if (!notUnlocked)
+        {
+            MeshRenderer mesh = go.GetComponent<GachaCapsule>().previewMesh.GetComponent<MeshRenderer>();
+            mesh.material.SetColor("_EmissionColor", Color.gray);
+            mesh.material.SetColor("_HologramEdgeColor", Color.gray);
+        }
+
+        IgnorePatches = false;
     }
 }
