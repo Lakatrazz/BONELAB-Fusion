@@ -30,6 +30,8 @@ public class CosmeticInstance
 
     public FusionDictionary<Mirror, GameObject> mirrors = new(new UnityComparer());
 
+    private FusionDictionary<RigPoint, AvatarCosmeticPoint> _avatarPoints = new();
+
     private bool _destroyed = false;
     public bool IsDestroyed => _destroyed;
 
@@ -89,14 +91,31 @@ public class CosmeticInstance
     private void UpdateAvatar(Avatar avatar)
     {
         this.avatar = avatar;
+
+        // Get all cosmetic points using Fusion SDK
+        _avatarPoints = new();
+
+        foreach (var point in avatar.GetComponentsInChildren<AvatarCosmeticPoint>())
+        {
+            var cosmeticPoint = (RigPoint)point.cosmeticPoint.Get();
+
+            if (!_avatarPoints.ContainsKey(cosmeticPoint))
+            {
+                _avatarPoints.Add(cosmeticPoint, point);
+            }
+        }
     }
 
     private void UpdateVisibility(bool paused)
     {
         if (!paused && isHiddenInView)
+        {
             accessory.SetActive(false);
+        }
         else
+        {
             accessory.SetActive(true);
+        }
     }
 
     public void Update(RigPoint itemPoint)
@@ -112,8 +131,16 @@ public class CosmeticInstance
         Quaternion rotation;
         Vector3 scale;
 
+        // SDK provided transform
+        if (_avatarPoints.TryGetValue(itemPoint, out var avatarPoint))
+        {
+            CosmeticItemHelper.GetTransform(avatarPoint, out position, out rotation, out scale);
+        }
         // Auto calculated transform
-        CosmeticItemHelper.GetTransform(itemPoint, rigManager, out position, out rotation, out scale);
+        else
+        {
+            CosmeticItemHelper.GetTransform(itemPoint, rigManager, out position, out rotation, out scale);
+        }
 
         transform.SetPositionAndRotation(position, rotation);
         transform.localScale = scale;

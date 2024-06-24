@@ -11,27 +11,6 @@ using Avatar = Il2CppSLZ.VRMK.Avatar;
 
 namespace LabFusion.SDK.Cosmetics;
 
-public enum AccessoryPoint
-{
-    // Head
-    HEAD,
-    HEAD_TOP,
-
-    // Eyes
-    EYE_LEFT,
-    EYE_RIGHT,
-    EYE_CENTER,
-
-    // Face
-    NOSE,
-
-    // Spine
-    CHEST,
-    CHEST_BACK,
-    HIPS,
-    LOCOSPHERE,
-}
-
 public enum CosmeticScaleMode
 {
     NONE,
@@ -71,6 +50,14 @@ public static class CosmeticItemHelper
             case RigPoint.NOSE:
                 return CosmeticScaleMode.HEAD;
         }
+    }
+
+    public static void GetTransform(AvatarCosmeticPoint point, out Vector3 position, out Quaternion rotation, out Vector3 scale)
+    {
+        var transform = point.transform;
+        position = transform.position;
+        rotation = transform.rotation;
+        scale = transform.lossyScale;
     }
 
     public static void GetTransform(RigPoint itemPoint, RigManager rig, out Vector3 position, out Quaternion rotation, out Vector3 scale)

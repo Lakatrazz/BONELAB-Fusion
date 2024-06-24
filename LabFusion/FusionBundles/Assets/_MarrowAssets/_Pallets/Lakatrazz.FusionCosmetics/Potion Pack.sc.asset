@@ -35,8 +35,8 @@ MonoBehaviour:
   _previewMesh:
     _assetGUID: dfd4a95e3864484439d2ae1a50ba9200
     _editorAssetChanged: 1
-  _customQuality: 0
-  _previewMeshQuality: 0.5
+  _customQuality: 1
+  _previewMeshQuality: 0.8
   _maxLODLevel: 0
   _colliderBounds:
     m_Center: {x: 0, y: 0, z: 0}
