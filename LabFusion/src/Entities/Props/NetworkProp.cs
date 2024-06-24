@@ -60,8 +60,6 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
         IMarrowEntityExtender.Cache.Add(marrowEntity, networkEntity);
 
-        OnEntityCull(marrowEntity.IsCulled);
-
         networkEntity.HookOnRegistered(OnPropRegistered);
         networkEntity.OnEntityUnregistered += OnPropUnregistered;
     }
@@ -170,6 +168,9 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
         _destroySensor = MarrowEntity.gameObject.AddComponent<DestroySensor>();
         _destroySensor.Hook(OnSensorDestroyed);
+
+        // Cull the entity if it needs to be
+        OnEntityCull(MarrowEntity.IsCulled);
     }
 
     private void OnPropUnregistered(NetworkEntity entity)
