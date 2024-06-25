@@ -15,7 +15,7 @@ MonoBehaviour:
   m_GroupName: FusionContent_Spawnables
   m_Data:
     m_SerializedData: []
-  m_GUID: f80350eec6364c3419f746117c137c3f
+  m_GUID: 4522f92e28a7f8a4da90ab1e29f63b9a
   m_SerializeEntries:
   - m_GUID: 6d0197f34937bb849b28d98d27baedd6
     m_Address: Spawnable/BitMart
@@ -54,6 +54,26 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7bd674172ba743b4097a713ad25bfa0f
     m_Address: PreviewMesh/Victory Trophy
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 00ff56bb8e780f64b803ec6fc4e292aa
+    m_Address: Spawnable/Achievement Popup
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 26f3b8ff298a03e4fbc70d187f9237c9
+    m_Address: PreviewMesh/Achievement Popup
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e4eeecf5183eb5d4ea33ffa81cce262a
+    m_Address: Spawnable/Bit Popup
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7a615d385fee2c849b61621a51ab9de7
+    m_Address: PreviewMesh/Bit Popup
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

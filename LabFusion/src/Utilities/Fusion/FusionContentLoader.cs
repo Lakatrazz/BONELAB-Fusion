@@ -17,8 +17,6 @@ namespace LabFusion.Utilities
 
         public static WeakAssetReference<GameObject> EntangledLinePrefab { get; private set; } = new();
 
-        public static WeakAssetReference<GameObject> AchievementPopupPrefab { get; private set; } = new();
-        public static WeakAssetReference<GameObject> BitPopupPrefab { get; private set; } = new();
         public static WeakAssetReference<GameObject> MutePopupPrefab { get; private set; } = new();
 
         public static WeakAssetReference<Texture2D> SabrelakeLogo { get; private set; } = new();
@@ -59,8 +57,6 @@ namespace LabFusion.Utilities
 
             bundle.LoadPersistentAssetAsync<GameObject>(ResourcePaths.EntangledLinePrefab, (v) => { EntangledLinePrefab.SetAsset(v); });
 
-            bundle.LoadPersistentAssetAsync<GameObject>(ResourcePaths.AchievementPopupPrefab, (v) => { AchievementPopupPrefab.SetAsset(v); });
-            bundle.LoadPersistentAssetAsync<GameObject>(ResourcePaths.BitPopupPrefab, (v) => { BitPopupPrefab.SetAsset(v); });
             bundle.LoadPersistentAssetAsync<GameObject>(ResourcePaths.MutePopupPrefab, (v) => { MutePopupPrefab.SetAsset(v); });
 
             bundle.LoadPersistentAssetAsync<Texture2D>(ResourcePaths.SabrelakeLogo, (v) => { SabrelakeLogo.SetAsset(v); });

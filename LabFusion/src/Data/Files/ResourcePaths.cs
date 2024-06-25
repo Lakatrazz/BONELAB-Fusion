@@ -26,8 +26,6 @@
 
         public const string EntangledLinePrefab = "renderer_EntangledLine";
 
-        public const string AchievementPopupPrefab = "achievement_Popup";
-        public const string BitPopupPrefab = "bit_Popup";
         public const string MutePopupPrefab = "mute_Popup";
 
         public const string SabrelakeLogo = "tex_sabreLakeLogo";

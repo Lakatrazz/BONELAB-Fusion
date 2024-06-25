@@ -17,4 +17,8 @@ public static class FusionSpawnableReferences
     public static readonly SpawnableCrateReference InfoBoardReference = new("Lakatrazz.FusionContent.Spawnable.InfoBoard");
 
     public static readonly SpawnableCrateReference VictoryTrophyReference = new("Lakatrazz.FusionContent.Spawnable.VictoryTrophy");
+
+    public static readonly SpawnableCrateReference AchievementPopupReference = new("Lakatrazz.FusionContent.Spawnable.AchievementPopup");
+
+    public static readonly SpawnableCrateReference BitPopupReference = new("Lakatrazz.FusionContent.Spawnable.BitPopup");
 }
