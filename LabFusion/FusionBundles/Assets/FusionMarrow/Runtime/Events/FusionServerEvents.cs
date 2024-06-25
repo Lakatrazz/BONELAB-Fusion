@@ -66,12 +66,12 @@ namespace LabFusion.Marrow.Integration
             _onServerLeftCached?.Invoke();
         }
 
-        public static bool IsHost()
+        public bool IsHost()
         {
             return NetworkInfo.IsServer;
         }
 
-        public static bool HasServer()
+        public bool HasServer()
         {
             return NetworkInfo.HasServer;
         }
@@ -80,12 +80,12 @@ namespace LabFusion.Marrow.Integration
 
         public UltEvent onServerLeft;
 
-        public static bool IsHost()
+        public bool IsHost()
         {
             return false;
         }
         
-        public static bool HasServer()
+        public bool HasServer()
         {
             return false;
         }
