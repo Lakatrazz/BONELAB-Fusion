@@ -34,7 +34,7 @@ https://github.com/Lakatrazz/Fusion-Module-Example
 - The source code of [LiteNetLib](https://github.com/RevenantX/LiteNetLib) is included under the MIT License. The full license can be found [here](https://github.com/RevenantX/LiteNetLib/blob/master/LICENSE.txt).
 
 ## Setting up the Source Code
-0. Make sure you have a copy of BONELAB with MelonLoader 0.6.1 installed, and ran at least once.
+0. Make sure you have a copy of BONELAB with MelonLoader 0.6.4 installed, and ran at least once.
 1. Clone the git repo into a folder.
 2. Setup a "managed" folder in the "LabFusion/dependencies" folder.
 3. Drag the "Il2CppAssemblies", "Managed", and "net6" folders from the MelonLoader folder in your game directory into the folder.
