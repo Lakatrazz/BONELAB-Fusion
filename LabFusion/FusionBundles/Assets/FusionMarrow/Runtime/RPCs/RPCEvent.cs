@@ -59,11 +59,14 @@ namespace LabFusion.Marrow.Integration
             HashTable.AddComponent(hash, this);
         }
 
+        private void OnDestroy()
+        {
+            HashTable.RemoveComponent(this);
+        }
+
         public void Receive()
         {
             _onEventReceivedCached?.Invoke();
-
-            HashTable.RemoveComponent(this);
         }
 
         public bool Invoke()
