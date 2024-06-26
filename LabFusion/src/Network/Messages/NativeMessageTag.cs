@@ -142,5 +142,8 @@ public static class NativeMessageTag
         // Point items
         PointItemEquipState = 206,
         PointItemTrigger = 207,
-        PointItemTriggerValue = 208;
+        PointItemTriggerValue = 208,
+
+        // RPC
+        RPCEvent = 209;
 }

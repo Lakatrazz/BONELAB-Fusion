@@ -190,7 +190,8 @@
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Cosmetics\AvatarCosmeticPoint.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Cosmetics\CosmeticRoot.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Cosmetics\RigPoint.cs" />
-    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Events\FusionServerEvents.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Events\ServerEvents.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\RPCs\RPCEvent.cs" />
   </ItemGroup>
 
   <ItemGroup>

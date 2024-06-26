@@ -12,29 +12,29 @@ public class NetworkPropCreateData : IFusionSerializable
     public const int Size = sizeof(byte) + sizeof(ushort);
 
     public byte ownerId;
-    public MarrowEntityHelper.EntityLookupData lookupData;
+    public ComponentHashData hashData;
     public ushort entityId;
 
     public void Serialize(FusionWriter writer)
     {
         writer.Write(ownerId);
-        writer.Write(lookupData);
+        writer.Write(hashData);
         writer.Write(entityId);
     }
 
     public void Deserialize(FusionReader reader)
     {
         ownerId = reader.ReadByte();
-        lookupData = reader.ReadFusionSerializable<MarrowEntityHelper.EntityLookupData>();
+        hashData = reader.ReadFusionSerializable<ComponentHashData>();
         entityId = reader.ReadUInt16();
     }
 
-    public static NetworkPropCreateData Create(byte ownerId, MarrowEntityHelper.EntityLookupData lookupData, ushort entityId)
+    public static NetworkPropCreateData Create(byte ownerId, ComponentHashData hashData, ushort entityId)
     {
         return new NetworkPropCreateData()
         {
             ownerId = ownerId,
-            lookupData = lookupData,
+            hashData = hashData,
             entityId = entityId,
         };
     }
@@ -50,7 +50,7 @@ public class NetworkPropCreateMessage : FusionMessageHandler
         using FusionReader reader = FusionReader.Create(bytes);
         var data = reader.ReadFusionSerializable<NetworkPropCreateData>();
 
-        var marrowEntity = MarrowEntityHelper.GetEntityFromLookup(data.lookupData);
+        var marrowEntity = MarrowEntityHelper.GetEntityFromData(data.hashData);
 
         // If this is handled by the server, broadcast the prop creation
         if (isServerHandled)

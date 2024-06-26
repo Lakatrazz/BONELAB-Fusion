@@ -21,10 +21,10 @@ namespace LabFusion.Marrow.Integration
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #endif
-    public class FusionServerEvents : MonoBehaviour
+    public class ServerEvents : MonoBehaviour
     {
 #if MELONLOADER
-        public FusionServerEvents(IntPtr intPtr) : base(intPtr) { }
+        public ServerEvents(IntPtr intPtr) : base(intPtr) { }
 
         public Il2CppReferenceField<UltEvent> onServerJoined;
 

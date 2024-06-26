@@ -25,9 +25,9 @@ public static class PropSender
         }
 
         var marrowEntity = prop.MarrowEntity;
-        var lookupData = MarrowEntityHelper.GetLookupFromEntity(marrowEntity);
+        var hashData = MarrowEntityHelper.GetDataFromEntity(marrowEntity);
 
-        if (lookupData == null)
+        if (hashData == null)
         {
             return;
         }
@@ -35,7 +35,7 @@ public static class PropSender
         using var writer = FusionWriter.Create(NetworkPropCreateData.Size);
         var networkEntity = prop.NetworkEntity;
 
-        var data = NetworkPropCreateData.Create(networkEntity.OwnerId, lookupData, networkEntity.Id);
+        var data = NetworkPropCreateData.Create(networkEntity.OwnerId, hashData, networkEntity.Id);
         writer.Write(data);
 
         using var message = FusionMessage.Create(NativeMessageTag.NetworkPropCreate, writer);
@@ -115,15 +115,15 @@ public static class PropSender
                 return;
             }
 
-            var lookupData = MarrowEntityHelper.GetLookupFromEntity(marrowEntity);
+            var hashData = MarrowEntityHelper.GetDataFromEntity(marrowEntity);
 
-            if (lookupData == null)
+            if (hashData == null)
             {
                 return;
             }
 
             using var writer = FusionWriter.Create(NetworkPropCreateData.Size);
-            var data = NetworkPropCreateData.Create(PlayerIdManager.LocalSmallId, lookupData, newEntity.Id);
+            var data = NetworkPropCreateData.Create(PlayerIdManager.LocalSmallId, hashData, newEntity.Id);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.NetworkPropCreate, writer);

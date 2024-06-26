@@ -8,53 +8,13 @@ namespace LabFusion.Marrow;
 
 public static class MarrowEntityHelper
 {
-    public class EntityLookupData : IFusionSerializable
+    public static MarrowEntity GetEntityFromData(ComponentHashData data)
     {
-        public int hash;
-        public int index;
-
-        public void Serialize(FusionWriter writer)
-        {
-            writer.Write(hash);
-            writer.Write(index);
-        }
-
-        public void Deserialize(FusionReader reader)
-        {
-            hash = reader.ReadInt32();
-            index = reader.ReadInt32();
-        }
+        return MarrowEntityPatches.HashTable.GetComponentFromData(data);
     }
 
-    public static MarrowEntity GetEntityFromLookup(EntityLookupData data)
+    public static ComponentHashData GetDataFromEntity(MarrowEntity entity)
     {
-        if (!MarrowEntityPatches.HashToEntities.TryGetValue(data.hash, out var entities))
-        {
-            return null;
-        }
-
-        if (data.index >= entities.Count || data.index < 0)
-        {
-            return null;
-        }
-
-        return entities[data.index];
-    }
-
-    public static EntityLookupData GetLookupFromEntity(MarrowEntity entity)
-    {
-        if (!MarrowEntityPatches.EntityToHash.TryGetValue(entity, out var hash))
-        {
-            return null;
-        }
-
-        var list = MarrowEntityPatches.HashToEntities[hash];
-        var index = list.FindIndex((e) => e == entity);
-
-        return new EntityLookupData()
-        {
-            hash = hash,
-            index = index,
-        };
+        return MarrowEntityPatches.HashTable.GetDataFromComponent(entity);
     }
 }
