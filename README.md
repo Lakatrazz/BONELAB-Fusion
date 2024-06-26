@@ -4,6 +4,9 @@ A multiplayer mod for BONELAB featuring support for all platforms.
 
 ![](https://i.imgur.com/1ZpMfei.png)
 
+## Documentation
+For source code setup, documentation, help with Marrow SDK integration, and more, check out [the wiki](https://github.com/Lakatrazz/BONELAB-Fusion/wiki).
+
 ## Networking
 This mod is networked and built around Steam, but the networking system can be swapped out using a Networking Layer.
 
