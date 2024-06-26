@@ -36,14 +36,6 @@ https://github.com/Lakatrazz/Fusion-Module-Example
 - The source code of [Steamworks.NET](https://github.com/rlabrecque/Steamworks.NET) is used partially under the MIT License. The full license can be found [here](https://github.com/rlabrecque/Steamworks.NET/blob/master/LICENSE.txt).
 - The source code of [LiteNetLib](https://github.com/RevenantX/LiteNetLib) is included under the MIT License. The full license can be found [here](https://github.com/RevenantX/LiteNetLib/blob/master/LICENSE.txt).
 
-## Setting up the Source Code
-0. Make sure you have a copy of BONELAB with MelonLoader 0.6.4 installed, and ran at least once.
-1. Clone the git repo into a folder.
-2. Setup a "managed" folder in the "LabFusion/dependencies" folder.
-3. Drag the "Il2CppAssemblies", "Managed", and "net6" folders from the MelonLoader folder in your game directory into the folder.
-4. Drag the most recent functional version of BoneLib into the "LabFusion/dependencies" folder.
-5. You're done!
-
 ## Disclaimer
 
 #### THIS PROJECT IS NOT AFFILIATED WITH ANY OTHER MULTIPLAYER MODS OR STRESS LEVEL ZERO! This is its own standalone mod and shares no code with others, any similarities are coincidental!
