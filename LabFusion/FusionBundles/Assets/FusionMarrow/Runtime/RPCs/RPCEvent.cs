@@ -20,6 +20,8 @@ namespace LabFusion.Marrow.Integration
 {
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
+#else
+    [HelpURL("https://github.com/Lakatrazz/BONELAB-Fusion/wiki/Remote-Procedure-Calls#rpc-event")]
 #endif
     public class RPCEvent : MonoBehaviour
     {
