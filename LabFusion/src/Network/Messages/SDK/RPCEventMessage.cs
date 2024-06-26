@@ -8,6 +8,12 @@ public static class RPCEventSender
 {
     public static bool Invoke(RPCEvent rpcEvent) 
     {
+        // Make sure we have a server
+        if (!NetworkInfo.HasServer)
+        {
+            return false;
+        }
+
         var target = (RPCEvent.RPCTarget)rpcEvent.target.Get();
 
         // If the target is to clients, but we aren't the server, we can't send the message
