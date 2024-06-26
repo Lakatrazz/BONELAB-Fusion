@@ -15,7 +15,7 @@ MonoBehaviour:
   m_GroupName: FusionContent_Spawnables
   m_Data:
     m_SerializedData: []
-  m_GUID: 4522f92e28a7f8a4da90ab1e29f63b9a
+  m_GUID: 7c43e05ac2c193d40984a393d906924e
   m_SerializeEntries:
   - m_GUID: 6d0197f34937bb849b28d98d27baedd6
     m_Address: Spawnable/BitMart

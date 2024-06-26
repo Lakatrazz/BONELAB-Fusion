@@ -1,41 +1,35 @@
-﻿using System.Runtime.Serialization.Formatters.Binary;
+﻿using Newtonsoft.Json;
 using LabFusion.Utilities;
 
 namespace LabFusion.Data
 {
     public static class DataSaver
     {
-        public static void WriteBinary(string path, object value, BinaryFormatter formatter = null)
+        public static void WriteJson(string path, object value)
         {
-            formatter ??= new BinaryFormatter();
-
             string fullPath = PersistentData.GetPath(path);
             string directoryName = Path.GetDirectoryName(fullPath);
 
             if (!Directory.Exists(directoryName))
                 Directory.CreateDirectory(directoryName);
 
-            FileStream file = File.Create(fullPath);
+            string jsonText = JsonConvert.SerializeObject(value, Formatting.Indented);
 
-            formatter.Serialize(file, value);
-
-            file.Close();
+            File.WriteAllText(fullPath, jsonText);
         }
 
-        public static T ReadBinary<T>(string path, BinaryFormatter formatter = null)
+        public static T ReadJson<T>(string path)
         {
-            formatter ??= new BinaryFormatter();
-
             string fullPath = PersistentData.GetPath(path);
 
             if (!File.Exists(fullPath))
                 return default;
 
-            FileStream file;
+            string jsonText;
 
             try
             {
-                file = File.Open(fullPath, FileMode.Open);
+                jsonText = File.ReadAllText(fullPath);
             }
             catch (UnauthorizedAccessException e)
             {
@@ -45,13 +39,12 @@ namespace LabFusion.Data
 
             try
             {
-                T obj = (T)formatter.Deserialize(file);
-                file.Close();
+                T obj = (T)JsonConvert.DeserializeObject(jsonText);
                 return obj;
             }
             catch
             {
-                file.Close();
+                File.Delete(fullPath);
                 return default;
             }
         }
