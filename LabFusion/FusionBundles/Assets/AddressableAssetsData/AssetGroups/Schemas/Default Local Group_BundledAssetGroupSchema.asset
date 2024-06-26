@@ -34,7 +34,7 @@ MonoBehaviour:
   m_RedirectLimit: -1
   m_RetryCount: 0
   m_BuildPath:
-    m_Id: BuiltPallets/Android/Lakatrazz.FusionContent
+    m_Id: BuiltPallets/StandaloneWindows64/Lakatrazz.FusionContent
   m_LoadPath:
     m_Id: 'PALLET_BARCODE:Lakatrazz.FusionContent:'
   m_BundleMode: 0
