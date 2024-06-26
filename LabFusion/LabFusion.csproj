@@ -209,6 +209,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>dependencies\managed\net6\0Harmony.dll</HintPath>
     </Reference>
@@ -289,6 +293,9 @@
     </Reference>
     <Reference Include="MelonLoader">
       <HintPath>dependencies\managed\net6\MelonLoader.dll</HintPath>
+    </Reference>
+    <Reference Include="SLZ.ModIO">
+      <HintPath>..\..\Steam\steamapps\common\BONELAB\MelonLoader\Dependencies\Il2CppAssemblyGenerator\Cpp2IL\cpp2il_out\SLZ.ModIO.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms">
       <HintPath>dependencies\managed\Managed\System.Windows.Forms.dll</HintPath>
