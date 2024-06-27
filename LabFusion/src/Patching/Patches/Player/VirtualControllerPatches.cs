@@ -20,9 +20,13 @@ namespace LabFusion.Patching
             {
                 var hand = pair.hand;
 
-                if (hand != null && NetworkPlayerManager.HasExternalPlayer(hand.manager))
+                if (hand != null && hand.manager != null && NetworkPlayerManager.HasExternalPlayer(hand.manager))
                 {
                     return false;
+                }
+                else if (hand.manager == null)
+                {
+                    return true;
                 }
             }
 
