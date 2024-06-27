@@ -895,51 +895,51 @@
   <ItemGroup>
     <Reference Include="0Harmony, Version=2.9.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\0Harmony.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="BoneLib, Version=1.3.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\dependencies\BoneLib.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\Mods\BoneLib.dll</HintPath>
     </Reference>
     <Reference Include="Il2Cppmscorlib, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Il2Cppmscorlib.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Il2Cppmscorlib.dll</HintPath>
     </Reference>
     <Reference Include="Il2CppSystem, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Il2CppSystem.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppSystem.dll</HintPath>
     </Reference>
     <Reference Include="Il2CppSystem.Core, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Il2CppSystem.Core.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppSystem.Core.dll</HintPath>
     </Reference>
     <Reference Include="MelonLoader, Version=0.5.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\MelonLoader.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\MelonLoader.dll</HintPath>
     </Reference>
     <Reference Include="SLZ.Algorithms, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\SLZ.Algorithms.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\SLZ.Algorithms.dll</HintPath>
     </Reference>
     <Reference Include="SLZ.Marrow, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\SLZ.Marrow.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\SLZ.Marrow.dll</HintPath>
     </Reference>
     <Reference Include="SLZ.Marrow.SDK, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\SLZ.Marrow.SDK.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\SLZ.Marrow.SDK.dll</HintPath>
     </Reference>
     <Reference Include="SLZ.Serialize, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\SLZ.Serialize.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\SLZ.Serialize.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -964,7 +964,7 @@
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Json">
-      <HintPath>Core\managed\System.Json.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\System.Json.dll</HintPath>
     </Reference>
     <Reference Include="System.Management" />
     <Reference Include="System.Messaging" />
@@ -972,13 +972,13 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\System.Net.Http.Formatting.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\System.Numerics.Vectors.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\System.Numerics.Vectors.dll</HintPath>
     </Reference>
     <Reference Include="System.Reflection.Context" />
     <Reference Include="System.Runtime.Caching" />
@@ -992,7 +992,7 @@
     <Reference Include="System.ServiceModel.Discovery" />
     <Reference Include="System.ServiceModel.Internals, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\System.ServiceModel.Internals.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\System.ServiceModel.Internals.dll</HintPath>
     </Reference>
     <Reference Include="System.ServiceModel.Routing" />
     <Reference Include="System.ServiceModel.Web" />
@@ -1005,31 +1005,31 @@
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Extensions.Design" />
     <Reference Include="System.Web.Http">
-      <HintPath>Core\managed\System.Web.Http.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\System.Web.Http.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Http.SelfHost">
-      <HintPath>Core\managed\System.Web.Http.SelfHost.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\System.Web.Http.SelfHost.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Http.WebHost">
-      <HintPath>Core\managed\System.Web.Http.WebHost.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\System.Web.Http.WebHost.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Mvc">
-      <HintPath>Core\managed\System.Web.Mvc.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\System.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Razor">
-      <HintPath>Core\managed\System.Web.Razor.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\System.Web.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.RegularExpressions" />
     <Reference Include="System.Web.Routing" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Web.WebPages">
-      <HintPath>Core\managed\System.Web.WebPages.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\System.Web.WebPages.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages.Deployment">
-      <HintPath>Core\managed\System.Web.WebPages.Deployment.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\System.Web.WebPages.Deployment.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages.Razor">
-      <HintPath>Core\managed\System.Web.WebPages.Razor.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
@@ -1037,447 +1037,447 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="UltEvents">
-      <HintPath>Core\managed\UltEvents.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UltEvents.dll</HintPath>
     </Reference>
     <Reference Include="UnhollowerBaseLib, Version=0.4.18.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnhollowerBaseLib.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnhollowerBaseLib.dll</HintPath>
     </Reference>
     <Reference Include="UnhollowerRuntimeLib, Version=0.4.10.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnhollowerRuntimeLib.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnhollowerRuntimeLib.dll</HintPath>
     </Reference>
     <Reference Include="UniTask, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UniTask.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UniTask.dll</HintPath>
     </Reference>
     <Reference Include="UniTask.Addressables, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UniTask.Addressables.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UniTask.Addressables.dll</HintPath>
     </Reference>
     <Reference Include="UniTask.Linq, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UniTask.Linq.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UniTask.Linq.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Addressables, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.Addressables.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.Addressables.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Animation.Rigging, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.Animation.Rigging.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.Animation.Rigging.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Barracuda, Version=2.3.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.Barracuda.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.Barracuda.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Barracuda.BurstBLAS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.Barracuda.BurstBLAS.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.Barracuda.BurstBLAS.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Burst, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.Burst.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.Burst.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Burst.Unsafe, Version=4.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.Burst.Unsafe.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.Burst.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Collections, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.Collections.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.Collections.dll</HintPath>
     </Reference>
     <Reference Include="Unity.InputSystem, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.InputSystem.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.InputSystem.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Mathematics, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.Mathematics.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="Unity.ML-Agents, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.ML-Agents.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.ML-Agents.dll</HintPath>
     </Reference>
     <Reference Include="Unity.ML-Agents.CommunicatorObjects, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.ML-Agents.CommunicatorObjects.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.ML-Agents.CommunicatorObjects.dll</HintPath>
     </Reference>
     <Reference Include="Unity.ProBuilder">
-      <HintPath>Core\managed\Unity.ProBuilder.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.ProBuilder.dll</HintPath>
     </Reference>
     <Reference Include="Unity.ProBuilder.KdTree">
-      <HintPath>Core\managed\Unity.ProBuilder.KdTree.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.ProBuilder.KdTree.dll</HintPath>
     </Reference>
     <Reference Include="Unity.ProBuilder.Poly2Tri">
-      <HintPath>Core\managed\Unity.ProBuilder.Poly2Tri.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.ProBuilder.Poly2Tri.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Profiling.Core, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.Profiling.Core.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.Profiling.Core.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipeline.Universal.ShaderLibrary, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.RenderPipeline.Universal.ShaderLibrary.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.RenderPipeline.Universal.ShaderLibrary.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.Core.Runtime, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.Universal.Runtime, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.RenderPipelines.Universal.Runtime.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.RenderPipelines.Universal.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Unity.RenderPipelines.Universal.StressLevelZero.VRS">
-      <HintPath>Core\managed\Unity.RenderPipelines.Universal.StressLevelZero.VRS.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.RenderPipelines.Universal.StressLevelZero.VRS.dll</HintPath>
     </Reference>
     <Reference Include="Unity.ResourceManager, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.ResourceManager.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.ResourceManager.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Splines, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.Splines.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.Splines.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Splines.Examples, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.Splines.Examples.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.Splines.Examples.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.TextMeshPro.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Timeline, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.Timeline.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.Timeline.dll</HintPath>
     </Reference>
     <Reference Include="Unity.XR.ARFoundation">
-      <HintPath>Core\managed\Unity.XR.ARFoundation.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.XR.ARFoundation.dll</HintPath>
     </Reference>
     <Reference Include="Unity.XR.ARSubsystems">
-      <HintPath>Core\managed\Unity.XR.ARSubsystems.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.XR.ARSubsystems.dll</HintPath>
     </Reference>
     <Reference Include="Unity.XR.CoreUtils">
-      <HintPath>Core\managed\Unity.XR.CoreUtils.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.XR.CoreUtils.dll</HintPath>
     </Reference>
     <Reference Include="Unity.XR.Interaction.Toolkit">
-      <HintPath>Core\managed\Unity.XR.Interaction.Toolkit.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.XR.Interaction.Toolkit.dll</HintPath>
     </Reference>
     <Reference Include="Unity.XR.Management, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.XR.Management.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.XR.Management.dll</HintPath>
     </Reference>
     <Reference Include="Unity.XR.MockHMD, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.XR.MockHMD.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.XR.MockHMD.dll</HintPath>
     </Reference>
     <Reference Include="Unity.XR.Oculus, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.XR.Oculus.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.XR.Oculus.dll</HintPath>
     </Reference>
     <Reference Include="Unity.XR.OpenXR, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.XR.OpenXR.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.XR.OpenXR.dll</HintPath>
     </Reference>
     <Reference Include="Unity.XR.OpenXR.Features.ConformanceAutomation, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.XR.OpenXR.Features.ConformanceAutomation.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.XR.OpenXR.Features.ConformanceAutomation.dll</HintPath>
     </Reference>
     <Reference Include="Unity.XR.OpenXR.Features.MockRuntime, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.XR.OpenXR.Features.MockRuntime.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.XR.OpenXR.Features.MockRuntime.dll</HintPath>
     </Reference>
     <Reference Include="Unity.XR.OpenXR.Features.OculusQuestSupport, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.XR.OpenXR.Features.OculusQuestSupport.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.XR.OpenXR.Features.OculusQuestSupport.dll</HintPath>
     </Reference>
     <Reference Include="Unity.XR.OpenXR.Features.RuntimeDebugger, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\Unity.XR.OpenXR.Features.RuntimeDebugger.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\Unity.XR.OpenXR.Features.RuntimeDebugger.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AccessibilityModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.AccessibilityModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.AccessibilityModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.AIModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.AIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AndroidJNIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.AndroidJNIModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.AndroidJNIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.AnimationModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.AnimationModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ARModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.ARModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.ARModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.AssetBundleModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.AudioModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.AudioModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ClothModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.ClothModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.ClothModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ClusterInputModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.ClusterInputModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.ClusterInputModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ClusterRendererModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.ClusterRendererModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.ClusterRendererModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CrashReportingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.CrashReportingModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.CrashReportingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.DirectorModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.DirectorModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.DirectorModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.DSPGraphModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.DSPGraphModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.DSPGraphModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.GameCenterModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.GameCenterModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.GameCenterModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.GIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.GIModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.GIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.GridModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.GridModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.GridModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.HotReloadModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.HotReloadModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.HotReloadModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.Il2CppAssetBundleManager, Version=0.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.Il2CppAssetBundleManager.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.Il2CppAssetBundleManager.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.Il2CppImageConversionManager, Version=0.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.Il2CppImageConversionManager.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.Il2CppImageConversionManager.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ImageConversionModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.ImageConversionModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.ImageConversionModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.InputLegacyModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.InputLegacyModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.InputModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.InputModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.InputModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.JSONSerializeModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.JSONSerializeModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.JSONSerializeModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.LocalizationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.LocalizationModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.LocalizationModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.NVIDIAModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.NVIDIAModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.NVIDIAModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ParticleSystemModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.ParticleSystemModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PerformanceReportingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.PerformanceReportingModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.PerformanceReportingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.Physics2DModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.Physics2DModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.Physics2DModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.PhysicsModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ProfilerModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.ProfilerModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.ProfilerModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ScreenCaptureModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.ScreenCaptureModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.ScreenCaptureModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.SharedInternalsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.SharedInternalsModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.SharedInternalsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.SpatialTracking, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.SpatialTracking.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.SpatialTracking.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.SpriteMaskModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.SpriteMaskModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.SpriteMaskModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.SpriteShapeModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.SpriteShapeModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.SpriteShapeModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.StreamingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.StreamingModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.StreamingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.SubstanceModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.SubstanceModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.SubstanceModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.SubsystemsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.SubsystemsModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.SubsystemsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TerrainModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.TerrainModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.TerrainModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TerrainPhysicsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.TerrainPhysicsModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.TerrainPhysicsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TextCoreFontEngineModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.TextCoreFontEngineModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.TextCoreFontEngineModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TextCoreTextEngineModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.TextCoreTextEngineModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.TextCoreTextEngineModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.TextRenderingModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TilemapModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.TilemapModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.TilemapModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TLSModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.TLSModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.TLSModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UIElementsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.UIElementsModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.UIElementsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UIElementsNativeModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.UIElementsNativeModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.UIElementsNativeModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.UIModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.UIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UmbraModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.UmbraModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.UmbraModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UNETModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.UNETModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.UNETModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityAnalyticsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.UnityAnalyticsModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.UnityAnalyticsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityConnectModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.UnityConnectModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.UnityConnectModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityCurlModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.UnityCurlModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.UnityCurlModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityTestProtocolModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.UnityTestProtocolModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.UnityTestProtocolModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestAudioModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.UnityWebRequestModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestTextureModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityWebRequestWWWModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.VehiclesModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.VehiclesModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.VehiclesModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.VFXModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.VFXModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.VFXModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.VideoModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.VideoModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.VideoModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.VirtualTexturingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.VirtualTexturingModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.VirtualTexturingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.VRModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.VRModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.VRModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.WindModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.WindModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.WindModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.XRModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\UnityEngine.XRModule.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\UnityEngine.XRModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
