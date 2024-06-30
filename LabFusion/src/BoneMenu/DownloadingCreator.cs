@@ -14,7 +14,7 @@ public static partial class BoneMenuCreator
     public static void CreateDownloadingMenu(MenuCategory category)
     {
         var downloadingCategory = category.CreateCategory("Downloading", Color.cyan);
-
+        
         _fusionContentButton = downloadingCategory.CreateFunctionElement("Download Fusion Content", Color.white, InstallContent);
         _fusionCosmeticsButton = downloadingCategory.CreateFunctionElement("Download Fusion Cosmetics", Color.white, InstallCosmetics);
     }
