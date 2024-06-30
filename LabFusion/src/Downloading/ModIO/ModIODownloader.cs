@@ -38,6 +38,13 @@ public static class ModIODownloader
 
     public static ModTransaction GetTransaction(int modId)
     {
+        // Check if the current transaction is for this mod
+        if (IsDownloading && CurrentTransaction.modFile.ModId == modId)
+        {
+            return CurrentTransaction;
+        }
+
+        // Look through queued transactions
         return QueuedTransactions.FirstOrDefault((transaction) => transaction.modFile.ModId == modId);
     }
 
