@@ -42,7 +42,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     private bool _isCulled = false;
 
-    private List<IEntityComponentExtender> _componentExtenders = null;
+    private HashSet<IEntityComponentExtender> _componentExtenders = null;
 
     public EntityPose EntityPose => _pose;
 

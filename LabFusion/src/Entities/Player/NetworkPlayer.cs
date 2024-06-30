@@ -764,7 +764,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         IMarrowEntityExtender.Cache.Remove(MarrowEntity);
     }
 
-    private List<IEntityComponentExtender> _componentExtenders = null;
+    private HashSet<IEntityComponentExtender> _componentExtenders = null;
 
     private void RegisterComponents(params GameObject[] parents)
     {

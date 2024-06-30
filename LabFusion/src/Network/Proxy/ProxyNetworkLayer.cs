@@ -493,15 +493,7 @@ namespace LabFusion.Network
         {
             // Create the basic options
             CreateMatchmakingMenu(category);
-            BoneMenuCreator.CreateGamemodesMenu(category);
-            BoneMenuCreator.CreateSettingsMenu(category);
-            BoneMenuCreator.CreateNotificationsMenu(category);
-            BoneMenuCreator.CreateBanListMenu(category);
-
-#if DEBUG
-            // Debug only (dev tools)
-            BoneMenuCreator.CreateDebugMenu(category);
-#endif
+            BoneMenuCreator.CreateUniversalMenus(category);
         }
 
         // Matchmaking menu

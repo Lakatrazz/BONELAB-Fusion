@@ -290,6 +290,9 @@
     <Reference Include="MelonLoader">
       <HintPath>dependencies\managed\net6\MelonLoader.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>dependencies\managed\Managed\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Forms">
       <HintPath>dependencies\managed\Managed\System.Windows.Forms.dll</HintPath>
     </Reference>
