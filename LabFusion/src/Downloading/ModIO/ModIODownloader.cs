@@ -70,6 +70,10 @@ public static class ModIODownloader
             if (!platform.HasValue)
             {
                 FusionLogger.Warn($"Tried beginning download for mod {modFile.ModId}, but it had no valid platforms!");
+
+                transaction.callback?.Invoke(DownloadCallbackInfo.FailedCallback);
+
+                EndDownload();
                 return;
             }
 
@@ -91,9 +95,19 @@ public static class ModIODownloader
 
         var zipPath = ModDownloadManager.DownloadPath + $"/m{modFile.ModId}f{modFile.FileId}.zip";
 
-        using (var fs = new FileStream(zipPath, FileMode.Create))
+        try
         {
+            using var fs = new FileStream(zipPath, FileMode.Create);
             await stream.CopyToAsync(fs);
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException($"downloading zip from mod {modFile.ModId}", e);
+
+            transaction.callback?.Invoke(DownloadCallbackInfo.FailedCallback);
+
+            EndDownload();
+            return;
         }
 
         // Load the pallet
@@ -102,6 +116,11 @@ public static class ModIODownloader
         // Delete temp zip
         File.Delete(zipPath);
 
+        EndDownload();
+    }
+
+    private static void EndDownload()
+    {
         _currentTransaction = default;
         _isDownloading = false;
     }

@@ -12,6 +12,12 @@ public delegate void DownloadCallback(DownloadCallbackInfo info);
 
 public struct DownloadCallbackInfo
 {
+    public static readonly DownloadCallbackInfo FailedCallback = new()
+    {
+        pallet = null,
+        result = DownloadResult.FAILED,
+    };
+
     public enum DownloadResult
     {
         NONE,
