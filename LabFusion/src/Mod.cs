@@ -109,7 +109,7 @@ public class FusionMod : MelonMod
         // Hook into asset warehouse
         var onReady = () =>
         {
-            CosmeticLoader.LoadAllCosmetics();
+            CosmeticLoader.OnAssetWarehouseReady();
         };
         AssetWarehouse.OnReady(onReady);
 
