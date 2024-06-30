@@ -37,14 +37,14 @@ public static partial class BoneMenuCreator
 
     private static void InstallCosmetics()
     {
-        _fusionContentButton.SetName("Installing Fusion Cosmetics");
+        _fusionCosmeticsButton.SetName("Installing Fusion Cosmetics");
 
         ModTransaction transaction = new()
         {
             modFile = new(ModReferences.FusionCosmeticsId),
             callback = (info) =>
             {
-                _fusionContentButton.SetName("Download Fusion Cosmetics");
+                _fusionCosmeticsButton.SetName("Download Fusion Cosmetics");
             }
         };
 
