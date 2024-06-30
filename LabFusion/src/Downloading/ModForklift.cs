@@ -36,15 +36,45 @@ public static class ModForklift
 
     private static void LoadPallet(PalletShipment shipment)
     {
+        var palletPath = shipment.palletPath;
+
 #if DEBUG
-        FusionLogger.Log($"Loading pallet at path {shipment.palletPath}.");
+        FusionLogger.Log($"Loading pallet at path {palletPath}.");
 #endif
 
         var warehouse = AssetWarehouse.Instance;
-        var palletTask = warehouse.LoadPalletFromFolderAsync(shipment.palletPath, true, null, shipment.modListing);
+        var palletTask = warehouse.LoadPalletFromFolderAsync(palletPath, true, null, shipment.modListing);
 
         var onCompleted = () =>
         {
+            // Get pallet from path
+            Pallet pallet = null;
+            var manifests = AssetWarehouse.Instance.GetPalletManifests();
+
+            foreach (var manifest in manifests)
+            {
+                if (manifest.PalletPath == palletPath)
+                {
+                    pallet = manifest.Pallet;
+                    break;
+                }
+            }
+
+            // Send download notification
+            if (pallet != null)
+            {
+                FusionNotifier.Send(new()
+                {
+                    isPopup = true,
+                    showTitleOnPopup = true,
+                    title = "Download Completed",
+                    type = NotificationType.SUCCESS,
+                    popupLength = 4,
+                    message = $"Finished installing {pallet.Title}!"
+                });
+            }
+
+            // Invoke complete callback
             shipment.onFinished?.Invoke();
         };
         palletTask.GetAwaiter().OnCompleted(onCompleted);
