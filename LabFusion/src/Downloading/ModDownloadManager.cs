@@ -66,7 +66,7 @@ public static class ModDownloadManager
         return string.Empty;
     }
 
-    public static async Task LoadPalletFromZip(string path, int modId, int modFileId, Action onFinished = null)
+    public static async Task LoadPalletFromZip(string path, int modId, int modFileId, DownloadCallback callback = null)
     {
         var fileName = Path.GetFileNameWithoutExtension(path);
         var extractedDirectory = ExportPath + "/" + fileName;
@@ -141,7 +141,7 @@ public static class ModDownloadManager
         {
             palletPath = jsonPath,
             modListing = listing,
-            onFinished = onFinished,
+            callback = callback,
         };
 
         ModForklift.SchedulePalletLoad(shipment);

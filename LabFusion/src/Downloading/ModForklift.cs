@@ -11,7 +11,7 @@ public static class ModForklift
     {
         public string palletPath;
         public ModListing modListing;
-        public Action onFinished;
+        public DownloadCallback callback;
 
         public override readonly int GetHashCode()
         {
@@ -75,7 +75,13 @@ public static class ModForklift
             }
 
             // Invoke complete callback
-            shipment.onFinished?.Invoke();
+            var info = new DownloadCallbackInfo()
+            {
+                pallet = pallet,
+                result = DownloadCallbackInfo.DownloadResult.SUCCEEDED,
+            };
+
+            shipment.callback?.Invoke(info);
         };
         palletTask.GetAwaiter().OnCompleted(onCompleted);
     }

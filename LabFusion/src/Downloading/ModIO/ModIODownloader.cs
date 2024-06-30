@@ -48,7 +48,7 @@ public static class ModIODownloader
         // If this mod is already being downloaded, just forward the download to the existing transaction
         if (existingTransaction != null)
         {
-            existingTransaction.HookDownload(transaction.downloadCallback);
+            existingTransaction.HookDownload(transaction.callback);
             return;
         }
 
@@ -97,7 +97,7 @@ public static class ModIODownloader
         }
 
         // Load the pallet
-        await ModDownloadManager.LoadPalletFromZip(zipPath, modFile.ModId, modFile.FileId.Value, transaction.downloadCallback);
+        await ModDownloadManager.LoadPalletFromZip(zipPath, modFile.ModId, modFile.FileId.Value, transaction.callback);
 
         // Delete temp zip
         File.Delete(zipPath);

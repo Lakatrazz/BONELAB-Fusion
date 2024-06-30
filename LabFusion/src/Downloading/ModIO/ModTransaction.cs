@@ -9,10 +9,10 @@ namespace LabFusion.Downloading.ModIO;
 public class ModTransaction
 {
     public ModIOFile modFile;
-    public Action downloadCallback;
+    public DownloadCallback callback;
 
-    public void HookDownload(Action downloadCallback)
+    public void HookDownload(DownloadCallback callback)
     {
-        this.downloadCallback += downloadCallback;
+        this.callback += callback;
     }
 }
