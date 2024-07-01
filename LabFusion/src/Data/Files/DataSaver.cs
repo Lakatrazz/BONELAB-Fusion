@@ -39,11 +39,13 @@ namespace LabFusion.Data
 
             try
             {
-                T obj = (T)JsonConvert.DeserializeObject(jsonText);
-                return obj;
+                T result = JsonConvert.DeserializeObject<T>(jsonText);
+                return result;
             }
-            catch
+            catch (Exception e)
             {
+                FusionLogger.LogException($"reading save data at {path}", e);
+
                 File.Delete(fullPath);
                 return default;
             }

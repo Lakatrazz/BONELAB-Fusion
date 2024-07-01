@@ -1,5 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Extensions;
+using LabFusion.Utilities;
 using LabFusion.XML;
 using System.Xml.Linq;
 
