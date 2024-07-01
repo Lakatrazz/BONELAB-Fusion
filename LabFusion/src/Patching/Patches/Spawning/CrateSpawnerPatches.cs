@@ -59,6 +59,8 @@ public static class CrateSpawnerAsyncPatches
         CurrentlySpawning.RemoveWhere((found) => found == spawner);
 
         // Invoke spawn events
+        spawner.onSpawnEvent?.Invoke(spawner, go);
+
         var poolee = Poolee.Cache.Get(go);
 
         spawner.OnPooleeSpawn(go);
