@@ -49,7 +49,7 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
 
     private NetworkEntityDelegate _registeredCallback = null;
 
-    private readonly List<IEntityExtender> _extenders = new();
+    private readonly HashSet<IEntityExtender> _extenders = new();
 
     public void ConnectExtender(IEntityExtender extender)
     {

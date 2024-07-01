@@ -9,91 +9,92 @@ using Il2CppSLZ.Marrow.Pool;
 
 using UnityEngine;
 
-namespace LabFusion.Patching
+namespace LabFusion.Patching;
+
+// SpawnSpawnableAsync is used by the regular SpawnSpawnable as well, so we don't need to patch that
+[HarmonyPatch(typeof(CrateSpawner._SpawnSpawnableAsync_d__23))]
+public static class CrateSpawnerAsyncPatches
 {
-    // SpawnSpawnableAsync is used by the regular SpawnSpawnable as well, so we don't need to patch that
-    [HarmonyPatch(typeof(CrateSpawner._SpawnSpawnableAsync_d__23))]
-    public static class CrateSpawnerAsyncPatches
+    public static readonly HashSet<CrateSpawner> CurrentlySpawning = new();
+
+    private static void NetworkedSpawnSpawnable(CrateSpawner spawner)
     {
-        public static readonly List<CrateSpawner> SpawningList = new();
+        var spawnable = spawner._spawnable;
+        var transform = spawner.transform;
 
-        private static void NetworkedSpawnSpawnable(CrateSpawner spawner)
+        NetworkAssetSpawner.Spawn(new NetworkAssetSpawner.SpawnRequestInfo()
         {
-            var spawnable = spawner._spawnable;
-            var transform = spawner.transform;
-
-            NetworkAssetSpawner.Spawn(new NetworkAssetSpawner.SpawnRequestInfo()
+            spawnable = spawnable,
+            position = transform.position,
+            rotation = transform.rotation,
+            spawnCallback = (info) =>
             {
-                spawnable = spawnable,
-                position = transform.position,
-                rotation = transform.rotation,
-                spawnCallback = (info) =>
-                {
-                    OnNetworkSpawn(spawner, info);
-                },
-            });
+                OnNetworkSpawn(spawner, info);
+            },
+        });
 
-            SpawningList.Add(spawner);
+        CurrentlySpawning.Add(spawner);
+    }
+
+    private static void OnNetworkSpawn(CrateSpawner spawner, NetworkAssetSpawner.SpawnCallbackInfo info)
+    {
+        var spawned = info.spawned;
+        spawner.OnFinishNetworkSpawn(spawned);
+
+        // Make sure we actually have a network entity
+        if (info.entity == null)
+        {
+            return;
         }
 
-        private static void OnNetworkSpawn(CrateSpawner spawner, NetworkAssetSpawner.SpawnCallbackInfo info)
+        // Send spawn message
+        var spawnedId = info.entity.Id;
+
+        SpawnSender.SendCratePlacerEvent(spawner, spawnedId);
+    }
+
+    public static void OnFinishNetworkSpawn(this CrateSpawner spawner, GameObject go)
+    {
+        // Remove from global spawning check
+        CurrentlySpawning.RemoveWhere((found) => found == spawner);
+
+        // Invoke spawn events
+        spawner.onSpawnEvent?.Invoke(spawner, go);
+
+        var poolee = Poolee.Cache.Get(go);
+
+        spawner.OnPooleeSpawn(go);
+
+        poolee.OnDespawnDelegate += (Action<GameObject>)spawner.OnPooleeDespawn;
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(CrateSpawner._SpawnSpawnableAsync_d__23.MoveNext))]
+    public static bool MoveNext(CrateSpawner._SpawnSpawnableAsync_d__23 __instance)
+    {
+        // If there is NO server, the spawner can function as normal.
+        if (!NetworkInfo.HasServer)
         {
-            var spawned = info.spawned;
-            spawner.OnFinishNetworkSpawn(spawned);
-
-            // Make sure we actually have a network entity
-            if (info.entity == null)
-            {
-                return;
-            }
-
-            // Send spawn message
-            var spawnedId = info.entity.Id;
-
-            SpawnSender.SendCratePlacerEvent(spawner, spawnedId);
+            return true;
         }
 
-        public static void OnFinishNetworkSpawn(this CrateSpawner spawner, GameObject go)
+        // If we aren't the server, don't allow a crate spawn
+        if (!NetworkInfo.IsServer)
         {
-            // Remove from global spawning check
-            SpawningList.RemoveAll((found) => found == spawner);
-
-            // Invoke spawn events
-            var poolee = Poolee.Cache.Get(go);
-
-            spawner.OnPooleeSpawn(go);
-
-            poolee.OnDespawnDelegate += (Action<GameObject>)spawner.OnPooleeDespawn;
-        }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(CrateSpawner._SpawnSpawnableAsync_d__23.MoveNext))]
-        public static bool MoveNext(CrateSpawner._SpawnSpawnableAsync_d__23 __instance)
-        {
-            // If there is NO server, the spawner can function as normal.
-            if (!NetworkInfo.HasServer)
-            {
-                return true;
-            }
-
-            // If we aren't the server, don't allow a crate spawn
-            if (!NetworkInfo.IsServer)
-            {
-                return false;
-            }
-
-            var spawner = __instance.__4__this;
-
-            // Make sure this isn't already spawning
-            if (SpawningList.Any((found) => found == spawner))
-            {
-                return false;
-            }
-
-            // Otherwise, manually sync this spawn over the network
-            NetworkedSpawnSpawnable(spawner);
-
             return false;
         }
+
+        var spawner = __instance.__4__this;
+
+        // Make sure this isn't already spawning
+        if (CurrentlySpawning.Any((found) => found == spawner))
+        {
+            return false;
+        }
+
+        // Otherwise, manually sync this spawn over the network
+        NetworkedSpawnSpawnable(spawner);
+
+        return false;
     }
 }

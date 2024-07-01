@@ -8,8 +8,8 @@ namespace LabFusion.Entities;
 
 public class EntityUpdateList<TUpdatable>
 {
-    private readonly List<TUpdatable> _entities = new();
-    public List<TUpdatable> Entities => _entities;
+    private readonly HashSet<TUpdatable> _entities = new();
+    public HashSet<TUpdatable> Entities => _entities;
 
     public void Register(TUpdatable entity)
     {

@@ -17,11 +17,40 @@ public static class CosmeticLoader
         "Cosmetic",
     };
 
+    public static void OnAssetWarehouseReady()
+    {
+        // Load initial cosmetics
+        LoadAllCosmetics();
+
+        // Hook pallet load event
+        var onPalletAdded = OnPalletAdded;
+        AssetWarehouse.Instance.OnPalletAdded += onPalletAdded;
+    }
+
+    private static void OnPalletAdded(string barcode)
+    {
+        var hasPallet = AssetWarehouse.Instance.TryGetPallet(barcode, out var pallet);
+
+        if (!hasPallet)
+        {
+            return;
+        }
+
+        var cosmeticCrates = CrateFilterer.FilterByTags<SpawnableCrate>(pallet, RequiredTags);
+
+        LoadAllCosmetics(cosmeticCrates);
+    }
+
     public static void LoadAllCosmetics()
     {
         var cosmeticCrates = CrateFilterer.FilterByTags<SpawnableCrate>(RequiredTags);
 
-        foreach (var crate in cosmeticCrates)
+        LoadAllCosmetics(cosmeticCrates);
+    }
+
+    public static void LoadAllCosmetics(SpawnableCrate[] crates)
+    {
+        foreach (var crate in crates)
         {
             Action<GameObject> onLoaded = (go) =>
             {
@@ -34,6 +63,12 @@ public static class CosmeticLoader
 
     private static void OnCrateAssetLoaded(GameObject gameObject, SpawnableCrate crate)
     {
+        // If an item with this barcode is already loaded, we can just skip it
+        if (PointItemManager.TryGetPointItem(crate.Barcode, out _))
+        {
+            return;
+        }
+
         var cosmeticRoot = gameObject.GetComponent<CosmeticRoot>();
 
         if (cosmeticRoot == null)

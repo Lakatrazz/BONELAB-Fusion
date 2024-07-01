@@ -125,7 +125,7 @@ public static class PlayerRepUtilities
         // Using regular Destroy may cause weird effects!
 
         // Set the bone tag to the fusion player tag instead of the default player tag
-        var entity = rigManager.GetComponent<MarrowEntity>();
+        var entity = rigManager.GetComponentInChildren<MarrowEntity>(true);
         entity.Tags.Tags.RemoveAt(0);
         entity.Tags.Tags.Add(FusionBoneTagReferences.FusionPlayerReference);
 

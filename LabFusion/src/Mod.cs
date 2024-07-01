@@ -12,6 +12,7 @@ using LabFusion.Voice;
 using LabFusion.SDK.Lobbies;
 using LabFusion.SDK.Cosmetics;
 using LabFusion.Entities;
+using LabFusion.Downloading.ModIO;
 
 #if DEBUG
 using LabFusion.Debugging;
@@ -108,7 +109,7 @@ public class FusionMod : MelonMod
         // Hook into asset warehouse
         var onReady = () =>
         {
-            CosmeticLoader.LoadAllCosmetics();
+            CosmeticLoader.OnAssetWarehouseReady();
         };
         AssetWarehouse.OnReady(onReady);
 
@@ -250,6 +251,9 @@ public class FusionMod : MelonMod
         // Reset byte counts
         NetworkInfo.BytesDown = 0;
         NetworkInfo.BytesUp = 0;
+
+        // Process mod downloads
+        ModIODownloader.UpdateQueue();
 
         // Update Time before running any functions
         TimeUtilities.OnEarlyUpdate();

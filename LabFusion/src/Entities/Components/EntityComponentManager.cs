@@ -43,9 +43,9 @@ public static class EntityComponentManager
 #endif
     }
 
-    public static List<IEntityComponentExtender> ApplyComponents(NetworkEntity networkEntity, params GameObject[] parents)
+    public static HashSet<IEntityComponentExtender> ApplyComponents(NetworkEntity networkEntity, params GameObject[] parents)
     {
-        var list = new List<IEntityComponentExtender>();
+        var set = new HashSet<IEntityComponentExtender>();
 
         for (var i = 0; i < _lastExtenderIndex; i++)
         {
@@ -55,11 +55,11 @@ public static class EntityComponentManager
 
             if (instance.TryRegister(networkEntity, parents))
             {
-                list.Add(instance);
+                set.Add(instance);
             }
         }
 
-        return list;
+        return set;
     }
 
     private static int _lastExtenderIndex = 0;

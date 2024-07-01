@@ -198,7 +198,7 @@ public static class PointItemManager
     {
         if (PointItemLookup.ContainsKey(item.Barcode))
         {
-            Debug.LogError($"Tried registering PointItem with barcode {item.Barcode}, but that barcode was already registered!");
+            FusionLogger.Error($"Tried registering PointItem with barcode {item.Barcode}, but that barcode was already registered!");
             return;
         }
 

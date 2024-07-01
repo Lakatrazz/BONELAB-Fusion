@@ -332,7 +332,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private void OnUpdateVoiceSource()
     {
         if (!_hasVoice)
+        {
             return;
+        }
 
         // Modify the source settings
         var rm = RigReferences.RigManager;
@@ -364,11 +366,11 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Update the jaw movement
         if (MicrophoneDisabled)
         {
-            _flapper.ClearJaw();
+            JawFlapper.ClearJaw();
         }
         else
         {
-            _flapper.UpdateJaw(_speaker.GetVoiceAmplitude());
+            JawFlapper.UpdateJaw(_speaker.GetVoiceAmplitude());
         }
     }
 
@@ -764,7 +766,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         IMarrowEntityExtender.Cache.Remove(MarrowEntity);
     }
 
-    private List<IEntityComponentExtender> _componentExtenders = null;
+    private HashSet<IEntityComponentExtender> _componentExtenders = null;
 
     private void RegisterComponents(params GameObject[] parents)
     {
