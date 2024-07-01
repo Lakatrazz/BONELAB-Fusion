@@ -15,12 +15,12 @@ public class EntityIdList<TEntity>
     private readonly FusionDictionary<ushort, TEntity> _idsToEntities = new();
     private readonly FusionDictionary<TEntity, ushort> _entitiesToIds = new();
 
-    private readonly List<ushort> _reservedIds = new();
+    private readonly HashSet<ushort> _reservedIds = new();
 
     public FusionDictionary<ushort, TEntity> IdEntityLookup => _idsToEntities;
     public FusionDictionary<TEntity, ushort> EntityIdLookup => _entitiesToIds;
 
-    public List<ushort> ReservedIds => _reservedIds;
+    public HashSet<ushort> ReservedIds => _reservedIds;
 
     public event EntityIdEvent<TEntity> OnEntityAdded, OnEntityRemoved;
 
