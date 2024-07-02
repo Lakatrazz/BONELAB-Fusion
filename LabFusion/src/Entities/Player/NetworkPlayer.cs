@@ -747,10 +747,13 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // TODO: register components for the avatar on avatar change
         RegisterComponents(rigManager.physicsRig.gameObject);
 
-        // Uncull
-        if (!MarrowEntity.IsCulled && !NetworkEntity.IsOwner)
+        if (!NetworkEntity.IsOwner)
         {
-            OnEntityCull(false);
+            // Teleport to the received pose
+            TeleportToPose();
+
+            // Match the current cull state
+            OnEntityCull(MarrowEntity.IsCulled);
         }
     }
 
