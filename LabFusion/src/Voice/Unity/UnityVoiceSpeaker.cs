@@ -17,6 +17,8 @@ public class UnityVoiceSpeaker : VoiceSpeaker
 
     private bool _clearedAudio = false;
 
+    private bool _isReadyToRead = false;
+
     public UnityVoiceSpeaker(PlayerId id)
     {
         // Save the id
@@ -63,6 +65,18 @@ public class UnityVoiceSpeaker : VoiceSpeaker
 
     public override void Update()
     {
+        // Have more than enough data to read
+        if (_readingQueue.Count >= UnityVoice.SampleRate / 5 && !_isReadyToRead)
+        {
+            _isReadyToRead = true;
+        }
+        // Already read through all our data, so wait for another batch
+        else if (_readingQueue.Count <= 0)
+        {
+            _isReadyToRead = false;
+        }
+
+        // Check for voice clearing
         if (!_clearedAudio && _amplitude <= VoiceVolume.SilencingVolume)
         {
             _clearedAudio = true;
@@ -118,7 +132,7 @@ public class UnityVoiceSpeaker : VoiceSpeaker
         {
             float output = 0f;
 
-            if (_readingQueue.Count > 0)
+            if (_readingQueue.Count > 0 && _isReadyToRead)
             {
                 output = _readingQueue.Dequeue();
             }
