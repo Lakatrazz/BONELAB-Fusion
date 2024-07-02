@@ -106,9 +106,8 @@ public class SpawnResponseMessage : FusionMessageHandler
 
     public static void OnSpawnFinished(byte owner, string barcode, ushort syncId, Poolee poolee, uint trackerId = 0)
     {
-        if (poolee == null)
-            return;
-
+        // The poolee will never be null, so we don't have to check for it
+        // Only case where it could be null is the object not spawning, but the spawn callback only executes when it exists
         var go = poolee.gameObject;
 
         // Remove the existing entity on this poolee if it exists
