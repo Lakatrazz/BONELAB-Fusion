@@ -1,5 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -230,6 +229,9 @@
     <Reference Include="Il2Cppmscorlib">
       <HintPath>dependencies\managed\Il2CppAssemblies\Il2Cppmscorlib.dll</HintPath>
     </Reference>
+    <Reference Include="Il2CppNewtonsoft.Json">
+      <HintPath>Managed\Il2CppNewtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="Il2CppSLZ.Algorithms">
       <HintPath>dependencies\managed\Il2CppAssemblies\Il2CppSLZ.Algorithms.dll</HintPath>
     </Reference>
@@ -291,7 +293,6 @@
       <HintPath>dependencies\managed\net6\MelonLoader.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>dependencies\managed\Managed\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms">
       <HintPath>dependencies\managed\Managed\System.Windows.Forms.dll</HintPath>

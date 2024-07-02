@@ -106,6 +106,9 @@ public class SpawnResponseMessage : FusionMessageHandler
 
     public static void OnSpawnFinished(byte owner, string barcode, ushort syncId, Poolee poolee, uint trackerId = 0)
     {
+        if (poolee == null)
+            return;
+
         var go = poolee.gameObject;
 
         // Remove the existing entity on this poolee if it exists

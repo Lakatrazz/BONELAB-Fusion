@@ -517,6 +517,11 @@ namespace LabFusion.Network
             // Public lobbies list
             _publicLobbiesCategory = matchmaking.CreateCategory("Public Lobbies", Color.white);
             _publicLobbiesCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshPublicLobbies);
+            _publicLobbiesCategory.CreateEnumElement("Sort By", Color.white, _publicLobbySortMode, (v) =>
+            {
+                _publicLobbySortMode = v;
+                Menu_RefreshPublicLobbies();
+            });
             _publicLobbiesCategory.CreateFunctionElement("Select Refresh to load servers!", Color.yellow, null);
 
             // Steam friends list
@@ -530,7 +535,7 @@ namespace LabFusion.Network
         private void CreateServerInfoMenu(MenuCategory category)
         {
             _createServerElement = category.CreateFunctionElement("Create Server", Color.white, OnClickCreateServer);
-            category.CreateFunctionElement("Copy SteamID to Clipboard", Color.white, OnCopySteamID);
+            //category.CreateFunctionElement("Copy SteamID to Clipboard", Color.white, OnCopySteamID);
 
             BoneMenuCreator.PopulateServerInfo(category);
         }

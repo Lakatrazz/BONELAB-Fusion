@@ -31,7 +31,7 @@ namespace LabFusion.SDK.Points
 
         public static void WriteToFile()
         {
-            DataSaver.WriteBinary(_filePath, PointSaveData.CreateCurrent());
+            DataSaver.WriteJson(_filePath, PointSaveData.CreateCurrent());
         }
 
         public static void WriteBackup()
@@ -45,7 +45,7 @@ namespace LabFusion.SDK.Points
 
         public static void ReadFile()
         {
-            var data = DataSaver.ReadBinary<PointSaveData>(_filePath);
+            var data = DataSaver.ReadJson<PointSaveData>(_filePath);
 
             if (data == null)
             {

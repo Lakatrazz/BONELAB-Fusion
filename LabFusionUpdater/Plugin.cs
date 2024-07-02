@@ -50,7 +50,7 @@ namespace LabFusionUpdater
             _offlineModePref = _prefCategory.CreateEntry("OfflineMode", false);
             _prefCategory.SaveToFile(false);
 
-            LoggerInstance.Msg(IsOffline ? ConsoleColor.Yellow : ConsoleColor.Green, IsOffline ? "Fusion Auto-Updater is OFFLINE." : "Fusion Auto-Updater is ONLINE.");
+            LoggerInstance.Msg(IsOffline ? System.Drawing.Color.Yellow : System.Drawing.Color.Green, IsOffline ? "Fusion Auto-Updater is OFFLINE." : "Fusion Auto-Updater is ONLINE.");
 
             if (IsOffline) {
                 if (!File.Exists(ModAssemblyPath)) {

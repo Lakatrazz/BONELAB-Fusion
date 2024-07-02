@@ -1,5 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Extensions;
+using LabFusion.Utilities;
 using LabFusion.XML;
 using System.Xml.Linq;
 
@@ -57,7 +58,7 @@ public static class AchievementSaveManager
 
     public static void WriteToFile()
     {
-        DataSaver.WriteBinary(_filePath, AchievementSaveData.CreateCurrent());
+        DataSaver.WriteJson(_filePath, AchievementSaveData.CreateCurrent());
     }
 
     public static void WriteBackup()
@@ -71,7 +72,7 @@ public static class AchievementSaveManager
 
     public static void ReadFile()
     {
-        var data = DataSaver.ReadBinary<AchievementSaveData>(_filePath);
+        var data = DataSaver.ReadJson<AchievementSaveData>(_filePath);
 
         if (data == null)
         {

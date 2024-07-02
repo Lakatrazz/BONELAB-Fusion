@@ -26,7 +26,7 @@ namespace LabFusion.UI
                         var genericGrip = collider.gameObject.AddComponent<GenericGrip>();
                         genericGrip.isThrowable = true;
                         genericGrip.ignoreGripTargetOnAttach = false;
-                        genericGrip.additionalGripColliders = new Il2CppReferenceArray<Collider>(0);
+                        genericGrip.additionalGripColliders = new Collider[0];
                         genericGrip.handleAmplifyCurve = AnimationCurve.Linear(0f, 1f, 0f, 1f);
                         genericGrip.gripOptions = InteractionOptions.MultipleHands;
                         genericGrip.priority = 1f;

@@ -7,26 +7,17 @@ using Il2CppSLZ.Bonelab.SaveData;
 
 using UnityEngine;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using LabFusion.Utilities;
+using Il2CppNewtonsoft.Json.Linq;
 
 namespace LabFusion.Patching
 {
-    [HarmonyPatch(typeof(BonelabProgressionHelper))]
+    [HarmonyPatch(typeof(BonelabProgressionHelper.__restoreSlotsOnReady_d__13))]
     public static class BonelabProgressionHelperPatches
     {
-        [HarmonyPatch(nameof(BonelabProgressionHelper.RestoreInventory))]
+        [HarmonyPatch(nameof(BonelabProgressionHelper.__restoreSlotsOnReady_d__13.MoveNext))]
         [HarmonyPrefix]
-        [HarmonyPatch(new Type[]
-        {
-            typeof(PlayerProgression),
-            typeof(string),
-            typeof(bool),
-            typeof(Transform),
-            typeof(Transform),
-            typeof(Il2CppSystem.Func<Barcode, Barcode>),
-            typeof(Il2CppStringArray),
-        }
-        )]
-        public static bool RestoreInventory(PlayerProgression progression, string levelKey, bool freshLoad, Transform leftHand, Transform rightHand, Il2CppSystem.Func<Barcode, Barcode> itemFilter, Il2CppStringArray priorLevels)
+        public static bool OnSlotsReady()
         {
             // Temporary fix
             // Eventually replace with syncing spawned inventory
