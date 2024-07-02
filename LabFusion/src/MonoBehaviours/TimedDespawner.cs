@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Il2CppInterop.Runtime.Attributes;
+﻿using Il2CppInterop.Runtime.Attributes;
 
 using Il2CppSLZ.Marrow.Pool;
 
@@ -20,14 +14,19 @@ namespace LabFusion.MonoBehaviours;
 [RegisterTypeInIl2Cpp]
 public class TimedDespawner : MonoBehaviour
 {
+    public delegate bool DespawnCheck();
+
     public TimedDespawner(IntPtr intPtr) : base(intPtr) { }
 
-    public const float TotalDespawnTime = 30f;
+    // Cleanable objects should usually despawn pretty quickly
+    public const float TotalDespawnTime = 10f;
 
     private Poolee _poolee = null;
     private float _elapsedTime = 0f;
 
     public Poolee Poolee { get { return _poolee; } set { _poolee = value; } }
+
+    public event DespawnCheck OnDespawnCheck;
 
     [HideFromIl2Cpp]
     public void RefreshTimer()
@@ -48,6 +47,15 @@ public class TimedDespawner : MonoBehaviour
         // Despawn the poolee
         if (_elapsedTime >= TotalDespawnTime)
         {
+            // Make sure to check that the despawn is valid, incase theres an event preventing the despawn
+            var despawnValid = OnDespawnCheck?.Invoke();
+
+            if (despawnValid.HasValue && !despawnValid.Value)
+            {
+                RefreshTimer();
+                return;
+            }
+
             _poolee.Despawn();
         }
     }
