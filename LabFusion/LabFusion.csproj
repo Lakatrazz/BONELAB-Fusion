@@ -322,6 +322,9 @@
     <Reference Include="UnityEngine.IMGUIModule">
       <HintPath>dependencies\managed\Il2CppAssemblies\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.JSONSerializeModule">
+      <HintPath>dependencies\managed\Il2CppAssemblies\UnityEngine.JSONSerializeModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
       <HintPath>dependencies\managed\Il2CppAssemblies\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
