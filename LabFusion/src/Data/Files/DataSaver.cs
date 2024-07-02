@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
 
 using LabFusion.Utilities;
 
@@ -6,7 +6,12 @@ namespace LabFusion.Data;
 
 public static class DataSaver
 {
-    public static void WriteJson(string path, object value)
+    public static readonly JsonSerializerOptions SerializerOptions = new()
+    {
+        IncludeFields = true,
+    };
+
+    public static void WriteJson<T>(string path, T value)
     {
         string fullPath = PersistentData.GetPath(path);
         string directoryName = Path.GetDirectoryName(fullPath);
@@ -16,7 +21,7 @@ public static class DataSaver
             Directory.CreateDirectory(directoryName);
         }
 
-        string jsonText = JsonConvert.SerializeObject(value, Formatting.Indented);
+        string jsonText = JsonSerializer.Serialize(value, SerializerOptions);
 
         File.WriteAllText(fullPath, jsonText);
     }
@@ -44,7 +49,7 @@ public static class DataSaver
 
         try
         {
-            T result = JsonConvert.DeserializeObject<T>(jsonText);
+            T result = JsonSerializer.Deserialize<T>(jsonText, SerializerOptions);
             return result;
         }
         catch (Exception e)

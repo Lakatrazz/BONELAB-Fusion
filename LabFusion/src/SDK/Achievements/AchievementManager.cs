@@ -36,7 +36,7 @@ public static class AchievementManager
 
             if (AchievementSaveManager.Pointers.TryGetValue(achievement.Barcode, out var pointer))
             {
-                achievement.Unpack(XElement.Parse(pointer.data));
+                achievement.Unpack(XElement.Parse(pointer.Data));
             }
 
             achievement.Register();

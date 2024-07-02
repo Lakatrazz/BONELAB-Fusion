@@ -54,6 +54,7 @@ public static class FusionAchievementPopup
             UIMachineUtilities.OverrideFonts(popupTransform.transform);
 
             popupTransform.localPosition = LocalPosition;
+            popupTransform.localRotation = Quaternion.identity;
 
             Transform canvas = popupTransform.Find("Offset/Canvas");
 
