@@ -12,8 +12,7 @@ public class NetworkMetadata
     public FusionDictionary<string, string> LocalDictionary => _localDictionary;
 
     // Change callbacks
-    public event Action<string, string> OnMetadataChanged;
-    public event Action<string> OnMetadataRemoved;
+    public event Action<string, string> OnMetadataChanged, OnMetadataRemoved;
 
     // Network request callbacks
     public MetadataSetDelegate OnTrySetMetadata;
@@ -63,9 +62,9 @@ public class NetworkMetadata
 
     public void ForceRemoveLocalMetadata(string key)
     {
-        if (_localDictionary.ContainsKey(key))
+        if (_localDictionary.TryGetValue(key, out var value))
         {
-            OnMetadataRemoved?.Invoke(key);
+            OnMetadataRemoved?.Invoke(key, value);
 
             _localDictionary.Remove(key);
         }

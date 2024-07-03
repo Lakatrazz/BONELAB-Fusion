@@ -12,7 +12,6 @@ using LabFusion.SDK.Achievements;
 using LabFusion.SDK.Points;
 using LabFusion.Senders;
 using LabFusion.Utilities;
-using LabFusion.SDK.Metadata;
 using LabFusion.SDK.Triggers;
 
 using UnityEngine;
@@ -30,9 +29,6 @@ public class Deathmatch : Gamemode
     private const int _minMinutes = 2;
     private const int _maxMinutes = 60;
 
-    // Prefix
-    public const string DefaultPrefix = "InternalDeathmatchMetadata";
-
     // Default metadata keys
     public override string GamemodeCategory => "Fusion";
     public override string GamemodeName => "Deathmatch";
@@ -45,6 +41,9 @@ public class Deathmatch : Gamemode
 
     public TriggerEvent OneMinuteLeftTrigger { get; set; }
     public TriggerEvent NaturalEndTrigger { get; set; }
+
+    private readonly PlayerScoreKeeper _scoreKeeper = new();
+    public PlayerScoreKeeper ScoreKeeper => _scoreKeeper;
 
     private bool _hasDied;
 
@@ -60,8 +59,6 @@ public class Deathmatch : Gamemode
     private float? _vitalityOverride = null;
 
     private bool _enabledLateJoining = true;
-
-    private Dictionary<byte, MetadataInt> _scoreVariables = new();
 
     public override void OnBoneMenuCreated(MenuCategory category)
     {
@@ -146,7 +143,7 @@ public class Deathmatch : Gamemode
     public IReadOnlyList<PlayerId> GetPlayersByScore()
     {
         List<PlayerId> leaders = new(PlayerIdManager.PlayerIds);
-        leaders = leaders.OrderBy(id => GetScore(id)).ToList();
+        leaders = leaders.OrderBy(id => ScoreKeeper.GetScore(id)).ToList();
         leaders.Reverse();
 
         return leaders;
@@ -181,18 +178,6 @@ public class Deathmatch : Gamemode
         return -1;
     }
 
-    public int GetTotalScore()
-    {
-        int score = 0;
-
-        foreach (var variable in _scoreVariables.Values)
-        {
-            score += variable.GetValue();
-        }
-
-        return score;
-    }
-
     private int GetRewardedBits()
     {
         // Change the max bit count based on player count
@@ -204,8 +189,8 @@ public class Deathmatch : Gamemode
         int maxRand = maxBits / 10;
 
         // Get the scores
-        int score = GetScore(PlayerIdManager.LocalId).GetValue();
-        int totalScore = GetTotalScore();
+        int score = ScoreKeeper.GetScore(PlayerIdManager.LocalId);
+        int totalScore = ScoreKeeper.GetTotalScore();
 
         // Prevent divide by 0
         if (totalScore <= 0)
@@ -242,6 +227,10 @@ public class Deathmatch : Gamemode
         NaturalEndTrigger = new TriggerEvent(nameof(NaturalEndTrigger), Relay, true);
         NaturalEndTrigger.OnTriggered += OnNaturalEnd;
 
+        // Register score keeper
+        ScoreKeeper.Register(Metadata);
+        ScoreKeeper.OnScoreChanged += OnScoreChanged;
+
         SetDefaultValues();
     }
 
@@ -259,6 +248,10 @@ public class Deathmatch : Gamemode
         // Destroy triggers
         OneMinuteLeftTrigger.UnregisterEvent();
         NaturalEndTrigger.UnregisterEvent();
+
+        // Unregister score keeper
+        ScoreKeeper.Unregister();
+        ScoreKeeper.OnScoreChanged -= OnScoreChanged;
     }
 
     protected bool OnValidateNametag(PlayerId id)
@@ -291,7 +284,7 @@ public class Deathmatch : Gamemode
                     // Increment score for that player
                     if (NetworkInfo.IsServer)
                     {
-                        IncrementScore(otherPlayer);
+                        ScoreKeeper.AddScore(otherPlayer);
                     }
 
                     // If we are the killer, increment our achievement
@@ -310,7 +303,7 @@ public class Deathmatch : Gamemode
 
         if (NetworkInfo.IsServer)
         {
-            ResetScores();
+            ScoreKeeper.ResetScores();
         }
 
         FusionNotifier.Send(new FusionNotification()
@@ -398,23 +391,23 @@ public class Deathmatch : Gamemode
         var thirdPlace = GetByScore(2);
 
         var selfPlace = GetPlace(PlayerIdManager.LocalId);
-        var selfScore = GetScore(PlayerIdManager.LocalId);
+        var selfScore = ScoreKeeper.GetScore(PlayerIdManager.LocalId);
 
         string message = "No one scored points!";
 
         if (firstPlace != null && firstPlace.TryGetDisplayName(out var name))
         {
-            message = $"First Place: {name} (Score: {GetScore(firstPlace)}) \n";
+            message = $"First Place: {name} (Score: {ScoreKeeper.GetScore(firstPlace)}) \n";
         }
 
         if (secondPlace != null && secondPlace.TryGetDisplayName(out name))
         {
-            message += $"Second Place: {name} (Score: {GetScore(secondPlace)}) \n";
+            message += $"Second Place: {name} (Score: {ScoreKeeper.GetScore(secondPlace)}) \n";
         }
 
         if (thirdPlace != null && thirdPlace.TryGetDisplayName(out name))
         {
-            message += $"Third Place: {name} (Score: {GetScore(thirdPlace)}) \n";
+            message += $"Third Place: {name} (Score: {ScoreKeeper.GetScore(thirdPlace)}) \n";
         }
 
         if (selfPlace != -1 && selfPlace > 3)
@@ -540,56 +533,19 @@ public class Deathmatch : Gamemode
         }
     }
 
-    protected override void OnMetadataChanged(string key, string value)
+    private void OnScoreChanged(PlayerId player, int score)
     {
-        // Check if our score increased
-        var playerKey = KeyHelper.GetPlayerKey(CommonKeys.ScoreKey, PlayerIdManager.LocalId);
-
-        if (playerKey == key && value != "0")
+        if (player.IsSelf && score != 0)
         {
             FusionNotifier.Send(new FusionNotification()
             {
                 title = "Deathmatch Point",
                 showTitleOnPopup = true,
-                message = $"New score is {value}!",
+                message = $"New score is {score}!",
                 isMenuItem = false,
                 isPopup = true,
                 popupLength = 0.7f,
             });
         }
-    }
-
-    protected void ResetScores()
-    {
-        foreach (var score in _scoreVariables.Values)
-        {
-            score.SetValue(0);
-        }
-
-        _scoreVariables.Clear();
-    }
-
-    protected void IncrementScore(PlayerId id)
-    {
-        var score = GetScore(id);
-        score.Add(1);
-    }
-
-    protected MetadataInt GetScore(PlayerId id)
-    {
-        if (id == null)
-        {
-            return null;
-        }
-
-        if (_scoreVariables.TryGetValue(id, out var score))
-        {
-            return score;
-        }
-
-        var newVariable = new MetadataInt(KeyHelper.GetPlayerKey(CommonKeys.ScoreKey, id), Metadata);
-        _scoreVariables[id] = newVariable;
-
-        return newVariable;
     }
 }

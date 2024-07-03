@@ -434,5 +434,5 @@ public abstract class Gamemode
 
     protected virtual void OnMetadataChanged(string key, string value) { }
 
-    protected virtual void OnMetadataRemoved(string key) { }
+    protected virtual void OnMetadataRemoved(string key, string value) { }
 }

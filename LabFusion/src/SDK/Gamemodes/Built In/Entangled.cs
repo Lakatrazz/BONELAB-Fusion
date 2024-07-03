@@ -417,7 +417,7 @@ public class Entangled : Gamemode
         }
     }
 
-    protected override void OnMetadataRemoved(string key)
+    protected override void OnMetadataRemoved(string key, string value)
     {
         if (GetPartnerKey(PlayerIdManager.LocalId) == key)
         {

@@ -1,22 +1,55 @@
 ﻿using LabFusion.Representation;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace LabFusion.SDK.Metadata;
 
 public static class KeyHelper
 {
-    public static string GetPlayerKey(string variable, PlayerId player)
+    public const string PropertySeparator = ":";
+
+    public static bool KeyMatchesVariable(string key, string variable)
+    {
+        var lastSeparator = key.LastIndexOf(PropertySeparator);
+
+        if (lastSeparator < 0)
+        {
+            return key == variable;
+        }
+
+        var subString = key[..lastSeparator];
+
+        return subString == variable;
+    }
+
+    public static string GetKeyWithProperty(string variable, string property)
+    {
+        return $"{variable}{PropertySeparator}{property}";
+    }
+
+    public static string GetPropertyFromKey(string key)
+    {
+        var propertyStartIndex = key.LastIndexOf(PropertySeparator) + 1;
+        return key[propertyStartIndex..];
+    }
+
+    public static string GetKeyFromPlayer(string variable, PlayerId player)
     {
         if (player == null)
         {
             return string.Empty;
         }
 
-        return $"{variable}.{player.LongId}";
+        return GetKeyWithProperty(variable, player.LongId.ToString());
+    }
+
+    public static PlayerId GetPlayerFromKey(string key)
+    {
+        var idProperty = GetPropertyFromKey(key);
+
+        if (!ulong.TryParse(idProperty, out var longId))
+        {
+            throw new FormatException($"Key {key} was not in the correct format. (Property: {idProperty})");
+        }
+
+        return PlayerIdManager.GetPlayerId(longId);
     }
 }

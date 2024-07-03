@@ -39,7 +39,7 @@ public class TeamLogoInstance
 
         this.team = team;
 
-        UpdateLogo(team.Logo);
+        //UpdateLogo(team.Logo);
     }
 
     public void Toggle(bool value)
