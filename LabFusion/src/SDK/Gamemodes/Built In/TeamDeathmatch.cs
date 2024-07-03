@@ -66,6 +66,9 @@ public class TeamDeathmatch : Gamemode
     private TeamScoreKeeper _scoreKeeper = null;
     public TeamScoreKeeper ScoreKeeper => _scoreKeeper;
 
+    private readonly TeamMusicManager _teamMusicManager = new();
+    public TeamMusicManager TeamMusicManager => _teamMusicManager;
+
     private readonly FusionDictionary<PlayerId, TeamLogoInstance> _logoInstances = new();
 
     private string _avatarOverride = null;
@@ -137,25 +140,24 @@ public class TeamDeathmatch : Gamemode
     public void AddDefaultTeams()
     {
         TeamManager.ClearTeams();
+        TeamMusicManager.ClearTeams();
 
         Team sabrelake = new() { TeamName = DefaultSabrelakeName, };
         Team lavaGang = new() { TeamName = DefaultLavaGangName, };
 
-        //AudioLoader.LoadMonoDisc(FusionMonoDiscReferences.SabrelakeVictoryReference, (victory) =>
-        //{
-        //    AudioLoader.LoadMonoDisc(FusionMonoDiscReferences.SabrelakeFailureReference, (failure) =>
-        //    {
-        //        sabrelake.SetMusic(victory, failure);
-        //    });
-        //});
-        //
-        //AudioLoader.LoadMonoDisc(FusionMonoDiscReferences.LavaGangVictoryReference, (victory) =>
-        //{
-        //    AudioLoader.LoadMonoDisc(FusionMonoDiscReferences.LavaGangFailureReference, (failure) =>
-        //    {
-        //        lavaGang.SetMusic(victory, failure);
-        //    });
-        //});
+        TeamMusicManager.SetMusic(sabrelake, new TeamMusic()
+        {
+            WinMusic = new AudioReference(FusionMonoDiscReferences.SabrelakeVictoryReference),
+            LoseMusic = new AudioReference(FusionMonoDiscReferences.SabrelakeFailureReference),
+        });
+
+        TeamMusicManager.SetMusic(lavaGang, new TeamMusic()
+        {
+            WinMusic = new AudioReference(FusionMonoDiscReferences.LavaGangVictoryReference),
+            LoseMusic = new AudioReference(FusionMonoDiscReferences.LavaGangFailureReference),
+        });
+
+        TeamMusicManager.TieMusic = new AudioReference(FusionMonoDiscReferences.ErmReference);
 
         //sabrelake.SetLogo(FusionContentLoader.SabrelakeLogo.Asset);
         //lavaGang.SetLogo(FusionContentLoader.LavaGangLogo.Asset);
@@ -679,11 +681,17 @@ public class TeamDeathmatch : Gamemode
 
     protected void OnTeamVictory(Team team)
     {
-        //if (team.WinMusic != null)
-        //{
-        //    FusionAudio.Play2D(team.WinMusic);
-        //    return;
-        //}
+        var winMusic = TeamMusicManager.GetMusic(team).WinMusic;
+
+        if (winMusic.HasClip())
+        {
+            winMusic.LoadClip((clip) =>
+            {
+                FusionAudio.Play2D(clip, 0.2f);
+            });
+
+            return;
+        }
 
         MonoDiscReference randomChoice = UnityEngine.Random.Range(0, 4) % 2 == 0 ? FusionMonoDiscReferences.LavaGangVictoryReference : FusionMonoDiscReferences.SabrelakeVictoryReference;
 
@@ -695,11 +703,17 @@ public class TeamDeathmatch : Gamemode
 
     protected void OnTeamLost(Team team)
     {
-        //if (team.LossMusic != null)
-        //{
-        //    FusionAudio.Play2D(team.LossMusic);
-        //    return;
-        //}
+        var loseMusic = TeamMusicManager.GetMusic(team).LoseMusic;
+
+        if (loseMusic.HasClip())
+        {
+            loseMusic.LoadClip((clip) =>
+            {
+                FusionAudio.Play2D(clip, 0.2f);
+            });
+
+            return;
+        }
 
         MonoDiscReference randomChoice = UnityEngine.Random.Range(0, 4) % 2 == 0 ? FusionMonoDiscReferences.LavaGangFailureReference : FusionMonoDiscReferences.SabrelakeFailureReference;
 
@@ -711,9 +725,16 @@ public class TeamDeathmatch : Gamemode
 
     protected void OnTeamTied()
     {
-        AudioLoader.LoadMonoDisc(FusionMonoDiscReferences.ErmReference, (c) =>
+        var tieMusic = TeamMusicManager.TieMusic;
+
+        if (!tieMusic.HasClip())
         {
-            FusionAudio.Play2D(c, DefaultMusicVolume);
+            return;
+        }
+
+        tieMusic.LoadClip((clip) =>
+        {
+            FusionAudio.Play2D(clip, 0.2f);
         });
     }
 
