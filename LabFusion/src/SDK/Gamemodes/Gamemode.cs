@@ -131,25 +131,25 @@ public abstract class Gamemode
     private bool OnTrySetMetadata(string key, string value)
     {
         // We can only change metadata as the server!
-        if (NetworkInfo.IsServer)
+        if (!NetworkInfo.IsServer)
         {
-            GamemodeSender.SendGamemodeMetadataSet(Tag.Value, key, value);
-            return true;
+            return false;
         }
 
-        return false;
+        GamemodeSender.SendGamemodeMetadataSet(Tag.Value, key, value);
+        return true;
     }
 
     private bool OnTryRemoveMetadata(string key)
     {
         // We can only remove metadata as the server!
-        if (NetworkInfo.IsServer)
+        if (!NetworkInfo.IsServer)
         {
-            GamemodeSender.SendGamemodeMetadataRemove(Tag.Value, key);
-            return true;
+            return false;
         }
 
-        return false;
+        GamemodeSender.SendGamemodeMetadataRemove(Tag.Value, key);
+        return true;
     }
 
     public void SetPlaylist(float volume = 1f, params AudioClip[] clips)
