@@ -13,6 +13,7 @@ using LabFusion.SDK.Points;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 using LabFusion.SDK.Metadata;
+using LabFusion.SDK.Triggers;
 
 using UnityEngine;
 
@@ -41,6 +42,9 @@ public class Deathmatch : Gamemode
     public override bool DisableManualUnragdoll => true;
 
     public override bool PreventNewJoins => !_enabledLateJoining;
+
+    public TriggerEvent OneMinuteLeftTrigger { get; set; }
+    public TriggerEvent NaturalEndTrigger { get; set; }
 
     private bool _hasDied;
 
@@ -231,17 +235,30 @@ public class Deathmatch : Gamemode
         MultiplayerHooking.OnPlayerAction += OnPlayerAction;
         FusionOverrides.OnValidateNametag += OnValidateNametag;
 
+        // Create triggers
+        OneMinuteLeftTrigger = new TriggerEvent(nameof(OneMinuteLeftTrigger), Relay, true);
+        OneMinuteLeftTrigger.OnTriggered += OnOneMinuteLeft;
+
+        NaturalEndTrigger = new TriggerEvent(nameof(NaturalEndTrigger), Relay, true);
+        NaturalEndTrigger.OnTriggered += OnNaturalEnd;
+
         SetDefaultValues();
     }
 
     public override void OnGamemodeUnregistered()
     {
         if (Instance == this)
+        {
             Instance = null;
+        }
 
         // Remove hooks
         MultiplayerHooking.OnPlayerAction -= OnPlayerAction;
         FusionOverrides.OnValidateNametag -= OnValidateNametag;
+
+        // Destroy triggers
+        OneMinuteLeftTrigger.UnregisterEvent();
+        NaturalEndTrigger.UnregisterEvent();
     }
 
     protected bool OnValidateNametag(PlayerId id)
@@ -488,7 +505,7 @@ public class Deathmatch : Gamemode
         {
             if (minutesLeft <= 1f)
             {
-                TryInvokeTrigger("OneMinuteLeft");
+                OneMinuteLeftTrigger.TryInvoke();
                 _oneMinuteLeft = true;
             }
         }
@@ -497,33 +514,29 @@ public class Deathmatch : Gamemode
         if (minutesLeft <= 0f)
         {
             StopGamemode();
-            TryInvokeTrigger("NaturalEnd");
+            NaturalEndTrigger.TryInvoke();
         }
     }
 
-    protected override void OnEventTriggered(string value)
+    private void OnOneMinuteLeft()
     {
-        // Check event
-        switch (value)
+        FusionNotifier.Send(new FusionNotification()
         {
-            case "OneMinuteLeft":
-                FusionNotifier.Send(new FusionNotification()
-                {
-                    title = "Deathmatch Timer",
-                    showTitleOnPopup = true,
-                    message = "One minute left!",
-                    isMenuItem = false,
-                    isPopup = true,
-                });
-                break;
-            case "NaturalEnd":
-                int bitReward = GetRewardedBits();
+            title = "Deathmatch Timer",
+            showTitleOnPopup = true,
+            message = "One minute left!",
+            isMenuItem = false,
+            isPopup = true,
+        });
+    }
 
-                if (bitReward > 0)
-                {
-                    PointItemManager.RewardBits(bitReward);
-                }
-                break;
+    private void OnNaturalEnd()
+    {
+        int bitReward = GetRewardedBits();
+
+        if (bitReward > 0)
+        {
+            PointItemManager.RewardBits(bitReward);
         }
     }
 

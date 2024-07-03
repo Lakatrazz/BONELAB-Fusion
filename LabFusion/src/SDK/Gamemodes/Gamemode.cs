@@ -6,6 +6,7 @@ using LabFusion.Representation;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 using LabFusion.SDK.Metadata;
+using LabFusion.SDK.Triggers;
 
 using UnityEngine;
 
@@ -66,6 +67,9 @@ public abstract class Gamemode
     private readonly NetworkMetadata _metadata = new();
     public NetworkMetadata Metadata => _metadata;
 
+    private readonly TriggerRelay _relay = new();
+    public TriggerRelay Relay => _relay;
+
     // Music
     public virtual bool MusicEnabled => MusicToggled;
     public virtual bool ManualPlaylist { get; } = false;
@@ -77,12 +81,17 @@ public abstract class Gamemode
         MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
         MultiplayerHooking.OnLoadingBegin += OnLoadingBegin;
 
+        // Metadata
         Metadata.OnTrySetMetadata += OnTrySetMetadata;
         Metadata.OnTryRemoveMetadata += OnTryRemoveMetadata;
 
         Metadata.OnMetadataChanged += OnMetadataChanged;
         Metadata.OnMetadataChanged += OnInternalMetadataChanged;
         Metadata.OnMetadataRemoved += OnMetadataRemoved;
+
+        // Triggers
+        Relay.OnTryInvokeTrigger += OnTryInvokeTrigger;
+        Relay.OnTryInvokeTriggerWithValue += OnTryInvokeTriggerWithValue;
 
         OnGamemodeRegistered();
     }
@@ -92,14 +101,31 @@ public abstract class Gamemode
         MultiplayerHooking.OnMainSceneInitialized -= OnMainSceneInitialized;
         MultiplayerHooking.OnLoadingBegin -= OnLoadingBegin;
 
+        // Metadata
         Metadata.OnTrySetMetadata -= OnTrySetMetadata;
         Metadata.OnTryRemoveMetadata -= OnTryRemoveMetadata;
 
         Metadata.OnMetadataChanged += OnMetadataChanged;
         Metadata.OnMetadataChanged += OnInternalMetadataChanged;
         Metadata.OnMetadataRemoved -= OnMetadataRemoved;
+        
+        // Triggers
+        Relay.OnTryInvokeTrigger -= OnTryInvokeTrigger;
+        Relay.OnTryInvokeTriggerWithValue -= OnTryInvokeTriggerWithValue;
 
         OnGamemodeUnregistered();
+    }
+
+    private bool OnTryInvokeTrigger(string name)
+    {
+        GamemodeSender.SendGamemodeTriggerResponse(Tag.Value, name, null);
+        return true;
+    }
+
+    private bool OnTryInvokeTriggerWithValue(string name, string value)
+    {
+        GamemodeSender.SendGamemodeTriggerResponse(Tag.Value, name, value);
+        return true;
     }
 
     private bool OnTrySetMetadata(string key, string value)
@@ -396,23 +422,6 @@ public abstract class Gamemode
     }
     protected virtual void OnLateUpdate() { }
 
-    public bool TryInvokeTrigger(string value)
-    {
-        // We can only invoke triggers as the server!
-        if (NetworkInfo.IsServer)
-        {
-            GamemodeSender.SendGamemodeTriggerResponse(Tag.Value, value);
-            return true;
-        }
-
-        return false;
-    }
-
-    internal void Internal_TriggerEvent(string value)
-    {
-        OnEventTriggered(value);
-    }
-
     private void OnInternalMetadataChanged(string key, string value)
     {
         switch (key)
@@ -426,6 +435,4 @@ public abstract class Gamemode
     protected virtual void OnMetadataChanged(string key, string value) { }
 
     protected virtual void OnMetadataRemoved(string key) { }
-
-    protected virtual void OnEventTriggered(string value) { }
 }

@@ -1,6 +1,7 @@
-﻿using BoneLib;
-using BoneLib.BoneMenu.Elements;
+﻿using BoneLib.BoneMenu.Elements;
+
 using Il2CppSLZ.Marrow.Warehouse;
+
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
@@ -10,6 +11,7 @@ using LabFusion.Representation;
 using LabFusion.SDK.Achievements;
 using LabFusion.SDK.Metadata;
 using LabFusion.SDK.Points;
+using LabFusion.SDK.Triggers;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 
@@ -56,6 +58,9 @@ public class TeamDeathmatch : Gamemode
     public override bool DisableManualUnragdoll => true;
 
     public override bool PreventNewJoins => !_enabledLateJoining;
+
+    public TriggerEvent OneMinuteLeftTrigger { get; set; }
+    public TriggerEvent NaturalEndTrigger { get; set; }
 
     private float _timeOfStart;
     private bool _oneMinuteLeft;
@@ -199,6 +204,13 @@ public class TeamDeathmatch : Gamemode
 
         teams = new List<Team>();
 
+        // Create triggers
+        OneMinuteLeftTrigger = new TriggerEvent(nameof(OneMinuteLeftTrigger), Relay, true);
+        OneMinuteLeftTrigger.OnTriggered += OnOneMinuteLeft;
+
+        NaturalEndTrigger = new TriggerEvent(nameof(NaturalEndTrigger), Relay, true);
+        NaturalEndTrigger.OnTriggered += OnNaturalEnd;
+
         SetDefaultValues();
     }
 
@@ -215,6 +227,10 @@ public class TeamDeathmatch : Gamemode
         MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
         MultiplayerHooking.OnPlayerAction -= OnPlayerAction;
         FusionOverrides.OnValidateNametag -= OnValidateNametag;
+
+        // Destroy triggers
+        OneMinuteLeftTrigger.UnregisterEvent();
+        NaturalEndTrigger.UnregisterEvent();
     }
 
     protected bool OnValidateNametag(PlayerId id)
@@ -527,7 +543,7 @@ public class TeamDeathmatch : Gamemode
         {
             if (minutesLeft <= 1f)
             {
-                TryInvokeTrigger("OneMinuteLeft");
+                OneMinuteLeftTrigger.TryInvoke();
                 _oneMinuteLeft = true;
             }
         }
@@ -536,7 +552,7 @@ public class TeamDeathmatch : Gamemode
         if (minutesLeft <= 0f)
         {
             StopGamemode();
-            TryInvokeTrigger("NaturalEnd");
+            NaturalEndTrigger.TryInvoke();
         }
     }
 
@@ -573,34 +589,25 @@ public class TeamDeathmatch : Gamemode
         _logoInstances.Clear();
     }
 
-    /// <summary>
-    /// Called when named events get sent, which gets broadcasted to every player in the lobby.
-    /// </summary>
-    /// <param name="value"></param>
-    protected override void OnEventTriggered(string value)
+    private void OnOneMinuteLeft()
     {
-        FusionNotification oneMinuteNotification = new()
+        FusionNotifier.Send(new()
         {
             title = "Team Deathmatch Timer",
             showTitleOnPopup = true,
             message = "One minute left!",
             isMenuItem = false,
             isPopup = true,
-        };
+        });
+    }
 
-        if (value == "OneMinuteLeft")
+    private void OnNaturalEnd()
+    {
+        int bitReward = GetRewardedBits();
+
+        if (bitReward > 0)
         {
-            FusionNotifier.Send(oneMinuteNotification);
-        }
-
-        if (value == "NaturalEnd")
-        {
-            int bitReward = GetRewardedBits();
-
-            if (bitReward > 0)
-            {
-                PointItemManager.RewardBits(bitReward);
-            }
+            PointItemManager.RewardBits(bitReward);
         }
     }
 
@@ -764,13 +771,6 @@ public class TeamDeathmatch : Gamemode
         }
     }
 
-    /// <summary>
-    /// Method for handling changes in gamemode metadata.
-    /// Metadata is broken up into key value pairs to group requests and events when other players request them.
-    /// Things like team changes, point changes, wins, and losses, get handled here.
-    /// </summary>
-    /// <param name="key"></param>
-    /// <param name="value"></param>
     protected override void OnMetadataChanged(string key, string value)
     {
         base.OnMetadataChanged(key, value);
