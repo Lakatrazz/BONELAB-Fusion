@@ -65,9 +65,6 @@ public abstract class MessageHandler
         {
             FusionLogger.LogException("handling message", e);
         }
-
-        // Return the buffer
-        ByteRetriever.Return(bytes);
     }
 
     public abstract void HandleMessage(byte[] bytes, bool isServerHandled = false);

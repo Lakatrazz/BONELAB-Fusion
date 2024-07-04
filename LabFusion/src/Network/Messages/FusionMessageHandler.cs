@@ -42,8 +42,9 @@ public abstract class FusionMessageHandler : MessageHandler
         Handlers[index] = handler;
     }
 
-    public static unsafe void ReadMessage(byte* buffer, int size, bool isServerHandled = false)
+    public static unsafe void ReadMessage(ReadOnlySpan<byte> buffer, bool isServerHandled = false)
     {
+        int size = buffer.Length;
         NetworkInfo.BytesDown += size;
 
         byte tag = 0;
@@ -51,10 +52,9 @@ public abstract class FusionMessageHandler : MessageHandler
         try
         {
             tag = buffer[0];
-            byte[] message = ByteRetriever.Rent(size - 1);
 
-            for (var i = 0; i < message.Length; i++)
-                message[i] = buffer[i + 1];
+            var messageSlice = buffer[1..];
+            byte[] message = messageSlice.ToArray();
 
             if (Handlers[tag] != null)
             {
@@ -70,26 +70,6 @@ public abstract class FusionMessageHandler : MessageHandler
         catch (Exception e)
         {
             FusionLogger.Error($"Failed handling network message of tag {tag} with reason: {e.Message}\nTrace:{e.StackTrace}");
-        }
-    }
-
-    public static void ReadMessage(byte[] bytes, bool isServerHandled = false)
-    {
-        NetworkInfo.BytesDown += bytes.Length;
-
-        try
-        {
-            byte tag = bytes[0];
-            byte[] buffer = ByteRetriever.Rent(bytes.Length - 1);
-
-            for (var i = 0; i < buffer.Length; i++)
-                buffer[i] = bytes[i + 1];
-
-            Handlers[tag].Internal_HandleMessage(buffer, isServerHandled);
-        }
-        catch (Exception e)
-        {
-            FusionLogger.Error($"Failed handling network message with reason: {e.Message}\nTrace:{e.StackTrace}");
         }
     }
 

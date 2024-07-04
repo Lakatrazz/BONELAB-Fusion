@@ -13,23 +13,44 @@ public class TimedDespawnHandler
 
     private InteractableHost _host = null;
 
+    private bool _registered = false;
+
     private Il2CppSystem.Action<InteractableHost, Hand> _onHandAttached = null;
     private Il2CppSystem.Action<InteractableHost, Hand> _onHandDetached = null;
 
     public void Register(InteractableHost host, Poolee poolee)
     {
+        if (_registered)
+        {
+            return;
+        }
+
+        if (poolee == null)
+        {
+            return;
+        }
+
         _host = host;
 
         RegisterGrips(host);
         RegisterDespawner(poolee);
+
+        _registered = true;
     }
 
     public void Unregister()
     {
+        if (!_registered)
+        {
+            return;
+        }
+
         UnregisterGrips(_host);
         UnregisterDespawner();
 
         _host = null;
+
+        _registered = false;
     }
 
     private void RegisterGrips(InteractableHost host)

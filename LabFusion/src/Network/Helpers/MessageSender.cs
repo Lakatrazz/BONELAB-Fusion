@@ -65,7 +65,7 @@ public static class MessageSender
             {
                 unsafe
                 {
-                    FusionMessageHandler.ReadMessage(message.Buffer, message.Length, true);
+                    FusionMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message.Buffer, message.Length), true);
                 }
             }
         }
@@ -92,7 +92,7 @@ public static class MessageSender
             {
                 unsafe
                 {
-                    FusionMessageHandler.ReadMessage(message.Buffer, message.Length, false);
+                    FusionMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message.Buffer, message.Length), false);
                 }
             }
         }
@@ -120,7 +120,7 @@ public static class MessageSender
             {
                 unsafe
                 {
-                    FusionMessageHandler.ReadMessage(message.Buffer, message.Length, false);
+                    FusionMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message.Buffer, message.Length), false);
                 }
             }
         }
@@ -148,7 +148,7 @@ public static class MessageSender
             {
                 unsafe
                 {
-                    FusionMessageHandler.ReadMessage(message.Buffer, message.Length, false);
+                    FusionMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message.Buffer, message.Length), false);
                 }
             }
         }
