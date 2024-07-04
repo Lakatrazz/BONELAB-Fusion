@@ -24,6 +24,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 {
     public static readonly FusionComponentCache<RigManager, NetworkPlayer> RigCache = new();
 
+    public static readonly HashSet<NetworkPlayer> Players = new();
+
     private NetworkEntity _networkEntity = null;
 
     private PlayerId _playerId = null;
@@ -413,6 +415,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void OnPlayerRegistered(NetworkEntity entity)
     {
+        Players.Add(this);
+
         HookPlayer();
 
         entity.ConnectExtender(this);
@@ -425,6 +429,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void OnPlayerUnregistered(NetworkEntity entity)
     {
+        Players.Remove(this);
+
         UnhookPlayer();
 
         entity.DisconnectExtender(this);
