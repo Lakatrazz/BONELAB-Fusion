@@ -12,8 +12,6 @@ public class FusionReader : IDisposable
 {
     private byte[] buffer;
 
-    private int Offset = 0;
-
     public int Length
     {
         get
@@ -114,7 +112,7 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 1 byte but reader only has {0} bytes remaining.", Length - Position));
         }
-        return buffer[Offset + Position++];
+        return buffer[Position++];
     }
 
     /// <summary>
@@ -164,7 +162,7 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected 8 bytes but reader only has {0} bytes remaining.", Length - Position));
         }
-        double result = BigEndianHelper.ReadDouble(buffer, Offset + Position);
+        double result = BigEndianHelper.ReadDouble(buffer, Position);
         Position += 8;
         return result;
     }
@@ -179,7 +177,7 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected 2 bytes but reader only has {0} bytes remaining.", Length - Position));
         }
-        short result = BigEndianHelper.ReadInt16(buffer, Offset + Position);
+        short result = BigEndianHelper.ReadInt16(buffer, Position);
         Position += 2;
         return result;
     }
@@ -194,7 +192,7 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected 4 bytes but reader only has {0} bytes remaining.", Length - Position));
         }
-        int result = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int result = BigEndianHelper.ReadInt32(buffer, Position);
         Position += 4;
         return result;
     }
@@ -209,7 +207,7 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected 8 bytes but reader only has {0} bytes remaining.", Length - Position));
         }
-        long result = BigEndianHelper.ReadInt64(buffer, Offset + Position);
+        long result = BigEndianHelper.ReadInt64(buffer, Position);
         Position += 8;
         return result;
     }
@@ -233,7 +231,7 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected 4 bytes but reader only has {0} bytes remaining.", Length - Position));
         }
-        float result = BigEndianHelper.ReadSingle(buffer, Offset + Position);
+        float result = BigEndianHelper.ReadSingle(buffer, Position);
         Position += 4;
         return result;
     }
@@ -268,12 +266,12 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         if (Position + 4 + num > Length)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num, Length - Position - 4));
         }
-        string @string = encoding.GetString(buffer, Offset + Position + 4, num);
+        string @string = encoding.GetString(buffer, Position + 4, num);
         Position += 4 + num;
         return @string;
     }
@@ -288,7 +286,7 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected 2 bytes but reader only has {0} bytes remaining.", Length - Position));
         }
-        ushort result = BigEndianHelper.ReadUInt16(buffer, Offset + Position);
+        ushort result = BigEndianHelper.ReadUInt16(buffer, Position);
         Position += 2;
         return result;
     }
@@ -303,7 +301,7 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected 4 bytes but reader only has {0} bytes remaining.", Length - Position));
         }
-        uint result = BigEndianHelper.ReadUInt32(buffer, Offset + Position);
+        uint result = BigEndianHelper.ReadUInt32(buffer, Position);
         Position += 4;
         return result;
     }
@@ -318,7 +316,7 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected 8 bytes but reader only has {0} bytes remaining.", Length - Position));
         }
-        ulong result = BigEndianHelper.ReadUInt64(buffer, Offset + Position);
+        ulong result = BigEndianHelper.ReadUInt64(buffer, Position);
         Position += 8;
         return result;
     }
@@ -333,13 +331,13 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         if (Position + 4 + num > Length)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num, Length - Position - 4));
         }
         byte[] array = ByteRetriever.Rent(num);
-        Buffer.BlockCopy(buffer, Offset + Position + 4, array, 0, num);
+        Buffer.BlockCopy(buffer, Position + 4, array, 0, num);
         Position += 4 + num;
         return array;
     }
@@ -355,12 +353,12 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         if (Position + 4 + num > Length)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num, Length - Position - 4));
         }
-        Buffer.BlockCopy(buffer, Offset + Position + 4, destination, 0, num);
+        Buffer.BlockCopy(buffer, Position + 4, destination, 0, num);
         Position += 4 + num;
     }
 
@@ -394,12 +392,12 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         if (Position + 4 + num > Length)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num, Length - Position - 4));
         }
-        char[] chars = encoding.GetChars(buffer, Offset + Position + 4, num);
+        char[] chars = encoding.GetChars(buffer, Position + 4, num);
         Position += 4 + num;
         return chars;
     }
@@ -416,12 +414,12 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         if (Position + 4 + num > Length)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num, Length - Position - 4));
         }
-        encoding.GetChars(buffer, Offset + Position + 4, num, destination, offset);
+        encoding.GetChars(buffer, Position + 4, num, destination, offset);
         Position += 4 + num;
     }
 
@@ -435,7 +433,7 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         int num2 = (int)Math.Ceiling((double)num / 8.0);
         if (Position + 4 + num2 > Length)
         {
@@ -445,7 +443,7 @@ public class FusionReader : IDisposable
         int num3 = 0;
         for (int i = 0; i < num2; i++)
         {
-            byte b = buffer[Offset + Position + 4 + i];
+            byte b = buffer[Position + 4 + i];
             int num4 = 7;
             while (num4 >= 0 && num3 < num)
             {
@@ -468,7 +466,7 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         int num2 = (int)Math.Ceiling((double)num / 8.0);
         if (Position + 4 + num2 > Length)
         {
@@ -477,7 +475,7 @@ public class FusionReader : IDisposable
         int num3 = offset;
         for (int i = 0; i < num2; i++)
         {
-            byte b = buffer[Offset + Position + 4 + i];
+            byte b = buffer[Position + 4 + i];
             int num4 = 7;
             while (num4 >= 0 && num3 < num)
             {
@@ -498,14 +496,14 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         if (Position + 4 + num * 8 > Length)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num * 8, Length - Position - 4));
         }
         double[] array = new double[num];
         int num2 = 0;
-        int num3 = Offset + Position + 4;
+        int num3 = Position + 4;
         while (num2 < num)
         {
             array[num2] = BigEndianHelper.ReadDouble(buffer, num3);
@@ -528,13 +526,13 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         if (Position + 4 + num * 8 > Length)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num * 8, Length - Position - 4));
         }
         int num2 = 0;
-        int num3 = Offset + Position + 4;
+        int num3 = Position + 4;
         while (num2 < num)
         {
             destination[num2 + offset] = BigEndianHelper.ReadDouble(buffer, num3);
@@ -554,14 +552,14 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         if (Position + 4 + num * 2 > Length)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num * 2, Length - Position - 4));
         }
         short[] array = new short[num];
         int num2 = 0;
-        int num3 = Offset + Position + 4;
+        int num3 = Position + 4;
         while (num2 < num)
         {
             array[num2] = BigEndianHelper.ReadInt16(buffer, num3);
@@ -583,13 +581,13 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         if (Position + 4 + num * 2 > Length)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num * 2, Length - Position - 4));
         }
         int num2 = 0;
-        int num3 = Offset + Position + 4;
+        int num3 = Position + 4;
         while (num2 < num)
         {
             destination[num2 + offset] = BigEndianHelper.ReadInt16(buffer, num3);
@@ -609,14 +607,14 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         if (Position + 4 + num * 4 > Length)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num * 4, Length - Position - 4));
         }
         int[] array = new int[num];
         int num2 = 0;
-        int num3 = Offset + Position + 4;
+        int num3 = Position + 4;
         while (num2 < num)
         {
             array[num2] = BigEndianHelper.ReadInt32(buffer, num3);
@@ -638,13 +636,13 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         if (Position + 4 + num * 4 > Length)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num * 4, Length - Position - 4));
         }
         int num2 = 0;
-        int num3 = Offset + Position + 4;
+        int num3 = Position + 4;
         while (num2 < num)
         {
             destination[num2 + offset] = BigEndianHelper.ReadInt32(buffer, num3);
@@ -664,14 +662,14 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         if (Position + 4 + num * 8 > Length)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num * 8, Length - Position - 4));
         }
         long[] array = new long[num];
         int num2 = 0;
-        int num3 = Offset + Position + 4;
+        int num3 = Position + 4;
         while (num2 < num)
         {
             array[num2] = BigEndianHelper.ReadInt64(buffer, num3);
@@ -693,13 +691,13 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         if (Position + 4 + num * 8 > Length)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num * 8, Length - Position - 4));
         }
         int num2 = 0;
-        int num3 = Offset + Position + 4;
+        int num3 = Position + 4;
         while (num2 < num)
         {
             destination[num2 + offset] = BigEndianHelper.ReadInt64(buffer, num3);
@@ -719,13 +717,13 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         if (Position + 4 + num > Length)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num, Length - Position - 4));
         }
         sbyte[] array = new sbyte[num];
-        Buffer.BlockCopy(buffer, Offset + Position + 4, array, 0, num);
+        Buffer.BlockCopy(buffer, Position + 4, array, 0, num);
         Position += 4 + num;
         return array;
     }
@@ -741,12 +739,12 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         if (Position + 4 + num > Length)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num, Length - Position - 4));
         }
-        Buffer.BlockCopy(buffer, Offset + Position + 4, destination, offset, num);
+        Buffer.BlockCopy(buffer, Position + 4, destination, offset, num);
         Position += 4 + num;
     }
 
@@ -760,14 +758,14 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         if (Position + 4 + num * 4 > Length)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num * 4, Length - Position - 4));
         }
         float[] array = new float[num];
         int num2 = 0;
-        int num3 = Offset + Position + 4;
+        int num3 = Position + 4;
         while (num2 < num)
         {
             array[num2] = BigEndianHelper.ReadSingle(buffer, num3);
@@ -789,13 +787,13 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         if (Position + 4 + num * 4 > Length)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num * 4, Length - Position - 4));
         }
         int num2 = 0;
-        int num3 = Offset + Position + 4;
+        int num3 = Position + 4;
         while (num2 < num)
         {
             destination[num2 + offset] = BigEndianHelper.ReadSingle(buffer, num3);
@@ -815,7 +813,7 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         Position += 4;
         string[] array = new string[num];
         for (int i = 0; i < num; i++)
@@ -836,7 +834,7 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         Position += 4;
         for (int i = 0; i < num; i++)
         {
@@ -872,14 +870,14 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         if (Position + 4 + num * 2 > Length)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num * 2, Length - Position - 4));
         }
         ushort[] array = new ushort[num];
         int num2 = 0;
-        int num3 = Offset + Position + 4;
+        int num3 = Position + 4;
         while (num2 < num)
         {
             array[num2] = BigEndianHelper.ReadUInt16(buffer, num3);
@@ -901,13 +899,13 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         if (Position + 4 + num * 2 > Length)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num * 2, Length - Position - 4));
         }
         int num2 = 0;
-        int num3 = Offset + Position + 4;
+        int num3 = Position + 4;
         while (num2 < num)
         {
             destination[num2 + offset] = BigEndianHelper.ReadUInt16(buffer, num3);
@@ -927,14 +925,14 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         if (Position + 4 + num * 4 > Length)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num * 4, Length - Position - 4));
         }
         uint[] array = new uint[num];
         int num2 = 0;
-        int num3 = Offset + Position + 4;
+        int num3 = Position + 4;
         while (num2 < num)
         {
             array[num2] = BigEndianHelper.ReadUInt32(buffer, num3);
@@ -956,13 +954,13 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         if (Position + 4 + num * 4 > Length)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num * 4, Length - Position - 4));
         }
         int num2 = 0;
-        int num3 = Offset + Position + 4;
+        int num3 = Position + 4;
         while (num2 < num)
         {
             destination[num2 + offset] = BigEndianHelper.ReadUInt32(buffer, num3);
@@ -982,14 +980,14 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         if (Position + 4 + num * 8 > Length)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num * 8, Length - Position - 4));
         }
         ulong[] array = new ulong[num];
         int num2 = 0;
-        int num3 = Offset + Position + 4;
+        int num3 = Position + 4;
         while (num2 < num)
         {
             array[num2] = BigEndianHelper.ReadUInt64(buffer, num3);
@@ -1011,13 +1009,13 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
-        int num = BigEndianHelper.ReadInt32(buffer, Offset + Position);
+        int num = BigEndianHelper.ReadInt32(buffer, Position);
         if (Position + 4 + num * 8 > Length)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num * 8, Length - Position - 4));
         }
         int num2 = 0;
-        int num3 = Offset + Position + 4;
+        int num3 = Position + 4;
         while (num2 < num)
         {
             destination[num2 + offset] = BigEndianHelper.ReadUInt64(buffer, num3);
@@ -1056,7 +1054,7 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", length, Length - Position));
         }
-        Buffer.BlockCopy(this.buffer, this.Offset + Position, buffer, offset, length);
+        Buffer.BlockCopy(this.buffer, this.Position, buffer, offset, length);
         Position += length;
     }
 

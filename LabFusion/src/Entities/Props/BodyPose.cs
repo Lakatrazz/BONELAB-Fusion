@@ -1,12 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Network;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using UnityEngine;
 
 namespace LabFusion.Entities;
@@ -43,7 +37,7 @@ public class BodyPose : IFusionSerializable
 
     public void Serialize(FusionWriter writer)
     {
-        writer.Write(position);
+        writer.Write(SerializedShortVector3.Compress(position));
         writer.Write(SerializedSmallQuaternion.Compress(rotation));
         writer.Write(SerializedSmallVector3.Compress(velocity));
         writer.Write(SerializedSmallVector3.Compress(angularVelocity));
@@ -51,7 +45,7 @@ public class BodyPose : IFusionSerializable
 
     public void Deserialize(FusionReader reader)
     {
-        position = reader.ReadVector3();
+        position = reader.ReadFusionSerializable<SerializedShortVector3>().Expand();
         rotation = reader.ReadFusionSerializable<SerializedSmallQuaternion>().Expand();
         velocity = reader.ReadFusionSerializable<SerializedSmallVector3>().Expand();
         angularVelocity = reader.ReadFusionSerializable<SerializedSmallVector3>().Expand();
