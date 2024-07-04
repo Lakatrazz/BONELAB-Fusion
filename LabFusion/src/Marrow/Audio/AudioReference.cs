@@ -36,4 +36,14 @@ public struct AudioReference
 
         AudioLoader.LoadMonoDisc(MonoDisc, loadCallback);
     }
+
+    public static AudioReference[] CreateReferences(MonoDiscReference[] discs)
+    {
+        var references = new AudioReference[discs.Length];
+        for (var i = 0; i < discs.Length; i++)
+        {
+            references[i] = new AudioReference(discs[i]);
+        }
+        return references;
+    }
 }

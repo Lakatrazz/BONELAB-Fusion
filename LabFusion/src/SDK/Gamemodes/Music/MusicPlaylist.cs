@@ -46,7 +46,7 @@ public class MusicPlaylist
 
         currentTrack.LoadClip((clip) =>
         {
-            Audio2dPlugin.Audio2dManager.CueOverrideMusic(clip, Volume, 0.2f, 0.2f, LoopSingle, true);
+            Audio2dPlugin.Audio2dManager.CueOverrideMusic(clip, Volume, 0.2f, 0.2f, LoopSingle, false);
         });
     }
 
@@ -125,12 +125,37 @@ public class MusicPlaylist
         }
 
         // Check if we're ready to move tracks
-        bool isPlayingTrack = Audio2dPlugin.Audio2dManager._isOverride;
+        bool isOverridingTrack = Audio2dPlugin.Audio2dManager._isOverride;
+        bool isPlayingTrack = isOverridingTrack;
+
+        // Check if the track has ended
+        if (isOverridingTrack)
+        {
+            var ambAndMusic = GetCurrentAmbAndMusic();
+
+            if (ambAndMusic == null || !ambAndMusic.ambMus.isPlaying)
+            {
+                isPlayingTrack = false;
+            }
+        }
 
         if (!isPlayingTrack)
         {
             NextTrack();
         }
+    }
+
+    private static AmbAndMusic GetCurrentAmbAndMusic()
+    {
+        var audioManager = Audio2dPlugin.Audio2dManager;
+        var curMus = audioManager._curMus;
+
+        if (curMus > 0 && curMus < audioManager.ambAndMusics.Length)
+        {
+            return audioManager.ambAndMusics[curMus];
+        }
+
+        return null;
     }
 
     public void SetPlaylist(params AudioReference[] songs)

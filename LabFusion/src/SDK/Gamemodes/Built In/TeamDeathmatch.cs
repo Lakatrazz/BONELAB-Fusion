@@ -327,13 +327,7 @@ public class TeamDeathmatch : Gamemode
     {
         _totalMinutes = _savedMinutes;
 
-        var songReferences = FusionMonoDiscReferences.CombatSongReferences;
-        AudioReference[] playlist = new AudioReference[songReferences.Length];
-        for (var i = 0; i < songReferences.Length; i++)
-        {
-            playlist[i] = new AudioReference(songReferences[i]);
-        }
-
+        AudioReference[] playlist = AudioReference.CreateReferences(FusionMonoDiscReferences.CombatSongReferences);
         MusicPlaylist.SetPlaylist(playlist);
 
         AddDefaultTeams();
