@@ -48,6 +48,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private RigPose _pose = null;
     public RigPose RigPose => _pose;
 
+    private bool _receivedPose = false;
+    public bool ReceivedPose => _receivedPose;
+
     private RigPuppet _puppet = null;
     public RigPuppet Puppet => _puppet;
 
@@ -643,7 +646,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void OnApplyPelvisForces(float deltaTime)
     {
-        if (RigPose == null)
+        if (!ReceivedPose)
         {
             return;
         }
@@ -698,6 +701,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     public void OnReceivePose(RigPose pose)
     {
         _pose = pose;
+        _receivedPose = true;
 
         if (HasRig)
         {
@@ -707,7 +711,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     public void OnOverrideControllerRig()
     {
-        if (RigPose == null)
+        if (!ReceivedPose)
         {
             return;
         }
