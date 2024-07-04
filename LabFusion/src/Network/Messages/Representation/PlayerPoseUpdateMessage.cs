@@ -1,6 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Representation;
 using LabFusion.Entities;
+using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
@@ -77,6 +78,7 @@ public class PlayerPoseUpdateMessage : FusionMessageHandler
 
         if (entity == null)
         {
+            FusionLogger.Error($"PlayerPoseUpdateMessage could not find an entity with id {data.playerId}!");
             return;
         }
 
@@ -84,6 +86,7 @@ public class PlayerPoseUpdateMessage : FusionMessageHandler
 
         if (networkPlayer == null)
         {
+            FusionLogger.Error($"PlayerPoseUpdateMessage could not get a NetworkPlayer from the player entity!");
             return;
         }
 
