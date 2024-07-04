@@ -51,7 +51,7 @@ public class PlayerVoiceChatMessage : FusionMessageHandler
         using var data = reader.ReadFusionSerializable<PlayerVoiceChatData>();
 
         // Check if voice chat is active
-        if (!FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue())
+        if (!VoiceInfo.IsVoiceEnabled)
         {
             return;
         }
@@ -68,7 +68,7 @@ public class PlayerVoiceChatMessage : FusionMessageHandler
         if (NetworkInfo.IsServer)
         {
             using var message = FusionMessage.Create(Tag.Value, bytes);
-            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.VoiceChat, message);
+            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Unreliable, message);
         }
     }
 }

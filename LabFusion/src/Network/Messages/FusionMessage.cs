@@ -7,7 +7,6 @@ public enum NetworkChannel : byte
 {
     Reliable,
     Unreliable,
-    VoiceChat,
 }
 
 

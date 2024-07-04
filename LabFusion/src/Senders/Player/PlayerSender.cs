@@ -93,7 +93,7 @@ public static class PlayerSender
         writer.Write(data);
 
         using var message = FusionMessage.Create(NativeMessageTag.PlayerVoiceChat, writer);
-        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.VoiceChat, message);
+        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Unreliable, message);
     }
 
     public static void SendPlayerTeleport(byte target, Vector3 position)
