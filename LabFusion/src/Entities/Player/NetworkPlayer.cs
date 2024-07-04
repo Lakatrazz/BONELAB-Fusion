@@ -682,19 +682,16 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         // Apply forces
-        if (SafetyUtilities.IsValidTime)
-        {
-            pelvis.AddForce(_pelvisPDController.GetForce(pelvisPosition, pelvis.velocity, pelvisPose.position, pelvisPose.velocity), ForceMode.Acceleration);
+        pelvis.AddForce(_pelvisPDController.GetForce(pelvisPosition, pelvis.velocity, pelvisPose.position, pelvisPose.velocity), ForceMode.Acceleration);
 
-            // We only want to apply angular force when ragdolled
-            if (rigManager.physicsRig.torso.spineInternalMult <= 0f)
-            {
-                pelvis.AddTorque(_pelvisPDController.GetTorque(pelvisRotation, pelvis.angularVelocity, pelvisPose.rotation, pelvisPose.angularVelocity), ForceMode.Acceleration);
-            }
-            else
-            {
-                _pelvisPDController.ResetRotation();
-            }
+        // We only want to apply angular force when ragdolled
+        if (rigManager.physicsRig.torso.spineInternalMult <= 0f)
+        {
+            pelvis.AddTorque(_pelvisPDController.GetTorque(pelvisRotation, pelvis.angularVelocity, pelvisPose.rotation, pelvisPose.angularVelocity), ForceMode.Acceleration);
+        }
+        else
+        {
+            _pelvisPDController.ResetRotation();
         }
     }
 
