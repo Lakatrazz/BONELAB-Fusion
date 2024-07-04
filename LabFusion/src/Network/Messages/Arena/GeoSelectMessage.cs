@@ -29,7 +29,7 @@ namespace LabFusion.Network
     [Net.DelayWhileTargetLoading]
     public class GeoSelectMessage : FusionMessageHandler
     {
-        public override byte? Tag => NativeMessageTag.GeoSelect;
+        public override byte Tag => NativeMessageTag.GeoSelect;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {

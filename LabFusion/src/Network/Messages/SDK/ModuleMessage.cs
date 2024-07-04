@@ -1,12 +1,11 @@
-﻿namespace LabFusion.Network
-{
-    public class ModuleMessage : FusionMessageHandler
-    {
-        public override byte? Tag => NativeMessageTag.Module;
+﻿namespace LabFusion.Network;
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
-        {
-            ModuleMessageHandler.ReadMessage(bytes, isServerHandled);
-        }
+public class ModuleMessage : FusionMessageHandler
+{
+    public override byte Tag => NativeMessageTag.Module;
+
+    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    {
+        ModuleMessageHandler.ReadMessage(bytes, isServerHandled);
     }
 }

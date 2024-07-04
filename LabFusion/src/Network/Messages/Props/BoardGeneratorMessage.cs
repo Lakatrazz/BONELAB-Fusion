@@ -116,14 +116,14 @@ public class BoardGeneratorData : IFusionSerializable
 [Net.DelayWhileTargetLoading]
 public class BoardGeneratorMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.BoardGenerator;
+    public override byte Tag => NativeMessageTag.BoardGenerator;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
         // Send message to all clients if server
         if (isServerHandled)
         {
-            using var message = FusionMessage.Create(Tag.Value, bytes);
+            using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
             return;
         }

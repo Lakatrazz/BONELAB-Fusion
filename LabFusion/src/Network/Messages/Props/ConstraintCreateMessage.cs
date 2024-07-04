@@ -112,7 +112,7 @@ namespace LabFusion.Network
     [Net.DelayWhileTargetLoading]
     public class ConstraintCreateMessage : FusionMessageHandler
     {
-        public override byte? Tag => NativeMessageTag.ConstraintCreate;
+        public override byte Tag => NativeMessageTag.ConstraintCreate;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
@@ -135,7 +135,7 @@ namespace LabFusion.Network
 
                     writer.Write(data);
 
-                    using var message = FusionMessage.Create(Tag.Value, writer);
+                    using var message = FusionMessage.Create(Tag, writer);
                     MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
                 }
 

@@ -38,7 +38,7 @@ namespace LabFusion.Network
     [Net.DelayWhileTargetLoading]
     public class BonelabHubEventMessage : FusionMessageHandler
     {
-        public override byte? Tag => NativeMessageTag.BonelabHubEvent;
+        public override byte Tag => NativeMessageTag.BonelabHubEvent;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {

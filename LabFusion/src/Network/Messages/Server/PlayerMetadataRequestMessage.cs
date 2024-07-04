@@ -45,7 +45,7 @@ namespace LabFusion.Network
 
     public class PlayerMetadataRequestMessage : FusionMessageHandler
     {
-        public override byte? Tag => NativeMessageTag.PlayerMetadataRequest;
+        public override byte Tag => NativeMessageTag.PlayerMetadataRequest;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {

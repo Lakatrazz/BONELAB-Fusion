@@ -115,7 +115,7 @@ public class RPCEventData : IFusionSerializable
 
 public class RPCEventMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.RPCEvent;
+    public override byte Tag => NativeMessageTag.RPCEvent;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {

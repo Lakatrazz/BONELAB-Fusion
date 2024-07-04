@@ -43,7 +43,7 @@ public class MagazineClaimData : IFusionSerializable
 [Net.DelayWhileTargetLoading]
 public class MagazineClaimMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.MagazineClaim;
+    public override byte Tag => NativeMessageTag.MagazineClaim;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -53,7 +53,7 @@ public class MagazineClaimMessage : FusionMessageHandler
         // Send message to other clients if server
         if (isServerHandled)
         {
-            using var message = FusionMessage.Create(Tag.Value, bytes);
+            using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessageExcept(data.owner, NetworkChannel.Reliable, message, false);
             return;
         }

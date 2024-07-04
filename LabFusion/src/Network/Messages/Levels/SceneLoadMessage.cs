@@ -38,7 +38,7 @@ namespace LabFusion.Network
 
     public class SceneLoadMessage : FusionMessageHandler
     {
-        public override byte? Tag => NativeMessageTag.SceneLoad;
+        public override byte Tag => NativeMessageTag.SceneLoad;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {

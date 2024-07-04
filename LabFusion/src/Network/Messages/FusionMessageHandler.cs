@@ -6,7 +6,7 @@ namespace LabFusion.Network;
 
 public abstract class FusionMessageHandler : MessageHandler
 {
-    public virtual byte? Tag { get; } = null;
+    public abstract byte Tag { get; }
 
     // Handlers are created up front, they're not static
     public static void RegisterHandlersFromAssembly(Assembly targetAssembly)
@@ -26,24 +26,20 @@ public abstract class FusionMessageHandler : MessageHandler
     {
         FusionMessageHandler handler = Activator.CreateInstance(type) as FusionMessageHandler;
 
-        if (handler.Tag == null)
-        {
-            FusionLogger.Warn($"Didn't register {type.Name} because its message index was null!");
+        handler.NetAttributes = type.GetCustomAttributes<Net.NetAttribute>().ToArray();
+
+        byte index = handler.Tag;
+
+        if (Handlers[index] != null) 
+        { 
+            throw new Exception($"{type.Name} has the same index as {Handlers[index].GetType().Name}, we can't replace handlers!"); 
         }
-        else
-        {
-            handler.NetAttributes = type.GetCustomAttributes<Net.NetAttribute>().ToArray();
-
-            byte index = handler.Tag.Value;
-
-            if (Handlers[index] != null) throw new Exception($"{type.Name} has the same index as {Handlers[index].GetType().Name}, we can't replace handlers!");
 
 #if DEBUG
-            FusionLogger.Log($"Registered {type.Name}");
+        FusionLogger.Log($"Registered {type.Name}");
 #endif
 
-            Handlers[index] = handler;
-        }
+        Handlers[index] = handler;
     }
 
     public static unsafe void ReadMessage(byte* buffer, int size, bool isServerHandled = false)

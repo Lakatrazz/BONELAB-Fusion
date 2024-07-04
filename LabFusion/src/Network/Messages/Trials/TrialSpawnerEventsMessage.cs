@@ -33,7 +33,7 @@ namespace LabFusion.Network
     [Net.DelayWhileTargetLoading]
     public class TrialSpawnerEventsMessage : FusionMessageHandler
     {
-        public override byte? Tag => NativeMessageTag.TrialSpawnerEvents;
+        public override byte Tag => NativeMessageTag.TrialSpawnerEvents;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {

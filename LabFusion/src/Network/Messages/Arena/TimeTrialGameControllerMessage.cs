@@ -43,7 +43,7 @@ namespace LabFusion.Network
     [Net.DelayWhileTargetLoading]
     public class TimeTrialGameControllerMessage : FusionMessageHandler
     {
-        public override byte? Tag => NativeMessageTag.TimeTrial_GameController;
+        public override byte Tag => NativeMessageTag.TimeTrial_GameController;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {

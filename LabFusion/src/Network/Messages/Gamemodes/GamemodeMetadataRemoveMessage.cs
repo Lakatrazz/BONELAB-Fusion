@@ -33,7 +33,7 @@ namespace LabFusion.Network
 
     public class GamemodeMetadataRemoveMessage : FusionMessageHandler
     {
-        public override byte? Tag => NativeMessageTag.GamemodeMetadataRemove;
+        public override byte Tag => NativeMessageTag.GamemodeMetadataRemove;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {

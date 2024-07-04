@@ -70,7 +70,7 @@ public class SpawnResponseData : IFusionSerializable
 [Net.DelayWhileTargetLoading]
 public class SpawnResponseMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.SpawnResponse;
+    public override byte Tag => NativeMessageTag.SpawnResponse;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {

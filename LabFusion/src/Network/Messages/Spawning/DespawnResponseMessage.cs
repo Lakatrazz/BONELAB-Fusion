@@ -49,7 +49,7 @@ public class DespawnResponseData : IFusionSerializable
 [Net.DelayWhileTargetLoading]
 public class DespawnResponseMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.DespawnResponse;
+    public override byte Tag => NativeMessageTag.DespawnResponse;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {

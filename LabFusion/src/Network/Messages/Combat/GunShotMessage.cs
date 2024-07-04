@@ -44,7 +44,7 @@ public class GunShotData : IFusionSerializable
 [Net.SkipHandleWhileLoading]
 public class GunShotMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.GunShot;
+    public override byte Tag => NativeMessageTag.GunShot;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -54,7 +54,7 @@ public class GunShotMessage : FusionMessageHandler
         // Send message to other clients if server
         if (isServerHandled)
         {
-            using var message = FusionMessage.Create(Tag.Value, bytes);
+            using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
 
             return;

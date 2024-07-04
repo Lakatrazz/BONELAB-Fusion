@@ -45,7 +45,7 @@ public class FunicularControllerEventData : IFusionSerializable
 [Net.DelayWhileTargetLoading]
 public class FunicularControllerEventMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.FunicularControllerEvent;
+    public override byte Tag => NativeMessageTag.FunicularControllerEvent;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {

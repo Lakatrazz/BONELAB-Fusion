@@ -36,7 +36,7 @@ namespace LabFusion.Network
     [Net.SkipHandleWhileLoading]
     public class SlowMoButtonMessage : FusionMessageHandler
     {
-        public override byte? Tag => NativeMessageTag.SlowMoButton;
+        public override byte Tag => NativeMessageTag.SlowMoButton;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
@@ -44,7 +44,7 @@ namespace LabFusion.Network
             var data = reader.ReadFusionSerializable<SlowMoButtonMessageData>();
             if (isServerHandled)
             {
-                using var message = FusionMessage.Create(Tag.Value, bytes);
+                using var message = FusionMessage.Create(Tag, bytes);
                 MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
             }
             else

@@ -41,7 +41,7 @@ public class ConstrainerModeData : IFusionSerializable
 [Net.SkipHandleWhileLoading]
 public class ConstrainerModeMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.ConstrainerMode;
+    public override byte Tag => NativeMessageTag.ConstrainerMode;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -51,7 +51,7 @@ public class ConstrainerModeMessage : FusionMessageHandler
         // Send message to all clients if server
         if (isServerHandled)
         {
-            using var message = FusionMessage.Create(Tag.Value, bytes);
+            using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
 
             return;

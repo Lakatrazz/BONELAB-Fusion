@@ -45,7 +45,7 @@ namespace LabFusion.Network
 
     public class PointItemTriggerValueMessage : FusionMessageHandler
     {
-        public override byte? Tag => NativeMessageTag.PointItemTriggerValue;
+        public override byte Tag => NativeMessageTag.PointItemTriggerValue;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
@@ -54,7 +54,7 @@ namespace LabFusion.Network
             // Send message to other clients if server
             if (isServerHandled)
             {
-                using var message = FusionMessage.Create(Tag.Value, bytes);
+                using var message = FusionMessage.Create(Tag, bytes);
                 MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
             }
             else

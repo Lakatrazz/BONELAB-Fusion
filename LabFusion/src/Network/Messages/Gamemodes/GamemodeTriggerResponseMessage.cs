@@ -53,13 +53,13 @@ public class GamemodeTriggerResponseData : IFusionSerializable
 
 public class GamemodeTriggerResponseMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.GamemodeTriggerResponse;
+    public override byte Tag => NativeMessageTag.GamemodeTriggerResponse;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
         if (isServerHandled)
         {
-            using var message = FusionMessage.Create(Tag.Value, bytes);
+            using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
             return;
         }

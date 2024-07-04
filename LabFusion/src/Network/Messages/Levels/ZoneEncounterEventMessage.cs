@@ -45,7 +45,7 @@ namespace LabFusion.Network
     [Net.DelayWhileTargetLoading]
     public class ZoneEncounterEventMessage : FusionMessageHandler
     {
-        public override byte? Tag => NativeMessageTag.ZoneEncounterEvent;
+        public override byte Tag => NativeMessageTag.ZoneEncounterEvent;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {

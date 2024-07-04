@@ -31,7 +31,7 @@ public class BodyLogEffectData : IFusionSerializable
 [Net.SkipHandleWhileLoading]
 public class BodyLogEffectMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.BodyLogEffect;
+    public override byte Tag => NativeMessageTag.BodyLogEffect;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -47,7 +47,7 @@ public class BodyLogEffectMessage : FusionMessageHandler
         // Bounce the message back
         if (NetworkInfo.IsServer)
         {
-            using var message = FusionMessage.Create(Tag.Value, bytes);
+            using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Unreliable, message);
         }
     }

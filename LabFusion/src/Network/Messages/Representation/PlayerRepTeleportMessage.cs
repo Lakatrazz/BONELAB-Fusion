@@ -40,7 +40,7 @@ namespace LabFusion.Network
     [Net.SkipHandleWhileLoading]
     public class PlayerRepTeleportMessage : FusionMessageHandler
     {
-        public override byte? Tag => NativeMessageTag.PlayerRepTeleport;
+        public override byte Tag => NativeMessageTag.PlayerRepTeleport;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {

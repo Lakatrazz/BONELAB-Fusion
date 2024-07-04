@@ -45,7 +45,7 @@ public class DescentElevatorData : IFusionSerializable
 [Net.DelayWhileTargetLoading]
 public class DescentElevatorMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.DescentElevator;
+    public override byte Tag => NativeMessageTag.DescentElevator;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -55,7 +55,7 @@ public class DescentElevatorMessage : FusionMessageHandler
         // Send message to other clients if server
         if (isServerHandled)
         {
-            using var message = FusionMessage.Create(Tag.Value, bytes);
+            using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
             return;
         }

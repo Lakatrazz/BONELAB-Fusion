@@ -43,7 +43,7 @@ public class NetworkPropCreateData : IFusionSerializable
 [Net.DelayWhileTargetLoading]
 public class NetworkPropCreateMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.NetworkPropCreate;
+    public override byte Tag => NativeMessageTag.NetworkPropCreate;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -60,7 +60,7 @@ public class NetworkPropCreateMessage : FusionMessageHandler
                 return;
             }
 
-            using var message = FusionMessage.Create(Tag.Value, bytes);
+            using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessageExcept(data.ownerId, NetworkChannel.Reliable, message, false);
             return;
         }

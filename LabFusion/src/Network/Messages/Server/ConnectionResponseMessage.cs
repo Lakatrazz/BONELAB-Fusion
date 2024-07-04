@@ -42,7 +42,7 @@ public class ConnectionResponseData : IFusionSerializable
 
 public class ConnectionResponseMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.ConnectionResponse;
+    public override byte Tag => NativeMessageTag.ConnectionResponse;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {

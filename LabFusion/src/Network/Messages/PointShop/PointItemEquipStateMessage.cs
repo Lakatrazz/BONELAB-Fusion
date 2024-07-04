@@ -37,7 +37,7 @@ namespace LabFusion.Network
 
     public class PointItemEquipStateMessage : FusionMessageHandler
     {
-        public override byte? Tag => NativeMessageTag.PointItemEquipState;
+        public override byte Tag => NativeMessageTag.PointItemEquipState;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
@@ -46,7 +46,7 @@ namespace LabFusion.Network
             // Send message to other clients if server
             if (isServerHandled)
             {
-                using var message = FusionMessage.Create(Tag.Value, bytes);
+                using var message = FusionMessage.Create(Tag, bytes);
                 MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
             }
             else if (PointItemManager.TryGetPointItem(data.barcode, out var item))

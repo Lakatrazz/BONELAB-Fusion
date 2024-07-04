@@ -41,7 +41,7 @@ public class PlayerRepActionData : IFusionSerializable
 
 public class PlayerRepActionMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.PlayerRepAction;
+    public override byte Tag => NativeMessageTag.PlayerRepAction;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -51,7 +51,7 @@ public class PlayerRepActionMessage : FusionMessageHandler
         // Send message to other clients if server
         if (isServerHandled)
         {
-            using var message = FusionMessage.Create(Tag.Value, bytes);
+            using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
             return;
         }

@@ -42,7 +42,7 @@ public class PlayerVoiceChatData : IFusionSerializable, IDisposable
 
 public class PlayerVoiceChatMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.PlayerVoiceChat;
+    public override byte Tag => NativeMessageTag.PlayerVoiceChat;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -66,7 +66,7 @@ public class PlayerVoiceChatMessage : FusionMessageHandler
         // Bounce the message back
         if (NetworkInfo.IsServer)
         {
-            using var message = FusionMessage.Create(Tag.Value, bytes);
+            using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Unreliable, message);
         }
     }
