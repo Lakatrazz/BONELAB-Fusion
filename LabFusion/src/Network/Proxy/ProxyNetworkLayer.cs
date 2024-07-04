@@ -349,21 +349,26 @@ namespace LabFusion.Network
         public override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message)
         {
             var id = PlayerIdManager.GetPlayerId(userId);
+
             if (id != null)
+            {
                 SendFromServer(id.LongId, channel, message);
+            }
         }
 
         public override void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message)
         {
-            if (IsServer)
+            if (!IsServer)
             {
-                MessageTypes type = channel == NetworkChannel.Unreliable ? MessageTypes.UnreliableSendFromServer : MessageTypes.ReliableSendFromServer;
-                NetDataWriter writer = NewWriter(type);
-                writer.Put(userId);
-                byte[] data = message.ToByteArray();
-                writer.PutBytesWithLength(data);
-                SendToProxyServer(writer);
+                return;
             }
+
+            MessageTypes type = channel == NetworkChannel.Unreliable ? MessageTypes.UnreliableSendFromServer : MessageTypes.ReliableSendFromServer;
+            NetDataWriter writer = NewWriter(type);
+            writer.Put(userId);
+            byte[] data = message.ToByteArray();
+            writer.PutBytesWithLength(data);
+            SendToProxyServer(writer);
         }
 
         public override void StartServer()

@@ -1,8 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
 
-using UnityEngine;
-
 namespace LabFusion.Network;
 
 public class EntityPoseUpdateData : IFusionSerializable
