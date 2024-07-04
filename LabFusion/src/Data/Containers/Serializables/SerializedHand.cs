@@ -13,8 +13,6 @@ namespace LabFusion.Data
     {
         public const int Size = sizeof(float) * 3 + sizeof(byte) * 12;
 
-        public float forceMultiplier;
-
         public float indexCurl;
         public float middleCurl;
         public float ringCurl;
@@ -39,8 +37,6 @@ namespace LabFusion.Data
 
         public SerializedHand(Hand hand, BaseController controller)
         {
-            forceMultiplier = hand.physHand._forceMultiplier;
-
             indexCurl = controller._processedIndex;
             middleCurl = controller._processedMiddle;
             ringCurl = controller._processedRing;
@@ -62,8 +58,6 @@ namespace LabFusion.Data
 
         public void CopyTo(Hand hand, BaseController controller)
         {
-            hand.physHand._forceMultiplier = forceMultiplier;
-
             controller._processedIndex = indexCurl;
             controller._processedMiddle = middleCurl;
             controller._processedRing = ringCurl;
@@ -106,7 +100,7 @@ namespace LabFusion.Data
             controller._lastTimeGrabbed = TimeUtilities.TimeSinceStartup;
         }
 
-        public void SolveButtonPress(bool lastValue, bool newValue, ref bool up, ref bool down)
+        public static void SolveButtonPress(bool lastValue, bool newValue, ref bool up, ref bool down)
         {
             if (newValue)
             {
@@ -130,8 +124,6 @@ namespace LabFusion.Data
 
         public void Serialize(FusionWriter writer)
         {
-            writer.Write(forceMultiplier);
-
             writer.Write((byte)(indexCurl * PRECISION_MULTIPLIER));
             writer.Write((byte)(middleCurl * PRECISION_MULTIPLIER));
             writer.Write((byte)(ringCurl * PRECISION_MULTIPLIER));
@@ -153,8 +145,6 @@ namespace LabFusion.Data
 
         public void Deserialize(FusionReader reader)
         {
-            forceMultiplier = reader.ReadSingle();
-
             indexCurl = ReadCompressedFloat(reader);
             middleCurl = ReadCompressedFloat(reader);
             ringCurl = ReadCompressedFloat(reader);
@@ -174,7 +164,7 @@ namespace LabFusion.Data
             thumbstickAxis = reader.ReadFusionSerializable<SerializedSmallDirection2D>().Expand();
         }
 
-        private float ReadCompressedFloat(FusionReader reader)
+        private static float ReadCompressedFloat(FusionReader reader)
         {
             return ((float)reader.ReadByte()) / PRECISION_MULTIPLIER;
         }
