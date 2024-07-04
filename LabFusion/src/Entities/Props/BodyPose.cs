@@ -45,15 +45,15 @@ public class BodyPose : IFusionSerializable
     {
         writer.Write(position);
         writer.Write(SerializedSmallQuaternion.Compress(rotation));
-        writer.Write(velocity);
-        writer.Write(angularVelocity);
+        writer.Write(SerializedSmallVector3.Compress(velocity));
+        writer.Write(SerializedSmallVector3.Compress(angularVelocity));
     }
 
     public void Deserialize(FusionReader reader)
     {
         position = reader.ReadVector3();
         rotation = reader.ReadFusionSerializable<SerializedSmallQuaternion>().Expand();
-        velocity = reader.ReadVector3();
-        angularVelocity = reader.ReadVector3();
+        velocity = reader.ReadFusionSerializable<SerializedSmallVector3>().Expand();
+        angularVelocity = reader.ReadFusionSerializable<SerializedSmallVector3>().Expand();
     }
 }

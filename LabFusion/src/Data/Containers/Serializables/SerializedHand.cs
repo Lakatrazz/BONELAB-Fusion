@@ -148,7 +148,7 @@ namespace LabFusion.Data
             writer.Write(primaryInteractionButton);
             writer.Write(secondaryInteractionButton);
 
-            writer.Write(thumbstickAxis);
+            writer.Write(SerializedSmallDirection2D.Compress(thumbstickAxis));
         }
 
         public void Deserialize(FusionReader reader)
@@ -171,7 +171,7 @@ namespace LabFusion.Data
             primaryInteractionButton = reader.ReadBoolean();
             secondaryInteractionButton = reader.ReadBoolean();
 
-            thumbstickAxis = reader.ReadVector2();
+            thumbstickAxis = reader.ReadFusionSerializable<SerializedSmallDirection2D>().Expand();
         }
 
         private float ReadCompressedFloat(FusionReader reader)

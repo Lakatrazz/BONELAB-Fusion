@@ -641,7 +641,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         writer.Write(data);
 
         using var message = FusionMessage.Create(NativeMessageTag.PlayerPoseUpdate, writer);
-        MessageSender.SendToServer(NetworkChannel.Unreliable, message);
+        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Unreliable, message);
     }
 
     private void OnApplyPelvisForces(float deltaTime)

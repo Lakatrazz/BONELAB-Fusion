@@ -1,4 +1,5 @@
-﻿using LabFusion.Network;
+﻿using LabFusion.Extensions;
+using LabFusion.Network;
 
 using System.Text.RegularExpressions;
 
@@ -28,6 +29,7 @@ public static class FusionMasterList
     }
 
     private static readonly MasterPlayer[] _steamPlayers = new MasterPlayer[] {
+        // Fusion testers
         new(76561198198752494, "Lakatrazz"),
         new(76561198097630377, "AlexTheBaBa"),
         new(76561198222917852, "Mr.Gaming"),
@@ -36,6 +38,9 @@ public static class FusionMasterList
         new(76561198233973112, "Alfie"),
         new(76561198061847729, "zz0000"),
         new(76561198837064193, "172", false),
+
+        // Fusion frequenters
+        new(76561198381184399, "Puma"),
     };
 
     public static FusionMasterResult VerifyPlayer(ulong id, string name)
@@ -61,8 +66,9 @@ public static class FusionMasterList
             }
 
             // Convert names to have no whitespace and in lowercase
-            string masterName = Regex.Replace(player.name, @"\s+", "").ToLower();
-            string otherName = Regex.Replace(name, @"\s+", "").ToLower();
+            string masterName = Regex.Replace(player.name, @"\s+", "").ToLower().RemoveRichText();
+
+            string otherName = Regex.Replace(name, @"\s+", "").ToLower().RemoveRichText();
 
             // The name matches, but the id didn't
             if (otherName.Contains(masterName) && player.unique)
