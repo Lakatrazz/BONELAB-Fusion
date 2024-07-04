@@ -69,6 +69,9 @@ public class TeamDeathmatch : Gamemode
     private readonly TeamMusicManager _teamMusicManager = new();
     public TeamMusicManager TeamMusicManager => _teamMusicManager;
 
+    private readonly MusicPlaylist _musicPlaylist = new();
+    public MusicPlaylist MusicPlaylist => _musicPlaylist;
+
     private readonly FusionDictionary<PlayerId, TeamLogoInstance> _logoInstances = new();
 
     private string _avatarOverride = null;
@@ -324,10 +327,14 @@ public class TeamDeathmatch : Gamemode
     {
         _totalMinutes = _savedMinutes;
 
-        AudioLoader.LoadMonoDiscs(FusionMonoDiscReferences.CombatSongReferences, (clips) =>
+        var songReferences = FusionMonoDiscReferences.CombatSongReferences;
+        AudioReference[] playlist = new AudioReference[songReferences.Length];
+        for (var i = 0; i < songReferences.Length; i++)
         {
-            SetPlaylist(DefaultMusicVolume, clips);
-        });
+            playlist[i] = new AudioReference(songReferences[i]);
+        }
+
+        MusicPlaylist.SetPlaylist(playlist);
 
         AddDefaultTeams();
 
@@ -392,39 +399,46 @@ public class TeamDeathmatch : Gamemode
     /// <param name="otherPlayer"></param>
     protected void OnPlayerAction(PlayerId player, PlayerActionType type, PlayerId otherPlayer = null)
     {
-        if (IsActive() && NetworkInfo.IsServer)
+        if (!NetworkInfo.IsServer)
         {
-            if (type != PlayerActionType.DYING_BY_OTHER_PLAYER)
+            return;
+        }
+
+        if (!IsActive())
+        {
+            return;
+        }
+
+        if (type != PlayerActionType.DYING_BY_OTHER_PLAYER)
+        {
+            return;
+        }
+
+        if (otherPlayer == null)
+        {
+            return;
+        }
+
+        if (otherPlayer == player)
+        {
+            return;
+        }
+
+        var killerTeam = TeamManager.GetPlayerTeam(otherPlayer);
+        var killedTeam = TeamManager.GetPlayerTeam(player);
+
+        if (killerTeam != killedTeam)
+        {
+            // Increment score for that team
+            if (NetworkInfo.IsServer)
             {
-                return;
+                ScoreKeeper.AddScore(killerTeam);
             }
 
-            if (otherPlayer == null)
+            // If we are the killer, increment our achievement
+            if (otherPlayer.IsSelf)
             {
-                return;
-            }
-
-            if (otherPlayer == player)
-            {
-                return;
-            }
-
-            var killerTeam = TeamManager.GetPlayerTeam(otherPlayer);
-            var killedTeam = TeamManager.GetPlayerTeam(player);
-
-            if (killerTeam != killedTeam)
-            {
-                // Increment score for that team
-                if (NetworkInfo.IsServer)
-                {
-                    ScoreKeeper.AddScore(killerTeam);
-                }
-
-                // If we are the killer, increment our achievement
-                if (otherPlayer.IsSelf)
-                {
-                    AchievementManager.IncrementAchievements<KillerAchievement>();
-                }
+                AchievementManager.IncrementAchievements<KillerAchievement>();
             }
         }
     }
@@ -456,6 +470,8 @@ public class TeamDeathmatch : Gamemode
     protected override void OnStartGamemode()
     {
         base.OnStartGamemode();
+
+        MusicPlaylist.StartPlaylist();
 
         if (NetworkInfo.IsServer)
         {
@@ -497,6 +513,8 @@ public class TeamDeathmatch : Gamemode
     protected override void OnStopGamemode()
     {
         base.OnStopGamemode();
+
+        MusicPlaylist.StopPlaylist();
 
         var leaders = TeamManager.Teams.OrderBy(team => ScoreKeeper.GetScore(team)).Reverse().ToList();
 
@@ -575,7 +593,17 @@ public class TeamDeathmatch : Gamemode
     {
         base.OnUpdate();
 
-        if (!IsActive() || !NetworkInfo.IsServer)
+        // Make sure the gamemode is active
+        if (!IsActive())
+        {
+            return;
+        }
+
+        // Update music
+        MusicPlaylist.Update();
+
+        // Make sure this is the host
+        if (!NetworkInfo.IsServer)
         {
             return;
         }
@@ -697,7 +725,7 @@ public class TeamDeathmatch : Gamemode
 
         AudioLoader.LoadMonoDisc(randomChoice, (c) =>
         {
-            FusionAudio.Play2D(c, DefaultMusicVolume);
+            FusionAudio.Play2D(c, 0.2f);
         });
     }
 
@@ -719,7 +747,7 @@ public class TeamDeathmatch : Gamemode
 
         AudioLoader.LoadMonoDisc(randomChoice, (c) =>
         {
-            FusionAudio.Play2D(c, DefaultMusicVolume);
+            FusionAudio.Play2D(c, 0.2f);
         });
     }
 

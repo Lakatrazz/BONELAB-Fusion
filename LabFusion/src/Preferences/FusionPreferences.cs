@@ -107,7 +107,6 @@ namespace LabFusion.Preferences
             public static FusionPref<float> GlobalVolume { get; internal set; }
 
             // Gamemode settings
-            public static FusionPref<bool> GamemodeMusic { get; internal set; }
             public static FusionPref<bool> GamemodeLateJoining { get; internal set; }
         }
 
@@ -190,7 +189,6 @@ namespace LabFusion.Preferences
             ClientSettings.GlobalVolume = new FusionPref<float>(prefCategory, "GlobalMicVolume", 1f, PrefUpdateMode.IGNORE);
 
             // Gamemodes
-            ClientSettings.GamemodeMusic = new FusionPref<bool>(prefCategory, "Gamemode Music", true, PrefUpdateMode.IGNORE);
             ClientSettings.GamemodeLateJoining = new FusionPref<bool>(prefCategory, "Gamemode Late Joining", true, PrefUpdateMode.IGNORE);
 
             // Save category

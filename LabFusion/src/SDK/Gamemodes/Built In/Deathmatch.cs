@@ -45,6 +45,9 @@ public class Deathmatch : Gamemode
     private readonly PlayerScoreKeeper _scoreKeeper = new();
     public PlayerScoreKeeper ScoreKeeper => _scoreKeeper;
 
+    private readonly MusicPlaylist _playlist = new();
+    public MusicPlaylist Playlist => _playlist;
+
     private bool _hasDied;
 
     private float _timeOfStart;
@@ -92,10 +95,14 @@ public class Deathmatch : Gamemode
     {
         _totalMinutes = _savedMinutes;
 
-        AudioLoader.LoadMonoDiscs(FusionMonoDiscReferences.CombatSongReferences, (clips) =>
+        var songReferences = FusionMonoDiscReferences.CombatSongReferences;
+        AudioReference[] playlist = new AudioReference[songReferences.Length];
+        for (var i = 0; i < songReferences.Length; i++)
         {
-            SetPlaylist(DefaultMusicVolume, clips);
-        });
+            playlist[i] = new AudioReference(songReferences[i]);
+        }
+
+        Playlist.SetPlaylist(playlist);
 
         _avatarOverride = null;
         _vitalityOverride = null;
@@ -301,6 +308,8 @@ public class Deathmatch : Gamemode
     {
         base.OnStartGamemode();
 
+        Playlist.StartPlaylist();
+
         if (NetworkInfo.IsServer)
         {
             ScoreKeeper.ResetScores();
@@ -384,6 +393,8 @@ public class Deathmatch : Gamemode
     protected override void OnStopGamemode()
     {
         base.OnStopGamemode();
+
+        Playlist.StopPlaylist();
 
         // Get the winner message
         var firstPlace = GetByScore(0);
@@ -478,14 +489,17 @@ public class Deathmatch : Gamemode
 
     protected override void OnUpdate()
     {
-        // Make sure we're in a server
-        if (!NetworkInfo.IsServer)
+        // Also make sure the gamemode is active
+        if (!IsActive())
         {
             return;
         }
 
-        // Also make sure the gamemode is active
-        if (!IsActive())
+        // Update music
+        Playlist.Update();
+
+        // Make sure we are a server
+        if (!NetworkInfo.IsServer)
         {
             return;
         }

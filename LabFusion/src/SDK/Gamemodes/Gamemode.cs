@@ -14,8 +14,6 @@ namespace LabFusion.SDK.Gamemodes;
 
 public abstract class Gamemode
 {
-    public const float DefaultMusicVolume = 0.4f;
-
     internal static bool _isGamemodeRunning = false;
     internal static Gamemode _activeGamemode = null;
     internal static Gamemode _markedGamemode = null;
@@ -40,7 +38,6 @@ public abstract class Gamemode
     /// </summary>
     public static Gamemode TargetGamemode => _activeGamemode ?? _markedGamemode;
 
-    public static bool MusicToggled { get; internal set; } = true;
     public static bool LateJoining { get; internal set; } = false;
 
     internal ushort? _tag = null;
@@ -69,12 +66,6 @@ public abstract class Gamemode
 
     private readonly TriggerRelay _relay = new();
     public TriggerRelay Relay => _relay;
-
-    // Music
-    public virtual bool MusicEnabled => MusicToggled;
-    public virtual bool ManualPlaylist { get; } = false;
-
-    protected GamemodePlaylist _playlist = null;
 
     internal void GamemodeRegistered()
     {
@@ -150,53 +141,6 @@ public abstract class Gamemode
 
         GamemodeSender.SendGamemodeMetadataRemove(Tag.Value, key);
         return true;
-    }
-
-    public void SetPlaylist(float volume = 1f, params AudioClip[] clips)
-    {
-        bool wasPlaying = false;
-
-        if (_playlist != null)
-        {
-            wasPlaying = _playlist.IsPlaying;
-            _playlist.Dispose();
-            _playlist = null;
-        }
-
-        _playlist = new GamemodePlaylist(this, volume, clips);
-
-        if (wasPlaying && !ManualPlaylist)
-            PlayPlaylist();
-    }
-
-    public void PlayPlaylist()
-    {
-        if (_playlist != null)
-            _playlist.Play();
-    }
-
-    public void StopPlaylist()
-    {
-        if (_playlist != null)
-        {
-            _playlist.Stop();
-        }
-    }
-
-    public void DisposePlaylist()
-    {
-        if (_playlist != null)
-        {
-            _playlist.Dispose();
-            _playlist = null;
-        }
-    }
-
-
-    public void UpdatePlaylist()
-    {
-        if (_playlist != null)
-            _playlist.Update();
     }
 
     public bool IsActive() => ActiveGamemode == this;
@@ -336,9 +280,6 @@ public abstract class Gamemode
             GamemodeManager.Internal_SetActiveGamemode(this);
             IsStarted = true;
             OnStartGamemode();
-
-            if (!ManualPlaylist)
-                PlayPlaylist();
         }
         else
         {
@@ -347,9 +288,6 @@ public abstract class Gamemode
             GamemodeManager.Internal_SetActiveGamemode(null);
             IsStarted = false;
             OnStopGamemode();
-
-            if (!ManualPlaylist)
-                StopPlaylist();
         }
     }
 
@@ -411,7 +349,6 @@ public abstract class Gamemode
 
     public void Update()
     {
-        UpdatePlaylist();
         OnUpdate();
     }
     protected virtual void OnUpdate() { }

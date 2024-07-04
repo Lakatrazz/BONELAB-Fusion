@@ -137,7 +137,6 @@
     <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\Deathmatch\DeathmatchProxy.cs.meta" />
     <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\Deathmatch\DeathmatchSpawnpoint.cs.meta" />
     <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\Entangled.meta" />
-    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\Entangled\EntangledProxy.cs.meta" />
     <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\GamemodeEndEvent.cs.meta" />
     <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\GamemodeStartEvent.cs.meta" />
     <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\Team Deathmatch.meta" />
@@ -183,6 +182,8 @@
     <None Remove="FusionHelper\libsteam_api.so" />
     <None Remove="FusionHelper\steam_api64.dll" />
     <None Remove="src\AssemblyInfo.tt" />
+    <None Remove="src\Marrow\Audio\AudioReference.cs~RF202ddfa1.TMP" />
+    <None Remove="src\SDK\Gamemodes\Music\MusicPlaylist.cs~RF2046160e.TMP" />
   </ItemGroup>
 
   <ItemGroup>

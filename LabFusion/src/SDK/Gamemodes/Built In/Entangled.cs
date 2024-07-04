@@ -121,6 +121,9 @@ public class Entangled : Gamemode
     // Keys
     public const string PlayerPartnerKey = DefaultPrefix + ".Partner";
 
+    private readonly MusicPlaylist _playlist = new();
+    public MusicPlaylist Playlist => _playlist;
+
     protected PlayerId _partner = null;
     protected List<EntangledTether> _tethers = new List<EntangledTether>();
 
@@ -151,10 +154,8 @@ public class Entangled : Gamemode
 
     public void SetDefaultValues()
     {
-        AudioLoader.LoadMonoDisc(FusionMonoDiscReferences.GeoGrpFellDownTheStairsReference, (c) =>
-        {
-            SetPlaylist(DefaultMusicVolume, c);
-        });
+        var song = new AudioReference(FusionMonoDiscReferences.GeoGrpFellDownTheStairsReference);
+        Playlist.SetPlaylist(song);
     }
 
     public void SetOverriden()
@@ -195,29 +196,37 @@ public class Entangled : Gamemode
 
     protected override void OnUpdate()
     {
-        // Update all tethers
-        if (IsActive())
+        // Make sure the gamemode is active
+        if (!IsActive())
         {
-            foreach (var tether in _tethers)
-            {
-                tether.OnUpdate();
-            }
+            return;
+        }
+
+        // Update music
+        Playlist.Update();
+
+        // Update all tethers
+        foreach (var tether in _tethers)
+        {
+            tether.OnUpdate();
         }
     }
 
     protected void OnPlayerJoin(PlayerId id)
     {
-        if (IsActive())
+        if (!IsActive())
         {
-            var unassignedPlayers = GetUnassignedPlayers();
-
-            if (unassignedPlayers.Count > 0)
-            {
-                AssignPartners(unassignedPlayers[0], id);
-            }
-            else
-                AssignPartners(id, null);
+            return;
         }
+
+        var unassignedPlayers = GetUnassignedPlayers();
+
+        if (unassignedPlayers.Count > 0)
+        {
+            AssignPartners(unassignedPlayers[0], id);
+        }
+        else
+            AssignPartners(id, null);
     }
 
     protected void OnPlayerLeave(PlayerId id)
