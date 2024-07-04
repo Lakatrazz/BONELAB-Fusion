@@ -238,6 +238,8 @@ public class Entangled : Gamemode
     {
         base.OnStartGamemode();
 
+        Playlist.StartPlaylist();
+
         // Recursively assign players until there are no more pairs left
         if (NetworkInfo.IsServer)
         {
@@ -268,6 +270,8 @@ public class Entangled : Gamemode
     protected override void OnStopGamemode()
     {
         base.OnStopGamemode();
+
+        Playlist.StopPlaylist();
 
         // Send notification of gamemode stop
         FusionNotifier.Send(new FusionNotification()
