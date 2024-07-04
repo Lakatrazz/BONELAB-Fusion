@@ -26,6 +26,7 @@ public class TimedDespawner : MonoBehaviour
 
     public Poolee Poolee { get { return _poolee; } set { _poolee = value; } }
 
+    [HideFromIl2Cpp]
     public event DespawnCheck OnDespawnCheck;
 
     [HideFromIl2Cpp]
