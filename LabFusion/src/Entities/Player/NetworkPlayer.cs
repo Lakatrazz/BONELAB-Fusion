@@ -3,7 +3,6 @@ using Il2CppSLZ.Rig;
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Audio;
 using Il2CppSLZ.Interaction;
-using Il2CppSLZ.Marrow.Utilities;
 
 using LabFusion.Data;
 using LabFusion.Extensions;
@@ -18,8 +17,6 @@ using MelonLoader;
 using UnityEngine;
 
 using System.Collections;
-using BoneLib;
-using LabFusion.Marrow;
 
 namespace LabFusion.Entities;
 
@@ -641,7 +638,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         writer.Write(data);
 
         using var message = FusionMessage.Create(NativeMessageTag.PlayerPoseUpdate, writer);
-        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Unreliable, message);
+        MessageSender.SendToServer(NetworkChannel.Unreliable, message);
     }
 
     private void OnApplyPelvisForces(float deltaTime)
