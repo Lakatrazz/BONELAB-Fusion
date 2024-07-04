@@ -40,6 +40,7 @@ public static class FusionMasterList
         new(76561198837064193, "172", false),
 
         // Fusion frequenters
+        new(76561198060337335, "Camobiwon"),
         new(76561198381184399, "Puma"),
     };
 
