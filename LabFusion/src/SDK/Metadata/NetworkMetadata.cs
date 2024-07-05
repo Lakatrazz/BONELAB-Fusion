@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Utilities;
 
 namespace LabFusion.SDK.Metadata;
 
@@ -22,6 +23,7 @@ public class NetworkMetadata
     {
         if (OnTrySetMetadata == null)
         {
+            FusionLogger.Warn($"Tried setting metadata with a key of {key} and value of {value}, but the request callbacks were not set!");
             return false;
         }
 
@@ -32,6 +34,7 @@ public class NetworkMetadata
     {
         if (OnTryRemoveMetadata == null)
         {
+            FusionLogger.Warn($"Tried removing metadata with a key of {key}, but the request callbacks were not set!");
             return false;
         }
 
