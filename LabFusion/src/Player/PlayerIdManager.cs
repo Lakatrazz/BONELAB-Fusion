@@ -9,7 +9,7 @@ public static class PlayerIdManager
     public const int MinPlayerId = 0;
     public const int MaxPlayerId = byte.MaxValue;
 
-    public static readonly List<PlayerId> PlayerIds = new();
+    public static readonly HashSet<PlayerId> PlayerIds = new();
     public static int PlayerCount => PlayerIds.Count;
     public static bool HasOtherPlayers => PlayerCount > 1;
 
@@ -20,6 +20,8 @@ public static class PlayerIdManager
     public static byte LocalSmallId { get; private set; }
     public static PlayerId LocalId { get; private set; }
 
+    public const byte HostSmallId = 0;
+
     public static byte? GetUnusedPlayerId()
     {
         for (byte i = 0; i < 255; i++)
@@ -28,6 +30,11 @@ public static class PlayerIdManager
                 return i;
         }
         return null;
+    }
+
+    public static PlayerId GetHostId()
+    {
+        return GetPlayerId(HostSmallId);
     }
 
     public static PlayerId GetPlayerId(byte smallId)

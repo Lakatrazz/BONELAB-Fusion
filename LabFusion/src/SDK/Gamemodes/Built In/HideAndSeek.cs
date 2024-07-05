@@ -109,7 +109,7 @@ public class HideAndSeek : Gamemode
             TeamManager.TryAssignTeam(playerId, SeekerTeam);
         }
 
-        if (playerId.IsSelf)
+        if (playerId.IsOwner)
         {
             FusionNotifier.Send(new FusionNotification()
             {
@@ -125,7 +125,7 @@ public class HideAndSeek : Gamemode
 
     private void OnAssignedToTeam(PlayerId player, Team team)
     {
-        if (!player.IsSelf)
+        if (!player.IsOwner)
         {
             return;
         }
@@ -159,6 +159,28 @@ public class HideAndSeek : Gamemode
         }
     }
 
+    private static void TeleportToHost()
+    {
+        if (NetworkInfo.IsServer)
+        {
+            return;
+        }
+
+        var host = PlayerIdManager.GetHostId();
+
+        if (!NetworkPlayerManager.TryGetPlayer(host.SmallId, out var player))
+        {
+            return;
+        }
+
+        if (player.HasRig)
+        {
+            var feetPosition = player.RigReferences.RigManager.physicsRig.feet.transform.position;
+
+            FusionPlayer.Teleport(feetPosition, Vector3.forward, true);
+        }
+    }
+
     private static IEnumerator HideVisionAndReveal()
     {
         // Move to LocalVision later
@@ -188,14 +210,18 @@ public class HideAndSeek : Gamemode
 
         float elapsed = 0f;
         int seconds = 0;
+        int maxSeconds = 30;
 
-        while (seconds < 10)
+        while (seconds < maxSeconds)
         {
-            int remainingSeconds = 10 - seconds;
+            int remainingSeconds = maxSeconds - seconds;
             switch (remainingSeconds)
             {
+                case 30:
+                case 20:
                 case 10:
                 case 5:
+                case 4:
                 case 3:
                 case 2:
                 case 1:
@@ -205,7 +231,7 @@ public class HideAndSeek : Gamemode
                         showTitleOnPopup = true,
                         title = "Countdown",
                         message = $"{remainingSeconds}",
-                        popupLength = 0.1f,
+                        popupLength = 1f,
                         type = NotificationType.INFORMATION,
                     });
                     break;
@@ -218,7 +244,7 @@ public class HideAndSeek : Gamemode
             }
 
             seconds++;
-            elapsed = 0f;
+            elapsed -= 1f;
         }
 
         LocalControls.UnlockMovement();
@@ -256,6 +282,8 @@ public class HideAndSeek : Gamemode
         {
             AssignTeams();
         }
+
+        TeleportToHost();
     }
 
     protected override void OnStopGamemode()
@@ -309,6 +337,7 @@ public class HideAndSeek : Gamemode
     {
         TeamManager.UnassignAllPlayers();
     }
+
 
     private void OnLocalPlayerGrab(Hand hand, Grip grip)
     {

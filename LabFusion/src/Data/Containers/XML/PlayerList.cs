@@ -34,9 +34,11 @@ public sealed class PlayerList
     {
         // Create player info array from all players
         players = new PlayerInfo[PlayerIdManager.PlayerCount];
-        for (var i = 0; i < players.Length; i++)
+        int index = 0;
+
+        foreach (var player in PlayerIdManager.PlayerIds)
         {
-            players[i] = new PlayerInfo(PlayerIdManager.PlayerIds[i]);
+            players[index++] = new PlayerInfo(player);
         }
     }
 

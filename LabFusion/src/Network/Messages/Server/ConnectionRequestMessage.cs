@@ -203,7 +203,7 @@ public class ConnectionRequestMessage : FusionMessageHandler
             var barcode = CommonBarcodes.INVALID_AVATAR_BARCODE;
             SerializedAvatarStats stats = new();
 
-            if (id.SmallId == 0)
+            if (id.SmallId == PlayerIdManager.HostSmallId)
             {
                 barcode = RigData.RigAvatarId;
                 stats = RigData.RigAvatarStats;

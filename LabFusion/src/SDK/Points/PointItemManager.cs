@@ -345,7 +345,7 @@ public static class PointItemManager
         RigManager manager = null;
         PointItemPayloadType type = PointItemPayloadType.SELF;
 
-        if (id == null || id.IsSelf)
+        if (id == null || id.IsOwner)
         {
             manager = RigData.RigReferences.RigManager;
             type = PointItemPayloadType.SELF;
@@ -384,7 +384,7 @@ public static class PointItemManager
         RigManager manager = null;
         PointItemPayloadType type = PointItemPayloadType.SELF;
 
-        if (id == null || id.IsSelf)
+        if (id == null || id.IsOwner)
         {
             manager = RigData.RigReferences.RigManager;
             type = PointItemPayloadType.SELF;

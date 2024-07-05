@@ -1,5 +1,4 @@
 ﻿using LabFusion.Data;
-using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.SDK.Metadata;
 using LabFusion.SDK.Points;
@@ -10,9 +9,11 @@ namespace LabFusion.Player;
 
 public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
 {
-    public bool IsSelf => LongId == PlayerIdManager.LocalLongId;
+    public bool IsOwner => LongId == PlayerIdManager.LocalLongId;
     public bool IsValid => _isValid;
     private bool _isValid = false;
+
+    public bool IsHost => SmallId == PlayerIdManager.LocalSmallId;
 
     public ulong LongId { get; private set; }
     public byte SmallId { get; private set; }
@@ -96,7 +97,7 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
 
     private bool HasMetadataPermissions()
     {
-        return NetworkInfo.IsServer || IsSelf;
+        return NetworkInfo.IsServer || IsOwner;
     }
 
     public bool Equals(PlayerId other)
@@ -135,7 +136,7 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
 
     public bool HasEquipped(PointItem item)
     {
-        if (IsSelf)
+        if (IsOwner)
             return item.IsEquipped;
         else
             return EquippedItems.Contains(item.Barcode);
@@ -157,9 +158,12 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
     {
         if (PlayerIdManager.PlayerIds.Any((id) => id.SmallId == SmallId))
         {
-            var list = PlayerIdManager.PlayerIds.FindAll((id) => id.SmallId == SmallId);
+            var list = PlayerIdManager.PlayerIds.Where((id) => id.SmallId == SmallId).ToList();
+
             for (var i = 0; i < list.Count; i++)
+            {
                 list[i].Cleanup();
+            }
         }
 
         PlayerIdManager.PlayerIds.Add(this);
@@ -173,9 +177,12 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
             return;
         }
 
-        PlayerIdManager.PlayerIds.RemoveInstance(this);
+        PlayerIdManager.PlayerIds.Remove(this);
+
         if (PlayerIdManager.LocalId == this)
+        {
             PlayerIdManager.RemoveLocalId();
+        }
 
         _isValid = false;
 

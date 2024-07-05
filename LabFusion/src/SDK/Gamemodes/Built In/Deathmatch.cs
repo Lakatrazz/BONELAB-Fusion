@@ -274,7 +274,7 @@ public class Deathmatch : Gamemode
         {
             case PlayerActionType.DEATH:
                 // If we died, we can't get the Rampage achievement
-                if (player.IsSelf)
+                if (player.IsOwner)
                 {
                     _hasDied = true;
                 }
@@ -289,7 +289,7 @@ public class Deathmatch : Gamemode
                     }
 
                     // If we are the killer, increment our achievement
-                    if (otherPlayer.IsSelf)
+                    if (otherPlayer.IsOwner)
                     {
                         AchievementManager.IncrementAchievements<KillerAchievement>();
                     }
@@ -543,7 +543,7 @@ public class Deathmatch : Gamemode
 
     private void OnScoreChanged(PlayerId player, int score)
     {
-        if (player.IsSelf && score != 0)
+        if (player.IsOwner && score != 0)
         {
             FusionNotifier.Send(new FusionNotification()
             {

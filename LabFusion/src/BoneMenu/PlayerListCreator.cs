@@ -68,7 +68,7 @@ public static partial class BoneMenuCreator
         byte smallId = id.SmallId;
 
         // Set permission display
-        if (NetworkInfo.IsServer && !id.IsSelf)
+        if (NetworkInfo.IsServer && !id.IsOwner)
         {
             var permSetter = category.CreateEnumElement($"Permissions", Color.yellow, level, (v) =>
             {
@@ -111,7 +111,7 @@ public static partial class BoneMenuCreator
         var serverSettings = FusionPreferences.ActiveServerSettings;
 
         // Create vote options
-        if (!id.IsSelf && FusionPermissions.HasSufficientPermissions(selfLevel, level))
+        if (!id.IsOwner && FusionPermissions.HasSufficientPermissions(selfLevel, level))
         {
             var votingCategory = category.CreateCategory("Voting", Color.white);
 
@@ -127,7 +127,7 @@ public static partial class BoneMenuCreator
 
         // Create moderation options
         // If we are the server then we have full auth. Otherwise, check perm level
-        if (!id.IsSelf && (NetworkInfo.IsServer || FusionPermissions.HasHigherPermissions(selfLevel, level)))
+        if (!id.IsOwner && (NetworkInfo.IsServer || FusionPermissions.HasHigherPermissions(selfLevel, level)))
         {
             var moderationCategory = category.CreateCategory("Moderation", Color.white);
 
