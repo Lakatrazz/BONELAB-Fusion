@@ -128,10 +128,16 @@ public static class MuteUIHelper
             _muteRenderer.enabled = false;
             _muteCamera = _muteIcon.GetComponent<Camera>();
 
+            // Add mute camera to the camera stack
+            var cameraData = headset.GetComponent<UniversalAdditionalCameraData>();
+            cameraData.cameraStack.Add(_muteCamera);
+
             // Configure the mute camera's data so that it only renders what it needs to
-            // Volume layer mask is also changed so that it does not affect volumetrics
             var muteCameraData = _muteIcon.GetComponent<UniversalAdditionalCameraData>();
-            muteCameraData.volumeLayerMask = 8;
+
+            // Make sure the volume layer mask is the same as the normal camera
+            muteCameraData.volumeLayerMask = cameraData.volumeLayerMask;
+
             muteCameraData.renderPostProcessing = false;
             muteCameraData.m_EnableVolumetrics = false;
             muteCameraData.renderShadows = false;
@@ -139,10 +145,6 @@ public static class MuteUIHelper
             muteCameraData.requiresColorTexture = false;
             muteCameraData.requiresDepthOption = CameraOverrideOption.Off;
             muteCameraData.requiresDepthTexture = false;
-
-            // Add mute camera to the camera stack
-            var cameraData = headset.GetComponent<UniversalAdditionalCameraData>();
-            cameraData.cameraStack.Add(_muteCamera);
 
             _muteIcon.SetActive(VoiceInfo.ShowMuteIndicator);
         });
