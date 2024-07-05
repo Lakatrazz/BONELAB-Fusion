@@ -1,93 +1,90 @@
 ﻿using BoneLib;
 
-namespace LabFusion.Extensions
+namespace LabFusion.Extensions;
+
+public static class IEnumerableExtensions
 {
-    public static class IEnumerableExtensions
+    public static bool ContainsIL2CPP<T>(this HashSet<T> set, T item)
     {
-        #region HASHSET
-        public static bool ContainsIL2CPP<T>(this HashSet<T> set, T item)
+        if (!HelperMethods.IsAndroid())
         {
-            if (!HelperMethods.IsAndroid())
-            {
-                return set.Contains(item);
-            }
-            else
-            {
-                return set.Any((i) => i.EqualsIL2CPP(item));
-            }
+            return set.Contains(item);
         }
-
-        public static bool RemoveIL2CPP<T>(this HashSet<T> set, T item)
+        else
         {
-            if (!HelperMethods.IsAndroid())
-            {
-                return set.Remove(item);
-            }
-            else
-            {
-                return set.RemoveWhere((i) => i.EqualsIL2CPP(item)) > 0;
-            }
+            return set.Any((i) => i.EqualsIL2CPP(item));
         }
-        #endregion
+    }
 
-        public static bool ContainsInstance<T>(this List<T> list, T obj) where T : class
+    public static bool RemoveIL2CPP<T>(this HashSet<T> set, T item)
+    {
+        if (!HelperMethods.IsAndroid())
         {
-            return list.Any((o) => o == obj);
+            return set.Remove(item);
         }
-
-        public static bool RemoveInstance<T>(this List<T> list, T obj) where T : class
+        else
         {
-            if (!list.ContainsInstance(obj))
-                return false;
+            return set.RemoveWhere((i) => i.EqualsIL2CPP(item)) > 0;
+        }
+    }
 
-            for (var i = 0; i < list.Count(); i++)
-            {
-                if (list.ElementAt(i) == obj)
-                {
-                    list.RemoveAt(i);
-                    return true;
-                }
-            }
+    public static bool ContainsInstance<T>(this List<T> list, T obj) where T : class
+    {
+        return list.Any((o) => o == obj);
+    }
 
+    public static bool RemoveInstance<T>(this List<T> list, T obj) where T : class
+    {
+        if (!list.ContainsInstance(obj))
             return false;
-        }
 
-        public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
+        for (var i = 0; i < list.Count; i++)
         {
-            for (var i = 0; i < enumerable.Count(); i++)
+            if (list.ElementAt(i) == obj)
             {
-                action(enumerable.ElementAt(i));
+                list.RemoveAt(i);
+                return true;
             }
         }
 
-        public static bool Has<T>(this IEnumerable<T> list, T obj) where T : UnityEngine.Object => list.Any(o => o == obj);
+        return false;
+    }
 
-        public static bool Has<T>(this Il2CppSystem.Collections.Generic.List<T> list, T obj) where T : UnityEngine.Object
+    public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
+    {
+        for (var i = 0; i < enumerable.Count(); i++)
         {
-            for (var i = 0; i < list.Count; i++)
-            {
-                var other = list[i];
+            action(enumerable.ElementAt(i));
+        }
+    }
 
-                if (other == obj)
-                    return true;
-            }
+    public static bool Has<T>(this IEnumerable<T> list, T obj) where T : UnityEngine.Object => list.Any(o => o == obj);
 
-            return false;
+    public static bool Has<T>(this Il2CppSystem.Collections.Generic.List<T> list, T obj) where T : UnityEngine.Object
+    {
+        for (var i = 0; i < list.Count; i++)
+        {
+            var other = list[i];
+
+            if (other == obj)
+                return true;
         }
 
-        private static readonly Random _random = new();
+        return false;
+    }
 
-        public static void Shuffle<T>(this IList<T> list)
+    private static readonly Random _random = new();
+
+    public static void Shuffle<T>(this IList<T> list)
+    {
+        int n = list.Count;
+        while (n > 1)
         {
-            int n = list.Count;
-            while (n > 1)
-            {
-                n--;
-                int k = _random.Next(n + 1);
-                T value = list[k];
-                list[k] = list[n];
-                list[n] = value;
-            }
+            n--;
+            int k = _random.Next(n + 1);
+
+            // Swap values
+            (list[n], list[k]) = (list[k], list[n]);
         }
     }
 }
