@@ -81,8 +81,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
         // Copy current bodies into the entity pose so that they're held up by forces
         CopyBodiesToPose();
-        _receivedPose = true;
-        _lastReceivedTime = TimeUtilities.TimeSinceStartup;
+        UpdateReceiveTime();
     }
 
     private void InitializeComponents()
@@ -94,6 +93,12 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     {
         pose.CopyTo(EntityPose);
 
+        UpdateReceiveTime();
+    }
+
+    private void UpdateReceiveTime()
+    {
+        _isSleeping = false;
         _receivedPose = true;
         _lastReceivedTime = TimeUtilities.TimeSinceStartup;
     }
@@ -302,6 +307,12 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     private void OnReceivedUpdate(float deltaTime)
     {
+        // Make sure the prop isn't sleeping
+        if (IsSleeping)
+        {
+            return;
+        }
+
         // Make sure we actually have a pose
         if (!_receivedPose)
         {
@@ -313,6 +324,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
         if (timeSinceMessage >= 1f)
         {
+            _isSleeping = true;
             return;
         }
 
