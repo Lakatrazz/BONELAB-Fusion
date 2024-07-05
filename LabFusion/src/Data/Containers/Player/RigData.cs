@@ -41,9 +41,25 @@ public class RigReferenceCollection
 
     public Transform Head { get; private set; }
 
+    private Action _onDestroyCallback = null;
+
+    public void HookOnDestroy(Action callback)
+    {
+        if (IsValid)
+        {
+            _onDestroyCallback += callback;
+        }
+        else
+        {
+            _onDestroyCallback?.Invoke();
+        }
+    }
+
     public void OnDestroy()
     {
         IsValid = false;
+
+        _onDestroyCallback?.Invoke();
     }
 
     public byte? GetIndex(Grip grip, bool isAvatarGrip = false)

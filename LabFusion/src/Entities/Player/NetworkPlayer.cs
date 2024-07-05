@@ -262,7 +262,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Remove cache
         if (HasRig)
         {
-            RemoveFromCache();
+            UnhookRig();
         }
 
         // Unhook from scene loading events
@@ -633,7 +633,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private void TeleportToPose()
     {
         // Don't teleport if no pose
-        if (RigPose == null || !HasRig)
+        if (!ReceivedPose || !HasRig)
         {
             return;
         }
@@ -718,13 +718,23 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     public void OnReceivePose(RigPose pose)
     {
-        _pose = pose;
-        _receivedPose = true;
-
-        if (HasRig)
+        // If we don't have a rig yet, don't store the pose
+        if (!HasRig)
         {
-            RigSkeleton.trackedPlayspace.rotation = RigPose.trackedPlayspace.Expand();
+            return;
         }
+
+        _pose = pose;
+
+        // Teleport to the pose if this is our first
+        if (!ReceivedPose)
+        {
+            _receivedPose = true;
+            TeleportToPose();
+        }
+
+        // Update the playspace rotation
+        RigSkeleton.trackedPlayspace.rotation = RigPose.trackedPlayspace.Expand();
     }
 
     public void OnOverrideControllerRig()
@@ -743,12 +753,20 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
     }
 
+    private void OnRigDestroyed()
+    {
+        _pose = null;
+        _receivedPose = false;
+    }
+
     private void OnFoundRigManager(RigManager rigManager)
     {
         _marrowEntity = rigManager.marrowEntity;
 
         _rigSkeleton = new(rigManager);
         _rigReferences = new(rigManager);
+
+        _rigReferences.HookOnDestroy(OnRigDestroyed);
 
         _pose = new();
 
@@ -757,11 +775,10 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         _art = new(rigManager);
         _physics = new(rigManager);
 
-        AddToCache();
+        HookRig();
 
-        // Register components for the physics rig
-        // TODO: register components for the avatar on avatar change
-        RegisterComponents(rigManager.physicsRig.gameObject);
+        // Register components for the rig objects
+        RegisterComponents();
 
         if (!NetworkEntity.IsOwner)
         {
@@ -773,19 +790,47 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
     }
 
-    private void AddToCache()
+    private Il2CppSystem.Action _onAvatarSwappedAction = null;
+
+    private void HookRig()
     {
         RigCache.Add(RigReferences.RigManager, this);
         IMarrowEntityExtender.Cache.Add(MarrowEntity, NetworkEntity);
+
+        _onAvatarSwappedAction = (Action)OnAvatarSwapped;
+
+        RigReferences.RigManager.onAvatarSwapped += _onAvatarSwappedAction;
     }
 
-    private void RemoveFromCache()
+    private void UnhookRig()
     {
         RigCache.Remove(RigReferences.RigManager);
         IMarrowEntityExtender.Cache.Remove(MarrowEntity);
+
+        RigReferences.RigManager.onAvatarSwapped -= _onAvatarSwappedAction;
+
+        _onAvatarSwappedAction = null;
+    }
+
+    private void OnAvatarSwapped()
+    {
+        RegisterComponents();
     }
 
     private HashSet<IEntityComponentExtender> _componentExtenders = null;
+
+    private void RegisterComponents()
+    {
+        if (!HasRig)
+        {
+            return;
+        }
+
+        var physicsRig = RigReferences.RigManager.physicsRig.gameObject;
+        var avatar = RigReferences.RigManager.avatar.gameObject;
+
+        RegisterComponents(physicsRig, avatar);
+    }
 
     private void RegisterComponents(params GameObject[] parents)
     {
