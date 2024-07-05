@@ -14,6 +14,7 @@ using Il2CppSLZ.Marrow.AI;
 using Il2CppSLZ.Marrow.Interaction;
 
 using CommonBarcodes = LabFusion.Utilities.CommonBarcodes;
+using LabFusion.MonoBehaviours;
 
 namespace LabFusion.Data;
 
@@ -157,8 +158,8 @@ public class RigReferenceCollection
         RigManager = rigManager;
         IsValid = true;
 
-        var lifeCycle = rigManager.gameObject.AddComponent<RigLifeCycleEvents>();
-        lifeCycle.Collection = this;
+        var destroySensor = rigManager.gameObject.AddComponent<DestroySensor>();
+        destroySensor.Hook(OnDestroy);
 
         // Assign values
         ControllerRig = rigManager.ControllerRig;
