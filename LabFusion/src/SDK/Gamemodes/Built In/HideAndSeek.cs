@@ -76,6 +76,8 @@ public class HideAndSeek : Gamemode
 
     public override void OnGamemodeRegistered()
     {
+        FusionOverrides.OnValidateNametag += OnValidateNametag;
+
         TeamManager.Register(this);
         TeamManager.AddTeam(SeekerTeam);
         TeamManager.AddTeam(HiderTeam);
@@ -91,6 +93,8 @@ public class HideAndSeek : Gamemode
 
     public override void OnGamemodeUnregistered()
     {
+        FusionOverrides.OnValidateNametag -= OnValidateNametag;
+
         TeamManager.Unregister();
 
         TagEvent.UnregisterEvent();
@@ -98,6 +102,16 @@ public class HideAndSeek : Gamemode
 
         SeekerVictoryEvent.UnregisterEvent();
         SeekerVictoryEvent = null;
+    }
+
+    protected bool OnValidateNametag(PlayerId id)
+    {
+        if (!IsActive())
+        {
+            return true;
+        }
+
+        return TeamManager.GetPlayerTeam(id) == TeamManager.GetLocalTeam();
     }
 
     private void OnTagTriggered(string value)
@@ -160,6 +174,9 @@ public class HideAndSeek : Gamemode
 
     private void OnAssignedToTeam(PlayerId player, Team team)
     {
+        // Update nametags
+        FusionOverrides.ForceUpdateOverrides();
+
         if (!player.IsOwner)
         {
             return;
@@ -330,6 +347,9 @@ public class HideAndSeek : Gamemode
         }
 
         TeleportToHost();
+
+        // Update nametags
+        FusionOverrides.ForceUpdateOverrides();
     }
 
     protected override void OnStopGamemode()
@@ -347,6 +367,9 @@ public class HideAndSeek : Gamemode
         {
             ClearTeams();
         }
+
+        // Update nametags
+        FusionOverrides.ForceUpdateOverrides();
     }
 
     protected override void OnUpdate()
