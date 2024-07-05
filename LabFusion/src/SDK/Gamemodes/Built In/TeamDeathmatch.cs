@@ -145,8 +145,8 @@ public class TeamDeathmatch : Gamemode
         TeamManager.ClearTeams();
         TeamMusicManager.ClearTeams();
 
-        Team sabrelake = new() { TeamName = DefaultSabrelakeName, };
-        Team lavaGang = new() { TeamName = DefaultLavaGangName, };
+        Team sabrelake = new(DefaultSabrelakeName);
+        Team lavaGang = new(DefaultLavaGangName);
 
         TeamMusicManager.SetMusic(sabrelake, new TeamMusic()
         {

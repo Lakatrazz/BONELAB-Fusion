@@ -19,10 +19,20 @@ public class Team
         }
     }
 
+    public Team(string teamName)
+    {
+        TeamName = teamName;
+    }
+
     private readonly HashSet<PlayerId> _players = new();
     public HashSet<PlayerId> Players => _players;
 
     public int PlayerCount => _players.Count;
+
+    public bool HasPlayer(PlayerId player)
+    {
+        return Players.Contains(player);
+    }
 
     public void ForceAddPlayer(PlayerId player)
     {

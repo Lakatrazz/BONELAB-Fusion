@@ -1,8 +1,23 @@
-﻿using Il2CppSLZ.Interaction;
+﻿using BoneLib.BoneMenu.Elements;
+
+using Il2CppSLZ.Interaction;
 using Il2CppSLZ.Marrow.Warehouse;
 
+using LabFusion.Data;
+using LabFusion.Entities;
+using LabFusion.Extensions;
 using LabFusion.Marrow;
+using LabFusion.Network;
 using LabFusion.Player;
+using LabFusion.SDK.Triggers;
+using LabFusion.Utilities;
+
+using MelonLoader;
+
+using System.Collections;
+
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -14,7 +29,7 @@ public class HideAndSeek : Gamemode
 
     public static class Defaults
     {
-        public const int SeekerCount = 2;
+        public const int SeekerCount = 1;
 
         public static readonly MonoDiscReference[] Tracks = new MonoDiscReference[]
         {
@@ -33,6 +48,194 @@ public class HideAndSeek : Gamemode
     private readonly MusicPlaylist _playlist = new();
     public MusicPlaylist Playlist => _playlist;
 
+    private readonly TeamManager _teamManager = new();
+    public TeamManager TeamManager => _teamManager;
+
+    private readonly Team _seekerTeam = new("Seekers");
+    public Team SeekerTeam => _seekerTeam;
+
+    private readonly Team _hiderTeam = new("Hiders");
+    public Team HiderTeam => _hiderTeam;
+
+    public TriggerEvent TagEvent { get; set; }
+
+    public override void OnBoneMenuCreated(MenuCategory category)
+    {
+        base.OnBoneMenuCreated(category);
+
+        category.CreateIntElement("Seeker Count", Color.yellow, SeekerCount, 1, 1, 8, (value) =>
+        {
+            SeekerCount = value;
+        });
+    }
+
+    public override void OnGamemodeRegistered()
+    {
+        TeamManager.Register(this);
+        TeamManager.AddTeam(SeekerTeam);
+        TeamManager.AddTeam(HiderTeam);
+
+        TeamManager.OnAssignedToTeam += OnAssignedToTeam;
+
+        TagEvent = new TriggerEvent("TagPlayer", Relay, false);
+        TagEvent.OnTriggeredWithValue += OnTagTriggered;
+    }
+
+    public override void OnGamemodeUnregistered()
+    {
+        TeamManager.Unregister();
+
+        TagEvent.UnregisterEvent();
+        TagEvent = null;
+    }
+
+    private void OnTagTriggered(string value)
+    {
+        if (!ulong.TryParse(value, out var userId))
+        {
+            FusionLogger.Warn($"Player Tag was triggered, but the value {value} is not a userId!");
+            return;
+        }
+
+        var playerId = PlayerIdManager.GetPlayerId(userId);
+
+        if (playerId == null)
+        {
+            return;
+        }
+
+        if (NetworkInfo.IsServer && HiderTeam.HasPlayer(playerId))
+        {
+            TeamManager.TryAssignTeam(playerId, SeekerTeam);
+        }
+
+        if (playerId.IsSelf)
+        {
+            FusionNotifier.Send(new FusionNotification()
+            {
+                isPopup = true,
+                showTitleOnPopup = true,
+                title = "Tagged",
+                message = "You've been tagged!",
+                popupLength = 4,
+                type = NotificationType.INFORMATION,
+            });
+        }
+    }
+
+    private void OnAssignedToTeam(PlayerId player, Team team)
+    {
+        if (!player.IsSelf)
+        {
+            return;
+        }
+
+        if (team == HiderTeam)
+        {
+            FusionNotifier.Send(new FusionNotification()
+            {
+                isPopup = true,
+                showTitleOnPopup = true,
+                title = "Hider",
+                message = "You are a hider! Don't let the seekers grab you!",
+                popupLength = 4,
+                type = NotificationType.INFORMATION,
+            });
+        }
+
+        if (team == SeekerTeam)
+        {
+            FusionNotifier.Send(new FusionNotification()
+            {
+                isPopup = true,
+                showTitleOnPopup = true,
+                title = "Seeker",
+                message = "You are a seeker! Grab all hiders to win!",
+                popupLength = 2f,
+                type = NotificationType.INFORMATION,
+            });
+
+            MelonCoroutines.Start(HideVisionAndReveal());
+        }
+    }
+
+    private static IEnumerator HideVisionAndReveal()
+    {
+        // Move to LocalVision later
+        var canvasGameObject = new GameObject("VISION OBSTRUCTION");
+        var canvas = canvasGameObject.AddComponent<Canvas>();
+
+        canvas.renderMode = RenderMode.WorldSpace;
+        var canvasTransform = canvasGameObject.transform;
+        canvasTransform.parent = RigData.RigReferences.RigManager.ControllerRig.m_head;
+        canvasTransform.localPosition = Vector3Extensions.forward * 0.1f;
+        canvasTransform.localRotation = Quaternion.Euler(0f, 180f, 0f);
+        canvasTransform.localScale = Vector3Extensions.one * 10f;
+
+        var image = canvas.gameObject.AddComponent<RawImage>();
+        image.color = Color.black;
+
+        // Lock movement so we can't move while vision is dark
+        LocalControls.LockMovement();
+
+        float notificationWait = 0f;
+
+        while (notificationWait < 4f)
+        {
+            notificationWait += TimeUtilities.DeltaTime;
+            yield return null;
+        }
+
+        float elapsed = 0f;
+        int seconds = 0;
+
+        while (seconds < 10)
+        {
+            int remainingSeconds = 10 - seconds;
+            switch (remainingSeconds)
+            {
+                case 10:
+                case 5:
+                case 3:
+                case 2:
+                case 1:
+                    FusionNotifier.Send(new FusionNotification()
+                    {
+                        isPopup = true,
+                        showTitleOnPopup = true,
+                        title = "Countdown",
+                        message = $"{remainingSeconds}",
+                        popupLength = 0.1f,
+                        type = NotificationType.INFORMATION,
+                    });
+                    break;
+            }
+
+            while (elapsed < 1f)
+            {
+                elapsed += TimeUtilities.DeltaTime;
+                yield return null;
+            }
+
+            seconds++;
+            elapsed = 0f;
+        }
+
+        LocalControls.UnlockMovement();
+
+        FusionNotifier.Send(new FusionNotification()
+        {
+            isPopup = true,
+            showTitleOnPopup = true,
+            title = "Countdown Over",
+            message = $"GO!",
+            popupLength = 0.5f,
+            type = NotificationType.INFORMATION,
+        });
+
+        GameObject.Destroy(canvasGameObject);
+    }
+
     private void SetDefaults()
     {
         Playlist.SetPlaylist(AudioReference.CreateReferences(Defaults.Tracks));
@@ -48,6 +251,11 @@ public class HideAndSeek : Gamemode
         Playlist.StartPlaylist();
 
         LocalPlayer.OnGrab += OnLocalPlayerGrab;
+
+        if (NetworkInfo.IsServer)
+        {
+            AssignTeams();
+        }
     }
 
     protected override void OnStopGamemode()
@@ -57,6 +265,11 @@ public class HideAndSeek : Gamemode
         Playlist.StopPlaylist();
 
         LocalPlayer.OnGrab -= OnLocalPlayerGrab;
+
+        if (NetworkInfo.IsServer)
+        {
+            ClearTeams();
+        }
     }
 
     protected override void OnUpdate()
@@ -69,8 +282,57 @@ public class HideAndSeek : Gamemode
         Playlist.Update();
     }
 
+    private void AssignTeams()
+    {
+        // Shuffle the players for randomness
+        var players = new List<PlayerId>(PlayerIdManager.PlayerIds);
+        players.Shuffle();
+
+        // Assign seekers
+        for (var i = 0; i < SeekerCount && i < players.Count; i++)
+        {
+            var player = players[i];
+            TeamManager.TryAssignTeam(player, SeekerTeam);
+
+            // Remove the player from the list
+            players.Remove(player);
+        }
+
+        // Assign the rest as hiders
+        foreach (var player in players)
+        {
+            TeamManager.TryAssignTeam(player, HiderTeam);
+        }
+    }
+
+    private void ClearTeams()
+    {
+        TeamManager.UnassignAllPlayers();
+    }
+
     private void OnLocalPlayerGrab(Hand hand, Grip grip)
     {
+        // If we aren't a seeker, ignore
+        if (!SeekerTeam.HasPlayer(PlayerIdManager.LocalId))
+        {
+            return;
+        }
+        
+        // Check if the grabbed object is a player
+        if (!grip._marrowEntity)
+        {
+            return;
+        }
 
+        if (!NetworkPlayerManager.TryGetPlayer(grip._marrowEntity, out var player))
+        {
+            return;
+        }
+
+        // Check if they're a hider, and if they are, tag them
+        if (HiderTeam.HasPlayer(player.PlayerId))
+        {
+            TagEvent.TryInvoke(player.PlayerId.LongId.ToString());
+        }
     }
 }

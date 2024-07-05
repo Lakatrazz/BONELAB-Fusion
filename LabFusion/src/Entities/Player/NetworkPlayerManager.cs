@@ -1,13 +1,8 @@
-﻿using Il2CppSLZ.Rig;
+﻿using Il2CppSLZ.Marrow.Interaction;
+using Il2CppSLZ.Rig;
 
 using LabFusion.Player;
 using LabFusion.Utilities;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LabFusion.Entities;
 
@@ -79,6 +74,19 @@ public static class NetworkPlayerManager
     public static bool TryGetPlayer(RigManager rigManager, out NetworkPlayer player)
     {
         return NetworkPlayer.RigCache.TryGet(rigManager, out player);
+    }
+
+    public static bool TryGetPlayer(MarrowEntity marrowEntity, out NetworkPlayer player)
+    {
+        player = null;
+
+        if (!IMarrowEntityExtender.Cache.TryGet(marrowEntity, out var networkEntity))
+        {
+            return false;
+        }
+
+        player = networkEntity.GetExtender<NetworkPlayer>();
+        return player != null;
     }
 
     public static NetworkPlayer CreateLocalPlayer()
