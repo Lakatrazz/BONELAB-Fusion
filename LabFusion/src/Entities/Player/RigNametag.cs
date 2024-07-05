@@ -4,12 +4,6 @@ using Il2CppTMPro;
 using LabFusion.Extensions;
 using LabFusion.Utilities;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using UnityEngine;
 
 namespace LabFusion.Entities;
@@ -91,7 +85,9 @@ public class RigNametag
             return;
         }
 
-        text.text = _username;
+        // Rich text is cool, but allows people to get cheeky with usernames
+        // This is all YOUR FAULT IMPERSONATORS!
+        text.text = _username.RemoveRichText();
 
         if (_isQuestUser)
         {
