@@ -139,7 +139,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         for (var i = 0; i < 120; i++)
         {
             if (FusionSceneManager.IsLoading())
+            {
                 yield break;
+            }
 
             yield return null;
         }
@@ -148,14 +150,18 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         while (FusionSceneManager.IsDelayedLoading() || PlayerId.Metadata.GetMetadata(MetadataHelper.LoadingKey) == bool.TrueString)
         {
             if (FusionSceneManager.IsLoading())
+            {
                 yield break;
+            }
 
             yield return null;
         }
 
         // Make sure the rep still exists
         if (PlayerId == null || !PlayerId.IsValid)
+        {
             yield break;
+        }
 
         _puppet.CreatePuppet(OnPuppetCreated);
     }

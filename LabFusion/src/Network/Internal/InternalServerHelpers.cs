@@ -232,7 +232,7 @@ public static class InternalServerHelpers
     /// <returns></returns>
     public static List<string> GetInitialEquippedItems()
     {
-        List<string> list = new List<string>();
+        var list = new List<string>();
 
         foreach (var item in PointItemManager.LoadedItems)
         {

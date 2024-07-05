@@ -36,7 +36,9 @@ namespace LabFusion.Senders
         public static void SendLoadingState(bool isLoading)
         {
             if (!NetworkInfo.HasServer || PlayerIdManager.LocalId == null)
+            {
                 return;
+            }
 
             // Set the loading metadata
             PlayerIdManager.LocalId.Metadata.TrySetMetadata(MetadataHelper.LoadingKey, isLoading.ToString());

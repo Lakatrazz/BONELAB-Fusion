@@ -146,9 +146,13 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
     {
         // Remove/add to the list
         if (value && !_internalEquippedItems.Contains(barcode))
+        {
             _internalEquippedItems.Add(barcode);
+        }
         else if (!value && _internalEquippedItems.Contains(barcode))
+        {
             _internalEquippedItems.Remove(barcode);
+        }
 
         // Invoke the events on the item
         PointItemManager.Internal_OnEquipChange(this, barcode, value);
@@ -215,6 +219,10 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
             Metadata.ForceSetLocalMetadata(pair.Key, pair.Value);
         }
 
+        // Hook metadata
+        HookMetadata();
+
+        // Read equipped items
         var equippedItems = reader.ReadStrings();
 
         foreach (var item in equippedItems)

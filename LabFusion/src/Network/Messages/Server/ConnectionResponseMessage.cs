@@ -80,6 +80,8 @@ public class ConnectionResponseMessage : FusionMessageHandler
 
         // Update our vitals to everyone
         if (RigData.HasPlayer)
+        {
             RigData.OnSendVitals();
+        }
     }
 }
