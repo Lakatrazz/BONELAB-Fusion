@@ -220,7 +220,7 @@ public static class InternalServerHelpers
             { MetadataHelper.PermissionKey, NetworkInfo.IsServer ? PermissionLevel.OWNER.ToString() : PermissionLevel.DEFAULT.ToString() },
 
             // Platform
-            { MetadataHelper.PlatformKey, HelperMethods.IsAndroid() ? "QUEST" : "PC" }
+            { MetadataHelper.PlatformKey, HelperMethods.IsAndroid() ? "QUEST" : "PC" },
         };
 
         return metadata;

@@ -59,6 +59,11 @@ public class HideAndSeek : Gamemode
 
     public TriggerEvent TagEvent { get; set; }
 
+    public TriggerEvent SeekerVictoryEvent { get; set; }
+
+    private bool _hasBeenTagged = false;
+    private bool _assignedDefaultTeam = false;
+
     public override void OnBoneMenuCreated(MenuCategory category)
     {
         base.OnBoneMenuCreated(category);
@@ -79,6 +84,9 @@ public class HideAndSeek : Gamemode
 
         TagEvent = new TriggerEvent("TagPlayer", Relay, false);
         TagEvent.OnTriggeredWithValue += OnTagTriggered;
+
+        SeekerVictoryEvent = new TriggerEvent("SeekerVictory", Relay, true);
+        SeekerVictoryEvent.OnTriggered += OnSeekerVictory;
     }
 
     public override void OnGamemodeUnregistered()
@@ -87,6 +95,9 @@ public class HideAndSeek : Gamemode
 
         TagEvent.UnregisterEvent();
         TagEvent = null;
+
+        SeekerVictoryEvent.UnregisterEvent();
+        SeekerVictoryEvent = null;
     }
 
     private void OnTagTriggered(string value)
@@ -106,26 +117,55 @@ public class HideAndSeek : Gamemode
 
         if (NetworkInfo.IsServer && HiderTeam.HasPlayer(playerId))
         {
-            TeamManager.TryAssignTeam(playerId, SeekerTeam);
+            // If this was the last player, end the game
+            if (HiderTeam.PlayerCount <= 1)
+            {
+                SeekerVictoryEvent.TryInvoke();
+                StopGamemode();
+            }
+            else
+            {
+                TeamManager.TryAssignTeam(playerId, SeekerTeam);
+            }
         }
 
-        if (playerId.IsOwner)
+        if (playerId.IsOwner && !_hasBeenTagged)
         {
             FusionNotifier.Send(new FusionNotification()
             {
                 isPopup = true,
                 showTitleOnPopup = true,
                 title = "Tagged",
-                message = "You've been tagged!",
-                popupLength = 4,
+                message = "You've been tagged! You are now a seeker!",
+                popupLength = 4f,
                 type = NotificationType.INFORMATION,
             });
+
+            _hasBeenTagged = true;
         }
+    }
+
+    public void OnSeekerVictory()
+    {
+        FusionNotifier.Send(new FusionNotification()
+        {
+            isPopup = true,
+            showTitleOnPopup = true,
+            title = "Seekers Won",
+            message = "All hiders have been found!",
+            popupLength = 4f,
+            type = NotificationType.INFORMATION,
+        });
     }
 
     private void OnAssignedToTeam(PlayerId player, Team team)
     {
         if (!player.IsOwner)
+        {
+            return;
+        }
+
+        if (_assignedDefaultTeam)
         {
             return;
         }
@@ -157,6 +197,8 @@ public class HideAndSeek : Gamemode
 
             MelonCoroutines.Start(HideVisionAndReveal());
         }
+
+        _assignedDefaultTeam = true;
     }
 
     private static void TeleportToHost()
@@ -218,7 +260,9 @@ public class HideAndSeek : Gamemode
             switch (remainingSeconds)
             {
                 case 30:
+                case 25:
                 case 20:
+                case 15:
                 case 10:
                 case 5:
                 case 4:
@@ -272,6 +316,8 @@ public class HideAndSeek : Gamemode
     {
         base.OnStartGamemode();
 
+        _hasBeenTagged = false;
+
         SetDefaults();
 
         Playlist.StartPlaylist();
@@ -289,6 +335,9 @@ public class HideAndSeek : Gamemode
     protected override void OnStopGamemode()
     {
         base.OnStopGamemode();
+
+        _hasBeenTagged = false;
+        _assignedDefaultTeam = false;
 
         Playlist.StopPlaylist();
 
