@@ -61,6 +61,11 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
             Metadata.ForceSetLocalMetadata(pair.Key, pair.Value);
         }
 
+        OnAfterCreateId();
+    }
+
+    private void OnAfterCreateId()
+    {
         HookMetadata();
 
         _isValid = true;
@@ -219,9 +224,6 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
             Metadata.ForceSetLocalMetadata(pair.Key, pair.Value);
         }
 
-        // Hook metadata
-        HookMetadata();
-
         // Read equipped items
         var equippedItems = reader.ReadStrings();
 
@@ -230,6 +232,6 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
             Internal_ForceSetEquipped(item, true);
         }
 
-        _isValid = true;
+        OnAfterCreateId();
     }
 }
