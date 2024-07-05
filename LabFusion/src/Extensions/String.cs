@@ -43,6 +43,19 @@ public static class StringExtensions
         return plainText;
     }
 
+    public static string RemoveRichTextExceptColor(this string str)
+    {
+        Regex rich = new(@"<(?!\W*(?i)color(?-i)\W*)[^>]*>");
+        string plainText = str;
+
+        if (rich.IsMatch(plainText))
+        {
+            plainText = rich.Replace(plainText, string.Empty);
+        }
+
+        return plainText;
+    }
+
     public static string LimitLength(this string str, int maxLength)
     {
         if (string.IsNullOrEmpty(str))

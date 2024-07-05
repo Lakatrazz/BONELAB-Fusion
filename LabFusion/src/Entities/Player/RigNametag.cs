@@ -85,9 +85,8 @@ public class RigNametag
             return;
         }
 
-        // Rich text is cool, but allows people to get cheeky with usernames
-        // This is all YOUR FAULT IMPERSONATORS!
-        text.text = _username.RemoveRichText();
+        // Only allow color
+        text.text = _username.RemoveRichTextExceptColor();
 
         if (_isQuestUser)
         {
