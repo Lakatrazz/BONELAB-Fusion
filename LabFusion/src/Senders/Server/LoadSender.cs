@@ -39,7 +39,7 @@ namespace LabFusion.Senders
                 return;
 
             // Set the loading metadata
-            PlayerIdManager.LocalId.TrySetMetadata(MetadataHelper.LoadingKey, isLoading.ToString());
+            PlayerIdManager.LocalId.Metadata.TrySetMetadata(MetadataHelper.LoadingKey, isLoading.ToString());
         }
 
         public static void SendLevelLoad(string barcode, string loadBarcode)

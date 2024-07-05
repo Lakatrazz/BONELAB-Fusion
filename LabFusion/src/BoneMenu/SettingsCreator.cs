@@ -165,7 +165,7 @@ namespace LabFusion.BoneMenu
             CreateStringPreference(nicknameSubPanel, "Nickname", FusionPreferences.ClientSettings.Nickname, (v) =>
             {
                 if (PlayerIdManager.LocalId != null)
-                    PlayerIdManager.LocalId.TrySetMetadata(MetadataHelper.NicknameKey, v);
+                    PlayerIdManager.LocalId.Metadata.TrySetMetadata(MetadataHelper.NicknameKey, v);
             });
 
             // Voice chat

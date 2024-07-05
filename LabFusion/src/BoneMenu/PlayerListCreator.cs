@@ -45,8 +45,8 @@ public static partial class BoneMenuCreator
     private static void CreatePlayer(PlayerId id)
     {
         // Get the name for the category
-        string username = id.GetMetadata(MetadataHelper.UsernameKey);
-        string nickname = id.GetMetadata(MetadataHelper.NicknameKey);
+        string username = id.Metadata.GetMetadata(MetadataHelper.UsernameKey);
+        string nickname = id.Metadata.GetMetadata(MetadataHelper.NicknameKey);
 
         username = username.LimitLength(PlayerIdManager.MaxNameLength);
         nickname = nickname.LimitLength(PlayerIdManager.MaxNameLength);
@@ -75,24 +75,33 @@ public static partial class BoneMenuCreator
                 FusionPermissions.TrySetPermission(longId, username, v);
             });
 
-            id.OnMetadataChanged += (player) =>
+            id.Metadata.OnMetadataChanged += (key, value) =>
             {
-                if (player.TryGetMetadata(MetadataHelper.PermissionKey, out string rawLevel) && Enum.TryParse(rawLevel, out PermissionLevel newLevel))
+                if (key != MetadataHelper.PermissionKey)
                 {
-                    permSetter.SetValue(newLevel);
+                    return;
                 }
+
+                if (!Enum.TryParse(value, out PermissionLevel newLevel))
+                {
+                    return;
+                }
+
+                permSetter.SetValue(newLevel);
             };
         }
         else
         {
             var permDisplay = category.CreateFunctionElement($"Permissions: {level}", Color.yellow, null);
 
-            id.OnMetadataChanged += (player) =>
+            id.Metadata.OnMetadataChanged += (key, value) =>
             {
-                if (player.TryGetMetadata(MetadataHelper.PermissionKey, out string rawLevel))
+                if (key != MetadataHelper.PermissionKey)
                 {
-                    permDisplay.SetName($"Permissions: {rawLevel}");
+                    return;
                 }
+
+                permDisplay.SetName($"Permissions: {value}");
             };
         }
 

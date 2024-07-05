@@ -145,7 +145,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         // Wait for loading
-        while (FusionSceneManager.IsDelayedLoading() || PlayerId.GetMetadata(MetadataHelper.LoadingKey) == bool.TrueString)
+        while (FusionSceneManager.IsDelayedLoading() || PlayerId.Metadata.GetMetadata(MetadataHelper.LoadingKey) == bool.TrueString)
         {
             if (FusionSceneManager.IsLoading())
                 yield break;
@@ -230,7 +230,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         NetworkEntity.LockOwner();
 
         // Hook into the player's events
-        PlayerId.OnMetadataChanged += OnMetadataChanged;
+        PlayerId.Metadata.OnMetadataChanged += OnMetadataChanged;
         PlayerId.OnDestroyedEvent += OnPlayerDestroyed;
 
         MultiplayerHooking.OnServerSettingsChanged += OnServerSettingsChanged;
@@ -247,7 +247,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         NetworkEntity.UnlockOwner();
 
         // Unhook from the player's events
-        PlayerId.OnMetadataChanged -= OnMetadataChanged;
+        PlayerId.Metadata.OnMetadataChanged -= OnMetadataChanged;
         PlayerId.OnDestroyedEvent -= OnPlayerDestroyed;
 
         MultiplayerHooking.OnServerSettingsChanged -= OnServerSettingsChanged;
@@ -274,15 +274,20 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         _nametag.DestroyNametag();
     }
 
-    private void OnMetadataChanged(PlayerId playerId)
+    private void OnMetadataChanged(string key, string value)
+    {
+        OnMetadataChanged();
+    }
+
+    private void OnMetadataChanged()
     {
         // Read display name
-        if (playerId.TryGetDisplayName(out var name))
+        if (PlayerId.TryGetDisplayName(out var name))
         {
             _username = name;
         }
 
-        _isQuestUser = PlayerId.GetMetadata(MetadataHelper.PlatformKey) == "QUEST";
+        _isQuestUser = PlayerId.Metadata.GetMetadata(MetadataHelper.PlatformKey) == "QUEST";
 
         // Update nametag
         if (!NetworkEntity.IsOwner)
@@ -300,7 +305,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     {
         _isServerDirty = true;
 
-        OnMetadataChanged(PlayerId);
+        OnMetadataChanged();
     }
 
     public void SetRagdoll(bool isRagdolled)
@@ -425,7 +430,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         OnReregisterUpdates();
 
         // Update metadata
-        OnMetadataChanged(PlayerId);
+        OnMetadataChanged();
     }
 
     private void OnPlayerUnregistered(NetworkEntity entity)

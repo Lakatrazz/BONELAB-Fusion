@@ -17,7 +17,7 @@ public static class MetadataHelper
 
     public static bool TryGetPermissionLevel(this PlayerId id, out PermissionLevel level)
     {
-        if (id.TryGetMetadata(PermissionKey, out string rawLevel) && Enum.TryParse(rawLevel, out PermissionLevel newLevel))
+        if (id.Metadata.TryGetMetadata(PermissionKey, out string rawLevel) && Enum.TryParse(rawLevel, out PermissionLevel newLevel))
         {
             level = newLevel;
             return true;
@@ -29,8 +29,8 @@ public static class MetadataHelper
 
     public static bool TryGetDisplayName(this PlayerId id, out string name)
     {
-        id.TryGetMetadata(UsernameKey, out var username);
-        id.TryGetMetadata(NicknameKey, out var nickname);
+        id.Metadata.TryGetMetadata(UsernameKey, out var username);
+        id.Metadata.TryGetMetadata(NicknameKey, out var nickname);
 
         // Check validity
         if (FusionMasterList.VerifyPlayer(id.LongId, username) == FusionMasterResult.IMPERSONATOR)

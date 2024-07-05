@@ -1,6 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Network;
+using LabFusion.SDK.Metadata;
 using LabFusion.SDK.Points;
 using LabFusion.Senders;
 using LabFusion.Utilities;
@@ -16,16 +17,8 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
     public ulong LongId { get; private set; }
     public byte SmallId { get; private set; }
 
-    /// <summary>
-    /// When the metadata of the ID is changed.
-    /// </summary>
-    public event Action<PlayerId> OnMetadataChanged;
-
-    /// <summary>
-    /// When a specific key and value pair of metadata is changed.
-    /// <para>The second argument is the key, and the third argument is the value.</para>
-    /// </summary>
-    public event Action<PlayerId, string, string> OnMetadataPairChanged;
+    private readonly NetworkMetadata _metadata = new();
+    public NetworkMetadata Metadata => _metadata;
 
     private Action _onDestroyedEvent = null;
     public event Action OnDestroyedEvent
@@ -47,9 +40,6 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
         }
     }
 
-    private readonly FusionDictionary<string, string> _internalMetadata = new();
-    public FusionDictionary<string, string> Metadata => _internalMetadata;
-
     private List<string> _internalEquippedItems = new List<string>();
     public List<string> EquippedItems => _internalEquippedItems;
 
@@ -62,16 +52,59 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
     {
         LongId = longId;
         SmallId = smallId;
-        _internalMetadata = metadata;
+
         _internalEquippedItems = equippedItems;
 
+        foreach (var pair in metadata)
+        {
+            Metadata.ForceSetLocalMetadata(pair.Key, pair.Value);
+        }
+
+        HookMetadata();
+
         _isValid = true;
+    }
+
+    private void HookMetadata()
+    {
+        Metadata.OnTrySetMetadata += OnTrySetMetadata;
+        Metadata.OnTryRemoveMetadata += OnTryRemoveMetadata;
+    }
+
+    private void UnhookMetadata()
+    {
+        Metadata.OnTrySetMetadata -= OnTrySetMetadata;
+        Metadata.OnTryRemoveMetadata -= OnTryRemoveMetadata;
+    }
+
+    private bool OnTrySetMetadata(string key, string value)
+    {
+        if (!HasMetadataPermissions())
+        {
+            return false;
+        }
+
+        PlayerSender.SendPlayerMetadataRequest(SmallId, key, value);
+        return true;
+    }
+
+    private bool OnTryRemoveMetadata(string key)
+    {
+        // Not implemented
+        return false;
+    }
+
+    private bool HasMetadataPermissions()
+    {
+        return NetworkInfo.IsServer || IsSelf;
     }
 
     public bool Equals(PlayerId other)
     {
         if (other == null)
+        {
             return false;
+        }
 
         return SmallId == other.SmallId;
     }
@@ -106,43 +139,6 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
             return item.IsEquipped;
         else
             return EquippedItems.Contains(item.Barcode);
-    }
-
-    public bool TrySetMetadata(string key, string value)
-    {
-        // If we are the server, we just accept the request
-        // Otherwise, we make sure this is our PlayerId
-        if (NetworkInfo.IsServer || SmallId == PlayerIdManager.LocalSmallId)
-        {
-            PlayerSender.SendPlayerMetadataRequest(SmallId, key, value);
-            return true;
-        }
-
-        return false;
-    }
-
-    public bool TryGetMetadata(string key, out string value)
-    {
-        return _internalMetadata.TryGetValue(key, out value);
-    }
-
-    public string GetMetadata(string key)
-    {
-        if (_internalMetadata.TryGetValue(key, out string value))
-            return value;
-
-        return null;
-    }
-
-    internal void Internal_ForceSetMetadata(string key, string value)
-    {
-        if (_internalMetadata.ContainsKey(key))
-            _internalMetadata[key] = value;
-        else
-            _internalMetadata.Add(key, value);
-
-        OnMetadataPairChanged.InvokeSafe(this, key, value, $"invoking OnMetadataPairChanged for player {SmallId}");
-        OnMetadataChanged.InvokeSafe(this, $"invoking OnMetadataChanged hook for player {SmallId}");
     }
 
     internal void Internal_ForceSetEquipped(string barcode, bool value)
@@ -185,6 +181,8 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
 
         _onDestroyedEvent?.Invoke();
         _onDestroyedEvent = null;
+
+        UnhookMetadata();
     }
 
     public void Serialize(FusionWriter writer)
@@ -193,7 +191,7 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
         writer.Write(SmallId);
 
         // Write the player metadata
-        writer.Write(_internalMetadata);
+        writer.Write(Metadata.LocalDictionary);
 
         writer.Write(_internalEquippedItems);
     }
@@ -204,10 +202,10 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
         SmallId = reader.ReadByte();
 
         // Read the player metadata
-        var metaData = reader.ReadStringDictionary();
-        foreach (var pair in metaData)
+        var metadata = reader.ReadStringDictionary();
+        foreach (var pair in metadata)
         {
-            Internal_ForceSetMetadata(pair.Key, pair.Value);
+            Metadata.ForceSetLocalMetadata(pair.Key, pair.Value);
         }
 
         var equippedItems = reader.ReadStrings();

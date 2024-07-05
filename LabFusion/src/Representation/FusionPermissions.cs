@@ -57,7 +57,7 @@ namespace LabFusion.Representation
             {
                 var id = PlayerIdManager.GetPlayerId(longId);
 
-                if (id != null && id.TryGetMetadata(MetadataHelper.PermissionKey, out string rawLevel))
+                if (id != null && id.Metadata.TryGetMetadata(MetadataHelper.PermissionKey, out string rawLevel))
                 {
                     Enum.TryParse(rawLevel, out level);
                 }
@@ -74,7 +74,7 @@ namespace LabFusion.Representation
 
             if (playerId != null && NetworkInfo.IsServer)
             {
-                playerId.TrySetMetadata(MetadataHelper.PermissionKey, level.ToString());
+                playerId.Metadata.TrySetMetadata(MetadataHelper.PermissionKey, level.ToString());
             }
         }
 

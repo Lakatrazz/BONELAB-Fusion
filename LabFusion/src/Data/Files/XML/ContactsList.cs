@@ -31,7 +31,7 @@ namespace LabFusion.Data
         public void Update(PlayerId id)
         {
             this.id = id;
-            username = id.GetMetadata(MetadataHelper.UsernameKey);
+            username = id.Metadata.GetMetadata(MetadataHelper.UsernameKey);
         }
 
         public Contact(XElement element)
