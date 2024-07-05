@@ -3,7 +3,7 @@
 using HarmonyLib;
 
 using LabFusion.Network;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Entities;
 using LabFusion.Utilities;
 using LabFusion.Senders;

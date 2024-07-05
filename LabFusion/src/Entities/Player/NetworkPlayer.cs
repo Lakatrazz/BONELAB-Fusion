@@ -7,6 +7,7 @@ using Il2CppSLZ.Interaction;
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Network;
+using LabFusion.Player;
 using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Preferences;

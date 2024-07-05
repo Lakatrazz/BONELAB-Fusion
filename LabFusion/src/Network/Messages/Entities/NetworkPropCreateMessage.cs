@@ -2,7 +2,7 @@
 using LabFusion.Syncables;
 using LabFusion.Senders;
 using LabFusion.Entities;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Marrow;
 
 namespace LabFusion.Network;

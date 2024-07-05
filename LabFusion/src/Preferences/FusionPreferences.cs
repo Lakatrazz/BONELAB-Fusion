@@ -2,6 +2,7 @@
 using BoneLib.BoneMenu.Elements;
 using LabFusion.Data;
 using LabFusion.Network;
+using LabFusion.Player;
 using LabFusion.Representation;
 using LabFusion.Senders;
 using MelonLoader;

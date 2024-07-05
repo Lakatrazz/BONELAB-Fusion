@@ -1,6 +1,7 @@
 ﻿using LabFusion.Extensions;
 using LabFusion.Preferences;
 using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Senders;
 
 namespace LabFusion.Network;

@@ -1,7 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Exceptions;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Utilities;
 
 namespace LabFusion.Network;

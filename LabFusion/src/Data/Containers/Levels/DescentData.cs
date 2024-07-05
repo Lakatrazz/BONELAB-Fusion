@@ -7,7 +7,7 @@ using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Interaction;
 
 using UnityEngine;
-using LabFusion.Representation;
+using LabFusion.Player;
 
 namespace LabFusion.Data
 {

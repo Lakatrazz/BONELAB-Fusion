@@ -1,7 +1,7 @@
 ﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 using LabFusion.Data;
-using LabFusion.Representation;
+using LabFusion.Player;
 
 using UnityEngine;
 

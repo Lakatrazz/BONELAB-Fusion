@@ -3,7 +3,7 @@
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Network;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Utilities;
 
 using Il2CppSLZ.Rig;

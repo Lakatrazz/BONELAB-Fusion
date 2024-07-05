@@ -10,7 +10,7 @@ using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.MonoBehaviours;
 using LabFusion.Network;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Utilities;
 
 using UnityEngine;

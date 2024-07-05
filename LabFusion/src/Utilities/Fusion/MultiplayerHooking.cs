@@ -1,7 +1,7 @@
 ﻿using BoneLib.BoneMenu.Elements;
 
 using LabFusion.Network;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Senders;
 
 using Il2CppSLZ.Rig;

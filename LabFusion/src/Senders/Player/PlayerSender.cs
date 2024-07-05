@@ -5,7 +5,7 @@ using LabFusion.Data;
 using LabFusion.Exceptions;
 using LabFusion.Extensions;
 using LabFusion.Network;
-using LabFusion.Representation;
+using LabFusion.Player;
 
 using UnityEngine;
 

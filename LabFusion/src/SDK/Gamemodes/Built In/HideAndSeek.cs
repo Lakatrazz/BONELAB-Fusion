@@ -1,6 +1,8 @@
-﻿using Il2CppSLZ.Marrow.Warehouse;
+﻿using Il2CppSLZ.Interaction;
+using Il2CppSLZ.Marrow.Warehouse;
 
 using LabFusion.Marrow;
+using LabFusion.Player;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -44,6 +46,8 @@ public class HideAndSeek : Gamemode
         SetDefaults();
 
         Playlist.StartPlaylist();
+
+        LocalPlayer.OnGrab += OnLocalPlayerGrab;
     }
 
     protected override void OnStopGamemode()
@@ -51,6 +55,8 @@ public class HideAndSeek : Gamemode
         base.OnStopGamemode();
 
         Playlist.StopPlaylist();
+
+        LocalPlayer.OnGrab -= OnLocalPlayerGrab;
     }
 
     protected override void OnUpdate()
@@ -61,5 +67,10 @@ public class HideAndSeek : Gamemode
         }
 
         Playlist.Update();
+    }
+
+    private void OnLocalPlayerGrab(Hand hand, Grip grip)
+    {
+
     }
 }

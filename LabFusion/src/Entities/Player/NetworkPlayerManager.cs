@@ -1,6 +1,6 @@
 ﻿using Il2CppSLZ.Rig;
 
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Utilities;
 
 using System;

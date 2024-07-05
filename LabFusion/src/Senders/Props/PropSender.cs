@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 using LabFusion.Network;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Utilities;
 using LabFusion.Entities;
 using LabFusion.MonoBehaviours;

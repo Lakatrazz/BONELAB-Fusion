@@ -1,5 +1,5 @@
 ﻿using LabFusion.Extensions;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Entities;
 
 using UnityEngine.UI;

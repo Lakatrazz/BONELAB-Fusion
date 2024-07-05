@@ -1,7 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Exceptions;
 using LabFusion.Extensions;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Utilities;
 
 using UnityEngine;

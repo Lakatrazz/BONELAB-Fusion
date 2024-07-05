@@ -1,5 +1,5 @@
 ﻿using LabFusion.Data;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Patching;
 using LabFusion.Extensions;
 using LabFusion.Entities;

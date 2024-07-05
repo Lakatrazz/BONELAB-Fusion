@@ -1,5 +1,5 @@
 ﻿using LabFusion.Network;
-using LabFusion.Representation;
+using LabFusion.Player;
 
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Vehicle;

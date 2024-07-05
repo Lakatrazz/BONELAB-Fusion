@@ -1,4 +1,4 @@
-﻿using LabFusion.Representation;
+﻿using LabFusion.Player;
 using LabFusion.Senders;
 using LabFusion.Entities;
 using LabFusion.Utilities;

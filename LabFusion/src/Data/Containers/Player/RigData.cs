@@ -1,13 +1,11 @@
 ﻿using Il2CppSLZ.Rig;
 using Il2CppSLZ.Interaction;
 
-using BoneLib;
-
 using UnityEngine;
 
 using LabFusion.Utilities;
 using LabFusion.Network;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Extensions;
 using LabFusion.Senders;
 
@@ -201,7 +199,7 @@ public static class RigData
 
     public static void OnCacheRigInfo()
     {
-        var manager = Player.rigManager;
+        var manager = BoneLib.Player.rigManager;
 
         if (!manager)
         {

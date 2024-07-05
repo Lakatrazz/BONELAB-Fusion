@@ -1,6 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Extensions;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 using LabFusion.Entities;

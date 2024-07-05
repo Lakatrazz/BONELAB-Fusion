@@ -1,7 +1,7 @@
 ﻿using BoneLib.BoneMenu.Elements;
 
 using LabFusion.Preferences;
-using LabFusion.Representation;
+using LabFusion.Player;
 
 namespace LabFusion.Network
 {

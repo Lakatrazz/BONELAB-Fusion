@@ -7,7 +7,7 @@ using LabFusion.Extensions;
 using LabFusion.Marrow;
 using LabFusion.MarrowIntegration;
 using LabFusion.Network;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.SDK.Achievements;
 using LabFusion.SDK.Points;
 using LabFusion.SDK.Triggers;

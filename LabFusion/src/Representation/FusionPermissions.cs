@@ -1,5 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Network;
+using LabFusion.Player;
 
 using UnityEngine;
 

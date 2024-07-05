@@ -1,6 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.SDK.Points;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Extensions;
 
 namespace LabFusion.Network

@@ -7,7 +7,7 @@ using LabFusion.Utilities;
 using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Senders;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.SDK.Achievements;
 using Il2CppSLZ.Marrow.Interaction;
 
