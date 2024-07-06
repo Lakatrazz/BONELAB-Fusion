@@ -22,6 +22,7 @@ public static class VirtualControllerPatches
 
         // The hand and its rigManager will never be null, so we don't need to check for it
         // If they are null, then something has seriously gone wrong, so an error *should* be thrown and not hidden
+        /// For some reason on Android hand's rigmanager is null, will look into later
         var hand = pair.hand;
 
         if (NetworkPlayerManager.HasExternalPlayer(hand.manager))
