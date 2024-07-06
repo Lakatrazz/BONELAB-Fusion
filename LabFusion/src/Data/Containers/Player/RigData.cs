@@ -233,7 +233,7 @@ public static class RigData
         RigReferences.RigManager.remapHeptaRig.onPlayerJump += (Il2CppSystem.Action)OnJump;
 
         // Notify hooks
-        MultiplayerHooking.Internal_OnLocalPlayerCreated(manager);
+        LocalPlayer.OnLocalRigCreated?.InvokeSafe(manager, "executing OnLocalRigCreated hook");
 
         // Update avatar
         if (manager._avatar != null)

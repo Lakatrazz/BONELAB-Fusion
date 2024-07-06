@@ -27,6 +27,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     public static readonly HashSet<NetworkPlayer> Players = new();
 
+    public static event Action<NetworkPlayer, RigManager> OnNetworkRigCreated;
+
     private NetworkEntity _networkEntity = null;
 
     private PlayerId _playerId = null;
@@ -788,6 +790,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             // Match the current cull state
             OnEntityCull(MarrowEntity.IsCulled);
         }
+
+        // Run events
+        OnNetworkRigCreated?.InvokeSafe(this, rigManager, "executing OnNetworkRigCreated hook");
     }
 
     private Il2CppSystem.Action _onAvatarSwappedAction = null;

@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using Il2CppSLZ.Interaction;
+using Il2CppSLZ.Rig;
 
 using LabFusion.Entities;
 using LabFusion.Network;
@@ -13,6 +14,8 @@ public static class LocalPlayer
 {
     public static PlayerGrabDelegate? OnGrab { get; set; }
     public static PlayerGrabDelegate? OnRelease { get; set; }
+
+    public static Action<RigManager>? OnLocalRigCreated { get; set; }
 
     public static NetworkPlayer? GetNetworkPlayer()
     {

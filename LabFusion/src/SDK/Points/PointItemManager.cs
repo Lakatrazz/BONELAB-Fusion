@@ -124,17 +124,17 @@ public static class PointItemManager
 
     internal static void HookEvents()
     {
-        MultiplayerHooking.OnLocalPlayerCreated += Internal_OnLocalPlayerCreated;
-        MultiplayerHooking.OnPlayerRepCreated += Internal_OnPlayerRepCreated;
+        LocalPlayer.OnLocalRigCreated += OnLocalRigCreated;
+        NetworkPlayer.OnNetworkRigCreated += OnNetworkRigCreated;
     }
 
     internal static void UnhookEvents()
     {
-        MultiplayerHooking.OnLocalPlayerCreated -= Internal_OnLocalPlayerCreated;
-        MultiplayerHooking.OnPlayerRepCreated -= Internal_OnPlayerRepCreated;
+        LocalPlayer.OnLocalRigCreated -= OnLocalRigCreated;
+        NetworkPlayer.OnNetworkRigCreated -= OnNetworkRigCreated;
     }
 
-    private static void Internal_OnLocalPlayerCreated(RigManager rigManager)
+    private static void OnLocalRigCreated(RigManager rigManager)
     {
         foreach (var item in LoadedItems)
         {
@@ -150,20 +150,22 @@ public static class PointItemManager
         }
     }
 
-    private static void Internal_OnPlayerRepCreated(RigManager rigManager)
+    private static void OnNetworkRigCreated(NetworkPlayer player, RigManager rigManager)
     {
-        if (!NetworkPlayerManager.TryGetPlayer(rigManager, out var rep) || rep.NetworkEntity.IsOwner)
+        if (player.NetworkEntity.IsOwner)
+        {
             return;
+        }
 
         foreach (var item in LoadedItems)
         {
-            if (rep.PlayerId.EquippedItems.Contains(item.Barcode))
+            if (player.PlayerId.EquippedItems.Contains(item.Barcode))
             {
                 item.OnUpdateObjects(new PointItemPayload()
                 {
                     type = PointItemPayloadType.PLAYER_REP,
                     rigManager = rigManager,
-                    playerId = rep.PlayerId,
+                    playerId = player.PlayerId,
                 }, true);
             }
         }
