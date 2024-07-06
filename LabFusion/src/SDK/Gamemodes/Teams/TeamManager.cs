@@ -46,6 +46,16 @@ public class TeamManager
 
         _playersToTeam[player] = teamVariable;
 
+        // Remove from existing teams
+        foreach (var existingTeam in Teams)
+        {
+            if (existingTeam.HasPlayer(player))
+            {
+                OnRemovedFromTeam?.Invoke(player, existingTeam);
+                existingTeam.ForceRemovePlayer(player);
+            }
+        }
+
         // Invoke team change event
         var team = GetTeamByName(value);
         
