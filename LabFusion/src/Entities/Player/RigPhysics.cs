@@ -5,7 +5,7 @@ namespace LabFusion.Entities;
 
 public class RigPhysics
 {
-    private MarrowEntity _entity = null;
+    private readonly MarrowEntity _entity = null;
 
     public RigPhysics(RigManager rigManager)
     {
@@ -15,7 +15,6 @@ public class RigPhysics
     public void CullPhysics(bool isInactive)
     {
         bool isEnabled = !isInactive;
-        _entity.EnableTrackers(isEnabled);
         _entity.EnableColliders(isEnabled);
     }
 }

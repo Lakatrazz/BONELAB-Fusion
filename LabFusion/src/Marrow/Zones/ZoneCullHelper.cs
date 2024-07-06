@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Il2CppSLZ.Marrow.Interaction;
+﻿using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow.Zones;
 
 using LabFusion.Patching;
@@ -14,6 +8,29 @@ namespace LabFusion.Marrow.Zones;
 
 public static class ZoneCullHelper
 {
+    private static bool CanInteractWithZone(Zone zone, Tracker tracker)
+    {
+        var zoneLayer = zone.gameObject.layer;
+        var trackerLayer = tracker.gameObject.layer;
+
+        if (zoneLayer == (int)MarrowLayers.EntityTrigger && trackerLayer != (int)MarrowLayers.EntityTracker)
+        {
+            return false;
+        }
+
+        if (zoneLayer == (int)MarrowLayers.BeingTrigger && trackerLayer != (int)MarrowLayers.BeingTracker)
+        {
+            return false;
+        }
+
+        if (zoneLayer == (int)MarrowLayers.ObserverTrigger && trackerLayer != (int)MarrowLayers.ObserverTracker)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     private static void SimulateZoneExit(Zone zone, MarrowEntity entity) 
     {
         // Exit all trackers
@@ -21,34 +38,28 @@ public static class ZoneCullHelper
         {
             foreach (var tracker in body.Trackers)
             {
-                // Make sure the zone still contains the entity
-                if (!zone._entityOverlapCounts.ContainsKey(entity))
-                {
-                    return;
-                }
-
-                // Make sure the zone contains the tracker
-                if (!zone._trackerOverlap.Contains(tracker))
-                {
-                    continue;
-                }
-
-                try
-                {
-                    zone.OnTriggerExit(tracker.Collider);
-                }
-                catch (Exception e)
-                {
-#if DEBUG
-                    FusionLogger.LogException("simulating zone exit", e);
-#endif
-                }
-
-                zone._trackerOverlap.Remove(tracker);
+                SimulateZoneExit(zone, tracker);
             }
         }
+    }
 
-        zone._entityOverlapCounts.Remove(entity);
+    private static void SimulateZoneExit(Zone zone, Tracker tracker)
+    {
+        if (!CanInteractWithZone(zone, tracker))
+        {
+            return;
+        }
+
+        try
+        {
+            zone.OnTriggerExit(tracker.Collider);
+        }
+        catch (Exception e)
+        {
+#if DEBUG
+            FusionLogger.LogException("simulating zone exit", e);
+#endif
+        }
     }
 
     private static void SimulateZoneEnter(Zone zone, MarrowEntity entity) 
@@ -57,32 +68,27 @@ public static class ZoneCullHelper
         {
             foreach (var tracker in body.Trackers)
             {
-                if (zone._trackerOverlap.Contains(tracker))
-                {
-                    continue;
-                }
-
-                try
-                {
-                    zone.OnTriggerEnter(tracker.Collider);
-                }
-                catch (Exception e)
-                {
-#if DEBUG
-                    FusionLogger.LogException("simulating zone enter", e);
-#endif
-                }
+                SimulateZoneEnter(zone, tracker);
             }
         }
+    }
 
-        // Make sure the zone's overlap count is only 1
-        if (!zone._entityOverlapCounts.ContainsKey(entity))
+    private static void SimulateZoneEnter(Zone zone, Tracker tracker)
+    {
+        if (!CanInteractWithZone(zone, tracker))
         {
-            zone._entityOverlapCounts.Add(entity, 1);
+            return;
         }
-        else
+
+        try
         {
-            zone._entityOverlapCounts[entity] = 1;
+            zone.OnTriggerEnter(tracker.Collider);
+        }
+        catch (Exception e)
+        {
+#if DEBUG
+            FusionLogger.LogException("simulating zone enter", e);
+#endif
         }
     }
 
