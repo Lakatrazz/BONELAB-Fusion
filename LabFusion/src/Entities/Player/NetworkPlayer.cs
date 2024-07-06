@@ -826,17 +826,22 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             return;
         }
 
-        var physicsRig = RigReferences.RigManager.physicsRig.gameObject;
-        var avatar = RigReferences.RigManager.avatar.gameObject;
+        var physicsRig = RigReferences.RigManager.physicsRig;
+        var avatar = RigReferences.RigManager.avatar;
 
-        RegisterComponents(physicsRig, avatar);
+        var parents = new GameObject[] { physicsRig.gameObject, avatar.gameObject };
+
+        var ammoReceiver = physicsRig.GetComponentInChildren<InventoryAmmoReceiver>().gameObject;
+        var blacklist = new GameObject[] { ammoReceiver, };
+
+        RegisterComponents(parents, blacklist);
     }
 
-    private void RegisterComponents(params GameObject[] parents)
+    private void RegisterComponents(GameObject[] parents, GameObject[] blacklist)
     {
         UnregisterComponents();
 
-        _componentExtenders = EntityComponentManager.ApplyComponents(NetworkEntity, parents);
+        _componentExtenders = EntityComponentManager.ApplyComponents(NetworkEntity, parents, blacklist);
     }
 
     private void UnregisterComponents()

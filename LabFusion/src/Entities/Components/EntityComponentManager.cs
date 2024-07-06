@@ -43,7 +43,7 @@ public static class EntityComponentManager
 #endif
     }
 
-    public static HashSet<IEntityComponentExtender> ApplyComponents(NetworkEntity networkEntity, params GameObject[] parents)
+    public static HashSet<IEntityComponentExtender> ApplyComponents(NetworkEntity networkEntity, GameObject[] parents, GameObject[] blacklist = null)
     {
         var set = new HashSet<IEntityComponentExtender>();
 
@@ -53,7 +53,7 @@ public static class EntityComponentManager
 
             var instance = Activator.CreateInstance(type) as IEntityComponentExtender;
 
-            if (instance.TryRegister(networkEntity, parents))
+            if (instance.TryRegister(networkEntity, parents, blacklist))
             {
                 set.Add(instance);
             }

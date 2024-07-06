@@ -86,7 +86,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     private void InitializeComponents()
     {
-        _componentExtenders = EntityComponentManager.ApplyComponents(NetworkEntity, MarrowEntity.gameObject);
+        _componentExtenders = EntityComponentManager.ApplyComponents(NetworkEntity, new GameObject[] { MarrowEntity.gameObject });
     }
 
     public void OnReceivePose(EntityPose pose)
