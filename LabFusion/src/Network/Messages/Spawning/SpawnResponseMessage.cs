@@ -113,6 +113,8 @@ public class SpawnResponseMessage : FusionMessageHandler
         // Remove the existing entity on this poolee if it exists
         if (PooleeExtender.Cache.TryGet(poolee, out var conflictingEntity))
         {
+            FusionLogger.Warn($"Unregistered entity {conflictingEntity.Id} on poolee {poolee.name} due to conflicting id.");
+
             NetworkEntityManager.IdManager.UnregisterEntity(conflictingEntity);
         }
 
