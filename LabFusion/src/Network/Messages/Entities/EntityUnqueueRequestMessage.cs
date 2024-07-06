@@ -35,7 +35,7 @@ namespace LabFusion.Network
 
     public class EntityUnqueueRequestMessage : FusionMessageHandler
     {
-        public override byte? Tag => NativeMessageTag.EntityUnqueueRequest;
+        public override byte Tag => NativeMessageTag.EntityUnqueueRequest;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {

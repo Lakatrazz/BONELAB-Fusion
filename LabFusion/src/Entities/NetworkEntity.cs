@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using LabFusion.Representation;
+﻿using LabFusion.Player;
 using LabFusion.Utilities;
 
 namespace LabFusion.Entities;
@@ -38,7 +32,7 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
 
     public PlayerId OwnerId => _ownerId;
 
-    public bool IsOwner => HasOwner && _ownerId.IsSelf;
+    public bool IsOwner => HasOwner && _ownerId.IsOwner;
 
     public bool HasOwner => _ownerId != null;
 

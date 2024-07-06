@@ -45,7 +45,7 @@ namespace LabFusion.Network
     [Net.DelayWhileTargetLoading]
     public class ArenaTransitionMessage : FusionMessageHandler
     {
-        public override byte? Tag => NativeMessageTag.ArenaTransition;
+        public override byte Tag => NativeMessageTag.ArenaTransition;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {

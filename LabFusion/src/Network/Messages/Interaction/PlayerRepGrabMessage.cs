@@ -1,5 +1,5 @@
 ﻿using LabFusion.Data;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Utilities;
 using LabFusion.Grabbables;
 using LabFusion.Entities;
@@ -72,7 +72,7 @@ public class PlayerRepGrabData : IFusionSerializable
 [Net.DelayWhileTargetLoading]
 public class PlayerRepGrabMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.PlayerRepGrab;
+    public override byte Tag => NativeMessageTag.PlayerRepGrab;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -89,7 +89,7 @@ public class PlayerRepGrabMessage : FusionMessageHandler
         // Send message to other clients if server
         if (isServerHandled)
         {
-            using var message = FusionMessage.Create(Tag.Value, bytes);
+            using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
         }
     }

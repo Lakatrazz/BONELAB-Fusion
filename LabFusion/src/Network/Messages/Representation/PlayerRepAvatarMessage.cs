@@ -1,6 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
-using LabFusion.Representation;
+using LabFusion.Player;
 
 namespace LabFusion.Network;
 
@@ -39,7 +39,7 @@ public class PlayerRepAvatarData : IFusionSerializable
 
 public class PlayerRepAvatarMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.PlayerRepAvatar;
+    public override byte Tag => NativeMessageTag.PlayerRepAvatar;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -55,7 +55,7 @@ public class PlayerRepAvatarMessage : FusionMessageHandler
         // Bounce the message back
         if (NetworkInfo.IsServer)
         {
-            using var message = FusionMessage.Create(Tag.Value, bytes);
+            using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
         }
     }

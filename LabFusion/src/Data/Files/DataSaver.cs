@@ -1,54 +1,63 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
+
 using LabFusion.Utilities;
 
-namespace LabFusion.Data
+namespace LabFusion.Data;
+
+public static class DataSaver
 {
-    public static class DataSaver
+    public static readonly JsonSerializerOptions SerializerOptions = new()
     {
-        public static void WriteJson(string path, object value)
+        IncludeFields = true,
+    };
+
+    public static void WriteJson<T>(string path, T value)
+    {
+        string fullPath = PersistentData.GetPath(path);
+        string directoryName = Path.GetDirectoryName(fullPath);
+
+        if (!Directory.Exists(directoryName))
         {
-            string fullPath = PersistentData.GetPath(path);
-            string directoryName = Path.GetDirectoryName(fullPath);
-
-            if (!Directory.Exists(directoryName))
-                Directory.CreateDirectory(directoryName);
-
-            string jsonText = JsonConvert.SerializeObject(value, Formatting.Indented);
-
-            File.WriteAllText(fullPath, jsonText);
+            Directory.CreateDirectory(directoryName);
         }
 
-        public static T ReadJson<T>(string path)
+        string jsonText = JsonSerializer.Serialize(value, SerializerOptions);
+
+        File.WriteAllText(fullPath, jsonText);
+    }
+
+    public static T ReadJson<T>(string path)
+    {
+        string fullPath = PersistentData.GetPath(path);
+
+        if (!File.Exists(fullPath))
         {
-            string fullPath = PersistentData.GetPath(path);
+            return default;
+        }
 
-            if (!File.Exists(fullPath))
-                return default;
+        string jsonText;
 
-            string jsonText;
+        try
+        {
+            jsonText = File.ReadAllText(fullPath);
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            FusionLogger.LogException($"reading save data at {path}", e);
+            return default;
+        }
 
-            try
-            {
-                jsonText = File.ReadAllText(fullPath);
-            }
-            catch (UnauthorizedAccessException e)
-            {
-                FusionLogger.LogException($"reading save data at {path}", e);
-                return default;
-            }
+        try
+        {
+            T result = JsonSerializer.Deserialize<T>(jsonText, SerializerOptions);
+            return result;
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException($"reading save data at {path}", e);
 
-            try
-            {
-                T result = JsonConvert.DeserializeObject<T>(jsonText);
-                return result;
-            }
-            catch (Exception e)
-            {
-                FusionLogger.LogException($"reading save data at {path}", e);
-
-                File.Delete(fullPath);
-                return default;
-            }
+            File.Delete(fullPath);
+            return default;
         }
     }
 }

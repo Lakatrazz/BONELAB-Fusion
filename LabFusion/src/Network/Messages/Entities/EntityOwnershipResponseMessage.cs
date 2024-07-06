@@ -1,12 +1,12 @@
 ﻿using LabFusion.Entities;
 using LabFusion.Exceptions;
-using LabFusion.Representation;
+using LabFusion.Player;
 
 namespace LabFusion.Network;
 
 public class EntityOwnershipResponseMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.EntityOwnershipResponse;
+    public override byte Tag => NativeMessageTag.EntityOwnershipResponse;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {

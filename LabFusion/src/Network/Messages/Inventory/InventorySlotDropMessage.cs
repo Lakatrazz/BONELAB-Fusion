@@ -1,5 +1,5 @@
 ﻿using LabFusion.Data;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Patching;
 using LabFusion.Extensions;
 using LabFusion.Entities;
@@ -58,7 +58,7 @@ public class InventorySlotDropData : IFusionSerializable
 [Net.DelayWhileTargetLoading]
 public class InventorySlotDropMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.InventorySlotDrop;
+    public override byte Tag => NativeMessageTag.InventorySlotDrop;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -68,7 +68,7 @@ public class InventorySlotDropMessage : FusionMessageHandler
         // Send message to other clients if server
         if (isServerHandled)
         {
-            using var message = FusionMessage.Create(Tag.Value, bytes);
+            using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessageExcept(data.grabber, NetworkChannel.Reliable, message, false);
             return;
         }

@@ -42,7 +42,7 @@ namespace LabFusion.Network
     [Net.DelayWhileTargetLoading]
     public class KartRaceEventMessage : FusionMessageHandler
     {
-        public override byte? Tag => NativeMessageTag.KartRaceEvent;
+        public override byte Tag => NativeMessageTag.KartRaceEvent;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
@@ -51,7 +51,7 @@ namespace LabFusion.Network
             // Send message to other clients if server
             if (isServerHandled)
             {
-                using var message = FusionMessage.Create(Tag.Value, bytes);
+                using var message = FusionMessage.Create(Tag, bytes);
                 MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
             }
             else

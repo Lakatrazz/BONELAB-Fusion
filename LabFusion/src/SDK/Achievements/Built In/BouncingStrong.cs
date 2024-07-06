@@ -1,6 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Marrow;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 
@@ -45,7 +45,7 @@ namespace LabFusion.SDK.Achievements
                 return;
 
             // Make sure this is us, and that we jumped
-            if (player.IsSelf && type == PlayerActionType.JUMP)
+            if (player.IsOwner && type == PlayerActionType.JUMP)
             {
                 // Check current avatar
                 if (RigData.RigAvatarId == CommonBarcodes.STRONG_BARCODE)

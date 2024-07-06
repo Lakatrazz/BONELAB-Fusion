@@ -12,90 +12,115 @@ using Il2CppSLZ.Marrow.Pool;
 using MelonLoader;
 
 
-namespace LabFusion.Patching
+namespace LabFusion.Patching;
+
+[HarmonyPatch(typeof(Poolee), nameof(Poolee.OnDespawnEvent))]
+public class PooleeOnDespawnPatch
 {
-    [HarmonyPatch(typeof(Poolee), nameof(Poolee.OnDespawnEvent))]
-    public class PooleeOnDespawnPatch
+    public static void Postfix(Poolee __instance)
     {
-        public static void Postfix(Poolee __instance)
+        if (PooleeUtilities.IsPlayer(__instance) || __instance.IsNOC())
         {
-            if (PooleeUtilities.IsPlayer(__instance) || __instance.IsNOC())
-            {
-                return;
-            }
-
-            if (!NetworkInfo.HasServer)
-            {
-                return;
-            }
-
-            if (PooleeExtender.Cache.TryGet(__instance, out var entity))
-            {
-                NetworkEntityManager.IdManager.UnregisterEntity(entity);
-            }
+            return;
         }
-    }
 
-    [HarmonyPatch(typeof(Poolee), nameof(Poolee.Despawn))]
-    public class PooleeDespawnPatch
-    {
-        public static bool IgnorePatch = false;
-
-        public static bool Prefix(Poolee __instance)
+        if (!NetworkInfo.HasServer)
         {
-            if (!NetworkInfo.HasServer)
-            {
-                return true;
-            }
+            return;
+        }
 
-            if (PooleeUtilities.IsPlayer(__instance) || IgnorePatch || __instance.IsNOC())
-            {
-                return true;
-            }
+        if (!PooleeExtender.Cache.TryGet(__instance, out var entity))
+        {
+            return;
+        }
 
-            try
-            {
-                if (!NetworkInfo.IsServer && !PooleeUtilities.CanDespawn && PooleeExtender.Cache.ContainsSource(__instance))
-                {
-                    return false;
-                }
-                else if (NetworkInfo.IsServer)
-                {
-                    if (!CheckNetworkEntity(__instance) && PooleeUtilities.CheckingForSpawn.Contains(__instance))
-                    {
-                        MelonCoroutines.Start(CoVerifyDespawnCoroutine(__instance));
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-#if DEBUG
-                FusionLogger.LogException("to execute patch Poolee.Despawn", e);
-#endif
-            }
+        var prop = entity.GetExtender<NetworkProp>();
 
+        if (prop == null)
+        {
+            return;
+        }
+
+        NetworkEntityManager.IdManager.UnregisterEntity(entity);
+    }
+}
+
+[HarmonyPatch(typeof(Poolee), nameof(Poolee.Despawn))]
+public class PooleeDespawnPatch
+{
+    public static bool IgnorePatch = false;
+
+    public static bool Prefix(Poolee __instance)
+    {
+        // Make sure we have a server
+        if (!NetworkInfo.HasServer)
+        {
             return true;
         }
 
-        private static bool CheckNetworkEntity(Poolee __instance)
+        // Also make sure we're not ignoring this patch
+        if (IgnorePatch)
         {
-            if (PooleeExtender.Cache.TryGet(__instance, out var entity))
-            {
-                PooleeUtilities.SendDespawn(entity.Id);
-                NetworkEntityManager.IdManager.UnregisterEntity(entity);
-                return true;
-            }
+            return true;
+        }
+
+        // Prevent despawning of players
+        if (PooleeUtilities.IsPlayer(__instance))
+        {
+            FusionLogger.Warn($"Prevented despawn of RigManager {__instance.name}!");
             return false;
         }
 
-        private static IEnumerator CoVerifyDespawnCoroutine(Poolee __instance)
+        try
         {
-            while (!__instance.IsNOC() && PooleeUtilities.CheckingForSpawn.Contains(__instance))
+            if (!NetworkInfo.IsServer && !PooleeUtilities.CanDespawn && PooleeExtender.Cache.ContainsSource(__instance))
             {
-                yield return null;
+                return false;
             }
-
-            CheckNetworkEntity(__instance);
+            else if (NetworkInfo.IsServer)
+            {
+                if (!CheckNetworkEntity(__instance) && PooleeUtilities.CheckingForSpawn.Contains(__instance))
+                {
+                    MelonCoroutines.Start(CoVerifyDespawnCoroutine(__instance));
+                }
+            }
         }
+        catch (Exception e)
+        {
+#if DEBUG
+            FusionLogger.LogException("to execute patch Poolee.Despawn", e);
+#endif
+        }
+
+        return true;
+    }
+
+    private static bool CheckNetworkEntity(Poolee __instance)
+    {
+        if (!PooleeExtender.Cache.TryGet(__instance, out var entity))
+        {
+            return false;
+        }
+
+        var prop = entity.GetExtender<NetworkProp>();
+
+        if (prop == null)
+        {
+            return false;
+        }
+
+        PooleeUtilities.SendDespawn(entity.Id);
+        NetworkEntityManager.IdManager.UnregisterEntity(entity);
+        return true;
+    }
+
+    private static IEnumerator CoVerifyDespawnCoroutine(Poolee __instance)
+    {
+        while (!__instance.IsNOC() && PooleeUtilities.CheckingForSpawn.Contains(__instance))
+        {
+            yield return null;
+        }
+
+        CheckNetworkEntity(__instance);
     }
 }

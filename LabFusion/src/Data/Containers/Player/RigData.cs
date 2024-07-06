@@ -1,13 +1,11 @@
 ﻿using Il2CppSLZ.Rig;
 using Il2CppSLZ.Interaction;
 
-using BoneLib;
-
 using UnityEngine;
 
 using LabFusion.Utilities;
 using LabFusion.Network;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Extensions;
 using LabFusion.Senders;
 
@@ -16,6 +14,7 @@ using Il2CppSLZ.Marrow.AI;
 using Il2CppSLZ.Marrow.Interaction;
 
 using CommonBarcodes = LabFusion.Utilities.CommonBarcodes;
+using LabFusion.MonoBehaviours;
 
 namespace LabFusion.Data;
 
@@ -42,9 +41,25 @@ public class RigReferenceCollection
 
     public Transform Head { get; private set; }
 
+    private Action _onDestroyCallback = null;
+
+    public void HookOnDestroy(Action callback)
+    {
+        if (IsValid)
+        {
+            _onDestroyCallback += callback;
+        }
+        else
+        {
+            _onDestroyCallback?.Invoke();
+        }
+    }
+
     public void OnDestroy()
     {
         IsValid = false;
+
+        _onDestroyCallback?.Invoke();
     }
 
     public byte? GetIndex(Grip grip, bool isAvatarGrip = false)
@@ -159,8 +174,8 @@ public class RigReferenceCollection
         RigManager = rigManager;
         IsValid = true;
 
-        var lifeCycle = rigManager.gameObject.AddComponent<RigLifeCycleEvents>();
-        lifeCycle.Collection = this;
+        var destroySensor = rigManager.gameObject.AddComponent<DestroySensor>();
+        destroySensor.Hook(OnDestroy);
 
         // Assign values
         ControllerRig = rigManager.ControllerRig;
@@ -201,7 +216,7 @@ public static class RigData
 
     public static void OnCacheRigInfo()
     {
-        var manager = Player.rigManager;
+        var manager = BoneLib.Player.rigManager;
 
         if (!manager)
         {

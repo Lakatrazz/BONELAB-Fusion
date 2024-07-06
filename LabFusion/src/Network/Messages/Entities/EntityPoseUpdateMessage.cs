@@ -1,8 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
 
-using UnityEngine;
-
 namespace LabFusion.Network;
 
 public class EntityPoseUpdateData : IFusionSerializable
@@ -50,7 +48,7 @@ public class EntityPoseUpdateData : IFusionSerializable
 [Net.SkipHandleWhileLoading]
 public class EntityPoseUpdateMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.EntityPoseUpdate;
+    public override byte Tag => NativeMessageTag.EntityPoseUpdate;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -60,7 +58,7 @@ public class EntityPoseUpdateMessage : FusionMessageHandler
         // Send message to other clients if server
         if (isServerHandled)
         {
-            using var message = FusionMessage.Create(Tag.Value, bytes);
+            using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessageExcept(data.ownerId, NetworkChannel.Unreliable, message);
         }
 

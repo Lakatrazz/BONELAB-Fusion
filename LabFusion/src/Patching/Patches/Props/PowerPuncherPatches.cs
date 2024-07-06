@@ -96,7 +96,12 @@ public static class PowerPuncherPatches
 
         _knockedElapsed = 0f;
 
-        physicsRig.UnRagdollRig();
+        var health = rigManager.health;
+
+        if (health.alive && !health.deathIsImminent)
+        {
+            physicsRig.UnRagdollRig();
+        }
 
         _isKnockedOut = false;
     }

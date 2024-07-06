@@ -1,5 +1,5 @@
 ﻿using LabFusion.Network;
-using LabFusion.Representation;
+using LabFusion.Player;
 
 using Il2CppSLZ.Marrow.Warehouse;
 
@@ -36,10 +36,12 @@ namespace LabFusion.Senders
         public static void SendLoadingState(bool isLoading)
         {
             if (!NetworkInfo.HasServer || PlayerIdManager.LocalId == null)
+            {
                 return;
+            }
 
             // Set the loading metadata
-            PlayerIdManager.LocalId.TrySetMetadata(MetadataHelper.LoadingKey, isLoading.ToString());
+            PlayerIdManager.LocalId.Metadata.TrySetMetadata(MetadataHelper.LoadingKey, isLoading.ToString());
         }
 
         public static void SendLevelLoad(string barcode, string loadBarcode)

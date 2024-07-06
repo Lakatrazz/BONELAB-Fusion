@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace LabFusion.Entities;
 
@@ -17,17 +11,19 @@ public abstract class EntityComponentExtender<TComponent> : IEntityComponentExte
 
     public TComponent Component => _component;
 
-    public bool TryRegister(NetworkEntity networkEntity, params GameObject[] parents)
+    public bool TryRegister(NetworkEntity networkEntity, GameObject[] parents)
     {
         foreach (var parent in parents)
         {
             var component = parent.GetComponentInChildren<TComponent>(true);
 
-            if (component != null)
+            if (component == null)
             {
-                Register(networkEntity, component);
-                return true;
+                continue;
             }
+
+            Register(networkEntity, component);
+            return true;
         }
 
         return false;

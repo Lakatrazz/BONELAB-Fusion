@@ -2,10 +2,11 @@
 
 using LabFusion.Data;
 using LabFusion.Network;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.SDK.Achievements;
 using LabFusion.Entities;
 using LabFusion.Utilities;
+using LabFusion.Representation;
 
 using Il2CppSLZ.Interaction;
 using Il2CppSLZ.Rig;

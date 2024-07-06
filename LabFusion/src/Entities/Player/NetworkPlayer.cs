@@ -3,11 +3,11 @@ using Il2CppSLZ.Rig;
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Audio;
 using Il2CppSLZ.Interaction;
-using Il2CppSLZ.Marrow.Utilities;
 
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Network;
+using LabFusion.Player;
 using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Preferences;
@@ -18,14 +18,14 @@ using MelonLoader;
 using UnityEngine;
 
 using System.Collections;
-using BoneLib;
-using LabFusion.Marrow;
 
 namespace LabFusion.Entities;
 
 public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpdatable, IEntityFixedUpdatable, IEntityLateUpdatable
 {
     public static readonly FusionComponentCache<RigManager, NetworkPlayer> RigCache = new();
+
+    public static readonly HashSet<NetworkPlayer> Players = new();
 
     private NetworkEntity _networkEntity = null;
 
@@ -50,6 +50,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private RigPose _pose = null;
     public RigPose RigPose => _pose;
+
+    private bool _receivedPose = false;
+    public bool ReceivedPose => _receivedPose;
 
     private RigPuppet _puppet = null;
     public RigPuppet Puppet => _puppet;
@@ -136,23 +139,29 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         for (var i = 0; i < 120; i++)
         {
             if (FusionSceneManager.IsLoading())
+            {
                 yield break;
+            }
 
             yield return null;
         }
 
         // Wait for loading
-        while (FusionSceneManager.IsDelayedLoading() || PlayerId.GetMetadata(MetadataHelper.LoadingKey) == bool.TrueString)
+        while (FusionSceneManager.IsDelayedLoading() || PlayerId.Metadata.GetMetadata(MetadataHelper.LoadingKey) == bool.TrueString)
         {
             if (FusionSceneManager.IsLoading())
+            {
                 yield break;
+            }
 
             yield return null;
         }
 
         // Make sure the rep still exists
         if (PlayerId == null || !PlayerId.IsValid)
+        {
             yield break;
+        }
 
         _puppet.CreatePuppet(OnPuppetCreated);
     }
@@ -227,7 +236,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         NetworkEntity.LockOwner();
 
         // Hook into the player's events
-        PlayerId.OnMetadataChanged += OnMetadataChanged;
+        PlayerId.Metadata.OnMetadataChanged += OnMetadataChanged;
         PlayerId.OnDestroyedEvent += OnPlayerDestroyed;
 
         MultiplayerHooking.OnServerSettingsChanged += OnServerSettingsChanged;
@@ -244,7 +253,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         NetworkEntity.UnlockOwner();
 
         // Unhook from the player's events
-        PlayerId.OnMetadataChanged -= OnMetadataChanged;
+        PlayerId.Metadata.OnMetadataChanged -= OnMetadataChanged;
         PlayerId.OnDestroyedEvent -= OnPlayerDestroyed;
 
         MultiplayerHooking.OnServerSettingsChanged -= OnServerSettingsChanged;
@@ -253,7 +262,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Remove cache
         if (HasRig)
         {
-            RemoveFromCache();
+            UnhookRig();
         }
 
         // Unhook from scene loading events
@@ -271,15 +280,20 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         _nametag.DestroyNametag();
     }
 
-    private void OnMetadataChanged(PlayerId playerId)
+    private void OnMetadataChanged(string key, string value)
+    {
+        OnMetadataChanged();
+    }
+
+    private void OnMetadataChanged()
     {
         // Read display name
-        if (playerId.TryGetDisplayName(out var name))
+        if (PlayerId.TryGetDisplayName(out var name))
         {
             _username = name;
         }
 
-        _isQuestUser = PlayerId.GetMetadata(MetadataHelper.PlatformKey) == "QUEST";
+        _isQuestUser = PlayerId.Metadata.GetMetadata(MetadataHelper.PlatformKey) == "QUEST";
 
         // Update nametag
         if (!NetworkEntity.IsOwner)
@@ -297,7 +311,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     {
         _isServerDirty = true;
 
-        OnMetadataChanged(PlayerId);
+        OnMetadataChanged();
     }
 
     public void SetRagdoll(bool isRagdolled)
@@ -413,6 +427,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void OnPlayerRegistered(NetworkEntity entity)
     {
+        Players.Add(this);
+
         HookPlayer();
 
         entity.ConnectExtender(this);
@@ -420,11 +436,13 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         OnReregisterUpdates();
 
         // Update metadata
-        OnMetadataChanged(PlayerId);
+        OnMetadataChanged();
     }
 
     private void OnPlayerUnregistered(NetworkEntity entity)
     {
+        Players.Remove(this);
+
         UnhookPlayer();
 
         entity.DisconnectExtender(this);
@@ -615,7 +633,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private void TeleportToPose()
     {
         // Don't teleport if no pose
-        if (RigPose == null || !HasRig)
+        if (!ReceivedPose || !HasRig)
         {
             return;
         }
@@ -641,12 +659,12 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         writer.Write(data);
 
         using var message = FusionMessage.Create(NativeMessageTag.PlayerPoseUpdate, writer);
-        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Unreliable, message);
+        MessageSender.SendToServer(NetworkChannel.Unreliable, message);
     }
 
     private void OnApplyPelvisForces(float deltaTime)
     {
-        if (RigPose == null)
+        if (!ReceivedPose)
         {
             return;
         }
@@ -685,35 +703,43 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         // Apply forces
-        if (SafetyUtilities.IsValidTime)
-        {
-            pelvis.AddForce(_pelvisPDController.GetForce(pelvisPosition, pelvis.velocity, pelvisPose.position, pelvisPose.velocity), ForceMode.Acceleration);
+        pelvis.AddForce(_pelvisPDController.GetForce(pelvisPosition, pelvis.velocity, pelvisPose.position, pelvisPose.velocity), ForceMode.Acceleration);
 
-            // We only want to apply angular force when ragdolled
-            if (rigManager.physicsRig.torso.spineInternalMult <= 0f)
-            {
-                pelvis.AddTorque(_pelvisPDController.GetTorque(pelvisRotation, pelvis.angularVelocity, pelvisPose.rotation, pelvisPose.angularVelocity), ForceMode.Acceleration);
-            }
-            else
-            {
-                _pelvisPDController.ResetRotation();
-            }
+        // We only want to apply angular force when ragdolled
+        if (rigManager.physicsRig.torso.spineInternalMult <= 0f)
+        {
+            pelvis.AddTorque(_pelvisPDController.GetTorque(pelvisRotation, pelvis.angularVelocity, pelvisPose.rotation, pelvisPose.angularVelocity), ForceMode.Acceleration);
+        }
+        else
+        {
+            _pelvisPDController.ResetRotation();
         }
     }
 
     public void OnReceivePose(RigPose pose)
     {
+        // If we don't have a rig yet, don't store the pose
+        if (!HasRig)
+        {
+            return;
+        }
+
         _pose = pose;
 
-        if (HasRig)
+        // Teleport to the pose if this is our first
+        if (!ReceivedPose)
         {
-            RigSkeleton.trackedPlayspace.rotation = RigPose.trackedPlayspace.Expand();
+            _receivedPose = true;
+            TeleportToPose();
         }
+
+        // Update the playspace rotation
+        RigSkeleton.trackedPlayspace.rotation = RigPose.trackedPlayspace.Expand();
     }
 
     public void OnOverrideControllerRig()
     {
-        if (RigPose == null)
+        if (!ReceivedPose)
         {
             return;
         }
@@ -727,12 +753,20 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
     }
 
+    private void OnRigDestroyed()
+    {
+        _pose = null;
+        _receivedPose = false;
+    }
+
     private void OnFoundRigManager(RigManager rigManager)
     {
         _marrowEntity = rigManager.marrowEntity;
 
         _rigSkeleton = new(rigManager);
         _rigReferences = new(rigManager);
+
+        _rigReferences.HookOnDestroy(OnRigDestroyed);
 
         _pose = new();
 
@@ -741,34 +775,66 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         _art = new(rigManager);
         _physics = new(rigManager);
 
-        AddToCache();
+        HookRig();
 
-        // Register components for the physics rig
-        // TODO: register components for the avatar on avatar change
-        RegisterComponents(rigManager.physicsRig.gameObject);
+        // Register components for the rig objects
+        RegisterComponents();
 
-        // Uncull
-        if (!MarrowEntity.IsCulled && !NetworkEntity.IsOwner)
+        if (!NetworkEntity.IsOwner)
         {
-            OnEntityCull(false);
+            // Teleport to the received pose
+            TeleportToPose();
+
+            // Match the current cull state
+            OnEntityCull(MarrowEntity.IsCulled);
         }
     }
 
-    private void AddToCache()
+    private Il2CppSystem.Action _onAvatarSwappedAction = null;
+
+    private void HookRig()
     {
         RigCache.Add(RigReferences.RigManager, this);
         IMarrowEntityExtender.Cache.Add(MarrowEntity, NetworkEntity);
+
+        _onAvatarSwappedAction = (Action)OnAvatarSwapped;
+
+        RigReferences.RigManager.onAvatarSwapped += _onAvatarSwappedAction;
     }
 
-    private void RemoveFromCache()
+    private void UnhookRig()
     {
         RigCache.Remove(RigReferences.RigManager);
         IMarrowEntityExtender.Cache.Remove(MarrowEntity);
+
+        RigReferences.RigManager.onAvatarSwapped -= _onAvatarSwappedAction;
+
+        _onAvatarSwappedAction = null;
+    }
+
+    private void OnAvatarSwapped()
+    {
+        RegisterComponents();
     }
 
     private HashSet<IEntityComponentExtender> _componentExtenders = null;
 
-    private void RegisterComponents(params GameObject[] parents)
+    private void RegisterComponents()
+    {
+        if (!HasRig)
+        {
+            return;
+        }
+
+        var physicsRig = RigReferences.RigManager.physicsRig;
+        var avatar = RigReferences.RigManager.avatar;
+
+        var parents = new GameObject[] { physicsRig.gameObject, avatar.gameObject };
+
+        RegisterComponents(parents);
+    }
+
+    private void RegisterComponents(GameObject[] parents)
     {
         UnregisterComponents();
 

@@ -1,7 +1,7 @@
 ﻿using BoneLib;
 using LabFusion.Extensions;
 using LabFusion.Preferences;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Senders;
 using LabFusion.Utilities;

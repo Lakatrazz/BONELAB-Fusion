@@ -41,7 +41,7 @@ public class MagazineInsertData : IFusionSerializable
 [Net.DelayWhileTargetLoading]
 public class MagazineInsertMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.MagazineInsert;
+    public override byte Tag => NativeMessageTag.MagazineInsert;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -51,7 +51,7 @@ public class MagazineInsertMessage : FusionMessageHandler
         // Send message to other clients if server
         if (isServerHandled)
         {
-            using var message = FusionMessage.Create(Tag.Value, bytes);
+            using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
 
             return;

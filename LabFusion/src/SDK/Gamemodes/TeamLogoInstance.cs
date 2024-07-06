@@ -1,5 +1,5 @@
 ﻿using LabFusion.Extensions;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Entities;
 
 using UnityEngine.UI;
@@ -39,7 +39,7 @@ public class TeamLogoInstance
 
         this.team = team;
 
-        UpdateLogo(team.Logo);
+        //UpdateLogo(team.Logo);
     }
 
     public void Toggle(bool value)

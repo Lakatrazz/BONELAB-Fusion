@@ -1,37 +1,34 @@
-﻿using LabFusion.Patching;
+﻿using Il2CppSLZ.Interaction;
 
-using Il2CppSLZ.Interaction;
+namespace LabFusion.Extensions;
 
-namespace LabFusion.Extensions
+public static class InteractableHostExtensions
 {
-    public static class InteractableHostExtensions
+    public static void TryDetach(this InteractableHost host)
     {
-        public static void TryDetach(this InteractableHost host)
+        List<Hand> handsToDetach = null;
+        for (var i = 0; i < host._hands.Count; i++)
         {
-            List<Hand> handsToDetach = null;
-            for (var i = 0; i < host._hands.Count; i++)
-            {
-                if (handsToDetach == null)
-                    handsToDetach = new List<Hand>();
+            if (handsToDetach == null)
+                handsToDetach = new List<Hand>();
 
-                handsToDetach.Add(host._hands[i]);
-            }
-
-            if (handsToDetach != null)
-            {
-                for (var i = 0; i < handsToDetach.Count; i++)
-                {
-                    handsToDetach[i].TryDetach();
-                }
-            }
+            handsToDetach.Add(host._hands[i]);
         }
 
-        public static void TryDetach(this IGrippable host)
+        if (handsToDetach != null)
         {
-            var interactable = host.TryCast<InteractableHost>();
-
-            if (interactable != null)
-                interactable.TryDetach();
+            for (var i = 0; i < handsToDetach.Count; i++)
+            {
+                handsToDetach[i].TryDetach();
+            }
         }
+    }
+
+    public static void TryDetach(this IGrippable host)
+    {
+        var interactable = host.TryCast<InteractableHost>();
+
+        if (interactable != null)
+            interactable.TryDetach();
     }
 }

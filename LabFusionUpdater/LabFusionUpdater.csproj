@@ -5,9 +5,9 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MelonLoader">
-      <HintPath>..\LabFusion\Managed\MelonLoader.dll</HintPath>
-    </Reference>
+    <Compile Remove="Properties\**" />
+    <EmbeddedResource Remove="Properties\**" />
+    <None Remove="Properties\**" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="AssemblyInfo.cs">
@@ -24,12 +24,14 @@
     <EmbeddedResource Include="resources\updater.exe" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MelonLoader">
+      <HintPath>..\LabFusion\dependencies\managed\net6\MelonLoader.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

@@ -1,70 +1,73 @@
 ﻿using LabFusion.Data;
-using LabFusion.Preferences;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Utilities;
 using LabFusion.Voice;
 
-namespace LabFusion.Network
+namespace LabFusion.Network;
+
+public class PlayerVoiceChatData : IFusionSerializable, IDisposable
 {
-    public class PlayerVoiceChatData : IFusionSerializable, IDisposable
+    public const int Size = sizeof(byte);
+
+    public byte smallId;
+    public byte[] bytes;
+
+    public void Serialize(FusionWriter writer)
     {
-        public const int Size = sizeof(byte);
-
-        public byte smallId;
-        public byte[] bytes;
-
-        public void Serialize(FusionWriter writer)
-        {
-            writer.Write(smallId);
-            writer.Write(bytes);
-        }
-
-        public void Deserialize(FusionReader reader)
-        {
-            smallId = reader.ReadByte();
-            bytes = reader.ReadBytes();
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-            ByteRetriever.Return(bytes);
-        }
-
-        public static PlayerVoiceChatData Create(byte smallId, byte[] voiceData)
-        {
-            return new PlayerVoiceChatData()
-            {
-                smallId = smallId,
-                bytes = voiceData,
-            };
-        }
+        writer.Write(smallId);
+        writer.Write(bytes);
     }
 
-    public class PlayerVoiceChatMessage : FusionMessageHandler
+    public void Deserialize(FusionReader reader)
     {
-        public override byte? Tag => NativeMessageTag.PlayerVoiceChat;
+        smallId = reader.ReadByte();
+        bytes = reader.ReadBytes();
+    }
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        ByteRetriever.Return(bytes);
+    }
+
+    public static PlayerVoiceChatData Create(byte smallId, byte[] voiceData)
+    {
+        return new PlayerVoiceChatData()
         {
-            using var reader = FusionReader.Create(bytes);
-            using var data = reader.ReadFusionSerializable<PlayerVoiceChatData>();
-            // Check if voice chat is active
-            if (!FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue())
-                return;
+            smallId = smallId,
+            bytes = voiceData,
+        };
+    }
+}
 
-            // Read the voice chat
-            var id = PlayerIdManager.GetPlayerId(data.smallId);
+public class PlayerVoiceChatMessage : FusionMessageHandler
+{
+    public override byte Tag => NativeMessageTag.PlayerVoiceChat;
 
-            if (id != null)
-                VoiceHelper.OnVoiceDataReceived(id, data.bytes);
+    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    {
+        using var reader = FusionReader.Create(bytes);
+        using var data = reader.ReadFusionSerializable<PlayerVoiceChatData>();
 
-            // Bounce the message back
-            if (NetworkInfo.IsServer)
-            {
-                using var message = FusionMessage.Create(Tag.Value, bytes);
-                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.VoiceChat, message);
-            }
+        // Check if voice chat is active
+        if (!VoiceInfo.IsVoiceEnabled)
+        {
+            return;
+        }
+
+        // Read the voice chat
+        var id = PlayerIdManager.GetPlayerId(data.smallId);
+
+        if (id != null)
+        {
+            VoiceHelper.OnVoiceDataReceived(id, data.bytes);
+        }
+
+        // Bounce the message back
+        if (NetworkInfo.IsServer)
+        {
+            using var message = FusionMessage.Create(Tag, bytes);
+            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Unreliable, message);
         }
     }
 }

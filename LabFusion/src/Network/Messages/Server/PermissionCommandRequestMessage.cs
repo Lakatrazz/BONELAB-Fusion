@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Player;
 using LabFusion.Representation;
 using LabFusion.Preferences;
 using LabFusion.Senders;
@@ -48,7 +49,7 @@ public class PermissionCommandRequestData : IFusionSerializable
 
 public class PermissionCommandRequestMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.PermissionCommandRequest;
+    public override byte Tag => NativeMessageTag.PermissionCommandRequest;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {

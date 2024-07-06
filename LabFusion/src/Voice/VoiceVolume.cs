@@ -11,6 +11,8 @@ public static class VoiceVolume
 
     public const float SilencingVolume = 0.1f;
 
+    public const float TalkTimeoutTime = 1f;
+
     public static float GetGlobalVolumeMultiplier()
     {
         float volume = FusionPreferences.ClientSettings.GlobalVolume;

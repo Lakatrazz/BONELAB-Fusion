@@ -1,62 +1,84 @@
 ﻿using LabFusion.Data;
-using LabFusion.Exceptions;
+
 using LabFusion.SDK.Gamemodes;
 
-namespace LabFusion.Network
+namespace LabFusion.Network;
+
+public class GamemodeTriggerResponseData : IFusionSerializable
 {
-    public class GamemodeTriggerResponseData : IFusionSerializable
+    public ushort gamemodeId;
+
+    public string triggerName;
+
+    public bool hasValue;
+    public string triggerValue;
+
+    public void Serialize(FusionWriter writer)
     {
-        public ushort gamemodeId;
-        public string value;
+        writer.Write(gamemodeId);
+        writer.Write(triggerName);
 
-        public void Serialize(FusionWriter writer)
-        {
-            writer.Write(gamemodeId);
-            writer.Write(value);
-        }
+        writer.Write(hasValue);
 
-        public void Deserialize(FusionReader reader)
+        if (hasValue)
         {
-            gamemodeId = reader.ReadUInt16();
-            value = reader.ReadString();
-        }
-
-        public static GamemodeTriggerResponseData Create(ushort gamemodeId, string value)
-        {
-            return new GamemodeTriggerResponseData()
-            {
-                gamemodeId = gamemodeId,
-                value = value,
-            };
-        }
-
-        public static GamemodeTriggerResponseData Create(Gamemode gamemode, string value)
-        {
-            return new GamemodeTriggerResponseData()
-            {
-                gamemodeId = gamemode.Tag.HasValue ? gamemode.Tag.Value : ushort.MaxValue,
-                value = value,
-            };
+            writer.Write(triggerValue);
         }
     }
 
-    public class GamemodeTriggerResponseMessage : FusionMessageHandler
+    public void Deserialize(FusionReader reader)
     {
-        public override byte? Tag => NativeMessageTag.GamemodeTriggerResponse;
+        gamemodeId = reader.ReadUInt16();
+        triggerName = reader.ReadString();
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        hasValue = reader.ReadBoolean();
+
+        if (hasValue)
         {
-            if (NetworkInfo.IsClient || !isServerHandled)
-            {
-                using var reader = FusionReader.Create(bytes);
-                var data = reader.ReadFusionSerializable<GamemodeTriggerResponseData>();
-                if (GamemodeManager.TryGetGamemode(data.gamemodeId, out var gamemode))
-                {
-                    gamemode.Internal_TriggerEvent(data.value);
-                }
-            }
-            else
-                throw new ExpectedClientException();
+            triggerValue = reader.ReadString();
+        }
+    }
+
+    public static GamemodeTriggerResponseData Create(ushort gamemodeId, string name, string value = null)
+    {
+        return new GamemodeTriggerResponseData()
+        {
+            gamemodeId = gamemodeId,
+            triggerName = name,
+            hasValue = value != null,
+            triggerValue = value,
+        };
+    }
+}
+
+public class GamemodeTriggerResponseMessage : FusionMessageHandler
+{
+    public override byte Tag => NativeMessageTag.GamemodeTriggerResponse;
+
+    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    {
+        if (isServerHandled)
+        {
+            using var message = FusionMessage.Create(Tag, bytes);
+            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+            return;
+        }
+
+        using var reader = FusionReader.Create(bytes);
+        var data = reader.ReadFusionSerializable<GamemodeTriggerResponseData>();
+
+        if (!GamemodeManager.TryGetGamemode(data.gamemodeId, out var gamemode))
+        {
+            return;
+        }
+
+        if (data.hasValue)
+        {
+            gamemode.Relay.ForceInvokeLocalTrigger(data.triggerName, data.triggerValue);
+        }
+        else
+        {
+            gamemode.Relay.ForceInvokeLocalTrigger(data.triggerName);
         }
     }
 }

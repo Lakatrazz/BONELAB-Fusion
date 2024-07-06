@@ -1,6 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Exceptions;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Utilities;
 using Il2CppSLZ.Marrow.SceneStreaming;
 using UnityEngine;
@@ -43,7 +43,7 @@ namespace LabFusion.Network
         private const float _requestCooldown = 10f;
         private static float _timeOfRequest = -1000f;
 
-        public override byte? Tag => NativeMessageTag.LevelRequest;
+        public override byte Tag => NativeMessageTag.LevelRequest;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {

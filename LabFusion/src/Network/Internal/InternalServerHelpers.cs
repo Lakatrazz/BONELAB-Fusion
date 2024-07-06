@@ -1,13 +1,14 @@
-﻿using LabFusion.Representation;
+﻿using LabFusion.Player;
+using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Preferences;
+
 using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Points;
-using LabFusion.Data;
-using LabFusion.Entities;
 using LabFusion.SDK.Achievements;
 
-using UnityEngine;
+using LabFusion.Data;
+using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
 
@@ -219,7 +220,7 @@ public static class InternalServerHelpers
             { MetadataHelper.PermissionKey, NetworkInfo.IsServer ? PermissionLevel.OWNER.ToString() : PermissionLevel.DEFAULT.ToString() },
 
             // Platform
-            { MetadataHelper.PlatformKey, HelperMethods.IsAndroid() ? "QUEST" : "PC" }
+            { MetadataHelper.PlatformKey, HelperMethods.IsAndroid() ? "QUEST" : "PC" },
         };
 
         return metadata;
@@ -231,7 +232,7 @@ public static class InternalServerHelpers
     /// <returns></returns>
     public static List<string> GetInitialEquippedItems()
     {
-        List<string> list = new List<string>();
+        var list = new List<string>();
 
         foreach (var item in PointItemManager.LoadedItems)
         {

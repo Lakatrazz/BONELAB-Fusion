@@ -57,7 +57,7 @@ public class DynamicsAssignData : IFusionSerializable
 
 public class DynamicsAssignMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.DynamicsAssignment;
+    public override byte Tag => NativeMessageTag.DynamicsAssignment;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {

@@ -1,7 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Exceptions;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Utilities;
 
 namespace LabFusion.Network;
@@ -50,7 +50,7 @@ public class SpawnRequestData : IFusionSerializable
 [Net.DelayWhileTargetLoading]
 public class SpawnRequestMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.SpawnRequest;
+    public override byte Tag => NativeMessageTag.SpawnRequest;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {

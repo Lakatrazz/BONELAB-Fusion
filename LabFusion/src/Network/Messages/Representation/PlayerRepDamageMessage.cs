@@ -1,5 +1,5 @@
 ﻿using LabFusion.Data;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Utilities;
 
 using Il2CppSLZ.Player;
@@ -51,7 +51,7 @@ public class PlayerRepDamageData : IFusionSerializable
 [Net.SkipHandleWhileLoading]
 public class PlayerRepDamageMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.PlayerRepDamage;
+    public override byte Tag => NativeMessageTag.PlayerRepDamage;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -61,7 +61,7 @@ public class PlayerRepDamageMessage : FusionMessageHandler
         // If we are the server, relay it to the desired user
         if (isServerHandled)
         {
-            using var message = FusionMessage.Create(Tag.Value, bytes);
+            using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.SendFromServer(data.damagedId, NetworkChannel.Reliable, message);
             return;
         }

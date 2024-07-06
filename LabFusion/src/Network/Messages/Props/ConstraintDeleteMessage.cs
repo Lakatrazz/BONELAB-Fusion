@@ -39,7 +39,7 @@ public class ConstraintDeleteData : IFusionSerializable
 [Net.DelayWhileTargetLoading]
 public class ConstraintDeleteMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.ConstraintDelete;
+    public override byte Tag => NativeMessageTag.ConstraintDelete;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -49,7 +49,7 @@ public class ConstraintDeleteMessage : FusionMessageHandler
         // Send message to all clients if server
         if (isServerHandled)
         {
-            using var message = FusionMessage.Create(Tag.Value, bytes);
+            using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
             return;
         }

@@ -34,7 +34,7 @@ public class PlayerSettingsData : IFusionSerializable
 
 public class PlayerSettingsMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.PlayerSettings;
+    public override byte Tag => NativeMessageTag.PlayerSettings;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -44,7 +44,7 @@ public class PlayerSettingsMessage : FusionMessageHandler
         // Send message to other clients if server
         if (isServerHandled)
         {
-            using var message = FusionMessage.Create(Tag.Value, bytes);
+            using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
             return;
         }

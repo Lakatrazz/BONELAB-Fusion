@@ -1,6 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.SDK.Points;
-using LabFusion.Representation;
+using LabFusion.Player;
 
 namespace LabFusion.Network
 {
@@ -33,7 +33,7 @@ namespace LabFusion.Network
 
     public class PointItemTriggerMessage : FusionMessageHandler
     {
-        public override byte? Tag => NativeMessageTag.PointItemTrigger;
+        public override byte Tag => NativeMessageTag.PointItemTrigger;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
@@ -42,7 +42,7 @@ namespace LabFusion.Network
             // Send message to other clients if server
             if (isServerHandled)
             {
-                using var message = FusionMessage.Create(Tag.Value, bytes);
+                using var message = FusionMessage.Create(Tag, bytes);
                 MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
             }
             else

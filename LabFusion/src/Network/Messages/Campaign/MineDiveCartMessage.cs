@@ -29,7 +29,7 @@ namespace LabFusion.Network
     [Net.DelayWhileTargetLoading]
     public class MineDiveCartMessage : FusionMessageHandler
     {
-        public override byte? Tag => NativeMessageTag.MineDiveCart;
+        public override byte Tag => NativeMessageTag.MineDiveCart;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {

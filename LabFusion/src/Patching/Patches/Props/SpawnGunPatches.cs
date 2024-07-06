@@ -8,7 +8,7 @@ using Il2CppSLZ.Marrow.Warehouse;
 using LabFusion.Entities;
 using LabFusion.Marrow;
 using LabFusion.Network;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.RPC;
 using LabFusion.SDK.Achievements;
 using LabFusion.Utilities;

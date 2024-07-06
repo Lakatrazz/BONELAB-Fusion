@@ -3,46 +3,44 @@
 using LabFusion.Network;
 using LabFusion.Extensions;
 
-namespace LabFusion.Data
+namespace LabFusion.Data;
+
+public class SerializedSmallQuaternion : IFusionSerializable
 {
-    public class SerializedSmallQuaternion : IFusionSerializable
+    public const int Size = sizeof(byte) * 4;
+    public static readonly SerializedSmallQuaternion Default = Compress(QuaternionExtensions.identity);
+
+    public sbyte c1, c2, c3, c4;
+
+    public void Serialize(FusionWriter writer)
     {
-        public const int Size = sizeof(byte) * 4;
-        public static readonly SerializedSmallQuaternion Default = Compress(QuaternionExtensions.identity);
+        writer.Write(c1.ToByte());
+        writer.Write(c2.ToByte());
+        writer.Write(c3.ToByte());
+        writer.Write(c4.ToByte());
+    }
 
-        public sbyte c1, c2, c3, c4;
+    public void Deserialize(FusionReader reader)
+    {
+        c1 = reader.ReadByte().ToSByte();
+        c2 = reader.ReadByte().ToSByte();
+        c3 = reader.ReadByte().ToSByte();
+        c4 = reader.ReadByte().ToSByte();
+    }
 
-        public void Serialize(FusionWriter writer)
+    public static SerializedSmallQuaternion Compress(Quaternion quat)
+    {
+        return new SerializedSmallQuaternion() 
         {
-            writer.Write(c1.ToByte());
-            writer.Write(c2.ToByte());
-            writer.Write(c3.ToByte());
-            writer.Write(c4.ToByte());
-        }
+            c1 = quat.x.ToSByte(),
+            c2 = quat.y.ToSByte(),
+            c3 = quat.z.ToSByte(),
+            c4 = quat.w.ToSByte()
+        };
+    }
 
-        public void Deserialize(FusionReader reader)
-        {
-            c1 = reader.ReadByte().ToSByte();
-            c2 = reader.ReadByte().ToSByte();
-            c3 = reader.ReadByte().ToSByte();
-            c4 = reader.ReadByte().ToSByte();
-        }
-
-        public static SerializedSmallQuaternion Compress(Quaternion quat)
-        {
-            return new SerializedSmallQuaternion() 
-            {
-                c1 = quat.x.ToSByte(),
-                c2 = quat.y.ToSByte(),
-                c3 = quat.z.ToSByte(),
-                c4 = quat.w.ToSByte()
-            };
-        }
-
-        public Quaternion Expand()
-        {
-            return new Quaternion(c1.ToSingle(), c2.ToSingle(), c3.ToSingle(), c4.ToSingle()).normalized;
-        }
+    public Quaternion Expand()
+    {
+        return new Quaternion(c1.ToSingle(), c2.ToSingle(), c3.ToSingle(), c4.ToSingle()).normalized;
     }
 }
-

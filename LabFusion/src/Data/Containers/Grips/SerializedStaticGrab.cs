@@ -1,5 +1,5 @@
 ﻿using LabFusion.Network;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Utilities;
 using LabFusion.Grabbables;
 using LabFusion.Extensions;

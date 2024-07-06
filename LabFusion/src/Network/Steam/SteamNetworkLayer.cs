@@ -4,7 +4,7 @@ using BoneLib.BoneMenu;
 using BoneLib.BoneMenu.Elements;
 
 using LabFusion.Data;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Utilities;
 
 using Steamworks;
@@ -310,7 +310,7 @@ namespace LabFusion.Network
 
         private void OnPlayerJoin(PlayerId id)
         {
-            if (!id.IsSelf)
+            if (!id.IsOwner)
                 VoiceManager.GetSpeaker(id);
 
             OnUpdateLobby();

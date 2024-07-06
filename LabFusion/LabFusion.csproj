@@ -137,7 +137,6 @@
     <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\Deathmatch\DeathmatchProxy.cs.meta" />
     <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\Deathmatch\DeathmatchSpawnpoint.cs.meta" />
     <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\Entangled.meta" />
-    <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\Entangled\EntangledProxy.cs.meta" />
     <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\GamemodeEndEvent.cs.meta" />
     <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\GamemodeStartEvent.cs.meta" />
     <None Remove="FusionBundles\Assets\marrow-integration\Runtime\Gamemodes\Team Deathmatch.meta" />
@@ -183,6 +182,8 @@
     <None Remove="FusionHelper\libsteam_api.so" />
     <None Remove="FusionHelper\steam_api64.dll" />
     <None Remove="src\AssemblyInfo.tt" />
+    <None Remove="src\Marrow\Audio\AudioReference.cs~RF202ddfa1.TMP" />
+    <None Remove="src\SDK\Gamemodes\Music\MusicPlaylist.cs~RF2046160e.TMP" />
   </ItemGroup>
 
   <ItemGroup>
@@ -228,9 +229,6 @@
     </Reference>
     <Reference Include="Il2Cppmscorlib">
       <HintPath>dependencies\managed\Il2CppAssemblies\Il2Cppmscorlib.dll</HintPath>
-    </Reference>
-    <Reference Include="Il2CppNewtonsoft.Json">
-      <HintPath>Managed\Il2CppNewtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Il2CppSLZ.Algorithms">
       <HintPath>dependencies\managed\Il2CppAssemblies\Il2CppSLZ.Algorithms.dll</HintPath>
@@ -293,6 +291,7 @@
       <HintPath>dependencies\managed\net6\MelonLoader.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
+      <HintPath>dependencies\managed\Managed\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms">
       <HintPath>dependencies\managed\Managed\System.Windows.Forms.dll</HintPath>
@@ -323,6 +322,9 @@
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
       <HintPath>dependencies\managed\Il2CppAssemblies\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.JSONSerializeModule">
+      <HintPath>dependencies\managed\Il2CppAssemblies\UnityEngine.JSONSerializeModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
       <HintPath>dependencies\managed\Il2CppAssemblies\UnityEngine.PhysicsModule.dll</HintPath>

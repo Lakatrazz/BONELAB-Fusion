@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
+﻿using System.Reflection;
 
 using LabFusion.Utilities;
 
@@ -43,7 +38,7 @@ public static class EntityComponentManager
 #endif
     }
 
-    public static HashSet<IEntityComponentExtender> ApplyComponents(NetworkEntity networkEntity, params GameObject[] parents)
+    public static HashSet<IEntityComponentExtender> ApplyComponents(NetworkEntity networkEntity, GameObject[] parents)
     {
         var set = new HashSet<IEntityComponentExtender>();
 

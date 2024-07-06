@@ -1,151 +1,159 @@
 ﻿using LabFusion.Data;
 using LabFusion.Debugging;
 
-namespace LabFusion.SDK.Points
+using System.Text.Json.Serialization;
+
+namespace LabFusion.SDK.Points;
+
+public static class PointSaveManager
 {
-    public static class PointSaveManager
+    [Serializable]
+    public class PointSaveData
     {
-        [Serializable]
-        public class PointSaveData
-        {
-            public string[] _boughtItems = null;
-            public string[] _enabledItems = null;
-            public Dictionary<string, int> _upgradedItems = null;
-            public int _bitCount = 0;
+        [JsonPropertyName("boughtItems")]
+        public string[] BoughtItems { get; set; }
 
-            public static PointSaveData CreateCurrent()
+        [JsonPropertyName("enabledItems")]
+        public string[] EnabledItems { get; set; }
+
+        [JsonPropertyName("upgradedItems")]
+        public Dictionary<string, int> UpgradedItems { get; set; }
+
+        [JsonPropertyName("bitCount")]
+        public int BitCount { get; set; }
+
+        public static PointSaveData CreateCurrent()
+        {
+            var data = new PointSaveData
             {
-                var data = new PointSaveData
-                {
-                    _boughtItems = _unlockedItems.ToArray(),
-                    _enabledItems = _equippedItems.ToArray(),
-                    _upgradedItems = _itemUpgrades,
-                    _bitCount = _totalBits,
-                };
-                return data;
-            }
+                BoughtItems = _unlockedItems.ToArray(),
+                EnabledItems = _equippedItems.ToArray(),
+                UpgradedItems = _itemUpgrades,
+                BitCount = _totalBits,
+            };
+            return data;
+        }
+    }
+
+    private const string _filePath = "point_shop.dat";
+    private const string _backupPath = "point_shop.dat.bak";
+
+    public static void WriteToFile()
+    {
+        DataSaver.WriteJson(_filePath, PointSaveData.CreateCurrent());
+    }
+
+    public static void WriteBackup()
+    {
+        string filePath = PersistentData.GetPath(_filePath);
+        string backupPath = PersistentData.GetPath(_backupPath);
+
+        if (File.Exists(filePath))
+            File.Copy(filePath, backupPath, true);
+    }
+
+    public static void ReadFile()
+    {
+        var data = DataSaver.ReadJson<PointSaveData>(_filePath);
+
+        if (data == null)
+        {
+            return;
         }
 
-        private const string _filePath = "point_shop.dat";
-        private const string _backupPath = "point_shop.dat.bak";
+        if (data.BoughtItems != null)
+            _unlockedItems = data.BoughtItems.ToList();
 
-        public static void WriteToFile()
-        {
-            DataSaver.WriteJson(_filePath, PointSaveData.CreateCurrent());
-        }
+        if (data.EnabledItems != null)
+            _equippedItems = data.EnabledItems.ToList();
 
-        public static void WriteBackup()
-        {
-            string filePath = PersistentData.GetPath(_filePath);
-            string backupPath = PersistentData.GetPath(_backupPath);
+        if (data.UpgradedItems != null)
+            _itemUpgrades = data.UpgradedItems;
 
-            if (File.Exists(filePath))
-                File.Copy(filePath, backupPath, true);
-        }
+        _totalBits = data.BitCount;
+    }
 
-        public static void ReadFile()
-        {
-            var data = DataSaver.ReadJson<PointSaveData>(_filePath);
+    public static int GetUpgradeLevel(string barcode)
+    {
+        if (_itemUpgrades.TryGetValue(barcode, out var level))
+            return level;
+        else
+            return -1;
+    }
 
-            if (data == null)
-            {
-                return;
-            }
-
-            if (data._boughtItems != null)
-                _unlockedItems = data._boughtItems.ToList();
-
-            if (data._enabledItems != null)
-                _equippedItems = data._enabledItems.ToList();
-
-            if (data._upgradedItems != null)
-                _itemUpgrades = data._upgradedItems;
-
-            _totalBits = data._bitCount;
-        }
-
-        public static int GetUpgradeLevel(string barcode)
-        {
-            if (_itemUpgrades.TryGetValue(barcode, out var level))
-                return level;
-            else
-                return -1;
-        }
-
-        public static bool IsUnlocked(string barcode)
-        {
+    public static bool IsUnlocked(string barcode)
+    {
 #if DEBUG
-            if (FusionDevMode.UnlockEverything)
+        if (FusionDevMode.UnlockEverything)
 #pragma warning disable CS0162 // Unreachable code detected
-                return true;
+            return true;
 #pragma warning restore CS0162 // Unreachable code detected
 #endif
 
 #pragma warning disable CS0162 // Unreachable code detected
-            return _unlockedItems.Contains(barcode);
+        return _unlockedItems.Contains(barcode);
 #pragma warning restore CS0162 // Unreachable code detected
-        }
-
-        public static bool IsEquipped(string barcode)
-        {
-            return _equippedItems.Contains(barcode);
-        }
-
-        public static void UnlockItem(string barcode)
-        {
-            if (!_unlockedItems.Contains(barcode))
-                _unlockedItems.Add(barcode);
-
-            WriteToFile();
-        }
-
-        public static void LockItem(string barcode)
-        {
-            _unlockedItems.Remove(barcode);
-
-            WriteToFile();
-        }
-
-        public static void UpgradeItem(string barcode)
-        {
-            if (!_itemUpgrades.ContainsKey(barcode))
-                _itemUpgrades.Add(barcode, -1);
-
-            _itemUpgrades[barcode]++;
-        }
-
-        public static void SetUpgradeLevel(string barcode, int level)
-        {
-            if (!_itemUpgrades.ContainsKey(barcode))
-                _itemUpgrades.Add(barcode, -1);
-
-            _itemUpgrades[barcode] = level;
-        }
-
-        public static void SetEquipped(string barcode, bool isEquipped)
-        {
-            if (isEquipped)
-            {
-                if (!_equippedItems.Contains(barcode))
-                    _equippedItems.Add(barcode);
-            }
-            else
-                _equippedItems.Remove(barcode);
-
-            WriteToFile();
-        }
-
-        public static int GetBitCount() => _totalBits;
-
-        public static void SetBitCount(int count)
-        {
-            _totalBits = Math.Max(0, count);
-            WriteToFile();
-        }
-
-        private static List<string> _unlockedItems = new();
-        private static List<string> _equippedItems = new();
-        private static FusionDictionary<string, int> _itemUpgrades = new();
-        private static int _totalBits;
     }
+
+    public static bool IsEquipped(string barcode)
+    {
+        return _equippedItems.Contains(barcode);
+    }
+
+    public static void UnlockItem(string barcode)
+    {
+        if (!_unlockedItems.Contains(barcode))
+            _unlockedItems.Add(barcode);
+
+        WriteToFile();
+    }
+
+    public static void LockItem(string barcode)
+    {
+        _unlockedItems.Remove(barcode);
+
+        WriteToFile();
+    }
+
+    public static void UpgradeItem(string barcode)
+    {
+        if (!_itemUpgrades.ContainsKey(barcode))
+            _itemUpgrades.Add(barcode, -1);
+
+        _itemUpgrades[barcode]++;
+    }
+
+    public static void SetUpgradeLevel(string barcode, int level)
+    {
+        if (!_itemUpgrades.ContainsKey(barcode))
+            _itemUpgrades.Add(barcode, -1);
+
+        _itemUpgrades[barcode] = level;
+    }
+
+    public static void SetEquipped(string barcode, bool isEquipped)
+    {
+        if (isEquipped)
+        {
+            if (!_equippedItems.Contains(barcode))
+                _equippedItems.Add(barcode);
+        }
+        else
+            _equippedItems.Remove(barcode);
+
+        WriteToFile();
+    }
+
+    public static int GetBitCount() => _totalBits;
+
+    public static void SetBitCount(int count)
+    {
+        _totalBits = Math.Max(0, count);
+        WriteToFile();
+    }
+
+    private static List<string> _unlockedItems = new();
+    private static List<string> _equippedItems = new();
+    private static FusionDictionary<string, int> _itemUpgrades = new();
+    private static int _totalBits;
 }

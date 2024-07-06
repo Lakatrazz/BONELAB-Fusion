@@ -1,5 +1,5 @@
 ﻿using LabFusion.Network;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Grabbables;
 
 using Il2CppSLZ.Interaction;

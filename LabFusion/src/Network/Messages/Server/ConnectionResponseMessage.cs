@@ -1,7 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Exceptions;
-using LabFusion.Representation;
+using LabFusion.Player;
 
 namespace LabFusion.Network;
 
@@ -42,7 +42,7 @@ public class ConnectionResponseData : IFusionSerializable
 
 public class ConnectionResponseMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.ConnectionResponse;
+    public override byte Tag => NativeMessageTag.ConnectionResponse;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -80,6 +80,8 @@ public class ConnectionResponseMessage : FusionMessageHandler
 
         // Update our vitals to everyone
         if (RigData.HasPlayer)
+        {
             RigData.OnSendVitals();
+        }
     }
 }

@@ -46,7 +46,7 @@ public class CrateSpawnerData : IFusionSerializable
 [Net.DelayWhileTargetLoading]
 public class CrateSpawnerMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.CrateSpawner;
+    public override byte Tag => NativeMessageTag.CrateSpawner;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {

@@ -2,7 +2,7 @@
 
 using LabFusion.Data;
 using LabFusion.Network;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.RPC;
 using LabFusion.Syncables;
 using LabFusion.Utilities;

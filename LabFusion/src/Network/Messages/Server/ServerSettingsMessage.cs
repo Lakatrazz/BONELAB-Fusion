@@ -32,7 +32,7 @@ namespace LabFusion.Network
 
     public class ServerSettingsMessage : FusionMessageHandler
     {
-        public override byte? Tag => NativeMessageTag.ServerSettings;
+        public override byte Tag => NativeMessageTag.ServerSettings;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {

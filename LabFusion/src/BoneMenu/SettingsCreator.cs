@@ -2,7 +2,7 @@
 using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Preferences;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Utilities;
 using LabFusion.Voice;
@@ -165,7 +165,7 @@ namespace LabFusion.BoneMenu
             CreateStringPreference(nicknameSubPanel, "Nickname", FusionPreferences.ClientSettings.Nickname, (v) =>
             {
                 if (PlayerIdManager.LocalId != null)
-                    PlayerIdManager.LocalId.TrySetMetadata(MetadataHelper.NicknameKey, v);
+                    PlayerIdManager.LocalId.Metadata.TrySetMetadata(MetadataHelper.NicknameKey, v);
             });
 
             // Voice chat

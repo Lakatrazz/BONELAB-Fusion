@@ -144,7 +144,7 @@ public class PlayerRepVitalsData : IFusionSerializable
 
 public class PlayerRepVitalsMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.PlayerRepVitals;
+    public override byte Tag => NativeMessageTag.PlayerRepVitals;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -158,7 +158,7 @@ public class PlayerRepVitalsMessage : FusionMessageHandler
 
         if (NetworkInfo.IsServer)
         {
-            using var message = FusionMessage.Create(Tag.Value, bytes);
+            using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
         }
     }

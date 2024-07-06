@@ -1,6 +1,6 @@
 ﻿using LabFusion.Extensions;
 using LabFusion.Network;
-using LabFusion.Representation;
+using LabFusion.Player;
 using System.Xml.Linq;
 
 namespace LabFusion.Data
@@ -31,7 +31,7 @@ namespace LabFusion.Data
         public void Update(PlayerId id)
         {
             this.id = id;
-            username = id.GetMetadata(MetadataHelper.UsernameKey);
+            username = id.Metadata.GetMetadata(MetadataHelper.UsernameKey);
         }
 
         public Contact(XElement element)

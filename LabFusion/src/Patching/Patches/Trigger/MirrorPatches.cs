@@ -9,10 +9,10 @@ using Il2CppSLZ.Rig;
 using Il2CppSLZ.Marrow.AI;
 
 using LabFusion.SDK.Points;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Network;
 using LabFusion.MonoBehaviours;
-using static Il2CppSLZ.Marrow.PuppetMasta.Muscle;
+using LabFusion.Representation;
 
 namespace LabFusion.Patching
 {

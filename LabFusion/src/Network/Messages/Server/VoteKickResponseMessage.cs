@@ -1,5 +1,5 @@
 ﻿using LabFusion.Data;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Utilities;
 using LabFusion.Exceptions;
 
@@ -54,7 +54,7 @@ namespace LabFusion.Network
 
     public class VoteKickResponseMessage : FusionMessageHandler
     {
-        public override byte? Tag => NativeMessageTag.VoteKickResponse;
+        public override byte Tag => NativeMessageTag.VoteKickResponse;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {

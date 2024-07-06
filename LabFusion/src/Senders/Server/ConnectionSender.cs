@@ -1,6 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Network;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Utilities;
 
 namespace LabFusion.Senders;
@@ -13,7 +13,7 @@ public static class ConnectionSender
         {
             foreach (var id in PlayerIdManager.PlayerIds)
             {
-                if (id.IsSelf)
+                if (id.IsOwner)
                     continue;
 
                 using FusionWriter writer = FusionWriter.Create();

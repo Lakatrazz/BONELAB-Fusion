@@ -27,7 +27,7 @@ public class DestroySensor : MonoBehaviour
         }
     }
 
-    public void OnDestroy()
+    private void OnDestroy()
     {
         _onDestroyed?.Invoke();
         _onDestroyed = null;

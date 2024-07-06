@@ -1,7 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Network;
-using LabFusion.Representation;
+using LabFusion.Player;
 
 using Il2CppSLZ.Marrow.Pool;
 

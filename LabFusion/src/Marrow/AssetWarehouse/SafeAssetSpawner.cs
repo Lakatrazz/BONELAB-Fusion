@@ -19,6 +19,13 @@ public static class SafeAssetSpawner
         {
             var result = awaiter.GetResult();
 
+            // The GameObject did not spawn, so we don't have to invoke the callback
+            // Maybe pass in a Failed result in the future instead?
+            if (result == null)
+            {
+                return;
+            }
+
             spawnCallback?.Invoke(result);
         };
         awaiter.OnCompleted(continuation);

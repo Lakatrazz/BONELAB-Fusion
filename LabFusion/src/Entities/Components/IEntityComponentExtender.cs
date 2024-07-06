@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LabFusion.Extensions;
 
 using UnityEngine;
 
@@ -10,7 +6,7 @@ namespace LabFusion.Entities;
 
 public interface IEntityComponentExtender : IEntityExtender
 {
-    bool TryRegister(NetworkEntity networkEntity, params GameObject[] parents);
+    bool TryRegister(NetworkEntity networkEntity, GameObject[] parents);
 
     void Unregister();
 }

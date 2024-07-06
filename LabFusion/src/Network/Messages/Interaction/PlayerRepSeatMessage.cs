@@ -1,7 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Patching;
-using LabFusion.Representation;
+using LabFusion.Player;
 
 namespace LabFusion.Network
 {
@@ -45,7 +45,7 @@ namespace LabFusion.Network
     [Net.SkipHandleWhileLoading]
     public class PlayerRepSeatMessage : FusionMessageHandler
     {
-        public override byte? Tag => NativeMessageTag.PlayerRepSeat;
+        public override byte Tag => NativeMessageTag.PlayerRepSeat;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
@@ -55,7 +55,7 @@ namespace LabFusion.Network
             // Send message to other clients if server
             if (isServerHandled)
             {
-                using var message = FusionMessage.Create(Tag.Value, bytes);
+                using var message = FusionMessage.Create(Tag, bytes);
                 MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
                 return;
             }

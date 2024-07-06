@@ -1,7 +1,9 @@
 ﻿using LabFusion.Data;
 using LabFusion.Extensions;
-using LabFusion.Utilities;
 using LabFusion.XML;
+
+using System.Text.Json.Serialization;
+
 using System.Xml.Linq;
 
 namespace LabFusion.SDK.Achievements;
@@ -11,38 +13,41 @@ public static class AchievementSaveManager
     [Serializable]
     public class AchievementPointer : IXMLPackable
     {
-        public string data;
+        [JsonPropertyName("data")]
+        public string Data { get; set; }
 
         public AchievementPointer(Achievement achievement)
         {
-            XElement entry = new(nameof(data));
+            XElement entry = new(nameof(Data));
             achievement.Pack(entry);
-            data = entry.ToString();
+            Data = entry.ToString();
         }
 
         public AchievementPointer() { }
 
         public void Pack(XElement element)
         {
-            element.SetAttributeValue(nameof(data), data);
+            element.SetAttributeValue(nameof(Data), Data);
         }
 
         public void Unpack(XElement element)
         {
-            element.TryGetAttribute(nameof(data), out data);
+            element.TryGetAttribute(nameof(Data), out var unpackedData);
+            Data = unpackedData;
         }
     }
 
     [Serializable]
     public class AchievementSaveData
     {
-        public Dictionary<string, AchievementPointer> pointers;
+        [JsonPropertyName("pointers")]
+        public Dictionary<string, AchievementPointer> Pointers { get; set; }
 
         public static AchievementSaveData CreateCurrent()
         {
             var data = new AchievementSaveData()
             {
-                pointers = _achievementPointers,
+                Pointers = _achievementPointers,
             };
             return data;
         }
@@ -79,9 +84,9 @@ public static class AchievementSaveManager
             return;
         }
 
-        if (data.pointers != null)
+        if (data.Pointers != null)
         {
-            _achievementPointers = data.pointers;
+            _achievementPointers = data.Pointers;
         }
 
         // If all achievements are completed, unlock victory items

@@ -35,7 +35,7 @@ public class BodyLogToggleData : IFusionSerializable
 [Net.SkipHandleWhileLoading]
 public class BodyLogToggleMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.BodyLogToggle;
+    public override byte Tag => NativeMessageTag.BodyLogToggle;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -51,7 +51,7 @@ public class BodyLogToggleMessage : FusionMessageHandler
         // Bounce the message back
         if (NetworkInfo.IsServer)
         {
-            using var message = FusionMessage.Create(Tag.Value, bytes);
+            using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
         }
     }

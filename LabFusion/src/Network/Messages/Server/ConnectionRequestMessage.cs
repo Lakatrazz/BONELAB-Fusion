@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Player;
 using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Preferences;
@@ -62,7 +63,7 @@ public class ConnectionRequestData : IFusionSerializable
 
 public class ConnectionRequestMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.ConnectionRequest;
+    public override byte Tag => NativeMessageTag.ConnectionRequest;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -202,7 +203,7 @@ public class ConnectionRequestMessage : FusionMessageHandler
             var barcode = CommonBarcodes.INVALID_AVATAR_BARCODE;
             SerializedAvatarStats stats = new();
 
-            if (id.SmallId == 0)
+            if (id.SmallId == PlayerIdManager.HostSmallId)
             {
                 barcode = RigData.RigAvatarId;
                 stats = RigData.RigAvatarStats;

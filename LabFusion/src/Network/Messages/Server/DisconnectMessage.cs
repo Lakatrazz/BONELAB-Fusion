@@ -1,6 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Exceptions;
-using LabFusion.Representation;
+using LabFusion.Player;
 
 namespace LabFusion.Network
 {
@@ -33,7 +33,7 @@ namespace LabFusion.Network
 
     public class DisconnectMessage : FusionMessageHandler
     {
-        public override byte? Tag => NativeMessageTag.Disconnect;
+        public override byte Tag => NativeMessageTag.Disconnect;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {

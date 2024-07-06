@@ -3,43 +3,45 @@
 using LabFusion.Extensions;
 using LabFusion.Network;
 
-namespace LabFusion.Data
+namespace LabFusion.Data;
+
+public class SerializedLocalTransform : IFusionSerializable
 {
-    public class SerializedLocalTransform : IFusionSerializable
+    public const int Size = SerializedShortVector3.Size + SerializedSmallQuaternion.Size;
+    public static readonly SerializedLocalTransform Default = new(Vector3Extensions.zero, QuaternionExtensions.identity);
+
+    public Vector3 position;
+    public Quaternion rotation;
+
+    private SerializedShortVector3 _compressedPosition;
+    private SerializedSmallQuaternion _compressedRotation;
+
+    public void Serialize(FusionWriter writer)
     {
-        public const int Size = sizeof(float) * 3 + SerializedSmallQuaternion.Size;
-        public static readonly SerializedLocalTransform Default = new(Vector3Extensions.zero, QuaternionExtensions.identity);
+        _compressedPosition = SerializedShortVector3.Compress(position);
+        _compressedRotation = SerializedSmallQuaternion.Compress(rotation);
 
-        public Vector3 position;
-        public Quaternion rotation;
+        writer.Write(_compressedPosition);
+        writer.Write(_compressedRotation);
+    }
 
-        private SerializedSmallQuaternion _compressedRotation;
+    public void Deserialize(FusionReader reader)
+    {
+        _compressedPosition = reader.ReadFusionSerializable<SerializedShortVector3>();
+        position = _compressedPosition.Expand();
 
-        public void Serialize(FusionWriter writer)
-        {
-            writer.Write(position);
-            writer.Write(_compressedRotation);
-        }
+        _compressedRotation = reader.ReadFusionSerializable<SerializedSmallQuaternion>();
+        rotation = _compressedRotation.Expand();
+    }
 
-        public void Deserialize(FusionReader reader)
-        {
-            position = reader.ReadVector3();
+    public SerializedLocalTransform() { }
 
-            _compressedRotation = reader.ReadFusionSerializable<SerializedSmallQuaternion>();
-            rotation = _compressedRotation.Expand();
-        }
+    public SerializedLocalTransform(Transform transform)
+        : this(transform.localPosition, transform.localRotation) { }
 
-        public SerializedLocalTransform() { }
-
-        public SerializedLocalTransform(Transform transform)
-            : this(transform.localPosition, transform.localRotation) { }
-
-        public SerializedLocalTransform(Vector3 localPosition, Quaternion localRotation)
-        {
-            this.position = localPosition;
-            this.rotation = localRotation;
-
-            this._compressedRotation = SerializedSmallQuaternion.Compress(this.rotation);
-        }
+    public SerializedLocalTransform(Vector3 localPosition, Quaternion localRotation)
+    {
+        this.position = localPosition;
+        this.rotation = localRotation;
     }
 }

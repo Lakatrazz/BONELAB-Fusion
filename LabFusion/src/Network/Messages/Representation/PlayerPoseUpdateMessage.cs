@@ -1,6 +1,8 @@
 ﻿using LabFusion.Data;
+using LabFusion.Player;
 using LabFusion.Representation;
 using LabFusion.Entities;
+using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
@@ -51,7 +53,7 @@ public class PlayerPoseUpdateData : IFusionSerializable
 [Net.SkipHandleWhileLoading]
 public class PlayerPoseUpdateMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.PlayerPoseUpdate;
+    public override byte Tag => NativeMessageTag.PlayerPoseUpdate;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -61,7 +63,7 @@ public class PlayerPoseUpdateMessage : FusionMessageHandler
         // Send message to other clients if server
         if (isServerHandled)
         {
-            using var message = FusionMessage.Create(Tag.Value, bytes);
+            using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessageExcept(data.playerId, NetworkChannel.Unreliable, message, false);
             return;
         }
@@ -77,6 +79,7 @@ public class PlayerPoseUpdateMessage : FusionMessageHandler
 
         if (entity == null)
         {
+            FusionLogger.Error($"PlayerPoseUpdateMessage could not find an entity with id {data.playerId}!");
             return;
         }
 
@@ -84,6 +87,7 @@ public class PlayerPoseUpdateMessage : FusionMessageHandler
 
         if (networkPlayer == null)
         {
+            FusionLogger.Error($"PlayerPoseUpdateMessage could not get a NetworkPlayer from the player entity!");
             return;
         }
 

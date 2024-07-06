@@ -5,8 +5,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace FusionHelper.Extensions {
-    public static class StringExtensions {
+namespace FusionHelper.Extensions 
+{
+    public static class StringExtensions 
+    {
         public const char UniqueSeparator = '¬';
 
         public static string[] Expand(this string value) {

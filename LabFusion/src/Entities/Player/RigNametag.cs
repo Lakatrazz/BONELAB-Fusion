@@ -4,12 +4,6 @@ using Il2CppTMPro;
 using LabFusion.Extensions;
 using LabFusion.Utilities;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using UnityEngine;
 
 namespace LabFusion.Entities;
@@ -91,7 +85,8 @@ public class RigNametag
             return;
         }
 
-        text.text = _username;
+        // Only allow color
+        text.text = _username.RemoveRichTextExceptColor();
 
         if (_isQuestUser)
         {

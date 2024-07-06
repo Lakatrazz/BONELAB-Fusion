@@ -1,4 +1,4 @@
-﻿using LabFusion.Representation;
+﻿using LabFusion.Player;
 using LabFusion.Senders;
 using LabFusion.Entities;
 using LabFusion.Utilities;
@@ -30,7 +30,7 @@ namespace LabFusion.SDK.Achievements
         private void OnPlayerAction(PlayerId player, PlayerActionType type, PlayerId otherPlayer)
         {
             // Was the person saved?
-            if (!player.IsSelf && type == PlayerActionType.RECOVERY)
+            if (!player.IsOwner && type == PlayerActionType.RECOVERY)
             {
                 // Check the most recently killed NPC
                 // If we are the owner, we probably saved them

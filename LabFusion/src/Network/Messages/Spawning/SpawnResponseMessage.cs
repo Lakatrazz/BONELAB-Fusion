@@ -1,5 +1,5 @@
 ﻿using LabFusion.Data;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Utilities;
 
 using Il2CppSLZ.Marrow.Pool;
@@ -70,7 +70,7 @@ public class SpawnResponseData : IFusionSerializable
 [Net.DelayWhileTargetLoading]
 public class SpawnResponseMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.SpawnResponse;
+    public override byte Tag => NativeMessageTag.SpawnResponse;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -106,14 +106,15 @@ public class SpawnResponseMessage : FusionMessageHandler
 
     public static void OnSpawnFinished(byte owner, string barcode, ushort syncId, Poolee poolee, uint trackerId = 0)
     {
-        if (poolee == null)
-            return;
-
+        // The poolee will never be null, so we don't have to check for it
+        // Only case where it could be null is the object not spawning, but the spawn callback only executes when it exists
         var go = poolee.gameObject;
 
         // Remove the existing entity on this poolee if it exists
         if (PooleeExtender.Cache.TryGet(poolee, out var conflictingEntity))
         {
+            FusionLogger.Warn($"Unregistered entity {conflictingEntity.Id} on poolee {poolee.name} due to conflicting id.");
+
             NetworkEntityManager.IdManager.UnregisterEntity(conflictingEntity);
         }
 

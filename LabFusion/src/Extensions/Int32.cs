@@ -1,10 +1,9 @@
-﻿namespace LabFusion.Extensions
+﻿namespace LabFusion.Extensions;
+
+public static class Int32Extensions
 {
-    public static class Int32Extensions
+    public static bool IsNaN(this int value)
     {
-        public static bool IsNaN(this int value)
-        {
-            return value >= int.MaxValue || value <= int.MinValue;
-        }
+        return value >= int.MaxValue || value <= int.MinValue;
     }
 }

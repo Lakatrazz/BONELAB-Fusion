@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Il2CppSLZ.Marrow.Interaction;
+﻿using Il2CppSLZ.Marrow.Interaction;
 
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.MonoBehaviours;
 using LabFusion.Network;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Utilities;
 
 using UnityEngine;
@@ -39,6 +33,13 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     private float _lastSentTime = 0f;
 
     private DestroySensor _destroySensor = null;
+
+    private bool _isSleeping = false;
+    public bool IsSleeping => _isSleeping;
+
+    private static int _globalSleepOffset = 0;
+    private int _sleepFrameOffset = 0;
+    private const int _sleepCheckInterval = 20;
 
     private bool _isCulled = false;
 
@@ -80,19 +81,24 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
         // Copy current bodies into the entity pose so that they're held up by forces
         CopyBodiesToPose();
-        _receivedPose = true;
-        _lastReceivedTime = TimeUtilities.TimeSinceStartup;
+        UpdateReceiveTime();
     }
 
     private void InitializeComponents()
     {
-        _componentExtenders = EntityComponentManager.ApplyComponents(NetworkEntity, MarrowEntity.gameObject);
+        _componentExtenders = EntityComponentManager.ApplyComponents(NetworkEntity, new GameObject[] { MarrowEntity.gameObject });
     }
 
     public void OnReceivePose(EntityPose pose)
     {
         pose.CopyTo(EntityPose);
 
+        UpdateReceiveTime();
+    }
+
+    private void UpdateReceiveTime()
+    {
+        _isSleeping = false;
         _receivedPose = true;
         _lastReceivedTime = TimeUtilities.TimeSinceStartup;
     }
@@ -171,6 +177,15 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
         // Cull the entity if it needs to be
         OnEntityCull(MarrowEntity.IsCulled);
+
+        // Cycle sleep offset
+        _sleepFrameOffset = _globalSleepOffset;
+        _globalSleepOffset++;
+
+        if (_globalSleepOffset >= 30)
+        {
+            _globalSleepOffset = 0;
+        }
     }
 
     private void OnPropUnregistered(NetworkEntity entity)
@@ -212,11 +227,9 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         return (sentPose.position - currentPose.position).sqrMagnitude > MinMoveSqrMagnitude || Quaternion.Angle(sentPose.rotation, currentPose.rotation) > MinMoveAngle; 
     }
 
-    private void OnOwnedUpdate()
+    private void CheckSleeping()
     {
-        CopyBodiesToPose();
-
-        bool isAwake = false;
+        _isSleeping = true;
 
         for (var i = 0; i < _bodies.Length; i++)
         {
@@ -237,13 +250,28 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
             if (!rb.IsSleeping() && HasBodyMoved(i))
             {
-                isAwake = true;
+                _isSleeping = false;
                 break;
             }
         }
+    }
+
+    private void OnOwnedUpdate()
+    {
+        // If we were sleeping last frame, only check so often
+        if (IsSleeping && !TimeUtilities.IsMatchingFrame(_sleepCheckInterval, _sleepFrameOffset))
+        {
+            return;
+        }
+
+        // Copy all body positions to current position
+        CopyBodiesToPose();
+
+        // Update sleeping
+        CheckSleeping();
 
         // Update send time
-        if (isAwake)
+        if (!IsSleeping)
         {
             _lastSentTime = TimeUtilities.TimeSinceStartup;
         }
@@ -279,6 +307,12 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     private void OnReceivedUpdate(float deltaTime)
     {
+        // Make sure the prop isn't sleeping
+        if (IsSleeping)
+        {
+            return;
+        }
+
         // Make sure we actually have a pose
         if (!_receivedPose)
         {
@@ -290,6 +324,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
         if (timeSinceMessage >= 1f)
         {
+            _isSleeping = true;
             return;
         }
 

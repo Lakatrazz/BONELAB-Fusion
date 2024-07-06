@@ -2,7 +2,7 @@
 
 using BoneLib.BoneMenu;
 using BoneLib.BoneMenu.Elements;
-using LabFusion.Representation;
+using LabFusion.Player;
 using LabFusion.Utilities;
 using LabFusion.Preferences;
 
@@ -349,21 +349,26 @@ namespace LabFusion.Network
         public override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message)
         {
             var id = PlayerIdManager.GetPlayerId(userId);
+
             if (id != null)
+            {
                 SendFromServer(id.LongId, channel, message);
+            }
         }
 
         public override void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message)
         {
-            if (IsServer)
+            if (!IsServer)
             {
-                MessageTypes type = channel == NetworkChannel.Unreliable ? MessageTypes.UnreliableSendFromServer : MessageTypes.ReliableSendFromServer;
-                NetDataWriter writer = NewWriter(type);
-                writer.Put(userId);
-                byte[] data = message.ToByteArray();
-                writer.PutBytesWithLength(data);
-                SendToProxyServer(writer);
+                return;
             }
+
+            MessageTypes type = channel == NetworkChannel.Unreliable ? MessageTypes.UnreliableSendFromServer : MessageTypes.ReliableSendFromServer;
+            NetDataWriter writer = NewWriter(type);
+            writer.Put(userId);
+            byte[] data = message.ToByteArray();
+            writer.PutBytesWithLength(data);
+            SendToProxyServer(writer);
         }
 
         public override void StartServer()
@@ -436,7 +441,7 @@ namespace LabFusion.Network
 
         private void OnPlayerJoin(PlayerId id)
         {
-            if (!id.IsSelf)
+            if (!id.IsOwner)
                 _voiceManager.GetSpeaker(id);
 
             OnUpdateLobby();

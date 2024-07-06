@@ -74,7 +74,7 @@ public class KeySlotData : IFusionSerializable
 [Net.DelayWhileTargetLoading]
 public class KeySlotMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.KeySlot;
+    public override byte Tag => NativeMessageTag.KeySlot;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -84,7 +84,7 @@ public class KeySlotMessage : FusionMessageHandler
         // Send message to other clients if server
         if (isServerHandled)
         {
-            using var message = FusionMessage.Create(Tag.Value, bytes);
+            using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
 
             return;

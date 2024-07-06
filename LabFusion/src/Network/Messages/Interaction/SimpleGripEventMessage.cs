@@ -51,7 +51,7 @@ public class SimpleGripEventData : IFusionSerializable
 [Net.DelayWhileTargetLoading]
 public class SimpleGripEventMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.SimpleGripEvent;
+    public override byte Tag => NativeMessageTag.SimpleGripEvent;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -61,7 +61,7 @@ public class SimpleGripEventMessage : FusionMessageHandler
         // Send message to other clients if server
         if (isServerHandled)
         {
-            using var message = FusionMessage.Create(Tag.Value, bytes);
+            using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
 
             return;

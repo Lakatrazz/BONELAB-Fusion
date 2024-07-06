@@ -1,18 +1,16 @@
 ﻿using Object = UnityEngine.Object;
 
-namespace LabFusion.Extensions
-{
-    public class UnityComparer : IEqualityComparer<Object>
-    {
-        public bool Equals(Object lft, Object rht)
-        {
-            return lft == rht;
-        }
+namespace LabFusion.Extensions;
 
-        public int GetHashCode(Object obj)
-        {
-            return obj.GetHashCode();
-        }
+public class UnityComparer : IEqualityComparer<Object>
+{
+    public bool Equals(Object lft, Object rht)
+    {
+        return lft == rht;
+    }
+
+    public int GetHashCode(Object obj)
+    {
+        return obj.GetHashCode();
     }
 }
-

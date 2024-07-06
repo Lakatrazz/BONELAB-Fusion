@@ -6,7 +6,7 @@ namespace LabFusion.Network;
 [Net.DelayWhileTargetLoading]
 public class PuppetMasterKillMessage : FusionMessageHandler
 {
-    public override byte? Tag => NativeMessageTag.PuppetMasterKill;
+    public override byte Tag => NativeMessageTag.PuppetMasterKill;
 
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
@@ -16,7 +16,7 @@ public class PuppetMasterKillMessage : FusionMessageHandler
         // Send message to other clients if server
         if (isServerHandled)
         {
-            using var message = FusionMessage.Create(Tag.Value, bytes);
+            using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
 
             return;
