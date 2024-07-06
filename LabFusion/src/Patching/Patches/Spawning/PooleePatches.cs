@@ -29,10 +29,19 @@ namespace LabFusion.Patching
                 return;
             }
 
-            if (PooleeExtender.Cache.TryGet(__instance, out var entity))
+            if (!PooleeExtender.Cache.TryGet(__instance, out var entity))
             {
-                NetworkEntityManager.IdManager.UnregisterEntity(entity);
+                return;
             }
+
+            var prop = entity.GetExtender<NetworkProp>();
+
+            if (prop == null)
+            {
+                return;
+            }
+
+            NetworkEntityManager.IdManager.UnregisterEntity(entity);
         }
     }
 
@@ -79,13 +88,21 @@ namespace LabFusion.Patching
 
         private static bool CheckNetworkEntity(Poolee __instance)
         {
-            if (PooleeExtender.Cache.TryGet(__instance, out var entity))
+            if (!PooleeExtender.Cache.TryGet(__instance, out var entity))
             {
-                PooleeUtilities.SendDespawn(entity.Id);
-                NetworkEntityManager.IdManager.UnregisterEntity(entity);
-                return true;
+                return false;
             }
-            return false;
+
+            var prop = entity.GetExtender<NetworkProp>();
+
+            if (prop == null)
+            {
+                return false;
+            }
+
+            PooleeUtilities.SendDespawn(entity.Id);
+            NetworkEntityManager.IdManager.UnregisterEntity(entity);
+            return true;
         }
 
         private static IEnumerator CoVerifyDespawnCoroutine(Poolee __instance)
