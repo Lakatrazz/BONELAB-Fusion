@@ -11,7 +11,7 @@ public abstract class EntityComponentArrayExtender<TComponent> : IEntityComponen
 
     public TComponent[] Components => _components;
 
-    public bool TryRegister(NetworkEntity networkEntity, GameObject[] parents, GameObject[] blacklist = null)
+    public bool TryRegister(NetworkEntity networkEntity, GameObject[] parents)
     {
         List<TComponent> components = new();
 
@@ -19,18 +19,6 @@ public abstract class EntityComponentArrayExtender<TComponent> : IEntityComponen
         foreach (var parent in parents)
         {
             components.AddRange(parent.GetComponentsInChildren<TComponent>(true));
-        }
-
-        // Check blacklist
-        if (blacklist != null)
-        {
-            foreach (var component in components.ToArray())
-            {
-                if (IEntityComponentExtender.CheckBlacklist(component, blacklist))
-                {
-                    components.Remove(component);
-                }
-            }
         }
 
         if (components.Count > 0)

@@ -7,23 +7,6 @@ namespace LabFusion.Extensions;
 
 public static class ComponentExtensions
 {
-    public static bool InHierarchyOf(this GameObject go, GameObject root)
-    {
-        Transform parent = go.transform;
-
-        while (parent != null)
-        {
-            if (parent.gameObject == root)
-            {
-                return true;
-            }
-
-            parent = parent.parent;
-        }
-
-        return false;
-    }
-
     /// <summary>
     /// Returns true if this GameObject has a RigManager in the hierarchy.
     /// </summary>

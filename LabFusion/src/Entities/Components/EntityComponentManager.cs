@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
+﻿using System.Reflection;
 
 using LabFusion.Utilities;
 
@@ -43,7 +38,7 @@ public static class EntityComponentManager
 #endif
     }
 
-    public static HashSet<IEntityComponentExtender> ApplyComponents(NetworkEntity networkEntity, GameObject[] parents, GameObject[] blacklist = null)
+    public static HashSet<IEntityComponentExtender> ApplyComponents(NetworkEntity networkEntity, GameObject[] parents)
     {
         var set = new HashSet<IEntityComponentExtender>();
 
@@ -53,7 +48,7 @@ public static class EntityComponentManager
 
             var instance = Activator.CreateInstance(type) as IEntityComponentExtender;
 
-            if (instance.TryRegister(networkEntity, parents, blacklist))
+            if (instance.TryRegister(networkEntity, parents))
             {
                 set.Add(instance);
             }

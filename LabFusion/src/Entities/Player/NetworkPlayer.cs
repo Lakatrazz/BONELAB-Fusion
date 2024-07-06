@@ -831,17 +831,14 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         var parents = new GameObject[] { physicsRig.gameObject, avatar.gameObject };
 
-        var ammoReceiver = physicsRig.GetComponentInChildren<InventoryAmmoReceiver>().gameObject;
-        var blacklist = new GameObject[] { ammoReceiver, };
-
-        RegisterComponents(parents, blacklist);
+        RegisterComponents(parents);
     }
 
-    private void RegisterComponents(GameObject[] parents, GameObject[] blacklist)
+    private void RegisterComponents(GameObject[] parents)
     {
         UnregisterComponents();
 
-        _componentExtenders = EntityComponentManager.ApplyComponents(NetworkEntity, parents, blacklist);
+        _componentExtenders = EntityComponentManager.ApplyComponents(NetworkEntity, parents);
     }
 
     private void UnregisterComponents()

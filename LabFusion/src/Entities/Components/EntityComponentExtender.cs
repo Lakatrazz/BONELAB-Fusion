@@ -1,11 +1,4 @@
-﻿using LabFusion.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace LabFusion.Entities;
 
@@ -18,18 +11,13 @@ public abstract class EntityComponentExtender<TComponent> : IEntityComponentExte
 
     public TComponent Component => _component;
 
-    public bool TryRegister(NetworkEntity networkEntity, GameObject[] parents, GameObject[] blacklist = null)
+    public bool TryRegister(NetworkEntity networkEntity, GameObject[] parents)
     {
         foreach (var parent in parents)
         {
             var component = parent.GetComponentInChildren<TComponent>(true);
 
             if (component == null)
-            {
-                continue;
-            }
-
-            if (IEntityComponentExtender.CheckBlacklist(component, blacklist))
             {
                 continue;
             }
