@@ -143,6 +143,7 @@ public class HideAndSeek : Gamemode
             }
         }
 
+        // Were we tagged? Give a notification
         if (playerId.IsOwner && !_hasBeenTagged)
         {
             FusionNotifier.Send(new FusionNotification()
@@ -156,6 +157,22 @@ public class HideAndSeek : Gamemode
             });
 
             _hasBeenTagged = true;
+        }
+
+        // Other player tagged?
+        if (!playerId.IsOwner)
+        {
+            playerId.TryGetDisplayName(out var name);
+
+            FusionNotifier.Send(new FusionNotification()
+            {
+                isPopup = true,
+                showTitleOnPopup = true,
+                title = $"{name} Tagged",
+                message = $"{name} has been tagged and is now a seeker!",
+                popupLength = 4f,
+                type = NotificationType.INFORMATION,
+            });
         }
     }
 
