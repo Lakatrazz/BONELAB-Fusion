@@ -206,12 +206,19 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void OnPuppetCreated(RigManager rigManager)
     {
+        // Disable the bodylog
         SetBallEnabled(false);
 
+        // Recreate the nametag
         _nametag.CreateNametag();
 
+        // Mark our rig dirty for setting updates
         MarkDirty();
 
+        // Rename the rig to match our ID
+        rigManager.gameObject.name = $"{PlayerRepUtilities.PlayerRepName} (ID {PlayerId.SmallId})";
+
+        // Hook into the rig
         OnFoundRigManager(rigManager);
     }
 
@@ -443,6 +450,10 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void OnPlayerUnregistered(NetworkEntity entity)
     {
+#if DEBUG
+        FusionLogger.Log($"Unregistered NetworkPlayer with ID {PlayerId.SmallId}.");
+#endif
+
         Players.Remove(this);
 
         UnhookPlayer();

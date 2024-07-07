@@ -113,6 +113,10 @@ public class DespawnResponseMessage : FusionMessageHandler
             poolee.Despawn();
         }
 
+#if DEBUG
+        FusionLogger.Log($"Unregistered entity at ID {entity.Id} after despawning.");
+#endif
+
         NetworkEntityManager.IdManager.UnregisterEntity(entity);
 
         PooleeUtilities.CanDespawn = false;

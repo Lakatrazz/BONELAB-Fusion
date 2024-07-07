@@ -41,6 +41,10 @@ public class PooleeOnDespawnPatch
             return;
         }
 
+#if DEBUG
+        FusionLogger.Log($"Unregistered entity at ID {entity.Id} after OnDespawnEvent.");
+#endif
+
         NetworkEntityManager.IdManager.UnregisterEntity(entity);
     }
 }
