@@ -35,7 +35,9 @@ public static class MessageSender
     public static void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message)
     {
         if (message == null)
+        {
             return;
+        }
 
         if (NetworkInfo.CurrentNetworkLayer != null)
         {
@@ -53,18 +55,24 @@ public static class MessageSender
     public static void SendToServer(NetworkChannel channel, FusionMessage message)
     {
         if (message == null)
+        {
             return;
+        }
 
         if (NetworkInfo.CurrentNetworkLayer != null)
         {
             NetworkInfo.BytesUp += message.Length;
 
             if (!NetworkInfo.IsServer)
+            {
                 NetworkInfo.CurrentNetworkLayer.SendToServer(channel, message);
+            }
             else
             {
                 unsafe
                 {
+                    NetworkInfo.LastReceivedUser = PlayerIdManager.LocalLongId;
+
                     FusionMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message.Buffer, message.Length), true);
                 }
             }
@@ -92,6 +100,8 @@ public static class MessageSender
             {
                 unsafe
                 {
+                    NetworkInfo.LastReceivedUser = PlayerIdManager.LocalLongId;
+
                     FusionMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message.Buffer, message.Length), false);
                 }
             }
@@ -120,6 +130,8 @@ public static class MessageSender
             {
                 unsafe
                 {
+                    NetworkInfo.LastReceivedUser = PlayerIdManager.LocalLongId;
+
                     FusionMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message.Buffer, message.Length), false);
                 }
             }
@@ -148,6 +160,8 @@ public static class MessageSender
             {
                 unsafe
                 {
+                    NetworkInfo.LastReceivedUser = PlayerIdManager.LocalLongId;
+
                     FusionMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message.Buffer, message.Length), false);
                 }
             }
