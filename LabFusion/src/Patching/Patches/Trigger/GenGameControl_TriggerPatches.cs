@@ -2,74 +2,77 @@
 
 using LabFusion.Network;
 using LabFusion.Utilities;
+
 using Il2CppSLZ.Bonelab;
+using Il2CppSLZ.Marrow.AI;
+using Il2CppSLZ.Rig;
 
 using UnityEngine;
-using Il2CppSLZ.Marrow.AI;
 
-namespace LabFusion.Patching
+namespace LabFusion.Patching;
+
+[HarmonyPatch(typeof(GenGameControl_Trigger))]
+public static class GenGameControl_TriggerPatches
 {
-    [HarmonyPatch(typeof(GenGameControl_Trigger))]
-    public static class GenGameControl_TriggerPatches
+    private static bool ProcessTrigger(GenGameControl_Trigger __instance, Collider other)
     {
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(GenGameControl_Trigger.OnTriggerEnter))]
-        public static bool OnTriggerEnter(GenGameControl_Trigger __instance, Collider other)
+        var rigidbody = other.attachedRigidbody;
+
+        if (rigidbody == null)
         {
-            if (!NetworkInfo.HasServer)
-            {
-                return true;
-            }
-
-            var proxy = other.GetComponent<TriggerRefProxy>();
-
-            if (proxy == null)
-            {
-                return true;
-            }
-
-            if (proxy.triggerType == TriggerRefProxy.TriggerType.Player)
-            {
-                if (TriggerUtilities.VerifyLevelTrigger(__instance, other, out bool runMethod))
-                    return runMethod;
-
-                TriggerUtilities.Increment(__instance);
-                bool canEnter = TriggerUtilities.CanEnter(__instance);
-
-                return canEnter;
-            }
-
             return true;
         }
 
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(GenGameControl_Trigger.OnTriggerExit))]
-        public static bool OnTriggerExit(GenGameControl_Trigger __instance, Collider other)
+        var proxy = rigidbody.GetComponent<TriggerRefProxy>();
+
+        if (proxy == null)
         {
-            if (!NetworkInfo.HasServer)
-            {
-                return true;
-            }
-
-            var proxy = other.GetComponent<TriggerRefProxy>();
-
-            if (proxy == null)
-            {
-                return true;
-            }
-
-            if (proxy.triggerType == TriggerRefProxy.TriggerType.Player)
-            {
-                if (TriggerUtilities.VerifyLevelTrigger(__instance, other, out bool runMethod))
-                    return runMethod;
-
-                TriggerUtilities.Decrement(__instance);
-                bool canExit = TriggerUtilities.CanExit(__instance);
-
-                return canExit;
-            }
-
             return true;
         }
+
+        var root = proxy.root;
+
+        if (root == null)
+        {
+            return true;
+        }
+
+        var rig = RigManager.Cache.Get(root);
+
+        if (rig == null)
+        {
+            return true;
+        }
+
+        if (!rig.IsSelf())
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(GenGameControl_Trigger.OnTriggerEnter))]
+    public static bool OnTriggerEnter(GenGameControl_Trigger __instance, Collider other)
+    {
+        if (!NetworkInfo.HasServer)
+        {
+            return true;
+        }
+
+        return ProcessTrigger(__instance, other);
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(GenGameControl_Trigger.OnTriggerExit))]
+    public static bool OnTriggerExit(GenGameControl_Trigger __instance, Collider other)
+    {
+        if (!NetworkInfo.HasServer)
+        {
+            return true;
+        }
+
+        return ProcessTrigger(__instance, other);
     }
 }
