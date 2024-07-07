@@ -15,7 +15,7 @@ public abstract class EntityComponentExtender<TComponent> : IEntityComponentExte
     {
         foreach (var parent in parents)
         {
-            var component = parent.GetComponentInChildren<TComponent>(true);
+            var component = GetComponent(parent);
 
             if (component == null)
             {
@@ -27,6 +27,11 @@ public abstract class EntityComponentExtender<TComponent> : IEntityComponentExte
         }
 
         return false;
+    }
+
+    protected virtual TComponent GetComponent(GameObject go)
+    {
+        return go.GetComponentInChildren<TComponent>(true);
     }
 
     public void Register(NetworkEntity networkEntity, TComponent component)
