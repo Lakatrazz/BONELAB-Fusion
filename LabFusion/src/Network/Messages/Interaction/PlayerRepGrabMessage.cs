@@ -4,10 +4,6 @@ using LabFusion.Utilities;
 using LabFusion.Grabbables;
 using LabFusion.Entities;
 
-using System.Collections;
-
-using MelonLoader;
-
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Interaction;
 
@@ -79,12 +75,11 @@ public class PlayerRepGrabMessage : FusionMessageHandler
         using FusionReader reader = FusionReader.Create(bytes);
         var data = reader.ReadFusionSerializable<PlayerRepGrabData>();
 
+        // Make sure this isn't us
         if (data.smallId == PlayerIdManager.LocalSmallId)
         {
             return;
         }
-
-        MelonCoroutines.Start(CoWaitAndGrab(data));
 
         // Send message to other clients if server
         if (isServerHandled)
@@ -92,31 +87,28 @@ public class PlayerRepGrabMessage : FusionMessageHandler
             using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
         }
+
+        // Apply grab
+        ApplyGrip(data);
     }
 
-    private static IEnumerator CoWaitAndGrab(PlayerRepGrabData data)
+    private static void ApplyGrip(PlayerRepGrabData data)
     {
         var player = data.GetPlayer();
 
         if (player == null)
-            yield break;
+        {
+#if DEBUG
+            FusionLogger.Warn("Grab message requested a player to grab that doesn't exist?");
+#endif
+            return;
+        }
 
         var grip = data.GetGrip();
 
         if (grip == null)
         {
-            float time = TimeUtilities.TimeSinceStartup;
-
-            while (grip == null && (TimeUtilities.TimeSinceStartup - time) <= 0.5f)
-            {
-                yield return null;
-                grip = data.GetGrip();
-            }
-
-            if (grip == null)
-            {
-                yield break;
-            }
+            return;
         }
 
         data.serializedGrab.RequestGrab(player, data.handedness, grip);

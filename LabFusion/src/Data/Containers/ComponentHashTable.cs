@@ -7,6 +7,8 @@ namespace LabFusion.Data;
 
 public class ComponentHashData : IFusionSerializable
 {
+    public const int Size = sizeof(int) * 2;
+
     public int hash;
     public int index;
 
