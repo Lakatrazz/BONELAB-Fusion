@@ -6,6 +6,7 @@ using LabFusion.Utilities;
 using LabFusion.Senders;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Extensions;
+using LabFusion.Player;
 
 using Il2CppSLZ.SFX;
 using Il2CppSLZ.Bonelab;
@@ -82,29 +83,35 @@ public static class HeadSFXPatches
         }
 
         // Did they actually die?
-        if (!rm.health.alive)
+        if (rm.health.alive)
         {
-            // If in a gamemode with auto holstering, then do it
-            if (Gamemode.ActiveGamemode != null && Gamemode.ActiveGamemode.AutoHolsterOnDeath)
-            {
-                rm.physicsRig.leftHand.TryAutoHolsterGrip(RigData.RigReferences);
-                rm.physicsRig.rightHand.TryAutoHolsterGrip(RigData.RigReferences);
-            }
-
-            // Update the spawn point
-            if (FusionPlayer.TryGetSpawnPoint(out var point))
-            {
-                rm.checkpointPosition = point.position;
-                rm.checkpointFwd = point.forward;
-            }
-
-            // Notify the server about the death
-            PlayerSender.SendPlayerAction(PlayerActionType.DEATH);
-
-            // If another player killed us, notify the server about that
-            if (FusionPlayer.LastAttacker.HasValue)
-                PlayerSender.SendPlayerAction(PlayerActionType.DEATH_BY_OTHER_PLAYER, FusionPlayer.LastAttacker.Value);
+            return;
         }
+
+        // If in a gamemode with auto holstering, then do it
+        if (Gamemode.ActiveGamemode != null && Gamemode.ActiveGamemode.AutoHolsterOnDeath)
+        {
+            rm.physicsRig.leftHand.TryAutoHolsterGrip(RigData.RigReferences);
+            rm.physicsRig.rightHand.TryAutoHolsterGrip(RigData.RigReferences);
+        }
+
+        // Update the spawn point
+        if (FusionPlayer.TryGetSpawnPoint(out var point))
+        {
+            rm.checkpointPosition = point.position;
+            rm.checkpointFwd = point.forward;
+        }
+
+        // Notify the server about the death
+        PlayerSender.SendPlayerAction(PlayerActionType.DEATH);
+
+        // If another player killed us, notify the server about that
+        if (FusionPlayer.LastAttacker.HasValue)
+        {
+            PlayerSender.SendPlayerAction(PlayerActionType.DEATH_BY_OTHER_PLAYER, FusionPlayer.LastAttacker.Value);
+        }
+
+        LocalPlayer.ClearConstraints();
     }
 }
 
@@ -126,6 +133,8 @@ public static class HealthPatches
         }
 
         PlayerSender.SendPlayerAction(PlayerActionType.RESPAWN);
+
+        LocalPlayer.ClearConstraints();
     }
 }
 
