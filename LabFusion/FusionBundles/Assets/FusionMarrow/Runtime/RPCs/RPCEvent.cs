@@ -79,7 +79,7 @@ namespace LabFusion.Marrow.Integration
 
         public void Receive()
         {
-            _onEventReceivedCached?.Invoke();
+            OnEventReceived?.Invoke();
         }
 
         public bool Invoke()
