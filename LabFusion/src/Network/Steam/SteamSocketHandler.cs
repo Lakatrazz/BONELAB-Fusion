@@ -39,14 +39,10 @@ public static class SteamSocketHandler
         {
             IntPtr messagePtr = (IntPtr)message.Buffer;
 
-            void SendMessage(Connection connection)
+            foreach (var connection in socketManager.Connected)
             {
-                ThreadingUtilities.IL2PrepareThread();
-
                 connection.SendMessage(messagePtr, sizeOfMessage, sendType);
             }
-
-            Parallel.ForEach(socketManager.Connected, SendMessage);
         }
     }
 
