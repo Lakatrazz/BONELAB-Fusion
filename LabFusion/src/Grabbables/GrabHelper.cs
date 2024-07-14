@@ -1,8 +1,6 @@
 ﻿using Il2CppSLZ.Rig;
 using Il2CppSLZ.Interaction;
 
-using UnityEngine;
-
 using LabFusion.Utilities;
 using LabFusion.Data;
 using LabFusion.Network;
@@ -10,6 +8,7 @@ using LabFusion.Syncables;
 using LabFusion.Player;
 using LabFusion.Senders;
 using LabFusion.Entities;
+using LabFusion.Patching;
 
 namespace LabFusion.Grabbables;
 
@@ -109,11 +108,15 @@ public static class GrabHelper
             {
                 group = GrabGroup.STATIC;
 
-                _ = grip.gameObject.GetFullPathAsync((p) =>
+                var gripHash = GripPatches.HashTable.GetDataFromComponent(grip);
+
+                if (gripHash == null)
                 {
-                    serializedGrab = new SerializedStaticGrab(p);
-                    OnFinish();
-                });
+                    return;
+                }
+
+                serializedGrab = new SerializedStaticGrab(gripHash);
+                OnFinish();
             }
         }
         // Check for entity grips

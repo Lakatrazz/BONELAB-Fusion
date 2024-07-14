@@ -4,9 +4,9 @@ using Il2CppSLZ.Marrow.Pool;
 
 namespace LabFusion.Entities;
 
-public class PooleeExtender : EntityComponentExtender<Poolee>
+public class PooleeExtender : EntityComponentParentExtender<Poolee>
 {
-    public static FusionComponentCache<Poolee, NetworkEntity> Cache = new();
+    public static readonly FusionComponentCache<Poolee, NetworkEntity> Cache = new();
 
     protected override void OnRegister(NetworkEntity networkEntity, Poolee component)
     {

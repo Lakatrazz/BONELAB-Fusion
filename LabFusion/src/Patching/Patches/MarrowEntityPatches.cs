@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using HarmonyLib;
+﻿using HarmonyLib;
 
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow.Zones;
@@ -22,10 +16,34 @@ public static class MarrowEntityPatches
 {
     public static readonly ComponentHashTable<MarrowEntity> HashTable = new();
 
+    private static bool IsPooled(MarrowEntity entity)
+    {
+        var poolee = entity._poolee;
+
+        if (poolee == null)
+        {
+            return false;
+        }
+
+        if (!poolee.IsInPool)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     [HarmonyPrefix]
     [HarmonyPatch(nameof(MarrowEntity.Awake))]
     public static void Awake(MarrowEntity __instance)
     {
+        // Don't hash pooled entities, we manually sync spawned objects
+        // Hashing pooled entities can cause more conflicts
+        if (IsPooled(__instance))
+        {
+            return;
+        }
+
         var hash = GameObjectHasher.GetHierarchyHash(__instance.gameObject);
 
         var index = HashTable.AddComponent(hash, __instance);

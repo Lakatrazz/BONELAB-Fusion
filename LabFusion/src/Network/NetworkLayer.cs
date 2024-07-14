@@ -158,15 +158,13 @@ public abstract class NetworkLayer
     /// <param name="message"></param>
     public virtual void BroadcastMessageExcept(byte userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
     {
-        void Send(PlayerId id)
+        foreach (var id in PlayerIdManager.PlayerIds)
         {
-            ThreadingUtilities.IL2PrepareThread();
-
             if (id.SmallId != userId && (id.SmallId != 0 || !ignoreHost))
+            {
                 SendFromServer(id.SmallId, channel, message);
+            }
         }
-
-        Parallel.ForEach(PlayerIdManager.PlayerIds, Send);
     }
 
     /// <summary>
@@ -177,15 +175,13 @@ public abstract class NetworkLayer
     /// <param name="message"></param>
     public virtual void BroadcastMessageExcept(ulong userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
     {
-        void Send(PlayerId id)
+        foreach (var id in PlayerIdManager.PlayerIds)
         {
-            ThreadingUtilities.IL2PrepareThread();
-
             if (id.LongId != userId && (id.SmallId != 0 || !ignoreHost))
+            {
                 SendFromServer(id.SmallId, channel, message);
+            }
         }
-
-        Parallel.ForEach(PlayerIdManager.PlayerIds, Send);
     }
 
     public abstract void OnInitializeLayer();

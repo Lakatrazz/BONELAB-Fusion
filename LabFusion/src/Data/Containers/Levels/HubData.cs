@@ -30,13 +30,6 @@ namespace LabFusion.Data
             }
 
             PointShopHelper.SpawnBitMart(PointShopPosition, PointShopRotation);
-
-            if (NetworkInfo.IsServer && Funicular != null)
-            {
-                var funicularEntity = Funicular.GetComponentInParent<MarrowEntity>();
-                
-                PropSender.SendPropCreation(funicularEntity);
-            }
         }
     }
 }

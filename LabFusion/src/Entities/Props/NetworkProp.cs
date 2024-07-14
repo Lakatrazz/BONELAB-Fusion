@@ -203,6 +203,10 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     {
         if (NetworkEntity != null && NetworkEntity.IsRegistered)
         {
+#if DEBUG
+            FusionLogger.Log($"Unregistered prop at ID {NetworkEntity.Id} after the GameObject was destroyed.");
+#endif
+
             NetworkEntityManager.IdManager.UnregisterEntity(NetworkEntity);
         }
 

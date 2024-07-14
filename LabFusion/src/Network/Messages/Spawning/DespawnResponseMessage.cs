@@ -95,6 +95,10 @@ public class DespawnResponseMessage : FusionMessageHandler
 
         var poolee = pooleeExtender.Component;
 
+#if DEBUG
+        FusionLogger.Log($"Unregistering entity at ID {entity.Id} after despawning.");
+#endif
+
         if (isMag)
         {
             AmmoInventory ammoInventory = AmmoInventory.Instance;

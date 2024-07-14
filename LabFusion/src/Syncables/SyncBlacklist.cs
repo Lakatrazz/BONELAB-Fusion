@@ -1,8 +1,4 @@
-﻿using LabFusion.Utilities;
-
-using Il2CppSLZ.Bonelab;
-using Il2CppSLZ.Combat;
-using Il2CppSLZ.Marrow.Pool;
+﻿using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Rig;
 using Il2CppInterop.Runtime;
 using Il2CppSLZ.VFX;
@@ -54,16 +50,7 @@ namespace LabFusion.Syncables
             if (HasBlacklistedComponents(go))
                 return false;
 
-            // Other hardcoded stuff (probably cleanup later)
-            bool hasRigidbody = go.GetComponentInChildren<Rigidbody>(true) != null;
-
-            bool hasGunProperties = go.GetComponentInChildren<FirearmCartridge>(true) == null || go.GetComponentInChildren<Gun>(true) != null;
-
-            bool spawnableProperties = true;
-
-            bool isValid = hasRigidbody && hasGunProperties && spawnableProperties;
-
-            return isValid;
+            return true;
         }
     }
 }

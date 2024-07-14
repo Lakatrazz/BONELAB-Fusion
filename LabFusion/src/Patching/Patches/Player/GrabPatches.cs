@@ -7,6 +7,8 @@ using LabFusion.Grabbables;
 using LabFusion.Network;
 using LabFusion.Entities;
 using LabFusion.Player;
+using LabFusion.Data;
+using LabFusion.Marrow;
 
 namespace LabFusion.Patching;
 
@@ -77,6 +79,8 @@ public static class ForcePullPatches
 [HarmonyPatch(typeof(Grip))]
 public static class GripPatches
 {
+    public static readonly ComponentHashTable<Grip> HashTable = new();
+
     // This is just referenced by other grip patches, not actually a patch itself
     public static void UpdateJointConfiguration(Hand hand)
     {
@@ -92,6 +96,35 @@ public static class GripPatches
             joint.breakForce = float.PositiveInfinity;
             joint.breakTorque = float.PositiveInfinity;
         }
+    }
+
+    [HarmonyPatch(nameof(Grip.Awake))]
+    [HarmonyPrefix]
+    private static void Awake(Grip __instance)
+    {
+        // Only hash grips which don't have an entity (aka static grips)
+        if (__instance._marrowEntity != null)
+        {
+            return;
+        }
+
+        var hash = GameObjectHasher.GetHierarchyHash(__instance.gameObject);
+
+        var index = HashTable.AddComponent(hash, __instance);
+
+#if DEBUG
+        if (index > 0)
+        {
+            FusionLogger.Log($"Grip {__instance.name} had a conflicting hash {hash} and has been added at index {index}.");
+        }
+#endif
+    }
+
+    [HarmonyPatch(nameof(Grip.OnDestroy))]
+    [HarmonyPrefix]
+    private static void OnDestroy(Grip __instance)
+    {
+        HashTable.RemoveComponent(__instance);
     }
 
     [HarmonyPatch(nameof(Grip.OnAttachedToHand))]

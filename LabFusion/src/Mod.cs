@@ -258,9 +258,6 @@ public class FusionMod : MelonMod
         // Update Time before running any functions
         TimeUtilities.OnEarlyUpdate();
 
-        // Update threaded events
-        ThreadingUtilities.Internal_OnUpdate();
-
         // Update the level loading checks
         FusionSceneManager.Internal_UpdateScene();
 

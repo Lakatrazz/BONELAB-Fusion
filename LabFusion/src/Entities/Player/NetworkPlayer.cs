@@ -27,6 +27,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     public static readonly HashSet<NetworkPlayer> Players = new();
 
+    public static event Action<NetworkPlayer, RigManager> OnNetworkRigCreated;
+
     private NetworkEntity _networkEntity = null;
 
     private PlayerId _playerId = null;
@@ -204,12 +206,19 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void OnPuppetCreated(RigManager rigManager)
     {
+        // Disable the bodylog
         SetBallEnabled(false);
 
+        // Recreate the nametag
         _nametag.CreateNametag();
 
+        // Mark our rig dirty for setting updates
         MarkDirty();
 
+        // Rename the rig to match our ID
+        rigManager.gameObject.name = $"{PlayerRepUtilities.PlayerRepName} (ID {PlayerId.SmallId})";
+
+        // Hook into the rig
         OnFoundRigManager(rigManager);
     }
 
@@ -441,6 +450,10 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void OnPlayerUnregistered(NetworkEntity entity)
     {
+#if DEBUG
+        FusionLogger.Log($"Unregistered NetworkPlayer with ID {PlayerId.SmallId}.");
+#endif
+
         Players.Remove(this);
 
         UnhookPlayer();
@@ -788,6 +801,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             // Match the current cull state
             OnEntityCull(MarrowEntity.IsCulled);
         }
+
+        // Run events
+        OnNetworkRigCreated?.InvokeSafe(this, rigManager, "executing OnNetworkRigCreated hook");
     }
 
     private Il2CppSystem.Action _onAvatarSwappedAction = null;

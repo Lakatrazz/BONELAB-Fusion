@@ -85,7 +85,9 @@ public class SerializedEntityGrab : SerializedGrab
     {
         // Don't do anything if this isn't grabbed anymore
         if (!isGrabbed)
+        {
             return;
+        }
 
         // Get the hand and its starting values
         Hand hand = player.RigReferences.GetHand(handedness);

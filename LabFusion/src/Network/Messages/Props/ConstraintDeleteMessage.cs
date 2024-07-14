@@ -1,6 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Patching;
 using LabFusion.Entities;
+using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
@@ -71,6 +72,10 @@ public class ConstraintDeleteMessage : FusionMessageHandler
         ConstraintTrackerPatches.IgnorePatches = true;
         networkConstraint.Tracker.DeleteConstraint();
         ConstraintTrackerPatches.IgnorePatches = false;
+
+#if DEBUG
+        FusionLogger.Log($"Unregistered constraint at ID {entity.Id}.");
+#endif
 
         NetworkEntityManager.IdManager.UnregisterEntity(entity);
     }

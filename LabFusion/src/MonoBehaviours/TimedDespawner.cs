@@ -35,6 +35,16 @@ public class TimedDespawner : MonoBehaviour
         _elapsedTime = 0f;
     }
 
+    private void OnEnable()
+    {
+        RefreshTimer();
+    }
+
+    private void OnDisable()
+    {
+        RefreshTimer();
+    }
+
     private void LateUpdate()
     {
         // Make sure this is the server, otherwise we shouldn't despawn it

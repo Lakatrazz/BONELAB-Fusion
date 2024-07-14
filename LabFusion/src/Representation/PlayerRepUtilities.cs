@@ -29,7 +29,7 @@ namespace LabFusion.Representation;
 public static class PlayerRepUtilities
 {
     // This should never change, incase other mods rely on it.
-    public const string PlayerRepName = "[RigManager (FUSION PlayerRep)]";
+    public const string PlayerRepName = "[RigManager (Networked)]";
 
     public static bool TryGetRigInfo(RigManager rig, out byte smallId, out RigReferenceCollection references)
     {

@@ -2,6 +2,7 @@
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Network;
+using LabFusion.Player;
 
 using Il2CppSLZ.Combat;
 using Il2CppSLZ.Rig;
@@ -19,7 +20,7 @@ public static class PlayerAdditionsHelper
         MultiplayerHooking.OnJoinServer += () => { OnEnterServer(RigData.RigReferences.RigManager); };
         MultiplayerHooking.OnStartServer += () => { OnEnterServer(RigData.RigReferences.RigManager); };
         MultiplayerHooking.OnDisconnect += () => { OnExitServer(RigData.RigReferences.RigManager); };
-        MultiplayerHooking.OnLocalPlayerCreated += (rig) =>
+        LocalPlayer.OnLocalRigCreated += (rig) =>
         {
             OnCreatedLocalPlayer(rig);
 

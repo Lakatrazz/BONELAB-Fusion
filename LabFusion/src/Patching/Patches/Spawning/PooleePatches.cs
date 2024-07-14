@@ -41,6 +41,10 @@ public class PooleeOnDespawnPatch
             return;
         }
 
+#if DEBUG
+        FusionLogger.Log($"Unregistered entity at ID {entity.Id} after OnDespawnEvent.");
+#endif
+
         NetworkEntityManager.IdManager.UnregisterEntity(entity);
     }
 }
@@ -64,11 +68,16 @@ public class PooleeDespawnPatch
             return true;
         }
 
-        // Prevent despawning of players
-        if (PooleeUtilities.IsPlayer(__instance))
+        // Prevent despawning of other players
+        if (PooleeExtender.Cache.TryGet(__instance, out var entity))
         {
-            FusionLogger.Warn($"Prevented despawn of RigManager {__instance.name}!");
-            return false;
+            var player = entity.GetExtender<NetworkPlayer>();
+
+            if (player != null && !entity.IsOwner)
+            {
+                FusionLogger.Warn($"Prevented despawn of player at ID {entity.Id}!");
+                return false;
+            }
         }
 
         try

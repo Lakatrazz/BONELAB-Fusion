@@ -14,7 +14,7 @@ public static class RPCEventSender
             return false;
         }
 
-        var target = (RPCEvent.RPCTarget)rpcEvent.target.Get();
+        var target = (RPCEvent.RPCTarget)rpcEvent.Target;
 
         // If the target is to clients, but we aren't the server, we can't send the message
         if (target == RPCEvent.RPCTarget.Clients && !NetworkInfo.IsServer)
@@ -22,7 +22,7 @@ public static class RPCEventSender
             return false;
         }
 
-        var channel = (RPCEvent.RPCChannel)rpcEvent.channel.Get();
+        var channel = (RPCEvent.RPCChannel)rpcEvent.Channel;
 
         // Convert to network channel
         var networkChannel = channel == RPCEvent.RPCChannel.Reliable ? NetworkChannel.Reliable : NetworkChannel.Unreliable;
@@ -37,7 +37,7 @@ public static class RPCEventSender
         if (RPCEventExtender.Cache.TryGet(rpcEvent, out var entity))
         {
             // If we need ownership, make sure we have it
-            if (rpcEvent.requiresOwnership.Get() && !entity.IsOwner)
+            if (rpcEvent.RequiresOwnership && !entity.IsOwner)
             {
                 return false;
             }

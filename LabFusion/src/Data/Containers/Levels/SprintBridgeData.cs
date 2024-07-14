@@ -22,21 +22,6 @@ namespace LabFusion.Data
             {
                 return;
             }
-
-            var copter = GameObject.Find("TrashCopter");
-
-            if (copter != null)
-            {
-                var marrowEntity = copter.GetComponentInParent<MarrowEntity>();
-
-                PropSender.SendPropCreation(marrowEntity);
-            }
-            else
-            {
-#if DEBUG
-                FusionLogger.Warn("Failed to find TrashCopter in Sprint Bridge!");
-#endif
-            }
         }
     }
 }
