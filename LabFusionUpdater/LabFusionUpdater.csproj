@@ -31,7 +31,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MelonLoader">
-      <HintPath>..\LabFusion\dependencies\managed\net6\MelonLoader.dll</HintPath>
+      <HintPath>$(BONELAB_DIR)\MelonLoader\net6\MelonLoader.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>
