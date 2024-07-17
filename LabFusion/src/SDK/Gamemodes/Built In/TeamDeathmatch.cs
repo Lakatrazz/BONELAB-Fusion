@@ -1,4 +1,4 @@
-﻿using BoneLib.BoneMenu.Elements;
+﻿using BoneLib.BoneMenu;
 
 using Il2CppSLZ.Marrow.Warehouse;
 
@@ -79,11 +79,11 @@ public class TeamDeathmatch : Gamemode
 
     private bool _enabledLateJoining = true;
 
-    public override void OnBoneMenuCreated(MenuCategory category)
+    public override void OnBoneMenuCreated(Page page)
     {
-        base.OnBoneMenuCreated(category);
+        base.OnBoneMenuCreated(page);
 
-        category.CreateIntElement("Round Minutes", Color.white, _totalMinutes, 1, _minMinutes, _maxMinutes, (v) =>
+        page.CreateInt("Round Minutes", Color.white, 1, _totalMinutes, _minMinutes, _maxMinutes, (v) =>
         {
             _totalMinutes = v;
             _savedMinutes = v;

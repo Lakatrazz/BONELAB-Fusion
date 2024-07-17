@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 
-using BoneLib.BoneMenu.Elements;
+using BoneLib.BoneMenu;
+
 using LabFusion.Data;
 using LabFusion.Player;
 using LabFusion.Utilities;
@@ -198,7 +199,7 @@ public abstract class NetworkLayer
 
     public virtual void OnUserJoin(PlayerId id) { }
 
-    public virtual void OnSetupBoneMenu(MenuCategory category) { }
+    public virtual void OnSetupBoneMenu(Page page) { }
 
     public abstract void OnUpdateLobby();
 

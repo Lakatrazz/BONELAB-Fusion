@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 
 using BoneLib.BoneMenu;
-using BoneLib.BoneMenu.Elements;
 
 using LabFusion.Data;
 using LabFusion.Player;
@@ -385,56 +384,56 @@ namespace LabFusion.Network
             OnUpdateCreateServerText();
         }
 
-        public override void OnSetupBoneMenu(MenuCategory category)
+        public override void OnSetupBoneMenu(Page page)
         {
             // Create the basic options
-            CreateMatchmakingMenu(category);
-            BoneMenuCreator.CreateUniversalMenus(category);
+            CreateMatchmakingMenu(page);
+            BoneMenuCreator.CreateUniversalMenus(page);
         }
 
         // Matchmaking menu
-        private MenuCategory _serverInfoCategory;
-        private MenuCategory _manualJoiningCategory;
-        private MenuCategory _publicLobbiesCategory;
-        private MenuCategory _friendsCategory;
+        private Page _serverInfoCategory;
+        private Page _manualJoiningCategory;
+        private Page _publicLobbiesCategory;
+        private Page _friendsCategory;
 
-        private void CreateMatchmakingMenu(MenuCategory category)
+        private void CreateMatchmakingMenu(Page page)
         {
             // Root category
-            var matchmaking = category.CreateCategory("Matchmaking", Color.red);
+            var matchmaking = page.CreatePage("Matchmaking", Color.red);
 
             // Server making
-            _serverInfoCategory = matchmaking.CreateCategory("Server Info", Color.white);
+            _serverInfoCategory = matchmaking.CreatePage("Server Info", Color.white);
             CreateServerInfoMenu(_serverInfoCategory);
 
             // Manual joining
-            _manualJoiningCategory = matchmaking.CreateCategory("Manual Joining", Color.white);
+            _manualJoiningCategory = matchmaking.CreatePage("Manual Joining", Color.white);
             CreateManualJoiningMenu(_manualJoiningCategory);
 
             // Public lobbies list
-            _publicLobbiesCategory = matchmaking.CreateCategory("Public Lobbies", Color.white);
-            _publicLobbiesCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshPublicLobbies);
-            _publicLobbiesCategory.CreateEnumElement("Sort By", Color.white, _publicLobbySortMode, (v) =>
+            _publicLobbiesCategory = matchmaking.CreatePage("Public Lobbies", Color.white);
+            _publicLobbiesCategory.CreateFunction("Refresh", Color.white, Menu_RefreshPublicLobbies);
+            _publicLobbiesCategory.CreateEnum("Sort By", Color.white, _publicLobbySortMode, (v) =>
             {
-                _publicLobbySortMode = v;
+                _publicLobbySortMode = (LobbySortMode)v;
                 Menu_RefreshPublicLobbies();
             });
-            _publicLobbiesCategory.CreateFunctionElement("Select Refresh to load servers!", Color.yellow, null);
+            _publicLobbiesCategory.CreateFunction("Select Refresh to load servers!", Color.yellow, null);
 
             // Steam friends list
-            _friendsCategory = matchmaking.CreateCategory("Steam Friends", Color.white);
-            _friendsCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshFriendLobbies);
-            _friendsCategory.CreateFunctionElement("Select Refresh to load servers!", Color.yellow, null);
+            _friendsCategory = matchmaking.CreatePage("Steam Friends", Color.white);
+            _friendsCategory.CreateFunction("Refresh", Color.white, Menu_RefreshFriendLobbies);
+            _friendsCategory.CreateFunction("Select Refresh to load servers!", Color.yellow, null);
         }
 
         private FunctionElement _createServerElement;
 
-        private void CreateServerInfoMenu(MenuCategory category)
+        private void CreateServerInfoMenu(Page page)
         {
-            _createServerElement = category.CreateFunctionElement("Create Server", Color.white, OnClickCreateServer);
-            category.CreateFunctionElement("Copy SteamID to Clipboard", Color.white, OnCopySteamID);
+            _createServerElement = page.CreateFunction("Create Server", Color.white, OnClickCreateServer);
+            page.CreateFunction("Copy SteamID to Clipboard", Color.white, OnCopySteamID);
 
-            BoneMenuCreator.PopulateServerInfo(category);
+            BoneMenuCreator.PopulateServerInfo(page);
         }
 
         private void OnClickCreateServer()
@@ -462,18 +461,18 @@ namespace LabFusion.Network
                 return;
 
             if (_isConnectionActive)
-                _createServerElement.SetName("Disconnect from Server");
+                _createServerElement.ElementName = "Disconnect from Server";
             else
-                _createServerElement.SetName("Create Server");
+                _createServerElement.ElementName = "Create Server";
         }
 
         private FunctionElement _targetServerElement;
 
-        private void CreateManualJoiningMenu(MenuCategory category)
+        private void CreateManualJoiningMenu(Page page)
         {
-            category.CreateFunctionElement("Join Server", Color.white, OnClickJoinServer);
-            _targetServerElement = category.CreateFunctionElement("Server ID:", Color.white, null);
-            category.CreateFunctionElement("Paste Server ID from Clipboard", Color.white, OnPasteServerID);
+            page.CreateFunction("Join Server", Color.white, OnClickJoinServer);
+            _targetServerElement = page.CreateFunction("Server ID:", Color.white, null);
+            page.CreateFunction("Paste Server ID from Clipboard", Color.white, OnPasteServerID);
         }
 
         private void OnClickJoinServer()
@@ -491,7 +490,7 @@ namespace LabFusion.Network
             if (!string.IsNullOrWhiteSpace(text) && ulong.TryParse(text, out var result))
             {
                 _targetServerId = result;
-                _targetServerElement.SetName($"Server ID: {_targetServerId}");
+                _targetServerElement.ElementName = $"Server ID: {_targetServerId}";
             }
         }
 
@@ -505,14 +504,14 @@ namespace LabFusion.Network
                 return;
 
             // Clear existing lobbies
-            _publicLobbiesCategory.Elements.Clear();
-            _publicLobbiesCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshPublicLobbies);
+            _publicLobbiesCategory.RemoveAll();
+            _publicLobbiesCategory.CreateFunction("Refresh", Color.white, Menu_RefreshPublicLobbies);
 
             BoneMenuCreator.CreateFilters(_publicLobbiesCategory);
 
-            _publicLobbiesCategory.CreateEnumElement("Sort By", Color.white, _publicLobbySortMode, (v) =>
+            _publicLobbiesCategory.CreateEnum("Sort By", Color.white, _publicLobbySortMode, (v) =>
             {
-                _publicLobbySortMode = v;
+                _publicLobbySortMode = (LobbySortMode)v;
                 Menu_RefreshPublicLobbies();
             });
 
@@ -557,29 +556,23 @@ namespace LabFusion.Network
 
             var lobbies = task.Result;
 
-            using (BatchedBoneMenu.Create())
+            foreach (var lobby in lobbies)
             {
-                foreach (var lobby in lobbies)
+                // Make sure this is not us
+                if (lobby.Owner.IsMe)
                 {
-                    // Make sure this is not us
-                    if (lobby.Owner.IsMe)
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    var networkLobby = new SteamLobby(lobby);
-                    var info = LobbyMetadataHelper.ReadInfo(networkLobby);
+                var networkLobby = new SteamLobby(lobby);
+                var info = LobbyMetadataHelper.ReadInfo(networkLobby);
 
-                    if (Internal_CanShowLobby(info) && LobbyFilterManager.FilterLobby(networkLobby, info))
-                    {
-                        // Add to list
-                        BoneMenuCreator.CreateLobby(_publicLobbiesCategory, info, networkLobby, sortMode);
-                    }
+                if (Internal_CanShowLobby(info) && LobbyFilterManager.FilterLobby(networkLobby, info))
+                {
+                    // Add to list
+                    BoneMenuCreator.CreateLobby(_publicLobbiesCategory, info, networkLobby, sortMode);
                 }
             }
-
-            // Select the updated category
-            MenuManager.SelectCategory(_publicLobbiesCategory);
 
             _isPublicLobbySearching = false;
         }
@@ -593,8 +586,8 @@ namespace LabFusion.Network
                 return;
 
             // Clear existing lobbies
-            _friendsCategory.Elements.Clear();
-            _friendsCategory.CreateFunctionElement("Refresh", Color.white, Menu_RefreshFriendLobbies);
+            _friendsCategory.RemoveAll();
+            _friendsCategory.CreateFunction("Refresh", Color.white, Menu_RefreshFriendLobbies);
 
             MelonCoroutines.Start(CoAwaitFriendListRoutine());
         }
@@ -611,30 +604,24 @@ namespace LabFusion.Network
 
             var lobbies = task.Result;
 
-            using (BatchedBoneMenu.Create())
+            foreach (var lobby in lobbies)
             {
-                foreach (var lobby in lobbies)
+                // Make sure this is not us but is also a friend
+                if (lobby.Owner.IsMe)
+                    continue;
+
+                var networkLobby = new SteamLobby(lobby);
+                var lobbyInfo = LobbyMetadataHelper.ReadInfo(networkLobby);
+
+                if (!IsFriend(lobbyInfo.LobbyId))
+                    continue;
+
+                if (Internal_CanShowLobby(lobbyInfo))
                 {
-                    // Make sure this is not us but is also a friend
-                    if (lobby.Owner.IsMe)
-                        continue;
-
-                    var networkLobby = new SteamLobby(lobby);
-                    var lobbyInfo = LobbyMetadataHelper.ReadInfo(networkLobby);
-
-                    if (!IsFriend(lobbyInfo.LobbyId))
-                        continue;
-
-                    if (Internal_CanShowLobby(lobbyInfo))
-                    {
-                        // Add to list
-                        BoneMenuCreator.CreateLobby(_friendsCategory, lobbyInfo, networkLobby);
-                    }
+                    // Add to list
+                    BoneMenuCreator.CreateLobby(_friendsCategory, lobbyInfo, networkLobby);
                 }
             }
-
-            // Select the updated category
-            MenuManager.SelectCategory(_friendsCategory);
 
             _isFriendLobbySearching = false;
         }

@@ -1,10 +1,9 @@
-﻿using BoneLib.BoneMenu;
-using BoneLib.BoneMenu.Elements;
-using LabFusion.Data;
+﻿using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Representation;
 using LabFusion.Senders;
+
 using MelonLoader;
 
 using UnityEngine;
@@ -119,7 +118,6 @@ namespace LabFusion.Preferences
         public static bool IsMortal => ActiveServerSettings.ServerMortality.GetValue();
         public static TimeScaleMode TimeScaleMode => ActiveServerSettings.TimeScaleMode.GetValue();
 
-        public static MenuCategory fusionCategory;
         public static MelonPreferences_Category prefCategory;
 
         public static Action OnFusionPreferencesLoaded;
@@ -194,51 +192,6 @@ namespace LabFusion.Preferences
 
             // Save category
             prefCategory.SaveToFile(false);
-        }
-
-        internal static void OnPrepareBoneMenuCategory()
-        {
-            // We create this here so that its one of the first categories
-            fusionCategory = MenuManager.CreateCategory("BONELAB Fusion", Color.white);
-        }
-
-        private static int _lastIndex;
-
-        internal static void OnCreateBoneMenu()
-        {
-            // Make sure the Fusion category is empty
-            fusionCategory.Elements.Clear();
-
-            // Create category for changing network layer
-            var networkLayerManager = fusionCategory.CreateCategory("Network Layer Manager", Color.yellow);
-            networkLayerManager.CreateFunctionElement("Players need to be on the same layer!", Color.yellow, null);
-
-            _lastIndex = NetworkLayer.SupportedLayers.IndexOf(NetworkLayerDeterminer.LoadedLayer);
-
-            networkLayerManager.CreateFunctionElement($"Active Layer: {NetworkLayerDeterminer.LoadedTitle}", Color.white, null);
-
-            var targetPanel = networkLayerManager.CreateSubPanel($"Target Layer: {ClientSettings.NetworkLayerTitle.GetValue()}", Color.white);
-            targetPanel.CreateFunctionElement("Cycle", Color.white, () =>
-            {
-                int count = NetworkLayer.SupportedLayers.Count;
-                if (count <= 0)
-                    return;
-
-                _lastIndex++;
-                if (count <= _lastIndex)
-                    _lastIndex = 0;
-
-                ClientSettings.NetworkLayerTitle.SetValue(NetworkLayer.SupportedLayers[_lastIndex].Title);
-            });
-            ClientSettings.NetworkLayerTitle.OnValueChanged += (v) =>
-            {
-                targetPanel.SetName($"Target Layer: {v}");
-            };
-
-            targetPanel.CreateFunctionElement("SET NETWORK LAYER", Color.green, () => InternalLayerHelpers.UpdateLoadedLayer());
-
-            // Setup bonemenu for the network layer
-            InternalLayerHelpers.OnSetupBoneMenuLayer(fusionCategory);
         }
 
         internal static void OnPreferencesLoaded()

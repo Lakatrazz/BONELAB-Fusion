@@ -1,4 +1,5 @@
-﻿using BoneLib.BoneMenu.Elements;
+﻿using BoneLib.BoneMenu;
+
 using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.SDK.Lobbies;
@@ -19,11 +20,11 @@ namespace LabFusion.BoneMenu
     {
         private static ulong _lobbyIndex = 0;
 
-        private static MenuCategory _filterCategory = null;
+        private static Page _filterCategory = null;
 
-        public static void CreateFilters(MenuCategory category)
+        public static void CreateFilters(Page page)
         {
-            _filterCategory = category.CreateCategory("Filters", Color.white);
+            _filterCategory = page.CreatePage("Filters", Color.white);
 
             foreach (var filter in LobbyFilterManager.LobbyFilters)
             {
@@ -33,24 +34,24 @@ namespace LabFusion.BoneMenu
 
         private static void AddFilter(ILobbyFilter filter)
         {
-            _filterCategory.CreateBoolElement(filter.GetTitle(), Color.white, filter.IsActive(), (v) =>
+            _filterCategory.CreateBool(filter.GetTitle(), Color.white, filter.IsActive(), (v) =>
             {
                 filter.SetActive(v);
             });
         }
 
-        public static void CreateLobby(MenuCategory category, LobbyMetadataInfo info, INetworkLobby lobby, LobbySortMode sortMode = LobbySortMode.NONE)
+        public static void CreateLobby(Page page, LobbyMetadataInfo info, INetworkLobby lobby, LobbySortMode sortMode = LobbySortMode.NONE)
         {
             // Create the root category if necessary
-            MenuCategory rootCategory = category;
+            Page rootCategory = page;
 
             switch (sortMode)
             {
                 case LobbySortMode.GAMEMODE:
-                    rootCategory = category.CreateCategory(info.GamemodeName, Color.white);
+                    rootCategory = page.CreatePage(info.GamemodeName, Color.white);
                     break;
                 case LobbySortMode.LEVEL:
-                    rootCategory = category.CreateCategory(info.LevelName, Color.white);
+                    rootCategory = page.CreatePage(info.LevelName, Color.white);
                     break;
             }
 
@@ -82,72 +83,76 @@ namespace LabFusion.BoneMenu
                 lobbyColor = Color.yellow;
 
             // Create the category and get the default lobby info
-            var lobbyCategory = rootCategory.CreateCategory($"INTERNAL_LOBBY_{_lobbyIndex++}", lobbyColor);
-            lobbyCategory.SetName(userString);
+            var lobbyCategory = rootCategory.CreatePage($"INTERNAL_LOBBY_{_lobbyIndex++}", lobbyColor);
+            lobbyCategory.Name = userString;
 
-            lobbyCategory.CreateFunctionElement("Join Server", Color.white, info.CreateJoinDelegate(lobby));
+            lobbyCategory.CreateFunction("Join Server", Color.white, info.CreateJoinDelegate(lobby));
 
             // Create a category for the player list
-            var playersCategory = lobbyCategory.CreateCategory("Players", Color.white);
+            var playersCategory = lobbyCategory.CreatePage("Players", Color.white, 0, false);
+            var playersLink = lobbyCategory.CreatePageLink(playersCategory);
 
             foreach (var player in info.PlayerList.players)
             {
-                playersCategory.CreateFunctionElement(player.username, Color.white, null);
+                playersCategory.CreateFunction(player.username, Color.white, null);
             }
-
-            RemoveEmptyCategory(lobbyCategory, playersCategory);
+            
+            RemoveEmptyPage(lobbyCategory, playersCategory, playersLink);
 
             // Create a category for the server tags
-            var tagsCategory = lobbyCategory.CreateCategory("Tags", Color.white);
+            var tagsCategory = lobbyCategory.CreatePage("Tags", Color.white, 0, false);
+            var tagsLink = lobbyCategory.CreatePageLink(tagsCategory);
 
             foreach (var tag in info.LobbyTags.Expand())
             {
-                tagsCategory.CreateFunctionElement(tag, Color.white, null);
+                tagsCategory.CreateFunction(tag, Color.white, null);
             }
 
-            RemoveEmptyCategory(lobbyCategory, tagsCategory);
+            RemoveEmptyPage(lobbyCategory, tagsCategory, tagsLink);
 
             // Allow outside mods to add their own lobby information
-            var modsCategory = lobbyCategory.CreateCategory("Extra Info", Color.cyan);
+            var modsCategory = lobbyCategory.CreatePage("Extra Info", Color.cyan, 0, false);
+            var modsLink = lobbyCategory.CreatePageLink(modsCategory);
+
             MultiplayerHooking.Internal_OnLobbyCategoryCreated(modsCategory, lobby);
 
-            RemoveEmptyCategory(lobbyCategory, modsCategory);
+            RemoveEmptyPage(lobbyCategory, modsCategory, modsLink);
 
             // Create general info panel
-            var generalInfoPanel = lobbyCategory.CreateSubPanel("General Info", Color.white);
+            var generalInfoPanel = lobbyCategory.CreatePage("General Info", Color.white);
 
             // Names
-            generalInfoPanel.CreateFunctionElement($"Username: {info.LobbyOwner}", Color.white, null);
+            generalInfoPanel.CreateFunction($"Username: {info.LobbyOwner}", Color.white, null);
 
             if (!string.IsNullOrWhiteSpace(info.LobbyName))
-                generalInfoPanel.CreateFunctionElement($"Server Name: {info.LobbyName}", Color.white, null);
+                generalInfoPanel.CreateFunction($"Server Name: {info.LobbyName}", Color.white, null);
 
             // Show their version
-            generalInfoPanel.CreateFunctionElement($"Version: {info.LobbyVersion}", versionColor, null);
+            generalInfoPanel.CreateFunction($"Version: {info.LobbyVersion}", versionColor, null);
 
             // Show their platform
-            generalInfoPanel.CreateFunctionElement($"Platform: {(info.IsAndroid ? "Quest" : "PC")}", Color.white, null);
+            generalInfoPanel.CreateFunction($"Platform: {(info.IsAndroid ? "Quest" : "PC")}", Color.white, null);
 
             // Show their active level
             Color levelColor = info.ClientHasLevel ? Color.white : Color.red;
 
-            generalInfoPanel.CreateFunctionElement($"Level: {info.LevelName}", levelColor, null);
+            generalInfoPanel.CreateFunction($"Level: {info.LevelName}", levelColor, null);
 
             // Show the player count
-            generalInfoPanel.CreateFunctionElement($"{info.PlayerCount} out of {info.MaxPlayers} Players", new Color(0.68f, 0.85f, 0.9f), null);
+            generalInfoPanel.CreateFunction($"{info.PlayerCount} out of {info.MaxPlayers} Players", new Color(0.68f, 0.85f, 0.9f), null);
 
             // Show their active gamemode
-            var gamemodePanel = lobbyCategory.CreateSubPanel("Gamemode Info", Color.white);
-            gamemodePanel.CreateFunctionElement(info.GamemodeName, Color.white, null);
-            gamemodePanel.CreateFunctionElement(info.IsGamemodeRunning ? "Running" : "Not Running", Color.white, null);
+            var gamemodePanel = lobbyCategory.CreatePage("Gamemode Info", Color.white);
+            gamemodePanel.CreateFunction(info.GamemodeName, Color.white, null);
+            gamemodePanel.CreateFunction(info.IsGamemodeRunning ? "Running" : "Not Running", Color.white, null);
 
             // Create a category for settings
-            var settingsCategory = lobbyCategory.CreateSubPanel("Settings", Color.yellow);
+            var settingsCategory = lobbyCategory.CreatePage("Settings", Color.yellow);
 
-            settingsCategory.CreateFunctionElement($"Nametags: {(info.NametagsEnabled ? "Enabled" : "Disabled")}", Color.white, null);
-            settingsCategory.CreateFunctionElement($"Server Privacy: {info.Privacy}", Color.white, null);
-            settingsCategory.CreateFunctionElement($"Time Scale Mode: {info.TimeScaleMode}", Color.white, null);
-            settingsCategory.CreateFunctionElement($"Voicechat: {(info.VoicechatEnabled ? "Enabled" : "Disabled")}", Color.white, null);
+            settingsCategory.CreateFunction($"Nametags: {(info.NametagsEnabled ? "Enabled" : "Disabled")}", Color.white, null);
+            settingsCategory.CreateFunction($"Server Privacy: {info.Privacy}", Color.white, null);
+            settingsCategory.CreateFunction($"Time Scale Mode: {info.TimeScaleMode}", Color.white, null);
+            settingsCategory.CreateFunction($"Voicechat: {(info.VoicechatEnabled ? "Enabled" : "Disabled")}", Color.white, null);
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using BoneLib.BoneMenu;
-using BoneLib.BoneMenu.Elements;
 
 using UnityEngine;
 
@@ -7,19 +6,19 @@ namespace LabFusion.BoneMenu
 {
     public static partial class BoneMenuCreator
     {
-        public static void PopulateServerInfo(MenuCategory category)
+        public static void PopulateServerInfo(Page page)
         {
-            CreatePlayerListMenu(category);
-            CreateAdminActionsMenu(category);
-            CreateServerInfoQuickAccess(category);
+            CreatePlayerListMenu(page);
+            CreateAdminActionsMenu(page);
+            CreateServerInfoQuickAccess(page);
         }
 
-        private static void CreateServerInfoQuickAccess(MenuCategory category)
+        private static void CreateServerInfoQuickAccess(Page page)
         {
-            var subPanel = category.CreateSubPanel("Quick Access", Color.yellow);
-            subPanel.CreateFunctionElement("Server Settings", Color.white, () =>
+            var subPanel = page.CreatePage("Quick Access", Color.yellow);
+            subPanel.CreateFunction("Server Settings", Color.white, () =>
             {
-                MenuManager.SelectCategory(_serverSettingsCategory);
+                Menu.OpenPage(_serverSettingsCategory);
             });
         }
     }

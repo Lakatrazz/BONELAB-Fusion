@@ -1,7 +1,8 @@
-﻿using BoneLib.BoneMenu.Elements;
-
-using LabFusion.Preferences;
+﻿using LabFusion.Preferences;
 using LabFusion.Player;
+using LabFusion.BoneMenu;
+
+using BoneLib.BoneMenu;
 
 namespace LabFusion.Network
 {
@@ -37,8 +38,9 @@ namespace LabFusion.Network
             SetLayer(NetworkLayerDeterminer.LoadedLayer);
 
             // Recreate Bonemenu
-            BoneLib.BoneMenu.MenuManager.SelectCategory(FusionPreferences.fusionCategory);
-            FusionPreferences.OnCreateBoneMenu();
+            BoneMenuCreator.OnPopulateMainPage();
+
+            BoneMenuCreator.OpenMainPage();
         }
 
         public static void OnLateInitializeLayer()
@@ -73,9 +75,9 @@ namespace LabFusion.Network
             CurrentNetworkLayer?.OnUpdateLobby();
         }
 
-        public static void OnSetupBoneMenuLayer(MenuCategory category)
+        public static void OnSetupBoneMenuLayer(Page page)
         {
-            CurrentNetworkLayer?.OnSetupBoneMenu(category);
+            CurrentNetworkLayer?.OnSetupBoneMenu(page);
         }
 
         public static void OnUserJoin(PlayerId id)

@@ -1,10 +1,10 @@
-﻿using BoneLib.BoneMenu.Elements;
-
-using LabFusion.Network;
+﻿using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Senders;
 
 using Il2CppSLZ.Rig;
+
+using BoneLib.BoneMenu;
 
 namespace LabFusion.Utilities;
 
@@ -14,7 +14,7 @@ public delegate void UpdateEvent();
 public delegate void PlayerUpdate(PlayerId playerId);
 public delegate void PlayerAction(PlayerId playerId, PlayerActionType type, PlayerId otherPlayer = null);
 public delegate void RigManagerEvent(RigManager rig);
-public delegate void LobbyMenuAction(MenuCategory category, INetworkLobby lobby);
+public delegate void LobbyMenuAction(Page page, INetworkLobby lobby);
 
 /// <summary>
 /// Hooks for getting events from the server, players, etc.
@@ -64,7 +64,7 @@ public static class MultiplayerHooking
 
     internal static void Internal_OnPlayerCatchup(PlayerId playerId) => OnPlayerCatchup.InvokeSafe(playerId, "executing OnPlayerCatchup hook");
 
-    internal static void Internal_OnLobbyCategoryCreated(MenuCategory category, INetworkLobby lobby) => OnLobbyCategoryCreated.InvokeSafe(category, lobby, "executing OnLobbyCategoryCreated");
+    internal static void Internal_OnLobbyCategoryCreated(Page page, INetworkLobby lobby) => OnLobbyCategoryCreated.InvokeSafe(page, lobby, "executing OnLobbyCategoryCreated");
 
     // Settings updates
     public static event ServerEvent OnServerSettingsChanged;

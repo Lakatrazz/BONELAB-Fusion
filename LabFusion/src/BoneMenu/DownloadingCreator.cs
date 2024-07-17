@@ -1,4 +1,4 @@
-﻿using BoneLib.BoneMenu.Elements;
+﻿using BoneLib.BoneMenu;
 
 using LabFusion.Downloading.ModIO;
 
@@ -11,24 +11,24 @@ public static partial class BoneMenuCreator
     private static FunctionElement _fusionContentButton = null;
     private static FunctionElement _fusionCosmeticsButton = null;
 
-    public static void CreateDownloadingMenu(MenuCategory category)
+    public static void CreateDownloadingMenu(Page page)
     {
-        var downloadingCategory = category.CreateCategory("Downloading", Color.cyan);
+        var downloadingCategory = page.CreatePage("Downloading", Color.cyan);
         
-        _fusionContentButton = downloadingCategory.CreateFunctionElement("Download Fusion Content", Color.white, InstallContent);
-        _fusionCosmeticsButton = downloadingCategory.CreateFunctionElement("Download Fusion Cosmetics", Color.white, InstallCosmetics);
+        _fusionContentButton = downloadingCategory.CreateFunction("Download Fusion Content", Color.white, InstallContent);
+        _fusionCosmeticsButton = downloadingCategory.CreateFunction("Download Fusion Cosmetics", Color.white, InstallCosmetics);
     }
 
     private static void InstallContent()
     {
-        _fusionContentButton.SetName("Installing Fusion Content");
+        _fusionContentButton.ElementName = "Installing Fusion Content";
 
         ModTransaction transaction = new()
         {
             modFile = new(ModReferences.FusionContentId),
             callback = (info) =>
             {
-                _fusionContentButton.SetName("Download Fusion Content");
+                _fusionContentButton.ElementName = "Download Fusion Content";
             }
         };
 
@@ -37,14 +37,14 @@ public static partial class BoneMenuCreator
 
     private static void InstallCosmetics()
     {
-        _fusionCosmeticsButton.SetName("Installing Fusion Cosmetics");
+        _fusionCosmeticsButton.ElementName = "Installing Fusion Cosmetics";
 
         ModTransaction transaction = new()
         {
             modFile = new(ModReferences.FusionCosmeticsId),
             callback = (info) =>
             {
-                _fusionCosmeticsButton.SetName("Download Fusion Cosmetics");
+                _fusionCosmeticsButton.ElementName = "Download Fusion Cosmetics";
             }
         };
 

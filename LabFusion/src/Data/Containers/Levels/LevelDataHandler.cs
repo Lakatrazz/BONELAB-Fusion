@@ -59,7 +59,7 @@ public abstract class LevelDataHandler
     public static void OnInitializeMelon()
     {
         // Hook functions
-        Hooking.OnLevelInitialized += (_) => { OnSceneAwake(); };
+        Hooking.OnLevelLoaded += (_) => { OnSceneAwake(); };
         MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
         MultiplayerHooking.OnPlayerCatchup += OnPlayerCatchup;
 

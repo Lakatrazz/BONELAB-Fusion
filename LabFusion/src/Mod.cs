@@ -13,6 +13,7 @@ using LabFusion.SDK.Lobbies;
 using LabFusion.SDK.Cosmetics;
 using LabFusion.Entities;
 using LabFusion.Downloading.ModIO;
+using LabFusion.BoneMenu;
 
 #if DEBUG
 using LabFusion.Debugging;
@@ -80,7 +81,7 @@ public class FusionMod : MelonMod
     public override void OnInitializeMelon()
     {
         // Prepare the bonemenu category
-        FusionPreferences.OnPrepareBoneMenuCategory();
+        BoneMenuCreator.OnPrepareMainPage();
 
         // Pull files
         FusionFileLoader.OnInitializeMelon();
@@ -133,7 +134,7 @@ public class FusionMod : MelonMod
         PersistentAssetCreator.OnLateInitializeMelon();
         PlayerAdditionsHelper.OnInitializeMelon();
 
-        FusionPreferences.OnCreateBoneMenu();
+        BoneMenuCreator.OnPopulateMainPage();
 
         // Check if the auto updater is installed
         _hasAutoUpdater = MelonPlugin.RegisteredMelons.Any((p) => p.Info.Name.Contains("LabFusion Updater"));

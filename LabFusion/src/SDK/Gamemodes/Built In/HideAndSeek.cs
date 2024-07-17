@@ -1,4 +1,4 @@
-﻿using BoneLib.BoneMenu.Elements;
+﻿using BoneLib.BoneMenu;
 
 using Il2CppSLZ.Interaction;
 using Il2CppSLZ.Marrow.Warehouse;
@@ -64,11 +64,11 @@ public class HideAndSeek : Gamemode
     private bool _hasBeenTagged = false;
     private bool _assignedDefaultTeam = false;
 
-    public override void OnBoneMenuCreated(MenuCategory category)
+    public override void OnBoneMenuCreated(Page page)
     {
-        base.OnBoneMenuCreated(category);
+        base.OnBoneMenuCreated(page);
 
-        category.CreateIntElement("Seeker Count", Color.yellow, SeekerCount, 1, 1, 8, (value) =>
+        page.CreateInt("Seeker Count", Color.yellow, 1, SeekerCount, 1, 8, (value) =>
         {
             SeekerCount = value;
         });

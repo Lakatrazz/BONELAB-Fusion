@@ -1,6 +1,8 @@
 ﻿using BoneLib;
-using BoneLib.BoneMenu.Elements;
+using BoneLib.BoneMenu;
+
 using LabFusion.Utilities;
+
 using UnityEngine;
 
 namespace LabFusion.Network
@@ -44,21 +46,21 @@ namespace LabFusion.Network
 #endif
         }
 
-        public override void OnSetupBoneMenu(MenuCategory category)
+        public override void OnSetupBoneMenu(Page page)
         {
-            base.OnSetupBoneMenu(category);
+            base.OnSetupBoneMenu(page);
 
             // Info for people incase this layer ends up being selected
-            category.CreateFunctionElement("You currently have no networking selected.", Color.white, null);
+            page.CreateFunction("You currently have no networking selected.", Color.white, null);
 
             if (!HelperMethods.IsAndroid())
             {
-                category.CreateFunctionElement("This means you likely do not have Steam open.", Color.white, null);
-                category.CreateFunctionElement("Please install and open Steam.", Color.white, null);
+                page.CreateFunction("This means you likely do not have Steam open.", Color.white, null);
+                page.CreateFunction("Please install and open Steam.", Color.white, null);
             }
             else
             {
-                category.CreateFunctionElement("Please select a layer in settings.", Color.white, null);
+                page.CreateFunction("Please select a layer in settings.", Color.white, null);
             }
         }
     }

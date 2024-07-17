@@ -216,7 +216,7 @@ public static class RigData
 
     public static void OnCacheRigInfo()
     {
-        var manager = BoneLib.Player.rigManager;
+        var manager = BoneLib.Player.RigManager;
 
         if (!manager)
         {

@@ -1,6 +1,4 @@
-﻿using BoneLib.BoneMenu.Elements;
-
-using LabFusion.BoneMenu;
+﻿using LabFusion.BoneMenu;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Senders;
@@ -9,6 +7,8 @@ using LabFusion.SDK.Metadata;
 using LabFusion.SDK.Triggers;
 
 using UnityEngine;
+
+using BoneLib.BoneMenu;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -156,10 +156,10 @@ public abstract class Gamemode
     protected FunctionElement _gamemodeToggleElement = null;
     protected FunctionElement _gamemodeMarkElement = null;
 
-    public virtual void OnBoneMenuCreated(MenuCategory category)
+    public virtual void OnBoneMenuCreated(Page page)
     {
         // Default elements
-        _gamemodeToggleElement = category.CreateFunctionElement("Start Gamemode", Color.yellow, () =>
+        _gamemodeToggleElement = page.CreateFunction("Start Gamemode", Color.yellow, () =>
         {
             if (!IsActive())
             {
@@ -171,7 +171,7 @@ public abstract class Gamemode
             }
         });
 
-        _gamemodeMarkElement = category.CreateFunctionElement("Mark Gamemode", Color.yellow, () =>
+        _gamemodeMarkElement = page.CreateFunction("Mark Gamemode", Color.yellow, () =>
         {
             if (MarkedGamemode != this)
             {
@@ -309,7 +309,7 @@ public abstract class Gamemode
         // Set default bonemenu element
         if (_gamemodeToggleElement != null)
         {
-            _gamemodeToggleElement.SetName("Stop Gamemode");
+            _gamemodeToggleElement.ElementName = "Stop Gamemode";
         }
     }
 
@@ -318,7 +318,7 @@ public abstract class Gamemode
         // Set default bonemenu element
         if (_gamemodeToggleElement != null)
         {
-            _gamemodeToggleElement.SetName("Start Gamemode");
+            _gamemodeToggleElement.ElementName = "Start Gamemode";
         }
     }
 
@@ -327,7 +327,7 @@ public abstract class Gamemode
         // Set default bonemenu element
         if (_gamemodeMarkElement != null)
         {
-            _gamemodeMarkElement.SetName("Unmark Gamemode");
+            _gamemodeMarkElement.ElementName = "Unmark Gamemode";
         }
     }
 
@@ -336,7 +336,7 @@ public abstract class Gamemode
         // Set default bonemenu element
         if (_gamemodeMarkElement != null)
         {
-            _gamemodeMarkElement.SetName("Mark Gamemode");
+            _gamemodeMarkElement.ElementName = "Mark Gamemode";
         }
     }
 

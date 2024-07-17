@@ -1,6 +1,4 @@
-﻿using BoneLib.BoneMenu.Elements;
-
-using Il2CppSLZ.Marrow.Audio;
+﻿using Il2CppSLZ.Marrow.Audio;
 using Il2CppSLZ.Marrow.Warehouse;
 
 using LabFusion.Extensions;
@@ -15,6 +13,8 @@ using LabFusion.Utilities;
 using LabFusion.SDK.Triggers;
 
 using UnityEngine;
+
+using BoneLib.BoneMenu;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -63,11 +63,11 @@ public class Deathmatch : Gamemode
 
     private bool _enabledLateJoining = true;
 
-    public override void OnBoneMenuCreated(MenuCategory category)
+    public override void OnBoneMenuCreated(Page page)
     {
-        base.OnBoneMenuCreated(category);
+        base.OnBoneMenuCreated(page);
 
-        category.CreateIntElement("Round Minutes", Color.white, _totalMinutes, 1, _minMinutes, _maxMinutes, (v) =>
+        page.CreateInt("Round Minutes", Color.white, 1, _totalMinutes, _minMinutes, _maxMinutes, (v) =>
         {
             _totalMinutes = v;
             _savedMinutes = v;

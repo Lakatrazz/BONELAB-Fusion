@@ -1,12 +1,12 @@
-﻿using BoneLib.BoneMenu.Elements;
-
-using Il2CppSLZ.Bonelab;
+﻿using Il2CppSLZ.Bonelab;
 
 using LabFusion.BoneMenu;
 using LabFusion.Data;
 using LabFusion.Extensions;
 
 using UnityEngine;
+
+using Page = BoneLib.BoneMenu.Page;
 
 namespace LabFusion.Utilities;
 
@@ -122,7 +122,7 @@ public class FusionNotification
     /// <summary>
     /// A hook for adding custom functions in the menu. Requires <see cref="isMenuItem"/> to be on.
     /// </summary>
-    public Action<MenuCategory> onCreateCategory = null;
+    public Action<Page> onCreateCategory = null;
 }
 
 public static class FusionNotifier
@@ -155,21 +155,22 @@ public static class FusionNotifier
         {
             // Use a name generated with an index because BoneMenu returns an existing category if names match
             string generated = $"Internal_Notification_Generated_{_notificationNumber}";
-            var category = BoneMenuCreator.NotificationCategory.CreateCategory(generated, notification.title.color);
+            var page = BoneMenuCreator.NotificationCategory.CreatePage(generated, notification.title.color, 0, false);
+            var pageLink = BoneMenuCreator.NotificationCategory.CreatePageLink(page);
 
-            category.SetName(notification.title.text);
+            page.Name = notification.title.text;
 
             _notificationNumber++;
 
             if (!string.IsNullOrWhiteSpace(notification.message.text))
-                category.CreateFunctionElement(notification.message.text, notification.message.color, null);
+                page.CreateFunction(notification.message.text, notification.message.color, null);
 
-            category.CreateFunctionElement("Mark as Read", Color.red, () =>
+            page.CreateFunction("Mark as Read", Color.red, () =>
             {
-                BoneMenuCreator.RemoveNotification(category);
+                BoneMenuCreator.RemoveNotification(pageLink);
             });
 
-            notification.onCreateCategory.InvokeSafe(category, "executing Notification.OnCreateCategory");
+            notification.onCreateCategory.InvokeSafe(page, "executing Notification.OnCreateCategory");
         }
 
         // Show to the player

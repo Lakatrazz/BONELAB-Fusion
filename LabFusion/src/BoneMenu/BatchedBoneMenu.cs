@@ -1,32 +1,30 @@
 ﻿using BoneLib;
 using BoneLib.BoneMenu;
-using BoneLib.BoneMenu.Elements;
 
-namespace LabFusion.BoneMenu
+namespace LabFusion.BoneMenu;
+
+public sealed class BatchedBoneMenu : IDisposable
 {
-    public sealed class BatchedBoneMenu : IDisposable
+    private Action<Page> _action;
+
+    private BatchedBoneMenu(Action<Page> action)
     {
-        private Action<MenuCategory, MenuElement> _action;
+        _action = action;
+    }
 
-        private BatchedBoneMenu(Action<MenuCategory, MenuElement> action)
-        {
-            _action = action;
-        }
+    public static BatchedBoneMenu Create()
+    {
+        var instance = new BatchedBoneMenu(Menu.OnPageUpdated);
+        Menu.OnPageUpdated = null;
+        return instance;
+    }
 
-        public static BatchedBoneMenu Create()
-        {
-            var instance = new BatchedBoneMenu(MenuCategory.OnElementCreated);
-            MenuCategory.OnElementCreated = null;
-            return instance;
-        }
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-
-            MenuCategory.OnElementCreated = _action;
-            SafeActions.InvokeActionSafe(_action, MenuManager.ActiveCategory.Parent, MenuManager.ActiveCategory);
-            _action = null;
-        }
+        Menu.OnPageUpdated = _action;
+        SafeActions.InvokeActionSafe(_action, Menu.CurrentPage);
+        _action = null;
     }
 }

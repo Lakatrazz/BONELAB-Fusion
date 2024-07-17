@@ -1,5 +1,5 @@
 ﻿#if DEBUG
-using BoneLib.BoneMenu.Elements;
+using BoneLib.BoneMenu;
 
 using LabFusion.Data;
 using LabFusion.Debugging;
@@ -12,10 +12,10 @@ namespace LabFusion.BoneMenu;
 
 public static partial class BoneMenuCreator
 {
-    public static void CreateDebugMenu(MenuCategory category)
+    public static void CreateDebugMenu(Page page)
     {
-        var debugCategory = category.CreateCategory("DEBUG", Color.red);
-        debugCategory.CreateFunctionElement("Spawn Player Rep", Color.white, () =>
+        var debugCategory = page.CreatePage("DEBUG", Color.red);
+        debugCategory.CreateFunction("Spawn Player Rep", Color.white, () =>
         {
             PlayerRepUtilities.CreateNewRig((rig) =>
             {
@@ -23,7 +23,7 @@ public static partial class BoneMenuCreator
             });
         });
 
-        debugCategory.CreateFunctionElement("Send To Floating Point", Color.red, () =>
+        debugCategory.CreateFunction("Send To Floating Point", Color.red, () =>
         {
             var physRig = RigData.RigReferences.RigManager.physicsRig;
 
@@ -38,13 +38,13 @@ public static partial class BoneMenuCreator
             }
         });
 
-        var zoneMigration = debugCategory.CreateCategory("Zone Migration", Color.yellow);
-        zoneMigration.CreateFunctionElement("Spawn Zone Migration Tester", Color.yellow, () =>
+        var zoneMigration = debugCategory.CreatePage("Zone Migration", Color.yellow);
+        zoneMigration.CreateFunction("Spawn Zone Migration Tester", Color.yellow, () =>
         {
             DebugZoneMigrator.SpawnMigrator();
         });
 
-        zoneMigration.CreateFunctionElement("Migrate To Zone", Color.yellow, () =>
+        zoneMigration.CreateFunction("Migrate To Zone", Color.yellow, () =>
         {
             DebugZoneMigrator.MigrateToZone();
         });
