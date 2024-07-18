@@ -5,7 +5,7 @@ using LabFusion.Grabbables;
 using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow.Interaction;
-using Il2CppSLZ.Interaction;
+using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Network;
 

@@ -1,8 +1,8 @@
 ﻿using LabFusion.Data;
 using LabFusion.Network;
 
-using Il2CppSLZ.Rig;
 using Il2CppSLZ.Marrow.AI;
+using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Utilities;
 

@@ -8,8 +8,8 @@ using LabFusion.Entities;
 
 using UnityEngine;
 
-using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Interaction;
+using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Network;
 

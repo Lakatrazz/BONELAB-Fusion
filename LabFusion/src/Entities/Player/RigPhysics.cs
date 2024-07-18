@@ -1,5 +1,5 @@
-﻿using Il2CppSLZ.Marrow.Interaction;
-using Il2CppSLZ.Rig;
+﻿using Il2CppSLZ.Marrow;
+using Il2CppSLZ.Marrow.Interaction;
 
 namespace LabFusion.Entities;
 
@@ -9,7 +9,7 @@ public class RigPhysics
 
     public RigPhysics(RigManager rigManager)
     {
-        _entity = rigManager.marrowEntity;
+        _entity = rigManager.physicsRig.marrowEntity;
     }
 
     public void CullPhysics(bool isInactive)

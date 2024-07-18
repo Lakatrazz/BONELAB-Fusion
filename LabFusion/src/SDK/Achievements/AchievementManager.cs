@@ -96,7 +96,7 @@ public static class AchievementManager
     public static void LoadVictoryItems()
     {
         // Unlock victory trophy
-        PointSaveManager.UnlockItem(FusionSpawnableReferences.VictoryTrophyReference.Barcode);
+        PointSaveManager.UnlockItem(FusionSpawnableReferences.VictoryTrophyReference.Barcode.ID);
     }
 
     public static bool IsCompleted()

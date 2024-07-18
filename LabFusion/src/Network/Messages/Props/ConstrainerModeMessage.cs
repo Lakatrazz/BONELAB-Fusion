@@ -1,7 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
 
-using Il2CppSLZ.Bonelab;
+using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Network;
 

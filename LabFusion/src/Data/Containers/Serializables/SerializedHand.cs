@@ -1,9 +1,8 @@
 ﻿using LabFusion.Network;
 using LabFusion.Utilities;
 
-using Il2CppSLZ.Interaction;
 using Il2CppSLZ.Marrow.Input;
-using Il2CppSLZ.Rig;
+using Il2CppSLZ.Marrow;
 
 using UnityEngine;
 

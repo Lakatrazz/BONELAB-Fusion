@@ -1,9 +1,8 @@
 ﻿using LabFusion.MarrowIntegration;
-using Il2CppSLZ.Combat;
-using Il2CppSLZ.Interaction;
-using Il2CppSLZ.Rig;
 
 using UnityEngine;
+
+using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Patching
 {

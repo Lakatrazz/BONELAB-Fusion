@@ -4,7 +4,7 @@ using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Entities;
 
-using Il2CppSLZ.Bonelab;
+using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Patching;
 

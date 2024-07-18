@@ -23,7 +23,7 @@ public struct AudioReference
 
     public readonly bool HasClip()
     {
-        return MonoDisc != null && MonoDisc.Barcode != Barcode.EMPTY;
+        return MonoDisc != null && MonoDisc.Barcode.ID != Barcode.EMPTY;
     }
 
     public readonly void LoadClip(Action<AudioClip> loadCallback)

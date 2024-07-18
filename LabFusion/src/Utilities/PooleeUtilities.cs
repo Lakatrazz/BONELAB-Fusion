@@ -4,8 +4,7 @@ using LabFusion.Network;
 using LabFusion.Player;
 
 using Il2CppSLZ.Marrow.Pool;
-
-using Il2CppSLZ.Rig;
+using Il2CppSLZ.Marrow;
 
 using LabFusion.Entities;
 

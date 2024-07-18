@@ -1,5 +1,5 @@
-﻿using Il2CppSLZ.Marrow.Interaction;
-using Il2CppSLZ.Rig;
+﻿using Il2CppSLZ.Marrow;
+using Il2CppSLZ.Marrow.Interaction;
 
 using LabFusion.Data;
 using LabFusion.Extensions;

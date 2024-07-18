@@ -50,7 +50,7 @@ namespace LabFusion.RPC
                 _callbackQueue.Add(trackerId, info.spawnCallback);
             }
 
-            PooleeUtilities.RequestSpawn(info.spawnable.crateRef.Barcode, new SerializedTransform(info.position, info.rotation), trackerId);
+            PooleeUtilities.RequestSpawn(info.spawnable.crateRef.Barcode.ID, new SerializedTransform(info.position, info.rotation), trackerId);
         }
     }
 }

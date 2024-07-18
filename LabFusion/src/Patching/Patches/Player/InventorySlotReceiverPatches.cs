@@ -8,10 +8,9 @@ using LabFusion.Entities;
 using LabFusion.Utilities;
 using LabFusion.Representation;
 
-using Il2CppSLZ.Interaction;
-using Il2CppSLZ.Rig;
 using Il2CppSLZ.VRMK;
 using Il2CppSLZ.Marrow.Interaction;
+using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Patching;
 

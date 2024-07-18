@@ -1,5 +1,5 @@
 ﻿using Il2CppSLZ.Bonelab;
-using Il2CppSLZ.Interaction;
+using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow.Pool;
@@ -91,7 +91,7 @@ public static class SpawnGunPatches
 
         if (crate != null)
         {
-            barcode = crate.Barcode;
+            barcode = crate.Barcode.ID;
         }
 
         using var writer = FusionWriter.Create(SpawnGunSelectData.GetSize(barcode));

@@ -8,14 +8,13 @@ using LabFusion.Preferences;
 using LabFusion.Representation;
 using LabFusion.Senders;
 using LabFusion.Utilities;
+using LabFusion.Entities;
 
 using MelonLoader;
 
-using Il2CppSLZ.Rig;
-
 using Avatar = Il2CppSLZ.VRMK.Avatar;
-using Il2CppSLZ.VRMK;
-using LabFusion.Entities;
+
+using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Patching
 {

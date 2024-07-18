@@ -1,8 +1,6 @@
 ﻿#nullable enable
 
-using Il2CppSLZ.Bonelab;
-using Il2CppSLZ.Interaction;
-using Il2CppSLZ.Rig;
+using Il2CppSLZ.Marrow;
 
 using LabFusion.Data;
 using LabFusion.Entities;

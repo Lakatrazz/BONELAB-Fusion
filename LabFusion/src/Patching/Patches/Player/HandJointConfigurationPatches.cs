@@ -1,12 +1,11 @@
 ﻿using HarmonyLib;
 
 using LabFusion.Network;
-using LabFusion.Player;
-
-using Il2CppSLZ.Interaction;
+using LabFusion.Entities;
 
 using UnityEngine;
-using LabFusion.Entities;
+
+using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Patching
 {

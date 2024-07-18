@@ -27,7 +27,7 @@ public static class CosmeticLoader
         AssetWarehouse.Instance.OnPalletAdded += onPalletAdded;
     }
 
-    private static void OnPalletAdded(string barcode)
+    private static void OnPalletAdded(Barcode barcode)
     {
         var hasPallet = AssetWarehouse.Instance.TryGetPallet(barcode, out var pallet);
 
@@ -64,7 +64,7 @@ public static class CosmeticLoader
     private static void OnCrateAssetLoaded(GameObject gameObject, SpawnableCrate crate)
     {
         // If an item with this barcode is already loaded, we can just skip it
-        if (PointItemManager.TryGetPointItem(crate.Barcode, out _))
+        if (PointItemManager.TryGetPointItem(crate.Barcode.ID, out _))
         {
             return;
         }
@@ -105,7 +105,7 @@ public static class CosmeticLoader
             description = description,
             author = author,
             tags = tags.ToArray(),
-            barcode = barcode,
+            barcode = barcode.ID,
             cosmeticPoint = point,
             price = price,
             hiddenInView = hiddenInView,

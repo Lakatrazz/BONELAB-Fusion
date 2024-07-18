@@ -1,40 +1,39 @@
 ﻿using HarmonyLib;
 using LabFusion.Network;
 
-using Il2CppSLZ.Combat;
+using Il2CppSLZ.Marrow;
 
 using UnityEngine;
 
-namespace LabFusion.Patching
+namespace LabFusion.Patching;
+
+[HarmonyPatch(typeof(StabSlash))]
+public static class StabSlashPatches
 {
-    [HarmonyPatch(typeof(StabSlash))]
-    public static class StabSlashPatches
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(StabSlash.ProcessCollision))]
+    public static bool ProcessCollision(StabSlash __instance, Collision c, bool isEnter = true)
     {
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(StabSlash.ProcessCollision))]
-        public static bool ProcessCollision(StabSlash __instance, Collision c, bool isEnter = true)
+        var host = __instance._host;
+
+        if (NetworkInfo.HasServer && host != null)
         {
-            var host = __instance._host;
+            var properties = ImpactProperties.Cache.Get(c.gameObject);
 
-            if (NetworkInfo.HasServer && host != null)
+            if (properties)
             {
-                var properties = ImpactProperties.Cache.Get(c.gameObject);
+                bool valid = ImpactAttackValidator.ValidateAttack(__instance.gameObject, host, properties);
 
-                if (properties)
+                // Play the impact audio
+                if (!valid && isEnter)
                 {
-                    bool valid = ImpactAttackValidator.ValidateAttack(__instance.gameObject, host, properties);
-
-                    // Play the impact audio
-                    if (!valid && isEnter)
-                    {
-                        // __instance.bladeAudio.CollisionEnterSfx(c, null, host.Rb);
-                    }
-
-                    return valid;
+                    // __instance.bladeAudio.CollisionEnterSfx(c, null, host.Rb);
                 }
-            }
 
-            return true;
+                return valid;
+            }
         }
+
+        return true;
     }
 }

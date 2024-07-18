@@ -1,20 +1,18 @@
-﻿using Il2CppSLZ.Rig;
-using Il2CppSLZ.Interaction;
-
-using UnityEngine;
+﻿using UnityEngine;
 
 using LabFusion.Utilities;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Extensions;
 using LabFusion.Senders;
+using LabFusion.MonoBehaviours;
 
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.AI;
 using Il2CppSLZ.Marrow.Interaction;
+using Il2CppSLZ.Marrow;
 
 using CommonBarcodes = LabFusion.Utilities.CommonBarcodes;
-using LabFusion.MonoBehaviours;
 
 namespace LabFusion.Data;
 
@@ -237,7 +235,7 @@ public static class RigData
 
         // Update avatar
         if (manager._avatar != null)
-            FusionPlayer.Internal_OnAvatarChanged(manager, manager._avatar, manager.AvatarCrate.Barcode);
+            FusionPlayer.Internal_OnAvatarChanged(manager, manager._avatar, manager.AvatarCrate.Barcode.ID);
     }
 
     public static void OnSendVitals()
@@ -259,7 +257,7 @@ public static class RigData
         var rm = RigReferences.RigManager;
 
         if (rm)
-            return rm.AvatarCrate.Barcode;
+            return rm.AvatarCrate.Barcode.ID;
         return CommonBarcodes.INVALID_AVATAR_BARCODE;
     }
 }

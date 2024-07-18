@@ -11,10 +11,8 @@ using LabFusion.Senders;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
 using Il2CppSLZ.Marrow.Warehouse;
-using Il2CppSLZ.Rig;
 using Il2CppSLZ.Marrow.Interaction;
-using Il2CppSLZ.Player;
-using Il2CppSLZ.Bonelab;
+using Il2CppSLZ.Marrow;
 
 using UnityEngine;
 
@@ -111,7 +109,7 @@ public static class FusionPlayer
                 if (!FusionPermissions.HasSufficientPermissions(level, requirement))
                 {
                     // Change to polyblank, we don't have permission
-                    rigManager.SwapAvatarCrate(FusionAvatar.POLY_BLANK_BARCODE, true);
+                    rigManager.SwapAvatarCrate(new Barcode(FusionAvatar.POLY_BLANK_BARCODE), true);
                 }
             }
         }
@@ -281,17 +279,15 @@ public static class FusionPlayer
         // Check avatar override
         if (RigData.HasPlayer && AssetWarehouse.ready && AvatarOverride != null)
         {
-            var avatarCrate = AssetWarehouse.Instance.GetCrate<AvatarCrate>(AvatarOverride);
-
-            if (avatarCrate != null)
+            if (AssetWarehouse.Instance.TryGetCrate<AvatarCrate>(new Barcode(AvatarOverride), out var avatarCrate))
             {
                 var rm = RigData.RigReferences.RigManager;
-                rm.SwapAvatarCrate(AvatarOverride, true, (Action<bool>)((success) =>
+                rm.SwapAvatarCrate(new Barcode(AvatarOverride), true, (Action<bool>)((success) =>
                 {
                     // If the avatar forcing doesn't work, change into polyblank
                     if (!success)
                     {
-                        rm.SwapAvatarCrate(FusionAvatar.POLY_BLANK_BARCODE, true);
+                        rm.SwapAvatarCrate(new Barcode(FusionAvatar.POLY_BLANK_BARCODE), true);
                     }
                 }));
             }

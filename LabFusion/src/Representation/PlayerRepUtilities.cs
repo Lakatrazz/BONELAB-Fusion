@@ -144,11 +144,6 @@ public static class PlayerRepUtilities
         // Delete the tracker GameObject
         GameObject.DestroyImmediate(observerTracker.gameObject);
 
-        // Add ammo. If theres no ammo in each category it wont set cartridges properly when grabbing guns
-        var ammoInventory = rigManager.GetComponentInChildren<AmmoInventory>();
-        var count = 100000;
-        ammoInventory.AddCartridge(ammoInventory.lightAmmoGroup, count);
-
         var playerHealth = rigManager.health.TryCast<Player_Health>();
         if (playerHealth != null)
         {
@@ -219,7 +214,7 @@ public static class PlayerRepUtilities
         GameObject.DestroyImmediate(headset.GetComponent<Camera>());
 
         openControllerRig.cameras = new Il2CppReferenceArray<Camera>(0);
-        openControllerRig.OnLastCameraUpdate = new UnityEvent();
+        openControllerRig.onLastCameraUpdate = null;
 
         headset.tag = "Untagged";
 
@@ -227,7 +222,8 @@ public static class PlayerRepUtilities
         GameObject.DestroyImmediate(rigManager.GetComponentInChildren<PlayerAvatarArt>(true));
 
         // Disable ammo trigger
-        ammoInventory.ammoReceiver.GetComponent<Collider>().enabled = false;
+        var ammoReceiver = rigManager.GetComponentInChildren<InventoryAmmoReceiver>();
+        ammoReceiver.GetComponent<Collider>().enabled = false;
 
         // Prevent player rep inventory stuff
         var leftPhysHand = rigManager.physicsRig.leftHand.GetComponent<PhysHand>();
@@ -252,21 +248,8 @@ public static class PlayerRepUtilities
         // Apply additions
         PlayerAdditionsHelper.OnCreatedRig(rigManager);
 
-        // Add ammo to the other categories
-        DelayUtilities.Delay(() => { Internal_DelayedAddAmmo(ammoInventory); }, 2);
-
         // Spatialize wind audio
         DelayUtilities.Delay(() => { Internal_SpatializeWind(rigManager.physicsRig.m_head.GetComponent<WindBuffetSFX>()); }, 5);
-    }
-
-    private static void Internal_DelayedAddAmmo(AmmoInventory inventory)
-    {
-        if (!inventory.IsNOC())
-        {
-            var count = 100000;
-            inventory.AddCartridge(inventory.heavyAmmoGroup, count);
-            inventory.AddCartridge(inventory.mediumAmmoGroup, count);
-        }
     }
 
     private static void Internal_ClearHaptor(Haptor haptor)

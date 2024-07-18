@@ -6,10 +6,10 @@ using Il2CppSLZ.Bonelab;
 
 namespace LabFusion.Patching;
 
-[HarmonyPatch(typeof(BonelabProgressionHelper.__restoreSlotsOnReady_d__13))]
+[HarmonyPatch(typeof(BonelabProgressionHelper.__restoreSlotsOnReady_d__11))]
 public static class BonelabProgressionHelperPatches
 {
-    [HarmonyPatch(nameof(BonelabProgressionHelper.__restoreSlotsOnReady_d__13.MoveNext))]
+    [HarmonyPatch(nameof(BonelabProgressionHelper.__restoreSlotsOnReady_d__11.MoveNext))]
     [HarmonyPrefix]
     public static bool RestoreSlotsOnReady()
     {

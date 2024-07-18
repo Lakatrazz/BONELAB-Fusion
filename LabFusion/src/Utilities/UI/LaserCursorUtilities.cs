@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 using Il2CppSLZ.Bonelab;
-using Il2CppSLZ.SFX;
+using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Utilities
 {
@@ -26,10 +26,10 @@ namespace LabFusion.Utilities
 
             var growCurve = new AnimationCurve(new Keyframe[]
             {
-                new Keyframe(0f, 1f),
-                new Keyframe(0.1271991f, 1.953225f),
-                new Keyframe(0.724905f, 0.9818711f),
-                new Keyframe(1f, 1f),
+                new(0f, 1f),
+                new(0.1271991f, 1.953225f),
+                new(0.724905f, 0.9818711f),
+                new(1f, 1f),
             });
             ray_start.blipCurve = growCurve;
             ray_mid.blipCurve = growCurve;

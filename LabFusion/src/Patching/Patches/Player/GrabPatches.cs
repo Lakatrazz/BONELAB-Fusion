@@ -1,6 +1,4 @@
-﻿using Il2CppSLZ.Interaction;
-
-using HarmonyLib;
+﻿using HarmonyLib;
 
 using LabFusion.Utilities;
 using LabFusion.Grabbables;
@@ -9,6 +7,8 @@ using LabFusion.Entities;
 using LabFusion.Player;
 using LabFusion.Data;
 using LabFusion.Marrow;
+
+using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Patching;
 

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using HarmonyLib;
+﻿using HarmonyLib;
 
 using Il2CppSLZ.Bonelab;
+using Il2CppSLZ.Marrow;
 
 using LabFusion.Utilities;
 
@@ -19,10 +14,10 @@ public static class BodyVitalsPatches
     [HarmonyPatch(nameof(BodyVitals.ApplyUILayoutSettings))]
     public static bool ApplyUILayoutSettings(BodyVitals __instance)
     {
-        var rig = __instance.ctrl_Rig;
+        var rig = __instance.GetComponent<RigManager>();
         
         // Don't scale the UI rig if this isn't the main RigManager
-        if (!rig.manager.IsSelf())
+        if (!rig.IsSelf())
         {
             return false;
         }

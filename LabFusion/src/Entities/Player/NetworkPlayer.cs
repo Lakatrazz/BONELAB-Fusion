@@ -1,8 +1,7 @@
 ﻿using Il2CppSLZ.Marrow.Interaction;
-using Il2CppSLZ.Rig;
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Audio;
-using Il2CppSLZ.Interaction;
+using Il2CppSLZ.Marrow;
 
 using LabFusion.Data;
 using LabFusion.Extensions;
@@ -774,7 +773,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void OnFoundRigManager(RigManager rigManager)
     {
-        _marrowEntity = rigManager.marrowEntity;
+        _marrowEntity = rigManager.physicsRig.marrowEntity;
 
         _rigSkeleton = new(rigManager);
         _rigReferences = new(rigManager);

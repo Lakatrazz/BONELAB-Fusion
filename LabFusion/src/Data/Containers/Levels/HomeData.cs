@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 using Il2CppSLZ.Bonelab;
-using Il2CppSLZ.Vehicle;
+using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Interaction;
 
 using LabFusion.Utilities;

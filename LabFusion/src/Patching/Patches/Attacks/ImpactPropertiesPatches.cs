@@ -2,14 +2,14 @@
 using LabFusion.Utilities;
 using LabFusion.Data;
 
-using Il2CppSLZ.Combat;
+using Il2CppSLZ.Marrow.Combat;
+using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.Marrow.AI;
 
 using UnityEngine;
 
 using HarmonyLib;
-using Il2CppSLZ.Marrow.Combat;
 
 namespace LabFusion.Patching
 {

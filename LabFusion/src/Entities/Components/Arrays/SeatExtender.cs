@@ -1,6 +1,6 @@
 ﻿using LabFusion.Utilities;
 
-using Il2CppSLZ.Vehicle;
+using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Entities;
 

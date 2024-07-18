@@ -2,10 +2,9 @@
 
 using LabFusion.Network;
 
-using Il2CppSLZ.Combat;
-using Il2CppSLZ.SFX;
-
 using UnityEngine;
+
+using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Patching
 {

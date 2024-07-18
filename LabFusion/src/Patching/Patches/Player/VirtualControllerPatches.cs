@@ -1,7 +1,7 @@
 ﻿using LabFusion.Network;
 using LabFusion.Entities;
 
-using Il2CppSLZ.Interaction;
+using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Utilities;
 
 using HarmonyLib;

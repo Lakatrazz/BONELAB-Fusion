@@ -3,9 +3,8 @@ using LabFusion.Utilities;
 using LabFusion.Senders;
 using LabFusion.Entities;
 
-using Il2CppSLZ.Rig;
 using Il2CppSLZ.Marrow.Data;
-using Il2CppSLZ.Player;
+using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.AI;
 using Il2CppSLZ.Marrow.Combat;
 

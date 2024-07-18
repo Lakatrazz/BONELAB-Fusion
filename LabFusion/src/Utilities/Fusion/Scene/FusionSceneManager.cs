@@ -3,6 +3,7 @@ using LabFusion.Patching;
 using LabFusion.Senders;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
+using Il2CppSLZ.Marrow.Warehouse;
 
 namespace LabFusion.Utilities;
 
@@ -119,7 +120,7 @@ public static partial class FusionSceneManager
         if (IsDelayedLoadDone() && !_hasStartedLoadingTarget && !string.IsNullOrEmpty(_targetServerScene))
         {
             SceneLoadPatch.IgnorePatches = true;
-            SceneStreamer.Load(_targetServerScene, _targetServerLoadScene);
+            SceneStreamer.Load(new Barcode(_targetServerScene), new Barcode(_targetServerLoadScene));
             SceneLoadPatch.IgnorePatches = false;
 
             _hasStartedLoadingTarget = true;

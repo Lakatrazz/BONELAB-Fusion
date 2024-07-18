@@ -35,7 +35,7 @@ public static class DebugZoneMigrator
             PlayerRepUtilities.CreateNewRig((rig) =>
             {
                 rig.transform.position = physicsRig.rightHand.transform.position;
-                _migratorEntity = rig.marrowEntity;
+                _migratorEntity = rig.physicsRig.marrowEntity;
             });
         }
         else

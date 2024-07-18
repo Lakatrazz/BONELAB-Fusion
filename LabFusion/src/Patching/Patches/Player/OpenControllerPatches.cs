@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-using Il2CppSLZ.Rig;
+using Il2CppSLZ.Marrow;
 
 using LabFusion.Player;
 using LabFusion.Utilities;

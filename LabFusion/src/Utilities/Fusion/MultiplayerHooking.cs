@@ -2,7 +2,7 @@
 using LabFusion.Player;
 using LabFusion.Senders;
 
-using Il2CppSLZ.Rig;
+using Il2CppSLZ.Marrow;
 
 using BoneLib.BoneMenu;
 
@@ -13,7 +13,6 @@ public delegate void ServerEvent();
 public delegate void UpdateEvent();
 public delegate void PlayerUpdate(PlayerId playerId);
 public delegate void PlayerAction(PlayerId playerId, PlayerActionType type, PlayerId otherPlayer = null);
-public delegate void RigManagerEvent(RigManager rig);
 public delegate void LobbyMenuAction(Page page, INetworkLobby lobby);
 
 /// <summary>

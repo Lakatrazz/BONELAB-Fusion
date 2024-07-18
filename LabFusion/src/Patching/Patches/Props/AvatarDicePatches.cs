@@ -2,8 +2,8 @@
 
 using LabFusion.Network;
 
-using Il2CppSLZ.Interaction;
 using Il2CppSLZ.Bonelab;
+using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Patching
 {

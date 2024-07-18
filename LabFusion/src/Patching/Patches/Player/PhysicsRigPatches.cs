@@ -6,9 +6,7 @@ using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Utilities;
 
-using Il2CppSLZ.Rig;
-using Il2CppSLZ.VRMK;
-using Il2CppSLZ.Bonelab;
+using Il2CppSLZ.Marrow;
 
 using UnityEngine;
 

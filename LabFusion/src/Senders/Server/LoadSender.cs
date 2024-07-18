@@ -13,7 +13,7 @@ namespace LabFusion.Senders
                 return;
 
             using FusionWriter writer = FusionWriter.Create();
-            var data = LevelRequestData.Create(PlayerIdManager.LocalSmallId, crate.Barcode, crate.Title);
+            var data = LevelRequestData.Create(PlayerIdManager.LocalSmallId, crate.Barcode.ID, crate.Title);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.LevelRequest, writer);

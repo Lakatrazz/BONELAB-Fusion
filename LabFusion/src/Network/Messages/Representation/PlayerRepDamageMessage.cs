@@ -2,9 +2,8 @@
 using LabFusion.Player;
 using LabFusion.Utilities;
 
-using Il2CppSLZ.Player;
 using Il2CppSLZ.Marrow.Combat;
-using Il2CppSLZ.Bonelab;
+using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Network;
 

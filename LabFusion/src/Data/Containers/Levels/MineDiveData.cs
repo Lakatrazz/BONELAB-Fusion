@@ -2,7 +2,7 @@
 using LabFusion.Player;
 
 using Il2CppSLZ.Bonelab;
-using Il2CppSLZ.Vehicle;
+using Il2CppSLZ.Marrow;
 
 using UnityEngine;
 using UnityEngine.Events;

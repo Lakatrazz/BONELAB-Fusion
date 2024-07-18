@@ -1,4 +1,4 @@
-﻿using Il2CppSLZ.Interaction;
+﻿using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow.Utilities;
 

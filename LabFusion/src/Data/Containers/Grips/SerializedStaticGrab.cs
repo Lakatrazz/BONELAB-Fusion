@@ -3,7 +3,7 @@ using LabFusion.Grabbables;
 using LabFusion.Entities;
 using LabFusion.Patching;
 
-using Il2CppSLZ.Interaction;
+using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Interaction;
 
 using UnityEngine;

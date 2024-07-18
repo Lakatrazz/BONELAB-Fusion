@@ -4,9 +4,7 @@ using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Player;
 
-using Il2CppSLZ.Combat;
-using Il2CppSLZ.Rig;
-using Il2CppSLZ.Bonelab;
+using Il2CppSLZ.Marrow;
 
 using UnityEngine;
 

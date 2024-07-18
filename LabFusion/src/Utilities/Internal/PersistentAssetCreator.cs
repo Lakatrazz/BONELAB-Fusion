@@ -1,13 +1,11 @@
 ﻿using LabFusion.Data;
 
-using Il2CppSLZ.Combat;
-using Il2CppSLZ.Data;
-using Il2CppSLZ.Rig;
-
 using Il2CppTMPro;
 
 using UnityEngine;
-using UnityEngine.Audio;
+
+using Il2CppSLZ.Marrow;
+using Il2CppSLZ.Marrow.Warehouse;
 
 namespace LabFusion.Utilities
 {
@@ -88,8 +86,7 @@ namespace LabFusion.Utilities
             var physRig = rig.physicsRig;
             var rigidbodies = physRig.GetComponentsInChildren<Rigidbody>(true);
 
-            var impactManager = physRig.GetComponent<ImpactPropertiesManager>();
-            var surfaceData = impactManager.surfaceData;
+            var surfaceData = new DataCardReference<SurfaceDataCard>("SLZ.Backlot.SurfaceDataCard.Blood");
 
             for (var i = 0; i < rigidbodies.Length; i++)
             {
@@ -109,10 +106,8 @@ namespace LabFusion.Utilities
                 }
             
                 var properties = go.AddComponent<ImpactProperties>();
-                properties.surfaceData = surfaceData;
-                properties.DecalMeshObj = null;
-                properties.decalType = ImpactPropertiesVariables.DecalType.none;
-                properties.Manager = impactManager;
+                properties.SurfaceDataCard = surfaceData;
+                properties.decalType = ImpactProperties.DecalType.None;
             }
         }
     }

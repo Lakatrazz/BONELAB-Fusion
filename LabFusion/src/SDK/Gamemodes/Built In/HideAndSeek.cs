@@ -1,6 +1,6 @@
 ﻿using BoneLib.BoneMenu;
 
-using Il2CppSLZ.Interaction;
+using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Warehouse;
 
 using LabFusion.Data;

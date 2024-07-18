@@ -1,12 +1,11 @@
 ﻿using LabFusion.Network;
-using LabFusion.Player;
 using LabFusion.Grabbables;
+using LabFusion.Entities;
 
-using Il2CppSLZ.Interaction;
+using Il2CppSLZ.Marrow;
+using Il2CppSLZ.Marrow.Interaction;
 
 using UnityEngine;
-using Il2CppSLZ.Marrow.Interaction;
-using LabFusion.Entities;
 
 namespace LabFusion.Data;
 

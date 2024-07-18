@@ -78,7 +78,6 @@ public class GunShotMessage : FusionMessageHandler
         var comp = extender.GetComponent(data.gunIndex);
 
         comp.hasFiredOnce = false;
-        comp._hasFiredSinceLastBroadcast = false;
         comp.isTriggerPulledOnAttach = false;
 
         if (comp._magState != null)

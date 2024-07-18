@@ -1,5 +1,4 @@
 ﻿using LabFusion.Data;
-using LabFusion.Player;
 using LabFusion.Utilities;
 using LabFusion.Marrow;
 using LabFusion.Entities;
@@ -8,8 +7,8 @@ using MelonLoader;
 
 using System.Collections;
 
-using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Audio;
+using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Network;
 
@@ -101,14 +100,17 @@ public class DespawnResponseMessage : FusionMessageHandler
 
         if (isMag)
         {
-            AmmoInventory ammoInventory = AmmoInventory.Instance;
+            InventoryAmmoReceiver ammoReceiver = null;
 
             if (NetworkPlayerManager.TryGetPlayer(despawnerId, out var rep))
             {
-                ammoInventory = rep.RigReferences.RigManager.GetComponentInChildren<AmmoInventory>(true);
+                ammoReceiver = rep.RigReferences.RigManager.GetComponentInChildren<InventoryAmmoReceiver>(true);
             }
 
-            SafeAudio3dPlayer.PlayAtPoint(ammoInventory.ammoReceiver.grabClips, ammoInventory.ammoReceiver.transform.position, Audio3dManager.softInteraction, 0.2f);
+            if (ammoReceiver)
+            {
+                SafeAudio3dPlayer.PlayAtPoint(ammoReceiver.grabClips, ammoReceiver.transform.position, Audio3dManager.softInteraction, 0.2f);
+            }
 
             poolee.gameObject.SetActive(false);
         }

@@ -5,7 +5,7 @@ using LabFusion.Utilities;
 
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.AI;
-using Il2CppSLZ.Rig;
+using Il2CppSLZ.Marrow;
 
 using UnityEngine;
 

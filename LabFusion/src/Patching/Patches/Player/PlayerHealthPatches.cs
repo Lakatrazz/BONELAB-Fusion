@@ -8,9 +8,7 @@ using LabFusion.SDK.Gamemodes;
 using LabFusion.Extensions;
 using LabFusion.Player;
 
-using Il2CppSLZ.SFX;
-using Il2CppSLZ.Bonelab;
-using Il2CppSLZ.Player;
+using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Patching;
 

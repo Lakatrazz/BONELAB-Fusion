@@ -1,9 +1,8 @@
 ﻿using HarmonyLib;
 
-using Il2CppSLZ.Combat;
 using Il2CppSLZ.Interaction;
 using Il2CppSLZ.Marrow.Interaction;
-using Il2CppSLZ.Rig;
+using Il2CppSLZ.Marrow;
 
 using LabFusion.Network;
 using LabFusion.Utilities;

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using HarmonyLib;
+﻿using HarmonyLib;
 
 using Il2CppSLZ.Bonelab;
 
@@ -12,12 +6,12 @@ using LabFusion.Network;
 
 namespace LabFusion.Patching;
 
-[HarmonyPatch(typeof(FadeAndDespawnVolume))]
+[HarmonyPatch(typeof(FadeVolume))]
 public static class FadeAndDespawnVolumePatches
 {
     [HarmonyPrefix]
-    [HarmonyPatch(nameof(FadeAndDespawnVolume.Awake))]
-    public static void Awake(FadeAndDespawnVolume __instance)
+    [HarmonyPatch(nameof(FadeVolume.Awake))]
+    public static void Awake(FadeVolume __instance)
     {
         // Make sure we have a server
         if (!NetworkInfo.HasServer)

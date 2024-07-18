@@ -1,7 +1,7 @@
 ﻿using LabFusion.Data;
 
-using Il2CppSLZ.Interaction;
 using Il2CppSLZ.Marrow.Utilities;
+using Il2CppSLZ.Marrow;
 
 using UnityEngine;
 

@@ -4,6 +4,7 @@ using LabFusion.Player;
 using LabFusion.Utilities;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
+using Il2CppSLZ.Marrow.Warehouse;
 
 using UnityEngine;
 
@@ -82,7 +83,7 @@ public class LevelRequestMessage : FusionMessageHandler
                 {
                     c.CreateFunction($"Accept", Color.yellow, () =>
                     {
-                        SceneStreamer.Load(data.barcode);
+                        SceneStreamer.Load(new Barcode(data.barcode));
                     });
                 },
             });

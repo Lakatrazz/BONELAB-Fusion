@@ -5,10 +5,10 @@ using LabFusion.Senders;
 using LabFusion.Entities;
 
 using Il2CppSLZ.Interaction;
+using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Patching
 {
-    // they mispelled receiver, nice.
     [HarmonyPatch(typeof(KeyReceiver))]
     public static class KeyRecieverPatches
     {

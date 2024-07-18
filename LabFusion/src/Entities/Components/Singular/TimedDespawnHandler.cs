@@ -1,4 +1,4 @@
-﻿using Il2CppSLZ.Interaction;
+﻿using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Pool;
 
 using LabFusion.MonoBehaviours;

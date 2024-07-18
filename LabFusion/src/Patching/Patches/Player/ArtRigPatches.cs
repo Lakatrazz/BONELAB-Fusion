@@ -5,11 +5,11 @@ using LabFusion.Network;
 using LabFusion.Utilities;
 using LabFusion.Entities;
 
-using Il2CppSLZ.Rig;
-
 using UnityEngine;
 
 using Avatar = Il2CppSLZ.VRMK.Avatar;
+
+using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Patching;
 
@@ -91,11 +91,11 @@ public static class ArtRigPatches
         // Is this our local player? If so, sync the avatar change
         if (__instance.IsSelf())
         {
-            FusionPlayer.Internal_OnAvatarChanged(__instance, newAvatar, __instance.AvatarCrate.Barcode);
+            FusionPlayer.Internal_OnAvatarChanged(__instance, newAvatar, __instance.AvatarCrate.Barcode.ID);
         }
         else if (NetworkPlayerManager.TryGetPlayer(__instance, out var player))
         {
-            player.Internal_OnAvatarChanged(__instance.AvatarCrate.Barcode);
+            player.Internal_OnAvatarChanged(__instance.AvatarCrate.Barcode.ID);
         }
     }
 }

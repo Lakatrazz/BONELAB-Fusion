@@ -1,7 +1,7 @@
 ﻿using Il2CppSLZ.Bonelab;
-using Il2CppSLZ.Rig;
+using Il2CppSLZ.Marrow;
+
 using Il2CppInterop.Runtime;
-using Il2CppSLZ.VFX;
 
 using UnityEngine;
 

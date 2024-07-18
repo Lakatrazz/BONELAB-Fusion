@@ -3,10 +3,9 @@
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Entities;
-using LabFusion.Utilities;
 
-using Il2CppSLZ.Interaction;
 using Il2CppSLZ.Marrow.Interaction;
+using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Patching;
 

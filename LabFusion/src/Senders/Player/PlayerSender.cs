@@ -1,5 +1,5 @@
-﻿using Il2CppSLZ.Marrow.Combat;
-using Il2CppSLZ.Player;
+﻿using Il2CppSLZ.Marrow;
+using Il2CppSLZ.Marrow.Combat;
 
 using LabFusion.Data;
 using LabFusion.Exceptions;

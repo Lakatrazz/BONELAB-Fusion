@@ -1,4 +1,5 @@
-﻿using Il2CppSLZ.Bonelab;
+﻿using Il2CppSLZ.Marrow;
+
 using LabFusion.Data;
 using LabFusion.Patching;
 
@@ -52,9 +53,13 @@ namespace LabFusion.Network
                 TimeManagerPatches.IgnorePatches = true;
 
                 if (data.isDecrease)
+                {
                     TimeManager.DECREASE_TIMESCALE();
+                }
                 else
+                {
                     TimeManager.TOGGLE_TIMESCALE();
+                }
 
                 TimeManagerPatches.IgnorePatches = false;
             }

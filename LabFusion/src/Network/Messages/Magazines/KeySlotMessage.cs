@@ -4,6 +4,7 @@ using LabFusion.Entities;
 using LabFusion.Extensions;
 
 using Il2CppSLZ.Interaction;
+using Il2CppSLZ.Marrow;
 
 using UnityEngine;
 

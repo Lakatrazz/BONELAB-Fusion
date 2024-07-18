@@ -24,12 +24,12 @@ using MelonLoader;
 using BoneLib;
 
 using Il2CppSLZ.Bonelab;
-using Il2CppSLZ.Rig;
 using Il2CppSLZ.Marrow.Warehouse;
 
 using ModuleHandler = LabFusion.SDK.Modules.ModuleHandler;
 
 using UnityEngine;
+using Il2CppSLZ.Marrow;
 
 namespace LabFusion;
 

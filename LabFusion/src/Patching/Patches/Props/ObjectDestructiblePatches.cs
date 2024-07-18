@@ -6,7 +6,7 @@ using LabFusion.Entities;
 using LabFusion.RPC;
 
 using Il2CppSLZ.Marrow.Data;
-using Il2CppSLZ.VFX;
+using Il2CppSLZ.Marrow;
 
 using UnityEngine;
 using UnityEngine.Events;

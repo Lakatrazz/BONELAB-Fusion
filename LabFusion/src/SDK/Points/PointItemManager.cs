@@ -5,11 +5,11 @@ using LabFusion.Senders;
 using LabFusion.Utilities;
 using LabFusion.Entities;
 
-using Il2CppSLZ.Rig;
-
 using System.Reflection;
 
 using UnityEngine;
+
+using Il2CppSLZ.Marrow;
 
 namespace LabFusion.SDK.Points;
 

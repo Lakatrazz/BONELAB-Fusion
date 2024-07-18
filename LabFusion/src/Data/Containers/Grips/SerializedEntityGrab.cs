@@ -4,9 +4,10 @@ using LabFusion.Extensions;
 using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow.Interaction;
-using Il2CppSLZ.Interaction;
 
 using UnityEngine;
+
+using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Data;
 

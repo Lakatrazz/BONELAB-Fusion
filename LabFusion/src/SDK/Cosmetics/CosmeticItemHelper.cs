@@ -1,9 +1,8 @@
 ﻿using LabFusion.Extensions;
-using LabFusion.MarrowIntegration;
 using LabFusion.Utilities;
 using LabFusion.Marrow.Integration;
 
-using Il2CppSLZ.Rig;
+using Il2CppSLZ.Marrow;
 
 using UnityEngine;
 
