@@ -18,4 +18,4 @@ using LabFusion;
 [assembly: MelonGame("Stress Level Zero", "BONELAB")]
 [assembly: MelonPriority(-10000)]
 [assembly: MelonOptionalDependencies("System.Windows.Forms")]
-[assembly: MelonIncompatibleAssemblies("BonelabMultiplayerMockup", "Junction")]
+[assembly: MelonIncompatibleAssemblies("BonelabMultiplayerMockup", "Junction", "WeatherElectric.InfiniteAmmo", "InfiniteAmmo")]
