@@ -227,15 +227,18 @@ public static class RigData
 
         // Store the references
         RigReferences = new RigReferenceCollection(manager);
-        RigReferences.RigManager.GetComponentInChildren<BodyVitals>().rescaleEvent += (BodyVitals.RescaleUI)OnSendVitals;
         RigReferences.RigManager.remapHeptaRig.onPlayerJump += (Il2CppSystem.Action)OnJump;
+
+        PlayerRefs.Instance.PlayerBodyVitals.rescaleEvent += (BodyVitals.RescaleUI)OnSendVitals;
 
         // Notify hooks
         LocalPlayer.OnLocalRigCreated?.InvokeSafe(manager, "executing OnLocalRigCreated hook");
 
         // Update avatar
         if (manager._avatar != null)
+        {
             FusionPlayer.Internal_OnAvatarChanged(manager, manager._avatar, manager.AvatarCrate.Barcode.ID);
+        }
     }
 
     public static void OnSendVitals()

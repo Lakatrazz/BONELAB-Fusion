@@ -243,8 +243,8 @@ public class FusionMod : MelonMod
         }
 
         // Force enable radial menu
-        RigData.RigReferences.RigManager.GetComponentInChildren<BodyVitals>().quickmenuEnabled = true;
         RigData.RigReferences.RigManager.ControllerRig.TryCast<OpenControllerRig>().quickmenuEnabled = true;
+        PlayerRefs.Instance.PlayerBodyVitals.quickmenuEnabled = true;
     }
 
     public override void OnUpdate()

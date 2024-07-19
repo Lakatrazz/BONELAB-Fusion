@@ -124,22 +124,21 @@ public static class PlayerRepUtilities
         // However, this means methods on that object will be called, even if we want it to have never existed in the first place.
         // Using regular Destroy may cause weird effects!
 
+        // Get the controller rig
+        var openControllerRig = rigManager.ControllerRig.TryCast<OpenControllerRig>();
+
         // Set the bone tag to the fusion player tag instead of the default player tag
         var entity = rigManager.GetComponentInChildren<MarrowEntity>(true);
         entity.Tags.Tags.RemoveAt(0);
         entity.Tags.Tags.Add(FusionBoneTagReferences.FusionPlayerReference);
 
-        // Remove the player rep's observer.
-        // This is what triggers chunks and physics culling, but player reps should NOT do this
-        var physHead = rigManager.physicsRig.m_head.GetComponent<MarrowBody>();
+        // Remove the rig's observer.
+        // This is what triggers chunks and physics culling, but networked players should NOT do this
+        var physHeadset = openControllerRig.headset.GetComponent<MarrowBody>();
 
-        // Get the observer tracker out of the array, and preserve the Entity and Being trackers
-        var observerTracker = physHead._trackers[2];
-        physHead._trackers = new Tracker[]
-        {
-            physHead._trackers[0],
-            physHead._trackers[1],
-        };
+        // Get the observer tracker from the controller rig
+        var observerTracker = physHeadset.Trackers[0];
+        physHeadset._trackers = Array.Empty<Tracker>();
 
         // Delete the tracker GameObject
         GameObject.DestroyImmediate(observerTracker.gameObject);
@@ -161,42 +160,15 @@ public static class PlayerRepUtilities
         // Fix spatial audio
         rigManager.physicsRig.headSfx.mouthSrc.spatialBlend = 1f;
 
+        // Enable body log
+        var pullCord = rigManager.physicsRig.GetComponentInChildren<PullCordDevice>(true);
+        pullCord.bodyLogEnabled = false;
+
         // Enable extras
-        var bodyVitals = rigManager.GetComponentInChildren<BodyVitals>();
-
-        bodyVitals.hasBodyLog = true;
-        bodyVitals.bodyLogFlipped = true;
-        bodyVitals.bodyLogEnabled = true;
-
         var health = rigManager.health;
         health._testVisualDamage = true;
 
-        // Destroy unnecessary data manager
-        var uiRig = rigManager.GetComponentInChildren<UIRig>();
-
-        GameObject.DestroyImmediate(uiRig.transform.Find("DATAMANAGER").gameObject);
-
-        // Disable extra rigs
-        GameObject.DestroyImmediate(rigManager.GetComponent<LineMesh>());
-        GameObject.DestroyImmediate(rigManager.GetComponent<CheatTool>());
-        GameObject.DestroyImmediate(rigManager.GetComponent<UtilitySpawnables>());
-        GameObject.DestroyImmediate(rigManager.GetComponent<TempTextureRef>());
-        GameObject.DestroyImmediate(rigManager.GetComponent<RigVolumeSettings>());
-        GameObject.DestroyImmediate(rigManager.GetComponent<ForceLevels>());
-        GameObject.DestroyImmediate(rigManager.GetComponent<Volume>());
-
-        var screenOptions = rigManager.GetComponentInChildren<RigScreenOptions>();
-        GameObject.DestroyImmediate(screenOptions.cam.gameObject);
-        GameObject.DestroyImmediate(screenOptions.OverlayCam.gameObject);
-        GameObject.DestroyImmediate(screenOptions);
-
-        uiRig.gameObject.SetActive(false);
-
-        var avatarManager = rigManager.GetComponentInChildren<PlayerAvatarManager>();
-        avatarManager.loadAvatarFromSaveData = false;
-
         // Remove extra inputs on the controller rig
-        var openControllerRig = rigManager.ControllerRig.TryCast<OpenControllerRig>();
         openControllerRig.quickmenuEnabled = false;
         openControllerRig._timeInput = false;
         rigManager.remapHeptaRig.doubleJump = false;
@@ -204,10 +176,7 @@ public static class PlayerRepUtilities
         // Remove camera stuff
         var headset = openControllerRig.headset;
         GameObject.DestroyImmediate(headset.GetComponent<AudioListener>());
-        GameObject.DestroyImmediate(headset.GetComponent<DebugDraw>());
         GameObject.DestroyImmediate(headset.GetComponent<CameraSettings>());
-        GameObject.DestroyImmediate(headset.GetComponent<XRLODBias>());
-        GameObject.DestroyImmediate(headset.GetComponent<VolumetricPlatformSwitch>());
         GameObject.DestroyImmediate(headset.GetComponent<StreamingController>());
         GameObject.DestroyImmediate(headset.GetComponent<VolumetricRendering>());
         GameObject.DestroyImmediate(headset.GetComponent<UniversalAdditionalCameraData>());

@@ -178,7 +178,7 @@ public static class FusionNotifier
 
         if (notification.isPopup && !rm.IsNOC())
         {
-            var tutorialRig = rm.GetComponentInChildren<TutorialRig>(true);
+            var tutorialRig = TutorialRig.Instance;
             var headTitles = tutorialRig.headTitles;
 
             EnableTutorialRig();
@@ -229,7 +229,7 @@ public static class FusionNotifier
 
         if (!rm.IsNOC())
         {
-            var tutorialRig = rm.GetComponentInChildren<TutorialRig>(true);
+            var tutorialRig = TutorialRig.Instance;
             var headTitles = tutorialRig.headTitles;
 
             // Make sure the tutorial rig/head titles are enabled
@@ -244,7 +244,7 @@ public static class FusionNotifier
 
         if (!rm.IsNOC())
         {
-            var tutorialRig = rm.GetComponentInChildren<TutorialRig>(true);
+            var tutorialRig = TutorialRig.Instance;
             var headTitles = tutorialRig.headTitles;
 
             return headTitles.headFollower.gameObject.activeInHierarchy;
