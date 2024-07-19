@@ -1,10 +1,6 @@
 ﻿using LabFusion.Utilities;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MelonLoader;
+using System.Collections;
 
 namespace LabFusion.Downloading.ModIO;
 
@@ -63,67 +59,88 @@ public static class ModIODownloader
         QueuedTransactions.Enqueue(transaction);
     }
 
-    private static async void BeginDownload(ModTransaction transaction)
+    private static void BeginDownload(ModTransaction transaction)
     {
         ModIOFile modFile = transaction.modFile;
 
         if (!modFile.FileId.HasValue)
         {
             // Request the latest file id
-            var modData = await ModIOManager.GetMod(modFile.ModId);
+            ModIOManager.GetMod(modFile.ModId, OnRequestedMod);
 
-            var platform = ModIOManager.GetValidPlatform(modData);
-
-            if (!platform.HasValue)
+            void OnRequestedMod(ModData modData)
             {
-                FusionLogger.Warn($"Tried beginning download for mod {modFile.ModId}, but it had no valid platforms!");
+                var platform = ModIOManager.GetValidPlatform(modData);
 
-                transaction.callback?.Invoke(DownloadCallbackInfo.FailedCallback);
+                if (!platform.HasValue)
+                {
+                    FusionLogger.Warn($"Tried beginning download for mod {modFile.ModId}, but it had no valid platforms!");
 
-                EndDownload();
-                return;
+                    transaction.callback?.Invoke(DownloadCallbackInfo.FailedCallback);
+
+                    EndDownload();
+                    return;
+                }
+
+                modFile = new ModIOFile(modData.Id, platform.Value.ModfileLive);
+
+                OnReceivedFile(modFile);
             }
 
-            modFile = new ModIOFile(modData.Id, platform.Value.ModfileLive);
+            return;
         }
-
-        _currentTransaction = transaction;
-        _isDownloading = true;
-
-        string url = FormatDownloadPath(modFile.ModId, modFile.FileId.Value);
-        string token = await ModIOSettings.LoadTokenAsync();
         
+        OnReceivedFile(modFile);
+
+        void OnReceivedFile(ModIOFile modFile)
+        {
+            _currentTransaction = transaction;
+            _isDownloading = true;
+
+            string url = FormatDownloadPath(modFile.ModId, modFile.FileId.Value);
+            ModIOSettings.LoadToken(OnTokenLoaded);
+
+            void OnTokenLoaded(string token)
+            {
+                MelonCoroutines.Start(CoDownloadWithToken(token, transaction, modFile, url));
+            }
+        }
+    }
+
+    private static IEnumerator CoDownloadWithToken(string token, ModTransaction transaction, ModIOFile modFile, string url)
+    {
         HttpClient client = new();
         client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-        
-        var stream = await client.GetStreamAsync(url);
+
+        var streamTask = client.GetStreamAsync(url);
+
+        while (!streamTask.IsCompleted)
+        {
+            yield return null;
+        }
 
         ModDownloadManager.ValidateStagingDirectory();
 
         var zipPath = ModDownloadManager.DownloadPath + $"/m{modFile.ModId}f{modFile.FileId}.zip";
 
-        try
-        {
-            using var fs = new FileStream(zipPath, FileMode.Create);
-            await stream.CopyToAsync(fs);
-        }
-        catch (Exception e)
-        {
-            FusionLogger.LogException($"downloading zip from mod {modFile.ModId}", e);
+        using var fs = new FileStream(zipPath, FileMode.Create);
+        var copyTask = streamTask.Result.CopyToAsync(fs);
 
-            transaction.callback?.Invoke(DownloadCallbackInfo.FailedCallback);
-
-            EndDownload();
-            return;
+        while (!copyTask.IsCompleted)
+        {
+            yield return null;
         }
 
         // Load the pallet
-        await ModDownloadManager.LoadPalletFromZip(zipPath, modFile.ModId, modFile.FileId.Value, transaction.callback);
+        ModDownloadManager.LoadPalletFromZip(zipPath, modFile, OnScheduledLoad, transaction.callback);
 
-        // Delete temp zip
-        File.Delete(zipPath);
+        void OnScheduledLoad()
+        {
+            // Delete temp zip
+            File.Delete(zipPath);
 
-        EndDownload();
+            EndDownload();
+        }
     }
 
     private static void EndDownload()

@@ -1,12 +1,12 @@
 ﻿using Il2CppSLZ.Marrow.Forklift;
 
+using LabFusion.Utilities;
+
+using MelonLoader;
+
 using Newtonsoft.Json.Linq;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections;
 
 namespace LabFusion.Downloading.ModIO;
 
@@ -19,12 +19,33 @@ public static class ModIOSettings
     private static string _loadedToken = null;
     public static string LoadedToken => _loadedToken;
 
-    public static async Task<string> LoadTokenAsync()
+    private static bool _isLoadingToken = false;
+    public static bool IsLoadingToken => _isLoadingToken;
+
+    private static Action<string> _tokenLoadCallback = null;
+
+    public static void LoadToken(Action<string> loadCallback)
     {
-        if (!string.IsNullOrWhiteSpace(_loadedToken))
+        if (!string.IsNullOrWhiteSpace(LoadedToken))
         {
-            return _loadedToken;
+            loadCallback?.Invoke(LoadedToken);
+            return;
         }
+
+        _tokenLoadCallback += loadCallback;
+
+        if (IsLoadingToken)
+        {
+            return;
+        }
+
+        MelonCoroutines.Start(CoLoadToken());
+    }
+
+    private static IEnumerator CoLoadToken()
+    {
+        // Start loading
+        _isLoadingToken = true;
 
         var settingsPath = ModDownloader.ModSettingsPath;
 
@@ -32,14 +53,29 @@ public static class ModIOSettings
 
         var reader = new StreamReader(stream);
 
-        var settingsContents = await reader.ReadToEndAsync();
+        var settingsTask = reader.ReadToEndAsync();
 
-        JObject settingsJson = JObject.Parse(settingsContents);
+        while (!settingsTask.IsCompleted)
+        {
+            yield return null;
+        }
+
+        if (!settingsTask.IsCompletedSuccessfully)
+        {
+            FusionLogger.Error("Failed reading Mod.IO token from settings!");
+            yield break;
+        }
+
+        JObject settingsJson = JObject.Parse(settingsTask.Result);
 
         var token = settingsJson["mod.io.access_token"].ToString();
 
         _loadedToken = token;
 
-        return token;
+        // Finish loading
+        _isLoadingToken = false;
+
+        _tokenLoadCallback?.Invoke(token);
+        _tokenLoadCallback = null;
     }
 }

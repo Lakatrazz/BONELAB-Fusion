@@ -3,7 +3,8 @@ using Il2CppSLZ.Marrow.Forklift.Model;
 
 using LabFusion.Downloading.ModIO;
 using LabFusion.Utilities;
-
+using MelonLoader;
+using System.Collections;
 using System.IO.Compression;
 
 using UnityEngine;
@@ -66,7 +67,12 @@ public static class ModDownloadManager
         return string.Empty;
     }
 
-    public static async Task LoadPalletFromZip(string path, int modId, int modFileId, DownloadCallback callback = null)
+    public static void LoadPalletFromZip(string path, ModIOFile modFile, Action scheduledCallback = null, DownloadCallback downloadCallback = null)
+    {
+        MelonCoroutines.Start(CoLoadPalletFromZip(path, modFile, scheduledCallback, downloadCallback));
+    }
+
+    private static IEnumerator CoLoadPalletFromZip(string path, ModIOFile modFile, Action scheduledCallback = null, DownloadCallback downloadCallback = null)
     {
         var fileName = Path.GetFileNameWithoutExtension(path);
         var extractedDirectory = ExportPath + "/" + fileName;
@@ -86,7 +92,12 @@ public static class ModDownloadManager
             archive.ExtractToDirectory(extractedDirectory);
         }
 
-        await Task.Run(UnzipMod);
+        var unzipTask = Task.Run(UnzipMod);
+
+        while (!unzipTask.IsCompleted)
+        {
+            yield return null;
+        }
 
 #if DEBUG
         FusionLogger.Log($"Extracted pallet from {path} to {extractedDirectory}!");
@@ -123,8 +134,8 @@ public static class ModDownloadManager
         var modIoModTarget = new ModIOModTarget()
         {
             GameId = ModIOSettings.GameId,
-            ModId = modId,
-            ModfileId = modFileId,
+            ModId = modFile.ModId,
+            ModfileId = modFile.FileId.Value,
         };
         targets.Add(ModIOManager.GetActivePlatform(), modIoModTarget);
 
@@ -141,9 +152,12 @@ public static class ModDownloadManager
         {
             palletPath = jsonPath,
             modListing = listing,
-            callback = callback,
+            callback = downloadCallback,
         };
 
         ModForklift.SchedulePalletLoad(shipment);
+
+        // Run scheduled callback
+        scheduledCallback?.Invoke();
     }
 }

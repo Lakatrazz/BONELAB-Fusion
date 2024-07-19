@@ -2,7 +2,11 @@
 
 using Il2CppSLZ.Marrow.Forklift.Model;
 
+using MelonLoader;
+
 using Newtonsoft.Json.Linq;
+
+using System.Collections;
 
 namespace LabFusion.Downloading.ModIO;
 
@@ -28,24 +32,43 @@ public static class ModIOManager
         return null;
     }
 
-    public static async Task<ModData> GetMod(int modId)
+    public static void GetMod(int modId, Action<ModData> modCallback)
     {
         var url = $"{ModIOSettings.GameApiPath}{modId}";
 
-        // Get token for authorization
-        string token = await ModIOSettings.LoadTokenAsync();
+        ModIOSettings.LoadToken(OnTokenLoaded);
 
+        void OnTokenLoaded(string token)
+        {
+            MelonCoroutines.Start(CoGetMod(url, token, modCallback));
+        }
+    }
+
+    private static IEnumerator CoGetMod(string url, string token, Action<ModData> modCallback)
+    {
         HttpClient client = new();
         client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
         // Read the mod json
-        var stream = await client.GetStreamAsync(url);
+        var streamTask = client.GetStreamAsync(url);
 
-        var json = await new StreamReader(stream).ReadToEndAsync();
+        while (!streamTask.IsCompleted)
+        {
+            yield return null;
+        }
+
+        var jsonTask = new StreamReader(streamTask.Result).ReadToEndAsync();
+
+        while (!jsonTask.IsCompleted)
+        {
+            yield return null;
+        }
 
         // Convert to ModData
-        var jObject = JObject.Parse(json);
-        return new ModData(jObject);
+        var jObject = JObject.Parse(jsonTask.Result);
+
+        var modData = new ModData(jObject);
+        modCallback?.Invoke(modData);
     }
 
     public static string GetActivePlatform()
