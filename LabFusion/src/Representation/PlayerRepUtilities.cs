@@ -162,7 +162,7 @@ public static class PlayerRepUtilities
 
         // Enable body log
         var pullCord = rigManager.physicsRig.GetComponentInChildren<PullCordDevice>(true);
-        pullCord.bodyLogEnabled = false;
+        pullCord._bodyLogEnabled = true;
 
         // Enable extras
         var health = rigManager.health;
