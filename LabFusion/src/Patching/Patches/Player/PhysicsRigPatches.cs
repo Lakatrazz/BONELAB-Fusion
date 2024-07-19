@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 
-using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Player;
@@ -11,24 +10,6 @@ using Il2CppSLZ.Marrow;
 using UnityEngine;
 
 namespace LabFusion.Patching;
-
-[HarmonyPatch(typeof(PhysGrounder))]
-public static class PhysGrounderPatches
-{
-    // For some reason, theres a lack of a null check in this method
-    // And whatever is null, sometimes makes player reps turn into mush when loading in
-    [HarmonyPrefix]
-    [HarmonyPatch(nameof(PhysGrounder.UpdateSkid))]
-    public static bool UpdateSkid(PhysGrounder __instance, float skidMag)
-    {
-        if (NetworkInfo.HasServer && __instance.physRig != RigData.RigReferences.RigManager.physicsRig)
-        {
-            return false;
-        }
-
-        return true;
-    }
-}
 
 [HarmonyPatch(typeof(PhysicsRig))]
 public static class PhysicsRigPatches
