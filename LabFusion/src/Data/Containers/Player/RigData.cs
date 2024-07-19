@@ -243,16 +243,19 @@ public static class RigData
 
     public static void OnSendVitals()
     {
-        // Send body vitals to network
-        if (NetworkInfo.HasServer)
+        // Make sure we have a server
+        if (!NetworkInfo.HasServer)
         {
-            using FusionWriter writer = FusionWriter.Create(PlayerRepVitalsData.Size);
-            var data = PlayerRepVitalsData.Create(PlayerIdManager.LocalSmallId, RigReferences.RigManager.GetComponentInChildren<BodyVitals>());
-            writer.Write(data);
-
-            using var message = FusionMessage.Create(NativeMessageTag.PlayerRepVitals, writer);
-            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+            return;
         }
+
+        // Send body vitals to network
+        using FusionWriter writer = FusionWriter.Create(PlayerRepVitalsData.Size);
+        var data = PlayerRepVitalsData.Create(PlayerIdManager.LocalSmallId, PlayerRefs.Instance.PlayerBodyVitals);
+        writer.Write(data);
+
+        using var message = FusionMessage.Create(NativeMessageTag.PlayerRepVitals, writer);
+        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
     }
 
     public static string GetAvatarBarcode()

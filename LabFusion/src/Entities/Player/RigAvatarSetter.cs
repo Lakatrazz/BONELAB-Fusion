@@ -76,7 +76,7 @@ public class RigAvatarSetter
 
         if (_isVitalsDirty)
         {
-            _vitals?.CopyTo(references.RigManager.GetComponentInChildren<BodyVitals>());
+            //_vitals?.CopyTo(references.RigManager.GetComponentInChildren<BodyVitals>());
 
             _isVitalsDirty = false;
         }
