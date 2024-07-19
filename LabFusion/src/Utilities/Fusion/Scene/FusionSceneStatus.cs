@@ -1,4 +1,5 @@
 ﻿using LabFusion.Network;
+using LabFusion.Marrow;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
 using Il2CppSLZ.Marrow.Warehouse;
@@ -32,7 +33,7 @@ public static partial class FusionSceneManager
 
     public static bool HasLevel(string barcode)
     {
-        if (AssetWarehouse.Instance.HasCrate<LevelCrate>(new Barcode(barcode)))
+        if (CrateFilterer.HasCrate<LevelCrate>(new Barcode(barcode)))
         {
             return true;
         }
@@ -54,7 +55,9 @@ public static partial class FusionSceneManager
     {
         // If we are the host or have no server, just do the normal load check
         if (!NetworkInfo.HasServer || NetworkInfo.IsServer)
+        {
             return IsLoadDone();
+        }
 
         return _hasStartedLoadingTarget && _hasEnteredTargetLoadingScreen && IsLoadDone();
     }

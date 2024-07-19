@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 
 using Il2CppSLZ.Marrow.Warehouse;
+using Il2CppSLZ.Marrow;
 
 using LabFusion.Extensions;
 using LabFusion.Preferences;
-using Il2CppSLZ.Marrow;
+using LabFusion.Marrow;
 
 namespace LabFusion.Utilities
 {
@@ -18,7 +19,9 @@ namespace LabFusion.Utilities
         public static void OnMainSceneInitialized()
         {
             // Get the constrainer crate so we can create a global constrainer
-            if (!AssetWarehouse.Instance.TryGetCrate<SpawnableCrate>(new Barcode(CommonBarcodes.CONSTRAINER_BARCODE), out var crate))
+            var crate = CrateFilterer.GetCrate<SpawnableCrate>(new Barcode(CommonBarcodes.CONSTRAINER_BARCODE));
+
+            if (crate == null)
             {
                 return;
             }

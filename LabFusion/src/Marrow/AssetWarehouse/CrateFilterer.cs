@@ -4,6 +4,30 @@ namespace LabFusion.Marrow;
 
 public static class CrateFilterer
 {
+    public static bool HasCrate<TCrate>(Barcode barcode) where TCrate : Crate
+    {
+        var warehouse = AssetWarehouse.Instance;
+
+        if (!warehouse._crateRegistry.ContainsKey(barcode))
+        {
+            return false;
+        }
+
+        return warehouse._crateRegistry[barcode].TryCast<TCrate>() != null;
+    }
+
+    public static TCrate GetCrate<TCrate>(Barcode barcode) where TCrate : Crate
+    {
+        var warehouse = AssetWarehouse.Instance;
+
+        if (!warehouse._crateRegistry.ContainsKey(barcode))
+        {
+            return null;
+        }
+
+        return warehouse._crateRegistry[barcode].TryCast<TCrate>();
+    }
+
     public static TCrate[] FilterByTags<TCrate>(Pallet pallet, params string[] tags) where TCrate : Crate
     {
         List<TCrate> filtered = new();

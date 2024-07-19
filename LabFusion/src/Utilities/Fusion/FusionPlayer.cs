@@ -17,6 +17,7 @@ using Il2CppSLZ.Marrow;
 using UnityEngine;
 
 using Avatar = Il2CppSLZ.VRMK.Avatar;
+using LabFusion.Marrow;
 
 namespace LabFusion.Utilities;
 
@@ -279,18 +280,22 @@ public static class FusionPlayer
         // Check avatar override
         if (RigData.HasPlayer && AssetWarehouse.ready && AvatarOverride != null)
         {
-            if (AssetWarehouse.Instance.TryGetCrate<AvatarCrate>(new Barcode(AvatarOverride), out var avatarCrate))
+            var avatarCrate = CrateFilterer.GetCrate<AvatarCrate>(new Barcode(AvatarOverride));
+
+            if (avatarCrate == null)
             {
-                var rm = RigData.RigReferences.RigManager;
-                rm.SwapAvatarCrate(new Barcode(AvatarOverride), true, (Action<bool>)((success) =>
-                {
-                    // If the avatar forcing doesn't work, change into polyblank
-                    if (!success)
-                    {
-                        rm.SwapAvatarCrate(new Barcode(FusionAvatar.POLY_BLANK_BARCODE), true);
-                    }
-                }));
+                return;
             }
+
+            var rm = RigData.RigReferences.RigManager;
+            rm.SwapAvatarCrate(new Barcode(AvatarOverride), true, (Action<bool>)((success) =>
+            {
+                // If the avatar forcing doesn't work, change into polyblank
+                if (!success)
+                {
+                    rm.SwapAvatarCrate(new Barcode(FusionAvatar.POLY_BLANK_BARCODE), true);
+                }
+            }));
         }
     }
 
