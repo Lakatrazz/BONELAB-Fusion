@@ -187,7 +187,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     public void SetBallEnabled(bool isEnabled)
     {
         if (!HasRig)
+        {
             return;
+        }
 
         var pullCord = RigReferences.RigManager.GetComponentInChildren<PullCordDevice>(true);
 

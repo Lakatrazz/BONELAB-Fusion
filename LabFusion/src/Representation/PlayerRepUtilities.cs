@@ -1,28 +1,20 @@
 ﻿using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 using LabFusion.Utilities;
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
+using LabFusion.Entities;
 
 using Il2Cpp;
 
-using Il2CppSLZ.Interaction;
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow;
-using Il2CppSLZ.VRMK;
-using Il2CppSLZ.SFX;
-using Il2CppSLZ.Player;
-using Il2CppSLZ.Marrow.Utilities;
-using Il2CppSLZ.Rig;
+using Il2CppSLZ.Marrow.Interaction;
+using Il2CppSLZ.Marrow.Warehouse;
 
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
-
-using UnityEngine.Events;
-using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
-using Il2CppSLZ.Marrow.Interaction;
-using LabFusion.Entities;
 
 namespace LabFusion.Representation;
 
@@ -82,7 +74,9 @@ public static class PlayerRepUtilities
 
         var crate = MarrowSettings.RuntimeInstance.DefaultPlayerRig.Crate;
         if (crate == null)
+        {
             return;
+        }
 
         crate.LoadAsset((Action<GameObject>)((go) => Internal_OnLoadPlayer(go, onRigCreated)));
     }
@@ -90,7 +84,7 @@ public static class PlayerRepUtilities
     private static void Internal_OnLoadPlayer(GameObject asset, Action<RigManager> onRigCreated)
     {
         // Create a temporary parent that is disabled
-        GameObject tempParent = new GameObject();
+        GameObject tempParent = new();
         tempParent.SetActive(false);
 
         var rigAsset = asset.GetComponentInChildren<RigManager>().gameObject;
@@ -128,22 +122,32 @@ public static class PlayerRepUtilities
         var openControllerRig = rigManager.ControllerRig.TryCast<OpenControllerRig>();
 
         // Set the bone tag to the fusion player tag instead of the default player tag
-        var entity = rigManager.GetComponentInChildren<MarrowEntity>(true);
-        entity.Tags.Tags.RemoveAt(0);
+        var entity = rigManager.physicsRig.marrowEntity;
+
+        entity.Tags.Tags.RemoveAll((Il2CppSystem.Predicate<BoneTagReference>)((tag) => tag.Barcode == BONELABBoneTagReferences.PlayerReference.Barcode));
+        
         entity.Tags.Tags.Add(FusionBoneTagReferences.FusionPlayerReference);
 
-        // Remove the rig's observer.
-        // This is what triggers chunks and physics culling, but networked players should NOT do this
-        var physHeadset = openControllerRig.headset.GetComponent<MarrowBody>();
+        // Clear the controller rig of its observer, bodies, and entity
+        var controllerEntity = openControllerRig.GetComponent<MarrowEntity>();
+        var controllerBodies = openControllerRig.GetComponentsInChildren<MarrowBody>();
+        var controllerTrackers = openControllerRig.GetComponentsInChildren<Tracker>();
 
-        // Get the observer tracker from the controller rig
-        var observerTracker = physHeadset.Trackers[0];
-        physHeadset._trackers = Array.Empty<Tracker>();
+        foreach (var body in controllerBodies)
+        {
+            GameObject.DestroyImmediate(body);
+        }
 
-        // Delete the tracker GameObject
-        GameObject.DestroyImmediate(observerTracker.gameObject);
+        foreach (var tracker in controllerTrackers)
+        {
+            GameObject.DestroyImmediate(tracker.gameObject);
+        }
 
+        GameObject.DestroyImmediate(controllerEntity);
+
+        // Apply health settings
         var playerHealth = rigManager.health.TryCast<Player_Health>();
+
         if (playerHealth != null)
         {
             playerHealth.reloadLevelOnDeath = false;
@@ -218,7 +222,7 @@ public static class PlayerRepUtilities
         PlayerAdditionsHelper.OnCreatedRig(rigManager);
 
         // Spatialize wind audio
-        DelayUtilities.Delay(() => { Internal_SpatializeWind(rigManager.physicsRig.m_head.GetComponent<WindBuffetSFX>()); }, 5);
+        DelayUtilities.Delay(() => { Internal_SpatializeWind(rigManager.GetComponentInChildren<WindBuffetSFX>()); }, 5);
     }
 
     private static void Internal_ClearHaptor(Haptor haptor)
@@ -258,7 +262,16 @@ public static class PlayerRepUtilities
 
     private static void Internal_SpatializeWind(WindBuffetSFX sfx)
     {
-        if (!sfx.IsNOC() && sfx._buffetSrc)
-            sfx._buffetSrc.spatialBlend = 1f;
+        if (sfx.IsNOC())
+        {
+            return;
+        }
+
+        if (!sfx._buffetSrc)
+        {
+            return;
+        }
+
+        sfx._buffetSrc.spatialBlend = 1f;
     }
 }

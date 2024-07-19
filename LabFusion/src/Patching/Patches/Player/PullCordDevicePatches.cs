@@ -10,75 +10,80 @@ using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow;
 
-namespace LabFusion.Patching
+namespace LabFusion.Patching;
+
+[HarmonyPatch(typeof(PullCordDevice))]
+public static class PullCordDevicePatches
 {
-    [HarmonyPatch(typeof(PullCordDevice))]
-    public static class PullCordDevicePatches
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(PullCordDevice.Update))]
+    public static void Update(PullCordDevice __instance)
     {
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(PullCordDevice.Update))]
-        public static void Update(PullCordDevice __instance)
+        // Make sure we have a server
+        if (!NetworkInfo.HasServer)
         {
-            // If this is a player rep,
-            // We need to disable the avatars inside the body log
-            // This way, the player reps won't accidentally change their avatar
-            if (NetworkInfo.HasServer && NetworkPlayerManager.HasExternalPlayer(__instance.rm))
-            {
-                for (var i = 0; i < __instance.avatarCrateRefs.Length; i++)
-                {
-                    __instance.avatarCrateRefs[i].Barcode = (Barcode)"";
-                }
-            }
+            return;
         }
 
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(PullCordDevice.EnableBall))]
-        public static void EnableBall(PullCordDevice __instance)
+        // If this is a networked player,
+        // We need to disable the avatars inside the body log
+        // This way, the player reps won't accidentally change their avatar
+        if (NetworkPlayerManager.HasExternalPlayer(__instance.rm))
         {
-            if (NetworkInfo.HasServer && __instance.rm.IsSelf())
+            for (var i = 0; i < __instance.avatarCrateRefs.Length; i++)
             {
-                PullCordSender.SendBodyLogToggle(true);
+                __instance.avatarCrateRefs[i].Barcode = Barcode.EmptyBarcode();
             }
         }
+    }
 
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(PullCordDevice.DisableBall))]
-        public static void DisableBall(PullCordDevice __instance)
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(PullCordDevice.EnableBall))]
+    public static void EnableBall(PullCordDevice __instance)
+    {
+        if (NetworkInfo.HasServer && __instance.rm.IsSelf())
         {
-            if (NetworkInfo.HasServer && __instance.rm.IsSelf())
-            {
-                PullCordSender.SendBodyLogToggle(false);
-            }
+            PullCordSender.SendBodyLogToggle(true);
         }
+    }
 
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(PullCordDevice.PlayAvatarParticleEffects))]
-        public static void PlayAvatarParticleEffects(PullCordDevice __instance)
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(PullCordDevice.DisableBall))]
+    public static void DisableBall(PullCordDevice __instance)
+    {
+        if (NetworkInfo.HasServer && __instance.rm.IsSelf())
         {
-            if (NetworkInfo.HasServer && __instance.rm.IsSelf())
-            {
-                PullCordSender.SendBodyLogEffect();
-            }
+            PullCordSender.SendBodyLogToggle(false);
         }
+    }
 
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(PullCordDevice.OnBallGripDetached))]
-        public static void OnBallGripDetached(PullCordDevice __instance, Hand hand)
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(PullCordDevice.PlayAvatarParticleEffects))]
+    public static void PlayAvatarParticleEffects(PullCordDevice __instance)
+    {
+        if (NetworkInfo.HasServer && __instance.rm.IsSelf())
         {
-            // Prevent player rep body logs from inserting into the body mall
-            if (NetworkInfo.HasServer && __instance.rm != RigData.RigReferences.RigManager)
+            PullCordSender.SendBodyLogEffect();
+        }
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(PullCordDevice.OnBallGripDetached))]
+    public static void OnBallGripDetached(PullCordDevice __instance, Hand hand)
+    {
+        // Prevent player rep body logs from inserting into the body mall
+        if (NetworkInfo.HasServer && __instance.rm != RigData.RigReferences.RigManager)
+        {
+            var apv = __instance.apv;
+
+            if (apv != null && apv.bodyLog == __instance)
             {
-                var apv = __instance.apv;
-
-                if (apv != null && apv.bodyLog == __instance)
-                {
-                    apv.bodyLog = null;
-                }
-
-                __instance.apv = null;
-                __instance.isHandleInReceiver = false;
-                __instance.isBallInReceiver = false;
+                apv.bodyLog = null;
             }
+
+            __instance.apv = null;
+            __instance.isHandleInReceiver = false;
+            __instance.isBallInReceiver = false;
         }
     }
 }
