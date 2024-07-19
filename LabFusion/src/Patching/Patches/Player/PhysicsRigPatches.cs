@@ -1,13 +1,10 @@
 ﻿using HarmonyLib;
 
-using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Utilities;
 
 using Il2CppSLZ.Marrow;
-
-using UnityEngine;
 
 namespace LabFusion.Patching;
 
@@ -15,27 +12,6 @@ namespace LabFusion.Patching;
 public static class PhysicsRigPatches
 {
     public static bool ForceAllowUnragdoll = false;
-
-    [HarmonyPrefix]
-    [HarmonyPatch(nameof(PhysicsRig.TeleportToPose))]
-    public static void TeleportToPosePrefix(PhysicsRig __instance, ref Vector3 __state)
-    {
-        __state = __instance.feet.transform.position;
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch(nameof(PhysicsRig.TeleportToPose))]
-    public static void TeleportToPosePostfix(PhysicsRig __instance, ref Vector3 __state)
-    {
-        var kneeTransform = __instance.knee.transform;
-        var feetTransform = __instance.feet.transform;
-
-        var localFeet = kneeTransform.InverseTransformPoint(feetTransform.position);
-        kneeTransform.localRotation = QuaternionExtensions.identity;
-        feetTransform.position = kneeTransform.TransformPoint(localFeet);
-
-        __instance.transform.position += __state - feetTransform.position;
-    }
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(PhysicsRig.RagdollRig))]
