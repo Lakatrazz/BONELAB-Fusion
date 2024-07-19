@@ -8,34 +8,34 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - ObserverTrigger
   - Water
   - UI
+  - Fixture
+  - 
+  - Player
+  - 
+  - Dynamic
+  - 
+  - EnemyColliders
+  - 
+  - 
+  - Interactable
+  - 
+  - Deciverse
+  - Socket
+  - Plug
   - 
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - FootballOnly
+  - Football
+  - NoFootball
+  - EntityTracker
+  - BeingTracker
+  - ObserverTracker
+  - EntityTrigger
+  - BeingTrigger
   - 
   m_SortingLayers:
   - name: Default

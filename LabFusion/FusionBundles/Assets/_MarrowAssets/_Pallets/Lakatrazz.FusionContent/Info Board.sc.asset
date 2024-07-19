@@ -14,10 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _barcode:
     _id: Lakatrazz.FusionContent.Spawnable.InfoBoard
-  _barcodeOld:
-    _id: null.empty.barcode
-  _slimCode:
-    _byteArray: 
   _title: Info Board
   _description: News terminal that pipes the most recent Fusion news into your instance.
   _unlockable: 0

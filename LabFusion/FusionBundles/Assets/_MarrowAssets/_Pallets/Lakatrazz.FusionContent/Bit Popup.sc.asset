@@ -14,10 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _barcode:
     _id: Lakatrazz.FusionContent.Spawnable.BitPopup
-  _barcodeOld:
-    _id: null.empty.barcode
-  _slimCode:
-    _byteArray: 
   _title: Bit Popup
   _description: The popup shown when spending or gaining bits.
   _unlockable: 0

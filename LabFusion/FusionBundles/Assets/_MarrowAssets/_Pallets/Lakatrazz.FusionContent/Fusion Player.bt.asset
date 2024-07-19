@@ -14,10 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _barcode:
     _id: Lakatrazz.FusionContent.BoneTag.FusionPlayer
-  _barcodeOld:
-    _id: null.empty.barcode
-  _slimCode:
-    _byteArray: 
   _title: Fusion Player
   _description: Identifies a separate player in Fusion
   _unlockable: 0

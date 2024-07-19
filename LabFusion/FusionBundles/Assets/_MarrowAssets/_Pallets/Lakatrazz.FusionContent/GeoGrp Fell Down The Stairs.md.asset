@@ -14,10 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _barcode:
     _id: Lakatrazz.FusionContent.MonoDisc.GeoGrpFellDownTheStairs
-  _barcodeOld:
-    _id: null.empty.barcode
-  _slimCode:
-    _byteArray: 
   _title: GeoGrp Fell Down The Stairs
   _description: 
   _unlockable: 0

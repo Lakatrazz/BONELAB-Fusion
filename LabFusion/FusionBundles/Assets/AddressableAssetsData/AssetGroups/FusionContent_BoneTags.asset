@@ -15,7 +15,7 @@ MonoBehaviour:
   m_GroupName: FusionContent_BoneTags
   m_Data:
     m_SerializedData: []
-  m_GUID: ea853bb2f3d584242aa7f68ba547c1ce
+  m_GUID: f5fc3b1ca4d8f1541b9dd4f494cad7e5
   m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 9feda70c59f9cda489cd3a23e7f14dd9, type: 2}

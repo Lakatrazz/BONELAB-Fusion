@@ -224,6 +224,7 @@ GameObject:
   m_Component:
   - component: {fileID: 337823941751272448}
   - component: {fileID: 159700132575712286}
+  - component: {fileID: 9180753559139307098}
   m_Layer: 0
   m_Name: Cup Board
   m_TagString: Untagged
@@ -253,13 +254,29 @@ MeshCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2359285889021386017}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: d88f8317257e1c542b5db98b42a9600d, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -4148404650735220981, guid: bc36e73f14472644f9007b998732fdcb, type: 3}
+--- !u!114 &9180753559139307098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2359285889021386017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0396b7cb33830d24a8749a5b11c36a6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _surfaceDataCard:
+    _barcode:
+      _id: SLZ.Backlot.SurfaceDataCard.Metal
+  decalType: 0
 --- !u!1 &2379150208771880085
 GameObject:
   m_ObjectHideFlags: 0

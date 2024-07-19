@@ -171,6 +171,7 @@ GameObject:
   - component: {fileID: 5232524936168655928}
   - component: {fileID: 1747741962337579442}
   - component: {fileID: 3517098317866632087}
+  - component: {fileID: 4706833158199024313}
   m_Layer: 0
   m_Name: Machine
   m_TagString: Untagged
@@ -250,13 +251,29 @@ MeshCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 709904808518335915}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: d88f8317257e1c542b5db98b42a9600d, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 8074750411987931458, guid: 0b873ce79b48d644693931dbdc25c729, type: 3}
+--- !u!114 &4706833158199024313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 709904808518335915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0396b7cb33830d24a8749a5b11c36a6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _surfaceDataCard:
+    _barcode:
+      _id: SLZ.Backlot.SurfaceDataCard.Metal
+  decalType: 0
 --- !u!1 &900611874784306860
 GameObject:
   m_ObjectHideFlags: 0
@@ -479,6 +496,7 @@ GameObject:
   - component: {fileID: 2334307016580104414}
   - component: {fileID: 7106781758959402361}
   - component: {fileID: 8870088517807683900}
+  - component: {fileID: 55260704374734041}
   m_Layer: 0
   m_Name: Interaction Module
   m_TagString: Untagged
@@ -558,13 +576,29 @@ MeshCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1576905932948651117}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: d88f8317257e1c542b5db98b42a9600d, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -5709077241026603766, guid: 0b873ce79b48d644693931dbdc25c729, type: 3}
+--- !u!114 &55260704374734041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1576905932948651117}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0396b7cb33830d24a8749a5b11c36a6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _surfaceDataCard:
+    _barcode:
+      _id: SLZ.Backlot.SurfaceDataCard.Metal
+  decalType: 0
 --- !u!1 &1688590671785286715
 GameObject:
   m_ObjectHideFlags: 0
@@ -1467,6 +1501,7 @@ GameObject:
   - component: {fileID: 7070013062681222014}
   - component: {fileID: 8277716355446417695}
   - component: {fileID: 1937842348193496489}
+  - component: {fileID: 4580368468345968579}
   m_Layer: 0
   m_Name: Sign
   m_TagString: Untagged
@@ -1546,13 +1581,29 @@ MeshCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5748602024529804631}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: d88f8317257e1c542b5db98b42a9600d, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -2849203588802097394, guid: 0b873ce79b48d644693931dbdc25c729, type: 3}
+--- !u!114 &4580368468345968579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5748602024529804631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0396b7cb33830d24a8749a5b11c36a6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _surfaceDataCard:
+    _barcode:
+      _id: SLZ.Backlot.SurfaceDataCard.Metal
+  decalType: 0
 --- !u!1 &5796912994105904392
 GameObject:
   m_ObjectHideFlags: 0
@@ -1606,6 +1657,7 @@ GameObject:
   - component: {fileID: 8619422706755746117}
   - component: {fileID: 7492898660039982436}
   - component: {fileID: 1738523003132626964}
+  - component: {fileID: 7604053489893593665}
   m_Layer: 0
   m_Name: Pipe
   m_TagString: Untagged
@@ -1685,13 +1737,29 @@ MeshCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5885924895585357276}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: d88f8317257e1c542b5db98b42a9600d, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -6402532953415861574, guid: 0b873ce79b48d644693931dbdc25c729, type: 3}
+--- !u!114 &7604053489893593665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5885924895585357276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0396b7cb33830d24a8749a5b11c36a6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _surfaceDataCard:
+    _barcode:
+      _id: SLZ.Backlot.SurfaceDataCard.Metal
+  decalType: 0
 --- !u!1 &6628890036815866257
 GameObject:
   m_ObjectHideFlags: 0
