@@ -153,17 +153,18 @@ public static class FusionPlayer
     /// <param name="count"></param>
     public static void SetAmmo(int count)
     {
-        var rm = RigData.RigReferences.RigManager;
+        var ammoInventory = AmmoInventory.Instance;
 
-        if (!rm.IsNOC())
+        if (ammoInventory == null)
         {
-            var ammo = rm.GetComponentInChildren<AmmoInventory>();
-            ammo.ClearAmmo();
-
-            ammo.AddCartridge(ammo.lightAmmoGroup, count);
-            ammo.AddCartridge(ammo.heavyAmmoGroup, count);
-            ammo.AddCartridge(ammo.mediumAmmoGroup, count);
+            return;
         }
+
+        ammoInventory.ClearAmmo();
+
+        ammoInventory.AddCartridge(ammoInventory.lightAmmoGroup, count);
+        ammoInventory.AddCartridge(ammoInventory.heavyAmmoGroup, count);
+        ammoInventory.AddCartridge(ammoInventory.mediumAmmoGroup, count);
     }
 
     /// <summary>
