@@ -5,7 +5,7 @@ Having been in development for 5 months, the long awaited multiplayer mod FUSION
 
 # Installation
 ## How To Install (PCVR)
-1. Make sure you are on BONELAB Patch #4.
+1. Make sure you are on BONELAB Patch #5.
 2. Install MelonLoader (0.6.4 required).
 3. Install BoneLib.
 4. Download Fusion and drag the LabFusion.dll file into your MelonLoader Mods folder. This is not to be confused with the SLZ official mods folder.
@@ -14,7 +14,7 @@ Having been in development for 5 months, the long awaited multiplayer mod FUSION
 6. You're done!
 
 ## How To Install (Quest)
-1. Make sure you are on BONELAB Patch #4.
+1. Make sure you are on BONELAB Patch #5.
 2. Install LemonLoader (latest version required).
 3. Install BoneLib.
 4. Download Fusion and drag the LabFusion.dll file into your Mods folder. Ignore the LabFusionUpdater.dll file, it does not work on Quest.
@@ -32,7 +32,7 @@ Having been in development for 5 months, the long awaited multiplayer mod FUSION
 
 # About
 ## How to Use the Mod
-All of the functions of the mod can be found in BONEMENU under the tab "BONELAB Fusion". In order to make and join servers, use the Matchmaking tab. Starting or disconnecting from a server can be found in the "Server Info" tab.
+All of the functions of the mod can be found in BONEMENU under the tab "Fusion". In order to make and join servers, use the Matchmaking tab. Starting or disconnecting from a server can be found in the "Server Info" tab.
 
 ## Physical Interactions
 Instead of players and synced props being kinematic, non-physics objects, all interactions are solved using physical forces.<br>
