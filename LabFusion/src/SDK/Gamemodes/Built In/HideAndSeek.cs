@@ -68,7 +68,7 @@ public class HideAndSeek : Gamemode
     {
         base.OnBoneMenuCreated(page);
 
-        page.CreateInt("Seeker Count", Color.yellow, 1, SeekerCount, 1, 8, (value) =>
+        page.CreateInt("Seeker Count", Color.yellow, startingValue: SeekerCount, increment: 1, 1, 8, (value) =>
         {
             SeekerCount = value;
         });

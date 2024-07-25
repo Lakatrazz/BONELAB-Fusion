@@ -175,7 +175,7 @@ public static partial class BoneMenuCreator
         // Create VC options
         var voiceCategory = category.CreatePage("Voice Settings", Color.white);
 
-        voiceCategory.CreateFloat("Volume", Color.white, 0.1f, ContactsList.GetContact(id).volume, 0f, 2f, (v) =>
+        voiceCategory.CreateFloat("Volume", Color.white, startingValue: ContactsList.GetContact(id).volume, increment: 0.1f, 0f, 2f, (v) =>
         {
             var contact = ContactsList.GetContact(id);
             contact.volume = v;
