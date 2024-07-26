@@ -21,8 +21,6 @@ using LabFusion.Debugging;
 
 using MelonLoader;
 
-using BoneLib;
-
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Warehouse;
 
@@ -139,7 +137,7 @@ public class FusionMod : MelonMod
         // Check if the auto updater is installed
         _hasAutoUpdater = MelonPlugin.RegisteredMelons.Any((p) => p.Info.Name.Contains("LabFusion Updater"));
 
-        if (!_hasAutoUpdater && !HelperMethods.IsAndroid())
+        if (!_hasAutoUpdater && !PlatformHelper.IsAndroid)
         {
             FusionNotifier.Send(new FusionNotification()
             {

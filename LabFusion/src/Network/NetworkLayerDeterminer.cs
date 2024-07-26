@@ -1,49 +1,50 @@
-﻿using BoneLib;
-using LabFusion.Preferences;
+﻿using LabFusion.Preferences;
+using LabFusion.Utilities;
 
-namespace LabFusion.Network
+namespace LabFusion.Network;
+
+public static class NetworkLayerDeterminer
 {
-    public static class NetworkLayerDeterminer
+    public static NetworkLayer LoadedLayer { get; private set; }
+    public static string LoadedTitle { get; private set; }
+
+    public static NetworkLayer GetDefaultLayer()
     {
-        public static NetworkLayer LoadedLayer { get; private set; }
-        public static string LoadedTitle { get; private set; }
-
-        public static NetworkLayer GetDefaultLayer()
+        if (PlatformHelper.IsAndroid)
         {
-            if (HelperMethods.IsAndroid())
-                return NetworkLayer.GetLayer<ProxySteamVRNetworkLayer>();
-
-            return NetworkLayer.GetLayer<SteamVRNetworkLayer>();
+            return NetworkLayer.GetLayer<ProxySteamVRNetworkLayer>();
         }
 
-        public static NetworkLayer VerifyLayer(NetworkLayer layer)
+        return NetworkLayer.GetLayer<SteamVRNetworkLayer>();
+    }
+
+    public static NetworkLayer VerifyLayer(NetworkLayer layer)
+    {
+        if (layer.CheckValidation())
         {
-            if (layer.CheckValidation())
-            {
-                return layer;
-            }
-            else if (layer.TryGetFallback(out var fallback))
-            {
-                return VerifyLayer(fallback);
-            }
-            else
-            {
-                return NetworkLayer.GetLayer<EmptyNetworkLayer>();
-            }
+            return layer;
+        }
+        else if (layer.TryGetFallback(out var fallback))
+        {
+            return VerifyLayer(fallback);
+        }
+        else
+        {
+            return NetworkLayer.GetLayer<EmptyNetworkLayer>();
+        }
+    }
+
+    public static void LoadLayer()
+    {
+        var title = FusionPreferences.ClientSettings.NetworkLayerTitle.GetValue();
+        if (!NetworkLayer.LayerLookup.TryGetValue(title, out var layer))
+        {
+            layer = GetDefaultLayer();
         }
 
-        public static void LoadLayer()
-        {
-            var title = FusionPreferences.ClientSettings.NetworkLayerTitle.GetValue();
-            if (!NetworkLayer.LayerLookup.TryGetValue(title, out var layer))
-            {
-                layer = GetDefaultLayer();
-            }
+        layer = VerifyLayer(layer);
 
-            layer = VerifyLayer(layer);
-
-            LoadedLayer = layer;
-            LoadedTitle = layer.Title;
-        }
+        LoadedLayer = layer;
+        LoadedTitle = layer.Title;
     }
 }

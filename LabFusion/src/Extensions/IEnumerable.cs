@@ -1,4 +1,4 @@
-﻿using BoneLib;
+﻿using LabFusion.Utilities;
 
 namespace LabFusion.Extensions;
 
@@ -6,7 +6,7 @@ public static class IEnumerableExtensions
 {
     public static bool ContainsIL2CPP<T>(this HashSet<T> set, T item)
     {
-        if (!HelperMethods.IsAndroid())
+        if (!PlatformHelper.IsAndroid)
         {
             return set.Contains(item);
         }
@@ -18,7 +18,7 @@ public static class IEnumerableExtensions
 
     public static bool RemoveIL2CPP<T>(this HashSet<T> set, T item)
     {
-        if (!HelperMethods.IsAndroid())
+        if (!PlatformHelper.IsAndroid)
         {
             return set.Remove(item);
         }

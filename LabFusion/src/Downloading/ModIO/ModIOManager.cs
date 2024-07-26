@@ -1,6 +1,6 @@
-﻿using BoneLib;
+﻿using Il2CppSLZ.Marrow.Forklift.Model;
 
-using Il2CppSLZ.Marrow.Forklift.Model;
+using LabFusion.Utilities;
 
 using MelonLoader;
 
@@ -73,7 +73,7 @@ public static class ModIOManager
 
     public static string GetActivePlatform()
     {
-        if (HelperMethods.IsAndroid())
+        if (PlatformHelper.IsAndroid)
         {
             return "android";
         }

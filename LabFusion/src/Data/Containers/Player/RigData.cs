@@ -214,10 +214,11 @@ public static class RigData
 
     public static void OnCacheRigInfo()
     {
-        var manager = BoneLib.Player.RigManager;
+        var manager = PlayerRefs.Instance.PlayerRigManager;
 
-        if (!manager)
+        if (manager == null)
         {
+            FusionLogger.Error("Failed to find the Player's RigManager!");
             return;
         }
 

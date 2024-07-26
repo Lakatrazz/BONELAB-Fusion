@@ -6,9 +6,6 @@ using LabFusion.Player;
 using LabFusion.Utilities;
 using LabFusion.Preferences;
 
-//using Steamworks;
-//using Steamworks.Data;
-
 using Color = UnityEngine.Color;
 
 using MelonLoader;
@@ -22,8 +19,6 @@ using FusionHelper.Network;
 
 using LiteNetLib;
 using LiteNetLib.Utils;
-
-using BoneLib;
 
 using LabFusion.Voice;
 using LabFusion.Voice.Unity;
@@ -65,7 +60,7 @@ namespace LabFusion.Network
 
         public override bool CheckSupported()
         {
-            return HelperMethods.IsAndroid();
+            return PlatformHelper.IsAndroid;
         }
 
         public override bool CheckValidation()

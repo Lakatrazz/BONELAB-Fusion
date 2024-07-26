@@ -12,8 +12,6 @@ using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
 
-using BoneLib;
-
 namespace LabFusion.Network;
 
 /// <summary>
@@ -220,7 +218,7 @@ public static class InternalServerHelpers
             { MetadataHelper.PermissionKey, NetworkInfo.IsServer ? PermissionLevel.OWNER.ToString() : PermissionLevel.DEFAULT.ToString() },
 
             // Platform
-            { MetadataHelper.PlatformKey, HelperMethods.IsAndroid() ? "QUEST" : "PC" },
+            { MetadataHelper.PlatformKey, PlatformHelper.GetPlatformName() },
         };
 
         return metadata;

@@ -1,5 +1,4 @@
-﻿using BoneLib;
-using BoneLib.BoneMenu;
+﻿using BoneLib.BoneMenu;
 
 using LabFusion.Utilities;
 
@@ -53,7 +52,7 @@ namespace LabFusion.Network
             // Info for people incase this layer ends up being selected
             page.CreateFunction("You currently have no networking selected.", Color.white, null);
 
-            if (!HelperMethods.IsAndroid())
+            if (!PlatformHelper.IsAndroid)
             {
                 page.CreateFunction("This means you likely do not have Steam open.", Color.white, null);
                 page.CreateFunction("Please install and open Steam.", Color.white, null);

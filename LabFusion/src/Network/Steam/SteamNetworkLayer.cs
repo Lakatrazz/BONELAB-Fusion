@@ -18,7 +18,6 @@ using System.Windows.Forms;
 using LabFusion.Senders;
 using LabFusion.BoneMenu;
 using LabFusion.SDK.Gamemodes;
-using BoneLib;
 using LabFusion.Voice;
 using LabFusion.Voice.Unity;
 using LabFusion.SDK.Lobbies;
@@ -66,7 +65,7 @@ namespace LabFusion.Network
 
         public override bool CheckSupported()
         {
-            return !HelperMethods.IsAndroid();
+            return !PlatformHelper.IsAndroid;
         }
 
         public override bool CheckValidation()
