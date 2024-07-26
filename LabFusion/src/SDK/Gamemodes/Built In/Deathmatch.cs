@@ -67,7 +67,7 @@ public class Deathmatch : Gamemode
     {
         base.OnBoneMenuCreated(page);
 
-        page.CreateInt("Round Minutes", Color.white, startingValue: _totalMinutes, increment: 1, _minMinutes, _maxMinutes, (v) =>
+        page.CreateInt("Round Minutes", Color.white, startingValue: _totalMinutes, increment: 1, minValue: _minMinutes, maxValue: _maxMinutes, callback: (v) =>
         {
             _totalMinutes = v;
             _savedMinutes = v;
