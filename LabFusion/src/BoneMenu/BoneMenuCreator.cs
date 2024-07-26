@@ -24,18 +24,21 @@ public static partial class BoneMenuCreator
         var currentColor = pref;
         var colorR = page.CreateFloat("Red", Color.red, startingValue: currentColor.GetValue().r, increment: 0.05f, minValue: 0f, maxValue: 1f, callback: (r) =>
         {
+            r = Mathf.Round(r * 100f) / 100f;
             var color = currentColor.GetValue();
             color.r = r;
             currentColor.SetValue(color);
         });
         var colorG = page.CreateFloat("Green", Color.green, startingValue: currentColor.GetValue().g, increment: 0.05f, minValue: 0f, maxValue: 1f, callback: (g) =>
         {
+            g = Mathf.Round(g * 100f) / 100f;
             var color = currentColor.GetValue();
             color.g = g;
             currentColor.SetValue(color);
         });
         var colorB = page.CreateFloat("Blue", Color.blue, startingValue: currentColor.GetValue().b, increment: 0.05f, minValue: 0f, maxValue: 1f, callback: (b) =>
         {
+            b = Mathf.Round(b * 100f) / 100f;
             var color = currentColor.GetValue();
             color.b = b;
             currentColor.SetValue(color);
@@ -45,8 +48,8 @@ public static partial class BoneMenuCreator
         currentColor.OnValueChanged += (color) =>
         {
             colorR.Value = color.r;
-            colorR.Value = color.g;
-            colorR.Value = color.b;
+            colorG.Value = color.g;
+            colorB.Value = color.b;
             colorPreview.ElementColor = color;
         };
     }
@@ -110,7 +113,7 @@ public static partial class BoneMenuCreator
         {
             pref.SetValue(v);
         });
-
+        
         pref.OnValueChanged += (v) =>
         {
             element.Value = v;
