@@ -22,19 +22,19 @@ public static partial class BoneMenuCreator
     public static void CreateColorPreference(Page page, IFusionPref<Color> pref)
     {
         var currentColor = pref;
-        var colorR = page.CreateFloat("Red", Color.red, startingValue: currentColor.GetValue().r, increment: 0.05f, 0f, 1f, (r) =>
+        var colorR = page.CreateFloat("Red", Color.red, startingValue: currentColor.GetValue().r, increment: 0.05f, minValue: 0f, maxValue: 1f, callback: (r) =>
         {
             var color = currentColor.GetValue();
             color.r = r;
             currentColor.SetValue(color);
         });
-        var colorG = page.CreateFloat("Green", Color.green, startingValue: currentColor.GetValue().g, increment: 0.05f, 0f, 1f, (g) =>
+        var colorG = page.CreateFloat("Green", Color.green, startingValue: currentColor.GetValue().g, increment: 0.05f, minValue: 0f, maxValue: 1f, callback: (g) =>
         {
             var color = currentColor.GetValue();
             color.g = g;
             currentColor.SetValue(color);
         });
-        var colorB = page.CreateFloat("Blue", Color.blue, startingValue: currentColor.GetValue().b, increment: 0.05f, 0f, 1f, (b) =>
+        var colorB = page.CreateFloat("Blue", Color.blue, startingValue: currentColor.GetValue().b, increment: 0.05f, minValue: 0f, maxValue: 1f, callback: (b) =>
         {
             var color = currentColor.GetValue();
             color.b = b;
@@ -53,7 +53,7 @@ public static partial class BoneMenuCreator
 
     public static void CreateBytePreference(Page page, string name, byte increment, byte minValue, byte maxValue, IFusionPref<byte> pref)
     {
-        var element = page.CreateInt(name, Color.white, startingValue: pref.GetValue(), increment: increment, minValue, maxValue, (v) =>
+        var element = page.CreateInt(name, Color.white, startingValue: pref.GetValue(), increment: increment, minValue: minValue, maxValue: maxValue, callback: (v) =>
         {
             pref.SetValue((byte)v);
         });
@@ -66,7 +66,7 @@ public static partial class BoneMenuCreator
 
     public static void CreateFloatPreference(Page page, string name, float increment, float minValue, float maxValue, IFusionPref<float> pref)
     {
-        var element = page.CreateFloat(name, Color.white, startingValue: pref.GetValue(), increment: increment, minValue, maxValue, (v) =>
+        var element = page.CreateFloat(name, Color.white, startingValue: pref.GetValue(), increment: increment, minValue: minValue, maxValue: maxValue, callback: (v) =>
         {
             pref.SetValue(v);
         });
