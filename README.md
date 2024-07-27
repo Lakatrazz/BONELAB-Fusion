@@ -15,11 +15,6 @@ Fusion supports a system called "Modules". This allows other code mods to add on
 Fusion also has an SDK for integrating features into Marrow™ SDK items, maps, and more.
 
 ## Marrow SDK Integration
-NOTICE:
-When using the integration, if you have the extended sdk installed, delete the "MarrowSDK" script that comes with the extended sdk.
-It can be found in "Scripts/SLZ.Marrow.SDK/SLZ/Marrow/MarrowSDK".
-The reason for this is that this is already included in the real sdk, and Fusion uses some values from it, causing it to get confused.
-
 You can download the integration unity package from [the Releases tab of this repository](https://github.com/Lakatrazz/BONELAB-Fusion/releases/latest).
 Alternatively, you can download the files raw [here](https://github.com/Lakatrazz/BONELAB-Fusion/tree/main/Core/marrow-integration).
 
@@ -35,6 +30,21 @@ https://github.com/Lakatrazz/Fusion-Module-Example
 - The source code of [Facepunch.Steamworks](https://github.com/Facepunch/Facepunch.Steamworks) is used partially under the MIT License. The full license can be found [here](https://github.com/Facepunch/Facepunch.Steamworks/blob/master/LICENSE).
 - The source code of [Steamworks.NET](https://github.com/rlabrecque/Steamworks.NET) is used partially under the MIT License. The full license can be found [here](https://github.com/rlabrecque/Steamworks.NET/blob/master/LICENSE.txt).
 - The source code of [LiteNetLib](https://github.com/RevenantX/LiteNetLib) is included under the MIT License. The full license can be found [here](https://github.com/RevenantX/LiteNetLib/blob/master/LICENSE.txt).
+
+## Distribution
+Since this project falls under the MIT license, there is nothing preventing you from redistributing any version of the mod anywhere.
+However, I would personally prefer and request that you do not reupload this mod to mod.io or thunderstore.io for the following reasons:
+
+mod.io:
+- mod.io is reserved for mods created using the official MarrowSDK, which Fusion is not. Thus, it will not function the same way as other mods on the site.
+
+thunderstore.io:
+- Fusion is already uploaded to thunderstore.io, so having a secondary upload only causes confusion.
+- While the official thunderstore version may not be the same version as the latest source code, this is for a reason.
+     - Development builds are unfinished and should not be uploaded to thunderstore. Uploading these to thunderstore only cause confusion and make people think that the mod is ready. If you would like for people to play development versions early, please redirect them to the github instead.
+
+This also goes without saying but please do not redistribute Fusion in order to gain subscribers, server members, money, etc. It's just scummy.
+Nothing stopping you, but please think twice before doing it.
 
 ## Disclaimer
 
