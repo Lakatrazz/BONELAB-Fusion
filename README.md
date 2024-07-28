@@ -44,7 +44,8 @@ thunderstore.io:
      - Development builds are unfinished and should not be uploaded to thunderstore. Uploading these to thunderstore only cause confusion and make people think that the mod is ready. If you would like for people to play development versions early, please redirect them to the github instead.
 
 This also goes without saying but please do not redistribute Fusion in order to gain subscribers, server members, money, etc. It's just scummy.
-Nothing stopping you, but please think twice before doing it.
+
+There's nothing stopping you, but please think twice before doing it.
 
 ## Disclaimer
 
