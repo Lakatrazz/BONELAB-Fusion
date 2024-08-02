@@ -34,7 +34,7 @@ public static class MagazineUtilities
 
         // Attach the object to the hand
         var grip = magazine.grip;
-
+        
         var found = handedness == Handedness.LEFT ? rigManager.physicsRig.leftHand : rigManager.physicsRig.rightHand;
 
         if (found)
