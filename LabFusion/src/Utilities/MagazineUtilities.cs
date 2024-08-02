@@ -4,8 +4,8 @@ using Il2CppSLZ.Marrow.Audio;
 using Il2CppSLZ.Marrow;
 
 using LabFusion.Marrow;
-using LabFusion.Data;
 using LabFusion.Extensions;
+using LabFusion.Entities;
 
 namespace LabFusion.Utilities;
 
@@ -26,11 +26,16 @@ public static class MagazineUtilities
         SafeAudio3dPlayer.PlayAtPoint(ammoReceiver.grabClips, ammoReceiver.transform.position, Audio3dManager.softInteraction, 0.2f);
     }
 
-    public static void GrabMagazine(Magazine magazine, RigReferenceCollection references, Handedness handedness)
+    public static void GrabMagazine(Magazine magazine, NetworkPlayer player, Handedness handedness)
     {
-        var rigManager = references.RigManager;
+        var rigManager = player.RigReferences.RigManager;
 
-        ClaimMagazine(magazine, references.AmmoReceiver);
+        var ammoReceiverExtender = player.NetworkEntity.GetExtender<InventoryAmmoReceiverExtender>();
+
+        if (ammoReceiverExtender != null)
+        {
+            ClaimMagazine(magazine, ammoReceiverExtender.Component);
+        }
 
         // Attach the object to the hand
         var grip = magazine.grip;

@@ -17,16 +17,12 @@ public class InventorySlotDropData : IFusionSerializable
     public byte slotIndex;
     public Handedness handedness;
 
-    public bool isAvatarSlot;
-
     public void Serialize(FusionWriter writer)
     {
         writer.Write(smallId);
         writer.Write(grabber);
         writer.Write(slotIndex);
         writer.Write((byte)handedness);
-
-        writer.Write(isAvatarSlot);
     }
 
     public void Deserialize(FusionReader reader)
@@ -35,11 +31,9 @@ public class InventorySlotDropData : IFusionSerializable
         grabber = reader.ReadByte();
         slotIndex = reader.ReadByte();
         handedness = (Handedness)reader.ReadByte();
-
-        isAvatarSlot = reader.ReadBoolean();
     }
 
-    public static InventorySlotDropData Create(byte smallId, byte grabber, byte slotIndex, Handedness handedness, bool isAvatarSlot = false)
+    public static InventorySlotDropData Create(byte smallId, byte grabber, byte slotIndex, Handedness handedness)
     {
         return new InventorySlotDropData()
         {
@@ -47,8 +41,6 @@ public class InventorySlotDropData : IFusionSerializable
             grabber = grabber,
             slotIndex = slotIndex,
             handedness = handedness,
-
-            isAvatarSlot = isAvatarSlot,
         };
     }
 }
@@ -71,19 +63,19 @@ public class InventorySlotDropMessage : FusionMessageHandler
             return;
         }
 
-        RigReferenceCollection references = null;
-
-        if (NetworkPlayerManager.TryGetPlayer(data.smallId, out var player))
-        {
-            references = player.RigReferences;
-        }
-
-        if (references == null)
+        if (!NetworkPlayerManager.TryGetPlayer(data.smallId, out var player))
         {
             return;
         }
 
-        var slotReceiver = references.GetSlot(data.slotIndex, data.isAvatarSlot);
+        var slotExtender = player.NetworkEntity.GetExtender<InventorySlotReceiverExtender>();
+
+        if (slotExtender == null)
+        {
+            return;
+        }
+
+        var slotReceiver = slotExtender.GetComponent(data.slotIndex);
         WeaponSlot weaponSlot = null;
 
         if (slotReceiver != null && slotReceiver._weaponHost != null)

@@ -81,7 +81,12 @@ public class InventoryAmmoReceiverGrab
             return;
         }
 
-        MagazineUtilities.GrabMagazine(magazine, RigData.RigReferences, handedness);
+        var localPlayer = LocalPlayer.GetNetworkPlayer();
+
+        if (localPlayer != null)
+        {
+            MagazineUtilities.GrabMagazine(magazine, localPlayer, handedness);
+        }
 
         // Send claim message
         using var writer = FusionWriter.Create(MagazineClaimData.Size);

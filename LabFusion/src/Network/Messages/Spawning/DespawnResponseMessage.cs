@@ -104,7 +104,12 @@ public class DespawnResponseMessage : FusionMessageHandler
 
             if (NetworkPlayerManager.TryGetPlayer(despawnerId, out var player))
             {
-                ammoReceiver = player.RigReferences.AmmoReceiver;
+                var ammoReceiverExtender = player.NetworkEntity.GetExtender<InventoryAmmoReceiverExtender>();
+
+                if (ammoReceiverExtender != null)
+                {
+                    ammoReceiver = ammoReceiverExtender.Component;
+                }
             }
 
             if (ammoReceiver)

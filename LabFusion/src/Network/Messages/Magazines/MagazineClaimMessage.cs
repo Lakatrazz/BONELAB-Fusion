@@ -1,5 +1,4 @@
 ﻿using LabFusion.Data;
-using LabFusion.Player;
 using LabFusion.Utilities;
 using LabFusion.Entities;
 
@@ -74,7 +73,7 @@ public class MagazineClaimMessage : FusionMessageHandler
 
         if (NetworkPlayerManager.TryGetPlayer(data.owner, out var player))
         {
-            MagazineUtilities.GrabMagazine(magazineExtender.Component, player.RigReferences, data.handedness);
+            MagazineUtilities.GrabMagazine(magazineExtender.Component, player, data.handedness);
         }
     }
 }

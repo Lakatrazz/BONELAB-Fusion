@@ -1,5 +1,4 @@
 ﻿using LabFusion.Data;
-using LabFusion.Player;
 using LabFusion.Patching;
 using LabFusion.Extensions;
 using LabFusion.Entities;
@@ -15,16 +14,12 @@ public class InventorySlotInsertData : IFusionSerializable
     public ushort syncId;
     public byte slotIndex;
 
-    public bool isAvatarSlot;
-
     public void Serialize(FusionWriter writer)
     {
         writer.Write(smallId);
         writer.Write(inserter);
         writer.Write(syncId);
         writer.Write(slotIndex);
-
-        writer.Write(isAvatarSlot);
     }
 
     public void Deserialize(FusionReader reader)
@@ -33,11 +28,9 @@ public class InventorySlotInsertData : IFusionSerializable
         inserter = reader.ReadByte();
         syncId = reader.ReadUInt16();
         slotIndex = reader.ReadByte();
-
-        isAvatarSlot = reader.ReadBoolean();
     }
 
-    public static InventorySlotInsertData Create(byte smallId, byte inserter, ushort syncId, byte slotIndex, bool isAvatarSlot = false)
+    public static InventorySlotInsertData Create(byte smallId, byte inserter, ushort syncId, byte slotIndex)
     {
         return new InventorySlotInsertData()
         {
@@ -45,8 +38,6 @@ public class InventorySlotInsertData : IFusionSerializable
             inserter = inserter,
             syncId = syncId,
             slotIndex = slotIndex,
-
-            isAvatarSlot = isAvatarSlot,
         };
     }
 }
@@ -77,27 +68,31 @@ public class InventorySlotInsertMessage : FusionMessageHandler
             return;
         }
 
-        var extender = entity.GetExtender<WeaponSlotExtender>();
+        var weaponExtender = entity.GetExtender<WeaponSlotExtender>();
 
-        if (extender == null)
+        if (weaponExtender == null)
         {
             return;
         }
 
-        RigReferenceCollection references = null;
-
-        if (NetworkPlayerManager.TryGetPlayer(data.smallId, out var player))
+        if (!NetworkPlayerManager.TryGetPlayer(data.smallId, out var player))
         {
-            references = player.RigReferences;
+            return;
         }
 
-        if (references != null)
-        {
-            extender.Component.interactableHost.TryDetach();
+        var slotExtender = player.NetworkEntity.GetExtender<InventorySlotReceiverExtender>();
 
-            InventorySlotReceiverDrop.PreventInsertCheck = true;
-            references.GetSlot(data.slotIndex, data.isAvatarSlot).InsertInSlot(extender.Component.interactableHost);
-            InventorySlotReceiverDrop.PreventInsertCheck = false;
+        if (slotExtender == null)
+        {
+            return;
         }
+
+        weaponExtender.Component.interactableHost.TryDetach();
+
+        InventorySlotReceiverDrop.PreventInsertCheck = true;
+
+        slotExtender.GetComponent(data.slotIndex).InsertInSlot(weaponExtender.Component.interactableHost);
+
+        InventorySlotReceiverDrop.PreventInsertCheck = false;
     }
 }

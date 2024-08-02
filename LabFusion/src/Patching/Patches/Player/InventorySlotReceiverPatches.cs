@@ -6,7 +6,6 @@ using LabFusion.Player;
 using LabFusion.SDK.Achievements;
 using LabFusion.Entities;
 using LabFusion.Utilities;
-using LabFusion.Representation;
 
 using Il2CppSLZ.VRMK;
 using Il2CppSLZ.Marrow.Interaction;
@@ -45,15 +44,11 @@ public class InventorySlotReceiverPatches
 
         try
         {
-            bool isAvatarSlot = __instance.GetComponentInParent<Avatar>() != null;
-
             byte? smallId = null;
-            RigReferenceCollection references = null;
 
             if (NetworkPlayerManager.TryGetPlayer(rigManager, out var player))
             {
                 smallId = player.PlayerId.SmallId;
-                references = player.RigReferences;
             }
 
             if (!smallId.HasValue)
@@ -61,7 +56,14 @@ public class InventorySlotReceiverPatches
                 return;
             }
 
-            byte? index = references.GetIndex(__instance, isAvatarSlot);
+            var slotExtender = player.NetworkEntity.GetExtender<InventorySlotReceiverExtender>();
+
+            if (slotExtender == null)
+            {
+                return;
+            }
+
+            byte? index = (byte?)slotExtender.GetIndex(__instance);
 
             if (!index.HasValue)
             {
@@ -82,7 +84,7 @@ public class InventorySlotReceiverPatches
             }
 
             using var writer = FusionWriter.Create(InventorySlotDropData.Size);
-            var data = InventorySlotDropData.Create(smallId.Value, PlayerIdManager.LocalSmallId, index.Value, handedness, isAvatarSlot);
+            var data = InventorySlotDropData.Create(smallId.Value, PlayerIdManager.LocalSmallId, index.Value, handedness);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.InventorySlotDrop, writer);
@@ -147,15 +149,11 @@ public class InventorySlotReceiverDrop
             return;
         }
 
-        bool isAvatarSlot = __instance.GetComponentInParent<Avatar>() != null;
-
         byte? smallId = null;
-        RigReferenceCollection references = null;
 
         if (NetworkPlayerManager.TryGetPlayer(rigManager, out var player))
         {
             smallId = player.PlayerId.SmallId;
-            references = player.RigReferences;
         }
 
         if (!smallId.HasValue)
@@ -163,7 +161,14 @@ public class InventorySlotReceiverDrop
             return;
         }
 
-        byte? index = references.GetIndex(__instance, isAvatarSlot);
+        var slotExtender = player.NetworkEntity.GetExtender<InventorySlotReceiverExtender>();
+
+        if (slotExtender == null)
+        {
+            return;
+        }
+
+        byte? index = (byte?)slotExtender.GetIndex(__instance);
 
         if (!index.HasValue)
         {
@@ -171,7 +176,7 @@ public class InventorySlotReceiverDrop
         }
 
         using var writer = FusionWriter.Create(InventorySlotInsertData.Size);
-        var data = InventorySlotInsertData.Create(smallId.Value, PlayerIdManager.LocalSmallId, entity.Id, index.Value, isAvatarSlot);
+        var data = InventorySlotInsertData.Create(smallId.Value, PlayerIdManager.LocalSmallId, entity.Id, index.Value);
         writer.Write(data);
 
         using var message = FusionMessage.Create(NativeMessageTag.InventorySlotInsert, writer);
