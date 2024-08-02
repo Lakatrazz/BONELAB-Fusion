@@ -3,8 +3,10 @@ using LabFusion.Network;
 
 namespace LabFusion.Downloading.ModIO;
 
-public class SerializableModIOFile : IFusionSerializable
+public class SerializedModIOFile : IFusionSerializable
 {
+    public static readonly SerializedModIOFile Default = new(null);
+
     public ModIOFile File { get; private set; }
 
     public bool HasFile { get; private set; }
@@ -25,9 +27,9 @@ public class SerializableModIOFile : IFusionSerializable
         HasFile = reader.ReadBoolean();
     }
 
-    public SerializableModIOFile() { }
+    public SerializedModIOFile() { }
 
-    public SerializableModIOFile(ModIOFile? file)
+    public SerializedModIOFile(ModIOFile? file)
     {
         HasFile = file.HasValue;
 
