@@ -28,7 +28,7 @@ public static class VoiceInfo
 
             if (RigData.HasPlayer)
             {
-                isDying = RigData.RigReferences.Health.deathIsImminent;
+                isDying = RigData.Refs.Health.deathIsImminent;
             }
 
             return FusionPreferences.ClientSettings.Muted || isDying;

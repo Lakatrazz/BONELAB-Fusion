@@ -19,13 +19,13 @@ public class RigGrabber
         public SimpleTransform? targetInBase = null;
     }
 
-    private RigReferenceCollection _references = null;
+    private RigRefs _references = null;
 
     private bool _isCulled = false;
 
     private FusionDictionary<Handedness, GrabberData> _lastGrabs = new();
 
-    public RigGrabber(RigReferenceCollection references)
+    public RigGrabber(RigRefs references)
     {
         _references = references;
     }

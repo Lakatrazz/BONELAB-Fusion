@@ -38,7 +38,7 @@ public static class LocalPlayer
         // Clear constraints
         try
         {
-            var physicsRig = RigData.RigReferences.RigManager.physicsRig;
+            var physicsRig = RigData.Refs.RigManager.physicsRig;
             var constraintTrackers = physicsRig.GetComponentsInChildren<ConstraintTracker>();
 
             foreach (var tracker in constraintTrackers)

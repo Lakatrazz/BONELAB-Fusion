@@ -125,7 +125,7 @@ namespace LabFusion.Patching
                 yield break;
 
             // Does the avatar still apply?
-            if (player.RigReferences.RigManager.avatar != avatar)
+            if (player.RigRefs.RigManager.avatar != avatar)
                 yield break;
 
             // Go ahead and disconnect the user

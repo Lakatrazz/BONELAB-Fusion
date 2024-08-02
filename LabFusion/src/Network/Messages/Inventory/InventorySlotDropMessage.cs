@@ -98,11 +98,11 @@ public class InventorySlotDropMessage : FusionMessageHandler
         {
             if (weaponSlot && weaponSlot.grip)
             {
-                weaponSlot.grip.MoveIntoHand(grabber.RigReferences.GetHand(data.handedness));
+                weaponSlot.grip.MoveIntoHand(grabber.RigRefs.GetHand(data.handedness));
                 grabber.Grabber.Attach(data.handedness, weaponSlot.grip);
             }
 
-            var hand = grabber.RigReferences.GetHand(data.handedness);
+            var hand = grabber.RigRefs.GetHand(data.handedness);
             if (hand)
             {
                 hand.gameObject.GetComponent<HandSFX>().BodySlot();

@@ -33,7 +33,7 @@ namespace LabFusion.Utilities
 
         private static void GetHandPose()
         {
-            SoftGrabPose = RigData.RigReferences.RigManager.worldGripHandPose;
+            SoftGrabPose = RigData.Refs.RigManager.worldGripHandPose;
 
             if (SoftGrabPose != null)
             {

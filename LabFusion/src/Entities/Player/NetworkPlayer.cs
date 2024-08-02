@@ -43,8 +43,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     public string Username => _username;
 
-    private RigReferenceCollection _rigReferences = null;
-    public RigReferenceCollection RigReferences => _rigReferences;
+    private RigRefs _rigRefs = null;
+    public RigRefs RigRefs => _rigRefs;
 
     private RigSkeleton _rigSkeleton = null;
     public RigSkeleton RigSkeleton => _rigSkeleton;
@@ -79,7 +79,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     public SerializedPlayerSettings playerSettings = null;
 
-    public bool HasRig => RigReferences != null && RigReferences.IsValid;
+    public bool HasRig => RigRefs != null && RigRefs.IsValid;
 
     private PDController _pelvisPDController = null;
 
@@ -126,7 +126,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     {
         if (NetworkEntity.IsOwner)
         {
-            OnFoundRigManager(RigData.RigReferences.RigManager);
+            OnFoundRigManager(RigData.Refs.RigManager);
         }
         else
         {
@@ -178,7 +178,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         if (!HasRig)
             return;
 
-        var pullCord = RigReferences.RigManager.GetComponentInChildren<PullCordDevice>(true);
+        var pullCord = RigRefs.RigManager.GetComponentInChildren<PullCordDevice>(true);
         pullCord.PlayAvatarParticleEffects();
 
         pullCord._map3.PlayAtPoint(pullCord.switchAvatar, pullCord.transform.position, null, pullCord.switchVolume, 1f, new(0f), 1f, 1f);
@@ -191,7 +191,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             return;
         }
 
-        var pullCord = RigReferences.RigManager.GetComponentInChildren<PullCordDevice>(true);
+        var pullCord = RigRefs.RigManager.GetComponentInChildren<PullCordDevice>(true);
 
         // If the ball should be enabled, make the distance required infinity so it always shows
         if (isEnabled)
@@ -312,7 +312,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
             if (HasRig)
             {
-                _nametag.UpdateSettings(RigReferences.RigManager);
+                _nametag.UpdateSettings(RigRefs.RigManager);
             }
         }
     }
@@ -340,7 +340,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     {
         if (HasRig)
         {
-            _nametag.UpdateSettings(RigReferences.RigManager);
+            _nametag.UpdateSettings(RigRefs.RigManager);
         }
 
         UpdateVoiceSourceSettings();
@@ -361,7 +361,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         // Modify the source settings
-        var rm = RigReferences.RigManager;
+        var rm = RigRefs.RigManager;
         if (HasRig)
         {
             var mouthSource = rm.physicsRig.headSfx.mouthSrc;
@@ -403,7 +403,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         if (_voiceSource == null)
             return;
 
-        var rm = RigReferences.RigManager;
+        var rm = RigRefs.RigManager;
         if (HasRig && rm._avatar)
         {
             float heightMult = rm._avatar.height / 1.76f;
@@ -495,8 +495,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
         else
         {
-            OnHandUpdate(RigReferences.LeftHand);
-            OnHandUpdate(RigReferences.RightHand);
+            OnHandUpdate(RigRefs.LeftHand);
+            OnHandUpdate(RigRefs.RightHand);
 
             OnUpdateVoiceSource();
 
@@ -529,13 +529,13 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             return;
         }
 
-        _nametag.UpdateTransform(RigReferences.RigManager);
+        _nametag.UpdateTransform(RigRefs.RigManager);
 
         // Update the player if its dirty and has an avatar
-        var rm = RigReferences.RigManager;
+        var rm = RigRefs.RigManager;
 
         // Resolve avatar changes
-        AvatarSetter.Resolve(RigReferences);
+        AvatarSetter.Resolve(RigRefs);
 
         // Toggle ragdoll mode
         if (_isRagdollDirty)
@@ -575,7 +575,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         // Update distance value
-        DistanceSqr = (RigReferences.Head.position - RigData.RigReferences.Head.position).sqrMagnitude;
+        DistanceSqr = (RigRefs.Head.position - RigData.Refs.Head.position).sqrMagnitude;
     }
 
     private void OnCullExtras()
@@ -693,7 +693,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         // Check for seating
-        var rigManager = RigReferences.RigManager;
+        var rigManager = RigRefs.RigManager;
 
         if (rigManager.activeSeat)
         {
@@ -778,13 +778,13 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         _marrowEntity = rigManager.physicsRig.marrowEntity;
 
         _rigSkeleton = new(rigManager);
-        _rigReferences = new(rigManager);
+        _rigRefs = new(rigManager);
 
-        _rigReferences.HookOnDestroy(OnRigDestroyed);
+        _rigRefs.HookOnDestroy(OnRigDestroyed);
 
         _pose = new();
 
-        _grabber = new RigGrabber(RigReferences);
+        _grabber = new RigGrabber(RigRefs);
 
         _art = new(rigManager);
         _physics = new(rigManager);
@@ -811,20 +811,20 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void HookRig()
     {
-        RigCache.Add(RigReferences.RigManager, this);
+        RigCache.Add(RigRefs.RigManager, this);
         IMarrowEntityExtender.Cache.Add(MarrowEntity, NetworkEntity);
 
         _onAvatarSwappedAction = (Action)OnAvatarSwapped;
 
-        RigReferences.RigManager.onAvatarSwapped += _onAvatarSwappedAction;
+        RigRefs.RigManager.onAvatarSwapped += _onAvatarSwappedAction;
     }
 
     private void UnhookRig()
     {
-        RigCache.Remove(RigReferences.RigManager);
+        RigCache.Remove(RigRefs.RigManager);
         IMarrowEntityExtender.Cache.Remove(MarrowEntity);
 
-        RigReferences.RigManager.onAvatarSwapped -= _onAvatarSwappedAction;
+        RigRefs.RigManager.onAvatarSwapped -= _onAvatarSwappedAction;
 
         _onAvatarSwappedAction = null;
     }
@@ -843,8 +843,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             return;
         }
 
-        var physicsRig = RigReferences.RigManager.physicsRig;
-        var avatar = RigReferences.RigManager.avatar;
+        var physicsRig = RigRefs.RigManager.physicsRig;
+        var avatar = RigRefs.RigManager.avatar;
 
         var parents = new GameObject[] { physicsRig.gameObject, avatar.gameObject };
 

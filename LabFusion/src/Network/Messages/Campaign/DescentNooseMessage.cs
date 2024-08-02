@@ -72,8 +72,8 @@ public class DescentNooseMessage : FusionMessageHandler
                     // Assign the RigManager and Health to the noose
                     // We assign the rigmanager so the noose knows what neck to joint to
                     // The player health is also assigned so it doesn't damage the local player
-                    DescentData.Noose.rM = player.RigReferences.RigManager;
-                    DescentData.Noose.pH = player.RigReferences.Health;
+                    DescentData.Noose.rM = player.RigRefs.RigManager;
+                    DescentData.Noose.pH = player.RigRefs.Health;
 
                     // Now we actually attach the neck of the player
                     DescentData.Noose.AttachNeck();

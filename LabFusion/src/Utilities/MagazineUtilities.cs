@@ -28,7 +28,7 @@ public static class MagazineUtilities
 
     public static void GrabMagazine(Magazine magazine, NetworkPlayer player, Handedness handedness)
     {
-        var rigManager = player.RigReferences.RigManager;
+        var rigManager = player.RigRefs.RigManager;
 
         var ammoReceiverExtender = player.NetworkEntity.GetExtender<InventoryAmmoReceiverExtender>();
 

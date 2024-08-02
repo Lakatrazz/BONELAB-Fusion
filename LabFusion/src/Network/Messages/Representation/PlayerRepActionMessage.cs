@@ -66,7 +66,7 @@ public class PlayerRepActionMessage : FusionMessageHandler
         // If this isn't our rig, call these functions
         if (!player.NetworkEntity.IsOwner && player.HasRig)
         {
-            var rm = player.RigReferences.RigManager;
+            var rm = player.RigRefs.RigManager;
 
             switch (data.type)
             {
@@ -78,7 +78,7 @@ public class PlayerRepActionMessage : FusionMessageHandler
                     break;
                 case PlayerActionType.DEATH:
                     rm.physicsRig.headSfx.DeathVocal();
-                    player.RigReferences.DisableInteraction();
+                    player.RigRefs.DisableInteraction();
                     break;
                 case PlayerActionType.DYING:
                     rm.physicsRig.headSfx.DyingVocal();

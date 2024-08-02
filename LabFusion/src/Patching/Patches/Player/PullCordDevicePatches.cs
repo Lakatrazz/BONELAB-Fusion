@@ -72,7 +72,7 @@ public static class PullCordDevicePatches
     public static void OnBallGripDetached(PullCordDevice __instance, Hand hand)
     {
         // Prevent player rep body logs from inserting into the body mall
-        if (NetworkInfo.HasServer && __instance.rm != RigData.RigReferences.RigManager)
+        if (NetworkInfo.HasServer && __instance.rm != RigData.Refs.RigManager)
         {
             var apv = __instance.apv;
 

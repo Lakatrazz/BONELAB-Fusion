@@ -87,11 +87,11 @@ namespace LabFusion.Network
 
                 if (data.isIngress)
                 {
-                    seat.IngressRig(player.RigReferences.RigManager);
+                    seat.IngressRig(player.RigRefs.RigManager);
                 }
-                else if (player.RigReferences.RigManager.activeSeat)
+                else if (player.RigRefs.RigManager.activeSeat)
                 {
-                    player.RigReferences.RigManager.activeSeat.EgressRig(true);
+                    player.RigRefs.RigManager.activeSeat.EgressRig(true);
                 }
 
                 SeatPatches.IgnorePatches = false;

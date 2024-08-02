@@ -64,7 +64,7 @@ public class TeamLogoInstance
     {
         if (player != null)
         {
-            var rm = player.RigReferences.RigManager;
+            var rm = player.RigRefs.RigManager;
 
             if (!rm.IsNOC())
             {

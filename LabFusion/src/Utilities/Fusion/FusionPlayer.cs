@@ -51,7 +51,7 @@ public static class FusionPlayer
 
     private static void CheckFloatingPoint()
     {
-        var rm = RigData.RigReferences.RigManager;
+        var rm = RigData.Refs.RigManager;
         var position = rm.physicsRig.feet.transform.position;
 
         if (!position.IsNanOrInf())
@@ -144,7 +144,7 @@ public static class FusionPlayer
         if (!RigData.HasPlayer)
             return true;
 
-        return rigManager == RigData.RigReferences.RigManager;
+        return rigManager == RigData.Refs.RigManager;
     }
 
     /// <summary>
@@ -191,7 +191,7 @@ public static class FusionPlayer
     /// <param name="isMortal"></param>
     public static void SetMortality(bool isMortal)
     {
-        var rm = RigData.RigReferences.RigManager;
+        var rm = RigData.Refs.RigManager;
 
         if (!rm.IsNOC())
         {
@@ -229,7 +229,7 @@ public static class FusionPlayer
         if (!RigData.HasPlayer)
             return;
 
-        var rm = RigData.RigReferences.RigManager;
+        var rm = RigData.Refs.RigManager;
 
         rm.Teleport(position, fwdSnap, zeroVelocity);
         rm.physicsRig.ResetHands(Handedness.BOTH);
@@ -288,7 +288,7 @@ public static class FusionPlayer
                 return;
             }
 
-            var rm = RigData.RigReferences.RigManager;
+            var rm = RigData.Refs.RigManager;
             rm.SwapAvatarCrate(new Barcode(AvatarOverride), true, (Action<bool>)((success) =>
             {
                 // If the avatar forcing doesn't work, change into polyblank
@@ -304,7 +304,7 @@ public static class FusionPlayer
     {
         if (RigData.HasPlayer)
         {
-            var rm = RigData.RigReferences.RigManager;
+            var rm = RigData.Refs.RigManager;
             var avatar = rm._avatar;
 
             if (VitalityOverride.HasValue)

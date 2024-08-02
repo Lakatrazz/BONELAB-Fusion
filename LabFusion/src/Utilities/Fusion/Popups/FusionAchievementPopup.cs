@@ -36,7 +36,7 @@ public static class FusionAchievementPopup
         _timeOfPopup = TimeUtilities.TimeSinceStartup;
         var achievement = _queuedAchievements.Dequeue();
 
-        var camera = RigData.RigReferences.ControllerRig.m_head;
+        var camera = RigData.Refs.ControllerRig.m_head;
 
         var spawnable = new Spawnable()
         {

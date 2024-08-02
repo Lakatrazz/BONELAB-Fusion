@@ -174,7 +174,7 @@ public static class FusionNotifier
         }
 
         // Show to the player
-        var rm = RigData.RigReferences.RigManager;
+        var rm = RigData.Refs.RigManager;
 
         if (notification.isPopup && !rm.IsNOC())
         {
@@ -225,7 +225,7 @@ public static class FusionNotifier
 
     internal static void EnableTutorialRig()
     {
-        var rm = RigData.RigReferences.RigManager;
+        var rm = RigData.Refs.RigManager;
 
         if (!rm.IsNOC())
         {
@@ -240,7 +240,7 @@ public static class FusionNotifier
 
     internal static bool IsPlayingNotification()
     {
-        var rm = RigData.RigReferences.RigManager;
+        var rm = RigData.Refs.RigManager;
 
         if (!rm.IsNOC())
         {

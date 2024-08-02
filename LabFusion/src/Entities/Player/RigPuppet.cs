@@ -11,7 +11,7 @@ namespace LabFusion.Entities;
 
 public class RigPuppet
 {
-    private RigReferenceCollection _selfReferences = null;
+    private RigRefs _selfReferences = null;
 
     public bool HasPuppet => _selfReferences != null && _selfReferences.IsValid;
 
@@ -45,7 +45,7 @@ public class RigPuppet
         rig.ControllerRig.rightController.handedness = Handedness.RIGHT;
 
         // Get references
-        _selfReferences = new RigReferenceCollection(rig);
+        _selfReferences = new RigRefs(rig);
 
         // Shrink holster hitboxes for easier grabbing
         foreach (var slot in _selfReferences.RigSlots)

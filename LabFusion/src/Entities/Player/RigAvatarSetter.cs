@@ -30,7 +30,7 @@ public class RigAvatarSetter
     private bool _isVitalsDirty = false;
     private SerializedBodyVitals _vitals = null;
 
-    private RigReferenceCollection _references = null;
+    private RigRefs _references = null;
 
     public void SwapAvatar(SerializedAvatarStats stats, string barcode)
     {
@@ -61,7 +61,7 @@ public class RigAvatarSetter
         SetVitalsDirty();
     }
 
-    public void Resolve(RigReferenceCollection references)
+    public void Resolve(RigRefs references)
     {
         _references = references;
 

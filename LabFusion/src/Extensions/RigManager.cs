@@ -1,19 +1,20 @@
-﻿using LabFusion.Data;
-
-using MelonLoader;
+﻿using MelonLoader;
 
 using Il2CppSLZ.Marrow.Warehouse;
+
 using System.Collections;
 
 using UnityEngine;
 
 using Avatar = Il2CppSLZ.VRMK.Avatar;
 
+using LabFusion.Entities;
+
 namespace LabFusion.Extensions;
 
 public static class RigManagerExtensions
 {
-    public static void SwapAvatarCrate(this RigReferenceCollection references, string barcode, Action<bool> callback = null, Action<string, GameObject> preSwapAvatar = null)
+    public static void SwapAvatarCrate(this RigRefs references, string barcode, Action<bool> callback = null, Action<string, GameObject> preSwapAvatar = null)
     {
         AvatarCrateReference crateRef = new(barcode);
         var crate = crateRef.Crate;
@@ -28,7 +29,7 @@ public static class RigManagerExtensions
         }
     }
 
-    private static IEnumerator CoWaitAndSwapAvatarRoutine(RigReferenceCollection references, AvatarCrate crate, Action<bool> callback = null, Action<string, GameObject> preSwapAvatar = null)
+    private static IEnumerator CoWaitAndSwapAvatarRoutine(RigRefs references, AvatarCrate crate, Action<bool> callback = null, Action<string, GameObject> preSwapAvatar = null)
     {
         bool loaded = false;
         GameObject avatar = null;

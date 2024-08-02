@@ -251,7 +251,7 @@ public class HideAndSeek : Gamemode
 
         if (player.HasRig)
         {
-            var feetPosition = player.RigReferences.RigManager.physicsRig.feet.transform.position;
+            var feetPosition = player.RigRefs.RigManager.physicsRig.feet.transform.position;
 
             FusionPlayer.Teleport(feetPosition, Vector3.forward, true);
         }
@@ -265,7 +265,7 @@ public class HideAndSeek : Gamemode
 
         canvas.renderMode = RenderMode.WorldSpace;
         var canvasTransform = canvasGameObject.transform;
-        canvasTransform.parent = RigData.RigReferences.RigManager.ControllerRig.m_head;
+        canvasTransform.parent = RigData.Refs.RigManager.ControllerRig.m_head;
         canvasTransform.localPosition = Vector3Extensions.forward * 0.1f;
         canvasTransform.localRotation = Quaternion.Euler(0f, 180f, 0f);
         canvasTransform.localScale = Vector3Extensions.one * 10f;

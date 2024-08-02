@@ -19,7 +19,7 @@ internal static class PhysicsUtilities
         }
 
         var mode = FusionPreferences.TimeScaleMode;
-        var references = RigData.RigReferences;
+        var references = RigData.Refs;
         var rm = references.RigManager;
 
         switch (mode)

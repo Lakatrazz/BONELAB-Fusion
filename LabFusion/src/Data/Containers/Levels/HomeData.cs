@@ -81,7 +81,7 @@ public class HomeData : LevelDataHandler
     {
         if (RigData.HasPlayer)
         {
-            var rm = RigData.RigReferences.RigManager;
+            var rm = RigData.Refs.RigManager;
             var pos = new Vector3(-0.25f, 95.23f, 13f);
 
             rm.Teleport(pos, true);

@@ -23,13 +23,13 @@ public static class PlayerRepUtilities
     // This should never change, incase other mods rely on it.
     public const string PlayerRepName = "[RigManager (Networked)]";
 
-    public static bool TryGetReferences(byte smallId, out RigReferenceCollection references)
+    public static bool TryGetReferences(byte smallId, out RigRefs references)
     {
         references = null;
 
         if (NetworkPlayerManager.TryGetPlayer(smallId, out var player))
         {
-            references = player.RigReferences;
+            references = player.RigRefs;
             return true;
         }
 
@@ -64,7 +64,7 @@ public static class PlayerRepUtilities
         go.name = PlayerRepName;
         go.SetActive(false);
 
-        if (RigData.RigReferences.RigManager)
+        if (RigData.Refs.RigManager)
         {
             go.transform.position = RigData.RigSpawn;
             go.transform.rotation = RigData.RigSpawnRot;

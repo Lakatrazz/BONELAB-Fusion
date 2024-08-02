@@ -37,7 +37,7 @@ public class PlayerPoseUpdateData : IFusionSerializable
 
     public static PlayerPoseUpdateData Create(byte playerId, RigPose pose)
     {
-        var health = RigData.RigReferences.Health;
+        var health = RigData.Refs.Health;
 
         var data = new PlayerPoseUpdateData
         {

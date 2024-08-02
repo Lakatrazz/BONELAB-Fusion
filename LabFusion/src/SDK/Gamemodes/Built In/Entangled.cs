@@ -334,7 +334,7 @@ public class Entangled : Gamemode
         // Teleport the first player to the second
         if (NetworkPlayerManager.TryGetPlayer(player2, out var rep) && rep.HasRig)
         {
-            PlayerSender.SendPlayerTeleport(player1, rep.RigReferences.RigManager.physicsRig._feetRb.position);
+            PlayerSender.SendPlayerTeleport(player1, rep.RigRefs.RigManager.physicsRig._feetRb.position);
         }
     }
 

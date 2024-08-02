@@ -1,12 +1,12 @@
-﻿using LabFusion.Data;
+﻿using Il2CppSLZ.Marrow;
 
-using Il2CppSLZ.Marrow;
+using LabFusion.Entities;
 
 namespace LabFusion.Extensions;
 
 public static class HandExtensions
 {
-    public static void TryAutoHolsterGrip(this Hand hand, RigReferenceCollection collection)
+    public static void TryAutoHolsterGrip(this Hand hand, RigRefs collection)
     {
         if (hand.m_CurrentAttachedGO == null)
         {

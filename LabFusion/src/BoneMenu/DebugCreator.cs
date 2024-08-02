@@ -19,13 +19,13 @@ public static partial class BoneMenuCreator
         {
             PlayerRepUtilities.CreateNewRig((rig) =>
             {
-                rig.transform.position = RigData.RigReferences.RigManager.physicsRig.feet.transform.position;
+                rig.transform.position = RigData.Refs.RigManager.physicsRig.feet.transform.position;
             });
         });
 
         debugCategory.CreateFunction("Send To Floating Point", Color.red, () =>
         {
-            var physRig = RigData.RigReferences.RigManager.physicsRig;
+            var physRig = RigData.Refs.RigManager.physicsRig;
 
             float force = 100000000000000f;
 

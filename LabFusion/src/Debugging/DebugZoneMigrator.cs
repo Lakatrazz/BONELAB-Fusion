@@ -27,7 +27,7 @@ public static class DebugZoneMigrator
 
     public static void SpawnMigrator()
     {
-        var rigManager = RigData.RigReferences.RigManager;
+        var rigManager = RigData.Refs.RigManager;
         var physicsRig = rigManager.physicsRig;
 
         if (_isPlayerMode)
@@ -56,7 +56,7 @@ public static class DebugZoneMigrator
             return;
         }
 
-        var rigManager = RigData.RigReferences.RigManager;
+        var rigManager = RigData.Refs.RigManager;
         var physicsRig = rigManager.physicsRig;
         var rightHand = physicsRig.rightHand;
 

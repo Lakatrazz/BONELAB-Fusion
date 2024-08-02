@@ -69,7 +69,7 @@ public class PlayerRepDamageMessage : FusionMessageHandler
         if (data.damagedId == PlayerIdManager.LocalSmallId)
         {
             // Get player health
-            var rm = RigData.RigReferences.RigManager;
+            var rm = RigData.Refs.RigManager;
             var health = rm.health;
 
             // Get attack and find the collider

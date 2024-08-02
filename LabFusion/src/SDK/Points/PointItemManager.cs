@@ -349,12 +349,12 @@ public static class PointItemManager
 
         if (id == null || id.IsOwner)
         {
-            manager = RigData.RigReferences.RigManager;
+            manager = RigData.Refs.RigManager;
             type = PointItemPayloadType.SELF;
         }
         else if (NetworkPlayerManager.TryGetPlayer(id, out var rep))
         {
-            manager = rep.RigReferences.RigManager;
+            manager = rep.RigRefs.RigManager;
             type = PointItemPayloadType.PLAYER_REP;
         }
 
@@ -388,12 +388,12 @@ public static class PointItemManager
 
         if (id == null || id.IsOwner)
         {
-            manager = RigData.RigReferences.RigManager;
+            manager = RigData.Refs.RigManager;
             type = PointItemPayloadType.SELF;
         }
         else if (NetworkPlayerManager.TryGetPlayer(id, out var rep))
         {
-            manager = rep.RigReferences.RigManager;
+            manager = rep.RigRefs.RigManager;
             type = PointItemPayloadType.PLAYER_REP;
         }
 

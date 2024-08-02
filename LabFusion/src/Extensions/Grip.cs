@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow.Utilities;
 using Il2CppSLZ.Marrow;
@@ -9,7 +10,7 @@ namespace LabFusion.Extensions;
 
 public static class GripExtensions
 {
-    public static void TryAutoHolster(this Grip grip, RigReferenceCollection collection)
+    public static void TryAutoHolster(this Grip grip, RigRefs collection)
     {
         if (!grip.HasHost)
             return;

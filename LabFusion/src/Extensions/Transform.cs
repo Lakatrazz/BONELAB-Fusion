@@ -18,7 +18,7 @@ namespace LabFusion.Extensions
         {
             if (RigData.HasPlayer)
             {
-                var rm = RigData.RigReferences.RigManager;
+                var rm = RigData.Refs.RigManager;
                 var head = rm.physicsRig.m_head;
                 transform.rotation = Quaternion.LookRotation(Vector3.Normalize(transform.position - head.position), head.up);
             }

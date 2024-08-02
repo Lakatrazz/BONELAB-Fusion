@@ -32,7 +32,7 @@ namespace LabFusion.Patching
             TriggerRefProxy proxy = attack.proxy;
 
             // Check if this was a bullet attack + it was us who shot the bullet
-            if (proxy == RigData.RigReferences.Proxy && attack.attackType == AttackType.Piercing)
+            if (proxy == RigData.Refs.Proxy && attack.attackType == AttackType.Piercing)
             {
                 var rb = collider.attachedRigidbody;
 
