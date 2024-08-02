@@ -1,20 +1,18 @@
-﻿using LabFusion.Extensions;
-
-using Il2CppSLZ.Marrow.Data;
+﻿using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow.Audio;
 using Il2CppSLZ.Marrow;
 
 using LabFusion.Marrow;
+using LabFusion.Data;
+using LabFusion.Extensions;
 
 namespace LabFusion.Utilities;
 
 public static class MagazineUtilities
 {
-    public static void ClaimMagazine(Magazine magazine, RigManager rigManager)
+    public static void ClaimMagazine(Magazine magazine, InventoryAmmoReceiver ammoReceiver)
     {
-        var ammoReceiver = rigManager.GetComponentInChildren<InventoryAmmoReceiver>(true);
-
         CartridgeData cart = ammoReceiver.defaultLightCart;
 
         if (ammoReceiver._selectedCartridgeData != null)
@@ -28,9 +26,11 @@ public static class MagazineUtilities
         SafeAudio3dPlayer.PlayAtPoint(ammoReceiver.grabClips, ammoReceiver.transform.position, Audio3dManager.softInteraction, 0.2f);
     }
 
-    public static void GrabMagazine(Magazine magazine, RigManager rigManager, Handedness handedness)
+    public static void GrabMagazine(Magazine magazine, RigReferenceCollection references, Handedness handedness)
     {
-        ClaimMagazine(magazine, rigManager);
+        var rigManager = references.RigManager;
+
+        ClaimMagazine(magazine, references.AmmoReceiver);
 
         // Attach the object to the hand
         var grip = magazine.grip;

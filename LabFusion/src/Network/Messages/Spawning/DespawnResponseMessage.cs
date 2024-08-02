@@ -102,9 +102,9 @@ public class DespawnResponseMessage : FusionMessageHandler
         {
             InventoryAmmoReceiver ammoReceiver = null;
 
-            if (NetworkPlayerManager.TryGetPlayer(despawnerId, out var rep))
+            if (NetworkPlayerManager.TryGetPlayer(despawnerId, out var player))
             {
-                ammoReceiver = rep.RigReferences.RigManager.GetComponentInChildren<InventoryAmmoReceiver>(true);
+                ammoReceiver = player.RigReferences.AmmoReceiver;
             }
 
             if (ammoReceiver)

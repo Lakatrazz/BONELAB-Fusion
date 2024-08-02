@@ -81,7 +81,7 @@ public class InventoryAmmoReceiverGrab
             return;
         }
 
-        MagazineUtilities.GrabMagazine(magazine, RigData.RigReferences.RigManager, handedness);
+        MagazineUtilities.GrabMagazine(magazine, RigData.RigReferences, handedness);
 
         // Send claim message
         using var writer = FusionWriter.Create(MagazineClaimData.Size);

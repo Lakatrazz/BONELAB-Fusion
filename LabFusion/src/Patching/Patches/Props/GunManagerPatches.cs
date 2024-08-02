@@ -29,8 +29,7 @@ public static class GunManagerPatches
 
     private static void OnNetworkGrab(NetworkPlayer player, Gun gun)
     {
-        // In the future cache this somewhere, preferably
-        var ammoReceiver = player.RigReferences.RigManager.GetComponentInChildren<InventoryAmmoReceiver>(true);
+        var ammoReceiver = player.RigReferences.AmmoReceiver;
 
         // Switch the magazine and cartridge data, so that grabbed magazines have the correct type
         ammoReceiver.SwitchMagazine(gun.defaultMagazine, gun.defaultCartridge);

@@ -74,7 +74,7 @@ public class MagazineClaimMessage : FusionMessageHandler
 
         if (NetworkPlayerManager.TryGetPlayer(data.owner, out var player))
         {
-            MagazineUtilities.GrabMagazine(magazineExtender.Component, player.RigReferences.RigManager, data.handedness);
+            MagazineUtilities.GrabMagazine(magazineExtender.Component, player.RigReferences, data.handedness);
         }
     }
 }
