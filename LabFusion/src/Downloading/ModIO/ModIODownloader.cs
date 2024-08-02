@@ -1,5 +1,7 @@
 ﻿using LabFusion.Utilities;
+
 using MelonLoader;
+
 using System.Collections;
 
 namespace LabFusion.Downloading.ModIO;
@@ -68,9 +70,19 @@ public static class ModIODownloader
             // Request the latest file id
             ModIOManager.GetMod(modFile.ModId, OnRequestedMod);
 
-            void OnRequestedMod(ModData modData)
+            void OnRequestedMod(ModCallbackInfo info)
             {
-                var platform = ModIOManager.GetValidPlatform(modData);
+                if (info.result == ModResult.FAILED)
+                {
+                    FusionLogger.Warn($"Failed getting a mod file for mod {modFile.ModId}, cancelling download!");
+
+                    transaction.callback?.Invoke(DownloadCallbackInfo.FailedCallback);
+
+                    EndDownload();
+                    return;
+                }
+
+                var platform = ModIOManager.GetValidPlatform(info.data);
 
                 if (!platform.HasValue)
                 {
@@ -82,7 +94,7 @@ public static class ModIODownloader
                     return;
                 }
 
-                modFile = new ModIOFile(modData.Id, platform.Value.ModfileLive);
+                modFile = new ModIOFile(info.data.Id, platform.Value.ModfileLive);
 
                 OnReceivedFile(modFile);
             }

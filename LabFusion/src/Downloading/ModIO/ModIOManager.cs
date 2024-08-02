@@ -32,7 +32,7 @@ public static class ModIOManager
         return null;
     }
 
-    public static void GetMod(int modId, Action<ModData> modCallback)
+    public static void GetMod(int modId, ModCallback modCallback)
     {
         var url = $"{ModIOSettings.GameApiPath}{modId}";
 
@@ -44,31 +44,82 @@ public static class ModIOManager
         }
     }
 
-    private static IEnumerator CoGetMod(string url, string token, Action<ModData> modCallback)
+    private static IEnumerator CoGetMod(string url, string token, ModCallback modCallback)
     {
         HttpClient client = new();
         client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
         // Read the mod json
-        var streamTask = client.GetStreamAsync(url);
+        Task<Stream> streamTask;
 
+        // Handle any errors by running the callback as a failure
+        try
+        {
+            streamTask = client.GetStreamAsync(url);
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("getting stream from HttpClient", e);
+
+            modCallback?.Invoke(ModCallbackInfo.FailedCallback);
+            yield break;
+        }
+
+        // Wait for completion
         while (!streamTask.IsCompleted)
         {
             yield return null;
         }
 
-        var jsonTask = new StreamReader(streamTask.Result).ReadToEndAsync();
+        // Check for failure
+        if (!streamTask.IsCompletedSuccessfully)
+        {
+            modCallback?.Invoke(ModCallbackInfo.FailedCallback);
 
+            yield break;
+        }
+
+        Task<string> jsonTask;
+
+        // Handle any errors by running the callback as a failure
+        try
+        {
+            jsonTask = new StreamReader(streamTask.Result).ReadToEndAsync();
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("reading mod.io mod stream", e);
+
+            modCallback?.Invoke(ModCallbackInfo.FailedCallback);
+
+            yield break;
+        }
+
+        // Wait for completion
         while (!jsonTask.IsCompleted)
         {
             yield return null;
+        }
+
+        // Check for failure
+        if (!jsonTask.IsCompletedSuccessfully)
+        {
+            modCallback?.Invoke(ModCallbackInfo.FailedCallback);
+
+            yield break;
         }
 
         // Convert to ModData
         var jObject = JObject.Parse(jsonTask.Result);
 
         var modData = new ModData(jObject);
-        modCallback?.Invoke(modData);
+        var modCallbackInfo = new ModCallbackInfo()
+        {
+            data = modData,
+            result = ModResult.SUCCEEDED,
+        };
+
+        modCallback?.Invoke(modCallbackInfo);
     }
 
     public static string GetActivePlatform()

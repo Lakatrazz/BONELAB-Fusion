@@ -2,6 +2,20 @@
 
 namespace LabFusion.Downloading.ModIO;
 
+public delegate void ModCallback(ModCallbackInfo info);
+
+public struct ModCallbackInfo
+{
+    public static readonly ModCallbackInfo FailedCallback = new()
+    {
+        data = default,
+        result = ModResult.FAILED,
+    };
+
+    public ModData data;
+    public ModResult result;
+}
+
 [Serializable]
 public readonly struct ModData
 {

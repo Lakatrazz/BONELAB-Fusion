@@ -78,7 +78,7 @@ public static class ModForklift
             var info = new DownloadCallbackInfo()
             {
                 pallet = pallet,
-                result = DownloadCallbackInfo.DownloadResult.SUCCEEDED,
+                result = ModResult.SUCCEEDED,
             };
 
             shipment.callback?.Invoke(info);
