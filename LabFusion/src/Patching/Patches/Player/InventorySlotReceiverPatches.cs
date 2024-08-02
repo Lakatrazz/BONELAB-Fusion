@@ -50,10 +50,10 @@ public class InventorySlotReceiverPatches
             byte? smallId = null;
             RigReferenceCollection references = null;
 
-            if (PlayerRepUtilities.TryGetRigInfo(rigManager, out var id, out var rigReferences))
+            if (NetworkPlayerManager.TryGetPlayer(rigManager, out var player))
             {
-                smallId = id;
-                references = rigReferences;
+                smallId = player.PlayerId.SmallId;
+                references = player.RigReferences;
             }
 
             if (!smallId.HasValue)
@@ -152,19 +152,23 @@ public class InventorySlotReceiverDrop
         byte? smallId = null;
         RigReferenceCollection references = null;
 
-        if (PlayerRepUtilities.TryGetRigInfo(rigManager, out var id, out var rigReferences))
+        if (NetworkPlayerManager.TryGetPlayer(rigManager, out var player))
         {
-            smallId = id;
-            references = rigReferences;
+            smallId = player.PlayerId.SmallId;
+            references = player.RigReferences;
         }
 
         if (!smallId.HasValue)
+        {
             return;
+        }
 
         byte? index = references.GetIndex(__instance, isAvatarSlot);
 
         if (!index.HasValue)
+        {
             return;
+        }
 
         using var writer = FusionWriter.Create(InventorySlotInsertData.Size);
         var data = InventorySlotInsertData.Create(smallId.Value, PlayerIdManager.LocalSmallId, entity.Id, index.Value, isAvatarSlot);

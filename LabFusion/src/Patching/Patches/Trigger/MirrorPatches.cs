@@ -11,6 +11,7 @@ using LabFusion.Network;
 using LabFusion.MonoBehaviours;
 using LabFusion.Representation;
 using LabFusion.Utilities;
+using LabFusion.Entities;
 
 namespace LabFusion.Patching;
 
@@ -99,13 +100,21 @@ public static class MirrorPatches
             playerId = PlayerIdManager.GetPlayerId(identifier.id);
 
             if (playerId != null && PlayerRepUtilities.TryGetReferences(playerId, out var references))
+            {
                 rig = references.RigManager;
+            }
         }
         // Otherwise, clone the mirror and setup IDs
         else
         {
-            if (!PlayerRepUtilities.TryGetRigInfo(RigManager.Cache.Get(proxy.root), out byte targetId, out _))
+            bool hasPlayer = NetworkPlayerManager.TryGetPlayer(RigManager.Cache.Get(proxy.root), out var player);
+
+            if (!hasPlayer)
+            {
                 return true;
+            }
+
+            byte targetId = player.PlayerId.SmallId;
 
             // Add identifiers
             identifier = __instance.gameObject.AddComponent<MirrorIdentifier>();
@@ -120,7 +129,9 @@ public static class MirrorPatches
             for (byte i = 0; i < 5; i++)
             {
                 if (i == localId)
+                {
                     i++;
+                }
 
                 Transform cloneRoot = new GameObject($"Mirror {i}").transform;
                 cloneRoot.parent = root;
@@ -143,12 +154,16 @@ public static class MirrorPatches
 
             // Get values
             if (identifier.id != targetId)
+            {
                 return false;
+            }
 
             playerId = PlayerIdManager.GetPlayerId(identifier.id);
 
             if (playerId != null && PlayerRepUtilities.TryGetReferences(playerId, out var references))
+            {
                 rig = references.RigManager;
+            }
         }
 
         if (rig == null || playerId == null)

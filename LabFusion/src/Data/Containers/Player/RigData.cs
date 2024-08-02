@@ -62,38 +62,6 @@ public class RigReferenceCollection
         _onDestroyCallback?.Invoke();
     }
 
-    public byte? GetIndex(Grip grip, bool isAvatarGrip = false)
-    {
-        var gripArray = RigGrips;
-
-        if (isAvatarGrip)
-            gripArray = GetAvatarGrips();
-
-        for (byte i = 0; i < gripArray.Length; i++)
-        {
-            if (gripArray[i] == grip)
-                return i;
-        }
-        return null;
-    }
-
-    public Grip GetGrip(byte index, bool isAvatarGrip = false)
-    {
-        var gripArray = RigGrips;
-
-        if (isAvatarGrip)
-            gripArray = GetAvatarGrips();
-
-        if (gripArray != null && gripArray.Length > index)
-            return gripArray[index];
-        return null;
-    }
-
-    internal Grip[] GetAvatarGrips()
-    {
-        return RigManager._avatar.GetComponentsInChildren<Grip>();
-    }
-
     internal InventorySlotReceiver[] GetAvatarSlots()
     {
         return RigManager._avatar.GetComponentsInChildren<InventorySlotReceiver>();
@@ -140,7 +108,7 @@ public class RigReferenceCollection
     {
         if (RigGrips == null)
             return;
-
+        
         foreach (var grip in RigGrips)
         {
             foreach (var hand in grip.attachedHands.ToArray())

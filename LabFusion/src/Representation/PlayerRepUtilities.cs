@@ -23,21 +23,6 @@ public static class PlayerRepUtilities
     // This should never change, incase other mods rely on it.
     public const string PlayerRepName = "[RigManager (Networked)]";
 
-    public static bool TryGetRigInfo(RigManager rig, out byte smallId, out RigReferenceCollection references)
-    {
-        smallId = 0;
-        references = null;
-
-        if (NetworkPlayerManager.TryGetPlayer(rig, out var player))
-        {
-            smallId = player.PlayerId.SmallId;
-            references = player.RigReferences;
-            return true;
-        }
-
-        return false;
-    }
-
     public static bool TryGetReferences(byte smallId, out RigReferenceCollection references)
     {
         references = null;
@@ -51,26 +36,12 @@ public static class PlayerRepUtilities
         return false;
     }
 
-    public static bool FindAttachedPlayer(Grip grip, out byte smallId, out RigReferenceCollection references, out bool isAvatarGrip)
-    {
-        smallId = 0;
-        references = null;
-        isAvatarGrip = false;
-
-        if (grip == null)
-            return false;
-
-        var rig = grip.GetComponentInParent<RigManager>();
-        if (rig != null)
-            isAvatarGrip = grip.GetComponentInParent<Il2CppSLZ.VRMK.Avatar>();
-
-        return TryGetRigInfo(rig, out smallId, out references);
-    }
-
     public static void CreateNewRig(Action<RigManager> onRigCreated)
     {
         if (MarrowSettings.RuntimeInstance == null)
+        {
             return;
+        }
 
         var crate = MarrowSettings.RuntimeInstance.DefaultPlayerRig.Crate;
         if (crate == null)
