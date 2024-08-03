@@ -65,6 +65,6 @@ public class SpawnRequestMessage : FusionMessageHandler
 
         var entityId = NetworkEntityManager.IdManager.RegisteredEntities.AllocateNewId();
 
-        PooleeUtilities.SendSpawn(data.owner, data.barcode, entityId, data.serializedTransform, false, data.trackerId);
+        PooleeUtilities.SendSpawn(data.owner, data.barcode, entityId, data.serializedTransform, data.trackerId);
     }
 }

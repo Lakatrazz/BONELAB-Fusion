@@ -99,16 +99,14 @@ public static class PooleeUtilities
         MessageSender.SendToServer(NetworkChannel.Reliable, message);
     }
 
-    public static void SendSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, bool ignoreSelf = false, uint trackerId = 0)
+    public static void SendSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, uint trackerId = 0)
     {
         using var writer = FusionWriter.Create(SpawnResponseData.GetSize(barcode));
         var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, trackerId);
         writer.Write(data);
 
         using var message = FusionMessage.Create(NativeMessageTag.SpawnResponse, writer);
-        if (!ignoreSelf)
-            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-        else
-            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+
+        MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
     }
 }
