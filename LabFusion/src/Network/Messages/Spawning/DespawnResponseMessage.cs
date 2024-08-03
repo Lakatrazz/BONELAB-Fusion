@@ -1,14 +1,10 @@
 ﻿using LabFusion.Data;
 using LabFusion.Utilities;
-using LabFusion.Marrow;
 using LabFusion.Entities;
 
 using MelonLoader;
 
 using System.Collections;
-
-using Il2CppSLZ.Marrow.Audio;
-using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Network;
 
@@ -18,29 +14,25 @@ public class DespawnResponseData : IFusionSerializable
 
     public ushort syncId;
     public byte despawnerId;
-    public bool isMag;
 
     public void Serialize(FusionWriter writer)
     {
         writer.Write(syncId);
         writer.Write(despawnerId);
-        writer.Write(isMag);
     }
 
     public void Deserialize(FusionReader reader)
     {
         syncId = reader.ReadUInt16();
         despawnerId = reader.ReadByte();
-        isMag = reader.ReadBoolean();
     }
 
-    public static DespawnResponseData Create(ushort syncId, byte despawnerId, bool isMag = false)
+    public static DespawnResponseData Create(ushort syncId, byte despawnerId)
     {
         return new DespawnResponseData()
         {
             syncId = syncId,
             despawnerId = despawnerId,
-            isMag = isMag,
         };
     }
 }
@@ -56,10 +48,10 @@ public class DespawnResponseMessage : FusionMessageHandler
         using var reader = FusionReader.Create(bytes);
         var data = reader.ReadFusionSerializable<DespawnResponseData>();
 
-        MelonCoroutines.Start(Internal_WaitForValidDespawn(data.syncId, data.despawnerId, data.isMag));
+        MelonCoroutines.Start(Internal_WaitForValidDespawn(data.syncId, data.despawnerId));
     }
 
-    private static IEnumerator Internal_WaitForValidDespawn(ushort syncId, byte despawnerId, bool isMag)
+    private static IEnumerator Internal_WaitForValidDespawn(ushort syncId, byte despawnerId)
     {
         // Delay at most 300 frames until this entity exists
         int i = 0;
@@ -98,31 +90,7 @@ public class DespawnResponseMessage : FusionMessageHandler
         FusionLogger.Log($"Unregistering entity at ID {entity.Id} after despawning.");
 #endif
 
-        if (isMag)
-        {
-            InventoryAmmoReceiver ammoReceiver = null;
-
-            if (NetworkPlayerManager.TryGetPlayer(despawnerId, out var player))
-            {
-                var ammoReceiverExtender = player.NetworkEntity.GetExtender<InventoryAmmoReceiverExtender>();
-
-                if (ammoReceiverExtender != null)
-                {
-                    ammoReceiver = ammoReceiverExtender.Component;
-                }
-            }
-
-            if (ammoReceiver)
-            {
-                SafeAudio3dPlayer.PlayAtPoint(ammoReceiver.grabClips, ammoReceiver.transform.position, Audio3dManager.softInteraction, 0.2f);
-            }
-
-            poolee.gameObject.SetActive(false);
-        }
-        else
-        {
-            poolee.Despawn();
-        }
+        poolee.Despawn();
 
         NetworkEntityManager.IdManager.UnregisterEntity(entity);
 

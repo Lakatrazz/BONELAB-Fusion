@@ -39,6 +39,7 @@ public static class NativeMessageTag
 
         InventorySlotInsert = 26,
         InventorySlotDrop = 27,
+        InventoryAmmoReceiverDrop = 84,
 
         MagazineInsert = 28,
         MagazineEject = 29,

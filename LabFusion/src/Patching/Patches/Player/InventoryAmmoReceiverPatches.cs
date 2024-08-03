@@ -133,10 +133,19 @@ public class InventoryAmmoReceiverDrop
         }
 
         // Make sure this magazine isn't currently locked in a socket
-        // The base game doesn't check for this and bugs occur in the base game, but due to latency said bugs are more common
+        // The base game doesn't check for this and bugs occur in the base game (as of patch #3), but due to latency said bugs are more common
         if (!magazineExtender.Component.magazinePlug._isLocked)
         {
-            PooleeUtilities.RequestDespawn(entity.Id, true);
+            // Despawn the magazine
+            PooleeUtilities.RequestDespawn(entity.Id);
+
+            // Play the ammo release sound effect
+            using var writer = FusionWriter.Create(InventoryAmmoReceiverDropData.Size);
+            var data = InventoryAmmoReceiverDropData.Create(PlayerIdManager.LocalId);
+            writer.Write(data);
+
+            using var message = FusionMessage.Create(NativeMessageTag.InventoryAmmoReceiverDrop, writer);
+            MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
 
         return false;

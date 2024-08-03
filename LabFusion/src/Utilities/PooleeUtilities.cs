@@ -63,10 +63,10 @@ public static class PooleeUtilities
         }
     }
 
-    public static void RequestDespawn(ushort syncId, bool isMag = false)
+    public static void RequestDespawn(ushort syncId)
     {
         using var writer = FusionWriter.Create(DespawnRequestData.Size);
-        var data = DespawnRequestData.Create(syncId, PlayerIdManager.LocalSmallId, isMag);
+        var data = DespawnRequestData.Create(syncId, PlayerIdManager.LocalSmallId);
         writer.Write(data);
 
         using var message = FusionMessage.Create(NativeMessageTag.DespawnRequest, writer);
