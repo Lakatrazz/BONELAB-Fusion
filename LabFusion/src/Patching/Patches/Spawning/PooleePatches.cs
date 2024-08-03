@@ -1,16 +1,10 @@
-﻿using System.Collections;
-
-using HarmonyLib;
+﻿using HarmonyLib;
 
 using LabFusion.Network;
 using LabFusion.Utilities;
-using LabFusion.Extensions;
 using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow.Pool;
-
-using MelonLoader;
-
 
 namespace LabFusion.Patching;
 
@@ -19,11 +13,6 @@ public class PooleeOnDespawnPatch
 {
     public static void Postfix(Poolee __instance)
     {
-        if (PooleeUtilities.IsPlayer(__instance) || __instance.IsNOC())
-        {
-            return;
-        }
-
         if (!NetworkInfo.HasServer)
         {
             return;
@@ -80,56 +69,36 @@ public class PooleeDespawnPatch
             }
         }
 
-        try
+        // If we are not a server, and we don't allow despawns currently, then don't let the entity be despawned
+        if (!NetworkInfo.IsServer && !PooleeUtilities.CanDespawn && PooleeExtender.Cache.ContainsSource(__instance))
         {
-            if (!NetworkInfo.IsServer && !PooleeUtilities.CanDespawn && PooleeExtender.Cache.ContainsSource(__instance))
-            {
-                return false;
-            }
-            else if (NetworkInfo.IsServer)
-            {
-                if (!CheckNetworkEntity(__instance) && PooleeUtilities.CheckingForSpawn.Contains(__instance))
-                {
-                    MelonCoroutines.Start(CoVerifyDespawnCoroutine(__instance));
-                }
-            }
+            return false;
         }
-        catch (Exception e)
+
+        // If we are the server, sync the poolee despawn
+        if (NetworkInfo.IsServer)
         {
-#if DEBUG
-            FusionLogger.LogException("to execute patch Poolee.Despawn", e);
-#endif
+            CheckForDespawn(__instance);
         }
 
         return true;
     }
 
-    private static bool CheckNetworkEntity(Poolee __instance)
+    private static void CheckForDespawn(Poolee __instance)
     {
         if (!PooleeExtender.Cache.TryGet(__instance, out var entity))
         {
-            return false;
+            return;
         }
 
         var prop = entity.GetExtender<NetworkProp>();
 
         if (prop == null)
         {
-            return false;
+            return;
         }
 
         PooleeUtilities.SendDespawn(entity.Id);
         NetworkEntityManager.IdManager.UnregisterEntity(entity);
-        return true;
-    }
-
-    private static IEnumerator CoVerifyDespawnCoroutine(Poolee __instance)
-    {
-        while (!__instance.IsNOC() && PooleeUtilities.CheckingForSpawn.Contains(__instance))
-        {
-            yield return null;
-        }
-
-        CheckNetworkEntity(__instance);
     }
 }

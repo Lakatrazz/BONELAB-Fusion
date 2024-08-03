@@ -118,8 +118,6 @@ public class SpawnResponseMessage : FusionMessageHandler
             NetworkEntityManager.IdManager.UnregisterEntity(conflictingEntity);
         }
 
-        PooleeUtilities.CheckingForSpawn.Push(poolee);
-
         NetworkEntity newEntity = null;
 
         // Get the marrow entity on the spawned object
@@ -154,12 +152,5 @@ public class SpawnResponseMessage : FusionMessageHandler
                 entity = newEntity,
             });
         }
-
-        DelayUtilities.Delay(() => { Internal_PostSpawn(poolee); }, 3);
-    }
-
-    private static void Internal_PostSpawn(Poolee __instance)
-    {
-        PooleeUtilities.CheckingForSpawn.Pull(__instance);
     }
 }

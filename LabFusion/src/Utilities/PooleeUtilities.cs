@@ -1,10 +1,6 @@
 ﻿using LabFusion.Data;
-using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Player;
-
-using Il2CppSLZ.Marrow.Pool;
-using Il2CppSLZ.Marrow;
 
 using LabFusion.Entities;
 
@@ -12,10 +8,6 @@ namespace LabFusion.Utilities;
 
 public static class PooleeUtilities
 {
-    internal static PooleePusher ForceEnabled = new();
-
-    internal static PooleePusher CheckingForSpawn = new();
-
     internal static bool CanDespawn = false;
 
     public static void DespawnAll()
@@ -45,14 +37,6 @@ public static class PooleeUtilities
 
             poolee.Component.Despawn();
         }
-    }
-
-    public static bool IsPlayer(Poolee poolee)
-    {
-        if (poolee.IsNOC())
-            return false;
-
-        return poolee.GetComponentInChildren<RigManager>(true);
     }
 
     public static void SendDespawn(ushort syncId)
