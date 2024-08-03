@@ -45,6 +45,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e1c9657b3d244a148b5541b3deb1ca6b, type: 2}
   - {fileID: 11400000, guid: 778fde2ef685b2a4499998b042feac01, type: 2}
   - {fileID: 11400000, guid: 855b2547999c5e44b9621f4426dcbd23, type: 2}
+  - {fileID: 11400000, guid: 8b17a4c919b2cb9439f7d3587b61ec57, type: 2}
+  - {fileID: 11400000, guid: 31582503ed056f04ea43c5d2389cd688, type: 2}
   _tags: []
   _changeLogs: []
   _crateTitles:
@@ -70,4 +72,6 @@ MonoBehaviour:
   - MonoDisc  Sabrelake Triumphs
   - MonoDisc  Erm...
   - BoneTag  Fusion Player
+  - BoneTag  Team LavaGang
+  - BoneTag  Team Sabrelake
   _palletDependencies: []
