@@ -335,10 +335,12 @@ public class Deathmatch : Gamemode
             FusionPlayer.SetAmmo(1000);
 
             // Get all spawn points
-            List<Transform> transforms = new List<Transform>();
-            foreach (var point in DeathmatchSpawnpoint.Cache.Components)
+            var transforms = new List<Transform>();
+            var markers = GamemodeMarker.FilterMarkers(null);
+
+            foreach (var marker in markers)
             {
-                transforms.Add(point.transform);
+                transforms.Add(marker.transform);
             }
 
             FusionPlayer.SetSpawnPoints(transforms.ToArray());

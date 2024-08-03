@@ -764,33 +764,22 @@ public class TeamDeathmatch : Gamemode
     {
         // Get all spawn points
         List<Transform> transforms = new List<Transform>();
+        BoneTagReference tag = null;
 
         if (team.TeamName == DefaultSabrelakeName)
         {
-            foreach (var point in SabrelakeSpawnpoint.Cache.Components)
-            {
-                transforms.Add(point.transform);
-            }
+            tag = FusionBoneTagReferences.TeamSabrelakeReference;
         }
         else if (team.TeamName == DefaultLavaGangName)
         {
-            foreach (var point in LavaGangSpawnpoint.Cache.Components)
-            {
-                transforms.Add(point.transform);
-            }
+            tag = FusionBoneTagReferences.TeamLavaGangReference;
         }
-        else
-        {
-            // Likely a custom event for a team
-            foreach (var point in TeamSpawnpoint.Cache.Components)
-            {
-                if (team.TeamName != point.TeamName)
-                {
-                    continue;
-                }
 
-                transforms.Add(point.transform);
-            }
+        var markers = GamemodeMarker.FilterMarkers(tag);
+
+        foreach (var marker in markers)
+        {
+            transforms.Add(marker.transform);
         }
 
         FusionPlayer.SetSpawnPoints(transforms.ToArray());
