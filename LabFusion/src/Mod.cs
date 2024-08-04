@@ -327,10 +327,10 @@ public class FusionMod : MelonMod
         // Flush any left over network messages
         InternalLayerHelpers.OnLateUpdateLayer();
 
-        // Update hooks
+        // Late update hooks
         MultiplayerHooking.Internal_OnLateUpdate();
 
-        // Update gamemodes
+        // Late update gamemodes
         GamemodeManager.Internal_OnLateUpdate();
     }
 
