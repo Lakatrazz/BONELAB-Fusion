@@ -14,6 +14,8 @@ using LabFusion.Senders;
 using LabFusion.RPC;
 using LabFusion.Marrow;
 using LabFusion.Entities;
+using LabFusion.Downloading;
+using LabFusion.Downloading.ModIO;
 
 namespace LabFusion.Network;
 
@@ -23,7 +25,7 @@ public class SpawnResponseData : IFusionSerializable
 
     public byte owner;
     public string barcode;
-    public ushort syncId;
+    public ushort entityId;
 
     public SerializedTransform serializedTransform;
 
@@ -38,7 +40,7 @@ public class SpawnResponseData : IFusionSerializable
     {
         writer.Write(owner);
         writer.Write(barcode);
-        writer.Write(syncId);
+        writer.Write(entityId);
         writer.Write(serializedTransform);
 
         writer.Write(trackerId);
@@ -48,19 +50,19 @@ public class SpawnResponseData : IFusionSerializable
     {
         owner = reader.ReadByte();
         barcode = reader.ReadString();
-        syncId = reader.ReadUInt16();
+        entityId = reader.ReadUInt16();
         serializedTransform = reader.ReadFusionSerializable<SerializedTransform>();
 
         trackerId = reader.ReadUInt32();
     }
 
-    public static SpawnResponseData Create(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, uint trackerId = 0)
+    public static SpawnResponseData Create(byte owner, string barcode, ushort entityId, SerializedTransform serializedTransform, uint trackerId = 0)
     {
         return new SpawnResponseData()
         {
             owner = owner,
             barcode = barcode,
-            syncId = syncId,
+            entityId = entityId,
             serializedTransform = serializedTransform,
             trackerId = trackerId,
         };
@@ -81,30 +83,84 @@ public class SpawnResponseMessage : FusionMessageHandler
 
         using var reader = FusionReader.Create(bytes);
         var data = reader.ReadFusionSerializable<SpawnResponseData>();
-        var crateRef = new SpawnableCrateReference(data.barcode);
-
-        var spawnable = new Spawnable()
-        {
-            crateRef = crateRef,
-            policyData = null
-        };
-
-        AssetSpawner.Register(spawnable);
 
         byte owner = data.owner;
         string barcode = data.barcode;
-        ushort syncId = data.syncId;
+        ushort entityId = data.entityId;
         var trackerId = data.trackerId;
 
-        Action<Poolee> onSpawnFinished = (go) =>
-        {
-            OnSpawnFinished(owner, barcode, syncId, go, trackerId);
-        };
+        bool hasCrate = CrateFilterer.HasCrate<SpawnableCrate>(new(barcode));
 
-        SafeAssetSpawner.Spawn(spawnable, data.serializedTransform.position, data.serializedTransform.rotation, onSpawnFinished);
+        if (!hasCrate)
+        {
+            // TODO: implement
+            bool shouldDownload = true;
+
+            // Check if we should download the mod (it's not blacklisted, mod downloading disabled, etc.)
+            if (!shouldDownload)
+            {
+                return;
+            }
+
+            NetworkModRequester.RequestMod(new NetworkModRequester.ModRequestInfo()
+            {
+                target = owner,
+                barcode = barcode,
+                modCallback = OnModInfoReceived,
+            });
+
+            void OnModInfoReceived(NetworkModRequester.ModCallbackInfo info)
+            {
+                if (!info.hasFile)
+                {
+                    return;
+                }
+
+                ModIODownloader.EnqueueDownload(new ModTransaction()
+                {
+                    modFile = info.modFile,
+                    callback = OnModDownloaded,
+                });
+            }
+
+            void OnModDownloaded(DownloadCallbackInfo info)
+            {
+                if (info.result == ModResult.FAILED)
+                {
+                    FusionLogger.Warn($"Failed downloading spawnable {barcode}!");
+                    return;
+                }
+
+                BeginSpawn();
+            }
+
+            return;
+        }
+
+        BeginSpawn();
+
+        void BeginSpawn()
+        {
+            var crateRef = new SpawnableCrateReference(barcode);
+
+            var spawnable = new Spawnable()
+            {
+                crateRef = crateRef,
+                policyData = null
+            };
+
+            AssetSpawner.Register(spawnable);
+
+            void OnPooleeSpawned(Poolee go)
+            {
+                OnSpawnFinished(owner, barcode, entityId, go, trackerId);
+            }
+
+            SafeAssetSpawner.Spawn(spawnable, data.serializedTransform.position, data.serializedTransform.rotation, OnPooleeSpawned);
+        }
     }
 
-    public static void OnSpawnFinished(byte owner, string barcode, ushort syncId, Poolee poolee, uint trackerId = 0)
+    public static void OnSpawnFinished(byte owner, string barcode, ushort entityId, Poolee poolee, uint trackerId = 0)
     {
         // The poolee will never be null, so we don't have to check for it
         // Only case where it could be null is the object not spawning, but the spawn callback only executes when it exists
@@ -134,12 +190,12 @@ public class SpawnResponseMessage : FusionMessageHandler
             NetworkProp newProp = new(newEntity, marrowEntity);
 
             // Register this entity
-            NetworkEntityManager.IdManager.RegisterEntity(syncId, newEntity);
+            NetworkEntityManager.IdManager.RegisterEntity(entityId, newEntity);
 
             // Insert the catchup hook for future users
             newEntity.OnEntityCatchup += (entity, player) =>
             {
-                SpawnSender.SendCatchupSpawn(owner, barcode, syncId, new SerializedTransform(go.transform), player);
+                SpawnSender.SendCatchupSpawn(owner, barcode, entityId, new SerializedTransform(go.transform), player);
             };
         }
 
