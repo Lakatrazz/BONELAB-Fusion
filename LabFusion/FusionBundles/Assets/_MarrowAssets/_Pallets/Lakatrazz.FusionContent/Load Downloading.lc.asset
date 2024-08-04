@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2505b25ddfc1ccf418da1689d2daf024, type: 3}
+  m_Name: Load Downloading.lc
+  m_EditorClassIdentifier: 
+  _barcode:
+    _id: Lakatrazz.FusionContent.Level.LoadDownloading
+  _title: Load Downloading
+  _description: 
+  _unlockable: 0
+  _redacted: 1
+  _tags: []
+  _boneTags:
+    _tags: []
+  _mainAsset:
+    _assetGUID: 466e42a64ccb19a44ae66d911bd7c3f3
+    _editorAssetChanged: 0
+  _additionalAssetReferences: []
+  _multiScene: 0
+  _persistentScenes: []
+  _chunkScenes: []
+  _editorScenes: []
