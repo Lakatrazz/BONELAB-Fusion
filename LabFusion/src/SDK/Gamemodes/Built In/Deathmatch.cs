@@ -3,7 +3,7 @@ using Il2CppSLZ.Marrow.Warehouse;
 
 using LabFusion.Extensions;
 using LabFusion.Marrow;
-using LabFusion.MarrowIntegration;
+using LabFusion.Marrow.Integration;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.SDK.Achievements;

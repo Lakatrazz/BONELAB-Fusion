@@ -10,9 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8632461246979918067}
   - component: {fileID: 2780520675025977173}
-  - component: {fileID: 7430229829019726185}
   m_Layer: 0
-  m_Name: Fusion Birthday
+  m_Name: Mod Birthday
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46,19 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5277745ccc9ce94a841b7e705a19478, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &7430229829019726185
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 457785114302105346}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 289ff940279d54e4e92f632d7d3823dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _Event:
+  onModBirthday:
     _PersistentCalls:
     - _Target: {fileID: 559790333346668840}
       _MethodName: set_clip

@@ -5,7 +5,7 @@ using Il2CppSLZ.Marrow.Warehouse;
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
-using LabFusion.MarrowIntegration;
+using LabFusion.Marrow.Integration;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.SDK.Achievements;
@@ -257,35 +257,6 @@ public class TeamDeathmatch : Gamemode
         };
 
         FusionNotifier.Send(assignmentNotification);
-
-        // Invoke ult events
-        if (team.TeamName == DefaultSabrelakeName)
-        {
-            foreach (var ultEvent in InvokeUltEventIfTeamSabrelake.Cache.Components)
-            {
-                ultEvent.Invoke();
-            }
-        }
-        else if (team.TeamName == DefaultLavaGangName)
-        {
-            foreach (var ultEvent in InvokeUltEventIfTeamLavaGang.Cache.Components)
-            {
-                ultEvent.Invoke();
-            }
-        }
-        else
-        {
-            // Likely a custom event for a team
-            foreach (var holder in InvokeUltEventIfTeam.Cache.Components)
-            {
-                if (team.TeamName != holder.TeamName)
-                {
-                    continue;
-                }
-
-                holder.Invoke();
-            }
-        }
 
         // Invoke spawn point changes on level load
         FusionSceneManager.HookOnTargetLevelLoad(() => InitializeTeamSpawns(team));

@@ -37,6 +37,7 @@
     <Compile Remove="FusionBundles\ProjectSettings\**" />
     <Compile Remove="FusionBundles\Temp\**" />
     <Compile Remove="FusionBundles\UserSettings\**" />
+    <Compile Remove="FusionHelper\bin\**" />
     <Compile Remove="FusionHelper\Extensions\**" />
     <Compile Remove="FusionHelper\obj\**" />
     <Compile Remove="FusionHelper\Resources\**" />
@@ -62,6 +63,7 @@
     <EmbeddedResource Remove="FusionBundles\ProjectSettings\**" />
     <EmbeddedResource Remove="FusionBundles\Temp\**" />
     <EmbeddedResource Remove="FusionBundles\UserSettings\**" />
+    <EmbeddedResource Remove="FusionHelper\bin\**" />
     <EmbeddedResource Remove="FusionHelper\Extensions\**" />
     <EmbeddedResource Remove="FusionHelper\obj\**" />
     <EmbeddedResource Remove="FusionHelper\Resources\**" />
@@ -87,6 +89,7 @@
     <None Remove="FusionBundles\ProjectSettings\**" />
     <None Remove="FusionBundles\Temp\**" />
     <None Remove="FusionBundles\UserSettings\**" />
+    <None Remove="FusionHelper\bin\**" />
     <None Remove="FusionHelper\Extensions\**" />
     <None Remove="FusionHelper\obj\**" />
     <None Remove="FusionHelper\Resources\**" />
@@ -187,7 +190,12 @@
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Cosmetics\AvatarCosmeticPoint.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Cosmetics\CosmeticRoot.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Cosmetics\RigPoint.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Events\CelebrationEvents.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Events\OwnershipEvents.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Events\ServerEvents.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Functions\BitTransactor.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodeEvents.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodeMarker.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\RPCs\RPCEvent.cs" />
   </ItemGroup>
 
@@ -333,6 +341,10 @@
     <Reference Include="UnityEngine.UIModule">
       <HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\UnityEngine.UIModule.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="FusionBundles\Assets\FusionMarrow\Runtime\Variables\" />
   </ItemGroup>
 
 </Project>

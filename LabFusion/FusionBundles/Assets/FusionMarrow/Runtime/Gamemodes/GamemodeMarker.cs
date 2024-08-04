@@ -17,7 +17,7 @@ using SLZ.Marrow.Utilities;
 using SLZ.Marrow.Warehouse;
 #endif
 
-namespace LabFusion.MarrowIntegration
+namespace LabFusion.Marrow.Integration
 {
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
