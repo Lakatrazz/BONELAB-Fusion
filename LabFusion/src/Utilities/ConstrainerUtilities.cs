@@ -27,7 +27,7 @@ namespace LabFusion.Utilities
             }
 
             // If this was replaced, fix the GameObject GUID
-            if (!crate.Pallet.Internal)
+            if (!crate.Pallet.IsInMarrowGame())
             {
                 crate.MainAsset = new MarrowAsset(CommonBarcodes.CONSTRAINER_ASSET_GUID);
             }

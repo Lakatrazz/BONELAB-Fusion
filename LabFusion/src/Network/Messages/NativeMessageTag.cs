@@ -5,130 +5,136 @@ public static class NativeMessageTag
     public static readonly byte
         // Built in messages
         Unknown = 0,
-
+        
+        // Connection messages
+        // These should never change, they aren't game specific
         ConnectionRequest = 1,
         ConnectionResponse = 2,
         Disconnect = 3,
 
         PlayerPoseUpdate = 4,
-        PlayerRepAvatar = 6,
-        PlayerRepVitals = 7,
-        PlayerRepRagdoll = 8,
-        PlayerRepSeat = 9,
+        PlayerRepAvatar = 5,
+        PlayerRepVitals = 6,
+        PlayerRepRagdoll = 7,
+        PlayerRepSeat = 8,
 
-        PlayerRepGrab = 10,
-        PlayerRepRelease = 12,
-        PlayerRepAnchors = 13,
+        PlayerRepGrab = 9,
+        PlayerRepRelease = 10,
+        PlayerRepAnchors = 11,
 
-        SceneLoad = 14,
+        SceneLoad = 12,
 
-        EntityUnqueueRequest = 15,
-        EntityUnqueueResponse = 16,
-        EntityOwnershipRequest = 17,
-        EntityOwnershipResponse = 18,
+        EntityUnqueueRequest = 13,
+        EntityUnqueueResponse = 14,
+        EntityOwnershipRequest = 15,
+        EntityOwnershipResponse = 16,
 
-        EntityPoseUpdate = 19,
-        NetworkPropCreate = 20,
+        EntityPoseUpdate = 17,
+        NetworkPropCreate = 18,
 
-        EntityZoneRegister = 21,
+        EntityZoneRegister = 19,
 
-        SpawnRequest = 22,
-        SpawnResponse = 23,
-        DespawnRequest = 24,
-        DespawnResponse = 25,
+        SpawnRequest = 20,
+        SpawnResponse = 21,
+        DespawnRequest = 22,
+        DespawnResponse = 23,
 
-        InventorySlotInsert = 26,
-        InventorySlotDrop = 27,
-        InventoryAmmoReceiverDrop = 84,
+        InventorySlotInsert = 24,
+        InventorySlotDrop = 25,
+        InventoryAmmoReceiverDrop = 26,
 
-        MagazineInsert = 28,
-        MagazineEject = 29,
+        MagazineInsert = 27,
+        MagazineEject = 28,
 
-        GunShot = 30,
+        GunShot = 29,
 
-        PuppetMasterKill = 31,
+        PuppetMasterKill = 30,
 
-        SimpleGripEvent = 32,
+        SimpleGripEvent = 31,
 
-        ObjectDestructableDestroy = 34,
+        ObjectDestructableDestroy = 32,
 
-        ArenaTransition = 35,
-        ChallengeSelect = 36,
-        ArenaMenu = 37,
-        GeoSelect = 38,
+        ArenaTransition = 33,
+        ChallengeSelect = 34,
+        ArenaMenu = 35,
+        GeoSelect = 36,
 
-        DescentNoose = 39,
-        DescentElevator = 40,
+        DescentNoose = 37,
+        DescentElevator = 38,
 
-        FunicularControllerEvent = 41,
+        FunicularControllerEvent = 39,
 
-        MagmaGateEvent = 42,
+        MagmaGateEvent = 40,
 
-        DescentIntro = 43,
+        DescentIntro = 41,
 
-        BodyLogEffect = 44,
+        BodyLogEffect = 42,
 
-        BonelabHubEvent = 45,
+        BonelabHubEvent = 43,
 
-        PlayerSettings = 46,
-        ServerSettings = 47,
+        PlayerSettings = 44,
+        ServerSettings = 45,
 
-        KartRaceEvent = 48,
+        KartRaceEvent = 46,
 
-        FlashlightToggle = 49,
+        FlashlightToggle = 47,
 
-        KeySlot = 51,
+        KeySlot = 48,
 
-        NimbusGunNoclip = 52,
+        NimbusGunNoclip = 49,
 
-        PlayerRepAction = 53,
+        PlayerRepAction = 50,
 
-        ConstrainerMode = 54,
-        ConstraintCreate = 55,
-        ConstraintDelete = 56,
+        ConstrainerMode = 51,
+        ConstraintCreate = 52,
+        ConstraintDelete = 53,
 
-        BoardGenerator = 57,
+        BoardGenerator = 54,
 
-        HomeEvent = 58,
+        HomeEvent = 55,
 
-        CrateSpawner = 60,
+        CrateSpawner = 56,
 
-        TimeScale = 61,
-        SlowMoButton = 62,
+        TimeScale = 57,
+        SlowMoButton = 58,
 
-        PlayerMetadataRequest = 65,
-        PlayerMetadataResponse = 66,
+        PlayerMetadataRequest = 59,
+        PlayerMetadataResponse = 60,
 
-        TrialSpawnerEvents = 67,
+        TrialSpawnerEvents = 61,
 
-        LevelRequest = 68,
+        LevelRequest = 62,
 
-        BodyLogToggle = 70,
+        BodyLogToggle = 63,
 
-        PlayerRepDamage = 71,
+        PlayerRepDamage = 64,
 
-        TimeTrial_GameController = 72,
-        BaseGameController = 73,
+        TimeTrial_GameController = 65,
+        BaseGameController = 66,
 
-        PlayerVoiceChat = 74,
+        PlayerVoiceChat = 67,
 
-        PermissionCommandRequest = 75,
+        PermissionCommandRequest = 68,
 
-        PlayerRepTeleport = 76,
+        PlayerRepTeleport = 69,
 
-        ZoneEncounterEvent = 77,
+        ZoneEncounterEvent = 70,
 
-        HolodeckEvent = 78,
+        HolodeckEvent = 71,
 
-        SpawnGunSelect = 79,
+        SpawnGunSelect = 72,
 
-        MineDiveCart = 80,
+        MineDiveCart = 73,
 
         // Vote kicking
-        VoteKickRequest = 81,
-        VoteKickResponse = 82,
+        VoteKickRequest = 74,
+        VoteKickResponse = 75,
 
-        MagazineClaim = 83,
+        MagazineClaim = 76,
+
+        // Mod downloading
+        ModInfoRequest = 77,
+        ModInfoResponse = 78,
 
         // SDK messages
         // Module setup

@@ -99,9 +99,11 @@ public static class FusionPlayer
         var crate = rigManager.AvatarCrate.Crate;
 
         if (AvatarOverride != null && !FusionAvatar.IsMatchingAvatar(barcode, AvatarOverride))
+        {
             Internal_ChangeAvatar();
+        }
         // If we don't have an avatar override set, check if we are allowed to use custom avatars
-        else if (crate != null && !crate.Pallet.Internal)
+        else if (crate != null && !crate.Pallet.IsInMarrowGame())
         {
             if (PlayerIdManager.LocalId != null && PlayerIdManager.LocalId.TryGetPermissionLevel(out var level))
             {

@@ -15,9 +15,11 @@ public abstract class LevelDataHandler
     protected virtual bool IsMatchingScene()
     {
         if (string.IsNullOrEmpty(LevelTitle))
+        {
             return true;
+        }
 
-        return FusionSceneManager.Title == LevelTitle && FusionSceneManager.Level.Pallet.Internal;
+        return FusionSceneManager.Title == LevelTitle && FusionSceneManager.Level.Pallet.IsInMarrowGame();
     }
 
     protected virtual void SceneAwake() { }

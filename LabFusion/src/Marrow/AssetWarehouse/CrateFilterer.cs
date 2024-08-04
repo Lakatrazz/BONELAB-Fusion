@@ -4,6 +4,19 @@ namespace LabFusion.Marrow;
 
 public static class CrateFilterer
 {
+    public static PalletManifest GetManifest(Pallet pallet)
+    {
+        var manifests = AssetWarehouse.Instance.palletManifests;
+        var barcode = pallet.Barcode;
+
+        if (!manifests.ContainsKey(barcode))
+        {
+            return null;
+        }
+
+        return manifests[barcode];
+    }
+
     public static bool HasCrate<TCrate>(Barcode barcode) where TCrate : Crate
     {
         var warehouse = AssetWarehouse.Instance;
