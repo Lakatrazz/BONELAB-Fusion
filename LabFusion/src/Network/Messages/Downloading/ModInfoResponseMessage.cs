@@ -33,12 +33,13 @@ public class ModInfoResponseData : IFusionSerializable
         trackerId = reader.ReadUInt32();
     }
 
-    public static ModInfoResponseData Create(byte target, SerializedModIOFile modFile)
+    public static ModInfoResponseData Create(byte target, SerializedModIOFile modFile, uint trackerId)
     {
         return new ModInfoResponseData()
         {
             target = target,
             modFile = modFile,
+            trackerId = trackerId,
         };
     }
 }

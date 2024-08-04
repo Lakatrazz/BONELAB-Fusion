@@ -111,7 +111,7 @@ public class ModInfoRequestMessage : FusionMessageHandler
         var modFile = new SerializedModIOFile(new ModIOFile((int)modTarget.ModId, (int)modTarget.ModfileId));
 
         using var writer = FusionWriter.Create(ModInfoResponseData.Size);
-        var writtenData = ModInfoResponseData.Create(data.requester, modFile);
+        var writtenData = ModInfoResponseData.Create(data.requester, modFile, data.trackerId);
         writer.Write(writtenData);
         
         using var response = FusionMessage.Create(NativeMessageTag.ModInfoResponse, writer);
