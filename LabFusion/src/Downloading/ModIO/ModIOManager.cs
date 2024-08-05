@@ -40,6 +40,14 @@ public static class ModIOManager
 
         void OnTokenLoaded(string token)
         {
+            // If the token is null, it likely didn't load
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                modCallback?.Invoke(ModCallbackInfo.FailedCallback);
+
+                return;
+            }
+
             MelonCoroutines.Start(CoGetMod(url, token, modCallback));
         }
     }

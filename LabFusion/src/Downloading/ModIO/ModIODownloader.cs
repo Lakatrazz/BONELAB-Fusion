@@ -81,9 +81,7 @@ public static class ModIODownloader
                 {
                     FusionLogger.Warn($"Failed getting a mod file for mod {modFile.ModId}, cancelling download!");
 
-                    transaction.callback?.Invoke(DownloadCallbackInfo.FailedCallback);
-
-                    EndDownload();
+                    FailDownload();
                     return;
                 }
 
@@ -93,9 +91,7 @@ public static class ModIODownloader
                 {
                     FusionLogger.Warn($"Tried beginning download for mod {modFile.ModId}, but it had no valid platforms!");
 
-                    transaction.callback?.Invoke(DownloadCallbackInfo.FailedCallback);
-
-                    EndDownload();
+                    FailDownload();
                     return;
                 }
 
@@ -116,8 +112,23 @@ public static class ModIODownloader
 
             void OnTokenLoaded(string token)
             {
+                // If the token is null, it likely didn't load
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    FailDownload();
+
+                    return;
+                }
+
                 MelonCoroutines.Start(CoDownloadWithToken(token, transaction, modFile, url));
             }
+        }
+
+        void FailDownload()
+        {
+            transaction.callback?.Invoke(DownloadCallbackInfo.FailedCallback);
+
+            EndDownload();
         }
     }
 

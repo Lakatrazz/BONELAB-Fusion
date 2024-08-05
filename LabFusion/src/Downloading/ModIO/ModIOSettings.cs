@@ -49,6 +49,15 @@ public static class ModIOSettings
 
         var settingsPath = ModDownloader.ModSettingsPath;
 
+        if (!File.Exists(settingsPath))
+        {
+            FusionLogger.Error("Mod.IO token is missing! Please set it in the mods menu!");
+
+            EndLoadToken(null);
+
+            yield break;
+        }
+
         using var stream = new FileStream(settingsPath, FileMode.Open);
 
         var reader = new StreamReader(stream);
@@ -63,6 +72,9 @@ public static class ModIOSettings
         if (!settingsTask.IsCompletedSuccessfully)
         {
             FusionLogger.Error("Failed reading Mod.IO token from settings!");
+
+            EndLoadToken(null);
+
             yield break;
         }
 
@@ -70,9 +82,13 @@ public static class ModIOSettings
 
         var token = settingsJson["mod.io.access_token"].ToString();
 
+        EndLoadToken(token);
+    }
+
+    private static void EndLoadToken(string token)
+    {
         _loadedToken = token;
 
-        // Finish loading
         _isLoadingToken = false;
 
         _tokenLoadCallback?.Invoke(token);
