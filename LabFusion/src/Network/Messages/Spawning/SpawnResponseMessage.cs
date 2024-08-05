@@ -119,6 +119,7 @@ public class SpawnResponseMessage : FusionMessageHandler
                 ModIODownloader.EnqueueDownload(new ModTransaction()
                 {
                     modFile = info.modFile,
+                    temporary = true,
                     callback = OnModDownloaded,
                 });
             }

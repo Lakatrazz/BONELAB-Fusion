@@ -1,9 +1,10 @@
-﻿using Il2CppCysharp.Threading.Tasks;
-using Il2CppSLZ.Marrow.Forklift.Model;
+﻿using Il2CppSLZ.Marrow.Forklift.Model;
 
 using LabFusion.Downloading.ModIO;
 using LabFusion.Utilities;
+
 using MelonLoader;
+
 using System.Collections;
 using System.IO.Compression;
 
@@ -14,6 +15,8 @@ namespace LabFusion.Downloading;
 public static class ModDownloadManager
 {
     public static string ModsPath => Application.persistentDataPath + "/Mods";
+
+    public static string ModsTempPath => Application.persistentDataPath + "/ModsTemp";
 
     public static string StagingPath => Application.persistentDataPath + "/FusionStaging";
 
@@ -29,6 +32,12 @@ public static class ModDownloadManager
         if (!Directory.Exists(StagingPath))
         {
             Directory.CreateDirectory(StagingPath);
+        }
+
+        // Create the file path for temporarily loaded mods
+        if (!Directory.Exists(ModsTempPath))
+        {
+            Directory.CreateDirectory(ModsTempPath);
         }
 
         // Create the file path for downloads
@@ -67,12 +76,12 @@ public static class ModDownloadManager
         return string.Empty;
     }
 
-    public static void LoadPalletFromZip(string path, ModIOFile modFile, Action scheduledCallback = null, DownloadCallback downloadCallback = null)
+    public static void LoadPalletFromZip(string path, ModIOFile modFile, bool temporary, Action scheduledCallback = null, DownloadCallback downloadCallback = null)
     {
-        MelonCoroutines.Start(CoLoadPalletFromZip(path, modFile, scheduledCallback, downloadCallback));
+        MelonCoroutines.Start(CoLoadPalletFromZip(path, modFile, temporary, scheduledCallback, downloadCallback));
     }
 
-    private static IEnumerator CoLoadPalletFromZip(string path, ModIOFile modFile, Action scheduledCallback = null, DownloadCallback downloadCallback = null)
+    private static IEnumerator CoLoadPalletFromZip(string path, ModIOFile modFile, bool temporary, Action scheduledCallback = null, DownloadCallback downloadCallback = null)
     {
         var fileName = Path.GetFileNameWithoutExtension(path);
         var extractedDirectory = ExportPath + "/" + fileName;
@@ -109,7 +118,14 @@ public static class ModDownloadManager
 
         var palletDirectoryInfo = new DirectoryInfo(palletDirectory);
 
-        var palletPath = ModsPath + $"/{palletDirectoryInfo.Name}";
+        var parentPath = ModsPath;
+
+        if (temporary)
+        {
+            parentPath = ModsTempPath;
+        }
+
+        var palletPath = parentPath + $"/{palletDirectoryInfo.Name}";
 
         // Delete pallet folder if it already exists
         if (Directory.Exists(palletPath))

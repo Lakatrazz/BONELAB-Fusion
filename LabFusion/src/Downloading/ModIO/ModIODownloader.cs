@@ -144,7 +144,7 @@ public static class ModIODownloader
         }
 
         // Load the pallet
-        ModDownloadManager.LoadPalletFromZip(zipPath, modFile, OnScheduledLoad, transaction.callback);
+        ModDownloadManager.LoadPalletFromZip(zipPath, modFile, transaction.temporary, OnScheduledLoad, transaction.callback);
 
         void OnScheduledLoad()
         {
