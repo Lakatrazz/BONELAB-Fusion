@@ -26,7 +26,15 @@ public static class ModDownloadManager
 
     private const string _palletExtension = ".pallet.json";
 
-    public static void ValidateStagingDirectory()
+    public static void DeleteTemporaryDirectories()
+    {
+        if (Directory.Exists(ModsTempPath))
+        {
+            Directory.Delete(ModsTempPath, true);
+        }
+    }
+
+    public static void ValidateDirectories()
     {
         // Create the base staging directory
         if (!Directory.Exists(StagingPath))
@@ -98,7 +106,8 @@ public static class ModDownloadManager
         void UnzipMod()
         {
             using ZipArchive archive = ZipFile.OpenRead(path);
-            archive.ExtractToDirectory(extractedDirectory);
+
+            archive.ExtractToDirectory(extractedDirectory, true);
         }
 
         var unzipTask = Task.Run(UnzipMod);
@@ -108,13 +117,47 @@ public static class ModDownloadManager
             yield return null;
         }
 
+        if (!unzipTask.IsCompletedSuccessfully)
+        {
+            FusionLogger.LogException($"unzipping mod at path {path}", unzipTask.Exception);
+
+            downloadCallback?.Invoke(DownloadCallbackInfo.FailedCallback);
+
+            scheduledCallback?.Invoke();
+
+            yield break;
+        }
+
 #if DEBUG
         FusionLogger.Log($"Extracted pallet from {path} to {extractedDirectory}!");
 #endif
 
         // Search for pallet path
         var extractedPallet = FindPalletJson(extractedDirectory);
+
+        if (string.IsNullOrWhiteSpace(extractedPallet))
+        {
+            FusionLogger.Warn($"Failed to find pallet json at {extractedDirectory}, aborting download!");
+
+            downloadCallback?.Invoke(DownloadCallbackInfo.FailedCallback);
+
+            scheduledCallback?.Invoke();
+
+            yield break;
+        }
+
         var palletDirectory = Path.GetDirectoryName(extractedPallet);
+
+        if (string.IsNullOrWhiteSpace(palletDirectory))
+        {
+            FusionLogger.Warn($"Failed to get directory name of pallet {extractedPallet}, aborting download!");
+
+            downloadCallback?.Invoke(DownloadCallbackInfo.FailedCallback);
+
+            scheduledCallback?.Invoke();
+
+            yield break;
+        }
 
         var palletDirectoryInfo = new DirectoryInfo(palletDirectory);
 

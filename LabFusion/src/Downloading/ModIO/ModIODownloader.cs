@@ -63,6 +63,11 @@ public static class ModIODownloader
 
     private static void BeginDownload(ModTransaction transaction)
     {
+        // Set the active transaction to this one
+        _currentTransaction = transaction;
+        _isDownloading = true;
+
+        // Validate the mod file
         ModIOFile modFile = transaction.modFile;
 
         if (!modFile.FileId.HasValue)
@@ -106,9 +111,6 @@ public static class ModIODownloader
 
         void OnReceivedFile(ModIOFile modFile)
         {
-            _currentTransaction = transaction;
-            _isDownloading = true;
-
             string url = FormatDownloadPath(modFile.ModId, modFile.FileId.Value);
             ModIOSettings.LoadToken(OnTokenLoaded);
 
@@ -121,6 +123,10 @@ public static class ModIODownloader
 
     private static IEnumerator CoDownloadWithToken(string token, ModTransaction transaction, ModIOFile modFile, string url)
     {
+        // Before doing anything, make sure all mod directories are valid
+        ModDownloadManager.ValidateDirectories();
+
+        // Send a request to mod.io for the files
         HttpClient client = new();
         client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
@@ -131,16 +137,29 @@ public static class ModIODownloader
             yield return null;
         }
 
-        ModDownloadManager.ValidateStagingDirectory();
-
+        // Install the stream into a zip file
         var zipPath = ModDownloadManager.DownloadPath + $"/m{modFile.ModId}f{modFile.FileId}.zip";
 
-        using var fs = new FileStream(zipPath, FileMode.Create);
-        var copyTask = streamTask.Result.CopyToAsync(fs);
+        FileStream copyStream = null;
+        Task copyTask = null;
+
+        copyStream = new FileStream(zipPath, FileMode.Create);
+        copyTask = streamTask.Result.CopyToAsync(copyStream);
 
         while (!copyTask.IsCompleted)
         {
             yield return null;
+        }
+
+        copyStream?.Dispose();
+
+        if (!copyTask.IsCompletedSuccessfully)
+        {
+            FusionLogger.LogException("copying downloaded zip", copyTask.Exception);
+
+            FailDownload();
+
+            yield break;
         }
 
         // Load the pallet
@@ -150,6 +169,13 @@ public static class ModIODownloader
         {
             // Delete temp zip
             File.Delete(zipPath);
+
+            EndDownload();
+        }
+
+        void FailDownload()
+        {
+            transaction.callback?.Invoke(DownloadCallbackInfo.FailedCallback);
 
             EndDownload();
         }

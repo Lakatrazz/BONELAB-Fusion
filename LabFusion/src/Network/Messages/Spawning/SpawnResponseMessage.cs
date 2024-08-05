@@ -102,27 +102,7 @@ public class SpawnResponseMessage : FusionMessageHandler
                 return;
             }
 
-            NetworkModRequester.RequestMod(new NetworkModRequester.ModRequestInfo()
-            {
-                target = owner,
-                barcode = barcode,
-                modCallback = OnModInfoReceived,
-            });
-
-            void OnModInfoReceived(NetworkModRequester.ModCallbackInfo info)
-            {
-                if (!info.hasFile)
-                {
-                    return;
-                }
-
-                ModIODownloader.EnqueueDownload(new ModTransaction()
-                {
-                    modFile = info.modFile,
-                    temporary = true,
-                    callback = OnModDownloaded,
-                });
-            }
+            NetworkModRequester.RequestAndInstallMod(owner, barcode, OnModDownloaded);
 
             void OnModDownloaded(DownloadCallbackInfo info)
             {
@@ -132,6 +112,8 @@ public class SpawnResponseMessage : FusionMessageHandler
                     return;
                 }
 
+                // In the future we'll replace an already existing "dummy" spawnable, so that if its been despawned we won't respawn it
+                // This will also let us show previews while its downloading
                 BeginSpawn();
             }
 

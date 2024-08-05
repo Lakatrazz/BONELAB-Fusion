@@ -79,6 +79,12 @@ public class SpawnGunSelectMessage : FusionMessageHandler
 
         var crateReference = new SpawnableCrateReference(data.barcode);
 
+        // Don't update the preview mesh, we don't have that item
+        if (crateReference.Crate == null)
+        {
+            return;
+        }
+
         SpawnGunPatches.IgnorePatches = true;
 
         extender.Component.OnSpawnableSelected(crateReference.Crate);

@@ -14,6 +14,7 @@ using LabFusion.SDK.Cosmetics;
 using LabFusion.Entities;
 using LabFusion.Downloading.ModIO;
 using LabFusion.BoneMenu;
+using LabFusion.Downloading;
 
 #if DEBUG
 using LabFusion.Debugging;
@@ -59,6 +60,9 @@ public class FusionMod : MelonMod
     {
         Instance = this;
         FusionAssembly = MelonAssembly.Assembly;
+
+        // Delete temporary downloads from the last session
+        ModDownloadManager.DeleteTemporaryDirectories();
 
         // Prepare the data path for writing files
         PersistentData.OnPathInitialize();
@@ -345,6 +349,11 @@ public class FusionMod : MelonMod
         GUILayout.Label($"Bytes Down: {NetworkInfo.BytesDown}", emptyOptions);
 
         GUILayout.Label($"Network Entity Count: {NetworkEntityManager.IdManager.RegisteredEntities.EntityIdLookup.Count}", emptyOptions);
+
+        GUILayout.Label($"Active Download: {(ModIODownloader.IsDownloading ? ModIODownloader.CurrentTransaction.modFile.ModId : "None")}", emptyOptions);
+        GUILayout.Label($"Queued Downloads: {ModIODownloader.QueuedTransactions.Count}", emptyOptions);
+
+        GUILayout.Label($"Being Watched: False", emptyOptions);
 #endif
     }
 }

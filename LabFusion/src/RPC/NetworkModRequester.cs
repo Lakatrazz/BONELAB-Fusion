@@ -1,4 +1,5 @@
-﻿using LabFusion.Downloading.ModIO;
+﻿using LabFusion.Downloading;
+using LabFusion.Downloading.ModIO;
 using LabFusion.Network;
 using LabFusion.Player;
 
@@ -31,6 +32,31 @@ public static class NetworkModRequester
         {
             callback(info);
             _callbackQueue.Remove(trackerId);
+        }
+    }
+
+    public static void RequestAndInstallMod(byte target, string barcode, DownloadCallback downloadCallback)
+    {
+        RequestMod(new ModRequestInfo()
+        {
+            target = target,
+            barcode = barcode,
+            modCallback = OnModInfoReceived,
+        });
+
+        void OnModInfoReceived(ModCallbackInfo info)
+        {
+            if (!info.hasFile)
+            {
+                return;
+            }
+
+            ModIODownloader.EnqueueDownload(new ModTransaction()
+            {
+                modFile = info.modFile,
+                temporary = true,
+                callback = downloadCallback,
+            });
         }
     }
 
