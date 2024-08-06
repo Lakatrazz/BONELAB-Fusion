@@ -1,6 +1,7 @@
 ﻿using BoneLib.BoneMenu;
 
 using LabFusion.Downloading.ModIO;
+using LabFusion.Preferences.Client;
 
 using UnityEngine;
 
@@ -13,10 +14,14 @@ public static partial class BoneMenuCreator
 
     public static void CreateDownloadingMenu(Page page)
     {
-        var downloadingCategory = page.CreatePage("Downloading", Color.cyan);
+        var downloadingPage = page.CreatePage("Downloading", Color.cyan);
         
-        _fusionContentButton = downloadingCategory.CreateFunction("Download Fusion Content", Color.white, InstallContent);
-        _fusionCosmeticsButton = downloadingCategory.CreateFunction("Download Fusion Cosmetics", Color.white, InstallCosmetics);
+        _fusionContentButton = downloadingPage.CreateFunction("Download Fusion Content", Color.white, InstallContent);
+        _fusionCosmeticsButton = downloadingPage.CreateFunction("Download Fusion Cosmetics", Color.white, InstallCosmetics);
+
+        CreateBoolPreference(downloadingPage, "Download Spawnables", ClientSettings.Downloading.DownloadSpawnables);
+        CreateBoolPreference(downloadingPage, "Download Avatars", ClientSettings.Downloading.DownloadAvatars);
+        CreateBoolPreference(downloadingPage, "Download Levels", ClientSettings.Downloading.DownloadLevels);
     }
 
     private static void InstallContent()

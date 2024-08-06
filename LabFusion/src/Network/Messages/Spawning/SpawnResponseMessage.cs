@@ -15,7 +15,7 @@ using LabFusion.RPC;
 using LabFusion.Marrow;
 using LabFusion.Entities;
 using LabFusion.Downloading;
-using LabFusion.Downloading.ModIO;
+using LabFusion.Preferences.Client;
 
 namespace LabFusion.Network;
 
@@ -93,8 +93,7 @@ public class SpawnResponseMessage : FusionMessageHandler
 
         if (!hasCrate)
         {
-            // TODO: implement
-            bool shouldDownload = true;
+            bool shouldDownload = ClientSettings.Downloading.DownloadSpawnables.Value;
 
             // Check if we should download the mod (it's not blacklisted, mod downloading disabled, etc.)
             if (!shouldDownload)

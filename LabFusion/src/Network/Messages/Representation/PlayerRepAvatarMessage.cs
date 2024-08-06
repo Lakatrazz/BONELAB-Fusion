@@ -4,6 +4,7 @@ using LabFusion.Data;
 using LabFusion.Downloading;
 using LabFusion.Entities;
 using LabFusion.Marrow;
+using LabFusion.Preferences.Client;
 using LabFusion.RPC;
 using LabFusion.Utilities;
 
@@ -71,8 +72,7 @@ public class PlayerRepAvatarMessage : FusionMessageHandler
 
         if (!hasCrate)
         {
-            // TODO: implement
-            bool shouldDownload = true;
+            bool shouldDownload = ClientSettings.Downloading.DownloadAvatars.Value;
 
             // Check if we should download the mod (it's not blacklisted, mod downloading disabled, etc.)
             if (!shouldDownload)
