@@ -1,5 +1,5 @@
 ﻿using LabFusion.Extensions;
-using LabFusion.Preferences;
+using LabFusion.Preferences.Client;
 
 using UnityEngine;
 using UnityEngine.Rendering;

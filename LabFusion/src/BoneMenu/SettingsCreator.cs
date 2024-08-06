@@ -1,6 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Preferences;
+using LabFusion.Preferences.Client;
 using LabFusion.Player;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Utilities;

@@ -1,11 +1,9 @@
 ﻿using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Player;
-using LabFusion.Senders;
+using LabFusion.Preferences.Client;
 
 using MelonLoader;
-
-using UnityEngine;
 
 namespace LabFusion.Preferences;
 
@@ -67,26 +65,7 @@ public static class FusionPreferences
 
         ServerSettingsManager.OnInitialize(prefCategory);
 
-        // Client settings
-        ClientSettings.NetworkLayerTitle = new FusionPref<string>(prefCategory, "Network Layer Title", NetworkLayerDeterminer.GetDefaultLayer().Title, PrefUpdateMode.IGNORE);
-        ClientSettings.ProxyPort = new FusionPref<int>(prefCategory, "Proxy Port", 28340, PrefUpdateMode.IGNORE);
-
-        // Nametag
-        ClientSettings.NametagsEnabled = new FusionPref<bool>(prefCategory, "Client Nametags Enabled", true, PrefUpdateMode.LOCAL_UPDATE);
-        ClientSettings.NametagColor = new FusionPref<Color>(prefCategory, "Nametag Color", Color.white, PrefUpdateMode.CLIENT_UPDATE);
-
-        // Nickname
-        ClientSettings.Nickname = new FusionPref<string>(prefCategory, "Nickname", "", PrefUpdateMode.IGNORE);
-        ClientSettings.NicknameVisibility = new FusionPref<NicknameVisibility>(prefCategory, "Nickname Visibility", NicknameVisibility.SHOW_WITH_PREFIX, PrefUpdateMode.LOCAL_UPDATE);
-
-        // Voicechat
-        ClientSettings.Muted = new FusionPref<bool>(prefCategory, "Muted", false, PrefUpdateMode.IGNORE);
-        ClientSettings.MutedIndicator = new FusionPref<bool>(prefCategory, "Muted Indicator", true, PrefUpdateMode.IGNORE);
-        ClientSettings.Deafened = new FusionPref<bool>(prefCategory, "Deafened", false, PrefUpdateMode.IGNORE);
-        ClientSettings.GlobalVolume = new FusionPref<float>(prefCategory, "GlobalMicVolume", 1f, PrefUpdateMode.IGNORE);
-
-        // Gamemodes
-        ClientSettings.GamemodeLateJoining = new FusionPref<bool>(prefCategory, "Gamemode Late Joining", true, PrefUpdateMode.IGNORE);
+        ClientSettings.OnInitialize(prefCategory);
 
         // Save category
         prefCategory.SaveToFile(false);

@@ -1,4 +1,4 @@
-﻿using LabFusion.Preferences;
+﻿using LabFusion.Preferences.Client;
 using LabFusion.Utilities;
 
 namespace LabFusion.Voice;

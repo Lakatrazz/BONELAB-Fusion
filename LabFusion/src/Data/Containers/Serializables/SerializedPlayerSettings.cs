@@ -1,5 +1,5 @@
 ﻿using LabFusion.Network;
-using LabFusion.Preferences;
+using LabFusion.Preferences.Client;
 
 using UnityEngine;
 

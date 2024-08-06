@@ -1,5 +1,5 @@
 ﻿using LabFusion.Extensions;
-using LabFusion.Preferences;
+using LabFusion.Preferences.Client;
 using LabFusion.Representation;
 using LabFusion.Player;
 using LabFusion.Senders;

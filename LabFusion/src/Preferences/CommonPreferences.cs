@@ -1,4 +1,5 @@
 ﻿using LabFusion.Senders;
+using LabFusion.Preferences.Client;
 
 namespace LabFusion.Preferences;
 

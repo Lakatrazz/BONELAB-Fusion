@@ -4,7 +4,7 @@ using BoneLib.BoneMenu;
 
 using LabFusion.Player;
 using LabFusion.Utilities;
-using LabFusion.Preferences;
+using LabFusion.Preferences.Client;
 
 using Color = UnityEngine.Color;
 

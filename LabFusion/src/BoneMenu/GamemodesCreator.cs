@@ -1,6 +1,6 @@
 ﻿using BoneLib.BoneMenu;
 
-using LabFusion.Preferences;
+using LabFusion.Preferences.Client;
 using LabFusion.SDK.Gamemodes;
 
 using UnityEngine;
