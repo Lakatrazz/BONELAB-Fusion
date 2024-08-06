@@ -105,7 +105,7 @@ public class ConnectionRequestMessage : FusionMessageHandler
         }
 
         // Check if theres too many players
-        if (PlayerIdManager.PlayerCount >= byte.MaxValue || PlayerIdManager.PlayerCount >= FusionPreferences.LocalServerSettings.MaxPlayers.GetValue())
+        if (PlayerIdManager.PlayerCount >= byte.MaxValue || PlayerIdManager.PlayerCount >= ServerSettingsManager.SavedSettings.MaxPlayers.Value)
         {
             ConnectionSender.SendConnectionDeny(data.longId, "Server is full! Wait for someone to leave.");
             return;
@@ -160,7 +160,7 @@ public class ConnectionRequestMessage : FusionMessageHandler
         }
 
         // Check if Quest user
-        if (!FusionPreferences.LocalServerSettings.AllowQuestUsers.GetValue()
+        if (!ServerSettingsManager.SavedSettings.AllowQuestUsers.Value
             && data.initialMetadata[MetadataHelper.PlatformKey] == "QUEST")
         {
             ConnectionSender.SendConnectionDeny(data.longId, "Quest users are blocked from this server.");
@@ -168,7 +168,7 @@ public class ConnectionRequestMessage : FusionMessageHandler
         }
 
         // Check if PC user
-        if (!FusionPreferences.LocalServerSettings.AllowPCUsers.GetValue()
+        if (!ServerSettingsManager.SavedSettings.AllowPCUsers.Value
             && data.initialMetadata[MetadataHelper.PlatformKey] == "PC")
         {
             ConnectionSender.SendConnectionDeny(data.longId, "PC users are blocked from this server.");

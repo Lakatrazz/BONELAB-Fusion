@@ -14,7 +14,7 @@ public static class VoiceInfo
     public static bool CanTalk => (VoiceManager?.CanTalk).GetValueOrDefault();
     public static bool CanHear => (VoiceManager?.CanHear).GetValueOrDefault();
 
-    public static bool ShowMuteIndicator => NetworkInfo.HasServer && FusionPreferences.ClientSettings.Muted.GetValue() && FusionPreferences.ClientSettings.MutedIndicator.GetValue();
+    public static bool ShowMuteIndicator => NetworkInfo.HasServer && ClientSettings.Muted.Value && ClientSettings.MutedIndicator.Value;
 
     public static float VoiceAmplitude => (VoiceManager?.GetReceiver()?.GetVoiceAmplitude()).GetValueOrDefault();
 
@@ -31,20 +31,20 @@ public static class VoiceInfo
                 isDying = RigData.Refs.Health.deathIsImminent;
             }
 
-            return FusionPreferences.ClientSettings.Muted || isDying;
+            return ClientSettings.Muted.Value || isDying;
         }
     }
 
-    public static bool IsDeafened => FusionPreferences.ClientSettings.Deafened || !ServerVoiceEnabled;
+    public static bool IsDeafened => ClientSettings.Deafened.Value || !ServerVoiceEnabled;
 
     public static bool IsVoiceEnabled
     {
         get
         {
-            bool serverSetting = FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue();
+            bool serverSetting = ServerSettingsManager.ActiveSettings.VoicechatEnabled.Value;
             return serverSetting && !IsMuted && !IsDeafened;
         }
     }
 
-    public static bool ServerVoiceEnabled { get { return FusionPreferences.ActiveServerSettings.VoicechatEnabled.GetValue(); } }
+    public static bool ServerVoiceEnabled { get { return ServerSettingsManager.ActiveSettings.VoicechatEnabled.Value; } }
 }

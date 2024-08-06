@@ -58,9 +58,9 @@ namespace LabFusion.Patching
 
             // Check if this player is using a stat changer
             // We don't check polyblank as it could be a custom avatar
-            if (!isPolyblank && !FusionPermissions.HasSufficientPermissions(level, FusionPreferences.LocalServerSettings.StatChangersAllowed.GetValue()))
+            if (!isPolyblank && !FusionPermissions.HasSufficientPermissions(level, ServerSettingsManager.SavedSettings.StatChangersAllowed.Value))
             {
-                float leeway = FusionPreferences.LocalServerSettings.StatChangerLeeway.GetValue();
+                float leeway = ServerSettingsManager.SavedSettings.StatChangerLeeway.Value;
                 leeway = ManagedMathf.Clamp(leeway + 1f, 1f, 11f);
 
                 // Health

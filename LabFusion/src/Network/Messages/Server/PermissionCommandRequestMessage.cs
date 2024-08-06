@@ -86,19 +86,19 @@ public class PermissionCommandRequestMessage : FusionMessageHandler
             case PermissionCommandType.UNKNOWN:
                 break;
             case PermissionCommandType.KICK:
-                if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, FusionPreferences.ActiveServerSettings.KickingAllowed.GetValue()))
+                if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, ServerSettingsManager.ActiveSettings.KickingAllowed.Value))
                 {
                     NetworkHelper.KickUser(otherPlayer);
                 }
                 break;
             case PermissionCommandType.BAN:
-                if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, FusionPreferences.ActiveServerSettings.BanningAllowed.GetValue()))
+                if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, ServerSettingsManager.ActiveSettings.BanningAllowed.Value))
                 {
                     NetworkHelper.BanUser(otherPlayer);
                 }
                 break;
             case PermissionCommandType.TELEPORT_TO_THEM:
-                if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, FusionPreferences.ActiveServerSettings.Teleportation.GetValue()))
+                if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, ServerSettingsManager.ActiveSettings.Teleportation.Value))
                 {
                     PlayerRepUtilities.TryGetReferences(otherPlayer, out var references);
 
@@ -107,7 +107,7 @@ public class PermissionCommandRequestMessage : FusionMessageHandler
                 }
                 break;
             case PermissionCommandType.TELEPORT_TO_US:
-                if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, FusionPreferences.ActiveServerSettings.Teleportation.GetValue()))
+                if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, ServerSettingsManager.ActiveSettings.Teleportation.Value))
                 {
                     PlayerRepUtilities.TryGetReferences(playerId, out var references);
 

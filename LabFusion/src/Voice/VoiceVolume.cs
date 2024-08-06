@@ -15,7 +15,7 @@ public static class VoiceVolume
 
     public static float GetGlobalVolumeMultiplier()
     {
-        float volume = FusionPreferences.ClientSettings.GlobalVolume;
+        float volume = ClientSettings.GlobalVolume.Value;
 
         // If we are loading, lower the volume
         if (FusionSceneManager.IsLoading())

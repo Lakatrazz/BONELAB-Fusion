@@ -20,24 +20,28 @@ public static partial class BoneMenuCreator
         ClearGamemodes();
 
         // Hook late joining change
-        FusionPreferences.ClientSettings.GamemodeLateJoining.OnValueChanged += (v) =>
+        ClientSettings.GamemodeLateJoining.OnValueChanged += (v) =>
         {
             Gamemode.LateJoining = v;
         };
 
-        Gamemode.LateJoining = FusionPreferences.ClientSettings.GamemodeLateJoining.GetValue();
+        Gamemode.LateJoining = ClientSettings.GamemodeLateJoining.Value;
     }
 
     public static void SetActiveGamemodeText(string text)
     {
         if (_gamemodeElement != null)
+        {
             _gamemodeElement.ElementName = text;
+        }
     }
 
     public static void SetMarkedGamemodeText(string text)
     {
         if (_markedElement != null)
+        {
             _markedElement.ElementName = text;
+        }
     }
 
     public static void RefreshGamemodes()
@@ -78,7 +82,7 @@ public static partial class BoneMenuCreator
 
         // Add toggle buttons
         var options = _gamemodesCategory.CreatePage("Options", Color.white);
-        CreateBoolPreference(options, "Late Joining", FusionPreferences.ClientSettings.GamemodeLateJoining);
+        CreateBoolPreference(options, "Late Joining", ClientSettings.GamemodeLateJoining);
     }
 
     public static void ClearGamemodes(bool showText = true)

@@ -22,7 +22,7 @@ namespace LabFusion.Network
         public static void UpdateLoadedLayer()
         {
             // Make sure the layer being loaded isn't already loaded
-            var title = FusionPreferences.ClientSettings.NetworkLayerTitle.GetValue();
+            var title = ClientSettings.NetworkLayerTitle.Value;
             if (!NetworkLayer.LayerLookup.TryGetValue(title, out var layer))
                 return;
             layer = NetworkLayerDeterminer.VerifyLayer(layer);

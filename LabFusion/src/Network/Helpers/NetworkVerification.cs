@@ -43,7 +43,7 @@ public static class NetworkVerification
     /// <returns></returns>
     public static bool IsClientApproved(ulong userId)
     {
-        var privacy = FusionPreferences.LocalServerSettings.Privacy.GetValue();
+        var privacy = ServerSettingsManager.SavedSettings.Privacy.Value;
 
         switch (privacy)
         {

@@ -602,7 +602,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void UpdateNametagVisibility()
     {
-        _nametag.ToggleNametag(FusionPreferences.NametagsEnabled && FusionOverrides.ValidateNametag(PlayerId));
+        _nametag.ToggleNametag(CommonPreferences.NametagsEnabled && FusionOverrides.ValidateNametag(PlayerId));
     }
 
     public void OnEntityCull(bool isInactive)

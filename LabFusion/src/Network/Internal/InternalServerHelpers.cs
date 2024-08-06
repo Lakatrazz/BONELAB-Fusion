@@ -113,7 +113,7 @@ public static class InternalServerHelpers
         NetworkEntityManager.OnCleanupEntities();
 
         // Cleanup prefs
-        FusionPreferences.ReceivedServerSettings = null;
+        ServerSettingsManager.OnReceiveHostSettings(null);
 
         // Update hooks
         MultiplayerHooking.Internal_OnDisconnect();

@@ -121,7 +121,7 @@ namespace LabFusion.Network
 
         public IEnumerator DiscoverServer()
         {
-            int port = FusionPreferences.ClientSettings.ProxyPort.GetValue();
+            int port = ClientSettings.ProxyPort.Value;
             if (!(port >= 1024 && port <= 65535))
             {
                 FusionLogger.Error("Custom port is invalid, using default! (28430)");

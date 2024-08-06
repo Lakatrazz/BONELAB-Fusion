@@ -21,8 +21,8 @@ public static class MuteUIHelper
 
     public static void OnInitializeMelon()
     {
-        FusionPreferences.ClientSettings.Muted.OnValueChanged += OnMutedChanged;
-        FusionPreferences.ClientSettings.MutedIndicator.OnValueChanged += OnIndicatorChanged;
+        ClientSettings.Muted.OnValueChanged += OnMutedChanged;
+        ClientSettings.MutedIndicator.OnValueChanged += OnIndicatorChanged;
 
         RenderPipelineManager.beginCameraRendering += (Il2CppSystem.Action<ScriptableRenderContext, Camera>)OnBeginCameraRendering;
         RenderPipelineManager.endCameraRendering += (Il2CppSystem.Action<ScriptableRenderContext, Camera>)OnEndCameraRendering;
@@ -30,8 +30,8 @@ public static class MuteUIHelper
 
     public static void OnDeinitializeMelon()
     {
-        FusionPreferences.ClientSettings.Muted.OnValueChanged -= OnMutedChanged;
-        FusionPreferences.ClientSettings.MutedIndicator.OnValueChanged -= OnIndicatorChanged;
+        ClientSettings.Muted.OnValueChanged -= OnMutedChanged;
+        ClientSettings.MutedIndicator.OnValueChanged -= OnIndicatorChanged;
 
         RenderPipelineManager.beginCameraRendering -= (Il2CppSystem.Action<ScriptableRenderContext, Camera>)OnBeginCameraRendering;
         RenderPipelineManager.endCameraRendering -= (Il2CppSystem.Action<ScriptableRenderContext, Camera>)OnEndCameraRendering;
@@ -87,21 +87,21 @@ public static class MuteUIHelper
         // Insert quick mute button
         var popUpMenu = UIRig.Instance.popUpMenu;
         var homePage = popUpMenu.radialPageView.m_HomePage;
-        var mutedPref = FusionPreferences.ClientSettings.Muted;
-        bool isMuted = mutedPref.GetValue();
+        var mutedPref = ClientSettings.Muted;
+        bool isMuted = mutedPref.Value;
 
         string name = isMuted ? "Quick Unmute" : "Quick Mute";
 
         _mutePage = new PageItem(name, PageItem.Directions.SOUTHEAST, (Action)(() =>
         {
-            mutedPref.SetValue(!mutedPref.GetValue());
+            mutedPref.Value = !mutedPref.Value;
             popUpMenu.Deactivate();
 
             FusionNotifier.Send(new FusionNotification()
             {
                 isPopup = true,
                 isMenuItem = false,
-                message = mutedPref.GetValue() ? "Muted" : "Unmuted",
+                message = mutedPref.Value ? "Muted" : "Unmuted",
             });
         }));
 

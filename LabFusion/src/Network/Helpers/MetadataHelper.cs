@@ -46,7 +46,7 @@ public static class MetadataHelper
         // Convert how the nickname is displayed
         if (!string.IsNullOrWhiteSpace(nickname))
         {
-            var visibility = FusionPreferences.ClientSettings.NicknameVisibility.GetValue();
+            var visibility = ClientSettings.NicknameVisibility.Value;
 
             switch (visibility)
             {

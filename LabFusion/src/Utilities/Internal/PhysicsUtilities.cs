@@ -18,7 +18,7 @@ internal static class PhysicsUtilities
             return;
         }
 
-        var mode = FusionPreferences.TimeScaleMode;
+        var mode = CommonPreferences.TimeScaleMode;
         var references = RigData.Refs;
         var rm = references.RigManager;
 

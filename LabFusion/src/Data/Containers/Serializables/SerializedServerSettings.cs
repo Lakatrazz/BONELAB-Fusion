@@ -3,79 +3,78 @@ using LabFusion.Preferences;
 using LabFusion.Senders;
 using LabFusion.Representation;
 
-namespace LabFusion.Data
+namespace LabFusion.Data;
+
+public class SerializedServerSettings : IFusionSerializable
 {
-    public class SerializedServerSettings : IFusionSerializable
+    public const int Size = sizeof(byte) * 13;
+
+    public ServerSettings settings;
+
+    public void Serialize(FusionWriter writer)
     {
-        public const int Size = sizeof(byte) * 13;
+        // General settings
+        writer.Write(settings.NametagsEnabled.Value);
+        writer.Write(settings.VoicechatEnabled.Value);
+        writer.Write(settings.PlayerConstraintsEnabled.Value);
+        writer.Write(settings.VoteKickingEnabled.Value);
+        writer.Write((byte)settings.Privacy.Value);
+        writer.Write((byte)settings.TimeScaleMode.Value);
+        writer.Write(settings.MaxPlayers.Value);
 
-        public FusionPreferences.ServerSettings settings;
+        // Visual
+        writer.Write(settings.ServerName.Value);
+        writer.Write(settings.ServerTags.Value);
 
-        public void Serialize(FusionWriter writer)
+        // Mortality
+        writer.Write(settings.ServerMortality.Value);
+
+        // Server permissions
+        writer.Write((sbyte)settings.DevToolsAllowed.Value);
+        writer.Write((sbyte)settings.ConstrainerAllowed.Value);
+        writer.Write((sbyte)settings.CustomAvatarsAllowed.Value);
+        writer.Write((sbyte)settings.KickingAllowed.Value);
+        writer.Write((sbyte)settings.BanningAllowed.Value);
+        writer.Write((sbyte)settings.Teleportation.Value);
+    }
+
+    public void Deserialize(FusionReader reader)
+    {
+        settings = new ServerSettings
         {
             // General settings
-            writer.Write(settings.NametagsEnabled.GetValue());
-            writer.Write(settings.VoicechatEnabled.GetValue());
-            writer.Write(settings.PlayerConstraintsEnabled.GetValue());
-            writer.Write(settings.VoteKickingEnabled.GetValue());
-            writer.Write((byte)settings.Privacy.GetValue());
-            writer.Write((byte)settings.TimeScaleMode.GetValue());
-            writer.Write(settings.MaxPlayers.GetValue());
+            NametagsEnabled = new ReadonlyPref<bool>(reader.ReadBoolean()),
+            VoicechatEnabled = new ReadonlyPref<bool>(reader.ReadBoolean()),
+            PlayerConstraintsEnabled = new ReadonlyPref<bool>(reader.ReadBoolean()),
+            VoteKickingEnabled = new ReadonlyPref<bool>(reader.ReadBoolean()),
+            Privacy = new ReadonlyPref<ServerPrivacy>((ServerPrivacy)reader.ReadByte()),
+            TimeScaleMode = new ReadonlyPref<TimeScaleMode>((TimeScaleMode)reader.ReadByte()),
+            MaxPlayers = new ReadonlyPref<byte>(reader.ReadByte()),
 
             // Visual
-            writer.Write(settings.ServerName.GetValue());
-            writer.Write(settings.ServerTags.GetValue());
+            ServerName = new ReadonlyPref<string>(reader.ReadString()),
+            ServerTags = new ReadonlyPref<List<string>>(reader.ReadStrings().ToList()),
 
             // Mortality
-            writer.Write(settings.ServerMortality.GetValue());
+            ServerMortality = new ReadonlyPref<bool>(reader.ReadBoolean()),
 
             // Server permissions
-            writer.Write((sbyte)settings.DevToolsAllowed.GetValue());
-            writer.Write((sbyte)settings.ConstrainerAllowed.GetValue());
-            writer.Write((sbyte)settings.CustomAvatarsAllowed.GetValue());
-            writer.Write((sbyte)settings.KickingAllowed.GetValue());
-            writer.Write((sbyte)settings.BanningAllowed.GetValue());
-            writer.Write((sbyte)settings.Teleportation.GetValue());
-        }
+            DevToolsAllowed = new ReadonlyPref<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
+            ConstrainerAllowed = new ReadonlyPref<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
+            CustomAvatarsAllowed = new ReadonlyPref<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
+            KickingAllowed = new ReadonlyPref<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
+            BanningAllowed = new ReadonlyPref<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
+            Teleportation = new ReadonlyPref<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
+        };
+    }
 
-        public void Deserialize(FusionReader reader)
+    public static SerializedServerSettings Create()
+    {
+        var settings = new SerializedServerSettings()
         {
-            settings = new FusionPreferences.ServerSettings
-            {
-                // General settings
-                NametagsEnabled = new ReadonlyFusionPrev<bool>(reader.ReadBoolean()),
-                VoicechatEnabled = new ReadonlyFusionPrev<bool>(reader.ReadBoolean()),
-                PlayerConstraintsEnabled = new ReadonlyFusionPrev<bool>(reader.ReadBoolean()),
-                VoteKickingEnabled = new ReadonlyFusionPrev<bool>(reader.ReadBoolean()),
-                Privacy = new ReadonlyFusionPrev<ServerPrivacy>((ServerPrivacy)reader.ReadByte()),
-                TimeScaleMode = new ReadonlyFusionPrev<TimeScaleMode>((TimeScaleMode)reader.ReadByte()),
-                MaxPlayers = new ReadonlyFusionPrev<byte>(reader.ReadByte()),
+            settings = ServerSettingsManager.SavedSettings,
+        };
 
-                // Visual
-                ServerName = new ReadonlyFusionPrev<string>(reader.ReadString()),
-                ServerTags = new ReadonlyFusionPrev<List<string>>(reader.ReadStrings().ToList()),
-
-                // Mortality
-                ServerMortality = new ReadonlyFusionPrev<bool>(reader.ReadBoolean()),
-
-                // Server permissions
-                DevToolsAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
-                ConstrainerAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
-                CustomAvatarsAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
-                KickingAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
-                BanningAllowed = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
-                Teleportation = new ReadonlyFusionPrev<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
-            };
-        }
-
-        public static SerializedServerSettings Create()
-        {
-            var settings = new SerializedServerSettings()
-            {
-                settings = FusionPreferences.LocalServerSettings,
-            };
-
-            return settings;
-        }
+        return settings;
     }
 }

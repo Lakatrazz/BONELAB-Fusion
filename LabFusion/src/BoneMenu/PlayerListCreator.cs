@@ -107,7 +107,7 @@ public static partial class BoneMenuCreator
         // Get self permissions
         FusionPermissions.FetchPermissionLevel(PlayerIdManager.LocalLongId, out var selfLevel, out _);
 
-        var serverSettings = FusionPreferences.ActiveServerSettings;
+        var serverSettings = ServerSettingsManager.ActiveSettings;
 
         // Create vote options
         if (!id.IsOwner && FusionPermissions.HasSufficientPermissions(selfLevel, level))
@@ -115,7 +115,7 @@ public static partial class BoneMenuCreator
             var votingCategory = category.CreatePage("Voting", Color.white);
 
             // Vote kick
-            if (serverSettings.VoteKickingEnabled.GetValue())
+            if (serverSettings.VoteKickingEnabled.Value)
             {
                 votingCategory.CreateFunction("Vote Kick", Color.red, () =>
                 {
@@ -131,7 +131,7 @@ public static partial class BoneMenuCreator
             var moderationCategory = category.CreatePage("Moderation", Color.white);
 
             // Kick button
-            if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.KickingAllowed.GetValue()))
+            if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.KickingAllowed.Value))
             {
                 moderationCategory.CreateFunction("Kick", Color.red, () =>
                 {
@@ -140,7 +140,7 @@ public static partial class BoneMenuCreator
             }
 
             // Ban button
-            if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.BanningAllowed.GetValue()))
+            if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.BanningAllowed.Value))
             {
                 moderationCategory.CreateFunction("Ban", Color.red, () =>
                 {
@@ -149,7 +149,7 @@ public static partial class BoneMenuCreator
             }
 
             // Teleport buttons
-            if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.Teleportation.GetValue()))
+            if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.Teleportation.Value))
             {
                 moderationCategory.CreateFunction("Teleport To Them", Color.red, () =>
                 {

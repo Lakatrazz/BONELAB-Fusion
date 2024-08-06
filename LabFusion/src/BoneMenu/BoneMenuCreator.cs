@@ -22,28 +22,28 @@ public static partial class BoneMenuCreator
     public static void CreateColorPreference(Page page, IFusionPref<Color> pref)
     {
         var currentColor = pref;
-        var colorR = page.CreateFloat("Red", Color.red, startingValue: currentColor.GetValue().r, increment: 0.05f, minValue: 0f, maxValue: 1f, callback: (r) =>
+        var colorR = page.CreateFloat("Red", Color.red, startingValue: currentColor.Value.r, increment: 0.05f, minValue: 0f, maxValue: 1f, callback: (r) =>
         {
             r = Mathf.Round(r * 100f) / 100f;
-            var color = currentColor.GetValue();
+            var color = currentColor.Value;
             color.r = r;
-            currentColor.SetValue(color);
+            currentColor.Value = color;
         });
-        var colorG = page.CreateFloat("Green", Color.green, startingValue: currentColor.GetValue().g, increment: 0.05f, minValue: 0f, maxValue: 1f, callback: (g) =>
+        var colorG = page.CreateFloat("Green", Color.green, startingValue: currentColor.Value.g, increment: 0.05f, minValue: 0f, maxValue: 1f, callback: (g) =>
         {
             g = Mathf.Round(g * 100f) / 100f;
-            var color = currentColor.GetValue();
+            var color = currentColor.Value;
             color.g = g;
-            currentColor.SetValue(color);
+            currentColor.Value = color;
         });
-        var colorB = page.CreateFloat("Blue", Color.blue, startingValue: currentColor.GetValue().b, increment: 0.05f, minValue: 0f, maxValue: 1f, callback: (b) =>
+        var colorB = page.CreateFloat("Blue", Color.blue, startingValue: currentColor.Value.b, increment: 0.05f, minValue: 0f, maxValue: 1f, callback: (b) =>
         {
             b = Mathf.Round(b * 100f) / 100f;
-            var color = currentColor.GetValue();
+            var color = currentColor.Value;
             color.b = b;
-            currentColor.SetValue(color);
+            currentColor.Value = color;
         });
-        var colorPreview = page.CreateFunction("■■■■■■■■■■■", currentColor.GetValue(), null);
+        var colorPreview = page.CreateFunction("■■■■■■■■■■■", currentColor.Value, null);
 
         currentColor.OnValueChanged += (color) =>
         {
@@ -56,9 +56,9 @@ public static partial class BoneMenuCreator
 
     public static void CreateBytePreference(Page page, string name, byte increment, byte minValue, byte maxValue, IFusionPref<byte> pref)
     {
-        var element = page.CreateInt(name, Color.white, startingValue: pref.GetValue(), increment: increment, minValue: minValue, maxValue: maxValue, callback: (v) =>
+        var element = page.CreateInt(name, Color.white, startingValue: pref.Value, increment: increment, minValue: minValue, maxValue: maxValue, callback: (v) =>
         {
-            pref.SetValue((byte)v);
+            pref.Value = (byte)v;
         });
 
         pref.OnValueChanged += (v) =>
@@ -69,9 +69,9 @@ public static partial class BoneMenuCreator
 
     public static void CreateFloatPreference(Page page, string name, float increment, float minValue, float maxValue, IFusionPref<float> pref)
     {
-        var element = page.CreateFloat(name, Color.white, startingValue: pref.GetValue(), increment: increment, minValue: minValue, maxValue: maxValue, callback: (v) =>
+        var element = page.CreateFloat(name, Color.white, startingValue: pref.Value, increment: increment, minValue: minValue, maxValue: maxValue, callback: (v) =>
         {
-            pref.SetValue(v);
+            pref.Value = v;
         });
 
         pref.OnValueChanged += (v) =>
@@ -82,9 +82,9 @@ public static partial class BoneMenuCreator
 
     public static void CreateBoolPreference(Page page, string name, IFusionPref<bool> pref)
     {
-        var element = page.CreateBool(name, Color.white, pref.GetValue(), (v) =>
+        var element = page.CreateBool(name, Color.white, pref.Value, (v) =>
         {
-            pref.SetValue(v);
+            pref.Value = v;
         });
 
         pref.OnValueChanged += (v) =>
@@ -95,9 +95,9 @@ public static partial class BoneMenuCreator
 
     public static void CreateEnumPreference<TEnum>(Page page, string name, IFusionPref<TEnum> pref) where TEnum : Enum
     {
-        var element = page.CreateEnum(name, Color.white, pref.GetValue(), (v) =>
+        var element = page.CreateEnum(name, Color.white, pref.Value, (v) =>
         {
-            pref.SetValue((TEnum)v);
+            pref.Value = (TEnum)v;
         });
 
         pref.OnValueChanged += (v) =>
@@ -108,10 +108,10 @@ public static partial class BoneMenuCreator
 
     public static void CreateStringPreference(Page page, string name, IFusionPref<string> pref, Action<string> onValueChanged = null, int maxLength = PlayerIdManager.MaxNameLength)
     {
-        string currentValue = pref.GetValue();
+        string currentValue = pref.Value;
         var element = page.CreateString(name, Color.white, currentValue, (v) =>
         {
-            pref.SetValue(v);
+            pref.Value = v;
         });
         
         pref.OnValueChanged += (v) =>
@@ -150,7 +150,7 @@ public static partial class BoneMenuCreator
 
         networkLayerManager.CreateFunction($"Active Layer: {NetworkLayerDeterminer.LoadedTitle}", Color.white, null);
         
-        var targetPanel = networkLayerManager.CreatePage($"Target Layer: {FusionPreferences.ClientSettings.NetworkLayerTitle.GetValue()}", Color.white);
+        var targetPanel = networkLayerManager.CreatePage($"Target Layer: {ClientSettings.NetworkLayerTitle.Value}", Color.white);
         targetPanel.CreateFunction("Cycle", Color.white, () =>
         {
             int count = NetworkLayer.SupportedLayers.Count;
@@ -161,9 +161,9 @@ public static partial class BoneMenuCreator
             if (count <= _lastIndex)
                 _lastIndex = 0;
 
-            FusionPreferences.ClientSettings.NetworkLayerTitle.SetValue(NetworkLayer.SupportedLayers[_lastIndex].Title);
+            ClientSettings.NetworkLayerTitle.Value = NetworkLayer.SupportedLayers[_lastIndex].Title;
         });
-        FusionPreferences.ClientSettings.NetworkLayerTitle.OnValueChanged += (v) =>
+        ClientSettings.NetworkLayerTitle.OnValueChanged += (v) =>
         {
             targetPanel.Name = $"Target Layer: {v}";
         };

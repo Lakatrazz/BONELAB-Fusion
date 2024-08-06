@@ -50,8 +50,8 @@ public struct LobbyMetadataInfo
             // Lobby info
             LobbyId = PlayerIdManager.LocalLongId,
             LobbyOwner = PlayerIdManager.LocalUsername,
-            LobbyName = FusionPreferences.LocalServerSettings.ServerName.GetValue(),
-            LobbyTags = FusionPreferences.LocalServerSettings.ServerTags.GetValue().Contract(),
+            LobbyName = ServerSettingsManager.SavedSettings.ServerName.Value,
+            LobbyTags = ServerSettingsManager.SavedSettings.ServerTags.Value.Contract(),
             LobbyVersion = FusionMod.Version,
             HasServerOpen = NetworkInfo.IsServer,
             PlayerCount = PlayerIdManager.PlayerCount,
@@ -59,13 +59,13 @@ public struct LobbyMetadataInfo
             IsAndroid = PlatformHelper.IsAndroid,
 
             // Lobby settings
-            NametagsEnabled = FusionPreferences.LocalServerSettings.NametagsEnabled.GetValue(),
-            Privacy = FusionPreferences.LocalServerSettings.Privacy.GetValue(),
-            TimeScaleMode = FusionPreferences.LocalServerSettings.TimeScaleMode.GetValue(),
-            MaxPlayers = FusionPreferences.LocalServerSettings.MaxPlayers.GetValue(),
-            VoicechatEnabled = FusionPreferences.LocalServerSettings.VoicechatEnabled.GetValue(),
-            AllowQuestUsers = FusionPreferences.LocalServerSettings.AllowQuestUsers.GetValue(),
-            AllowPCUsers = FusionPreferences.LocalServerSettings.AllowPCUsers.GetValue(),
+            NametagsEnabled = ServerSettingsManager.SavedSettings.NametagsEnabled.Value,
+            Privacy = ServerSettingsManager.SavedSettings.Privacy.Value,
+            TimeScaleMode = ServerSettingsManager.SavedSettings.TimeScaleMode.Value,
+            MaxPlayers = ServerSettingsManager.SavedSettings.MaxPlayers.Value,
+            VoicechatEnabled = ServerSettingsManager.SavedSettings.VoicechatEnabled.Value,
+            AllowQuestUsers = ServerSettingsManager.SavedSettings.AllowQuestUsers.Value,
+            AllowPCUsers = ServerSettingsManager.SavedSettings.AllowPCUsers.Value,
 
             // Lobby status
             LevelName = FusionSceneManager.Title,

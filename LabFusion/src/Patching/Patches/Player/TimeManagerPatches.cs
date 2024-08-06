@@ -30,7 +30,7 @@ public static class TimeManagerPatches
             return true;
         }
 
-        var mode = FusionPreferences.TimeScaleMode;
+        var mode = CommonPreferences.TimeScaleMode;
 
         switch (mode)
         {
@@ -76,7 +76,7 @@ public static class TimeManagerPatches
             return;
         }
 
-        var mode = FusionPreferences.TimeScaleMode;
+        var mode = CommonPreferences.TimeScaleMode;
 
         switch (mode)
         {

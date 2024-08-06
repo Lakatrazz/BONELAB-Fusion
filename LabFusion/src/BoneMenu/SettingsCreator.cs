@@ -49,9 +49,9 @@ public static partial class BoneMenuCreator
         var tagsCategory = page.CreatePage("Server Tags", Color.white);
         tagsCategory.CreateFunction("Clear Tags", Color.white, () =>
         {
-            FusionPreferences.LocalServerSettings.ServerTags.SetValue(new List<string>());
+            ServerSettingsManager.SavedSettings.ServerTags.Value = new List<string>();
         });
-        FusionPreferences.LocalServerSettings.ServerTags.OnValueChanged += (v) =>
+        ServerSettingsManager.SavedSettings.ServerTags.OnValueChanged += (v) =>
         {
             foreach (var element in _tagElements.Values)
             {
@@ -67,14 +67,14 @@ public static partial class BoneMenuCreator
             }
         };
 
-        var serverTags = FusionPreferences.LocalServerSettings.ServerTags.GetValue();
+        var serverTags = ServerSettingsManager.SavedSettings.ServerTags.Value;
 
         foreach (var tag in _tagsList)
         {
             _tagElements.Add(tag, tagsCategory.CreateBool(tag, Color.white, serverTags.Contains(tag), (v) =>
             {
                 // Refresh
-                serverTags = FusionPreferences.LocalServerSettings.ServerTags.GetValue();
+                serverTags = ServerSettingsManager.SavedSettings.ServerTags.Value;
 
                 // Add tag
                 if (v)
@@ -82,14 +82,14 @@ public static partial class BoneMenuCreator
                     if (!serverTags.Contains(tag))
                         serverTags.Add(tag);
 
-                    FusionPreferences.LocalServerSettings.ServerTags.SetValue(serverTags);
+                    ServerSettingsManager.SavedSettings.ServerTags.Value = serverTags;
                 }
                 // Remove tag
                 else
                 {
                     serverTags.Remove(tag);
 
-                    FusionPreferences.LocalServerSettings.ServerTags.SetValue(serverTags);
+                    ServerSettingsManager.SavedSettings.ServerTags.Value = serverTags;
                 }
             }));
         }
@@ -100,48 +100,48 @@ public static partial class BoneMenuCreator
         // Cheat detection
         var cheatsCategory = page.CreatePage("Cheat Detection", Color.white);
         var statChangerSubPanel = cheatsCategory.CreatePage("Stat Changers", Color.white);
-        CreateEnumPreference(statChangerSubPanel, "Stat Changers Allowed", FusionPreferences.LocalServerSettings.StatChangersAllowed);
-        CreateFloatPreference(statChangerSubPanel, "Stat Changer Leeway", 1f, 0f, 10f, FusionPreferences.LocalServerSettings.StatChangerLeeway);
+        CreateEnumPreference(statChangerSubPanel, "Stat Changers Allowed", ServerSettingsManager.SavedSettings.StatChangersAllowed);
+        CreateFloatPreference(statChangerSubPanel, "Stat Changer Leeway", 1f, 0f, 10f, ServerSettingsManager.SavedSettings.StatChangerLeeway);
 
         // Server display
         var displaySettingsCategory = page.CreatePage("Display Settings", Color.white);
-        CreateStringPreference(displaySettingsCategory, "Server Name", FusionPreferences.LocalServerSettings.ServerName);
+        CreateStringPreference(displaySettingsCategory, "Server Name", ServerSettingsManager.SavedSettings.ServerName);
         CreateServerTagsMenu(displaySettingsCategory);
 
         // General settings
         var generalSettingsSubPanel = page.CreatePage("General Settings", Color.white);
-        CreateBytePreference(generalSettingsSubPanel, "Max Players", 1, 2, 255, FusionPreferences.LocalServerSettings.MaxPlayers);
-        CreateEnumPreference(generalSettingsSubPanel, "Server Privacy", FusionPreferences.LocalServerSettings.Privacy);
-        CreateBoolPreference(generalSettingsSubPanel, "Nametags", FusionPreferences.LocalServerSettings.NametagsEnabled);
-        CreateBoolPreference(generalSettingsSubPanel, "Voicechat", FusionPreferences.LocalServerSettings.VoicechatEnabled);
-        CreateBoolPreference(generalSettingsSubPanel, "Vote Kicking", FusionPreferences.LocalServerSettings.VoteKickingEnabled);
+        CreateBytePreference(generalSettingsSubPanel, "Max Players", 1, 2, 255, ServerSettingsManager.SavedSettings.MaxPlayers);
+        CreateEnumPreference(generalSettingsSubPanel, "Server Privacy", ServerSettingsManager.SavedSettings.Privacy);
+        CreateBoolPreference(generalSettingsSubPanel, "Nametags", ServerSettingsManager.SavedSettings.NametagsEnabled);
+        CreateBoolPreference(generalSettingsSubPanel, "Voicechat", ServerSettingsManager.SavedSettings.VoicechatEnabled);
+        CreateBoolPreference(generalSettingsSubPanel, "Vote Kicking", ServerSettingsManager.SavedSettings.VoteKickingEnabled);
 
         // Gameplay settings
         var gameplaySettingsSubPanel = page.CreatePage("Gameplay Settings", Color.white);
-        CreateEnumPreference(gameplaySettingsSubPanel, "Time Scale Mode", FusionPreferences.LocalServerSettings.TimeScaleMode);
-        CreateBoolPreference(gameplaySettingsSubPanel, "Server Mortality", FusionPreferences.LocalServerSettings.ServerMortality);
+        CreateEnumPreference(gameplaySettingsSubPanel, "Time Scale Mode", ServerSettingsManager.SavedSettings.TimeScaleMode);
+        CreateBoolPreference(gameplaySettingsSubPanel, "Server Mortality", ServerSettingsManager.SavedSettings.ServerMortality);
         MultiplayerHooking.OnServerSettingsChanged += () =>
         {
             // Update mortality
             if (Gamemode.ActiveGamemode == null)
                 FusionPlayer.ResetMortality();
         };
-        CreateBoolPreference(gameplaySettingsSubPanel, "Player Constraining", FusionPreferences.LocalServerSettings.PlayerConstraintsEnabled);
+        CreateBoolPreference(gameplaySettingsSubPanel, "Player Constraining", ServerSettingsManager.SavedSettings.PlayerConstraintsEnabled);
 
         // Permissions
         var permissionSubPanel = page.CreatePage("Permission Settings", Color.white);
-        CreateEnumPreference(permissionSubPanel, "Dev Tools Allowed", FusionPreferences.LocalServerSettings.DevToolsAllowed);
-        CreateEnumPreference(permissionSubPanel, "Constrainer Allowed", FusionPreferences.LocalServerSettings.ConstrainerAllowed);
-        CreateEnumPreference(permissionSubPanel, "Custom Avatars Allowed", FusionPreferences.LocalServerSettings.CustomAvatarsAllowed);
-        CreateEnumPreference(permissionSubPanel, "Kicking Allowed", FusionPreferences.LocalServerSettings.KickingAllowed);
-        CreateEnumPreference(permissionSubPanel, "Banning Allowed", FusionPreferences.LocalServerSettings.BanningAllowed);
-        CreateEnumPreference(permissionSubPanel, "Teleporation Allowed", FusionPreferences.LocalServerSettings.Teleportation);
+        CreateEnumPreference(permissionSubPanel, "Dev Tools Allowed", ServerSettingsManager.SavedSettings.DevToolsAllowed);
+        CreateEnumPreference(permissionSubPanel, "Constrainer Allowed", ServerSettingsManager.SavedSettings.ConstrainerAllowed);
+        CreateEnumPreference(permissionSubPanel, "Custom Avatars Allowed", ServerSettingsManager.SavedSettings.CustomAvatarsAllowed);
+        CreateEnumPreference(permissionSubPanel, "Kicking Allowed", ServerSettingsManager.SavedSettings.KickingAllowed);
+        CreateEnumPreference(permissionSubPanel, "Banning Allowed", ServerSettingsManager.SavedSettings.BanningAllowed);
+        CreateEnumPreference(permissionSubPanel, "Teleporation Allowed", ServerSettingsManager.SavedSettings.Teleportation);
 
         // Platform discriminators
         var platformSubPanel = page.CreatePage("Platform Discrimination", Color.white);
 
-        CreateBoolPreference(platformSubPanel, "Allow Quest Users", FusionPreferences.LocalServerSettings.AllowQuestUsers);
-        CreateBoolPreference(platformSubPanel, "Allow PC Users", FusionPreferences.LocalServerSettings.AllowPCUsers);
+        CreateBoolPreference(platformSubPanel, "Allow Quest Users", ServerSettingsManager.SavedSettings.AllowQuestUsers);
+        CreateBoolPreference(platformSubPanel, "Allow PC Users", ServerSettingsManager.SavedSettings.AllowPCUsers);
     }
 
     private static void CreateClientSettingsMenu(Page page)
@@ -149,21 +149,21 @@ public static partial class BoneMenuCreator
         // Nametags enabled
         var nametagSubPanel = page.CreatePage("Nametag Settings", Color.white);
 
-        CreateBoolPreference(nametagSubPanel, "Nametags", FusionPreferences.ClientSettings.NametagsEnabled);
+        CreateBoolPreference(nametagSubPanel, "Nametags", ClientSettings.NametagsEnabled);
 
         // Nametag color
-        var color = FusionPreferences.ClientSettings.NametagColor.GetValue();
+        var color = ClientSettings.NametagColor.Value;
         color.a = 1f;
-        FusionPreferences.ClientSettings.NametagColor.SetValue(color);
+        ClientSettings.NametagColor.Value = color;
 
-        CreateColorPreference(nametagSubPanel, FusionPreferences.ClientSettings.NametagColor);
+        CreateColorPreference(nametagSubPanel, ClientSettings.NametagColor);
 
         // Nickname
         var nicknameSubPanel = page.CreatePage("Nickname Settings", Color.white);
 
-        CreateEnumPreference(nicknameSubPanel, "Nickname Visibility", FusionPreferences.ClientSettings.NicknameVisibility);
+        CreateEnumPreference(nicknameSubPanel, "Nickname Visibility", ClientSettings.NicknameVisibility);
 
-        CreateStringPreference(nicknameSubPanel, "Nickname", FusionPreferences.ClientSettings.Nickname, (v) =>
+        CreateStringPreference(nicknameSubPanel, "Nickname", ClientSettings.Nickname, (v) =>
         {
             if (PlayerIdManager.LocalId != null)
                 PlayerIdManager.LocalId.Metadata.TrySetMetadata(MetadataHelper.NicknameKey, v);
@@ -175,14 +175,14 @@ public static partial class BoneMenuCreator
 
         if (VoiceInfo.CanTalk)
         {
-            CreateBoolPreference(voiceChatSubPanel, "Muted", FusionPreferences.ClientSettings.Muted);
-            CreateBoolPreference(voiceChatSubPanel, "Muted Indicator", FusionPreferences.ClientSettings.MutedIndicator);
+            CreateBoolPreference(voiceChatSubPanel, "Muted", ClientSettings.Muted);
+            CreateBoolPreference(voiceChatSubPanel, "Muted Indicator", ClientSettings.MutedIndicator);
         }
 
         if (VoiceInfo.CanHear)
         {
-            CreateBoolPreference(voiceChatSubPanel, "Deafened", FusionPreferences.ClientSettings.Deafened);
-            CreateFloatPreference(voiceChatSubPanel, "Global Volume", 0.1f, 0f, 10f, FusionPreferences.ClientSettings.GlobalVolume);
+            CreateBoolPreference(voiceChatSubPanel, "Deafened", ClientSettings.Deafened);
+            CreateFloatPreference(voiceChatSubPanel, "Global Volume", 0.1f, 0f, 10f, ClientSettings.GlobalVolume);
         }
 
         RemoveEmptyPage(page, voiceChatSubPanel, voiceChatLink);

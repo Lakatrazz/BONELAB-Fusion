@@ -14,7 +14,7 @@ public static class PlayerIdManager
     public static bool HasOtherPlayers => PlayerCount > 1;
 
     public static string LocalUsername { get; private set; } = "[unknown]";
-    public static string LocalNickname => FusionPreferences.ClientSettings.Nickname.GetValue();
+    public static string LocalNickname => ClientSettings.Nickname.Value;
 
     public static ulong LocalLongId { get; private set; }
     public static byte LocalSmallId { get; private set; }

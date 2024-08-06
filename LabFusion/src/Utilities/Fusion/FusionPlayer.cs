@@ -107,7 +107,7 @@ public static class FusionPlayer
         {
             if (PlayerIdManager.LocalId != null && PlayerIdManager.LocalId.TryGetPermissionLevel(out var level))
             {
-                var requirement = FusionPreferences.ActiveServerSettings.CustomAvatarsAllowed.GetValue();
+                var requirement = ServerSettingsManager.ActiveSettings.CustomAvatarsAllowed.Value;
 
                 if (!FusionPermissions.HasSufficientPermissions(level, requirement))
                 {
@@ -218,7 +218,7 @@ public static class FusionPlayer
         if (!NetworkInfo.HasServer)
             return;
 
-        SetMortality(FusionPreferences.IsMortal);
+        SetMortality(CommonPreferences.IsMortal);
     }
 
     /// <summary>

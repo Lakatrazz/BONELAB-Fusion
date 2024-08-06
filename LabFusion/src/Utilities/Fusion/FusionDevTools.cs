@@ -11,7 +11,7 @@ namespace LabFusion.Utilities
         {
             // Check permission level
             FusionPermissions.FetchPermissionLevel(id, out var level, out _);
-            if (!FusionPermissions.HasSufficientPermissions(level, FusionPreferences.ActiveServerSettings.ConstrainerAllowed.GetValue()))
+            if (!FusionPermissions.HasSufficientPermissions(level, ServerSettingsManager.ActiveSettings.ConstrainerAllowed.Value))
             {
                 return true;
             }
@@ -32,7 +32,7 @@ namespace LabFusion.Utilities
 
             // Check permission level
             FusionPermissions.FetchPermissionLevel(id, out var level, out _);
-            if (!FusionPermissions.HasSufficientPermissions(level, FusionPreferences.ActiveServerSettings.DevToolsAllowed.GetValue()))
+            if (!FusionPermissions.HasSufficientPermissions(level, ServerSettingsManager.ActiveSettings.DevToolsAllowed.Value))
             {
                 return true;
             }
@@ -53,7 +53,7 @@ namespace LabFusion.Utilities
 
             // Check permission level
             FusionPermissions.FetchPermissionLevel(id, out var level, out _);
-            if (!FusionPermissions.HasSufficientPermissions(level, FusionPreferences.ActiveServerSettings.DevToolsAllowed.GetValue()))
+            if (!FusionPermissions.HasSufficientPermissions(level, ServerSettingsManager.ActiveSettings.DevToolsAllowed.Value))
             {
                 return true;
             }
