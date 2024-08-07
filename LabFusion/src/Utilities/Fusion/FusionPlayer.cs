@@ -8,6 +8,7 @@ using LabFusion.Player;
 using LabFusion.Representation;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Senders;
+using LabFusion.Scene;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
 using Il2CppSLZ.Marrow.Warehouse;

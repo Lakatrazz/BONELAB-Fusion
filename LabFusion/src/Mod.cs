@@ -3,6 +3,7 @@
 using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Utilities;
+using LabFusion.Scene;
 using LabFusion.Grabbables;
 using LabFusion.Preferences;
 using LabFusion.SDK.Gamemodes;

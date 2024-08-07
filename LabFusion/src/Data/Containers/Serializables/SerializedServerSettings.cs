@@ -43,28 +43,28 @@ public class SerializedServerSettings : IFusionSerializable
         settings = new ServerSettings
         {
             // General settings
-            NametagsEnabled = new ReadonlyPref<bool>(reader.ReadBoolean()),
-            VoicechatEnabled = new ReadonlyPref<bool>(reader.ReadBoolean()),
-            PlayerConstraintsEnabled = new ReadonlyPref<bool>(reader.ReadBoolean()),
-            VoteKickingEnabled = new ReadonlyPref<bool>(reader.ReadBoolean()),
-            Privacy = new ReadonlyPref<ServerPrivacy>((ServerPrivacy)reader.ReadByte()),
-            TimeScaleMode = new ReadonlyPref<TimeScaleMode>((TimeScaleMode)reader.ReadByte()),
-            MaxPlayers = new ReadonlyPref<byte>(reader.ReadByte()),
+            NametagsEnabled = new ReadOnlyPref<bool>(reader.ReadBoolean()),
+            VoicechatEnabled = new ReadOnlyPref<bool>(reader.ReadBoolean()),
+            PlayerConstraintsEnabled = new ReadOnlyPref<bool>(reader.ReadBoolean()),
+            VoteKickingEnabled = new ReadOnlyPref<bool>(reader.ReadBoolean()),
+            Privacy = new ReadOnlyPref<ServerPrivacy>((ServerPrivacy)reader.ReadByte()),
+            TimeScaleMode = new ReadOnlyPref<TimeScaleMode>((TimeScaleMode)reader.ReadByte()),
+            MaxPlayers = new ReadOnlyPref<byte>(reader.ReadByte()),
 
             // Visual
-            ServerName = new ReadonlyPref<string>(reader.ReadString()),
-            ServerTags = new ReadonlyPref<List<string>>(reader.ReadStrings().ToList()),
+            ServerName = new ReadOnlyPref<string>(reader.ReadString()),
+            ServerTags = new ReadOnlyPref<List<string>>(reader.ReadStrings().ToList()),
 
             // Mortality
-            ServerMortality = new ReadonlyPref<bool>(reader.ReadBoolean()),
+            ServerMortality = new ReadOnlyPref<bool>(reader.ReadBoolean()),
 
             // Server permissions
-            DevToolsAllowed = new ReadonlyPref<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
-            ConstrainerAllowed = new ReadonlyPref<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
-            CustomAvatarsAllowed = new ReadonlyPref<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
-            KickingAllowed = new ReadonlyPref<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
-            BanningAllowed = new ReadonlyPref<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
-            Teleportation = new ReadonlyPref<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
+            DevToolsAllowed = new ReadOnlyPref<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
+            ConstrainerAllowed = new ReadOnlyPref<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
+            CustomAvatarsAllowed = new ReadOnlyPref<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
+            KickingAllowed = new ReadOnlyPref<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
+            BanningAllowed = new ReadOnlyPref<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
+            Teleportation = new ReadOnlyPref<PermissionLevel>((PermissionLevel)reader.ReadSByte()),
         };
     }
 

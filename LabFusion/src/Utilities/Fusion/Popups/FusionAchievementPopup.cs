@@ -1,6 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.SDK.Achievements;
 using LabFusion.Marrow;
+using LabFusion.Scene;
 
 using UnityEngine;
 using UnityEngine.UI;

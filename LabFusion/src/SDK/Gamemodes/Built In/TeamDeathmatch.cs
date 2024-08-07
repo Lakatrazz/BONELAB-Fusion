@@ -13,6 +13,7 @@ using LabFusion.SDK.Points;
 using LabFusion.SDK.Triggers;
 using LabFusion.Senders;
 using LabFusion.Utilities;
+using LabFusion.Scene;
 
 using UnityEngine;
 

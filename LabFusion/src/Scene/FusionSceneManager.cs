@@ -1,11 +1,12 @@
 ﻿using LabFusion.Network;
 using LabFusion.Patching;
 using LabFusion.Senders;
+using LabFusion.Utilities;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
 using Il2CppSLZ.Marrow.Warehouse;
 
-namespace LabFusion.Utilities;
+namespace LabFusion.Scene;
 
 public static partial class FusionSceneManager
 {

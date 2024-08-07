@@ -1,6 +1,7 @@
 ﻿using LabFusion.Network;
 using LabFusion.Data;
 using LabFusion.Utilities;
+using LabFusion.Scene;
 using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow.Warehouse;

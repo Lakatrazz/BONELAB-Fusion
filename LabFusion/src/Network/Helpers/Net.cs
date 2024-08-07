@@ -1,77 +1,76 @@
-﻿using LabFusion.Utilities;
+﻿using LabFusion.Scene;
 
-namespace LabFusion.Network
+namespace LabFusion.Network;
+
+public static class Net
 {
-    public static class Net
+    /// <summary>
+    /// The root net attribute.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
+    public abstract class NetAttribute : Attribute
     {
         /// <summary>
-        /// The root net attribute.
+        /// Runs any necessary code for the attribute.
         /// </summary>
-        [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-        public abstract class NetAttribute : Attribute
-        {
-            /// <summary>
-            /// Runs any necessary code for the attribute.
-            /// </summary>
-            public virtual void OnHandleBegin() { }
-
-            /// <summary>
-            /// Returns true if the message handler should immediately stop.
-            /// </summary>
-            /// <returns></returns>
-            public virtual bool StopHandling() => false;
-
-            /// <summary>
-            /// Returns true if this attribute can be hooked with HookComplete.
-            /// </summary>
-            /// <returns></returns>
-            public virtual bool IsAwaitable() => false;
-
-            /// <summary>
-            /// Registers this action so that it will be called when the message handling can continue.
-            /// </summary>
-            /// <param name="action"></param>
-            public virtual void HookComplete(Action action) => action.Invoke();
-        }
+        public virtual void OnHandleBegin() { }
 
         /// <summary>
-        /// Waits to handle any recieved messages until the scene has finished loading.
+        /// Returns true if the message handler should immediately stop.
         /// </summary>
-        [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-        public class DelayWhileLoading : NetAttribute
-        {
-            public override bool IsAwaitable() => true;
-
-            public override void HookComplete(Action action)
-            {
-                FusionSceneManager.HookOnLevelLoad(action);
-            }
-        }
+        /// <returns></returns>
+        public virtual bool StopHandling() => false;
 
         /// <summary>
-        /// Waits to handle any recieved messages until the server's target scene has finished loading.
+        /// Returns true if this attribute can be hooked with HookComplete.
         /// </summary>
-        [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-        public class DelayWhileTargetLoading : NetAttribute
-        {
-            public override bool IsAwaitable() => true;
-
-            public override void HookComplete(Action action)
-            {
-                FusionSceneManager.HookOnTargetLevelLoad(action);
-            }
-        }
+        /// <returns></returns>
+        public virtual bool IsAwaitable() => false;
 
         /// <summary>
-        /// Skips handling a message if the game is currently loading.
+        /// Registers this action so that it will be called when the message handling can continue.
         /// </summary>
-        [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-        public class SkipHandleWhileLoading : NetAttribute
+        /// <param name="action"></param>
+        public virtual void HookComplete(Action action) => action.Invoke();
+    }
+
+    /// <summary>
+    /// Waits to handle any recieved messages until the scene has finished loading.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
+    public class DelayWhileLoading : NetAttribute
+    {
+        public override bool IsAwaitable() => true;
+
+        public override void HookComplete(Action action)
         {
-            public override bool StopHandling()
-            {
-                return FusionSceneManager.IsLoading();
-            }
+            FusionSceneManager.HookOnLevelLoad(action);
+        }
+    }
+
+    /// <summary>
+    /// Waits to handle any recieved messages until the server's target scene has finished loading.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
+    public class DelayWhileTargetLoading : NetAttribute
+    {
+        public override bool IsAwaitable() => true;
+
+        public override void HookComplete(Action action)
+        {
+            FusionSceneManager.HookOnTargetLevelLoad(action);
+        }
+    }
+
+    /// <summary>
+    /// Skips handling a message if the game is currently loading.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
+    public class SkipHandleWhileLoading : NetAttribute
+    {
+        public override bool StopHandling()
+        {
+            return FusionSceneManager.IsLoading();
         }
     }
 }

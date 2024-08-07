@@ -1,5 +1,5 @@
 ﻿using LabFusion.Preferences.Client;
-using LabFusion.Utilities;
+using LabFusion.Scene;
 
 namespace LabFusion.Voice;
 

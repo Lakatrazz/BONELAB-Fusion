@@ -19,13 +19,13 @@ public interface IFusionPref<T>
     T Value { get; set; }
 }
 
-public class ReadonlyPref<T> : IFusionPref<T>
+public class ReadOnlyPref<T> : IFusionPref<T>
 {
     private readonly T _value;
 
     public Action<T> OnValueChanged { get; set; }
 
-    public ReadonlyPref(T value)
+    public ReadOnlyPref(T value)
     {
         _value = value;
     }

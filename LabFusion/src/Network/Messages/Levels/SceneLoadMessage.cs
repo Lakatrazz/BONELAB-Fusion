@@ -1,6 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Utilities;
+using LabFusion.Scene;
 
 namespace LabFusion.Network
 {

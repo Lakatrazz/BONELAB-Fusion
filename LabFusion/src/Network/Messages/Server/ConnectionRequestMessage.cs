@@ -2,6 +2,7 @@
 using LabFusion.Player;
 using LabFusion.Representation;
 using LabFusion.Utilities;
+using LabFusion.Scene;
 using LabFusion.Preferences;
 using LabFusion.Senders;
 using LabFusion.Exceptions;

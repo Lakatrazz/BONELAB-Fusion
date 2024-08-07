@@ -5,6 +5,7 @@ using BoneLib.BoneMenu;
 using LabFusion.Data;
 using LabFusion.Player;
 using LabFusion.Utilities;
+using LabFusion.Scene;
 
 using Steamworks;
 using Steamworks.Data;

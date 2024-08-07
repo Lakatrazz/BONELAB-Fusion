@@ -3,6 +3,7 @@
 using LabFusion.BoneMenu;
 using LabFusion.Data;
 using LabFusion.Extensions;
+using LabFusion.Scene;
 
 using UnityEngine;
 

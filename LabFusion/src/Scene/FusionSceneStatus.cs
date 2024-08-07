@@ -4,7 +4,7 @@ using LabFusion.Marrow;
 using Il2CppSLZ.Marrow.SceneStreaming;
 using Il2CppSLZ.Marrow.Warehouse;
 
-namespace LabFusion.Utilities;
+namespace LabFusion.Scene;
 
 public static partial class FusionSceneManager
 {

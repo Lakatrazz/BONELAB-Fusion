@@ -6,6 +6,7 @@ using LabFusion.Player;
 using LabFusion.Representation;
 using LabFusion.Senders;
 using LabFusion.Utilities;
+using LabFusion.Scene;
 
 using UnityEngine;
 

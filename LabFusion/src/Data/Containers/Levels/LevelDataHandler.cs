@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 
 using LabFusion.Utilities;
+using LabFusion.Scene;
 using LabFusion.Network;
 using LabFusion.Player;
 

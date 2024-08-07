@@ -4,6 +4,7 @@ using LabFusion.Player;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Senders;
 using LabFusion.Utilities;
+using LabFusion.Scene;
 using LabFusion.XML;
 
 using System.Xml.Linq;

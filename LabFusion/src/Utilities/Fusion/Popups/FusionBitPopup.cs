@@ -1,5 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Marrow;
+using LabFusion.Scene;
 
 using UnityEngine;
 using UnityEngine.UI;

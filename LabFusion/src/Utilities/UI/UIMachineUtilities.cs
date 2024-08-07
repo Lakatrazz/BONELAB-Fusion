@@ -1,6 +1,7 @@
 ﻿using LabFusion.Extensions;
 using LabFusion.UI;
 using LabFusion.Marrow;
+using LabFusion.Scene;
 
 using UnityEngine;
 using UnityEngine.Events;
