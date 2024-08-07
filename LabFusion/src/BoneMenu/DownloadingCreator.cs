@@ -22,6 +22,8 @@ public static partial class BoneMenuCreator
         CreateBoolPreference(downloadingPage, "Download Spawnables", ClientSettings.Downloading.DownloadSpawnables);
         CreateBoolPreference(downloadingPage, "Download Avatars", ClientSettings.Downloading.DownloadAvatars);
         CreateBoolPreference(downloadingPage, "Download Levels", ClientSettings.Downloading.DownloadLevels);
+
+        CreateBoolPreference(downloadingPage, "Keep Downloaded Mods", ClientSettings.Downloading.KeepDownloadedMods);
     }
 
     private static void InstallContent()

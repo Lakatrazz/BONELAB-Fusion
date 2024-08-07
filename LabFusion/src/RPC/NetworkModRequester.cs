@@ -2,6 +2,7 @@
 using LabFusion.Downloading.ModIO;
 using LabFusion.Network;
 using LabFusion.Player;
+using LabFusion.Preferences.Client;
 
 namespace LabFusion.RPC;
 
@@ -51,10 +52,12 @@ public static class NetworkModRequester
                 return;
             }
 
+            bool temporary = !ClientSettings.Downloading.KeepDownloadedMods.Value;
+
             ModIODownloader.EnqueueDownload(new ModTransaction()
             {
                 modFile = info.modFile,
-                temporary = true,
+                temporary = temporary,
                 callback = downloadCallback,
             });
         }
