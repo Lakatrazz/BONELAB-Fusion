@@ -3,6 +3,7 @@
 using LabFusion.Network;
 using LabFusion.Utilities;
 using LabFusion.Entities;
+using LabFusion.Scene;
 
 using Il2CppSLZ.Marrow.Pool;
 
@@ -14,6 +15,12 @@ public class PooleeOnDespawnPatch
     public static void Postfix(Poolee __instance)
     {
         if (!NetworkInfo.HasServer)
+        {
+            return;
+        }
+
+        // Don't do anything while in purgatory
+        if (CrossSceneManager.Purgatory)
         {
             return;
         }
@@ -57,6 +64,12 @@ public class PooleeDespawnPatch
             return true;
         }
 
+        // Don't do anything while in purgatory
+        if (CrossSceneManager.Purgatory)
+        {
+            return true;
+        }
+
         // Prevent despawning of other players
         if (PooleeExtender.Cache.TryGet(__instance, out var entity))
         {
@@ -69,14 +82,16 @@ public class PooleeDespawnPatch
             }
         }
 
-        // If we are not a server, and we don't allow despawns currently, then don't let the entity be despawned
-        if (!NetworkInfo.IsServer && !PooleeUtilities.CanDespawn && PooleeExtender.Cache.ContainsSource(__instance))
+        bool isSceneHost = CrossSceneManager.IsSceneHost();
+
+        // If we are not the scene host, and we don't allow despawns currently, then don't let the entity be despawned
+        if (!isSceneHost && !PooleeUtilities.CanDespawn && PooleeExtender.Cache.ContainsSource(__instance))
         {
             return false;
         }
 
-        // If we are the server, sync the poolee despawn
-        if (NetworkInfo.IsServer)
+        // If we are the scene host, sync the poolee despawn
+        if (isSceneHost)
         {
             CheckForDespawn(__instance);
         }

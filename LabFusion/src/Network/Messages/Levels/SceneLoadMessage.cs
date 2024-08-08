@@ -2,57 +2,59 @@
 using LabFusion.Extensions;
 using LabFusion.Utilities;
 using LabFusion.Scene;
+using LabFusion.Exceptions;
 
-namespace LabFusion.Network
+namespace LabFusion.Network;
+
+public class SceneLoadData : IFusionSerializable
 {
-    public class SceneLoadData : IFusionSerializable
+    public string levelBarcode;
+    public string loadBarcode;
+
+    public static int GetSize(string barcode, string loadBarcode)
     {
-        public string levelBarcode;
-        public string loadBarcode;
-
-        public static int GetSize(string barcode, string loadBarcode)
-        {
-            return barcode.GetSize() + loadBarcode.GetSize();
-        }
-
-        public void Serialize(FusionWriter writer)
-        {
-            writer.Write(levelBarcode);
-            writer.Write(loadBarcode);
-        }
-
-        public void Deserialize(FusionReader reader)
-        {
-            levelBarcode = reader.ReadString();
-            loadBarcode = reader.ReadString();
-        }
-
-        public static SceneLoadData Create(string levelBarcode, string loadBarcode)
-        {
-            return new SceneLoadData()
-            {
-                levelBarcode = levelBarcode,
-                loadBarcode = loadBarcode
-            };
-        }
+        return barcode.GetSize() + loadBarcode.GetSize();
     }
 
-    public class SceneLoadMessage : FusionMessageHandler
+    public void Serialize(FusionWriter writer)
     {
-        public override byte Tag => NativeMessageTag.SceneLoad;
+        writer.Write(levelBarcode);
+        writer.Write(loadBarcode);
+    }
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    public void Deserialize(FusionReader reader)
+    {
+        levelBarcode = reader.ReadString();
+        loadBarcode = reader.ReadString();
+    }
+
+    public static SceneLoadData Create(string levelBarcode, string loadBarcode)
+    {
+        return new SceneLoadData()
         {
-            if (!NetworkInfo.IsServer && !isServerHandled)
-            {
-                using var reader = FusionReader.Create(bytes);
-                var data = reader.ReadFusionSerializable<SceneLoadData>();
+            levelBarcode = levelBarcode,
+            loadBarcode = loadBarcode
+        };
+    }
+}
+
+public class SceneLoadMessage : FusionMessageHandler
+{
+    public override byte Tag => NativeMessageTag.SceneLoad;
+
+    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    {
+        if (isServerHandled)
+        {
+            throw new ExpectedClientException();
+        }
+
+        using var reader = FusionReader.Create(bytes);
+        var data = reader.ReadFusionSerializable<SceneLoadData>();
 #if DEBUG
-                FusionLogger.Log($"Received level load for {data.levelBarcode}!");
+        FusionLogger.Log($"Received level load for {data.levelBarcode}!");
 #endif
 
-                FusionSceneManager.SetTargetScene(data.levelBarcode, data.loadBarcode);
-            }
-        }
+        FusionSceneManager.SetTargetScene(data.levelBarcode, data.loadBarcode);
     }
 }

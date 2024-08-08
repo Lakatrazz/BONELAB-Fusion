@@ -2,6 +2,12 @@
 using LabFusion.Patching;
 using LabFusion.Senders;
 using LabFusion.Utilities;
+using LabFusion.Marrow;
+using LabFusion.RPC;
+using LabFusion.Player;
+using LabFusion.Downloading;
+using LabFusion.Preferences.Client;
+using LabFusion.Downloading.ModIO;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
 using Il2CppSLZ.Marrow.Warehouse;
@@ -24,10 +30,15 @@ public static partial class FusionSceneManager
         _targetServerLoadScene = string.Empty;
         _hasStartedLoadingTarget = false;
         _hasEnteredTargetLoadingScreen = false;
+
+        _hasStartedDownloadingTarget = false;
     }
 
     private static void Internal_SetServerScene(string barcode, string loadBarcode)
     {
+        // This is a brand new scene, so reset the download check
+        _hasStartedDownloadingTarget = false;
+
         // Here we set the target server scene
         // This is the scene barcode sent by the server to the client, which we want to load
         _targetServerScene = barcode;
@@ -109,7 +120,9 @@ public static partial class FusionSceneManager
     {
         // Make sure we are a client and have loaded
         if (!NetworkInfo.IsClient)
+        {
             return;
+        }
 
         // If we have entered the loading screen after beginning to load the target, set the value to true
         if (_hasStartedLoadingTarget && IsLoading())
@@ -118,14 +131,74 @@ public static partial class FusionSceneManager
         }
 
         // If we aren't loading and we have a target scene, change to it
-        if (IsDelayedLoadDone() && !_hasStartedLoadingTarget && !string.IsNullOrEmpty(_targetServerScene))
+        if (IsDelayedLoadDone() && !_hasStartedDownloadingTarget && !_hasStartedLoadingTarget && !string.IsNullOrEmpty(_targetServerScene))
         {
-            SceneLoadPatch.IgnorePatches = true;
-            SceneStreamer.Load(new Barcode(_targetServerScene), new Barcode(_targetServerLoadScene));
-            SceneLoadPatch.IgnorePatches = false;
+            bool hasLevel = CrateFilterer.HasCrate<LevelCrate>(new(_targetServerScene));
 
-            _hasStartedLoadingTarget = true;
+            if (hasLevel)
+            {
+                LoadTargetScene();
+            }
+            else
+            {
+                bool shouldDownload = ClientSettings.Downloading.DownloadLevels.Value;
+
+                // Check if we should download the mod (it's not blacklisted, mod downloading disabled, etc.)
+                if (shouldDownload)
+                {
+                    BeginDownloadingScene();
+                }
+                // Can't download the level, leave the server
+                else
+                {
+                    OnDownloadFailed();
+                }
+            }
         }
+    }
+
+    private static void BeginDownloadingScene()
+    {
+        // Cancel all currently queued downloads.
+        // They aren't as important as the level, and anything waiting for a download likely won't exist anymore in the new scene.
+        ModIODownloader.CancelQueue();
+
+        // Request the mod id from the host
+        NetworkModRequester.RequestAndInstallMod(PlayerIdManager.HostSmallId, _targetServerScene, OnDownloadFinished);
+
+        _hasStartedDownloadingTarget = true;
+    }
+
+    private static void OnDownloadFinished(DownloadCallbackInfo info) 
+    {
+        if (info.result == ModResult.FAILED)
+        {
+            OnDownloadFailed();
+            return;
+        }
+
+        // We can now load the level
+        LoadTargetScene();
+
+        _hasStartedDownloadingTarget = false;
+    }
+
+    private static void OnDownloadFailed()
+    {
+        NetworkHelper.Disconnect("The server's level failed to install!");
+
+        _hasStartedDownloadingTarget = false;
+    }
+
+    public static void LoadTargetScene()
+    {
+        SceneLoadPatch.IgnorePatches = true;
+
+        SceneStreamer.Load(new Barcode(_targetServerScene), new Barcode(_targetServerLoadScene));
+
+        SceneLoadPatch.IgnorePatches = false;
+
+        _hasStartedLoadingTarget = true;
     }
 
     internal static void Internal_UpdateScene()

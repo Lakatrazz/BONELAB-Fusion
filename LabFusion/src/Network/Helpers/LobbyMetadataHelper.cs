@@ -6,8 +6,11 @@ using LabFusion.Senders;
 using LabFusion.Utilities;
 using LabFusion.Scene;
 using LabFusion.XML;
+using LabFusion.Marrow;
 
 using System.Xml.Linq;
+
+using Il2CppSLZ.Marrow.Warehouse;
 
 namespace LabFusion.Network;
 
@@ -140,7 +143,7 @@ public struct LobbyMetadataInfo
         {
             info.PlayerList = new()
             {
-                players = new PlayerList.PlayerInfo[0]
+                players = Array.Empty<PlayerList.PlayerInfo>()
             };
         }
 
@@ -148,7 +151,7 @@ public struct LobbyMetadataInfo
         if (lobby.TryGetMetadata(nameof(LevelBarcode), out var barcode))
         {
             info.LevelBarcode = barcode;
-            info.ClientHasLevel = FusionSceneManager.HasLevel(barcode);
+            info.ClientHasLevel = CrateFilterer.HasCrate<LevelCrate>(new(barcode));
         }
         else
         {
@@ -185,24 +188,9 @@ public struct LobbyMetadataInfo
 
     public Action CreateJoinDelegate(INetworkLobby lobby)
     {
-        if (!ClientHasLevel)
-        {
-            string levelName = LevelName;
-
-            return () =>
-            {
-                FusionNotifier.Send(new FusionNotification()
-                {
-                    title = "Failed to Join",
-                    showTitleOnPopup = true,
-                    isMenuItem = false,
-                    isPopup = true,
-                    message = $"You do not have the map {levelName} installed!",
-                    popupLength = 6f,
-                });
-            };
-        }
-
+        // If the user does not have the host's level, it will automatically download
+        // If it fails, the user will be disconnected
+        // So, we no longer need to check if the client has the level here
         return lobby.CreateJoinDelegate(LobbyId);
     }
 }

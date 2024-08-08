@@ -1,106 +1,105 @@
 ﻿using LabFusion.Data;
 using LabFusion.Patching;
 
-namespace LabFusion.Network
+namespace LabFusion.Network;
+
+public enum ArenaTransitionType
 {
-    public enum ArenaTransitionType
+    UNKNOWN = 0,
+    ARENA_PLAYER_ENTER = 1,
+    INIT_OBJECTIVE_CONTAINER = 2,
+    ARENA_START_MATCH = 3,
+    START_NEXT_WAVE = 4,
+    ARENA_QUIT_CHALLENGE = 5,
+    ARENA_CANCEL_MATCH = 6,
+    ARENA_RESET_THE_BELL = 7,
+    ARENA_RING_THE_BELL = 8,
+    FAIL_OBJECTIVE_MODE = 9,
+    FAIL_ESCAPE_MODE = 10,
+    SPAWN_LOOT = 11,
+}
+
+public class ArenaTransitionData : IFusionSerializable
+{
+    public ArenaTransitionType type;
+
+    public void Serialize(FusionWriter writer)
     {
-        UNKNOWN = 0,
-        ARENA_PLAYER_ENTER = 1,
-        INIT_OBJECTIVE_CONTAINER = 2,
-        ARENA_START_MATCH = 3,
-        START_NEXT_WAVE = 4,
-        ARENA_QUIT_CHALLENGE = 5,
-        ARENA_CANCEL_MATCH = 6,
-        ARENA_RESET_THE_BELL = 7,
-        ARENA_RING_THE_BELL = 8,
-        FAIL_OBJECTIVE_MODE = 9,
-        FAIL_ESCAPE_MODE = 10,
-        SPAWN_LOOT = 11,
+        writer.Write((byte)type);
     }
 
-    public class ArenaTransitionData : IFusionSerializable
+    public void Deserialize(FusionReader reader)
     {
-        public ArenaTransitionType type;
-
-        public void Serialize(FusionWriter writer)
-        {
-            writer.Write((byte)type);
-        }
-
-        public void Deserialize(FusionReader reader)
-        {
-            type = (ArenaTransitionType)reader.ReadByte();
-        }
-
-        public static ArenaTransitionData Create(ArenaTransitionType type)
-        {
-            return new ArenaTransitionData()
-            {
-                type = type,
-            };
-        }
+        type = (ArenaTransitionType)reader.ReadByte();
     }
 
-    [Net.DelayWhileTargetLoading]
-    public class ArenaTransitionMessage : FusionMessageHandler
+    public static ArenaTransitionData Create(ArenaTransitionType type)
     {
-        public override byte Tag => NativeMessageTag.ArenaTransition;
-
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        return new ArenaTransitionData()
         {
-            using FusionReader reader = FusionReader.Create(bytes);
-            var data = reader.ReadFusionSerializable<ArenaTransitionData>();
-            ArenaPatches.IgnorePatches = true;
+            type = type,
+        };
+    }
+}
 
-            // We ONLY handle this for clients, this message should only ever be sent by the server!
-            if (!NetworkInfo.IsServer && ArenaData.IsInArena)
+[Net.DelayWhileTargetLoading]
+public class ArenaTransitionMessage : FusionMessageHandler
+{
+    public override byte Tag => NativeMessageTag.ArenaTransition;
+
+    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    {
+        using FusionReader reader = FusionReader.Create(bytes);
+        var data = reader.ReadFusionSerializable<ArenaTransitionData>();
+        ArenaPatches.IgnorePatches = true;
+
+        // We ONLY handle this for clients, this message should only ever be sent by the server!
+        if (!NetworkInfo.IsServer && ArenaData.IsInArena)
+        {
+            switch (data.type)
             {
-                switch (data.type)
-                {
-                    default:
-                    case ArenaTransitionType.UNKNOWN:
-                        break;
-                    case ArenaTransitionType.ARENA_PLAYER_ENTER:
-                        ArenaData.GameController.ARENA_PlayerEnter();
-                        break;
-                    case ArenaTransitionType.INIT_OBJECTIVE_CONTAINER:
-                        ArenaData.GameController.InitObjectiveContainer();
+                default:
+                case ArenaTransitionType.UNKNOWN:
+                    break;
+                case ArenaTransitionType.ARENA_PLAYER_ENTER:
+                    ArenaData.GameController.ARENA_PlayerEnter();
+                    break;
+                case ArenaTransitionType.INIT_OBJECTIVE_CONTAINER:
+                    ArenaData.GameController.InitObjectiveContainer();
 
-                        if (ArenaData.GameControlDisplay)
-                            ArenaData.GameControlDisplay.gameObject.SetActive(true);
-                        break;
-                    case ArenaTransitionType.ARENA_START_MATCH:
-                        ArenaData.GameController.ARENA_StartMatch();
-                        break;
-                    case ArenaTransitionType.START_NEXT_WAVE:
-                        ArenaData.GameController.StartNextWave();
-                        break;
-                    case ArenaTransitionType.ARENA_QUIT_CHALLENGE:
-                        ArenaData.GameController.ARENA_QuitChallenge();
-                        break;
-                    case ArenaTransitionType.ARENA_CANCEL_MATCH:
-                        ArenaData.GameController.ARENA_CancelMatch();
-                        break;
-                    case ArenaTransitionType.ARENA_RESET_THE_BELL:
-                        ArenaData.GameController.ARENA_ResetTheBell();
-                        break;
-                    case ArenaTransitionType.ARENA_RING_THE_BELL:
-                        ArenaData.GameController.ARENA_RingTheBell();
-                        break;
-                    case ArenaTransitionType.FAIL_OBJECTIVE_MODE:
-                        ArenaData.GameController.FailObjectiveMode();
-                        break;
-                    case ArenaTransitionType.FAIL_ESCAPE_MODE:
-                        ArenaData.GameController.FailEscapeMode();
-                        break;
-                    case ArenaTransitionType.SPAWN_LOOT:
-                        ArenaData.GameController.SpawnLoot();
-                        break;
-                }
+                    if (ArenaData.GameControlDisplay)
+                        ArenaData.GameControlDisplay.gameObject.SetActive(true);
+                    break;
+                case ArenaTransitionType.ARENA_START_MATCH:
+                    ArenaData.GameController.ARENA_StartMatch();
+                    break;
+                case ArenaTransitionType.START_NEXT_WAVE:
+                    ArenaData.GameController.StartNextWave();
+                    break;
+                case ArenaTransitionType.ARENA_QUIT_CHALLENGE:
+                    ArenaData.GameController.ARENA_QuitChallenge();
+                    break;
+                case ArenaTransitionType.ARENA_CANCEL_MATCH:
+                    ArenaData.GameController.ARENA_CancelMatch();
+                    break;
+                case ArenaTransitionType.ARENA_RESET_THE_BELL:
+                    ArenaData.GameController.ARENA_ResetTheBell();
+                    break;
+                case ArenaTransitionType.ARENA_RING_THE_BELL:
+                    ArenaData.GameController.ARENA_RingTheBell();
+                    break;
+                case ArenaTransitionType.FAIL_OBJECTIVE_MODE:
+                    ArenaData.GameController.FailObjectiveMode();
+                    break;
+                case ArenaTransitionType.FAIL_ESCAPE_MODE:
+                    ArenaData.GameController.FailEscapeMode();
+                    break;
+                case ArenaTransitionType.SPAWN_LOOT:
+                    ArenaData.GameController.SpawnLoot();
+                    break;
             }
-
-            ArenaPatches.IgnorePatches = false;
         }
+
+        ArenaPatches.IgnorePatches = false;
     }
 }

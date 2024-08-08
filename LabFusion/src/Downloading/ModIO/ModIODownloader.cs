@@ -19,6 +19,21 @@ public static class ModIODownloader
 
     public static Queue<ModTransaction> QueuedTransactions => _queuedTransactions;
 
+    /// <summary>
+    /// Cancels all queued downloads. Does not cancel the currently active download.
+    /// </summary>
+    public static void CancelQueue()
+    {
+        var count = QueuedTransactions.Count;
+
+        for (var i = 0; i < count; i++)
+        {
+            var transaction = QueuedTransactions.Dequeue();
+
+            transaction.callback?.Invoke(DownloadCallbackInfo.FailedCallback);
+        }
+    }
+
     public static void UpdateQueue()
     {
         if (!IsDownloading && QueuedTransactions.Count > 0)

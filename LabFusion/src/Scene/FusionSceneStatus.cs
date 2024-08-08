@@ -1,5 +1,4 @@
 ﻿using LabFusion.Network;
-using LabFusion.Marrow;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
 using Il2CppSLZ.Marrow.Warehouse;
@@ -24,24 +23,15 @@ public static partial class FusionSceneManager
     private static bool _hasStartedLoadingTarget = false;
     private static bool _hasEnteredTargetLoadingScreen = false;
 
+    // Downloading logic
+    private static bool _hasStartedDownloadingTarget = false;
+
     public static LevelCrate Level => SceneStreamer.Session.Level;
     public static string Barcode => Level != null ? Level.Barcode.ID : "";
     public static string Title => Level != null ? Level.Title : "";
 
     public static LevelCrate LoadLevel => SceneStreamer.Session.LoadLevel;
     public static string LoadBarcode => LoadLevel != null ? LoadLevel.Barcode.ID : "";
-
-    public static bool HasLevel(string barcode)
-    {
-        if (CrateFilterer.HasCrate<LevelCrate>(new Barcode(barcode)))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
 
     public static bool IsLoading() => _isLoading;
 
