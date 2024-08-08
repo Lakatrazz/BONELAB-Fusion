@@ -152,8 +152,12 @@ public static class ModIODownloader
         // Before doing anything, make sure all mod directories are valid
         ModDownloadManager.ValidateDirectories();
 
+        // Initialize the transaction progress at 0%
+        // TODO: Update this value
+        transaction.Progress = 0f;
+
         // Send a request to mod.io for the files
-        HttpClient client = new();
+        using HttpClient client = new();
         client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
         var streamTask = client.GetStreamAsync(url);

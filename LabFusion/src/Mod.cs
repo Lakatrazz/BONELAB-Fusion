@@ -352,6 +352,12 @@ public class FusionMod : MelonMod
         GUILayout.Label($"Network Entity Count: {NetworkEntityManager.IdManager.RegisteredEntities.EntityIdLookup.Count}", emptyOptions);
 
         GUILayout.Label($"Active Download: {(ModIODownloader.IsDownloading ? ModIODownloader.CurrentTransaction.modFile.ModId : "None")}", emptyOptions);
+        
+        if (ModIODownloader.IsDownloading)
+        {
+            GUILayout.Label($"Active Progress: {ModIODownloader.CurrentTransaction.Progress * 100f}%");
+        }
+        
         GUILayout.Label($"Queued Downloads: {ModIODownloader.QueuedTransactions.Count}", emptyOptions);
 
         GUILayout.Label($"Being Watched: False", emptyOptions);
