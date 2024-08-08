@@ -68,6 +68,19 @@ public static partial class BoneMenuCreator
         };
     }
 
+    public static void CreateIntPreference(Page page, string name, int increment, int minValue, int maxValue, IFusionPref<int> pref)
+    {
+        var element = page.CreateInt(name, Color.white, startingValue: pref.Value, increment: increment, minValue: minValue, maxValue: maxValue, callback: (v) =>
+        {
+            pref.Value = v;
+        });
+
+        pref.OnValueChanged += (v) =>
+        {
+            element.Value = v;
+        };
+    }
+
     public static void CreateFloatPreference(Page page, string name, float increment, float minValue, float maxValue, IFusionPref<float> pref)
     {
         var element = page.CreateFloat(name, Color.white, startingValue: pref.Value, increment: increment, minValue: minValue, maxValue: maxValue, callback: (v) =>

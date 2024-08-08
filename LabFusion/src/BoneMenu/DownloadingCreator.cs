@@ -24,6 +24,9 @@ public static partial class BoneMenuCreator
         CreateBoolPreference(downloadingPage, "Download Levels", ClientSettings.Downloading.DownloadLevels);
 
         CreateBoolPreference(downloadingPage, "Keep Downloaded Mods", ClientSettings.Downloading.KeepDownloadedMods);
+
+        CreateIntPreference(downloadingPage, "Max File Size (MB)", 10, 0, 10000, ClientSettings.Downloading.MaxFileSize);
+        CreateIntPreference(downloadingPage, "Max Level Size (MB)", 10, 0, 10000, ClientSettings.Downloading.MaxLevelSize);
     }
 
     private static void InstallContent()
