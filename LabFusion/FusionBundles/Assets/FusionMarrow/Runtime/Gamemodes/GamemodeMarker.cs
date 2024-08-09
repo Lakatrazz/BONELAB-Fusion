@@ -7,14 +7,14 @@ using LabFusion.Extensions;
 
 using Il2CppInterop.Runtime.InteropTypes.Fields;
 using Il2CppSLZ.Marrow.Warehouse;
+#else
+using SLZ.Marrow;
+using SLZ.Marrow.Utilities;
+using SLZ.Marrow.Warehouse;
 #endif
 
 #if UNITY_EDITOR
 using UnityEditor;
-
-using SLZ.Marrow;
-using SLZ.Marrow.Utilities;
-using SLZ.Marrow.Warehouse;
 #endif
 
 namespace LabFusion.Marrow.Integration

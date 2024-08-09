@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Il2CppSLZ.Marrow.Warehouse;
+﻿using Il2CppSLZ.Marrow.Warehouse;
 
 namespace LabFusion.Marrow;
 
@@ -21,4 +15,6 @@ public static class FusionSpawnableReferences
     public static readonly SpawnableCrateReference AchievementPopupReference = new("Lakatrazz.FusionContent.Spawnable.AchievementPopup");
 
     public static readonly SpawnableCrateReference BitPopupReference = new("Lakatrazz.FusionContent.Spawnable.BitPopup");
+
+    public static readonly SpawnableCrateReference ProgressBarPopupReference = new("Lakatrazz.FusionContent.Spawnable.ProgressBar");
 }
