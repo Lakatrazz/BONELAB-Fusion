@@ -44,11 +44,6 @@ public static class ModIODownloader
         ModForklift.UpdateForklift();
     }
 
-    public static string FormatDownloadPath(int modId, int fileId)
-    {
-        return $"{ModIOSettings.GameApiPath}{modId}/files/{fileId}/download";
-    }
-
     public static ModTransaction GetTransaction(int modId)
     {
         // Check if the current transaction is for this mod
@@ -122,7 +117,7 @@ public static class ModIODownloader
 
         void OnReceivedFile(ModIOFile modFile)
         {
-            string url = FormatDownloadPath(modFile.ModId, modFile.FileId.Value);
+            string url = ModIOSettings.FormatDownloadPath(modFile.ModId, modFile.FileId.Value);
             ModIOSettings.LoadToken(OnTokenLoaded);
 
             void OnTokenLoaded(string token)

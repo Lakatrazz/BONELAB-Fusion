@@ -24,6 +24,16 @@ public static class ModIOSettings
 
     private static Action<string> _tokenLoadCallback = null;
 
+    public static string FormatFilePath(int modId, int fileId)
+    {
+        return $"{GameApiPath}{modId}/files/{fileId}";
+    }
+
+    public static string FormatDownloadPath(int modId, int fileId)
+    {
+        return $"{FormatFilePath(modId, fileId)}/download";
+    }
+
     public static void LoadToken(Action<string> loadCallback)
     {
         if (!string.IsNullOrWhiteSpace(LoadedToken))
