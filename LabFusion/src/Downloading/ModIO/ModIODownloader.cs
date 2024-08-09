@@ -30,7 +30,7 @@ public static class ModIODownloader
         {
             var transaction = QueuedTransactions.Dequeue();
 
-            transaction.callback?.Invoke(DownloadCallbackInfo.FailedCallback);
+            transaction.Callback?.Invoke(DownloadCallbackInfo.FailedCallback);
         }
     }
 
@@ -47,23 +47,23 @@ public static class ModIODownloader
     public static ModTransaction GetTransaction(int modId)
     {
         // Check if the current transaction is for this mod
-        if (IsDownloading && CurrentTransaction.modFile.ModId == modId)
+        if (IsDownloading && CurrentTransaction.ModFile.ModId == modId)
         {
             return CurrentTransaction;
         }
 
         // Look through queued transactions
-        return QueuedTransactions.FirstOrDefault((transaction) => transaction.modFile.ModId == modId);
+        return QueuedTransactions.FirstOrDefault((transaction) => transaction.ModFile.ModId == modId);
     }
 
     public static void EnqueueDownload(ModTransaction transaction)
     {
-        var existingTransaction = GetTransaction(transaction.modFile.ModId);
+        var existingTransaction = GetTransaction(transaction.ModFile.ModId);
 
         // If this mod is already being downloaded, just forward the download to the existing transaction
         if (existingTransaction != null)
         {
-            existingTransaction.HookDownload(transaction.callback);
+            existingTransaction.HookDownload(transaction.Callback);
             return;
         }
 
@@ -78,7 +78,7 @@ public static class ModIODownloader
         _isDownloading = true;
 
         // Validate the mod file
-        ModIOFile modFile = transaction.modFile;
+        ModIOFile modFile = transaction.ModFile;
 
         if (!modFile.FileId.HasValue)
         {
@@ -136,7 +136,7 @@ public static class ModIODownloader
 
         void FailDownload()
         {
-            transaction.callback?.Invoke(DownloadCallbackInfo.FailedCallback);
+            transaction.Callback?.Invoke(DownloadCallbackInfo.FailedCallback);
 
             EndDownload();
         }
@@ -148,35 +148,85 @@ public static class ModIODownloader
         ModDownloadManager.ValidateDirectories();
 
         // Initialize the transaction progress at 0%
-        // TODO: Update this value
         transaction.Progress = 0f;
 
-        // Send a request to mod.io for the files
+        // Send a request to mod.io for the headers
+        // We don't want to read the whole content yet
         using HttpClient client = new();
         client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
-        var streamTask = client.GetStreamAsync(url);
+        var responseTask = client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
 
-        while (!streamTask.IsCompleted)
+        while (!responseTask.IsCompleted)
         {
             yield return null;
+        }
+
+        // Make sure the response was successful
+        if (!responseTask.IsCompletedSuccessfully)
+        {
+            FusionLogger.LogException("getting response from mod.io", responseTask.Exception);
+
+            FailDownload();
+
+            yield break;
+        }
+
+        // Get the resulting content
+        var content = responseTask.Result.Content;
+        var contentLength = content.Headers.ContentLength.Value;
+
+        // Check if the file size is too large to download
+        var maxBytes = transaction.MaxBytes;
+
+        if (maxBytes.HasValue && contentLength > maxBytes.Value)
+        {
+            FusionLogger.Warn($"Skipped download of mod {modFile.ModId} due to the file size being too large.");
+
+            FailDownload();
+
+            yield break;
+        }
+
+        // Download the content into a MemoryStream
+        using var downloadStream = new MemoryStream();
+        var downloadTask = content.CopyToAsync(downloadStream);
+
+        while (!downloadTask.IsCompleted)
+        {
+            transaction.Progress = (float)downloadStream.Length / contentLength;
+
+            yield return null;
+        }
+
+        // Set progress to 100%
+        transaction.Progress = 1f;
+
+        // Make sure the download was successful
+        if (!downloadTask.IsCompletedSuccessfully)
+        {
+            FusionLogger.LogException("copying download to stream", downloadTask.Exception);
+
+            FailDownload();
+
+            yield break;
         }
 
         // Install the stream into a zip file
         var zipPath = ModDownloadManager.DownloadPath + $"/m{modFile.ModId}f{modFile.FileId}.zip";
 
-        FileStream copyStream = null;
         Task copyTask = null;
 
-        copyStream = new FileStream(zipPath, FileMode.Create);
-        copyTask = streamTask.Result.CopyToAsync(copyStream);
+        using var copyStream = new FileStream(zipPath, FileMode.Create);
+
+        // Copy the download to the zip file
+        downloadStream.Position = 0;
+        copyTask = downloadStream.CopyToAsync(copyStream);
 
         while (!copyTask.IsCompleted)
         {
             yield return null;
         }
-
-        copyStream?.Dispose();
 
         if (!copyTask.IsCompletedSuccessfully)
         {
@@ -188,7 +238,7 @@ public static class ModIODownloader
         }
 
         // Load the pallet
-        ModDownloadManager.LoadPalletFromZip(zipPath, modFile, transaction.temporary, OnScheduledLoad, transaction.callback);
+        ModDownloadManager.LoadPalletFromZip(zipPath, modFile, transaction.Temporary, OnScheduledLoad, transaction.Callback);
 
         void OnScheduledLoad()
         {
@@ -200,7 +250,7 @@ public static class ModIODownloader
 
         void FailDownload()
         {
-            transaction.callback?.Invoke(DownloadCallbackInfo.FailedCallback);
+            transaction.Callback?.Invoke(DownloadCallbackInfo.FailedCallback);
 
             EndDownload();
         }

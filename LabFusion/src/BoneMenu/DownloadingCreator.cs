@@ -35,8 +35,8 @@ public static partial class BoneMenuCreator
 
         ModTransaction transaction = new()
         {
-            modFile = new(ModReferences.FusionContentId),
-            callback = (info) =>
+            ModFile = new(ModReferences.FusionContentId),
+            Callback = (info) =>
             {
                 _fusionContentButton.ElementName = "Download Fusion Content";
             }
@@ -51,8 +51,8 @@ public static partial class BoneMenuCreator
 
         ModTransaction transaction = new()
         {
-            modFile = new(ModReferences.FusionCosmeticsId),
-            callback = (info) =>
+            ModFile = new(ModReferences.FusionCosmeticsId),
+            Callback = (info) =>
             {
                 _fusionCosmeticsButton.ElementName = "Download Fusion Cosmetics";
             }

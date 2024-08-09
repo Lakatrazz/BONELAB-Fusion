@@ -163,8 +163,11 @@ public static partial class FusionSceneManager
         // They aren't as important as the level, and anything waiting for a download likely won't exist anymore in the new scene.
         ModIODownloader.CancelQueue();
 
+        // Get the maximum amount of bytes that we download before cancelling, to make sure the level isn't too big
+        long maxBytes = ClientSettings.Downloading.MaxLevelSize.Value * 1000000;
+
         // Request the mod id from the host
-        NetworkModRequester.RequestAndInstallMod(PlayerIdManager.HostSmallId, _targetServerScene, OnDownloadFinished);
+        NetworkModRequester.RequestAndInstallMod(PlayerIdManager.HostSmallId, _targetServerScene, OnDownloadFinished, maxBytes);
 
         _hasStartedDownloadingTarget = true;
     }

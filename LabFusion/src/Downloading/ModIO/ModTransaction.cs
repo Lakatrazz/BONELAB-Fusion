@@ -2,11 +2,13 @@
 
 public class ModTransaction
 {
-    public ModIOFile modFile = default;
+    public ModIOFile ModFile { get; set; } = default;
 
-    public bool temporary = false;
+    public bool Temporary { get; set; } = false;
 
-    public DownloadCallback callback = null;
+    public DownloadCallback Callback { get; set; } = null;
+
+    public long? MaxBytes { get; set; } = null;
 
     private float _progress = 0f;
     public float Progress
@@ -23,6 +25,6 @@ public class ModTransaction
 
     public void HookDownload(DownloadCallback callback)
     {
-        this.callback += callback;
+        this.Callback += callback;
     }
 }

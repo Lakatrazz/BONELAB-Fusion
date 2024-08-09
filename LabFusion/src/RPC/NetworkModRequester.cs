@@ -36,7 +36,7 @@ public static class NetworkModRequester
         }
     }
 
-    public static void RequestAndInstallMod(byte target, string barcode, DownloadCallback downloadCallback)
+    public static void RequestAndInstallMod(byte target, string barcode, DownloadCallback downloadCallback, long? maxBytes = null)
     {
         RequestMod(new ModRequestInfo()
         {
@@ -56,9 +56,10 @@ public static class NetworkModRequester
 
             ModIODownloader.EnqueueDownload(new ModTransaction()
             {
-                modFile = info.modFile,
-                temporary = temporary,
-                callback = downloadCallback,
+                ModFile = info.modFile,
+                Temporary = temporary,
+                Callback = downloadCallback,
+                MaxBytes = maxBytes,
             });
         }
     }

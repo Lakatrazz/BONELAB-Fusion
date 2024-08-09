@@ -351,7 +351,7 @@ public class FusionMod : MelonMod
 
         GUILayout.Label($"Network Entity Count: {NetworkEntityManager.IdManager.RegisteredEntities.EntityIdLookup.Count}", emptyOptions);
 
-        GUILayout.Label($"Active Download: {(ModIODownloader.IsDownloading ? ModIODownloader.CurrentTransaction.modFile.ModId : "None")}", emptyOptions);
+        GUILayout.Label($"Active Download: {(ModIODownloader.IsDownloading ? ModIODownloader.CurrentTransaction.ModFile.ModId : "None")}", emptyOptions);
         
         if (ModIODownloader.IsDownloading)
         {
