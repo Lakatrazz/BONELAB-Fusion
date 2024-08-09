@@ -31,6 +31,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a539c7622a73032409365a6dc14f3433, type: 2}
   - {fileID: 11400000, guid: 5039d76edb1337c4bb1b96e0b44d4b38, type: 2}
   - {fileID: 11400000, guid: 11b17f0986d8ef642be7d283ce879b24, type: 2}
+  - {fileID: 11400000, guid: 340bc840636d80e4bbb43462065e23a9, type: 2}
+  - {fileID: 11400000, guid: 55d9a119e85b3ea41bde1251663681cc, type: 2}
   _dataCards:
   - {fileID: 11400000, guid: 391bcea53f62c9d4983ac21ae088574b, type: 2}
   - {fileID: 11400000, guid: a5491b0dbbcbdb0488e0d00b312c3874, type: 2}
@@ -60,6 +62,8 @@ MonoBehaviour:
   - Spawnable  Bit Popup
   - Level  Load Downloading
   - Spawnable  Progress Bar
+  - Spawnable  NameTag
+  - Spawnable  Head Layout
   _datacardTitles:
   - MonoDisc  Phantasmagorical Appliances
   - MonoDisc  Appen Beyuge
