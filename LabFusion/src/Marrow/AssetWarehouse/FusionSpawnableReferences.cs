@@ -16,5 +16,9 @@ public static class FusionSpawnableReferences
 
     public static readonly SpawnableCrateReference BitPopupReference = new("Lakatrazz.FusionContent.Spawnable.BitPopup");
 
-    public static readonly SpawnableCrateReference ProgressBarPopupReference = new("Lakatrazz.FusionContent.Spawnable.ProgressBar");
+    public static readonly SpawnableCrateReference ProgressBarReference = new("Lakatrazz.FusionContent.Spawnable.ProgressBar");
+
+    public static readonly SpawnableCrateReference NameTagReference = new("Lakatrazz.FusionContent.Spawnable.NameTag");
+
+    public static readonly SpawnableCrateReference HeadLayoutReference = new("Lakatrazz.FusionContent.Spawnable.HeadLayout");
 }
