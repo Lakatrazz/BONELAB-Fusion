@@ -21,15 +21,11 @@ public readonly struct ModData
 {
     public int Id { get; }
 
-    public ModFileData ModFile { get; }
-
     public IReadOnlyList<ModPlatformData> Platforms { get; }
 
     public ModData(JToken token)
     {
         Id = token.Value<int>("id");
-
-        ModFile = new ModFileData(token["modfile"]);
 
         List<ModPlatformData> modPlatformList = new();
 
