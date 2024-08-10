@@ -1,4 +1,6 @@
-﻿namespace LabFusion.Downloading.ModIO;
+﻿using LabFusion.Utilities;
+
+namespace LabFusion.Downloading.ModIO;
 
 public class ModTransaction : IProgress<float>
 {
@@ -25,6 +27,13 @@ public class ModTransaction : IProgress<float>
         _progress = value;
 
         // If we have a reporter, report the progress to it
-        Reporter?.Report(value);
+        try
+        {
+            Reporter?.Report(value);
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("reporting progress of mod transaction", e);
+        }
     }
 }
