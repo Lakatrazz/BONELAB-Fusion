@@ -18,6 +18,9 @@ public static class NetworkEntityManager
     private static readonly EntityUpdateList<IEntityLateUpdatable> _lateUpdateManager = new();
     public static EntityUpdateList<IEntityLateUpdatable> LateUpdateManager => _lateUpdateManager;
 
+    private static readonly EntityValidationList _ownershipTransferValidators = new();
+    public static EntityValidationList OwnershipTransferValidators => _ownershipTransferValidators;
+
     public static void OnInitializeManager()
     {
         MultiplayerHooking.OnPlayerCatchup += OnPlayerCatchup;
@@ -143,6 +146,15 @@ public static class NetworkEntityManager
 
     public static void TransferOwnership(NetworkEntity entity, PlayerId ownerId)
     {
+        if (!OwnershipTransferValidators.Validate(entity, ownerId))
+        {
+#if DEBUG
+            FusionLogger.Log($"Prevented ownership transfer for NetworkEntity at id {entity.Id} due to failed validation!");
+#endif
+
+            return;
+        }
+
         if (entity.IsOwnerLocked)
         {
             FusionLogger.Warn($"Attempted to transfer ownership for NetworkEntity at id {entity.Id}, but ownership was locked!");

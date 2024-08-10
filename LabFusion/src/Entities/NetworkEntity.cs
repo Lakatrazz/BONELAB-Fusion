@@ -5,7 +5,7 @@ namespace LabFusion.Entities;
 
 public delegate void NetworkEntityDelegate(NetworkEntity entity);
 
-public delegate void NetworkEntityPlayerDelegate(NetworkEntity entity, PlayerId playerId);
+public delegate void NetworkEntityPlayerDelegate(NetworkEntity entity, PlayerId player);
 
 public class NetworkEntity : INetworkRegistrable, INetworkOwnable
 {
