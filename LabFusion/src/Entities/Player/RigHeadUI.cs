@@ -173,6 +173,11 @@ public class RigHeadUI
 
     public void UpdateTransform(RigManager rigManager)
     {
+        if (!Spawned)
+        {
+            return;
+        }
+
         var head = rigManager.physicsRig.m_head;
 
         var position = head.position + Vector3Extensions.up * GetUIOffset(rigManager);
