@@ -24,6 +24,7 @@ public class ModTransaction : IProgress<float>
     {
         _progress = value;
 
-        Reporter.Report(value);
+        // If we have a reporter, report the progress to it
+        Reporter?.Report(value);
     }
 }
