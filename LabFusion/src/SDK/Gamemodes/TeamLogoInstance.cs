@@ -70,7 +70,7 @@ public class TeamLogoInstance
             {
                 var head = rm.physicsRig.m_head;
 
-                go.transform.position = head.position + Vector3Extensions.up * RigNametag.GetNametagOffset(rm);
+                go.transform.position = head.position + Vector3Extensions.up * RigHeadUI.GetUIOffset(rm);
                 go.transform.LookAtPlayer();
             }
         }

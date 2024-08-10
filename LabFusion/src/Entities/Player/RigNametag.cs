@@ -1,75 +1,51 @@
-﻿using Il2CppSLZ.Marrow;
+﻿using Il2CppSLZ.Marrow.Data;
+using Il2CppSLZ.Marrow.Pool;
 
 using Il2CppTMPro;
 
 using LabFusion.Extensions;
+using LabFusion.Marrow;
 using LabFusion.Utilities;
 
 using UnityEngine;
 
 namespace LabFusion.Entities;
 
-public class RigNametag
+public class RigNameTag : IHeadUIElement
 {
-    public const float NametagHeight = 0.23f;
-    public const float NameTagDivider = 250f;
+    private Transform _nametagTransform;
+    private Poolee _nametagPoolee;
+    private TextMeshProUGUI _nametagText;
 
-    public GameObject canvasGameObject;
-    public Transform canvasTransform;
-    public Canvas canvas;
-    public TextMeshProUGUI text;
+    public TextMeshProUGUI Text => _nametagText;
 
     private string _username = "No Name";
     private bool _isQuestUser = false;
 
-    public void CreateNametag()
+    public int Priority => 0;
+
+    private bool _visible = true;
+
+    public bool Visible
     {
-        canvasGameObject = new GameObject("NAMETAG CANVAS");
-        canvas = canvasGameObject.AddComponent<Canvas>();
-
-        canvas.renderMode = RenderMode.WorldSpace;
-        canvasTransform = canvasGameObject.transform;
-        canvasTransform.localScale = Vector3Extensions.one / NameTagDivider;
-
-        text = canvasGameObject.AddComponent<TextMeshProUGUI>();
-
-        text.alignment = TextAlignmentOptions.Midline;
-        text.enableAutoSizing = true;
-        text.richText = true;
-
-        text.font = PersistentAssetCreator.Font;
-    }
-
-    public void UpdateSettings(RigManager rigManager)
-    {
-        var avatar = rigManager.avatar;
-
-        if (!avatar)
+        get
         {
-            return;
+            return _visible;
         }
+        set
+        {
+            _visible = value;
 
-        float height = avatar.height / 1.76f;
-        canvasTransform.localScale = Vector3Extensions.one / NameTagDivider * height;
+            if (_nametagPoolee == null)
+            {
+                return;
+            }
 
-        UpdateText();
+            _nametagPoolee.gameObject.SetActive(value);
+        }
     }
 
-    public void UpdateTransform(RigManager rigManager)
-    {
-        var head = rigManager.physicsRig.m_head;
-        canvasTransform.position = head.position + Vector3Extensions.up * GetNametagOffset(rigManager);
-        canvasTransform.LookAtPlayer();
-    }
-
-    public static float GetNametagOffset(RigManager rigManager)
-    {
-        float offset = NametagHeight;
-
-        offset *= rigManager.avatar.height;
-
-        return offset;
-    }
+    public Transform Transform => _nametagTransform;
 
     public void SetUsername(string username, bool isQuestUser)
     {
@@ -79,32 +55,58 @@ public class RigNametag
         UpdateText();
     }
 
-    private void UpdateText()
+    public void UpdateText()
     {
-        if (text.IsNOC())
+        if (_nametagText.IsNOC())
         {
             return;
         }
 
         // Only allow color
-        text.text = _username.RemoveRichTextExceptColor();
+        _nametagText.text = _username.RemoveRichTextExceptColor();
 
         if (_isQuestUser)
         {
-            text.text += " <size=60%>Q";
+            _nametagText.text += " <size=60%>Q";
         }
     }
 
-    public void DestroyNametag()
+    public void Spawn(Transform parent)
     {
-        if (!canvasGameObject.IsNOC())
+        var spawnable = new Spawnable()
         {
-            GameObject.DestroyObject(canvasGameObject);
-        }
+            crateRef = FusionSpawnableReferences.NameTagReference,
+            policyData = null,
+        };
+
+        AssetSpawner.Register(spawnable);
+
+        SafeAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, (poolee) =>
+        {
+            _nametagPoolee = poolee;
+            _nametagText = poolee.GetComponentInChildren<TextMeshProUGUI>();
+            _nametagTransform = poolee.transform;
+
+            _nametagTransform.parent = parent;
+            _nametagTransform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+
+            poolee.gameObject.SetActive(Visible);
+
+            _nametagText.font = PersistentAssetCreator.Font;
+        });
     }
 
-    public void ToggleNametag(bool isActive)
+    public void Despawn()
     {
-        canvasGameObject.SetActive(isActive);
+        if (_nametagPoolee == null)
+        {
+            return;
+        }
+
+        _nametagPoolee.Despawn();
+
+        _nametagPoolee = null;
+        _nametagText = null;
+        _nametagTransform = null;
     }
 }

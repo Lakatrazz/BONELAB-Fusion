@@ -59,7 +59,10 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private RigPuppet _puppet = null;
     public RigPuppet Puppet => _puppet;
 
-    private RigNametag _nametag = null;
+    private RigNameTag _nametag = null;
+
+    private RigHeadUI _headUI = null;
+    public RigHeadUI HeadUI => _headUI;
 
     private RigArt _art = null;
     private RigPhysics _physics = null;
@@ -115,9 +118,13 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         _pelvisPDController = new();
         _puppet = new();
         _nametag = new();
+        _headUI = new();
 
         _avatarSetter = new();
         _avatarSetter.OnAvatarChanged += UpdateAvatarSettings;
+
+        // Register the default head UI elements so they're automatically spawned in
+        HeadUI.RegisterElement(_nametag);
 
         networkEntity.HookOnRegistered(OnPlayerRegistered);
         networkEntity.OnEntityUnregistered += OnPlayerUnregistered;
@@ -211,8 +218,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Disable the bodylog
         SetBallEnabled(false);
 
-        // Recreate the nametag
-        _nametag.CreateNametag();
+        // Spawn the head ui
+        _headUI.Spawn();
 
         // Mark our rig dirty for setting updates
         MarkDirty();
@@ -288,7 +295,10 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             _puppet.DestroyPuppet();
         }
 
-        _nametag.DestroyNametag();
+        _nametag.Despawn();
+
+        // Despawn the head UI
+        _headUI.Despawn();
     }
 
     private void OnMetadataChanged(string key, string value)
@@ -313,7 +323,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
             if (HasRig)
             {
-                _nametag.UpdateSettings(RigRefs.RigManager);
+                _nametag.UpdateText();
             }
         }
     }
@@ -341,7 +351,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     {
         if (HasRig)
         {
-            _nametag.UpdateSettings(RigRefs.RigManager);
+            _nametag.UpdateText();
+
+            _headUI.UpdateScale(RigRefs.RigManager);
         }
 
         UpdateVoiceSourceSettings();
@@ -530,7 +542,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             return;
         }
 
-        _nametag.UpdateTransform(RigRefs.RigManager);
+        _headUI.UpdateTransform(RigRefs.RigManager);
 
         // Update the player if its dirty and has an avatar
         var rm = RigRefs.RigManager;
@@ -561,7 +573,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
                 // Make sure the alpha is 1 so that people cannot create invisible names
                 var color = playerSettings.nametagColor;
                 color.a = 1f;
-                _nametag.text.color = color;
+                _nametag.Text.color = color;
             }
 
             _isSettingsDirty = false;
@@ -581,7 +593,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void OnCullExtras()
     {
-        _nametag.ToggleNametag(false);
+        _headUI.Visible = false;
 
         if (HasRig)
         {
@@ -592,7 +604,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void OnUncullExtras()
     {
-        UpdateNametagVisibility();
+        _headUI.Visible = true;
 
         if (HasRig)
         {
@@ -603,7 +615,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void UpdateNametagVisibility()
     {
-        _nametag.ToggleNametag(CommonPreferences.NametagsEnabled && FusionOverrides.ValidateNametag(PlayerId));
+        _nametag.Visible = CommonPreferences.NametagsEnabled && FusionOverrides.ValidateNametag(PlayerId);
     }
 
     public void OnEntityCull(bool isInactive)

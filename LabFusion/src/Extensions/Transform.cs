@@ -16,12 +16,14 @@ namespace LabFusion.Extensions
         /// <param name="transform"></param>
         public static void LookAtPlayer(this Transform transform)
         {
-            if (RigData.HasPlayer)
+            if (!RigData.HasPlayer)
             {
-                var rm = RigData.Refs.RigManager;
-                var head = rm.physicsRig.m_head;
-                transform.rotation = Quaternion.LookRotation(Vector3.Normalize(transform.position - head.position), head.up);
+                return;
             }
+
+            var rm = RigData.Refs.RigManager;
+            var head = rm.physicsRig.m_head;
+            transform.rotation = Quaternion.LookRotation(Vector3.Normalize(transform.position - head.position), head.up);
         }
 
         internal static string GetBasePath(this Transform transform)
