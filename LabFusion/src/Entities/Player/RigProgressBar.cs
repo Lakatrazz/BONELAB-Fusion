@@ -19,6 +19,7 @@ public class RigProgressBar : IHeadUIElement, IProgress<float>
     private Transform _transform;
 
     private Slider _slider;
+    private TMP_Text _text;
 
     private Animator _animator;
 
@@ -70,10 +71,10 @@ public class RigProgressBar : IHeadUIElement, IProgress<float>
 
             poolee.gameObject.SetActive(Visible);
 
-            var text = poolee.GetComponentInChildren<TMP_Text>();
-            text.font = PersistentAssetCreator.Font;
+            _text = poolee.GetComponentInChildren<TMP_Text>();
+            _text.font = PersistentAssetCreator.Font;
 
-            _slider.value = _progress;
+            UpdateVisuals();
 
             _animator.SetBool(_animatorParameterName, true);
         });
@@ -100,11 +101,19 @@ public class RigProgressBar : IHeadUIElement, IProgress<float>
     {
         _progress = value;
 
-        if (_slider == null)
+        UpdateVisuals();
+    }
+
+    private void UpdateVisuals()
+    {
+        if (_slider != null)
         {
-            return;
+            _slider.value = _progress;
         }
 
-        _slider.value = value;
+        if (_text != null)
+        {
+            _text.text = $"{Mathf.Round(_progress * 100f) / 100f}%";
+        }
     }
 }
