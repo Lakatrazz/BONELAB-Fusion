@@ -1,0 +1,30 @@
+﻿using MelonLoader;
+
+namespace LabFusion.Preferences.Client;
+
+public class DownloadingSettings
+{
+    public const int DefaultMaxFileSize = 100;
+    public const int DefaultMaxLevelSize = 1000;
+
+    public FusionPref<bool> DownloadSpawnables { get; private set; }
+    public FusionPref<bool> DownloadAvatars { get; private set; }
+    public FusionPref<bool> DownloadLevels { get; private set; }
+
+    public FusionPref<bool> KeepDownloadedMods { get; private set; }
+
+    public FusionPref<int> MaxFileSize { get; private set; }
+    public FusionPref<int> MaxLevelSize { get; private set; }
+
+    public void CreatePrefs(MelonPreferences_Category category)
+    {
+        DownloadSpawnables = new FusionPref<bool>(category, "Download Spawnables", true, PrefUpdateMode.IGNORE);
+        DownloadAvatars = new FusionPref<bool>(category, "Download Avatars", true, PrefUpdateMode.IGNORE);
+        DownloadLevels = new FusionPref<bool>(category, "Download Levels", true, PrefUpdateMode.IGNORE);
+
+        KeepDownloadedMods = new FusionPref<bool>(category, "Keep Downloaded Mods", false, PrefUpdateMode.IGNORE);
+
+        MaxFileSize = new FusionPref<int>(category, "Max File Size", DefaultMaxFileSize, PrefUpdateMode.IGNORE);
+        MaxLevelSize = new FusionPref<int>(category, "Max Level Size", DefaultMaxLevelSize, PrefUpdateMode.IGNORE);
+    }
+}

@@ -1,0 +1,177 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bffa63f5a19c394b9f0ab757607a9ea, type: 3}
+  m_Name: _Fusion Cosmetics.pallet
+  m_EditorClassIdentifier: 
+  _barcode:
+    _id: Lakatrazz.FusionCosmetics
+  _barcodeOld:
+    _id: null.empty.barcode
+  _slimCode:
+    _byteArray: 
+  _title: Fusion Cosmetics
+  _description: 
+  _unlockable: 0
+  _redacted: 0
+  _author: Lakatrazz
+  _version: 1.0.0
+  _sdkVersion: 0.6.0
+  _internal: 0
+  _crates:
+  - {fileID: 11400000, guid: 57ec9825418fd634eaae55bb88e6cf6b, type: 2}
+  - {fileID: 11400000, guid: 0626756a7e8211e469835dd588ed2ddd, type: 2}
+  - {fileID: 11400000, guid: db718bc218cdb9242a7604f3d914b449, type: 2}
+  - {fileID: 11400000, guid: dbbf79d3c71b8ea43b70846a17785418, type: 2}
+  - {fileID: 11400000, guid: c81a47f87f88d3d49b0a86b52246a465, type: 2}
+  - {fileID: 11400000, guid: adcbb166bd4cbf24db17cdc95afd1765, type: 2}
+  - {fileID: 11400000, guid: cffae56615ac57249962ec5c26068305, type: 2}
+  - {fileID: 11400000, guid: 934858e59530b9748834741c89da5476, type: 2}
+  - {fileID: 11400000, guid: 3b408c7707e44e44898e6222a0a46085, type: 2}
+  - {fileID: 11400000, guid: 1fdd42a3ac7f07b46be90775ed18f8a8, type: 2}
+  - {fileID: 11400000, guid: 77ac0d7ef0b84b144a5ad576055095cf, type: 2}
+  - {fileID: 11400000, guid: d50776a0202300a41934d5f672bdf44f, type: 2}
+  - {fileID: 11400000, guid: da8185dec1ac46e479b52cced5b3235f, type: 2}
+  - {fileID: 11400000, guid: caf4e0797302e66498d3d14501d02c94, type: 2}
+  - {fileID: 11400000, guid: ade2e7edff4dbfd43b17227e461bcd7a, type: 2}
+  - {fileID: 11400000, guid: aba2ab7cbc4b8b94d92d889a0267e055, type: 2}
+  - {fileID: 11400000, guid: 34a0c446fead2f74a908d795279dbc3d, type: 2}
+  - {fileID: 11400000, guid: 84f3f7a0d929b7d4786803c2bb5938cf, type: 2}
+  - {fileID: 11400000, guid: 1bee7d1b071cac6409e38ca66f9cf3a1, type: 2}
+  - {fileID: 11400000, guid: 25bc10db0a222ea458dc8d959333baee, type: 2}
+  - {fileID: 11400000, guid: 95cf8d02ffc5269409d4bf52bf490d3c, type: 2}
+  - {fileID: 11400000, guid: 1b007fc81e04f5d40bed5c56817702f4, type: 2}
+  - {fileID: 11400000, guid: 13ec458f9d1ec8449835026928d4412f, type: 2}
+  - {fileID: 11400000, guid: 136dae45e3747eb4685937f90d74f438, type: 2}
+  - {fileID: 11400000, guid: c6877a1bf2e6b004da1a3538a3787778, type: 2}
+  - {fileID: 11400000, guid: 50362ba7350f3c341a2e729536b0e0da, type: 2}
+  - {fileID: 11400000, guid: bb14b9c7d4942964bb4946fff3203096, type: 2}
+  - {fileID: 11400000, guid: 2126ee7ab29b8ce478f5a07ffee9d6eb, type: 2}
+  - {fileID: 11400000, guid: 6bbcea4970760114d82ec0926ff8c4a4, type: 2}
+  - {fileID: 11400000, guid: 8a937c5682a4a364c946365f7eae4469, type: 2}
+  - {fileID: 11400000, guid: c01b731eeb2dd674393996806e5842ba, type: 2}
+  - {fileID: 11400000, guid: b6003dde218475b4fa69caf0b969cdc3, type: 2}
+  - {fileID: 11400000, guid: 89ca442fe3f5d5a4fbdf171e55670d97, type: 2}
+  - {fileID: 11400000, guid: 8d4000bba17acc446bc73cc1a2c810b1, type: 2}
+  - {fileID: 11400000, guid: cae7bdac9ce928340b77c16ea86413e3, type: 2}
+  - {fileID: 11400000, guid: 9fa189887d922a34cb9a5c381d238752, type: 2}
+  - {fileID: 11400000, guid: 42908cd1deba6c343a57f72ae32b4335, type: 2}
+  - {fileID: 11400000, guid: cec62af1d12296d4daaa9411974169d5, type: 2}
+  - {fileID: 11400000, guid: 9379dd0b2ed509143b400d5c2c3fc53c, type: 2}
+  - {fileID: 11400000, guid: cce341781e499284d8ca3ff24d60e75f, type: 2}
+  - {fileID: 11400000, guid: 866062066756fd5439d145ad71def08a, type: 2}
+  - {fileID: 11400000, guid: 4ce43fa6f598a7a43a78d54f6186a957, type: 2}
+  - {fileID: 11400000, guid: e67eec322d8d3ec469385c43c362c79c, type: 2}
+  - {fileID: 11400000, guid: 8ea7d47622b4e714194fcb5c307d826e, type: 2}
+  - {fileID: 11400000, guid: 36014463a106eec469d1cebbd0905b30, type: 2}
+  - {fileID: 11400000, guid: 348abac6b7144394ab895b7ccd367c52, type: 2}
+  - {fileID: 11400000, guid: 02ea5ad8e7e59b5418b99c32875e0303, type: 2}
+  - {fileID: 11400000, guid: 6260a37867503e74b933c37e2764dec4, type: 2}
+  - {fileID: 11400000, guid: 2d3c0dc2df08ac9419ce1d28c046eca6, type: 2}
+  - {fileID: 11400000, guid: 6e33ae2867b0d984a8875e664535a13f, type: 2}
+  - {fileID: 11400000, guid: 2015cc49b83b1f24995cd9712d4dfd19, type: 2}
+  - {fileID: 11400000, guid: 5d7f3cb7b89ec3f46b47fded1c462719, type: 2}
+  - {fileID: 11400000, guid: 91afde55efd20514988944ed07f3dfe0, type: 2}
+  - {fileID: 11400000, guid: d747babf6fe84494591e970b1d8d4046, type: 2}
+  - {fileID: 11400000, guid: c14b3ad48332a074eb384f9409b8923d, type: 2}
+  - {fileID: 11400000, guid: 0d522a200e71bbf43ad029c8508d6cb8, type: 2}
+  - {fileID: 11400000, guid: 50601e235ef6b7f4fba47a4d92d99f54, type: 2}
+  - {fileID: 11400000, guid: 4f09631719fc9464bbd45b8fef5a5908, type: 2}
+  - {fileID: 11400000, guid: 254e88f7e9103d54bb9df804c4304ef3, type: 2}
+  - {fileID: 11400000, guid: 1b83bdbb83a3ea64e9fefe759d7274a4, type: 2}
+  - {fileID: 11400000, guid: 4c47ffaac8ed7ee4c8daa0a5267fa5c8, type: 2}
+  - {fileID: 11400000, guid: 7bfb98bf8a168ec40b949659fd1637c1, type: 2}
+  - {fileID: 11400000, guid: a0f317512864aeb4fa32c8deef4d1870, type: 2}
+  - {fileID: 11400000, guid: a1a4d4f2100383c4181755737ef9b09f, type: 2}
+  - {fileID: 11400000, guid: efa97e854f0b33d48a9502daaefca729, type: 2}
+  - {fileID: 11400000, guid: cea118952e1cf7c4dafbce5cb1bbd980, type: 2}
+  - {fileID: 11400000, guid: ecd1975d8cd5a7e44a63f215abb07864, type: 2}
+  - {fileID: 11400000, guid: ecf92189bf2f1934b8156e628adcfdb7, type: 2}
+  - {fileID: 11400000, guid: f1a2f53406428984cb7332f854c81c7f, type: 2}
+  - {fileID: 11400000, guid: fe81f85f2e1afbf458e250923e912393, type: 2}
+  - {fileID: 11400000, guid: 103b04320b548a84e9eb51c5bef707fe, type: 2}
+  _dataCards: []
+  _tags: []
+  _changeLogs: []
+  _crateTitles:
+  - Spawnable  Adventurers Hat
+  - Spawnable  3D Glasses
+  - Spawnable  LODS OF BITS
+  - Spawnable  Null Pillow
+  - Spawnable  British Helm
+  - Spawnable  Cardboard Disguise
+  - Spawnable  Cardboard Tophat
+  - Spawnable  Cat Beanie
+  - Spawnable  The Big Cheese
+  - Spawnable  Construction Helm
+  - Spawnable  Cooler Backpack
+  - Spawnable  Circle Shades
+  - Spawnable  Green Cap
+  - Spawnable  Fez
+  - Spawnable  Firework Backpack
+  - Spawnable  Fren
+  - Spawnable  Frycook Hat
+  - Spawnable  Gearhead
+  - Spawnable  Ancient Artifact
+  - Spawnable  Gloop Trail
+  - Spawnable  Guard Helmet
+  - Spawnable  Junk-tion
+  - Spawnable  Kick Me Sign
+  - Spawnable  Gray Cap
+  - Spawnable  Silk Hat
+  - Spawnable  Brickhead
+  - Spawnable  Shocking Head Effect
+  - Spawnable  Monocle
+  - Spawnable  Nyan Trail
+  - Spawnable  Party Hat
+  - Spawnable  Plastic Piece
+  - Spawnable  Pulsating Mass
+  - Spawnable  Puzzle Cube
+  - Spawnable  Magicians Hat
+  - Spawnable  Stormy Head Effect
+  - Spawnable  Test Item Please Ignore
+  - Spawnable  The Beacon
+  - Spawnable  Purple-Green Aura
+  - Spawnable  Shiny Shades
+  - Spawnable  Ancient Tablet
+  - Spawnable  Big Bit Backpack
+  - Spawnable  Briefcase
+  - Spawnable  Circling Bits
+  - Spawnable  Floatie
+  - Spawnable  Headset
+  - Spawnable  Hot Head
+  - Spawnable  Junky Jetpack
+  - Spawnable  Retro Guitar
+  - Spawnable  Octo Specs
+  - Spawnable  Potion Pack
+  - Spawnable  Psychic Perception
+  - Spawnable  Retro Mind
+  - Spawnable  Signaling Spiral
+  - Spawnable  Violet Vortex
+  - Spawnable  Speaker
+  - Spawnable  Arrow Head
+  - Spawnable  Bucket Hat
+  - Spawnable  CBRN Gas Mask
+  - Spawnable  Crown
+  - Spawnable  Flinchs Jinjle
+  - Spawnable  GP-5 Gas Mask
+  - Spawnable  The Jester
+  - Spawnable  Missed A Wide Glasses
+  - Spawnable  Missed A Wide Hat
+  - Spawnable  Old Timey Pipe
+  - Spawnable  Zesty Swag Shades
+  - Spawnable  Fedoral
+  - Spawnable  Riot Helmet
+  - Spawnable  Smitty
+  - Spawnable  Virtually Insane
+  - Spawnable  Wonker
+  _datacardTitles: []
+  _palletDependencies: []

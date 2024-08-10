@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34569ddb84e20304981812b1c448d930, type: 3}
+  m_Name: Achievement Board.sc
+  m_EditorClassIdentifier: 
+  _barcode:
+    _id: Lakatrazz.FusionContent.Spawnable.AchievementBoard
+  _title: Achievement Board
+  _description: Challenge board containing multiple objectives completable with pals
+    in MythOS.
+  _unlockable: 0
+  _redacted: 0
+  _tags:
+  - Fusion
+  _boneTags:
+    _tags: []
+  _mainAsset:
+    _assetGUID: 848410be2c3510e4c97a8cebcedb8865
+    _editorAssetChanged: 0
+  _previewMesh:
+    _assetGUID: 0f8d05635cd6e674d9ddbec183dbac42
+    _editorAssetChanged: 1
+  _customQuality: 0
+  _previewMeshQuality: 0.5
+  _maxLODLevel: 0
+  _colliderBounds:
+    m_Center: {x: 0.00077962875, y: 1.4492706, z: 0.0000005364418}
+    m_Extent: {x: 1.2705607, y: 1.4493948, z: 0.3081976}

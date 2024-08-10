@@ -1,7 +1,0 @@
-Added:
-- Automatic scene reloading if the screen becomes black
-Fixed:
-- Major crashing bugs from 1.6.0
-- Broken static impact properties while in a server
-Improved:
-- Spawning in the ground (likely)

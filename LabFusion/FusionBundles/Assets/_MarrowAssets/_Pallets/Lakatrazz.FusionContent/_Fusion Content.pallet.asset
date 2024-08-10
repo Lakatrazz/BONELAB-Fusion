@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bffa63f5a19c394b9f0ab757607a9ea, type: 3}
+  m_Name: _Fusion Content.pallet
+  m_EditorClassIdentifier: 
+  _barcode:
+    _id: Lakatrazz.FusionContent
+  _title: Fusion Content
+  _description: 
+  _unlockable: 0
+  _redacted: 0
+  _author: Lakatrazz
+  _version: 1.0.0
+  _sdkVersion: 1.1.0
+  _internal: 0
+  _crates:
+  - {fileID: 11400000, guid: 978b050c32ef248479bd34fb391923eb, type: 2}
+  - {fileID: 11400000, guid: 4e5cbc908b199324c99407f16ce1561d, type: 2}
+  - {fileID: 11400000, guid: 7a19ee3ad972289479562a9278bcc256, type: 2}
+  - {fileID: 11400000, guid: 50523ab32d2918543816621a3b940d3e, type: 2}
+  - {fileID: 11400000, guid: 419e9fce233a5584fbbe1dc1315ce4a4, type: 2}
+  - {fileID: 11400000, guid: a539c7622a73032409365a6dc14f3433, type: 2}
+  - {fileID: 11400000, guid: 5039d76edb1337c4bb1b96e0b44d4b38, type: 2}
+  - {fileID: 11400000, guid: 11b17f0986d8ef642be7d283ce879b24, type: 2}
+  - {fileID: 11400000, guid: 340bc840636d80e4bbb43462065e23a9, type: 2}
+  - {fileID: 11400000, guid: 55d9a119e85b3ea41bde1251663681cc, type: 2}
+  _dataCards:
+  - {fileID: 11400000, guid: 391bcea53f62c9d4983ac21ae088574b, type: 2}
+  - {fileID: 11400000, guid: a5491b0dbbcbdb0488e0d00b312c3874, type: 2}
+  - {fileID: 11400000, guid: 5ff5c6950d9e40849b64e181e47bc842, type: 2}
+  - {fileID: 11400000, guid: 6f17f498b8413b64b89046160377011d, type: 2}
+  - {fileID: 11400000, guid: 06353090925024f48bb854e58ed12684, type: 2}
+  - {fileID: 11400000, guid: 9cc6b265cb9b1204ab65ccdd755d1307, type: 2}
+  - {fileID: 11400000, guid: 96d3be93ce6f0774aa84df3fdb0e8f67, type: 2}
+  - {fileID: 11400000, guid: b8b1e8e2bb8d1bb4aa670bbc08a3f783, type: 2}
+  - {fileID: 11400000, guid: 317c0fc33c06ee74ab5e2eb557ae1442, type: 2}
+  - {fileID: 11400000, guid: d32a5b33d675d8c449e061af2e6b9a0e, type: 2}
+  - {fileID: 11400000, guid: ee9f095dcbac400498592b3627b960f7, type: 2}
+  - {fileID: 11400000, guid: 3e660a20b56c0bd47a0f856fc039e366, type: 2}
+  - {fileID: 11400000, guid: e1c9657b3d244a148b5541b3deb1ca6b, type: 2}
+  - {fileID: 11400000, guid: 778fde2ef685b2a4499998b042feac01, type: 2}
+  - {fileID: 11400000, guid: 855b2547999c5e44b9621f4426dcbd23, type: 2}
+  - {fileID: 11400000, guid: 8b17a4c919b2cb9439f7d3587b61ec57, type: 2}
+  - {fileID: 11400000, guid: 31582503ed056f04ea43c5d2389cd688, type: 2}
+  _tags: []
+  _changeLogs: []
+  _crateTitles:
+  - Spawnable  BitMart
+  - Spawnable  Achievement Board
+  - Spawnable  Info Board
+  - Spawnable  Victory Trophy
+  - Spawnable  Achievement Popup
+  - Spawnable  Bit Popup
+  - Level  Load Downloading
+  - Spawnable  Progress Bar
+  - Spawnable  NameTag
+  - Spawnable  Head Layout
+  _datacardTitles:
+  - MonoDisc  Phantasmagorical Appliances
+  - MonoDisc  Appen Beyuge
+  - MonoDisc  Buggy Physics
+  - MonoDisc  Sickly Bug Initiative
+  - MonoDisc  Smiggles In Despair
+  - MonoDisc  Synthetic Caverns
+  - MonoDisc  Wacky Willy's Wonderland
+  - MonoDisc  Fistfight Fusion
+  - MonoDisc  GeoGrp Fell Down The Stairs
+  - MonoDisc  Lava Gang Fails
+  - MonoDisc  Lava Gang Triumphs
+  - MonoDisc  Sabrelake Fails
+  - MonoDisc  Sabrelake Triumphs
+  - MonoDisc  Erm...
+  - BoneTag  Fusion Player
+  - BoneTag  Team LavaGang
+  - BoneTag  Team Sabrelake
+  _palletDependencies: []

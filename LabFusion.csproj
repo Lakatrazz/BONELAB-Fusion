@@ -2,7 +2,7 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>10.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -42,7 +42,6 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>9.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug-Lite|AnyCPU'">
@@ -52,7 +51,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>9.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
@@ -321,10 +319,16 @@
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\VoidG114DMData.cs" />
     <Compile Include="Core\src\Data\Containers\FusionDictionary.cs" />
     <Compile Include="Core\src\Data\Containers\FusionArrayPool.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\Sandboxes\GunRangeData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\Sandboxes\BigBoneBowlingData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\Sandboxes\MirrorData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\Sandboxes\MuseumBasementData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\Sandboxes\TuscanyData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\Sandboxes\HalfwayParkData.cs" />
     <Compile Include="Core\src\Data\Containers\Syncables\GrabbedGripList.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\GameControllerData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\HalfwayParkDMData.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\HolodeckData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\Sandboxes\HolodeckData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\LevelDataHandler.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\ResetButtonRemover.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\VoidG114Data.cs" />
@@ -414,16 +418,37 @@
     <Compile Include="Core\src\MonoBehaviours\NotifyOnEnable.cs" />
     <Compile Include="Core\src\MonoBehaviours\CollisionSyncer.cs" />
     <Compile Include="Core\src\MonoBehaviours\TimedDespawner.cs" />
+    <Compile Include="Core\src\Network\Data\PropReferenceData.cs" />
+    <Compile Include="Core\src\Network\Data\ComponentIndexData.cs" />
     <Compile Include="Core\src\Network\Fallback\EmptyNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Helpers\LobbyMetadataHelper.cs" />
     <Compile Include="Core\src\Network\Helpers\MetadataHelper.cs" />
     <Compile Include="Core\src\Network\Helpers\NetworkVerification.cs" />
     <Compile Include="Core\src\Network\Helpers\SendRateTable.cs" />
-    <Compile Include="Core\src\Network\Helpers\VoiceHelper.cs" />
+    <Compile Include="Core\src\Network\Messages\Levels\ZoneSpawnerMessage.cs" />
+    <Compile Include="Core\src\Network\Messages\Magazines\MagazineClaimMessage.cs" />
+    <Compile Include="Core\src\Patching\Patches\Spawning\ZoneSpawnerPatches.cs" />
+    <Compile Include="Core\src\Representation\LocalPlayer.cs" />
+    <Compile Include="Core\src\RPC\NetworkAssetSpawner.cs" />
+    <Compile Include="Core\src\SDK\Gamemodes\MetadataVariable.cs" />
+    <Compile Include="Core\src\SDK\Gamemodes\NetworkMetadata.cs" />
+    <Compile Include="Core\src\SDK\Lobbies\GenericLobbyFilter.cs" />
+    <Compile Include="Core\src\SDK\Lobbies\ILobbyFilter.cs" />
+    <Compile Include="Core\src\SDK\Lobbies\LobbyFilterManager.cs" />
+    <Compile Include="Core\src\Utilities\MagazineUtilities.cs" />
+    <Compile Include="Core\src\Voice\IVoiceReceiver.cs" />
+    <Compile Include="Core\src\Voice\JawFlapper.cs" />
+    <Compile Include="Core\src\Voice\Unity\UnityVoice.cs" />
+    <Compile Include="Core\src\Voice\Unity\UnityVoiceManager.cs" />
+    <Compile Include="Core\src\Voice\Unity\UnityVoiceReceiver.cs" />
+    <Compile Include="Core\src\Voice\Unity\UnityVoiceSpeaker.cs" />
+    <Compile Include="Core\src\Voice\VoiceCompressor.cs" />
+    <Compile Include="Core\src\Voice\VoiceHelper.cs" />
+    <Compile Include="Core\src\Voice\VoiceInfo.cs" />
     <Compile Include="Core\src\Network\Helpers\VoteKickHelper.cs" />
     <Compile Include="Core\src\Network\INetworkLobby.cs" />
-    <Compile Include="Core\src\Network\IVoiceHandler.cs" />
-    <Compile Include="Core\src\Network\IVoiceManager.cs" />
+    <Compile Include="Core\src\Voice\IVoiceSpeaker.cs" />
+    <Compile Include="Core\src\Voice\IVoiceManager.cs" />
     <Compile Include="Core\src\Network\Messages\Arena\BaseGameControllerMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Arena\TimeTrialGameControllerMessage.cs" />
     <Compile Include="Core\src\Network\Messages\Campaign\MineDiveCartMessage.cs" />
@@ -481,30 +506,26 @@
     <Compile Include="Core\src\Network\Proxy\ProxyNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxyNetworkLobby.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxySocketHandler.cs" />
-    <Compile Include="Core\src\Network\Proxy\ProxyVoiceManager.cs" />
-    <Compile Include="Core\src\Network\Proxy\ProxyVoiceHandler.cs" />
     <Compile Include="Core\src\Network\Steam\SpacewarNetworkLayer.cs" />
-    <Compile Include="Core\src\Network\Steam\SteamVoiceManager.cs" />
     <Compile Include="Core\src\Network\Steam\SteamVRNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Steam\SteamLobby.cs" />
-    <Compile Include="Core\src\Network\Steam\SteamVoiceHandler.cs" />
     <Compile Include="Core\src\Patching\CommonDelegates.cs" />
     <Compile Include="Core\src\Patching\NativeStructs\Attack_.cs" />
     <Compile Include="Core\src\Patching\Patches\Attacks\ImpactAttackValidator.cs" />
     <Compile Include="Core\src\Patching\Patches\Attacks\ImpactPropertiesPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\AvatarDicePatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\AvatarPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Props\AvatarDicePatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Player\AvatarPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Enemies\BehaviourOmniwheelPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Enemies\BehaviourPowerLegsPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Enemies\BehaviourBaseNavPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\Control_GlobalTimePatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\GachaPlacerPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Player\Control_GlobalTimePatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Props\GachaPlacerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\BonelabHubPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\BoardGeneratorPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\ConstrainerPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Props\BoardGeneratorPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Props\ConstrainerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\BonelabProgressionHelperPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\ConstraintTrackerPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\DevManipulatorPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Props\ConstraintTrackerPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Props\DevManipulatorPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\BaseGameControllerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\GameControl_HolodeckPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\TimeTrial_GameControllerPatches.cs" />
@@ -512,22 +533,21 @@
     <Compile Include="Core\src\Patching\Patches\Player\ArtRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\JimmyDoorControllerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\PlayerDamageReceiverPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\Player\RemapRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Props\AmmoPickupPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Props\FlyingGunPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\KartRacePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Plugs\KeyRecieverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\HomePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\Trial_SpawnerEventsPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\PropFlashlightPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Props\PropFlashlightPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Props\FunicularControllerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Props\PowerableJointPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Props\SpawnEventsPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Props\TwoButtonRemoteControllerPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\PullCordDevicePatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Player\PullCordDevicePatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Attacks\ImpactSFXPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\PullCordForceChangePatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\SpawnableCratePlacerPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Trigger\PullCordForceChangePatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Spawning\SpawnableCratePlacerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Attacks\StabSlashPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Trigger\GenGameControl_TriggerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Trigger\MirrorPatches.cs" />
@@ -771,27 +791,27 @@
     <Compile Include="Core\src\Network\Steam\SteamSocketHandler.cs" />
     <Compile Include="Core\src\Patching\NativeStructs\HandGripPair_.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\ArenaPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\AssetPooleePatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\ChunkTriggerPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\DescentPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\GrabPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\GunPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\HandJointConfigurationPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\InventorySlotReceiverPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\InventoryAmmoReceiverPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Spawning\AssetPooleePatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Trigger\ChunkTriggerPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Levels\DescentPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Player\GrabPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Props\GunPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Player\HandJointConfigurationPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Player\InventorySlotReceiverPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Player\InventoryAmmoReceiverPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\UI\LevelsPanelViewPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Levels\MagmaGatePatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\ObjectDestructablePatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\OpenControllerRigPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Props\ObjectDestructablePatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Player\OpenControllerRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\PhysicsRigPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\PlayerHealthPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Plugs\PlugPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\PopUpMenuPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\PropHealthPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\UI\PopUpMenuPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Props\PropHealthPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\PuppetMasterPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\SceneStreamerPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\SeatPatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\SimpleGripEventsPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Levels\SceneStreamerPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Props\SeatPatches.cs" />
+    <Compile Include="Core\src\Patching\Patches\Props\SimpleGripEventsPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\SubBehaviourHealthPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Trigger\TriggerLasersPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Unity\PhysicsPatches.cs" />
@@ -867,6 +887,7 @@
     <Compile Include="Core\src\Utilities\ThreadingUtilities.cs" />
     <Compile Include="Core\src\Utilities\TriggerUtilities.cs" />
     <Compile Include="Core\src\Utilities\UI\UIMachineUtilities.cs" />
+    <Compile Include="Core\src\Voice\VoiceVolume.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Core\resources\lib\x86_64\steam_api64.dll" />

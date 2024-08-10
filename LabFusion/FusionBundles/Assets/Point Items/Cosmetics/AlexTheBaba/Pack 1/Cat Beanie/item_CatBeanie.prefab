@@ -1,0 +1,155 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7042027370846385063
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2273752375499138665}
+  - component: {fileID: 6847688590504199097}
+  - component: {fileID: 8908007469489662502}
+  m_Layer: 0
+  m_Name: item_CatBeanie
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2273752375499138665
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7042027370846385063}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 6482486128504128272}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &6847688590504199097
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7042027370846385063}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0, y: -0.039324455, z: 0.018999979}
+  m_Size: 0.21955007
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.006044724
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 5313480193170290815}
+  m_Enabled: 1
+--- !u!114 &8908007469489662502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7042027370846385063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cosmeticPoint: 1
+  hiddenInView: 1
+  rawPrice: 600
+  previewIcon: {fileID: 2800000, guid: 9aab5fb5ea63be24d9863541332c64ec, type: 3}
+  authorOverride: BaBaCorp
+--- !u!1001 &6808549509818197243
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2273752375499138665}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 3058122a82676ff449443db003501371, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3058122a82676ff449443db003501371, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 10.1607
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3058122a82676ff449443db003501371, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 11.9607
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3058122a82676ff449443db003501371, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 12.2607
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3058122a82676ff449443db003501371, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3058122a82676ff449443db003501371, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.103
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3058122a82676ff449443db003501371, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.019
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3058122a82676ff449443db003501371, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071067
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3058122a82676ff449443db003501371, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3058122a82676ff449443db003501371, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3058122a82676ff449443db003501371, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3058122a82676ff449443db003501371, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3058122a82676ff449443db003501371, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3058122a82676ff449443db003501371, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 3058122a82676ff449443db003501371, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 35ec50d33bae7db44b9a30306bec916a, type: 2}
+    - target: {fileID: 919132149155446097, guid: 3058122a82676ff449443db003501371, type: 3}
+      propertyPath: m_Name
+      value: Cat Beanie
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3058122a82676ff449443db003501371, type: 3}
+--- !u!23 &5313480193170290815 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 3058122a82676ff449443db003501371, type: 3}
+  m_PrefabInstance: {fileID: 6808549509818197243}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6482486128504128272 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 3058122a82676ff449443db003501371, type: 3}
+  m_PrefabInstance: {fileID: 6808549509818197243}
+  m_PrefabAsset: {fileID: 0}
