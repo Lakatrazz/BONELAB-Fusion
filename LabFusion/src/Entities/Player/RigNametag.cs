@@ -19,6 +19,26 @@ public class RigNameTag : IHeadUIElement
 
     public TextMeshProUGUI Text => _nametagText;
 
+    private Color _color = Color.white;
+    public Color Color
+    {
+        get
+        {
+            return _color;
+        }
+        set
+        {
+            _color = value;
+
+            if (Text == null)
+            {
+                return;
+            }
+
+            Text.color = value;
+        }
+    }
+
     private string _username = "No Name";
     private bool _isQuestUser = false;
 
@@ -57,18 +77,21 @@ public class RigNameTag : IHeadUIElement
 
     public void UpdateText()
     {
-        if (_nametagText.IsNOC())
+        if (Text == null)
         {
             return;
         }
 
         // Only allow color
-        _nametagText.text = _username.RemoveRichTextExceptColor();
+        Text.text = _username.RemoveRichTextExceptColor();
 
         if (_isQuestUser)
         {
-            _nametagText.text += " <size=60%>Q";
+            Text.text += " <size=60%>Q";
         }
+
+        // Update multiply color value
+        Text.color = Color;
     }
 
     public void Spawn(Transform parent)
@@ -93,6 +116,8 @@ public class RigNameTag : IHeadUIElement
             poolee.gameObject.SetActive(Visible);
 
             _nametagText.font = PersistentAssetCreator.Font;
+
+            UpdateText();
         });
     }
 

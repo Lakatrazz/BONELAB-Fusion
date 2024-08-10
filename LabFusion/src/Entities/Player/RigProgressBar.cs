@@ -1,10 +1,14 @@
-﻿using Il2CppSLZ.Marrow.Data;
+﻿using System.Collections;
+
+using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.Marrow.Pool;
 
 using Il2CppTMPro;
 
 using LabFusion.Marrow;
 using LabFusion.Utilities;
+
+using MelonLoader;
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,7 +17,7 @@ namespace LabFusion.Entities;
 
 public class RigProgressBar : IHeadUIElement, IProgress<float>
 {
-    private const string _animatorParameterName = "Visible";
+    private const string _visibilityParameterName = "Visible";
 
     private Poolee _poolee;
     private Transform _transform;
@@ -43,7 +47,32 @@ public class RigProgressBar : IHeadUIElement, IProgress<float>
                 return;
             }
 
-            _poolee.gameObject.SetActive(value);
+            if (value)
+            {
+                _poolee.gameObject.SetActive(true);
+            }
+            else
+            {
+                MelonCoroutines.Start(CoDelayedDisable(1.2f));
+            }
+
+            _animator.SetBool(_visibilityParameterName, Visible);
+        }
+    }
+
+    private IEnumerator CoDelayedDisable(float time)
+    {
+        float elapsed = 0f;
+
+        while (elapsed < time)
+        {
+            elapsed += TimeUtilities.DeltaTime;
+            yield return null;
+        }
+
+        if (_poolee != null)
+        {
+            _poolee.gameObject.SetActive(false);
         }
     }
 
@@ -75,8 +104,6 @@ public class RigProgressBar : IHeadUIElement, IProgress<float>
             _text.font = PersistentAssetCreator.Font;
 
             UpdateVisuals();
-
-            _animator.SetBool(_animatorParameterName, true);
         });
     }
 
@@ -87,14 +114,12 @@ public class RigProgressBar : IHeadUIElement, IProgress<float>
             return;
         }
 
-        _animator.SetBool(_animatorParameterName, false);
+        _poolee.Despawn();
 
         _poolee = null;
         _animator = null;
         _transform = null;
         _slider = null;
-
-        PooleeHelper.DespawnDelayed(_poolee, 1.5f);
     }
 
     public void Report(float value)
@@ -113,7 +138,12 @@ public class RigProgressBar : IHeadUIElement, IProgress<float>
 
         if (_text != null)
         {
-            _text.text = $"{Mathf.Round(_progress * 100f) / 100f}%";
+            _text.text = $"{Mathf.RoundToInt(_progress * 100f)}%";
+        }
+
+        if (_animator != null)
+        {
+            _animator.SetBool(_visibilityParameterName, Visible);
         }
     }
 }
