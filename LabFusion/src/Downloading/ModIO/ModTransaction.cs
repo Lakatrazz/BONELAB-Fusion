@@ -1,6 +1,6 @@
 ﻿namespace LabFusion.Downloading.ModIO;
 
-public class ModTransaction
+public class ModTransaction : IProgress<float>
 {
     public ModIOFile ModFile { get; set; } = default;
 
@@ -11,20 +11,19 @@ public class ModTransaction
     public long? MaxBytes { get; set; } = null;
 
     private float _progress = 0f;
-    public float Progress
-    {
-        get
-        {
-            return _progress;
-        }
-        set
-        {
-            _progress = value;
-        }
-    }
+    public float Progress => _progress;
+
+    public IProgress<float> Reporter { get; set; } = null;
 
     public void HookDownload(DownloadCallback callback)
     {
         this.Callback += callback;
+    }
+
+    public void Report(float value)
+    {
+        _progress = value;
+
+        Reporter.Report(value);
     }
 }

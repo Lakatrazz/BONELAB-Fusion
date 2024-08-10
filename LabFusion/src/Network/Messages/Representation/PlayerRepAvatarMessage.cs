@@ -1,12 +1,5 @@
-﻿using Il2CppSLZ.Marrow.Warehouse;
-
-using LabFusion.Data;
-using LabFusion.Downloading;
+﻿using LabFusion.Data;
 using LabFusion.Entities;
-using LabFusion.Marrow;
-using LabFusion.Preferences.Client;
-using LabFusion.RPC;
-using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
@@ -65,41 +58,6 @@ public class PlayerRepAvatarMessage : FusionMessageHandler
         {
             using var message = FusionMessage.Create(Tag, bytes);
             MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
-        }
-
-        // Check if we need to install the avatar
-        bool hasCrate = CrateFilterer.HasCrate<AvatarCrate>(new(barcode));
-
-        if (!hasCrate)
-        {
-            bool shouldDownload = ClientSettings.Downloading.DownloadAvatars.Value;
-
-            // Check if we should download the mod (it's not blacklisted, mod downloading disabled, etc.)
-            if (!shouldDownload)
-            {
-                return;
-            }
-
-            long maxBytes = ClientSettings.Downloading.MaxFileSize.Value * 1000000;
-
-            NetworkModRequester.RequestAndInstallMod(data.smallId, barcode, OnModDownloaded, maxBytes);
-
-            void OnModDownloaded(DownloadCallbackInfo info)
-            {
-                if (info.result == ModResult.FAILED)
-                {
-                    FusionLogger.Warn($"Failed downloading avatar {barcode}!");
-                    return;
-                }
-
-                if (NetworkPlayerManager.TryGetPlayer(data.smallId, out var player))
-                {
-                    // We just set the avatar dirty, so that if it's changed to another avatar by this point we aren't overriding it
-                    player.AvatarSetter.SetAvatarDirty();
-                }
-            }
-
-            return;
         }
     }
 }

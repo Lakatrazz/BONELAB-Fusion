@@ -148,7 +148,7 @@ public static class ModIODownloader
         ModDownloadManager.ValidateDirectories();
 
         // Initialize the transaction progress at 0%
-        transaction.Progress = 0f;
+        transaction.Report(0f);
 
         // Send a request to mod.io for the headers
         // We don't want to read the whole content yet
@@ -194,13 +194,13 @@ public static class ModIODownloader
 
         while (!downloadTask.IsCompleted)
         {
-            transaction.Progress = (float)downloadStream.Length / contentLength;
+            transaction.Report((float)downloadStream.Length / contentLength);
 
             yield return null;
         }
 
         // Set progress to 100%
-        transaction.Progress = 1f;
+        transaction.Report(1f);
 
         // Make sure the download was successful
         if (!downloadTask.IsCompletedSuccessfully)

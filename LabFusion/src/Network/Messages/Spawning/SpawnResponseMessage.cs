@@ -103,7 +103,13 @@ public class SpawnResponseMessage : FusionMessageHandler
 
             long maxBytes = ClientSettings.Downloading.MaxFileSize.Value * 1000000;
 
-            NetworkModRequester.RequestAndInstallMod(owner, barcode, OnModDownloaded, maxBytes);
+            NetworkModRequester.RequestAndInstallMod(new NetworkModRequester.ModInstallInfo()
+            { 
+                target = owner,
+                barcode = barcode,
+                downloadCallback = OnModDownloaded,
+                maxBytes = maxBytes,
+            });
 
             void OnModDownloaded(DownloadCallbackInfo info)
             {

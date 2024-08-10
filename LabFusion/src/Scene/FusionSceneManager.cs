@@ -167,7 +167,13 @@ public static partial class FusionSceneManager
         long maxBytes = ClientSettings.Downloading.MaxLevelSize.Value * 1000000;
 
         // Request the mod id from the host
-        NetworkModRequester.RequestAndInstallMod(PlayerIdManager.HostSmallId, _targetServerScene, OnDownloadFinished, maxBytes);
+        NetworkModRequester.RequestAndInstallMod(new NetworkModRequester.ModInstallInfo()
+        {
+            target = PlayerIdManager.HostSmallId,
+            barcode = _targetServerScene,
+            downloadCallback = OnDownloadFinished,
+            maxBytes = maxBytes,
+        });
 
         _hasStartedDownloadingTarget = true;
     }

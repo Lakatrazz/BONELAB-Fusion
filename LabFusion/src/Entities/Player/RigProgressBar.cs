@@ -11,9 +11,9 @@ using UnityEngine.UI;
 
 namespace LabFusion.Entities;
 
-public class RigProgressBar : IHeadUIElement
+public class RigProgressBar : IHeadUIElement, IProgress<float>
 {
-    private const string _animatorParameterName = "Shown";
+    private const string _animatorParameterName = "Visible";
 
     private Poolee _poolee;
     private Transform _transform;
@@ -47,24 +47,6 @@ public class RigProgressBar : IHeadUIElement
     }
 
     private float _progress = 0f;
-    public float Progress
-    {
-        get
-        {
-            return _progress;
-        }
-        set
-        {
-            _progress = value;
-
-            if (_slider == null)
-            {
-                return;
-            }
-
-            _slider.value = value;
-        }
-    }
 
     public void Spawn(Transform parent)
     {
@@ -112,5 +94,17 @@ public class RigProgressBar : IHeadUIElement
         _slider = null;
 
         PooleeHelper.DespawnDelayed(_poolee, 1.5f);
+    }
+
+    public void Report(float value)
+    {
+        _progress = value;
+
+        if (_slider == null)
+        {
+            return;
+        }
+
+        _slider.value = value;
     }
 }

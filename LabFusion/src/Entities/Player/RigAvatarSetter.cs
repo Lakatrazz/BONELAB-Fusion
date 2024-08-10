@@ -1,6 +1,12 @@
-﻿using LabFusion.Data;
+﻿using Il2CppSLZ.Marrow.Warehouse;
+
+using LabFusion.Data;
+using LabFusion.Downloading;
 using LabFusion.Extensions;
+using LabFusion.Marrow;
 using LabFusion.Network;
+using LabFusion.Preferences.Client;
+using LabFusion.RPC;
 using LabFusion.Utilities;
 
 using UnityEngine;
@@ -24,10 +30,73 @@ public class RigAvatarSetter
 
     private RigRefs _references = null;
 
+    private NetworkEntity _entity = null;
+
+    private readonly RigProgressBar _progressBar = new();
+    public RigProgressBar ProgressBar => _progressBar;
+
+    public RigAvatarSetter(NetworkEntity entity)
+    {
+        _entity = entity;
+
+        ProgressBar.Visible = false;
+    }
+
     public void SwapAvatar(SerializedAvatarStats stats, string barcode)
     {
         _stats = stats;
         _avatarBarcode = barcode;
+        SetAvatarDirty();
+
+        CheckForInstall(barcode);
+    }
+
+    private void CheckForInstall(string barcode)
+    {
+        // Check if we need to install the avatar
+        bool hasCrate = CrateFilterer.HasCrate<AvatarCrate>(new(barcode));
+
+        if (hasCrate)
+        {
+            return;
+        }
+
+        bool shouldDownload = ClientSettings.Downloading.DownloadAvatars.Value;
+
+        // Check if we should download the mod (it's not blacklisted, mod downloading disabled, etc.)
+        if (!shouldDownload)
+        {
+            return;
+        }
+
+        long maxBytes = ClientSettings.Downloading.MaxFileSize.Value * 1000000;
+
+        var owner = _entity.OwnerId.SmallId;
+
+        ProgressBar.Report(0f);
+        ProgressBar.Visible = true;
+
+        NetworkModRequester.RequestAndInstallMod(new NetworkModRequester.ModInstallInfo()
+        {
+            target = owner,
+            barcode = barcode,
+            downloadCallback = OnAvatarDownloaded,
+            maxBytes = maxBytes,
+            reporter = ProgressBar,
+        });
+    }
+
+    private void OnAvatarDownloaded(DownloadCallbackInfo info)
+    {
+        ProgressBar.Visible = false;
+
+        if (info.result == ModResult.FAILED)
+        {
+            FusionLogger.Warn($"Failed downloading avatar for rig {_entity.Id}!");
+            return;
+        }
+
+        // We just set the avatar dirty, so that if it's changed to another avatar by this point we aren't overriding it
         SetAvatarDirty();
     }
 

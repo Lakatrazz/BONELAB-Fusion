@@ -120,11 +120,12 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         _nametag = new();
         _headUI = new();
 
-        _avatarSetter = new();
+        _avatarSetter = new(networkEntity);
         _avatarSetter.OnAvatarChanged += UpdateAvatarSettings;
 
         // Register the default head UI elements so they're automatically spawned in
         HeadUI.RegisterElement(_nametag);
+        HeadUI.RegisterElement(_avatarSetter.ProgressBar);
 
         networkEntity.HookOnRegistered(OnPlayerRegistered);
         networkEntity.OnEntityUnregistered += OnPlayerUnregistered;

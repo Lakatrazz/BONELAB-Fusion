@@ -36,7 +36,7 @@ AnimatorController:
   m_Name: controller_PopupProgressBar
   serializedVersion: 5
   m_AnimatorParameters:
-  - m_Name: Shown
+  - m_Name: Visible
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
@@ -64,7 +64,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: Shown
+    m_ConditionEvent: Visible
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 4763230006893218207}
@@ -144,7 +144,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: Shown
+    m_ConditionEvent: Visible
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 4763230006893218207}
@@ -169,7 +169,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: Shown
+    m_ConditionEvent: Visible
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -811952492368325143}
@@ -194,7 +194,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: Shown
+    m_ConditionEvent: Visible
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -811952492368325143}

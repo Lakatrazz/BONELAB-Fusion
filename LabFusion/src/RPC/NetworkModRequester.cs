@@ -23,6 +23,19 @@ public static class NetworkModRequester
         public Action<ModCallbackInfo> modCallback;
     }
 
+    public struct ModInstallInfo
+    {
+        public byte target;
+
+        public string barcode;
+
+        public DownloadCallback downloadCallback;
+
+        public long? maxBytes;
+
+        public IProgress<float> reporter;
+    }
+
     private static uint _lastTrackedRequest = 0;
 
     private static readonly Dictionary<uint, Action<ModCallbackInfo>> _callbackQueue = new();
@@ -36,12 +49,12 @@ public static class NetworkModRequester
         }
     }
 
-    public static void RequestAndInstallMod(byte target, string barcode, DownloadCallback downloadCallback, long? maxBytes = null)
+    public static void RequestAndInstallMod(ModInstallInfo installInfo)
     {
         RequestMod(new ModRequestInfo()
         {
-            target = target,
-            barcode = barcode,
+            target = installInfo.target,
+            barcode = installInfo.barcode,
             modCallback = OnModInfoReceived,
         });
 
@@ -58,8 +71,9 @@ public static class NetworkModRequester
             {
                 ModFile = info.modFile,
                 Temporary = temporary,
-                Callback = downloadCallback,
-                MaxBytes = maxBytes,
+                Callback = installInfo.downloadCallback,
+                MaxBytes = installInfo.maxBytes,
+                Reporter = installInfo.reporter,
             });
         }
     }

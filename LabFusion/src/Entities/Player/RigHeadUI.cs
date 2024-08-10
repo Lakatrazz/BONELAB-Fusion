@@ -2,6 +2,7 @@
 using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.Marrow.Pool;
 
+using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
 
@@ -176,7 +177,9 @@ public class RigHeadUI
 
         var position = head.position + Vector3Extensions.up * GetUIOffset(rigManager);
 
-        var rotation = Quaternion.LookRotation((position - head.position).normalized, head.up);
+        var playerHead = RigData.Refs.Head;
+
+        var rotation = Quaternion.LookRotation((position - playerHead.position).normalized, playerHead.up);
 
         _layoutTransform.SetPositionAndRotation(position, rotation);
     }
