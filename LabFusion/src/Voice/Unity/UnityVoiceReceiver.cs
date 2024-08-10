@@ -13,7 +13,6 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
     private bool _hasVoiceActivity = false;
 
     private AudioClip _voiceClip = null;
-    private Il2CppStructArray<float> _audioData = null;
 
     private int _lastSample = 0;
 
@@ -86,7 +85,14 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
 
         int sampleCount = position - _lastSample;
 
-        _voiceClip.GetData(_audioData, _lastSample);
+        var audioData = new Il2CppStructArray<float>(sampleCount);
+
+        // Check if we have any samples
+        // If we don't, we don't need to waste the GetData call
+        if (sampleCount > 0)
+        {
+            _voiceClip.GetData(audioData, _lastSample);
+        }
 
         if (_loopedData)
         {
@@ -106,7 +112,7 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
 
         for (int i = 0; i < sampleCount; i++)
         {
-            float sample = _audioData[i] * VoiceVolume.DefaultSampleMultiplier;
+            float sample = audioData[i] * VoiceVolume.DefaultSampleMultiplier;
             _amplitude += Mathf.Abs(sample);
 
             int elementPosition = i * elementSize;
@@ -163,13 +169,11 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
 
     public void Enable()
     {
-        _audioData = new(UnityVoice.SampleRate);
     }
 
     public void Disable()
     {
         _uncompressedData = null;
         _hasVoiceActivity = false;
-        _audioData = null;
     }
 }
