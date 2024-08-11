@@ -14,10 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _barcode:
     _id: Lakatrazz.FusionCosmetics.Spawnable.RetroMind
-  _barcodeOld:
-    _id: null.empty.barcode
-  _slimCode:
-    _byteArray: 
   _title: Retro Mind
   _description: MY LIFE IS LIKE A VIDEO GAME
   _unlockable: 0

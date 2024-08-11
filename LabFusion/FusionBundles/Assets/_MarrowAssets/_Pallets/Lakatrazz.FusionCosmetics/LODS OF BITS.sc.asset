@@ -14,10 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _barcode:
     _id: Lakatrazz.FusionCosmetics.Spawnable.LODSOFBITS
-  _barcodeOld:
-    _id: null.empty.barcode
-  _slimCode:
-    _byteArray: 
   _title: LODS OF BITS
   _description: A true show of wealth! the coins are falling right out of your pockets
   _unlockable: 0

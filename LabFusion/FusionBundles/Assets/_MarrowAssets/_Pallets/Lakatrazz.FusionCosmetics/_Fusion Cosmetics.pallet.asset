@@ -14,17 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _barcode:
     _id: Lakatrazz.FusionCosmetics
-  _barcodeOld:
-    _id: null.empty.barcode
-  _slimCode:
-    _byteArray: 
   _title: Fusion Cosmetics
   _description: 
   _unlockable: 0
   _redacted: 0
   _author: Lakatrazz
   _version: 1.0.0
-  _sdkVersion: 0.6.0
+  _sdkVersion: 1.1.0
   _internal: 0
   _crates:
   - {fileID: 11400000, guid: 57ec9825418fd634eaae55bb88e6cf6b, type: 2}

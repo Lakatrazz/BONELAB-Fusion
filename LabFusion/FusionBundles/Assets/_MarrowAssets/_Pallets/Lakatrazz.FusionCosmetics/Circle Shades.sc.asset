@@ -14,10 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _barcode:
     _id: Lakatrazz.FusionCosmetics.Spawnable.CircleShades
-  _barcodeOld:
-    _id: null.empty.barcode
-  _slimCode:
-    _byteArray: 
   _title: Circle Shades
   _description: Stylish! and circular.
   _unlockable: 0

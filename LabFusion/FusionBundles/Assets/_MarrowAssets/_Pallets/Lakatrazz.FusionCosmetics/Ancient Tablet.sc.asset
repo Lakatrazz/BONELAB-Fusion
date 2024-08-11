@@ -14,10 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _barcode:
     _id: Lakatrazz.FusionCosmetics.Spawnable.AncientTablet
-  _barcodeOld:
-    _id: null.empty.barcode
-  _slimCode:
-    _byteArray: 
   _title: Ancient Tablet
   _description: The inscription says....
   _unlockable: 0

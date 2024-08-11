@@ -14,10 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _barcode:
     _id: Lakatrazz.FusionCosmetics.Spawnable.CardboardTophat
-  _barcodeOld:
-    _id: null.empty.barcode
-  _slimCode:
-    _byteArray: 
   _title: Cardboard Tophat
   _description: Found somewhere between a post office and a clothes store. that somewhere
     being the dumpster. BUT ISNT IT JUST SO FASIONABLE!?

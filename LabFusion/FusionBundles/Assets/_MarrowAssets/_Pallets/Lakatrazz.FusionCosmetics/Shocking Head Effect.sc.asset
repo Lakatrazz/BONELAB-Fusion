@@ -14,10 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _barcode:
     _id: Lakatrazz.FusionCosmetics.Spawnable.ShockingHeadEffect
-  _barcodeOld:
-    _id: null.empty.barcode
-  _slimCode:
-    _byteArray: 
   _title: Shocking Head Effect
   _description: BZzzzzbBZzzzz ZZZzz ZZ (the sound your head is making)
   _unlockable: 0
