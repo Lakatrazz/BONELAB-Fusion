@@ -124,7 +124,12 @@ public class RigHeadUI
         {
             var element = prioritySorted.ElementAt(i);
 
-            element.Transform?.SetSiblingIndex(i);
+            var transform = element.Transform;
+
+            if (transform)
+            {
+                transform.SetSiblingIndex(i);
+            }
         }
     }
 
