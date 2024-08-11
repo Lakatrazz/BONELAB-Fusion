@@ -4,7 +4,7 @@ namespace LabFusion.Preferences.Client;
 
 public class DownloadingSettings
 {
-    public const int DefaultMaxFileSize = 100;
+    public const int DefaultMaxFileSize = 1000;
     public const int DefaultMaxLevelSize = 1000;
 
     public FusionPref<bool> DownloadSpawnables { get; private set; }
