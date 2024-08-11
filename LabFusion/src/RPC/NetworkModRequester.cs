@@ -29,7 +29,9 @@ public static class NetworkModRequester
 
         public string barcode;
 
-        public DownloadCallback downloadCallback;
+        public Action<ModCallbackInfo> beginDownloadCallback;
+
+        public DownloadCallback finishDownloadCallback;
 
         public long? maxBytes;
 
@@ -65,13 +67,15 @@ public static class NetworkModRequester
                 return;
             }
 
+            installInfo.beginDownloadCallback?.Invoke(info);
+
             bool temporary = !ClientSettings.Downloading.KeepDownloadedMods.Value;
 
             ModIODownloader.EnqueueDownload(new ModTransaction()
             {
                 ModFile = info.modFile,
                 Temporary = temporary,
-                Callback = installInfo.downloadCallback,
+                Callback = installInfo.finishDownloadCallback,
                 MaxBytes = installInfo.maxBytes,
                 Reporter = installInfo.reporter,
             });

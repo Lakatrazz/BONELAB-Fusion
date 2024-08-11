@@ -107,7 +107,7 @@ public class SpawnResponseMessage : FusionMessageHandler
             { 
                 target = owner,
                 barcode = barcode,
-                downloadCallback = OnModDownloaded,
+                finishDownloadCallback = OnModDownloaded,
                 maxBytes = maxBytes,
             });
 

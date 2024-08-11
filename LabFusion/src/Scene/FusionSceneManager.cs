@@ -171,7 +171,7 @@ public static partial class FusionSceneManager
         {
             target = PlayerIdManager.HostSmallId,
             barcode = _targetServerScene,
-            downloadCallback = OnDownloadFinished,
+            finishDownloadCallback = OnDownloadFinished,
             maxBytes = maxBytes,
         });
 

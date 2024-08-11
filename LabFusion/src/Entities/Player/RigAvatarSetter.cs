@@ -73,17 +73,22 @@ public class RigAvatarSetter
 
         var owner = _entity.OwnerId.SmallId;
 
-        ProgressBar.Report(0f);
-        ProgressBar.Visible = true;
-
         NetworkModRequester.RequestAndInstallMod(new NetworkModRequester.ModInstallInfo()
         {
             target = owner,
             barcode = barcode,
-            downloadCallback = OnAvatarDownloaded,
+            beginDownloadCallback = OnAvatarBeginDownload,
+            finishDownloadCallback = OnAvatarDownloaded,
             maxBytes = maxBytes,
             reporter = ProgressBar,
         });
+    }
+
+    private void OnAvatarBeginDownload(NetworkModRequester.ModCallbackInfo info)
+    {
+        // Now that we know the download has been queued, we can show the progress bar
+        ProgressBar.Report(0f);
+        ProgressBar.Visible = true;
     }
 
     private void OnAvatarDownloaded(DownloadCallbackInfo info)
