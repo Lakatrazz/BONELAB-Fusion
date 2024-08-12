@@ -181,7 +181,6 @@
     <None Remove="FusionHelper\libsteam_api.dylib" />
     <None Remove="FusionHelper\libsteam_api.so" />
     <None Remove="FusionHelper\steam_api64.dll" />
-    <None Remove="src\AssemblyInfo.tt" />
     <None Remove="src\Downloading\ModIO\ModReferences.cs~RF2566c200.TMP" />
     <None Remove="src\Marrow\Audio\AudioReference.cs~RF202ddfa1.TMP" />
     <None Remove="src\SDK\Gamemodes\Music\MusicPlaylist.cs~RF2046160e.TMP" />
@@ -346,6 +345,10 @@
 
   <ItemGroup>
     <Folder Include="FusionBundles\Assets\FusionMarrow\Runtime\Variables\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
 
 </Project>

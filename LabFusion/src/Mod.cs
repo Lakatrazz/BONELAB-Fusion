@@ -34,22 +34,29 @@ namespace LabFusion;
 public struct FusionVersion
 {
 #if DEBUG
-    // Devil's Fusion
-    public const byte versionMajor = 6;
-    public const byte versionMinor = 6;
-    public const short versionPatch = 6;
+    public const byte VersionMajor = 0;
+    public const byte VersionMinor = 0;
+    public const short VersionPatch = 0;
+
+    public const string VersionString = "0.0.0";
 #else
-    public const byte versionMajor = 1;
-    public const byte versionMinor = 7;
-    public const short versionPatch = 0;
+    public const byte VersionMajor = 1;
+    public const byte VersionMinor = 7;
+    public const short VersionPatch = 0;
+
+    public const string VersionString = "1.7.0";
 #endif
 }
 
 public class FusionMod : MelonMod
 {
-    public const string Name = "LabFusion";
-    public const string Author = "Lakatrazz";
-    public static readonly Version Version = new(FusionVersion.versionMajor, FusionVersion.versionMinor, FusionVersion.versionPatch);
+    public const string ModName = "LabFusion";
+    public const string ModAuthor = "Lakatrazz";
+
+    public const string GameDeveloper = "Stress Level Zero";
+    public const string GameName = "BONELAB";
+
+    public static readonly Version Version = new(FusionVersion.VersionMajor, FusionVersion.VersionMinor, FusionVersion.VersionPatch);
 
     public static string Changelog { get; internal set; } = null;
 
