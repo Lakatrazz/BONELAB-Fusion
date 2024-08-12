@@ -50,7 +50,7 @@ public class PlayerVoiceChatMessage : FusionMessageHandler
         using var data = reader.ReadFusionSerializable<PlayerVoiceChatData>();
 
         // Check if voice chat is active
-        if (!VoiceInfo.IsVoiceEnabled)
+        if (VoiceInfo.IsDeafened)
         {
             return;
         }

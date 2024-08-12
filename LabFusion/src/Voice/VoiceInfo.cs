@@ -12,15 +12,34 @@ public static class VoiceInfo
     /// </summary>
     public static IVoiceManager VoiceManager => NetworkInfo.CurrentNetworkLayer.VoiceManager;
 
+    /// <summary>
+    /// Returns if the voice manager supports speaking.
+    /// </summary>
     public static bool CanTalk => (VoiceManager?.CanTalk).GetValueOrDefault();
+    
+    /// <summary>
+    /// Returns if the voice manager supports listening.
+    /// </summary>
     public static bool CanHear => (VoiceManager?.CanHear).GetValueOrDefault();
 
+    /// <summary>
+    /// Returns if the mute icon is enabled.
+    /// </summary>
     public static bool ShowMuteIndicator => NetworkInfo.HasServer && ClientSettings.Muted.Value && ClientSettings.MutedIndicator.Value;
 
+    /// <summary>
+    /// Returns the microphone amplitude for this frame.
+    /// </summary>
     public static float VoiceAmplitude => (VoiceManager?.GetReceiver()?.GetVoiceAmplitude()).GetValueOrDefault();
 
+    /// <summary>
+    /// Returns if we have voice activity for this frame.
+    /// </summary>
     public static bool HasVoiceActivity => (VoiceManager?.GetReceiver()?.HasVoiceActivity()).GetValueOrDefault();
 
+    /// <summary>
+    /// Returns if the player can't speak (muted, deafened, or dying).
+    /// </summary>
     public static bool IsMuted
     {
         get
@@ -32,20 +51,17 @@ public static class VoiceInfo
                 isDying = RigData.Refs.Health.deathIsImminent;
             }
 
-            return ClientSettings.Muted.Value || isDying;
+            return ClientSettings.Muted.Value || isDying || IsDeafened;
         }
     }
 
+    /// <summary>
+    /// Returns if voice chat is currently disabled, either via deafening or the server setting.
+    /// </summary>
     public static bool IsDeafened => ClientSettings.Deafened.Value || !ServerVoiceEnabled;
 
-    public static bool IsVoiceEnabled
-    {
-        get
-        {
-            bool serverSetting = ServerSettingsManager.ActiveSettings.VoicechatEnabled.Value;
-            return serverSetting && !IsMuted && !IsDeafened;
-        }
-    }
-
+    /// <summary>
+    /// Returns if voice chat is enabled on the server's end.
+    /// </summary>
     public static bool ServerVoiceEnabled { get { return ServerSettingsManager.ActiveSettings.VoicechatEnabled.Value; } }
 }
