@@ -29,15 +29,20 @@ using Il2CppSLZ.Marrow;
 
 using ModuleHandler = LabFusion.SDK.Modules.ModuleHandler;
 
-using UnityEngine;
-
 namespace LabFusion;
 
 public struct FusionVersion
 {
+#if DEBUG
+    // Devil's Fusion
+    public const byte versionMajor = 6;
+    public const byte versionMinor = 6;
+    public const short versionPatch = 6;
+#else
     public const byte versionMajor = 1;
     public const byte versionMinor = 7;
     public const short versionPatch = 0;
+#endif
 }
 
 public class FusionMod : MelonMod
