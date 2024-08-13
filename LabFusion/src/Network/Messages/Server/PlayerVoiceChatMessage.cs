@@ -49,6 +49,13 @@ public class PlayerVoiceChatMessage : FusionMessageHandler
         using var reader = FusionReader.Create(bytes);
         using var data = reader.ReadFusionSerializable<PlayerVoiceChatData>();
 
+        // Bounce the message back
+        if (isServerHandled)
+        {
+            using var message = FusionMessage.Create(Tag, bytes);
+            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Unreliable, message);
+        }
+
         // Check if voice chat is active
         if (VoiceInfo.IsDeafened)
         {
@@ -61,13 +68,6 @@ public class PlayerVoiceChatMessage : FusionMessageHandler
         if (id != null)
         {
             VoiceHelper.OnVoiceDataReceived(id, data.bytes);
-        }
-
-        // Bounce the message back
-        if (NetworkInfo.IsServer)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Unreliable, message);
         }
     }
 }
