@@ -16,6 +16,7 @@ using LabFusion.Entities;
 using LabFusion.Downloading.ModIO;
 using LabFusion.BoneMenu;
 using LabFusion.Downloading;
+using LabFusion.Marrow;
 
 #if DEBUG
 using LabFusion.Debugging;
@@ -126,6 +127,7 @@ public class FusionMod : MelonMod
         var onReady = () =>
         {
             CosmeticLoader.OnAssetWarehouseReady();
+            ScannableEvents.OnAssetWarehouseReady();
         };
         AssetWarehouse.OnReady(onReady);
 
@@ -148,8 +150,6 @@ public class FusionMod : MelonMod
         InternalLayerHelpers.OnLateInitializeLayer();
         PersistentAssetCreator.OnLateInitializeMelon();
         PlayerAdditionsHelper.OnInitializeMelon();
-
-        BoneMenuCreator.OnPopulateMainPage();
 
         // Check if the auto updater is installed
         _hasAutoUpdater = MelonPlugin.RegisteredMelons.Any((p) => p.Info.Name.Contains("LabFusion Updater"));
@@ -223,8 +223,16 @@ public class FusionMod : MelonMod
         FusionPreferences.OnPreferencesLoaded();
     }
 
+    private static bool _initializedBoneMenu = false;
+
     public static void OnMainSceneInitialized()
     {
+        if (!_initializedBoneMenu)
+        {
+            BoneMenuCreator.OnPopulateMainPage();
+            _initializedBoneMenu = true;
+        }
+
         string sceneName = FusionSceneManager.Level.Title;
 
 #if DEBUG

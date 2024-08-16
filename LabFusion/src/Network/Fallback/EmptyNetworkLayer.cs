@@ -1,5 +1,5 @@
 ﻿using BoneLib.BoneMenu;
-
+using LabFusion.BoneMenu;
 using LabFusion.Utilities;
 
 using UnityEngine;
@@ -16,8 +16,6 @@ namespace LabFusion.Network
         public override void Disconnect(string reason = "") { }
 
         public override void StartServer() { }
-
-        public override void OnCleanupLayer() { }
 
         public override void OnUpdateLobby() { }
 
@@ -43,12 +41,17 @@ namespace LabFusion.Network
 #else
             FusionLogger.Log("This usually means all other network layers failed to initialize, or you selected Empty in the settings.", ConsoleColor.Magenta);
 #endif
+
+            MatchmakingCreator.OnFillMatchmakingPage += OnFillMatchmakingPage;
         }
 
-        public override void OnSetupBoneMenu(Page page)
+        public override void OnCleanupLayer() 
         {
-            base.OnSetupBoneMenu(page);
+            MatchmakingCreator.OnFillMatchmakingPage -= OnFillMatchmakingPage;
+        }
 
+        private void OnFillMatchmakingPage(Page page)
+        {
             // Info for people incase this layer ends up being selected
             page.CreateFunction("You currently have no networking selected.", Color.white, null);
 

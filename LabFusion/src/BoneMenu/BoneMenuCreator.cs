@@ -2,10 +2,13 @@
 using LabFusion.Preferences.Client;
 using LabFusion.Player;
 using LabFusion.Network;
+using LabFusion.Marrow;
 
 using UnityEngine;
 
 using BoneLib.BoneMenu;
+
+using Il2CppSLZ.Marrow.Warehouse;
 
 namespace LabFusion.BoneMenu;
 
@@ -142,6 +145,18 @@ public static partial class BoneMenuCreator
     public static void OnPrepareMainPage()
     {
         _mainPage = Page.Root.CreatePage("Fusion", Color.white);
+
+        ScannableEvents.OnPalletAddedEvent += OnPalletAdded;
+    }
+
+    private static void OnPalletAdded(Barcode barcode)
+    {
+        // Check if the pallet is Fusion Content
+        // If so, repopulate the matchmaking tab
+        if (barcode == FusionPalletReferences.FusionContentReference.Barcode)
+        {
+            MatchmakingCreator.RecreatePage();
+        }
     }
 
     public static void OpenMainPage()
@@ -184,12 +199,14 @@ public static partial class BoneMenuCreator
 
         targetPanel.CreateFunction("SET NETWORK LAYER", Color.green, () => InternalLayerHelpers.UpdateLoadedLayer());
 
-        // Setup bonemenu for the network layer
-        InternalLayerHelpers.OnSetupBoneMenuLayer(_mainPage);
+        // Setup the sub pages
+        CreateUniversalMenus(_mainPage);
     }
 
-    public static void CreateUniversalMenus(Page page)
+    private static void CreateUniversalMenus(Page page)
     {
+        MatchmakingCreator.CreateMatchmakingPage(page);
+
         CreateGamemodesMenu(page);
         CreateSettingsMenu(page);
         CreateNotificationsMenu(page);

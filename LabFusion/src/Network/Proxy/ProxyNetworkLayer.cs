@@ -434,6 +434,9 @@ namespace LabFusion.Network
             MultiplayerHooking.OnServerSettingsChanged += OnUpdateLobby;
             MultiplayerHooking.OnDisconnect += OnDisconnect;
 
+            // Add BoneMenu hooks
+            MatchmakingCreator.OnFillMatchmakingPage += OnFillMatchmakingPage;
+
             _currentLobby = new ProxyNetworkLobby();
         }
 
@@ -459,15 +462,15 @@ namespace LabFusion.Network
 
         private void UnHookSteamEvents()
         {
-            // Remove steam hooks
-            //SteamFriends.OnGameRichPresenceJoinRequested -= OnGameRichPresenceJoinRequested;
-
             // Remove server hooks
             MultiplayerHooking.OnMainSceneInitialized -= OnUpdateLobby;
             MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
             MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged -= OnUpdateLobby;
             MultiplayerHooking.OnDisconnect -= OnDisconnect;
+
+            // Unhook BoneMenu events
+            MatchmakingCreator.OnFillMatchmakingPage -= OnFillMatchmakingPage;
         }
 
         public override void OnUpdateLobby()
@@ -492,33 +495,19 @@ namespace LabFusion.Network
             SendToProxyServer(writer);
         }
 
-        public override void OnSetupBoneMenu(Page page)
-        {
-            // Create the basic options
-            CreateMatchmakingMenu(page);
-            BoneMenuCreator.CreateUniversalMenus(page);
-        }
-
         // Matchmaking menu
         private Page _serverInfoCategory;
         private Page _publicLobbiesCategory;
         private Page _friendsCategory;
 
-        private void CreateMatchmakingMenu(Page page)
+        private void OnFillMatchmakingPage(Page page)
         {
-            // Root category
-            var matchmaking = page.CreatePage("Matchmaking", Color.red);
-
             // Server making
-            _serverInfoCategory = matchmaking.CreatePage("Server Info", Color.white);
+            _serverInfoCategory = page.CreatePage("Server Info", Color.white);
             CreateServerInfoMenu(_serverInfoCategory);
 
-            // Manual joining
-            //_manualJoiningCategory = matchmaking.CreateCategory("Manual Joining", Color.white);
-            //CreateManualJoiningMenu(_manualJoiningCategory);
-
             // Public lobbies list
-            _publicLobbiesCategory = matchmaking.CreatePage("Public Lobbies", Color.white);
+            _publicLobbiesCategory = page.CreatePage("Public Lobbies", Color.white);
             _publicLobbiesCategory.CreateFunction("Refresh", Color.white, Menu_RefreshPublicLobbies);
             _publicLobbiesCategory.CreateEnum("Sort By", Color.white, _publicLobbySortMode, (v) =>
             {
@@ -528,7 +517,7 @@ namespace LabFusion.Network
             _publicLobbiesCategory.CreateFunction("Select Refresh to load servers!", Color.yellow, null);
 
             // Steam friends list
-            _friendsCategory = matchmaking.CreatePage("Steam Friends", Color.white);
+            _friendsCategory = page.CreatePage("Steam Friends", Color.white);
             _friendsCategory.CreateFunction("Refresh", Color.white, Menu_RefreshFriendLobbies);
             _friendsCategory.CreateFunction("Select Refresh to load servers!", Color.yellow, null);
         }

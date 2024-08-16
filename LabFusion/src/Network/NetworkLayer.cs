@@ -199,8 +199,6 @@ public abstract class NetworkLayer
 
     public virtual void OnUserJoin(PlayerId id) { }
 
-    public virtual void OnSetupBoneMenu(Page page) { }
-
     public abstract void OnUpdateLobby();
 
     public static void RegisterLayersFromAssembly(Assembly targetAssembly)

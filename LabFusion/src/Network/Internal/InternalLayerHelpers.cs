@@ -75,11 +75,6 @@ namespace LabFusion.Network
             CurrentNetworkLayer?.OnUpdateLobby();
         }
 
-        public static void OnSetupBoneMenuLayer(Page page)
-        {
-            CurrentNetworkLayer?.OnSetupBoneMenu(page);
-        }
-
         public static void OnUserJoin(PlayerId id)
         {
             CurrentNetworkLayer?.OnUserJoin(id);
