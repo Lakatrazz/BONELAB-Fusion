@@ -265,7 +265,7 @@ public class HideAndSeek : Gamemode
 
         canvas.renderMode = RenderMode.WorldSpace;
         var canvasTransform = canvasGameObject.transform;
-        canvasTransform.parent = RigData.Refs.RigManager.ControllerRig.m_head;
+        canvasTransform.parent = RigData.Refs.Headset;
         canvasTransform.localPosition = Vector3Extensions.forward * 0.1f;
         canvasTransform.localRotation = Quaternion.Euler(0f, 180f, 0f);
         canvasTransform.localScale = Vector3Extensions.one * 10f;

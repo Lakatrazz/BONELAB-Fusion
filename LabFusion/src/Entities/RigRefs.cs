@@ -30,6 +30,8 @@ public class RigRefs
 
     public Transform Head { get; private set; }
 
+    public Transform Headset { get; private set; }
+
     private Action _onDestroyCallback = null;
 
     public void HookOnDestroy(Action callback)
@@ -117,5 +119,16 @@ public class RigRefs
         Proxy = rigManager.GetComponentInChildren<TriggerRefProxy>(true);
 
         Head = RigManager.physicsRig.m_head;
+
+        var openControllerRig = ControllerRig.TryCast<OpenControllerRig>();
+
+        if (openControllerRig != null)
+        {
+            Headset = openControllerRig.headset;
+        }
+        else
+        {
+            Headset = ControllerRig.m_head;
+        }
     }
 }
