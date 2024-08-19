@@ -114,7 +114,7 @@ public static partial class BoneMenuCreator
         CreateBytePreference(generalSettingsSubPanel, "Max Players", 1, 2, 255, ServerSettingsManager.SavedSettings.MaxPlayers);
         CreateEnumPreference(generalSettingsSubPanel, "Server Privacy", ServerSettingsManager.SavedSettings.Privacy);
         CreateBoolPreference(generalSettingsSubPanel, "Nametags", ServerSettingsManager.SavedSettings.NametagsEnabled);
-        CreateBoolPreference(generalSettingsSubPanel, "Voicechat", ServerSettingsManager.SavedSettings.VoicechatEnabled);
+        CreateBoolPreference(generalSettingsSubPanel, "Voice Chat", ServerSettingsManager.SavedSettings.VoicechatEnabled);
         CreateBoolPreference(generalSettingsSubPanel, "Vote Kicking", ServerSettingsManager.SavedSettings.VoteKickingEnabled);
 
         // Gameplay settings
