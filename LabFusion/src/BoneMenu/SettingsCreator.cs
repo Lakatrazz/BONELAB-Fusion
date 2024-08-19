@@ -136,7 +136,7 @@ public static partial class BoneMenuCreator
         CreateEnumPreference(permissionSubPanel, "Custom Avatars Allowed", ServerSettingsManager.SavedSettings.CustomAvatarsAllowed);
         CreateEnumPreference(permissionSubPanel, "Kicking Allowed", ServerSettingsManager.SavedSettings.KickingAllowed);
         CreateEnumPreference(permissionSubPanel, "Banning Allowed", ServerSettingsManager.SavedSettings.BanningAllowed);
-        CreateEnumPreference(permissionSubPanel, "Teleporation Allowed", ServerSettingsManager.SavedSettings.Teleportation);
+        CreateEnumPreference(permissionSubPanel, "Teleportation Allowed", ServerSettingsManager.SavedSettings.Teleportation);
 
         // Platform discriminators
         var platformSubPanel = page.CreatePage("Platform Discrimination", Color.white);
