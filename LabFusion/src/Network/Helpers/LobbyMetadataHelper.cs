@@ -67,7 +67,7 @@ public struct LobbyMetadataInfo
             Privacy = ServerSettingsManager.SavedSettings.Privacy.Value,
             TimeScaleMode = ServerSettingsManager.SavedSettings.TimeScaleMode.Value,
             MaxPlayers = ServerSettingsManager.SavedSettings.MaxPlayers.Value,
-            VoicechatEnabled = ServerSettingsManager.SavedSettings.VoicechatEnabled.Value,
+            VoicechatEnabled = ServerSettingsManager.SavedSettings.VoiceChatEnabled.Value,
             AllowQuestUsers = ServerSettingsManager.SavedSettings.AllowQuestUsers.Value,
             AllowPCUsers = ServerSettingsManager.SavedSettings.AllowPCUsers.Value,
 

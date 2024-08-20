@@ -63,5 +63,5 @@ public static class VoiceInfo
     /// <summary>
     /// Returns if voice chat is enabled on the server's end.
     /// </summary>
-    public static bool ServerVoiceEnabled { get { return ServerSettingsManager.ActiveSettings.VoicechatEnabled.Value; } }
+    public static bool ServerVoiceEnabled { get { return ServerSettingsManager.ActiveSettings.VoiceChatEnabled.Value; } }
 }

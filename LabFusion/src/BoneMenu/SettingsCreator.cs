@@ -114,7 +114,7 @@ public static partial class BoneMenuCreator
         CreateBytePreference(generalSettingsSubPanel, "Max Players", 1, 2, 255, ServerSettingsManager.SavedSettings.MaxPlayers);
         CreateEnumPreference(generalSettingsSubPanel, "Server Privacy", ServerSettingsManager.SavedSettings.Privacy);
         CreateBoolPreference(generalSettingsSubPanel, "Nametags", ServerSettingsManager.SavedSettings.NametagsEnabled);
-        CreateBoolPreference(generalSettingsSubPanel, "Voicechat", ServerSettingsManager.SavedSettings.VoicechatEnabled);
+        CreateBoolPreference(generalSettingsSubPanel, "Voice Chat", ServerSettingsManager.SavedSettings.VoiceChatEnabled);
         CreateBoolPreference(generalSettingsSubPanel, "Vote Kicking", ServerSettingsManager.SavedSettings.VoteKickingEnabled);
 
         // Gameplay settings
@@ -136,7 +136,7 @@ public static partial class BoneMenuCreator
         CreateEnumPreference(permissionSubPanel, "Custom Avatars Allowed", ServerSettingsManager.SavedSettings.CustomAvatarsAllowed);
         CreateEnumPreference(permissionSubPanel, "Kicking Allowed", ServerSettingsManager.SavedSettings.KickingAllowed);
         CreateEnumPreference(permissionSubPanel, "Banning Allowed", ServerSettingsManager.SavedSettings.BanningAllowed);
-        CreateEnumPreference(permissionSubPanel, "Teleporation Allowed", ServerSettingsManager.SavedSettings.Teleportation);
+        CreateEnumPreference(permissionSubPanel, "Teleportation Allowed", ServerSettingsManager.SavedSettings.Teleportation);
 
         // Platform discriminators
         var platformSubPanel = page.CreatePage("Platform Discrimination", Color.white);

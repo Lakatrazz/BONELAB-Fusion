@@ -10,7 +10,7 @@ public class ServerSettings
 {
     // General settings
     public IFusionPref<bool> NametagsEnabled;
-    public IFusionPref<bool> VoicechatEnabled;
+    public IFusionPref<bool> VoiceChatEnabled;
     public IFusionPref<bool> PlayerConstraintsEnabled;
     public IFusionPref<bool> VoteKickingEnabled;
     public IFusionPref<ServerPrivacy> Privacy;
@@ -46,7 +46,7 @@ public class ServerSettings
         {
             // General settings
             NametagsEnabled = new FusionPref<bool>(category, "Server Nametags Enabled", true, PrefUpdateMode.SERVER_UPDATE),
-            VoicechatEnabled = new FusionPref<bool>(category, "Server Voicechat Enabled", true, PrefUpdateMode.SERVER_UPDATE),
+            VoiceChatEnabled = new FusionPref<bool>(category, "Server Voicechat Enabled", true, PrefUpdateMode.SERVER_UPDATE),
             PlayerConstraintsEnabled = new FusionPref<bool>(category, "Server Player Constraints Enabled", false, PrefUpdateMode.SERVER_UPDATE),
             VoteKickingEnabled = new FusionPref<bool>(category, "Server Vote Kicking Enabled", true, PrefUpdateMode.SERVER_UPDATE),
             Privacy = new FusionPref<ServerPrivacy>(category, "Server Privacy", ServerPrivacy.PUBLIC, PrefUpdateMode.LOCAL_UPDATE),
