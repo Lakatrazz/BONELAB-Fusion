@@ -207,7 +207,7 @@ public static class SpawnGunPatches
         }
 
         // Flash the spawn gun
-        spawnGun.Flash();
+        spawnGun.FlashScreen();
         spawnGun.SpawnFlareAsync().Forget();
     }
 

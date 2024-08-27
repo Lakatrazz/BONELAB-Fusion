@@ -12,7 +12,7 @@ using UnityEngine;
 namespace LabFusion.Patching;
 
 // SpawnSpawnableAsync is used by the regular SpawnSpawnable as well, so we don't need to patch that
-[HarmonyPatch(typeof(CrateSpawner._SpawnSpawnableAsync_d__23))]
+[HarmonyPatch(typeof(CrateSpawner._SpawnSpawnableAsync_d__26))]
 public static class CrateSpawnerAsyncPatches
 {
     public static readonly HashSet<CrateSpawner> CurrentlySpawning = new();
@@ -69,8 +69,8 @@ public static class CrateSpawnerAsyncPatches
     }
 
     [HarmonyPrefix]
-    [HarmonyPatch(nameof(CrateSpawner._SpawnSpawnableAsync_d__23.MoveNext))]
-    public static bool MoveNext(CrateSpawner._SpawnSpawnableAsync_d__23 __instance)
+    [HarmonyPatch(nameof(CrateSpawner._SpawnSpawnableAsync_d__26.MoveNext))]
+    public static bool MoveNext(CrateSpawner._SpawnSpawnableAsync_d__26 __instance)
     {
         // If there is NO server, the spawner can function as normal.
         if (!NetworkInfo.HasServer)
