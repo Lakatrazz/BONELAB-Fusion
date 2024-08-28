@@ -1,5 +1,7 @@
 ﻿using LabFusion.Player;
 
+using UnityEngine;
+
 namespace LabFusion.Voice.Unity;
 
 public sealed class UnityVoiceManager : VoiceManager
@@ -15,6 +17,19 @@ public sealed class UnityVoiceManager : VoiceManager
             }
 
             return true;
+        }
+    }
+
+    public override string[] InputDevices
+    {
+        get
+        {
+            if (!UnityVoice.IsSupported())
+            {
+                return Array.Empty<string>();
+            }
+
+            return Microphone.devices;
         }
     }
 

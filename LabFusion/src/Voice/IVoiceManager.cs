@@ -11,6 +11,8 @@ public interface IVoiceManager
     bool CanTalk { get; }
     bool CanHear { get; }
 
+    string[] InputDevices { get; }
+
     IVoiceSpeaker GetSpeaker(PlayerId id);
     void RemoveSpeaker(PlayerId id);
 
@@ -30,6 +32,8 @@ public abstract class VoiceManager : IVoiceManager
 
     public virtual bool CanTalk => true;
     public virtual bool CanHear => true;
+
+    public virtual string[] InputDevices => Array.Empty<string>();
 
     private IVoiceReceiver _receiver = null;
 

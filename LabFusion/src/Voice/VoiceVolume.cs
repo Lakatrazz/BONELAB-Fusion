@@ -15,7 +15,7 @@ public static class VoiceVolume
 
     public static float GetGlobalVolumeMultiplier()
     {
-        float volume = ClientSettings.GlobalVolume.Value;
+        float volume = ClientSettings.VoiceChat.GlobalVolume.Value;
 
         // If we are loading, lower the volume
         if (FusionSceneManager.IsLoading())

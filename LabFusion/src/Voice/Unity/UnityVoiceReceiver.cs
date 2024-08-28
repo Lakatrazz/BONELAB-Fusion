@@ -1,5 +1,6 @@
 ﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
+using LabFusion.Preferences.Client;
 using LabFusion.Utilities;
 
 using UnityEngine;
@@ -39,7 +40,7 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
 
     public static string GetValidMicrophoneName()
     {
-        return string.Empty;
+        return ClientSettings.VoiceChat.InputDevice.Value;
     }
 
     private void ClearData()
@@ -66,7 +67,7 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
         }
         else if (!enabled && isRecording)
         {
-            Microphone.End(null);
+            Microphone.End(microphoneName);
         }
 
         if (!enabled || _voiceClip == null)

@@ -56,7 +56,7 @@ public class ServerSettings
             MaxPlayers = new FusionPref<byte>(category, "Max Players", 10, PrefUpdateMode.SERVER_UPDATE),
 
             // Visual
-            ServerName = new FusionPref<string>(category, "Server Name", "", PrefUpdateMode.LOCAL_UPDATE),
+            ServerName = new FusionPref<string>(category, "Server Name", string.Empty, PrefUpdateMode.LOCAL_UPDATE),
             ServerTags = new FusionPref<List<string>>(category, "Server Tags", new List<string>(), PrefUpdateMode.LOCAL_UPDATE),
 
             // Mortality

@@ -21,11 +21,7 @@ public struct ClientSettings
     public static FusionPref<string> Nickname { get; internal set; }
     public static FusionPref<NicknameVisibility> NicknameVisibility { get; internal set; }
 
-    // Voicechat settings
-    public static FusionPref<bool> Muted { get; internal set; }
-    public static FusionPref<bool> MutedIndicator { get; internal set; }
-    public static FusionPref<bool> Deafened { get; internal set; }
-    public static FusionPref<float> GlobalVolume { get; internal set; }
+    public static VoiceChatSettings VoiceChat { get; private set; }
 
     // Gamemode settings
     public static FusionPref<bool> GamemodeLateJoining { get; internal set; }
@@ -43,14 +39,11 @@ public struct ClientSettings
         NametagColor = new FusionPref<Color>(category, "Nametag Color", Color.white, PrefUpdateMode.CLIENT_UPDATE);
 
         // Nickname
-        Nickname = new FusionPref<string>(category, "Nickname", "", PrefUpdateMode.IGNORE);
+        Nickname = new FusionPref<string>(category, "Nickname", string.Empty, PrefUpdateMode.IGNORE);
         NicknameVisibility = new FusionPref<NicknameVisibility>(category, "Nickname Visibility", Senders.NicknameVisibility.SHOW_WITH_PREFIX, PrefUpdateMode.LOCAL_UPDATE);
 
-        // Voicechat
-        Muted = new FusionPref<bool>(category, "Muted", false, PrefUpdateMode.IGNORE);
-        MutedIndicator = new FusionPref<bool>(category, "Muted Indicator", true, PrefUpdateMode.IGNORE);
-        Deafened = new FusionPref<bool>(category, "Deafened", false, PrefUpdateMode.IGNORE);
-        GlobalVolume = new FusionPref<float>(category, "GlobalMicVolume", 1f, PrefUpdateMode.IGNORE);
+        VoiceChat = new VoiceChatSettings();
+        VoiceChat.CreatePrefs(category);
 
         // Gamemodes
         GamemodeLateJoining = new FusionPref<bool>(category, "Gamemode Late Joining", true, PrefUpdateMode.IGNORE);

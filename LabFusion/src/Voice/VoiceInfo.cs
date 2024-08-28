@@ -21,11 +21,16 @@ public static class VoiceInfo
     /// Returns if the voice manager supports listening.
     /// </summary>
     public static bool CanHear => (VoiceManager?.CanHear).GetValueOrDefault();
+    
+    /// <summary>
+    /// Returns an array of all input devices that are available.
+    /// </summary>
+    public static string[] InputDevices => VoiceManager != null ? VoiceManager.InputDevices : Array.Empty<string>();
 
     /// <summary>
     /// Returns if the mute icon is enabled.
     /// </summary>
-    public static bool ShowMuteIndicator => NetworkInfo.HasServer && ClientSettings.Muted.Value && ClientSettings.MutedIndicator.Value;
+    public static bool ShowMuteIndicator => NetworkInfo.HasServer && ClientSettings.VoiceChat.Muted.Value && ClientSettings.VoiceChat.MutedIndicator.Value;
 
     /// <summary>
     /// Returns the microphone amplitude for this frame.
@@ -51,14 +56,14 @@ public static class VoiceInfo
                 isDying = RigData.Refs.Health.deathIsImminent;
             }
 
-            return ClientSettings.Muted.Value || isDying || IsDeafened;
+            return ClientSettings.VoiceChat.Muted.Value || isDying || IsDeafened;
         }
     }
 
     /// <summary>
     /// Returns if voice chat is currently disabled, either via deafening or the server setting.
     /// </summary>
-    public static bool IsDeafened => ClientSettings.Deafened.Value || !ServerVoiceEnabled;
+    public static bool IsDeafened => ClientSettings.VoiceChat.Deafened.Value || !ServerVoiceEnabled;
 
     /// <summary>
     /// Returns if voice chat is enabled on the server's end.

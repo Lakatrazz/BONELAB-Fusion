@@ -21,8 +21,8 @@ public static class MuteUIHelper
 
     public static void OnInitializeMelon()
     {
-        ClientSettings.Muted.OnValueChanged += OnMutedChanged;
-        ClientSettings.MutedIndicator.OnValueChanged += OnIndicatorChanged;
+        ClientSettings.VoiceChat.Muted.OnValueChanged += OnMutedChanged;
+        ClientSettings.VoiceChat.MutedIndicator.OnValueChanged += OnIndicatorChanged;
 
         RenderPipelineManager.beginCameraRendering += (Il2CppSystem.Action<ScriptableRenderContext, Camera>)OnBeginCameraRendering;
         RenderPipelineManager.endCameraRendering += (Il2CppSystem.Action<ScriptableRenderContext, Camera>)OnEndCameraRendering;
@@ -30,8 +30,8 @@ public static class MuteUIHelper
 
     public static void OnDeinitializeMelon()
     {
-        ClientSettings.Muted.OnValueChanged -= OnMutedChanged;
-        ClientSettings.MutedIndicator.OnValueChanged -= OnIndicatorChanged;
+        ClientSettings.VoiceChat.Muted.OnValueChanged -= OnMutedChanged;
+        ClientSettings.VoiceChat.MutedIndicator.OnValueChanged -= OnIndicatorChanged;
 
         RenderPipelineManager.beginCameraRendering -= (Il2CppSystem.Action<ScriptableRenderContext, Camera>)OnBeginCameraRendering;
         RenderPipelineManager.endCameraRendering -= (Il2CppSystem.Action<ScriptableRenderContext, Camera>)OnEndCameraRendering;
@@ -87,7 +87,7 @@ public static class MuteUIHelper
         // Insert quick mute button
         var popUpMenu = UIRig.Instance.popUpMenu;
         var homePage = popUpMenu.radialPageView.m_HomePage;
-        var mutedPref = ClientSettings.Muted;
+        var mutedPref = ClientSettings.VoiceChat.Muted;
         bool isMuted = mutedPref.Value;
 
         string name = isMuted ? "Quick Unmute" : "Quick Mute";
