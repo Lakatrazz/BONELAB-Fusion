@@ -90,7 +90,7 @@ public class KartRaceData : LevelDataHandler
         }
         else
         {
-            FusionLogger.Warn("Could not find the Gokart spawner in Monogon Motorway, please report this to Lakatrazz!");
+            FusionLogger.Warn($"Could not find the Gokart spawner in Monogon Motorway, please report this to {FusionMod.ModAuthor}!");
         }
     }
 }
