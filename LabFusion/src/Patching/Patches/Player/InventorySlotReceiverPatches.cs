@@ -1,13 +1,10 @@
 ﻿using HarmonyLib;
 
-using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.SDK.Achievements;
 using LabFusion.Entities;
-using LabFusion.Utilities;
 
-using Il2CppSLZ.VRMK;
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow;
 
@@ -35,67 +32,41 @@ public class InventorySlotReceiverPatches
             return;
         }
 
-        var rigManager = __instance.GetComponentInParent<RigManager>();
-
-        if (rigManager == null)
+        if (!InventorySlotReceiverExtender.Cache.TryGet(__instance, out var slotEntity))
         {
             return;
         }
 
-        try
+        var slotExtender = slotEntity.GetExtender<InventorySlotReceiverExtender>();
+
+        byte? index = (byte?)slotExtender.GetIndex(__instance);
+
+        if (!index.HasValue)
         {
-            byte? smallId = null;
-
-            if (NetworkPlayerManager.TryGetPlayer(rigManager, out var player))
-            {
-                smallId = player.PlayerId.SmallId;
-            }
-
-            if (!smallId.HasValue)
-            {
-                return;
-            }
-
-            var slotExtender = player.NetworkEntity.GetExtender<InventorySlotReceiverExtender>();
-
-            if (slotExtender == null)
-            {
-                return;
-            }
-
-            byte? index = (byte?)slotExtender.GetIndex(__instance);
-
-            if (!index.HasValue)
-            {
-                return;
-            }
-
-            var handedness = Handedness.UNDEFINED;
-
-            if (hand != null)
-            {
-                handedness = hand.handedness;
-
-                // Reward achievement
-                if (!rigManager.IsSelf() && AchievementManager.TryGetAchievement<HighwayMan>(out var achievement))
-                {
-                    achievement.IncrementTask();
-                }
-            }
-
-            using var writer = FusionWriter.Create(InventorySlotDropData.Size);
-            var data = InventorySlotDropData.Create(smallId.Value, PlayerIdManager.LocalSmallId, index.Value, handedness);
-            writer.Write(data);
-
-            using var message = FusionMessage.Create(NativeMessageTag.InventorySlotDrop, writer);
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+            return;
         }
-        catch (Exception e)
+
+        // Check if we're taking from someone else's holster for the achievement
+        var handedness = Handedness.UNDEFINED;
+
+        if (hand != null)
         {
-#if DEBUG
-            FusionLogger.LogException("patching InventorySlotReceiver.OnHandGrab", e);
-#endif
+            handedness = hand.handedness;
+
+            // Reward achievement
+            if (!slotEntity.IsOwner && AchievementManager.TryGetAchievement<HighwayMan>(out var achievement))
+            {
+                achievement.IncrementTask();
+            }
         }
+
+        // Send a receiver grab message
+        using var writer = FusionWriter.Create(InventorySlotDropData.Size);
+        var data = InventorySlotDropData.Create(slotEntity.Id, PlayerIdManager.LocalSmallId, index.Value, handedness);
+        writer.Write(data);
+
+        using var message = FusionMessage.Create(NativeMessageTag.InventorySlotDrop, writer);
+        MessageSender.SendToServer(NetworkChannel.Reliable, message);
     }
 
     [HarmonyPrefix]
@@ -135,38 +106,19 @@ public class InventorySlotReceiverDrop
             return;
         }
 
-        var entity = WeaponSlotExtender.Cache.Get(__instance._slottedWeapon);
+        var weaponEntity = WeaponSlotExtender.Cache.Get(__instance._slottedWeapon);
 
-        if (entity == null)
+        if (weaponEntity == null)
         {
             return;
         }
 
-        var rigManager = __instance.GetComponentInParent<RigManager>();
-
-        if (rigManager == null)
+        if (!InventorySlotReceiverExtender.Cache.TryGet(__instance, out var slotEntity))
         {
             return;
         }
 
-        byte? smallId = null;
-
-        if (NetworkPlayerManager.TryGetPlayer(rigManager, out var player))
-        {
-            smallId = player.PlayerId.SmallId;
-        }
-
-        if (!smallId.HasValue)
-        {
-            return;
-        }
-
-        var slotExtender = player.NetworkEntity.GetExtender<InventorySlotReceiverExtender>();
-
-        if (slotExtender == null)
-        {
-            return;
-        }
+        var slotExtender = slotEntity.GetExtender<InventorySlotReceiverExtender>();
 
         byte? index = (byte?)slotExtender.GetIndex(__instance);
 
@@ -176,7 +128,7 @@ public class InventorySlotReceiverDrop
         }
 
         using var writer = FusionWriter.Create(InventorySlotInsertData.Size);
-        var data = InventorySlotInsertData.Create(smallId.Value, PlayerIdManager.LocalSmallId, entity.Id, index.Value);
+        var data = InventorySlotInsertData.Create(slotEntity.Id, PlayerIdManager.LocalSmallId, weaponEntity.Id, index.Value);
         writer.Write(data);
 
         using var message = FusionMessage.Create(NativeMessageTag.InventorySlotInsert, writer);

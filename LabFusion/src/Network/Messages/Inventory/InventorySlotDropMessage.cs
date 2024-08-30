@@ -10,16 +10,16 @@ namespace LabFusion.Network;
 
 public class InventorySlotDropData : IFusionSerializable
 {
-    public const int Size = sizeof(byte) * 5;
+    public const int Size = sizeof(byte) * 3 + sizeof(ushort);
 
-    public byte smallId;
+    public ushort slotEntityId;
     public byte grabber;
     public byte slotIndex;
     public Handedness handedness;
 
     public void Serialize(FusionWriter writer)
     {
-        writer.Write(smallId);
+        writer.Write(slotEntityId);
         writer.Write(grabber);
         writer.Write(slotIndex);
         writer.Write((byte)handedness);
@@ -27,17 +27,17 @@ public class InventorySlotDropData : IFusionSerializable
 
     public void Deserialize(FusionReader reader)
     {
-        smallId = reader.ReadByte();
+        slotEntityId = reader.ReadUInt16();
         grabber = reader.ReadByte();
         slotIndex = reader.ReadByte();
         handedness = (Handedness)reader.ReadByte();
     }
 
-    public static InventorySlotDropData Create(byte smallId, byte grabber, byte slotIndex, Handedness handedness)
+    public static InventorySlotDropData Create(ushort slotEntityId, byte grabber, byte slotIndex, Handedness handedness)
     {
         return new InventorySlotDropData()
         {
-            smallId = smallId,
+            slotEntityId = slotEntityId,
             grabber = grabber,
             slotIndex = slotIndex,
             handedness = handedness,
@@ -63,12 +63,14 @@ public class InventorySlotDropMessage : FusionMessageHandler
             return;
         }
 
-        if (!NetworkPlayerManager.TryGetPlayer(data.smallId, out var player))
+        var slotEntity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.slotEntityId);
+
+        if (slotEntity == null)
         {
             return;
         }
 
-        var slotExtender = player.NetworkEntity.GetExtender<InventorySlotReceiverExtender>();
+        var slotExtender = slotEntity.GetExtender<InventorySlotReceiverExtender>();
 
         if (slotExtender == null)
         {

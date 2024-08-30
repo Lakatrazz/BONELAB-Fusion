@@ -7,16 +7,16 @@ namespace LabFusion.Network;
 
 public class InventorySlotInsertData : IFusionSerializable
 {
-    public const int Size = sizeof(byte) * 4 + sizeof(ushort);
+    public const int Size = sizeof(byte) * 2 + sizeof(ushort) * 2;
 
-    public byte smallId;
+    public ushort slotEntityId;
     public byte inserter;
     public ushort syncId;
     public byte slotIndex;
 
     public void Serialize(FusionWriter writer)
     {
-        writer.Write(smallId);
+        writer.Write(slotEntityId);
         writer.Write(inserter);
         writer.Write(syncId);
         writer.Write(slotIndex);
@@ -24,17 +24,17 @@ public class InventorySlotInsertData : IFusionSerializable
 
     public void Deserialize(FusionReader reader)
     {
-        smallId = reader.ReadByte();
+        slotEntityId = reader.ReadUInt16();
         inserter = reader.ReadByte();
         syncId = reader.ReadUInt16();
         slotIndex = reader.ReadByte();
     }
 
-    public static InventorySlotInsertData Create(byte smallId, byte inserter, ushort syncId, byte slotIndex)
+    public static InventorySlotInsertData Create(ushort slotEntityId, byte inserter, ushort syncId, byte slotIndex)
     {
         return new InventorySlotInsertData()
         {
-            smallId = smallId,
+            slotEntityId = slotEntityId,
             inserter = inserter,
             syncId = syncId,
             slotIndex = slotIndex,
@@ -75,12 +75,14 @@ public class InventorySlotInsertMessage : FusionMessageHandler
             return;
         }
 
-        if (!NetworkPlayerManager.TryGetPlayer(data.smallId, out var player))
+        var slotEntity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.slotEntityId);
+
+        if (slotEntity == null)
         {
             return;
         }
 
-        var slotExtender = player.NetworkEntity.GetExtender<InventorySlotReceiverExtender>();
+        var slotExtender = slotEntity.GetExtender<InventorySlotReceiverExtender>();
 
         if (slotExtender == null)
         {
