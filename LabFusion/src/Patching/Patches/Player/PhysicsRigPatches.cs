@@ -17,21 +17,19 @@ public static class PhysicsRigPatches
     [HarmonyPatch(nameof(PhysicsRig.RagdollRig))]
     public static bool RagdollRig(PhysicsRig __instance)
     {
-        try
+        if (!NetworkInfo.HasServer)
         {
-            if (NetworkInfo.HasServer && __instance.manager.IsSelf())
-            {
-                using var writer = FusionWriter.Create(PlayerRepRagdollData.Size);
-                var data = PlayerRepRagdollData.Create(PlayerIdManager.LocalSmallId, true);
-                writer.Write(data);
-
-                using var message = FusionMessage.Create(NativeMessageTag.PlayerRepRagdoll, writer);
-                MessageSender.SendToServer(NetworkChannel.Reliable, message);
-            }
+            return true;
         }
-        catch (Exception e)
+
+        if (__instance.manager.IsSelf())
         {
-            FusionLogger.LogException("patching PhysicsRig.RagdollRig", e);
+            using var writer = FusionWriter.Create(PlayerRepRagdollData.Size);
+            var data = PlayerRepRagdollData.Create(PlayerIdManager.LocalSmallId, true);
+            writer.Write(data);
+
+            using var message = FusionMessage.Create(NativeMessageTag.PlayerRepRagdoll, writer);
+            MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
 
         // If not already shutdown, shutdown the rig
@@ -49,29 +47,27 @@ public static class PhysicsRigPatches
     [HarmonyPatch(nameof(PhysicsRig.UnRagdollRig))]
     public static bool UnRagdollRig(PhysicsRig __instance)
     {
-        try
+        if (!NetworkInfo.HasServer)
         {
-            if (NetworkInfo.HasServer && __instance.manager.IsSelf())
-            {
-                // Check if we can unragdoll
-                var playerHealth = __instance.manager.health.TryCast<Player_Health>();
-
-                if (!ForceAllowUnragdoll && playerHealth.deathIsImminent && !FusionPlayer.CanUnragdoll())
-                {
-                    return false;
-                }
-
-                using var writer = FusionWriter.Create(PlayerRepRagdollData.Size);
-                var data = PlayerRepRagdollData.Create(PlayerIdManager.LocalSmallId, false);
-                writer.Write(data);
-
-                using var message = FusionMessage.Create(NativeMessageTag.PlayerRepRagdoll, writer);
-                MessageSender.SendToServer(NetworkChannel.Reliable, message);
-            }
+            return true;
         }
-        catch (Exception e)
+
+        if (__instance.manager.IsSelf())
         {
-            FusionLogger.LogException("patching PhysicsRig.UnRagdollRig", e);
+            // Check if we can unragdoll
+            var playerHealth = __instance.manager.health.TryCast<Player_Health>();
+
+            if (!ForceAllowUnragdoll && playerHealth.deathIsImminent && !FusionPlayer.CanUnragdoll())
+            {
+                return false;
+            }
+
+            using var writer = FusionWriter.Create(PlayerRepRagdollData.Size);
+            var data = PlayerRepRagdollData.Create(PlayerIdManager.LocalSmallId, false);
+            writer.Write(data);
+
+            using var message = FusionMessage.Create(NativeMessageTag.PlayerRepRagdoll, writer);
+            MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
 
         // Unshutdown the rig if needed

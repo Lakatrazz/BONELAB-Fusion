@@ -17,8 +17,8 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 84fba15efdfa0b14b88566e4244e7200
   m_SerializeEntries:
-  - m_GUID: e01287617603ab7469e3f5e659d08441
-    m_Address: Lakatrazz.FusionContent
+  - m_GUID: 6a83bc969688b3d40a9e2078a768fd00
+    m_Address: Lakatrazz.FusionCosmetics
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

@@ -554,13 +554,15 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Toggle ragdoll mode
         if (_isRagdollDirty)
         {
+            var physicsRig = rm.physicsRig;
+
             if (_ragdollState)
             {
-                rm.bodyState = RigManager.BodyState.Ragdoll;
+                physicsRig.RagdollRig();
             }
             else
             {
-                rm.bodyState = RigManager.BodyState.OnFoot;
+                physicsRig.UnRagdollRig();
             }
 
             _isRagdollDirty = false;

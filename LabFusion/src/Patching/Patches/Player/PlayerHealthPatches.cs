@@ -155,7 +155,7 @@ public static class PlayerHealthPatches
         {
             PhysicsRigPatches.ForceAllowUnragdoll = true;
 
-            __instance._rigManager.bodyState = RigManager.BodyState.OnFoot;
+            __instance._rigManager.physicsRig.UnRagdollRig();
 
             PhysicsRigPatches.ForceAllowUnragdoll = false;
         }
@@ -179,7 +179,7 @@ public static class PlayerHealthPatches
         {
             PhysicsRigPatches.ForceAllowUnragdoll = true;
 
-            __instance._rigManager.bodyState = RigManager.BodyState.OnFoot;
+            __instance._rigManager.physicsRig.UnRagdollRig();
 
             PhysicsRigPatches.ForceAllowUnragdoll = false;
         }

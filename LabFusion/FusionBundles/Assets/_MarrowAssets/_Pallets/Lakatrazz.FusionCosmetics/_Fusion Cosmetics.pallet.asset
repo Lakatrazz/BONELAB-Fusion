@@ -19,8 +19,8 @@ MonoBehaviour:
   _unlockable: 0
   _redacted: 0
   _author: Lakatrazz
-  _version: 1.0.0
-  _sdkVersion: 1.1.0
+  _version: 1.0.1
+  _sdkVersion: 1.2.0
   _internal: 0
   _crates:
   - {fileID: 11400000, guid: 57ec9825418fd634eaae55bb88e6cf6b, type: 2}
@@ -96,7 +96,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 103b04320b548a84e9eb51c5bef707fe, type: 2}
   _dataCards: []
   _tags: []
-  _changeLogs: []
+  _changeLogs:
+  - version: 1.0.0
+    title: Release
+    text: Initial release
+  - version: 1.0.1
+    title: Patch 6
+    text: Updated to Patch 6
   _crateTitles:
   - Spawnable  Adventurers Hat
   - Spawnable  3D Glasses

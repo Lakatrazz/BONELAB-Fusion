@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 4d882dacb0cf54c449d94345cde2d533
   m_currentHash:
     serializedVersion: 2
-    Hash: e57820db025027e469a57f4bb728e02f
+    Hash: 530a788102ff176d961dc9662e2a36cf
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 1
   m_BundleLocalCatalog: 0
@@ -30,26 +30,23 @@ MonoBehaviour:
   m_StripUnityVersionFromBundleBuild: 0
   m_DisableVisibleSubAssetRepresentations: 0
   m_ShaderBundleNaming: 2
-  m_ShaderBundleCustomNaming: Lakatrazz.FusionContent
+  m_ShaderBundleCustomNaming: Lakatrazz.FusionCosmetics
   m_MonoScriptBundleNaming: 3
   m_CheckForContentUpdateRestrictionsOption: 0
-  m_MonoScriptBundleCustomNaming: Lakatrazz.FusionContent
+  m_MonoScriptBundleCustomNaming: Lakatrazz.FusionCosmetics
   m_RemoteCatalogBuildPath:
-    m_Id: BuiltPallets/StandaloneWindows64/Lakatrazz.FusionContent
+    m_Id: BuiltPallets/StandaloneWindows64/Lakatrazz.FusionCosmetics
   m_RemoteCatalogLoadPath:
-    m_Id: 'PALLET_BARCODE:Lakatrazz.FusionContent:'
+    m_Id: 'PALLET_BARCODE:Lakatrazz.FusionCosmetics:'
   m_ContentStateBuildPathProfileVariableName: <default settings path>
   m_CustomContentStateBuildPath: 
   m_ContentStateBuildPath: 
   m_BuildAddressablesWithPlayerBuild: 2
-  m_overridePlayerVersion: Lakatrazz.FusionContent
+  m_overridePlayerVersion: Lakatrazz.FusionCosmetics
   m_GroupAssets:
   - {fileID: 11400000, guid: 8b5ee8ae1bae6794692e05c65f209650, type: 2}
   - {fileID: 11400000, guid: 84fba15efdfa0b14b88566e4244e7200, type: 2}
-  - {fileID: 11400000, guid: 0f24cc3b3a4f4fe429a94b365dd662b8, type: 2}
-  - {fileID: 11400000, guid: 7d8523ca3e691ac48b345a93554fb489, type: 2}
-  - {fileID: 11400000, guid: 375f6805badfc9a46980954fc19c6e69, type: 2}
-  - {fileID: 11400000, guid: 6caeddfa8fe1c3c4badf47a92f828904, type: 2}
+  - {fileID: 11400000, guid: c21962cc790a2844b893220795a9e883, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1

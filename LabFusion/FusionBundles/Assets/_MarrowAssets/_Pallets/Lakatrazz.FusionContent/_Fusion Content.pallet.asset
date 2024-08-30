@@ -53,7 +53,15 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8b17a4c919b2cb9439f7d3587b61ec57, type: 2}
   - {fileID: 11400000, guid: 31582503ed056f04ea43c5d2389cd688, type: 2}
   _tags: []
-  _changeLogs: []
+  _changeLogs:
+  - version: 1.0.0
+    title: Release
+    text: Initial release
+  - version: 1.1.0
+    title: Patch 6
+    text: 'Updated to Patch 6
+
+      Made Mute Indicator a redacted spawnable'
   _crateTitles:
   - Spawnable  BitMart
   - Spawnable  Achievement Board
