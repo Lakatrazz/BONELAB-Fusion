@@ -1,11 +1,10 @@
 ﻿using HarmonyLib;
 
 using LabFusion.Network;
-using LabFusion.Utilities;
+using LabFusion.Entities;
 
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Interaction;
-using Il2CppSLZ.Marrow;
 
 using UnityEngine;
 
@@ -38,13 +37,16 @@ public static class PullCordForceChangePatches
         }
 
         var marrowEntity = marrowBody.Entity;
-        var rigManager = RigManager.Cache.Get(marrowEntity.gameObject);
 
-        if (rigManager != null)
+        // Check if the triggered marrow entity has a network entity attached
+        var networkEntity = IMarrowEntityExtender.Cache.Get(marrowEntity);
+
+        if (networkEntity == null)
         {
-            return rigManager.IsSelf();
+            return true;
         }
 
-        return true;
+        // Only let pull cord force changes trigger for entities that are owned by us (ex. our own player)
+        return networkEntity.IsOwner;
     }
 }
