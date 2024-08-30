@@ -39,13 +39,13 @@ public static class PooleeUtilities
         }
     }
 
-    public static void SendDespawn(ushort syncId)
+    public static void SendDespawn(ushort entityId, bool despawnEffect)
     {
         // Send response
         if (NetworkInfo.IsServer)
         {
             using var writer = FusionWriter.Create(DespawnResponseData.Size);
-            var data = DespawnResponseData.Create(syncId, PlayerIdManager.LocalSmallId);
+            var data = DespawnResponseData.Create(PlayerIdManager.LocalSmallId, entityId, despawnEffect);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.DespawnResponse, writer);
@@ -54,19 +54,14 @@ public static class PooleeUtilities
         // Send request
         else
         {
-            using var writer = FusionWriter.Create(DespawnRequestData.Size);
-            var data = DespawnRequestData.Create(syncId, PlayerIdManager.LocalSmallId);
-            writer.Write(data);
-
-            using var message = FusionMessage.Create(NativeMessageTag.DespawnRequest, writer);
-            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+            RequestDespawn(entityId, despawnEffect);
         }
     }
 
-    public static void RequestDespawn(ushort syncId)
+    public static void RequestDespawn(ushort entityId, bool despawnEffect)
     {
         using var writer = FusionWriter.Create(DespawnRequestData.Size);
-        var data = DespawnRequestData.Create(syncId, PlayerIdManager.LocalSmallId);
+        var data = DespawnRequestData.Create(PlayerIdManager.LocalSmallId, entityId, despawnEffect);
         writer.Write(data);
 
         using var message = FusionMessage.Create(NativeMessageTag.DespawnRequest, writer);

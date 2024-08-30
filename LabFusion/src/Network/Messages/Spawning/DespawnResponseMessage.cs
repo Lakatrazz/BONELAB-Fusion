@@ -5,6 +5,7 @@ using LabFusion.Entities;
 using MelonLoader;
 
 using System.Collections;
+using Il2CppSLZ.Marrow.VFX;
 
 namespace LabFusion.Network;
 
@@ -12,27 +13,35 @@ public class DespawnResponseData : IFusionSerializable
 {
     public const int Size = sizeof(ushort) + sizeof(byte) * 2;
 
-    public ushort syncId;
     public byte despawnerId;
+    public ushort entityId;
+
+    public bool despawnEffect;
 
     public void Serialize(FusionWriter writer)
     {
-        writer.Write(syncId);
         writer.Write(despawnerId);
+        writer.Write(entityId);
+
+        writer.Write(despawnEffect);
     }
 
     public void Deserialize(FusionReader reader)
     {
-        syncId = reader.ReadUInt16();
         despawnerId = reader.ReadByte();
+        entityId = reader.ReadUInt16();
+
+        despawnEffect = reader.ReadBoolean();
     }
 
-    public static DespawnResponseData Create(ushort syncId, byte despawnerId)
+    public static DespawnResponseData Create(byte despawnerId, ushort entityId, bool despawnEffect)
     {
         return new DespawnResponseData()
         {
-            syncId = syncId,
             despawnerId = despawnerId,
+            entityId = entityId,
+
+            despawnEffect = despawnEffect,
         };
     }
 }
@@ -48,14 +57,14 @@ public class DespawnResponseMessage : FusionMessageHandler
         using var reader = FusionReader.Create(bytes);
         var data = reader.ReadFusionSerializable<DespawnResponseData>();
 
-        MelonCoroutines.Start(Internal_WaitForValidDespawn(data.syncId, data.despawnerId));
+        MelonCoroutines.Start(Internal_WaitForValidDespawn(data.despawnerId, data.entityId, data.despawnEffect));
     }
 
-    private static IEnumerator Internal_WaitForValidDespawn(ushort syncId, byte despawnerId)
+    private static IEnumerator Internal_WaitForValidDespawn(byte despawnerId, ushort entityId, bool despawnEffect)
     {
         // Delay at most 300 frames until this entity exists
         int i = 0;
-        while (!NetworkEntityManager.IdManager.RegisteredEntities.HasEntity(syncId))
+        while (!NetworkEntityManager.IdManager.RegisteredEntities.HasEntity(entityId))
         {
             yield return null;
 
@@ -68,7 +77,7 @@ public class DespawnResponseMessage : FusionMessageHandler
         }
 
         // Get the entity from the valid id
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(syncId);
+        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(entityId);
 
         if (entity == null)
         {
@@ -89,6 +98,14 @@ public class DespawnResponseMessage : FusionMessageHandler
 #if DEBUG
         FusionLogger.Log($"Unregistering entity at ID {entity.Id} after despawning.");
 #endif
+
+        var marrowEntity = entity.GetExtender<IMarrowEntityExtender>();
+
+        if (marrowEntity != null && despawnEffect)
+        {
+            SpawnEffects.CallDespawnEffect(marrowEntity.MarrowEntity);
+        }
+
 
         poolee.Despawn();
 

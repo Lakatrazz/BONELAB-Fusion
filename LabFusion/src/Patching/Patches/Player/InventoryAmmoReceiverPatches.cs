@@ -137,7 +137,7 @@ public class InventoryAmmoReceiverDrop
         if (!magazineExtender.Component.magazinePlug._isLocked)
         {
             // Despawn the magazine
-            PooleeUtilities.RequestDespawn(entity.Id);
+            PooleeUtilities.RequestDespawn(entity.Id, false);
 
             // Play the ammo release sound effect
             using var writer = FusionWriter.Create(InventoryAmmoReceiverDropData.Size);

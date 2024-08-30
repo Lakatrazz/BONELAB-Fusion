@@ -113,7 +113,7 @@ public class PooleeDespawnPatch
             return;
         }
 
-        PooleeUtilities.SendDespawn(entity.Id);
+        PooleeUtilities.SendDespawn(entity.Id, true);
         NetworkEntityManager.IdManager.UnregisterEntity(entity);
     }
 }

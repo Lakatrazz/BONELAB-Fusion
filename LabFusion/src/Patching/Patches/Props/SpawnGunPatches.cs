@@ -203,7 +203,7 @@ public static class SpawnGunPatches
 
         if (PooleeExtender.Cache.TryGet(poolee, out var entity) && entity.IsRegistered)
         {
-            PooleeUtilities.RequestDespawn(entity.Id);
+            PooleeUtilities.RequestDespawn(entity.Id, true);
         }
 
         // Flash the spawn gun
