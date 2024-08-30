@@ -1,5 +1,7 @@
 ﻿using LabFusion.Extensions;
 using LabFusion.Preferences.Client;
+using LabFusion.Voice;
+using LabFusion.Marrow;
 
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -7,14 +9,15 @@ using UnityEngine.Rendering.Universal;
 
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow;
-
-using LabFusion.Voice;
+using Il2CppSLZ.Marrow.Data;
+using Il2CppSLZ.Marrow.Pool;
 
 namespace LabFusion.Utilities;
 
 public static class MuteUIHelper
 {
     private static PageItem _mutePage = null;
+    private static Poolee _indicatorPoolee = null;
     private static GameObject _muteIcon = null;
     private static Renderer _muteRenderer = null;
     private static Camera _muteCamera = null;
@@ -110,14 +113,21 @@ public static class MuteUIHelper
         // Add mute icon
         var openControllerRig = manager.ControllerRig.TryCast<OpenControllerRig>();
         Transform headset = openControllerRig.headset;
-        FusionContentLoader.MutePopupPrefab.Load((go) =>
-        {
-            if (headset == null)
-            {
-                return;
-            }
 
-            _muteIcon = GameObject.Instantiate(go, headset);
+        var muteSpawnable = new Spawnable()
+        {
+            crateRef = FusionSpawnableReferences.MuteIndicatorReference,
+            policyData = null,
+        };
+
+        AssetSpawner.Register(muteSpawnable);
+
+        SafeAssetSpawner.Spawn(muteSpawnable, Vector3.zero, Quaternion.identity, (poolee) =>
+        {
+            // Store references to the spawned mute icon
+            _indicatorPoolee = poolee;
+
+            _muteIcon = poolee.gameObject;
             _muteIcon.SetActive(false);
 
             _muteIcon.name = "Mute Icon [FUSION]";
@@ -125,6 +135,16 @@ public static class MuteUIHelper
             _muteRenderer = _muteIcon.GetComponentInChildren<Renderer>();
             _muteRenderer.enabled = false;
             _muteCamera = _muteIcon.GetComponent<Camera>();
+
+            if (headset == null)
+            {
+                return;
+            }
+
+            // Parent the mute icon to the headset
+            var iconTransform = _muteIcon.transform;
+            iconTransform.parent = headset;
+            iconTransform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
 
             // Add mute camera to the camera stack
             var cameraData = headset.GetComponent<UniversalAdditionalCameraData>();
@@ -148,7 +168,7 @@ public static class MuteUIHelper
         });
     }
 
-    public static void OnDestroyMuteUI(RigManager manager)
+    public static void OnDestroyMuteUI()
     {
         if (_mutePage != null)
         {
@@ -160,10 +180,11 @@ public static class MuteUIHelper
             _mutePage = null;
         }
 
-        if (!_muteIcon.IsNOC())
+        if (!_indicatorPoolee.IsNOC())
         {
-            GameObject.Destroy(_muteIcon);
+            _indicatorPoolee.Despawn();
 
+            _indicatorPoolee = null;
             _muteIcon = null;
         }
     }

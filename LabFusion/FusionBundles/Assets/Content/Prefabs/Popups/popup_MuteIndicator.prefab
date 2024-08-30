@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 9123450124656637238}
   - component: {fileID: 7055855141953685027}
   m_Layer: 29
-  m_Name: mute_Popup
+  m_Name: popup_MuteIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -121,7 +121,7 @@ GameObject:
   - component: {fileID: 8509809781273958225}
   - component: {fileID: 554795228614318905}
   m_Layer: 29
-  m_Name: ui_Muted
+  m_Name: Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

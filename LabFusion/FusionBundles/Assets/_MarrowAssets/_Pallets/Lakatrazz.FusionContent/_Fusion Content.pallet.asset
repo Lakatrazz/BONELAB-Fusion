@@ -15,12 +15,12 @@ MonoBehaviour:
   _barcode:
     _id: Lakatrazz.FusionContent
   _title: Fusion Content
-  _description: 
+  _description: Brings in all of the main Fusion official content!
   _unlockable: 0
   _redacted: 0
   _author: Lakatrazz
-  _version: 1.0.0
-  _sdkVersion: 1.1.0
+  _version: 1.1.0
+  _sdkVersion: 1.2.0
   _internal: 0
   _crates:
   - {fileID: 11400000, guid: 978b050c32ef248479bd34fb391923eb, type: 2}
@@ -33,6 +33,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 11b17f0986d8ef642be7d283ce879b24, type: 2}
   - {fileID: 11400000, guid: 340bc840636d80e4bbb43462065e23a9, type: 2}
   - {fileID: 11400000, guid: 55d9a119e85b3ea41bde1251663681cc, type: 2}
+  - {fileID: 11400000, guid: 1567b04bf55bfdc45a0ee04c3eb0be3b, type: 2}
   _dataCards:
   - {fileID: 11400000, guid: 391bcea53f62c9d4983ac21ae088574b, type: 2}
   - {fileID: 11400000, guid: a5491b0dbbcbdb0488e0d00b312c3874, type: 2}
@@ -64,6 +65,7 @@ MonoBehaviour:
   - Spawnable  Progress Bar
   - Spawnable  NameTag
   - Spawnable  Head Layout
+  - Spawnable  Mute Indicator
   _datacardTitles:
   - MonoDisc  Phantasmagorical Appliances
   - MonoDisc  Appen Beyuge

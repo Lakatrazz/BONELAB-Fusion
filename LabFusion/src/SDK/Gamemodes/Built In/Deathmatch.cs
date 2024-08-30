@@ -369,11 +369,11 @@ public class Deathmatch : Gamemode
         MonoDiscReference stingerReference;
         if (isVictory)
         {
-            stingerReference = FusionContentLoader.LavaGangVictoryReference;
+            stingerReference = FusionMonoDiscReferences.LavaGangVictoryReference;
         }
         else
         {
-            stingerReference = FusionContentLoader.LavaGangFailureReference;
+            stingerReference = FusionMonoDiscReferences.LavaGangFailureReference;
         }
 
         var dataCard = stingerReference.DataCard;

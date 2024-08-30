@@ -100,20 +100,23 @@ public static class PlayerAdditionsHelper
             return;
 
         // Disable mute icons
-        MuteUIHelper.OnDestroyMuteUI(manager);
+        MuteUIHelper.OnDestroyMuteUI();
 
         // Remove impact properties
         var impactProperties = manager.GetComponentsInChildren<ImpactProperties>(true);
-        foreach (var properties in impactProperties)
-            GameObject.Destroy(properties);
 
-        var impactManager = manager.GetComponentInChildren<ImpactPropertiesManager>(true);
-        GameObject.Destroy(impactManager);
+        foreach (var properties in impactProperties)
+        {
+            GameObject.Destroy(properties);
+        }
 
         // Remove collision syncers
         var collisionSyncers = manager.GetComponentsInChildren<CollisionSyncer>(true);
+
         foreach (var syncer in collisionSyncers)
+        {
             GameObject.Destroy(syncer);
+        }
 
         // Remove experimental features
         manager.health._testRagdollOnDeath = false;

@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34569ddb84e20304981812b1c448d930, type: 3}
+  m_Name: Mute Indicator.sc
+  m_EditorClassIdentifier: 
+  _barcode:
+    _id: Lakatrazz.FusionContent.Spawnable.MuteIndicator
+  _title: Mute Indicator
+  _description: The indicator on your screen shown when you are muted.
+  _unlockable: 0
+  _redacted: 1
+  _tags:
+  - Fusion
+  - Popup
+  _boneTags:
+    _tags: []
+  _mainAsset:
+    _assetGUID: 54c60c3ba852f2f40a1b61a6a872df11
+    _editorAssetChanged: 0
+  _previewMesh:
+    _assetGUID: e28251fd4a1f9d94f89abd52b342dbd8
+    _editorAssetChanged: 1
+  _customQuality: 0
+  _previewMeshQuality: 0.5
+  _maxLODLevel: 0
+  _colliderBounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}

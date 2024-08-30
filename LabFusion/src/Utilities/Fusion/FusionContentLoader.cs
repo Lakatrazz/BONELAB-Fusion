@@ -1,6 +1,4 @@
-﻿using Il2CppSLZ.Marrow.Warehouse;
-
-using LabFusion.Data;
+﻿using LabFusion.Data;
 
 using UnityEngine;
 
@@ -8,16 +6,9 @@ namespace LabFusion.Utilities
 {
     public static class FusionContentLoader
     {
-        public static readonly MonoDiscReference LavaGangVictoryReference = new("Lakatrazz.FusionContent.MonoDisc.LavaGangTriumphs");
-        public static readonly MonoDiscReference LavaGangFailureReference = new("Lakatrazz.FusionContent.MonoDisc.LavaGangFails");
-
-        public static readonly MonoDiscReference FistfightFusionReference = new("Lakatrazz.FusionContent.MonoDisc.FistfightFusion");
-
         public static WeakAssetReference<AssetBundle> ContentBundle { get; private set; } = new();
 
         public static WeakAssetReference<GameObject> EntangledLinePrefab { get; private set; } = new();
-
-        public static WeakAssetReference<GameObject> MutePopupPrefab { get; private set; } = new();
 
         public static WeakAssetReference<Texture2D> SabrelakeLogo { get; private set; } = new();
         public static WeakAssetReference<Texture2D> LavaGangLogo { get; private set; } = new();
@@ -56,8 +47,6 @@ namespace LabFusion.Utilities
             ContentBundle.SetAsset(bundle);
 
             bundle.LoadPersistentAssetAsync<GameObject>(ResourcePaths.EntangledLinePrefab, (v) => { EntangledLinePrefab.SetAsset(v); });
-
-            bundle.LoadPersistentAssetAsync<GameObject>(ResourcePaths.MutePopupPrefab, (v) => { MutePopupPrefab.SetAsset(v); });
 
             bundle.LoadPersistentAssetAsync<Texture2D>(ResourcePaths.SabrelakeLogo, (v) => { SabrelakeLogo.SetAsset(v); });
             bundle.LoadPersistentAssetAsync<Texture2D>(ResourcePaths.LavaGangLogo, (v) => { LavaGangLogo.SetAsset(v); });

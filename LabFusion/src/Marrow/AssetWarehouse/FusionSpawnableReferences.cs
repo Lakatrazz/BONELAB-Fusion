@@ -21,4 +21,6 @@ public static class FusionSpawnableReferences
     public static readonly SpawnableCrateReference NameTagReference = new("Lakatrazz.FusionContent.Spawnable.NameTag");
 
     public static readonly SpawnableCrateReference HeadLayoutReference = new("Lakatrazz.FusionContent.Spawnable.HeadLayout");
+
+    public static readonly SpawnableCrateReference MuteIndicatorReference = new("Lakatrazz.FusionContent.Spawnable.MuteIndicator");
 }
