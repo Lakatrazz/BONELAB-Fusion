@@ -1,44 +1,23 @@
 ## **Fusion**
 #### Added:
-- Patch 5 Support
-- Quest 2 Voice Chat
-- Jaw Movement in Mirrors
-- Built-In Mod Downloading (uses your login from the mod.io menu, options to disable and limit file size)
-- Hide and Seek Gamemode
-- Player blood effects and decals
-- Synced physics culling
-- Power Puncher now ragdolls players for a small amount of time
-- Extra APIs for code modders to make use of
-- RPC Events for sdk modders to make use of (will be available in the next Fusion SDK release)
-#### Rewrote:
-- Microphone System
-- Synced Entities (now use a modular NetworkEntity system)
-- Synced Players (make use of the NetworkEntity system, making systems much more universal)
-- Gamemodes
-- Spawn Syncing
-- Cosmetics
-- Bundles (now moved to an SDK mod, can be downloaded within the in-game Downloading tab)
-- Head UI (automatically aligns when more elements are added, though some systems still need to be converted)
-#### Removed:
-- Gravity sync
-- Lots and lots of duplicate code
-- Old fixes for bugs/issues that are no longer in BoneLab
+- Patch 6 Support
+- Input Devices setting for Voice Chat (no longer just Default)
+#### Fixed:
+- Mine Dive not creating multiple minecarts
+- Monogon Motorway not creating multiple gokarts
+- Hide and Seek blinding parenting to the skull instead of the camera, so avatar proportions affected the functionality
+- Muting causing voice chat to stop functioning
+- Dying inside of a vehicle causing you to get stuck ragdolled on respawn
 #### Improved:
-- Microphone Quality
-- Object Physics
-- SteamID spoofing
-- Board gun manually synced
-- Performance (Heavily)
-#### Known Issues:
-- Fusion SDK not updated (saved for a future update)
-- Arena not fully fixed
-- No blacklist for mod downloading
+- Default maximum download file size increased
+- Mute UI is now a spawnable instead of loaded from the asset bundle
+- Matchmaking tab lets you know when you don't have the Fusion Content pallet installed or updated
 
 ## **Fusion Auto Updater**
-- Updated to Patch 5
+- No changes
 
 ## **Marrow Integration**
-- Temporarily removed until a future update
+- No changes
 
 ## **Fusion Helper**
 - [Download Here](https://github.com/Lakatrazz/Fusion-Helper/releases/latest)
