@@ -1,5 +1,4 @@
 ﻿using LabFusion.Extensions;
-using LabFusion.Utilities;
 using LabFusion.Marrow.Integration;
 
 using Il2CppSLZ.Marrow;
@@ -19,16 +18,9 @@ public enum CosmeticScaleMode
 
 public static class CosmeticItemHelper
 {
-    private static Vector3 GetEyeCenter(RigManager rig, ArtRig artRig)
+    private static Vector3 GetEyeCenter(ArtRig artRig)
     {
-        if (TimeUtilities.TimeScale > 0f)
-        {
-            return rig.ControllerRig.m_head.position;
-        }
-        else
-        {
-            return (artRig.eyeLf.position + artRig.eyeRt.position) * 0.5f;
-        }
+        return (artRig.eyeLf.position + artRig.eyeRt.position) * 0.5f;
     }
 
     public static CosmeticScaleMode GetScaleMode(RigPoint point)
@@ -77,7 +69,7 @@ public static class CosmeticItemHelper
                 rotation = head.rotation;
                 break;
             case RigPoint.HEAD_TOP:
-                Vector3 eyeCenter = GetEyeCenter(rig, artRig);
+                Vector3 eyeCenter = GetEyeCenter(artRig);
 
                 eyeCenter += head.up * (avatar.HeadTop * 1.5f * avatar.height);
                 eyeCenter = head.InverseTransformPoint(eyeCenter);
@@ -95,21 +87,21 @@ public static class CosmeticItemHelper
                 rotation = artRig.eyeLf.rotation;
                 break;
             case RigPoint.EYE_CENTER:
-                position = GetEyeCenter(rig, artRig);
-                rotation = inRig.m_head.rotation;
+                position = GetEyeCenter(artRig);
+                rotation = head.rotation;
                 break;
             case RigPoint.NOSE:
-                Vector3 noseCenter = GetEyeCenter(rig, artRig);
-                position = inRig.m_head.position + inRig.m_head.forward * (avatar.ForeheadEllipseZ * avatar.height);
+                Vector3 noseCenter = GetEyeCenter(artRig);
+                position = head.position + head.forward * (avatar.ForeheadEllipseZ * avatar.height);
 
-                noseCenter = inRig.m_head.InverseTransformPoint(noseCenter);
-                position = inRig.m_head.InverseTransformPoint(position);
+                noseCenter = head.InverseTransformPoint(noseCenter);
+                position = head.InverseTransformPoint(position);
 
                 position.y = noseCenter.y;
 
-                position = inRig.m_head.TransformPoint(position);
+                position = head.TransformPoint(position);
 
-                rotation = inRig.m_head.rotation;
+                rotation = head.rotation;
                 break;
             case RigPoint.EYE_RIGHT:
                 position = artRig.eyeRt.position;
