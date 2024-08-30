@@ -5,7 +5,6 @@ using LabFusion.Marrow;
 
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
 
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow;
@@ -17,10 +16,12 @@ namespace LabFusion.Utilities;
 public static class MuteUIHelper
 {
     private static PageItem _mutePage = null;
+
     private static Poolee _indicatorPoolee = null;
-    private static GameObject _muteIcon = null;
-    private static Renderer _muteRenderer = null;
-    private static Camera _muteCamera = null;
+    private static GameObject _indicatorGameObject = null;
+    private static Renderer _indicatorRenderer = null;
+
+    private static Camera _headsetCamera = null;
 
     public static void OnInitializeMelon()
     {
@@ -42,18 +43,32 @@ public static class MuteUIHelper
 
     private static void OnBeginCameraRendering(ScriptableRenderContext context, Camera camera)
     {
-        if (camera == _muteCamera && _muteRenderer != null)
+        if (camera != _headsetCamera)
         {
-            _muteRenderer.enabled = true;
+            return;
         }
+
+        if (_indicatorRenderer == null)
+        {
+            return;
+        }
+
+        _indicatorRenderer.enabled = true;
     }
 
     private static void OnEndCameraRendering(ScriptableRenderContext context, Camera camera)
     {
-        if (camera == _muteCamera && _muteRenderer != null)
+        if (camera != _headsetCamera)
         {
-            _muteRenderer.enabled = false;
+            return;
         }
+
+        if (_indicatorRenderer == null)
+        {
+            return;
+        }
+
+        _indicatorRenderer.enabled = false;
     }
 
     private static void OnMutedChanged(bool value)
@@ -73,10 +88,12 @@ public static class MuteUIHelper
 
     private static void UpdateMuteIcon()
     {
-        if (_muteIcon != null)
+        if (_indicatorGameObject == null)
         {
-            _muteIcon.SetActive(VoiceInfo.ShowMuteIndicator);
+            return;
         }
+
+        _indicatorGameObject.SetActive(VoiceInfo.ShowMuteIndicator);
     }
 
     public static void OnCreateMuteUI(RigManager manager)
@@ -127,44 +144,29 @@ public static class MuteUIHelper
             // Store references to the spawned mute icon
             _indicatorPoolee = poolee;
 
-            _muteIcon = poolee.gameObject;
-            _muteIcon.SetActive(false);
+            _indicatorGameObject = poolee.gameObject;
+            _indicatorGameObject.SetActive(false);
 
-            _muteIcon.name = "Mute Icon [FUSION]";
+            _indicatorGameObject.name = "Mute Icon [FUSION]";
 
-            _muteRenderer = _muteIcon.GetComponentInChildren<Renderer>();
-            _muteRenderer.enabled = false;
-            _muteCamera = _muteIcon.GetComponent<Camera>();
+            _indicatorRenderer = _indicatorGameObject.GetComponentInChildren<Renderer>();
+            _indicatorRenderer.enabled = false;
 
             if (headset == null)
             {
                 return;
             }
 
+            // Store the headset camera
+            _headsetCamera = headset.GetComponent<Camera>();
+
             // Parent the mute icon to the headset
-            var iconTransform = _muteIcon.transform;
+            var iconTransform = _indicatorGameObject.transform;
             iconTransform.parent = headset;
             iconTransform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
 
-            // Add mute camera to the camera stack
-            var cameraData = headset.GetComponent<UniversalAdditionalCameraData>();
-            cameraData.cameraStack.Add(_muteCamera);
-
-            // Configure the mute camera's data so that it only renders what it needs to
-            var muteCameraData = _muteIcon.GetComponent<UniversalAdditionalCameraData>();
-
-            // Make sure the volume layer mask is the same as the normal camera
-            muteCameraData.volumeLayerMask = cameraData.volumeLayerMask;
-
-            muteCameraData.renderPostProcessing = false;
-            muteCameraData.m_EnableVolumetrics = false;
-            muteCameraData.renderShadows = false;
-            muteCameraData.requiresColorOption = CameraOverrideOption.Off;
-            muteCameraData.requiresColorTexture = false;
-            muteCameraData.requiresDepthOption = CameraOverrideOption.Off;
-            muteCameraData.requiresDepthTexture = false;
-
-            _muteIcon.SetActive(VoiceInfo.ShowMuteIndicator);
+            // Update the visibility of the indicator
+            UpdateMuteIcon();
         });
     }
 
@@ -185,7 +187,8 @@ public static class MuteUIHelper
             _indicatorPoolee.Despawn();
 
             _indicatorPoolee = null;
-            _muteIcon = null;
+            _indicatorGameObject = null;
+            _indicatorRenderer = null;
         }
     }
 }
