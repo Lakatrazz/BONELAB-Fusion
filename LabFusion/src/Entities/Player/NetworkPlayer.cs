@@ -556,11 +556,11 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         {
             if (_ragdollState)
             {
-                rm.physicsRig.RagdollRig();
+                rm.bodyState = RigManager.BodyState.Ragdoll;
             }
             else
             {
-                rm.physicsRig.UnRagdollRig();
+                rm.bodyState = RigManager.BodyState.OnFoot;
             }
 
             _isRagdollDirty = false;

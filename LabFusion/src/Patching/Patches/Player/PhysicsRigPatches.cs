@@ -36,6 +36,7 @@ public static class PhysicsRigPatches
 
         // If not already shutdown, shutdown the rig
         // This is required for patch 4 ragdolling
+        // Strangely, the bodyState system doesn't appear to properly call this
         if (!__instance.shutdown)
         {
             __instance.ShutdownRig();

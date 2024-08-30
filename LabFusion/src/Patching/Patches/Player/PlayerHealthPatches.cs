@@ -133,6 +133,14 @@ public static class HealthPatches
         PlayerSender.SendPlayerAction(PlayerActionType.RESPAWN);
 
         LocalPlayer.ClearConstraints();
+
+        // Currently a bug with seating where you can get stuck ragdolled
+        // So, refresh the ragdoll state here
+        // Remove in the future if SLZ properly supports ragdolling and respawning in vehicles
+        if (__instance._testRagdollOnDeath)
+        {
+            __instance._rigManager.physicsRig.SetBodyState(RigManager.BodyState.OnFoot, RigManager.BodyState.Ragdoll);
+        }
     }
 }
 
@@ -147,7 +155,7 @@ public static class PlayerHealthPatches
         {
             PhysicsRigPatches.ForceAllowUnragdoll = true;
 
-            __instance._rigManager.physicsRig.UnRagdollRig();
+            __instance._rigManager.bodyState = RigManager.BodyState.OnFoot;
 
             PhysicsRigPatches.ForceAllowUnragdoll = false;
         }
@@ -171,7 +179,7 @@ public static class PlayerHealthPatches
         {
             PhysicsRigPatches.ForceAllowUnragdoll = true;
 
-            __instance._rigManager.physicsRig.UnRagdollRig();
+            __instance._rigManager.bodyState = RigManager.BodyState.OnFoot;
 
             PhysicsRigPatches.ForceAllowUnragdoll = false;
         }

@@ -81,9 +81,7 @@ public static class PowerPuncherPatches
     {
         _isKnockedOut = true;
 
-        var physicsRig = rigManager.physicsRig;
-
-        physicsRig.RagdollRig();
+        rigManager.bodyState = RigManager.BodyState.Ragdoll;
 
         _knockedElapsed = 0f;
 
@@ -99,7 +97,7 @@ public static class PowerPuncherPatches
 
         if (health.alive && !health.deathIsImminent)
         {
-            physicsRig.UnRagdollRig();
+            rigManager.bodyState = RigManager.BodyState.OnFoot;
         }
 
         _isKnockedOut = false;
