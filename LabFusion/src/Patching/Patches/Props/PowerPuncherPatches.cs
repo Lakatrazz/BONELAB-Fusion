@@ -6,6 +6,7 @@ using Il2CppSLZ.Marrow;
 
 using LabFusion.Network;
 using LabFusion.Utilities;
+using LabFusion.Entities;
 
 using UnityEngine;
 
@@ -49,26 +50,43 @@ public static class PowerPuncherPatches
             return;
         }
 
-        var rigManager = RigManager.Cache.Get(marrowBody.Entity.gameObject);
+        // Check if the hit MarrowEntity has a NetworkEntity
+        var networkEntity = IMarrowEntityExtender.Cache.Get(marrowBody.Entity);
 
-        if (rigManager != null && rigManager.IsSelf())
+        if (networkEntity == null)
         {
-            // Already knocked out?
-            if (_isKnockedOut)
-            {
-                // Reset timer
-                _knockedElapsed = 0f;
-            }
-            // Not knocked out?
-            else
-            {
-                // Get knockout time
-                var relativeVelocity = (__instance._host.Rb.velocity - marrowBody._rigidbody.velocity).magnitude;
-                var knockoutTime = Mathf.Clamp(relativeVelocity, 0f, 2f);
+            return;
+        }
 
-                // Start knockout
-                MelonCoroutines.Start(KnockoutRig(rigManager, knockoutTime));
-            }
+        // Get the network player from the entity
+        var networkPlayer = networkEntity.GetExtender<NetworkPlayer>();
+
+        if (networkPlayer == null)
+        {
+            return;
+        }
+
+        // Make sure the player is us
+        if (!networkEntity.IsOwner)
+        {
+            return;
+        }
+
+        // Already knocked out?
+        if (_isKnockedOut)
+        {
+            // Reset timer
+            _knockedElapsed = 0f;
+        }
+        // Not knocked out?
+        else
+        {
+            // Get knockout time
+            var relativeVelocity = (__instance._host.Rb.velocity - marrowBody._rigidbody.velocity).magnitude;
+            var knockoutTime = Mathf.Clamp(relativeVelocity, 0f, 2f);
+        
+            // Start knockout
+            MelonCoroutines.Start(KnockoutRig(networkPlayer.RigRefs.RigManager, knockoutTime));
         }
     }
 
