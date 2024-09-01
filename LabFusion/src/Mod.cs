@@ -153,6 +153,7 @@ public class FusionMod : MelonMod
         PersistentAssetCreator.OnLateInitializeMelon();
         PlayerAdditionsHelper.OnInitializeMelon();
 
+#if RELEASE
         // Check if the auto updater is installed
         _hasAutoUpdater = MelonPlugin.RegisteredMelons.Any((p) => p.Info.Name.Contains("LabFusion Updater"));
 
@@ -166,11 +167,8 @@ public class FusionMod : MelonMod
                 "\nIt is recommended to install it in order to stay up to date.",
                 type = NotificationType.WARNING,
             });
-
-#if DEBUG
-            FusionLogger.Warn("The player does not have the auto updater installed.");
-#endif
         }
+#endif
     }
 
     protected static void OnInitializeNetworking()
