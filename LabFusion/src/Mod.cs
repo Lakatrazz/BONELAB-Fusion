@@ -20,6 +20,7 @@ using LabFusion.BoneMenu;
 using LabFusion.Downloading;
 using LabFusion.Marrow;
 using LabFusion.Menu;
+using LabFusion.Patching;
 
 #if DEBUG
 using LabFusion.Debugging;
@@ -133,6 +134,9 @@ public class FusionMod : MelonMod
             ScannableEvents.OnAssetWarehouseReady();
         };
         AssetWarehouse.OnReady(onReady);
+
+        // Patch manual HarmonyPatches
+        ManualPatcher.PatchAll(HarmonyInstance);
 
         // Create prefs
         FusionPreferences.OnInitializePreferences();

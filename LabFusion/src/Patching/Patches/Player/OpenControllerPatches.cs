@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
 
+using UnityEngine;
+
 using Il2CppSLZ.Marrow;
 
 using LabFusion.Player;
@@ -21,41 +23,14 @@ public static class OpenControllerPatches
     }
 
     [HarmonyPrefix]
-    [HarmonyPatch(nameof(OpenController.GetThumbStickAxis))]
-    public static bool GetThumbstickAxis(OpenController __instance)
+    [HarmonyPatch(nameof(OpenController.OnUpdate))]
+    public static void OnUpdate(OpenController __instance)
     {
-        // Lock movement
         if (LockedMovement(__instance))
         {
-            return false;
+            __instance._thumbstickAxis = Vector2.zero;
+            __instance._aButton = false;
+            __instance._aButtonUp = false;
         }
-
-        return true;
-    }
-
-    [HarmonyPrefix]
-    [HarmonyPatch(nameof(OpenController.GetAButton))]
-    public static bool GetAButton(OpenController __instance)
-    {
-        // Lock jump charging
-        if (LockedMovement(__instance))
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    [HarmonyPrefix]
-    [HarmonyPatch(nameof(OpenController.GetAButtonUp))]
-    public static bool GetAButtonUp(OpenController __instance)
-    {
-        // Lock jump releasing
-        if (LockedMovement(__instance))
-        {
-            return false;
-        }
-
-        return true;
     }
 }

@@ -152,7 +152,13 @@ public static class ModIODownloader
 
         // Send a request to mod.io for the headers
         // We don't want to read the whole content yet
-        using HttpClient client = new();
+        HttpClientHandler handler = new HttpClientHandler()
+        {
+            ClientCertificateOptions = ClientCertificateOption.Manual,
+            ServerCertificateCustomValidationCallback = (_, _, _, _) => true
+        };
+
+        using HttpClient client = new(handler);
         client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
         var responseTask = client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
