@@ -10,27 +10,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 34569ddb84e20304981812b1c448d930, type: 3}
-  m_Name: Info Board.sc
+  m_Name: Fusion Menu.sc
   m_EditorClassIdentifier: 
   _barcode:
-    _id: Lakatrazz.FusionContent.Spawnable.InfoBoard
-  _title: Info Board
-  _description: News terminal that pipes the most recent Fusion news into your instance.
+    _id: Lakatrazz.FusionContent.Spawnable.FusionMenu
+  _title: Fusion Menu
+  _description: The menu for interacting with Fusion on the go!
   _unlockable: 0
-  _redacted: 0
+  _redacted: 1
   _tags:
   - Fusion
+  - UI
   _boneTags:
     _tags: []
   _mainAsset:
-    _assetGUID: d83d8915bf1f8e844a31f3db81a580ae
+    _assetGUID: 9797c7c48c0e4114086d24688ebb8f4f
     _editorAssetChanged: 0
   _previewMesh:
-    _assetGUID: 6084f5de170558c48a17b564c5e48d43
+    _assetGUID: 393f64c3f17861b40b4eeeff48b086f0
     _editorAssetChanged: 1
   _customQuality: 0
   _previewMeshQuality: 0.5
   _maxLODLevel: 0
   _colliderBounds:
-    m_Center: {x: 0, y: 1.1417872, z: -0.00000020861626}
-    m_Extent: {x: 0.5051991, y: 1.1339468, z: 0.267407}
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}

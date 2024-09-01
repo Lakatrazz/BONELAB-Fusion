@@ -12,6 +12,8 @@ using Il2CppSLZ.Marrow.Warehouse;
 
 namespace LabFusion.BoneMenu;
 
+using Menu = BoneLib.BoneMenu.Menu;
+
 public static partial class BoneMenuCreator
 {
     public static void RemoveEmptyPage(Page parent, Page child, Element link)

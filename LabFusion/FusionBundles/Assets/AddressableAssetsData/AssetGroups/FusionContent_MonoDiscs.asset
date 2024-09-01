@@ -1,0 +1,166 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: FusionContent_MonoDiscs
+  m_EditorClassIdentifier: 
+  m_GroupName: FusionContent_MonoDiscs
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 2c4a48abf8061544cbd4209e4b83fcba
+  m_SerializeEntries:
+  - m_GUID: 391bcea53f62c9d4983ac21ae088574b
+    m_Address: MonoDisc/Phantasmagorical Appliances
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 739d59fd10b43b24dace7299385d6f7f
+    m_Address: AudioClip/Phantasmagorical Appliances
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a5491b0dbbcbdb0488e0d00b312c3874
+    m_Address: MonoDisc/Appen Beyuge
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7269c1d995d35ae42bde376a0a1c6b02
+    m_Address: AudioClip/Appen Beyuge
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5ff5c6950d9e40849b64e181e47bc842
+    m_Address: MonoDisc/Buggy Physics
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f8094b0c042dd694b8ed5a7fce103018
+    m_Address: AudioClip/Buggy Physics
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6f17f498b8413b64b89046160377011d
+    m_Address: MonoDisc/Sickly Bug Initiative
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 14b94b2344b0df9498de6b138bfafae0
+    m_Address: AudioClip/Sickly Bug Initiative
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 06353090925024f48bb854e58ed12684
+    m_Address: MonoDisc/Smiggles In Despair
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8fc609b419d48834bb7e1c58cc005c20
+    m_Address: AudioClip/Smiggles In Despair
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9cc6b265cb9b1204ab65ccdd755d1307
+    m_Address: MonoDisc/Synthetic Caverns
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 428f2aed77b6cc740ad3873548ccd2b4
+    m_Address: AudioClip/Synthetic Caverns
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 96d3be93ce6f0774aa84df3fdb0e8f67
+    m_Address: MonoDisc/Wacky Willy's Wonderland
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 84e001818c08ae840b815dfb6b302397
+    m_Address: AudioClip/Wacky Willy's Wonderland
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b8b1e8e2bb8d1bb4aa670bbc08a3f783
+    m_Address: MonoDisc/Fistfight Fusion
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 542f57511000087439ba725c022f4926
+    m_Address: AudioClip/Fistfight Fusion
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 317c0fc33c06ee74ab5e2eb557ae1442
+    m_Address: MonoDisc/GeoGrp Fell Down The Stairs
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c47e9bc134e676a41a524a2b99ea3c02
+    m_Address: AudioClip/GeoGrp Fell Down The Stairs
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d32a5b33d675d8c449e061af2e6b9a0e
+    m_Address: MonoDisc/Lava Gang Fails
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 00995302a401a114fb7d186b0a504b64
+    m_Address: AudioClip/Lava Gang Fails
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ee9f095dcbac400498592b3627b960f7
+    m_Address: MonoDisc/Lava Gang Triumphs
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4d83ed6ee27665641be857a623e6eac1
+    m_Address: AudioClip/Lava Gang Triumphs
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3e660a20b56c0bd47a0f856fc039e366
+    m_Address: MonoDisc/Sabrelake Fails
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5a6da1f98fc90b64c9bee7dbfc06f69b
+    m_Address: AudioClip/Sabrelake Fails
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e1c9657b3d244a148b5541b3deb1ca6b
+    m_Address: MonoDisc/Sabrelake Triumphs
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 86014f1fdf315474ca5cf3de3e56254e
+    m_Address: AudioClip/Sabrelake Triumphs
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 778fde2ef685b2a4499998b042feac01
+    m_Address: MonoDisc/Erm...
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 10d560ac5564e72479069f1b825be7e8
+    m_Address: AudioClip/Erm...
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 9feda70c59f9cda489cd3a23e7f14dd9, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 76fed0e829eb3754783a42c9c58aa9ee, type: 2}
+    - {fileID: 11400000, guid: d26bef9648aedce4fbaa41db0b1e2701, type: 2}
+    - {fileID: 11400000, guid: 01199d199aeb8d540948cf081447bba0, type: 2}

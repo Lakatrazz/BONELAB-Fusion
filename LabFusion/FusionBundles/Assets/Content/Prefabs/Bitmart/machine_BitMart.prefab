@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8632461246979918067}
   - component: {fileID: 2780520675025977173}
+  - component: {fileID: 2961816512568672754}
   m_Layer: 0
   m_Name: Mod Birthday
   m_TagString: Untagged
@@ -45,23 +46,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5277745ccc9ce94a841b7e705a19478, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onModBirthday:
+  onModBirthdayHolder: {fileID: 2961816512568672754}
+--- !u!114 &2961816512568672754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 457785114302105346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 289ff940279d54e4e92f632d7d3823dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Event:
     _PersistentCalls:
-    - _Target: {fileID: 559790333346668840}
-      _MethodName: set_clip
-      _PersistentArguments:
-      - _Type: 13
-        _Int: 0
-        _String: UnityEngine.AudioClip, UnityEngine.AudioModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-        _X: 0
-        _Y: 0
-        _Z: 0
-        _W: 0
-        _Object: {fileID: 8300000, guid: cece6209b4f64344390e4cbb1362cb7c, type: 3}
-    - _Target: {fileID: 559790333346668840}
-      _MethodName: Play
-      _PersistentArguments: []
     - _Target: {fileID: 1688590671785286715}
       _MethodName: SetActive
       _PersistentArguments:

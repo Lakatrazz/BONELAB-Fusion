@@ -4,6 +4,8 @@ using UnityEngine;
 
 namespace LabFusion.BoneMenu
 {
+    using Menu = BoneLib.BoneMenu.Menu;
+
     public static partial class BoneMenuCreator
     {
         private static Page _notificationCategory;

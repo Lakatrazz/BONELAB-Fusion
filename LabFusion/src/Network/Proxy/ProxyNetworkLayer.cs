@@ -27,6 +27,8 @@ using LabFusion.SDK.Lobbies;
 
 namespace LabFusion.Network
 {
+    using Menu = BoneLib.BoneMenu.Menu;
+
     public abstract class ProxyNetworkLayer : NetworkLayer
     {
         public abstract uint ApplicationID { get; }

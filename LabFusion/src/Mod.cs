@@ -19,6 +19,7 @@ using LabFusion.Downloading.ModIO;
 using LabFusion.BoneMenu;
 using LabFusion.Downloading;
 using LabFusion.Marrow;
+using LabFusion.Menu;
 
 #if DEBUG
 using LabFusion.Debugging;
@@ -268,6 +269,9 @@ public class FusionMod : MelonMod
         // Force enable radial menu
         RigData.Refs.RigManager.ControllerRig.TryCast<OpenControllerRig>().quickmenuEnabled = true;
         PlayerRefs.Instance.PlayerBodyVitals.quickmenuEnabled = true;
+
+        // Create the Fusion Menu
+        MenuCreator.CreateMenu();
     }
 
     public override void OnUpdate()
