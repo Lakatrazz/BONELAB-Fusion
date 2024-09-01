@@ -20,20 +20,11 @@ namespace LabFusion.Marrow.Integration
 #if MELONLOADER
         public OwnershipEvents(IntPtr intPtr) : base(intPtr) { }
 
-        public Il2CppReferenceField<UltEvent> onOwnershipGained;
+        public Il2CppReferenceField<UltEventHolder> onOwnershipGainedHolder;
 
-        public Il2CppReferenceField<UltEvent> onOwnershipLost;
-
-        private UltEvent _onOwnershipGainedCached = null;
-        private UltEvent _onOwnershipLostCached = null;
+        public Il2CppReferenceField<UltEventHolder> onOwnershipLostHolder;
 
         private bool _isOwnerCached = false;
-
-        private void Awake()
-        {
-            _onOwnershipGainedCached = onOwnershipGained.Get();
-            _onOwnershipLostCached = onOwnershipLost.Get();
-        }
 
         public void OnOwnerChanged(bool owner)
         {
@@ -47,11 +38,11 @@ namespace LabFusion.Marrow.Integration
 
             if (owner)
             {
-                _onOwnershipGainedCached?.Invoke();
+                onOwnershipGainedHolder.Get()?.Invoke();
             }
             else
             {
-                _onOwnershipLostCached?.Invoke();
+                onOwnershipLostHolder.Get()?.Invoke();
             }
         }
 
@@ -60,9 +51,9 @@ namespace LabFusion.Marrow.Integration
             return _isOwnerCached;
         }
 #else
-        public UltEvent onOwnershipGained;
+        public UltEventHolder onOwnershipGainedHolder;
 
-        public UltEvent onOwnershipLost;
+        public UltEventHolder onOwnershipLostHolder;
 
         public bool IsOwner()
         {

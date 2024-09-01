@@ -23,18 +23,12 @@ namespace LabFusion.Marrow.Integration
 #if MELONLOADER
         public ServerEvents(IntPtr intPtr) : base(intPtr) { }
 
-        public Il2CppReferenceField<UltEvent> onServerJoined;
+        public Il2CppReferenceField<UltEventHolder> onServerJoinedHolder;
 
-        public Il2CppReferenceField<UltEvent> onServerLeft;
-
-        private UltEvent _onServerJoinedCached = null;
-        private UltEvent _onServerLeftCached = null;
+        public Il2CppReferenceField<UltEventHolder> onServerLeftHolder;
 
         private void Awake()
         {
-            _onServerJoinedCached = onServerJoined.Get();
-            _onServerLeftCached = onServerLeft.Get();
-
             MultiplayerHooking.OnJoinServer += OnServerJoined;
             MultiplayerHooking.OnStartServer += OnServerJoined;
             MultiplayerHooking.OnDisconnect += OnServerLeft;
@@ -55,12 +49,12 @@ namespace LabFusion.Marrow.Integration
 
         private void OnServerJoined()
         {
-            _onServerJoinedCached?.Invoke();
+            onServerJoinedHolder.Get()?.Invoke();
         }
 
         private void OnServerLeft()
         {
-            _onServerLeftCached?.Invoke();
+            onServerLeftHolder.Get()?.Invoke();
         }
 
         public bool IsHost()
@@ -73,9 +67,9 @@ namespace LabFusion.Marrow.Integration
             return NetworkInfo.HasServer;
         }
 #else
-        public UltEvent onServerJoined;
+        public UltEventHolder onServerJoinedHolder;
 
-        public UltEvent onServerLeft;
+        public UltEventHolder onServerLeftHolder;
 
         public bool IsHost()
         {

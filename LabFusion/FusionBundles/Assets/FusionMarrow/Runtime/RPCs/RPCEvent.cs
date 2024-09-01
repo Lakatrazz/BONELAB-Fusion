@@ -48,24 +48,21 @@ namespace LabFusion.Marrow.Integration
 
         public Il2CppValueField<bool> requiresOwnership;
 
-        public Il2CppReferenceField<UltEvent> onEventReceived;
+        public Il2CppReferenceField<UltEventHolder> onEventReceivedHolder;
 
         private int _targetCached;
         private int _channelCached;
         private bool _requiresOwnershipCached;
-        private UltEvent _onEventReceivedCached;
 
         public int Target => _targetCached;
         public int Channel => _channelCached;
         public bool RequiresOwnership => _requiresOwnershipCached;
-        public UltEvent OnEventReceived => _onEventReceivedCached;
 
         private void Awake()
         {
             _targetCached = target.Get();
             _channelCached = channel.Get();
             _requiresOwnershipCached = requiresOwnership.Get();
-            _onEventReceivedCached = onEventReceived.Get();
 
             var hash = GameObjectHasher.GetHierarchyHash(gameObject);
 
@@ -79,7 +76,7 @@ namespace LabFusion.Marrow.Integration
 
         public void Receive()
         {
-            OnEventReceived?.Invoke();
+            onEventReceivedHolder.Get()?.Invoke();
         }
 
         public bool Invoke()
@@ -93,7 +90,7 @@ namespace LabFusion.Marrow.Integration
 
         public bool requiresOwnership = false;
 
-        public UltEvent onEventReceived;
+        public UltEventHolder onEventReceivedHolder;
 
         public bool Invoke()
         {

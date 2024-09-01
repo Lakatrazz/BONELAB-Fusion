@@ -24,24 +24,17 @@ namespace LabFusion.Marrow.Integration
 #if MELONLOADER
         public CelebrationEvents(IntPtr intPtr) : base(intPtr) { }
 
-        public Il2CppReferenceField<UltEvent> onModBirthday;
-
-        private UltEvent _onModBirthdayCached = null;
-
-        private void Awake()
-        {
-            _onModBirthdayCached = onModBirthday.Get();
-        }
+        public Il2CppReferenceField<UltEventHolder> onModBirthdayHolder;
 
         private void Start()
         {
             if (FusionSpecialDates.GetCurrentDate() == FusionSpecialDates.FusionDate.FUSION_BIRTHDAY)
             {
-                _onModBirthdayCached?.Invoke();
+                onModBirthdayHolder.Get()?.Invoke();
             }
         }
 #else
-        public UltEvent onModBirthday;
+        public UltEventHolder onModBirthdayHolder;
 #endif
     }
 }

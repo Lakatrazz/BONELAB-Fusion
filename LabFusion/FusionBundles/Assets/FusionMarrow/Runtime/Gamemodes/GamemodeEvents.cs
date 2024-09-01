@@ -23,18 +23,12 @@ namespace LabFusion.Marrow.Integration
 #if MELONLOADER
         public GamemodeEvents(IntPtr intPtr) : base(intPtr) { }
 
-        public Il2CppReferenceField<UltEvent> onGamemodeStarted;
+        public Il2CppReferenceField<UltEventHolder> onGamemodeStartedHolder;
 
-        public Il2CppReferenceField<UltEvent> onGamemodeEnded;
-
-        private UltEvent _onGamemodeStartedCached = null;
-        private UltEvent _onGamemodeEndedCached = null;
+        public Il2CppReferenceField<UltEventHolder> onGamemodeEndedHolder;
 
         private void Awake()
         {
-            _onGamemodeStartedCached = onGamemodeStarted.Get();
-            _onGamemodeEndedCached = onGamemodeEnded.Get();
-
             GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
         }
 
@@ -48,17 +42,17 @@ namespace LabFusion.Marrow.Integration
         {
             if (gamemode != null)
             {
-                _onGamemodeStartedCached?.Invoke();
+                onGamemodeStartedHolder.Get()?.Invoke();
             }
             else 
             {
-                _onGamemodeEndedCached?.Invoke();
+                onGamemodeEndedHolder.Get()?.Invoke();
             }
         }
 #else
-        public UltEvent onGamemodeStarted;
+        public UltEventHolder onGamemodeStartedHolder;
 
-        public UltEvent onGamemodeEnded;
+        public UltEventHolder onGamemodeEndedHolder;
 #endif
     }
 }
