@@ -25,6 +25,7 @@
     <Compile Remove="FusionBundles\Assets\Point Items\**" />
     <Compile Remove="FusionBundles\Assets\Scenes\**" />
     <Compile Remove="FusionBundles\Assets\Scripts\**" />
+    <Compile Remove="FusionBundles\Assets\Settings\**" />
     <Compile Remove="FusionBundles\Assets\SLZShaders\**" />
     <Compile Remove="FusionBundles\Assets\TextMesh Pro\**" />
     <Compile Remove="FusionBundles\Assets\XR\**" />
@@ -51,6 +52,7 @@
     <EmbeddedResource Remove="FusionBundles\Assets\Point Items\**" />
     <EmbeddedResource Remove="FusionBundles\Assets\Scenes\**" />
     <EmbeddedResource Remove="FusionBundles\Assets\Scripts\**" />
+    <EmbeddedResource Remove="FusionBundles\Assets\Settings\**" />
     <EmbeddedResource Remove="FusionBundles\Assets\SLZShaders\**" />
     <EmbeddedResource Remove="FusionBundles\Assets\TextMesh Pro\**" />
     <EmbeddedResource Remove="FusionBundles\Assets\XR\**" />
@@ -77,6 +79,7 @@
     <None Remove="FusionBundles\Assets\Point Items\**" />
     <None Remove="FusionBundles\Assets\Scenes\**" />
     <None Remove="FusionBundles\Assets\Scripts\**" />
+    <None Remove="FusionBundles\Assets\Settings\**" />
     <None Remove="FusionBundles\Assets\SLZShaders\**" />
     <None Remove="FusionBundles\Assets\TextMesh Pro\**" />
     <None Remove="FusionBundles\Assets\XR\**" />
@@ -171,6 +174,7 @@
     <None Remove="FusionBundles\Assets\Point Items.meta" />
     <None Remove="FusionBundles\Assets\Scenes.meta" />
     <None Remove="FusionBundles\Assets\Scripts.meta" />
+    <None Remove="FusionBundles\Assets\Settings.meta" />
     <None Remove="FusionBundles\Assets\SLZShaders.meta" />
     <None Remove="FusionBundles\Assets\TextMesh Pro.meta" />
     <None Remove="FusionBundles\Assets\UniversalRenderPipelineGlobalSettings.asset" />
