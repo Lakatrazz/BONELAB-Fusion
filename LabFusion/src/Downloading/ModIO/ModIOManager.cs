@@ -54,7 +54,13 @@ public static class ModIOManager
 
     private static IEnumerator CoGetMod(string url, string token, ModCallback modCallback)
     {
-        using HttpClient client = new();
+        HttpClientHandler handler = new HttpClientHandler()
+        {
+            ClientCertificateOptions = ClientCertificateOption.Manual,
+            ServerCertificateCustomValidationCallback = (_, _, _, _) => true
+        };
+
+        using HttpClient client = new(handler);
         client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
         // Read the mod json
