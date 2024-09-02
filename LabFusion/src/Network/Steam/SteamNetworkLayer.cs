@@ -2,6 +2,10 @@
 
 using BoneLib.BoneMenu;
 
+using UnityEngine;
+
+using Il2CppWebSocketSharp;
+
 using LabFusion.Data;
 using LabFusion.Player;
 using LabFusion.Utilities;
@@ -13,8 +17,6 @@ using Steamworks.Data;
 using Color = UnityEngine.Color;
 
 using MelonLoader;
-
-using System.Windows.Forms;
 
 using LabFusion.Senders;
 using LabFusion.BoneMenu;
@@ -448,7 +450,7 @@ namespace LabFusion.Network
 
         private void OnCopySteamID()
         {
-            Clipboard.SetText(SteamId.Value.ToString());
+            GUIUtility.systemCopyBuffer = SteamId.Value.ToString();
         }
 
         private void OnUpdateCreateServerText()
@@ -478,10 +480,10 @@ namespace LabFusion.Network
 
         private void OnPasteServerID()
         {
-            if (!Clipboard.ContainsText())
+            if (!GUIUtility.systemCopyBuffer.IsNullOrEmpty())
                 return;
 
-            var text = Clipboard.GetText();
+            var text = GUIUtility.systemCopyBuffer;
 
             if (!string.IsNullOrWhiteSpace(text) && ulong.TryParse(text, out var result))
             {
