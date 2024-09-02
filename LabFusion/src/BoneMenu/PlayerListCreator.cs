@@ -10,8 +10,6 @@ using LabFusion.Senders;
 
 using UnityEngine;
 
-using System.Windows.Forms;
-
 namespace LabFusion.BoneMenu;
 
 public static partial class BoneMenuCreator
@@ -165,11 +163,11 @@ public static partial class BoneMenuCreator
 
         category.CreateFunction($"Platform ID: {longId}", Color.yellow, () =>
         {
-            Clipboard.SetText(longId.ToString());
+            GUIUtility.systemCopyBuffer = longId.ToString();
         });
         category.CreateFunction($"Instance ID: {smallId}", Color.yellow, () =>
         {
-            Clipboard.SetText(smallId.ToString());
+            GUIUtility.systemCopyBuffer = smallId.ToString();
         });
 
         // Create VC options
