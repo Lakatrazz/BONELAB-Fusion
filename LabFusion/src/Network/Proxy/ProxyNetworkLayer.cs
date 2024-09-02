@@ -517,9 +517,9 @@ namespace LabFusion.Network
             _publicLobbiesCategory.CreateFunction("Select Refresh to load servers!", Color.yellow, null);
 
             // Steam friends list
-            _friendsCategory = page.CreatePage("Steam Friends", Color.white);
-            _friendsCategory.CreateFunction("Refresh", Color.white, Menu_RefreshFriendLobbies);
-            _friendsCategory.CreateFunction("Select Refresh to load servers!", Color.yellow, null);
+            //_friendsCategory = page.CreatePage("Steam Friends", Color.white);
+            //_friendsCategory.CreateFunction("Refresh", Color.white, Menu_RefreshFriendLobbies);
+            //_friendsCategory.CreateFunction("Select Refresh to load servers!", Color.yellow, null);
         }
 
         private FunctionElement _createServerElement;
