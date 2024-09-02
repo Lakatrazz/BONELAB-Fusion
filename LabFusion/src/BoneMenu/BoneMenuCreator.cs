@@ -192,9 +192,14 @@ public static partial class BoneMenuCreator
 
             ClientSettings.NetworkLayerTitle.Value = NetworkLayer.SupportedLayers[_lastIndex].Title;
         });
+        FunctionElement targetDisplay = targetPanel.CreateFunction($"Target Layer: {ClientSettings.NetworkLayerTitle.Value}", Color.white, () =>
+        {
+            InternalLayerHelpers.UpdateLoadedLayer();
+        });
         ClientSettings.NetworkLayerTitle.OnValueChanged += (v) =>
         {
             targetPanel.Name = $"Target Layer: {v}";
+            targetDisplay.ElementName = $"Target Layer: {v}";
         };
 
         targetPanel.CreateFunction("SET NETWORK LAYER", Color.green, () => InternalLayerHelpers.UpdateLoadedLayer());
