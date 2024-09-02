@@ -75,6 +75,11 @@ public abstract class NetworkLayer
     public virtual IVoiceManager VoiceManager => null;
 
     /// <summary>
+    /// Returns if this NetworkLayer requires valid player IDs. True when it requires a logged in account, such as steam.
+    /// </summary>
+    public virtual bool RequiresValidId => true;
+
+    /// <summary>
     /// Returns true if this NetworkLayer is supported on the current platform.
     /// </summary>
     /// <returns></returns>

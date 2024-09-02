@@ -60,6 +60,13 @@ public static class NetworkInfo
     /// <returns></returns>
     public static bool IsSpoofed(ulong userId)
     {
+        // If the network layer cannot validate the user id, then we can't properly spoof check
+        if (HasLayer && !CurrentNetworkLayer.RequiresValidId)
+        {
+            return false;
+        }
+
+        // If we haven't received any messages, then just assume it isn't spoofed
         if (!LastReceivedUser.HasValue)
         {
             return false;
