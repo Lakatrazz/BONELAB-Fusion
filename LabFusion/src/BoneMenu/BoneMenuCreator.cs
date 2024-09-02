@@ -179,8 +179,10 @@ public static partial class BoneMenuCreator
 
         networkLayerManager.CreateFunction($"Active Layer: {NetworkLayerDeterminer.LoadedTitle}", Color.white, null);
         
-        var targetPanel = networkLayerManager.CreatePage($"Target Layer: {ClientSettings.NetworkLayerTitle.Value}", Color.white);
-        targetPanel.CreateFunction("Cycle", Color.white, () =>
+        var changeLayerCategory = networkLayerManager.CreatePage("Change Layer", Color.white);
+
+        var targetPanel = changeLayerCategory.CreateFunction($"Target Layer: {ClientSettings.NetworkLayerTitle.Value}", Color.white, null);
+        changeLayerCategory.CreateFunction("Cycle", Color.white, () =>
         {
             int count = NetworkLayer.SupportedLayers.Count;
             if (count <= 0)
@@ -192,17 +194,12 @@ public static partial class BoneMenuCreator
 
             ClientSettings.NetworkLayerTitle.Value = NetworkLayer.SupportedLayers[_lastIndex].Title;
         });
-        FunctionElement targetDisplay = targetPanel.CreateFunction($"Target Layer: {ClientSettings.NetworkLayerTitle.Value}", Color.white, () =>
-        {
-            InternalLayerHelpers.UpdateLoadedLayer();
-        });
         ClientSettings.NetworkLayerTitle.OnValueChanged += (v) =>
         {
-            targetPanel.Name = $"Target Layer: {v}";
-            targetDisplay.ElementName = $"Target Layer: {v}";
+            targetPanel.ElementName = $"Target Layer: {v}";
         };
 
-        targetPanel.CreateFunction("SET NETWORK LAYER", Color.green, () => InternalLayerHelpers.UpdateLoadedLayer());
+        changeLayerCategory.CreateFunction("SET NETWORK LAYER", Color.green, () => InternalLayerHelpers.UpdateLoadedLayer());
 
         // Setup the sub pages
         CreateUniversalMenus(_mainPage);
