@@ -76,6 +76,8 @@ namespace LabFusion.Network
             _voiceManager = new UnityVoiceManager();
             _voiceManager.Enable();
 
+            HookSteamEvents();
+
             EventBasedNetListener listener = new();
             client = new NetManager(listener)
             {
@@ -181,8 +183,6 @@ namespace LabFusion.Network
                         SendToProxyServer(writer);
 
                         FusionLogger.Log($"Steamworks initialized with SteamID {SteamId}!");
-
-                        HookSteamEvents();
 
                         _isInitialized = true;
                         break;
