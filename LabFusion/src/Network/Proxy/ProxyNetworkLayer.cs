@@ -76,6 +76,8 @@ namespace LabFusion.Network
             _voiceManager = new UnityVoiceManager();
             _voiceManager.Enable();
 
+            HookSteamEvents();
+
             EventBasedNetListener listener = new();
             client = new NetManager(listener)
             {
@@ -181,8 +183,6 @@ namespace LabFusion.Network
                         SendToProxyServer(writer);
 
                         FusionLogger.Log($"Steamworks initialized with SteamID {SteamId}!");
-
-                        HookSteamEvents();
 
                         _isInitialized = true;
                         break;
@@ -517,9 +517,9 @@ namespace LabFusion.Network
             _publicLobbiesCategory.CreateFunction("Select Refresh to load servers!", Color.yellow, null);
 
             // Steam friends list
-            _friendsCategory = page.CreatePage("Steam Friends", Color.white);
-            _friendsCategory.CreateFunction("Refresh", Color.white, Menu_RefreshFriendLobbies);
-            _friendsCategory.CreateFunction("Select Refresh to load servers!", Color.yellow, null);
+            //_friendsCategory = page.CreatePage("Steam Friends", Color.white);
+            //_friendsCategory.CreateFunction("Refresh", Color.white, Menu_RefreshFriendLobbies);
+            //_friendsCategory.CreateFunction("Select Refresh to load servers!", Color.yellow, null);
         }
 
         private FunctionElement _createServerElement;
