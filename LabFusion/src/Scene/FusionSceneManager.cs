@@ -8,6 +8,7 @@ using LabFusion.Player;
 using LabFusion.Downloading;
 using LabFusion.Preferences.Client;
 using LabFusion.Downloading.ModIO;
+using LabFusion.Data;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
 using Il2CppSLZ.Marrow.Warehouse;
@@ -164,7 +165,7 @@ public static partial class FusionSceneManager
         ModIODownloader.CancelQueue();
 
         // Get the maximum amount of bytes that we download before cancelling, to make sure the level isn't too big
-        long maxBytes = ClientSettings.Downloading.MaxLevelSize.Value * 1000000;
+        long maxBytes = DataConversions.ConvertMegabytesToBytes(ClientSettings.Downloading.MaxLevelSize.Value);
 
         // Request the mod id from the host
         NetworkModRequester.RequestAndInstallMod(new NetworkModRequester.ModInstallInfo()

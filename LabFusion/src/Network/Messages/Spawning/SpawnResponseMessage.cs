@@ -101,7 +101,7 @@ public class SpawnResponseMessage : FusionMessageHandler
                 return;
             }
 
-            long maxBytes = ClientSettings.Downloading.MaxFileSize.Value * 1000000;
+            long maxBytes = DataConversions.ConvertMegabytesToBytes(ClientSettings.Downloading.MaxFileSize.Value);
 
             NetworkModRequester.RequestAndInstallMod(new NetworkModRequester.ModInstallInfo()
             { 

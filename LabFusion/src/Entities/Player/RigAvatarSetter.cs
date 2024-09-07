@@ -69,7 +69,7 @@ public class RigAvatarSetter
             return;
         }
 
-        long maxBytes = ClientSettings.Downloading.MaxFileSize.Value * 1000000;
+        long maxBytes = DataConversions.ConvertMegabytesToBytes(ClientSettings.Downloading.MaxFileSize.Value);
 
         var owner = _entity.OwnerId.SmallId;
 
