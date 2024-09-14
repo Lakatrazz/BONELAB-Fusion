@@ -126,10 +126,6 @@ public static class NativeMessageTag
 
         MineDiveCart = 73,
 
-        // Vote kicking
-        VoteKickRequest = 74,
-        VoteKickResponse = 75,
-
         MagazineClaim = 76,
 
         // Mod downloading

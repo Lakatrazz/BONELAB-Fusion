@@ -216,9 +216,6 @@ public static class InternalServerHelpers
 
             // Permission
             { MetadataHelper.PermissionKey, NetworkInfo.IsServer ? PermissionLevel.OWNER.ToString() : PermissionLevel.DEFAULT.ToString() },
-
-            // Platform
-            { MetadataHelper.PlatformKey, PlatformHelper.GetPlatformName() },
         };
 
         return metadata;

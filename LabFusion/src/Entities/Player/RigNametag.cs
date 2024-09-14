@@ -40,7 +40,6 @@ public class RigNameTag : IHeadUIElement
     }
 
     private string _username = "No Name";
-    private bool _isQuestUser = false;
 
     public int Priority => 0;
 
@@ -67,10 +66,9 @@ public class RigNameTag : IHeadUIElement
 
     public Transform Transform => _nametagTransform;
 
-    public void SetUsername(string username, bool isQuestUser)
+    public void SetUsername(string username)
     {
         _username = username;
-        _isQuestUser = isQuestUser;
 
         UpdateText();
     }
@@ -84,11 +82,6 @@ public class RigNameTag : IHeadUIElement
 
         // Only allow color
         Text.text = _username.RemoveRichTextExceptColor();
-
-        if (_isQuestUser)
-        {
-            Text.text += " <size=60%>Q";
-        }
 
         // Update multiply color value
         Text.color = Color;

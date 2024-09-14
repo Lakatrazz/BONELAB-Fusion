@@ -107,21 +107,6 @@ public static partial class BoneMenuCreator
 
         var serverSettings = ServerSettingsManager.ActiveSettings;
 
-        // Create vote options
-        if (!id.IsOwner && FusionPermissions.HasSufficientPermissions(selfLevel, level))
-        {
-            var votingCategory = category.CreatePage("Voting", Color.white);
-
-            // Vote kick
-            if (serverSettings.VoteKickingEnabled.Value)
-            {
-                votingCategory.CreateFunction("Vote Kick", Color.red, () =>
-                {
-                    PlayerSender.SendVoteKickRequest(id);
-                });
-            }
-        }
-
         // Create moderation options
         // If we are the server then we have full auth. Otherwise, check perm level
         if (!id.IsOwner && (NetworkInfo.IsServer || FusionPermissions.HasHigherPermissions(selfLevel, level)))

@@ -152,16 +152,6 @@ public static class PlayerSender
             throw new ExpectedClientException();
     }
 
-    public static void SendVoteKickRequest(byte target)
-    {
-        using var writer = FusionWriter.Create(VoteKickRequestData.Size);
-        var data = VoteKickRequestData.Create(PlayerIdManager.LocalId, target);
-        writer.Write(data);
-
-        using var message = FusionMessage.Create(NativeMessageTag.VoteKickRequest, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
-    }
-
     public static void SendPlayerAction(PlayerActionType type, byte? otherPlayer = null)
     {
         using var writer = FusionWriter.Create(PlayerRepActionData.Size);

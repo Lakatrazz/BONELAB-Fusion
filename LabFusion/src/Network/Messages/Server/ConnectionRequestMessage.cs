@@ -160,22 +160,6 @@ public class ConnectionRequestMessage : FusionMessageHandler
             return;
         }
 
-        // Check if Quest user
-        if (!ServerSettingsManager.SavedSettings.AllowQuestUsers.Value
-            && data.initialMetadata[MetadataHelper.PlatformKey] == "QUEST")
-        {
-            ConnectionSender.SendConnectionDeny(data.longId, "Quest users are blocked from this server.");
-            return;
-        }
-
-        // Check if PC user
-        if (!ServerSettingsManager.SavedSettings.AllowPCUsers.Value
-            && data.initialMetadata[MetadataHelper.PlatformKey] == "PC")
-        {
-            ConnectionSender.SendConnectionDeny(data.longId, "PC users are blocked from this server.");
-            return;
-        }
-
         // Append metadata with info
         data.initialMetadata[MetadataHelper.PermissionKey] = level.ToString();
 

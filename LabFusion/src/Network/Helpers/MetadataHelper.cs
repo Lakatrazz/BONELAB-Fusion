@@ -13,7 +13,6 @@ public static class MetadataHelper
     public const string NicknameKey = "Nickname";
     public const string LoadingKey = "IsLoading";
     public const string PermissionKey = "PermissionLevel";
-    public const string PlatformKey = "Platform";
 
     public static bool TryGetPermissionLevel(this PlayerId id, out PermissionLevel level)
     {

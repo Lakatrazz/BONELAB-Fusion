@@ -25,16 +25,13 @@ public struct LobbyMetadataInfo
     public bool HasServerOpen;
     public int PlayerCount;
     public PlayerList PlayerList;
-    public bool IsAndroid;
 
     // Lobby settings
     public bool NametagsEnabled;
     public ServerPrivacy Privacy;
     public TimeScaleMode TimeScaleMode;
     public int MaxPlayers;
-    public bool VoicechatEnabled;
-    public bool AllowQuestUsers;
-    public bool AllowPCUsers;
+    public bool VoiceChatEnabled;
 
     // Lobby status
     public string LevelName;
@@ -60,16 +57,13 @@ public struct LobbyMetadataInfo
             HasServerOpen = NetworkInfo.IsServer,
             PlayerCount = PlayerIdManager.PlayerCount,
             PlayerList = playerList,
-            IsAndroid = PlatformHelper.IsAndroid,
 
             // Lobby settings
             NametagsEnabled = ServerSettingsManager.SavedSettings.NametagsEnabled.Value,
             Privacy = ServerSettingsManager.SavedSettings.Privacy.Value,
             TimeScaleMode = ServerSettingsManager.SavedSettings.TimeScaleMode.Value,
             MaxPlayers = ServerSettingsManager.SavedSettings.MaxPlayers.Value,
-            VoicechatEnabled = ServerSettingsManager.SavedSettings.VoiceChatEnabled.Value,
-            AllowQuestUsers = ServerSettingsManager.SavedSettings.AllowQuestUsers.Value,
-            AllowPCUsers = ServerSettingsManager.SavedSettings.AllowPCUsers.Value,
+            VoiceChatEnabled = ServerSettingsManager.SavedSettings.VoiceChatEnabled.Value,
 
             // Lobby status
             LevelName = FusionSceneManager.Title,
@@ -90,16 +84,13 @@ public struct LobbyMetadataInfo
         lobby.SetMetadata(LobbyConstants.HasServerOpenKey, HasServerOpen.ToString());
         lobby.SetMetadata(nameof(PlayerCount), PlayerCount.ToString());
         lobby.SetMetadata(nameof(PlayerList), PlayerList.WriteDocument().ToString());
-        lobby.SetMetadata(nameof(IsAndroid), IsAndroid.ToString());
 
         // Lobby settings
         lobby.SetMetadata(nameof(NametagsEnabled), NametagsEnabled.ToString());
         lobby.SetMetadata(nameof(Privacy), Privacy.ToString());
         lobby.SetMetadata(nameof(TimeScaleMode), TimeScaleMode.ToString());
         lobby.SetMetadata(nameof(MaxPlayers), MaxPlayers.ToString());
-        lobby.SetMetadata(nameof(VoicechatEnabled), VoicechatEnabled.ToString());
-        lobby.SetMetadata(nameof(AllowQuestUsers), AllowQuestUsers.ToString());
-        lobby.SetMetadata(nameof(AllowPCUsers), AllowPCUsers.ToString());
+        lobby.SetMetadata(nameof(VoiceChatEnabled), VoiceChatEnabled.ToString());
 
         // Lobby status
         lobby.SetMetadata(nameof(LevelName), LevelName);
@@ -120,13 +111,10 @@ public struct LobbyMetadataInfo
             LobbyName = lobby.GetMetadata(nameof(LobbyName)),
             LobbyTags = lobby.GetMetadata(nameof(LobbyTags)),
             HasServerOpen = lobby.GetMetadata(LobbyConstants.HasServerOpenKey) == bool.TrueString,
-            IsAndroid = lobby.GetMetadata(nameof(IsAndroid)) == bool.TrueString,
 
             // Lobby settings
             NametagsEnabled = lobby.GetMetadata(nameof(NametagsEnabled)) == bool.TrueString,
-            VoicechatEnabled = lobby.GetMetadata(nameof(VoicechatEnabled)) == bool.TrueString,
-            AllowQuestUsers = lobby.GetMetadata(nameof(AllowQuestUsers)) == bool.TrueString,
-            AllowPCUsers = lobby.GetMetadata(nameof(AllowPCUsers)) == bool.TrueString,
+            VoiceChatEnabled = lobby.GetMetadata(nameof(VoiceChatEnabled)) == bool.TrueString,
 
             // Lobby status
             LevelName = lobby.GetMetadata(nameof(LevelName)),

@@ -79,8 +79,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private bool _isSettingsDirty = false;
     private bool _isServerDirty = false;
 
-    private bool _isQuestUser = false;
-
     public SerializedPlayerSettings playerSettings = null;
 
     public bool HasRig => RigRefs != null && RigRefs.IsValid;
@@ -315,12 +313,10 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             _username = name;
         }
 
-        _isQuestUser = PlayerId.Metadata.GetMetadata(MetadataHelper.PlatformKey) == "QUEST";
-
         // Update nametag
         if (!NetworkEntity.IsOwner)
         {
-            _nametag.SetUsername(Username, _isQuestUser);
+            _nametag.SetUsername(Username);
 
             if (HasRig)
             {

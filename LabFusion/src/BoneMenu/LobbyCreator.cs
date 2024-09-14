@@ -73,14 +73,15 @@ namespace LabFusion.BoneMenu
             Color lobbyColor = Color.white;
             Color versionColor = Color.white;
 
-            if (NetworkVerification.CompareVersion(info.LobbyVersion, FusionMod.Version) != VersionResult.Ok
-                || !NetworkVerification.IsPlatformAllowed(info.AllowQuestUsers, info.AllowPCUsers))
+            if (NetworkVerification.CompareVersion(info.LobbyVersion, FusionMod.Version) != VersionResult.Ok)
             {
                 lobbyColor = Color.red;
                 versionColor = Color.red;
             }
             else if (!info.ClientHasLevel)
+            {
                 lobbyColor = Color.yellow;
+            }
 
             // Create the category and get the default lobby info
             var lobbyCategory = rootCategory.CreatePage($"INTERNAL_LOBBY_{_lobbyIndex++}", lobbyColor);
@@ -125,13 +126,12 @@ namespace LabFusion.BoneMenu
             generalInfoPanel.CreateFunction($"Username: {info.LobbyOwner}", Color.white, null);
 
             if (!string.IsNullOrWhiteSpace(info.LobbyName))
+            {
                 generalInfoPanel.CreateFunction($"Server Name: {info.LobbyName}", Color.white, null);
+            }
 
             // Show their version
             generalInfoPanel.CreateFunction($"Version: {info.LobbyVersion}", versionColor, null);
-
-            // Show their platform
-            generalInfoPanel.CreateFunction($"Platform: {(info.IsAndroid ? "Quest" : "PC")}", Color.white, null);
 
             // Show their active level
             Color levelColor = info.ClientHasLevel ? Color.white : Color.red;
@@ -152,7 +152,7 @@ namespace LabFusion.BoneMenu
             settingsCategory.CreateFunction($"Nametags: {(info.NametagsEnabled ? "Enabled" : "Disabled")}", Color.white, null);
             settingsCategory.CreateFunction($"Server Privacy: {info.Privacy}", Color.white, null);
             settingsCategory.CreateFunction($"Time Scale Mode: {info.TimeScaleMode}", Color.white, null);
-            settingsCategory.CreateFunction($"Voicechat: {(info.VoicechatEnabled ? "Enabled" : "Disabled")}", Color.white, null);
+            settingsCategory.CreateFunction($"Voicechat: {(info.VoiceChatEnabled ? "Enabled" : "Disabled")}", Color.white, null);
         }
     }
 }

@@ -12,10 +12,7 @@ public class ServerSettings
     public IFusionPref<bool> NametagsEnabled;
     public IFusionPref<bool> VoiceChatEnabled;
     public IFusionPref<bool> PlayerConstraintsEnabled;
-    public IFusionPref<bool> VoteKickingEnabled;
     public IFusionPref<ServerPrivacy> Privacy;
-    public IFusionPref<bool> AllowQuestUsers;
-    public IFusionPref<bool> AllowPCUsers;
     public IFusionPref<TimeScaleMode> TimeScaleMode;
     public IFusionPref<byte> MaxPlayers;
 
@@ -48,10 +45,7 @@ public class ServerSettings
             NametagsEnabled = new FusionPref<bool>(category, "Server Nametags Enabled", true, PrefUpdateMode.SERVER_UPDATE),
             VoiceChatEnabled = new FusionPref<bool>(category, "Server Voicechat Enabled", true, PrefUpdateMode.SERVER_UPDATE),
             PlayerConstraintsEnabled = new FusionPref<bool>(category, "Server Player Constraints Enabled", false, PrefUpdateMode.SERVER_UPDATE),
-            VoteKickingEnabled = new FusionPref<bool>(category, "Server Vote Kicking Enabled", true, PrefUpdateMode.SERVER_UPDATE),
             Privacy = new FusionPref<ServerPrivacy>(category, "Server Privacy", ServerPrivacy.PUBLIC, PrefUpdateMode.LOCAL_UPDATE),
-            AllowQuestUsers = new FusionPref<bool>(category, "Allow Quest Users", true, PrefUpdateMode.SERVER_UPDATE),
-            AllowPCUsers = new FusionPref<bool>(category, "Allow PC Users", true, PrefUpdateMode.SERVER_UPDATE),
             TimeScaleMode = new FusionPref<TimeScaleMode>(category, "Time Scale Mode", Senders.TimeScaleMode.LOW_GRAVITY, PrefUpdateMode.SERVER_UPDATE),
             MaxPlayers = new FusionPref<byte>(category, "Max Players", 10, PrefUpdateMode.SERVER_UPDATE),
 

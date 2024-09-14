@@ -94,8 +94,6 @@ public class FusionMod : MelonMod
         ModuleHandler.Internal_HookAssemblies();
         GamemodeRegistration.Internal_HookAssemblies();
         PointItemManager.HookEvents();
-
-        VoteKickHelper.Internal_OnInitializeMelon();
     }
 
     public override void OnInitializeMelon()
@@ -202,8 +200,6 @@ public class FusionMod : MelonMod
     {
         // Cleanup networking
         InternalLayerHelpers.OnCleanupLayer();
-
-        VoteKickHelper.Internal_OnDeinitializeMelon();
 
         // Backup files
         FusionFileLoader.OnDeinitializeMelon();

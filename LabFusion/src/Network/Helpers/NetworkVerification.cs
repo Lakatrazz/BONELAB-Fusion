@@ -1,5 +1,4 @@
 ﻿using LabFusion.Preferences;
-using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
@@ -56,18 +55,5 @@ public static class NetworkVerification
             case ServerPrivacy.FRIENDS_ONLY:
                 return NetworkHelper.IsFriend(userId);
         }
-    }
-
-    public static bool IsPlatformAllowed(bool allowQuest, bool allowPC)
-    {
-        bool onQuest = PlatformHelper.IsAndroid;
-
-        if (!allowQuest && onQuest)
-            return false;
-
-        if (!allowPC && !onQuest)
-            return false;
-
-        return true;
     }
 }

@@ -17,7 +17,6 @@ public class SerializedServerSettings : IFusionSerializable
         writer.Write(settings.NametagsEnabled.Value);
         writer.Write(settings.VoiceChatEnabled.Value);
         writer.Write(settings.PlayerConstraintsEnabled.Value);
-        writer.Write(settings.VoteKickingEnabled.Value);
         writer.Write((byte)settings.Privacy.Value);
         writer.Write((byte)settings.TimeScaleMode.Value);
         writer.Write(settings.MaxPlayers.Value);
@@ -46,7 +45,6 @@ public class SerializedServerSettings : IFusionSerializable
             NametagsEnabled = new ReadOnlyPref<bool>(reader.ReadBoolean()),
             VoiceChatEnabled = new ReadOnlyPref<bool>(reader.ReadBoolean()),
             PlayerConstraintsEnabled = new ReadOnlyPref<bool>(reader.ReadBoolean()),
-            VoteKickingEnabled = new ReadOnlyPref<bool>(reader.ReadBoolean()),
             Privacy = new ReadOnlyPref<ServerPrivacy>((ServerPrivacy)reader.ReadByte()),
             TimeScaleMode = new ReadOnlyPref<TimeScaleMode>((TimeScaleMode)reader.ReadByte()),
             MaxPlayers = new ReadOnlyPref<byte>(reader.ReadByte()),
