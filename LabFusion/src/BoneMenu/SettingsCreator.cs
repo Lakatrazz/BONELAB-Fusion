@@ -98,12 +98,6 @@ public static partial class BoneMenuCreator
 
     private static void CreateServerSettingsMenu(Page page)
     {
-        // Cheat detection
-        var cheatsCategory = page.CreatePage("Cheat Detection", Color.white);
-        var statChangerSubPanel = cheatsCategory.CreatePage("Stat Changers", Color.white);
-        CreateEnumPreference(statChangerSubPanel, "Stat Changers Allowed", ServerSettingsManager.SavedSettings.StatChangersAllowed);
-        CreateFloatPreference(statChangerSubPanel, "Stat Changer Leeway", 1f, 0f, 10f, ServerSettingsManager.SavedSettings.StatChangerLeeway);
-
         // Server display
         var displaySettingsCategory = page.CreatePage("Display Settings", Color.white);
         CreateStringPreference(displaySettingsCategory, "Server Name", ServerSettingsManager.SavedSettings.ServerName);

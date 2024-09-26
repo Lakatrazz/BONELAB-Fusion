@@ -23,10 +23,6 @@ public class ServerSettings
     // Mortality
     public IFusionPref<bool> ServerMortality;
 
-    // Cheat detection
-    public IFusionPref<PermissionLevel> StatChangersAllowed;
-    public IFusionPref<float> StatChangerLeeway;
-
     // Permissions
     public IFusionPref<PermissionLevel> DevToolsAllowed;
     public IFusionPref<PermissionLevel> ConstrainerAllowed;
@@ -55,10 +51,6 @@ public class ServerSettings
 
             // Mortality
             ServerMortality = new FusionPref<bool>(category, "Server Mortality", true, PrefUpdateMode.SERVER_UPDATE),
-
-            // Cheat detection
-            StatChangersAllowed = new FusionPref<PermissionLevel>(category, "Stat Changers Allowed", PermissionLevel.OPERATOR, PrefUpdateMode.SERVER_UPDATE),
-            StatChangerLeeway = new FusionPref<float>(category, "Stat Changer Leeway", 0f, PrefUpdateMode.SERVER_UPDATE),
 
             // Server permissions
             DevToolsAllowed = new FusionPref<PermissionLevel>(category, "Dev Tools Allowed", PermissionLevel.DEFAULT, PrefUpdateMode.SERVER_UPDATE),
