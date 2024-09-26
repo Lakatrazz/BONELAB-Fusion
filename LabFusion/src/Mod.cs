@@ -133,9 +133,6 @@ public class FusionMod : MelonMod
         };
         AssetWarehouse.OnReady(onReady);
 
-        // Patch manual HarmonyPatches
-        ManualPatcher.PatchAll(HarmonyInstance);
-
         // Create prefs
         FusionPreferences.OnInitializePreferences();
 

@@ -52,7 +52,7 @@ public static class NativeMessageTag
 
         SimpleGripEvent = 31,
 
-        ObjectDestructableDestroy = 32,
+        ObjectDestructibleDestroy = 32,
 
         ArenaTransition = 33,
         ChallengeSelect = 34,
@@ -61,8 +61,6 @@ public static class NativeMessageTag
 
         DescentNoose = 37,
         DescentElevator = 38,
-
-        FunicularControllerEvent = 39,
 
         MagmaGateEvent = 40,
 
@@ -117,8 +115,6 @@ public static class NativeMessageTag
         PermissionCommandRequest = 68,
 
         PlayerRepTeleport = 69,
-
-        ZoneEncounterEvent = 70,
 
         HolodeckEvent = 71,
 
