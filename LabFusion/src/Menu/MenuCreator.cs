@@ -143,8 +143,9 @@ public static class MenuCreator
         // Apply resources contained in the menu
         ApplyMenuResources(menuTransform.Find("Resources"));
 
-        // Finally, populate the functions for all of the pages
+        // Finally, populate the functions for all of the elements
         MenuPageHelper.PopulatePages(menuGameObject);
+        MenuToolbarHelper.PopulateToolbar(menuTransform.Find("Popups/grid_Toolbar").gameObject);
     }
 
     private static void ApplyMenuResources(Transform resourcesTransform)

@@ -41,26 +41,26 @@ namespace LabFusion.Marrow.Proxies
 
         public void NextValue() 
         {
-            Value += Increment;
+            var newValue = Value + Increment;
 
-            if (Value > MaxValue)
+            if (newValue > MaxValue)
             {
-                Value = MaxValue;
+                newValue = MaxValue;
             }
 
-            UpdateSettings();
+            Value = newValue;
         }
 
         public void PreviousValue()
         {
-            Value -= Increment;
+            var newValue = Value - Increment;
 
-            if (Value < MinValue)
+            if (newValue < MinValue)
             {
-                Value = MinValue;
+                newValue = MinValue;
             }
 
-            UpdateSettings();
+            Value = newValue;
         }
 
         public override void UpdateText()

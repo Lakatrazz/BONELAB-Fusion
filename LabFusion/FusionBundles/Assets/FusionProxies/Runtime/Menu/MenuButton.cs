@@ -43,7 +43,12 @@ namespace LabFusion.Marrow.Proxies
 
         protected virtual void Awake()
         {
-            _text = transform.Find("text").GetComponent<TMP_Text>();
+            var textTransform = transform.Find("text");
+
+            if (textTransform != null)
+            {
+                _text = textTransform.GetComponent<TMP_Text>();
+            }
 
             UpdateSettings();
         }

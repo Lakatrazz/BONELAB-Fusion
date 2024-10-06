@@ -135,6 +135,7 @@
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Machines\BitMart.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Machines\InfoBoard.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\BoolButton.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\FloatButton.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\FunctionButton.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\IntButton.cs.meta" />
