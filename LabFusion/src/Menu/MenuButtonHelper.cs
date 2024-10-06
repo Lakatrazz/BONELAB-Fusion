@@ -12,7 +12,7 @@ namespace LabFusion.Menu;
 
 public static class MenuButtonHelper
 {
-    public static void SetBoolPref(BoolButton button, FusionPref<bool> pref, Action<bool> onValueChanged = null)
+    public static void SetBoolPref(BoolElement button, FusionPref<bool> pref, Action<bool> onValueChanged = null)
     {
         button.Value = pref.Value;
 
@@ -39,7 +39,7 @@ public static class MenuButtonHelper
         };
     }
 
-    public static void SetStringPref(StringButton button, FusionPref<string> pref, Action<string> onValueChanged = null)
+    public static void SetStringPref(StringElement button, FusionPref<string> pref, Action<string> onValueChanged = null)
     {
         button.Value = pref.Value;
 

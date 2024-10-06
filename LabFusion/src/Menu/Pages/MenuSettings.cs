@@ -1,4 +1,5 @@
 ﻿using LabFusion.Marrow.Proxies;
+using LabFusion.Network;
 
 using UnityEngine;
 
@@ -8,18 +9,19 @@ public static class MenuSettings
 {
     public static void PopulateSettings(GameObject settingsPage)
     {
-        var root = settingsPage.GetComponentInChildren<MenuGroup>();
+        var root = settingsPage.GetComponentInChildren<GroupElement>();
 
         // General settings
-        var generalSettingsGroup = root.AddGroup("General Settings");
+        var generalSettingsGroup = root.AddElement<GroupElement>("General Settings");
 
-        generalSettingsGroup.AddInt("Max Players", 10, 1, 1, 255);
-        generalSettingsGroup.AddBool("Nametags", true);
-        generalSettingsGroup.AddBool("Voice Chat", true);
+        generalSettingsGroup.AddElement<IntElement>("Max Players");
+        generalSettingsGroup.AddElement<EnumElement>("Server Privacy").EnumType = typeof(ServerPrivacy);
+        generalSettingsGroup.AddElement<BoolElement>("Nametags");
+        generalSettingsGroup.AddElement<BoolElement>("Voice Chat");
 
         // Gameplay settings
-        var gameplaySettingsGroup = root.AddGroup("Gameplay Settings");
+        var gameplaySettingsGroup = root.AddElement<GroupElement>("Gameplay Settings");
 
-        gameplaySettingsGroup.AddBool("Server Mortality", true);
+        gameplaySettingsGroup.AddElement<BoolElement>("Server Mortality");
     }
 }

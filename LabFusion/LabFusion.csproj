@@ -138,6 +138,16 @@
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\BoolButton.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\ButtonGroup.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\DropdownButton.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\BoolElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\DropdownElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\EnumElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\FloatElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\FunctionElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\GroupElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\IntElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\MenuElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\StringElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\FloatButton.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\FunctionButton.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\HoldButton.cs.meta" />

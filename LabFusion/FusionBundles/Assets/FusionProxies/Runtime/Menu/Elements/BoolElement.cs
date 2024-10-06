@@ -9,10 +9,10 @@ namespace LabFusion.Marrow.Proxies
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #endif
-    public class BoolButton : MenuButton
+    public class BoolElement : MenuElement
     {
 #if MELONLOADER
-        public BoolButton(IntPtr intPtr) : base(intPtr) { }
+        public BoolElement(IntPtr intPtr) : base(intPtr) { }
 
         private bool _value = false;
         public bool Value

@@ -7,12 +7,12 @@ namespace LabFusion.Marrow.Proxies
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #endif
-    public class FunctionButton : MenuButton
+    public class FunctionElement : MenuElement
     {
 #if MELONLOADER
         public Action OnPressed;
 
-        public FunctionButton(IntPtr intPtr) : base(intPtr) { }
+        public FunctionElement(IntPtr intPtr) : base(intPtr) { }
 
         public void Press()
         {

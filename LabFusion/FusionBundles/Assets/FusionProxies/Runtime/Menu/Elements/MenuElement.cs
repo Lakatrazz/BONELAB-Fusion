@@ -14,10 +14,10 @@ namespace LabFusion.Marrow.Proxies
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #endif
-    public class MenuButton : MonoBehaviour
+    public class MenuElement : MonoBehaviour
     {
 #if MELONLOADER
-        public MenuButton(IntPtr intPtr) : base(intPtr) { }
+        public MenuElement(IntPtr intPtr) : base(intPtr) { }
 
         private string _title = "Button";
 

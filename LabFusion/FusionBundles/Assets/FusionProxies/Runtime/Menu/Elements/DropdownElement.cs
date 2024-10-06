@@ -12,10 +12,10 @@ namespace LabFusion.Marrow.Proxies
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #endif
-    public class DropdownButton : MenuGroup
+    public class DropdownElement : GroupElement
     {
 #if MELONLOADER
-        public DropdownButton(IntPtr intPtr) : base(intPtr) { }
+        public DropdownElement(IntPtr intPtr) : base(intPtr) { }
         
         private bool _expanded = false;
         public bool Expanded => _expanded;
@@ -55,16 +55,16 @@ namespace LabFusion.Marrow.Proxies
             }
         }
 
-        protected override void OnElementAdded(MenuButton element)
+        protected override void OnElementAdded(MenuElement element)
         {
             element.gameObject.SetActive(Expanded);
         }
 
         public void Expand()
         {
-            foreach (var button in Buttons)
+            foreach (var element in Elements)
             {
-                button.gameObject.SetActive(true);
+                element.gameObject.SetActive(true);
             }
 
             _expanded = true;
@@ -77,9 +77,9 @@ namespace LabFusion.Marrow.Proxies
 
         public void Collapse()
         {
-            foreach (var button in Buttons)
+            foreach (var element in Elements)
             {
-                button.gameObject.SetActive(false);
+                element.gameObject.SetActive(false);
             }
 
             _expanded = false;

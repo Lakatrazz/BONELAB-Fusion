@@ -21,7 +21,7 @@ public static class MenuKeyboardHelper
         }
     }
 
-    public static void AssignKeyboardToButton(StringButton button)
+    public static void AssignKeyboardToButton(StringElement button)
     {
         var popups = MenuCreator.MenuPopups;
 

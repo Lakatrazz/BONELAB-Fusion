@@ -46,7 +46,7 @@ public static class MenuLocation
         // No Server subpage
         var noServerPage = locationPage.transform.Find("subPage_NoServer");
 
-        var createServerButton = noServerPage.Find("button_CreateServer").GetComponent<FunctionButton>();
+        var createServerButton = noServerPage.Find("button_CreateServer").GetComponent<FunctionElement>();
 
         createServerButton.Title = "Create Server";
 
@@ -55,7 +55,7 @@ public static class MenuLocation
         // Server subpage
         var serverPage = locationPage.transform.Find("subPage_Server");
 
-        var disconnectButton = serverPage.Find("button_Disconnect").GetComponent<FunctionButton>();
+        var disconnectButton = serverPage.Find("button_Disconnect").GetComponent<FunctionElement>();
 
         disconnectButton.Title = "Disconnect";
 
