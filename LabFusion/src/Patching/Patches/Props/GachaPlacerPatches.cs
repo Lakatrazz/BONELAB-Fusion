@@ -28,8 +28,13 @@ public static class GachaPlacerPatches
             return true;
         }
 
-        // If we're in a server, make sure the capsule always spawns
-        __instance._crateSpawner.SpawnSpawnable();
+        // If we're in a server, make sure the capsule always spawns unless its manual mode
+        var crateSpawner = __instance._crateSpawner;
+
+        if (!crateSpawner.manualMode)
+        {
+            crateSpawner.SpawnSpawnable();
+        }
 
         return false;
     }
