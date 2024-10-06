@@ -1,4 +1,6 @@
 #if MELONLOADER
+using Il2CppInterop.Runtime.Attributes;
+
 using MelonLoader;
 #endif
 
@@ -72,6 +74,8 @@ namespace LabFusion.Marrow.Proxies
             }
         }
 
+        // This must be hidden to prevent crashes
+        [HideFromIl2Cpp]
         public void SelectSubPage(MenuPage page)
         {
             // Hide the last page
