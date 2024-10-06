@@ -13,5 +13,6 @@ public static class MenuPageHelper
     {
         MenuProfile.PopulateProfile(root.transform.Find("page_Profile").gameObject);
         MenuLocation.PopulateLocation(root.transform.Find("page_Location").gameObject);
+        MenuSettings.PopulateSettings(root.transform.Find("page_Settings").gameObject);
     }
 }

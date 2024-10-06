@@ -23,8 +23,6 @@ namespace LabFusion.Marrow.Proxies
         private void Awake()
         {
             GetSubPages();
-
-            ResetPages();
         }
 
         private void GetSubPages()

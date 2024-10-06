@@ -35,7 +35,7 @@ namespace LabFusion.Marrow.Proxies
             }
         }
 
-        public TMP_Text Text => _text;
+        public TMP_Text Text { get { return _text; } set { _text = value; } }
 
         private TMP_Text _text = null;
 
@@ -49,11 +49,14 @@ namespace LabFusion.Marrow.Proxies
             {
                 _text = textTransform.GetComponent<TMP_Text>();
             }
+        }
 
+        protected virtual void OnEnable()
+        {
             UpdateSettings();
         }
 
-        private void OnDestroy()
+        protected virtual void OnDestroy()
         {
             OnDestroyed?.Invoke();
             OnDestroyed = null;

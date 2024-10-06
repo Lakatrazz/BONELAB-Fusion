@@ -53,8 +53,6 @@ namespace LabFusion.Marrow.Proxies
             {
                 _trueObject = trueTransform.gameObject;
             }
-
-            UpdateSettings();
         }
 
         public void Toggle() 

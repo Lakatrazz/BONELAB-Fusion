@@ -6,45 +6,44 @@ using LabFusion.Syncables;
 
 using UnityEngine;
 
-namespace LabFusion.Utilities
+namespace LabFusion.Utilities;
+
+public static class ImpactUtilities
 {
-    public static class ImpactUtilities
+    public static void OnHitRigidbody(Rigidbody rb)
     {
-        public static void OnHitRigidbody(Rigidbody rb)
+        var go = rb.gameObject;
+
+        var marrowBody = MarrowBody.Cache.Get(go);
+
+        if (marrowBody == null)
         {
-            var go = rb.gameObject;
+            return;
+        }
 
-            var marrowBody = MarrowBody.Cache.Get(go);
+        // Check if the body already has an entity attached
+        if (MarrowBodyExtender.Cache.TryGet(marrowBody, out var entity))
+        {
+            var gripExtender = entity.GetExtender<GripExtender>();
 
-            if (marrowBody == null)
+            if (gripExtender != null && gripExtender.CheckHeld())
             {
                 return;
             }
 
-            // Check if the body already has an entity attached
-            if (MarrowBodyExtender.Cache.TryGet(marrowBody, out var entity))
+            // Transfer ownership
+            NetworkEntityManager.TakeOwnership(entity);
+        }
+        // Create a new network entity
+        else
+        {
+            // Check the blacklist
+            if (!go.IsSyncWhitelisted())
             {
-                var gripExtender = entity.GetExtender<GripExtender>();
-
-                if (gripExtender != null && gripExtender.CheckHeld())
-                {
-                    return;
-                }
-
-                // Transfer ownership
-                NetworkEntityManager.TakeOwnership(entity);
+                return;
             }
-            // Create a new network entity
-            else
-            {
-                // Check the blacklist
-                if (!go.IsSyncWhitelisted())
-                {
-                    return;
-                }
 
-                DelayUtilities.Delay(() => { PropSender.SendPropCreation(marrowBody.Entity); }, 4);
-            }
+            DelayUtilities.Delay(() => { PropSender.SendPropCreation(marrowBody.Entity); }, 4);
         }
     }
 }
