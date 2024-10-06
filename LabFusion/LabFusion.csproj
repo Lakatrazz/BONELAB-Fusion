@@ -127,10 +127,24 @@
     <None Remove="FusionBundles\Assets\FusionMarrow.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Keyboard.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Keyboard\Keyboard.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Keyboard\KeyboardButton.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Machines.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Machines\AchievementBoard.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Machines\BitMart.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Machines\InfoBoard.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\FloatButton.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\FunctionButton.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\IntButton.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\MenuButton.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\MenuPage.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Popups.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Popups\MenuPopups.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Popups\MenuToolbar.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\PreferencesPanelProxy.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\StringButton.cs.meta" />
     <None Remove="FusionBundles\Assets\marrow-integration.meta" />
     <None Remove="FusionBundles\Assets\marrow-integration\Editor.meta" />
     <None Remove="FusionBundles\Assets\marrow-integration\Runtime.meta" />
@@ -187,6 +201,7 @@
     <None Remove="FusionHelper\steam_api64.dll" />
     <None Remove="src\Downloading\ModIO\ModReferences.cs~RF2566c200.TMP" />
     <None Remove="src\Marrow\Audio\AudioReference.cs~RF202ddfa1.TMP" />
+    <None Remove="src\Menu\MenuPageHelper.cs~RF7c939358.TMP" />
     <None Remove="src\SDK\Gamemodes\Music\MusicPlaylist.cs~RF2046160e.TMP" />
   </ItemGroup>
 
@@ -278,9 +293,6 @@
     </Reference>
     <Reference Include="Il2CppURPUnsafe">
       <HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\Il2CppURPUnsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="Il2CppWave.OpenXR">
-      <HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\Il2CppWave.OpenXR.dll</HintPath>
     </Reference>
     <Reference Include="Il2Cppwebsocket-sharp">
       <HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\Il2Cppwebsocket-sharp.dll</HintPath>

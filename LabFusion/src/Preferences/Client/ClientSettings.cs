@@ -21,6 +21,9 @@ public struct ClientSettings
     public static FusionPref<string> Nickname { get; internal set; }
     public static FusionPref<NicknameVisibility> NicknameVisibility { get; internal set; }
 
+    // Description settings
+    public static FusionPref<string> Description { get; internal set; }
+
     public static VoiceChatSettings VoiceChat { get; private set; }
 
     // Gamemode settings
@@ -41,6 +44,9 @@ public struct ClientSettings
         // Nickname
         Nickname = new FusionPref<string>(category, "Nickname", string.Empty, PrefUpdateMode.IGNORE);
         NicknameVisibility = new FusionPref<NicknameVisibility>(category, "Nickname Visibility", Senders.NicknameVisibility.SHOW_WITH_PREFIX, PrefUpdateMode.LOCAL_UPDATE);
+
+        // Description
+        Description = new FusionPref<string>(category, "Description", string.Empty, PrefUpdateMode.IGNORE);
 
         VoiceChat = new VoiceChatSettings();
         VoiceChat.CreatePrefs(category);
