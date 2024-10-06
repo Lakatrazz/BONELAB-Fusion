@@ -136,6 +136,8 @@ public class FusionMod : MelonMod
         // Create prefs
         FusionPreferences.OnInitializePreferences();
 
+        MenuCreator.OnInitializeMelon();
+
         // Initialize level loading
         FusionSceneManager.Internal_OnInitializeMelon();
 

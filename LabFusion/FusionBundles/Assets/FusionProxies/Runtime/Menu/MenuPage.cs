@@ -18,9 +18,13 @@ namespace LabFusion.Marrow.Proxies
 
         private List<MenuPage> _subPages = null;
 
+        public int DefaultPageIndex { get; set; } = 0;
+
         private void Awake()
         {
             GetSubPages();
+
+            ResetPages();
         }
 
         private void GetSubPages()
@@ -40,11 +44,16 @@ namespace LabFusion.Marrow.Proxies
             }
         }
 
-        private void OnEnable()
+        private void ResetPages()
         {
             HideSubPages();
 
-            SelectSubPage(0);
+            SelectSubPage(DefaultPageIndex);
+        }
+
+        private void OnEnable()
+        {
+            ResetPages();
         }
 
         public void ShowPage()
@@ -67,6 +76,12 @@ namespace LabFusion.Marrow.Proxies
 
         public void SelectSubPage(int index)
         {
+            // Make sure we have the pages referenced
+            if (_subPages == null)
+            {
+                return;
+            }
+
             // Hide the last page
             if (CurrentPage != null)
             {

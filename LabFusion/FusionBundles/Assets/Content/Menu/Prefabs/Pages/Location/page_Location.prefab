@@ -1,5 +1,102 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &2834016790154090307
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 8676189951453056745}
+    m_Modifications:
+    - target: {fileID: 2221665339445809768, guid: 7c05cfe0c391718449f6016bb0d94dab, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221665339445809768, guid: 7c05cfe0c391718449f6016bb0d94dab, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221665339445809768, guid: 7c05cfe0c391718449f6016bb0d94dab, type: 3}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221665339445809768, guid: 7c05cfe0c391718449f6016bb0d94dab, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221665339445809768, guid: 7c05cfe0c391718449f6016bb0d94dab, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221665339445809768, guid: 7c05cfe0c391718449f6016bb0d94dab, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221665339445809768, guid: 7c05cfe0c391718449f6016bb0d94dab, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221665339445809768, guid: 7c05cfe0c391718449f6016bb0d94dab, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 800
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221665339445809768, guid: 7c05cfe0c391718449f6016bb0d94dab, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 800
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221665339445809768, guid: 7c05cfe0c391718449f6016bb0d94dab, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221665339445809768, guid: 7c05cfe0c391718449f6016bb0d94dab, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221665339445809768, guid: 7c05cfe0c391718449f6016bb0d94dab, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221665339445809768, guid: 7c05cfe0c391718449f6016bb0d94dab, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221665339445809768, guid: 7c05cfe0c391718449f6016bb0d94dab, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221665339445809768, guid: 7c05cfe0c391718449f6016bb0d94dab, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221665339445809768, guid: 7c05cfe0c391718449f6016bb0d94dab, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221665339445809768, guid: 7c05cfe0c391718449f6016bb0d94dab, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221665339445809768, guid: 7c05cfe0c391718449f6016bb0d94dab, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221665339445809768, guid: 7c05cfe0c391718449f6016bb0d94dab, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221665339445809768, guid: 7c05cfe0c391718449f6016bb0d94dab, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2221665339445809768, guid: 7c05cfe0c391718449f6016bb0d94dab, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3930216105919132376, guid: 7c05cfe0c391718449f6016bb0d94dab, type: 3}
+      propertyPath: m_Name
+      value: subPage_Server
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 7c05cfe0c391718449f6016bb0d94dab, type: 3}
 --- !u!1001 &3203487455016201208
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -105,6 +202,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e0d7c6fb9d9610d49aac588cdee5249b, type: 3}
+--- !u!1 &4963598845260968917 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7536540913996699693, guid: e0d7c6fb9d9610d49aac588cdee5249b, type: 3}
+  m_PrefabInstance: {fileID: 3203487455016201208}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2344416342510274412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4963598845260968917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0cdf1e0a91276c408fa9aa90ee50501, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &3432220742420132428
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -414,14 +528,6 @@ PrefabInstance:
     - target: {fileID: 521407766513075453, guid: fa7d7f475a3a77640afa14f53779094f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1748862936451294083, guid: fa7d7f475a3a77640afa14f53779094f, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 430
-      objectReference: {fileID: 0}
-    - target: {fileID: 1748862936451294083, guid: fa7d7f475a3a77640afa14f53779094f, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 640
       objectReference: {fileID: 0}
     - target: {fileID: 3414423386188112973, guid: fa7d7f475a3a77640afa14f53779094f, type: 3}
       propertyPath: m_Name

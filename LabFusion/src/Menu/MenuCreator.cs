@@ -24,6 +24,11 @@ public static class MenuCreator
     public static MenuPopups MenuPopups => _menuPopups;
     private static MenuPopups _menuPopups = null;
 
+    public static void OnInitializeMelon()
+    {
+        MenuPageHelper.OnInitializeMelon();
+    }
+
     public static void CreateMenu()
     {
         CreateMenuButton();

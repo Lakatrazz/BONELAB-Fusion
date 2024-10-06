@@ -138,6 +138,8 @@
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\FloatButton.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\FunctionButton.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\IntButton.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Labels.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Labels\LevelNameLabel.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\MenuButton.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\MenuPage.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Popups.meta" />
