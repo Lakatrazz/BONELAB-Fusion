@@ -72,6 +72,20 @@ namespace LabFusion.Marrow.Proxies
             }
         }
 
+        public void SelectSubPage(MenuPage page)
+        {
+            // Hide the last page
+            if (CurrentPage != null)
+            {
+                CurrentPage.HidePage();
+                CurrentPage = null;
+            }
+
+            // Show the new page
+            CurrentPage = page;
+            CurrentPage.ShowPage();
+        }
+
         public void SelectSubPage(int index)
         {
             // Make sure we have the pages referenced
@@ -80,18 +94,10 @@ namespace LabFusion.Marrow.Proxies
                 return;
             }
 
-            // Hide the last page
-            if (CurrentPage != null)
-            {
-                CurrentPage.HidePage();
-                CurrentPage = null;
-            }
-
             // Select a new page
             if (_subPages.Count > 0 && _subPages.Count > index)
             {
-                CurrentPage = _subPages[index];
-                CurrentPage.ShowPage();
+                SelectSubPage(_subPages[index]);
             }
         }
 #else
