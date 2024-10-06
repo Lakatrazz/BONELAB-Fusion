@@ -96,5 +96,7 @@ public static class MenuButtonHelper
 
         hoverClick.feedback_tactile = tacticle;
         hoverClick.feedback_audio = audio;
+
+        hoverClick.confirmer = true;
     }
 }
