@@ -1,6 +1,7 @@
 ﻿using LabFusion.Marrow.Proxies;
 using LabFusion.Preferences;
-using static Il2CppSystem.Linq.Expressions.Interpreter.NullableMethodCallInstruction;
+
+using UnityEngine;
 
 namespace LabFusion.Menu;
 
@@ -164,6 +165,13 @@ public static class MenuChaining
         return element;
     }
 
+    public static FunctionElement Do(this FunctionElement element, Action onPressed)
+    {
+        element.OnPressed += onPressed;
+
+        return element;
+    }
+
     public static IntElement WithLimits(this IntElement element, int minValue, int maxValue) 
     {
         element.MinValue = minValue;
@@ -190,6 +198,20 @@ public static class MenuChaining
     public static FloatElement WithIncrement(this FloatElement element, float increment)
     {
         element.Increment = increment;
+
+        return element;
+    }
+
+    public static TElement WithTitle<TElement>(this TElement element, string title) where TElement : MenuElement
+    {
+        element.Title = title;
+
+        return element;
+    }
+
+    public static TElement WithColor<TElement>(this TElement element, Color color) where TElement : MenuElement
+    {
+        element.Color = color;
 
         return element;
     }

@@ -69,6 +69,8 @@ namespace LabFusion.Marrow.Proxies
             {
                 float rounded = Mathf.Round(Value * 1000f) / 1000f;
                 Text.text = $"{Title}: {rounded}";
+
+                Text.color = Color;
             }
         }
 #else

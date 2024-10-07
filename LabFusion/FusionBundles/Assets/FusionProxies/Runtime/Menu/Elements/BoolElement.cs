@@ -65,6 +65,7 @@ namespace LabFusion.Marrow.Proxies
             if (Text != null)
             {
                 Text.text = Title;
+                Text.color = Color;
             }
 
             if (_trueObject != null)

@@ -87,6 +87,11 @@ namespace LabFusion.Marrow.Proxies
 
             return page;
         }
+
+        public PageElement AddPage()
+        {
+            return AddPage("Page");
+        }
 #endif
     }
 }

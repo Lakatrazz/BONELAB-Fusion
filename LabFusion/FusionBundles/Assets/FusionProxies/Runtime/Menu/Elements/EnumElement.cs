@@ -82,6 +82,7 @@ namespace LabFusion.Marrow.Proxies
             if (Text != null)
             {
                 Text.text = $"{Title}: {Value}";
+                Text.color = Color;
             }
         }
 #else

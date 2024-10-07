@@ -1,7 +1,5 @@
 ﻿using LabFusion.Preferences;
-using LabFusion.Preferences.Client;
 using LabFusion.Player;
-using LabFusion.Network;
 using LabFusion.Marrow;
 
 using UnityEngine;
@@ -166,42 +164,10 @@ public static partial class BoneMenuCreator
         Menu.OpenPage(_mainPage);
     }
 
-    private static int _lastIndex;
-
     public static void OnPopulateMainPage()
     {
         // Clear page
         _mainPage.RemoveAll();
-
-        // Create category for changing network layer
-        var networkLayerManager = _mainPage.CreatePage("Network Layer Manager", Color.yellow);
-        var func = networkLayerManager.CreateFunction("Players need to be on the same layer!", Color.yellow, null);
-        
-        _lastIndex = NetworkLayer.SupportedLayers.IndexOf(NetworkLayerDeterminer.LoadedLayer);
-
-        networkLayerManager.CreateFunction($"Active Layer: {NetworkLayerDeterminer.LoadedTitle}", Color.white, null);
-        
-        var changeLayerCategory = networkLayerManager.CreatePage("Change Layer", Color.white);
-
-        var targetPanel = changeLayerCategory.CreateFunction($"Target Layer: {ClientSettings.NetworkLayerTitle.Value}", Color.white, null);
-        changeLayerCategory.CreateFunction("Cycle", Color.white, () =>
-        {
-            int count = NetworkLayer.SupportedLayers.Count;
-            if (count <= 0)
-                return;
-
-            _lastIndex++;
-            if (count <= _lastIndex)
-                _lastIndex = 0;
-
-            ClientSettings.NetworkLayerTitle.Value = NetworkLayer.SupportedLayers[_lastIndex].Title;
-        });
-        ClientSettings.NetworkLayerTitle.OnValueChanged += (v) =>
-        {
-            targetPanel.ElementName = $"Target Layer: {v}";
-        };
-
-        changeLayerCategory.CreateFunction("SET NETWORK LAYER", Color.green, () => InternalLayerHelpers.UpdateLoadedLayer());
 
         // Setup the sub pages
         CreateUniversalMenus(_mainPage);
@@ -215,11 +181,5 @@ public static partial class BoneMenuCreator
         CreateSettingsMenu(page);
         CreateNotificationsMenu(page);
         CreateBanListMenu(page);
-        CreateDownloadingMenu(page);
-
-#if DEBUG
-        // Debug only (dev tools)
-        CreateDebugMenu(page);
-#endif
     }
 }

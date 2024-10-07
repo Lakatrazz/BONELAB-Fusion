@@ -54,12 +54,12 @@ namespace LabFusion.Marrow.Proxies
                 if (string.IsNullOrEmpty(Value))
                 {
                     Text.text = $"Click to add {Title.ToLower()}...";
-                    Text.color = Color.gray;
+                    Text.color = Color.gray * Color;
                 }
                 else
                 {
                     Text.text = $"{Title}: {Value}";
-                    Text.color = Color.white;
+                    Text.color = Color;
                 }
             }
         }

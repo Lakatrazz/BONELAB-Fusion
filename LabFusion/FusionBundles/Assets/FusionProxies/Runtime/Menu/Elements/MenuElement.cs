@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-
 using UnityEngine;
 
 #if MELONLOADER
@@ -19,7 +16,7 @@ namespace LabFusion.Marrow.Proxies
 #if MELONLOADER
         public MenuElement(IntPtr intPtr) : base(intPtr) { }
 
-        private string _title = "Button";
+        private string _title = "Element";
 
         public string Title
         {
@@ -30,6 +27,22 @@ namespace LabFusion.Marrow.Proxies
             set
             {
                 _title = value;
+
+                UpdateSettings();
+            }
+        }
+
+        private Color _color = Color.white;
+
+        public Color Color
+        {
+            get
+            {
+                return _color;
+            }
+            set
+            {
+                _color = value;
 
                 UpdateSettings();
             }
@@ -72,6 +85,7 @@ namespace LabFusion.Marrow.Proxies
             if (Text != null)
             {
                 Text.text = _title;
+                Text.color = _color;
             }
         }
 #endif
