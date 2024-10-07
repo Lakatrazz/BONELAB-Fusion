@@ -64,7 +64,7 @@ public static class MenuSettings
             .WithIncrement(1)
             .WithLimits(2, 255);
 
-        generalSettingsGroup.AddElement<EnumElement>("Server Privacy")
+        generalSettingsGroup.AddElement<EnumElement>("Privacy")
             .AsPref(ServerSettingsManager.SavedSettings.Privacy);
 
         generalSettingsGroup.AddElement<BoolElement>("NameTags")
