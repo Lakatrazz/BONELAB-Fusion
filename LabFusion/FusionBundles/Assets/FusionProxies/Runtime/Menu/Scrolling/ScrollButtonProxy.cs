@@ -32,7 +32,7 @@ namespace LabFusion.Marrow.Proxies
 
             scrollButton.button = GetComponent<Button>();
 
-            scrollButton.incremental = false;
+            scrollButton.incremental = true; // Make sure this is incremental so its constant steps
 
             scrollButton.scrollFrequency = 1f;
             scrollButton.signedStepSize = 1f;
