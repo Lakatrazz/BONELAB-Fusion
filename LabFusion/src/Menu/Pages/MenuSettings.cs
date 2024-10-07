@@ -76,10 +76,10 @@ public static class MenuSettings
         // Gameplay
         var gameplaySettingsGroup = page.AddElement<GroupElement>("Gameplay");
 
-        gameplaySettingsGroup.AddElement<EnumElement>("Time Scale Mode")
+        gameplaySettingsGroup.AddElement<EnumElement>("SlowMo")
             .AsPref(ServerSettingsManager.SavedSettings.TimeScaleMode);
 
-        gameplaySettingsGroup.AddElement<BoolElement>("Server Mortality")
+        gameplaySettingsGroup.AddElement<BoolElement>("Mortality")
             .AsPref(ServerSettingsManager.SavedSettings.ServerMortality);
 
         // Move this out of this class eventually
@@ -98,22 +98,22 @@ public static class MenuSettings
         // Permissions
         var permissionsGroup = page.AddElement<GroupElement>("Permissions");
 
-        permissionsGroup.AddElement<EnumElement>("Dev Tools Allowed")
+        permissionsGroup.AddElement<EnumElement>("Dev Tools")
             .AsPref(ServerSettingsManager.SavedSettings.DevToolsAllowed);
 
-        permissionsGroup.AddElement<EnumElement>("Constrainer Allowed")
+        permissionsGroup.AddElement<EnumElement>("Constrainer")
             .AsPref(ServerSettingsManager.SavedSettings.ConstrainerAllowed);
 
-        permissionsGroup.AddElement<EnumElement>("Custom Avatars Allowed")
+        permissionsGroup.AddElement<EnumElement>("Custom Avatars")
             .AsPref(ServerSettingsManager.SavedSettings.CustomAvatarsAllowed);
 
-        permissionsGroup.AddElement<EnumElement>("Kicking Allowed")
+        permissionsGroup.AddElement<EnumElement>("Kicking")
             .AsPref(ServerSettingsManager.SavedSettings.KickingAllowed);
 
-        permissionsGroup.AddElement<EnumElement>("Banning Allowed")
+        permissionsGroup.AddElement<EnumElement>("Banning")
             .AsPref(ServerSettingsManager.SavedSettings.BanningAllowed);
 
-        permissionsGroup.AddElement<EnumElement>("Teleportation Allowed")
+        permissionsGroup.AddElement<EnumElement>("Teleportation")
             .AsPref(ServerSettingsManager.SavedSettings.Teleportation);
     }
 
