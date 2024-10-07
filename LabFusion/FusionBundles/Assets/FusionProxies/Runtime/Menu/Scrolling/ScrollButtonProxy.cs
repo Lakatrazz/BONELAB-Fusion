@@ -38,7 +38,7 @@ namespace LabFusion.Marrow.Proxies
             scrollButton.signedStepSize = 1f;
             scrollButton.stepSize = 1f;
 
-            var grid = transform.parent.Find("Viewport/Content");
+            var grid = GetComponentInParent<ScrollRect>().transform.Find("Viewport/Content");
             var elementsContainer = grid.GetComponent<ScrollElementsContainer>();
 
             if (elementsContainer == null)

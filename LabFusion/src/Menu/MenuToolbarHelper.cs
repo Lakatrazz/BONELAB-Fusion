@@ -12,6 +12,6 @@ public static class MenuToolbarHelper
         // Setup the mute button
         var muteButton = toolbar.transform.Find("button_Muted").GetComponent<BoolElement>();
 
-        MenuButtonHelper.SetBoolPref(muteButton, ClientSettings.VoiceChat.Muted);
+        muteButton.AsPref(ClientSettings.VoiceChat.Muted);
     }
 }

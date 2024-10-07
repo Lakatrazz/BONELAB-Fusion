@@ -14,7 +14,7 @@ public class ServerSettings
     public IFusionPref<bool> PlayerConstraintsEnabled;
     public IFusionPref<ServerPrivacy> Privacy;
     public IFusionPref<TimeScaleMode> TimeScaleMode;
-    public IFusionPref<byte> MaxPlayers;
+    public IFusionPref<int> MaxPlayers;
 
     // Visual
     public IFusionPref<string> ServerName;
@@ -43,7 +43,7 @@ public class ServerSettings
             PlayerConstraintsEnabled = new FusionPref<bool>(category, "Server Player Constraints Enabled", false, PrefUpdateMode.SERVER_UPDATE),
             Privacy = new FusionPref<ServerPrivacy>(category, "Server Privacy", ServerPrivacy.PUBLIC, PrefUpdateMode.LOCAL_UPDATE),
             TimeScaleMode = new FusionPref<TimeScaleMode>(category, "Time Scale Mode", Senders.TimeScaleMode.LOW_GRAVITY, PrefUpdateMode.SERVER_UPDATE),
-            MaxPlayers = new FusionPref<byte>(category, "Max Players", 10, PrefUpdateMode.SERVER_UPDATE),
+            MaxPlayers = new FusionPref<int>(category, "Max Players", 10, PrefUpdateMode.SERVER_UPDATE),
 
             // Visual
             ServerName = new FusionPref<string>(category, "Server Name", string.Empty, PrefUpdateMode.LOCAL_UPDATE),

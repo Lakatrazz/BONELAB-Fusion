@@ -12,60 +12,6 @@ namespace LabFusion.Menu;
 
 public static class MenuButtonHelper
 {
-    public static void SetBoolPref(BoolElement button, FusionPref<bool> pref, Action<bool> onValueChanged = null)
-    {
-        button.Value = pref.Value;
-
-        var onButtonChanged = (bool value) =>
-        {
-            pref.Value = value;
-        };
-        button.OnValueChanged += onButtonChanged;
-
-        pref.OnValueChanged += (value) =>
-        {
-            // Update the value
-            if (button.Value != value)
-            {
-                button.Value = value;
-            }
-
-            onValueChanged?.Invoke(value);
-        };
-
-        button.OnDestroyed += () =>
-        {
-            button.OnValueChanged -= onButtonChanged;
-        };
-    }
-
-    public static void SetStringPref(StringElement button, FusionPref<string> pref, Action<string> onValueChanged = null)
-    {
-        button.Value = pref.Value;
-
-        var onButtonChanged = (string value) =>
-        {
-            pref.Value = value;
-        };
-        button.OnValueChanged += onButtonChanged;
-
-        pref.OnValueChanged += (value) =>
-        {
-            // Update the value
-            if (button.Value != value)
-            {
-                button.Value = value;
-            }
-
-            onValueChanged?.Invoke(value);
-        };
-
-        button.OnDestroyed += () =>
-        {
-            button.OnValueChanged -= onButtonChanged;
-        };
-    }
-
     public static void PopulateTexts(GameObject root)
     {
         var texts = root.GetComponentsInChildren<TMP_Text>(true);

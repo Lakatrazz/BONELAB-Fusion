@@ -105,7 +105,7 @@ public static partial class BoneMenuCreator
 
         // General settings
         var generalSettingsSubPanel = page.CreatePage("General Settings", Color.white);
-        CreateBytePreference(generalSettingsSubPanel, "Max Players", 1, 2, 255, ServerSettingsManager.SavedSettings.MaxPlayers);
+        CreateIntPreference(generalSettingsSubPanel, "Max Players", 1, 2, 255, ServerSettingsManager.SavedSettings.MaxPlayers);
         CreateEnumPreference(generalSettingsSubPanel, "Server Privacy", ServerSettingsManager.SavedSettings.Privacy);
         CreateBoolPreference(generalSettingsSubPanel, "Nametags", ServerSettingsManager.SavedSettings.NametagsEnabled);
         CreateBoolPreference(generalSettingsSubPanel, "Voice Chat", ServerSettingsManager.SavedSettings.VoiceChatEnabled);

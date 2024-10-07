@@ -19,20 +19,16 @@ public static class MenuProfile
         var usernameLabel = gridPofile.Find("label_Username");
         usernameLabel.Find("text").GetComponent<TMP_Text>().text = PlayerIdManager.LocalUsername;
 
-        var nicknameButton = gridPofile.Find("button_Nickname").GetComponent<StringElement>();
+        var nicknameButton = gridPofile.Find("button_Nickname").GetComponent<StringElement>()
+            .AsPref(ClientSettings.Nickname, (value) =>
+            {
+                PlayerIdManager.LocalId?.Metadata.TrySetMetadata(MetadataHelper.NicknameKey, value);
+            });
+
         nicknameButton.Title = "Nickname";
 
-        MenuButtonHelper.SetStringPref(nicknameButton, ClientSettings.Nickname, (value) =>
-        {
-            PlayerIdManager.LocalId?.Metadata.TrySetMetadata(MetadataHelper.NicknameKey, value);
-        });
-
-        var descriptionButton = gridPofile.Find("button_Description").GetComponent<StringElement>();
+        var descriptionButton = gridPofile.Find("button_Description").GetComponent<StringElement>()
+            .AsPref(ClientSettings.Description);
         descriptionButton.Title = "Description";
-
-        MenuButtonHelper.SetStringPref(descriptionButton, ClientSettings.Description, (value) =>
-        {
-            // Fill metadata in the future
-        });
     }
 }

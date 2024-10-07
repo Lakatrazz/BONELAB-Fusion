@@ -47,7 +47,7 @@ public class SerializedServerSettings : IFusionSerializable
             PlayerConstraintsEnabled = new ReadOnlyPref<bool>(reader.ReadBoolean()),
             Privacy = new ReadOnlyPref<ServerPrivacy>((ServerPrivacy)reader.ReadByte()),
             TimeScaleMode = new ReadOnlyPref<TimeScaleMode>((TimeScaleMode)reader.ReadByte()),
-            MaxPlayers = new ReadOnlyPref<byte>(reader.ReadByte()),
+            MaxPlayers = new ReadOnlyPref<int>(reader.ReadInt32()),
 
             // Visual
             ServerName = new ReadOnlyPref<string>(reader.ReadString()),

@@ -43,7 +43,9 @@ namespace LabFusion.Marrow.Proxies
                 if (value != null)
                 {
                     _enumValues = Enum.GetValues(_enumType);
-                    Value = _enumValues.GetValue(0) as Enum;
+
+                    // Apply default enum if its not set
+                    _value ??= _enumValues.GetValue(0) as Enum;
                 }
             }
         }
@@ -52,11 +54,6 @@ namespace LabFusion.Marrow.Proxies
 
         private int _enumIndex = 1;
         private Array _enumValues = null;
-
-        protected override void Awake()
-        {
-            base.Awake();
-        }
 
         public void NextValue() 
         {
