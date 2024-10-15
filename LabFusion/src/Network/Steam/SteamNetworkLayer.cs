@@ -110,24 +110,23 @@ namespace LabFusion.Network
 
         public override void OnLateInitializeLayer()
         {
-            if (SteamClient.IsValid)
-            {
-                SteamId = SteamClient.SteamId;
-                PlayerIdManager.SetLongId(SteamId.Value);
-                PlayerIdManager.SetUsername(GetUsername(SteamId.Value));
-
-                FusionLogger.Log($"Steamworks initialized with SteamID {SteamId} and ApplicationID {ApplicationID}!");
-
-                SteamNetworkingUtils.InitRelayNetworkAccess();
-
-                HookSteamEvents();
-
-                _isInitialized = true;
-            }
-            else
+            if (!SteamClient.IsValid)
             {
                 FusionLogger.Log("Steamworks failed to initialize!");
+                return;
             }
+
+            SteamId = SteamClient.SteamId;
+            PlayerIdManager.SetLongId(SteamId.Value);
+            PlayerIdManager.SetUsername(GetUsername(SteamId.Value));
+
+            FusionLogger.Log($"Steamworks initialized with SteamID {SteamId} and ApplicationID {ApplicationID}!");
+
+            SteamNetworkingUtils.InitRelayNetworkAccess();
+
+            HookSteamEvents();
+
+            _isInitialized = true;
         }
 
         public override void OnCleanupLayer()
@@ -229,7 +228,6 @@ namespace LabFusion.Network
             InternalServerHelpers.OnStartServer();
 
             OnUpdateLobby();
-            OnUpdateRichPresence();
         }
 
         public void JoinServer(SteamId serverId)
@@ -246,7 +244,6 @@ namespace LabFusion.Network
             ConnectionSender.SendConnectionRequest();
 
             OnUpdateLobby();
-            OnUpdateRichPresence();
         }
 
         public override void Disconnect(string reason = "")
@@ -272,26 +269,10 @@ namespace LabFusion.Network
             InternalServerHelpers.OnDisconnect(reason);
 
             OnUpdateLobby();
-            OnUpdateRichPresence();
-        }
-
-        private void OnUpdateRichPresence()
-        {
-            if (_isConnectionActive)
-            {
-                SteamFriends.SetRichPresence("connect", "true");
-            }
-            else
-            {
-                SteamFriends.SetRichPresence("connect", null);
-            }
         }
 
         private void HookSteamEvents()
         {
-            // Add steam hooks
-            SteamFriends.OnGameRichPresenceJoinRequested += OnGameRichPresenceJoinRequested;
-
             // Add server hooks
             MultiplayerHooking.OnMainSceneInitialized += OnUpdateLobby;
             GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
@@ -334,9 +315,6 @@ namespace LabFusion.Network
 
         private void UnHookSteamEvents()
         {
-            // Remove steam hooks
-            SteamFriends.OnGameRichPresenceJoinRequested -= OnGameRichPresenceJoinRequested;
-
             // Remove server hooks
             MultiplayerHooking.OnMainSceneInitialized -= OnUpdateLobby;
             GamemodeManager.OnGamemodeChanged -= OnGamemodeChanged;
@@ -366,12 +344,6 @@ namespace LabFusion.Network
 
             _localLobby = lobbyTask.Value;
             _currentLobby = new SteamLobby(_localLobby);
-        }
-
-        private void OnGameRichPresenceJoinRequested(Friend friend, string value)
-        {
-            // Forward this to joining a server from the friend
-            JoinServer(friend.Id);
         }
 
         public override void OnUpdateLobby()
