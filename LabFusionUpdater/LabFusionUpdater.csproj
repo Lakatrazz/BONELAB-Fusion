@@ -10,20 +10,6 @@
     <None Remove="Properties\**" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="AssemblyInfo.cs">
-      <DependentUpon>AssemblyInfo.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="AssemblyInfo.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>AssemblyInfo.cs</LastGenOutput>
-    </Content>
-    <EmbeddedResource Include="resources\updater.exe" />
-  </ItemGroup>
-  <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>

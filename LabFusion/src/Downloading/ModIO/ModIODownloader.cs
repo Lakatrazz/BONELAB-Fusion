@@ -152,7 +152,7 @@ public static class ModIODownloader
 
         // Send a request to mod.io for the headers
         // We don't want to read the whole content yet
-        HttpClientHandler handler = new HttpClientHandler()
+        var handler = new HttpClientHandler()
         {
             ClientCertificateOptions = ClientCertificateOption.Manual,
             ServerCertificateCustomValidationCallback = (_, _, _, _) => true
