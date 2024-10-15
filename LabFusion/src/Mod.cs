@@ -32,7 +32,7 @@ using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Marrow;
 
-using ModuleHandler = LabFusion.SDK.Modules.ModuleHandler;
+using ModuleManager = LabFusion.SDK.Modules.ModuleManager;
 
 namespace LabFusion;
 
@@ -91,8 +91,6 @@ public class FusionMod : MelonMod
         // Initialize data and hooks
         ByteRetriever.PopulateInitial();
         PDController.OnInitializeMelon();
-        ModuleHandler.Internal_HookAssemblies();
-        GamemodeRegistration.Internal_HookAssemblies();
         PointItemManager.HookEvents();
     }
 
@@ -204,8 +202,6 @@ public class FusionMod : MelonMod
         FusionFileLoader.OnDeinitializeMelon();
 
         // Unhook assembly loads
-        ModuleHandler.Internal_UnhookAssemblies();
-        GamemodeRegistration.Internal_UnhookAssemblies();
         PointItemManager.UnhookEvents();
 
         // Unload assetbundles

@@ -1,30 +1,26 @@
-﻿namespace LabFusion.SDK.Modules
+﻿namespace LabFusion.SDK.Modules;
+
+/// <summary>
+/// The base class for a Fusion module.
+/// </summary>
+public abstract class Module
 {
     /// <summary>
-    /// The class to inherit from when creating a Fusion module.
+    /// The logger that the module can use to log information.
     /// </summary>
-    public abstract class Module
+    public ModuleLogger LoggerInstance { get; internal set; }
+
+    internal void Register(ModuleData moduleData)
     {
-        /// <summary>
-        /// Logger for logging info from modules.
-        /// </summary>
-        public ModuleLogger LoggerInstance { get; internal set; }
+        string name = moduleData.Name;
 
-        // Called internally when a module is setup
-        internal void ModuleLoaded(ModuleInfo info)
-        {
-            string name = info.name;
-            if (!string.IsNullOrWhiteSpace(info.abbreviation))
-                name = info.abbreviation;
+        LoggerInstance = new ModuleLogger(name);
 
-            LoggerInstance = new ModuleLogger(name);
-
-            OnModuleLoaded();
-        }
-
-        /// <summary>
-        /// Called when the module is initially loaded.
-        /// </summary>
-        public virtual void OnModuleLoaded() { }
+        OnModuleRegistered();
     }
+
+    /// <summary>
+    /// Called when the module is initially registered.
+    /// </summary>
+    public virtual void OnModuleRegistered() { }
 }

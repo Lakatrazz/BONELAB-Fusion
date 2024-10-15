@@ -13,7 +13,9 @@ public abstract class ModuleMessageHandler : MessageHandler
     public static void LoadHandlers(Assembly assembly)
     {
         if (assembly == null)
+        {
             throw new NullReferenceException("Tried loading handlers from a null module assembly!");
+        }
 
         AssemblyUtilities.LoadAllValid<ModuleMessageHandler>(assembly, RegisterHandler);
     }
@@ -69,22 +71,24 @@ public abstract class ModuleMessageHandler : MessageHandler
 
     public static ushort? GetHandlerTag(Type type)
     {
-        if (Handlers != null)
+        if (Handlers == null)
         {
-            for (ushort i = 0; i < Handlers.Length; i++)
+            return null;
+        }
+
+        for (ushort i = 0; i < Handlers.Length; i++)
+        {
+            var other = Handlers[i];
+
+            // We don't have one for this slot. Skip.
+            if (other == null)
             {
-                var other = Handlers[i];
+                continue;
+            }
 
-                // We don't have one for this slot. Skip.
-                if (other == null)
-                {
-                    continue;
-                }
-
-                if (other.GetType().AssemblyQualifiedName == type.AssemblyQualifiedName)
-                {
-                    return i;
-                }
+            if (other.GetType().AssemblyQualifiedName == type.AssemblyQualifiedName)
+            {
+                return i;
             }
         }
 
@@ -108,7 +112,9 @@ public abstract class ModuleMessageHandler : MessageHandler
             byte[] buffer = ByteRetriever.Rent(bytes.Length - 2);
 
             for (var i = 0; i < buffer.Length; i++)
+            {
                 buffer[i] = bytes[i + 2];
+            }
 
             // Since modules cannot be assumed to exist for everyone, we need to null check
             if (Handlers.Length > tag && Handlers[tag] != null)
@@ -122,6 +128,6 @@ public abstract class ModuleMessageHandler : MessageHandler
         }
     }
 
-    internal static FusionDictionary<string, Type> HandlerTypes = new();
-    internal static ModuleMessageHandler[] Handlers = null;
+    public static FusionDictionary<string, Type> HandlerTypes { get; private set; } = new();
+    public static ModuleMessageHandler[] Handlers { get; private set; } = null;
 }
