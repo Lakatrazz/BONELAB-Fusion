@@ -239,7 +239,6 @@ namespace LabFusion.Network
                         InternalServerHelpers.OnStartServer();
 
                         OnUpdateLobby();
-                        OnUpdateRichPresence();
                         break;
                     }
                 case (ulong)MessageTypes.LobbyIds:
@@ -392,7 +391,6 @@ namespace LabFusion.Network
             ConnectionSender.SendConnectionRequest();
 
             OnUpdateLobby();
-            OnUpdateRichPresence();
         }
 
         public override void Disconnect(string reason = "")
@@ -416,15 +414,6 @@ namespace LabFusion.Network
             InternalServerHelpers.OnDisconnect(reason);
 
             OnUpdateLobby();
-            OnUpdateRichPresence();
-        }
-
-        private void OnUpdateRichPresence()
-        {
-            string data = _isConnectionActive ? "true" : "null";
-            NetDataWriter writer = NewWriter(MessageTypes.UpdateConnectPresence);
-            writer.Put(data);
-            SendToProxyServer(writer);
         }
 
         private void HookSteamEvents()
