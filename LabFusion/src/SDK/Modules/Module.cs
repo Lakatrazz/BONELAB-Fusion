@@ -7,7 +7,7 @@ public abstract class Module
 {
     public abstract string Name { get; }
     public virtual string Author { get; } = "Unknown";
-    public virtual string Version { get; } = "0.0.0";
+    public virtual Version Version { get; } = new();
 
     public virtual ConsoleColor Color { get; } = ConsoleColor.Magenta;
 
