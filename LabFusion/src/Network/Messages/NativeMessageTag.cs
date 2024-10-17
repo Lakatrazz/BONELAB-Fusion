@@ -50,8 +50,6 @@ public static class NativeMessageTag
 
         PuppetMasterKill = 30,
 
-        SimpleGripEvent = 31,
-
         ObjectDestructibleDestroy = 32,
 
         ArenaTransition = 33,

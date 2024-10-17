@@ -1,7 +1,10 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Bonelab.Extenders;
+using LabFusion.Data;
 using LabFusion.Entities;
+using LabFusion.Network;
+using LabFusion.SDK.Modules;
 
-namespace LabFusion.Network;
+namespace LabFusion.Bonelab;
 
 public enum SimpleGripEventType
 {
@@ -49,10 +52,8 @@ public class SimpleGripEventData : IFusionSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class SimpleGripEventMessage : FusionMessageHandler
+public class SimpleGripEventMessage : ModuleMessageHandler
 {
-    public override byte Tag => NativeMessageTag.SimpleGripEvent;
-
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
         using FusionReader reader = FusionReader.Create(bytes);
@@ -61,7 +62,7 @@ public class SimpleGripEventMessage : FusionMessageHandler
         // Send message to other clients if server
         if (isServerHandled)
         {
-            using var message = FusionMessage.Create(Tag, bytes);
+            using var message = FusionMessage.ModuleCreate<SimpleGripEventMessage>(bytes);
             MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
 
             return;

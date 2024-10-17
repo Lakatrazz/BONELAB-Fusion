@@ -13,6 +13,7 @@ public class BonelabModule : Module
     public override void OnModuleRegistered()
     {
         ModuleMessageHandler.RegisterHandler<RandomObjectMessage>();
+        ModuleMessageHandler.RegisterHandler<SimpleGripEventMessage>();
     }
 
     public override void OnModuleUnregistered()

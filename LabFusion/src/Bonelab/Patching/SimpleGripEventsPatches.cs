@@ -4,12 +4,13 @@ using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Utilities;
 using LabFusion.Entities;
+using LabFusion.Bonelab.Extenders;
 
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Bonelab.Patching;
 
 [HarmonyPatch(typeof(SimpleGripEvents))]
 public static class SimpleGripEventsPatches
@@ -19,7 +20,9 @@ public static class SimpleGripEventsPatches
     public static bool OnAttachedDelegatePrefix(SimpleGripEvents __instance, Hand hand)
     {
         if (IsPlayerRep(__instance, hand))
+        {
             return false;
+        }
         else if (GetExtender(__instance, hand, out var syncable, out var extender))
         {
             // Decompiled code from CPP2IL
@@ -44,7 +47,9 @@ public static class SimpleGripEventsPatches
     public static bool OnDetachedDelegatePrefix(SimpleGripEvents __instance, Hand hand)
     {
         if (IsPlayerRep(__instance, hand))
+        {
             return false;
+        }
         else if (GetExtender(__instance, hand, out var syncable, out var extender))
         {
             // Decompiled code from CPP2IL
@@ -135,7 +140,7 @@ public static class SimpleGripEventsPatches
         var data = SimpleGripEventData.Create(PlayerIdManager.LocalSmallId, syncId, gripEventIndex, type);
         writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.SimpleGripEvent, writer);
+        using var message = FusionMessage.ModuleCreate<SimpleGripEventMessage>(writer);
         MessageSender.SendToServer(NetworkChannel.Reliable, message);
     }
 }
