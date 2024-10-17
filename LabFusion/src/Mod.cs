@@ -153,6 +153,7 @@ public class FusionMod : MelonMod
 
     private static void InitializeBaseModules()
     {
+        ModuleManager.RegisterModule<MarrowModule>();
         ModuleManager.RegisterModule<BonelabModule>();
     }
 

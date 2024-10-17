@@ -10,13 +10,13 @@ public class BonelabModule : Module
 
     public override ConsoleColor Color => ConsoleColor.Cyan;
 
-    public override void OnModuleRegistered()
+    protected override void OnModuleRegistered()
     {
         ModuleMessageHandler.RegisterHandler<RandomObjectMessage>();
         ModuleMessageHandler.RegisterHandler<SimpleGripEventMessage>();
     }
 
-    public override void OnModuleUnregistered()
+    protected override void OnModuleUnregistered()
     {
         
     }
