@@ -1,12 +1,13 @@
 ﻿using LabFusion.Utilities;
+using LabFusion.Entities;
 
 using Il2CppSLZ.Bonelab;
 
-namespace LabFusion.Entities;
+namespace LabFusion.Bonelab.Extenders;
 
 public class PropFlashlightExtender : EntityComponentExtender<PropFlashlight>
 {
-    public static FusionComponentCache<PropFlashlight, NetworkEntity> Cache = new();
+    public static readonly FusionComponentCache<PropFlashlight, NetworkEntity> Cache = new();
 
     protected override void OnRegister(NetworkEntity networkEntity, PropFlashlight component)
     {

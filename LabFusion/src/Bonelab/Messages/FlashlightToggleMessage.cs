@@ -1,8 +1,11 @@
 ﻿using LabFusion.Data;
-using LabFusion.Patching;
+using LabFusion.Bonelab.Patching;
 using LabFusion.Entities;
+using LabFusion.Network;
+using LabFusion.SDK.Modules;
+using LabFusion.Bonelab.Extenders;
 
-namespace LabFusion.Network;
+namespace LabFusion.Bonelab;
 
 public class FlashlightToggleData : IFusionSerializable
 {
@@ -38,10 +41,8 @@ public class FlashlightToggleData : IFusionSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class FlashlightToggleMessage : FusionMessageHandler
+public class FlashlightToggleMessage : ModuleMessageHandler
 {
-    public override byte Tag => NativeMessageTag.FlashlightToggle;
-
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
         using FusionReader reader = FusionReader.Create(bytes);
@@ -50,7 +51,7 @@ public class FlashlightToggleMessage : FusionMessageHandler
         // Send message to other clients if server
         if (isServerHandled)
         {
-            using var message = FusionMessage.Create(Tag, bytes);
+            using var message = FusionMessage.ModuleCreate<FlashlightToggleMessage>(bytes);
             MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
 
             return;

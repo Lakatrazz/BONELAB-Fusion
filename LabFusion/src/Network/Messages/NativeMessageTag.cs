@@ -73,8 +73,6 @@ public static class NativeMessageTag
 
         KartRaceEvent = 46,
 
-        FlashlightToggle = 47,
-
         KeySlot = 48,
 
         NimbusGunNoclip = 49,
