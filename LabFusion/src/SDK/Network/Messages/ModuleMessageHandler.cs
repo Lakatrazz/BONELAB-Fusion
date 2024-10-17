@@ -25,7 +25,9 @@ public abstract class ModuleMessageHandler : MessageHandler
     protected static void RegisterHandler(Type type)
     {
         if (HandlerTypes.ContainsKey(type.AssemblyQualifiedName))
+        {
             throw new ArgumentException($"Handler {type.Name} was already registered.");
+        }
 
         HandlerTypes.Add(type.AssemblyQualifiedName, type);
     }
@@ -43,10 +45,11 @@ public abstract class ModuleMessageHandler : MessageHandler
         for (ushort i = 0; i < names.Length; i++)
         {
             string handlerName = names[i];
+
             if (HandlerTypes.ContainsKey(handlerName))
             {
                 Type type = HandlerTypes[handlerName];
-                var handler = Internal_CreateHandler(type, i);
+                var handler = CreateHandler(type, i);
                 Handlers[i] = handler;
             }
             else
@@ -61,7 +64,7 @@ public abstract class ModuleMessageHandler : MessageHandler
         Handlers = null;
     }
 
-    private static ModuleMessageHandler Internal_CreateHandler(Type type, ushort tag)
+    private static ModuleMessageHandler CreateHandler(Type type, ushort tag)
     {
         var handler = (ModuleMessageHandler)Activator.CreateInstance(type);
         handler._tag = tag;

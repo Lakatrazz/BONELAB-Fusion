@@ -221,26 +221,26 @@ public static class ModIODownloader
         // Install the stream into a zip file
         var zipPath = ModDownloadManager.DownloadPath + $"/m{modFile.ModId}f{modFile.FileId}.zip";
 
-        Task copyTask = null;
-
-        using var copyStream = new FileStream(zipPath, FileMode.Create);
-
         // Copy the download to the zip file
-        downloadStream.Position = 0;
-        copyTask = downloadStream.CopyToAsync(copyStream);
-
-        while (!copyTask.IsCompleted)
+        // Make sure this using statement ends before we load the pallet, so that the file is not in use
+        using (var copyStream = new FileStream(zipPath, FileMode.Create))
         {
-            yield return null;
-        }
+            downloadStream.Position = 0;
+            var copyTask = downloadStream.CopyToAsync(copyStream);
 
-        if (!copyTask.IsCompletedSuccessfully)
-        {
-            FusionLogger.LogException("copying downloaded zip", copyTask.Exception);
+            while (!copyTask.IsCompleted)
+            {
+                yield return null;
+            }
 
-            FailDownload();
+            if (!copyTask.IsCompletedSuccessfully)
+            {
+                FusionLogger.LogException("copying downloaded zip", copyTask.Exception);
 
-            yield break;
+                FailDownload();
+
+                yield break;
+            }
         }
 
         // Load the pallet

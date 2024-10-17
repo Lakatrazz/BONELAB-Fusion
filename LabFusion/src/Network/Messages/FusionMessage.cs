@@ -1,4 +1,5 @@
 ﻿using LabFusion.Utilities;
+
 using System.Runtime.InteropServices;
 
 namespace LabFusion.Network;
@@ -8,7 +9,6 @@ public enum NetworkChannel : byte
     Reliable,
     Unreliable,
 }
-
 
 public unsafe class FusionMessage : IDisposable
 {
@@ -33,7 +33,7 @@ public unsafe class FusionMessage : IDisposable
         }
     }
 
-    internal static FusionMessage Internal_Create(int size)
+    private static FusionMessage Create(int size)
     {
         return new FusionMessage()
         {
@@ -51,10 +51,12 @@ public unsafe class FusionMessage : IDisposable
     public static FusionMessage Create(byte tag, byte[] buffer, int length = -1)
     {
         if (length <= 0)
+        {
             length = buffer.Length;
+        }
 
         int size = length + 1;
-        var message = Internal_Create(size);
+        var message = Create(size);
 
         message._buffer[0] = tag;
         for (var i = 0; i < length; i++)
@@ -83,7 +85,9 @@ public unsafe class FusionMessage : IDisposable
     public static FusionMessage ModuleCreate(Type type, byte[] buffer, int length = -1)
     {
         if (length <= 0)
+        {
             length = buffer.Length;
+        }
 
         int size = length + 3;
 
@@ -96,7 +100,7 @@ public unsafe class FusionMessage : IDisposable
             var value = tag.Value;
             var tagBytes = BitConverter.GetBytes((ushort)value);
 
-            var message = Internal_Create(size);
+            var message = Create(size);
             message._buffer[0] = NativeMessageTag.Module;
             message._buffer[1] = tagBytes[0];
             message._buffer[2] = tagBytes[1];
@@ -123,7 +127,9 @@ public unsafe class FusionMessage : IDisposable
     public void Dispose()
     {
         if (_disposed)
+        {
             return;
+        }
 
         GC.SuppressFinalize(this);
         Marshal.FreeHGlobal((IntPtr)_buffer);
