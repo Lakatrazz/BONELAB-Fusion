@@ -40,6 +40,8 @@ namespace LabFusion.Network
         public override bool IsServer => _isServerActive;
         public override bool IsClient => _isConnectionActive;
 
+        public override bool RequiresValidId => false;
+
         public SteamId SteamId;
 
         private INetworkLobby _currentLobby;

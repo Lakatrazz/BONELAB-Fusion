@@ -33,11 +33,9 @@ namespace LabFusion.Network
 
         public const int ReceiveBufferSize = 32;
 
-        // AsyncCallbacks are bad!
-        // In Unity/Melonloader, they can cause random crashes, especially when making a lot of calls
-        public const bool AsyncCallbacks = false;
-
         public override string Title => "Steam";
+
+        public override bool RequiresValidId => true;
 
         public override bool IsServer => _isServerActive;
         public override bool IsClient => _isConnectionActive;
@@ -75,13 +73,17 @@ namespace LabFusion.Network
         {
             // Make sure the API actually loaded
             if (!SteamAPILoader.HasSteamAPI)
+            {
                 return false;
+            }
 
             try
             {
                 // Try loading the steam client
                 if (!SteamClient.IsValid)
-                    SteamClient.Init(ApplicationID, AsyncCallbacks);
+                {
+                    SteamClient.Init(ApplicationID, false);
+                }
 
                 return true;
             }
@@ -97,7 +99,9 @@ namespace LabFusion.Network
             try
             {
                 if (!SteamClient.IsValid)
-                    SteamClient.Init(ApplicationID, AsyncCallbacks);
+                {
+                    SteamClient.Init(ApplicationID, false);
+                }
             }
             catch (Exception e)
             {
@@ -144,10 +148,7 @@ namespace LabFusion.Network
         public override void OnUpdateLayer()
         {
             // Run callbacks for our client
-            if (!AsyncCallbacks)
-            {
-                SteamClient.RunCallbacks();
-            }
+            SteamClient.RunCallbacks();
 
             // Receive any needed messages
             try

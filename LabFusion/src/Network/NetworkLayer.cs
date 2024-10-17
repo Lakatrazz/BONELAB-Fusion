@@ -75,9 +75,11 @@ public abstract class NetworkLayer
     public virtual IVoiceManager VoiceManager => null;
 
     /// <summary>
-    /// Returns if this NetworkLayer requires valid player IDs. True when it requires a logged in account, such as steam.
+    /// Returns if this NetworkLayer requires valid player IDs. 
+    /// Set this to true if the layer sets <see cref="NetworkInfo.LastReceivedUser"/> upon receiving messages.
+    /// Defaults to false.
     /// </summary>
-    public virtual bool RequiresValidId => true;
+    public virtual bool RequiresValidId => false;
 
     /// <summary>
     /// Returns true if this NetworkLayer is supported on the current platform.
