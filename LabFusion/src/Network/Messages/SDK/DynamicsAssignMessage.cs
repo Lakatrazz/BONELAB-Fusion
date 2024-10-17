@@ -1,6 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Exceptions;
 using LabFusion.SDK.Gamemodes;
+using LabFusion.SDK.Modules;
 
 namespace LabFusion.Network;
 

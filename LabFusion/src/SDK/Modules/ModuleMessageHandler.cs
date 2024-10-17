@@ -1,9 +1,10 @@
 ﻿using System.Reflection;
 
 using LabFusion.Data;
+using LabFusion.Network;
 using LabFusion.Utilities;
 
-namespace LabFusion.Network;
+namespace LabFusion.SDK.Modules;
 
 public abstract class ModuleMessageHandler : MessageHandler
 {

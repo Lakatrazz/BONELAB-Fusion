@@ -6,6 +6,7 @@ using LabFusion.Preferences;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Points;
 using LabFusion.SDK.Achievements;
+using LabFusion.SDK.Modules;
 
 using LabFusion.Data;
 using LabFusion.Entities;

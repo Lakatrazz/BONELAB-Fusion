@@ -1,4 +1,5 @@
-﻿using LabFusion.Utilities;
+﻿using LabFusion.SDK.Modules;
+using LabFusion.Utilities;
 
 using System.Runtime.InteropServices;
 
@@ -113,7 +114,9 @@ public unsafe class FusionMessage : IDisposable
             return message;
         }
         else
+        {
             return null;
+        }
     }
 
     public byte[] ToByteArray()

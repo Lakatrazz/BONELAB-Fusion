@@ -20,7 +20,12 @@ public abstract class Module
     }
 
     /// <summary>
-    /// Called when the module is initially registered.
+    /// Called when the module is initially registered. Use this to hook into Fusion functions, register Module Messages, etc.
     /// </summary>
     public virtual void OnModuleRegistered() { }
+
+    /// <summary>
+    /// Called when the module is unregistered. Use this to clean up anything affected by the module.
+    /// </summary>
+    public virtual void OnModuleUnregistered() { }
 }
