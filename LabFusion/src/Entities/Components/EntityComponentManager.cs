@@ -19,12 +19,12 @@ public static class EntityComponentManager
         FusionLogger.Log($"Populating EntityComponentExtender list from {targetAssembly.GetName().Name}!");
 #endif
 
-        AssemblyUtilities.LoadAllValid<IEntityComponentExtender>(targetAssembly, RegisterExtender);
+        AssemblyUtilities.LoadAllValid<IEntityComponentExtender>(targetAssembly, RegisterComponent);
     }
 
-    public static void RegisterExtender<T>() where T : IEntityComponentExtender => RegisterExtender(typeof(T));
+    public static void RegisterComponent<T>() where T : IEntityComponentExtender => RegisterComponent(typeof(T));
 
-    private static void RegisterExtender(Type type)
+    private static void RegisterComponent(Type type)
     {
         if (ExtenderTypes.Contains(type))
         {

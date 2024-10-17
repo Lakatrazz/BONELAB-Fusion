@@ -20,7 +20,8 @@ using LabFusion.BoneMenu;
 using LabFusion.Downloading;
 using LabFusion.Marrow;
 using LabFusion.Menu;
-using LabFusion.Patching;
+using LabFusion.SDK.Modules;
+using LabFusion.Bonelab;
 
 #if DEBUG
 using LabFusion.Debugging;
@@ -105,6 +106,9 @@ public class FusionMod : MelonMod
         // Load assetbundles
         FusionBundleLoader.OnBundleLoad();
 
+        // Register base modules
+        InitializeBaseModules();
+
         // Register our base handlers
         LevelDataHandler.OnInitializeMelon();
         FusionMessageHandler.RegisterHandlersFromAssembly(FusionAssembly);
@@ -145,6 +149,11 @@ public class FusionMod : MelonMod
 #if DEBUG
         FusionUnityLogger.OnInitializeMelon();
 #endif
+    }
+
+    private static void InitializeBaseModules()
+    {
+        ModuleManager.RegisterModule<BonelabModule>();
     }
 
     public override void OnLateInitializeMelon()

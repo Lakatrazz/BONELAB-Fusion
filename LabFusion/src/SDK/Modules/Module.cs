@@ -5,16 +5,20 @@
 /// </summary>
 public abstract class Module
 {
+    public abstract string Name { get; }
+    public virtual string Author { get; } = "Unknown";
+    public virtual string Version { get; } = "0.0.0";
+
+    public virtual ConsoleColor Color { get; } = ConsoleColor.Magenta;
+
     /// <summary>
     /// The logger that the module can use to log information.
     /// </summary>
-    public ModuleLogger LoggerInstance { get; internal set; }
+    public ModuleLogger LoggerInstance { get; private set; }
 
-    internal void Register(ModuleData moduleData)
+    internal void Register()
     {
-        string name = moduleData.Name;
-
-        LoggerInstance = new ModuleLogger(name);
+        LoggerInstance = new ModuleLogger(Name);
 
         OnModuleRegistered();
     }

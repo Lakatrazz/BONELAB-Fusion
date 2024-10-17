@@ -9,32 +9,27 @@ public static class ModuleManager
     public static List<Module> Modules => _modules;
 
     /// <summary>
-    /// Registers a module using the given ModuleData.
+    /// Registers a module of the given type.
     /// </summary>
-    /// <param name="moduleData"></param>
-    public static void RegisterModule(ModuleData moduleData)
+    /// <typeparam name="TModule">The type of the module.</typeparam>
+    public static void RegisterModule<TModule>() where TModule : Module
     {
-        if (Activator.CreateInstance(moduleData.ModuleType) is not Module module)
-        {
-            FusionLogger.Error("Failed to create a Module as the ModuleType was not valid!");
+        var module = Activator.CreateInstance<TModule>();
 
-            return;
-        }
-
-        LogDescription(moduleData);
+        LogDescription(module);
 
         _modules.Add(module);
-        module.Register(moduleData);
+        module.Register();
     }
 
-    private static void LogDescription(ModuleData moduleData)
+    private static void LogDescription(Module module)
     {
-        FusionLogger.Log("--==== Loaded Fusion Module ====--", moduleData.Color);
+        FusionLogger.Log("--==== Loaded Fusion Module ====--", module.Color);
 
-        FusionLogger.Log($"{moduleData.Name} - v{moduleData.Version}");
+        FusionLogger.Log($"{module.Name} - v{module.Version}");
 
-        FusionLogger.Log($"by {moduleData.Author}");
+        FusionLogger.Log($"by {module.Author}");
 
-        FusionLogger.Log("--=============================--", moduleData.Color);
+        FusionLogger.Log("--=============================--", module.Color);
     }
 }
