@@ -79,7 +79,7 @@ public class ConnectionRequestMessage : FusionMessageHandler
         // Make sure the id isn't spoofed.
         if (NetworkInfo.IsSpoofed(data.longId))
         {
-            ConnectionSender.SendConnectionDeny(data.longId, "Nice try.");
+            ConnectionSender.SendConnectionDeny(data.longId, "Your player ID does not match the networked ID.");
             return;
         }
 
