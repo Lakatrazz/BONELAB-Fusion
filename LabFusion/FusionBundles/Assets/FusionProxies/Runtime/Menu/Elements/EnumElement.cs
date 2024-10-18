@@ -7,7 +7,7 @@ namespace LabFusion.Marrow.Proxies
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #endif
-    public class EnumElement : MenuElement
+    public class EnumElement : LabelElement
     {
 #if MELONLOADER
         public EnumElement(IntPtr intPtr) : base(intPtr) { }
@@ -23,7 +23,7 @@ namespace LabFusion.Marrow.Proxies
             {
                 _value = value;
 
-                UpdateSettings();
+                Draw();
 
                 OnValueChanged?.Invoke(value);
             }
@@ -50,7 +50,7 @@ namespace LabFusion.Marrow.Proxies
             }
         }
 
-        public event Action<Enum> OnValueChanged;
+        public Action<Enum> OnValueChanged;
 
         private int _enumIndex = 1;
         private Array _enumValues = null;

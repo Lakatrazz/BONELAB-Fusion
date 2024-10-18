@@ -140,12 +140,15 @@
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\DropdownButton.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\BoolElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\ButtonElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\DropdownElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\EnumElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\FloatElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\FunctionElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\GroupElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\IntElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\LabelElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\LobbyElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\MenuElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\PageElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\StringElement.cs.meta" />
@@ -158,6 +161,8 @@
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\MenuButton.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\MenuGroup.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\MenuPage.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Panels.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Panels\LobbyPanel.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Popups.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Popups\MenuPopups.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Popups\MenuToolbar.cs.meta" />

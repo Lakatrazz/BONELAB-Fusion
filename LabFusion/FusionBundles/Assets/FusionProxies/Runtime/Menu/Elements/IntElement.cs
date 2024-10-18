@@ -1,4 +1,4 @@
-using UnityEngine;
+using UnityEngine.UI;
 
 #if MELONLOADER
 using MelonLoader;
@@ -9,7 +9,7 @@ namespace LabFusion.Marrow.Proxies
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #endif
-    public class IntElement : MenuElement
+    public class IntElement : ButtonElement
     {
 #if MELONLOADER
         public IntElement(IntPtr intPtr) : base(intPtr) { }
@@ -25,7 +25,7 @@ namespace LabFusion.Marrow.Proxies
             {
                 _value = value;
 
-                UpdateSettings();
+                Draw();
 
                 OnValueChanged?.Invoke(value);
             }
@@ -37,7 +37,33 @@ namespace LabFusion.Marrow.Proxies
 
         public int Increment { get; set; } = 1;
 
-        public event Action<int> OnValueChanged;
+        public Action<int> OnValueChanged;
+
+        private Button _leftArrow = null;
+        private Button _rightArrow = null;
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            _leftArrow = transform.Find("button_LeftArrow").GetComponent<Button>();
+            _rightArrow = transform.Find("button_RightArrow").GetComponent<Button>();
+        }
+
+        protected override void OnDraw()
+        {
+            base.OnDraw();
+
+            if (_leftArrow != null)
+            {
+                _leftArrow.gameObject.SetActive(Interactable);
+            }
+
+            if (_rightArrow != null)
+            {
+                _rightArrow.gameObject.SetActive(Interactable);
+            }
+        }
 
         public void NextValue() 
         {

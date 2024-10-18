@@ -11,7 +11,7 @@ namespace LabFusion.Marrow.Proxies
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #endif
-    public class GroupElement : MenuElement
+    public class GroupElement : LabelElement
     {
 #if MELONLOADER
         public GroupElement(IntPtr intPtr) : base(intPtr) { }

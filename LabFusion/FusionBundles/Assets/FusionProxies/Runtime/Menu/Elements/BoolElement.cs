@@ -9,7 +9,7 @@ namespace LabFusion.Marrow.Proxies
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #endif
-    public class BoolElement : MenuElement
+    public class BoolElement : LabelElement
     {
 #if MELONLOADER
         public BoolElement(IntPtr intPtr) : base(intPtr) { }
@@ -25,13 +25,13 @@ namespace LabFusion.Marrow.Proxies
             {
                 _value = value;
 
-                UpdateSettings();
+                Draw();
 
                 OnValueChanged?.Invoke(value);
             }
         }
 
-        public event Action<bool> OnValueChanged;
+        public Action<bool> OnValueChanged;
 
         private GameObject _falseObject = null;
         private GameObject _trueObject = null;

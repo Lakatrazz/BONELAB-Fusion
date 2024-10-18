@@ -1,5 +1,8 @@
 ﻿using LabFusion.Marrow.Proxies;
 using LabFusion.Network;
+using LabFusion.Player;
+using LabFusion.Preferences;
+using LabFusion.Scene;
 using LabFusion.Utilities;
 
 using UnityEngine;
@@ -10,6 +13,8 @@ public static class MenuLocation
 {
     public static MenuPage LocationPage { get; private set; }
 
+    public static LobbyElement LobbyElement { get; private set; }
+
     public static void OnInitializeMelon()
     {
         MultiplayerHooking.OnStartServer += OnConnect;
@@ -19,47 +24,85 @@ public static class MenuLocation
 
     private static void OnConnect()
     {
-        if (LocationPage == null)
+        if (LobbyElement == null)
         {
             return;
         }
 
-        LocationPage.DefaultPageIndex = 1;
-        LocationPage.SelectSubPage(1);
+        PopulateLobbyAsServer(LobbyElement);
     }
 
     private static void OnDisconnect()
     {
-        if (LocationPage == null)
+        if (LobbyElement == null)
         {
             return;
         }
 
-        LocationPage.DefaultPageIndex = 0;
-        LocationPage.SelectSubPage(0);
+        PopulateLobbyNoServer(LobbyElement);
+    }
+
+    private static void PopulateLobbyNoServer(LobbyElement element)
+    {
+        element.ServerActionElement
+            .Clear()
+            .WithTitle("Create Server")
+            .Do(NetworkHelper.StartServer);
+
+        AssignLobbyToLocalSettings(element);
+    }
+
+    private static void PopulateLobbyAsServer(LobbyElement element)
+    {
+        element.ServerActionElement
+            .Clear()
+            .WithTitle("Disconnect")
+            .Do(() => { NetworkHelper.Disconnect(); });
+
+        AssignLobbyToLocalSettings(element);
+    }
+
+    private static void AssignLobbyToLocalSettings(LobbyElement element)
+    {
+        element.LevelNameElement
+            .WithTitle(FusionSceneManager.Title);
+
+        element.ServerVersionElement
+            .WithTitle($"v{FusionMod.Version}");
+
+        var playerCount = PlayerIdManager.PlayerCount;
+
+        element.PlayerCountElement
+            .WithTitle($"{playerCount} Player{(playerCount != 1 ? "s" : "")}");
+
+        element.MaxPlayersElement
+            .Clear()
+            .AsPref(ServerSettingsManager.SavedSettings.MaxPlayers)
+            .WithIncrement(1)
+            .WithLimits(2, 255)
+            .WithTitle("Max Players");
+
+        element.PrivacyElement
+            .Clear()
+            .AsPref(ServerSettingsManager.SavedSettings.Privacy)
+            .WithTitle("Privacy");
+
+        element.ServerNameElement
+            .Clear()
+            .AsPref(ServerSettingsManager.SavedSettings.ServerName)
+            .WithTitle("Server Name");
+
+        element.HostNameElement
+            .WithTitle($"{PlayerIdManager.LocalUsername}");
     }
 
     public static void PopulateLocation(GameObject locationPage)
     {
         LocationPage = locationPage.GetComponent<MenuPage>();
 
-        // No Server subpage
-        var noServerPage = locationPage.transform.Find("subPage_NoServer");
+        LobbyElement = locationPage.transform.Find("panel_Lobby").GetComponent<LobbyElement>();
 
-        var createServerButton = noServerPage.Find("button_CreateServer").GetComponent<FunctionElement>();
-
-        createServerButton.Title = "Create Server";
-
-        createServerButton.OnPressed += NetworkHelper.StartServer;
-
-        // Server subpage
-        var serverPage = locationPage.transform.Find("subPage_Server");
-
-        var disconnectButton = serverPage.Find("button_Disconnect").GetComponent<FunctionElement>();
-
-        disconnectButton.Title = "Disconnect";
-
-        disconnectButton.OnPressed += () => { NetworkHelper.Disconnect(); };
+        LobbyElement.GetElements();
 
         // Update server status
         if (NetworkInfo.HasServer)

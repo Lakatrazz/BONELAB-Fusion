@@ -4,6 +4,7 @@ using LabFusion.Menu;
 using MelonLoader;
 
 using UnityEngine;
+using UnityEngine.UI;
 #endif
 
 namespace LabFusion.Marrow.Proxies
@@ -11,12 +12,12 @@ namespace LabFusion.Marrow.Proxies
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #endif
-    public class StringElement : MenuElement
+    public class StringElement : ButtonElement
     {
 #if MELONLOADER
         public StringElement(IntPtr intPtr) : base(intPtr) { }
 
-        public event Action<string> OnValueChanged;
+        public Action<string> OnValueChanged;
 
         private string _value = null;
         public string Value
@@ -29,9 +30,58 @@ namespace LabFusion.Marrow.Proxies
             {
                 _value = value;
 
-                UpdateSettings();
+                Draw();
 
                 OnValueChanged?.Invoke(value);
+            }
+        }
+
+        private string _emptyFormat = "Click to add {0}...";
+        public string EmptyFormat
+        {
+            get
+            {
+                return _emptyFormat;
+            }
+            set
+            {
+                _emptyFormat = value;
+
+                Draw();
+            }
+        }
+
+        private string _enteredFormat = "{0}: {1}";
+        public string EnteredFormat
+        {
+            get
+            {
+                return _enteredFormat;
+            }
+            set
+            {
+                _enteredFormat = value;
+
+                Draw();
+            }
+        }
+
+        private Button _button = null;
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            _button = GetComponent<Button>();
+        }
+
+        protected override void OnDraw()
+        {
+            base.OnDraw();
+
+            if (_button != null)
+            {
+                _button.interactable = Interactable;
             }
         }
 
@@ -53,12 +103,12 @@ namespace LabFusion.Marrow.Proxies
             {
                 if (string.IsNullOrEmpty(Value))
                 {
-                    Text.text = $"Click to add {Title.ToLower()}...";
+                    Text.text = string.Format(EmptyFormat, Title);
                     Text.color = Color.gray * Color;
                 }
                 else
                 {
-                    Text.text = $"{Title}: {Value}";
+                    Text.text = string.Format(EnteredFormat, Title, Value);
                     Text.color = Color;
                 }
             }

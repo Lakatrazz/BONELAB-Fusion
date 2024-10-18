@@ -9,7 +9,7 @@ namespace LabFusion.Marrow.Proxies
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #endif
-    public class FloatElement : MenuElement
+    public class FloatElement : LabelElement
     {
 #if MELONLOADER
         public FloatElement(IntPtr intPtr) : base(intPtr) { }
@@ -25,7 +25,7 @@ namespace LabFusion.Marrow.Proxies
             {
                 _value = value;
 
-                UpdateSettings();
+                Draw();
 
                 OnValueChanged?.Invoke(value);
             }
@@ -37,7 +37,7 @@ namespace LabFusion.Marrow.Proxies
 
         public float Increment { get; set; } = 0.01f;
 
-        public event Action<float> OnValueChanged;
+        public Action<float> OnValueChanged;
 
         public void NextValue() 
         {

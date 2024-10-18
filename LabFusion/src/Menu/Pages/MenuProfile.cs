@@ -16,19 +16,18 @@ public static class MenuProfile
         // Update the profile grid
         var gridPofile = profilePage.transform.Find("grid_Profile");
 
-        var usernameLabel = gridPofile.Find("label_Username");
-        usernameLabel.Find("text").GetComponent<TMP_Text>().text = PlayerIdManager.LocalUsername;
+        var usernameLabel = gridPofile.Find("label_Username").GetComponent<LabelElement>()
+            .WithTitle(PlayerIdManager.LocalUsername);
 
         var nicknameButton = gridPofile.Find("button_Nickname").GetComponent<StringElement>()
+            .WithTitle("Nickname")
             .AsPref(ClientSettings.Nickname, (value) =>
             {
                 PlayerIdManager.LocalId?.Metadata.TrySetMetadata(MetadataHelper.NicknameKey, value);
             });
 
-        nicknameButton.Title = "Nickname";
-
         var descriptionButton = gridPofile.Find("button_Description").GetComponent<StringElement>()
+            .WithTitle("Description")
             .AsPref(ClientSettings.Description);
-        descriptionButton.Title = "Description";
     }
 }
