@@ -75,6 +75,11 @@ public abstract class NetworkLayer
     public virtual IVoiceManager VoiceManager => null;
 
     /// <summary>
+    /// Returns the layer's matchmaker for finding lobbies.
+    /// </summary>
+    public virtual IMatchmaker Matchmaker => null;
+
+    /// <summary>
     /// Returns if this NetworkLayer requires valid player IDs. 
     /// Set this to true if the layer sets <see cref="NetworkInfo.LastReceivedUser"/> upon receiving messages.
     /// Defaults to false.

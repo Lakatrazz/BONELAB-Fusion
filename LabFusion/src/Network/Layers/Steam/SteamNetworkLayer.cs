@@ -25,6 +25,8 @@ using LabFusion.Voice;
 using LabFusion.Voice.Unity;
 using LabFusion.SDK.Lobbies;
 using LabFusion.Preferences;
+using LabFusion.SDK.Points;
+using static LabFusion.Network.IMatchmaker;
 
 namespace LabFusion.Network;
 
@@ -46,6 +48,9 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
     private IVoiceManager _voiceManager = null;
     public override IVoiceManager VoiceManager => _voiceManager;
+
+    private IMatchmaker _matchmaker = null;
+    public override IMatchmaker Matchmaker => _matchmaker;
 
     public SteamId SteamId;
 
@@ -111,6 +116,8 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
         _voiceManager = new UnityVoiceManager();
         _voiceManager.Enable();
+
+        _matchmaker = new SteamMatchmaker();
     }
 
     public override void OnLateInitializeLayer()
@@ -487,7 +494,9 @@ public abstract class SteamNetworkLayer : NetworkLayer
             Menu_RefreshPublicLobbies();
         });
 
-        MelonCoroutines.Start(CoAwaitLobbyListRoutine());
+        _isPublicLobbySearching = true;
+
+        Matchmaker?.RequestLobbies(OnLobbyListReturned);
     }
 
     private bool Internal_CanShowLobby(LobbyMetadataInfo info)
@@ -505,7 +514,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
         };
     }
 
-    private Task<Lobby[]> FetchLobbies()
+    private static Task<Lobby[]> FetchLobbies()
     {
         var list = SteamMatchmaking.LobbyList;
         list.FilterDistanceWorldwide();
@@ -515,34 +524,16 @@ public abstract class SteamNetworkLayer : NetworkLayer
         return list.RequestAsync();
     }
 
-    private IEnumerator CoAwaitLobbyListRoutine()
+    private void OnLobbyListReturned(MatchmakerCallbackInfo info)
     {
-        _isPublicLobbySearching = true;
-        LobbySortMode sortMode = _publicLobbySortMode;
-
-        // Fetch lobbies
-        var task = FetchLobbies();
-
-        while (!task.IsCompleted)
-            yield return null;
-
-        var lobbies = task.Result;
-
-        foreach (var lobby in lobbies)
+        foreach (var lobby in info.lobbies)
         {
-            // Make sure this is not us
-            if (lobby.Owner.IsMe)
-            {
-                continue;
-            }
+            var metadata = LobbyMetadataHelper.ReadInfo(lobby);
 
-            var networkLobby = new SteamLobby(lobby);
-            var info = LobbyMetadataHelper.ReadInfo(networkLobby);
-
-            if (Internal_CanShowLobby(info) && LobbyFilterManager.FilterLobby(networkLobby, info))
+            if (Internal_CanShowLobby(metadata) && LobbyFilterManager.FilterLobby(lobby, metadata))
             {
                 // Add to list
-                BoneMenuCreator.CreateLobby(_publicLobbiesCategory, info, networkLobby, sortMode);
+                BoneMenuCreator.CreateLobby(_publicLobbiesCategory, metadata, lobby, _publicLobbySortMode);
             }
         }
 
