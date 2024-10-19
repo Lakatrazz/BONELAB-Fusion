@@ -9,7 +9,7 @@ namespace LabFusion.Marrow.Proxies
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #endif
-    public class FloatElement : LabelElement
+    public class FloatElement : ValueElement
     {
 #if MELONLOADER
         public FloatElement(IntPtr intPtr) : base(intPtr) { }
@@ -63,15 +63,22 @@ namespace LabFusion.Marrow.Proxies
             Value = newValue;
         }
 
-        public override void UpdateText()
+        public override object GetValue()
         {
-            if (Text != null)
-            {
-                float rounded = Mathf.Round(Value * 1000f) / 1000f;
-                Text.text = $"{Title}: {rounded}";
+            return Mathf.Round(Value * 1000f) / 1000f;
+        }
 
-                Text.color = Color;
-            }
+        protected override void OnClearValues()
+        {
+            _value = 0f;
+
+            MinValue = 0f;
+            MaxValue = 1f;
+            Increment = 0.01f;
+
+            OnValueChanged = null;
+
+            base.OnClearValues();
         }
 #else
         public void NextValue()

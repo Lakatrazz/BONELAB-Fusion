@@ -30,7 +30,7 @@ namespace LabFusion.Marrow.Proxies
             }
         }
 
-        public event Action OnDestroyed;
+        public event Action OnCleared;
 
         protected virtual void OnEnable()
         {
@@ -39,8 +39,20 @@ namespace LabFusion.Marrow.Proxies
 
         protected virtual void OnDestroy()
         {
-            OnDestroyed?.Invoke();
-            OnDestroyed = null;
+            Clear();
+        }
+
+        public void Clear()
+        {
+            OnClearValues();
+
+            OnCleared?.Invoke();
+            OnCleared = null;
+        }
+
+        protected virtual void OnClearValues()
+        {
+            _title = "Element";
         }
 
         public void Draw()

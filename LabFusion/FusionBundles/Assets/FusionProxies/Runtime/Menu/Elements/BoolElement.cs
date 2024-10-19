@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 #if MELONLOADER
 using MelonLoader;
@@ -9,7 +10,7 @@ namespace LabFusion.Marrow.Proxies
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #endif
-    public class BoolElement : LabelElement
+    public class BoolElement : ButtonElement
     {
 #if MELONLOADER
         public BoolElement(IntPtr intPtr) : base(intPtr) { }
@@ -33,12 +34,15 @@ namespace LabFusion.Marrow.Proxies
 
         public Action<bool> OnValueChanged;
 
+        private Button _button = null;
         private GameObject _falseObject = null;
         private GameObject _trueObject = null;
 
         protected override void Awake()
         {
             base.Awake();
+
+            _button = GetComponent<Button>();
 
             var falseTransform = transform.Find("False Object");
 
@@ -62,10 +66,11 @@ namespace LabFusion.Marrow.Proxies
 
         public override void UpdateText()
         {
-            if (Text != null)
+            base.UpdateText();
+
+            if (_button != null)
             {
-                Text.text = Title;
-                Text.color = Color;
+                _button.interactable = Interactable;
             }
 
             if (_trueObject != null)
@@ -77,6 +82,14 @@ namespace LabFusion.Marrow.Proxies
             {
                 _falseObject.SetActive(!Value);
             }
+        }
+
+        protected override void OnClearValues()
+        {
+            _value = false;
+            OnValueChanged = null;
+
+            base.OnClearValues();
         }
 #else
         public void Toggle()

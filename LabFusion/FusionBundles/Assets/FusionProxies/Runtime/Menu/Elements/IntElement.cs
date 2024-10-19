@@ -9,7 +9,7 @@ namespace LabFusion.Marrow.Proxies
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #endif
-    public class IntElement : ButtonElement
+    public class IntElement : ValueElement
     {
 #if MELONLOADER
         public IntElement(IntPtr intPtr) : base(intPtr) { }
@@ -39,32 +39,6 @@ namespace LabFusion.Marrow.Proxies
 
         public Action<int> OnValueChanged;
 
-        private Button _leftArrow = null;
-        private Button _rightArrow = null;
-
-        protected override void Awake()
-        {
-            base.Awake();
-
-            _leftArrow = transform.Find("button_LeftArrow").GetComponent<Button>();
-            _rightArrow = transform.Find("button_RightArrow").GetComponent<Button>();
-        }
-
-        protected override void OnDraw()
-        {
-            base.OnDraw();
-
-            if (_leftArrow != null)
-            {
-                _leftArrow.gameObject.SetActive(Interactable);
-            }
-
-            if (_rightArrow != null)
-            {
-                _rightArrow.gameObject.SetActive(Interactable);
-            }
-        }
-
         public void NextValue() 
         {
             var newValue = Value + Increment;
@@ -89,14 +63,22 @@ namespace LabFusion.Marrow.Proxies
             Value = newValue;
         }
 
-        public override void UpdateText()
+        public override object GetValue()
         {
-            if (Text != null)
-            {
-                Text.text = $"{Title}: {Value}";
+            return Value;
+        }
 
-                Text.color = Color;
-            }
+        protected override void OnClearValues()
+        {
+            _value = 0;
+
+            MinValue = 0;
+            MaxValue = 1;
+            Increment = 1;
+
+            OnValueChanged = null;
+
+            base.OnClearValues();
         }
 #else
         public void NextValue()

@@ -12,6 +12,21 @@ namespace LabFusion.Marrow.Proxies
 #if MELONLOADER
         public LobbyElement(IntPtr intPtr) : base(intPtr) { }
 
+        private bool _interactable = true;
+        public bool Interactable
+        {
+            get
+            {
+                return _interactable;
+            }
+            set
+            {
+                _interactable = value;
+
+                Draw();
+            }
+        }
+
         public LabelElement LevelNameElement { get; set; } = null;
         public LabelElement ServerVersionElement { get; set; } = null;
         public LabelElement PlayerCountElement { get; set; } = null;
@@ -51,6 +66,26 @@ namespace LabFusion.Marrow.Proxies
             HostNameElement = serverInfoGrid.Find("label_HostName").GetComponent<LabelElement>();
 
             _hasElements = true;
+        }
+
+        protected override void OnDraw()
+        {
+            base.OnDraw();
+
+            if (MaxPlayersElement != null)
+            {
+                MaxPlayersElement.Interactable = Interactable;
+            }
+
+            if (PrivacyElement != null)
+            {
+                PrivacyElement.Interactable = Interactable;
+            }
+
+            if (ServerNameElement != null)
+            {
+                ServerNameElement.Interactable = Interactable;
+            }
         }
 #endif
     }

@@ -24,6 +24,7 @@ using LiteNetLib.Utils;
 using LabFusion.Voice;
 using LabFusion.Voice.Unity;
 using LabFusion.SDK.Lobbies;
+using LabFusion.Preferences;
 
 namespace LabFusion.Network
 {
@@ -424,7 +425,7 @@ namespace LabFusion.Network
             MultiplayerHooking.OnMainSceneInitialized += OnUpdateLobby;
             MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
-            MultiplayerHooking.OnServerSettingsChanged += OnUpdateLobby;
+            ServerSettingsManager.OnServerSettingsChanged += OnUpdateLobby;
             MultiplayerHooking.OnDisconnect += OnDisconnect;
 
             // Add BoneMenu hooks
@@ -459,7 +460,7 @@ namespace LabFusion.Network
             MultiplayerHooking.OnMainSceneInitialized -= OnUpdateLobby;
             MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
             MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
-            MultiplayerHooking.OnServerSettingsChanged -= OnUpdateLobby;
+            ServerSettingsManager.OnServerSettingsChanged -= OnUpdateLobby;
             MultiplayerHooking.OnDisconnect -= OnDisconnect;
 
             // Unhook BoneMenu events

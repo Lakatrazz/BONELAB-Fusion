@@ -114,7 +114,7 @@ public static partial class BoneMenuCreator
         var gameplaySettingsSubPanel = page.CreatePage("Gameplay Settings", Color.white);
         CreateEnumPreference(gameplaySettingsSubPanel, "Time Scale Mode", ServerSettingsManager.SavedSettings.TimeScaleMode);
         CreateBoolPreference(gameplaySettingsSubPanel, "Server Mortality", ServerSettingsManager.SavedSettings.ServerMortality);
-        MultiplayerHooking.OnServerSettingsChanged += () =>
+        ServerSettingsManager.OnServerSettingsChanged += () =>
         {
             // Update mortality
             if (Gamemode.ActiveGamemode == null)

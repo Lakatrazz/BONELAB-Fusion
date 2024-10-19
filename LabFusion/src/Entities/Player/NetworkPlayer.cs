@@ -256,7 +256,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         PlayerId.Metadata.OnMetadataChanged += OnMetadataChanged;
         PlayerId.OnDestroyedEvent += OnPlayerDestroyed;
 
-        MultiplayerHooking.OnServerSettingsChanged += OnServerSettingsChanged;
+        ServerSettingsManager.OnServerSettingsChanged += OnServerSettingsChanged;
         FusionOverrides.OnOverridesChanged += OnServerSettingsChanged;
 
         // Find the rig for the current scene, and hook into scene loads
@@ -273,7 +273,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         PlayerId.Metadata.OnMetadataChanged -= OnMetadataChanged;
         PlayerId.OnDestroyedEvent -= OnPlayerDestroyed;
 
-        MultiplayerHooking.OnServerSettingsChanged -= OnServerSettingsChanged;
+        ServerSettingsManager.OnServerSettingsChanged -= OnServerSettingsChanged;
         FusionOverrides.OnOverridesChanged -= OnServerSettingsChanged;
 
         // Remove cache

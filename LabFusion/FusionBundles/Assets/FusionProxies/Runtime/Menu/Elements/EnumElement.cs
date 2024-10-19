@@ -7,7 +7,7 @@ namespace LabFusion.Marrow.Proxies
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #endif
-    public class EnumElement : LabelElement
+    public class EnumElement : ValueElement
     {
 #if MELONLOADER
         public EnumElement(IntPtr intPtr) : base(intPtr) { }
@@ -55,6 +55,11 @@ namespace LabFusion.Marrow.Proxies
         private int _enumIndex = 1;
         private Array _enumValues = null;
 
+        public override object GetValue()
+        {
+            return Value;
+        }
+
         public void NextValue() 
         {
             if (_enumValues == null)
@@ -77,13 +82,12 @@ namespace LabFusion.Marrow.Proxies
             Value = _enumValues.GetValue(_enumIndex--) as Enum;
         }
 
-        public override void UpdateText()
+        protected override void OnClearValues()
         {
-            if (Text != null)
-            {
-                Text.text = $"{Title}: {Value}";
-                Text.color = Color;
-            }
+            _value = null;
+            OnValueChanged = null;
+
+            base.OnClearValues();
         }
 #else
         public void NextValue()

@@ -44,6 +44,6 @@ public class ServerSettingsMessage : FusionMessageHandler
             throw new ExpectedClientException();
         }
 
-        ServerSettingsManager.OnReceiveHostSettings(data.settings.settings);
+        ServerSettingsManager.HostSettings = data.settings.settings;
     }
 }

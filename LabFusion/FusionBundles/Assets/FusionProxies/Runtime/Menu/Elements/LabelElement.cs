@@ -32,6 +32,28 @@ namespace LabFusion.Marrow.Proxies
 
         public TMP_Text Text { get { return _text; } set { _text = value; } }
 
+        public virtual string DefaultTextFormat => "{0}";
+
+        private string _textFormat = null;
+        public string TextFormat
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(_textFormat))
+                {
+                    _textFormat = DefaultTextFormat;
+                }
+
+                return _textFormat;
+            }
+            set
+            {
+                _textFormat = value;
+
+                Draw();
+            }
+        }
+
         private TMP_Text _text = null;
 
         protected virtual void Awake()
@@ -55,9 +77,16 @@ namespace LabFusion.Marrow.Proxies
         {
             if (Text != null)
             {
-                Text.text = Title;
+                Text.text = string.Format(TextFormat, Title);
                 Text.color = Color;
             }
+        }
+
+        protected override void OnClearValues()
+        {
+            _color = Color.white;
+
+            base.OnClearValues();
         }
 #endif
     }

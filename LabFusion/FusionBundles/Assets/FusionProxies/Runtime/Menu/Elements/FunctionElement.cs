@@ -39,6 +39,13 @@ namespace LabFusion.Marrow.Proxies
                 _button.interactable = Interactable;
             }
         }
+
+        protected override void OnClearValues()
+        {
+            OnPressed = null;
+
+            base.OnClearValues();
+        }
 #else
         public void Press()
         {

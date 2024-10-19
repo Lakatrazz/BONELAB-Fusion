@@ -1,11 +1,6 @@
 ﻿using LabFusion.Utilities;
-using MelonLoader;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MelonLoader;
 
 namespace LabFusion.Preferences;
 
@@ -15,9 +10,23 @@ public static class ServerSettingsManager
     public static ServerSettings SavedSettings => _savedSettings;
 
     private static ServerSettings _hostSettings = null;
-    public static ServerSettings HostSettings => _hostSettings;
+    public static ServerSettings HostSettings 
+    {
+        get
+        {
+            return _hostSettings;
+        }
+        set
+        {
+            _hostSettings = value;
+
+            PushSettingsUpdate();
+        }
+    }
 
     public static ServerSettings ActiveSettings => HostSettings ?? SavedSettings;
+
+    public static event Action OnServerSettingsChanged;
 
     public static void OnInitialize(MelonPreferences_Category category)
     {
@@ -25,10 +34,8 @@ public static class ServerSettingsManager
         _savedSettings = ServerSettings.CreateMelonPrefs(category);
     }
 
-    public static void OnReceiveHostSettings(ServerSettings settings)
+    public static void PushSettingsUpdate()
     {
-        _hostSettings = settings;
-
-        MultiplayerHooking.Internal_OnServerSettingsChanged();
+        OnServerSettingsChanged.InvokeSafe("executing server settings changed hook");
     }
 }

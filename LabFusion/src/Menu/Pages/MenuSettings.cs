@@ -59,14 +59,6 @@ public static class MenuSettings
         // General
         var generalSettingsGroup = page.AddElement<GroupElement>("General");
 
-        generalSettingsGroup.AddElement<IntElement>("Max Players")
-            .AsPref(ServerSettingsManager.SavedSettings.MaxPlayers)
-            .WithIncrement(1)
-            .WithLimits(2, 255);
-
-        generalSettingsGroup.AddElement<EnumElement>("Privacy")
-            .AsPref(ServerSettingsManager.SavedSettings.Privacy);
-
         generalSettingsGroup.AddElement<BoolElement>("NameTags")
             .AsPref(ServerSettingsManager.SavedSettings.NametagsEnabled);
 
@@ -83,7 +75,7 @@ public static class MenuSettings
             .AsPref(ServerSettingsManager.SavedSettings.ServerMortality);
 
         // Move this out of this class eventually
-        MultiplayerHooking.OnServerSettingsChanged += () =>
+        ServerSettingsManager.OnServerSettingsChanged += () =>
         {
             // Update mortality
             if (Gamemode.ActiveGamemode == null)

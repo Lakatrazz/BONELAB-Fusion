@@ -89,13 +89,13 @@ public class FusionPref<T> : IFusionPref<T>
                 break;
             case PrefUpdateMode.SERVER_UPDATE:
                 FusionPreferences.SendServerSettings();
-                MultiplayerHooking.Internal_OnServerSettingsChanged();
+                ServerSettingsManager.PushSettingsUpdate();
                 break;
             case PrefUpdateMode.CLIENT_UPDATE:
                 FusionPreferences.SendClientSettings();
                 break;
             case PrefUpdateMode.LOCAL_UPDATE:
-                MultiplayerHooking.Internal_OnServerSettingsChanged();
+                ServerSettingsManager.PushSettingsUpdate();
                 break;
         }
     }

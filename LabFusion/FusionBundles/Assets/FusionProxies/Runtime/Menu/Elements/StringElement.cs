@@ -51,20 +51,7 @@ namespace LabFusion.Marrow.Proxies
             }
         }
 
-        private string _enteredFormat = "{0}: {1}";
-        public string EnteredFormat
-        {
-            get
-            {
-                return _enteredFormat;
-            }
-            set
-            {
-                _enteredFormat = value;
-
-                Draw();
-            }
-        }
+        public override string DefaultTextFormat => "{0}: {1}";
 
         private Button _button = null;
 
@@ -108,10 +95,18 @@ namespace LabFusion.Marrow.Proxies
                 }
                 else
                 {
-                    Text.text = string.Format(EnteredFormat, Title, Value);
+                    Text.text = string.Format(TextFormat, Title, Value);
                     Text.color = Color;
                 }
             }
+        }
+
+        protected override void OnClearValues()
+        {
+            _value = null;
+            OnValueChanged = null;
+
+            base.OnClearValues();
         }
 #else
         public void ToggleKeyboard()

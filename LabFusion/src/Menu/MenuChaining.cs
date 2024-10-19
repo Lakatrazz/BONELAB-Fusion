@@ -30,7 +30,7 @@ public static class MenuChaining
             onValueChanged?.Invoke(value);
         };
 
-        element.OnDestroyed += () =>
+        element.OnCleared += () =>
         {
             element.OnValueChanged -= OnButtonChanged;
         };
@@ -60,7 +60,7 @@ public static class MenuChaining
             onValueChanged?.Invoke(value);
         };
 
-        element.OnDestroyed += () =>
+        element.OnCleared += () =>
         {
             element.OnValueChanged -= OnButtonChanged;
         };
@@ -90,7 +90,7 @@ public static class MenuChaining
             onValueChanged?.Invoke(value);
         };
 
-        element.OnDestroyed += () =>
+        element.OnCleared += () =>
         {
             element.OnValueChanged -= OnButtonChanged;
         };
@@ -120,7 +120,7 @@ public static class MenuChaining
             onValueChanged?.Invoke(value);
         };
 
-        element.OnDestroyed += () =>
+        element.OnCleared += () =>
         {
             element.OnValueChanged -= OnButtonChanged;
         };
@@ -150,7 +150,7 @@ public static class MenuChaining
             onValueChanged?.Invoke(value);
         };
 
-        element.OnDestroyed += () =>
+        element.OnCleared += () =>
         {
             element.OnValueChanged -= OnButtonChanged;
         };
@@ -223,67 +223,9 @@ public static class MenuChaining
         return button;
     }
 
-    public static IntElement Clear(this IntElement element)
+    public static TElement Cleared<TElement>(this TElement element) where TElement : MenuElement
     {
-        element.Title = "Element";
-        element.Color = Color.white;
-        element.OnValueChanged = null;
-        element.Value = 0;
-        element.Increment = 1;
-        element.MinValue = 0;
-        element.MaxValue= 1;
-
-        return element;
-    }
-
-    public static FunctionElement Clear(this FunctionElement element)
-    {
-        element.Title = "Element";
-        element.Color = Color.white;
-        element.OnPressed = null;
-
-        return element;
-    }
-
-    public static FloatElement Clear(this FloatElement element)
-    {
-        element.Title = "Element";
-        element.Color = Color.white;
-        element.OnValueChanged = null;
-        element.Value = 0;
-        element.Increment = 0.01f;
-        element.MinValue = 0;
-        element.MaxValue = 1f;
-
-        return element;
-    }
-
-    public static BoolElement Clear(this BoolElement element)
-    {
-        element.Title = "Element";
-        element.Color = Color.white;
-        element.OnValueChanged = null;
-        element.Value = false;
-
-        return element;
-    }
-
-    public static StringElement Clear(this StringElement element)
-    {
-        element.Title = "Element";
-        element.Color = Color.white;
-        element.OnValueChanged = null;
-        element.Value = null;
-
-        return element;
-    }
-
-    public static EnumElement Clear(this EnumElement element)
-    {
-        element.Title = "Element";
-        element.Color = Color.white;
-        element.OnValueChanged = null;
-        element.Value = null;
+        element.Clear();
 
         return element;
     }

@@ -65,11 +65,6 @@ public static class MultiplayerHooking
 
     internal static void Internal_OnLobbyCategoryCreated(Page page, INetworkLobby lobby) => OnLobbyCategoryCreated.InvokeSafe(page, lobby, "executing OnLobbyCategoryCreated");
 
-    // Settings updates
-    public static event ServerEvent OnServerSettingsChanged;
-
-    internal static void Internal_OnServerSettingsChanged() => OnServerSettingsChanged.InvokeSafe("executing server settings changed hook");
-
     // Unity hooks
     /// <summary>
     /// A hook for frame updates. Errors are not caught for performance reasons, please use carefully!
