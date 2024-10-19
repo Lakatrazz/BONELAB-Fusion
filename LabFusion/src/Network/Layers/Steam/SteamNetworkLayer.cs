@@ -514,16 +514,6 @@ public abstract class SteamNetworkLayer : NetworkLayer
         };
     }
 
-    private static Task<Lobby[]> FetchLobbies()
-    {
-        var list = SteamMatchmaking.LobbyList;
-        list.FilterDistanceWorldwide();
-        list.WithMaxResults(int.MaxValue);
-        list.WithSlotsAvailable(int.MaxValue);
-        list.WithKeyValue(LobbyConstants.HasServerOpenKey, bool.TrueString);
-        return list.RequestAsync();
-    }
-
     private void OnLobbyListReturned(MatchmakerCallbackInfo info)
     {
         foreach (var lobby in info.lobbies)
@@ -552,37 +542,27 @@ public abstract class SteamNetworkLayer : NetworkLayer
         _friendsCategory.RemoveAll();
         _friendsCategory.CreateFunction("Refresh", Color.white, Menu_RefreshFriendLobbies);
 
-        MelonCoroutines.Start(CoAwaitFriendListRoutine());
-    }
-
-    private IEnumerator CoAwaitFriendListRoutine()
-    {
         _isFriendLobbySearching = true;
 
-        // Fetch lobbies
-        var task = FetchLobbies();
+        Matchmaker?.RequestLobbies(OnFriendListReturned);
+    }
 
-        while (!task.IsCompleted)
-            yield return null;
-
-        var lobbies = task.Result;
-
-        foreach (var lobby in lobbies)
+    private void OnFriendListReturned(MatchmakerCallbackInfo info)
+    {
+        foreach (var lobby in info.lobbies)
         {
-            // Make sure this is not us but is also a friend
-            if (lobby.Owner.IsMe)
-                continue;
-
-            var networkLobby = new SteamLobby(lobby);
-            var lobbyInfo = LobbyMetadataHelper.ReadInfo(networkLobby);
+            var metadata = LobbyMetadataHelper.ReadInfo(lobby);
+            var lobbyInfo = LobbyMetadataHelper.ReadInfo(lobby);
 
             if (!IsFriend(lobbyInfo.LobbyId))
+            {
                 continue;
+            }
 
-            if (Internal_CanShowLobby(lobbyInfo))
+            if (Internal_CanShowLobby(metadata) && LobbyFilterManager.FilterLobby(lobby, metadata))
             {
                 // Add to list
-                BoneMenuCreator.CreateLobby(_friendsCategory, lobbyInfo, networkLobby);
+                BoneMenuCreator.CreateLobby(_publicLobbiesCategory, metadata, lobby, _publicLobbySortMode);
             }
         }
 
