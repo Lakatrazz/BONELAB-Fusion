@@ -3,6 +3,7 @@ using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Preferences.Server;
 using LabFusion.Scene;
+using LabFusion.Senders;
 using LabFusion.Utilities;
 
 using UnityEngine;
@@ -136,6 +137,43 @@ public static class MenuLocation
         element.DescriptionElement.EmptyFormat = emptyFormat;
         element.DescriptionElement.TextFormat = "{1}";
 
+        // Fill out lists
+        // Settings list
+        var settingsPage = element.SettingsElement.Pages[0];
+
+        var generalGroup = settingsPage.AddOrGetElement<GroupElement>("General");
+
+        generalGroup.AddOrGetElement<BoolElement>("NameTags")
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .AsPref(settings.NametagsEnabled)
+            .WithTitle("NameTags");
+
+        generalGroup.AddOrGetElement<BoolElement>("VoiceChat")
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .AsPref(settings.VoiceChatEnabled)
+            .WithTitle("VoiceChat");
+
+        generalGroup.AddOrGetElement<EnumElement>("SlowMo")
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .AsPref(settings.TimeScaleMode)
+            .WithTitle("SlowMo");
+
+        // Player list
+        element.PlayerListElement.Clear();
+
+        var playerListPage = element.PlayerListElement.AddPage();
+
+        foreach (var player in PlayerIdManager.PlayerIds)
+        {
+            MetadataHelper.TryGetDisplayName(player, out var name);
+
+            playerListPage.AddElement<FunctionElement>(name);
+        }
+
+        // Change interactability for all elements
         element.Interactable = ownsSettings;
     }
 
@@ -146,6 +184,8 @@ public static class MenuLocation
         LobbyElement = locationPage.transform.Find("panel_Lobby").GetComponent<LobbyElement>();
 
         LobbyElement.GetElements();
+
+        LobbyElement.SettingsElement.AddPage();
 
         // Update server status
         if (NetworkInfo.HasServer)

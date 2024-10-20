@@ -100,6 +100,27 @@ namespace LabFusion.Marrow.Proxies
         }
 
         [HideFromIl2Cpp]
+        public TElement AddOrGetElement<TElement>(string title) where TElement : MenuElement
+        {
+            foreach (var element in Elements)
+            {
+                if (element.Title != title)
+                {
+                    continue;
+                }
+
+                var casted = element.TryCast<TElement>();
+
+                if (casted != null)
+                {
+                    return casted;
+                }
+            }
+
+            return AddElement<TElement>(title);
+        }
+
+        [HideFromIl2Cpp]
         public bool RemoveElement<TElement>(TElement element) where TElement : MenuElement
         {
             if (!Elements.Contains(element))
