@@ -22,7 +22,7 @@ public static class MenuChaining
         pref.OnValueChanged += (value) =>
         {
             // Update the value
-            if (element.Value != value as Enum)
+            if (element.Value.ToString() != value.ToString())
             {
                 element.Value = value;
             }

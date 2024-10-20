@@ -23,6 +23,8 @@ namespace LabFusion.Marrow.Proxies
             {
                 _value = value;
 
+                UpdateEnumIndex();
+
                 Draw();
 
                 OnValueChanged?.Invoke(value);
@@ -46,6 +48,8 @@ namespace LabFusion.Marrow.Proxies
 
                     // Apply default enum if its not set
                     _value ??= _enumValues.GetValue(0) as Enum;
+
+                    UpdateEnumIndex();
                 }
             }
         }
@@ -67,8 +71,10 @@ namespace LabFusion.Marrow.Proxies
                 return;
             }
 
+            _enumIndex++;
             _enumIndex %= _enumValues.Length;
-            Value = _enumValues.GetValue(_enumIndex++) as Enum;
+
+            Value = _enumValues.GetValue(_enumIndex) as Enum;
         }
 
         public void PreviousValue()
@@ -78,8 +84,29 @@ namespace LabFusion.Marrow.Proxies
                 return;
             }
 
+            _enumIndex--;
             _enumIndex %= _enumValues.Length;
-            Value = _enumValues.GetValue(_enumIndex--) as Enum;
+
+            Value = _enumValues.GetValue(_enumIndex) as Enum;
+        }
+
+        private void UpdateEnumIndex()
+        {
+            if (_enumValues == null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < _enumValues.Length; i++)
+            {
+                var enumValue = _enumValues.GetValue(i);
+            
+                if (enumValue.ToString() == _value.ToString())
+                {
+                    _enumIndex = i;
+                    break;
+                }
+            }
         }
 
         protected override void OnClearValues()
