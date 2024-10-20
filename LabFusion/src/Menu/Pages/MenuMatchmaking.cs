@@ -1,5 +1,6 @@
 ﻿using LabFusion.Marrow.Proxies;
 using LabFusion.Network;
+using LabFusion.SDK.Lobbies;
 
 using UnityEngine;
 
@@ -8,6 +9,13 @@ namespace LabFusion.Menu;
 public static class MenuMatchmaking
 {
     public static MenuPage MatchmakingPage { get; private set; }
+
+    // Filters
+    public static PageElement BrowserFiltersElement { get; private set; }
+
+    public static PageElement SandboxFiltersPageElement { get; private set; }
+
+    public static GroupElement SandboxFiltersGroupElement { get; private set; }
 
     // Browser
     public static PageElement LobbyBrowserElement { get; private set; }
@@ -66,23 +74,55 @@ public static class MenuMatchmaking
 
     private static void PopulateBrowser(Transform browserTransform)
     {
-        LobbyBrowserElement = browserTransform.Find("scrollRect_LobbyBrowser/Viewport/Content").GetComponent<PageElement>();
+        // Get the filters group
+        var filtersGroup = browserTransform.Find("group_Filters");
+
+        BrowserFiltersElement = filtersGroup.Find("scrollRect_Filters/Viewport/Content").GetComponent<PageElement>();
+
+        SandboxFiltersPageElement = BrowserFiltersElement.AddPage();
+        SandboxFiltersGroupElement = SandboxFiltersPageElement.AddElement<GroupElement>("Filters");
+
+        AddFilters();
+
+        // Get the searching group
+        var searchGroup = browserTransform.Find("group_Search");
+
+        LobbyBrowserElement = searchGroup.Find("scrollRect_LobbyBrowser/Viewport/Content").GetComponent<PageElement>();
 
         SearchResultsElement = LobbyBrowserElement.AddElement<PageElement>("Search Results");
 
-        SearchBarElement = browserTransform.Find("button_SearchBar").GetComponent<StringElement>();
+        SearchBarElement = searchGroup.Find("button_SearchBar").GetComponent<StringElement>();
         SearchBarElement.EmptyFormat = "Enter server or level name";
         SearchBarElement.TextFormat = "{1}";
 
         SearchBarElement.OnSubmitted += RefreshBrowser;
 
-        NoServersFoundElement = browserTransform.Find("label_NoServersFound").GetComponent<LabelElement>();
+        NoServersFoundElement = searchGroup.Find("label_NoServersFound").GetComponent<LabelElement>();
         NoServersFoundElement.Title = "No servers found :/";
 
-        var refreshElement = browserTransform.Find("button_Refresh").GetComponent<FunctionElement>();
+        var refreshElement = searchGroup.Find("button_Refresh").GetComponent<FunctionElement>();
         refreshElement.Do(RefreshBrowser);
     }
 
+    public static void AddFilters()
+    {
+        foreach (var filter in LobbyFilterManager.LobbyFilters)
+        {
+            AddFilter(SandboxFiltersGroupElement, filter);
+        }
+    }
+
+    private static void AddFilter(GroupElement element, ILobbyFilter filter)
+    {
+        var filterElement = element.AddElement<BoolElement>(filter.GetTitle());
+        filterElement.Value = filter.IsActive();
+        filterElement.OnValueChanged += (v) =>
+        {
+            filter.SetActive(v);
+
+            RefreshBrowser();
+        };
+    }
 
     private static bool _isSearchingLobbies = false;
 
@@ -148,7 +188,8 @@ public static class MenuMatchmaking
             .OrderBy(l => l.metadata.LobbyOwner)
             .OrderBy(l => l.metadata.LevelName)
             .OrderBy(l => l.metadata.LobbyVersion)
-            .Where(CheckLobbyVisibility);
+            .Where(CheckLobbyVisibility)
+            .Where(l => LobbyFilterManager.FilterLobby(l.lobby, l.metadata));
 
         // Apply search query
         var searchQuery = SearchBarElement.Value;

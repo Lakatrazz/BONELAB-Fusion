@@ -28,6 +28,14 @@ public static class LobbyFilterManager
         outdatedFilter.SetActive(true);
 
         AddLobbyFilter(outdatedFilter);
+
+        // Friends filter
+        var friendsFilter = new GenericLobbyFilter("Friends Only", (l, i) =>
+        {
+            return NetworkInfo.CurrentNetworkLayer.IsFriend(i.LobbyId);
+        });
+
+        AddLobbyFilter(friendsFilter);
     }
 
     public static void AddLobbyFilter(ILobbyFilter filter)
