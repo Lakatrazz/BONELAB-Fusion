@@ -1,5 +1,6 @@
 ﻿using LabFusion.Network;
 using LabFusion.Preferences;
+using LabFusion.Preferences.Server;
 using LabFusion.Senders;
 using LabFusion.Representation;
 
@@ -23,6 +24,7 @@ public class SerializedServerSettings : IFusionSerializable
 
         // Visual
         writer.Write(settings.ServerName.Value);
+        writer.Write(settings.ServerDescription.Value);
         writer.Write(settings.ServerTags.Value);
 
         // Mortality
@@ -51,6 +53,7 @@ public class SerializedServerSettings : IFusionSerializable
 
             // Visual
             ServerName = new ReadOnlyPref<string>(reader.ReadString()),
+            ServerDescription = new ReadOnlyPref<string>(reader.ReadString()),
             ServerTags = new ReadOnlyPref<List<string>>(reader.ReadStrings().ToList()),
 
             // Mortality

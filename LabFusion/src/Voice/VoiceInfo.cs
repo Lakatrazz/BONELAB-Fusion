@@ -1,6 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Network;
-using LabFusion.Preferences;
+using LabFusion.Preferences.Server;
 using LabFusion.Preferences.Client;
 
 namespace LabFusion.Voice;

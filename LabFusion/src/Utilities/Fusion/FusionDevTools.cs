@@ -1,4 +1,4 @@
-﻿using LabFusion.Preferences;
+﻿using LabFusion.Preferences.Server;
 using LabFusion.Player;
 using LabFusion.Representation;
 using LabFusion.SDK.Gamemodes;

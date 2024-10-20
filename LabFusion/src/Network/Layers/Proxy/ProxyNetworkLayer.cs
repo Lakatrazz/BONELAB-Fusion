@@ -6,6 +6,10 @@ using LabFusion.Player;
 using LabFusion.Utilities;
 using LabFusion.Scene;
 using LabFusion.Preferences.Client;
+using LabFusion.Voice;
+using LabFusion.Voice.Unity;
+using LabFusion.SDK.Lobbies;
+using LabFusion.Preferences.Server;
 
 using Color = UnityEngine.Color;
 
@@ -20,11 +24,6 @@ using FusionHelper.Network;
 
 using LiteNetLib;
 using LiteNetLib.Utils;
-
-using LabFusion.Voice;
-using LabFusion.Voice.Unity;
-using LabFusion.SDK.Lobbies;
-using LabFusion.Preferences;
 
 namespace LabFusion.Network
 {

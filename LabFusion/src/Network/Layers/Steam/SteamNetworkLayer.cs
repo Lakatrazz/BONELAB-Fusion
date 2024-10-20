@@ -19,8 +19,7 @@ using LabFusion.BoneMenu;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Voice;
 using LabFusion.Voice.Unity;
-using LabFusion.SDK.Lobbies;
-using LabFusion.Preferences;
+using LabFusion.Preferences.Server;
 
 namespace LabFusion.Network;
 

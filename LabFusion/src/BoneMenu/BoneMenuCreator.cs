@@ -58,19 +58,6 @@ public static partial class BoneMenuCreator
         };
     }
 
-    public static void CreateBytePreference(Page page, string name, byte increment, byte minValue, byte maxValue, IFusionPref<byte> pref)
-    {
-        var element = page.CreateInt(name, Color.white, startingValue: pref.Value, increment: increment, minValue: minValue, maxValue: maxValue, callback: (v) =>
-        {
-            pref.Value = (byte)v;
-        });
-
-        pref.OnValueChanged += (v) =>
-        {
-            element.Value = v;
-        };
-    }
-
     public static void CreateIntPreference(Page page, string name, int increment, int minValue, int maxValue, IFusionPref<int> pref)
     {
         var element = page.CreateInt(name, Color.white, startingValue: pref.Value, increment: increment, minValue: minValue, maxValue: maxValue, callback: (v) =>

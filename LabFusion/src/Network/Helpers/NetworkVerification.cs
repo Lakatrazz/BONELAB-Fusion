@@ -1,4 +1,4 @@
-﻿using LabFusion.Preferences;
+﻿using LabFusion.Preferences.Server;
 
 namespace LabFusion.Network;
 

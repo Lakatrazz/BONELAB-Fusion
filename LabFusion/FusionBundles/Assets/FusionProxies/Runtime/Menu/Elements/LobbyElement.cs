@@ -40,6 +40,9 @@ namespace LabFusion.Marrow.Proxies
         public LabelElement HostNameElement { get; set; } = null;
         public StringElement DescriptionElement { get; set; } = null;
 
+        public PageElement SettingsElement { get; set; } = null;
+        public PageElement PlayerListElement { get; set; } = null;
+
         private bool _hasElements = false;
 
         public void Awake()
@@ -69,6 +72,8 @@ namespace LabFusion.Marrow.Proxies
             ServerNameElement = serverInfoGrid.Find("button_ServerName").GetComponent<StringElement>();
             HostNameElement = serverInfoGrid.Find("label_HostName").GetComponent<LabelElement>();
             DescriptionElement = serverInfoGrid.Find("button_Description").GetComponent<StringElement>();
+            SettingsElement = serverInfoGrid.Find("scrollRect_Settings/Viewport/Content").GetComponent<PageElement>();
+            PlayerListElement = serverInfoGrid.Find("scrollRect_PlayerList/Viewport/Content").GetComponent<PageElement>();
 
             _hasElements = true;
         }

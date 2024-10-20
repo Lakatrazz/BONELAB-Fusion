@@ -4,6 +4,7 @@ using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Scene;
 using LabFusion.Preferences;
+using LabFusion.Preferences.Server;
 using LabFusion.Senders;
 using LabFusion.Exceptions;
 using LabFusion.Entities;

@@ -1,6 +1,7 @@
 ﻿using LabFusion.Marrow.Proxies;
 using LabFusion.Network;
 using LabFusion.SDK.Lobbies;
+using LabFusion.Senders;
 
 using UnityEngine;
 
@@ -238,12 +239,36 @@ public static class MenuMatchmaking
             OnShowLobby(info);
         };
 
+        var levelColor = Color.white;
+        var versionColor = Color.white;
+        var playerCountColor = Color.white;
+
+        if (!metadata.ClientHasLevel)
+        {
+            levelColor = Color.yellow;
+        }
+
+        if (NetworkVerification.CompareVersion(metadata.LobbyVersion, FusionMod.Version) != VersionResult.Ok)
+        {
+            versionColor = Color.red;
+        }
+
+        if (metadata.PlayerCount >= metadata.MaxPlayers)
+        {
+            playerCountColor = Color.red;
+        }
+
         element.LevelNameText.text = metadata.LevelName;
+        element.LevelNameText.color = levelColor;
 
         element.ServerNameText.text = ParseServerName(metadata.LobbyName, metadata.LobbyOwner);
         element.HostNameText.text = metadata.LobbyOwner;
+
         element.PlayerCountText.text = string.Format($"{metadata.PlayerCount}/{metadata.MaxPlayers} Players");
+        element.PlayerCountText.color = playerCountColor;
+
         element.VersionText.text = string.Format($"v{metadata.LobbyVersion}");
+        element.VersionText.color = versionColor;
 
         var levelIcon = MenuResources.GetLevelIcon(metadata.LevelName);
 
@@ -351,5 +376,36 @@ public static class MenuMatchmaking
         }
 
         element.LevelIcon.texture = levelIcon;
+
+        // Fill out lists
+        // Settings list
+        element.SettingsElement.Clear();
+
+        var settingsPage = element.SettingsElement.AddPage();
+
+        var generalGroup = settingsPage.AddElement<GroupElement>("General");
+
+        generalGroup.AddElement<BoolElement>("NameTags")
+            .WithInteractability(false)
+            .Value = info.NametagsEnabled;
+
+        generalGroup.AddElement<BoolElement>("VoiceChat")
+            .WithInteractability(false)
+            .Value = info.VoiceChatEnabled;
+
+        var slowMoElement = generalGroup.AddElement<EnumElement>("SlowMo")
+            .WithInteractability(false);
+        slowMoElement.EnumType = typeof(TimeScaleMode);
+        slowMoElement.Value = info.TimeScaleMode;
+
+        // Player list
+        element.PlayerListElement.Clear();
+
+        var playerListPage = element.PlayerListElement.AddPage();
+
+        foreach (var player in info.PlayerList.players)
+        {
+            playerListPage.AddElement<FunctionElement>(player.username);
+        }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Player;
 using LabFusion.Representation;
-using LabFusion.Preferences;
+using LabFusion.Preferences.Server;
 using LabFusion.Senders;
 using LabFusion.Exceptions;
 

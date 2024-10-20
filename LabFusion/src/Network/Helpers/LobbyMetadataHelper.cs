@@ -1,5 +1,5 @@
 ﻿using LabFusion.Extensions;
-using LabFusion.Preferences;
+using LabFusion.Preferences.Server;
 using LabFusion.Player;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Senders;
@@ -53,7 +53,7 @@ public struct LobbyMetadataInfo
             LobbyId = PlayerIdManager.LocalLongId,
             LobbyOwner = PlayerIdManager.LocalUsername,
             LobbyName = ServerSettingsManager.SavedSettings.ServerName.Value,
-            LobbyDescription = string.Empty,
+            LobbyDescription = ServerSettingsManager.SavedSettings.ServerDescription.Value,
             LobbyTags = ServerSettingsManager.SavedSettings.ServerTags.Value.Contract(),
             LobbyVersion = FusionMod.Version,
             HasServerOpen = NetworkInfo.IsServer,

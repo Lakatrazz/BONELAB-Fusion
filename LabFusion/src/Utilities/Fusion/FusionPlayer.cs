@@ -4,6 +4,7 @@ using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Preferences;
+using LabFusion.Preferences.Server;
 using LabFusion.Player;
 using LabFusion.Representation;
 using LabFusion.SDK.Gamemodes;

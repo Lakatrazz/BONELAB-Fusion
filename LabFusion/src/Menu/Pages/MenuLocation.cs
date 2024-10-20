@@ -1,8 +1,7 @@
-﻿using BoneLib.BoneMenu;
-using LabFusion.Marrow.Proxies;
+﻿using LabFusion.Marrow.Proxies;
 using LabFusion.Network;
 using LabFusion.Player;
-using LabFusion.Preferences;
+using LabFusion.Preferences.Server;
 using LabFusion.Scene;
 using LabFusion.Utilities;
 
@@ -55,8 +54,6 @@ public static class MenuLocation
         UpdateLevelIcon(element);
 
         OnServerSettingsChanged();
-
-        UpdateInteractability();
     }
 
     private static void PopulateLobbyAsServer(LobbyElement element)
@@ -69,8 +66,6 @@ public static class MenuLocation
         UpdateLevelIcon(element);
 
         OnServerSettingsChanged();
-
-        UpdateInteractability();
     }
 
     private static void UpdateLevelIcon(LobbyElement element)
@@ -92,15 +87,12 @@ public static class MenuLocation
         ApplyServerSettingsToLobby(LobbyElement, ServerSettingsManager.ActiveSettings);
     }
 
-    private static void UpdateInteractability()
+    private static void ApplyServerSettingsToLobby(LobbyElement element, ServerSettings settings)
     {
         bool ownsSettings = NetworkInfo.IsServer || !NetworkInfo.HasServer;
 
-        LobbyElement.Interactable = ownsSettings;
-    }
+        string emptyFormat = ownsSettings ? "Click to add {0}" : "No {0}";
 
-    private static void ApplyServerSettingsToLobby(LobbyElement element, ServerSettings settings)
-    {
         element.LevelNameElement
             .WithTitle(FusionSceneManager.Title);
 
@@ -130,7 +122,7 @@ public static class MenuLocation
             .AsPref(settings.ServerName)
             .WithTitle("Server Name");
 
-        element.ServerNameElement.EmptyFormat = "Click to add {0}";
+        element.ServerNameElement.EmptyFormat = emptyFormat;
         element.ServerNameElement.TextFormat = "{1}";
 
         element.HostNameElement
@@ -138,10 +130,13 @@ public static class MenuLocation
 
         element.DescriptionElement
             .Cleared()
+            .AsPref(settings.ServerDescription)
             .WithTitle("Description");
 
-        element.DescriptionElement.EmptyFormat = "Click to add {0}";
+        element.DescriptionElement.EmptyFormat = emptyFormat;
         element.DescriptionElement.TextFormat = "{1}";
+
+        element.Interactable = ownsSettings;
     }
 
     public static void PopulateLocation(GameObject locationPage)

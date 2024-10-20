@@ -2,7 +2,7 @@
 using LabFusion.Extensions;
 using LabFusion.Marrow.Proxies;
 using LabFusion.Network;
-using LabFusion.Preferences;
+using LabFusion.Preferences.Server;
 using LabFusion.Preferences.Client;
 using LabFusion.Representation;
 using LabFusion.SDK.Gamemodes;

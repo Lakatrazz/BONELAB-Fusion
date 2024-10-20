@@ -4,7 +4,7 @@ using LabFusion.Senders;
 
 using MelonLoader;
 
-namespace LabFusion.Preferences;
+namespace LabFusion.Preferences.Server;
 
 public class ServerSettings
 {
@@ -18,6 +18,7 @@ public class ServerSettings
 
     // Visual
     public IFusionPref<string> ServerName;
+    public IFusionPref<string> ServerDescription;
     public IFusionPref<List<string>> ServerTags;
 
     // Mortality
@@ -46,7 +47,8 @@ public class ServerSettings
             MaxPlayers = new FusionPref<int>(category, "Max Players", 10, PrefUpdateMode.SERVER_UPDATE),
 
             // Visual
-            ServerName = new FusionPref<string>(category, "Server Name", string.Empty, PrefUpdateMode.LOCAL_UPDATE),
+            ServerName = new FusionPref<string>(category, "Server Name", string.Empty, PrefUpdateMode.SERVER_UPDATE),
+            ServerDescription = new FusionPref<string>(category, "Server Description", string.Empty, PrefUpdateMode.SERVER_UPDATE),
             ServerTags = new FusionPref<List<string>>(category, "Server Tags", new List<string>(), PrefUpdateMode.LOCAL_UPDATE),
 
             // Mortality

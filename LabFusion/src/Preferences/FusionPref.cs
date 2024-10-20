@@ -1,6 +1,6 @@
 ﻿using MelonLoader;
 
-using LabFusion.Utilities;
+using LabFusion.Preferences.Server;
 
 namespace LabFusion.Preferences;
 

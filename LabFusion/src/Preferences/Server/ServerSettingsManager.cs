@@ -2,7 +2,7 @@
 
 using MelonLoader;
 
-namespace LabFusion.Preferences;
+namespace LabFusion.Preferences.Server;
 
 public static class ServerSettingsManager
 {

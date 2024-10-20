@@ -2,6 +2,7 @@
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Preferences.Client;
+using LabFusion.Preferences.Server;
 
 using MelonLoader;
 

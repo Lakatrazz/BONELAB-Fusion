@@ -4,7 +4,7 @@ using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Marrow;
 
 using LabFusion.Extensions;
-using LabFusion.Preferences;
+using LabFusion.Preferences.Server;
 using LabFusion.Marrow;
 
 namespace LabFusion.Utilities;

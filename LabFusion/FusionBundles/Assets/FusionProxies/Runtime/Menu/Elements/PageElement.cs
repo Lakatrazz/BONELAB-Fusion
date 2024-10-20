@@ -28,6 +28,18 @@ namespace LabFusion.Marrow.Proxies
             }
         }
 
+        protected override void OnElementRemoved(MenuElement element)
+        {
+            var page = element.TryCast<PageElement>();
+
+            if (page != null && Pages.Contains(page))
+            {
+                _pages.Remove(page);
+            }
+
+            base.OnElementRemoved(element);
+        }
+
         public void Toggle(bool visible)
         {
             gameObject.SetActive(visible);
@@ -78,12 +90,20 @@ namespace LabFusion.Marrow.Proxies
                 return Root.AddPage(title);
             }
 
+            bool noPages = Pages.Count <= 0;
+
             var page = AddElement<PageElement>(title);
             page._root = this;
 
             page.gameObject.SetActive(false);
 
             _pages.Add(page);
+
+            // First page added? Select it
+            if (noPages)
+            {
+                SelectPage(page);
+            }
 
             return page;
         }

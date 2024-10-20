@@ -2,6 +2,7 @@
 using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Preferences;
+using LabFusion.Preferences.Server;
 
 using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Points;
