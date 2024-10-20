@@ -145,9 +145,27 @@ public static class MenuCreator
 
         MenuButtonImage.sprite = MenuResources.MenuIconSprite;
 
+        // Add functionality to the back arrow
+        var backArrowElement = menuTransform.Find("button_BackArrow").GetComponent<FunctionElement>();
+        backArrowElement.Do(OnBackArrowPressed);
+
         // Finally, populate the functions for all of the elements
         MenuPageHelper.PopulatePages(menuGameObject);
         MenuToolbarHelper.PopulateToolbar(menuTransform.Find("Popups/grid_Toolbar").gameObject);
+    }
+
+    private static void OnBackArrowPressed()
+    {
+        var selectedPage = MenuPage.SelectedPage;
+
+        if (selectedPage.Parent != null && selectedPage.Parent.Parent != null)
+        {
+            selectedPage.Parent.Parent.SelectSubPage(selectedPage.Parent);
+        }
+        else
+        {
+            UIRig.Instance.popUpMenu.preferencesPanelView.PAGESELECT(0);
+        }
     }
 
     private static int InjectPage(PreferencesPanelView panelView, GameObject page)

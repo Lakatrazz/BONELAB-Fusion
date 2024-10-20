@@ -18,6 +18,8 @@ public static class MenuMatchmaking
     public static GroupElement SandboxFiltersGroupElement { get; private set; }
 
     // Browser
+    public static MenuPage BrowserPage { get; private set; }
+
     public static PageElement LobbyBrowserElement { get; private set; }
     public static PageElement SearchResultsElement { get; private set; }
 
@@ -31,12 +33,6 @@ public static class MenuMatchmaking
     public static void PopulateMatchmaking(GameObject matchmakingPage)
     {
         MatchmakingPage = matchmakingPage.GetComponent<MenuPage>();
-
-        LobbyPanel = matchmakingPage.transform.Find("page_Lobby/panel_Lobby").GetComponent<LobbyElement>();
-
-        LobbyPanel.GetElements();
-
-        LobbyPanel.Interactable = false;
 
         // Get options references
         var optionsTransform = matchmakingPage.transform.Find("page_Options");
@@ -74,8 +70,13 @@ public static class MenuMatchmaking
 
     private static void PopulateBrowser(Transform browserTransform)
     {
+        BrowserPage = browserTransform.GetComponent<MenuPage>();
+
+        // Search page
+        var searchPage = browserTransform.Find("page_Search");
+
         // Get the filters group
-        var filtersGroup = browserTransform.Find("group_Filters");
+        var filtersGroup = searchPage.Find("group_Filters");
 
         BrowserFiltersElement = filtersGroup.Find("scrollRect_Filters/Viewport/Content").GetComponent<PageElement>();
 
@@ -85,7 +86,7 @@ public static class MenuMatchmaking
         AddFilters();
 
         // Get the searching group
-        var searchGroup = browserTransform.Find("group_Search");
+        var searchGroup = searchPage.Find("group_Search");
 
         LobbyBrowserElement = searchGroup.Find("scrollRect_LobbyBrowser/Viewport/Content").GetComponent<PageElement>();
 
@@ -102,6 +103,13 @@ public static class MenuMatchmaking
 
         var refreshElement = searchGroup.Find("button_Refresh").GetComponent<FunctionElement>();
         refreshElement.Do(RefreshBrowser);
+
+        // Lobby page
+        LobbyPanel = browserTransform.Find("page_Lobby/panel_Lobby").GetComponent<LobbyElement>();
+
+        LobbyPanel.GetElements();
+
+        LobbyPanel.Interactable = false;
     }
 
     public static void AddFilters()
@@ -213,7 +221,8 @@ public static class MenuMatchmaking
 
     private static void OnShowLobby(IMatchmaker.LobbyInfo info)
     {
-        MatchmakingPage.SelectSubPage(5);
+        MatchmakingPage.SelectSubPage(4);
+        BrowserPage.SelectSubPage(1);
 
         ApplyServerMetadataToLobby(LobbyPanel, info.lobby, info.metadata);
     }
