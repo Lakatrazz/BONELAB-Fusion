@@ -26,7 +26,7 @@ public sealed class SteamMatchmaker : IMatchmaker
 
         var lobbies = task.Result;
 
-        List<INetworkLobby> netLobbies = new();
+        List<IMatchmaker.LobbyInfo> netLobbies = new();
 
         foreach (var lobby in lobbies)
         {
@@ -37,8 +37,13 @@ public sealed class SteamMatchmaker : IMatchmaker
             }
 
             var networkLobby = new SteamLobby(lobby);
+            var metadata = LobbyMetadataHelper.ReadInfo(networkLobby);
 
-            netLobbies.Add(networkLobby);
+            netLobbies.Add(new IMatchmaker.LobbyInfo()
+            {
+                lobby = networkLobby,
+                metadata = metadata,
+            });
         }
 
         var info = new IMatchmaker.MatchmakerCallbackInfo()

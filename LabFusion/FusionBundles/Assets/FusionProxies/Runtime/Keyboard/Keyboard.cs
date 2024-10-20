@@ -17,7 +17,7 @@ namespace LabFusion.Marrow.Proxies
 
         public Action<string> OnValueChanged;
 
-        public event Action OnOpen, OnClose;
+        public Action OnOpen, OnClose, OnEnter;
 
         private string _value = string.Empty;
         public string Value
@@ -128,6 +128,12 @@ namespace LabFusion.Marrow.Proxies
 
         public void Backspace()
         {
+            // We can't remove characters if there aren't any left!
+            if (Value.Length <= 0)
+            {
+                return;
+            }
+
             Value = Value[..^1];
         }
 
@@ -146,6 +152,8 @@ namespace LabFusion.Marrow.Proxies
         
         public void Enter()
         {
+            OnEnter?.Invoke();
+
             Close();
         }
 

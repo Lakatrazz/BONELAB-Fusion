@@ -41,6 +41,11 @@ public static class MenuKeyboardHelper
             button.Value = value;
         };
 
+        keyboard.OnEnter = () =>
+        {
+            button.Submit();
+        };
+
         keyboard.OnClose += OnAssignedKeyboardClose;
     }
 
@@ -57,6 +62,7 @@ public static class MenuKeyboardHelper
 
         keyboard.OnClose -= OnAssignedKeyboardClose;
         keyboard.OnValueChanged = null;
+        keyboard.OnEnter = null;
     }
 
     public static void CloseKeyboard()

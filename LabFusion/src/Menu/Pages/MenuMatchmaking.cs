@@ -9,10 +9,14 @@ public static class MenuMatchmaking
 {
     public static MenuPage MatchmakingPage { get; private set; }
 
-    public static LobbyElement LobbyPanel { get; private set; }
-
+    // Browser
     public static PageElement LobbyBrowserElement { get; private set; }
     public static PageElement SearchResultsElement { get; private set; }
+
+    public static StringElement SearchBarElement { get; private set; }
+
+    // Lobby
+    public static LobbyElement LobbyPanel { get; private set; }
 
     public static void PopulateMatchmaking(GameObject matchmakingPage)
     {
@@ -38,7 +42,11 @@ public static class MenuMatchmaking
 
         SearchResultsElement = LobbyBrowserElement.AddElement<PageElement>("Search Results");
 
-        var searchBarElement = browserTransform.Find("button_SearchBar").GetComponent<FunctionElement>();
+        SearchBarElement = browserTransform.Find("button_SearchBar").GetComponent<StringElement>();
+        SearchBarElement.EmptyFormat = "Enter server or level name";
+        SearchBarElement.TextFormat = "{1}";
+
+        SearchBarElement.OnSubmitted += RefreshBrowser;
 
         var refreshElement = browserTransform.Find("button_Refresh").GetComponent<FunctionElement>();
         refreshElement.Do(RefreshBrowser);
@@ -63,31 +71,97 @@ public static class MenuMatchmaking
         NetworkInfo.CurrentNetworkLayer.Matchmaker?.RequestLobbies(OnLobbiesRequested);
     }
 
+    private static bool CheckLobbyVisibility(IMatchmaker.LobbyInfo info)
+    {
+        switch (info.metadata.Privacy)
+        {
+            case ServerPrivacy.PUBLIC:
+                return true;
+            case ServerPrivacy.FRIENDS_ONLY:
+                return NetworkInfo.CurrentNetworkLayer.IsFriend(info.metadata.LobbyId);
+            default:
+                return false;
+        }
+    }
+
+    private static bool CheckLobbySearch(IMatchmaker.LobbyInfo info, string query)
+    {
+        var metadata = info.metadata;
+        var levelName = metadata.LevelName.ToLower();
+        var serverName = metadata.LobbyName.ToLower();
+        var hostName = metadata.LobbyOwner.ToLower();
+
+        if (levelName.Contains(query))
+        {
+            return true;
+        }
+
+        if (!string.IsNullOrWhiteSpace(serverName) && serverName.Contains(query))
+        {
+            return true;
+        }
+
+        if (hostName.Contains(query))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     private static void OnLobbiesRequested(IMatchmaker.MatchmakerCallbackInfo info)
     {
         _isSearchingLobbies = false;
 
-        foreach (var lobby in info.lobbies)
+        var sortedLobbies = info.lobbies
+            .OrderBy(l => l.metadata.LobbyOwner)
+            .OrderBy(l => l.metadata.LevelName)
+            .OrderBy(l => l.metadata.LobbyVersion)
+            .Where(CheckLobbyVisibility);
+
+        // Apply search query
+        var searchQuery = SearchBarElement.Value;
+
+        if (!string.IsNullOrWhiteSpace(searchQuery))
+        {
+            sortedLobbies = sortedLobbies.Where((l) => CheckLobbySearch(l, searchQuery));
+        }
+
+        // Add all lobbies to the list
+        foreach (var lobby in sortedLobbies)
         {
             var lobbyResult = SearchResultsElement.AddElement<LobbyResultElement>("Lobby Result");
-            var lobbyInfo = LobbyMetadataHelper.ReadInfo(lobby);
 
-            ApplyLobbyToResult(lobbyResult, lobby, lobbyInfo);
+            ApplyLobbyToResult(lobbyResult, lobby);
         }
     }
 
-    private static void ApplyLobbyToResult(LobbyResultElement element, INetworkLobby lobby, LobbyMetadataInfo info)
+    private static void OnShowLobby(IMatchmaker.LobbyInfo info)
+    {
+        MatchmakingPage.SelectSubPage(3);
+
+        ApplyServerMetadataToLobby(LobbyPanel, info.lobby, info.metadata);
+    }
+
+    private static void ApplyLobbyToResult(LobbyResultElement element, IMatchmaker.LobbyInfo info)
     {
         element.GetReferences();
 
-        element.LevelNameText.text = info.LevelName;
+        var metadata = info.metadata;
 
-        element.ServerNameText.text = ParseServerName(info.LobbyName, info.LobbyOwner);
-        element.HostNameText.text = info.LobbyOwner;
-        element.PlayerCountText.text = string.Format($"{info.PlayerCount}/{info.MaxPlayers} Players");
-        element.VersionText.text = string.Format($"v{info.LobbyVersion}");
+        element.OnPressed = () =>
+        {
+            OnShowLobby(info);
+        };
 
-        var levelIcon = MenuResources.GetLevelIcon(info.LevelName);
+        element.LevelNameText.text = metadata.LevelName;
+
+        element.ServerNameText.text = ParseServerName(metadata.LobbyName, metadata.LobbyOwner);
+        element.HostNameText.text = metadata.LobbyOwner;
+        element.PlayerCountText.text = string.Format($"{metadata.PlayerCount}/{metadata.MaxPlayers} Players");
+        element.VersionText.text = string.Format($"v{metadata.LobbyVersion}");
+
+        var levelIcon = MenuResources.GetLevelIcon(metadata.LevelName);
 
         if (levelIcon == null)
         {
@@ -176,5 +250,15 @@ public static class MenuMatchmaking
 
         element.HostNameElement
             .WithTitle(info.LobbyOwner);
+
+        // Apply level icon
+        var levelIcon = MenuResources.GetLevelIcon(info.LevelName);
+
+        if (levelIcon == null)
+        {
+            levelIcon = MenuResources.GetLevelIcon(MenuResources.ModsIconTitle);
+        }
+
+        element.LevelIcon.texture = levelIcon;
     }
 }

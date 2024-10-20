@@ -2,8 +2,6 @@
 using LabFusion.Player;
 using LabFusion.Senders;
 
-using Il2CppSLZ.Marrow;
-
 using BoneLib.BoneMenu;
 
 namespace LabFusion.Utilities;

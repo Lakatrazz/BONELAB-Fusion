@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-using BoneLib.BoneMenu;
+﻿using BoneLib.BoneMenu;
 
 using UnityEngine;
 
@@ -16,8 +14,6 @@ using Steamworks.Data;
 
 using Color = UnityEngine.Color;
 
-using MelonLoader;
-
 using LabFusion.Senders;
 using LabFusion.BoneMenu;
 using LabFusion.SDK.Gamemodes;
@@ -25,8 +21,6 @@ using LabFusion.Voice;
 using LabFusion.Voice.Unity;
 using LabFusion.SDK.Lobbies;
 using LabFusion.Preferences;
-using LabFusion.SDK.Points;
-using static LabFusion.Network.IMatchmaker;
 
 namespace LabFusion.Network;
 
@@ -376,8 +370,6 @@ public abstract class SteamNetworkLayer : NetworkLayer
     // Matchmaking menu
     private Page _serverInfoCategory;
     private Page _manualJoiningCategory;
-    private Page _publicLobbiesCategory;
-    private Page _friendsCategory;
 
     private void OnFillMatchmakingPage(Page page)
     {
@@ -388,21 +380,6 @@ public abstract class SteamNetworkLayer : NetworkLayer
         // Manual joining
         _manualJoiningCategory = page.CreatePage("Manual Joining", Color.white);
         CreateManualJoiningMenu(_manualJoiningCategory);
-
-        // Public lobbies list
-        _publicLobbiesCategory = page.CreatePage("Public Lobbies", Color.white);
-        _publicLobbiesCategory.CreateFunction("Refresh", Color.white, Menu_RefreshPublicLobbies);
-        _publicLobbiesCategory.CreateEnum("Sort By", Color.white, _publicLobbySortMode, (v) =>
-        {
-            _publicLobbySortMode = (LobbySortMode)v;
-            Menu_RefreshPublicLobbies();
-        });
-        _publicLobbiesCategory.CreateFunction("Select Refresh to load servers!", Color.yellow, null);
-
-        // Steam friends list
-        _friendsCategory = page.CreatePage("Steam Friends", Color.white);
-        _friendsCategory.CreateFunction("Refresh", Color.white, Menu_RefreshFriendLobbies);
-        _friendsCategory.CreateFunction("Select Refresh to load servers!", Color.yellow, null);
     }
 
     private FunctionElement _createServerElement;
@@ -471,101 +448,5 @@ public abstract class SteamNetworkLayer : NetworkLayer
             _targetServerId = result;
             _targetServerElement.ElementName = $"Server ID: {_targetServerId}";
         }
-    }
-
-    private LobbySortMode _publicLobbySortMode = LobbySortMode.LEVEL;
-    private bool _isPublicLobbySearching = false;
-
-    private void Menu_RefreshPublicLobbies()
-    {
-        // Make sure we arent already searching
-        if (_isPublicLobbySearching)
-            return;
-
-        // Clear existing lobbies
-        _publicLobbiesCategory.RemoveAll();
-        _publicLobbiesCategory.CreateFunction("Refresh", Color.white, Menu_RefreshPublicLobbies);
-
-        BoneMenuCreator.CreateFilters(_publicLobbiesCategory);
-
-        _publicLobbiesCategory.CreateEnum("Sort By", Color.white, _publicLobbySortMode, (v) =>
-        {
-            _publicLobbySortMode = (LobbySortMode)v;
-            Menu_RefreshPublicLobbies();
-        });
-
-        _isPublicLobbySearching = true;
-
-        Matchmaker?.RequestLobbies(OnLobbyListReturned);
-    }
-
-    private bool Internal_CanShowLobby(LobbyMetadataInfo info)
-    {
-        // Make sure the lobby is actually open
-        if (!info.HasServerOpen)
-            return false;
-
-        // Decide if this server is too private
-        return info.Privacy switch
-        {
-            ServerPrivacy.PUBLIC => true,
-            ServerPrivacy.FRIENDS_ONLY => IsFriend(info.LobbyId),
-            _ => false,
-        };
-    }
-
-    private void OnLobbyListReturned(MatchmakerCallbackInfo info)
-    {
-        foreach (var lobby in info.lobbies)
-        {
-            var metadata = LobbyMetadataHelper.ReadInfo(lobby);
-
-            if (Internal_CanShowLobby(metadata) && LobbyFilterManager.FilterLobby(lobby, metadata))
-            {
-                // Add to list
-                BoneMenuCreator.CreateLobby(_publicLobbiesCategory, metadata, lobby, _publicLobbySortMode);
-            }
-        }
-
-        _isPublicLobbySearching = false;
-    }
-
-    private bool _isFriendLobbySearching = false;
-
-    private void Menu_RefreshFriendLobbies()
-    {
-        // Make sure we arent searching for lobbies already
-        if (_isFriendLobbySearching)
-            return;
-
-        // Clear existing lobbies
-        _friendsCategory.RemoveAll();
-        _friendsCategory.CreateFunction("Refresh", Color.white, Menu_RefreshFriendLobbies);
-
-        _isFriendLobbySearching = true;
-
-        Matchmaker?.RequestLobbies(OnFriendListReturned);
-    }
-
-    private void OnFriendListReturned(MatchmakerCallbackInfo info)
-    {
-        foreach (var lobby in info.lobbies)
-        {
-            var metadata = LobbyMetadataHelper.ReadInfo(lobby);
-            var lobbyInfo = LobbyMetadataHelper.ReadInfo(lobby);
-
-            if (!IsFriend(lobbyInfo.LobbyId))
-            {
-                continue;
-            }
-
-            if (Internal_CanShowLobby(metadata) && LobbyFilterManager.FilterLobby(lobby, metadata))
-            {
-                // Add to list
-                BoneMenuCreator.CreateLobby(_publicLobbiesCategory, metadata, lobby, _publicLobbySortMode);
-            }
-        }
-
-        _isFriendLobbySearching = false;
     }
 }

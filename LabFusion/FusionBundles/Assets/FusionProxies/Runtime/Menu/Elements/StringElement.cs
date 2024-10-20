@@ -18,6 +18,7 @@ namespace LabFusion.Marrow.Proxies
         public StringElement(IntPtr intPtr) : base(intPtr) { }
 
         public Action<string> OnValueChanged;
+        public Action OnSubmitted;
 
         private string _value = null;
         public string Value
@@ -70,6 +71,11 @@ namespace LabFusion.Marrow.Proxies
             {
                 _button.interactable = Interactable;
             }
+        }
+
+        public void Submit()
+        {
+            OnSubmitted?.Invoke();
         }
 
         public void ToggleKeyboard()
