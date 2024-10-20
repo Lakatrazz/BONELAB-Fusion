@@ -15,6 +15,8 @@ public static class MenuMatchmaking
 
     public static StringElement SearchBarElement { get; private set; }
 
+    public static LabelElement NoServersFoundElement { get; private set; }
+
     // Lobby
     public static LobbyElement LobbyPanel { get; private set; }
 
@@ -28,7 +30,10 @@ public static class MenuMatchmaking
 
         LobbyPanel.Interactable = false;
 
-        MatchmakingPage.DefaultPageIndex = 2;
+        // Get options references
+        var optionsTransform = matchmakingPage.transform.Find("page_Options");
+
+        PopulateOptions(optionsTransform);
 
         // Get browser references
         var browserTransform = matchmakingPage.transform.Find("page_Browser");
@@ -36,6 +41,29 @@ public static class MenuMatchmaking
         PopulateBrowser(browserTransform);
     }
     
+    private static void PopulateOptions(Transform optionsTransform)
+    {
+        var grid = optionsTransform.Find("grid_Options");
+
+        var gamemodeElement = grid.Find("button_Gamemode").GetComponent<FunctionElement>();
+
+        gamemodeElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Gamemode";
+
+        var sandboxElement = grid.Find("button_Sandbox").GetComponent<FunctionElement>();
+        sandboxElement.Do(() =>
+        {
+            MatchmakingPage.SelectSubPage(4);
+
+            RefreshBrowser();
+        });
+
+        sandboxElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Sandbox";
+
+        var codeElement = grid.Find("button_Code").GetComponent<FunctionElement>();
+
+        codeElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Enter Code";
+    }
+
     private static void PopulateBrowser(Transform browserTransform)
     {
         LobbyBrowserElement = browserTransform.Find("scrollRect_LobbyBrowser/Viewport/Content").GetComponent<PageElement>();
@@ -48,10 +76,11 @@ public static class MenuMatchmaking
 
         SearchBarElement.OnSubmitted += RefreshBrowser;
 
+        NoServersFoundElement = browserTransform.Find("label_NoServersFound").GetComponent<LabelElement>();
+        NoServersFoundElement.Title = "No servers found :/";
+
         var refreshElement = browserTransform.Find("button_Refresh").GetComponent<FunctionElement>();
         refreshElement.Do(RefreshBrowser);
-
-        RefreshBrowser();
     }
 
 
@@ -65,6 +94,8 @@ public static class MenuMatchmaking
         }
 
         SearchResultsElement.RemoveElements<LobbyResultElement>();
+
+        NoServersFoundElement.gameObject.SetActive(false);
 
         _isSearchingLobbies = true;
 
@@ -134,11 +165,14 @@ public static class MenuMatchmaking
 
             ApplyLobbyToResult(lobbyResult, lobby);
         }
+
+        bool foundLobbies = sortedLobbies.Any();
+        NoServersFoundElement.gameObject.SetActive(!foundLobbies);
     }
 
     private static void OnShowLobby(IMatchmaker.LobbyInfo info)
     {
-        MatchmakingPage.SelectSubPage(3);
+        MatchmakingPage.SelectSubPage(5);
 
         ApplyServerMetadataToLobby(LobbyPanel, info.lobby, info.metadata);
     }
@@ -220,16 +254,14 @@ public static class MenuMatchmaking
             .WithTitle($"v{info.LobbyVersion}")
             .WithColor(versionColor);
 
-        element.PlayerCountElement
-            .WithTitle($"{info.PlayerCount} Player{(info.PlayerCount != 1 ? "s" : "")}")
-            .WithColor(playerCountColor);
-
-        element.MaxPlayersElement
+        element.PlayersElement
             .Cleared()
-            .WithTitle("Max Players")
+            .WithTitle("Players")
             .WithColor(playerCountColor);
 
-        element.MaxPlayersElement.Value = info.MaxPlayers;
+        element.PlayersElement.TextFormat = $"{info.PlayerCount}/{{1}} {{0}}";
+
+        element.PlayersElement.Value = info.MaxPlayers;
 
         element.PrivacyElement
             .Cleared()

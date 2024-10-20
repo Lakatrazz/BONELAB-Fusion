@@ -32,8 +32,7 @@ namespace LabFusion.Marrow.Proxies
 
         public LabelElement LevelNameElement { get; set; } = null;
         public LabelElement ServerVersionElement { get; set; } = null;
-        public LabelElement PlayerCountElement { get; set; } = null;
-        public IntElement MaxPlayersElement { get; set; } = null;
+        public IntElement PlayersElement { get; set; } = null;
 
         public FunctionElement ServerActionElement { get; set; } = null;
         public EnumElement PrivacyElement { get; set; } = null;
@@ -61,8 +60,7 @@ namespace LabFusion.Marrow.Proxies
 
             LevelNameElement = levelInfoGrid.Find("label_LevelName").GetComponent<LabelElement>();
             ServerVersionElement = levelInfoGrid.Find("label_ServerVersion").GetComponent<LabelElement>();
-            PlayerCountElement = levelInfoGrid.Find("label_PlayerCount").GetComponent<LabelElement>();
-            MaxPlayersElement = levelInfoGrid.Find("button_MaxPlayers").GetComponent<IntElement>();
+            PlayersElement = levelInfoGrid.Find("button_Players").GetComponent<IntElement>();
             PrivacyElement = levelInfoGrid.Find("button_Privacy").GetComponent<EnumElement>();
             ServerActionElement = levelInfoGrid.Find("button_ServerAction").GetComponent<FunctionElement>();
 
@@ -79,9 +77,9 @@ namespace LabFusion.Marrow.Proxies
         {
             base.OnDraw();
 
-            if (MaxPlayersElement != null)
+            if (PlayersElement != null)
             {
-                MaxPlayersElement.Interactable = Interactable;
+                PlayersElement.Interactable = Interactable;
             }
 
             if (PrivacyElement != null)

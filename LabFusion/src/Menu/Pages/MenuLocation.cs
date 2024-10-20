@@ -109,15 +109,14 @@ public static class MenuLocation
 
         var playerCount = PlayerIdManager.PlayerCount;
 
-        element.PlayerCountElement
-            .WithTitle($"{playerCount} Player{(playerCount != 1 ? "s" : "")}");
-
-        element.MaxPlayersElement
+        element.PlayersElement
             .Cleared()
             .AsPref(settings.MaxPlayers)
             .WithIncrement(1)
             .WithLimits(2, 255)
-            .WithTitle("Max Players");
+            .WithTitle("Players");
+
+        element.PlayersElement.TextFormat = $"{playerCount}/{{1}} {{0}}";
 
         element.PrivacyElement
             .Cleared()
