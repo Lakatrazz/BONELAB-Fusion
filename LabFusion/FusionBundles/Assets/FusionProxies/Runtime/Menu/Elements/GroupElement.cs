@@ -61,6 +61,11 @@ namespace LabFusion.Marrow.Proxies
         }
 
         [HideFromIl2Cpp]
+        protected virtual void OnElementRemoved(MenuElement element)
+        {
+        }
+
+        [HideFromIl2Cpp]
         public TElement AddElement<TElement>(string title) where TElement : MenuElement
         {
             GetTemplates();
@@ -92,6 +97,61 @@ namespace LabFusion.Marrow.Proxies
             OnElementAdded(newElement);
 
             return newElement;
+        }
+
+        [HideFromIl2Cpp]
+        public bool RemoveElement<TElement>(TElement element) where TElement : MenuElement
+        {
+            if (!Elements.Contains(element))
+            {
+                return false;
+            }
+
+            _elements.Remove(element);
+
+            OnElementRemoved(element);
+
+            GameObject.Destroy(element.gameObject);
+
+            return true;
+        }
+
+        [HideFromIl2Cpp]
+        public int RemoveElements<TElement>() where TElement : MenuElement
+        {
+            var elementsToRemove = new List<TElement>();
+            
+            foreach (var element in Elements)
+            {
+                var casted = element.TryCast<TElement>();
+
+                if (casted == null)
+                {
+                    continue;
+                }
+
+                elementsToRemove.Add(casted);
+            }
+
+            int count = 0;
+
+            foreach (var element in elementsToRemove)
+            {
+                RemoveElement(element);
+                count++;
+            }
+
+            return count;
+        }
+
+        [HideFromIl2Cpp]
+        public int RemoveElements() => RemoveElements<MenuElement>();
+
+        protected override void OnClearValues()
+        {
+            RemoveElements();
+
+            base.OnClearValues();
         }
 #endif
     }

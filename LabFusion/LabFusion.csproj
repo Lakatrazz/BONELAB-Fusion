@@ -149,6 +149,7 @@
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\IntElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\LabelElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\LobbyElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\LobbyResultElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\MenuElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\PageElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\StringElement.cs.meta" />

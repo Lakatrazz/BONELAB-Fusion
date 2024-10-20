@@ -90,7 +90,7 @@ namespace LabFusion.Marrow.Proxies
             {
                 if (string.IsNullOrEmpty(Value))
                 {
-                    Text.text = string.Format(EmptyFormat, Title);
+                    Text.text = string.Format(EmptyFormat, Title.ToLower());
                     Text.color = Color.gray * Color;
                 }
                 else

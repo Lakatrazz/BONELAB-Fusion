@@ -140,23 +140,14 @@ public static class MenuCreator
         // Setup buttons
         MenuButtonHelper.PopulateButtons(menuGameObject);
 
-        // Apply resources contained in the menu
-        ApplyMenuResources(menuTransform.Find("Resources"));
+        // Get resources contained in the menu
+        MenuResources.GetResources(menuTransform.Find("Resources"));
+
+        MenuButtonImage.sprite = MenuResources.MenuIconSprite;
 
         // Finally, populate the functions for all of the elements
         MenuPageHelper.PopulatePages(menuGameObject);
         MenuToolbarHelper.PopulateToolbar(menuTransform.Find("Popups/grid_Toolbar").gameObject);
-    }
-
-    private static void ApplyMenuResources(Transform resourcesTransform)
-    {
-        // Apply menu icon
-        var menuIcon = resourcesTransform.Find("Menu Icon");
-
-        if (menuIcon != null)
-        {
-            MenuButtonImage.sprite = menuIcon.GetComponent<SpriteRenderer>().sprite;
-        }
     }
 
     private static int InjectPage(PreferencesPanelView panelView, GameObject page)
