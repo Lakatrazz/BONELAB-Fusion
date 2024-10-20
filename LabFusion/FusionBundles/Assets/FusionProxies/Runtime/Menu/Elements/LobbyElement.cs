@@ -62,13 +62,13 @@ namespace LabFusion.Marrow.Proxies
             ServerVersionElement = levelInfoGrid.Find("label_ServerVersion").GetComponent<LabelElement>();
             PlayerCountElement = levelInfoGrid.Find("label_PlayerCount").GetComponent<LabelElement>();
             MaxPlayersElement = levelInfoGrid.Find("button_MaxPlayers").GetComponent<IntElement>();
+            PrivacyElement = levelInfoGrid.Find("button_Privacy").GetComponent<EnumElement>();
 
             var serverInfoGrid = transform.Find("grid_ServerInfo");
 
-            ServerActionElement = serverInfoGrid.Find("button_ServerAction").GetComponent<FunctionElement>();
-            PrivacyElement = serverInfoGrid.Find("button_Privacy").GetComponent<EnumElement>();
             ServerNameElement = serverInfoGrid.Find("button_ServerName").GetComponent<StringElement>();
             HostNameElement = serverInfoGrid.Find("label_HostName").GetComponent<LabelElement>();
+            ServerActionElement = serverInfoGrid.Find("button_ServerAction").GetComponent<FunctionElement>();
 
             _hasElements = true;
         }

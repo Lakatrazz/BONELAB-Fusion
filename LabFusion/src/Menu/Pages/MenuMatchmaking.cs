@@ -27,14 +27,25 @@ public static class MenuMatchmaking
         MatchmakingPage.DefaultPageIndex = 2;
 
         // Get browser references
-        var browserPage = matchmakingPage.transform.Find("page_Browser");
+        var browserTransform = matchmakingPage.transform.Find("page_Browser");
 
-        LobbyBrowserElement = browserPage.Find("scrollRect_LobbyBrowser/Viewport/Content").GetComponent<PageElement>();
+        PopulateBrowser(browserTransform);
+    }
+    
+    private static void PopulateBrowser(Transform browserTransform)
+    {
+        LobbyBrowserElement = browserTransform.Find("scrollRect_LobbyBrowser/Viewport/Content").GetComponent<PageElement>();
 
         SearchResultsElement = LobbyBrowserElement.AddElement<PageElement>("Search Results");
 
+        var searchBarElement = browserTransform.Find("button_SearchBar").GetComponent<FunctionElement>();
+
+        var refreshElement = browserTransform.Find("button_Refresh").GetComponent<FunctionElement>();
+        refreshElement.Do(RefreshBrowser);
+
         RefreshBrowser();
     }
+
 
     private static bool _isSearchingLobbies = false;
 
@@ -71,14 +82,7 @@ public static class MenuMatchmaking
 
         element.LevelNameText.text = info.LevelName;
 
-        string serverName = info.LobbyName;
-
-        if (string.IsNullOrWhiteSpace(serverName))
-        {
-            serverName = $"{info.LobbyOwner}'s Server";
-        }
-
-        element.ServerNameText.text = serverName;
+        element.ServerNameText.text = ParseServerName(info.LobbyName, info.LobbyOwner);
         element.HostNameText.text = info.LobbyOwner;
         element.PlayerCountText.text = string.Format($"{info.PlayerCount}/{info.MaxPlayers} Players");
         element.VersionText.text = string.Format($"v{info.LobbyVersion}");
@@ -91,6 +95,16 @@ public static class MenuMatchmaking
         }
 
         element.LevelIcon.texture = levelIcon;
+    }
+
+    private static string ParseServerName(string serverName, string hostName)
+    {
+        if (string.IsNullOrWhiteSpace(serverName))
+        {
+            serverName = $"{hostName}'s Server";
+        }
+
+        return serverName;
     }
 
     private static void ApplyServerMetadataToLobby(LobbyElement element, INetworkLobby lobby, LobbyMetadataInfo info)
@@ -158,7 +172,7 @@ public static class MenuMatchmaking
         element.ServerNameElement.EmptyFormat = "No {0}";
         element.ServerNameElement.TextFormat = "{1}";
 
-        element.ServerNameElement.Value = info.LobbyName;
+        element.ServerNameElement.Value = ParseServerName(info.LobbyName, info.LobbyOwner);
 
         element.HostNameElement
             .WithTitle(info.LobbyOwner);
