@@ -131,11 +131,18 @@ public static class MenuLocation
             .AsPref(settings.ServerName)
             .WithTitle("Server Name");
 
-        element.ServerNameElement.EmptyFormat = "No {0}";
+        element.ServerNameElement.EmptyFormat = "Click to add {0}";
         element.ServerNameElement.TextFormat = "{1}";
 
         element.HostNameElement
             .WithTitle($"{PlayerIdManager.LocalUsername}");
+
+        element.DescriptionElement
+            .Cleared()
+            .WithTitle("Description");
+
+        element.DescriptionElement.EmptyFormat = "Click to add {0}";
+        element.DescriptionElement.TextFormat = "{1}";
     }
 
     public static void PopulateLocation(GameObject locationPage)

@@ -251,6 +251,15 @@ public static class MenuMatchmaking
         element.HostNameElement
             .WithTitle(info.LobbyOwner);
 
+        element.DescriptionElement
+            .Cleared()
+            .WithTitle("Description");
+
+        element.DescriptionElement.EmptyFormat = "No {0}";
+        element.DescriptionElement.TextFormat = "{1}";
+
+        element.DescriptionElement.Value = info.LobbyDescription;
+
         // Apply level icon
         var levelIcon = MenuResources.GetLevelIcon(info.LevelName);
 

@@ -39,6 +39,7 @@ namespace LabFusion.Marrow.Proxies
         public EnumElement PrivacyElement { get; set; } = null;
         public StringElement ServerNameElement { get; set; } = null;
         public LabelElement HostNameElement { get; set; } = null;
+        public StringElement DescriptionElement { get; set; } = null;
 
         private bool _hasElements = false;
 
@@ -63,12 +64,13 @@ namespace LabFusion.Marrow.Proxies
             PlayerCountElement = levelInfoGrid.Find("label_PlayerCount").GetComponent<LabelElement>();
             MaxPlayersElement = levelInfoGrid.Find("button_MaxPlayers").GetComponent<IntElement>();
             PrivacyElement = levelInfoGrid.Find("button_Privacy").GetComponent<EnumElement>();
+            ServerActionElement = levelInfoGrid.Find("button_ServerAction").GetComponent<FunctionElement>();
 
             var serverInfoGrid = transform.Find("grid_ServerInfo");
 
             ServerNameElement = serverInfoGrid.Find("button_ServerName").GetComponent<StringElement>();
             HostNameElement = serverInfoGrid.Find("label_HostName").GetComponent<LabelElement>();
-            ServerActionElement = serverInfoGrid.Find("button_ServerAction").GetComponent<FunctionElement>();
+            DescriptionElement = serverInfoGrid.Find("button_Description").GetComponent<StringElement>();
 
             _hasElements = true;
         }
@@ -90,6 +92,11 @@ namespace LabFusion.Marrow.Proxies
             if (ServerNameElement != null)
             {
                 ServerNameElement.Interactable = Interactable;
+            }
+
+            if (DescriptionElement != null)
+            {
+                DescriptionElement.Interactable = Interactable;
             }
         }
 #endif

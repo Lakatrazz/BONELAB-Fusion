@@ -20,6 +20,7 @@ public struct LobbyMetadataInfo
     public ulong LobbyId;
     public string LobbyOwner;
     public string LobbyName;
+    public string LobbyDescription;
     public string LobbyTags;
     public Version LobbyVersion;
     public bool HasServerOpen;
@@ -52,6 +53,7 @@ public struct LobbyMetadataInfo
             LobbyId = PlayerIdManager.LocalLongId,
             LobbyOwner = PlayerIdManager.LocalUsername,
             LobbyName = ServerSettingsManager.SavedSettings.ServerName.Value,
+            LobbyDescription = string.Empty,
             LobbyTags = ServerSettingsManager.SavedSettings.ServerTags.Value.Contract(),
             LobbyVersion = FusionMod.Version,
             HasServerOpen = NetworkInfo.IsServer,
@@ -79,6 +81,7 @@ public struct LobbyMetadataInfo
         lobby.SetMetadata(nameof(LobbyId), LobbyId.ToString());
         lobby.SetMetadata(nameof(LobbyOwner), LobbyOwner);
         lobby.SetMetadata(nameof(LobbyName), LobbyName);
+        lobby.SetMetadata(nameof(LobbyDescription), LobbyDescription);
         lobby.SetMetadata(nameof(LobbyTags), LobbyTags);
         lobby.SetMetadata(nameof(LobbyVersion), LobbyVersion.ToString());
         lobby.SetMetadata(LobbyConstants.HasServerOpenKey, HasServerOpen.ToString());
@@ -109,6 +112,7 @@ public struct LobbyMetadataInfo
             // Lobby info
             LobbyOwner = lobby.GetMetadata(nameof(LobbyOwner)),
             LobbyName = lobby.GetMetadata(nameof(LobbyName)),
+            LobbyDescription = lobby.GetMetadata(nameof(LobbyDescription)),
             LobbyTags = lobby.GetMetadata(nameof(LobbyTags)),
             HasServerOpen = lobby.GetMetadata(LobbyConstants.HasServerOpenKey) == bool.TrueString,
 
