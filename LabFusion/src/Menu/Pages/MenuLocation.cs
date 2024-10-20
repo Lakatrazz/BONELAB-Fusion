@@ -1,4 +1,5 @@
-﻿using LabFusion.Marrow.Proxies;
+﻿using BoneLib.BoneMenu;
+using LabFusion.Marrow.Proxies;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Preferences;
@@ -51,6 +52,8 @@ public static class MenuLocation
             .WithTitle("Create Server")
             .Do(NetworkHelper.StartServer);
 
+        UpdateLevelIcon(element);
+
         OnServerSettingsChanged();
 
         UpdateInteractability();
@@ -63,9 +66,25 @@ public static class MenuLocation
             .WithTitle("Disconnect")
             .Do(() => { NetworkHelper.Disconnect(); });
 
+        UpdateLevelIcon(element);
+
         OnServerSettingsChanged();
 
         UpdateInteractability();
+    }
+
+    private static void UpdateLevelIcon(LobbyElement element)
+    {
+        var levelName = FusionSceneManager.Title;
+
+        var levelIcon = MenuResources.GetLevelIcon(levelName);
+
+        if (levelIcon == null)
+        {
+            levelIcon = MenuResources.GetLevelIcon(MenuResources.ModsIconTitle);
+        }
+
+        element.LevelIcon.texture = levelIcon;
     }
 
     private static void OnServerSettingsChanged()

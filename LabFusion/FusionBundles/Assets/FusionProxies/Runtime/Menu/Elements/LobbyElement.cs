@@ -1,5 +1,6 @@
 #if MELONLOADER
 using MelonLoader;
+using UnityEngine.UI;
 #endif
 
 namespace LabFusion.Marrow.Proxies
@@ -27,6 +28,8 @@ namespace LabFusion.Marrow.Proxies
             }
         }
 
+        public RawImage LevelIcon { get; set; } = null;
+
         public LabelElement LevelNameElement { get; set; } = null;
         public LabelElement ServerVersionElement { get; set; } = null;
         public LabelElement PlayerCountElement { get; set; } = null;
@@ -52,6 +55,8 @@ namespace LabFusion.Marrow.Proxies
             }
 
             var levelInfoGrid = transform.Find("grid_LevelInfo");
+
+            LevelIcon = levelInfoGrid.Find("background_Level/icon_Level").GetComponent<RawImage>();
 
             LevelNameElement = levelInfoGrid.Find("label_LevelName").GetComponent<LabelElement>();
             ServerVersionElement = levelInfoGrid.Find("label_ServerVersion").GetComponent<LabelElement>();
