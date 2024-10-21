@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using LabFusion.Utilities;
+using Newtonsoft.Json.Linq;
 
 namespace LabFusion.Downloading.ModIO;
 
@@ -23,6 +24,8 @@ public readonly struct ModData
 
     public IReadOnlyList<ModPlatformData> Platforms { get; }
 
+    public string ThumbnailUrl { get; }
+
     public ModData(JToken token)
     {
         Id = token.Value<int>("id");
@@ -36,5 +39,7 @@ public readonly struct ModData
         }
 
         Platforms = modPlatformList;
+
+        ThumbnailUrl = token["logo"]["thumb_640x360"].ToString();
     }
 }

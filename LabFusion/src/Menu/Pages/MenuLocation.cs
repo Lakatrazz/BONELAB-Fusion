@@ -1,9 +1,10 @@
-﻿using LabFusion.Marrow.Proxies;
+﻿using LabFusion.Downloading.ModIO;
+using LabFusion.Marrow;
+using LabFusion.Marrow.Proxies;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Preferences.Server;
 using LabFusion.Scene;
-using LabFusion.Senders;
 using LabFusion.Utilities;
 
 using UnityEngine;
@@ -81,6 +82,39 @@ public static class MenuLocation
         }
 
         element.LevelIcon.texture = levelIcon;
+
+        if (!FusionSceneManager.Level.Pallet.IsInMarrowGame())
+        {
+            ApplyModTexture(element);
+        }
+    }
+
+    private static void ApplyModTexture(LobbyElement element)
+    {
+        // Get the mod info
+        var pallet = FusionSceneManager.Level.Pallet;
+
+        var manifest = CrateFilterer.GetManifest(pallet);
+
+        if (manifest == null)
+        {
+            return;
+        }
+
+        var modListing = manifest.ModListing;
+
+        var modTarget = ModIOManager.GetTargetFromListing(modListing);
+
+        if (modTarget == null)
+        {
+            return;
+        }
+
+        // Get the texture
+        ModIOThumbnailDownloader.GetThumbnail((int)modTarget.ModId, (texture) =>
+        {
+            element.LevelIcon.texture = texture;
+        });
     }
 
     private static void OnServerSettingsChanged()

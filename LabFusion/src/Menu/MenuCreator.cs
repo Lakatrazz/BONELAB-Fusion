@@ -158,14 +158,30 @@ public static class MenuCreator
     {
         var selectedPage = MenuPage.SelectedPage;
 
-        if (selectedPage.Parent != null && selectedPage.Parent.Parent != null)
+        GoBack(selectedPage);
+    }
+
+    private static void GoBack(MenuPage page)
+    {
+        var parent = page.Parent;
+
+        if (parent != null && parent.Parent != null)
         {
-            selectedPage.Parent.Parent.SelectSubPage(selectedPage.Parent);
+            var upperParent = parent.Parent;
+
+            upperParent.SelectSubPage(parent);
+
+            // Edge case fix
+            // Could be avoided if I designed MenuPages better with FieldInjection but I do not care enough
+            if (upperParent.SubPages.Count <= 1 && upperParent.Parent != null)
+            {
+                upperParent.Parent.SelectSubPage(upperParent);
+            }
+
+            return;
         }
-        else
-        {
-            UIRig.Instance.popUpMenu.preferencesPanelView.PAGESELECT(0);
-        }
+
+        UIRig.Instance.popUpMenu.preferencesPanelView.PAGESELECT(0);
     }
 
     private static int InjectPage(PreferencesPanelView panelView, GameObject page)

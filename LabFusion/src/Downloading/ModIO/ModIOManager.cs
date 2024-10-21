@@ -54,7 +54,7 @@ public static class ModIOManager
 
     private static IEnumerator CoGetMod(string url, string token, ModCallback modCallback)
     {
-        HttpClientHandler handler = new HttpClientHandler()
+        var handler = new HttpClientHandler()
         {
             ClientCertificateOptions = ClientCertificateOption.Manual,
             ServerCertificateCustomValidationCallback = (_, _, _, _) => true
