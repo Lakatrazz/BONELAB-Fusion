@@ -367,6 +367,11 @@ public static class MenuMatchmaking
 
         element.DescriptionElement.Value = info.LobbyDescription;
 
+        element.MoreElement
+            .Cleared()
+            .WithTitle("More...")
+            .Do(() => { element.LobbyPage.SelectSubPage(1); });
+
         // Apply level icon
         var levelIcon = MenuResources.GetLevelIcon(info.LevelName);
 

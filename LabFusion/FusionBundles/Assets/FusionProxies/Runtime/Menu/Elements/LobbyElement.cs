@@ -30,11 +30,14 @@ namespace LabFusion.Marrow.Proxies
 
         public RawImage LevelIcon { get; set; } = null;
 
+        public MenuPage LobbyPage { get; set; } = null;
+
         public LabelElement LevelNameElement { get; set; } = null;
         public LabelElement ServerVersionElement { get; set; } = null;
         public IntElement PlayersElement { get; set; } = null;
 
         public FunctionElement ServerActionElement { get; set; } = null;
+        public FunctionElement MoreElement { get; set; } = null;
         public EnumElement PrivacyElement { get; set; } = null;
         public StringElement ServerNameElement { get; set; } = null;
         public LabelElement HostNameElement { get; set; } = null;
@@ -57,7 +60,12 @@ namespace LabFusion.Marrow.Proxies
                 return; 
             }
 
-            var levelInfoGrid = transform.Find("grid_LevelInfo");
+            LobbyPage = GetComponent<MenuPage>();
+
+            // Main panel
+            var mainPanel = transform.Find("panel_Main");
+
+            var levelInfoGrid = mainPanel.Find("grid_LevelInfo");
 
             LevelIcon = levelInfoGrid.Find("background_Level/icon_Level").GetComponent<RawImage>();
 
@@ -66,14 +74,19 @@ namespace LabFusion.Marrow.Proxies
             PlayersElement = levelInfoGrid.Find("button_Players").GetComponent<IntElement>();
             PrivacyElement = levelInfoGrid.Find("button_Privacy").GetComponent<EnumElement>();
             ServerActionElement = levelInfoGrid.Find("button_ServerAction").GetComponent<FunctionElement>();
+            MoreElement = levelInfoGrid.Find("button_More").GetComponent<FunctionElement>();
 
-            var serverInfoGrid = transform.Find("grid_ServerInfo");
+            var serverInfoGrid = mainPanel.Find("grid_ServerInfo");
 
             ServerNameElement = serverInfoGrid.Find("button_ServerName").GetComponent<StringElement>();
             HostNameElement = serverInfoGrid.Find("label_HostName").GetComponent<LabelElement>();
             DescriptionElement = serverInfoGrid.Find("button_Description").GetComponent<StringElement>();
-            SettingsElement = serverInfoGrid.Find("scrollRect_Settings/Viewport/Content").GetComponent<PageElement>();
             PlayerListElement = serverInfoGrid.Find("scrollRect_PlayerList/Viewport/Content").GetComponent<PageElement>();
+
+            // More panel
+            var morePanel = transform.Find("panel_More");
+            var settingsGrid = morePanel.Find("grid_Settings");
+            SettingsElement = settingsGrid.Find("scrollRect_Settings/Viewport/Content").GetComponent<PageElement>();
 
             _hasElements = true;
         }

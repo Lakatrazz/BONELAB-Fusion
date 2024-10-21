@@ -29,6 +29,11 @@ namespace LabFusion.Marrow.Proxies
         private void Awake()
         {
             GetSubPages();
+
+            if (Parent == null && transform.parent != null)
+            {
+                Parent = transform.parent.GetComponentInParent<MenuPage>();
+            }
         }
 
         private void GetSubPages()

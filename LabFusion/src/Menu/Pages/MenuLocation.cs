@@ -137,6 +137,11 @@ public static class MenuLocation
         element.DescriptionElement.EmptyFormat = emptyFormat;
         element.DescriptionElement.TextFormat = "{1}";
 
+        element.MoreElement
+            .Cleared()
+            .WithTitle("More...")
+            .Do(() => { element.LobbyPage.SelectSubPage(1); });
+
         // Fill out lists
         // Settings list
         var settingsPage = element.SettingsElement.Pages[0];
