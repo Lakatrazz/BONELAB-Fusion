@@ -59,6 +59,15 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
         }
 
         string microphoneName = GetValidMicrophoneName();
+        var microphoneId = Microphone.GetMicrophoneDeviceIDFromName(microphoneName);
+
+        // Invalid microphone name, don't record
+        if (microphoneId == -1)
+        {
+            ClearData();
+            return;
+        }
+
         bool isRecording = Microphone.IsRecording(microphoneName);
 
         if (enabled && !isRecording)
