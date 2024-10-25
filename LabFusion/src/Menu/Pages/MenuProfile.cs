@@ -1,6 +1,4 @@
-﻿using Il2CppTMPro;
-
-using LabFusion.Marrow.Proxies;
+﻿using LabFusion.Marrow.Proxies;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Preferences.Client;
@@ -14,19 +12,21 @@ public static class MenuProfile
     public static void PopulateProfile(GameObject profilePage)
     {
         // Update the profile grid
-        var gridPofile = profilePage.transform.Find("grid_Profile");
+        var profilePanel = profilePage.transform.Find("panel_Profile").GetComponent<PlayerElement>();
 
-        var usernameLabel = gridPofile.Find("label_Username").GetComponent<LabelElement>()
+        profilePanel.GetElements();
+
+        profilePanel.UsernameElement
             .WithTitle(PlayerIdManager.LocalUsername);
 
-        var nicknameButton = gridPofile.Find("button_Nickname").GetComponent<StringElement>()
+        profilePanel.NicknameElement
             .WithTitle("Nickname")
             .AsPref(ClientSettings.Nickname, (value) =>
             {
                 PlayerIdManager.LocalId?.Metadata.TrySetMetadata(MetadataHelper.NicknameKey, value);
             });
 
-        var descriptionButton = gridPofile.Find("button_Description").GetComponent<StringElement>()
+        profilePanel.DescriptionElement
             .WithTitle("Description")
             .AsPref(ClientSettings.Description);
     }

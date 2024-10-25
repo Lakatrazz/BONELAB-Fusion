@@ -201,15 +201,21 @@ public static class MenuLocation
             .WithTitle("SlowMo");
 
         // Player list
-        element.PlayerListElement.Clear();
+        element.PlayerBrowserElement.Clear();
 
-        var playerListPage = element.PlayerListElement.AddPage();
+        var playerListPage = element.PlayerBrowserElement.AddPage();
 
         foreach (var player in PlayerIdManager.PlayerIds)
         {
             MetadataHelper.TryGetDisplayName(player, out var name);
 
-            playerListPage.AddElement<FunctionElement>(name);
+            var playerResult = playerListPage.AddElement<PlayerResultElement>(name);
+
+            playerResult.GetReferences();
+
+            playerResult.PlayerNameText.text = name;
+
+            playerResult.RoleText.text = "User";
         }
 
         // Change interactability for all elements

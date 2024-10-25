@@ -48,6 +48,12 @@
       },
       "url": "https://registry.stresslevelzero.com"
     },
+    "com.unity.2d.sprite": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {}
+    },
     "com.unity.addressables": {
       "version": "1.21.12",
       "depth": 1,

@@ -2,6 +2,7 @@
 using LabFusion.Network;
 using LabFusion.SDK.Lobbies;
 using LabFusion.Senders;
+using LabFusion.XML;
 
 using UnityEngine;
 
@@ -228,6 +229,15 @@ public static class MenuMatchmaking
         ApplyServerMetadataToLobby(LobbyPanel, info.lobby, info.metadata);
     }
 
+    private static void OnShowPlayer(PlayerList.PlayerInfo info)
+    {
+        MatchmakingPage.SelectSubPage(4);
+        BrowserPage.SelectSubPage(1);
+        LobbyPanel.LobbyPage.SelectSubPage(2);
+
+        ApplyPlayerToElement(LobbyPanel.ProfileElement, info);
+    }
+
     private static void ApplyLobbyToResult(LobbyResultElement element, IMatchmaker.LobbyInfo info)
     {
         element.GetReferences();
@@ -404,13 +414,37 @@ public static class MenuMatchmaking
         slowMoElement.Value = info.TimeScaleMode;
 
         // Player list
-        element.PlayerListElement.Clear();
+        element.PlayerBrowserElement.Clear();
 
-        var playerListPage = element.PlayerListElement.AddPage();
+        var playerListPage = element.PlayerBrowserElement.AddPage();
 
         foreach (var player in info.PlayerList.players)
         {
-            playerListPage.AddElement<FunctionElement>(player.username);
+            var playerResult = playerListPage.AddElement<PlayerResultElement>(player.username);
+
+            playerResult.GetReferences();
+
+            playerResult.PlayerNameText.text = player.username;
+
+            playerResult.RoleText.text = "User";
+
+            playerResult.OnPressed = () =>
+            {
+                OnShowPlayer(player);
+            };
         }
+    }
+
+    private static void ApplyPlayerToElement(PlayerElement element, PlayerList.PlayerInfo info)
+    {
+        element.UsernameElement.Title = info.username;
+
+        element.NicknameElement.Title = "Nickname";
+        element.NicknameElement.Value = string.Empty;
+        element.NicknameElement.EmptyFormat = "No {0}";
+
+        element.DescriptionElement.Title = "Description";
+        element.DescriptionElement.Value = string.Empty;
+        element.DescriptionElement.EmptyFormat = "No {0}";
     }
 }

@@ -13,5 +13,10 @@ public static class MenuToolbarHelper
         var muteButton = toolbar.transform.Find("button_Muted").GetComponent<BoolElement>();
 
         muteButton.AsPref(ClientSettings.VoiceChat.Muted);
+
+        // Setup the deafen button
+        var deafenButton = toolbar.transform.Find("button_Deafened").GetComponent<BoolElement>();
+
+        deafenButton.AsPref(ClientSettings.VoiceChat.Deafened);
     }
 }

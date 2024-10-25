@@ -44,7 +44,9 @@ namespace LabFusion.Marrow.Proxies
         public StringElement DescriptionElement { get; set; } = null;
 
         public PageElement SettingsElement { get; set; } = null;
-        public PageElement PlayerListElement { get; set; } = null;
+
+        public PageElement PlayerBrowserElement { get; set; } = null;
+        public PlayerElement ProfileElement { get; set; } = null;
 
         private bool _hasElements = false;
 
@@ -81,12 +83,16 @@ namespace LabFusion.Marrow.Proxies
             ServerNameElement = serverInfoGrid.Find("button_ServerName").GetComponent<StringElement>();
             HostNameElement = serverInfoGrid.Find("label_HostName").GetComponent<LabelElement>();
             DescriptionElement = serverInfoGrid.Find("button_Description").GetComponent<StringElement>();
-            PlayerListElement = serverInfoGrid.Find("scrollRect_PlayerList/Viewport/Content").GetComponent<PageElement>();
+            PlayerBrowserElement = serverInfoGrid.Find("scrollRect_PlayerBrowser/Viewport/Content").GetComponent<PageElement>();
 
             // More panel
             var morePanel = transform.Find("panel_More");
             var settingsGrid = morePanel.Find("grid_Settings");
             SettingsElement = settingsGrid.Find("scrollRect_Settings/Viewport/Content").GetComponent<PageElement>();
+
+            // Profile panel
+            var profilePanel = transform.Find("panel_Profile");
+            ProfileElement = profilePanel.GetComponent<PlayerElement>();
 
             _hasElements = true;
         }
@@ -113,6 +119,11 @@ namespace LabFusion.Marrow.Proxies
             if (DescriptionElement != null)
             {
                 DescriptionElement.Interactable = Interactable;
+            }
+
+            if (ProfileElement != null)
+            {
+                ProfileElement.Interactable = Interactable;
             }
         }
 #endif
