@@ -17,6 +17,10 @@ public static class MenuLocation
 
     public static LobbyElement LobbyElement { get; private set; }
 
+    public static BoolElement NameTagsElement { get; private set; }
+    public static BoolElement VoiceChatElement { get; private set; }
+    public static EnumElement SlowMoElement { get; private set; }
+
     public static void OnInitializeMelon()
     {
         MultiplayerHooking.OnStartServer += OnConnect;
@@ -178,23 +182,19 @@ public static class MenuLocation
 
         // Fill out lists
         // Settings list
-        var settingsPage = element.SettingsElement.Pages[0];
-
-        var generalGroup = settingsPage.AddOrGetElement<GroupElement>("General");
-
-        generalGroup.AddOrGetElement<BoolElement>("NameTags")
+        NameTagsElement
             .Cleared()
             .WithInteractability(ownsSettings)
             .AsPref(settings.NametagsEnabled)
             .WithTitle("NameTags");
 
-        generalGroup.AddOrGetElement<BoolElement>("VoiceChat")
+        VoiceChatElement
             .Cleared()
             .WithInteractability(ownsSettings)
             .AsPref(settings.VoiceChatEnabled)
             .WithTitle("VoiceChat");
 
-        generalGroup.AddOrGetElement<EnumElement>("SlowMo")
+        SlowMoElement
             .Cleared()
             .WithInteractability(ownsSettings)
             .AsPref(settings.TimeScaleMode)
@@ -230,7 +230,8 @@ public static class MenuLocation
 
         LobbyElement.GetElements();
 
-        LobbyElement.SettingsElement.AddPage();
+        var settingsPage = LobbyElement.SettingsElement.AddPage();
+        PopulateSettings(settingsPage);
 
         // Update server status
         if (NetworkInfo.HasServer)
@@ -241,5 +242,16 @@ public static class MenuLocation
         {
             OnDisconnect();
         }
+    }
+
+    private static void PopulateSettings(PageElement element)
+    {
+        var generalGroup = element.AddElement<GroupElement>("General");
+
+        NameTagsElement = generalGroup.AddElement<BoolElement>("NameTags");
+
+        VoiceChatElement = generalGroup.AddElement<BoolElement>("VoiceChat");
+
+        SlowMoElement = generalGroup.AddElement<EnumElement>("SlowMo");
     }
 }
