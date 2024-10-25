@@ -93,9 +93,9 @@ namespace LabFusion.BoneMenu
             var playersCategory = lobbyCategory.CreatePage("Players", Color.white, 0, false);
             var playersLink = lobbyCategory.CreatePageLink(playersCategory);
 
-            foreach (var player in info.PlayerList.players)
+            foreach (var player in info.PlayerList.Players)
             {
-                playersCategory.CreateFunction(player.username, Color.white, null);
+                playersCategory.CreateFunction(player.Username, Color.white, null);
             }
             
             RemoveEmptyPage(lobbyCategory, playersCategory, playersLink);

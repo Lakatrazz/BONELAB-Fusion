@@ -5,10 +5,10 @@ using LabFusion.SDK.Gamemodes;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 using LabFusion.Scene;
-using LabFusion.XML;
 using LabFusion.Marrow;
+using LabFusion.Data;
 
-using System.Xml.Linq;
+using System.Text.Json;
 
 using Il2CppSLZ.Marrow.Warehouse;
 
@@ -46,7 +46,8 @@ public struct LobbyMetadataInfo
     public static LobbyMetadataInfo Create()
     {
         var playerList = new PlayerList();
-        playerList.ReadPlayerList();
+        playerList.WritePlayers();
+
         return new LobbyMetadataInfo()
         {
             // Lobby info
@@ -86,7 +87,7 @@ public struct LobbyMetadataInfo
         lobby.SetMetadata(nameof(LobbyVersion), LobbyVersion.ToString());
         lobby.SetMetadata(LobbyConstants.HasServerOpenKey, HasServerOpen.ToString());
         lobby.SetMetadata(nameof(PlayerCount), PlayerCount.ToString());
-        lobby.SetMetadata(nameof(PlayerList), PlayerList.WriteDocument().ToString());
+        lobby.SetMetadata(nameof(PlayerList), JsonSerializer.Serialize(PlayerList));
 
         // Lobby settings
         lobby.SetMetadata(nameof(NametagsEnabled), NametagsEnabled.ToString());
@@ -125,17 +126,27 @@ public struct LobbyMetadataInfo
             GamemodeName = lobby.GetMetadata(nameof(GamemodeName)),
             IsGamemodeRunning = lobby.GetMetadata(nameof(IsGamemodeRunning)) == bool.TrueString,
         };
+
         // Check if we have a player list
-        if (lobby.TryGetMetadata(nameof(PlayerList), out var playerXML))
+        if (lobby.TryGetMetadata(nameof(PlayerList), out var json))
         {
-            info.PlayerList = new PlayerList();
-            info.PlayerList.ReadDocument(XDocument.Parse(playerXML));
+            try
+            {
+                info.PlayerList = JsonSerializer.Deserialize<PlayerList>(json);
+            }
+            catch
+            {
+                info.PlayerList = new()
+                {
+                    Players = Array.Empty<PlayerInfo>()
+                };
+            }
         }
         else
         {
             info.PlayerList = new()
             {
-                players = Array.Empty<PlayerList.PlayerInfo>()
+                Players = Array.Empty<PlayerInfo>()
             };
         }
 

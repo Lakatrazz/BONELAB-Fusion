@@ -1,8 +1,8 @@
-﻿using LabFusion.Marrow.Proxies;
+﻿using LabFusion.Data;
+using LabFusion.Marrow.Proxies;
 using LabFusion.Network;
 using LabFusion.SDK.Lobbies;
 using LabFusion.Senders;
-using LabFusion.XML;
 
 using UnityEngine;
 
@@ -229,7 +229,7 @@ public static class MenuMatchmaking
         ApplyServerMetadataToLobby(LobbyPanel, info.lobby, info.metadata);
     }
 
-    private static void OnShowPlayer(PlayerList.PlayerInfo info)
+    private static void OnShowPlayer(PlayerInfo info)
     {
         MatchmakingPage.SelectSubPage(4);
         BrowserPage.SelectSubPage(1);
@@ -418,13 +418,13 @@ public static class MenuMatchmaking
 
         var playerListPage = element.PlayerBrowserElement.AddPage();
 
-        foreach (var player in info.PlayerList.players)
+        foreach (var player in info.PlayerList.Players)
         {
-            var playerResult = playerListPage.AddElement<PlayerResultElement>(player.username);
+            var playerResult = playerListPage.AddElement<PlayerResultElement>(player.Username);
 
             playerResult.GetReferences();
 
-            playerResult.PlayerNameText.text = player.username;
+            playerResult.PlayerNameText.text = player.Username;
 
             playerResult.RoleText.text = "User";
 
@@ -435,12 +435,12 @@ public static class MenuMatchmaking
         }
     }
 
-    private static void ApplyPlayerToElement(PlayerElement element, PlayerList.PlayerInfo info)
+    private static void ApplyPlayerToElement(PlayerElement element, PlayerInfo info)
     {
-        element.UsernameElement.Title = info.username;
+        element.UsernameElement.Title = info.Username;
 
         element.NicknameElement.Title = "Nickname";
-        element.NicknameElement.Value = string.Empty;
+        element.NicknameElement.Value = info.Nickname;
         element.NicknameElement.EmptyFormat = "No {0}";
 
         element.DescriptionElement.Title = "Description";
