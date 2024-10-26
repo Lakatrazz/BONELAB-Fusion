@@ -1,5 +1,7 @@
 #if MELONLOADER
 using MelonLoader;
+
+using UnityEngine;
 using UnityEngine.UI;
 #endif
 
@@ -32,9 +34,14 @@ namespace LabFusion.Marrow.Proxies
 
         public RawImage PlayerIcon { get; set; } = null;
 
+        public EnumElement PermissionsElement { get; set; } = null;
+
         public LabelElement UsernameElement { get; set; } = null;
         public StringElement NicknameElement { get; set; } = null;
         public StringElement DescriptionElement { get; set; } = null;
+
+        public GameObject ActionsGrid { get; set; } = null;
+        public PageElement ActionsElement { get; set; } = null;
 
         private bool _hasElements = false;
 
@@ -58,12 +65,18 @@ namespace LabFusion.Marrow.Proxies
             var optionsGrid = mainPanel.Find("grid_PlayerOptions");
 
             PlayerIcon = optionsGrid.Find("label_ProfileIcon/icon_Player").GetComponent<RawImage>();
+            PermissionsElement = optionsGrid.Find("button_Permissions").GetComponent<EnumElement>();
 
             var infoGrid = mainPanel.Find("grid_PlayerInfo");
 
             UsernameElement = infoGrid.Find("label_Username").GetComponent<LabelElement>();
             NicknameElement = infoGrid.Find("button_Nickname").GetComponent<StringElement>();
             DescriptionElement = infoGrid.Find("button_Description").GetComponent<StringElement>();
+
+            var actionsGrid = infoGrid.Find("grid_Actions");
+            ActionsGrid = actionsGrid.gameObject;
+
+            ActionsElement = actionsGrid.Find("scrollRect_Actions/Viewport/Content").GetComponent<PageElement>();
 
             _hasElements = true;
         }

@@ -4,10 +4,13 @@ using LabFusion.Marrow.Proxies;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Preferences.Server;
+using LabFusion.Representation;
 using LabFusion.Scene;
+using LabFusion.Senders;
 using LabFusion.Utilities;
 
 using UnityEngine;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace LabFusion.Menu;
 
@@ -216,10 +219,113 @@ public static class MenuLocation
             playerResult.PlayerNameText.text = name;
 
             playerResult.RoleText.text = "User";
+
+            playerResult.OnPressed = () =>
+            {
+                OnShowPlayer(player);
+            };
         }
 
         // Change interactability for all elements
         element.Interactable = ownsSettings;
+    }
+
+    private static void OnShowPlayer(PlayerId player)
+    {
+        if (!player.IsValid)
+        {
+            return;
+        }
+
+        LobbyElement.LobbyPage.SelectSubPage(2);
+
+        ApplyPlayerToElement(LobbyElement.ProfileElement, player);
+    }
+
+    private static void ApplyPlayerToElement(PlayerElement element, PlayerId player)
+    {
+        var username = player.Metadata.GetMetadata(MetadataHelper.UsernameKey);
+        element.UsernameElement.Title = username;
+
+        element.NicknameElement.Title = "Nickname";
+        element.NicknameElement.Value = player.Metadata.GetMetadata(MetadataHelper.NicknameKey);
+        element.NicknameElement.Interactable = false;
+        element.NicknameElement.EmptyFormat = "No {0}";
+
+        element.DescriptionElement.Title = "Description";
+        element.DescriptionElement.Interactable = false;
+        element.DescriptionElement.EmptyFormat = "No {0}";
+
+        // Get permissions
+        FusionPermissions.FetchPermissionLevel(PlayerIdManager.LocalLongId, out var selfLevel, out _);
+
+        FusionPermissions.FetchPermissionLevel(player.LongId, out var level, out Color color);
+
+        var serverSettings = ServerSettingsManager.ActiveSettings;
+
+        // Permissions element
+        var permissionsElement = element.PermissionsElement
+            .WithTitle("Permissions")
+            .WithColor(Color.yellow);
+
+        permissionsElement.EnumType = typeof(PermissionLevel);
+        permissionsElement.Value = level;
+
+        permissionsElement.OnValueChanged += (v) =>
+        {
+            FusionPermissions.TrySetPermission(player.LongId, username, (PermissionLevel)v);
+        };
+
+        permissionsElement.Interactable = !player.IsMe && NetworkInfo.IsServer;
+
+        // Actions
+        element.ActionsElement.Clear();
+        var actionsPage = element.ActionsElement.AddPage();
+
+        if (!player.IsMe && (NetworkInfo.IsServer || FusionPermissions.HasHigherPermissions(selfLevel, level)))
+        {
+            var moderationGroup = actionsPage.AddElement<GroupElement>("Moderation");
+
+            // Kick button
+            if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.KickingAllowed.Value))
+            {
+                moderationGroup.AddElement<FunctionElement>("Kick")
+                    .WithColor(Color.red)
+                    .Do(() =>
+                    {
+                        PermissionSender.SendPermissionRequest(PermissionCommandType.KICK, player);
+                    });
+            }
+
+            // Ban button
+            if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.BanningAllowed.Value))
+            {
+                moderationGroup.AddElement<FunctionElement>("Ban")
+                    .WithColor(Color.red)
+                    .Do(() =>
+                    {
+                        PermissionSender.SendPermissionRequest(PermissionCommandType.BAN, player);
+                    });
+            }
+
+            // Teleport buttons
+            if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.Teleportation.Value))
+            {
+                moderationGroup.AddElement<FunctionElement>("Teleport To Them")
+                    .WithColor(Color.red)
+                    .Do(() =>
+                    {
+                        PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_THEM, player);
+                    });
+
+                moderationGroup.AddElement<FunctionElement>("Teleport To Us")
+                    .WithColor(Color.red)
+                    .Do(() =>
+                    {
+                        PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_US, player);
+                    });
+            }
+        }
     }
 
     public static void PopulateLocation(GameObject locationPage)

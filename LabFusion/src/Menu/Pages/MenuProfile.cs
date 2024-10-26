@@ -29,5 +29,10 @@ public static class MenuProfile
         profilePanel.DescriptionElement
             .WithTitle("Description")
             .AsPref(ClientSettings.Description);
+
+        // Disable unnecessary elements
+        profilePanel.ActionsGrid.SetActive(false);
+
+        profilePanel.PermissionsElement.gameObject.SetActive(false);
     }
 }

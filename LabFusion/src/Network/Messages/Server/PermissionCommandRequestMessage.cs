@@ -86,12 +86,22 @@ public class PermissionCommandRequestMessage : FusionMessageHandler
             case PermissionCommandType.UNKNOWN:
                 break;
             case PermissionCommandType.KICK:
+                if (otherPlayer.IsHost)
+                {
+                    return;
+                }
+
                 if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, ServerSettingsManager.ActiveSettings.KickingAllowed.Value))
                 {
                     NetworkHelper.KickUser(otherPlayer);
                 }
                 break;
             case PermissionCommandType.BAN:
+                if (otherPlayer.IsHost)
+                {
+                    return;
+                }
+
                 if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, ServerSettingsManager.ActiveSettings.BanningAllowed.Value))
                 {
                     NetworkHelper.BanUser(otherPlayer);

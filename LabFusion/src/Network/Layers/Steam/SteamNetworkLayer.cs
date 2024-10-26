@@ -297,7 +297,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
     private void OnPlayerJoin(PlayerId id)
     {
-        if (!id.IsOwner)
+        if (!id.IsMe)
             VoiceManager.GetSpeaker(id);
 
         OnUpdateLobby();

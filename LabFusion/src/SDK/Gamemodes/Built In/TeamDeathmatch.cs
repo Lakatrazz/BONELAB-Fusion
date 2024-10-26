@@ -232,7 +232,7 @@ public class TeamDeathmatch : Gamemode
 
     private void OnAssignedToTeam(PlayerId playerId, Team team)
     {
-        if (playerId.IsOwner)
+        if (playerId.IsMe)
         {
             OnSelfAssigned(team);
         }
@@ -402,7 +402,7 @@ public class TeamDeathmatch : Gamemode
             }
 
             // If we are the killer, increment our achievement
-            if (otherPlayer.IsOwner)
+            if (otherPlayer.IsMe)
             {
                 AchievementManager.IncrementAchievements<KillerAchievement>();
             }

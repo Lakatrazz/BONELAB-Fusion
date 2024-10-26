@@ -144,7 +144,7 @@ public class HideAndSeek : Gamemode
         }
 
         // Were we tagged? Give a notification
-        if (playerId.IsOwner && !_hasBeenTagged)
+        if (playerId.IsMe && !_hasBeenTagged)
         {
             FusionNotifier.Send(new FusionNotification()
             {
@@ -160,7 +160,7 @@ public class HideAndSeek : Gamemode
         }
 
         // Other player tagged?
-        if (!playerId.IsOwner)
+        if (!playerId.IsMe)
         {
             playerId.TryGetDisplayName(out var name);
 
@@ -194,7 +194,7 @@ public class HideAndSeek : Gamemode
         // Update nametags
         FusionOverrides.ForceUpdateOverrides();
 
-        if (!player.IsOwner)
+        if (!player.IsMe)
         {
             return;
         }

@@ -9,7 +9,7 @@ namespace LabFusion.Player;
 
 public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
 {
-    public bool IsOwner => LongId == PlayerIdManager.LocalLongId;
+    public bool IsMe => LongId == PlayerIdManager.LocalLongId;
     public bool IsValid => _isValid;
     private bool _isValid = false;
 
@@ -102,7 +102,7 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
 
     private bool HasMetadataPermissions()
     {
-        return NetworkInfo.IsServer || IsOwner;
+        return NetworkInfo.IsServer || IsMe;
     }
 
     public bool Equals(PlayerId other)
@@ -141,7 +141,7 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
 
     public bool HasEquipped(PointItem item)
     {
-        if (IsOwner)
+        if (IsMe)
             return item.IsEquipped;
         else
             return EquippedItems.Contains(item.Barcode);

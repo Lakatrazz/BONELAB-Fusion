@@ -13,7 +13,7 @@ public static class ConnectionSender
         {
             foreach (var id in PlayerIdManager.PlayerIds)
             {
-                if (id.IsOwner)
+                if (id.IsMe)
                     continue;
 
                 using FusionWriter writer = FusionWriter.Create();

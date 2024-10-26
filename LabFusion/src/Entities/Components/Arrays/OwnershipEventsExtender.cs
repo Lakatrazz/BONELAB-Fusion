@@ -18,7 +18,7 @@ public class OwnershipEventsExtender : EntityComponentArrayExtender<OwnershipEve
 
     private void OnEntityOwnershipTransfer(NetworkEntity entity, PlayerId playerId)
     {
-        bool owner = playerId.IsOwner;
+        bool owner = playerId.IsMe;
 
         foreach (var component in Components)
         {

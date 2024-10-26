@@ -30,7 +30,7 @@ namespace LabFusion.SDK.Achievements
         private void OnPlayerAction(PlayerId player, PlayerActionType type, PlayerId otherPlayer)
         {
             // Was the person saved?
-            if (!player.IsOwner && type == PlayerActionType.RECOVERY)
+            if (!player.IsMe && type == PlayerActionType.RECOVERY)
             {
                 // Check the most recently killed NPC
                 // If we are the owner, we probably saved them

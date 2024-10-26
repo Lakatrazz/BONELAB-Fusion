@@ -1002,9 +1002,29 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4675812421904646839}
     m_Modifications:
+    - target: {fileID: 3359658860387112921, guid: 3e0dbfd502ac1ae4f99c2359ac338cfe, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3359658860387112921, guid: 3e0dbfd502ac1ae4f99c2359ac338cfe, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4060704429607582196, guid: 3e0dbfd502ac1ae4f99c2359ac338cfe, type: 3}
       propertyPath: m_Name
       value: panel_Profile
+      objectReference: {fileID: 0}
+    - target: {fileID: 6383929765087188344, guid: 3e0dbfd502ac1ae4f99c2359ac338cfe, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6383929765087188344, guid: 3e0dbfd502ac1ae4f99c2359ac338cfe, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6383929765087188344, guid: 3e0dbfd502ac1ae4f99c2359ac338cfe, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6872482830293092141, guid: 3e0dbfd502ac1ae4f99c2359ac338cfe, type: 3}
       propertyPath: m_Pivot.x
@@ -1088,6 +1108,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6872482830293092141, guid: 3e0dbfd502ac1ae4f99c2359ac338cfe, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8319711653812338997, guid: 3e0dbfd502ac1ae4f99c2359ac338cfe, type: 3}
+      propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

@@ -435,7 +435,7 @@ namespace LabFusion.Network
 
         private void OnPlayerJoin(PlayerId id)
         {
-            if (!id.IsOwner)
+            if (!id.IsMe)
                 _voiceManager.GetSpeaker(id);
 
             OnUpdateLobby();
