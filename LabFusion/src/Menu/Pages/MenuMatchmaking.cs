@@ -1,6 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Marrow.Proxies;
 using LabFusion.Network;
+using LabFusion.Representation;
 using LabFusion.SDK.Lobbies;
 using LabFusion.Senders;
 
@@ -280,14 +281,7 @@ public static class MenuMatchmaking
         element.VersionText.text = string.Format($"v{metadata.LobbyVersion}");
         element.VersionText.color = versionColor;
 
-        var levelIcon = MenuResources.GetLevelIcon(metadata.LevelName);
-
-        if (levelIcon == null)
-        {
-            levelIcon = MenuResources.GetLevelIcon(MenuResources.ModsIconTitle);
-        }
-
-        element.LevelIcon.texture = levelIcon;
+        ElementIconHelper.SetLevelResultIcon(element, metadata.LevelName);
     }
 
     private static string ParseServerName(string serverName, string hostName)
@@ -383,14 +377,7 @@ public static class MenuMatchmaking
             .Do(() => { element.LobbyPage.SelectSubPage(1); });
 
         // Apply level icon
-        var levelIcon = MenuResources.GetLevelIcon(info.LevelName);
-
-        if (levelIcon == null)
-        {
-            levelIcon = MenuResources.GetLevelIcon(MenuResources.ModsIconTitle);
-        }
-
-        element.LevelIcon.texture = levelIcon;
+        ElementIconHelper.SetLevelIcon(element, info.LevelName);
 
         // Fill out lists
         // Settings list
@@ -426,12 +413,14 @@ public static class MenuMatchmaking
 
             playerResult.PlayerNameText.text = player.Username;
 
-            playerResult.RoleText.text = "User";
+            playerResult.RoleText.text = player.PermissionLevel.ToString();
 
             playerResult.OnPressed = () =>
             {
                 OnShowPlayer(player);
             };
+
+            ElementIconHelper.SetProfileResultIcon(playerResult, player.AvatarTitle, player.AvatarModId);
         }
     }
 
@@ -446,5 +435,15 @@ public static class MenuMatchmaking
         element.DescriptionElement.Title = "Description";
         element.DescriptionElement.Value = string.Empty;
         element.DescriptionElement.EmptyFormat = "No {0}";
+
+        element.PermissionsElement
+            .WithTitle("Permissions")
+            .WithColor(Color.yellow)
+            .WithInteractability(false);
+
+        element.PermissionsElement.Value = info.PermissionLevel;
+        element.PermissionsElement.EnumType = typeof(PermissionLevel);
+
+        ElementIconHelper.SetProfileIcon(element, info.AvatarTitle, info.AvatarModId);
     }
 }

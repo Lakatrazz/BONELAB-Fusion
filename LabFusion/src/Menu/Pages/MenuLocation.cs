@@ -79,73 +79,7 @@ public static class MenuLocation
 
     private static void UpdateLevelIcon(LobbyElement element)
     {
-        var levelName = FusionSceneManager.Title;
-
-        var levelIcon = MenuResources.GetLevelIcon(levelName);
-
-        if (levelIcon == null)
-        {
-            levelIcon = MenuResources.GetLevelIcon(MenuResources.ModsIconTitle);
-        }
-
-        element.LevelIcon.texture = levelIcon;
-
-        if (!FusionSceneManager.Level.Pallet.IsInMarrowGame())
-        {
-            ApplyModTexture(element);
-        }
-    }
-
-    private static void ApplyModTexture(LobbyElement element)
-    {
-        // Get the mod info
-        var pallet = FusionSceneManager.Level.Pallet;
-
-        var manifest = CrateFilterer.GetManifest(pallet);
-
-        if (manifest == null)
-        {
-            return;
-        }
-
-        var modListing = manifest.ModListing;
-
-        var modTarget = ModIOManager.GetTargetFromListing(modListing);
-
-        if (modTarget == null)
-        {
-            return;
-        }
-
-        // Get the texture
-        ModIOThumbnailDownloader.GetThumbnail((int)modTarget.ModId, (texture) =>
-        {
-            element.LevelIcon.texture = texture;
-        });
-    }
-
-    private static void UpdatePlayerIcon(PlayerElement element, string avatarTitle)
-    {
-        var avatarIcon = MenuResources.GetAvatarIcon(avatarTitle);
-
-        if (avatarIcon == null)
-        {
-            avatarIcon = MenuResources.GetAvatarIcon(MenuResources.ModsIconTitle);
-        }
-
-        element.PlayerIcon.texture = avatarIcon;
-    }
-
-    private static void UpdatePlayerIcon(PlayerResultElement element, string avatarTitle)
-    {
-        var avatarIcon = MenuResources.GetAvatarIcon(avatarTitle);
-
-        if (avatarIcon == null)
-        {
-            avatarIcon = MenuResources.GetAvatarIcon(MenuResources.ModsIconTitle);
-        }
-
-        element.PlayerIcon.texture = avatarIcon;
+        ElementIconHelper.SetLevelIcon(element, FusionSceneManager.Title, ElementIconHelper.GetModId(FusionSceneManager.Level.Pallet));
     }
 
     private static void OnServerSettingsChanged()
@@ -266,7 +200,7 @@ public static class MenuLocation
                 avatarTitle = networkPlayer.RigRefs.RigManager.AvatarCrate.Crate.Title;
             }
 
-            UpdatePlayerIcon(playerResult, avatarTitle);
+            ElementIconHelper.SetProfileResultIcon(playerResult, avatarTitle);
         }
     }
 
@@ -305,7 +239,7 @@ public static class MenuLocation
             avatarTitle = networkPlayer.RigRefs.RigManager.AvatarCrate.Crate.Title;
         }
 
-        UpdatePlayerIcon(element, avatarTitle);
+        ElementIconHelper.SetProfileIcon(element, avatarTitle);
 
         // Get permissions
         FusionPermissions.FetchPermissionLevel(PlayerIdManager.LocalLongId, out var selfLevel, out _);

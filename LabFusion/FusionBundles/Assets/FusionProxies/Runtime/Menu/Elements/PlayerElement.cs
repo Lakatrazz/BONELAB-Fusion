@@ -33,6 +33,7 @@ namespace LabFusion.Marrow.Proxies
         public MenuPage PlayerPage { get; set; } = null;
 
         public RawImage PlayerIcon { get; set; } = null;
+        public AspectRatioFitter PlayerIconFitter { get; set; } = null;
 
         public EnumElement PermissionsElement { get; set; } = null;
 
@@ -64,7 +65,9 @@ namespace LabFusion.Marrow.Proxies
 
             var optionsGrid = mainPanel.Find("grid_PlayerOptions");
 
-            PlayerIcon = optionsGrid.Find("label_ProfileIcon/icon_Player").GetComponent<RawImage>();
+            PlayerIcon = optionsGrid.Find("label_ProfileIcon/icon_Mask/icon_Player").GetComponent<RawImage>();
+            PlayerIconFitter = PlayerIcon.GetComponent<AspectRatioFitter>();
+
             PermissionsElement = optionsGrid.Find("button_Permissions").GetComponent<EnumElement>();
 
             var infoGrid = mainPanel.Find("grid_PlayerInfo");

@@ -42,7 +42,7 @@ namespace LabFusion.Marrow.Proxies
             // Icons
             var iconRoot = transform.Find("label_ProfileIcon");
 
-            PlayerIcon = iconRoot.Find("icon_Player").GetComponent<RawImage>();
+            PlayerIcon = iconRoot.Find("icon_Mask/icon_Player").GetComponent<RawImage>();
             PlayerStatus = iconRoot.Find("icon_StatusDrop/icon_Status").GetComponent<RawImage>();
             PlayerBorder = iconRoot.Find("border").GetComponent<RawImage>();
 

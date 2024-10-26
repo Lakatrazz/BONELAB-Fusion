@@ -14,16 +14,10 @@ public static class MenuProfile
 
     private static void UpdatePlayerIcon(PlayerElement element)
     {
-        var avatarTitle = RigData.Refs.RigManager.AvatarCrate.Crate.Title;
+        var avatarCrate = RigData.Refs.RigManager.AvatarCrate.Crate;
+        var avatarTitle = avatarCrate.Title;
 
-        var avatarIcon = MenuResources.GetAvatarIcon(avatarTitle);
-
-        if (avatarIcon == null)
-        {
-            avatarIcon = MenuResources.GetAvatarIcon(MenuResources.ModsIconTitle);
-        }
-
-        element.PlayerIcon.texture = avatarIcon;
+        ElementIconHelper.SetProfileIcon(element, avatarTitle, ElementIconHelper.GetModId(avatarCrate.Pallet));
     }
 
     public static void RefreshIcon()
