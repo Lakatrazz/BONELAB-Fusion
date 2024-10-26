@@ -257,7 +257,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         PlayerId.Metadata.OnMetadataChanged += OnMetadataChanged;
         PlayerId.OnDestroyedEvent += OnPlayerDestroyed;
 
-        ServerSettingsManager.OnServerSettingsChanged += OnServerSettingsChanged;
+        LobbyInfoManager.OnLobbyInfoChanged += OnServerSettingsChanged;
         FusionOverrides.OnOverridesChanged += OnServerSettingsChanged;
 
         // Find the rig for the current scene, and hook into scene loads
@@ -274,7 +274,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         PlayerId.Metadata.OnMetadataChanged -= OnMetadataChanged;
         PlayerId.OnDestroyedEvent -= OnPlayerDestroyed;
 
-        ServerSettingsManager.OnServerSettingsChanged -= OnServerSettingsChanged;
+        LobbyInfoManager.OnLobbyInfoChanged -= OnServerSettingsChanged;
         FusionOverrides.OnOverridesChanged -= OnServerSettingsChanged;
 
         // Remove cache
@@ -615,7 +615,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void UpdateNametagVisibility()
     {
-        _nametag.Visible = CommonPreferences.NametagsEnabled && FusionOverrides.ValidateNametag(PlayerId);
+        _nametag.Visible = CommonPreferences.NameTags && FusionOverrides.ValidateNametag(PlayerId);
     }
 
     public void OnEntityCull(bool isInactive)

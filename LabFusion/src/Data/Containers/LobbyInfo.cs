@@ -1,6 +1,7 @@
 ﻿using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Preferences.Server;
+using LabFusion.Representation;
 using LabFusion.Scene;
 using LabFusion.Senders;
 
@@ -62,13 +63,38 @@ public class LobbyInfo
     [JsonPropertyName("voiceChat")]
     public bool VoiceChat { get; set; }
 
+    [JsonPropertyName("playerConstraints")]
+    public bool PlayerConstraints { get; set; }
+
+    [JsonPropertyName("mortality")]
+    public bool Mortality { get; set; }
+
+    // Permissions
+    [JsonPropertyName("devTools")]
+    public PermissionLevel DevTools { get; set; }
+
+    [JsonPropertyName("constrainer")]
+    public PermissionLevel Constrainer { get; set; }
+
+    [JsonPropertyName("customAvatars")]
+    public PermissionLevel CustomAvatars { get; set; }
+
+    [JsonPropertyName("kicking")]
+    public PermissionLevel Kicking { get; set; }
+
+    [JsonPropertyName("banning")]
+    public PermissionLevel Banning { get; set; }
+
+    [JsonPropertyName("teleportation")]
+    public PermissionLevel Teleportation { get; set; }
+
     public void WriteLobby()
     {
         // Info
         LobbyId = PlayerIdManager.LocalLongId;
         LobbyCode = NetworkHelper.GetServerCode();
-        LobbyName = ServerSettingsManager.SavedSettings.ServerName.Value;
-        LobbyDescription = ServerSettingsManager.SavedSettings.ServerDescription.Value;
+        LobbyName = SavedServerSettings.ServerName.Value;
+        LobbyDescription = SavedServerSettings.ServerDescription.Value;
         LobbyVersion = FusionMod.Version;
         LobbyHostName = PlayerIdManager.LocalUsername;
 
@@ -83,10 +109,20 @@ public class LobbyInfo
         LevelBarcode = FusionSceneManager.Barcode;
 
         // Settings
-        NameTags = ServerSettingsManager.SavedSettings.NametagsEnabled.Value;
-        Privacy = ServerSettingsManager.SavedSettings.Privacy.Value;
-        SlowMoMode = ServerSettingsManager.SavedSettings.TimeScaleMode.Value;
-        MaxPlayers = ServerSettingsManager.SavedSettings.MaxPlayers.Value;
-        VoiceChat = ServerSettingsManager.SavedSettings.VoiceChatEnabled.Value;
+        NameTags = SavedServerSettings.NameTags.Value;
+        Privacy = SavedServerSettings.Privacy.Value;
+        SlowMoMode = SavedServerSettings.SlowMoMode.Value;
+        MaxPlayers = SavedServerSettings.MaxPlayers.Value;
+        VoiceChat = SavedServerSettings.VoiceChat.Value;
+        PlayerConstraints = SavedServerSettings.PlayerConstraints.Value;
+        Mortality = SavedServerSettings.Mortality.Value;
+
+        // Permissions
+        DevTools = SavedServerSettings.DevTools.Value;
+        Constrainer = SavedServerSettings.Constrainer.Value;
+        CustomAvatars = SavedServerSettings.CustomAvatars.Value;
+        Kicking = SavedServerSettings.Kicking.Value;
+        Banning = SavedServerSettings.Banning.Value;
+        Teleportation = SavedServerSettings.Teleportation.Value;
     }
 }

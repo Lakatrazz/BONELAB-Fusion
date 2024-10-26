@@ -1,4 +1,4 @@
-﻿using LabFusion.Preferences.Server;
+﻿using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Representation;
 using LabFusion.SDK.Gamemodes;
@@ -11,7 +11,7 @@ namespace LabFusion.Utilities
         {
             // Check permission level
             FusionPermissions.FetchPermissionLevel(id, out var level, out _);
-            if (!FusionPermissions.HasSufficientPermissions(level, ServerSettingsManager.ActiveSettings.ConstrainerAllowed.Value))
+            if (!FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.Constrainer))
             {
                 return true;
             }
@@ -32,7 +32,7 @@ namespace LabFusion.Utilities
 
             // Check permission level
             FusionPermissions.FetchPermissionLevel(id, out var level, out _);
-            if (!FusionPermissions.HasSufficientPermissions(level, ServerSettingsManager.ActiveSettings.DevToolsAllowed.Value))
+            if (!FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.DevTools))
             {
                 return true;
             }
@@ -53,7 +53,7 @@ namespace LabFusion.Utilities
 
             // Check permission level
             FusionPermissions.FetchPermissionLevel(id, out var level, out _);
-            if (!FusionPermissions.HasSufficientPermissions(level, ServerSettingsManager.ActiveSettings.DevToolsAllowed.Value))
+            if (!FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.DevTools))
             {
                 return true;
             }

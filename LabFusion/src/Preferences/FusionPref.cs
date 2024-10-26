@@ -12,37 +12,7 @@ public enum PrefUpdateMode
     LOCAL_UPDATE = 3,
 }
 
-public interface IFusionPref<T>
-{
-    Action<T> OnValueChanged { get; set; }
-
-    T Value { get; set; }
-}
-
-public class ReadOnlyPref<T> : IFusionPref<T>
-{
-    private readonly T _value;
-
-    public Action<T> OnValueChanged { get; set; }
-
-    public ReadOnlyPref(T value)
-    {
-        _value = value;
-    }
-
-    public T Value
-    {
-        get
-        {
-            return _value;
-        }
-        set
-        {
-        }
-    }
-}
-
-public class FusionPref<T> : IFusionPref<T>
+public class FusionPref<T>
 {
     private readonly MelonPreferences_Category _category;
     private readonly MelonPreferences_Entry<T> _entry;
@@ -89,13 +59,13 @@ public class FusionPref<T> : IFusionPref<T>
                 break;
             case PrefUpdateMode.SERVER_UPDATE:
                 FusionPreferences.SendServerSettings();
-                ServerSettingsManager.PushSettingsUpdate();
+                SavedServerSettings.PushSettingsUpdate();
                 break;
             case PrefUpdateMode.CLIENT_UPDATE:
                 FusionPreferences.SendClientSettings();
                 break;
             case PrefUpdateMode.LOCAL_UPDATE:
-                ServerSettingsManager.PushSettingsUpdate();
+                SavedServerSettings.PushSettingsUpdate();
                 break;
         }
     }

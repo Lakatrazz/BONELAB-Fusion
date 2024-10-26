@@ -1,30 +1,29 @@
 ﻿using LabFusion.Data;
 using LabFusion.Exceptions;
-using LabFusion.Preferences.Server;
+
+using System.Text.Json;
 
 namespace LabFusion.Network;
 
 public class ServerSettingsData : IFusionSerializable
 {
-    public const int Size = SerializedServerSettings.Size;
-
-    public SerializedServerSettings settings;
+    public LobbyInfo lobbyInfo;
 
     public void Serialize(FusionWriter writer)
     {
-        writer.Write(settings);
+        writer.Write(JsonSerializer.Serialize(lobbyInfo));
     }
 
     public void Deserialize(FusionReader reader)
     {
-        settings = reader.ReadFusionSerializable<SerializedServerSettings>();
+        lobbyInfo = JsonSerializer.Deserialize<LobbyInfo>(reader.ReadString());
     }
 
-    public static ServerSettingsData Create(SerializedServerSettings settings)
+    public static ServerSettingsData Create()
     {
         return new ServerSettingsData()
         {
-            settings = settings,
+            lobbyInfo = LobbyInfoManager.LobbyInfo,
         };
     }
 }
@@ -44,6 +43,6 @@ public class ServerSettingsMessage : FusionMessageHandler
             throw new ExpectedClientException();
         }
 
-        ServerSettingsManager.HostSettings = data.settings.settings;
+        LobbyInfoManager.LobbyInfo = data.lobbyInfo;
     }
 }

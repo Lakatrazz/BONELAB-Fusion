@@ -18,12 +18,9 @@ public struct LobbyMetadataInfo
 
     public static LobbyMetadataInfo Create()
     {
-        var lobbyInfo = new LobbyInfo();
-        lobbyInfo.WriteLobby();
-
         return new LobbyMetadataInfo()
         {
-            LobbyInfo = lobbyInfo,
+            LobbyInfo = LobbyInfoManager.LobbyInfo,
             HasServerOpen = NetworkInfo.IsServer,
         };
     }

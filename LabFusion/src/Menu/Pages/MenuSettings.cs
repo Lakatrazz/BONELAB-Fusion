@@ -60,22 +60,22 @@ public static class MenuSettings
         var generalSettingsGroup = page.AddElement<GroupElement>("General");
 
         generalSettingsGroup.AddElement<BoolElement>("NameTags")
-            .AsPref(ServerSettingsManager.SavedSettings.NametagsEnabled);
+            .AsPref(SavedServerSettings.NameTags);
 
         generalSettingsGroup.AddElement<BoolElement>("Voice Chat")
-            .AsPref(ServerSettingsManager.SavedSettings.VoiceChatEnabled);
+            .AsPref(SavedServerSettings.VoiceChat);
 
         // Gameplay
         var gameplaySettingsGroup = page.AddElement<GroupElement>("Gameplay");
 
         gameplaySettingsGroup.AddElement<EnumElement>("SlowMo")
-            .AsPref(ServerSettingsManager.SavedSettings.TimeScaleMode);
+            .AsPref(SavedServerSettings.SlowMoMode);
 
         gameplaySettingsGroup.AddElement<BoolElement>("Mortality")
-            .AsPref(ServerSettingsManager.SavedSettings.ServerMortality);
+            .AsPref(SavedServerSettings.Mortality);
 
         // Move this out of this class eventually
-        ServerSettingsManager.OnServerSettingsChanged += () =>
+        LobbyInfoManager.OnLobbyInfoChanged += () =>
         {
             // Update mortality
             if (Gamemode.ActiveGamemode == null)
@@ -85,28 +85,28 @@ public static class MenuSettings
         };
 
         gameplaySettingsGroup.AddElement<BoolElement>("Player Constraining")
-            .AsPref(ServerSettingsManager.SavedSettings.PlayerConstraintsEnabled);
+            .AsPref(SavedServerSettings.PlayerConstraints);
 
         // Permissions
         var permissionsGroup = page.AddElement<GroupElement>("Permissions");
 
         permissionsGroup.AddElement<EnumElement>("Dev Tools")
-            .AsPref(ServerSettingsManager.SavedSettings.DevToolsAllowed);
+            .AsPref(SavedServerSettings.DevTools);
 
         permissionsGroup.AddElement<EnumElement>("Constrainer")
-            .AsPref(ServerSettingsManager.SavedSettings.ConstrainerAllowed);
+            .AsPref(SavedServerSettings.Constrainer);
 
         permissionsGroup.AddElement<EnumElement>("Custom Avatars")
-            .AsPref(ServerSettingsManager.SavedSettings.CustomAvatarsAllowed);
+            .AsPref(SavedServerSettings.CustomAvatars);
 
         permissionsGroup.AddElement<EnumElement>("Kicking")
-            .AsPref(ServerSettingsManager.SavedSettings.KickingAllowed);
+            .AsPref(SavedServerSettings.Kicking);
 
         permissionsGroup.AddElement<EnumElement>("Banning")
-            .AsPref(ServerSettingsManager.SavedSettings.BanningAllowed);
+            .AsPref(SavedServerSettings.Banning);
 
         permissionsGroup.AddElement<EnumElement>("Teleportation")
-            .AsPref(ServerSettingsManager.SavedSettings.Teleportation);
+            .AsPref(SavedServerSettings.Teleportation);
     }
 
     private static void PopulateClientSettings(PageElement page)

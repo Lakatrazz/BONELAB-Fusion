@@ -34,15 +34,11 @@ public static partial class BoneMenuCreator
 
         if (VoiceInfo.CanTalk)
         {
-            CreateBoolPreference(voiceChatSubPanel, "Muted", ClientSettings.VoiceChat.Muted);
-            CreateBoolPreference(voiceChatSubPanel, "Muted Indicator", ClientSettings.VoiceChat.MutedIndicator);
-
             CreateInputDevicesPage(voiceChatSubPanel);
         }
 
         if (VoiceInfo.CanHear)
         {
-            CreateBoolPreference(voiceChatSubPanel, "Deafened", ClientSettings.VoiceChat.Deafened);
             CreateFloatPreference(voiceChatSubPanel, "Global Volume", 0.1f, 0f, 10f, ClientSettings.VoiceChat.GlobalVolume);
         }
 

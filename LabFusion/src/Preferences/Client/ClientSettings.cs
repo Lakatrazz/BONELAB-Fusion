@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace LabFusion.Preferences.Client;
 
-public struct ClientSettings
+public static class ClientSettings
 {
     // Selected network layer
     public static FusionPref<string> NetworkLayerTitle { get; internal set; }

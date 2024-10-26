@@ -7,7 +7,7 @@ namespace LabFusion.Menu;
 
 public static class MenuChaining
 {
-    public static EnumElement AsPref<TEnum>(this EnumElement element, IFusionPref<TEnum> pref, Action<TEnum> onValueChanged = null) where TEnum : Enum
+    public static EnumElement AsPref<TEnum>(this EnumElement element, FusionPref<TEnum> pref, Action<TEnum> onValueChanged = null) where TEnum : Enum
     {
         element.Value = pref.Value;
         element.EnumType = typeof(TEnum);
@@ -38,7 +38,7 @@ public static class MenuChaining
         return element;
     }
 
-    public static StringElement AsPref(this StringElement element, IFusionPref<string> pref, Action<string> onValueChanged = null)
+    public static StringElement AsPref(this StringElement element, FusionPref<string> pref, Action<string> onValueChanged = null)
     {
         element.Value = pref.Value;
 
@@ -68,7 +68,7 @@ public static class MenuChaining
         return element;
     }
 
-    public static FloatElement AsPref(this FloatElement element, IFusionPref<float> pref, Action<float> onValueChanged = null)
+    public static FloatElement AsPref(this FloatElement element, FusionPref<float> pref, Action<float> onValueChanged = null)
     {
         element.Value = pref.Value;
 
@@ -98,7 +98,7 @@ public static class MenuChaining
         return element;
     }
 
-    public static IntElement AsPref(this IntElement element, IFusionPref<int> pref, Action<int> onValueChanged = null)
+    public static IntElement AsPref(this IntElement element, FusionPref<int> pref, Action<int> onValueChanged = null)
     {
         element.Value = pref.Value;
 
@@ -128,7 +128,7 @@ public static class MenuChaining
         return element;
     }
 
-    public static BoolElement AsPref(this BoolElement element, IFusionPref<bool> pref, Action<bool> onValueChanged = null)
+    public static BoolElement AsPref(this BoolElement element, FusionPref<bool> pref, Action<bool> onValueChanged = null)
     {
         element.Value = pref.Value;
 

@@ -23,7 +23,7 @@ public static partial class BoneMenuCreator
     }
 
     #region MENU CATEGORIES
-    public static void CreateFloatPreference(Page page, string name, float increment, float minValue, float maxValue, IFusionPref<float> pref)
+    public static void CreateFloatPreference(Page page, string name, float increment, float minValue, float maxValue, FusionPref<float> pref)
     {
         var element = page.CreateFloat(name, Color.white, startingValue: pref.Value, increment: increment, minValue: minValue, maxValue: maxValue, callback: (v) =>
         {
@@ -36,7 +36,7 @@ public static partial class BoneMenuCreator
         };
     }
 
-    public static void CreateBoolPreference(Page page, string name, IFusionPref<bool> pref)
+    public static void CreateBoolPreference(Page page, string name, FusionPref<bool> pref)
     {
         var element = page.CreateBool(name, Color.white, pref.Value, (v) =>
         {

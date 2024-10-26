@@ -42,7 +42,7 @@ public static class NetworkVerification
     /// <returns></returns>
     public static bool IsClientApproved(ulong userId)
     {
-        var privacy = ServerSettingsManager.SavedSettings.Privacy.Value;
+        var privacy = SavedServerSettings.Privacy.Value;
 
         switch (privacy)
         {

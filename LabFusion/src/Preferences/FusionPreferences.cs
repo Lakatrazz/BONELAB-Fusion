@@ -22,7 +22,7 @@ public static class FusionPreferences
         }
 
         using var writer = FusionWriter.Create();
-        var data = ServerSettingsData.Create(SerializedServerSettings.Create());
+        var data = ServerSettingsData.Create();
         writer.Write(data);
 
         using var message = FusionMessage.Create(NativeMessageTag.ServerSettings, writer);
@@ -36,8 +36,8 @@ public static class FusionPreferences
             return;
         }
 
-        using var writer = FusionWriter.Create(ServerSettingsData.Size);
-        var data = ServerSettingsData.Create(SerializedServerSettings.Create());
+        using var writer = FusionWriter.Create();
+        var data = ServerSettingsData.Create();
         writer.Write(data);
 
         using var message = FusionMessage.Create(NativeMessageTag.ServerSettings, writer);
@@ -64,7 +64,7 @@ public static class FusionPreferences
         // Create preferences
         prefCategory = MelonPreferences.CreateCategory("BONELAB Fusion");
 
-        ServerSettingsManager.OnInitialize(prefCategory);
+        SavedServerSettings.OnInitialize(prefCategory);
 
         ClientSettings.OnInitialize(prefCategory);
 

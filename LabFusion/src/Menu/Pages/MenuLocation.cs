@@ -1,6 +1,5 @@
-﻿using LabFusion.Downloading.ModIO;
+﻿using LabFusion.Data;
 using LabFusion.Entities;
-using LabFusion.Marrow;
 using LabFusion.Marrow.Proxies;
 using LabFusion.Network;
 using LabFusion.Player;
@@ -30,7 +29,7 @@ public static class MenuLocation
         MultiplayerHooking.OnJoinServer += OnConnect;
         MultiplayerHooking.OnDisconnect += OnDisconnect;
 
-        ServerSettingsManager.OnServerSettingsChanged += OnServerSettingsChanged;
+        LobbyInfoManager.OnLobbyInfoChanged += OnServerSettingsChanged;
     }
 
     private static void OnConnect()
@@ -84,10 +83,18 @@ public static class MenuLocation
 
     private static void OnServerSettingsChanged()
     {
-        ApplyServerSettingsToLobby(LobbyElement, ServerSettingsManager.ActiveSettings);
+        if (NetworkInfo.IsClient)
+        {
+            ApplyLobbyInfoToLobby(LobbyElement, LobbyInfoManager.LobbyInfo);
+
+        }
+        else
+        {
+            ApplyServerSettingsToLobby(LobbyElement);
+        }
     }
 
-    private static void ApplyServerSettingsToLobby(LobbyElement element, ServerSettings settings)
+    private static void ApplyLobbyInfoToLobby(LobbyElement element, LobbyInfo info)
     {
         bool ownsSettings = NetworkInfo.IsServer || !NetworkInfo.HasServer;
 
@@ -103,7 +110,114 @@ public static class MenuLocation
 
         element.PlayersElement
             .Cleared()
-            .AsPref(settings.MaxPlayers)
+            .WithIncrement(1)
+            .WithLimits(2, 255)
+            .WithTitle("Players");
+
+        element.PlayersElement.Value = info.MaxPlayers;
+
+        element.PlayersElement.TextFormat = $"{playerCount}/{{1}} {{0}}";
+
+        element.PrivacyElement
+            .Cleared()
+            .WithTitle("Privacy");
+
+        element.PrivacyElement.Value = info.Privacy;
+
+        element.PrivacyElement.TextFormat = "{1}";
+
+        element.ServerNameElement
+            .Cleared()
+            .WithTitle("Server Name");
+
+        element.ServerNameElement.Value = info.LobbyName;
+
+        element.ServerNameElement.EmptyFormat = emptyFormat;
+        element.ServerNameElement.TextFormat = "{1}";
+
+        element.HostNameElement
+            .WithTitle($"{PlayerIdManager.LocalUsername}");
+
+        element.DescriptionElement
+            .Cleared()
+            .WithTitle("Description");
+
+        element.DescriptionElement.Value = info.LobbyDescription;
+
+        element.DescriptionElement.EmptyFormat = emptyFormat;
+        element.DescriptionElement.TextFormat = "{1}";
+
+        element.MoreElement
+            .Cleared()
+            .WithTitle("More...")
+            .Do(() => { element.LobbyPage.SelectSubPage(1); });
+
+        // Fill out lists
+        // Settings list
+        NameTagsElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .WithTitle("NameTags");
+
+        NameTagsElement.Value = info.NameTags;
+
+        VoiceChatElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .WithTitle("VoiceChat");
+
+        VoiceChatElement.Value = info.VoiceChat;
+
+        SlowMoElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .WithTitle("SlowMo");
+
+        SlowMoElement.Value = info.SlowMoMode;
+
+        RefreshPlayerList();
+
+        // Show server code
+        element.CodeElement
+            .Cleared()
+            .WithTitle("Code")
+            .WithInteractability(false);
+
+        element.CodeElement.Value = NetworkHelper.GetServerCode();
+        element.CodeElement.EmptyFormat = "No {0}";
+
+        element.CodeRefreshElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .Do(NetworkHelper.RefreshServerCode);
+
+        // Disable unnecessary elements
+        element.BansGrid.SetActive(ownsSettings);
+
+        // This also shouldn't show while not in a server
+        element.CodeGrid.SetActive(NetworkInfo.IsServer);
+
+        // Change interactability for all elements
+        element.Interactable = ownsSettings;
+    }
+
+    private static void ApplyServerSettingsToLobby(LobbyElement element)
+    {
+        bool ownsSettings = NetworkInfo.IsServer || !NetworkInfo.HasServer;
+
+        string emptyFormat = ownsSettings ? "Click to add {0}" : "No {0}";
+
+        element.LevelNameElement
+            .WithTitle(FusionSceneManager.Title);
+
+        element.ServerVersionElement
+            .WithTitle($"v{FusionMod.Version}");
+
+        var playerCount = PlayerIdManager.PlayerCount;
+
+        element.PlayersElement
+            .Cleared()
+            .AsPref(SavedServerSettings.MaxPlayers)
             .WithIncrement(1)
             .WithLimits(2, 255)
             .WithTitle("Players");
@@ -112,14 +226,14 @@ public static class MenuLocation
 
         element.PrivacyElement
             .Cleared()
-            .AsPref(settings.Privacy)
+            .AsPref(SavedServerSettings.Privacy)
             .WithTitle("Privacy");
 
         element.PrivacyElement.TextFormat = "{1}";
 
         element.ServerNameElement
             .Cleared()
-            .AsPref(settings.ServerName)
+            .AsPref(SavedServerSettings.ServerName)
             .WithTitle("Server Name");
 
         element.ServerNameElement.EmptyFormat = emptyFormat;
@@ -130,7 +244,7 @@ public static class MenuLocation
 
         element.DescriptionElement
             .Cleared()
-            .AsPref(settings.ServerDescription)
+            .AsPref(SavedServerSettings.ServerDescription)
             .WithTitle("Description");
 
         element.DescriptionElement.EmptyFormat = emptyFormat;
@@ -146,19 +260,19 @@ public static class MenuLocation
         NameTagsElement
             .Cleared()
             .WithInteractability(ownsSettings)
-            .AsPref(settings.NametagsEnabled)
+            .AsPref(SavedServerSettings.NameTags)
             .WithTitle("NameTags");
 
         VoiceChatElement
             .Cleared()
             .WithInteractability(ownsSettings)
-            .AsPref(settings.VoiceChatEnabled)
+            .AsPref(SavedServerSettings.VoiceChat)
             .WithTitle("VoiceChat");
 
         SlowMoElement
             .Cleared()
             .WithInteractability(ownsSettings)
-            .AsPref(settings.TimeScaleMode)
+            .AsPref(SavedServerSettings.SlowMoMode)
             .WithTitle("SlowMo");
 
         RefreshPlayerList();
@@ -267,7 +381,7 @@ public static class MenuLocation
 
         FusionPermissions.FetchPermissionLevel(player.LongId, out var level, out Color color);
 
-        var serverSettings = ServerSettingsManager.ActiveSettings;
+        var activeLobbyInfo = LobbyInfoManager.LobbyInfo;
 
         // Permissions element
         var permissionsElement = element.PermissionsElement
@@ -293,7 +407,7 @@ public static class MenuLocation
             var moderationGroup = actionsPage.AddElement<GroupElement>("Moderation");
 
             // Kick button
-            if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.KickingAllowed.Value))
+            if (FusionPermissions.HasSufficientPermissions(selfLevel, activeLobbyInfo.Kicking))
             {
                 moderationGroup.AddElement<FunctionElement>("Kick")
                     .WithColor(Color.red)
@@ -304,7 +418,7 @@ public static class MenuLocation
             }
 
             // Ban button
-            if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.BanningAllowed.Value))
+            if (FusionPermissions.HasSufficientPermissions(selfLevel, activeLobbyInfo.Banning))
             {
                 moderationGroup.AddElement<FunctionElement>("Ban")
                     .WithColor(Color.red)
@@ -315,7 +429,7 @@ public static class MenuLocation
             }
 
             // Teleport buttons
-            if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.Teleportation.Value))
+            if (FusionPermissions.HasSufficientPermissions(selfLevel, activeLobbyInfo.Teleportation))
             {
                 moderationGroup.AddElement<FunctionElement>("Teleport To Them")
                     .WithColor(Color.red)

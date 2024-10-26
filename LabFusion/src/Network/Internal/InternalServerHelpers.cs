@@ -114,9 +114,6 @@ public static class InternalServerHelpers
         DisposeUsers();
         NetworkEntityManager.OnCleanupEntities();
 
-        // Cleanup prefs
-        ServerSettingsManager.HostSettings = null;
-
         // Update hooks
         MultiplayerHooking.Internal_OnDisconnect();
 

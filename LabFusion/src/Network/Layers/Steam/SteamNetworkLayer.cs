@@ -280,7 +280,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
         GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
         MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
         MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
-        ServerSettingsManager.OnServerSettingsChanged += OnUpdateLobby;
+        LobbyInfoManager.OnLobbyInfoChanged += OnUpdateLobby;
         MultiplayerHooking.OnDisconnect += OnDisconnect;
 
         // Add BoneMenu hooks
@@ -322,7 +322,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
         GamemodeManager.OnGamemodeChanged -= OnGamemodeChanged;
         MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
         MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
-        ServerSettingsManager.OnServerSettingsChanged -= OnUpdateLobby;
+        LobbyInfoManager.OnLobbyInfoChanged -= OnUpdateLobby;
         MultiplayerHooking.OnDisconnect -= OnDisconnect;
 
         // Unhook BoneMenu events

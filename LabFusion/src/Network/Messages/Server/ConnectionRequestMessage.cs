@@ -107,7 +107,7 @@ public class ConnectionRequestMessage : FusionMessageHandler
         }
 
         // Check if theres too many players
-        if (PlayerIdManager.PlayerCount >= byte.MaxValue || PlayerIdManager.PlayerCount >= ServerSettingsManager.SavedSettings.MaxPlayers.Value)
+        if (PlayerIdManager.PlayerCount >= byte.MaxValue || PlayerIdManager.PlayerCount >= SavedServerSettings.MaxPlayers.Value)
         {
             ConnectionSender.SendConnectionDeny(data.longId, "Server is full! Wait for someone to leave.");
             return;
