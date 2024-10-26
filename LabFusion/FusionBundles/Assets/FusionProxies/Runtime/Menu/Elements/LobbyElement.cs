@@ -1,5 +1,6 @@
 #if MELONLOADER
 using MelonLoader;
+using UnityEngine;
 using UnityEngine.UI;
 #endif
 
@@ -45,6 +46,13 @@ namespace LabFusion.Marrow.Proxies
 
         public PageElement SettingsElement { get; set; } = null;
 
+        public GameObject BansGrid { get; set; } = null;
+        public PageElement BansElement { get; set; } = null;
+
+        public GameObject CodeGrid { get; set; } = null;
+        public StringElement CodeElement { get; set; } = null;
+        public FunctionElement CodeRefreshElement { get; set; } = null;
+
         public PageElement PlayerBrowserElement { get; set; } = null;
         public PlayerElement ProfileElement { get; set; } = null;
 
@@ -85,10 +93,23 @@ namespace LabFusion.Marrow.Proxies
             DescriptionElement = serverInfoGrid.Find("button_Description").GetComponent<StringElement>();
             PlayerBrowserElement = serverInfoGrid.Find("scrollRect_PlayerBrowser/Viewport/Content").GetComponent<PageElement>();
 
+            var codeGrid = serverInfoGrid.Find("grid_Code");
+
+            CodeGrid = codeGrid.gameObject;
+            CodeElement = codeGrid.Find("button_Code").GetComponent<StringElement>();
+            CodeRefreshElement = codeGrid.Find("button_Refresh").GetComponent<FunctionElement>();
+
             // More panel
             var morePanel = transform.Find("panel_More");
-            var settingsGrid = morePanel.Find("grid_Settings");
+            var groupsGrid = morePanel.Find("grid_Groups");
+
+            var settingsGrid = groupsGrid.Find("grid_Settings");
             SettingsElement = settingsGrid.Find("scrollRect_Settings/Viewport/Content").GetComponent<PageElement>();
+
+            var bansGrid = groupsGrid.Find("grid_Bans");
+
+            BansGrid = bansGrid.gameObject;
+            BansElement = bansGrid.Find("scrollRect_Bans/Viewport/Content").GetComponent<PageElement>();
 
             // Profile panel
             var profilePanel = transform.Find("panel_Profile");
@@ -119,6 +140,16 @@ namespace LabFusion.Marrow.Proxies
             if (DescriptionElement != null)
             {
                 DescriptionElement.Interactable = Interactable;
+            }
+
+            if (CodeElement != null)
+            {
+                CodeElement.Interactable = Interactable;
+            }
+
+            if (CodeRefreshElement != null)
+            {
+                CodeRefreshElement.gameObject.SetActive(Interactable);
             }
 
             if (ProfileElement != null)

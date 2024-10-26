@@ -163,6 +163,26 @@ public static class MenuLocation
 
         RefreshPlayerList();
 
+        // Show server code
+        element.CodeElement
+            .Cleared()
+            .WithTitle("Code")
+            .WithInteractability(false);
+
+        element.CodeElement.Value = NetworkHelper.GetServerCode();
+        element.CodeElement.EmptyFormat = "No {0}";
+
+        element.CodeRefreshElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .Do(NetworkHelper.RefreshServerCode);
+
+        // Disable unnecessary elements
+        element.BansGrid.SetActive(ownsSettings);
+
+        // This also shouldn't show while not in a server
+        element.CodeGrid.SetActive(NetworkInfo.IsServer);
+
         // Change interactability for all elements
         element.Interactable = ownsSettings;
     }

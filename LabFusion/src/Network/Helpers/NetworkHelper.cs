@@ -39,6 +39,32 @@ public static class NetworkHelper
     }
 
     /// <summary>
+    /// Attempts to join a server given a server code.
+    /// </summary>
+    /// <param name="code"></param>
+    public static void JoinServerByCode(string code)
+    {
+        NetworkInfo.CurrentNetworkLayer?.JoinServerByCode(code);
+    }
+
+    /// <summary>
+    /// Gets the code of the current server.
+    /// </summary>
+    /// <returns>The server code.</returns>
+    public static string GetServerCode()
+    {
+        return NetworkInfo.CurrentNetworkLayer.GetServerCode();
+    }
+
+    /// <summary>
+    /// Generates a new server code.
+    /// </summary>
+    public static void RefreshServerCode()
+    {
+        NetworkInfo.CurrentNetworkLayer.RefreshServerCode();
+    }
+
+    /// <summary>
     /// Pushes an update to the lobby metadata.
     /// </summary>
     public static void UpdateLobby()

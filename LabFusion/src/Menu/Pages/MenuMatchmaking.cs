@@ -20,6 +20,9 @@ public static class MenuMatchmaking
 
     public static GroupElement SandboxFiltersGroupElement { get; private set; }
 
+    // Code
+    public static StringElement CodeElement { get; private set; }
+
     // Browser
     public static MenuPage BrowserPage { get; private set; }
 
@@ -42,6 +45,11 @@ public static class MenuMatchmaking
 
         PopulateOptions(optionsTransform);
 
+        // Get code references
+        var codeTransform = matchmakingPage.transform.Find("page_Code");
+
+        PopulateCode(codeTransform);
+
         // Get browser references
         var browserTransform = matchmakingPage.transform.Find("page_Browser");
 
@@ -55,6 +63,10 @@ public static class MenuMatchmaking
         var gamemodeElement = grid.Find("button_Gamemode").GetComponent<FunctionElement>();
 
         gamemodeElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Gamemode";
+        gamemodeElement.Do(() =>
+        {
+            MatchmakingPage.SelectSubPage(1);
+        });
 
         var sandboxElement = grid.Find("button_Sandbox").GetComponent<FunctionElement>();
         sandboxElement.Do(() =>
@@ -67,8 +79,37 @@ public static class MenuMatchmaking
         sandboxElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Sandbox";
 
         var codeElement = grid.Find("button_Code").GetComponent<FunctionElement>();
+        codeElement.Do(() =>
+        {
+            MatchmakingPage.SelectSubPage(3);
+        });
 
         codeElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Enter Code";
+    }
+
+    private static void PopulateCode(Transform codeTransform)
+    {
+        var grid = codeTransform.Find("grid_Buttons");
+
+        CodeElement = grid.Find("button_Code").GetComponent<StringElement>();
+        CodeElement.Title = "Code";
+        CodeElement.EmptyFormat = "Enter {0}";
+
+        var joinElement = grid.Find("button_Join").GetComponent<FunctionElement>();
+
+        joinElement
+            .WithTitle("Join")
+            .Do(() =>
+        {
+            var code = CodeElement.Value;
+
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                return;
+            }
+
+            NetworkHelper.JoinServerByCode(code);
+        });
     }
 
     private static void PopulateBrowser(Transform browserTransform)
@@ -422,6 +463,10 @@ public static class MenuMatchmaking
 
             ElementIconHelper.SetProfileResultIcon(playerResult, player.AvatarTitle, player.AvatarModId);
         }
+
+        // Disable unnecessary buttons
+        element.CodeGrid.SetActive(false);
+        element.BansGrid.SetActive(false);
     }
 
     private static void ApplyPlayerToElement(PlayerElement element, PlayerInfo info)

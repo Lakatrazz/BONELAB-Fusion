@@ -37,6 +37,9 @@ public static class MenuProfile
 
     public static void PopulateProfile(GameObject profilePage)
     {
+        // Reset the stored avatar
+        PreviousAvatarTitle = null;
+
         // Update the profile grid
         ProfileElement = profilePage.transform.Find("panel_Profile").GetComponent<PlayerElement>();
 

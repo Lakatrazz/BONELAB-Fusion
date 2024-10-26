@@ -14,6 +14,7 @@ public class BonelabModule : Module
     {
         ModuleMessageHandler.RegisterHandler<RandomObjectMessage>();
         ModuleMessageHandler.RegisterHandler<SimpleGripEventMessage>();
+        ModuleMessageHandler.RegisterHandler<FlashlightToggleMessage>();
     }
 
     protected override void OnModuleUnregistered()

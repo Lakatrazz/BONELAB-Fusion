@@ -12,7 +12,7 @@ public class MarrowModule : Module
 
     protected override void OnModuleRegistered()
     {
-        
+        ModuleMessageHandler.RegisterHandler<ButtonChargeMessage>();
     }
 
     protected override void OnModuleUnregistered()

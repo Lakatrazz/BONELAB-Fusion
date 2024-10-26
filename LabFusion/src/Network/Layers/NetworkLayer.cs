@@ -1,7 +1,5 @@
 ﻿using System.Reflection;
 
-using BoneLib.BoneMenu;
-
 using LabFusion.Data;
 using LabFusion.Player;
 using LabFusion.Utilities;
@@ -212,6 +210,20 @@ public abstract class NetworkLayer
     public virtual void OnUserJoin(PlayerId id) { }
 
     public abstract void OnUpdateLobby();
+
+    public virtual string GetServerCode()
+    {
+        return null;
+    }
+
+    public virtual void RefreshServerCode()
+    {
+    }
+
+    public virtual void JoinServerByCode(string code)
+    {
+        throw new NotImplementedException("The current NetworkLayer does not support joining by code!");
+    }
 
     public static void RegisterLayersFromAssembly(Assembly targetAssembly)
     {
