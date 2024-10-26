@@ -19,7 +19,6 @@ public class ServerSettings
     // Visual
     public IFusionPref<string> ServerName;
     public IFusionPref<string> ServerDescription;
-    public IFusionPref<List<string>> ServerTags;
 
     // Mortality
     public IFusionPref<bool> ServerMortality;
@@ -49,7 +48,6 @@ public class ServerSettings
             // Visual
             ServerName = new FusionPref<string>(category, "Server Name", string.Empty, PrefUpdateMode.SERVER_UPDATE),
             ServerDescription = new FusionPref<string>(category, "Server Description", string.Empty, PrefUpdateMode.SERVER_UPDATE),
-            ServerTags = new FusionPref<List<string>>(category, "Server Tags", new List<string>(), PrefUpdateMode.LOCAL_UPDATE),
 
             // Mortality
             ServerMortality = new FusionPref<bool>(category, "Server Mortality", true, PrefUpdateMode.SERVER_UPDATE),

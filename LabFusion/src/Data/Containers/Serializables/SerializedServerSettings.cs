@@ -25,7 +25,6 @@ public class SerializedServerSettings : IFusionSerializable
         // Visual
         writer.Write(settings.ServerName.Value);
         writer.Write(settings.ServerDescription.Value);
-        writer.Write(settings.ServerTags.Value);
 
         // Mortality
         writer.Write(settings.ServerMortality.Value);
@@ -54,7 +53,6 @@ public class SerializedServerSettings : IFusionSerializable
             // Visual
             ServerName = new ReadOnlyPref<string>(reader.ReadString()),
             ServerDescription = new ReadOnlyPref<string>(reader.ReadString()),
-            ServerTags = new ReadOnlyPref<List<string>>(reader.ReadStrings().ToList()),
 
             // Mortality
             ServerMortality = new ReadOnlyPref<bool>(reader.ReadBoolean()),

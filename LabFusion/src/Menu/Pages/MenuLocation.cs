@@ -205,7 +205,8 @@ public static class MenuLocation
 
             playerResult.PlayerNameText.text = name;
 
-            playerResult.RoleText.text = "User";
+            player.TryGetPermissionLevel(out var permissionLevel);
+            playerResult.RoleText.text = permissionLevel.ToString();
 
             playerResult.OnPressed = () =>
             {

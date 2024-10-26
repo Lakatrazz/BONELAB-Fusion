@@ -100,17 +100,6 @@ namespace LabFusion.BoneMenu
             
             RemoveEmptyPage(lobbyCategory, playersCategory, playersLink);
 
-            // Create a category for the server tags
-            var tagsCategory = lobbyCategory.CreatePage("Tags", Color.white, 0, false);
-            var tagsLink = lobbyCategory.CreatePageLink(tagsCategory);
-
-            foreach (var tag in info.LobbyTags.Expand())
-            {
-                tagsCategory.CreateFunction(tag, Color.white, null);
-            }
-
-            RemoveEmptyPage(lobbyCategory, tagsCategory, tagsLink);
-
             // Allow outside mods to add their own lobby information
             var modsCategory = lobbyCategory.CreatePage("Extra Info", Color.cyan, 0, false);
             var modsLink = lobbyCategory.CreatePageLink(modsCategory);
