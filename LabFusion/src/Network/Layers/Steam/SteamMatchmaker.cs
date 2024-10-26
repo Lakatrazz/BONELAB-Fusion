@@ -39,6 +39,11 @@ public sealed class SteamMatchmaker : IMatchmaker
             var networkLobby = new SteamLobby(lobby);
             var metadata = LobbyMetadataHelper.ReadInfo(networkLobby);
 
+            if (!metadata.HasServerOpen)
+            {
+                continue;
+            }
+
             netLobbies.Add(new IMatchmaker.LobbyInfo()
             {
                 lobby = networkLobby,

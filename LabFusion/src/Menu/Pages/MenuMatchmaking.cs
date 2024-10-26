@@ -196,12 +196,12 @@ public static class MenuMatchmaking
 
     private static bool CheckLobbyVisibility(IMatchmaker.LobbyInfo info)
     {
-        switch (info.metadata.Privacy)
+        switch (info.metadata.LobbyInfo.Privacy)
         {
             case ServerPrivacy.PUBLIC:
                 return true;
             case ServerPrivacy.FRIENDS_ONLY:
-                return NetworkInfo.CurrentNetworkLayer.IsFriend(info.metadata.LobbyId);
+                return NetworkInfo.CurrentNetworkLayer.IsFriend(info.metadata.LobbyInfo.LobbyId);
             default:
                 return false;
         }
@@ -210,9 +210,9 @@ public static class MenuMatchmaking
     private static bool CheckLobbySearch(IMatchmaker.LobbyInfo info, string query)
     {
         var metadata = info.metadata;
-        var levelName = metadata.LevelName.ToLower();
-        var serverName = metadata.LobbyName.ToLower();
-        var hostName = metadata.LobbyOwner.ToLower();
+        var levelName = metadata.LobbyInfo.LevelTitle.ToLower();
+        var serverName = metadata.LobbyInfo.LobbyName.ToLower();
+        var hostName = metadata.LobbyInfo.LobbyHostName.ToLower();
 
         if (levelName.Contains(query))
         {
@@ -237,9 +237,9 @@ public static class MenuMatchmaking
         _isSearchingLobbies = false;
 
         var sortedLobbies = info.lobbies
-            .OrderBy(l => l.metadata.LobbyOwner)
-            .OrderBy(l => l.metadata.LevelName)
-            .OrderBy(l => l.metadata.LobbyVersion)
+            .OrderBy(l => l.metadata.LobbyInfo.LobbyHostName)
+            .OrderBy(l => l.metadata.LobbyInfo.LevelTitle)
+            .OrderBy(l => l.metadata.LobbyInfo.LobbyVersion)
             .Where(CheckLobbyVisibility)
             .Where(l => LobbyFilterManager.FilterLobby(l.lobby, l.metadata));
 
@@ -300,29 +300,29 @@ public static class MenuMatchmaking
             levelColor = Color.yellow;
         }
 
-        if (NetworkVerification.CompareVersion(metadata.LobbyVersion, FusionMod.Version) != VersionResult.Ok)
+        if (NetworkVerification.CompareVersion(metadata.LobbyInfo.LobbyVersion, FusionMod.Version) != VersionResult.Ok)
         {
             versionColor = Color.red;
         }
 
-        if (metadata.PlayerCount >= metadata.MaxPlayers)
+        if (metadata.LobbyInfo.PlayerCount >= metadata.LobbyInfo.MaxPlayers)
         {
             playerCountColor = Color.red;
         }
 
-        element.LevelNameText.text = metadata.LevelName;
+        element.LevelNameText.text = metadata.LobbyInfo.LevelTitle;
         element.LevelNameText.color = levelColor;
 
-        element.ServerNameText.text = ParseServerName(metadata.LobbyName, metadata.LobbyOwner);
-        element.HostNameText.text = metadata.LobbyOwner;
+        element.ServerNameText.text = ParseServerName(metadata.LobbyInfo.LobbyName, metadata.LobbyInfo.LobbyHostName);
+        element.HostNameText.text = metadata.LobbyInfo.LobbyHostName;
 
-        element.PlayerCountText.text = string.Format($"{metadata.PlayerCount}/{metadata.MaxPlayers} Players");
+        element.PlayerCountText.text = string.Format($"{metadata.LobbyInfo.PlayerCount}/{metadata.LobbyInfo.MaxPlayers} Players");
         element.PlayerCountText.color = playerCountColor;
 
-        element.VersionText.text = string.Format($"v{metadata.LobbyVersion}");
+        element.VersionText.text = string.Format($"v{metadata.LobbyInfo.LobbyVersion}");
         element.VersionText.color = versionColor;
 
-        ElementIconHelper.SetLevelResultIcon(element, metadata.LevelName);
+        ElementIconHelper.SetLevelResultIcon(element, metadata.LobbyInfo.LevelTitle);
     }
 
     private static string ParseServerName(string serverName, string hostName)
@@ -348,13 +348,13 @@ public static class MenuMatchmaking
             levelColor = Color.yellow;
         }
 
-        if (NetworkVerification.CompareVersion(info.LobbyVersion, FusionMod.Version) != VersionResult.Ok)
+        if (NetworkVerification.CompareVersion(info.LobbyInfo.LobbyVersion, FusionMod.Version) != VersionResult.Ok)
         {
             lobbyColor = Color.red;
             versionColor = Color.red;
         }
 
-        if (info.PlayerCount >= info.MaxPlayers)
+        if (info.LobbyInfo.PlayerCount >= info.LobbyInfo.MaxPlayers)
         {
             lobbyColor = Color.red;
             playerCountColor = Color.red;
@@ -367,11 +367,11 @@ public static class MenuMatchmaking
             .WithColor(lobbyColor);
 
         element.LevelNameElement
-            .WithTitle(info.LevelName)
+            .WithTitle(info.LobbyInfo.LevelTitle)
             .WithColor(levelColor);
 
         element.ServerVersionElement
-            .WithTitle($"v{info.LobbyVersion}")
+            .WithTitle($"v{info.LobbyInfo.LobbyVersion}")
             .WithColor(versionColor);
 
         element.PlayersElement
@@ -379,15 +379,15 @@ public static class MenuMatchmaking
             .WithTitle("Players")
             .WithColor(playerCountColor);
 
-        element.PlayersElement.TextFormat = $"{info.PlayerCount}/{{1}} {{0}}";
+        element.PlayersElement.TextFormat = $"{info.LobbyInfo.PlayerCount}/{{1}} {{0}}";
 
-        element.PlayersElement.Value = info.MaxPlayers;
+        element.PlayersElement.Value = info.LobbyInfo.MaxPlayers;
 
         element.PrivacyElement
             .Cleared()
             .WithTitle("Privacy");
 
-        element.PrivacyElement.Value = info.Privacy;
+        element.PrivacyElement.Value = info.LobbyInfo.Privacy;
 
         element.PrivacyElement.TextFormat = "{1}";
 
@@ -398,10 +398,10 @@ public static class MenuMatchmaking
         element.ServerNameElement.EmptyFormat = "No {0}";
         element.ServerNameElement.TextFormat = "{1}";
 
-        element.ServerNameElement.Value = ParseServerName(info.LobbyName, info.LobbyOwner);
+        element.ServerNameElement.Value = ParseServerName(info.LobbyInfo.LobbyName, info.LobbyInfo.LobbyHostName);
 
         element.HostNameElement
-            .WithTitle(info.LobbyOwner);
+            .WithTitle(info.LobbyInfo.LobbyHostName);
 
         element.DescriptionElement
             .Cleared()
@@ -410,7 +410,7 @@ public static class MenuMatchmaking
         element.DescriptionElement.EmptyFormat = "No {0}";
         element.DescriptionElement.TextFormat = "{1}";
 
-        element.DescriptionElement.Value = info.LobbyDescription;
+        element.DescriptionElement.Value = info.LobbyInfo.LobbyDescription;
 
         element.MoreElement
             .Cleared()
@@ -418,7 +418,7 @@ public static class MenuMatchmaking
             .Do(() => { element.LobbyPage.SelectSubPage(1); });
 
         // Apply level icon
-        ElementIconHelper.SetLevelIcon(element, info.LevelName);
+        ElementIconHelper.SetLevelIcon(element, info.LobbyInfo.LevelTitle);
 
         // Fill out lists
         // Settings list
@@ -430,23 +430,23 @@ public static class MenuMatchmaking
 
         generalGroup.AddElement<BoolElement>("NameTags")
             .WithInteractability(false)
-            .Value = info.NametagsEnabled;
+            .Value = info.LobbyInfo.NameTags;
 
         generalGroup.AddElement<BoolElement>("VoiceChat")
             .WithInteractability(false)
-            .Value = info.VoiceChatEnabled;
+            .Value = info.LobbyInfo.VoiceChat;
 
         var slowMoElement = generalGroup.AddElement<EnumElement>("SlowMo")
             .WithInteractability(false);
         slowMoElement.EnumType = typeof(TimeScaleMode);
-        slowMoElement.Value = info.TimeScaleMode;
+        slowMoElement.Value = info.LobbyInfo.SlowMoMode;
 
         // Player list
         element.PlayerBrowserElement.Clear();
 
         var playerListPage = element.PlayerBrowserElement.AddPage();
 
-        foreach (var player in info.PlayerList.Players)
+        foreach (var player in info.LobbyInfo.PlayerList.Players)
         {
             var playerResult = playerListPage.AddElement<PlayerResultElement>(player.Username);
 

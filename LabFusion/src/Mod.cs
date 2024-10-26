@@ -33,8 +33,6 @@ using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Marrow;
 
-using ModuleManager = LabFusion.SDK.Modules.ModuleManager;
-
 namespace LabFusion;
 
 public struct FusionVersion
@@ -47,10 +45,10 @@ public struct FusionVersion
     public const string VersionString = "0.0.0";
 #else
     public const byte VersionMajor = 1;
-    public const byte VersionMinor = 8;
+    public const byte VersionMinor = 9;
     public const short VersionPatch = 0;
 
-    public const string VersionString = "1.8.0";
+    public const string VersionString = "1.9.0";
 #endif
 }
 

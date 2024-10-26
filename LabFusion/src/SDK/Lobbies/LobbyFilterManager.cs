@@ -14,7 +14,7 @@ public static class LobbyFilterManager
         // Lobby length filter
         var lengthFilter = new GenericLobbyFilter("Hide Full Lobbies", (l, i) =>
         {
-            return i.MaxPlayers > i.PlayerCount;
+            return i.LobbyInfo.MaxPlayers > i.LobbyInfo.PlayerCount;
         });
         lengthFilter.SetActive(true);
 
@@ -23,7 +23,7 @@ public static class LobbyFilterManager
         // Outdated filter
         var outdatedFilter = new GenericLobbyFilter("Hide Mismatching Versions", (l, i) =>
         {
-            return NetworkVerification.CompareVersion(i.LobbyVersion, FusionMod.Version) == VersionResult.Ok;
+            return NetworkVerification.CompareVersion(i.LobbyInfo.LobbyVersion, FusionMod.Version) == VersionResult.Ok;
         });
         outdatedFilter.SetActive(true);
 
@@ -32,7 +32,7 @@ public static class LobbyFilterManager
         // Friends filter
         var friendsFilter = new GenericLobbyFilter("Friends Only", (l, i) =>
         {
-            return NetworkInfo.CurrentNetworkLayer.IsFriend(i.LobbyId);
+            return NetworkInfo.CurrentNetworkLayer.IsFriend(i.LobbyInfo.LobbyId);
         });
 
         AddLobbyFilter(friendsFilter);

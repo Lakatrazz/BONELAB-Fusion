@@ -595,10 +595,10 @@ namespace LabFusion.Network
                 return false;
 
             // Decide if this server is too private
-            return info.Privacy switch
+            return info.LobbyInfo.Privacy switch
             {
                 ServerPrivacy.PUBLIC => true,
-                ServerPrivacy.FRIENDS_ONLY => IsFriend(info.LobbyId),
+                ServerPrivacy.FRIENDS_ONLY => IsFriend(info.LobbyInfo.LobbyId),
                 _ => false,
             };
         }
@@ -746,7 +746,7 @@ namespace LabFusion.Network
 
                 LobbyMetadataInfo info = metadataTask.Result;
 
-                if (!IsFriend(info.LobbyId))
+                if (!IsFriend(info.LobbyInfo.LobbyId))
                     continue;
 
                 if (Internal_CanShowLobby(info))
