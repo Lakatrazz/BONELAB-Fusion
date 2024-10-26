@@ -19,9 +19,9 @@ namespace LabFusion.Marrow.Proxies
         public TMP_Text PlayerNameText { get; private set; } = null;
         public TMP_Text RoleText { get; private set; } = null;
 
-        public RawImage UserIcon { get; private set; } = null;
-        public RawImage UserStatus { get; private set; } = null;
-        public RawImage UserBorder { get; private set; } = null;
+        public RawImage PlayerIcon { get; private set; } = null;
+        public RawImage PlayerStatus { get; private set; } = null;
+        public RawImage PlayerBorder { get; private set; } = null;
 
         public Action OnPressed;
 
@@ -42,9 +42,9 @@ namespace LabFusion.Marrow.Proxies
             // Icons
             var iconRoot = transform.Find("label_ProfileIcon");
 
-            UserIcon = iconRoot.Find("icon_Player").GetComponent<RawImage>();
-            UserStatus = iconRoot.Find("icon_StatusDrop/icon_Status").GetComponent<RawImage>();
-            UserBorder = iconRoot.Find("border").GetComponent<RawImage>();
+            PlayerIcon = iconRoot.Find("icon_Player").GetComponent<RawImage>();
+            PlayerStatus = iconRoot.Find("icon_StatusDrop/icon_Status").GetComponent<RawImage>();
+            PlayerBorder = iconRoot.Find("border").GetComponent<RawImage>();
 
             // Info layout
             var infoLayout = transform.Find("layout_Info");

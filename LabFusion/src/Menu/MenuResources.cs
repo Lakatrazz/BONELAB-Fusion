@@ -8,6 +8,7 @@ public static class MenuResources
     public static Sprite MenuIconSprite { get; private set; } = null;
 
     public static Dictionary<string, Texture> LevelIconLookup { get; private set; } = null;
+    public static Dictionary<string, Texture> AvatarIconLookup { get; private set; } = null;
 
     public const string ModsIconTitle = "Mods";
 
@@ -16,6 +17,16 @@ public static class MenuResources
         if (LevelIconLookup.TryGetValue(levelTitle, out var texture))
         {
             return texture;
+        }
+
+        return null;
+    }
+
+    public static Texture GetAvatarIcon(string avatarTitle)
+    {
+        if (AvatarIconLookup.TryGetValue(avatarTitle, out var texture)) 
+        {
+            return texture; 
         }
 
         return null;
@@ -53,6 +64,30 @@ public static class MenuResources
             }
 
             LevelIconLookup.Add(iconTransform.name, image.texture);
+        }
+
+        // Avatar icons
+        var avatarIcons = resourcesTransform.Find("Avatar Icons");
+
+        AvatarIconLookup = new();
+
+        foreach (var icon in avatarIcons)
+        {
+            var iconTransform = icon.TryCast<Transform>();
+
+            if (iconTransform == null)
+            {
+                continue;
+            }
+
+            var image = iconTransform.GetComponent<RawImage>();
+
+            if (image == null)
+            {
+                continue;
+            }
+
+            AvatarIconLookup.Add(iconTransform.name, image.texture);
         }
     }
 }

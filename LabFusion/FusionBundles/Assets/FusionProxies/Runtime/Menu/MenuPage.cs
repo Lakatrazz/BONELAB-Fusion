@@ -18,6 +18,8 @@ namespace LabFusion.Marrow.Proxies
 
         public static MenuPage SelectedPage { get; private set; } = null;
 
+        public Action OnShown;
+
         public MenuPage CurrentPage { get; set; } = null;
 
         private List<MenuPage> _subPages = null;
@@ -71,6 +73,8 @@ namespace LabFusion.Marrow.Proxies
         public void ShowPage()
         {
             gameObject.SetActive(true);
+
+            OnShown?.Invoke();
         }
 
         public void HidePage()

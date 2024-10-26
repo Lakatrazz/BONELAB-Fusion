@@ -1,4 +1,5 @@
 ﻿using LabFusion.Downloading.ModIO;
+using LabFusion.Entities;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Proxies;
 using LabFusion.Network;
@@ -10,7 +11,6 @@ using LabFusion.Senders;
 using LabFusion.Utilities;
 
 using UnityEngine;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace LabFusion.Menu;
 
@@ -124,6 +124,30 @@ public static class MenuLocation
         });
     }
 
+    private static void UpdatePlayerIcon(PlayerElement element, string avatarTitle)
+    {
+        var avatarIcon = MenuResources.GetAvatarIcon(avatarTitle);
+
+        if (avatarIcon == null)
+        {
+            avatarIcon = MenuResources.GetAvatarIcon(MenuResources.ModsIconTitle);
+        }
+
+        element.PlayerIcon.texture = avatarIcon;
+    }
+
+    private static void UpdatePlayerIcon(PlayerResultElement element, string avatarTitle)
+    {
+        var avatarIcon = MenuResources.GetAvatarIcon(avatarTitle);
+
+        if (avatarIcon == null)
+        {
+            avatarIcon = MenuResources.GetAvatarIcon(MenuResources.ModsIconTitle);
+        }
+
+        element.PlayerIcon.texture = avatarIcon;
+    }
+
     private static void OnServerSettingsChanged()
     {
         ApplyServerSettingsToLobby(LobbyElement, ServerSettingsManager.ActiveSettings);
@@ -203,7 +227,16 @@ public static class MenuLocation
             .AsPref(settings.TimeScaleMode)
             .WithTitle("SlowMo");
 
-        // Player list
+        RefreshPlayerList();
+
+        // Change interactability for all elements
+        element.Interactable = ownsSettings;
+    }
+
+    private static void RefreshPlayerList()
+    {
+        var element = LobbyElement;
+
         element.PlayerBrowserElement.Clear();
 
         var playerListPage = element.PlayerBrowserElement.AddPage();
@@ -224,10 +257,17 @@ public static class MenuLocation
             {
                 OnShowPlayer(player);
             };
-        }
 
-        // Change interactability for all elements
-        element.Interactable = ownsSettings;
+            // Apply icon
+            var avatarTitle = "PolyBlank";
+
+            if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer) && networkPlayer.HasRig)
+            {
+                avatarTitle = networkPlayer.RigRefs.RigManager.AvatarCrate.Crate.Title;
+            }
+
+            UpdatePlayerIcon(playerResult, avatarTitle);
+        }
     }
 
     private static void OnShowPlayer(PlayerId player)
@@ -244,6 +284,7 @@ public static class MenuLocation
 
     private static void ApplyPlayerToElement(PlayerElement element, PlayerId player)
     {
+        // Apply name and description
         var username = player.Metadata.GetMetadata(MetadataHelper.UsernameKey);
         element.UsernameElement.Title = username;
 
@@ -255,6 +296,16 @@ public static class MenuLocation
         element.DescriptionElement.Title = "Description";
         element.DescriptionElement.Interactable = false;
         element.DescriptionElement.EmptyFormat = "No {0}";
+
+        // Apply icon
+        var avatarTitle = "PolyBlank";
+
+        if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer) && networkPlayer.HasRig)
+        {
+            avatarTitle = networkPlayer.RigRefs.RigManager.AvatarCrate.Crate.Title;
+        }
+
+        UpdatePlayerIcon(element, avatarTitle);
 
         // Get permissions
         FusionPermissions.FetchPermissionLevel(PlayerIdManager.LocalLongId, out var selfLevel, out _);
@@ -335,6 +386,11 @@ public static class MenuLocation
         LobbyElement = locationPage.transform.Find("panel_Lobby").GetComponent<LobbyElement>();
 
         LobbyElement.GetElements();
+
+        LobbyElement.LobbyPage.OnShown += () =>
+        {
+            RefreshPlayerList();
+        };
 
         var settingsPage = LobbyElement.SettingsElement.AddPage();
         PopulateSettings(settingsPage);

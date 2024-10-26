@@ -670,6 +670,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: label_ProfileIcon
       objectReference: {fileID: 0}
+    - target: {fileID: 2629642918156650091, guid: fcb670d21a37b824abb826f76fa1cf15, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -40
+      objectReference: {fileID: 0}
+    - target: {fileID: 2629642918156650091, guid: fcb670d21a37b824abb826f76fa1cf15, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: -40
+      objectReference: {fileID: 0}
+    - target: {fileID: 2629642918156650091, guid: fcb670d21a37b824abb826f76fa1cf15, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2629642918156650091, guid: fcb670d21a37b824abb826f76fa1cf15, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4796853930903014345, guid: fcb670d21a37b824abb826f76fa1cf15, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -1127,7 +1143,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5079736990429502471, guid: c1b534cfcc1f1e84e974f5ff61b4f0da, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 270
+      value: 260
       objectReference: {fileID: 0}
     - target: {fileID: 5079736990429502471, guid: c1b534cfcc1f1e84e974f5ff61b4f0da, type: 3}
       propertyPath: m_SizeDelta.y
