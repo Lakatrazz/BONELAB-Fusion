@@ -12,10 +12,20 @@ public static class MenuProfile
 {
     public static PlayerElement ProfileElement { get; private set; }
 
+    private static string PreviousAvatarTitle { get; set; } = null;
+
     private static void UpdatePlayerIcon(PlayerElement element)
     {
         var avatarCrate = RigData.Refs.RigManager.AvatarCrate.Crate;
         var avatarTitle = avatarCrate.Title;
+
+        // No need to update the icon if its the same avatar
+        if (avatarTitle == PreviousAvatarTitle)
+        {
+            return;
+        }
+
+        PreviousAvatarTitle = avatarTitle;
 
         ElementIconHelper.SetProfileIcon(element, avatarTitle, ElementIconHelper.GetModId(avatarCrate.Pallet));
     }

@@ -31,10 +31,10 @@ public sealed class SteamMatchmaker : IMatchmaker
         foreach (var lobby in lobbies)
         {
             // Make sure this is not us
-            //if (lobby.Owner.IsMe)
-            //{
-            //    continue;
-            //}
+            if (lobby.Owner.IsMe)
+            {
+                continue;
+            }
 
             var networkLobby = new SteamLobby(lobby);
             var metadata = LobbyMetadataHelper.ReadInfo(networkLobby);
