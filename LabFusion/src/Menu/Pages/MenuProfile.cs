@@ -1,4 +1,5 @@
-﻿using LabFusion.Marrow.Proxies;
+﻿using LabFusion.Data;
+using LabFusion.Marrow.Proxies;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Preferences.Client;
@@ -9,30 +10,59 @@ namespace LabFusion.Menu;
 
 public static class MenuProfile
 {
+    public static PlayerElement ProfileElement { get; private set; }
+
+    private static void UpdatePlayerIcon(PlayerElement element)
+    {
+        var avatarTitle = RigData.Refs.RigManager.AvatarCrate.Crate.Title;
+
+        var avatarIcon = MenuResources.GetAvatarIcon(avatarTitle);
+
+        if (avatarIcon == null)
+        {
+            avatarIcon = MenuResources.GetAvatarIcon(MenuResources.ModsIconTitle);
+        }
+
+        element.PlayerIcon.texture = avatarIcon;
+    }
+
+    public static void RefreshIcon()
+    {
+        UpdatePlayerIcon(ProfileElement);
+    }
+
     public static void PopulateProfile(GameObject profilePage)
     {
         // Update the profile grid
-        var profilePanel = profilePage.transform.Find("panel_Profile").GetComponent<PlayerElement>();
+        ProfileElement = profilePage.transform.Find("panel_Profile").GetComponent<PlayerElement>();
 
-        profilePanel.GetElements();
+        ProfileElement.GetElements();
 
-        profilePanel.UsernameElement
+        ProfileElement.UsernameElement
             .WithTitle(PlayerIdManager.LocalUsername);
 
-        profilePanel.NicknameElement
+        ProfileElement.NicknameElement
             .WithTitle("Nickname")
             .AsPref(ClientSettings.Nickname, (value) =>
             {
                 PlayerIdManager.LocalId?.Metadata.TrySetMetadata(MetadataHelper.NicknameKey, value);
             });
 
-        profilePanel.DescriptionElement
+        ProfileElement.DescriptionElement
             .WithTitle("Description")
             .AsPref(ClientSettings.Description);
 
-        // Disable unnecessary elements
-        profilePanel.ActionsGrid.SetActive(false);
+        // Update the icon
+        ProfileElement.PlayerPage.OnShown += () =>
+        {
+            RefreshIcon();
+        };
 
-        profilePanel.PermissionsElement.gameObject.SetActive(false);
+        RefreshIcon();
+
+        // Disable unnecessary elements
+        ProfileElement.ActionsGrid.SetActive(false);
+
+        ProfileElement.PermissionsElement.gameObject.SetActive(false);
     }
 }
