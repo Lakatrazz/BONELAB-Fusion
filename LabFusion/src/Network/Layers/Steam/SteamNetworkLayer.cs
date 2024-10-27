@@ -16,10 +16,8 @@ using Color = UnityEngine.Color;
 
 using LabFusion.Senders;
 using LabFusion.BoneMenu;
-using LabFusion.SDK.Gamemodes;
 using LabFusion.Voice;
 using LabFusion.Voice.Unity;
-using LabFusion.Preferences.Server;
 
 namespace LabFusion.Network;
 
@@ -278,7 +276,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
     public override void RefreshServerCode()
     {
-        ServerCode = RandomCodeGenerator.GetString(6);
+        ServerCode = RandomCodeGenerator.GetString(8);
 
         LobbyInfoManager.PushLobbyUpdate();
     }
