@@ -134,7 +134,7 @@ public static class NetworkHelper
             return;
         }
 
-        BanList.Ban(id.LongId, id.Metadata.GetMetadata(MetadataHelper.UsernameKey), "Banned");
+        BanManager.Ban(new PlayerInfo(id), "Banned");
         ConnectionSender.SendDisconnect(id, "Banned from Server");
     }
 
@@ -150,10 +150,12 @@ public static class NetworkHelper
             return false;
 
         // Check the ban list
-        foreach (var tuple in BanList.BannedUsers)
+        foreach (var ban in BanManager.BanList.Bans)
         {
-            if (tuple.Item1 == longId)
+            if (ban.Player.LongId == longId)
+            {
                 return true;
+            }
         }
 
         return false;
@@ -165,6 +167,6 @@ public static class NetworkHelper
     /// <param name="longId"></param>
     public static void PardonUser(ulong longId)
     {
-        BanList.Pardon(longId);
+        BanManager.Pardon(longId);
     }
 }

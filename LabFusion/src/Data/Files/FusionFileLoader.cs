@@ -8,7 +8,7 @@ namespace LabFusion.Data
         public static void OnInitializeMelon()
         {
             PermissionList.ReadFile();
-            BanList.ReadFile();
+            BanManager.ReadFile();
             ContactsList.ReadFile();
             PointSaveManager.ReadFile();
 

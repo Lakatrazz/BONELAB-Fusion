@@ -45,7 +45,7 @@ public class LobbyInfo
     public string LevelBarcode { get; set; }
 
     [JsonPropertyName("levelModId")]
-    public int LevelModId { get; set; }
+    public int LevelModId { get; set; } = -1;
 
     // Settings
     [JsonPropertyName("nameTags")]

@@ -344,6 +344,38 @@ public static class MenuLocation
         }
     }
 
+    private static void RefreshBanList()
+    {
+        var element = LobbyElement;
+
+        element.BansElement.Clear();
+
+        var banListPage = element.BansElement.AddPage();
+
+        BanManager.ReadFile();
+
+        foreach (var ban in BanManager.BanList.Bans)
+        {
+            var player = ban.Player;
+
+            var banResult = banListPage.AddElement<PlayerResultElement>(player.Username);
+
+            banResult.GetReferences();
+
+            banResult.PlayerNameText.text = player.Username;
+
+            banResult.RoleText.text = "Banned";
+
+            banResult.OnPressed = () =>
+            {
+                OnShowBannedPlayer(player);
+            };
+
+            // Apply icon
+            ElementIconHelper.SetProfileResultIcon(banResult, player.AvatarTitle, player.AvatarModId);
+        }
+    }
+
     private static void OnShowPlayer(PlayerId player)
     {
         if (!player.IsValid)
@@ -354,6 +386,52 @@ public static class MenuLocation
         LobbyElement.LobbyPage.SelectSubPage(2);
 
         ApplyPlayerToElement(LobbyElement.ProfileElement, player);
+    }
+
+    private static void OnShowBannedPlayer(PlayerInfo playerInfo)
+    {
+        LobbyElement.LobbyPage.SelectSubPage(2);
+
+        ApplyBannedPlayerToElement(LobbyElement.ProfileElement, playerInfo);
+    }
+
+    private static void ApplyBannedPlayerToElement(PlayerElement element, PlayerInfo playerInfo)
+    {
+        // Apply name and description
+        var username = playerInfo.Username;
+        element.UsernameElement.Title = username;
+
+        element.NicknameElement.Title = "Nickname";
+        element.NicknameElement.Value = playerInfo.Nickname;
+        element.NicknameElement.Interactable = false;
+        element.NicknameElement.EmptyFormat = "No {0}";
+
+        element.DescriptionElement.Title = "Description";
+        element.DescriptionElement.Interactable = false;
+        element.DescriptionElement.EmptyFormat = "No {0}";
+
+        // Apply icon
+        var avatarTitle = playerInfo.AvatarTitle;
+
+        ElementIconHelper.SetProfileIcon(element, avatarTitle, playerInfo.AvatarModId);
+
+        var activeLobbyInfo = LobbyInfoManager.LobbyInfo;
+
+        // Actions
+        element.ActionsElement.Clear();
+        var actionsPage = element.ActionsElement.AddPage();
+
+        var moderationGroup = actionsPage.AddElement<GroupElement>("Moderation");
+
+        moderationGroup.AddElement<FunctionElement>("Unban")
+            .WithColor(Color.yellow)
+            .Do(() =>
+            {
+                NetworkHelper.PardonUser(playerInfo.LongId);
+            });
+
+        // Disable unnecessary elements
+        element.PermissionsElement.gameObject.SetActive(false);
     }
 
     private static void ApplyPlayerToElement(PlayerElement element, PlayerId player)
@@ -464,6 +542,7 @@ public static class MenuLocation
         LobbyElement.LobbyPage.OnShown += () =>
         {
             RefreshPlayerList();
+            RefreshBanList();
         };
 
         var settingsPage = LobbyElement.SettingsElement.AddPage();

@@ -28,13 +28,13 @@ namespace LabFusion.BoneMenu
             _banListCategory.CreateFunction("Refresh", Color.white, RefreshBanList);
 
             // Pull the latest file info
-            BanList.ReadFile();
+            BanManager.ReadFile();
 
             // Add a ban item for every banned player
-            foreach (var tuple in BanList.BannedUsers)
-            {
-                CreateBannedPlayer(tuple.Item1, tuple.Item2, tuple.Item3);
-            }
+            //foreach (var tuple in BanManager.BannedUsers)
+            //{
+            //    CreateBannedPlayer(tuple.Item1, tuple.Item2, tuple.Item3);
+            //}
 
             Menu.OpenPage(_banListCategory);
         }
