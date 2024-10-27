@@ -17,6 +17,8 @@ using LabFusion.Entities;
 using LabFusion.Downloading;
 using LabFusion.Preferences.Client;
 
+using Il2CppSLZ.Marrow.VFX;
+
 namespace LabFusion.Network;
 
 public class SpawnResponseData : IFusionSerializable
@@ -31,6 +33,8 @@ public class SpawnResponseData : IFusionSerializable
 
     public uint trackerId;
 
+    public bool spawnEffect;
+
     public static int GetSize(string barcode)
     {
         return DefaultSize + barcode.GetSize();
@@ -44,6 +48,8 @@ public class SpawnResponseData : IFusionSerializable
         writer.Write(serializedTransform);
 
         writer.Write(trackerId);
+
+        writer.Write(spawnEffect);
     }
 
     public void Deserialize(FusionReader reader)
@@ -54,9 +60,11 @@ public class SpawnResponseData : IFusionSerializable
         serializedTransform = reader.ReadFusionSerializable<SerializedTransform>();
 
         trackerId = reader.ReadUInt32();
+
+        spawnEffect = reader.ReadBoolean();
     }
 
-    public static SpawnResponseData Create(byte owner, string barcode, ushort entityId, SerializedTransform serializedTransform, uint trackerId = 0)
+    public static SpawnResponseData Create(byte owner, string barcode, ushort entityId, SerializedTransform serializedTransform, uint trackerId = 0, bool spawnEffect = false)
     {
         return new SpawnResponseData()
         {
@@ -65,6 +73,7 @@ public class SpawnResponseData : IFusionSerializable
             entityId = entityId,
             serializedTransform = serializedTransform,
             trackerId = trackerId,
+            spawnEffect = spawnEffect,
         };
     }
 }
@@ -88,6 +97,7 @@ public class SpawnResponseMessage : FusionMessageHandler
         string barcode = data.barcode;
         ushort entityId = data.entityId;
         var trackerId = data.trackerId;
+        var spawnEffect = data.spawnEffect;
 
         bool hasCrate = CrateFilterer.HasCrate<SpawnableCrate>(new(barcode));
 
@@ -143,14 +153,14 @@ public class SpawnResponseMessage : FusionMessageHandler
 
             void OnPooleeSpawned(Poolee go)
             {
-                OnSpawnFinished(owner, barcode, entityId, go, trackerId);
+                OnSpawnFinished(owner, barcode, entityId, go, trackerId, spawnEffect);
             }
 
             SafeAssetSpawner.Spawn(spawnable, data.serializedTransform.position, data.serializedTransform.rotation, OnPooleeSpawned);
         }
     }
 
-    public static void OnSpawnFinished(byte owner, string barcode, ushort entityId, Poolee poolee, uint trackerId = 0)
+    public static void OnSpawnFinished(byte owner, string barcode, ushort entityId, Poolee poolee, uint trackerId = 0, bool spawnEffect = false)
     {
         // The poolee will never be null, so we don't have to check for it
         // Only case where it could be null is the object not spawning, but the spawn callback only executes when it exists
@@ -187,6 +197,11 @@ public class SpawnResponseMessage : FusionMessageHandler
             {
                 SpawnSender.SendCatchupSpawn(owner, barcode, entityId, new SerializedTransform(go.transform), player);
             };
+
+            if (spawnEffect)
+            {
+                SpawnEffects.CallSpawnEffect(marrowEntity);
+            }
         }
 
         // Invoke spawn callback

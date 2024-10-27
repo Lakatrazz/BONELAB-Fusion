@@ -16,6 +16,8 @@ public class SpawnRequestData : IFusionSerializable
 
     public uint trackerId;
 
+    public bool spawnEffect;
+
     public void Serialize(FusionWriter writer)
     {
         writer.Write(owner);
@@ -23,6 +25,8 @@ public class SpawnRequestData : IFusionSerializable
         writer.Write(serializedTransform);
 
         writer.Write(trackerId);
+
+        writer.Write(spawnEffect);
     }
 
     public void Deserialize(FusionReader reader)
@@ -32,9 +36,11 @@ public class SpawnRequestData : IFusionSerializable
         serializedTransform = reader.ReadFusionSerializable<SerializedTransform>();
 
         trackerId = reader.ReadUInt32();
+
+        spawnEffect = reader.ReadBoolean();
     }
 
-    public static SpawnRequestData Create(byte owner, string barcode, SerializedTransform serializedTransform, uint trackerId)
+    public static SpawnRequestData Create(byte owner, string barcode, SerializedTransform serializedTransform, uint trackerId, bool spawnEffect)
     {
         return new SpawnRequestData()
         {
@@ -43,6 +49,8 @@ public class SpawnRequestData : IFusionSerializable
             serializedTransform = serializedTransform,
 
             trackerId = trackerId,
+
+            spawnEffect = spawnEffect,
         };
     }
 }
@@ -65,6 +73,6 @@ public class SpawnRequestMessage : FusionMessageHandler
 
         var entityId = NetworkEntityManager.IdManager.RegisteredEntities.AllocateNewId();
 
-        PooleeUtilities.SendSpawn(data.owner, data.barcode, entityId, data.serializedTransform, data.trackerId);
+        PooleeUtilities.SendSpawn(data.owner, data.barcode, entityId, data.serializedTransform, data.trackerId, data.spawnEffect);
     }
 }

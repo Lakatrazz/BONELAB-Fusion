@@ -151,6 +151,7 @@ public static class SpawnGunPatches
             spawnable = spawnable,
             position = transform.position,
             rotation = transform.rotation,
+            spawnEffect = true,
         };
 
         NetworkAssetSpawner.Spawn(info);

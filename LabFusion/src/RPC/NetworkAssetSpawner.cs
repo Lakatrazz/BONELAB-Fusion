@@ -26,6 +26,8 @@ public static class NetworkAssetSpawner
         public Quaternion rotation;
 
         public Action<SpawnCallbackInfo> spawnCallback;
+
+        public bool spawnEffect;
     }
 
     private static uint _lastTrackedSpawnable = 0;
@@ -50,6 +52,6 @@ public static class NetworkAssetSpawner
             _callbackQueue.Add(trackerId, info.spawnCallback);
         }
 
-        PooleeUtilities.RequestSpawn(info.spawnable.crateRef.Barcode.ID, new SerializedTransform(info.position, info.rotation), trackerId);
+        PooleeUtilities.RequestSpawn(info.spawnable.crateRef.Barcode.ID, new SerializedTransform(info.position, info.rotation), trackerId, info.spawnEffect);
     }
 }

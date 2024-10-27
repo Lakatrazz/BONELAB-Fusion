@@ -106,7 +106,6 @@ public class DespawnResponseMessage : FusionMessageHandler
             SpawnEffects.CallDespawnEffect(marrowEntity.MarrowEntity);
         }
 
-
         poolee.Despawn();
 
         NetworkEntityManager.IdManager.UnregisterEntity(entity);
