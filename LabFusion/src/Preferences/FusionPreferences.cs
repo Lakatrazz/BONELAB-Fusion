@@ -14,36 +14,6 @@ public static class FusionPreferences
 
     public static event Action OnPrefsLoaded;
 
-    internal static void SendServerSettings()
-    {
-        if (!NetworkInfo.IsServer)
-        {
-            return;
-        }
-
-        using var writer = FusionWriter.Create();
-        var data = ServerSettingsData.Create();
-        writer.Write(data);
-
-        using var message = FusionMessage.Create(NativeMessageTag.ServerSettings, writer);
-        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-    }
-
-    internal static void SendServerSettings(ulong longId)
-    {
-        if (!NetworkInfo.IsServer)
-        {
-            return;
-        }
-
-        using var writer = FusionWriter.Create();
-        var data = ServerSettingsData.Create();
-        writer.Write(data);
-
-        using var message = FusionMessage.Create(NativeMessageTag.ServerSettings, writer);
-        MessageSender.SendFromServer(longId, NetworkChannel.Reliable, message);
-    }
-
     internal static void SendClientSettings()
     {
         if (!NetworkInfo.HasServer)

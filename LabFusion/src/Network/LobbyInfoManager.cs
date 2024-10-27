@@ -44,12 +44,42 @@ public static class LobbyInfoManager
         LobbyInfo = new();
         LobbyInfo.WriteLobby();
 
-        // If a server is active, send the settings
+        // If a server is active, send the info
         if (NetworkInfo.IsServer)
         {
-            FusionPreferences.SendServerSettings();
+            SendLobbyInfo();
         }
 
         OnLobbyInfoChanged.InvokeSafe("executing lobby info changed hook");
+    }
+
+    private static void SendLobbyInfo()
+    {
+        if (!NetworkInfo.IsServer)
+        {
+            return;
+        }
+
+        using var writer = FusionWriter.Create();
+        var data = ServerSettingsData.Create();
+        writer.Write(data);
+
+        using var message = FusionMessage.Create(NativeMessageTag.ServerSettings, writer);
+        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+    }
+
+    internal static void SendLobbyInfo(ulong longId)
+    {
+        if (!NetworkInfo.IsServer)
+        {
+            return;
+        }
+
+        using var writer = FusionWriter.Create();
+        var data = ServerSettingsData.Create();
+        writer.Write(data);
+
+        using var message = FusionMessage.Create(NativeMessageTag.ServerSettings, writer);
+        MessageSender.SendFromServer(longId, NetworkChannel.Reliable, message);
     }
 }

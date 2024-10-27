@@ -217,7 +217,7 @@ public class ConnectionRequestMessage : FusionMessageHandler
         }
 
         // Send the active server settings
-        FusionPreferences.SendServerSettings(data.longId);
+        LobbyInfoManager.SendLobbyInfo(data.longId);
 
         // SERVER CATCHUP
         // Catchup hooked events

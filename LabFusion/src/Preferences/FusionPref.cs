@@ -9,7 +9,6 @@ public enum PrefUpdateMode
     IGNORE = 0,
     SERVER_UPDATE = 1,
     CLIENT_UPDATE = 2,
-    LOCAL_UPDATE = 3,
 }
 
 public class FusionPref<T>
@@ -58,14 +57,10 @@ public class FusionPref<T>
             case PrefUpdateMode.IGNORE:
                 break;
             case PrefUpdateMode.SERVER_UPDATE:
-                FusionPreferences.SendServerSettings();
                 SavedServerSettings.PushSettingsUpdate();
                 break;
             case PrefUpdateMode.CLIENT_UPDATE:
                 FusionPreferences.SendClientSettings();
-                break;
-            case PrefUpdateMode.LOCAL_UPDATE:
-                SavedServerSettings.PushSettingsUpdate();
                 break;
         }
     }

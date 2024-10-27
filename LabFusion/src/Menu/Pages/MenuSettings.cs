@@ -115,7 +115,7 @@ public static class MenuSettings
         var visualGroup = page.AddElement<GroupElement>("Visuals");
 
         visualGroup.AddElement<BoolElement>("NameTags")
-            .AsPref(ClientSettings.NametagsEnabled);
+            .AsPref(ClientSettings.NameTags);
 
         visualGroup.AddElement<EnumElement>("Nickname Visibility")
             .AsPref(ClientSettings.NicknameVisibility);
@@ -124,7 +124,7 @@ public static class MenuSettings
             .AsPref(ClientSettings.VoiceChat.MutedIndicator);
 
         // NameTag color
-        var nameTagColorPref = ClientSettings.NametagColor;
+        var nameTagColorPref = ClientSettings.NameTagColor;
 
         Color.RGBToHSV(nameTagColorPref.Value, out var defaultH, out var defaultS, out var defaultV);
 
