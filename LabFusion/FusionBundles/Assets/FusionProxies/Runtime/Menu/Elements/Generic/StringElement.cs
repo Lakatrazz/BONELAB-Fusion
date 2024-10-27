@@ -19,6 +19,7 @@ namespace LabFusion.Marrow.Proxies
 
         public Action<string> OnValueChanged;
         public Action OnSubmitted;
+        public Action<bool> OnKeyboardToggled;
 
         private string _value = null;
         public string Value
@@ -83,10 +84,14 @@ namespace LabFusion.Marrow.Proxies
             if (MenuKeyboardHelper.KeyboardOpened)
             {
                 MenuKeyboardHelper.CloseKeyboard();
+
+                OnKeyboardToggled?.Invoke(false);
             }
             else
             {
                 MenuKeyboardHelper.AssignKeyboardToButton(this);
+
+                OnKeyboardToggled?.Invoke(true);
             }
         }
 

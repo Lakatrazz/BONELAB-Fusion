@@ -49,6 +49,9 @@ namespace LabFusion.Marrow.Proxies
         public GameObject BansGrid { get; set; } = null;
         public PageElement BansElement { get; set; } = null;
 
+        public GameObject AdminGrid { get; set; } = null;
+        public PageElement AdminElement { get; set; } = null;
+
         public GameObject CodeGrid { get; set; } = null;
         public StringElement CodeElement { get; set; } = null;
         public FunctionElement CodeRefreshElement { get; set; } = null;
@@ -110,6 +113,10 @@ namespace LabFusion.Marrow.Proxies
 
             BansGrid = bansGrid.gameObject;
             BansElement = bansGrid.Find("scrollRect_Bans/Viewport/Content").GetComponent<PageElement>();
+
+            var adminGrid = morePanel.Find("grid_Admin");
+            AdminGrid = adminGrid.gameObject;
+            AdminElement = adminGrid.Find("scrollRect_Admin/Viewport/Content").GetComponent<PageElement>();
 
             // Profile panel
             var profilePanel = transform.Find("panel_Profile");

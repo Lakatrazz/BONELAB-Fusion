@@ -42,6 +42,18 @@ namespace LabFusion.Marrow.Proxies
         private bool _uppercase = false;
         private bool _temporaryUppercase = false;
 
+        public bool TemporaryUppercase
+        {
+            get
+            {
+                return _temporaryUppercase;
+            }
+            set
+            {
+                _temporaryUppercase = value;
+            }
+        }
+
         public bool Uppercase
         {
             get
@@ -54,6 +66,13 @@ namespace LabFusion.Marrow.Proxies
 
                 foreach (var button in _buttons)
                 {
+                    // Numeric characters shouldn't be affected by caps lock
+                    if (!_temporaryUppercase && button.Special)
+                    {
+                        button.Uppercase = false;
+                        continue;
+                    }
+
                     button.Uppercase = value;
                 }
             }
@@ -139,15 +158,16 @@ namespace LabFusion.Marrow.Proxies
 
         public void Shift()
         {
-            Uppercase = !Uppercase;
+            bool newUppercase = !Uppercase;
 
-            _temporaryUppercase = Uppercase;
+            _temporaryUppercase = newUppercase;
+            Uppercase = newUppercase;
         }
 
         public void Caps()
         {
-            Uppercase = !Uppercase;
             _temporaryUppercase = false;
+            Uppercase = !Uppercase;
         }
         
         public void Enter()

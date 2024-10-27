@@ -1,9 +1,4 @@
-﻿using BoneLib.BoneMenu;
-
-using LabFusion.BoneMenu;
-using LabFusion.Utilities;
-
-using UnityEngine;
+﻿using LabFusion.Utilities;
 
 namespace LabFusion.Network
 {
@@ -40,29 +35,10 @@ namespace LabFusion.Network
 #else
             FusionLogger.Log("This usually means all other network layers failed to initialize, or you selected Empty in the settings.", ConsoleColor.Magenta);
 #endif
-
-            MatchmakingCreator.OnFillMatchmakingPage += OnFillMatchmakingPage;
         }
 
         public override void OnCleanupLayer() 
         {
-            MatchmakingCreator.OnFillMatchmakingPage -= OnFillMatchmakingPage;
-        }
-
-        private void OnFillMatchmakingPage(Page page)
-        {
-            // Info for people incase this layer ends up being selected
-            page.CreateFunction("You currently have no networking selected.", Color.white, null);
-
-            if (!PlatformHelper.IsAndroid)
-            {
-                page.CreateFunction("This means you likely do not have Steam open.", Color.white, null);
-                page.CreateFunction("Please install and open Steam.", Color.white, null);
-            }
-            else
-            {
-                page.CreateFunction("Please select a layer in settings.", Color.white, null);
-            }
         }
     }
 }

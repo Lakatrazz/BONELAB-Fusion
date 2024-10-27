@@ -20,6 +20,8 @@ namespace LabFusion.Marrow.Proxies
         private string _lowercaseKey = null;
         private string _uppercaseKey = null;
 
+        public bool Special { get; set; } = false;
+
         private bool _uppercase = false;
 
         public bool Uppercase
@@ -67,6 +69,14 @@ namespace LabFusion.Marrow.Proxies
                 {
                     _uppercaseKey = variablesRoot.GetChild(1).name;
                 }
+            }
+
+            // Check if this is a special key
+            var specialTransform = variablesRoot.Find("Special");
+
+            if (specialTransform != null)
+            {
+                Special = true;
             }
 
             // Set text value

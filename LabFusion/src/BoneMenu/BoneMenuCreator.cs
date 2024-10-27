@@ -55,18 +55,6 @@ public static partial class BoneMenuCreator
     public static void OnPrepareMainPage()
     {
         _mainPage = Page.Root.CreatePage("Fusion", Color.white);
-
-        ScannableEvents.OnPalletAddedEvent += OnPalletAdded;
-    }
-
-    private static void OnPalletAdded(Barcode barcode)
-    {
-        // Check if the pallet is Fusion Content
-        // If so, repopulate the matchmaking tab
-        if (barcode == FusionPalletReferences.FusionContentReference.Barcode)
-        {
-            MatchmakingCreator.RecreatePage();
-        }
     }
 
     public static void OpenMainPage()
@@ -85,11 +73,8 @@ public static partial class BoneMenuCreator
 
     private static void CreateUniversalMenus(Page page)
     {
-        MatchmakingCreator.CreateMatchmakingPage(page);
-
         CreateGamemodesMenu(page);
         CreateSettingsMenu(page);
         CreateNotificationsMenu(page);
-        CreateBanListMenu(page);
     }
 }

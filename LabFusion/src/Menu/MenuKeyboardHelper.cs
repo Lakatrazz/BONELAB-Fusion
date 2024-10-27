@@ -34,6 +34,9 @@ public static class MenuKeyboardHelper
 
         keyboard.Open();
 
+        keyboard.TemporaryUppercase = false;
+        keyboard.Uppercase = false;
+
         keyboard.Value = button.Value;
 
         keyboard.OnValueChanged = (value) =>

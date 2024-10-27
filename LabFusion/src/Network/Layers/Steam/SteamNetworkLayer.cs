@@ -315,9 +315,6 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
         LobbyInfoManager.OnLobbyInfoChanged += OnUpdateLobby;
 
-        // Add BoneMenu hooks
-        MatchmakingCreator.OnFillMatchmakingPage += OnFillMatchmakingPage;
-
         // Create a local lobby
         AwaitLobbyCreation();
     }
@@ -348,9 +345,6 @@ public abstract class SteamNetworkLayer : NetworkLayer
         MultiplayerHooking.OnDisconnect -= OnDisconnect;
 
         LobbyInfoManager.OnLobbyInfoChanged -= OnUpdateLobby;
-
-        // Unhook BoneMenu events
-        MatchmakingCreator.OnFillMatchmakingPage -= OnFillMatchmakingPage;
 
         // Remove the local lobby
         _localLobby.Leave();
@@ -385,91 +379,5 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
         // Write active info about the lobby
         LobbyMetadataHelper.WriteInfo(CurrentLobby);
-
-        // Update bonemenu items
-        OnUpdateCreateServerText();
-    }
-
-    // Matchmaking menu
-    private Page _serverInfoCategory;
-    private Page _manualJoiningCategory;
-
-    private void OnFillMatchmakingPage(Page page)
-    {
-        // Server making
-        _serverInfoCategory = page.CreatePage("Server Info", Color.white);
-        CreateServerInfoMenu(_serverInfoCategory);
-
-        // Manual joining
-        _manualJoiningCategory = page.CreatePage("Manual Joining", Color.white);
-        CreateManualJoiningMenu(_manualJoiningCategory);
-    }
-
-    private FunctionElement _createServerElement;
-
-    private void CreateServerInfoMenu(Page page)
-    {
-        _createServerElement = page.CreateFunction("Create Server", Color.white, OnClickCreateServer);
-        page.CreateFunction("Copy SteamID to Clipboard", Color.white, OnCopySteamID);
-
-        BoneMenuCreator.PopulateServerInfo(page);
-    }
-
-    private void OnClickCreateServer()
-    {
-        // Is a server already running? Disconnect
-        if (_isConnectionActive)
-        {
-            Disconnect();
-        }
-        // Otherwise, start a server
-        else
-        {
-            StartServer();
-        }
-    }
-
-    private void OnCopySteamID()
-    {
-        GUIUtility.systemCopyBuffer = SteamId.Value.ToString();
-    }
-
-    private void OnUpdateCreateServerText()
-    {
-        if (FusionSceneManager.IsDelayedLoading())
-            return;
-
-        if (_isConnectionActive)
-            _createServerElement.ElementName = "Disconnect from Server";
-        else
-            _createServerElement.ElementName = "Create Server";
-    }
-
-    private FunctionElement _targetServerElement;
-
-    private void CreateManualJoiningMenu(Page page)
-    {
-        page.CreateFunction("Join Server", Color.white, OnClickJoinServer);
-        _targetServerElement = page.CreateFunction("Server ID:", Color.white, null);
-        page.CreateFunction("Paste Server ID from Clipboard", Color.white, OnPasteServerID);
-    }
-
-    private void OnClickJoinServer()
-    {
-        JoinServer(_targetServerId);
-    }
-
-    private void OnPasteServerID()
-    {
-        if (!GUIUtility.systemCopyBuffer.IsNullOrEmpty())
-            return;
-
-        var text = GUIUtility.systemCopyBuffer;
-
-        if (!string.IsNullOrWhiteSpace(text) && ulong.TryParse(text, out var result))
-        {
-            _targetServerId = result;
-            _targetServerElement.ElementName = $"Server ID: {_targetServerId}";
-        }
     }
 }

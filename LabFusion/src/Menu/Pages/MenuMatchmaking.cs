@@ -95,21 +95,31 @@ public static class MenuMatchmaking
         CodeElement.Title = "Code";
         CodeElement.EmptyFormat = "Enter {0}";
 
+        CodeElement.OnKeyboardToggled += (v) =>
+        {
+            if (v)
+            {
+                var keyboard = MenuCreator.MenuPopups.Keyboard;
+                keyboard.TemporaryUppercase = false;
+                keyboard.Uppercase = true;
+            }
+        };
+
         var joinElement = grid.Find("button_Join").GetComponent<FunctionElement>();
 
         joinElement
             .WithTitle("Join")
             .Do(() =>
-        {
-            var code = CodeElement.Value;
-
-            if (string.IsNullOrWhiteSpace(code))
             {
-                return;
-            }
+                var code = CodeElement.Value;
 
-            NetworkHelper.JoinServerByCode(code);
-        });
+                if (string.IsNullOrWhiteSpace(code))
+                {
+                    return;
+                }
+
+                NetworkHelper.JoinServerByCode(code);
+            });
     }
 
     private static void PopulateBrowser(Transform browserTransform)

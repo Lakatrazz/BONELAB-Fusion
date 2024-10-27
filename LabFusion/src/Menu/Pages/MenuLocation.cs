@@ -198,6 +198,7 @@ public static class MenuLocation
 
         // Disable unnecessary elements
         element.BansGrid.SetActive(ownsSettings);
+        element.AdminGrid.SetActive(ownsSettings);
 
         // This also shouldn't show while not in a server
         element.CodeGrid.SetActive(NetworkInfo.IsServer);
@@ -298,6 +299,7 @@ public static class MenuLocation
 
         // Disable unnecessary elements
         element.BansGrid.SetActive(ownsSettings);
+        element.AdminGrid.SetActive(ownsSettings);
 
         // This also shouldn't show while not in a server
         element.CodeGrid.SetActive(NetworkInfo.IsServer);
@@ -548,6 +550,9 @@ public static class MenuLocation
         var settingsPage = LobbyElement.SettingsElement.AddPage();
         PopulateSettings(settingsPage);
 
+        var adminPage = LobbyElement.AdminElement.AddPage();
+        PopulateAdmin(adminPage);
+
         // Update server status
         if (NetworkInfo.HasServer)
         {
@@ -568,5 +573,16 @@ public static class MenuLocation
         VoiceChatElement = generalGroup.AddElement<BoolElement>("VoiceChat");
 
         SlowMoElement = generalGroup.AddElement<EnumElement>("SlowMo");
+    }
+
+    private static void PopulateAdmin(PageElement element)
+    {
+        var cleanupGroup = element.AddElement<GroupElement>("Cleanup");
+
+        var despawnAllElement = cleanupGroup.AddElement<FunctionElement>("Despawn All")
+            .Do(() =>
+            {
+                PooleeUtilities.DespawnAll();
+            });
     }
 }

@@ -422,7 +422,7 @@ namespace LabFusion.Network
             LobbyInfoManager.OnLobbyInfoChanged += OnUpdateLobby;
 
             // Add BoneMenu hooks
-            MatchmakingCreator.OnFillMatchmakingPage += OnFillMatchmakingPage;
+            //MatchmakingCreator.OnFillMatchmakingPage += OnFillMatchmakingPage;
 
             _currentLobby = new ProxyNetworkLobby();
         }
@@ -455,7 +455,7 @@ namespace LabFusion.Network
             LobbyInfoManager.OnLobbyInfoChanged -= OnUpdateLobby;
 
             // Unhook BoneMenu events
-            MatchmakingCreator.OnFillMatchmakingPage -= OnFillMatchmakingPage;
+            //MatchmakingCreator.OnFillMatchmakingPage -= OnFillMatchmakingPage;
         }
 
         public void OnUpdateLobby()
@@ -494,11 +494,11 @@ namespace LabFusion.Network
             // Public lobbies list
             _publicLobbiesCategory = page.CreatePage("Public Lobbies", Color.white);
             _publicLobbiesCategory.CreateFunction("Refresh", Color.white, Menu_RefreshPublicLobbies);
-            _publicLobbiesCategory.CreateEnum("Sort By", Color.white, _publicLobbySortMode, (v) =>
-            {
-                _publicLobbySortMode = (LobbySortMode)v;
-                Menu_RefreshPublicLobbies();
-            });
+            //_publicLobbiesCategory.CreateEnum("Sort By", Color.white, _publicLobbySortMode, (v) =>
+            //{
+                //_publicLobbySortMode = (LobbySortMode)v;
+            //    Menu_RefreshPublicLobbies();
+            //});
             _publicLobbiesCategory.CreateFunction("Select Refresh to load servers!", Color.yellow, null);
 
             // Steam friends list
@@ -542,7 +542,6 @@ namespace LabFusion.Network
                 _createServerElement.ElementName = "Create Server";
         }
 
-        private LobbySortMode _publicLobbySortMode = LobbySortMode.LEVEL;
         private bool _isPublicLobbySearching = false;
 
         private void Menu_RefreshPublicLobbies()
@@ -554,14 +553,6 @@ namespace LabFusion.Network
             // Clear existing lobbies
             _publicLobbiesCategory.RemoveAll();
             _publicLobbiesCategory.CreateFunction("Refresh", Color.white, Menu_RefreshPublicLobbies);
-
-            BoneMenuCreator.CreateFilters(_publicLobbiesCategory);
-
-            _publicLobbiesCategory.CreateEnum("Sort By", Color.white, _publicLobbySortMode, (v) =>
-            {
-                _publicLobbySortMode = (LobbySortMode)v;
-                Menu_RefreshPublicLobbies();
-            });
 
             MelonCoroutines.Start(CoAwaitLobbyListRoutine());
         }
@@ -598,7 +589,6 @@ namespace LabFusion.Network
         private IEnumerator CoAwaitLobbyListRoutine()
         {
             _isPublicLobbySearching = true;
-            LobbySortMode sortMode = _publicLobbySortMode;
 
             // Fetch lobbies
             var task = _lobbyManager.RequestLobbyIds();
@@ -666,7 +656,7 @@ namespace LabFusion.Network
 
                     if (LobbyFilterManager.FilterLobby(networkLobby, info))
                     {
-                        BoneMenuCreator.CreateLobby(_publicLobbiesCategory, info, networkLobby, sortMode);
+                        //BoneMenuCreator.CreateLobby(_publicLobbiesCategory, info, networkLobby, sortMode);
                     }
                 }
             }
@@ -680,7 +670,7 @@ namespace LabFusion.Network
         private IEnumerator CoAwaitFriendListRoutine()
         {
             _isFriendLobbySearching = true;
-            LobbySortMode sortMode = LobbySortMode.NONE;
+            //LobbySortMode sortMode = LobbySortMode.NONE;
 
             // Fetch lobbies
             var task = _lobbyManager.RequestLobbyIds();
@@ -749,7 +739,7 @@ namespace LabFusion.Network
                         info = info
                     };
 
-                    BoneMenuCreator.CreateLobby(_publicLobbiesCategory, info, networkLobby, sortMode);
+                    //BoneMenuCreator.CreateLobby(_publicLobbiesCategory, info, networkLobby, sortMode);
                 }
             }
 
