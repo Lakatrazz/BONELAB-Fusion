@@ -83,10 +83,15 @@ public static class MenuLocation
 
     private static void OnServerSettingsChanged()
     {
+        // Make sure the lobby element has been created
+        if (LobbyElement == null)
+        {
+            return;
+        }
+
         if (NetworkInfo.IsClient)
         {
             ApplyLobbyInfoToLobby(LobbyElement, LobbyInfoManager.LobbyInfo);
-
         }
         else
         {
