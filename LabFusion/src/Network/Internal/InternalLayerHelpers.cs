@@ -2,8 +2,6 @@
 using LabFusion.Player;
 using LabFusion.BoneMenu;
 
-using BoneLib.BoneMenu;
-
 namespace LabFusion.Network
 {
     /// <summary>
@@ -68,11 +66,6 @@ namespace LabFusion.Network
         public static void OnGUILayer()
         {
             CurrentNetworkLayer?.OnGUILayer();
-        }
-
-        public static void OnUpdateLobby()
-        {
-            CurrentNetworkLayer?.OnUpdateLobby();
         }
 
         public static void OnUserJoin(PlayerId id)

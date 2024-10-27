@@ -209,8 +209,6 @@ public abstract class NetworkLayer
 
     public virtual void OnUserJoin(PlayerId id) { }
 
-    public abstract void OnUpdateLobby();
-
     public virtual string GetServerCode()
     {
         return null;

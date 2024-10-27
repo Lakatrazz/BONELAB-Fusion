@@ -239,8 +239,6 @@ namespace LabFusion.Network
 
                         // Call server setup
                         InternalServerHelpers.OnStartServer();
-
-                        OnUpdateLobby();
                         break;
                     }
                 case (ulong)MessageTypes.LobbyIds:
@@ -391,8 +389,6 @@ namespace LabFusion.Network
             _isConnectionActive = true;
 
             ConnectionSender.SendConnectionRequest();
-
-            OnUpdateLobby();
         }
 
         public override void Disconnect(string reason = "")
@@ -414,18 +410,16 @@ namespace LabFusion.Network
             _isConnectionActive = false;
 
             InternalServerHelpers.OnDisconnect(reason);
-
-            OnUpdateLobby();
         }
 
         private void HookSteamEvents()
         {
             // Add server hooks
-            MultiplayerHooking.OnMainSceneInitialized += OnUpdateLobby;
             MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
-            LobbyInfoManager.OnLobbyInfoChanged += OnUpdateLobby;
             MultiplayerHooking.OnDisconnect += OnDisconnect;
+
+            LobbyInfoManager.OnLobbyInfoChanged += OnUpdateLobby;
 
             // Add BoneMenu hooks
             MatchmakingCreator.OnFillMatchmakingPage += OnFillMatchmakingPage;
@@ -444,8 +438,6 @@ namespace LabFusion.Network
         private void OnPlayerLeave(PlayerId id)
         {
             _voiceManager.RemoveSpeaker(id);
-
-            OnUpdateLobby();
         }
 
         private void OnDisconnect()
@@ -456,17 +448,17 @@ namespace LabFusion.Network
         private void UnHookSteamEvents()
         {
             // Remove server hooks
-            MultiplayerHooking.OnMainSceneInitialized -= OnUpdateLobby;
             MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
             MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
-            LobbyInfoManager.OnLobbyInfoChanged -= OnUpdateLobby;
             MultiplayerHooking.OnDisconnect -= OnDisconnect;
+
+            LobbyInfoManager.OnLobbyInfoChanged -= OnUpdateLobby;
 
             // Unhook BoneMenu events
             MatchmakingCreator.OnFillMatchmakingPage -= OnFillMatchmakingPage;
         }
 
-        public override void OnUpdateLobby()
+        public void OnUpdateLobby()
         {
             // Make sure the lobby exists
             if (CurrentLobby == null)

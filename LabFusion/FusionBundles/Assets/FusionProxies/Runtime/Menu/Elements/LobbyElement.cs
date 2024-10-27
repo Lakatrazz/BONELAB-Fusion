@@ -142,16 +142,6 @@ namespace LabFusion.Marrow.Proxies
                 DescriptionElement.Interactable = Interactable;
             }
 
-            if (CodeElement != null)
-            {
-                CodeElement.Interactable = Interactable;
-            }
-
-            if (CodeRefreshElement != null)
-            {
-                CodeRefreshElement.gameObject.SetActive(Interactable);
-            }
-
             if (ProfileElement != null)
             {
                 ProfileElement.Interactable = Interactable;

@@ -19,6 +19,7 @@ using LabFusion.BoneMenu;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Voice;
 using LabFusion.Voice.Unity;
+using LabFusion.Preferences.Server;
 
 namespace LabFusion.Network;
 
@@ -228,7 +229,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
         // Call server setup
         InternalServerHelpers.OnStartServer();
 
-        OnUpdateLobby();
+        RefreshServerCode();
     }
 
     public void JoinServer(SteamId serverId)
@@ -243,8 +244,6 @@ public abstract class SteamNetworkLayer : NetworkLayer
         _isConnectionActive = true;
 
         ConnectionSender.SendConnectionRequest();
-
-        OnUpdateLobby();
     }
 
     public override void Disconnect(string reason = "")
@@ -268,14 +267,50 @@ public abstract class SteamNetworkLayer : NetworkLayer
         _isConnectionActive = false;
 
         InternalServerHelpers.OnDisconnect(reason);
+    }
 
-        OnUpdateLobby();
+    public string ServerCode { get; private set; } = null;
+
+    public override string GetServerCode()
+    {
+        return ServerCode;
+    }
+
+    public override void RefreshServerCode()
+    {
+        ServerCode = RandomCodeGenerator.GetString(6);
+
+        LobbyInfoManager.PushLobbyUpdate();
+    }
+
+    public override void JoinServerByCode(string code)
+    {
+        if (Matchmaker == null)
+        {
+            return;
+        }
+
+        Matchmaker.RequestLobbies((info) =>
+        {
+            foreach (var lobby in info.lobbies)
+            {
+                var lobbyCode = lobby.metadata.LobbyInfo.LobbyCode;
+                var inputCode = code;
+
+                // Case insensitive
+                // Makes it easier to input
+                if (lobbyCode.ToLower() == code.ToLower())
+                {
+                    JoinServer(lobby.metadata.LobbyInfo.LobbyId);
+                    break;
+                }
+            }
+        });
     }
 
     private void HookSteamEvents()
     {
         // Add server hooks
-        GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
         MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
         MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
         MultiplayerHooking.OnDisconnect += OnDisconnect;
@@ -287,11 +322,6 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
         // Create a local lobby
         AwaitLobbyCreation();
-    }
-
-    private void OnGamemodeChanged(Gamemode gamemode)
-    {
-        OnUpdateLobby();
     }
 
     private void OnPlayerJoin(PlayerId id)
@@ -315,7 +345,6 @@ public abstract class SteamNetworkLayer : NetworkLayer
     private void UnHookSteamEvents()
     {
         // Remove server hooks
-        GamemodeManager.OnGamemodeChanged -= OnGamemodeChanged;
         MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
         MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
         MultiplayerHooking.OnDisconnect -= OnDisconnect;
@@ -345,7 +374,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
         _currentLobby = new SteamLobby(_localLobby);
     }
 
-    public override void OnUpdateLobby()
+    public void OnUpdateLobby()
     {
         // Make sure the lobby exists
         if (CurrentLobby == null)

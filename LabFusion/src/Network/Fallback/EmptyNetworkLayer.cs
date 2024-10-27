@@ -1,4 +1,5 @@
 ﻿using BoneLib.BoneMenu;
+
 using LabFusion.BoneMenu;
 using LabFusion.Utilities;
 
@@ -16,8 +17,6 @@ namespace LabFusion.Network
         public override void Disconnect(string reason = "") { }
 
         public override void StartServer() { }
-
-        public override void OnUpdateLobby() { }
 
         public override bool CheckSupported()
         {

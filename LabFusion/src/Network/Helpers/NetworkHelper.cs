@@ -65,14 +65,6 @@ public static class NetworkHelper
     }
 
     /// <summary>
-    /// Pushes an update to the lobby metadata.
-    /// </summary>
-    public static void UpdateLobby()
-    {
-        InternalLayerHelpers.OnUpdateLobby();
-    }
-
-    /// <summary>
     /// Returns true if this user is friended on the active network platform.
     /// </summary>
     /// <param name="userId"></param>
