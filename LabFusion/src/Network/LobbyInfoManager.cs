@@ -16,11 +16,14 @@ public static class LobbyInfoManager
     {
         // Hook lobby updates
         MultiplayerHooking.OnMainSceneInitialized += PushLobbyUpdate;
-        GamemodeManager.OnGamemodeChanged += (_) => { PushLobbyUpdate(); };
         MultiplayerHooking.OnPlayerJoin += (_) => { PushLobbyUpdate(); };
         MultiplayerHooking.OnPlayerLeave += (_) => { PushLobbyUpdate(); };
-        SavedServerSettings.OnSavedServerSettingsChanged += PushLobbyUpdate;
+        MultiplayerHooking.OnStartServer += PushLobbyUpdate;
         MultiplayerHooking.OnDisconnect += PushLobbyUpdate;
+
+        SavedServerSettings.OnSavedServerSettingsChanged += PushLobbyUpdate;
+
+        GamemodeManager.OnGamemodeChanged += (_) => { PushLobbyUpdate(); };
     }
 
     public static void PushLobbyUpdate()

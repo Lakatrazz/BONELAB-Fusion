@@ -19,7 +19,6 @@ using LabFusion.BoneMenu;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Voice;
 using LabFusion.Voice.Unity;
-using LabFusion.Preferences.Server;
 
 namespace LabFusion.Network;
 
@@ -276,12 +275,12 @@ public abstract class SteamNetworkLayer : NetworkLayer
     private void HookSteamEvents()
     {
         // Add server hooks
-        MultiplayerHooking.OnMainSceneInitialized += OnUpdateLobby;
         GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
         MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
         MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
-        LobbyInfoManager.OnLobbyInfoChanged += OnUpdateLobby;
         MultiplayerHooking.OnDisconnect += OnDisconnect;
+
+        LobbyInfoManager.OnLobbyInfoChanged += OnUpdateLobby;
 
         // Add BoneMenu hooks
         MatchmakingCreator.OnFillMatchmakingPage += OnFillMatchmakingPage;
@@ -298,16 +297,14 @@ public abstract class SteamNetworkLayer : NetworkLayer
     private void OnPlayerJoin(PlayerId id)
     {
         if (!id.IsMe)
+        {
             VoiceManager.GetSpeaker(id);
-
-        OnUpdateLobby();
+        }
     }
 
     private void OnPlayerLeave(PlayerId id)
     {
         VoiceManager.RemoveSpeaker(id);
-
-        OnUpdateLobby();
     }
 
     private void OnDisconnect()
@@ -318,12 +315,12 @@ public abstract class SteamNetworkLayer : NetworkLayer
     private void UnHookSteamEvents()
     {
         // Remove server hooks
-        MultiplayerHooking.OnMainSceneInitialized -= OnUpdateLobby;
         GamemodeManager.OnGamemodeChanged -= OnGamemodeChanged;
         MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
         MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
-        LobbyInfoManager.OnLobbyInfoChanged -= OnUpdateLobby;
         MultiplayerHooking.OnDisconnect -= OnDisconnect;
+
+        LobbyInfoManager.OnLobbyInfoChanged -= OnUpdateLobby;
 
         // Unhook BoneMenu events
         MatchmakingCreator.OnFillMatchmakingPage -= OnFillMatchmakingPage;
