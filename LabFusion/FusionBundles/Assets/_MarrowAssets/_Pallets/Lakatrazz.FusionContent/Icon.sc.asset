@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34569ddb84e20304981812b1c448d930, type: 3}
+  m_Name: Icon.sc
+  m_EditorClassIdentifier: 
+  _barcode:
+    _id: Lakatrazz.FusionContent.Spawnable.Icon
+  _title: Icon
+  _description: An icon to show above an entity.
+  _unlockable: 0
+  _redacted: 1
+  _tags:
+  - Fusion
+  - Popup
+  _boneTags:
+    _tags: []
+  _mainAsset:
+    _assetGUID: 1360143c1c47dce45a71f80a0417cc6b
+    _editorAssetChanged: 0
+  _previewMesh:
+    _assetGUID: e527a9aa9066dc24982c4f566be03c79
+    _editorAssetChanged: 1
+  _customQuality: 0
+  _previewMeshQuality: 0.5
+  _maxLODLevel: 0
+  _colliderBounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
