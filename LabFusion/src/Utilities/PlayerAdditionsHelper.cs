@@ -65,7 +65,6 @@ public static class PlayerAdditionsHelper
         PersistentAssetCreator.SetupImpactProperties(manager);
 
         // Enable unused experimental features
-        manager.health._testRagdollOnDeath = true;
         manager.health._testVisualDamage = true;
 
         // Remove level reloading on death
@@ -119,7 +118,6 @@ public static class PlayerAdditionsHelper
         }
 
         // Remove experimental features
-        manager.health._testRagdollOnDeath = false;
         manager.health._testVisualDamage = false;
 
         // Add back slowmo on death

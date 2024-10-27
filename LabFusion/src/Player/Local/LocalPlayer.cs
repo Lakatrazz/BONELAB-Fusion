@@ -18,6 +18,8 @@ public static class LocalPlayer
 
     public static Action<RigManager>? OnLocalRigCreated { get; set; }
 
+    public static bool RagdollOnDeath => NetworkInfo.HasServer;
+
     public static NetworkPlayer? GetNetworkPlayer()
     {
         if (!NetworkInfo.HasServer)

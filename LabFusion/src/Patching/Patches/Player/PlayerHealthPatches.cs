@@ -10,6 +10,8 @@ using LabFusion.Player;
 
 using Il2CppSLZ.Marrow;
 
+using System.Collections;
+
 namespace LabFusion.Patching;
 
 [HarmonyPatch(typeof(HeadSFX))]
@@ -21,6 +23,7 @@ public static class HeadSFXPatches
     {
         // Is this our player?
         var rm = __instance._physRig.manager;
+
         if (NetworkInfo.HasServer && rm.IsSelf())
         {
             // Notify the server about the recovery
@@ -46,9 +49,8 @@ public static class HeadSFXPatches
             return;
         }
 
-        // If the player has ragdoll on death enabled, ragdoll them
-        var health = rm.health;
-        if (health._testRagdollOnDeath)
+        // If ragdoll on death is enabled, ragdoll the player
+        if (LocalPlayer.RagdollOnDeath)
         {
             rm.physicsRig.RagdollRig();
         }
@@ -134,12 +136,17 @@ public static class HealthPatches
 
         LocalPlayer.ClearConstraints();
 
-        // Currently a bug with seating where you can get stuck ragdolled
-        // So, refresh the ragdoll state here
-        // Remove in the future if SLZ properly supports ragdolling and respawning in vehicles
-        if (__instance._testRagdollOnDeath)
+        // Unragdoll after respawning
+        if (LocalPlayer.RagdollOnDeath)
         {
-            __instance._rigManager.physicsRig.SetBodyState(RigManager.BodyState.OnFoot, RigManager.BodyState.Ragdoll);
+            PhysicsRigPatches.ForceAllowUnragdoll = true;
+
+            __instance._rigManager.physicsRig.UnRagdollRig();
+
+            PhysicsRigPatches.ForceAllowUnragdoll = false;
+
+            // Teleport so we don't fling
+            __instance._rigManager.TeleportToPose(__instance._rigManager.checkpointPosition, __instance._rigManager.checkpointFwd, true);
         }
     }
 }
@@ -151,31 +158,7 @@ public static class PlayerHealthPatches
     [HarmonyPatch(nameof(Player_Health.LifeSavingDamgeDealt))]
     public static void LifeSavingDamgeDealt(Player_Health __instance)
     {
-        if (__instance._rigManager.IsSelf() && __instance._testRagdollOnDeath)
-        {
-            PhysicsRigPatches.ForceAllowUnragdoll = true;
-
-            __instance._rigManager.physicsRig.UnRagdollRig();
-
-            PhysicsRigPatches.ForceAllowUnragdoll = false;
-        }
-    }
-
-    [HarmonyPrefix]
-    [HarmonyPatch(nameof(Player_Health.TAKEDAMAGE))]
-    public static void TAKEDAMAGEPrefix(Player_Health __instance, float damage)
-    {
-        if (__instance.healthMode == Health.HealthMode.Invincible && __instance._testRagdollOnDeath)
-        {
-            __instance._testRagdollOnDeath = false;
-        }
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch(nameof(Player_Health.TAKEDAMAGE))]
-    public static void TAKEDAMAGEPostfix(Player_Health __instance, float damage)
-    {
-        if (__instance._rigManager.IsSelf() && __instance._testRagdollOnDeath && !__instance.alive)
+        if (__instance._rigManager.IsSelf() && LocalPlayer.RagdollOnDeath)
         {
             PhysicsRigPatches.ForceAllowUnragdoll = true;
 
