@@ -2,7 +2,6 @@
 
 using Il2CppSLZ.Marrow.Warehouse;
 
-using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Integration;
@@ -73,7 +72,8 @@ public class TeamDeathmatch : Gamemode
     private readonly MusicPlaylist _musicPlaylist = new();
     public MusicPlaylist MusicPlaylist => _musicPlaylist;
 
-    private readonly FusionDictionary<PlayerId, TeamLogoInstance> _logoInstances = new();
+    private readonly TeamLogoManager _teamLogoManager = new();
+    public TeamLogoManager TeamLogoManager => _teamLogoManager;
 
     private string _avatarOverride = null;
     private float? _vitalityOverride = null;
@@ -121,30 +121,11 @@ public class TeamDeathmatch : Gamemode
         }
     }
 
-    public void SetTeamDisplayName(string teamName, string displayName)
-    {
-        var team = TeamManager.GetTeamByName(teamName);
-
-        if (team != null)
-        {
-            team.DisplayName = displayName;
-        }
-    }
-
-    public void SetTeamLogo(string teamName, Texture2D logo)
-    {
-        // var team = teams.FirstOrDefault((t) => t.TeamName == teamName);
-        // 
-        // if (team != null)
-        // {
-        //     team.SetLogo(logo);
-        // }
-    }
-
     public void AddDefaultTeams()
     {
         TeamManager.ClearTeams();
         TeamMusicManager.ClearTeams();
+        TeamLogoManager.ClearTeams();
 
         Team sabrelake = new(DefaultSabrelakeName);
         Team lavaGang = new(DefaultLavaGangName);
@@ -163,8 +144,8 @@ public class TeamDeathmatch : Gamemode
 
         TeamMusicManager.TieMusic = new AudioReference(FusionMonoDiscReferences.ErmReference);
 
-        //sabrelake.SetLogo(FusionContentLoader.SabrelakeLogo.Asset);
-        //lavaGang.SetLogo(FusionContentLoader.LavaGangLogo.Asset);
+        TeamLogoManager.SetLogo(sabrelake, FusionContentLoader.SabrelakeLogo.Asset);
+        TeamLogoManager.SetLogo(lavaGang, FusionContentLoader.LavaGangLogo.Asset);
 
         TeamManager.AddTeam(sabrelake);
         TeamManager.AddTeam(lavaGang);
@@ -177,13 +158,14 @@ public class TeamDeathmatch : Gamemode
         Instance = this;
 
         MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
-        MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
         MultiplayerHooking.OnPlayerAction += OnPlayerAction;
         FusionOverrides.OnValidateNametag += OnValidateNametag;
 
         // Register team manager
         TeamManager.Register(this);
         TeamManager.OnAssignedToTeam += OnAssignedToTeam;
+
+        TeamLogoManager.Register(TeamManager);
 
         // Register score keeper
         _scoreKeeper = new(TeamManager);
@@ -214,6 +196,8 @@ public class TeamDeathmatch : Gamemode
         TeamManager.Unregister();
         TeamManager.OnAssignedToTeam -= OnAssignedToTeam;
 
+        TeamLogoManager.Unregister();
+
         // Unregister score keeper
         ScoreKeeper.Unregister();
         ScoreKeeper.OnScoreChanged -= OnScoreChanged;
@@ -221,7 +205,6 @@ public class TeamDeathmatch : Gamemode
         _scoreKeeper = null;
 
         MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
-        MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
         MultiplayerHooking.OnPlayerAction -= OnPlayerAction;
         FusionOverrides.OnValidateNametag -= OnValidateNametag;
 
@@ -235,10 +218,6 @@ public class TeamDeathmatch : Gamemode
         if (playerId.IsMe)
         {
             OnSelfAssigned(team);
-        }
-        else
-        {
-            OnOtherAssigned(playerId, team);
         }
 
         // Update overrides
@@ -261,11 +240,6 @@ public class TeamDeathmatch : Gamemode
 
         // Invoke spawn point changes on level load
         FusionSceneManager.HookOnTargetLevelLoad(() => InitializeTeamSpawns(team));
-    }
-
-    private void OnOtherAssigned(PlayerId playerId, Team team)
-    {
-        AddLogo(playerId, team);
     }
 
     protected bool OnValidateNametag(PlayerId id)
@@ -417,16 +391,7 @@ public class TeamDeathmatch : Gamemode
     {
         if (NetworkInfo.IsServer && IsActive())
         {
-            AssignTeam(id);
-        }
-    }
-
-    protected void OnPlayerLeave(PlayerId id)
-    {
-        if (_logoInstances.TryGetValue(id, out var instance))
-        {
-            instance.Cleanup();
-            _logoInstances.Remove(id);
+            TeamManager.AssignToSmallestTeam(id);
         }
     }
 
@@ -533,9 +498,6 @@ public class TeamDeathmatch : Gamemode
         // Remove ammo
         FusionPlayer.SetAmmo(0);
 
-        // Remove all team logos
-        RemoveLogos();
-
         // Push nametag updates
         FusionOverrides.ForceUpdateOverrides();
 
@@ -574,8 +536,6 @@ public class TeamDeathmatch : Gamemode
             return;
         }
 
-        UpdateLogos();
-
         // Get time left
         float minutesLeft = GetMinutesLeft();
 
@@ -595,39 +555,6 @@ public class TeamDeathmatch : Gamemode
             StopGamemode();
             NaturalEndTrigger.TryInvoke();
         }
-    }
-
-    protected void UpdateLogos()
-    {
-        // Update logos
-        foreach (var logo in _logoInstances.Values)
-        {
-            // Change visibility
-            bool visible = logo.team == TeamManager.GetLocalTeam();
-            if (visible != logo.IsShown())
-            {
-                logo.Toggle(visible);
-            }
-
-            // Update position
-            logo.Update();
-        }
-    }
-
-    protected void AddLogo(PlayerId id, Team team)
-    {
-        var logo = new TeamLogoInstance(id, team);
-        _logoInstances.Add(id, logo);
-    }
-
-    protected void RemoveLogos()
-    {
-        foreach (var logo in _logoInstances.Values)
-        {
-            logo.Cleanup();
-        }
-
-        _logoInstances.Clear();
     }
 
     private void OnOneMinuteLeft()
@@ -735,7 +662,7 @@ public class TeamDeathmatch : Gamemode
     protected static void InitializeTeamSpawns(Team team)
     {
         // Get all spawn points
-        List<Transform> transforms = new List<Transform>();
+        var transforms = new List<Transform>();
         BoneTagReference tag = null;
 
         if (team.TeamName == DefaultSabrelakeName)
@@ -783,15 +710,8 @@ public class TeamDeathmatch : Gamemode
 
     protected void SetTeams()
     {
-        // Shuffle the player teams
-        var players = new List<PlayerId>(PlayerIdManager.PlayerIds);
-        players.Shuffle();
-
         // Assign every team
-        foreach (var player in players)
-        {
-            AssignTeam(player);
-        }
+        TeamManager.AssignToRandomTeams();
     }
 
     protected void ResetTeams()
@@ -801,13 +721,5 @@ public class TeamDeathmatch : Gamemode
 
         // Reset all scores
         ScoreKeeper.ResetScores();
-    }
-
-    protected void AssignTeam(PlayerId id)
-    {
-        // Get team with fewest players
-        var newTeam = TeamManager.GetTeamWithFewestPlayers();
-
-        TeamManager.TryAssignTeam(id, newTeam);
     }
 }

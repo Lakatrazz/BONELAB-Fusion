@@ -40,6 +40,19 @@ public class RigNameTag : IHeadUIElement
     }
 
     private string _username = "No Name";
+    public string Username
+    {
+        get
+        {
+            return _username;
+        }
+        set
+        {
+            _username = value;
+
+            UpdateText();
+        }
+    }
 
     public int Priority => 0;
 
@@ -65,13 +78,6 @@ public class RigNameTag : IHeadUIElement
     }
 
     public Transform Transform => _nametagTransform;
-
-    public void SetUsername(string username)
-    {
-        _username = username;
-
-        UpdateText();
-    }
 
     public void UpdateText()
     {

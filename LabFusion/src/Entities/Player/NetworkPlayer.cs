@@ -11,7 +11,6 @@ using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Scene;
 using LabFusion.Preferences;
-using LabFusion.Preferences.Server;
 using LabFusion.Voice;
 
 using MelonLoader;
@@ -61,6 +60,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     public RigPuppet Puppet => _puppet;
 
     private RigNameTag _nametag = null;
+
+    private RigIcon _icon = null;
+    public RigIcon Icon => _icon;
 
     private RigHeadUI _headUI = null;
     public RigHeadUI HeadUI => _headUI;
@@ -119,12 +121,18 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         _nametag = new();
         _headUI = new();
 
+        _icon = new()
+        {
+            Visible = false
+        };
+
         _avatarSetter = new(networkEntity);
         _avatarSetter.OnAvatarChanged += UpdateAvatarSettings;
 
         // Register the default head UI elements so they're automatically spawned in
         HeadUI.RegisterElement(_nametag);
         HeadUI.RegisterElement(_avatarSetter.ProgressBar);
+        HeadUI.RegisterElement(_icon);
 
         networkEntity.HookOnRegistered(OnPlayerRegistered);
         networkEntity.OnEntityUnregistered += OnPlayerUnregistered;
@@ -317,12 +325,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Update nametag
         if (!NetworkEntity.IsOwner)
         {
-            _nametag.SetUsername(Username);
-
-            if (HasRig)
-            {
-                _nametag.UpdateText();
-            }
+            _nametag.Username = Username;
         }
     }
 
