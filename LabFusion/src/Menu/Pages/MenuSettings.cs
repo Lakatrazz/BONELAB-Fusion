@@ -126,80 +126,27 @@ public static class MenuSettings
         // NameTag color
         var nameTagColorPref = ClientSettings.NameTagColor;
 
-        Color.RGBToHSV(nameTagColorPref.Value, out var defaultH, out var defaultS, out var defaultV);
-
         var nameTagColorGroup = page.AddElement<GroupElement>("NameTag Color")
-            .WithColor(nameTagColorPref.Value);
+            .WithColor(nameTagColorPref);
 
         var hueElement = nameTagColorGroup.AddElement<FloatElement>("Hue")
             .WithIncrement(0.05f)
-            .WithLimits(0f, 1f);
-
-        hueElement.Value = defaultH;
+            .WithLimits(0f, 1f)
+            .AsPref(ClientSettings.NameTagHue, OnColorElementChanged);
 
         var saturationElement = nameTagColorGroup.AddElement<FloatElement>("Saturation")
             .WithIncrement(0.05f)
-            .WithLimits(0f, 1f);
-
-        saturationElement.Value = defaultS;
+            .WithLimits(0f, 1f)
+            .AsPref(ClientSettings.NameTagSaturation, OnColorElementChanged); ;
 
         var valueElement = nameTagColorGroup.AddElement<FloatElement>("Value")
             .WithIncrement(0.05f)
-            .WithLimits(0f, 1f);
+            .WithLimits(0f, 1f)
+            .AsPref(ClientSettings.NameTagValue, OnColorElementChanged); ;
 
-        valueElement.Value = defaultV;
-
-        hueElement.OnValueChanged += OnHueElementChanged;
-        saturationElement.OnValueChanged += OnSaturationElementChanged;
-        valueElement.OnValueChanged += OnValueElementChanged;
-
-        nameTagColorPref.OnValueChanged += OnColorPreferenceChanged;
-
-        nameTagColorGroup.OnCleared += OnColorElementCleared;
-
-        void OnColorElementCleared()
+        void OnColorElementChanged(float value)
         {
-            nameTagColorPref.OnValueChanged -= OnColorPreferenceChanged;
-        }
-
-        void OnHueElementChanged(float hue)
-        {
-            Color.RGBToHSV(nameTagColorPref.Value, out _, out var s, out var v);
-
-            nameTagColorPref.Value = Color.HSVToRGB(hue, s, v);
-        }
-
-        void OnSaturationElementChanged(float saturation)
-        {
-            Color.RGBToHSV(nameTagColorPref.Value, out var h, out _, out var v);
-
-            nameTagColorPref.Value = Color.HSVToRGB(h, saturation, v);
-        }
-
-        void OnValueElementChanged(float value)
-        {
-            Color.RGBToHSV(nameTagColorPref.Value, out var h, out var s, out _);
-
-            nameTagColorPref.Value = Color.HSVToRGB(h, s, value);
-        }
-
-        void OnColorPreferenceChanged(Color value)
-        {
-            Color.RGBToHSV(value, out var h, out var s, out var v);
-
-            hueElement.OnValueChanged -= OnHueElementChanged;
-            saturationElement.OnValueChanged -= OnSaturationElementChanged;
-            valueElement.OnValueChanged -= OnValueElementChanged;
-
-            hueElement.Value = h;
-            saturationElement.Value = s;
-            valueElement.Value = v;
-
-            nameTagColorGroup.Color = value;
-
-            hueElement.OnValueChanged += OnHueElementChanged;
-            saturationElement.OnValueChanged += OnSaturationElementChanged;
-            valueElement.OnValueChanged += OnValueElementChanged;
+            nameTagColorGroup.Color = ClientSettings.NameTagColor;
         }
     }
 

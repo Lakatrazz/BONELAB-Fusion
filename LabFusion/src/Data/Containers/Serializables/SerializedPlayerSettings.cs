@@ -25,7 +25,7 @@ public class SerializedPlayerSettings : IFusionSerializable
     {
         var settings = new SerializedPlayerSettings()
         {
-            nametagColor = ClientSettings.NameTagColor.Value,
+            nametagColor = ClientSettings.NameTagColor,
         };
 
         return settings;

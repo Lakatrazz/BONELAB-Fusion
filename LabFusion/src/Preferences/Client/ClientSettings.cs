@@ -15,7 +15,12 @@ public static class ClientSettings
 
     // Nametag settings
     public static FusionPref<bool> NameTags { get; internal set; }
-    public static FusionPref<Color> NameTagColor { get; internal set; }
+
+    public static Color NameTagColor => Color.HSVToRGB(NameTagHue.Value, NameTagSaturation.Value, NameTagValue.Value);
+
+    public static FusionPref<float> NameTagHue { get; internal set; }
+    public static FusionPref<float> NameTagSaturation { get; internal set; }
+    public static FusionPref<float> NameTagValue { get; internal set; }
 
     // Nickname settings
     public static FusionPref<string> Nickname { get; internal set; }
@@ -39,7 +44,10 @@ public static class ClientSettings
 
         // Nametag
         NameTags = new FusionPref<bool>(category, "Client Nametags Enabled", true, PrefUpdateMode.SERVER_UPDATE);
-        NameTagColor = new FusionPref<Color>(category, "Nametag Color", Color.white, PrefUpdateMode.CLIENT_UPDATE);
+
+        NameTagHue = new FusionPref<float>(category, "NameTag Hue", 0f, PrefUpdateMode.CLIENT_UPDATE);
+        NameTagSaturation = new FusionPref<float>(category, "NameTag Saturation", 0f, PrefUpdateMode.CLIENT_UPDATE);
+        NameTagValue = new FusionPref<float>(category, "NameTag Value", 1f, PrefUpdateMode.CLIENT_UPDATE);
 
         // Nickname
         Nickname = new FusionPref<string>(category, "Nickname", string.Empty, PrefUpdateMode.IGNORE);
