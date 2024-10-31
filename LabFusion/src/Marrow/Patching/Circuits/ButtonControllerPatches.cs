@@ -2,7 +2,6 @@
 
 using Il2CppSLZ.Marrow.Circuits;
 
-using LabFusion.Bonelab;
 using LabFusion.Marrow.Extenders;
 using LabFusion.Network;
 using LabFusion.Player;

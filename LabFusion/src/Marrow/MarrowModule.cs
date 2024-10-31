@@ -13,6 +13,7 @@ public class MarrowModule : Module
     protected override void OnModuleRegistered()
     {
         ModuleMessageHandler.RegisterHandler<ButtonChargeMessage>();
+        ModuleMessageHandler.RegisterHandler<EventActuatorMessage>();
     }
 
     protected override void OnModuleUnregistered()
