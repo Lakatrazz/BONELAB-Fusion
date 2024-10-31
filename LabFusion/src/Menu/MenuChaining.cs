@@ -19,7 +19,15 @@ public static class MenuChaining
 
         element.OnValueChanged += OnButtonChanged;
 
-        pref.OnValueChanged += (value) =>
+        pref.OnValueChanged += OnPrefChanged;
+
+        element.OnCleared += () =>
+        {
+            element.OnValueChanged -= OnButtonChanged;
+            pref.OnValueChanged -= OnPrefChanged;
+        };
+
+        void OnPrefChanged(TEnum value)
         {
             // Update the value
             if (element.Value.ToString() != value.ToString())
@@ -28,12 +36,7 @@ public static class MenuChaining
             }
 
             onValueChanged?.Invoke(value);
-        };
-
-        element.OnCleared += () =>
-        {
-            element.OnValueChanged -= OnButtonChanged;
-        };
+        }
 
         return element;
     }
@@ -49,7 +52,15 @@ public static class MenuChaining
 
         element.OnValueChanged += OnButtonChanged;
 
-        pref.OnValueChanged += (value) =>
+        pref.OnValueChanged += OnPrefChanged;
+
+        element.OnCleared += () =>
+        {
+            element.OnValueChanged -= OnButtonChanged;
+            pref.OnValueChanged -= OnPrefChanged;
+        };
+
+        void OnPrefChanged(string value)
         {
             // Update the value
             if (element.Value != value)
@@ -58,12 +69,7 @@ public static class MenuChaining
             }
 
             onValueChanged?.Invoke(value);
-        };
-
-        element.OnCleared += () =>
-        {
-            element.OnValueChanged -= OnButtonChanged;
-        };
+        }
 
         return element;
     }
@@ -79,7 +85,15 @@ public static class MenuChaining
 
         element.OnValueChanged += OnButtonChanged;
 
-        pref.OnValueChanged += (value) =>
+        pref.OnValueChanged += OnPrefChanged;
+
+        element.OnCleared += () =>
+        {
+            element.OnValueChanged -= OnButtonChanged;
+            pref.OnValueChanged -= OnPrefChanged;
+        };
+
+        void OnPrefChanged(float value)
         {
             // Update the value
             if (element.Value != value)
@@ -88,12 +102,7 @@ public static class MenuChaining
             }
 
             onValueChanged?.Invoke(value);
-        };
-
-        element.OnCleared += () =>
-        {
-            element.OnValueChanged -= OnButtonChanged;
-        };
+        }
 
         return element;
     }
@@ -109,7 +118,15 @@ public static class MenuChaining
 
         element.OnValueChanged += OnButtonChanged;
 
-        pref.OnValueChanged += (value) =>
+        pref.OnValueChanged += OnPrefChanged;
+
+        element.OnCleared += () =>
+        {
+            element.OnValueChanged -= OnButtonChanged;
+            pref.OnValueChanged -= OnPrefChanged;
+        };
+
+        void OnPrefChanged(int value)
         {
             // Update the value
             if (element.Value != value)
@@ -118,12 +135,7 @@ public static class MenuChaining
             }
 
             onValueChanged?.Invoke(value);
-        };
-
-        element.OnCleared += () =>
-        {
-            element.OnValueChanged -= OnButtonChanged;
-        };
+        }
 
         return element;
     }
@@ -139,7 +151,15 @@ public static class MenuChaining
 
         element.OnValueChanged += OnButtonChanged;
 
-        pref.OnValueChanged += (value) =>
+        pref.OnValueChanged += OnPrefChanged;
+
+        element.OnCleared += () =>
+        {
+            element.OnValueChanged -= OnButtonChanged;
+            pref.OnValueChanged -= OnPrefChanged;
+        };
+
+        void OnPrefChanged(bool value)
         {
             // Update the value
             if (element.Value != value)
@@ -148,12 +168,7 @@ public static class MenuChaining
             }
 
             onValueChanged?.Invoke(value);
-        };
-
-        element.OnCleared += () =>
-        {
-            element.OnValueChanged -= OnButtonChanged;
-        };
+        }
 
         return element;
     }
