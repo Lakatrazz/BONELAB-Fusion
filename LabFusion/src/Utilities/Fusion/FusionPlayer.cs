@@ -31,9 +31,17 @@ public static class FusionPlayer
     public static float? VitalityOverride { get; internal set; } = null;
     public static string AvatarOverride { get; internal set; } = null;
 
+    private static bool _physicsCrash = false;
+
     internal static void OnMainSceneInitialized()
     {
         LastAttacker = null;
+
+        if (_physicsCrash)
+        {
+            Physics.autoSimulation = true;
+            _physicsCrash = false;
+        }
     }
 
     internal static void OnUpdate()
@@ -64,6 +72,10 @@ public static class FusionPlayer
 #if DEBUG
         FusionLogger.Warn("Player was sent out of floating point, reloading scene.");
 #endif
+
+        // We hit NaN, don't simulate physics!
+        Physics.autoSimulation = false;
+        _physicsCrash = true;
 
         if (NetworkInfo.HasServer && !NetworkInfo.IsServer)
         {
