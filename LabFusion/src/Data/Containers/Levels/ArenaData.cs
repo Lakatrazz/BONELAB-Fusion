@@ -30,7 +30,7 @@ namespace LabFusion.Data
             }
         }
 
-        public static bool IsInArena => !GameController.IsNOC();
+        public static bool IsInArena => GameController != null;
 
         public static byte? GetIndex(ChallengeSelectMenu menu)
         {

@@ -81,12 +81,16 @@ public static class ArtRigPatches
     private static void Internal_WaitForBarcode(RigManager __instance, Avatar newAvatar)
     {
         // First make sure our player hasn't been destroyed (ex. loading new scene)
-        if (__instance.IsNOC())
+        if (__instance == null)
+        {
             return;
+        }
 
         // Next check the avatar hasn't changed
         if (__instance._avatar != newAvatar)
+        {
             return;
+        }
 
         // Is this our local player? If so, sync the avatar change
         if (__instance.IsSelf())

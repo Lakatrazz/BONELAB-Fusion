@@ -37,11 +37,15 @@ public class Entangled : Gamemode
 
         public void Dispose()
         {
-            if (!joint.IsNOC())
+            if (joint != null)
+            {
                 GameObject.Destroy(joint);
+            }
 
-            if (!lineInstance.IsNOC())
+            if (lineInstance != null)
+            {
                 GameObject.Destroy(lineInstance);
+            }
         }
 
         public bool IsValid()
@@ -56,18 +60,24 @@ public class Entangled : Gamemode
                 return;
 
             // Validate pelvis rigidbodies
-            if (selfPelvis.IsNOC() && PlayerRepUtilities.TryGetReferences(player1, out var ref1) && ref1.IsValid)
+            if (selfPelvis == null && PlayerRepUtilities.TryGetReferences(player1, out var ref1) && ref1.IsValid)
+            {
                 selfPelvis = ref1.RigManager.physicsRig.torso._pelvisRb;
+            }
 
-            if (otherPelvis.IsNOC() && PlayerRepUtilities.TryGetReferences(player2, out var ref2) && ref2.IsValid)
+            if (otherPelvis == null && PlayerRepUtilities.TryGetReferences(player2, out var ref2) && ref2.IsValid)
+            {
                 otherPelvis = ref2.RigManager.physicsRig.torso._pelvisRb;
+            }
 
             // If we have both pelvises, update them
             if (selfPelvis != null && otherPelvis != null)
             {
                 // Create joint if missing
-                if (joint.IsNOC())
+                if (joint == null)
+                {
                     CreateJoint();
+                }
 
                 // Update line renderer
                 lineInstance.SetActive(true);

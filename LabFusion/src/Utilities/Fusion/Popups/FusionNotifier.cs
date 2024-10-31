@@ -175,9 +175,7 @@ public static class FusionNotifier
         }
 
         // Show to the player
-        var rm = RigData.Refs.RigManager;
-
-        if (notification.isPopup && !rm.IsNOC())
+        if (notification.isPopup && RigData.HasPlayer)
         {
             var tutorialRig = TutorialRig.Instance;
             var headTitles = tutorialRig.headTitles;
@@ -187,7 +185,9 @@ public static class FusionNotifier
             string incomingTitle = "New Notification";
 
             if (notification.showTitleOnPopup)
+            {
                 incomingTitle = notification.title.text;
+            }
 
             string incomingSubTitle = notification.message.text;
 
@@ -226,32 +226,30 @@ public static class FusionNotifier
 
     internal static void EnableTutorialRig()
     {
-        var rm = RigData.Refs.RigManager;
-
-        if (!rm.IsNOC())
+        if (!RigData.HasPlayer)
         {
-            var tutorialRig = TutorialRig.Instance;
-            var headTitles = tutorialRig.headTitles;
-
-            // Make sure the tutorial rig/head titles are enabled
-            tutorialRig.gameObject.SetActive(true);
-            headTitles.gameObject.SetActive(true);
+            return;
         }
+
+        var tutorialRig = TutorialRig.Instance;
+        var headTitles = tutorialRig.headTitles;
+
+        // Make sure the tutorial rig/head titles are enabled
+        tutorialRig.gameObject.SetActive(true);
+        headTitles.gameObject.SetActive(true);
     }
 
     internal static bool IsPlayingNotification()
     {
-        var rm = RigData.Refs.RigManager;
-
-        if (!rm.IsNOC())
+        if (!RigData.HasPlayer)
         {
-            var tutorialRig = TutorialRig.Instance;
-            var headTitles = tutorialRig.headTitles;
-
-            return headTitles.headFollower.gameObject.activeInHierarchy;
+            return false;
         }
 
-        return false;
+        var tutorialRig = TutorialRig.Instance;
+        var headTitles = tutorialRig.headTitles;
+
+        return headTitles.headFollower.gameObject.activeInHierarchy;
     }
 
     internal static void OnUpdate()

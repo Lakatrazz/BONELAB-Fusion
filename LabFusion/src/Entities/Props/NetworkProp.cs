@@ -156,7 +156,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     private bool IsMarrowEntityDestroyed()
     {
-        return MarrowEntity.IsNOC() || MarrowEntity.IsDestroyed || MarrowEntity.IsDespawned;
+        return MarrowEntity == null || MarrowEntity.IsDestroyed || MarrowEntity.IsDespawned;
     }
 
     private void OnPropRegistered(NetworkEntity entity)

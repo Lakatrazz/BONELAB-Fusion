@@ -233,7 +233,7 @@ public static class PlayerRepUtilities
 
     private static void Internal_SpatializeWind(WindBuffetSFX sfx)
     {
-        if (sfx.IsNOC())
+        if (sfx == null)
         {
             return;
         }

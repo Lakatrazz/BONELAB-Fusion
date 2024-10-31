@@ -55,7 +55,7 @@ public static class PlayerAdditionsHelper
 
     public static void OnEnterServer(RigManager manager)
     {
-        if (manager.IsNOC())
+        if (manager == null)
         {
             return;
         }
@@ -97,8 +97,10 @@ public static class PlayerAdditionsHelper
 
     public static void OnExitServer(RigManager manager)
     {
-        if (manager.IsNOC())
+        if (manager == null)
+        {
             return;
+        }
 
         // Disable mute icons
         MuteUIHelper.OnDestroyMuteUI();

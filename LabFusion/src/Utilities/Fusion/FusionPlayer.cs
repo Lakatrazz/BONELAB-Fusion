@@ -220,20 +220,22 @@ public static class FusionPlayer
     /// <param name="isMortal"></param>
     public static void SetMortality(bool isMortal)
     {
+        if (!RigData.HasPlayer)
+        {
+            return;
+        }
+
         var rm = RigData.Refs.RigManager;
 
-        if (!rm.IsNOC())
-        {
-            var playerHealth = rm.health.TryCast<Player_Health>();
+        var playerHealth = rm.health.TryCast<Player_Health>();
 
-            if (isMortal)
-            {
-                playerHealth.healthMode = Health.HealthMode.Mortal;
-            }
-            else
-            {
-                playerHealth.healthMode = Health.HealthMode.Invincible;
-            }
+        if (isMortal)
+        {
+            playerHealth.healthMode = Health.HealthMode.Mortal;
+        }
+        else
+        {
+            playerHealth.healthMode = Health.HealthMode.Invincible;
         }
     }
 

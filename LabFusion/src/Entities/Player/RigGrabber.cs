@@ -116,7 +116,7 @@ public class RigGrabber
             return;
         }
 
-        if (data.grip.IsNOC())
+        if (data.grip == null)
         {
             _lastGrabs.Remove(handedness);
             return;

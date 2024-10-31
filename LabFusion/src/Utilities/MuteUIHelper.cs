@@ -182,7 +182,7 @@ public static class MuteUIHelper
             _mutePage = null;
         }
 
-        if (!_indicatorPoolee.IsNOC())
+        if (_indicatorPoolee != null)
         {
             _indicatorPoolee.Despawn();
 
