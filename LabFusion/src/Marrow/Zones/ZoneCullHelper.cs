@@ -45,6 +45,12 @@ public static class ZoneCullHelper
 
     private static void SimulateZoneExit(Zone zone, Tracker tracker)
     {
+        // Some people setup items without trackers, which can cause errors
+        if (tracker == null)
+        {
+            return;
+        }
+
         if (!CanInteractWithZone(zone, tracker))
         {
             return;
@@ -75,6 +81,12 @@ public static class ZoneCullHelper
 
     private static void SimulateZoneEnter(Zone zone, Tracker tracker)
     {
+        // Some people setup items without trackers, which can cause errors
+        if (tracker == null)
+        {
+            return;
+        }
+
         if (!CanInteractWithZone(zone, tracker))
         {
             return;
