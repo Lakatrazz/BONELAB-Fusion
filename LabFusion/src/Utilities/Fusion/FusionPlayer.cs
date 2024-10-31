@@ -4,7 +4,6 @@ using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Preferences;
-using LabFusion.Preferences.Server;
 using LabFusion.Player;
 using LabFusion.Representation;
 using LabFusion.SDK.Gamemodes;
@@ -32,6 +31,20 @@ public static class FusionPlayer
     public static string AvatarOverride { get; internal set; } = null;
 
     private static bool _physicsCrash = false;
+
+    internal static void OnInitializeMelon()
+    {
+        LobbyInfoManager.OnLobbyInfoChanged += OnLobbyInfoChanged;
+    }
+
+    private static void OnLobbyInfoChanged()
+    {
+        // Update mortality
+        if (Gamemode.ActiveGamemode == null)
+        {
+            ResetMortality();
+        }
+    }
 
     internal static void OnMainSceneInitialized()
     {

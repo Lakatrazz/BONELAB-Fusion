@@ -60,6 +60,7 @@ public static class MenuMatchmaking
     {
         var grid = optionsTransform.Find("grid_Options");
 
+        // Gamemode
         var gamemodeElement = grid.Find("button_Gamemode").GetComponent<FunctionElement>();
 
         gamemodeElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Gamemode";
@@ -68,16 +69,29 @@ public static class MenuMatchmaking
             MatchmakingPage.SelectSubPage(1);
         });
 
+        // Sandbox
         var sandboxElement = grid.Find("button_Sandbox").GetComponent<FunctionElement>();
         sandboxElement.Do(() =>
         {
-            MatchmakingPage.SelectSubPage(4);
+            MatchmakingPage.SelectSubPage(2);
 
             RefreshBrowser();
         });
 
         sandboxElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Sandbox";
 
+        // Browse
+        var browseElement = grid.Find("button_Browse").GetComponent<FunctionElement>();
+        browseElement.Do(() =>
+        {
+            MatchmakingPage.SelectSubPage(4);
+
+            RefreshBrowser();
+        });
+
+        browseElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Browse";
+
+        // Enter Code
         var codeElement = grid.Find("button_Code").GetComponent<FunctionElement>();
         codeElement.Do(() =>
         {

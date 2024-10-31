@@ -202,6 +202,13 @@ public static class MenuChaining
         return element;
     }
 
+    public static IntElement WithValue(this IntElement element, int value)
+    {
+        element.Value = value;
+
+        return element;
+    }
+
     public static FloatElement WithLimits(this FloatElement element, float minValue, float maxValue)
     {
         element.MinValue = minValue;
@@ -213,6 +220,34 @@ public static class MenuChaining
     public static FloatElement WithIncrement(this FloatElement element, float increment)
     {
         element.Increment = increment;
+
+        return element;
+    }
+
+    public static FloatElement WithValue(this FloatElement element, float value)
+    {
+        element.Value = value;
+
+        return element;
+    }
+
+    public static BoolElement WithValue(this BoolElement element, bool value)
+    {
+        element.Value = value;
+
+        return element;
+    }
+
+    public static EnumElement WithValue(this EnumElement element, Enum value)
+    {
+        element.Value = value;
+
+        return element;
+    }
+
+    public static StringElement WithValue(this StringElement element, string value)
+    {
+        element.Value = value;
 
         return element;
     }

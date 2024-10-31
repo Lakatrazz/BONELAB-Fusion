@@ -56,7 +56,9 @@ public static class PlayerAdditionsHelper
     public static void OnEnterServer(RigManager manager)
     {
         if (manager.IsNOC())
+        {
             return;
+        }
 
         // Create mute icon
         MuteUIHelper.OnCreateMuteUI(manager);

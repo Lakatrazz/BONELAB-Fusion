@@ -22,6 +22,16 @@ public static class MenuLocation
     public static BoolElement NameTagsElement { get; private set; }
     public static BoolElement VoiceChatElement { get; private set; }
     public static EnumElement SlowMoElement { get; private set; }
+    public static BoolElement MortalityElement { get; private set; }
+    public static BoolElement FriendlyFireElement { get; private set; }
+    public static BoolElement PlayerConstrainingElement { get; private set; }
+
+    public static EnumElement DevToolsElement { get; private set; }
+    public static EnumElement ConstrainerElement { get; private set; }
+    public static EnumElement CustomAvatarsElement { get; private set; }
+    public static EnumElement KickingElement { get; private set; }
+    public static EnumElement BanningElement { get; private set; }
+    public static EnumElement TeleportationElement { get; private set; }
 
     public static void OnInitializeMelon()
     {
@@ -117,25 +127,22 @@ public static class MenuLocation
             .Cleared()
             .WithIncrement(1)
             .WithLimits(2, 255)
-            .WithTitle("Players");
-
-        element.PlayersElement.Value = info.MaxPlayers;
+            .WithTitle("Players")
+            .WithValue(info.MaxPlayers);
 
         element.PlayersElement.TextFormat = $"{playerCount}/{{1}} {{0}}";
 
         element.PrivacyElement
             .Cleared()
-            .WithTitle("Privacy");
-
-        element.PrivacyElement.Value = info.Privacy;
+            .WithTitle("Privacy")
+            .WithValue(info.Privacy);
 
         element.PrivacyElement.TextFormat = "{1}";
 
         element.ServerNameElement
             .Cleared()
-            .WithTitle("Server Name");
-
-        element.ServerNameElement.Value = info.LobbyName;
+            .WithTitle("Server Name")
+            .WithValue(info.LobbyName);
 
         element.ServerNameElement.EmptyFormat = emptyFormat;
         element.ServerNameElement.TextFormat = "{1}";
@@ -145,9 +152,8 @@ public static class MenuLocation
 
         element.DescriptionElement
             .Cleared()
-            .WithTitle("Description");
-
-        element.DescriptionElement.Value = info.LobbyDescription;
+            .WithTitle("Description")
+            .WithValue(info.LobbyDescription);
 
         element.DescriptionElement.EmptyFormat = emptyFormat;
         element.DescriptionElement.TextFormat = "{1}";
@@ -162,23 +168,70 @@ public static class MenuLocation
         NameTagsElement
             .Cleared()
             .WithInteractability(ownsSettings)
-            .WithTitle("NameTags");
-
-        NameTagsElement.Value = info.NameTags;
+            .WithTitle("NameTags")
+            .WithValue(info.NameTags);
 
         VoiceChatElement
             .Cleared()
             .WithInteractability(ownsSettings)
-            .WithTitle("VoiceChat");
-
-        VoiceChatElement.Value = info.VoiceChat;
+            .WithTitle("VoiceChat")
+            .WithValue(info.VoiceChat);
 
         SlowMoElement
             .Cleared()
             .WithInteractability(ownsSettings)
-            .WithTitle("SlowMo");
+            .WithTitle("SlowMo")
+            .WithValue(info.SlowMoMode);
 
-        SlowMoElement.Value = info.SlowMoMode;
+        MortalityElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .WithTitle("Mortality")
+            .WithValue(info.Mortality);
+
+        FriendlyFireElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .WithTitle("Friendly Fire")
+            .WithValue(info.FriendlyFire);
+
+        PlayerConstrainingElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .WithTitle("Player Constraining")
+            .WithValue(info.PlayerConstraining);
+
+        // Permissions
+        DevToolsElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .WithTitle("Dev Tools")
+            .WithValue(info.DevTools);
+        ConstrainerElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .WithTitle("Constrainer")
+            .WithValue(info.Constrainer);
+        CustomAvatarsElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .WithTitle("Custom Avatars")
+            .WithValue(info.CustomAvatars);
+        KickingElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .WithTitle("Kicking")
+            .WithValue(info.Kicking);
+        BanningElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .WithTitle("Banning")
+            .WithValue(info.Banning);
+        TeleportationElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .WithTitle("Teleportation")
+            .WithValue(info.Teleportation);
 
         RefreshPlayerList();
 
@@ -281,6 +334,62 @@ public static class MenuLocation
             .AsPref(SavedServerSettings.SlowMoMode)
             .WithTitle("SlowMo");
 
+        MortalityElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .AsPref(SavedServerSettings.Mortality)
+            .WithTitle("Mortality");
+
+        FriendlyFireElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .AsPref(SavedServerSettings.FriendlyFire)
+            .WithTitle("Friendly Fire");
+
+        PlayerConstrainingElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .AsPref(SavedServerSettings.PlayerConstraining)
+            .WithTitle("Player Constraining");
+
+        // Permissions
+        DevToolsElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .AsPref(SavedServerSettings.DevTools)
+            .WithTitle("Dev Tools");
+
+        ConstrainerElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .AsPref(SavedServerSettings.Constrainer)
+            .WithTitle("Constrainer");
+
+        CustomAvatarsElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .AsPref(SavedServerSettings.CustomAvatars)
+            .WithTitle("Custom Avatars");
+
+        KickingElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .AsPref(SavedServerSettings.Kicking)
+            .WithTitle("Kicking");
+
+        BanningElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .AsPref(SavedServerSettings.Banning)
+            .WithTitle("Banning");
+
+        TeleportationElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .AsPref(SavedServerSettings.Teleportation)
+            .WithTitle("Teleportation");
+
+        // Update player list
         RefreshPlayerList();
 
         // Show server code
@@ -573,6 +682,22 @@ public static class MenuLocation
         VoiceChatElement = generalGroup.AddElement<BoolElement>("VoiceChat");
 
         SlowMoElement = generalGroup.AddElement<EnumElement>("SlowMo");
+
+        MortalityElement = generalGroup.AddElement<BoolElement>("Mortality");
+
+        FriendlyFireElement = generalGroup.AddElement<BoolElement>("Friendly Fire");
+
+        PlayerConstrainingElement = generalGroup.AddElement<BoolElement>("Player Constraining");
+
+        // Permissions
+        var permissionGroup = element.AddElement<GroupElement>("Permissions");
+
+        DevToolsElement = permissionGroup.AddElement<EnumElement>("Dev Tools");
+        ConstrainerElement = permissionGroup.AddElement<EnumElement>("Constrainer");
+        CustomAvatarsElement = permissionGroup.AddElement<EnumElement>("Custom Avatars");
+        KickingElement = permissionGroup.AddElement<EnumElement>("Kicking");
+        BanningElement = permissionGroup.AddElement<EnumElement>("Banning");
+        TeleportationElement = permissionGroup.AddElement<EnumElement>("Teleportation");
     }
 
     private static void PopulateAdmin(PageElement element)

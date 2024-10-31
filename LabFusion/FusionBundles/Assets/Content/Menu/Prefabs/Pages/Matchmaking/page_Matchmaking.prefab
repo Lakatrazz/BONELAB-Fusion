@@ -516,8 +516,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 220}
-  m_SizeDelta: {x: 800, y: 500}
+  m_AnchoredPosition: {x: 0, y: 225}
+  m_SizeDelta: {x: 800, y: 510}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &8019603929940476588
 MonoBehaviour:
@@ -534,14 +534,14 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 0
+    m_Top: 50
     m_Bottom: 0
   m_ChildAlignment: 1
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 180, y: 180}
-  m_Spacing: {x: 50, y: 80}
-  m_Constraint: 1
+  m_CellSize: {x: 144, y: 144}
+  m_Spacing: {x: 50, y: 50}
+  m_Constraint: 0
   m_ConstraintCount: 2
 --- !u!1 &5943760376243297415
 GameObject:
@@ -924,6 +924,10 @@ PrefabInstance:
       propertyPath: m_text
       value: Gamemode
       objectReference: {fileID: 0}
+    - target: {fileID: 5443592227519665599, guid: e0d7c6fb9d9610d49aac588cdee5249b, type: 3}
+      propertyPath: m_fontSize
+      value: 19.75
+      objectReference: {fileID: 0}
     - target: {fileID: 7536540913996699693, guid: e0d7c6fb9d9610d49aac588cdee5249b, type: 3}
       propertyPath: m_Name
       value: label_Title
@@ -939,11 +943,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 793217053637549209, guid: 685765a1f6bd02d4d953ffd5c494297f, type: 3}
       propertyPath: m_Size.x
-      value: 180
+      value: 144
       objectReference: {fileID: 0}
     - target: {fileID: 793217053637549209, guid: 685765a1f6bd02d4d953ffd5c494297f, type: 3}
       propertyPath: m_Size.y
-      value: 180
+      value: 144
       objectReference: {fileID: 0}
     - target: {fileID: 2265853363669747627, guid: 685765a1f6bd02d4d953ffd5c494297f, type: 3}
       propertyPath: m_Texture
@@ -1082,11 +1086,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 793217053637549209, guid: 685765a1f6bd02d4d953ffd5c494297f, type: 3}
       propertyPath: m_Size.x
-      value: 180
+      value: 144
       objectReference: {fileID: 0}
     - target: {fileID: 793217053637549209, guid: 685765a1f6bd02d4d953ffd5c494297f, type: 3}
       propertyPath: m_Size.y
-      value: 180
+      value: 144
       objectReference: {fileID: 0}
     - target: {fileID: 2265853363669747627, guid: 685765a1f6bd02d4d953ffd5c494297f, type: 3}
       propertyPath: m_Texture
@@ -2165,6 +2169,10 @@ PrefabInstance:
       propertyPath: m_text
       value: Enter Code
       objectReference: {fileID: 0}
+    - target: {fileID: 5443592227519665599, guid: e0d7c6fb9d9610d49aac588cdee5249b, type: 3}
+      propertyPath: m_fontSize
+      value: 20.6
+      objectReference: {fileID: 0}
     - target: {fileID: 7536540913996699693, guid: e0d7c6fb9d9610d49aac588cdee5249b, type: 3}
       propertyPath: m_Name
       value: label_Title
@@ -2294,11 +2302,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 793217053637549209, guid: 685765a1f6bd02d4d953ffd5c494297f, type: 3}
       propertyPath: m_Size.x
-      value: 180
+      value: 144
       objectReference: {fileID: 0}
     - target: {fileID: 793217053637549209, guid: 685765a1f6bd02d4d953ffd5c494297f, type: 3}
       propertyPath: m_Size.y
-      value: 180
+      value: 144
       objectReference: {fileID: 0}
     - target: {fileID: 2265853363669747627, guid: 685765a1f6bd02d4d953ffd5c494297f, type: 3}
       propertyPath: m_Texture
@@ -3360,11 +3368,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 793217053637549209, guid: 685765a1f6bd02d4d953ffd5c494297f, type: 3}
       propertyPath: m_Size.x
-      value: 180
+      value: 144
       objectReference: {fileID: 0}
     - target: {fileID: 793217053637549209, guid: 685765a1f6bd02d4d953ffd5c494297f, type: 3}
       propertyPath: m_Size.y
-      value: 180
+      value: 144
       objectReference: {fileID: 0}
     - target: {fileID: 2265853363669747627, guid: 685765a1f6bd02d4d953ffd5c494297f, type: 3}
       propertyPath: m_Texture

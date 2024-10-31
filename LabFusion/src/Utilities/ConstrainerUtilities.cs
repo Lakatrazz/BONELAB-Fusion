@@ -11,7 +11,7 @@ namespace LabFusion.Utilities;
 
 public static class ConstrainerUtilities
 {
-    public static bool PlayerConstraintsEnabled { get { return LobbyInfoManager.LobbyInfo.PlayerConstraints; } }
+    public static bool PlayerConstraintsEnabled { get { return LobbyInfoManager.LobbyInfo.PlayerConstraining; } }
 
     public static bool HasConstrainer { get { return GlobalConstrainer != null; } }
     public static Constrainer GlobalConstrainer { get; private set; }

@@ -63,8 +63,8 @@ public class LobbyInfo
     [JsonPropertyName("voiceChat")]
     public bool VoiceChat { get; set; }
 
-    [JsonPropertyName("playerConstraints")]
-    public bool PlayerConstraints { get; set; }
+    [JsonPropertyName("playerConstraining")]
+    public bool PlayerConstraining { get; set; }
 
     [JsonPropertyName("mortality")]
     public bool Mortality { get; set; }
@@ -117,7 +117,7 @@ public class LobbyInfo
         SlowMoMode = SavedServerSettings.SlowMoMode.Value;
         MaxPlayers = SavedServerSettings.MaxPlayers.Value;
         VoiceChat = SavedServerSettings.VoiceChat.Value;
-        PlayerConstraints = SavedServerSettings.PlayerConstraints.Value;
+        PlayerConstraining = SavedServerSettings.PlayerConstraining.Value;
         Mortality = SavedServerSettings.Mortality.Value;
         FriendlyFire = SavedServerSettings.FriendlyFire.Value;
 

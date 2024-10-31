@@ -140,6 +140,8 @@ public class FusionMod : MelonMod
 
         MenuCreator.OnInitializeMelon();
 
+        FusionPlayer.OnInitializeMelon();
+
         // Initialize level loading
         FusionSceneManager.Internal_OnInitializeMelon();
 

@@ -2,11 +2,8 @@
 using LabFusion.Extensions;
 using LabFusion.Marrow.Proxies;
 using LabFusion.Network;
-using LabFusion.Preferences.Server;
 using LabFusion.Preferences.Client;
 using LabFusion.Representation;
-using LabFusion.SDK.Gamemodes;
-using LabFusion.Utilities;
 using LabFusion.Voice;
 
 using UnityEngine;
@@ -18,10 +15,6 @@ public static class MenuSettings
     public static void PopulateSettings(GameObject settingsPage)
     {
         var rootPage = settingsPage.transform.Find("scrollRect_Options/Viewport/Content").GetComponent<PageElement>();
-
-        var serverPage = rootPage.AddPage();
-
-        PopulateServerSettings(serverPage);
 
         var clientPage = rootPage.AddPage();
 
@@ -45,7 +38,6 @@ public static class MenuSettings
         var categoriesRoot = settingsPage.transform.Find("scrollRect_Categories/Viewport/Content").GetComponent<PageElement>();
         var categoriesPage = categoriesRoot.AddPage("Default");
 
-        categoriesPage.AddElement<FunctionElement>("Server").Link(serverPage).WithColor(Color.white);
         categoriesPage.AddElement<FunctionElement>("Client").Link(clientPage).WithColor(Color.white);
         categoriesPage.AddElement<FunctionElement>("Downloading").Link(downloadingPage).WithColor(Color.cyan);
         categoriesPage.AddElement<FunctionElement>("Network Layer").Link(networkLayerPage).WithColor(Color.yellow);
@@ -53,64 +45,6 @@ public static class MenuSettings
 #if DEBUG
         categoriesPage.AddElement<FunctionElement>("Debug").Link(debugPage).WithColor(Color.red);
 #endif
-    }
-
-    private static void PopulateServerSettings(PageElement page)
-    {
-        // General
-        var generalSettingsGroup = page.AddElement<GroupElement>("General");
-
-        generalSettingsGroup.AddElement<BoolElement>("NameTags")
-            .AsPref(SavedServerSettings.NameTags);
-
-        generalSettingsGroup.AddElement<BoolElement>("Voice Chat")
-            .AsPref(SavedServerSettings.VoiceChat);
-
-        // Gameplay
-        var gameplaySettingsGroup = page.AddElement<GroupElement>("Gameplay");
-
-        gameplaySettingsGroup.AddElement<EnumElement>("SlowMo")
-            .AsPref(SavedServerSettings.SlowMoMode);
-
-        gameplaySettingsGroup.AddElement<BoolElement>("Mortality")
-            .AsPref(SavedServerSettings.Mortality);
-
-        gameplaySettingsGroup.AddElement<BoolElement>("Friendly Fire")
-            .AsPref(SavedServerSettings.FriendlyFire);
-
-        // Move this out of this class eventually
-        LobbyInfoManager.OnLobbyInfoChanged += () =>
-        {
-            // Update mortality
-            if (Gamemode.ActiveGamemode == null)
-            {
-                FusionPlayer.ResetMortality();
-            }
-        };
-
-        gameplaySettingsGroup.AddElement<BoolElement>("Player Constraining")
-            .AsPref(SavedServerSettings.PlayerConstraints);
-
-        // Permissions
-        var permissionsGroup = page.AddElement<GroupElement>("Permissions");
-
-        permissionsGroup.AddElement<EnumElement>("Dev Tools")
-            .AsPref(SavedServerSettings.DevTools);
-
-        permissionsGroup.AddElement<EnumElement>("Constrainer")
-            .AsPref(SavedServerSettings.Constrainer);
-
-        permissionsGroup.AddElement<EnumElement>("Custom Avatars")
-            .AsPref(SavedServerSettings.CustomAvatars);
-
-        permissionsGroup.AddElement<EnumElement>("Kicking")
-            .AsPref(SavedServerSettings.Kicking);
-
-        permissionsGroup.AddElement<EnumElement>("Banning")
-            .AsPref(SavedServerSettings.Banning);
-
-        permissionsGroup.AddElement<EnumElement>("Teleportation")
-            .AsPref(SavedServerSettings.Teleportation);
     }
 
     private static void PopulateClientSettings(PageElement page)

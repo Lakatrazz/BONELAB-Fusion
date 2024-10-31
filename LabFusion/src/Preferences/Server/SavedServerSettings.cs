@@ -15,7 +15,7 @@ public static class SavedServerSettings
     // General settings
     public static FusionPref<bool> NameTags { get; internal set; }
     public static FusionPref<bool> VoiceChat { get; internal set; }
-    public static FusionPref<bool> PlayerConstraints { get; internal set; }
+    public static FusionPref<bool> PlayerConstraining { get; internal set; }
     public static FusionPref<ServerPrivacy> Privacy { get; internal set; }
     public static FusionPref<TimeScaleMode> SlowMoMode { get; internal set; }
     public static FusionPref<int> MaxPlayers { get; internal set; }
@@ -45,7 +45,7 @@ public static class SavedServerSettings
         // General settings
         NameTags = new FusionPref<bool>(category, "Server Nametags Enabled", true, updateMode);
         VoiceChat = new FusionPref<bool>(category, "Server Voicechat Enabled", true, updateMode);
-        PlayerConstraints = new FusionPref<bool>(category, "Server Player Constraints Enabled", false, updateMode);
+        PlayerConstraining = new FusionPref<bool>(category, "Server Player Constraints Enabled", false, updateMode);
         Privacy = new FusionPref<ServerPrivacy>(category, "Server Privacy", ServerPrivacy.PUBLIC, updateMode);
         SlowMoMode = new FusionPref<TimeScaleMode>(category, "Time Scale Mode", Senders.TimeScaleMode.LOW_GRAVITY, updateMode);
         MaxPlayers = new FusionPref<int>(category, "Max Players", 10, updateMode);
