@@ -1,4 +1,5 @@
-﻿using LabFusion.Utilities;
+﻿using LabFusion.Preferences.Client;
+using LabFusion.Utilities;
 
 using MelonLoader;
 
@@ -87,9 +88,19 @@ public static class ModIODownloader
 
             void OnRequestedMod(ModCallbackInfo info)
             {
+                // Check if the mod request failed
                 if (info.result == ModResult.FAILED)
                 {
                     FusionLogger.Warn($"Failed getting a mod file for mod {modFile.ModId}, cancelling download!");
+
+                    FailDownload();
+                    return;
+                }
+
+                // Check for maturity
+                if (info.data.Mature && !ClientSettings.Downloading.DownloadMatureContent.Value)
+                {
+                    FusionLogger.Warn($"Skipped download of mod {modFile.ModId} due to it containing mature content.");
 
                     FailDownload();
                     return;

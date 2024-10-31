@@ -74,6 +74,9 @@ public static class MenuSettings
         gameplaySettingsGroup.AddElement<BoolElement>("Mortality")
             .AsPref(SavedServerSettings.Mortality);
 
+        gameplaySettingsGroup.AddElement<BoolElement>("Friendly Fire")
+            .AsPref(SavedServerSettings.FriendlyFire);
+
         // Move this out of this class eventually
         LobbyInfoManager.OnLobbyInfoChanged += () =>
         {
@@ -175,6 +178,10 @@ public static class MenuSettings
             .AsPref(ClientSettings.Downloading.MaxLevelSize)
             .WithIncrement(10)
             .WithLimits(0, 10000);
+
+        generalGroup.AddElement<BoolElement>("Downloaded Mature Content")
+            .AsPref(ClientSettings.Downloading.DownloadMatureContent)
+            .WithColor(Color.red);
     }
 
     private static int _lastLayerIndex;

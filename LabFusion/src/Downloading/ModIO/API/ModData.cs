@@ -1,5 +1,4 @@
-﻿using LabFusion.Utilities;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 
 namespace LabFusion.Downloading.ModIO;
 
@@ -22,13 +21,19 @@ public readonly struct ModData
 {
     public int Id { get; }
 
+    public int MaturityOption { get; }
+
     public IReadOnlyList<ModPlatformData> Platforms { get; }
 
     public string ThumbnailUrl { get; }
 
+    public bool Mature => MaturityOption > 0;
+
     public ModData(JToken token)
     {
         Id = token.Value<int>("id");
+
+        MaturityOption = token.Value<int>("maturity_option");
 
         List<ModPlatformData> modPlatformList = new();
 

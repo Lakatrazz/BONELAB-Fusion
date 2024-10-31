@@ -24,8 +24,9 @@ public static class SavedServerSettings
     public static FusionPref<string> ServerName { get; internal set; }
     public static FusionPref<string> ServerDescription { get; internal set; }
 
-    // Mortality
+    // Combat
     public static FusionPref<bool> Mortality { get; internal set; }
+    public static FusionPref<bool> FriendlyFire { get; internal set; }
 
     // Permissions
     public static FusionPref<PermissionLevel> DevTools { get; internal set; }
@@ -53,8 +54,9 @@ public static class SavedServerSettings
         ServerName = new FusionPref<string>(category, "Server Name", string.Empty, updateMode);
         ServerDescription = new FusionPref<string>(category, "Server Description", string.Empty, updateMode);
 
-        // Mortality
+        // Combat
         Mortality = new FusionPref<bool>(category, "Server Mortality", true, updateMode);
+        FriendlyFire = new FusionPref<bool>(category, "Friendly Fire", true, updateMode);
 
         // Server permissions
         DevTools = new FusionPref<PermissionLevel>(category, "Dev Tools Allowed", PermissionLevel.DEFAULT, updateMode);

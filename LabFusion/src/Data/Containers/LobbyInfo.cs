@@ -69,6 +69,9 @@ public class LobbyInfo
     [JsonPropertyName("mortality")]
     public bool Mortality { get; set; }
 
+    [JsonPropertyName("friendlyFire")]
+    public bool FriendlyFire { get; set; }
+
     // Permissions
     [JsonPropertyName("devTools")]
     public PermissionLevel DevTools { get; set; }
@@ -116,6 +119,7 @@ public class LobbyInfo
         VoiceChat = SavedServerSettings.VoiceChat.Value;
         PlayerConstraints = SavedServerSettings.PlayerConstraints.Value;
         Mortality = SavedServerSettings.Mortality.Value;
+        FriendlyFire = SavedServerSettings.FriendlyFire.Value;
 
         // Permissions
         DevTools = SavedServerSettings.DevTools.Value;
