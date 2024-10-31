@@ -64,44 +64,6 @@ public static partial class BoneMenuCreator
         ulong longId = id.LongId;
         byte smallId = id.SmallId;
 
-        // Set permission display
-        if (NetworkInfo.IsServer && !id.IsMe)
-        {
-            var permSetter = category.CreateEnum($"Permissions", Color.yellow, level, (v) =>
-            {
-                FusionPermissions.TrySetPermission(longId, username, (PermissionLevel)v);
-            });
-
-            id.Metadata.OnMetadataChanged += (key, value) =>
-            {
-                if (key != MetadataHelper.PermissionKey)
-                {
-                    return;
-                }
-
-                if (!Enum.TryParse(value, out PermissionLevel newLevel))
-                {
-                    return;
-                }
-
-                permSetter.Value = newLevel;
-            };
-        }
-        else
-        {
-            var permDisplay = category.CreateFunction($"Permissions: {level}", Color.yellow, null);
-
-            id.Metadata.OnMetadataChanged += (key, value) =>
-            {
-                if (key != MetadataHelper.PermissionKey)
-                {
-                    return;
-                }
-
-                permDisplay.ElementName = $"Permissions: {value}";
-            };
-        }
-
         // Get self permissions
         FusionPermissions.FetchPermissionLevel(PlayerIdManager.LocalLongId, out var selfLevel, out _);
 

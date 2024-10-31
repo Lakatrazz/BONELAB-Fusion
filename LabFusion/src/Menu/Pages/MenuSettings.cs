@@ -7,6 +7,7 @@ using LabFusion.Preferences.Client;
 using LabFusion.Representation;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Utilities;
+using LabFusion.Voice;
 
 using UnityEngine;
 
@@ -150,6 +151,77 @@ public static class MenuSettings
         void OnColorElementChanged(float value)
         {
             nameTagColorGroup.Color = ClientSettings.NameTagColor;
+        }
+
+        // Voice Chat
+        var voiceChatGroup = page.AddElement<GroupElement>("Voice Chat");
+
+        voiceChatGroup.AddElement<FloatElement>("Global Volume")
+            .AsPref(ClientSettings.VoiceChat.GlobalVolume)
+            .WithLimits(0f, 3f)
+            .WithIncrement(0.1f);
+
+        var inputDeviceGroup = page.AddElement<GroupElement>("Input Device");
+
+        PopulateInputDeviceGroup(inputDeviceGroup);
+    }
+
+    private static void PopulateInputDeviceGroup(GroupElement element)
+    {
+        var devices = VoiceInfo.InputDevices;
+
+        var inputPreference = ClientSettings.VoiceChat.InputDevice;
+
+        Dictionary<string, FunctionElement> deviceElements = new();
+
+        var defaultButton = element.AddElement<FunctionElement>("Default")
+            .WithColor(string.IsNullOrEmpty(inputPreference.Value) ? Color.green : Color.gray)
+            .Do(() =>
+            {
+                inputPreference.Value = string.Empty;
+            });
+
+        deviceElements.Add(string.Empty, defaultButton);
+
+        foreach (var device in devices)
+        {
+            var color = inputPreference.Value == device ? Color.green : Color.gray;
+
+            var deviceButton = element.AddElement<FunctionElement>(device)
+                .WithColor(color)
+                .Do(() =>
+                {
+                    inputPreference.Value = device;
+                });
+
+            deviceElements.Add(device, deviceButton);
+        }
+
+        inputPreference.OnValueChanged += OnPrefChanged;
+
+        element.OnCleared += () =>
+        {
+            inputPreference.OnValueChanged -= OnPrefChanged;
+        };
+
+        void OnPrefChanged(string value)
+        {
+            foreach (var element in deviceElements)
+            {
+                if (string.IsNullOrWhiteSpace(value) && string.IsNullOrEmpty(element.Key))
+                {
+                    element.Value.Color = Color.green;
+                    continue;
+                }
+
+                if (value == element.Key)
+                {
+                    element.Value.Color = Color.green;
+                    continue;
+                }
+
+                element.Value.Color = Color.gray;
+            }
         }
     }
 
