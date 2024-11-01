@@ -2,6 +2,7 @@
 using LabFusion.Utilities;
 using LabFusion.Senders;
 using LabFusion.Entities;
+using LabFusion.Marrow;
 
 using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.AI;
@@ -59,6 +60,12 @@ public static class PlayerDamageReceiverPatches
             // Is the attacked person another player? Did we attack them?
             else if (NetworkPlayerManager.TryGetPlayer(rm, out var player) && attacker.IsSelf())
             {
+                // Don't attack the other player if friendly fire is disabled
+                if (!NetworkCombatManager.CanAttack(player))
+                {
+                    return false;
+                }
+
                 // Send the damage over the network
                 PlayerSender.SendPlayerDamage(player.PlayerId, attack, __instance.bodyPart);
 
