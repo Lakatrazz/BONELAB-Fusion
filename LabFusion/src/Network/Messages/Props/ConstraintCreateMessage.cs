@@ -10,6 +10,7 @@ using UnityEngine;
 
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow;
+using LabFusion.Scene;
 
 namespace LabFusion.Network;
 
@@ -52,8 +53,8 @@ public class ConstraintCreateData : IFusionSerializable
         writer.Write(tracker1Transform);
         writer.Write(tracker2Transform);
 
-        writer.Write(point1);
-        writer.Write(point2);
+        writer.Write(NetworkTransformManager.EncodePosition(point1));
+        writer.Write(NetworkTransformManager.EncodePosition(point2));
 
         writer.Write(normal1);
         writer.Write(normal2);
@@ -76,8 +77,8 @@ public class ConstraintCreateData : IFusionSerializable
         tracker1Transform = reader.ReadFusionSerializable<SerializedTransform>();
         tracker2Transform = reader.ReadFusionSerializable<SerializedTransform>();
 
-        point1 = reader.ReadVector3();
-        point2 = reader.ReadVector3();
+        point1 = NetworkTransformManager.DecodePosition(reader.ReadVector3());
+        point2 = NetworkTransformManager.DecodePosition(reader.ReadVector3());
 
         normal1 = reader.ReadVector3();
         normal2 = reader.ReadVector3();

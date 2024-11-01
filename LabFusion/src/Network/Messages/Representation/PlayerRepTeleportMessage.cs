@@ -2,6 +2,7 @@
 using LabFusion.Exceptions;
 using LabFusion.Extensions;
 using LabFusion.Player;
+using LabFusion.Scene;
 using LabFusion.Utilities;
 
 using UnityEngine;
@@ -18,13 +19,13 @@ public class PlayerRepTeleportData : IFusionSerializable
     public void Serialize(FusionWriter writer)
     {
         writer.Write(teleportedUser);
-        writer.Write(position);
+        writer.Write(NetworkTransformManager.EncodePosition(position));
     }
 
     public void Deserialize(FusionReader reader)
     {
         teleportedUser = reader.ReadByte();
-        position = reader.ReadVector3();
+        position = NetworkTransformManager.DecodePosition(reader.ReadVector3());
     }
 
     public static PlayerRepTeleportData Create(byte teleportedUser, Vector3 position)
