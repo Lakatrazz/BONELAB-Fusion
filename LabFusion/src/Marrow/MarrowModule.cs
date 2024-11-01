@@ -1,4 +1,5 @@
 ﻿using LabFusion.SDK.Modules;
+using LabFusion.Utilities;
 
 namespace LabFusion.Marrow;
 
@@ -14,6 +15,8 @@ public class MarrowModule : Module
     {
         ModuleMessageHandler.RegisterHandler<ButtonChargeMessage>();
         ModuleMessageHandler.RegisterHandler<EventActuatorMessage>();
+
+        MultiplayerHooking.OnMainSceneInitialized += NetworkGunManager.OnMainSceneInitialized;
     }
 
     protected override void OnModuleUnregistered()

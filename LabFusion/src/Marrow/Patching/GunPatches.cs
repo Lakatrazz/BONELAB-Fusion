@@ -7,12 +7,29 @@ using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Marrow.Patching;
 
 [HarmonyPatch(typeof(Gun))]
 public static class GunPatches
 {
-    public static bool IgnorePatches = false;
+    public static bool IgnorePatches { get; set; } = false;
+
+    [HarmonyPatch(nameof(Gun.OnTriggerGripAttached))]
+    [HarmonyPostfix]
+    public static void OnTriggerGripAttached(Gun __instance, Hand hand)
+    {
+        // Make sure we're in a server first
+        if (!NetworkInfo.HasServer)
+        {
+            return;
+        }
+
+        // If this isn't our RigManager, then we should provide the Gun with the NetworkAmmoInventory instead
+        if (!hand.manager.IsSelf())
+        {
+            __instance._ammoInventory = NetworkGunManager.NetworkAmmoInventory;
+        }
+    }
 
     [HarmonyPatch(nameof(Gun.Fire))]
     [HarmonyPrefix]
