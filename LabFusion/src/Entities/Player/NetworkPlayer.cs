@@ -725,7 +725,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         pelvisPose.PredictPosition(deltaTime);
 
         // Check for stability teleport
-        float distSqr = (pelvisPosition - pelvisPose.position).sqrMagnitude;
+        float distSqr = (pelvisPosition - pelvisPose.PredictedPosition).sqrMagnitude;
         if (distSqr > (2f * (pelvisPose.velocity.magnitude + 1f)))
         {
             TeleportToPose();
@@ -733,7 +733,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         // Apply forces
-        pelvis.AddForce(_pelvisPDController.GetForce(pelvisPosition, pelvis.velocity, pelvisPose.position, pelvisPose.velocity), ForceMode.Acceleration);
+        pelvis.AddForce(_pelvisPDController.GetForce(pelvisPosition, pelvis.velocity, pelvisPose.PredictedPosition, pelvisPose.velocity), ForceMode.Acceleration);
 
         // We only want to apply angular force when ragdolled
         if (rigManager.physicsRig.torso.spineInternalMult <= 0f)

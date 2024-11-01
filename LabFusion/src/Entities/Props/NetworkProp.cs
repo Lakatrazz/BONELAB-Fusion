@@ -368,7 +368,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         }
 
         // Add proper forces
-        pdController.SavedForce = pdController.GetForce(rigidbody.position, rigidbody.velocity, pose.position, pose.velocity);
+        pdController.SavedForce = pdController.GetForce(rigidbody.position, rigidbody.velocity, pose.PredictedPosition, pose.velocity);
         pdController.SavedTorque = pdController.GetTorque(rigidbody.rotation, rigidbody.angularVelocity, pose.rotation, pose.angularVelocity);
 
         rigidbody.AddForce(pdController.SavedForce, ForceMode.Acceleration);

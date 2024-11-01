@@ -1,4 +1,5 @@
 ﻿using LabFusion.Extensions;
+using LabFusion.Scene;
 using LabFusion.Utilities;
 
 using UnityEngine;
@@ -8,8 +9,8 @@ namespace LabFusion.Data;
 public class PDController
 {
     // Clamping values to make sure forces and torques don't get out of hand
-    private const float MaxForce = 50000f;
-    private const float MaxTorque = 10000f;
+    private const float MaxForce = 5000f;
+    private const float MaxTorque = 1000f;
 
     // Tweak these values to control movement properties of all synced objects
     private const float PositionFrequency = 10f;
@@ -116,11 +117,18 @@ public class PDController
 
     public Vector3 GetForce(in Vector3 position, in Vector3 velocity, in Vector3 targetPos, in Vector3 targetVel)
     {
+        if (!NetworkTransformManager.IsInBounds(targetPos))
+        {
+            return Vector3.zero;
+        }
+
+        var limitedTargetVel = NetworkTransformManager.LimitVelocity(targetVel);
+
         // Update derivatives if needed
         if (!_validPosition)
         {
             _lastPosition = targetPos;
-            _lastVelocity = targetVel;
+            _lastVelocity = limitedTargetVel;
             _validPosition = true;
         }
 
@@ -133,8 +141,8 @@ public class PDController
         var force = (Pt1 - Pt0) * _positionKsg + (Vt1 - Vt0) * _positionKdg;
 
         // Acceleration
-        force += (targetVel - _lastVelocity) / _lastFixedDelta;
-        _lastVelocity = targetVel;
+        force += (limitedTargetVel - _lastVelocity) / _lastFixedDelta;
+        _lastVelocity = limitedTargetVel;
 
         _lastPosition = targetPos;
 
