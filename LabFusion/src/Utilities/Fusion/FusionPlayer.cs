@@ -9,6 +9,7 @@ using LabFusion.Representation;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Senders;
 using LabFusion.Scene;
+using LabFusion.Marrow;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
 using Il2CppSLZ.Marrow.Warehouse;
@@ -18,7 +19,6 @@ using Il2CppSLZ.Marrow;
 using UnityEngine;
 
 using Avatar = Il2CppSLZ.VRMK.Avatar;
-using LabFusion.Marrow;
 
 namespace LabFusion.Utilities;
 
@@ -30,7 +30,7 @@ public static class FusionPlayer
     public static float? VitalityOverride { get; internal set; } = null;
     public static string AvatarOverride { get; internal set; } = null;
 
-    private static bool _physicsCrash = false;
+    private static bool _brokeBounds = false;
 
     internal static void OnInitializeMelon()
     {
@@ -50,10 +50,10 @@ public static class FusionPlayer
     {
         LastAttacker = null;
 
-        if (_physicsCrash)
+        if (_brokeBounds)
         {
             Physics.autoSimulation = true;
-            _physicsCrash = false;
+            _brokeBounds = false;
         }
     }
 
@@ -77,22 +77,22 @@ public static class FusionPlayer
         var rm = RigData.Refs.RigManager;
         var position = rm.physicsRig.feet.transform.position;
 
-        if (!position.IsNanOrInf())
+        if (NetworkTransformManager.IsInBounds(position))
         {
             return;
         }
 
 #if DEBUG
-        FusionLogger.Warn("Player was sent out of floating point, reloading scene.");
+        FusionLogger.Warn("Player was sent out of bounds, reloading scene.");
 #endif
 
-        // We hit NaN, don't simulate physics!
+        // Incase we hit NaN, don't simulate physics!
         Physics.autoSimulation = false;
-        _physicsCrash = true;
+        _brokeBounds = true;
 
         if (NetworkInfo.HasServer && !NetworkInfo.IsServer)
         {
-            NetworkHelper.Disconnect("Game Crash");
+            NetworkHelper.Disconnect("Left Bounds");
         }
 
         SceneStreamer.Reload();
@@ -103,7 +103,7 @@ public static class FusionPlayer
             showTitleOnPopup = true,
             title = "Whoops! Sorry about that!",
             type = NotificationType.WARNING,
-            message = "The scene was reloaded due to a physics crash.",
+            message = "The scene was reloaded due to being sent far out of bounds.",
             popupLength = 6f,
         });
     }

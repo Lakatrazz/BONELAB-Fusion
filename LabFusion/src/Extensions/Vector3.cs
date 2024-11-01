@@ -20,16 +20,6 @@ public static class Vector3Extensions
     public static readonly Vector3 up = Vector3.up;
     public static readonly Vector3 down = Vector3.down;
 
-    public static bool IsNanOrInf(this Vector3 vector)
-    {
-        return Internal_IsNanOrInf(vector.x) || Internal_IsNanOrInf(vector.y) || Internal_IsNanOrInf(vector.z);
-    }
-
-    internal static bool Internal_IsNanOrInf(float value)
-    {
-        return float.IsPositiveInfinity(value) || float.IsNegativeInfinity(value) || float.IsNaN(value);
-    }
-
     public static Quaternion GetQuaternionDisplacement(this Vector3 displacement)
     {
         float xMag = GetMagnitude(displacement) * ManagedMathf.Rad2Deg;
