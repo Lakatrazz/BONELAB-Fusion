@@ -33,9 +33,7 @@ public static class EventActuatorPatches
         // Unfortunately, interop completely fails to patch EventActuator.Actuate and crashes when it runs
         // So, I have to do this mess and instead replace the UltEvents
         // I wish this game was mono...
-        OverrideEvent(actuator, actuator.InputUpdated, OnInputUpdated);
         OverrideEvent(actuator, actuator.InputRose, OnInputRose);
-        OverrideEvent(actuator, actuator.InputHeld, OnInputHeld);
         OverrideEvent(actuator, actuator.InputFell, OnInputFell);
         OverrideEvent(actuator, actuator.InputRoseOneShot, OnInputRoseOneShot);
     }
@@ -89,32 +87,22 @@ public static class EventActuatorPatches
         }
     }
 
-    private static void OnInputUpdated(EventActuator actuator, float f)
-    {
-        OnSendEvent(actuator, EventActuatorType.UPDATED, f, NetworkChannel.Unreliable);
-    }
-
     private static void OnInputRose(EventActuator actuator, float f)
     {
-        OnSendEvent(actuator, EventActuatorType.ROSE, f, NetworkChannel.Reliable);
-    }
-
-    private static void OnInputHeld(EventActuator actuator, float f)
-    {
-        OnSendEvent(actuator, EventActuatorType.HELD, f, NetworkChannel.Unreliable);
+        OnSendEvent(actuator, EventActuatorType.ROSE, f);
     }
 
     private static void OnInputFell(EventActuator actuator, float f)
     {
-        OnSendEvent(actuator, EventActuatorType.FELL, f, NetworkChannel.Reliable);
+        OnSendEvent(actuator, EventActuatorType.FELL, f);
     }
 
     private static void OnInputRoseOneShot(EventActuator actuator, float f)
     {
-        OnSendEvent(actuator, EventActuatorType.ROSEONESHOT, f, NetworkChannel.Reliable);
+        OnSendEvent(actuator, EventActuatorType.ROSEONESHOT, f);
     }
 
-    private static void OnSendEvent(EventActuator actuator, EventActuatorType type, float value, NetworkChannel channel)
+    private static void OnSendEvent(EventActuator actuator, EventActuatorType type, float value)
     {
         var hashData = HashTable.GetDataFromComponent(actuator);
 
@@ -128,7 +116,6 @@ public static class EventActuatorPatches
         writer.Write(data);
 
         using var message = FusionMessage.ModuleCreate<EventActuatorMessage>(writer);
-        MessageSender.BroadcastMessageExceptSelf(channel, message);
-
+        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
     }
 }

@@ -11,9 +11,7 @@ namespace LabFusion.Marrow;
 
 public enum EventActuatorType : byte
 {
-    UPDATED,
     ROSE,
-    HELD,
     FELL,
     ROSEONESHOT,
 }
@@ -88,14 +86,8 @@ public class EventActuatorMessage : ModuleMessageHandler
         {
             switch (type)
             {
-                case EventActuatorType.UPDATED:
-                    actuator._invokeInputUpdated(value);
-                    break;
                 case EventActuatorType.ROSE:
                     actuator._invokeInputRose(value);
-                    break;
-                case EventActuatorType.HELD:
-                    actuator._invokeInputHeld(value);
                     break;
                 case EventActuatorType.FELL:
                     actuator._invokeInputFell(value);
