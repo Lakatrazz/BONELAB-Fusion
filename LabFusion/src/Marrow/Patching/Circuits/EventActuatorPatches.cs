@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 
 using Il2CppSLZ.Marrow.Circuits;
+using Il2CppUltEvents;
 
 using LabFusion.Data;
 using LabFusion.Network;
@@ -12,6 +13,8 @@ namespace LabFusion.Marrow.Patching;
 public static class EventActuatorPatches
 {
     public static readonly ComponentHashTable<EventActuator> HashTable = new();
+
+    public static bool IgnoreOverride { get; set; } = false;
 
     public static void Awake(EventActuator actuator)
     {
@@ -26,42 +29,14 @@ public static class EventActuatorPatches
         }
 #endif
 
-        // Hook into UltEvents
-        // We don't need to do this if the UltEvent doesn't have calls
-        if (actuator.InputUpdated.HasCalls)
-        {
-            actuator.InputUpdated.add_DynamicCalls((Il2CppSystem.Action<float>)((float f) => {
-                OnInputUpdated(actuator, f);
-            }));
-        }
-
-        if (actuator.InputRose.HasCalls)
-        {
-            actuator.InputRose.add_DynamicCalls((Il2CppSystem.Action<float>)((float f) => {
-                OnInputRose(actuator, f);
-            }));
-        }
-
-        if (actuator.InputHeld.HasCalls)
-        {
-            actuator.InputHeld.add_DynamicCalls((Il2CppSystem.Action<float>)((float f) => {
-                OnInputHeld(actuator, f);
-            }));
-        }
-
-        if (actuator.InputFell.HasCalls)
-        {
-            actuator.InputFell.add_DynamicCalls((Il2CppSystem.Action<float>)((float f) => {
-                OnInputFell(actuator, f);
-            }));
-        }
-
-        if (actuator.InputRoseOneShot.HasCalls)
-        {
-            actuator.InputRoseOneShot.add_DynamicCalls((Il2CppSystem.Action<float>)((float f) => {
-                OnInputRoseOneShot(actuator, f);
-            }));
-        }
+        // Override the UltEvents
+        // Unfortunately, interop completely fails to patch EventActuator.Actuate and crashes when it runs
+        // So, I have to do this mess and instead replace the UltEvents
+        OverrideEvent(actuator, actuator.InputUpdated, OnInputUpdated);
+        OverrideEvent(actuator, actuator.InputRose, OnInputRose);
+        OverrideEvent(actuator, actuator.InputHeld, OnInputHeld);
+        OverrideEvent(actuator, actuator.InputFell, OnInputFell);
+        OverrideEvent(actuator, actuator.InputRoseOneShot, OnInputRoseOneShot);
     }
 
     public static void OnDestroy(EventActuator actuator)
@@ -69,53 +44,72 @@ public static class EventActuatorPatches
         HashTable.RemoveComponent(actuator);
     }
 
-    private static void OnInputUpdated(EventActuator actuator, float f)
+    private static void OverrideEvent(EventActuator actuator, UltEvent<float> ultEvent, Action<EventActuator, float> replacement)
     {
-        if (!NetworkInfo.IsServer)
+        // No calls? No need to override
+        if (!ultEvent.HasCalls)
         {
             return;
         }
 
+        var originalCalls = ultEvent.PersistentCallsList;
+
+        var copiedEvent = new UltEvent<float>();
+        copiedEvent._PersistentCalls = new Il2CppSystem.Collections.Generic.List<PersistentCall>();
+
+        foreach (var call in originalCalls)
+        {
+            copiedEvent.PersistentCallsList.Add(call);
+        }
+
+        ultEvent.Clear();
+
+        ultEvent.add_DynamicCalls((Il2CppSystem.Action<float>)NewCall);
+
+        void NewCall(float parameter0)
+        {
+            if (!NetworkInfo.HasServer || IgnoreOverride)
+            {
+                RunOriginal(parameter0);
+                return;
+            }
+
+            if (NetworkInfo.IsServer)
+            {
+                replacement(actuator, parameter0);
+                RunOriginal(parameter0);
+                return;
+            }
+        }
+
+        void RunOriginal(float parameter0)
+        {
+            copiedEvent.Invoke(parameter0);
+        }
+    }
+
+    private static void OnInputUpdated(EventActuator actuator, float f)
+    {
         OnSendEvent(actuator, EventActuatorType.UPDATED, f, NetworkChannel.Unreliable);
     }
 
     private static void OnInputRose(EventActuator actuator, float f)
     {
-        if (!NetworkInfo.IsServer)
-        {
-            return;
-        }
-
         OnSendEvent(actuator, EventActuatorType.ROSE, f, NetworkChannel.Reliable);
     }
 
     private static void OnInputHeld(EventActuator actuator, float f)
     {
-        if (!NetworkInfo.IsServer)
-        {
-            return;
-        }
-
         OnSendEvent(actuator, EventActuatorType.HELD, f, NetworkChannel.Unreliable);
     }
 
     private static void OnInputFell(EventActuator actuator, float f)
     {
-        if (!NetworkInfo.IsServer)
-        {
-            return;
-        }
-
         OnSendEvent(actuator, EventActuatorType.FELL, f, NetworkChannel.Reliable);
     }
 
     private static void OnInputRoseOneShot(EventActuator actuator, float f)
     {
-        if (!NetworkInfo.IsServer)
-        {
-            return;
-        }
-
         OnSendEvent(actuator, EventActuatorType.ROSEONESHOT, f, NetworkChannel.Reliable);
     }
 
@@ -136,25 +130,4 @@ public static class EventActuatorPatches
         MessageSender.BroadcastMessageExceptSelf(channel, message);
 
     }
-
-    // TODO: Fix this causing crashes!
-    // [HarmonyPatch(nameof(EventActuator.Actuate))]
-    // [HarmonyPrefix]
-    // public static bool ActuatePrefix(EventActuator __instance, double fixedTime, bool isInitializing)
-    // {
-    //     // No need for syncing if we aren't in a server
-    //     if (!NetworkInfo.HasServer)
-    //     {
-    //         return true;
-    //     }
-    // 
-    //     // Only allow the server to process event actuators
-    //     if (NetworkInfo.IsServer)
-    //     {
-    //         return true;
-    //     }
-    // 
-    //     // Otherwise, don't process them, have them be synced by the server
-    //     return false;
-    // }
 }

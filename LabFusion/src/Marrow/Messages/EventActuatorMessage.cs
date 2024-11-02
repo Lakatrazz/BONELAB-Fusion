@@ -3,6 +3,7 @@ using LabFusion.Network;
 using LabFusion.SDK.Modules;
 using LabFusion.Exceptions;
 using LabFusion.Marrow.Patching;
+using LabFusion.Utilities;
 
 using Il2CppSLZ.Marrow.Circuits;
 
@@ -80,23 +81,35 @@ public class EventActuatorMessage : ModuleMessageHandler
 
     private static void OnFoundEventActuator(EventActuator actuator, EventActuatorType type, float value)
     {
-        switch (type)
+
+        EventActuatorPatches.IgnoreOverride = true;
+
+        try
         {
-            case EventActuatorType.UPDATED:
-                actuator._invokeInputUpdated(value);
-                break;
-            case EventActuatorType.ROSE:
-                actuator._invokeInputRose(value);
-                break;
-            case EventActuatorType.HELD:
-                actuator._invokeInputHeld(value);
-                break;
-            case EventActuatorType.FELL:
-                actuator._invokeInputFell(value);
-                break;
-            case EventActuatorType.ROSEONESHOT:
-                actuator._invokeInputRoseOneShot(value);
-                break;
+            switch (type)
+            {
+                case EventActuatorType.UPDATED:
+                    actuator._invokeInputUpdated(value);
+                    break;
+                case EventActuatorType.ROSE:
+                    actuator._invokeInputRose(value);
+                    break;
+                case EventActuatorType.HELD:
+                    actuator._invokeInputHeld(value);
+                    break;
+                case EventActuatorType.FELL:
+                    actuator._invokeInputFell(value);
+                    break;
+                case EventActuatorType.ROSEONESHOT:
+                    actuator._invokeInputRoseOneShot(value);
+                    break;
+            }
         }
+        catch (Exception e)
+        {
+            FusionLogger.LogException($"executing EventActuator {type}", e);
+        }
+
+        EventActuatorPatches.IgnoreOverride = false;
     }
 }
