@@ -6,8 +6,6 @@ using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Utilities;
 
-using MelonLoader.NativeUtils;
-
 namespace LabFusion.Marrow.Patching;
 
 [HarmonyPatch(typeof(EventActuator))]

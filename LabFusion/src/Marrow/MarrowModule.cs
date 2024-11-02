@@ -1,5 +1,4 @@
-﻿using LabFusion.Marrow.Patching;
-using LabFusion.SDK.Modules;
+﻿using LabFusion.SDK.Modules;
 using LabFusion.Utilities;
 
 namespace LabFusion.Marrow;
