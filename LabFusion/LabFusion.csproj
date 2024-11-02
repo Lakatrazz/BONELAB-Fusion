@@ -263,6 +263,9 @@
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodePlayerSettings.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodeTeamSettings.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\RPCs\RPCEvent.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Variables\RPCString.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Variables\RPCBool.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Variables\RPCFloat.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Variables\RPCInt.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Variables\RPCVariable.cs" />
   </ItemGroup>

@@ -141,5 +141,8 @@ public static class NativeMessageTag
 
         // RPC
         RPCEvent = 209,
-        RPCInt = 210;
+        RPCInt = 210,
+        RPCFloat = 211,
+        RPCBool = 212,
+        RPCString = 213;
 }

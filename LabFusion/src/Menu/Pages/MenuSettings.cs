@@ -1,5 +1,8 @@
-﻿using LabFusion.Data;
+﻿using Il2CppSLZ.Marrow.SceneStreaming;
+
+using LabFusion.Data;
 using LabFusion.Extensions;
+using LabFusion.Marrow;
 using LabFusion.Marrow.Proxies;
 using LabFusion.Network;
 using LabFusion.Preferences.Client;
@@ -229,6 +232,12 @@ public static class MenuSettings
     private static void PopulateDebugSettings(PageElement page)
     {
         var generalGroup = page.AddElement<GroupElement>("General");
+
+        generalGroup.AddElement<FunctionElement>("Load Testing Level")
+            .Do(() =>
+            {
+                SceneStreamer.Load(FusionLevelReferences.FusionTestingReference.Barcode, null);
+            });
 
         generalGroup.AddElement<FunctionElement>("Spawn Player Rep")
             .Do(() =>
