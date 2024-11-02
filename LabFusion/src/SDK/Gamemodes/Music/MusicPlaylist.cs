@@ -52,7 +52,18 @@ public class MusicPlaylist
 
     private void StopMusic()
     {
-        Audio2dPlugin.Audio2dManager.StopOverrideMusic();
+        var audio2dManager = Audio2dPlugin.Audio2dManager;
+
+        bool noOriginalMusic = audio2dManager._overridenMusicClip == null;
+
+        audio2dManager.StopOverrideMusic();
+
+        // Incase no music was overriden, we need to manually stop the music
+        // This way the music doesn't just keep playing anyways
+        if (noOriginalMusic)
+        {
+            audio2dManager.StopMusic(0.2f);
+        }
     }
 
     public void NextTrack()
