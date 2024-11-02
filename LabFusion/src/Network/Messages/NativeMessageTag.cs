@@ -5,7 +5,7 @@ public static class NativeMessageTag
     public static readonly byte
         // Built in messages
         Unknown = 0,
-        
+
         // Connection messages
         // These should never change, they aren't game specific
         ConnectionRequest = 1,
@@ -140,5 +140,6 @@ public static class NativeMessageTag
         PointItemTriggerValue = 208,
 
         // RPC
-        RPCEvent = 209;
+        RPCEvent = 209,
+        RPCInt = 210;
 }

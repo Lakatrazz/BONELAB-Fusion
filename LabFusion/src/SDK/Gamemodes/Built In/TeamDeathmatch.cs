@@ -1,6 +1,7 @@
 ﻿using BoneLib.BoneMenu;
 
 using Il2CppSLZ.Marrow.Warehouse;
+using Il2CppSLZ.Marrow.Audio;
 
 using LabFusion.Extensions;
 using LabFusion.Marrow;
@@ -675,7 +676,7 @@ public class TeamDeathmatch : Gamemode
         {
             winMusic.LoadClip((clip) =>
             {
-                FusionAudio.Play2D(clip, 0.2f);
+                SafeAudio3dPlayer.Play2dOneShot(clip, SafeAudio3dPlayer.NonDiegeticMusic, SafeAudio3dPlayer.MusicVolume);
             });
 
             return;
@@ -685,7 +686,7 @@ public class TeamDeathmatch : Gamemode
 
         AudioLoader.LoadMonoDisc(randomChoice, (c) =>
         {
-            FusionAudio.Play2D(c, 0.2f);
+            SafeAudio3dPlayer.Play2dOneShot(c, SafeAudio3dPlayer.NonDiegeticMusic, SafeAudio3dPlayer.MusicVolume);
         });
     }
 
@@ -697,7 +698,7 @@ public class TeamDeathmatch : Gamemode
         {
             loseMusic.LoadClip((clip) =>
             {
-                FusionAudio.Play2D(clip, 0.2f);
+                SafeAudio3dPlayer.Play2dOneShot(clip, SafeAudio3dPlayer.NonDiegeticMusic, SafeAudio3dPlayer.MusicVolume);
             });
 
             return;
@@ -707,7 +708,7 @@ public class TeamDeathmatch : Gamemode
 
         AudioLoader.LoadMonoDisc(randomChoice, (c) =>
         {
-            FusionAudio.Play2D(c, 0.2f);
+            SafeAudio3dPlayer.Play2dOneShot(c, SafeAudio3dPlayer.NonDiegeticMusic, SafeAudio3dPlayer.MusicVolume);
         });
     }
 
@@ -722,7 +723,7 @@ public class TeamDeathmatch : Gamemode
 
         tieMusic.LoadClip((clip) =>
         {
-            FusionAudio.Play2D(clip, 0.2f);
+            SafeAudio3dPlayer.Play2dOneShot(clip, SafeAudio3dPlayer.NonDiegeticMusic, SafeAudio3dPlayer.MusicVolume);
         });
     }
 

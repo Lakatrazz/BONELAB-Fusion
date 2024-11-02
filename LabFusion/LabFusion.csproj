@@ -256,10 +256,15 @@
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Events\OwnershipEvents.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Events\ServerEvents.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Functions\BitTransactor.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodeCrateSpawner.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodeEvents.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodeMarker.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodeMusicSettings.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodePlayerSettings.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodeTeamSettings.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\RPCs\RPCEvent.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Variables\RPCInt.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Variables\RPCVariable.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -353,9 +358,6 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>$(BONELAB_DIR)\MelonLoader\Managed\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="System.Windows.Forms">
-      <HintPath>$(BONELAB_DIR)\MelonLoader\Managed\System.Windows.Forms.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.RenderPipelines.Core.Runtime">
       <HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
     </Reference>
@@ -404,10 +406,6 @@
     <Reference Include="UnityEngine.UIModule">
       <HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\UnityEngine.UIModule.dll</HintPath>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="FusionBundles\Assets\FusionMarrow\Runtime\Variables\" />
   </ItemGroup>
 
   <ItemGroup>

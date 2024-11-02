@@ -4,8 +4,9 @@ using Il2CppSLZ.Marrow.Circuits;
 
 using LabFusion.Data;
 using LabFusion.Network;
-using LabFusion.Player;
 using LabFusion.Utilities;
+
+using MelonLoader.NativeUtils;
 
 namespace LabFusion.Marrow.Patching;
 
@@ -134,27 +135,28 @@ public static class EventActuatorPatches
         writer.Write(data);
 
         using var message = FusionMessage.ModuleCreate<EventActuatorMessage>(writer);
-        MessageSender.BroadcastMessage(channel, message);
+        MessageSender.BroadcastMessageExceptSelf(channel, message);
 
     }
 
-    [HarmonyPatch(nameof(EventActuator.Actuate))]
-    [HarmonyPrefix]
-    public static bool ActuatePrefix(EventActuator __instance, double fixedTime, bool isInitializing)
-    {
-        // No need for syncing if we aren't in a server
-        if (!NetworkInfo.HasServer)
-        {
-            return true;
-        }
-
-        // Only allow the server to process event actuators
-        if (NetworkInfo.IsServer)
-        {
-            return true;
-        }
-
-        // Otherwise, don't process them, have them be synced by the server
-        return false;
-    }
+    // TODO: Fix this causing crashes!
+    // [HarmonyPatch(nameof(EventActuator.Actuate))]
+    // [HarmonyPrefix]
+    // public static bool ActuatePrefix(EventActuator __instance, double fixedTime, bool isInitializing)
+    // {
+    //     // No need for syncing if we aren't in a server
+    //     if (!NetworkInfo.HasServer)
+    //     {
+    //         return true;
+    //     }
+    // 
+    //     // Only allow the server to process event actuators
+    //     if (NetworkInfo.IsServer)
+    //     {
+    //         return true;
+    //     }
+    // 
+    //     // Otherwise, don't process them, have them be synced by the server
+    //     return false;
+    // }
 }

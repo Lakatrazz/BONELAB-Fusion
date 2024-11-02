@@ -1,7 +1,7 @@
 ﻿using LabFusion.Extensions;
 using LabFusion.Player;
-
 using LabFusion.SDK.Metadata;
+using LabFusion.Utilities;
 
 using Random = UnityEngine.Random;
 
@@ -12,8 +12,8 @@ public class TeamManager
     private Gamemode _gamemode = null;
     public Gamemode Gamemode => _gamemode;
 
-    private readonly HashSet<Team> _teams = new();
-    public HashSet<Team> Teams => _teams;
+    private readonly List<Team> _teams = new();
+    public List<Team> Teams => _teams;
 
     public event Action<PlayerId, Team> OnAssignedToTeam, OnRemovedFromTeam;
 
@@ -145,22 +145,31 @@ public class TeamManager
     /// </summary>
     public void AssignToRandomTeams()
     {
-        // Shuffle the players for randomness
-        var players = new List<PlayerId>(PlayerIdManager.PlayerIds);
-        players.Shuffle();
+        if (Teams.Count <= 0)
+        {
+            FusionLogger.Warn("Failed to assign players to random teams because there are no teams!");
+            return;
+        }
+
+        // Shuffle the players and teams for randomness
+        var shuffledPlayers = new List<PlayerId>(PlayerIdManager.PlayerIds);
+        shuffledPlayers.Shuffle();
+
+        var shuffledTeams = new List<Team>(Teams);
+        shuffledTeams.Shuffle();
 
         // Iterate and assign teams
         int teamIndex = 0;
-        int teamCount = Teams.Count;
+        int teamCount = shuffledTeams.Count;
 
-        foreach (var player in players)
+        foreach (var player in shuffledPlayers)
         {
             if (teamIndex >= teamCount)
             {
                 teamIndex = 0;
             }
 
-            TryAssignTeam(player, Teams.ElementAt(teamCount++));
+            TryAssignTeam(player, shuffledTeams[teamIndex++]);
         }
     }
 
@@ -246,7 +255,7 @@ public class TeamManager
     /// <returns>A randomly selected team.</returns>
     public Team GetRandomTeam()
     {
-        return Teams.ElementAt(Random.RandomRangeInt(0, Teams.Count));
+        return Teams[Random.RandomRangeInt(0, Teams.Count)];
     }
 
     /// <summary>

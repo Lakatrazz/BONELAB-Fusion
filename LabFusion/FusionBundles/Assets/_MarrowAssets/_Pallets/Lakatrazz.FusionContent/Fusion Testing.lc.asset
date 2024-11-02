@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2505b25ddfc1ccf418da1689d2daf024, type: 3}
+  m_Name: Fusion Testing.lc
+  m_EditorClassIdentifier: 
+  _barcode:
+    _id: Lakatrazz.FusionContent.Level.FusionTesting
+  _title: Fusion Testing
+  _description: Debug level for testing Fusion events.
+  _unlockable: 0
+  _redacted: 1
+  _tags: []
+  _boneTags:
+    _tags: []
+  _mainAsset:
+    _assetGUID: e7e2d37e0bb9f3c4ba5626e11909b0b6
+    _editorAssetChanged: 0
+  _additionalAssetReferences: []
+  _multiScene: 0
+  _persistentScenes: []
+  _chunkScenes: []
+  _editorScenes: []

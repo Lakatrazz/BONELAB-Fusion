@@ -13,7 +13,7 @@ public class MusicPlaylist
     private int _currentTrack = -1;
     public int CurrentTrack => _currentTrack;
 
-    private float _volume = 0.2f;
+    private float _volume = SafeAudio3dPlayer.MusicVolume;
     public float Volume
     {
         get { return _volume; }

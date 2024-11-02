@@ -383,7 +383,7 @@ public class Deathmatch : Gamemode
         }
 
         dataCard.AudioClip.LoadAsset((Il2CppSystem.Action<AudioClip>)((c) => {
-            Audio3dManager.Play2dOneShot(c, Audio3dManager.nonDiegeticMusic, new Il2CppSystem.Nullable<float>(Audio3dManager.audio_MusicVolume), new Il2CppSystem.Nullable<float>(1f));
+            SafeAudio3dPlayer.Play2dOneShot(c, SafeAudio3dPlayer.NonDiegeticMusic, SafeAudio3dPlayer.MusicVolume);
         }));
     }
 
