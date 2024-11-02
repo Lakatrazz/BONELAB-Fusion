@@ -28,14 +28,6 @@ public class TeamDeathmatch : Gamemode
 
     public static TeamDeathmatch Instance { get; private set; }
 
-    public bool OverrideValues { get => _overrideValues; }
-
-    protected string _lavaGangOverride = null;
-    protected string _sabrelakeOverride = null;
-
-    protected Texture2D _lavaGangLogoOverride = null;
-    protected Texture2D _sabrelakeLogoOverride = null;
-
     private const int _defaultMinutes = 3;
     private const int _minMinutes = 2;
     private const int _maxMinutes = 60;
@@ -54,8 +46,6 @@ public class TeamDeathmatch : Gamemode
 
     private float _timeOfStart;
     private bool _oneMinuteLeft;
-
-    private bool _overrideValues;
 
     private int _savedMinutes = _defaultMinutes;
     private int _totalMinutes = _defaultMinutes;
@@ -121,31 +111,115 @@ public class TeamDeathmatch : Gamemode
         }
     }
 
-    public void AddDefaultTeams()
+    public void AddTeams()
     {
+        // TODO: Clean up
+        // Clear all team settings
         TeamManager.ClearTeams();
         TeamMusicManager.ClearTeams();
         TeamLogoManager.ClearTeams();
 
-        Team sabrelake = new(DefaultSabrelakeName);
-        Team lavaGang = new(DefaultLavaGangName);
+        // Get the default values
+        var sabrelakeBarcode = FusionBoneTagReferences.TeamSabrelakeReference.Barcode.ToString();
+        var lavaGangBarcode = FusionBoneTagReferences.TeamLavaGangReference.Barcode.ToString();
+
+        var sabrelakeVictoryReference = FusionMonoDiscReferences.SabrelakeVictoryReference;
+        var sabrelakeFailureReference = FusionMonoDiscReferences.SabrelakeFailureReference;
+
+        var lavaGangVictoryReference = FusionMonoDiscReferences.LavaGangVictoryReference;
+        var lavaGangFailureReference = FusionMonoDiscReferences.LavaGangFailureReference;
+
+        var tieReference = FusionMonoDiscReferences.ErmReference;
+
+        var sabrelakeLogo = FusionContentLoader.SabrelakeLogo.Asset;
+        var lavaGangLogo = FusionContentLoader.LavaGangLogo.Asset;
+
+        var sabrelakeDisplayName = DefaultSabrelakeName;
+        var lavaGangDisplayName = DefaultLavaGangName;
+
+        // Get overrides
+        var musicSettings = GamemodeMusicSettings.Instance;
+
+        if (musicSettings != null)
+        {
+            if (musicSettings.VictorySongOverrides.TryGetValue(sabrelakeBarcode, out var sabrelakeVictory))
+            {
+                sabrelakeVictoryReference = new MonoDiscReference(sabrelakeVictory);
+            }
+
+            if (musicSettings.FailureSongOverrides.TryGetValue(sabrelakeBarcode, out var sabrelakeFailure))
+            {
+                sabrelakeFailureReference = new MonoDiscReference(sabrelakeFailure);
+            }
+
+            if (musicSettings.VictorySongOverrides.TryGetValue(lavaGangBarcode, out var lavaGangVictory))
+            {
+                lavaGangVictoryReference = new MonoDiscReference(lavaGangVictory);
+            }
+
+            if (musicSettings.FailureSongOverrides.TryGetValue(lavaGangBarcode, out var lavaGangFailure))
+            {
+                lavaGangFailureReference = new MonoDiscReference(lavaGangFailure);
+            }
+
+            if (!string.IsNullOrWhiteSpace(musicSettings.TieSongOverride))
+            {
+                tieReference = new(musicSettings.TieSongOverride);
+            }
+        }
+
+        var teamSettings = GamemodeTeamSettings.Instance;
+
+        if (teamSettings != null)
+        {
+            if (teamSettings.TeamLogoOverrides.TryGetValue(sabrelakeBarcode, out var newSabrelakeLogo))
+            {
+                sabrelakeLogo = newSabrelakeLogo;
+            }
+
+            if (teamSettings.TeamLogoOverrides.TryGetValue(lavaGangBarcode, out var newLavaGangLogo))
+            {
+                lavaGangLogo = newLavaGangLogo;
+            }
+
+            if (teamSettings.TeamNameOverrides.TryGetValue(sabrelakeBarcode, out var newSabrelakeName))
+            {
+                sabrelakeDisplayName = newSabrelakeName;
+            }
+
+            if (teamSettings.TeamNameOverrides.TryGetValue(lavaGangBarcode, out var newLavaGangName))
+            {
+                lavaGangDisplayName = newLavaGangName;
+            }
+        }
+
+        // Create the teams
+        Team sabrelake = new(DefaultSabrelakeName)
+        {
+            DisplayName = sabrelakeDisplayName
+        };
+
+        Team lavaGang = new(DefaultLavaGangName)
+        {
+            DisplayName = lavaGangDisplayName
+        };
 
         TeamMusicManager.SetMusic(sabrelake, new TeamMusic()
         {
-            WinMusic = new AudioReference(FusionMonoDiscReferences.SabrelakeVictoryReference),
-            LoseMusic = new AudioReference(FusionMonoDiscReferences.SabrelakeFailureReference),
+            WinMusic = new AudioReference(sabrelakeVictoryReference),
+            LoseMusic = new AudioReference(sabrelakeFailureReference),
         });
 
         TeamMusicManager.SetMusic(lavaGang, new TeamMusic()
         {
-            WinMusic = new AudioReference(FusionMonoDiscReferences.LavaGangVictoryReference),
-            LoseMusic = new AudioReference(FusionMonoDiscReferences.LavaGangFailureReference),
+            WinMusic = new AudioReference(lavaGangVictoryReference),
+            LoseMusic = new AudioReference(lavaGangFailureReference),
         });
 
-        TeamMusicManager.TieMusic = new AudioReference(FusionMonoDiscReferences.ErmReference);
+        TeamMusicManager.TieMusic = new AudioReference(tieReference);
 
-        TeamLogoManager.SetLogo(sabrelake, FusionContentLoader.SabrelakeLogo.Asset);
-        TeamLogoManager.SetLogo(lavaGang, FusionContentLoader.LavaGangLogo.Asset);
+        TeamLogoManager.SetLogo(sabrelake, sabrelakeLogo);
+        TeamLogoManager.SetLogo(lavaGang, lavaGangLogo);
 
         TeamManager.AddTeam(sabrelake);
         TeamManager.AddTeam(lavaGang);
@@ -179,8 +253,6 @@ public class TeamDeathmatch : Gamemode
 
         NaturalEndTrigger = new TriggerEvent(nameof(NaturalEndTrigger), Relay, true);
         NaturalEndTrigger.OnTriggered += OnNaturalEnd;
-
-        SetDefaultValues();
     }
 
     public override void OnGamemodeUnregistered()
@@ -252,49 +324,42 @@ public class TeamDeathmatch : Gamemode
         return TeamManager.GetPlayerTeam(id) == TeamManager.GetLocalTeam();
     }
 
-    public override void OnMainSceneInitialized()
-    {
-        if (!_overrideValues)
-        {
-            SetDefaultValues();
-        }
-        else
-        {
-            _overrideValues = false;
-        }
-    }
-
-    public override void OnLoadingBegin()
-    {
-        _overrideValues = false;
-    }
-
-    public void SetDefaultValues()
+    public void ApplyGamemodeSettings()
     {
         _totalMinutes = _savedMinutes;
 
-        AudioReference[] playlist = AudioReference.CreateReferences(FusionMonoDiscReferences.CombatSongReferences);
+        var songReferences = FusionMonoDiscReferences.CombatSongReferences;
+
+        var musicSettings = GamemodeMusicSettings.Instance;
+
+        if (musicSettings != null && musicSettings.SongOverrides.Count > 0)
+        {
+            songReferences = new MonoDiscReference[musicSettings.SongOverrides.Count];
+
+            for (var i = 0; i < songReferences.Length; i++)
+            {
+                songReferences[i] = new(musicSettings.SongOverrides.ElementAt(i));
+            }
+        }
+
+        AudioReference[] playlist = AudioReference.CreateReferences(songReferences);
+
         MusicPlaylist.SetPlaylist(playlist);
 
-        AddDefaultTeams();
+        AddTeams();
 
         _avatarOverride = null;
         _vitalityOverride = null;
 
-        _enabledLateJoining = true;
-    }
+        var playerSettings = GamemodePlayerSettings.Instance;
 
-    public void SetOverriden()
-    {
-        if (FusionSceneManager.IsLoading())
+        if (playerSettings != null)
         {
-            if (!_overrideValues)
-            {
-                SetDefaultValues();
-            }
-
-            _overrideValues = true;
+            _avatarOverride = playerSettings.AvatarOverride;
+            _vitalityOverride = playerSettings.VitalityOverride;
         }
+
+        _enabledLateJoining = true;
     }
 
     private int GetRewardedBits()
@@ -401,6 +466,8 @@ public class TeamDeathmatch : Gamemode
     protected override void OnStartGamemode()
     {
         base.OnStartGamemode();
+
+        ApplyGamemodeSettings();
 
         MusicPlaylist.StartPlaylist();
 

@@ -5,12 +5,10 @@ using MelonLoader;
 
 using LabFusion.Extensions;
 
-using Il2CppInterop.Runtime.InteropTypes.Fields;
 using Il2CppSLZ.Marrow.Warehouse;
 #else
 using SLZ.Marrow;
 using SLZ.Marrow.Utilities;
-using SLZ.Marrow.Warehouse;
 #endif
 
 #if UNITY_EDITOR
@@ -31,22 +29,42 @@ namespace LabFusion.Marrow.Integration
 
         public static readonly HashSet<GamemodeMarker> Markers = new(new UnityComparer());
 
-        public Il2CppReferenceField<TagList> teamTags;
-
-        private TagList _teamTagsCached = null;
-
-        public TagList TeamTags => _teamTagsCached;
+        private readonly HashSet<string> _teamBarcodes = new();
+        public HashSet<string> TeamBarcodes => _teamBarcodes; 
 
         private void Awake()
         {
-            _teamTagsCached = teamTags.Get();
-
             Markers.Add(this);
         }
 
         private void OnDestroy()
         {
             Markers.Remove(this);
+        }
+
+        public void AddTeam(string barcode)
+        {
+            if (string.IsNullOrWhiteSpace(barcode))
+            {
+                return;
+            }
+
+            _teamBarcodes.Add(barcode);
+        }
+
+        public void RemoveTeam(string barcode)
+        {
+            if (string.IsNullOrWhiteSpace(barcode))
+            {
+                return;
+            }
+
+            _teamBarcodes.Remove(barcode);
+        }
+
+        public void ClearTeams()
+        {
+            _teamBarcodes.Clear();
         }
 
         public static IReadOnlyList<GamemodeMarker> FilterMarkers(BoneTagReference tag = null)
@@ -61,18 +79,18 @@ namespace LabFusion.Marrow.Integration
                     continue;
                 }
 
-                if (marker.TeamTags == null)
+                if (marker.TeamBarcodes == null || marker.TeamBarcodes.Count <= 0)
                 {
                     markers.Add(marker);
                     continue;
                 }
 
-                var teamTags = marker.TeamTags.Tags;
+                var teamBarcodes = marker.TeamBarcodes;
                 bool valid = false;
 
-                foreach (var otherTag in teamTags)
+                foreach (var otherBarcode in teamBarcodes)
                 {
-                    if (otherTag.Barcode == tag.Barcode) 
+                    if (otherBarcode == tag.Barcode.ToString()) 
                     {
                         valid = true;
                         break;
@@ -89,7 +107,17 @@ namespace LabFusion.Marrow.Integration
             return markers;
         }
 #else
-        public TagList teamTags;
+        public void AddTeam(string barcode)
+        {
+        }
+
+        public void RemoveTeam(string barcode) 
+        { 
+        }
+
+        public void ClearTeams()
+        {
+        }
 #endif
 
 #if UNITY_EDITOR

@@ -258,6 +258,7 @@
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Functions\BitTransactor.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodeEvents.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodeMarker.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodeMusicSettings.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\RPCs\RPCEvent.cs" />
   </ItemGroup>
 
