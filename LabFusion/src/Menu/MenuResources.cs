@@ -9,8 +9,11 @@ public static class MenuResources
 
     public static Dictionary<string, Texture> LevelIconLookup { get; private set; } = null;
     public static Dictionary<string, Texture> AvatarIconLookup { get; private set; } = null;
+    public static Dictionary<string, Texture> GamemodeIconLookup { get; private set; } = null;
 
     public const string ModsIconTitle = "Mods";
+
+    public const string SandboxIconTitle = "Sandbox";
 
     public static Texture GetLevelIcon(string levelTitle)
     {
@@ -27,6 +30,16 @@ public static class MenuResources
         if (AvatarIconLookup.TryGetValue(avatarTitle, out var texture)) 
         {
             return texture; 
+        }
+
+        return null;
+    }
+
+    public static Texture GetGamemodeIcon(string gamemodeTitle)
+    {
+        if (GamemodeIconLookup.TryGetValue(gamemodeTitle, out var texture))
+        {
+            return texture;
         }
 
         return null;
@@ -88,6 +101,30 @@ public static class MenuResources
             }
 
             AvatarIconLookup.Add(iconTransform.name, image.texture);
+        }
+
+        // Gamemode icons
+        var gamemodeIcons = resourcesTransform.Find("Gamemode Icons");
+
+        GamemodeIconLookup = new();
+
+        foreach (var icon in gamemodeIcons)
+        {
+            var iconTransform = icon.TryCast<Transform>();
+
+            if (iconTransform == null)
+            {
+                continue;
+            }
+
+            var image = iconTransform.GetComponent<RawImage>();
+
+            if (image == null)
+            {
+                continue;
+            }
+
+            GamemodeIconLookup.Add(iconTransform.name, image.texture);
         }
     }
 }

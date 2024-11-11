@@ -50,10 +50,6 @@ public static class InternalServerHelpers
         var names = ModuleMessageHandler.GetExistingTypeNames();
         ModuleMessageHandler.PopulateHandlerTable(names);
 
-        // Register gamemodes
-        var gamemodeNames = GamemodeRegistration.GetExistingTypeNames();
-        GamemodeRegistration.PopulateGamemodeTable(gamemodeNames);
-
         // Update hooks
         MultiplayerHooking.Internal_OnStartServer();
 
@@ -106,8 +102,7 @@ public static class InternalServerHelpers
     /// </summary>
     public static void OnDisconnect(string reason = "")
     {
-        // Cleanup gamemodes
-        GamemodeRegistration.ClearGamemodeTable();
+        // Cleanup modules
         ModuleMessageHandler.ClearHandlerTable();
 
         // Cleanup information

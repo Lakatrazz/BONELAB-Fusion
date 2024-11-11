@@ -31,9 +31,6 @@ public static class ClientSettings
 
     public static VoiceChatSettings VoiceChat { get; private set; }
 
-    // Gamemode settings
-    public static FusionPref<bool> GamemodeLateJoining { get; internal set; }
-
     public static DownloadingSettings Downloading { get; private set; }
 
     public static void OnInitialize(MelonPreferences_Category category)
@@ -58,9 +55,6 @@ public static class ClientSettings
 
         VoiceChat = new VoiceChatSettings();
         VoiceChat.CreatePrefs(category);
-
-        // Gamemodes
-        GamemodeLateJoining = new FusionPref<bool>(category, "Gamemode Late Joining", true, PrefUpdateMode.IGNORE);
 
         Downloading = new DownloadingSettings();
         Downloading.CreatePrefs(category);

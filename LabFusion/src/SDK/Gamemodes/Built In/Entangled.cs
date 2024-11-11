@@ -9,6 +9,7 @@ using LabFusion.Utilities;
 using LabFusion.Scene;
 
 using UnityEngine;
+using LabFusion.Menu;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -117,8 +118,9 @@ public class Entangled : Gamemode
     public static Entangled Instance { get; private set; }
 
     // Set info for the gamemode
-    public override string GamemodeCategory => "Fusion";
-    public override string GamemodeName => "Entangled";
+    public override string Title => "Entangled";
+    public override string Author => FusionMod.ModAuthor;
+    public override Texture Logo => MenuResources.GetGamemodeIcon(Title);
 
     // Set parameters for the gamemode
     public override bool AutoStopOnSceneLoad => false;
@@ -209,7 +211,7 @@ public class Entangled : Gamemode
     protected override void OnUpdate()
     {
         // Make sure the gamemode is active
-        if (!IsActive())
+        if (!IsStarted)
         {
             return;
         }
@@ -226,7 +228,7 @@ public class Entangled : Gamemode
 
     protected void OnPlayerJoin(PlayerId id)
     {
-        if (!IsActive())
+        if (!IsStarted)
         {
             return;
         }
@@ -246,9 +248,9 @@ public class Entangled : Gamemode
         RemovePartners(id);
     }
 
-    protected override void OnStartGamemode()
+    public override void OnGamemodeStarted()
     {
-        base.OnStartGamemode();
+        base.OnGamemodeStarted();
 
         Playlist.StartPlaylist();
 
@@ -279,9 +281,9 @@ public class Entangled : Gamemode
         }
     }
 
-    protected override void OnStopGamemode()
+    public override void OnGamemodeStopped()
     {
-        base.OnStopGamemode();
+        base.OnGamemodeStopped();
 
         Playlist.StopPlaylist();
 

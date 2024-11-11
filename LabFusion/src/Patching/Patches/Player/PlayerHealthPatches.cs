@@ -89,7 +89,7 @@ public static class HeadSFXPatches
         }
 
         // If in a gamemode with auto holstering, then do it
-        if (Gamemode.ActiveGamemode != null && Gamemode.ActiveGamemode.AutoHolsterOnDeath)
+        if (GamemodeManager.IsGamemodeStarted && GamemodeManager.ActiveGamemode.AutoHolsterOnDeath)
         {
             rm.physicsRig.leftHand.TryAutoHolsterGrip(RigData.Refs);
             rm.physicsRig.rightHand.TryAutoHolsterGrip(RigData.Refs);

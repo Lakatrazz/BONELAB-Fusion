@@ -7,6 +7,8 @@ using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
+using LabFusion.Menu;
+using LabFusion.Menu.Data;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.SDK.Triggers;
@@ -23,9 +25,11 @@ namespace LabFusion.SDK.Gamemodes;
 
 public class HideAndSeek : Gamemode
 {
-    public override string GamemodeName => "Hide And Seek";
+    public override string Title => "Hide And Seek";
 
-    public override string GamemodeCategory => "Fusion";
+    public override string Author => FusionMod.ModAuthor;
+
+    public override Texture Logo => MenuResources.GetGamemodeIcon(Title);
 
     public static class Defaults
     {
@@ -64,14 +68,30 @@ public class HideAndSeek : Gamemode
     private bool _hasBeenTagged = false;
     private bool _assignedDefaultTeam = false;
 
-    public override void OnBoneMenuCreated(Page page)
+    public override GroupElementData CreateSettingsGroup()
     {
-        base.OnBoneMenuCreated(page);
+        var group = base.CreateSettingsGroup();
 
-        page.CreateInt("Seeker Count", Color.yellow, startingValue: SeekerCount, increment: 1, minValue: 1, maxValue: 8, callback: (value) =>
+        var generalGroup = new GroupElementData("General");
+
+        group.AddElement(generalGroup);
+
+        var seekerCountData = new IntElementData()
         {
-            SeekerCount = value;
-        });
+            Title = "Seeker Count",
+            Value = SeekerCount,
+            Increment = 1,
+            MinValue = 1,
+            MaxValue = 8,
+            OnValueChanged = (v) =>
+            {
+                SeekerCount = v;
+            },
+        };
+
+        generalGroup.AddElement(seekerCountData);
+
+        return group;
     }
 
     public override void OnGamemodeRegistered()
@@ -106,7 +126,7 @@ public class HideAndSeek : Gamemode
 
     protected bool OnValidateNametag(PlayerId id)
     {
-        if (!IsActive())
+        if (!IsStarted)
         {
             return true;
         }
@@ -135,7 +155,7 @@ public class HideAndSeek : Gamemode
             if (HiderTeam.PlayerCount <= 1)
             {
                 SeekerVictoryEvent.TryInvoke();
-                StopGamemode();
+                GamemodeManager.StopGamemode();
             }
             else
             {
@@ -346,9 +366,9 @@ public class HideAndSeek : Gamemode
         Playlist.Shuffle();
     }
 
-    protected override void OnStartGamemode()
+    public override void OnGamemodeStarted()
     {
-        base.OnStartGamemode();
+        base.OnGamemodeStarted();
 
         _hasBeenTagged = false;
 
@@ -369,9 +389,9 @@ public class HideAndSeek : Gamemode
         FusionOverrides.ForceUpdateOverrides();
     }
 
-    protected override void OnStopGamemode()
+    public override void OnGamemodeStopped()
     {
-        base.OnStopGamemode();
+        base.OnGamemodeStopped();
 
         _hasBeenTagged = false;
         _assignedDefaultTeam = false;
@@ -391,7 +411,7 @@ public class HideAndSeek : Gamemode
 
     protected override void OnUpdate()
     {
-        if (!IsActive())
+        if (!IsStarted)
         {
             return;
         }

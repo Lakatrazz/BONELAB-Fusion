@@ -47,6 +47,13 @@ public class LobbyInfo
     [JsonPropertyName("levelModId")]
     public int LevelModId { get; set; } = -1;
 
+    // Gamemode
+    [JsonPropertyName("gamemodeTitle")]
+    public string GamemodeTitle { get; set; }
+
+    [JsonPropertyName("gamemodeBarcode")]
+    public string GamemodeBarcode { get; set; }
+
     // Settings
     [JsonPropertyName("nameTags")]
     public bool NameTags { get; set; }
@@ -110,6 +117,10 @@ public class LobbyInfo
         // Location
         LevelTitle = FusionSceneManager.Title;
         LevelBarcode = FusionSceneManager.Barcode;
+
+        // Gamemode
+        GamemodeTitle = string.Empty;
+        GamemodeBarcode = string.Empty;
 
         // Settings
         NameTags = SavedServerSettings.NameTags.Value;

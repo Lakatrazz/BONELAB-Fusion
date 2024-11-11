@@ -14,6 +14,7 @@ public static class MenuMatchmaking
     public static MenuPage MatchmakingPage { get; private set; }
 
     // Filters
+    public static GameObject BrowserFiltersRoot { get; private set; }
     public static PageElement BrowserFiltersElement { get; private set; }
 
     public static PageElement SandboxFiltersPageElement { get; private set; }
@@ -30,6 +31,7 @@ public static class MenuMatchmaking
     public static PageElement SearchResultsElement { get; private set; }
 
     public static StringElement SearchBarElement { get; private set; }
+    public static FunctionElement RefreshElement { get; private set; }
 
     public static LabelElement NoServersFoundElement { get; private set; }
 
@@ -44,6 +46,11 @@ public static class MenuMatchmaking
         var optionsTransform = matchmakingPage.transform.Find("page_Options");
 
         PopulateOptions(optionsTransform);
+
+        // Get gamemodes references
+        var gamemodesTransform = matchmakingPage.transform.Find("page_Gamemodes");
+
+        MenuMatchmakingGamemodes.PopulateGamemodes(gamemodesTransform);
 
         // Get code references
         var codeTransform = matchmakingPage.transform.Find("page_Code");
@@ -146,6 +153,7 @@ public static class MenuMatchmaking
         // Get the filters group
         var filtersGroup = searchPage.Find("group_Filters");
 
+        BrowserFiltersRoot = filtersGroup.gameObject;
         BrowserFiltersElement = filtersGroup.Find("scrollRect_Filters/Viewport/Content").GetComponent<PageElement>();
 
         SandboxFiltersPageElement = BrowserFiltersElement.AddPage();
@@ -169,8 +177,8 @@ public static class MenuMatchmaking
         NoServersFoundElement = searchGroup.Find("label_NoServersFound").GetComponent<LabelElement>();
         NoServersFoundElement.Title = "No servers found :/";
 
-        var refreshElement = searchGroup.Find("button_Refresh").GetComponent<FunctionElement>();
-        refreshElement.Do(RefreshBrowser);
+        RefreshElement = searchGroup.Find("button_Refresh").GetComponent<FunctionElement>();
+        RefreshElement.Do(RefreshBrowser);
 
         // Lobby page
         LobbyPanel = browserTransform.Find("page_Lobby/panel_Lobby").GetComponent<LobbyElement>();
@@ -256,6 +264,35 @@ public static class MenuMatchmaking
         return false;
     }
 
+    public static bool LoadLobbiesIntoBrowser(IEnumerable<IMatchmaker.LobbyInfo> lobbies) 
+    {
+        MatchmakingPage.SelectSubPage(4);
+
+        // Disable buttons
+        SearchBarElement.gameObject.SetActive(false);
+        RefreshElement.gameObject.SetActive(false);
+        BrowserFiltersRoot.SetActive(false);
+
+        var sortedLobbies = lobbies
+            .OrderBy(l => l.metadata.LobbyInfo.LobbyHostName)
+            .OrderBy(l => l.metadata.LobbyInfo.LevelTitle)
+            .OrderBy(l => l.metadata.LobbyInfo.LobbyVersion)
+            .Where(CheckLobbyVisibility);
+
+        // Add all lobbies to the list
+        foreach (var lobby in sortedLobbies)
+        {
+            var lobbyResult = SearchResultsElement.AddElement<LobbyResultElement>("Lobby Result");
+
+            ApplyLobbyToResult(lobbyResult, lobby);
+        }
+
+        bool foundLobbies = sortedLobbies.Any();
+        NoServersFoundElement.gameObject.SetActive(!foundLobbies);
+
+        return foundLobbies;
+    }
+
     private static void OnLobbiesRequested(IMatchmaker.MatchmakerCallbackInfo info)
     {
         _isSearchingLobbies = false;
@@ -266,6 +303,11 @@ public static class MenuMatchmaking
             .OrderBy(l => l.metadata.LobbyInfo.LobbyVersion)
             .Where(CheckLobbyVisibility)
             .Where(l => LobbyFilterManager.FilterLobby(l.lobby, l.metadata));
+
+        // Enable buttons
+        SearchBarElement.gameObject.SetActive(true);
+        RefreshElement.gameObject.SetActive(true);
+        BrowserFiltersRoot.SetActive(true);
 
         // Apply search query
         var searchQuery = SearchBarElement.Value;

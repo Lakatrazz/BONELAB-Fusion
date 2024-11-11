@@ -145,6 +145,7 @@
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\EnumElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\FloatElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\FunctionElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\GamemodeResultElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Generic.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Generic\BoolElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Generic\ButtonElement.cs.meta" />

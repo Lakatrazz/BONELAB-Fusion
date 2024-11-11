@@ -10,7 +10,7 @@ public static class NetworkCombatManager
     {
         // For now, have friendly fire always on for gamemodes
         // In the future, check teams
-        if (Gamemode.ActiveGamemode != null)
+        if (GamemodeManager.IsGamemodeStarted)
         {
             return true;
         }

@@ -1,5 +1,4 @@
-﻿using LabFusion.BoneMenu;
-using LabFusion.Data;
+﻿using LabFusion.Data;
 using LabFusion.Utilities;
 
 using System.Reflection;
@@ -22,115 +21,59 @@ public static class GamemodeRegistration
 
     private static void RegisterGamemode(Type type)
     {
-        if (GamemodeTypes.Contains(type))
-        {
-            throw new ArgumentException($"Gamemode {type.Name} was already registered.");
-        }
+        var gamemodeInstance = Activator.CreateInstance(type) as Gamemode;
+        gamemodeInstance.GamemodeRegistered();
 
-        GamemodeTypes.Add(type);
+        Gamemodes.Add(gamemodeInstance);
+        GamemodeLookup.Add(gamemodeInstance.Barcode, gamemodeInstance);
     }
 
-    public static string[] GetExistingTypeNames()
+    public static FusionDictionary<string, FusionDictionary<string, string>> GetExistingMetadata()
     {
-        string[] array = new string[GamemodeTypes.Count];
-        for (var i = 0; i < array.Length; i++)
-        {
-            array[i] = GamemodeTypes[i].AssemblyQualifiedName;
-        }
-        return array;
-    }
+        FusionDictionary<string, FusionDictionary<string, string>> metadata = new();
 
-    public static FusionDictionary<string, string>[] GetExistingMetadata()
-    {
-        FusionDictionary<string, string>[] metadata = new FusionDictionary<string, string>[Gamemodes.Length];
-
-        for (var i = 0; i < metadata.Length; i++)
+        for (var i = 0; i < Gamemodes.Count; i++)
         {
-            metadata[i] = Gamemodes[i].Metadata.LocalDictionary;
+            var barcode = Gamemodes[i].Barcode;
+
+            var metadataPairs = new FusionDictionary<string, string>();
+
+            foreach (var pair in Gamemodes[i].Metadata.LocalDictionary)
+            {
+                metadataPairs.Add(pair.Key, pair.Value);
+            }
+
+            metadata.Add(barcode, metadataPairs);
         }
 
         return metadata;
     }
 
-    public static void PopulateGamemodeTable(string[] names)
+    public static bool TryGetGamemode(string barcode, out Gamemode gamemode)
     {
-        Gamemodes = new Gamemode[names.Length];
-
-        for (ushort i = 0; i < names.Length; i++)
-        {
-            var type = Type.GetType(names[i]);
-            if (type != null && GamemodeTypes.Contains(type))
-            {
-                var handler = Internal_CreateGamemode(type, i);
-                Gamemodes[i] = handler;
-                handler.GamemodeRegistered();
-            }
-        }
-
-        BoneMenuCreator.RefreshGamemodes();
+        return GamemodeLookup.TryGetValue(barcode, out gamemode);
     }
 
-    public static void PopulateGamemodeMetadatas(FusionDictionary<string, string>[] metadatas)
+    public static void PopulateGamemodeMetadatas(FusionDictionary<string, FusionDictionary<string, string>> metadatas)
     {
-        for (var i = 0; i < Gamemodes.Length && i < metadatas.Length; i++)
+        foreach (var pair in metadatas)
         {
-            var gamemode = Gamemodes[i];
-            var metadata = metadatas[i];
+            var barcode = pair.Key;
 
-            if (gamemode != null && metadata != null)
+            if (!TryGetGamemode(barcode, out var gamemode))
             {
-                foreach (var pair in metadata)
-                {
-                    gamemode.Metadata.ForceSetLocalMetadata(pair.Key, pair.Value);
-                }
+                continue;
+            }
+
+            var metadata = pair.Value;
+
+            foreach (var metadataPair in metadata)
+            {
+                gamemode.Metadata.ForceSetLocalMetadata(metadataPair.Key, metadataPair.Value);
             }
         }
     }
 
-    public static void ClearGamemodeTable()
-    {
-        // Force stop gamemodes
-        if (Gamemodes != null && Gamemodes.Length > 0)
-        {
-            foreach (var gamemode in Gamemodes)
-            {
-                if (gamemode == null)
-                    continue;
-
-                gamemode.Internal_SetGamemodeState(false);
-                gamemode.GamemodeUnregistered();
-            }
-        }
-
-        GamemodeManager.Internal_SetActiveGamemode(null);
-        BoneMenuCreator.ClearGamemodes();
-
-        Gamemodes = null;
-    }
-
-    private static Gamemode Internal_CreateGamemode(Type type, ushort tag)
-    {
-        var gamemode = Activator.CreateInstance(type) as Gamemode;
-        gamemode._tag = tag;
-        return gamemode;
-    }
-
-    public static ushort? GetGamemodeTag(Type type)
-    {
-        if (Gamemodes != null)
-        {
-            for (ushort i = 0; i < Gamemodes.Length; i++)
-            {
-                var other = Gamemodes[i];
-                if (other.GetType() == type)
-                    return i;
-            }
-        }
-
-        return null;
-    }
-
-
-    public static readonly List<Type> GamemodeTypes = new();
-    public static Gamemode[] Gamemodes { get; private set; } = null;
+    public static List<Gamemode> Gamemodes { get; private set; } = new();
+    public static FusionDictionary<string, Gamemode> GamemodeLookup { get; private set; } = new();
 }

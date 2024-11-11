@@ -6,7 +6,7 @@ namespace LabFusion.Network;
 
 public class GamemodeTriggerResponseData : IFusionSerializable
 {
-    public ushort gamemodeId;
+    public string gamemodeBarcode;
 
     public string triggerName;
 
@@ -15,7 +15,7 @@ public class GamemodeTriggerResponseData : IFusionSerializable
 
     public void Serialize(FusionWriter writer)
     {
-        writer.Write(gamemodeId);
+        writer.Write(gamemodeBarcode);
         writer.Write(triggerName);
 
         writer.Write(hasValue);
@@ -28,7 +28,7 @@ public class GamemodeTriggerResponseData : IFusionSerializable
 
     public void Deserialize(FusionReader reader)
     {
-        gamemodeId = reader.ReadUInt16();
+        gamemodeBarcode = reader.ReadString();
         triggerName = reader.ReadString();
 
         hasValue = reader.ReadBoolean();
@@ -39,11 +39,11 @@ public class GamemodeTriggerResponseData : IFusionSerializable
         }
     }
 
-    public static GamemodeTriggerResponseData Create(ushort gamemodeId, string name, string value = null)
+    public static GamemodeTriggerResponseData Create(string gamemodeBarcode, string name, string value = null)
     {
         return new GamemodeTriggerResponseData()
         {
-            gamemodeId = gamemodeId,
+            gamemodeBarcode = gamemodeBarcode,
             triggerName = name,
             hasValue = value != null,
             triggerValue = value,
@@ -67,7 +67,7 @@ public class GamemodeTriggerResponseMessage : FusionMessageHandler
         using var reader = FusionReader.Create(bytes);
         var data = reader.ReadFusionSerializable<GamemodeTriggerResponseData>();
 
-        if (!GamemodeManager.TryGetGamemode(data.gamemodeId, out var gamemode))
+        if (!GamemodeManager.TryGetGamemode(data.gamemodeBarcode, out var gamemode))
         {
             return;
         }

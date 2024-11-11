@@ -1,7 +1,6 @@
 ﻿using BoneLib;
 
 using LabFusion.Data;
-using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Preferences;
 using LabFusion.Player;
@@ -40,7 +39,7 @@ public static class FusionPlayer
     private static void OnLobbyInfoChanged()
     {
         // Update mortality
-        if (Gamemode.ActiveGamemode == null)
+        if (!GamemodeManager.IsGamemodeStarted)
         {
             ResetMortality();
         }
@@ -203,9 +202,9 @@ public static class FusionPlayer
     public static bool CanUnragdoll()
     {
         // Check gamemode
-        if (Gamemode.ActiveGamemode != null)
+        if (GamemodeManager.IsGamemodeStarted)
         {
-            var gamemode = Gamemode.ActiveGamemode;
+            var gamemode = GamemodeManager.ActiveGamemode;
 
             if (gamemode.DisableManualUnragdoll)
                 return false;

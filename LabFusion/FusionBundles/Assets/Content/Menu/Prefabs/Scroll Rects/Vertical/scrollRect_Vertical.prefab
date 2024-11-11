@@ -1039,7 +1039,7 @@ GameObject:
   - component: {fileID: 8097468483711365786}
   - component: {fileID: 3801319428298880716}
   m_Layer: 5
-  m_Name: scrollRect_Empty
+  m_Name: scrollRect_Vertical
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

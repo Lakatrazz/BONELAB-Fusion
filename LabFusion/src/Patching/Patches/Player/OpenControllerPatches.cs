@@ -22,7 +22,7 @@ public static class OpenControllerPatches
         return false;
     }
 
-    [HarmonyPrefix]
+    [HarmonyPostfix]
     [HarmonyPatch(nameof(OpenController.OnUpdate))]
     public static void OnUpdate(OpenController __instance)
     {

@@ -125,6 +125,9 @@ public class FusionMod : MelonMod
 
         FusionPopupManager.OnInitializeMelon();
 
+        GamemodeManager.OnInitializeMelon();
+        GamemodeConditionsChecker.OnInitializeMelon();
+
         // Hook into asset warehouse
         var onReady = () =>
         {
@@ -257,12 +260,6 @@ public class FusionMod : MelonMod
         MultiplayerHooking.Internal_OnMainSceneInitialized();
 
         FusionPlayer.OnMainSceneInitialized();
-
-        // Stop the current gamemode
-        if (NetworkInfo.IsServer && Gamemode.ActiveGamemode != null && Gamemode.ActiveGamemode.AutoStopOnSceneLoad)
-        {
-            Gamemode.ActiveGamemode.StopGamemode();
-        }
     }
 
     public static void OnMainSceneInitializeDelayed()

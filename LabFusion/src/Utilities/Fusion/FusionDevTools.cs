@@ -3,62 +3,61 @@ using LabFusion.Player;
 using LabFusion.Representation;
 using LabFusion.SDK.Gamemodes;
 
-namespace LabFusion.Utilities
+namespace LabFusion.Utilities;
+
+public static class FusionDevTools
 {
-    public static class FusionDevTools
+    public static bool DespawnConstrainer(PlayerId id)
     {
-        public static bool DespawnConstrainer(PlayerId id)
+        // Check permission level
+        FusionPermissions.FetchPermissionLevel(id, out var level, out _);
+        if (!FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.Constrainer))
         {
-            // Check permission level
-            FusionPermissions.FetchPermissionLevel(id, out var level, out _);
-            if (!FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.Constrainer))
-            {
-                return true;
-            }
-
-            return false;
+            return true;
         }
 
-        public static bool DespawnDevTool(PlayerId id)
+        return false;
+    }
+
+    public static bool DespawnDevTool(PlayerId id)
+    {
+        // Check gamemode
+        if (GamemodeManager.IsGamemodeStarted)
         {
-            // Check gamemode
-            if (Gamemode.ActiveGamemode != null)
-            {
-                var gamemode = Gamemode.ActiveGamemode;
+            var gamemode = GamemodeManager.ActiveGamemode;
 
-                if (gamemode.DisableDevTools)
-                    return true;
-            }
-
-            // Check permission level
-            FusionPermissions.FetchPermissionLevel(id, out var level, out _);
-            if (!FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.DevTools))
-            {
+            if (gamemode.DisableDevTools)
                 return true;
-            }
-
-            return false;
         }
 
-        public static bool PreventSpawnGun(PlayerId id)
+        // Check permission level
+        FusionPermissions.FetchPermissionLevel(id, out var level, out _);
+        if (!FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.DevTools))
         {
-            // Check gamemode
-            if (Gamemode.ActiveGamemode != null)
-            {
-                var gamemode = Gamemode.ActiveGamemode;
-
-                if (gamemode.DisableSpawnGun)
-                    return true;
-            }
-
-            // Check permission level
-            FusionPermissions.FetchPermissionLevel(id, out var level, out _);
-            if (!FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.DevTools))
-            {
-                return true;
-            }
-
-            return false;
+            return true;
         }
+
+        return false;
+    }
+
+    public static bool PreventSpawnGun(PlayerId id)
+    {
+        // Check gamemode
+        if (GamemodeManager.IsGamemodeStarted)
+        {
+            var gamemode = GamemodeManager.ActiveGamemode;
+
+            if (gamemode.DisableSpawnGun)
+                return true;
+        }
+
+        // Check permission level
+        FusionPermissions.FetchPermissionLevel(id, out var level, out _);
+        if (!FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.DevTools))
+        {
+            return true;
+        }
+
+        return false;
     }
 }

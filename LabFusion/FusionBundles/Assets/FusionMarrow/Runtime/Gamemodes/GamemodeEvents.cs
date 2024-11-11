@@ -25,34 +25,35 @@ namespace LabFusion.Marrow.Integration
 
         public Il2CppReferenceField<UltEventHolder> onGamemodeStartedHolder;
 
-        public Il2CppReferenceField<UltEventHolder> onGamemodeEndedHolder;
+        public Il2CppReferenceField<UltEventHolder> onGamemodeStoppedHolder;
 
         private void Awake()
         {
-            GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
+            GamemodeManager.OnGamemodeStarted += OnGamemodeStarted;
+            GamemodeManager.OnGamemodeStopped += OnGamemodeStopped;
         }
 
         private void OnDestroy()
         {
-            GamemodeManager.OnGamemodeChanged -= OnGamemodeChanged;
+            GamemodeManager.OnGamemodeStarted -= OnGamemodeStarted;
+            GamemodeManager.OnGamemodeStopped -= OnGamemodeStopped;
         }
 
         [HideFromIl2Cpp]
-        private void OnGamemodeChanged(Gamemode gamemode)
+        private void OnGamemodeStarted()
         {
-            if (gamemode != null)
-            {
-                onGamemodeStartedHolder.Get()?.Invoke();
-            }
-            else 
-            {
-                onGamemodeEndedHolder.Get()?.Invoke();
-            }
+            onGamemodeStartedHolder.Get()?.Invoke();
+        }
+
+        [HideFromIl2Cpp]
+        private void OnGamemodeStopped()
+        {
+            onGamemodeStoppedHolder.Get()?.Invoke();
         }
 #else
         public UltEventHolder onGamemodeStartedHolder;
 
-        public UltEventHolder onGamemodeEndedHolder;
+        public UltEventHolder onGamemodeStoppedHolder;
 #endif
     }
 }

@@ -10,21 +10,6 @@ using Menu = BoneLib.BoneMenu.Menu;
 
 public static partial class BoneMenuCreator
 {
-    #region MENU CATEGORIES
-    public static void CreateBoolPreference(Page page, string name, FusionPref<bool> pref)
-    {
-        var element = page.CreateBool(name, Color.white, pref.Value, (v) =>
-        {
-            pref.Value = v;
-        });
-
-        pref.OnValueChanged += (v) =>
-        {
-            element.Value = v;
-        };
-    }
-    #endregion
-
     private static Page _mainPage = null;
 
     public static void OnPrepareMainPage()
@@ -48,7 +33,6 @@ public static partial class BoneMenuCreator
 
     private static void CreateUniversalMenus(Page page)
     {
-        CreateGamemodesMenu(page);
         CreateNotificationsMenu(page);
     }
 }

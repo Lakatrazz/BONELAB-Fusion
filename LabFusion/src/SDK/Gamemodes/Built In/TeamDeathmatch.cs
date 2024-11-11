@@ -1,7 +1,6 @@
 ﻿using BoneLib.BoneMenu;
 
 using Il2CppSLZ.Marrow.Warehouse;
-using Il2CppSLZ.Marrow.Audio;
 
 using LabFusion.Extensions;
 using LabFusion.Marrow;
@@ -16,6 +15,8 @@ using LabFusion.Utilities;
 using LabFusion.Scene;
 
 using UnityEngine;
+using LabFusion.Menu;
+using LabFusion.Menu.Data;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -33,14 +34,13 @@ public class TeamDeathmatch : Gamemode
     private const int _minMinutes = 2;
     private const int _maxMinutes = 60;
 
-    public override string GamemodeCategory => "Fusion";
-    public override string GamemodeName => "Team Deathmatch";
+    public override string Title => "Team Deathmatch";
+    public override string Author => FusionMod.ModAuthor;
+    public override Texture Logo => MenuResources.GetGamemodeIcon(Title);
 
     public override bool DisableDevTools => true;
     public override bool DisableSpawnGun => true;
     public override bool DisableManualUnragdoll => true;
-
-    public override bool PreventNewJoins => !_enabledLateJoining;
 
     public TriggerEvent OneMinuteLeftTrigger { get; set; }
     public TriggerEvent NaturalEndTrigger { get; set; }
@@ -50,6 +50,8 @@ public class TeamDeathmatch : Gamemode
 
     private int _savedMinutes = _defaultMinutes;
     private int _totalMinutes = _defaultMinutes;
+
+    private int _minimumPlayers = 4;
 
     private readonly TeamManager _teamManager = new();
     public TeamManager TeamManager => _teamManager;
@@ -69,47 +71,51 @@ public class TeamDeathmatch : Gamemode
     private string _avatarOverride = null;
     private float? _vitalityOverride = null;
 
-    private bool _enabledLateJoining = true;
-
-    public override void OnBoneMenuCreated(Page page)
+    public override GroupElementData CreateSettingsGroup()
     {
-        base.OnBoneMenuCreated(page);
+        var group = base.CreateSettingsGroup();
 
-        page.CreateInt("Round Minutes", Color.white, startingValue: _totalMinutes, increment: 1, minValue: _minMinutes, maxValue: _maxMinutes, callback: (v) =>
+        var generalGroup = new GroupElementData("General");
+
+        group.AddElement(generalGroup);
+
+        var roundMinutesData = new IntElementData()
         {
-            _totalMinutes = v;
-            _savedMinutes = v;
-        });
-    }
+            Title = "Round Minutes",
+            Value = _totalMinutes,
+            Increment = 1,
+            MinValue = _minMinutes,
+            MaxValue = _maxMinutes,
+            OnValueChanged = (v) =>
+            {
+                _totalMinutes = v;
+                _savedMinutes = v;
+            },
+        };
 
-    public void SetLateJoining(bool enabled)
-    {
-        _enabledLateJoining = enabled;
+        generalGroup.AddElement(roundMinutesData);
+
+        var minimumPlayersData = new IntElementData()
+        {
+            Title = "Minimum Players",
+            Value = _minimumPlayers,
+            Increment = 1,
+            MinValue = 2,
+            MaxValue = 255,
+            OnValueChanged = (v) =>
+            {
+                _minimumPlayers = v;
+            }
+        };
+
+        generalGroup.AddElement(minimumPlayersData);
+
+        return group;
     }
 
     public void SetRoundLength(int minutes)
     {
         _totalMinutes = minutes;
-    }
-
-    public void SetAvatarOverride(string barcode)
-    {
-        _avatarOverride = barcode;
-
-        if (IsActive())
-        {
-            FusionPlayer.SetAvatarOverride(barcode);
-        }
-    }
-
-    public void SetPlayerVitality(float vitality)
-    {
-        _vitalityOverride = vitality;
-
-        if (IsActive())
-        {
-            FusionPlayer.SetPlayerVitality(vitality);
-        }
     }
 
     public void AddTeams()
@@ -286,6 +292,11 @@ public class TeamDeathmatch : Gamemode
         NaturalEndTrigger.UnregisterEvent();
     }
 
+    public override bool CheckReadyConditions()
+    {
+        return PlayerIdManager.PlayerCount >= _minimumPlayers;
+    }
+
     private void OnAssignedToTeam(PlayerId playerId, Team team)
     {
         if (playerId.IsMe)
@@ -317,7 +328,7 @@ public class TeamDeathmatch : Gamemode
 
     protected bool OnValidateNametag(PlayerId id)
     {
-        if (!IsActive())
+        if (!IsStarted)
         {
             return true;
         }
@@ -359,8 +370,6 @@ public class TeamDeathmatch : Gamemode
             _avatarOverride = playerSettings.AvatarOverride;
             _vitalityOverride = playerSettings.VitalityOverride;
         }
-
-        _enabledLateJoining = true;
     }
 
     private int GetRewardedBits()
@@ -410,7 +419,7 @@ public class TeamDeathmatch : Gamemode
             return;
         }
 
-        if (!IsActive())
+        if (!IsStarted)
         {
             return;
         }
@@ -455,7 +464,7 @@ public class TeamDeathmatch : Gamemode
     /// <param name="id"></param>
     protected void OnPlayerJoin(PlayerId id)
     {
-        if (NetworkInfo.IsServer && IsActive())
+        if (NetworkInfo.IsServer && IsStarted)
         {
             TeamManager.AssignToSmallestTeam(id);
         }
@@ -464,9 +473,9 @@ public class TeamDeathmatch : Gamemode
     /// <summary>
     /// Called when the host begins the gamemode. Affects the local player, but also the host so it can send messages to other players.
     /// </summary>
-    protected override void OnStartGamemode()
+    public override void OnGamemodeStarted()
     {
-        base.OnStartGamemode();
+        base.OnGamemodeStarted();
 
         ApplyGamemodeSettings();
 
@@ -509,9 +518,9 @@ public class TeamDeathmatch : Gamemode
     /// <summary>
     /// Called when the host ends the active gamemode. Called events affect the local player.
     /// </summary>
-    protected override void OnStopGamemode()
+    public override void OnGamemodeStopped()
     {
-        base.OnStopGamemode();
+        base.OnGamemodeStopped();
 
         MusicPlaylist.StopPlaylist();
 
@@ -590,7 +599,7 @@ public class TeamDeathmatch : Gamemode
         base.OnUpdate();
 
         // Make sure the gamemode is active
-        if (!IsActive())
+        if (!IsStarted)
         {
             return;
         }
@@ -620,7 +629,7 @@ public class TeamDeathmatch : Gamemode
         // Should the gamemode end?
         if (minutesLeft <= 0f)
         {
-            StopGamemode();
+            GamemodeManager.StopGamemode();
             NaturalEndTrigger.TryInvoke();
         }
     }

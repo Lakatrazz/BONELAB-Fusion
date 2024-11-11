@@ -1,5 +1,4 @@
-﻿using Il2CppSLZ.Marrow.Audio;
-using Il2CppSLZ.Marrow.Warehouse;
+﻿using Il2CppSLZ.Marrow.Warehouse;
 
 using LabFusion.Extensions;
 using LabFusion.Marrow;
@@ -12,10 +11,11 @@ using LabFusion.Senders;
 using LabFusion.Utilities;
 using LabFusion.Scene;
 using LabFusion.SDK.Triggers;
+using LabFusion.Menu;
 
 using UnityEngine;
 
-using BoneLib.BoneMenu;
+using LabFusion.Menu.Data;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -31,14 +31,13 @@ public class Deathmatch : Gamemode
     private const int _maxMinutes = 60;
 
     // Default metadata keys
-    public override string GamemodeCategory => "Fusion";
-    public override string GamemodeName => "Deathmatch";
+    public override string Title => "Deathmatch";
+    public override string Author => FusionMod.ModAuthor;
+    public override Texture Logo => MenuResources.GetGamemodeIcon(Title);
 
     public override bool DisableDevTools => true;
     public override bool DisableSpawnGun => true;
     public override bool DisableManualUnragdoll => true;
-
-    public override bool PreventNewJoins => !_enabledLateJoining;
 
     public TriggerEvent OneMinuteLeftTrigger { get; set; }
     public TriggerEvent NaturalEndTrigger { get; set; }
@@ -57,39 +56,56 @@ public class Deathmatch : Gamemode
     private int _savedMinutes = _defaultMinutes;
     private int _totalMinutes = _defaultMinutes;
 
-    private bool _hasOverridenValues = false;
+    private int _minimumPlayers = 2;
 
     private string _avatarOverride = null;
     private float? _vitalityOverride = null;
 
-    private bool _enabledLateJoining = true;
-
-    public override void OnBoneMenuCreated(Page page)
+    public override GroupElementData CreateSettingsGroup()
     {
-        base.OnBoneMenuCreated(page);
+        var group = base.CreateSettingsGroup();
 
-        page.CreateInt("Round Minutes", Color.white, startingValue: _totalMinutes, increment: 1, minValue: _minMinutes, maxValue: _maxMinutes, callback: (v) =>
+        var generalGroup = new GroupElementData("General");
+
+        group.AddElement(generalGroup);
+
+        var roundMinutesData = new IntElementData()
         {
-            _totalMinutes = v;
-            _savedMinutes = v;
-        });
+            Title = "Round Minutes",
+            Value = _totalMinutes,
+            Increment = 1,
+            MinValue = _minMinutes,
+            MaxValue = _maxMinutes,
+            OnValueChanged = (v) =>
+            {
+                _totalMinutes = v;
+                _savedMinutes = v;
+            },
+        };
+
+        generalGroup.AddElement(roundMinutesData);
+
+        var minimumPlayersData = new IntElementData()
+        {
+            Title = "Minimum Players",
+            Value = _minimumPlayers,
+            Increment = 1,
+            MinValue = 2,
+            MaxValue = 255,
+            OnValueChanged = (v) =>
+            {
+                _minimumPlayers = v;
+            }
+        };
+
+        generalGroup.AddElement(minimumPlayersData);
+
+        return group;
     }
 
     public override void OnMainSceneInitialized()
     {
-        if (!_hasOverridenValues)
-        {
-            SetDefaultValues();
-        }
-        else
-        {
-            _hasOverridenValues = false;
-        }
-    }
-
-    public override void OnLoadingBegin()
-    {
-        _hasOverridenValues = false;
+        SetDefaultValues();
     }
 
     public void SetDefaultValues()
@@ -101,45 +117,11 @@ public class Deathmatch : Gamemode
 
         _avatarOverride = null;
         _vitalityOverride = null;
-
-        _enabledLateJoining = true;
-    }
-
-    public void SetOverriden()
-    {
-        if (FusionSceneManager.IsLoading())
-        {
-            if (!_hasOverridenValues)
-                SetDefaultValues();
-
-            _hasOverridenValues = true;
-        }
-    }
-
-    public void SetLateJoining(bool enabled)
-    {
-        _enabledLateJoining = enabled;
     }
 
     public void SetRoundLength(int minutes)
     {
         _totalMinutes = minutes;
-    }
-
-    public void SetAvatarOverride(string barcode)
-    {
-        _avatarOverride = barcode;
-
-        if (IsActive())
-            FusionPlayer.SetAvatarOverride(barcode);
-    }
-
-    public void SetPlayerVitality(float vitality)
-    {
-        _vitalityOverride = vitality;
-
-        if (IsActive())
-            FusionPlayer.SetPlayerVitality(vitality);
     }
 
     public IReadOnlyList<PlayerId> GetPlayersByScore()
@@ -258,7 +240,7 @@ public class Deathmatch : Gamemode
 
     protected bool OnValidateNametag(PlayerId id)
     {
-        if (!IsActive())
+        if (!IsStarted)
             return true;
 
         return false;
@@ -266,7 +248,7 @@ public class Deathmatch : Gamemode
 
     protected void OnPlayerAction(PlayerId player, PlayerActionType type, PlayerId otherPlayer = null)
     {
-        if (!IsActive())
+        if (!IsStarted)
         {
             return;
         }
@@ -299,9 +281,14 @@ public class Deathmatch : Gamemode
         }
     }
 
-    protected override void OnStartGamemode()
+    public override bool CheckReadyConditions()
     {
-        base.OnStartGamemode();
+        return PlayerIdManager.PlayerCount >= _minimumPlayers;
+    }
+
+    public override void OnGamemodeStarted()
+    {
+        base.OnGamemodeStarted();
 
         Playlist.StartPlaylist();
 
@@ -387,9 +374,9 @@ public class Deathmatch : Gamemode
         }));
     }
 
-    protected override void OnStopGamemode()
+    public override void OnGamemodeStopped()
     {
-        base.OnStopGamemode();
+        base.OnGamemodeStopped();
 
         Playlist.StopPlaylist();
 
@@ -487,7 +474,7 @@ public class Deathmatch : Gamemode
     protected override void OnUpdate()
     {
         // Also make sure the gamemode is active
-        if (!IsActive())
+        if (!IsStarted)
         {
             return;
         }
@@ -517,7 +504,7 @@ public class Deathmatch : Gamemode
         // Should the gamemode end?
         if (minutesLeft <= 0f)
         {
-            StopGamemode();
+            GamemodeManager.StopGamemode();
             NaturalEndTrigger.TryInvoke();
         }
     }

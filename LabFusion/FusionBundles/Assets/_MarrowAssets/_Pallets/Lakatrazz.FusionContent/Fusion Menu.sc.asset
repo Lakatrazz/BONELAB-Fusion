@@ -34,4 +34,4 @@ MonoBehaviour:
   _maxLODLevel: 0
   _colliderBounds:
     m_Center: {x: 0, y: -340, z: 0}
-    m_Extent: {x: 390, y: 55, z: 2.5}
+    m_Extent: {x: 900, y: 55, z: 2.5}

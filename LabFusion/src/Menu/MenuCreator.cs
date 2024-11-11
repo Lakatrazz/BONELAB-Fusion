@@ -27,6 +27,7 @@ public static class MenuCreator
     public static void OnInitializeMelon()
     {
         MenuPageHelper.OnInitializeMelon();
+        MenuToolbarHelper.OnInitializeMelon();
     }
 
     public static void CreateMenu()

@@ -20,17 +20,6 @@ public static class NetworkHelper
     }
 
     /// <summary>
-    /// Stops an existing server.
-    /// </summary>
-    public static void StopServer()
-    {
-        if (NetworkInfo.CurrentNetworkLayer != null && NetworkInfo.IsServer)
-        {
-            NetworkInfo.CurrentNetworkLayer.Disconnect();
-        }
-    }
-
-    /// <summary>
     /// Disconnects the network layer and cleans up.
     /// </summary>
     public static void Disconnect(string reason = "")
