@@ -19,6 +19,8 @@ public struct ModCallbackInfo
 [Serializable]
 public readonly struct ModData
 {
+    public string NameId { get; }
+
     public int Id { get; }
 
     public int MaturityOption { get; }
@@ -31,6 +33,8 @@ public readonly struct ModData
 
     public ModData(JToken token)
     {
+        NameId = token.Value<string>("name_id");
+
         Id = token.Value<int>("id");
 
         MaturityOption = token.Value<int>("maturity_option");

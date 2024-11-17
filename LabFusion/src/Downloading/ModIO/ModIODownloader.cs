@@ -100,7 +100,16 @@ public static class ModIODownloader
                 // Check for maturity
                 if (info.data.Mature && !ClientSettings.Downloading.DownloadMatureContent.Value)
                 {
-                    FusionLogger.Warn($"Skipped download of mod {modFile.ModId} due to it containing mature content.");
+                    FusionLogger.Warn($"Skipped download of mod {info.data.NameId} due to it containing mature content.");
+
+                    FailDownload();
+                    return;
+                }
+
+                // Check for blacklist
+                if (ModDownloadBlacklist.IsBlacklisted(info.data.NameId) || ModDownloadBlacklist.IsBlacklisted(info.data.Id.ToString()))
+                {
+                    FusionLogger.Warn($"Skipped download of mod {info.data.NameId} due to it being blacklisted!");
 
                     FailDownload();
                     return;

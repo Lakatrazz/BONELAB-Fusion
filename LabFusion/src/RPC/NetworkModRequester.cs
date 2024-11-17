@@ -58,6 +58,12 @@ public static class NetworkModRequester
 
     public static void RequestAndInstallMod(ModInstallInfo installInfo)
     {
+        if (ModDownloadBlacklist.IsBlacklisted(installInfo.barcode))
+        {
+            installInfo.finishDownloadCallback?.Invoke(DownloadCallbackInfo.FailedCallback);
+            return;
+        }
+
         MelonCoroutines.Start(WaitAndInstallMod(installInfo));
     }
 

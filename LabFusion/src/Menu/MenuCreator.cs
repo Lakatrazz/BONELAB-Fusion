@@ -141,7 +141,7 @@ public static class MenuCreator
             {
                 FusionNotifier.Send(new FusionNotification()
                 {
-                    Title = "Installation Failed",
+                    Title = "Download Failed",
                     Message = "The Fusion Content failed to install! Make sure you are logged into mod.io in VoidG114 or BONELAB Hub!",
                     Type = NotificationType.ERROR,
                     SaveToMenu = false,

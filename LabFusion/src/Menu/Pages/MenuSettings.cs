@@ -1,12 +1,14 @@
 ﻿using Il2CppSLZ.Marrow.SceneStreaming;
 
 using LabFusion.Data;
+using LabFusion.Downloading.ModIO;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Proxies;
 using LabFusion.Network;
 using LabFusion.Preferences.Client;
 using LabFusion.Representation;
+using LabFusion.Utilities;
 using LabFusion.Voice;
 
 using UnityEngine;
@@ -188,9 +190,34 @@ public static class MenuSettings
             .WithIncrement(10)
             .WithLimits(0, 10000);
 
-        generalGroup.AddElement<BoolElement>("Downloaded Mature Content")
+        generalGroup.AddElement<BoolElement>("Download Mature Content")
             .AsPref(ClientSettings.Downloading.DownloadMatureContent)
             .WithColor(Color.red);
+
+        var quickDownloads = page.AddElement<GroupElement>("Quick Downloads");
+
+        quickDownloads.AddElement<FunctionElement>("Download Cosmetics")
+            .Do(() =>
+            {
+                ModIODownloader.EnqueueDownload(new ModTransaction()
+                {
+                    ModFile = new ModIOFile(ModReferences.FusionCosmeticsId),
+                    Callback = (info) =>
+                    {
+                        if (info.result == Downloading.ModResult.FAILED)
+                        {
+                            FusionNotifier.Send(new FusionNotification()
+                            {
+                                Title = "Download Failed",
+                                Message = "Failed to download Fusion Cosmetics!",
+                                SaveToMenu = false,
+                                ShowPopup = true,
+                                Type = NotificationType.ERROR,
+                            });
+                        }
+                    },
+                });
+            });
     }
 
     private static int _lastLayerIndex;
