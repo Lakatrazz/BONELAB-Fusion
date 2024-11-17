@@ -4,6 +4,8 @@ using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.Marrow.Pool;
 using Il2CppTMPro;
 
+using LabFusion.Downloading;
+using LabFusion.Downloading.ModIO;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Proxies;
 using LabFusion.Utilities;
@@ -15,6 +17,8 @@ namespace LabFusion.Menu;
 
 public static class MenuCreator
 {
+    public static GameObject MenuGameObject { get; private set; } = null;
+
     public static int MenuPageIndex => _menuPageIndex;
     private static int _menuPageIndex = -1;
 
@@ -67,18 +71,113 @@ public static class MenuCreator
         buttonText.gameObject.name = "text_Fusion";
 
         var buttonScript = fusionButton.GetComponent<Button>();
-        buttonScript.onClick.RemoveAllListeners();
+        buttonScript.onClick = new Button.ButtonClickedEvent();
         buttonScript.AddClickEvent(OnMenuButtonClicked);
 
         // Cache references
         _menuButtonImage = fusionButton.transform.Find("img_icon").GetComponent<Image>();
     }
 
+    private static bool _isDownloadingContent = false;
+
+    private static bool CheckFusionContent()
+    {
+        if (_isDownloadingContent)
+        {
+            return false;
+        }
+
+        var contentStatus = FusionPalletReferences.ValidateContentPallet();
+
+        switch (contentStatus)
+        {
+            default:
+            case FusionPalletReferences.PalletStatus.MISSING:
+                FusionNotifier.Send(new FusionNotification()
+                {
+                    Title = "Missing Fusion Content",
+                    Message = "The Fusion Content mod is missing! Beginning download...",
+                    Type = NotificationType.INFORMATION,
+                    SaveToMenu = false,
+                    ShowPopup = true,
+                    PopupLength = 4f,
+                });
+
+                DownloadContent();
+                return false;
+            case FusionPalletReferences.PalletStatus.OUTDATED:
+                FusionNotifier.Send(new FusionNotification()
+                {
+                    Title = "Outdated Fusion Content",
+                    Message = "The installed Fusion Content mod is outdated! Updating...",
+                    Type = NotificationType.INFORMATION,
+                    SaveToMenu = false,
+                    ShowPopup = true,
+                    PopupLength = 4f,
+                });
+
+                DownloadContent();
+                return false;
+            case FusionPalletReferences.PalletStatus.FOUND:
+                return true;
+        }
+    }
+
+    private static void DownloadContent()
+    {
+        _isDownloadingContent = true;
+
+        ModIODownloader.EnqueueDownload(new ModTransaction()
+        {
+            ModFile = new ModIOFile(ModReferences.FusionContentId),
+            Callback = OnCallbackReceived,
+        });
+
+        static void OnCallbackReceived(DownloadCallbackInfo info)
+        {
+            _isDownloadingContent = false;
+
+            if (info.result == ModResult.FAILED)
+            {
+                FusionNotifier.Send(new FusionNotification()
+                {
+                    Title = "Installation Failed",
+                    Message = "The Fusion Content failed to install! Make sure you are logged into mod.io in VoidG114 or BONELAB Hub!",
+                    Type = NotificationType.ERROR,
+                    SaveToMenu = false,
+                    ShowPopup = true,
+                    PopupLength = 4f,
+                });
+
+                return;
+            }
+
+            // Now that the pallet is loaded, spawn the menu
+            SpawnMenu();
+        }
+    }
+
     private static void OnMenuButtonClicked()
     {
+        if (!CheckFusionContent())
+        {
+            return;
+        }
+
         // Make sure the page has been spawned properly
         if (_menuPageIndex < 0)
         {
+            FusionNotifier.Send(new FusionNotification()
+            {
+                Title = "Failed to Open Menu",
+                Message = "The Fusion menu does not exist!",
+                Type = NotificationType.ERROR,
+                SaveToMenu = false,
+                ShowPopup = true,
+                PopupLength = 4f,
+            });
+
+            FusionLogger.Error("Tried opening the menu, but it doesn't exist!");
             return;
         }
 
@@ -98,6 +197,12 @@ public static class MenuCreator
 
     private static void SpawnMenu()
     {
+        // Make sure the content is the right version
+        if (FusionPalletReferences.ValidateContentPallet() != FusionPalletReferences.PalletStatus.FOUND)
+        {
+            return;
+        }
+
         // Register and spawn the menu spawnable
         var spawnable = new Spawnable()
         {
@@ -123,23 +228,23 @@ public static class MenuCreator
         var panelView = uiRig.popUpMenu.preferencesPanelView;
 
         // Inject into the preferences menu
-        var menuGameObject = poolee.gameObject;
+        MenuGameObject = poolee.gameObject;
         var menuTransform = poolee.transform;
 
         menuTransform.parent = panelView.transform;
         menuTransform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         menuTransform.localScale = Vector3.one;
 
-        _menuPageIndex = InjectPage(panelView, menuGameObject);
+        _menuPageIndex = InjectPage(panelView, MenuGameObject);
 
         // Cache references
-        _menuPopups = menuGameObject.GetComponentInChildren<MenuPopups>(true);
+        _menuPopups = MenuGameObject.GetComponentInChildren<MenuPopups>(true);
 
         // Setup text
-        MenuButtonHelper.PopulateTexts(menuGameObject);
+        MenuButtonHelper.PopulateTexts(MenuGameObject);
 
         // Setup buttons
-        MenuButtonHelper.PopulateButtons(menuGameObject);
+        MenuButtonHelper.PopulateButtons(MenuGameObject);
 
         // Get resources contained in the menu
         MenuResources.GetResources(menuTransform.Find("Resources"));
@@ -151,7 +256,7 @@ public static class MenuCreator
         backArrowElement.Do(OnBackArrowPressed);
 
         // Finally, populate the functions for all of the elements
-        MenuPageHelper.PopulatePages(menuGameObject);
+        MenuPageHelper.PopulatePages(MenuGameObject);
         MenuToolbarHelper.PopulateToolbar(menuTransform.Find("Popups/grid_Toolbar").gameObject);
     }
 
