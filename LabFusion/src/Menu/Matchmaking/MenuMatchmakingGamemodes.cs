@@ -1,9 +1,8 @@
 ﻿using LabFusion.Marrow.Proxies;
 using LabFusion.Menu.Gamemodes;
 using LabFusion.Network;
-using LabFusion.Scene;
 using LabFusion.SDK.Gamemodes;
-using LabFusion.Utilities;
+
 using UnityEngine;
 
 namespace LabFusion.Menu;
@@ -67,8 +66,15 @@ public static class MenuMatchmakingGamemodes
 
     private static void OnLobbiesRequested(IMatchmaker.MatchmakerCallbackInfo info)
     {
+        string gamemodeBarcode = "Gamemode";
+
+        if (SelectedGamemode != null)
+        {
+            gamemodeBarcode = SelectedGamemode.Barcode;
+        }
+
         var gamemodeLobbies = info.lobbies
-            .Where((lobby) => lobby.metadata.LobbyInfo.GamemodeBarcode != string.Empty);
+            .Where((lobby) => lobby.metadata.LobbyInfo.GamemodeBarcode == gamemodeBarcode);
 
         bool foundLobbies = MenuMatchmaking.LoadLobbiesIntoBrowser(gamemodeLobbies);
 

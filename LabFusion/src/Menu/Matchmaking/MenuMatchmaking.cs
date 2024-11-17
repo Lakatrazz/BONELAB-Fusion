@@ -47,6 +47,11 @@ public static class MenuMatchmaking
 
         PopulateOptions(optionsTransform);
 
+        // Get sandbox references
+        var sandboxTransform = matchmakingPage.transform.Find("page_Sandbox");
+
+        MenuMatchmakingSandbox.PopulateSandbox(sandboxTransform);
+
         // Get gamemodes references
         var gamemodesTransform = matchmakingPage.transform.Find("page_Gamemodes");
 
@@ -262,6 +267,11 @@ public static class MenuMatchmaking
         }
 
         return false;
+    }
+
+    public static IEnumerable<IMatchmaker.LobbyInfo> ValidateLobbies(IEnumerable<IMatchmaker.LobbyInfo> lobbies)
+    {
+        return lobbies.Where(CheckLobbyVisibility);
     }
 
     public static bool LoadLobbiesIntoBrowser(IEnumerable<IMatchmaker.LobbyInfo> lobbies) 
