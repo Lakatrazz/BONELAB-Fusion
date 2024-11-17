@@ -40,6 +40,9 @@ public abstract class ProxyNetworkLayer : NetworkLayer
     private IVoiceManager _voiceManager;
     public override IVoiceManager VoiceManager => _voiceManager;
 
+    private IMatchmaker _matchmaker = null;
+    public override IMatchmaker Matchmaker => _matchmaker;
+
     protected bool _isServerActive = false;
     protected bool _isConnectionActive = false;
 
@@ -114,6 +117,8 @@ public abstract class ProxyNetworkLayer : NetworkLayer
         MelonCoroutines.Start(DiscoverServer());
 
         _lobbyManager = new ProxyLobbyManager(this);
+
+        _matchmaker = new ProxyMatchmaker(_lobbyManager);
     }
 
     public IEnumerator DiscoverServer()
