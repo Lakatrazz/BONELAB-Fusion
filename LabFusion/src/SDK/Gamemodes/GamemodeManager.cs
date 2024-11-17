@@ -101,9 +101,9 @@ public static class GamemodeManager
             {
                 Message = $"{ActiveGamemode.Title} is selected! Waiting until conditions are met...",
                 Title = "Gamemode Selected",
-                type = NotificationType.INFORMATION,
-                isPopup = true,
-                Length = 1.5f,
+                Type = NotificationType.INFORMATION,
+                ShowPopup = true,
+                PopupLength = 1.5f,
             });
         }
         else
@@ -112,9 +112,9 @@ public static class GamemodeManager
             {
                 Message = "The server is now in Sandbox mode!",
                 Title = "Gamemode Deselected",
-                type = NotificationType.INFORMATION,
-                isPopup = true,
-                Length = 1.5f,
+                Type = NotificationType.INFORMATION,
+                ShowPopup = true,
+                PopupLength = 1.5f,
             });
         }
     }
@@ -207,9 +207,9 @@ public static class GamemodeManager
             {
                 Message = $"{ActiveGamemode.Title} is ready! Starting in {DefaultTime} seconds!",
                 Title = "Gamemode Ready",
-                type = NotificationType.SUCCESS,
-                isPopup = true,
-                Length = 2f,
+                Type = NotificationType.SUCCESS,
+                ShowPopup = true,
+                PopupLength = 2f,
             });
         }
 
@@ -226,9 +226,9 @@ public static class GamemodeManager
             {
                 Message = $"{ActiveGamemode.Title} is no longer ready.",
                 Title = "Gamemode Unready",
-                type = NotificationType.ERROR,
-                isPopup = true,
-                Length = 2f,
+                Type = NotificationType.ERROR,
+                ShowPopup = true,
+                PopupLength = 2f,
             });
         }
 

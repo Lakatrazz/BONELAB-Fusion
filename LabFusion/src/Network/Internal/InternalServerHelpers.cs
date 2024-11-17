@@ -58,9 +58,9 @@ public static class InternalServerHelpers
         {
             Title = "Started Server",
             Message = "Started a server!",
-            isMenuItem = false,
-            isPopup = true,
-            type = NotificationType.SUCCESS,
+            SaveToMenu = false,
+            ShowPopup = true,
+            Type = NotificationType.SUCCESS,
         });
 
         // Unlock achievement
@@ -87,9 +87,9 @@ public static class InternalServerHelpers
         {
             Title = "Joined Server",
             Message = "Joined a server!",
-            isMenuItem = false,
-            isPopup = true,
-            type = NotificationType.SUCCESS,
+            SaveToMenu = false,
+            ShowPopup = true,
+            Type = NotificationType.SUCCESS,
         });
 
         // Unlock achievement
@@ -119,8 +119,8 @@ public static class InternalServerHelpers
             {
                 Title = "Disconnected from Server",
                 Message = "Disconnected from the current server!",
-                isMenuItem = false,
-                isPopup = true,
+                SaveToMenu = false,
+                ShowPopup = true,
             });
         }
         else
@@ -129,10 +129,10 @@ public static class InternalServerHelpers
             {
                 Title = "Disconnected from Server",
                 Message = $"You were disconnected for reason: {reason}",
-                isMenuItem = true,
-                isPopup = true,
-                Length = 5f,
-                type = NotificationType.WARNING,
+                SaveToMenu = true,
+                ShowPopup = true,
+                PopupLength = 5f,
+                Type = NotificationType.WARNING,
             });
         }
     }
@@ -159,8 +159,8 @@ public static class InternalServerHelpers
             {
                 Title = $"{name} Join",
                 Message = $"{name} joined the server.",
-                isMenuItem = false,
-                isPopup = true,
+                SaveToMenu = false,
+                ShowPopup = true,
             });
         }
     }
@@ -184,8 +184,8 @@ public static class InternalServerHelpers
             {
                 Title = $"{name} Leave",
                 Message = $"{name} left the server.",
-                isMenuItem = false,
-                isPopup = true,
+                SaveToMenu = false,
+                ShowPopup = true,
             });
         }
 

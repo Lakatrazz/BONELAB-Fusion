@@ -22,18 +22,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9b1b9af6d6b583c4fa4b59903eefb7f4
-    m_Address: PreviewMesh/BitMart
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 848410be2c3510e4c97a8cebcedb8865
     m_Address: Spawnable/Achievement Board
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 0f8d05635cd6e674d9ddbec183dbac42
-    m_Address: PreviewMesh/Achievement Board
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -42,18 +32,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6084f5de170558c48a17b564c5e48d43
-    m_Address: PreviewMesh/Info Board
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 143ed05e40cdce44493fe85c71c2d3f8
     m_Address: Spawnable/Victory Trophy
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 7bd674172ba743b4097a713ad25bfa0f
-    m_Address: PreviewMesh/Victory Trophy
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

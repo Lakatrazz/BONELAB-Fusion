@@ -577,6 +577,27 @@ public static class MenuLocation
 
         var activeLobbyInfo = LobbyInfoManager.LobbyInfo;
 
+        // Volume element
+        if (player.IsMe)
+        {
+            element.VolumeElement.gameObject.SetActive(false);
+        }
+        else
+        {
+            var volumeElement = element.VolumeElement
+                .WithTitle("Volume")
+                .WithIncrement(0.1f)
+                .WithLimits(0f, 2f);
+
+            volumeElement.Value = ContactsList.GetContact(player).volume;
+            volumeElement.OnValueChanged += (v) =>
+            {
+                var contact = ContactsList.GetContact(player);
+                contact.volume = v;
+                ContactsList.UpdateContact(contact);
+            };
+        }
+
         // Permissions element
         var permissionsElement = element.PermissionsElement
             .WithTitle("Permissions")

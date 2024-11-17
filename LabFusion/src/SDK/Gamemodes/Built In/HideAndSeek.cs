@@ -1,6 +1,4 @@
-﻿using BoneLib.BoneMenu;
-
-using Il2CppSLZ.Marrow;
+﻿using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Warehouse;
 
 using LabFusion.Data;
@@ -168,11 +166,11 @@ public class HideAndSeek : Gamemode
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                isPopup = true,
+                ShowPopup = true,
                 Title = "Tagged",
                 Message = "You've been tagged! You are now a seeker!",
-                Length = 4f,
-                type = NotificationType.INFORMATION,
+                PopupLength = 4f,
+                Type = NotificationType.INFORMATION,
             });
 
             _hasBeenTagged = true;
@@ -185,11 +183,11 @@ public class HideAndSeek : Gamemode
 
             FusionNotifier.Send(new FusionNotification()
             {
-                isPopup = true,
+                ShowPopup = true,
                 Title = $"{name} Tagged",
                 Message = $"{name} has been tagged and is now a seeker!",
-                Length = 4f,
-                type = NotificationType.INFORMATION,
+                PopupLength = 4f,
+                Type = NotificationType.INFORMATION,
             });
         }
     }
@@ -198,11 +196,11 @@ public class HideAndSeek : Gamemode
     {
         FusionNotifier.Send(new FusionNotification()
         {
-            isPopup = true,
+            ShowPopup = true,
             Title = "Seekers Won",
             Message = "All hiders have been found!",
-            Length = 4f,
-            type = NotificationType.INFORMATION,
+            PopupLength = 4f,
+            Type = NotificationType.INFORMATION,
         });
     }
 
@@ -225,11 +223,11 @@ public class HideAndSeek : Gamemode
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                isPopup = true,
+                ShowPopup = true,
                 Title = "Hider",
                 Message = "You are a hider! Don't let the seekers grab you!",
-                Length = 4,
-                type = NotificationType.INFORMATION,
+                PopupLength = 4,
+                Type = NotificationType.INFORMATION,
             });
         }
 
@@ -237,11 +235,11 @@ public class HideAndSeek : Gamemode
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                isPopup = true,
+                ShowPopup = true,
                 Title = "Seeker",
                 Message = "You are a seeker! Grab all hiders to win!",
-                Length = 2f,
-                type = NotificationType.INFORMATION,
+                PopupLength = 2f,
+                Type = NotificationType.INFORMATION,
             });
 
             MelonCoroutines.Start(HideVisionAndReveal());
@@ -320,11 +318,11 @@ public class HideAndSeek : Gamemode
                 case 1:
                     FusionNotifier.Send(new FusionNotification()
                     {
-                        isPopup = true,
+                        ShowPopup = true,
                         Title = "Countdown",
                         Message = $"{remainingSeconds}",
-                        Length = 1f,
-                        type = NotificationType.INFORMATION,
+                        PopupLength = 1f,
+                        Type = NotificationType.INFORMATION,
                     });
                     break;
             }
@@ -343,11 +341,11 @@ public class HideAndSeek : Gamemode
 
         FusionNotifier.Send(new FusionNotification()
         {
-            isPopup = true,
+            ShowPopup = true,
             Title = "Countdown Over",
             Message = $"GO!",
-            Length = 0.5f,
-            type = NotificationType.INFORMATION,
+            PopupLength = 0.5f,
+            Type = NotificationType.INFORMATION,
         });
 
         GameObject.Destroy(canvasGameObject);

@@ -301,8 +301,8 @@ public class Deathmatch : Gamemode
         {
             Title = "Deathmatch Started",
             Message = "Good luck!",
-            isMenuItem = false,
-            isPopup = true,
+            SaveToMenu = false,
+            ShowPopup = true,
         });
 
         // Reset time
@@ -436,10 +436,10 @@ public class Deathmatch : Gamemode
 
             Message = message,
 
-            Length = 6f,
+            PopupLength = 6f,
 
-            isMenuItem = false,
-            isPopup = true,
+            SaveToMenu = false,
+            ShowPopup = true,
         });
 
         _timeOfStart = 0f;
@@ -513,8 +513,8 @@ public class Deathmatch : Gamemode
         {
             Title = "Deathmatch Timer",
             Message = "One minute left!",
-            isMenuItem = false,
-            isPopup = true,
+            SaveToMenu = false,
+            ShowPopup = true,
         });
     }
 
@@ -536,9 +536,9 @@ public class Deathmatch : Gamemode
             {
                 Title = "Deathmatch Point",
                 Message = $"New score is {score}!",
-                isMenuItem = false,
-                isPopup = true,
-                Length = 0.7f,
+                SaveToMenu = false,
+                ShowPopup = true,
+                PopupLength = 0.7f,
             });
         }
     }

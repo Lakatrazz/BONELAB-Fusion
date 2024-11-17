@@ -113,14 +113,11 @@ public class DescentData : LevelDataHandler
         }
     }
 
-    protected override void SceneAwake()
+    protected override void MainSceneInitialized()
     {
         Instance = this;
         _introEvents.Clear();
-    }
 
-    protected override void MainSceneInitialized()
-    {
         Noose = GameObject.FindObjectOfType<NooseBonelabIntro>(true);
         Elevator = GameObject.FindObjectOfType<TutorialElevator>(true);
         GameController = GameObject.FindObjectOfType<GameControl_Descent>(true);

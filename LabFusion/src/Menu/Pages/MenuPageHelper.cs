@@ -19,5 +19,6 @@ public static class MenuPageHelper
         MenuMatchmaking.PopulateMatchmaking(root.transform.Find("page_Matchmaking").gameObject);
         MenuSettings.PopulateSettings(root.transform.Find("page_Settings").gameObject);
         MenuGamemode.PopulateGamemode(root.transform.Find("page_Gamemode").gameObject);
+        MenuNotifications.PopulateNotifications(root.transform.Find("page_Notifications").gameObject);
     }
 }

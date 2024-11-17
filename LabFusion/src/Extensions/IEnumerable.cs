@@ -4,6 +4,12 @@ namespace LabFusion.Extensions;
 
 public static class IEnumerableExtensions
 {
+    public static T GetRandom<T>(this IEnumerable<T> enumerable)
+    {
+        int random = UnityEngine.Random.Range(0, enumerable.Count());
+        return enumerable.ElementAt(random);
+    }
+
     public static bool ContainsIL2CPP<T>(this HashSet<T> set, T item)
     {
         if (!PlatformHelper.IsAndroid)

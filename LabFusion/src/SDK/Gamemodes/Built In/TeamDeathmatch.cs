@@ -1,6 +1,4 @@
-﻿using BoneLib.BoneMenu;
-
-using Il2CppSLZ.Marrow.Warehouse;
+﻿using Il2CppSLZ.Marrow.Warehouse;
 
 using LabFusion.Extensions;
 using LabFusion.Marrow;
@@ -314,9 +312,9 @@ public class TeamDeathmatch : Gamemode
         {
             Title = "Team Deathmatch Assignment",
             Message = $"Your team is: {team.DisplayName}",
-            isMenuItem = false,
-            isPopup = true,
-            Length = 5f,
+            SaveToMenu = false,
+            ShowPopup = true,
+            PopupLength = 5f,
         };
 
         FusionNotifier.Send(assignmentNotification);
@@ -558,10 +556,10 @@ public class TeamDeathmatch : Gamemode
 
             Message = message,
 
-            Length = 6f,
+            PopupLength = 6f,
 
-            isMenuItem = false,
-            isPopup = true,
+            SaveToMenu = false,
+            ShowPopup = true,
         });
 
         _timeOfStart = 0f;
@@ -638,8 +636,8 @@ public class TeamDeathmatch : Gamemode
         {
             Title = "Team Deathmatch Timer",
             Message = "One minute left!",
-            isMenuItem = false,
-            isPopup = true,
+            SaveToMenu = false,
+            ShowPopup = true,
         });
     }
 
@@ -774,9 +772,9 @@ public class TeamDeathmatch : Gamemode
             {
                 Title = "Team Deathmatch Point",
                 Message = $"{localTeam.DisplayName}'s score is {score}!",
-                isMenuItem = false,
-                isPopup = true,
-                Length = 0.7f,
+                SaveToMenu = false,
+                ShowPopup = true,
+                PopupLength = 0.7f,
             });
         }
     }

@@ -28,8 +28,8 @@ namespace LabFusion.Patching
                     {
                         Title = "Requested Level",
                         Message = $"Sent a level request for {crate.Title}!",
-                        isMenuItem = false,
-                        isPopup = true,
+                        SaveToMenu = false,
+                        ShowPopup = true,
                     });
 
                     return false;

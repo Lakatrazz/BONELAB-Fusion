@@ -70,6 +70,7 @@ public static class MenuProfile
         // Disable unnecessary elements
         ProfileElement.ActionsGrid.SetActive(false);
 
+        ProfileElement.VolumeElement.gameObject.SetActive(false);
         ProfileElement.PermissionsElement.gameObject.SetActive(false);
     }
 }

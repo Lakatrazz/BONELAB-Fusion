@@ -556,5 +556,8 @@ public static class MenuMatchmaking
         element.PermissionsElement.EnumType = typeof(PermissionLevel);
 
         ElementIconHelper.SetProfileIcon(element, info.AvatarTitle, info.AvatarModId);
+
+        // Disable unnecessary elements
+        element.VolumeElement.gameObject.SetActive(false);
     }
 }

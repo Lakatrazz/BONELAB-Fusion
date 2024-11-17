@@ -292,9 +292,9 @@ public class Entangled : Gamemode
         {
             Title = "Entangled Finish",
             Message = $"The gamemode has ended!",
-            isMenuItem = false,
-            isPopup = true,
-            Length = 2f,
+            SaveToMenu = false,
+            ShowPopup = true,
+            PopupLength = 2f,
         });
 
         // Remove all player partnerships
@@ -383,9 +383,9 @@ public class Entangled : Gamemode
             {
                 Title = "Entangled Partner Assignment",
                 Message = $"You have no assigned partner! Wait for a new person to join the lobby!",
-                isMenuItem = false,
-                isPopup = true,
-                Length = 5f,
+                SaveToMenu = false,
+                ShowPopup = true,
+                PopupLength = 5f,
             });
 
             _partner = null;
@@ -410,9 +410,9 @@ public class Entangled : Gamemode
         {
             Title = "Entangled Partner Assignment",
             Message = $"Your partner is: {name}",
-            isMenuItem = false,
-            isPopup = true,
-            Length = 5f,
+            SaveToMenu = false,
+            ShowPopup = true,
+            PopupLength = 5f,
         });
     }
 

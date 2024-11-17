@@ -119,8 +119,8 @@ public static class MuteUIHelper
 
             FusionNotifier.Send(new FusionNotification()
             {
-                isPopup = true,
-                isMenuItem = false,
+                ShowPopup = true,
+                SaveToMenu = false,
                 Message = mutedPref.Value ? "Muted" : "Unmuted",
             });
         }));

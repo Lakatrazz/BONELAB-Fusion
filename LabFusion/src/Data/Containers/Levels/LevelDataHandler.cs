@@ -5,8 +5,6 @@ using LabFusion.Scene;
 using LabFusion.Network;
 using LabFusion.Player;
 
-using BoneLib;
-
 namespace LabFusion.Data;
 
 public abstract class LevelDataHandler
@@ -23,20 +21,8 @@ public abstract class LevelDataHandler
         return FusionSceneManager.Title == LevelTitle && FusionSceneManager.Level.Pallet.IsInMarrowGame();
     }
 
-    protected virtual void SceneAwake() { }
     protected virtual void MainSceneInitialized() { }
     protected virtual void PlayerCatchup(PlayerId playerId) { }
-
-    private static void OnSceneAwake()
-    {
-        for (var i = 0; i < Handlers.Count; i++)
-        {
-            var handler = Handlers[i];
-
-            if (handler.IsMatchingScene())
-                handler.SceneAwake();
-        }
-    }
 
     private static void OnMainSceneInitialized()
     {
@@ -62,7 +48,6 @@ public abstract class LevelDataHandler
     public static void OnInitializeMelon()
     {
         // Hook functions
-        Hooking.OnLevelLoaded += (_) => { OnSceneAwake(); };
         MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
         MultiplayerHooking.OnPlayerCatchup += OnPlayerCatchup;
 

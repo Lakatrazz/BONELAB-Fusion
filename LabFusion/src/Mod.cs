@@ -16,7 +16,6 @@ using LabFusion.SDK.Lobbies;
 using LabFusion.SDK.Cosmetics;
 using LabFusion.Entities;
 using LabFusion.Downloading.ModIO;
-using LabFusion.BoneMenu;
 using LabFusion.Downloading;
 using LabFusion.Marrow;
 using LabFusion.Menu;
@@ -95,9 +94,6 @@ public class FusionMod : MelonMod
 
     public override void OnInitializeMelon()
     {
-        // Prepare the bonemenu category
-        BoneMenuCreator.OnPrepareMainPage();
-
         // Pull files
         FusionFileLoader.OnInitializeMelon();
 
@@ -172,7 +168,7 @@ public class FusionMod : MelonMod
         // Check if the auto updater is installed
         _hasAutoUpdater = MelonPlugin.RegisteredMelons.Any((p) => p.Info.Name.Contains("LabFusion Updater"));
 
-        if (!_hasAutoUpdater && !PlatformHelper.IsAndroid)
+        if (!_hasAutoUpdater)
         {
             FusionNotifier.Send(new FusionNotification()
             {
@@ -234,21 +230,14 @@ public class FusionMod : MelonMod
         FusionPreferences.OnPreferencesLoaded();
     }
 
-    private static bool _initializedBoneMenu = false;
-
     public static void OnMainSceneInitialized()
     {
-        if (!_initializedBoneMenu)
-        {
-            BoneMenuCreator.OnPopulateMainPage();
-            _initializedBoneMenu = true;
-        }
-
         string sceneName = FusionSceneManager.Level.Title;
 
 #if DEBUG
         FusionLogger.Log($"Main scene {sceneName} was initialized.");
 #endif
+
         // Cache info
         NetworkEntityManager.OnCleanupIds();
 

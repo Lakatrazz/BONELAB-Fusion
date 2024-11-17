@@ -1,6 +1,4 @@
-﻿using BoneLib;
-
-using LabFusion.Data;
+﻿using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Preferences;
 using LabFusion.Player;
@@ -9,6 +7,7 @@ using LabFusion.SDK.Gamemodes;
 using LabFusion.Senders;
 using LabFusion.Scene;
 using LabFusion.Marrow;
+using LabFusion.Extensions;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
 using Il2CppSLZ.Marrow.Warehouse;
@@ -98,11 +97,11 @@ public static class FusionPlayer
 
         FusionNotifier.Send(new FusionNotification()
         {
-            isPopup = true,
+            ShowPopup = true,
             Title = "Whoops! Sorry about that!",
-            type = NotificationType.WARNING,
+            Type = NotificationType.WARNING,
             Message = "The scene was reloaded due to being sent far out of bounds.",
-            Length = 6f,
+            PopupLength = 6f,
         });
     }
 

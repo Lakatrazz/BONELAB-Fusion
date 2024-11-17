@@ -84,9 +84,9 @@ public static class NetworkHelper
 
                 Message = $"{name} has denied your kick request.",
 
-                isMenuItem = false,
-                isPopup = true,
-                type = NotificationType.ERROR,
+                SaveToMenu = false,
+                ShowPopup = true,
+                Type = NotificationType.ERROR,
             });
 
             return;
@@ -113,9 +113,9 @@ public static class NetworkHelper
 
                 Message = $"{name} has denied your ban request.",
 
-                isMenuItem = false,
-                isPopup = true,
-                type = NotificationType.ERROR,
+                SaveToMenu = false,
+                ShowPopup = true,
+                Type = NotificationType.ERROR,
             });
 
             return;

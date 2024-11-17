@@ -1,13 +1,11 @@
 ﻿using Il2CppSLZ.Bonelab;
 
-using LabFusion.BoneMenu;
 using LabFusion.Data;
 using LabFusion.Extensions;
+using LabFusion.Menu;
 using LabFusion.Scene;
 
 using UnityEngine;
-
-using Page = BoneLib.BoneMenu.Page;
 
 namespace LabFusion.Utilities;
 
@@ -97,28 +95,33 @@ public class FusionNotification
     /// <summary>
     /// Should this notification popup?
     /// </summary>
-    public bool isPopup = true;
+    public bool ShowPopup { get; set; } = true;
 
     /// <summary>
     /// How long the notification will be up.
     /// </summary>
-    public float Length { get; set; } = 2f;
+    public float PopupLength { get; set; } = 2f;
 
     /// <summary>
     /// The type of notification this is. Changes the icon.
     /// </summary>
-    public NotificationType type = NotificationType.INFORMATION;
+    public NotificationType Type { get; set; } = NotificationType.INFORMATION;
 
     // BoneMenu settings
     /// <summary>
     /// Will the notification popup inside of the menu tab?
     /// </summary>
-    public bool isMenuItem = true;
+    public bool SaveToMenu { get; set; } = true;
 
     /// <summary>
-    /// A hook for adding custom functions in the menu. Requires <see cref="isMenuItem"/> to be on.
+    /// Invoked when the notification is accepted. Requires <see cref="SaveToMenu"/> to be true.
     /// </summary>
-    public Action<Page> onCreateCategory = null;
+    public Action OnAccepted { get; set; } = null;
+
+    /// <summary>
+    /// Invoked when the notification is declined. Requires <see cref="SaveToMenu"/> to be true.
+    /// </summary>
+    public Action OnDeclined { get; set; } = null;
 }
 
 public static class FusionNotifier
@@ -128,7 +131,6 @@ public static class FusionNotifier
     public const float DefaultScaleTime = 0.4f;
 
     private static readonly Queue<FusionNotification> _queuedNotifications = new();
-    private static ulong _notificationNumber = 0;
 
     private static bool _hasEnabledTutorialRig = false;
 
@@ -146,31 +148,14 @@ public static class FusionNotifier
     {
         var notification = _queuedNotifications.Dequeue();
 
-        // Add to bonemenu
-        if (notification.isMenuItem)
+        // Add to the menu
+        if (notification.SaveToMenu)
         {
-            // Use a name generated with an index because BoneMenu returns an existing category if names match
-            string generated = $"Internal_Notification_Generated_{_notificationNumber}";
-            var page = BoneMenuCreator.NotificationCategory.CreatePage(generated, notification.Title.Color, 0, false);
-            var pageLink = BoneMenuCreator.NotificationCategory.CreatePageLink(page);
-
-            page.Name = notification.Title.Text;
-
-            _notificationNumber++;
-
-            if (!string.IsNullOrWhiteSpace(notification.Message.Text))
-                page.CreateFunction(notification.Message.Text, notification.Message.Color, null);
-
-            page.CreateFunction("Mark as Read", Color.red, () =>
-            {
-                BoneMenuCreator.RemoveNotification(pageLink);
-            });
-
-            notification.onCreateCategory.InvokeSafe(page, "executing Notification.OnCreateCategory");
+            MenuNotifications.AddNotification(notification);
         }
 
         // Show to the player
-        if (notification.isPopup && RigData.HasPlayer)
+        if (notification.ShowPopup && RigData.HasPlayer)
         {
             var tutorialRig = TutorialRig.Instance;
             var headTitles = tutorialRig.headTitles;
@@ -183,7 +168,7 @@ public static class FusionNotifier
 
             Sprite incomingSprite = GetPopupSprite(notification);
 
-            float holdTime = notification.Length;
+            float holdTime = notification.PopupLength;
 
             float timeToScale = Mathf.Lerp(0.05f, DefaultScaleTime, Mathf.Clamp01(holdTime - 1f));
 
@@ -196,7 +181,7 @@ public static class FusionNotifier
 
     private static Sprite GetPopupSprite(FusionNotification notification)
     {
-        Texture2D incomingTexture = notification.type switch
+        Texture2D incomingTexture = notification.Type switch
         {
             NotificationType.WARNING => FusionContentLoader.NotificationWarning.Asset,
             NotificationType.ERROR => FusionContentLoader.NotificationError.Asset,
