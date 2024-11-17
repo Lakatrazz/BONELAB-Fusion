@@ -99,24 +99,22 @@ public static class GamemodeManager
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                message = $"{ActiveGamemode.Title} is selected! Waiting until conditions are met...",
-                title = "Gamemode Selected",
+                Message = $"{ActiveGamemode.Title} is selected! Waiting until conditions are met...",
+                Title = "Gamemode Selected",
                 type = NotificationType.INFORMATION,
                 isPopup = true,
-                showTitleOnPopup = true,
-                popupLength = 1.5f,
+                Length = 1.5f,
             });
         }
         else
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                message = "The server is now in Sandbox mode!",
-                title = "Gamemode Deselected",
+                Message = "The server is now in Sandbox mode!",
+                Title = "Gamemode Deselected",
                 type = NotificationType.INFORMATION,
                 isPopup = true,
-                showTitleOnPopup = true,
-                popupLength = 1.5f,
+                Length = 1.5f,
             });
         }
     }
@@ -207,12 +205,11 @@ public static class GamemodeManager
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                message = $"{ActiveGamemode.Title} is ready! Starting in {DefaultTime} seconds!",
-                title = "Gamemode Ready",
+                Message = $"{ActiveGamemode.Title} is ready! Starting in {DefaultTime} seconds!",
+                Title = "Gamemode Ready",
                 type = NotificationType.SUCCESS,
                 isPopup = true,
-                showTitleOnPopup = true,
-                popupLength = 2f,
+                Length = 2f,
             });
         }
 
@@ -227,12 +224,11 @@ public static class GamemodeManager
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                message = $"{ActiveGamemode.Title} is no longer ready.",
-                title = "Gamemode Unready",
+                Message = $"{ActiveGamemode.Title} is no longer ready.",
+                Title = "Gamemode Unready",
                 type = NotificationType.ERROR,
                 isPopup = true,
-                showTitleOnPopup = true,
-                popupLength = 2f,
+                Length = 2f,
             });
         }
 

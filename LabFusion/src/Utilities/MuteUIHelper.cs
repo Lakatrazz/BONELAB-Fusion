@@ -121,7 +121,7 @@ public static class MuteUIHelper
             {
                 isPopup = true,
                 isMenuItem = false,
-                message = mutedPref.Value ? "Muted" : "Unmuted",
+                Message = mutedPref.Value ? "Muted" : "Unmuted",
             });
         }));
 

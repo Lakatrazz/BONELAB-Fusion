@@ -80,10 +80,9 @@ public static class NetworkHelper
 
             FusionNotifier.Send(new FusionNotification()
             {
-                title = "Failed to Kick User",
-                showTitleOnPopup = true,
+                Title = "Failed to Kick User",
 
-                message = $"{name} has denied your kick request.",
+                Message = $"{name} has denied your kick request.",
 
                 isMenuItem = false,
                 isPopup = true,
@@ -110,10 +109,9 @@ public static class NetworkHelper
 
             FusionNotifier.Send(new FusionNotification()
             {
-                title = "Failed to Ban User",
-                showTitleOnPopup = true,
+                Title = "Failed to Ban User",
 
-                message = $"{name} has denied your ban request.",
+                Message = $"{name} has denied your ban request.",
 
                 isMenuItem = false,
                 isPopup = true,

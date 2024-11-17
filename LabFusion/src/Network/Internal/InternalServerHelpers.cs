@@ -56,8 +56,8 @@ public static class InternalServerHelpers
         // Send a notification
         FusionNotifier.Send(new FusionNotification()
         {
-            title = "Started Server",
-            message = "Started a server!",
+            Title = "Started Server",
+            Message = "Started a server!",
             isMenuItem = false,
             isPopup = true,
             type = NotificationType.SUCCESS,
@@ -85,8 +85,8 @@ public static class InternalServerHelpers
         // Send a notification
         FusionNotifier.Send(new FusionNotification()
         {
-            title = "Joined Server",
-            message = "Joined a server!",
+            Title = "Joined Server",
+            Message = "Joined a server!",
             isMenuItem = false,
             isPopup = true,
             type = NotificationType.SUCCESS,
@@ -117,8 +117,8 @@ public static class InternalServerHelpers
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                title = "Disconnected from Server",
-                message = "Disconnected from the current server!",
+                Title = "Disconnected from Server",
+                Message = "Disconnected from the current server!",
                 isMenuItem = false,
                 isPopup = true,
             });
@@ -127,11 +127,11 @@ public static class InternalServerHelpers
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                title = "Disconnected from Server",
-                message = $"You were disconnected for reason: {reason}",
+                Title = "Disconnected from Server",
+                Message = $"You were disconnected for reason: {reason}",
                 isMenuItem = true,
                 isPopup = true,
-                popupLength = 5f,
+                Length = 5f,
                 type = NotificationType.WARNING,
             });
         }
@@ -157,8 +157,8 @@ public static class InternalServerHelpers
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                title = $"{name} Join",
-                message = $"{name} joined the server.",
+                Title = $"{name} Join",
+                Message = $"{name} joined the server.",
                 isMenuItem = false,
                 isPopup = true,
             });
@@ -182,8 +182,8 @@ public static class InternalServerHelpers
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                title = $"{name} Leave",
-                message = $"{name} left the server.",
+                Title = $"{name} Leave",
+                Message = $"{name} left the server.",
                 isMenuItem = false,
                 isPopup = true,
             });

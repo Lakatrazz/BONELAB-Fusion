@@ -1,7 +1,8 @@
 ﻿using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Interaction;
+using Il2CppSLZ.Marrow.Pool;
+using Il2CppSLZ.Marrow.VFX;
 
-using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Representation;
 
@@ -29,6 +30,9 @@ public class RigPuppet
 
     private void OnPuppetCreated(RigManager rig, Action<RigManager> onPuppetCreated = null)
     {
+        // Add poolee to the PhysicsRig for spawn/despawn VFX
+        rig.physicsRig.gameObject.AddComponent<Poolee>();
+
         // Swap the open controllers for generic controllers
         // Left hand
         var leftHaptor = rig.ControllerRig.leftController.haptor;
@@ -60,16 +64,25 @@ public class RigPuppet
 
         // Invoke callback
         onPuppetCreated?.Invoke(rig);
+
+        // Play spawn VFX
+        SpawnEffects.CallSpawnEffect(rig.physicsRig.marrowEntity);
     }
 
     public void DestroyPuppet()
     {
-        if (HasPuppet)
+        if (!HasPuppet)
         {
-            _selfReferences.LeftHand.TryDetach();
-            _selfReferences.RightHand.TryDetach();
-
-            GameObject.Destroy(_selfReferences.RigManager.gameObject);
+            return;
         }
+
+        var marrowEntity = _selfReferences.RigManager.physicsRig.marrowEntity;
+
+        SpawnEffects.CallDespawnEffect(marrowEntity);
+
+        _selfReferences.LeftHand.TryDetach();
+        _selfReferences.RightHand.TryDetach();
+
+        GameObject.Destroy(_selfReferences.RigManager.gameObject);
     }
 }

@@ -45,17 +45,17 @@ public struct NotificationText
     /// <summary>
     /// The text.
     /// </summary>
-    public string text;
+    public string Text { get; set; }
 
     /// <summary>
     /// The color of the text.
     /// </summary>
-    public Color color;
+    public Color Color { get; set; }
 
     /// <summary>
     /// Should rich text be allowed?
     /// </summary>
-    public bool richText;
+    public bool RichText { get; set; }
 
     public NotificationText(string text) : this(text, Color.white) { }
 
@@ -66,9 +66,9 @@ public struct NotificationText
             text = text.RemoveRichText();
         }
 
-        this.text = text;
-        this.color = color;
-        this.richText = richText;
+        this.Text = text;
+        this.Color = color;
+        this.RichText = richText;
     }
 
     public static implicit operator NotificationText(string text)
@@ -86,19 +86,14 @@ public class FusionNotification
     /// <summary>
     /// The title of the notification.
     /// </summary>
-    public NotificationText title;
+    public NotificationText Title { get; set; } = new NotificationText("New Notification");
 
     /// <summary>
     /// The main body of the notification.
     /// </summary>
-    public NotificationText message;
+    public NotificationText Message { get; set; }
 
     // Popup settings
-    /// <summary>
-    /// Should the title be used on the popup? (If false, it shows "New Notification".)
-    /// </summary>
-    public bool showTitleOnPopup = false;
-
     /// <summary>
     /// Should this notification popup?
     /// </summary>
@@ -107,7 +102,7 @@ public class FusionNotification
     /// <summary>
     /// How long the notification will be up.
     /// </summary>
-    public float popupLength = 2f;
+    public float Length { get; set; } = 2f;
 
     /// <summary>
     /// The type of notification this is. Changes the icon.
@@ -156,15 +151,15 @@ public static class FusionNotifier
         {
             // Use a name generated with an index because BoneMenu returns an existing category if names match
             string generated = $"Internal_Notification_Generated_{_notificationNumber}";
-            var page = BoneMenuCreator.NotificationCategory.CreatePage(generated, notification.title.color, 0, false);
+            var page = BoneMenuCreator.NotificationCategory.CreatePage(generated, notification.Title.Color, 0, false);
             var pageLink = BoneMenuCreator.NotificationCategory.CreatePageLink(page);
 
-            page.Name = notification.title.text;
+            page.Name = notification.Title.Text;
 
             _notificationNumber++;
 
-            if (!string.IsNullOrWhiteSpace(notification.message.text))
-                page.CreateFunction(notification.message.text, notification.message.color, null);
+            if (!string.IsNullOrWhiteSpace(notification.Message.Text))
+                page.CreateFunction(notification.Message.Text, notification.Message.Color, null);
 
             page.CreateFunction("Mark as Read", Color.red, () =>
             {
@@ -182,18 +177,13 @@ public static class FusionNotifier
 
             EnableTutorialRig();
 
-            string incomingTitle = "New Notification";
+            string incomingTitle = notification.Title.Text;
 
-            if (notification.showTitleOnPopup)
-            {
-                incomingTitle = notification.title.text;
-            }
-
-            string incomingSubTitle = notification.message.text;
+            string incomingSubTitle = notification.Message.Text;
 
             Sprite incomingSprite = GetPopupSprite(notification);
 
-            float holdTime = notification.popupLength;
+            float holdTime = notification.Length;
 
             float timeToScale = Mathf.Lerp(0.05f, DefaultScaleTime, Mathf.Clamp01(holdTime - 1f));
 

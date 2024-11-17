@@ -99,11 +99,10 @@ public static class FusionPlayer
         FusionNotifier.Send(new FusionNotification()
         {
             isPopup = true,
-            showTitleOnPopup = true,
-            title = "Whoops! Sorry about that!",
+            Title = "Whoops! Sorry about that!",
             type = NotificationType.WARNING,
-            message = "The scene was reloaded due to being sent far out of bounds.",
-            popupLength = 6f,
+            Message = "The scene was reloaded due to being sent far out of bounds.",
+            Length = 6f,
         });
     }
 

@@ -169,10 +169,9 @@ public class HideAndSeek : Gamemode
             FusionNotifier.Send(new FusionNotification()
             {
                 isPopup = true,
-                showTitleOnPopup = true,
-                title = "Tagged",
-                message = "You've been tagged! You are now a seeker!",
-                popupLength = 4f,
+                Title = "Tagged",
+                Message = "You've been tagged! You are now a seeker!",
+                Length = 4f,
                 type = NotificationType.INFORMATION,
             });
 
@@ -187,10 +186,9 @@ public class HideAndSeek : Gamemode
             FusionNotifier.Send(new FusionNotification()
             {
                 isPopup = true,
-                showTitleOnPopup = true,
-                title = $"{name} Tagged",
-                message = $"{name} has been tagged and is now a seeker!",
-                popupLength = 4f,
+                Title = $"{name} Tagged",
+                Message = $"{name} has been tagged and is now a seeker!",
+                Length = 4f,
                 type = NotificationType.INFORMATION,
             });
         }
@@ -201,10 +199,9 @@ public class HideAndSeek : Gamemode
         FusionNotifier.Send(new FusionNotification()
         {
             isPopup = true,
-            showTitleOnPopup = true,
-            title = "Seekers Won",
-            message = "All hiders have been found!",
-            popupLength = 4f,
+            Title = "Seekers Won",
+            Message = "All hiders have been found!",
+            Length = 4f,
             type = NotificationType.INFORMATION,
         });
     }
@@ -229,10 +226,9 @@ public class HideAndSeek : Gamemode
             FusionNotifier.Send(new FusionNotification()
             {
                 isPopup = true,
-                showTitleOnPopup = true,
-                title = "Hider",
-                message = "You are a hider! Don't let the seekers grab you!",
-                popupLength = 4,
+                Title = "Hider",
+                Message = "You are a hider! Don't let the seekers grab you!",
+                Length = 4,
                 type = NotificationType.INFORMATION,
             });
         }
@@ -242,10 +238,9 @@ public class HideAndSeek : Gamemode
             FusionNotifier.Send(new FusionNotification()
             {
                 isPopup = true,
-                showTitleOnPopup = true,
-                title = "Seeker",
-                message = "You are a seeker! Grab all hiders to win!",
-                popupLength = 2f,
+                Title = "Seeker",
+                Message = "You are a seeker! Grab all hiders to win!",
+                Length = 2f,
                 type = NotificationType.INFORMATION,
             });
 
@@ -326,10 +321,9 @@ public class HideAndSeek : Gamemode
                     FusionNotifier.Send(new FusionNotification()
                     {
                         isPopup = true,
-                        showTitleOnPopup = true,
-                        title = "Countdown",
-                        message = $"{remainingSeconds}",
-                        popupLength = 1f,
+                        Title = "Countdown",
+                        Message = $"{remainingSeconds}",
+                        Length = 1f,
                         type = NotificationType.INFORMATION,
                     });
                     break;
@@ -350,10 +344,9 @@ public class HideAndSeek : Gamemode
         FusionNotifier.Send(new FusionNotification()
         {
             isPopup = true,
-            showTitleOnPopup = true,
-            title = "Countdown Over",
-            message = $"GO!",
-            popupLength = 0.5f,
+            Title = "Countdown Over",
+            Message = $"GO!",
+            Length = 0.5f,
             type = NotificationType.INFORMATION,
         });
 

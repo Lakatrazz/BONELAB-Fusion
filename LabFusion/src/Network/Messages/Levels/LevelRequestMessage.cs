@@ -74,8 +74,8 @@ public class LevelRequestMessage : FusionMessageHandler
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                title = $"{data.title} Load Request",
-                message = new NotificationText($"{name} has requested to load {data.title}.", Color.yellow),
+                Title = $"{data.title} Load Request",
+                Message = new NotificationText($"{name} has requested to load {data.title}.", Color.yellow),
 
                 isMenuItem = true,
                 isPopup = true,

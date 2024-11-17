@@ -312,12 +312,11 @@ public class TeamDeathmatch : Gamemode
     {
         FusionNotification assignmentNotification = new FusionNotification()
         {
-            title = "Team Deathmatch Assignment",
-            showTitleOnPopup = true,
-            message = $"Your team is: {team.DisplayName}",
+            Title = "Team Deathmatch Assignment",
+            Message = $"Your team is: {team.DisplayName}",
             isMenuItem = false,
             isPopup = true,
-            popupLength = 5f,
+            Length = 5f,
         };
 
         FusionNotifier.Send(assignmentNotification);
@@ -555,12 +554,11 @@ public class TeamDeathmatch : Gamemode
         // Show the winners in a notification
         FusionNotifier.Send(new FusionNotification()
         {
-            title = "Team Deathmatch Completed",
-            showTitleOnPopup = true,
+            Title = "Team Deathmatch Completed",
 
-            message = message,
+            Message = message,
 
-            popupLength = 6f,
+            Length = 6f,
 
             isMenuItem = false,
             isPopup = true,
@@ -638,9 +636,8 @@ public class TeamDeathmatch : Gamemode
     {
         FusionNotifier.Send(new()
         {
-            title = "Team Deathmatch Timer",
-            showTitleOnPopup = true,
-            message = "One minute left!",
+            Title = "Team Deathmatch Timer",
+            Message = "One minute left!",
             isMenuItem = false,
             isPopup = true,
         });
@@ -775,12 +772,11 @@ public class TeamDeathmatch : Gamemode
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                title = "Team Deathmatch Point",
-                showTitleOnPopup = true,
-                message = $"{localTeam.DisplayName}'s score is {score}!",
+                Title = "Team Deathmatch Point",
+                Message = $"{localTeam.DisplayName}'s score is {score}!",
                 isMenuItem = false,
                 isPopup = true,
-                popupLength = 0.7f,
+                Length = 0.7f,
             });
         }
     }

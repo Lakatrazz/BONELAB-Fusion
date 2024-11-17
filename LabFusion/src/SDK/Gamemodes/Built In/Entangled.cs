@@ -290,12 +290,11 @@ public class Entangled : Gamemode
         // Send notification of gamemode stop
         FusionNotifier.Send(new FusionNotification()
         {
-            title = "Entangled Finish",
-            showTitleOnPopup = true,
-            message = $"The gamemode has ended!",
+            Title = "Entangled Finish",
+            Message = $"The gamemode has ended!",
             isMenuItem = false,
             isPopup = true,
-            popupLength = 2f,
+            Length = 2f,
         });
 
         // Remove all player partnerships
@@ -382,12 +381,11 @@ public class Entangled : Gamemode
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                title = "Entangled Partner Assignment",
-                showTitleOnPopup = true,
-                message = $"You have no assigned partner! Wait for a new person to join the lobby!",
+                Title = "Entangled Partner Assignment",
+                Message = $"You have no assigned partner! Wait for a new person to join the lobby!",
                 isMenuItem = false,
                 isPopup = true,
-                popupLength = 5f,
+                Length = 5f,
             });
 
             _partner = null;
@@ -410,12 +408,11 @@ public class Entangled : Gamemode
 
         FusionNotifier.Send(new FusionNotification()
         {
-            title = "Entangled Partner Assignment",
-            showTitleOnPopup = true,
-            message = $"Your partner is: {name}",
+            Title = "Entangled Partner Assignment",
+            Message = $"Your partner is: {name}",
             isMenuItem = false,
             isPopup = true,
-            popupLength = 5f,
+            Length = 5f,
         });
     }
 

@@ -299,9 +299,8 @@ public class Deathmatch : Gamemode
 
         FusionNotifier.Send(new FusionNotification()
         {
-            title = "Deathmatch Started",
-            showTitleOnPopup = true,
-            message = "Good luck!",
+            Title = "Deathmatch Started",
+            Message = "Good luck!",
             isMenuItem = false,
             isPopup = true,
         });
@@ -433,12 +432,11 @@ public class Deathmatch : Gamemode
         // Show the winners in a notification
         FusionNotifier.Send(new FusionNotification()
         {
-            title = "Deathmatch Completed",
-            showTitleOnPopup = true,
+            Title = "Deathmatch Completed",
 
-            message = message,
+            Message = message,
 
-            popupLength = 6f,
+            Length = 6f,
 
             isMenuItem = false,
             isPopup = true,
@@ -513,9 +511,8 @@ public class Deathmatch : Gamemode
     {
         FusionNotifier.Send(new FusionNotification()
         {
-            title = "Deathmatch Timer",
-            showTitleOnPopup = true,
-            message = "One minute left!",
+            Title = "Deathmatch Timer",
+            Message = "One minute left!",
             isMenuItem = false,
             isPopup = true,
         });
@@ -537,12 +534,11 @@ public class Deathmatch : Gamemode
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                title = "Deathmatch Point",
-                showTitleOnPopup = true,
-                message = $"New score is {score}!",
+                Title = "Deathmatch Point",
+                Message = $"New score is {score}!",
                 isMenuItem = false,
                 isPopup = true,
-                popupLength = 0.7f,
+                Length = 0.7f,
             });
         }
     }

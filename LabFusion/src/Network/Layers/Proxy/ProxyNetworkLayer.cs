@@ -295,10 +295,9 @@ namespace LabFusion.Network
                 {
                     isMenuItem = false,
                     isPopup = true,
-                    popupLength = 4,
-                    showTitleOnPopup = true,
-                    title = "Connection Failed",
-                    message = "Failed to send data to the proxy, is FusionHelper running on your computer?",
+                    Length = 4,
+                    Title = "Connection Failed",
+                    Message = "Failed to send data to the proxy, is FusionHelper running on your computer?",
                     type = NotificationType.ERROR
                 });
                 return;
@@ -604,9 +603,8 @@ namespace LabFusion.Network
                 {
                     FusionNotifier.Send(new FusionNotification()
                     {
-                        title = "Timed Out",
-                        showTitleOnPopup = true,
-                        message = "Timed out when requesting lobby ids.",
+                        Title = "Timed Out",
+                        Message = "Timed out when requesting lobby ids.",
                         isMenuItem = false,
                         isPopup = true,
                     });
@@ -633,9 +631,8 @@ namespace LabFusion.Network
                     {
                         FusionNotifier.Send(new FusionNotification()
                         {
-                            title = "Timed Out",
-                            showTitleOnPopup = true,
-                            message = "Timed out when requesting lobby ids.",
+                            Title = "Timed Out",
+                            Message = "Timed out when requesting lobby ids.",
                             isMenuItem = false,
                             isPopup = true,
                         });
@@ -686,9 +683,8 @@ namespace LabFusion.Network
                 {
                     FusionNotifier.Send(new FusionNotification()
                     {
-                        title = "Timed Out",
-                        showTitleOnPopup = true,
-                        message = "Timed out when requesting lobby ids.",
+                        Title = "Timed Out",
+                        Message = "Timed out when requesting lobby ids.",
                         isMenuItem = false,
                         isPopup = true,
                     });
@@ -715,9 +711,8 @@ namespace LabFusion.Network
                     {
                         FusionNotifier.Send(new FusionNotification()
                         {
-                            title = "Timed Out",
-                            showTitleOnPopup = true,
-                            message = "Timed out when requesting lobby ids.",
+                            Title = "Timed Out",
+                            Message = "Timed out when requesting lobby ids.",
                             isMenuItem = false,
                             isPopup = true,
                         });

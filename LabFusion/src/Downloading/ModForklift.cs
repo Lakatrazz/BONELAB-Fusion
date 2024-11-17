@@ -66,11 +66,10 @@ public static class ModForklift
                 FusionNotifier.Send(new()
                 {
                     isPopup = true,
-                    showTitleOnPopup = true,
-                    title = "Download Completed",
+                    Title = "Download Completed",
                     type = NotificationType.SUCCESS,
-                    popupLength = 4,
-                    message = $"Finished installing {pallet.Title}!"
+                    Length = 4,
+                    Message = $"Finished installing {pallet.Title}!"
                 });
             }
 
