@@ -6,6 +6,7 @@ using LabFusion.Entities;
 using LabFusion.Scene;
 
 using Il2CppSLZ.Marrow.Pool;
+using Il2CppSLZ.Marrow.Interaction;
 
 namespace LabFusion.Patching;
 
@@ -50,6 +51,38 @@ public class PooleeDespawnPatch
 {
     public static bool IgnorePatch = false;
 
+    private static bool CheckPlayerDespawn(Poolee __instance)
+    {
+        // Poolee check
+        if (PooleeExtender.Cache.TryGet(__instance, out var entity))
+        {
+            var player = entity.GetExtender<NetworkPlayer>();
+
+            if (player != null)
+            {
+                FusionLogger.Warn($"Prevented Poolee.Despawn of player at ID {entity.Id}!");
+                return true;
+            }
+        }
+
+        // Marrow Entity check
+        var marrowEntity = MarrowEntity.Cache.Get(__instance.gameObject);
+
+        if (marrowEntity != null && IMarrowEntityExtender.Cache.TryGet(marrowEntity, out entity))
+        {
+            var player = entity.GetExtender<NetworkPlayer>();
+
+            if (player != null)
+            {
+                FusionLogger.Warn($"Prevented Poolee.Despawn of player at ID {entity.Id}!");
+                return true;
+            }
+        }
+
+        // Not despawning a player, everything is good
+        return false;
+    }
+
     public static bool Prefix(Poolee __instance)
     {
         // Make sure we have a server
@@ -70,16 +103,10 @@ public class PooleeDespawnPatch
             return true;
         }
 
-        // Prevent despawning of other players
-        if (PooleeExtender.Cache.TryGet(__instance, out var entity))
+        // Don't allow player despawning
+        if (CheckPlayerDespawn(__instance))
         {
-            var player = entity.GetExtender<NetworkPlayer>();
-
-            if (player != null && !entity.IsOwner)
-            {
-                FusionLogger.Warn($"Prevented despawn of player at ID {entity.Id}!");
-                return false;
-            }
+            return false;
         }
 
         bool isSceneHost = CrossSceneManager.IsSceneHost();
