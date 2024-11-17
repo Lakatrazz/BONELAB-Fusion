@@ -12,6 +12,7 @@ using LabFusion.Player;
 using LabFusion.RPC;
 using LabFusion.SDK.Achievements;
 using LabFusion.Utilities;
+using LabFusion.Scene;
 
 using HarmonyLib;
 
@@ -80,6 +81,11 @@ public static class SpawnGunPatches
             return;
         }
 
+        if (CrossSceneManager.Purgatory)
+        {
+            return;
+        }
+
         var entity = SpawnGunExtender.Cache.Get(__instance);
 
         if (entity == null || !entity.IsOwner)
@@ -111,6 +117,11 @@ public static class SpawnGunPatches
             return true;
         }
 
+        if (CrossSceneManager.Purgatory)
+        {
+            return true;
+        }
+
         __state = __instance._selectedCrate;
         __instance._selectedCrate = null;
 
@@ -121,6 +132,29 @@ public static class SpawnGunPatches
         }
 
         return true;
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(nameof(SpawnGun.OnFire))]
+    public static void OnFirePostfix(SpawnGun __instance, ref SpawnableCrate __state)
+    {
+        if (!NetworkInfo.HasServer)
+        {
+            return;
+        }
+
+
+        if (CrossSceneManager.Purgatory)
+        {
+            return;
+        }
+
+        __instance._selectedCrate = __state;
+
+        if (__instance._selectedMode == UtilityModes.SPAWNER)
+        {
+            OnFireSpawn(__instance);
+        }
     }
 
     private static void OnFireSpawn(SpawnGun spawnGun)
@@ -210,22 +244,5 @@ public static class SpawnGunPatches
         // Flash the spawn gun
         spawnGun.FlashScreen();
         spawnGun.SpawnFlareAsync().Forget();
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch(nameof(SpawnGun.OnFire))]
-    public static void OnFirePostfix(SpawnGun __instance, ref SpawnableCrate __state)
-    {
-        if (!NetworkInfo.HasServer)
-        {
-            return;
-        }
-
-        __instance._selectedCrate = __state;
-
-        if (__instance._selectedMode == UtilityModes.SPAWNER)
-        {
-            OnFireSpawn(__instance);
-        }
     }
 }
