@@ -180,7 +180,7 @@ public static class PlayerHealthPatches
             return;
         }
 
-        if (CommonPreferences.Knockout && __instance.healthMode == Health.HealthMode.Invincible)
+        if (CommonPreferences.Knockout && CommonPreferences.Mortality && __instance.healthMode == Health.HealthMode.Invincible)
         {
             MelonCoroutines.Start(KnockoutCoroutine(__instance));
         }
