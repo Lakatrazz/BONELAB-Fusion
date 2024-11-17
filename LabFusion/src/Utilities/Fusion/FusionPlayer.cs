@@ -214,8 +214,8 @@ public static class FusionPlayer
     /// <summary>
     /// Sets the mortality of the player.
     /// </summary>
-    /// <param name="isMortal"></param>
-    public static void SetMortality(bool isMortal)
+    /// <param name="mortal"></param>
+    public static void SetMortality(bool mortal)
     {
         if (!RigData.HasPlayer)
         {
@@ -226,7 +226,7 @@ public static class FusionPlayer
 
         var playerHealth = rm.health.TryCast<Player_Health>();
 
-        if (isMortal)
+        if (mortal)
         {
             playerHealth.healthMode = Health.HealthMode.Mortal;
         }
@@ -242,9 +242,19 @@ public static class FusionPlayer
     public static void ResetMortality()
     {
         if (!NetworkInfo.HasServer)
+        {
             return;
+        }
 
-        SetMortality(CommonPreferences.Mortality);
+        // Knockout mode can't die
+        if (CommonPreferences.Knockout)
+        {
+            SetMortality(false);
+        }
+        else
+        {
+            SetMortality(CommonPreferences.Mortality);
+        }
     }
 
     /// <summary>

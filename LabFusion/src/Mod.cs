@@ -21,6 +21,7 @@ using LabFusion.Marrow;
 using LabFusion.Menu;
 using LabFusion.SDK.Modules;
 using LabFusion.Bonelab;
+using LabFusion.Player;
 
 #if DEBUG
 using LabFusion.Debugging;
@@ -140,6 +141,7 @@ public class FusionMod : MelonMod
         MenuCreator.OnInitializeMelon();
 
         FusionPlayer.OnInitializeMelon();
+        LocalVision.OnInitializeMelon();
 
         // Initialize level loading
         FusionSceneManager.Internal_OnInitializeMelon();

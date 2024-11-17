@@ -272,19 +272,8 @@ public class HideAndSeek : Gamemode
 
     private static IEnumerator HideVisionAndReveal()
     {
-        // Move to LocalVision later
-        var canvasGameObject = new GameObject("VISION OBSTRUCTION");
-        var canvas = canvasGameObject.AddComponent<Canvas>();
-
-        canvas.renderMode = RenderMode.WorldSpace;
-        var canvasTransform = canvasGameObject.transform;
-        canvasTransform.parent = RigData.Refs.Headset;
-        canvasTransform.localPosition = Vector3Extensions.forward * 0.1f;
-        canvasTransform.localRotation = Quaternion.Euler(0f, 180f, 0f);
-        canvasTransform.localScale = Vector3Extensions.one * 10f;
-
-        var image = canvas.gameObject.AddComponent<RawImage>();
-        image.color = Color.black;
+        LocalVision.Blind = true;
+        LocalVision.BlindColor = Color.black;
 
         // Lock movement so we can't move while vision is dark
         LocalControls.LockMovement();
@@ -339,6 +328,8 @@ public class HideAndSeek : Gamemode
 
         LocalControls.UnlockMovement();
 
+        LocalVision.Blind = false;
+
         FusionNotifier.Send(new FusionNotification()
         {
             ShowPopup = true,
@@ -347,8 +338,6 @@ public class HideAndSeek : Gamemode
             PopupLength = 0.5f,
             Type = NotificationType.INFORMATION,
         });
-
-        GameObject.Destroy(canvasGameObject);
     }
 
     private void SetDefaults()

@@ -496,16 +496,54 @@ public static class MenuMatchmaking
 
         generalGroup.AddElement<BoolElement>("NameTags")
             .WithInteractability(false)
-            .Value = info.LobbyInfo.NameTags;
+            .WithValue(info.LobbyInfo.NameTags);
 
         generalGroup.AddElement<BoolElement>("VoiceChat")
             .WithInteractability(false)
-            .Value = info.LobbyInfo.VoiceChat;
+            .WithValue(info.LobbyInfo.VoiceChat);
 
-        var slowMoElement = generalGroup.AddElement<EnumElement>("SlowMo")
-            .WithInteractability(false);
-        slowMoElement.EnumType = typeof(TimeScaleMode);
-        slowMoElement.Value = info.LobbyInfo.SlowMoMode;
+        generalGroup.AddElement<EnumElement>("SlowMo")
+            .WithInteractability(false)
+            .WithValue(info.LobbyInfo.SlowMoMode);
+
+        generalGroup.AddElement<BoolElement>("Mortality")
+            .WithInteractability(false)
+            .WithValue(info.LobbyInfo.Mortality);
+
+        generalGroup.AddElement<BoolElement>("Friendly Fire")
+            .WithInteractability(false)
+            .WithValue(info.LobbyInfo.FriendlyFire);
+
+        generalGroup.AddElement<BoolElement>("Knockout")
+            .WithInteractability(false)
+            .WithValue(info.LobbyInfo.Knockout);
+
+        // Permissions
+        var permissionsGroup = settingsPage.AddElement<GroupElement>("Permissions");
+
+        permissionsGroup.AddElement<EnumElement>("Dev Tools")
+            .WithInteractability(false)
+            .WithValue(info.LobbyInfo.DevTools);
+
+        permissionsGroup.AddElement<EnumElement>("Constrainer")
+            .WithInteractability(false)
+            .WithValue(info.LobbyInfo.Constrainer);
+
+        permissionsGroup.AddElement<EnumElement>("Custom Avatars")
+            .WithInteractability(false)
+            .WithValue(info.LobbyInfo.CustomAvatars);
+
+        permissionsGroup.AddElement<EnumElement>("Kicking")
+            .WithInteractability(false)
+            .WithValue(info.LobbyInfo.Kicking);
+
+        permissionsGroup.AddElement<EnumElement>("Banning")
+            .WithInteractability(false)
+            .WithValue(info.LobbyInfo.Banning);
+
+        permissionsGroup.AddElement<EnumElement>("Teleportation")
+            .WithInteractability(false)
+            .WithValue(info.LobbyInfo.Teleportation);
 
         // Player list
         element.PlayerBrowserElement.Clear();
