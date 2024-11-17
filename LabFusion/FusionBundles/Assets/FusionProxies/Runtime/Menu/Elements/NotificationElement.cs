@@ -16,11 +16,11 @@ namespace LabFusion.Marrow.Proxies
 #if MELONLOADER
         public NotificationElement(IntPtr intPtr) : base(intPtr) { }
 
-        public TMP_Text TitleText { get; private set; } = null;
-        public TMP_Text MessageText { get; private set; } = null;
+        public TMP_Text TitleText { get; set; } = null;
+        public TMP_Text MessageText { get; set; } = null;
 
-        public GameObject AcceptButton { get; private set; } = null;
-        public GameObject DeclineButton { get; private set; } = null;
+        public GameObject AcceptButton { get; set; } = null;
+        public GameObject DeclineButton { get; set; } = null;
 
         public Action OnAccepted, OnDeclined;
 

@@ -1,8 +1,6 @@
 ﻿using Il2CppSLZ.Bonelab;
 using Il2CppTMPro;
 
-using LabFusion.Marrow.Proxies;
-using LabFusion.Preferences;
 using LabFusion.Utilities;
 
 using UnityEngine;

@@ -1,8 +1,13 @@
-﻿using LabFusion.Downloading;
+﻿using System.Collections;
+
+using LabFusion.Downloading;
 using LabFusion.Downloading.ModIO;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Preferences.Client;
+using LabFusion.Utilities;
+
+using MelonLoader;
 
 namespace LabFusion.RPC;
 
@@ -53,6 +58,14 @@ public static class NetworkModRequester
 
     public static void RequestAndInstallMod(ModInstallInfo installInfo)
     {
+        MelonCoroutines.Start(WaitAndInstallMod(installInfo));
+    }
+
+    private static IEnumerator WaitAndInstallMod(ModInstallInfo installInfo)
+    {
+        float elapsed = 0f;
+        bool receivedCallback = false;
+
         RequestMod(new ModRequestInfo()
         {
             target = installInfo.target,
@@ -60,10 +73,30 @@ public static class NetworkModRequester
             modCallback = OnModInfoReceived,
         });
 
+        // Wait for timeout
+        while (!receivedCallback && elapsed < 5f)
+        {
+            elapsed += TimeUtilities.DeltaTime;
+            yield return null;
+        }
+
+        // No callback means this request timed out
+        if (!receivedCallback)
+        {
+            installInfo.finishDownloadCallback?.Invoke(DownloadCallbackInfo.FailedCallback);
+
+            // Remove the callbacks incase it gets received very late
+            installInfo.beginDownloadCallback = null;
+            installInfo.finishDownloadCallback = null;
+        }
+
         void OnModInfoReceived(ModCallbackInfo info)
         {
+            receivedCallback = true;
+
             if (!info.hasFile)
             {
+                installInfo.finishDownloadCallback?.Invoke(DownloadCallbackInfo.FailedCallback);
                 return;
             }
 

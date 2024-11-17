@@ -3,12 +3,8 @@ using LabFusion.Patching;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 using LabFusion.Marrow;
-using LabFusion.RPC;
 using LabFusion.Player;
-using LabFusion.Downloading;
 using LabFusion.Preferences.Client;
-using LabFusion.Downloading.ModIO;
-using LabFusion.Data;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
 using Il2CppSLZ.Marrow.Warehouse;
@@ -22,6 +18,9 @@ public static partial class FusionSceneManager
         // Hook into events
         MultiplayerHooking.OnStartServer += Internal_OnCleanup;
         MultiplayerHooking.OnDisconnect += Internal_OnCleanup;
+
+        // Prepare level downloading
+        LevelDownloaderManager.OnInitializeMelon();
     }
 
     private static void Internal_OnCleanup()
@@ -147,7 +146,15 @@ public static partial class FusionSceneManager
                 // Check if we should download the mod (it's not blacklisted, mod downloading disabled, etc.)
                 if (shouldDownload)
                 {
-                    BeginDownloadingScene();
+                    LevelDownloaderManager.DownloadLevel(new LevelDownloaderManager.LevelDownloadInfo()
+                    {
+                        levelBarcode = _targetServerScene,
+                        levelHost = PlayerIdManager.HostSmallId,
+                        onDownloadSucceeded = OnDownloadSucceeded,
+                        onDownloadFailed = OnDownloadFailed,
+                    });
+
+                    _hasStartedDownloadingTarget = true;
                 }
                 // Can't download the level, leave the server
                 else
@@ -158,35 +165,8 @@ public static partial class FusionSceneManager
         }
     }
 
-    private static void BeginDownloadingScene()
+    private static void OnDownloadSucceeded() 
     {
-        // Cancel all currently queued downloads.
-        // They aren't as important as the level, and anything waiting for a download likely won't exist anymore in the new scene.
-        ModIODownloader.CancelQueue();
-
-        // Get the maximum amount of bytes that we download before cancelling, to make sure the level isn't too big
-        long maxBytes = DataConversions.ConvertMegabytesToBytes(ClientSettings.Downloading.MaxLevelSize.Value);
-
-        // Request the mod id from the host
-        NetworkModRequester.RequestAndInstallMod(new NetworkModRequester.ModInstallInfo()
-        {
-            target = PlayerIdManager.HostSmallId,
-            barcode = _targetServerScene,
-            finishDownloadCallback = OnDownloadFinished,
-            maxBytes = maxBytes,
-        });
-
-        _hasStartedDownloadingTarget = true;
-    }
-
-    private static void OnDownloadFinished(DownloadCallbackInfo info) 
-    {
-        if (info.result == ModResult.FAILED)
-        {
-            OnDownloadFailed();
-            return;
-        }
-
         // We can now load the level
         LoadTargetScene();
 

@@ -191,6 +191,7 @@
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Scrolling\ScrollRectController.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\StringButton.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Scene.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Scene\LevelDownloadUI.cs.meta" />
     <None Remove="FusionBundles\Assets\marrow-integration.meta" />
     <None Remove="FusionBundles\Assets\marrow-integration\Editor.meta" />
     <None Remove="FusionBundles\Assets\marrow-integration\Runtime.meta" />
