@@ -24,6 +24,7 @@ namespace LabFusion.Marrow.Proxies
         public TMP_Text VersionText { get; private set; } = null;
 
         public RawImage LevelIcon { get; private set; } = null;
+        public RawImage GamemodeIcon { get; private set; } = null;
 
         public Action OnPressed;
 
@@ -50,6 +51,7 @@ namespace LabFusion.Marrow.Proxies
             var iconRoot = transform.Find("icon_Background");
 
             LevelIcon = iconRoot.Find("icon_Level").GetComponent<RawImage>();
+            GamemodeIcon = iconRoot.Find("icon_Gamemode").GetComponent<RawImage>();
 
             // Info layout
             var infoLayout = transform.Find("layout_Info");

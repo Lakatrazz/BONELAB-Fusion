@@ -76,12 +76,7 @@ public static class SpawnGunPatches
             return;
         }
 
-        if (!NetworkInfo.HasServer)
-        {
-            return;
-        }
-
-        if (CrossSceneManager.Purgatory)
+        if (CrossSceneManager.InUnsyncedScene())
         {
             return;
         }
@@ -112,12 +107,7 @@ public static class SpawnGunPatches
     [HarmonyPatch(nameof(SpawnGun.OnFire))]
     public static bool OnFirePrefix(SpawnGun __instance, ref SpawnableCrate __state)
     {
-        if (!NetworkInfo.HasServer)
-        {
-            return true;
-        }
-
-        if (CrossSceneManager.Purgatory)
+        if (CrossSceneManager.InUnsyncedScene())
         {
             return true;
         }
@@ -138,13 +128,7 @@ public static class SpawnGunPatches
     [HarmonyPatch(nameof(SpawnGun.OnFire))]
     public static void OnFirePostfix(SpawnGun __instance, ref SpawnableCrate __state)
     {
-        if (!NetworkInfo.HasServer)
-        {
-            return;
-        }
-
-
-        if (CrossSceneManager.Purgatory)
+        if (CrossSceneManager.InUnsyncedScene())
         {
             return;
         }

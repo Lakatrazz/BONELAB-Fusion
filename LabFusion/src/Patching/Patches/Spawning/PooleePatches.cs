@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 
-using LabFusion.Network;
 using LabFusion.Utilities;
 using LabFusion.Entities;
 using LabFusion.Scene;
@@ -15,13 +14,7 @@ public class PooleeOnDespawnPatch
 {
     public static void Postfix(Poolee __instance)
     {
-        if (!NetworkInfo.HasServer)
-        {
-            return;
-        }
-
-        // Don't do anything while in purgatory
-        if (CrossSceneManager.Purgatory)
+        if (CrossSceneManager.InUnsyncedScene())
         {
             return;
         }
@@ -86,19 +79,13 @@ public class PooleeDespawnPatch
     public static bool Prefix(Poolee __instance)
     {
         // Make sure we have a server
-        if (!NetworkInfo.HasServer)
+        if (CrossSceneManager.InUnsyncedScene())
         {
             return true;
         }
 
         // Also make sure we're not ignoring this patch
         if (IgnorePatch)
-        {
-            return true;
-        }
-
-        // Don't do anything while in purgatory
-        if (CrossSceneManager.Purgatory)
         {
             return true;
         }

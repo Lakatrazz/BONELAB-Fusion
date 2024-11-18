@@ -252,7 +252,37 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void OnLevelLoad()
     {
+        if (CrossSceneManager.Purgatory)
+        {
+            return;
+        }
+
         FindRigManager();
+    }
+
+    private void OnPurgatoryChanged(bool purgatory)
+    {
+        // Don't care if this is our rig
+        if (NetworkEntity.IsOwner)
+        {
+            return;
+        }
+
+        // Don't update while loading
+        if (FusionSceneManager.IsLoading())
+        {
+            return;
+        }
+
+        // Puppet rig shouldn't exist in purgatory
+        if (purgatory)
+        {
+            DestroyPuppet();
+        }
+        else
+        {
+            FindRigManager();
+        }
     }
 
     private void HookPlayer()
@@ -271,6 +301,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Find the rig for the current scene, and hook into scene loads
         FindRigManager();
         MultiplayerHooking.OnMainSceneInitialized += OnLevelLoad;
+        CrossSceneManager.OnPurgatoryChanged += OnPurgatoryChanged;
     }
 
     private void UnhookPlayer()
@@ -294,6 +325,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Unhook from scene loading events
         DestroyPuppet();
         MultiplayerHooking.OnMainSceneInitialized -= OnLevelLoad;
+        CrossSceneManager.OnPurgatoryChanged -= OnPurgatoryChanged;
     }
 
     private void DestroyPuppet()

@@ -278,12 +278,20 @@ public abstract class SteamNetworkLayer : NetworkLayer
             return;
         }
 
+#if DEBUG
+        FusionLogger.Log($"Searching for servers with code {code}...");
+#endif
+
         Matchmaker.RequestLobbies((info) =>
         {
             foreach (var lobby in info.lobbies)
             {
                 var lobbyCode = lobby.metadata.LobbyInfo.LobbyCode;
                 var inputCode = code;
+
+#if DEBUG
+                FusionLogger.Log($"Found server with code {lobbyCode}");
+#endif
 
                 // Case insensitive
                 // Makes it easier to input

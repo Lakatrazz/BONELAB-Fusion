@@ -278,11 +278,10 @@ public static class MenuMatchmaking
     {
         MatchmakingPage.SelectSubPage(4);
 
-        // Disable buttons
-        SearchBarElement.gameObject.SetActive(false);
-        RefreshElement.gameObject.SetActive(false);
-        BrowserFiltersRoot.SetActive(false);
+        // Clear lobbies
+        SearchResultsElement.RemoveElements<LobbyResultElement>();
 
+        // Sort lobbies
         var sortedLobbies = lobbies
             .OrderBy(l => l.metadata.LobbyInfo.LobbyHostName)
             .OrderBy(l => l.metadata.LobbyInfo.LevelTitle)
@@ -399,6 +398,21 @@ public static class MenuMatchmaking
         element.VersionText.color = versionColor;
 
         ElementIconHelper.SetLevelResultIcon(element, metadata.LobbyInfo.LevelTitle);
+
+        // Gamemode icon
+        var gamemodeIcon = MenuResources.GetGamemodeIcon(MenuResources.SandboxIconTitle);
+
+        if (!string.IsNullOrWhiteSpace(metadata.LobbyInfo.GamemodeTitle))
+        {
+            gamemodeIcon = MenuResources.GetGamemodeIcon(metadata.LobbyInfo.GamemodeTitle);
+        }
+
+        if (gamemodeIcon == null)
+        {
+            gamemodeIcon = MenuResources.GetGamemodeIcon(MenuResources.ModsIconTitle);
+        }
+
+        element.GamemodeIcon.texture = gamemodeIcon;
     }
 
     private static string ParseServerName(string serverName, string hostName)

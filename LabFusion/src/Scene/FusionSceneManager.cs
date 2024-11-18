@@ -75,7 +75,7 @@ public static partial class FusionSceneManager
             FusionMod.OnMainSceneInitialized();
             _prevLevelBarcode = Barcode;
 
-            LoadSender.SendLoadingState(false);
+            LoadSender.SendLoadingState(!HasTargetLoaded());
 
             // Invoke the level load hook
             _onLevelLoad?.Invoke();

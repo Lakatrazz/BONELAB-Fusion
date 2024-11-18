@@ -82,6 +82,8 @@ public static class GamemodeManager
         MultiplayerHooking.OnShouldAllowConnection += OnUserJoinCheck;
 
         MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
+
+        MultiplayerHooking.OnDisconnect += OnDisconnect;
     }
 
     private static void OnMainSceneInitialized()
@@ -91,6 +93,11 @@ public static class GamemodeManager
         {
             StopGamemode();
         }
+    }
+
+    private static void OnDisconnect()
+    {
+        StopGamemode();
     }
 
     private static void SendGamemodeChangeNotification()
@@ -103,6 +110,7 @@ public static class GamemodeManager
                 Title = "Gamemode Selected",
                 Type = NotificationType.INFORMATION,
                 ShowPopup = true,
+                SaveToMenu = false,
                 PopupLength = 1.5f,
             });
         }
@@ -114,6 +122,7 @@ public static class GamemodeManager
                 Title = "Gamemode Deselected",
                 Type = NotificationType.INFORMATION,
                 ShowPopup = true,
+                SaveToMenu = false,
                 PopupLength = 1.5f,
             });
         }

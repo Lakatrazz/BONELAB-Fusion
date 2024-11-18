@@ -3,6 +3,7 @@ using LabFusion.Player;
 using LabFusion.Preferences.Server;
 using LabFusion.Representation;
 using LabFusion.Scene;
+using LabFusion.SDK.Gamemodes;
 using LabFusion.Senders;
 
 using System.Text.Json.Serialization;
@@ -124,6 +125,12 @@ public class LobbyInfo
         // Gamemode
         GamemodeTitle = string.Empty;
         GamemodeBarcode = string.Empty;
+
+        if (GamemodeManager.ActiveGamemode != null)
+        {
+            GamemodeTitle = GamemodeManager.ActiveGamemode.Title;
+            GamemodeBarcode = GamemodeManager.ActiveGamemode.Barcode;
+        }
 
         // Settings
         NameTags = SavedServerSettings.NameTags.Value;
