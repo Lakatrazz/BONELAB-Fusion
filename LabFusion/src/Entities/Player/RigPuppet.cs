@@ -1,10 +1,15 @@
-﻿using Il2CppSLZ.Marrow;
+﻿using System.Collections;
+
+using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow.Pool;
 using Il2CppSLZ.Marrow.VFX;
 
 using LabFusion.Extensions;
 using LabFusion.Representation;
+using LabFusion.Utilities;
+
+using MelonLoader;
 
 using UnityEngine;
 
@@ -66,7 +71,25 @@ public class RigPuppet
         onPuppetCreated?.Invoke(rig);
 
         // Play spawn VFX
-        SpawnEffects.CallSpawnEffect(rig.physicsRig.marrowEntity);
+        MelonCoroutines.Start(WaitAndCallSpawnEffect(rig.physicsRig.marrowEntity));
+    }
+
+    private static IEnumerator WaitAndCallSpawnEffect(MarrowEntity marrowEntity)
+    {
+        float elapsed = 0f;
+
+        while (elapsed < 0.5f)
+        {
+            elapsed += TimeUtilities.DeltaTime;
+            yield return null;
+        }
+
+        if (marrowEntity == null)
+        {
+            yield break;
+        }
+
+        SpawnEffects.CallSpawnEffect(marrowEntity);
     }
 
     public void DestroyPuppet()
