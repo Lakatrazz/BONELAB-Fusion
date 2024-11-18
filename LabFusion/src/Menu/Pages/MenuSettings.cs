@@ -228,10 +228,10 @@ public static class MenuSettings
 
         var changeLayerGroup = page.AddElement<GroupElement>("Change Layer");
 
-        changeLayerGroup.AddElement<FunctionElement>($"Active Layer: {NetworkLayerDeterminer.LoadedTitle}");
+        FunctionElement activeLayerElement = changeLayerGroup.AddElement<FunctionElement>($"Active Layer: {NetworkLayerDeterminer.LoadedTitle}");
 
         var targetLayerElement = changeLayerGroup.AddElement<FunctionElement>($"Target Layer: {ClientSettings.NetworkLayerTitle.Value}");
-        
+
         changeLayerGroup.AddElement<FunctionElement>("Cycle Layer")
             .Do(() =>
             {
@@ -252,7 +252,11 @@ public static class MenuSettings
         };
 
         changeLayerGroup.AddElement<FunctionElement>("Apply Layer")
-            .Do(() => InternalLayerHelpers.UpdateLoadedLayer());
+            .Do(() =>
+            {
+                InternalLayerHelpers.UpdateLoadedLayer();
+                activeLayerElement.Title = $"Active Layer: {NetworkLayerDeterminer.LoadedTitle}";
+            });
     }
 
 #if DEBUG
