@@ -8,7 +8,10 @@ You can find the latest installation guide [here](https://github.com/Lakatrazz/B
 
 # About
 ## How to Use the Mod
-All of the functions of the mod can be found in BONEMENU under the tab "Fusion". In order to make and join servers, use the Matchmaking tab. Starting or disconnecting from a server can be found in the "Server Info" tab.
+You can access the Fusion menu by clicking on the "Fusion" button in the Preferences menu.
+
+If you did not already install the [Fusion Content](https://mod.io/g/bonelab/m/fusion-content), clicking this will install it.
+It will only install correctly if you are logged into mod.io in VoidG114 or BONELAB Hub, so make sure this is the case.
 
 ## Physical Interactions
 Instead of players and synced props being kinematic, non-physics objects, all interactions are solved using physical forces.<br>

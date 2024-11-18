@@ -26,6 +26,8 @@ public static class MenuNotifications
         NotificationPageElement = notificationsPage.transform.Find("scrollRect_Notifications/Viewport/Content").GetComponent<PageElement>().AddPage();
 
         RecreateNotifications();
+
+        UpdateCount();
     }
 
     private static void UpdateCount()
