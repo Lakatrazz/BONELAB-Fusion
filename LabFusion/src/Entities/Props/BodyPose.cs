@@ -23,6 +23,8 @@ public class BodyPose : IFusionSerializable
         target.rotation = rotation;
         target.velocity = velocity;
         target.angularVelocity = angularVelocity;
+
+        ResetPrediction();
     }
 
     public void ResetPrediction()

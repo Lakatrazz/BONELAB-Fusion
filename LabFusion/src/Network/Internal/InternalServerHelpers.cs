@@ -157,7 +157,7 @@ public static class InternalServerHelpers
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                Title = $"{name} Join",
+                Title = $"{name} Joined",
                 Message = $"{name} joined the server.",
                 SaveToMenu = false,
                 ShowPopup = true,
@@ -182,7 +182,7 @@ public static class InternalServerHelpers
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                Title = $"{name} Leave",
+                Title = $"{name} Left",
                 Message = $"{name} left the server.",
                 SaveToMenu = false,
                 ShowPopup = true,
