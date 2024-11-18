@@ -8,7 +8,20 @@ namespace LabFusion.Network;
 
 public static class LobbyInfoManager
 {
-    public static LobbyInfo LobbyInfo { get; internal set; } = new();
+    private static LobbyInfo _lobbyInfo = null;
+    public static LobbyInfo LobbyInfo
+    {
+        get
+        {
+            return _lobbyInfo;
+        }
+        set
+        {
+            _lobbyInfo = value;
+
+            OnLobbyInfoChanged.InvokeSafe("executing LobbyInfoManager.OnLobbyInfoChanged");
+        }
+    }
 
     public static event Action OnLobbyInfoChanged;
 
@@ -41,16 +54,16 @@ public static class LobbyInfoManager
         }
 
         // Write the lobby info
-        LobbyInfo = new();
-        LobbyInfo.WriteLobby();
+        var info = new LobbyInfo();
+        info.WriteLobby();
+
+        LobbyInfo = info;
 
         // If a server is active, send the info
         if (NetworkInfo.IsServer)
         {
             SendLobbyInfo();
         }
-
-        OnLobbyInfoChanged.InvokeSafe("executing lobby info changed hook");
     }
 
     private static void SendLobbyInfo()

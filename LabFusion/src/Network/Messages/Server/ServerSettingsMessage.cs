@@ -1,5 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Exceptions;
+using LabFusion.Utilities;
 
 using System.Text.Json;
 
@@ -44,5 +45,9 @@ public class ServerSettingsMessage : FusionMessageHandler
         }
 
         LobbyInfoManager.LobbyInfo = data.lobbyInfo;
+
+#if DEBUG
+        FusionLogger.Log("Server LobbyInfo received!");
+#endif
     }
 }
