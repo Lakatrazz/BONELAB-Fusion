@@ -234,6 +234,8 @@ public abstract class ProxyNetworkLayer : NetworkLayer
 
                     // Call server setup
                     InternalServerHelpers.OnStartServer();
+
+                    RefreshServerCode();
                     break;
                 }
             case (ulong)MessageTypes.LobbyIds:
@@ -404,6 +406,53 @@ public abstract class ProxyNetworkLayer : NetworkLayer
         _isConnectionActive = false;
 
         InternalServerHelpers.OnDisconnect(reason);
+    }
+
+    public string ServerCode { get; private set; } = null;
+
+    public override string GetServerCode()
+    {
+        return ServerCode;
+    }
+
+    public override void RefreshServerCode()
+    {
+        ServerCode = RandomCodeGenerator.GetString(8);
+
+        LobbyInfoManager.PushLobbyUpdate();
+    }
+
+    public override void JoinServerByCode(string code)
+    {
+        if (Matchmaker == null)
+        {
+            return;
+        }
+
+#if DEBUG
+        FusionLogger.Log($"Searching for servers with code {code}...");
+#endif
+
+        Matchmaker.RequestLobbies((info) =>
+        {
+            foreach (var lobby in info.lobbies)
+            {
+                var lobbyCode = lobby.metadata.LobbyInfo.LobbyCode;
+                var inputCode = code;
+
+#if DEBUG
+                FusionLogger.Log($"Found server with code {lobbyCode}");
+#endif
+
+                // Case insensitive
+                // Makes it easier to input
+                if (lobbyCode.ToLower() == code.ToLower())
+                {
+                    JoinServer(lobby.metadata.LobbyInfo.LobbyId);
+                    break;
+                }
+            }
+        });
     }
 
     private void HookSteamEvents()
