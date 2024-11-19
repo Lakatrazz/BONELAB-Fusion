@@ -709,6 +709,21 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Apply offset to the marrow entity
         MarrowEntity.transform.position += offset;
 
+        // Zero the rig's velocity
+        foreach (var body in MarrowEntity.Bodies)
+        {
+            var rb = body._rigidbody;
+
+            if (rb == null)
+            {
+                continue;
+            }
+
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+        
+        // Reset PD controller
         _pelvisPDController.Reset();
     }
 
