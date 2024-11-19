@@ -144,5 +144,6 @@ public static class NativeMessageTag
         RPCInt = 210,
         RPCFloat = 211,
         RPCBool = 212,
-        RPCString = 213;
+        RPCString = 213,
+        RPCVector3 = 214;
 }
