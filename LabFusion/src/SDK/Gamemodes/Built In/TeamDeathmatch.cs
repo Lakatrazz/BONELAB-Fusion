@@ -111,11 +111,6 @@ public class TeamDeathmatch : Gamemode
         return group;
     }
 
-    public void SetRoundLength(int minutes)
-    {
-        _totalMinutes = minutes;
-    }
-
     public void AddTeams()
     {
         // TODO: Clean up

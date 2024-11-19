@@ -61,6 +61,9 @@ public class Deathmatch : Gamemode
     private string _avatarOverride = null;
     private float? _vitalityOverride = null;
 
+    private MonoDiscReference _victorySongReference = null;
+    private MonoDiscReference _failureSongReference = null;
+
     public override GroupElementData CreateSettingsGroup()
     {
         var group = base.CreateSettingsGroup();
@@ -103,9 +106,51 @@ public class Deathmatch : Gamemode
         return group;
     }
 
-    public override void OnMainSceneInitialized()
+    public void ApplyGamemodeSettings()
     {
-        SetDefaultValues();
+        _totalMinutes = _savedMinutes;
+
+        _victorySongReference = FusionMonoDiscReferences.LavaGangVictoryReference;
+        _failureSongReference = FusionMonoDiscReferences.LavaGangFailureReference;
+
+        var songReferences = FusionMonoDiscReferences.CombatSongReferences;
+
+        var musicSettings = GamemodeMusicSettings.Instance;
+
+        if (musicSettings != null && musicSettings.SongOverrides.Count > 0)
+        {
+            songReferences = new MonoDiscReference[musicSettings.SongOverrides.Count];
+
+            for (var i = 0; i < songReferences.Length; i++)
+            {
+                songReferences[i] = new(musicSettings.SongOverrides.ElementAt(i));
+            }
+        }
+
+        if (musicSettings != null && musicSettings.VictorySongOverrides.Count > 0)
+        {
+            _victorySongReference = new MonoDiscReference(musicSettings.VictorySongOverrides.ElementAt(0).Value);
+        }
+
+        if (musicSettings != null && musicSettings.FailureSongOverrides.Count > 0)
+        {
+            _victorySongReference = new MonoDiscReference(musicSettings.FailureSongOverrides.ElementAt(0).Value);
+        }
+
+        AudioReference[] playlist = AudioReference.CreateReferences(songReferences);
+
+        Playlist.SetPlaylist(playlist);
+
+        _avatarOverride = null;
+        _vitalityOverride = null;
+
+        var playerSettings = GamemodePlayerSettings.Instance;
+
+        if (playerSettings != null)
+        {
+            _avatarOverride = playerSettings.AvatarOverride;
+            _vitalityOverride = playerSettings.VitalityOverride;
+        }
     }
 
     public void SetDefaultValues()
@@ -214,8 +259,6 @@ public class Deathmatch : Gamemode
         // Register score keeper
         ScoreKeeper.Register(Metadata);
         ScoreKeeper.OnScoreChanged += OnScoreChanged;
-
-        SetDefaultValues();
     }
 
     public override void OnGamemodeUnregistered()
@@ -290,6 +333,8 @@ public class Deathmatch : Gamemode
     {
         base.OnGamemodeStarted();
 
+        ApplyGamemodeSettings();
+
         Playlist.StartPlaylist();
 
         if (NetworkInfo.IsServer)
@@ -350,19 +395,26 @@ public class Deathmatch : Gamemode
         });
     }
 
-    protected static void OnVictoryStatus(bool isVictory = false)
+    protected void OnVictoryStatus(bool isVictory = false)
     {
         MonoDiscReference stingerReference;
+
         if (isVictory)
         {
-            stingerReference = FusionMonoDiscReferences.LavaGangVictoryReference;
+            stingerReference = _victorySongReference;
         }
         else
         {
-            stingerReference = FusionMonoDiscReferences.LavaGangFailureReference;
+            stingerReference = _failureSongReference;
+        }
+
+        if (stingerReference == null)
+        {
+            return;
         }
 
         var dataCard = stingerReference.DataCard;
+
         if (dataCard == null)
         {
             return;
