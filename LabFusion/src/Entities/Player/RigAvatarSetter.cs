@@ -155,7 +155,7 @@ public class RigAvatarSetter
 
         if (!success)
         {
-            _references.SwapAvatarCrate(FusionAvatar.POLY_BLANK_BARCODE, OnSwapFallback, OnPrepareAvatar);
+            _references.SwapAvatarCrate(BONELABAvatarReferences.PolyBlankBarcode, OnSwapFallback, OnPrepareAvatar);
         }
         else
         {
@@ -176,7 +176,7 @@ public class RigAvatarSetter
             Transform transform = avatar.transform;
 
             // Polyblank should just scale based on the custom avatar height
-            if (barcode == FusionAvatar.POLY_BLANK_BARCODE)
+            if (barcode == BONELABAvatarReferences.PolyBlankBarcode)
             {
                 float newHeight = _stats.height;
                 transform.localScale = Vector3Extensions.one * (newHeight / 1.76f);

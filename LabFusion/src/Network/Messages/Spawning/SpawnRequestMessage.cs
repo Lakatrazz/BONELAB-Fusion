@@ -69,6 +69,17 @@ public class SpawnRequestMessage : FusionMessageHandler
 
         using var reader = FusionReader.Create(bytes);
         var data = reader.ReadFusionSerializable<SpawnRequestData>();
+
+        // Check for spawnable blacklist
+        if (ModBlacklist.IsBlacklisted(data.barcode))
+        {
+#if DEBUG
+            FusionLogger.Warn($"Blocking server spawn of spawnable {data.barcode} because it is blacklisted!");
+#endif
+
+            return;
+        }
+
         var playerId = PlayerIdManager.GetPlayerId(data.owner);
 
         var entityId = NetworkEntityManager.IdManager.RegisteredEntities.AllocateNewId();

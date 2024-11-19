@@ -99,6 +99,16 @@ public class SpawnResponseMessage : FusionMessageHandler
         var trackerId = data.trackerId;
         var spawnEffect = data.spawnEffect;
 
+        // Check for spawnable blacklist
+        if (ModBlacklist.IsBlacklisted(barcode))
+        {
+#if DEBUG
+            FusionLogger.Warn($"Blocking client spawn of spawnable {data.barcode} because it is blacklisted!");
+#endif
+
+            return;
+        }
+
         bool hasCrate = CrateFilterer.HasCrate<SpawnableCrate>(new(barcode));
 
         if (!hasCrate)

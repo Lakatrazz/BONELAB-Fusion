@@ -1,8 +1,6 @@
-﻿using LabFusion.Data;
+﻿namespace LabFusion.Data;
 
-namespace LabFusion.Downloading;
-
-public static class ModDownloadBlacklist
+public static class ModBlacklist
 {
     private static readonly List<string> _blacklistedModIds = new();
 
@@ -35,10 +33,12 @@ public static class ModDownloadBlacklist
         {
             using StreamWriter sw = File.CreateText(path);
 
-            sw.WriteLine("# This file is for preventing certain mods from being automatically downloaded.");
-            sw.WriteLine("# To blacklist a mod, add a mod id on its own line.");
-            sw.WriteLine("# A mod id can either be its number id, url id, or barcode.");
-            sw.WriteLine("# Any lines starting with a # are ignored.");
+            sw.WriteLine("# This file is for preventing the use of specific mods while in a server.");
+            sw.WriteLine("# To blacklist a mod, add a mod identifier on its own line.");
+            sw.WriteLine("# A mod identifier can either be its mod.io number ID, mod.io URL ID, or AssetWarehouse barcode.");
+            sw.WriteLine("# When the identifier is a number ID or URL ID, it will block the mod from being downloaded.");
+            sw.WriteLine("# On the other hand, if the identifier is a AssetWarehouse barcode, it will prevent the mod from being used.");
+            sw.WriteLine("# For server hosts, blacklisting a barcode prevents all clients from using that mod.");
             sw.WriteLine("#");
             sw.WriteLine("# Examples");
             sw.WriteLine("# -------------------------------------");
@@ -60,11 +60,11 @@ public static class ModDownloadBlacklist
         return PersistentData.GetPath("mod_blacklist.txt");
     }
 
-    public static bool IsBlacklisted(string modId)
+    public static bool IsBlacklisted(string identifier)
     {
         foreach (var blacklisted in _blacklistedModIds)
         {
-            if (blacklisted == modId)
+            if (blacklisted == identifier)
             {
                 return true;
             }

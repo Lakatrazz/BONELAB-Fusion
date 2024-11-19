@@ -1,5 +1,4 @@
-﻿using LabFusion.Downloading;
-using LabFusion.SDK.Achievements;
+﻿using LabFusion.SDK.Achievements;
 using LabFusion.SDK.Points;
 
 namespace LabFusion.Data
@@ -18,8 +17,8 @@ namespace LabFusion.Data
 
             ChangelogLoader.ReadFile();
 
-            ModDownloadBlacklist.OnInitializeMelon();
-            ModDownloadBlacklist.ReadFile();
+            ModBlacklist.OnInitializeMelon();
+            ModBlacklist.ReadFile();
         }
 
         public static void OnDeinitializeMelon()
