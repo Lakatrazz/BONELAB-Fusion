@@ -47,26 +47,49 @@ public class BitMiner : PointItem
 
     public override void OnLateUpdate()
     {
-        if (IsUnlocked && IsEquipped && NetworkInfo.HasServer)
+        if (!IsUnlocked)
         {
-            if (PlayerIdManager.HasOtherPlayers)
-            {
-                _bitTime += TimeUtilities.DeltaTime;
+            return;
+        }
 
-                if (_bitTime > 60f)
-                {
-                    while (_bitTime > 60f)
-                    {
-                        _bitTime -= 60f;
-                        PointItemManager.RewardBits(1 + (UpgradeLevel + 1), false);
-                    }
-                }
-            }
-            else
+        if (!IsEquipped)
+        {
+            return;
+        }
+
+        if (!NetworkInfo.HasServer)
+        {
+            return;
+        }
+
+        if (!PlayerIdManager.HasOtherPlayers)
+        {
+            _bitTime = 0f;
+            return;
+        }
+
+        _bitTime += TimeUtilities.DeltaTime;
+
+        if (_bitTime > 60f)
+        {
+            while (_bitTime > 60f)
             {
-                _bitTime = 0f;
+                _bitTime -= 60f;
+                PointItemManager.RewardBits(CalculateBitReward(), false);
             }
         }
+    }
+
+    private int CalculateBitReward()
+    {
+        var baseCount = 2 + UpgradeLevel;
+
+        var otherPlayers = PlayerIdManager.PlayerCount - 1;
+
+        // Multiplicatively increase bits by player count
+        var finalCount = baseCount * otherPlayers;
+
+        return finalCount;
     }
 
     public override void LoadPreviewIcon(Action<Texture2D> onLoaded)
