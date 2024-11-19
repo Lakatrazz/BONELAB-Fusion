@@ -701,7 +701,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         // Get teleport position
-        var pos = RigPose.pelvisPose.position;
+        var pos = RigPose.pelvisPose.PredictedPosition;
 
         // Get offset
         var offset = pos - RigSkeleton.physicsPelvis.position;

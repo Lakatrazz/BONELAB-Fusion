@@ -78,7 +78,7 @@ public class RigPuppet
     {
         float elapsed = 0f;
 
-        while (elapsed < 0.5f)
+        while (elapsed < 0.2f)
         {
             elapsed += TimeUtilities.DeltaTime;
             yield return null;

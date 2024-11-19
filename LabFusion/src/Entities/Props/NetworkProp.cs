@@ -123,7 +123,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
             var pose = _pose.bodies[i];
 
-            rigidbody.position = pose.position;
+            rigidbody.position = pose.PredictedPosition;
             rigidbody.rotation = pose.rotation;
             rigidbody.velocity = pose.velocity;
             rigidbody.angularVelocity = pose.angularVelocity;
