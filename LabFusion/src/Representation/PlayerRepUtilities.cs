@@ -189,9 +189,6 @@ public static class PlayerRepUtilities
         // Add impact properties for blunt + stabbing
         PersistentAssetCreator.SetupImpactProperties(rigManager);
 
-        // Apply additions
-        PlayerAdditionsHelper.OnCreatedRig(rigManager);
-
         // Spatialize wind audio
         DelayUtilities.Delay(() => { Internal_SpatializeWind(rigManager.GetComponentInChildren<WindBuffetSFX>()); }, 5);
     }

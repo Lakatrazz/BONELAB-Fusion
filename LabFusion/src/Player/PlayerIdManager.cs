@@ -1,6 +1,4 @@
-﻿using LabFusion.Preferences.Client;
-
-namespace LabFusion.Player;
+﻿namespace LabFusion.Player;
 
 public static class PlayerIdManager
 {
@@ -12,9 +10,6 @@ public static class PlayerIdManager
     public static readonly HashSet<PlayerId> PlayerIds = new();
     public static int PlayerCount => PlayerIds.Count;
     public static bool HasOtherPlayers => PlayerCount > 1;
-
-    public static string LocalUsername { get; private set; } = "[unknown]";
-    public static string LocalNickname => ClientSettings.Nickname.Value;
 
     public static ulong LocalLongId { get; private set; }
     public static byte LocalSmallId { get; private set; }
@@ -74,10 +69,5 @@ public static class PlayerIdManager
     public static void SetLongId(ulong longId)
     {
         LocalLongId = longId;
-    }
-
-    public static void SetUsername(string username)
-    {
-        LocalUsername = username;
     }
 }

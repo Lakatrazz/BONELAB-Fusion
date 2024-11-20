@@ -45,5 +45,12 @@ public class PlayerInfo
             var crate = networkPlayer.RigRefs.RigManager.AvatarCrate.Crate;
             AvatarTitle = crate.Title;
         }
+
+        AvatarTitle = playerId.Metadata.GetMetadata(MetadataHelper.AvatarTitleKey);
+
+        if (int.TryParse(playerId.Metadata.GetMetadata(MetadataHelper.AvatarModIdKey), out var modId))
+        {
+            AvatarModId = modId;
+        }
     }
 }

@@ -4,6 +4,7 @@ using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Utilities;
 using LabFusion.Entities;
+using LabFusion.Player;
 
 using UnityEngine;
 
@@ -95,7 +96,7 @@ public static class ArtRigPatches
         // Is this our local player? If so, sync the avatar change
         if (__instance.IsLocalPlayer())
         {
-            FusionPlayer.Internal_OnAvatarChanged(__instance, newAvatar, __instance.AvatarCrate.Barcode.ID);
+            LocalPlayer.InvokeAvatarChanged(newAvatar, __instance.AvatarCrate.Barcode.ID);
         }
         else if (NetworkPlayerManager.TryGetPlayer(__instance, out var player))
         {

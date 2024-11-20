@@ -397,7 +397,7 @@ public static class MenuMatchmaking
         element.VersionText.text = string.Format($"v{metadata.LobbyInfo.LobbyVersion}");
         element.VersionText.color = versionColor;
 
-        ElementIconHelper.SetLevelResultIcon(element, metadata.LobbyInfo.LevelTitle);
+        ElementIconHelper.SetLevelResultIcon(element, metadata.LobbyInfo.LevelTitle, metadata.LobbyInfo.LevelModId);
 
         // Gamemode icon
         var gamemodeIcon = MenuResources.GetGamemodeIcon(MenuResources.SandboxIconTitle);
@@ -508,7 +508,7 @@ public static class MenuMatchmaking
             .Do(() => { element.LobbyPage.SelectSubPage(1); });
 
         // Apply level icon
-        ElementIconHelper.SetLevelIcon(element, info.LobbyInfo.LevelTitle);
+        ElementIconHelper.SetLevelIcon(element, info.LobbyInfo.LevelTitle, info.LobbyInfo.LevelModId);
 
         // Fill out lists
         // Settings list

@@ -35,6 +35,8 @@ public static class ElementIconHelper
 
     public static void SetProfileResultIcon(PlayerResultElement element, string avatarTitle, int modId = -1)
     {
+        element.PlayerIconFitter.aspectRatio = 1f;
+
         var avatarIcon = MenuResources.GetAvatarIcon(avatarTitle);
 
         if (avatarIcon == null)
@@ -49,6 +51,7 @@ public static class ElementIconHelper
             ModIOThumbnailDownloader.GetThumbnail(modId, (texture) =>
             {
                 element.PlayerIcon.texture = texture;
+                element.PlayerIconFitter.aspectRatio = WideAspectRatio;
             });
         }
     }
@@ -91,27 +94,5 @@ public static class ElementIconHelper
                 element.LevelIcon.texture = texture;
             });
         }
-    }
-    
-    public static int GetModId(Pallet pallet)
-    {
-        // Get the mod info
-        var manifest = CrateFilterer.GetManifest(pallet);
-
-        if (manifest == null)
-        {
-            return -1;
-        }
-
-        var modListing = manifest.ModListing;
-
-        var modTarget = ModIOManager.GetTargetFromListing(modListing);
-
-        if (modTarget == null)
-        {
-            return -1;
-        }
-
-        return (int)modTarget.ModId;
     }
 }

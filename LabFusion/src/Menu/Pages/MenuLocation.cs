@@ -1,5 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
+using LabFusion.Marrow;
 using LabFusion.Marrow.Proxies;
 using LabFusion.Network;
 using LabFusion.Player;
@@ -89,7 +90,7 @@ public static class MenuLocation
 
     private static void UpdateLevelIcon(LobbyElement element)
     {
-        ElementIconHelper.SetLevelIcon(element, FusionSceneManager.Title, ElementIconHelper.GetModId(FusionSceneManager.Level.Pallet));
+        ElementIconHelper.SetLevelIcon(element, FusionSceneManager.Title, CrateFilterer.GetModId(FusionSceneManager.Level.Pallet));
     }
 
     private static void OnServerSettingsChanged()
@@ -149,7 +150,7 @@ public static class MenuLocation
         element.ServerNameElement.TextFormat = "{1}";
 
         element.HostNameElement
-            .WithTitle($"{PlayerIdManager.LocalUsername}");
+            .WithTitle($"{LocalPlayer.Username}");
 
         element.DescriptionElement
             .Cleared()
@@ -306,7 +307,7 @@ public static class MenuLocation
         element.ServerNameElement.TextFormat = "{1}";
 
         element.HostNameElement
-            .WithTitle($"{PlayerIdManager.LocalUsername}");
+            .WithTitle($"{LocalPlayer.Username}");
 
         element.DescriptionElement
             .Cleared()
@@ -457,14 +458,20 @@ public static class MenuLocation
             };
 
             // Apply icon
-            var avatarTitle = "PolyBlank";
+            var avatarTitle = player.Metadata.GetMetadata(MetadataHelper.AvatarTitleKey);
+            var modId = -1;
+
+            if (int.TryParse(player.Metadata.GetMetadata(MetadataHelper.AvatarModIdKey), out var rawModId))
+            {
+                modId = rawModId;
+            }
 
             if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer) && networkPlayer.HasRig)
             {
                 avatarTitle = networkPlayer.RigRefs.RigManager.AvatarCrate.Crate.Title;
             }
 
-            ElementIconHelper.SetProfileResultIcon(playerResult, avatarTitle);
+            ElementIconHelper.SetProfileResultIcon(playerResult, avatarTitle, modId);
         }
     }
 
@@ -570,18 +577,20 @@ public static class MenuLocation
         element.NicknameElement.EmptyFormat = "No {0}";
 
         element.DescriptionElement.Title = "Description";
+        element.DescriptionElement.Value = player.Metadata.GetMetadata(MetadataHelper.DescriptionKey);
         element.DescriptionElement.Interactable = false;
         element.DescriptionElement.EmptyFormat = "No {0}";
 
         // Apply icon
-        var avatarTitle = "PolyBlank";
+        var avatarTitle = player.Metadata.GetMetadata(MetadataHelper.AvatarTitleKey);
+        var modId = -1;
 
-        if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer) && networkPlayer.HasRig)
+        if (int.TryParse(player.Metadata.GetMetadata(MetadataHelper.AvatarModIdKey), out var rawModId))
         {
-            avatarTitle = networkPlayer.RigRefs.RigManager.AvatarCrate.Crate.Title;
+            modId = rawModId;
         }
 
-        ElementIconHelper.SetProfileIcon(element, avatarTitle);
+        ElementIconHelper.SetProfileIcon(element, avatarTitle, modId);
 
         // Get permissions
         FusionPermissions.FetchPermissionLevel(PlayerIdManager.LocalLongId, out var selfLevel, out _);

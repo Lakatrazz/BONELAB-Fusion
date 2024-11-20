@@ -39,8 +39,11 @@ public static class InternalServerHelpers
     /// </summary>
     public static void OnStartServer()
     {
+        // Apply initial metadata
+        LocalPlayer.InvokeApplyInitialMetadata();
+
         // Create local id
-        var id = new PlayerId(PlayerIdManager.LocalLongId, 0, GetInitialMetadata(), GetInitialEquippedItems());
+        var id = new PlayerId(PlayerIdManager.LocalLongId, 0, LocalPlayer.Metadata.LocalDictionary, GetInitialEquippedItems());
         id.Insert();
         PlayerIdManager.ApplyLocalId();
 
@@ -192,27 +195,6 @@ public static class InternalServerHelpers
         MultiplayerHooking.Internal_OnPlayerLeave(playerId);
 
         DisposeUser(playerId);
-    }
-
-    /// <summary>
-    /// Gets the default metadata for the local player.
-    /// </summary>
-    /// <returns></returns>
-    public static FusionDictionary<string, string> GetInitialMetadata()
-    {
-        // Create the dict
-        var metadata = new FusionDictionary<string, string> {
-            // Username
-            { MetadataHelper.UsernameKey, PlayerIdManager.LocalUsername },
-
-            // Nickname
-            { MetadataHelper.NicknameKey, PlayerIdManager.LocalNickname },
-
-            // Permission
-            { MetadataHelper.PermissionKey, NetworkInfo.IsServer ? PermissionLevel.OWNER.ToString() : PermissionLevel.DEFAULT.ToString() },
-        };
-
-        return metadata;
     }
 
     /// <summary>

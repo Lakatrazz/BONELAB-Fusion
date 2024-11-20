@@ -33,6 +33,7 @@ public static class FusionPlayer
     internal static void OnInitializeMelon()
     {
         LobbyInfoManager.OnLobbyInfoChanged += OnLobbyInfoChanged;
+        LocalPlayer.OnAvatarChanged += OnAvatarChanged;
     }
 
     private static void OnLobbyInfoChanged()
@@ -105,8 +106,10 @@ public static class FusionPlayer
         });
     }
 
-    internal static void Internal_OnAvatarChanged(RigManager rigManager, Avatar avatar, string barcode)
+    private static void OnAvatarChanged(Avatar avatar, string barcode)
     {
+        var rigManager = RigData.Refs.RigManager;
+
         // Save the stats
         RigData.RigAvatarStats = new SerializedAvatarStats(avatar);
         RigData.RigAvatarId = barcode;
@@ -120,7 +123,16 @@ public static class FusionPlayer
             Internal_ChangePlayerHealth();
 
         // Check player avatar
-        var crate = rigManager.AvatarCrate.Crate;
+        var crateReference = new AvatarCrateReference(barcode);
+
+        var crate = crateReference.Crate;
+
+        if (crate != null)
+        {
+            // Apply metadata
+            LocalPlayer.Metadata.TrySetMetadata(MetadataHelper.AvatarTitleKey, crate.Title);
+            LocalPlayer.Metadata.TrySetMetadata(MetadataHelper.AvatarModIdKey, CrateFilterer.GetModId(crate.Pallet).ToString());
+        }
 
         if (AvatarOverride != null && !FusionAvatar.IsMatchingAvatar(barcode, AvatarOverride))
         {
@@ -140,9 +152,6 @@ public static class FusionPlayer
                 }
             }
         }
-
-        // Invoke hooks and other events
-        PlayerAdditionsHelper.OnAvatarChanged(rigManager);
     }
 
     /// <summary>

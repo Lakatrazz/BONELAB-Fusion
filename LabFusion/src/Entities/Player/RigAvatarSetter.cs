@@ -135,8 +135,6 @@ public class RigAvatarSetter
         {
             references.SwapAvatarCrate(AvatarBarcode, OnSwapAvatar, OnPrepareAvatar);
 
-            PlayerAdditionsHelper.OnAvatarChanged(references.RigManager);
-
             _isAvatarDirty = false;
         }
 

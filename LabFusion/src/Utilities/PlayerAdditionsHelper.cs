@@ -20,8 +20,6 @@ public static class PlayerAdditionsHelper
         MultiplayerHooking.OnDisconnect += () => { OnExitServer(RigData.Refs.RigManager); };
         LocalPlayer.OnLocalRigCreated += (rig) =>
         {
-            OnCreatedLocalPlayer(rig);
-
             if (NetworkInfo.HasServer)
             {
                 OnEnterServer(rig);
@@ -36,21 +34,6 @@ public static class PlayerAdditionsHelper
     {
         // Invoke extras
         MuteUIHelper.OnDeinitializeMelon();
-    }
-
-    public static void OnAvatarChanged(RigManager manager)
-    {
-    }
-
-    public static void OnCreatedLocalPlayer(RigManager manager)
-    {
-        // Forward to the regular method
-        OnCreatedRig(manager);
-    }
-
-    public static void OnCreatedRig(RigManager manager)
-    {
-        OnAvatarChanged(manager);
     }
 
     public static void OnEnterServer(RigManager manager)

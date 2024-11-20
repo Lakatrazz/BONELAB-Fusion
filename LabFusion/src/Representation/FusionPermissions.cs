@@ -1,7 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Player;
-
+using LabFusion.Utilities;
 using UnityEngine;
 
 namespace LabFusion.Representation;
@@ -31,6 +31,19 @@ public enum PermissionLevel : sbyte
 
 public static class FusionPermissions
 {
+    public static void OnInitializeMelon()
+    {
+        LocalPlayer.Metadata.TrySetMetadata(MetadataHelper.PermissionKey, PermissionLevel.DEFAULT.ToString());
+
+        LocalPlayer.OnApplyInitialMetadata += OnUpdateInitialMetadata;
+    }
+
+    private static void OnUpdateInitialMetadata()
+    {
+        var permissionLevel = NetworkInfo.IsServer ? PermissionLevel.OWNER.ToString() : PermissionLevel.DEFAULT.ToString();
+        LocalPlayer.Metadata.TrySetMetadata(MetadataHelper.PermissionKey, permissionLevel);
+    }
+
     public static void FetchPermissionLevel(ulong longId, out PermissionLevel level, out Color color)
     {
         level = PermissionLevel.DEFAULT;

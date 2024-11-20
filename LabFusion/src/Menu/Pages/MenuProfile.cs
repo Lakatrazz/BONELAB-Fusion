@@ -1,6 +1,6 @@
 ﻿using LabFusion.Data;
+using LabFusion.Marrow;
 using LabFusion.Marrow.Proxies;
-using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Preferences.Client;
 
@@ -27,7 +27,7 @@ public static class MenuProfile
 
         PreviousAvatarTitle = avatarTitle;
 
-        ElementIconHelper.SetProfileIcon(element, avatarTitle, ElementIconHelper.GetModId(avatarCrate.Pallet));
+        ElementIconHelper.SetProfileIcon(element, avatarTitle, CrateFilterer.GetModId(avatarCrate.Pallet));
     }
 
     public static void RefreshIcon()
@@ -46,14 +46,11 @@ public static class MenuProfile
         ProfileElement.GetElements();
 
         ProfileElement.UsernameElement
-            .WithTitle(PlayerIdManager.LocalUsername);
+            .WithTitle(LocalPlayer.Username);
 
         ProfileElement.NicknameElement
             .WithTitle("Nickname")
-            .AsPref(ClientSettings.Nickname, (value) =>
-            {
-                PlayerIdManager.LocalId?.Metadata.TrySetMetadata(MetadataHelper.NicknameKey, value);
-            });
+            .AsPref(ClientSettings.Nickname);
 
         ProfileElement.DescriptionElement
             .WithTitle("Description")

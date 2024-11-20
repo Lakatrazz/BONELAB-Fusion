@@ -111,7 +111,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
         SteamId = SteamClient.SteamId;
         PlayerIdManager.SetLongId(SteamId.Value);
-        PlayerIdManager.SetUsername(GetUsername(SteamId.Value));
+        LocalPlayer.Username = GetUsername(SteamId.Value);
 
         FusionLogger.Log($"Steamworks initialized with SteamID {SteamId} and ApplicationID {ApplicationID}!");
 

@@ -1,4 +1,6 @@
-﻿using LabFusion.Network;
+﻿using LabFusion.Marrow;
+using LabFusion.Menu;
+using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Preferences.Server;
 using LabFusion.Representation;
@@ -110,7 +112,7 @@ public class LobbyInfo
         LobbyName = SavedServerSettings.ServerName.Value;
         LobbyDescription = SavedServerSettings.ServerDescription.Value;
         LobbyVersion = FusionMod.Version;
-        LobbyHostName = PlayerIdManager.LocalUsername;
+        LobbyHostName = LocalPlayer.Username;
 
         PlayerCount = PlayerIdManager.PlayerCount;
 
@@ -121,6 +123,8 @@ public class LobbyInfo
         // Location
         LevelTitle = FusionSceneManager.Title;
         LevelBarcode = FusionSceneManager.Barcode;
+
+        LevelModId = CrateFilterer.GetModId(FusionSceneManager.Level.Pallet);
 
         // Gamemode
         GamemodeTitle = string.Empty;

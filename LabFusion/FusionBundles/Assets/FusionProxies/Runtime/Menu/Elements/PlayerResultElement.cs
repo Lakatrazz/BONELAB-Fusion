@@ -20,6 +20,8 @@ namespace LabFusion.Marrow.Proxies
         public TMP_Text RoleText { get; private set; } = null;
 
         public RawImage PlayerIcon { get; private set; } = null;
+        public AspectRatioFitter PlayerIconFitter { get; set; } = null;
+
         public RawImage PlayerStatus { get; private set; } = null;
         public RawImage PlayerBorder { get; private set; } = null;
 
@@ -43,6 +45,8 @@ namespace LabFusion.Marrow.Proxies
             var iconRoot = transform.Find("label_ProfileIcon");
 
             PlayerIcon = iconRoot.Find("icon_Mask/icon_Player").GetComponent<RawImage>();
+            PlayerIconFitter = PlayerIcon.GetComponent<AspectRatioFitter>();
+
             PlayerStatus = iconRoot.Find("icon_StatusDrop/icon_Status").GetComponent<RawImage>();
             PlayerBorder = iconRoot.Find("border").GetComponent<RawImage>();
 

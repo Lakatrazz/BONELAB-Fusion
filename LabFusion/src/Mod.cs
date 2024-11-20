@@ -21,6 +21,7 @@ using LabFusion.Marrow;
 using LabFusion.Menu;
 using LabFusion.SDK.Modules;
 using LabFusion.Bonelab;
+using LabFusion.Representation;
 using LabFusion.Player;
 
 #if DEBUG
@@ -101,6 +102,11 @@ public class FusionMod : MelonMod
         // Load assetbundles
         FusionBundleLoader.OnBundleLoad();
 
+        // Initialize player
+        FusionPlayer.OnInitializeMelon();
+        LocalPlayer.OnInitializeMelon();
+        LocalVision.OnInitializeMelon();
+
         // Register base modules
         InitializeBaseModules();
 
@@ -136,12 +142,11 @@ public class FusionMod : MelonMod
         // Create prefs
         FusionPreferences.OnInitializePreferences();
 
+        FusionPermissions.OnInitializeMelon();
+
         LobbyInfoManager.OnInitialize();
 
         MenuCreator.OnInitializeMelon();
-
-        FusionPlayer.OnInitializeMelon();
-        LocalVision.OnInitializeMelon();
 
         // Initialize level loading
         FusionSceneManager.Internal_OnInitializeMelon();

@@ -3,7 +3,6 @@ using LabFusion.Player;
 using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Scene;
-using LabFusion.Preferences;
 using LabFusion.Preferences.Server;
 using LabFusion.Senders;
 using LabFusion.Exceptions;
@@ -51,13 +50,15 @@ public class ConnectionRequestData : IFusionSerializable
 
     public static ConnectionRequestData Create(ulong longId, Version version, string avatarBarcode, SerializedAvatarStats stats)
     {
+        LocalPlayer.InvokeApplyInitialMetadata();
+
         return new ConnectionRequestData()
         {
             longId = longId,
             version = version,
             avatarBarcode = avatarBarcode,
             avatarStats = stats,
-            initialMetadata = InternalServerHelpers.GetInitialMetadata(),
+            initialMetadata = LocalPlayer.Metadata.LocalDictionary,
             initialEquippedItems = InternalServerHelpers.GetInitialEquippedItems(),
         };
     }
