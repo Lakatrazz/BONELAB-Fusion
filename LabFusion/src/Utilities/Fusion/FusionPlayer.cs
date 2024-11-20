@@ -136,7 +136,7 @@ public static class FusionPlayer
                 if (!FusionPermissions.HasSufficientPermissions(level, requirement))
                 {
                     // Change to polyblank, we don't have permission
-                    rigManager.SwapAvatarCrate(new Barcode(FusionAvatar.POLY_BLANK_BARCODE), true);
+                    rigManager.SwapAvatarCrate(new Barcode(BONELABAvatarReferences.PolyBlankBarcode), true);
                 }
             }
         }
@@ -161,14 +161,16 @@ public static class FusionPlayer
     }
 
     /// <summary>
-    /// Checks if the rigmanager is ourselves.
+    /// Checks if the RigManager is the local player.
     /// </summary>
     /// <param name="rigManager"></param>
     /// <returns></returns>
-    public static bool IsSelf(this RigManager rigManager)
+    public static bool IsLocalPlayer(this RigManager rigManager)
     {
         if (!RigData.HasPlayer)
+        {
             return true;
+        }
 
         return rigManager == RigData.Refs.RigManager;
     }
@@ -332,7 +334,7 @@ public static class FusionPlayer
                 // If the avatar forcing doesn't work, change into polyblank
                 if (!success)
                 {
-                    rm.SwapAvatarCrate(new Barcode(FusionAvatar.POLY_BLANK_BARCODE), true);
+                    rm.SwapAvatarCrate(new Barcode(BONELABAvatarReferences.PolyBlankBarcode), true);
                 }
             }));
         }

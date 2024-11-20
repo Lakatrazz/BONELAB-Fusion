@@ -2,6 +2,8 @@ using UnityEngine;
 
 #if MELONLOADER
 using MelonLoader;
+
+using Il2CppInterop.Runtime.Attributes;
 #endif
 
 namespace LabFusion.Marrow.Proxies
@@ -63,6 +65,7 @@ namespace LabFusion.Marrow.Proxies
             Value = newValue;
         }
 
+        [HideFromIl2Cpp]
         public override object GetValue()
         {
             return Mathf.Round(Value * 1000f) / 1000f;

@@ -16,8 +16,10 @@ namespace LabFusion.Marrow.Proxies
 #if MELONLOADER
         public GroupElement(IntPtr intPtr) : base(intPtr) { }
 
+        [HideFromIl2Cpp]
         public List<MenuElement> Elements => _elements;
 
+        [HideFromIl2Cpp]
         public List<MenuElement> Templates => _elementTemplates;
 
         private readonly List<MenuElement> _elements = new();

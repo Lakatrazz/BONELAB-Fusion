@@ -32,7 +32,7 @@ public static class SpawnGunPatches
             return;
         }
 
-        if (!hand.manager.IsSelf())
+        if (!hand.manager.IsLocalPlayer())
         {
             AddSpawnMenuPatches.DisableMethods = true;
         }
@@ -54,7 +54,7 @@ public static class SpawnGunPatches
             return;
         }
 
-        if (!hand.manager.IsSelf())
+        if (!hand.manager.IsLocalPlayer())
         {
             AddSpawnMenuPatches.DisableMethods = true;
         }

@@ -22,7 +22,7 @@ public static class AmmoPickupPatches
         {
             var rigManager = other.GetComponentInParent<RigManager>();
 
-            if (rigManager != null && !rigManager.IsSelf())
+            if (rigManager != null && !rigManager.IsLocalPlayer())
             {
                 return false;
             }

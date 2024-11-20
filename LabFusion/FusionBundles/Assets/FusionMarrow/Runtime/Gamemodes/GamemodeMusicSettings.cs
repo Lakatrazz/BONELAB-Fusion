@@ -2,6 +2,8 @@ using UnityEngine;
 
 #if MELONLOADER
 using MelonLoader;
+
+using Il2CppInterop.Runtime.Attributes;
 #endif
 
 namespace LabFusion.Marrow.Integration
@@ -17,15 +19,23 @@ namespace LabFusion.Marrow.Integration
         public static GamemodeMusicSettings Instance { get; set; } = null;
 
         private readonly Dictionary<string, string> _victorySongOverrides = new();
+
+        [HideFromIl2Cpp]
         public Dictionary<string, string> VictorySongOverrides => _victorySongOverrides;
 
         private readonly Dictionary<string, string> _failureSongOverrides = new();
+
+        [HideFromIl2Cpp]
         public Dictionary<string, string> FailureSongOverrides => _failureSongOverrides;
 
         private string _tieSongOverride = null;
+
+        [HideFromIl2Cpp]
         public string TieSongOverride => _tieSongOverride;
 
         private readonly HashSet<string> _songOverrides = new();
+
+        [HideFromIl2Cpp]
         public HashSet<string> SongOverrides => _songOverrides;
 
         private void Awake()

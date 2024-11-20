@@ -83,6 +83,10 @@ public static class NetworkModRequester
         // No callback means this request timed out
         if (!receivedCallback)
         {
+#if DEBUG
+            FusionLogger.Warn($"Mod request for {installInfo.barcode} timed out.");
+#endif
+
             installInfo.finishDownloadCallback?.Invoke(DownloadCallbackInfo.FailedCallback);
 
             // Remove the callbacks incase it gets received very late

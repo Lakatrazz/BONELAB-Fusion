@@ -99,7 +99,7 @@ public class GripExtender : EntityComponentArrayExtender<Grip>
 
         // Determine the manager
         // Main player
-        if (hand.manager.IsSelf())
+        if (hand.manager.IsLocalPlayer())
         {
             NetworkEntityManager.TakeOwnership(NetworkEntity);
         }

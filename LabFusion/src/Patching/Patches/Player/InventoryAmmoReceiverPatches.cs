@@ -21,7 +21,7 @@ public class InventoryAmmoReceiverGrab
             return true;
         }
 
-        if (!__instance._parentRigManager.IsSelf())
+        if (!__instance._parentRigManager.IsLocalPlayer())
         {
             return true;
         }
@@ -105,7 +105,7 @@ public class InventoryAmmoReceiverDrop
             return true;
         }
 
-        if (!__instance._parentRigManager.IsSelf())
+        if (!__instance._parentRigManager.IsLocalPlayer())
         {
             return true;
         }

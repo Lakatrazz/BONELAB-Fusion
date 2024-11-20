@@ -119,7 +119,7 @@ public static class SimpleGripEventsPatches
             return false;
         }
 
-        if (!hand.manager.IsSelf())
+        if (!hand.manager.IsLocalPlayer())
         {
             return false;
         }

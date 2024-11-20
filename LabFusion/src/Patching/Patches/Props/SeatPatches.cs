@@ -55,7 +55,7 @@ public static class SeatPatches
             return true;
         }
 
-        if (rM.IsSelf())
+        if (rM.IsLocalPlayer())
         {
             MelonCoroutines.Start(Internal_SyncSeat(__instance));
         }
@@ -92,7 +92,7 @@ public static class SeatPatches
         yield return null;
 
         // Send seat request
-        if (!__instance.rigManager.IsSelf())
+        if (!__instance.rigManager.IsLocalPlayer())
         {
             yield break;
         }
@@ -123,7 +123,7 @@ public static class SeatPatches
             return;
         }
 
-        if (!__instance._rig.IsSelf())
+        if (!__instance._rig.IsLocalPlayer())
         {
             return;
         }

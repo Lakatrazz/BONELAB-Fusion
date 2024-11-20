@@ -23,6 +23,8 @@ namespace LabFusion.Marrow.Proxies
         public MenuPage CurrentPage { get; set; } = null;
 
         private List<MenuPage> _subPages = null;
+
+        [HideFromIl2Cpp]
         public List<MenuPage> SubPages => _subPages;
 
         public int DefaultPageIndex { get; set; } = 0;

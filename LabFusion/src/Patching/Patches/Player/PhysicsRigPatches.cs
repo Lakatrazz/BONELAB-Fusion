@@ -22,7 +22,7 @@ public static class PhysicsRigPatches
             return true;
         }
 
-        if (__instance.manager.IsSelf())
+        if (__instance.manager.IsLocalPlayer())
         {
             using var writer = FusionWriter.Create(PlayerRepRagdollData.Size);
             var data = PlayerRepRagdollData.Create(PlayerIdManager.LocalSmallId, true);
@@ -52,7 +52,7 @@ public static class PhysicsRigPatches
             return true;
         }
 
-        if (__instance.manager.IsSelf())
+        if (__instance.manager.IsLocalPlayer())
         {
             // Check if we can unragdoll
             var playerHealth = __instance.manager.health.TryCast<Player_Health>();

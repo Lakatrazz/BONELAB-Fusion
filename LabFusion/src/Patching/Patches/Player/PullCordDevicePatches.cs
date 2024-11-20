@@ -41,7 +41,7 @@ public static class PullCordDevicePatches
     [HarmonyPatch(nameof(PullCordDevice.EnableBall))]
     public static void EnableBall(PullCordDevice __instance)
     {
-        if (NetworkInfo.HasServer && __instance.rm.IsSelf())
+        if (NetworkInfo.HasServer && __instance.rm.IsLocalPlayer())
         {
             PullCordSender.SendBodyLogToggle(true);
         }
@@ -51,7 +51,7 @@ public static class PullCordDevicePatches
     [HarmonyPatch(nameof(PullCordDevice.DisableBall))]
     public static void DisableBall(PullCordDevice __instance)
     {
-        if (NetworkInfo.HasServer && __instance.rm.IsSelf())
+        if (NetworkInfo.HasServer && __instance.rm.IsLocalPlayer())
         {
             PullCordSender.SendBodyLogToggle(false);
         }
@@ -61,7 +61,7 @@ public static class PullCordDevicePatches
     [HarmonyPatch(nameof(PullCordDevice.PlayAvatarParticleEffects))]
     public static void PlayAvatarParticleEffects(PullCordDevice __instance)
     {
-        if (NetworkInfo.HasServer && __instance.rm.IsSelf())
+        if (NetworkInfo.HasServer && __instance.rm.IsLocalPlayer())
         {
             PullCordSender.SendBodyLogEffect();
         }

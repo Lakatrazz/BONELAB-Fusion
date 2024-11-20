@@ -41,7 +41,7 @@ public static class ComponentExtensions
         if (go == null)
             return false;
 
-        return go.GetComponentInParent<RigManager>().IsSelf();
+        return go.GetComponentInParent<RigManager>().IsLocalPlayer();
     }
 
     /// <summary>
@@ -53,6 +53,6 @@ public static class ComponentExtensions
         if (comp == null)
             return false;
 
-        return comp.GetComponentInParent<RigManager>().IsSelf();
+        return comp.GetComponentInParent<RigManager>().IsLocalPlayer();
     }
 }

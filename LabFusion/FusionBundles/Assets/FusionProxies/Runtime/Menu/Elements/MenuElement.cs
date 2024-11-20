@@ -2,6 +2,8 @@ using UnityEngine;
 
 #if MELONLOADER
 using MelonLoader;
+
+using Il2CppInterop.Runtime.Attributes;
 #endif
 
 namespace LabFusion.Marrow.Proxies
@@ -30,6 +32,7 @@ namespace LabFusion.Marrow.Proxies
             }
         }
 
+        [HideFromIl2Cpp]
         public event Action OnCleared;
 
         protected virtual void OnEnable()

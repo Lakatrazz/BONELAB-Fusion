@@ -132,7 +132,7 @@ public static class GripPatches
     private static void OnAttachedToHand(Grip __instance, Hand hand)
     {
         // Make sure this is the local player
-        if (!hand.manager.IsSelf())
+        if (!hand.manager.IsLocalPlayer())
         {
             return;
         }
@@ -154,7 +154,7 @@ public static class GripPatches
     private static void OnDetachedFromHand(Grip __instance, Hand hand)
     {
         // Make sure this is the local player
-        if (!hand.manager.IsSelf())
+        if (!hand.manager.IsLocalPlayer())
         {
             return;
         }

@@ -93,7 +93,7 @@ public static class ArtRigPatches
         }
 
         // Is this our local player? If so, sync the avatar change
-        if (__instance.IsSelf())
+        if (__instance.IsLocalPlayer())
         {
             FusionPlayer.Internal_OnAvatarChanged(__instance, newAvatar, __instance.AvatarCrate.Barcode.ID);
         }

@@ -44,7 +44,7 @@ public static class GenGameControl_TriggerPatches
             return true;
         }
 
-        if (!rig.IsSelf())
+        if (!rig.IsLocalPlayer())
         {
             return false;
         }

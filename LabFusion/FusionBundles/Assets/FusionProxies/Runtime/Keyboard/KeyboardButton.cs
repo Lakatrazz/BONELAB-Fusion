@@ -1,5 +1,7 @@
 #if MELONLOADER
+using Il2CppInterop.Runtime.Attributes;
 using Il2CppTMPro;
+
 using MelonLoader;
 #endif
 
@@ -13,6 +15,7 @@ namespace LabFusion.Marrow.Proxies
     public class KeyboardButton : MonoBehaviour
     {
 #if MELONLOADER
+        [HideFromIl2Cpp]
         public event Action<string> OnPressed;
 
         public KeyboardButton(IntPtr intPtr) : base(intPtr) { }

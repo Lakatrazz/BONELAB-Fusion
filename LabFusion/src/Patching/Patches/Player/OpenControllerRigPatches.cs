@@ -51,7 +51,7 @@ public static class OpenEarlyUpdatePatch
         __state = OpenControllerRig.OnPauseStateChange;
 
         // If this isn't our player, the pause callback should not be called
-        if (!__instance.manager.IsSelf())
+        if (!__instance.manager.IsLocalPlayer())
         {
             OpenControllerRig.OnPauseStateChange = null;
         }

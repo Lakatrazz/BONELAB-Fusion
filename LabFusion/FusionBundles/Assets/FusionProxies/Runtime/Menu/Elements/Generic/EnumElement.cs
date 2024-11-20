@@ -1,4 +1,6 @@
 #if MELONLOADER
+using Il2CppInterop.Runtime.Attributes;
+
 using MelonLoader;
 #endif
 
@@ -13,6 +15,8 @@ namespace LabFusion.Marrow.Proxies
         public EnumElement(IntPtr intPtr) : base(intPtr) { }
 
         private Enum _value = null;
+
+        [HideFromIl2Cpp]
         public Enum Value
         {
             get
@@ -32,6 +36,8 @@ namespace LabFusion.Marrow.Proxies
         }
 
         private Type _enumType = null;
+
+        [HideFromIl2Cpp]
         public Type EnumType
         {
             get
@@ -59,6 +65,7 @@ namespace LabFusion.Marrow.Proxies
         private int _enumIndex = 1;
         private Array _enumValues = null;
 
+        [HideFromIl2Cpp]
         public override object GetValue()
         {
             return Value;

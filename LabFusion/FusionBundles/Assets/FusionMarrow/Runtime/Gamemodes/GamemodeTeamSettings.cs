@@ -2,6 +2,8 @@ using UnityEngine;
 
 #if MELONLOADER
 using MelonLoader;
+
+using Il2CppInterop.Runtime.Attributes;
 #endif
 
 namespace LabFusion.Marrow.Integration
@@ -17,9 +19,13 @@ namespace LabFusion.Marrow.Integration
         public static GamemodeTeamSettings Instance { get; set; } = null;
 
         private readonly Dictionary<string, string> _teamNameOverrides = new();
+
+        [HideFromIl2Cpp]
         public Dictionary<string, string> TeamNameOverrides => _teamNameOverrides;
 
         private readonly Dictionary<string, Texture2D> _teamLogoOverrides = new();
+
+        [HideFromIl2Cpp]
         public Dictionary<string, Texture2D> TeamLogoOverrides => _teamLogoOverrides;
 
         private void Awake()

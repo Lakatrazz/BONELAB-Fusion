@@ -6,6 +6,8 @@ using MelonLoader;
 using LabFusion.Extensions;
 
 using Il2CppSLZ.Marrow.Warehouse;
+
+using Il2CppInterop.Runtime.Attributes;
 #else
 using SLZ.Marrow;
 using SLZ.Marrow.Utilities;
@@ -30,6 +32,8 @@ namespace LabFusion.Marrow.Integration
         public static readonly HashSet<GamemodeMarker> Markers = new(new UnityComparer());
 
         private readonly HashSet<string> _teamBarcodes = new();
+
+        [HideFromIl2Cpp]
         public HashSet<string> TeamBarcodes => _teamBarcodes; 
 
         private void Awake()

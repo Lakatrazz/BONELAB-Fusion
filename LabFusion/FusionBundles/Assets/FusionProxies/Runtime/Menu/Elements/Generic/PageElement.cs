@@ -1,4 +1,6 @@
 #if MELONLOADER
+using Il2CppInterop.Runtime.Attributes;
+
 using MelonLoader;
 #endif
 
@@ -13,9 +15,13 @@ namespace LabFusion.Marrow.Proxies
         public PageElement(IntPtr intPtr) : base(intPtr) { }
 
         private List<PageElement> _pages = new();
+
+        [HideFromIl2Cpp]
         public List<PageElement> Pages => _pages;
 
         private PageElement _root = null;
+
+        [HideFromIl2Cpp]
         public PageElement Root { get { return _root; } }
 
         protected override void OnEnable()

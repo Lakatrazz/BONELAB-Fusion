@@ -14,7 +14,7 @@ public static class OpenControllerPatches
 {
     private static bool LockedMovement(OpenController __instance)
     {
-        if (__instance.contRig.manager.IsSelf() && LocalControls.LockedMovement)
+        if (__instance.contRig.manager.IsLocalPlayer() && LocalControls.LockedMovement)
         {
             return true;
         }

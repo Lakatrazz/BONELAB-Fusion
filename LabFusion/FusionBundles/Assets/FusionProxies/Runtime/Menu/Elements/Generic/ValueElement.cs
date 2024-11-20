@@ -1,4 +1,6 @@
 #if MELONLOADER
+using Il2CppInterop.Runtime.Attributes;
+
 using MelonLoader;
 
 using UnityEngine.UI;
@@ -51,6 +53,7 @@ namespace LabFusion.Marrow.Proxies
             }
         }
 
+        [HideFromIl2Cpp]
         public virtual object GetValue()
         {
             return null;

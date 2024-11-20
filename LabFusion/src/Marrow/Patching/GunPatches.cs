@@ -25,7 +25,7 @@ public static class GunPatches
         }
 
         // If this isn't our RigManager, then we should provide the Gun with the NetworkAmmoInventory instead
-        if (!hand.manager.IsSelf())
+        if (!hand.manager.IsLocalPlayer())
         {
             __instance._ammoInventory = NetworkGunManager.NetworkAmmoInventory;
         }
@@ -106,7 +106,7 @@ public static class GunPatches
         try
         {
             // Make sure this is being grabbed by our main player
-            if (__instance.triggerGrip && __instance.triggerGrip.attachedHands.Find((Il2CppSystem.Predicate<Hand>)((h) => h.manager.IsSelf())))
+            if (__instance.triggerGrip && __instance.triggerGrip.attachedHands.Find((Il2CppSystem.Predicate<Hand>)((h) => h.manager.IsLocalPlayer())))
             {
                 using var writer = FusionWriter.Create(GunShotData.Size);
                 var ammoCount = __instance._magState != null ? (byte)__instance._magState.AmmoCount : (byte)0;

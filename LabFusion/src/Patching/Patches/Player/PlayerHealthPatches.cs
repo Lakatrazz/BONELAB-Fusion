@@ -29,7 +29,7 @@ public static class HeadSFXPatches
         // Is this our player?
         var rm = __instance._physRig.manager;
 
-        if (NetworkInfo.HasServer && rm.IsSelf())
+        if (NetworkInfo.HasServer && rm.IsLocalPlayer())
         {
             // Notify the server about the recovery
             PlayerSender.SendPlayerAction(PlayerActionType.RECOVERY);
@@ -49,7 +49,7 @@ public static class HeadSFXPatches
         var rm = __instance._physRig.manager;
 
         // Make sure this is the local player
-        if (!rm.IsSelf())
+        if (!rm.IsLocalPlayer())
         {
             return;
         }
@@ -82,7 +82,7 @@ public static class HeadSFXPatches
         var rm = __instance._physRig.manager;
 
         // Make sure this is the local player
-        if (!rm.IsSelf())
+        if (!rm.IsLocalPlayer())
         {
             return;
         }
@@ -132,7 +132,7 @@ public static class HealthPatches
             return;
         }
 
-        if (!__instance._rigManager.IsSelf())
+        if (!__instance._rigManager.IsLocalPlayer())
         {
             return;
         }
@@ -170,7 +170,7 @@ public static class PlayerHealthPatches
             return;
         }
 
-        if (!__instance._rigManager.IsSelf())
+        if (!__instance._rigManager.IsLocalPlayer())
         {
             return;
         }
@@ -238,7 +238,7 @@ public static class PlayerHealthPatches
     [HarmonyPatch(nameof(Player_Health.LifeSavingDamgeDealt))]
     public static void LifeSavingDamgeDealt(Player_Health __instance)
     {
-        if (__instance._rigManager.IsSelf() && LocalPlayer.RagdollOnDeath)
+        if (__instance._rigManager.IsLocalPlayer() && LocalPlayer.RagdollOnDeath)
         {
             PhysicsRigPatches.ForceAllowUnragdoll = true;
 
