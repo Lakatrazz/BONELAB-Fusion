@@ -223,42 +223,18 @@ public static class ModIODownloader
             yield break;
         }
 
-        // Download the content into a MemoryStream
-        using var downloadStream = new MemoryStream();
-        var downloadTask = content.CopyToAsync(downloadStream);
-
-        while (!downloadTask.IsCompleted)
-        {
-            transaction.Report((float)downloadStream.Length / contentLength);
-
-            yield return null;
-        }
-
-        // Set progress to 100%
-        transaction.Report(1f);
-
-        // Make sure the download was successful
-        if (!downloadTask.IsCompletedSuccessfully)
-        {
-            FusionLogger.LogException("copying download to stream", downloadTask.Exception);
-
-            FailDownload();
-
-            yield break;
-        }
-
-        // Install the stream into a zip file
+        // Install the content into a zip file
         var zipPath = ModDownloadManager.DownloadPath + $"/m{modFile.ModId}f{modFile.FileId}.zip";
 
-        // Copy the download to the zip file
         // Make sure this using statement ends before we load the pallet, so that the file is not in use
         using (var copyStream = new FileStream(zipPath, FileMode.Create))
         {
-            downloadStream.Position = 0;
-            var copyTask = downloadStream.CopyToAsync(copyStream);
+            var copyTask = content.CopyToAsync(copyStream);
 
             while (!copyTask.IsCompleted)
             {
+                transaction.Report((float)copyStream.Length / contentLength);
+
                 yield return null;
             }
 
@@ -271,6 +247,9 @@ public static class ModIODownloader
                 yield break;
             }
         }
+
+        // Set progress to 100%
+        transaction.Report(1f);
 
         // Load the pallet
         ModDownloadManager.LoadPalletFromZip(zipPath, modFile, transaction.Temporary, OnScheduledLoad, transaction.Callback);

@@ -1,7 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Player;
-using LabFusion.Utilities;
 using UnityEngine;
 
 namespace LabFusion.Representation;
