@@ -152,6 +152,7 @@ public static partial class FusionSceneManager
                         levelHost = PlayerIdManager.HostSmallId,
                         onDownloadSucceeded = OnDownloadSucceeded,
                         onDownloadFailed = OnDownloadFailed,
+                        onDownloadCanceled = OnDownloadCanceled,
                     });
 
                     _hasStartedDownloadingTarget = true;
@@ -177,6 +178,11 @@ public static partial class FusionSceneManager
     {
         NetworkHelper.Disconnect("The server's level failed to install!");
 
+        _hasStartedDownloadingTarget = false;
+    }
+
+    private static void OnDownloadCanceled()
+    {
         _hasStartedDownloadingTarget = false;
     }
 

@@ -542,6 +542,14 @@ public static class MenuMatchmaking
             .WithInteractability(false)
             .WithValue(info.LobbyInfo.Knockout);
 
+        generalGroup.AddElement<IntElement>("Knockout Length")
+            .WithInteractability(false)
+            .WithValue(info.LobbyInfo.KnockoutLength);
+
+        generalGroup.AddElement<BoolElement>("Player Constraining")
+            .WithInteractability(false)
+            .WithValue(info.LobbyInfo.PlayerConstraining);
+
         // Permissions
         var permissionsGroup = settingsPage.AddElement<GroupElement>("Permissions");
 

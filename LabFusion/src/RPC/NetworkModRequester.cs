@@ -100,6 +100,10 @@ public static class NetworkModRequester
 
             if (!info.hasFile)
             {
+#if DEBUG
+                FusionLogger.Warn("Mod info did not have a file, cancelling download.");
+#endif
+
                 installInfo.finishDownloadCallback?.Invoke(DownloadCallbackInfo.FailedCallback);
                 return;
             }

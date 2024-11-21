@@ -26,6 +26,7 @@ public static class MenuLocation
     public static BoolElement MortalityElement { get; private set; }
     public static BoolElement FriendlyFireElement { get; private set; }
     public static BoolElement KnockoutElement { get; private set; }
+    public static IntElement KnockoutLengthElement { get; private set; }
     public static BoolElement PlayerConstrainingElement { get; private set; }
 
     public static EnumElement DevToolsElement { get; private set; }
@@ -359,6 +360,14 @@ public static class MenuLocation
             .WithInteractability(ownsSettings)
             .AsPref(SavedServerSettings.Knockout)
             .WithTitle("Knockout");
+
+        KnockoutLengthElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .AsPref(SavedServerSettings.KnockoutLength)
+            .WithLimits(10, 300)
+            .WithIncrement(10)
+            .WithTitle("Knockout Length");
 
         PlayerConstrainingElement
             .Cleared()
@@ -731,6 +740,8 @@ public static class MenuLocation
         FriendlyFireElement = generalGroup.AddElement<BoolElement>("Friendly Fire");
 
         KnockoutElement = generalGroup.AddElement<BoolElement>("Knockout");
+
+        KnockoutLengthElement = generalGroup.AddElement<IntElement>("Knockout Length");
 
         PlayerConstrainingElement = generalGroup.AddElement<BoolElement>("Player Constraining");
 

@@ -21,7 +21,7 @@ public static class LevelDownloaderManager
         public string levelBarcode;
         public byte levelHost;
 
-        public Action onDownloadSucceeded, onDownloadFailed;
+        public Action onDownloadSucceeded, onDownloadFailed, onDownloadCanceled;
     }
 
     private static bool _initializedDownloadUI = false;
@@ -88,6 +88,12 @@ public static class LevelDownloaderManager
 
         _downloadingLevel = false;
         _downloadingFile = new ModIOFile(-1);
+
+        if (info.result == ModResult.CANCELED)
+        {
+            _downloadingInfo.onDownloadCanceled?.Invoke();
+            return;
+        }
 
         if (info.result == ModResult.FAILED)
         {

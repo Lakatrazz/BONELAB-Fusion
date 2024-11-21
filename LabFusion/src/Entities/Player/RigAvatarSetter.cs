@@ -95,7 +95,7 @@ public class RigAvatarSetter
     {
         ProgressBar.Visible = false;
 
-        if (info.result == ModResult.FAILED)
+        if (info.result != ModResult.SUCCEEDED)
         {
             FusionLogger.Warn($"Failed downloading avatar for rig {_entity.Id}!");
             return;

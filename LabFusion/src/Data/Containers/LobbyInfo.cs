@@ -85,6 +85,9 @@ public class LobbyInfo
     [JsonPropertyName("knockout")]
     public bool Knockout { get; set; }
 
+    [JsonPropertyName("knockoutLength")]
+    public int KnockoutLength { get; set; }
+
     // Permissions
     [JsonPropertyName("devTools")]
     public PermissionLevel DevTools { get; set; }
@@ -146,6 +149,7 @@ public class LobbyInfo
         Mortality = SavedServerSettings.Mortality.Value;
         FriendlyFire = SavedServerSettings.FriendlyFire.Value;
         Knockout = SavedServerSettings.Knockout.Value;
+        KnockoutLength = SavedServerSettings.KnockoutLength.Value;
 
         // Permissions
         DevTools = SavedServerSettings.DevTools.Value;

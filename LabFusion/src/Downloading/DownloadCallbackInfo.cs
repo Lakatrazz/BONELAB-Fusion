@@ -12,6 +12,12 @@ public struct DownloadCallbackInfo
         result = ModResult.FAILED,
     };
 
+    public static readonly DownloadCallbackInfo CanceledCallback = new()
+    {
+        pallet = null,
+        result = ModResult.CANCELED,
+    };
+
     public Pallet pallet;
     public ModResult result;
 }

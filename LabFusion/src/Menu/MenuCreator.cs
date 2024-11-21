@@ -137,7 +137,7 @@ public static class MenuCreator
         {
             _isDownloadingContent = false;
 
-            if (info.result == ModResult.FAILED)
+            if (info.result != ModResult.SUCCEEDED)
             {
                 FusionNotifier.Send(new FusionNotification()
                 {

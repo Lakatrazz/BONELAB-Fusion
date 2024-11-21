@@ -28,6 +28,7 @@ public static class SavedServerSettings
     public static FusionPref<bool> Mortality { get; internal set; }
     public static FusionPref<bool> FriendlyFire { get; internal set; }
     public static FusionPref<bool> Knockout { get; internal set; }
+    public static FusionPref<int> KnockoutLength { get; internal set; }
 
     // Permissions
     public static FusionPref<PermissionLevel> DevTools { get; internal set; }
@@ -59,6 +60,7 @@ public static class SavedServerSettings
         Mortality = new FusionPref<bool>(category, "Server Mortality", true, updateMode);
         FriendlyFire = new FusionPref<bool>(category, "Friendly Fire", true, updateMode);
         Knockout = new FusionPref<bool>(category, "Knockout", false, updateMode);
+        KnockoutLength = new FusionPref<int>(category, "Knockout Length", 10, updateMode);
 
         // Server permissions
         DevTools = new FusionPref<PermissionLevel>(category, "Dev Tools Allowed", PermissionLevel.DEFAULT, updateMode);

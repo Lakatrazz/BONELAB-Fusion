@@ -17,6 +17,11 @@ public static class MenuResources
 
     public static Texture GetLevelIcon(string levelTitle)
     {
+        if (string.IsNullOrWhiteSpace(levelTitle))
+        {
+            return null;
+        }
+
         if (LevelIconLookup.TryGetValue(levelTitle, out var texture))
         {
             return texture;
@@ -27,6 +32,11 @@ public static class MenuResources
 
     public static Texture GetAvatarIcon(string avatarTitle)
     {
+        if (string.IsNullOrWhiteSpace(avatarTitle))
+        {
+            return null;
+        }
+
         if (AvatarIconLookup.TryGetValue(avatarTitle, out var texture)) 
         {
             return texture; 
@@ -37,6 +47,11 @@ public static class MenuResources
 
     public static Texture GetGamemodeIcon(string gamemodeTitle)
     {
+        if (string.IsNullOrWhiteSpace(gamemodeTitle))
+        {
+            return null;
+        }
+
         if (GamemodeIconLookup.TryGetValue(gamemodeTitle, out var texture))
         {
             return texture;

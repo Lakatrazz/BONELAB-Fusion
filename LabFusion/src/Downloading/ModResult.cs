@@ -5,4 +5,5 @@ public enum ModResult
     NONE,
     FAILED,
     SUCCEEDED,
+    CANCELED,
 }

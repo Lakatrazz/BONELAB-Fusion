@@ -187,7 +187,7 @@ public static class MenuSettings
 
         generalGroup.AddElement<IntElement>("Max Level Size (MB)")
             .AsPref(ClientSettings.Downloading.MaxLevelSize)
-            .WithIncrement(10)
+            .WithIncrement(100)
             .WithLimits(0, 10000);
 
         generalGroup.AddElement<BoolElement>("Download Mature Content")
@@ -204,7 +204,7 @@ public static class MenuSettings
                     ModFile = new ModIOFile(ModReferences.FusionCosmeticsId),
                     Callback = (info) =>
                     {
-                        if (info.result == Downloading.ModResult.FAILED)
+                        if (info.result != Downloading.ModResult.SUCCEEDED)
                         {
                             FusionNotifier.Send(new FusionNotification()
                             {

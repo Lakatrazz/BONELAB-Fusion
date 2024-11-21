@@ -26,13 +26,17 @@ public static class ModIODownloader
     /// </summary>
     public static void CancelQueue()
     {
+#if DEBUG
+        FusionLogger.Warn("Cancelling queued mod transactions.");
+#endif
+
         var count = QueuedTransactions.Count;
 
         for (var i = 0; i < count; i++)
         {
             var transaction = QueuedTransactions.Dequeue();
 
-            transaction.Callback?.Invoke(DownloadCallbackInfo.FailedCallback);
+            transaction.Callback?.Invoke(DownloadCallbackInfo.CanceledCallback);
         }
     }
 
@@ -90,7 +94,7 @@ public static class ModIODownloader
             void OnRequestedMod(ModCallbackInfo info)
             {
                 // Check if the mod request failed
-                if (info.result == ModResult.FAILED)
+                if (info.result != ModResult.SUCCEEDED)
                 {
                     FusionLogger.Warn($"Failed getting a mod file for mod {modFile.ModId}, cancelling download!");
 
@@ -146,6 +150,10 @@ public static class ModIODownloader
                 // If the token is null, it likely didn't load
                 if (string.IsNullOrWhiteSpace(token))
                 {
+#if DEBUG
+                    FusionLogger.Warn("Token is null, cancelling mod download.");
+#endif
+
                     FailDownload();
 
                     return;

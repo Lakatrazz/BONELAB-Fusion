@@ -14,7 +14,7 @@ public static class ModIOThumbnailDownloader
 
         void OnModReceived(ModCallbackInfo info)
         {
-            if (info.result == ModResult.FAILED)
+            if (info.result != ModResult.SUCCEEDED)
             {
                 return;
             }

@@ -202,11 +202,13 @@ public static class PlayerHealthPatches
         // Wait a certain amount of time to wake up
         float elapsed = 0f;
 
-        while (elapsed <= 10f)
+        float length = LobbyInfoManager.LobbyInfo.KnockoutLength;
+
+        while (elapsed <= length)
         {
             elapsed += TimeUtilities.DeltaTime;
 
-            float progress = elapsed / 10f;
+            float progress = elapsed / length;
             LocalVision.BlindColor = Color.Lerp(Color.black, Color.clear, Mathf.Pow(progress, 3f));
 
             yield return null;
