@@ -92,6 +92,12 @@ namespace LabFusion.Marrow.Proxies
             }
 
             _enumIndex--;
+
+            if (_enumIndex < 0)
+            {
+                _enumIndex = _enumValues.Length - 1;
+            }
+
             _enumIndex %= _enumValues.Length;
 
             Value = _enumValues.GetValue(_enumIndex) as Enum;
