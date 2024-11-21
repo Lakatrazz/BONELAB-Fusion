@@ -211,20 +211,37 @@ public abstract class Gamemode
 
     private void OnInternalMetadataChanged(string key, string value)
     {
+        bool parsed = value == bool.TrueString;
+
         switch (key)
         {
             case GamemodeKeys.StartedKey:
-                _isStarted = value == bool.TrueString;
+                if (_isStarted == parsed)
+                {
+                    return;
+                }
+
+                _isStarted = parsed;
 
                 OnStartedKeyChanged?.Invoke(this, _isStarted);
                 break;
             case GamemodeKeys.SelectedKey:
-                _isSelected = value == bool.TrueString;
+                if (_isSelected == parsed)
+                {
+                    return;
+                }
+
+                _isSelected = parsed;
 
                 OnSelectedKeyChanged?.Invoke(this, _isSelected);
                 break;
             case GamemodeKeys.ReadyKey:
-                _isReady = value == bool.TrueString;
+                if (_isReady == parsed)
+                {
+                    return;
+                }
+
+                _isReady = parsed;
 
                 OnReadyKeyChanged?.Invoke(this, _isReady);
                 break;
