@@ -62,7 +62,7 @@ public class RigIcon : IHeadUIElement
             return;
         }
 
-        Image.texture = null; // Replace with set texture
+        Image.texture = Texture;
     }
 
     public void Spawn(Transform parent)

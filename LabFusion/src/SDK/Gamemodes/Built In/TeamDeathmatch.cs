@@ -516,6 +516,8 @@ public class TeamDeathmatch : Gamemode
 
         MusicPlaylist.StopPlaylist();
 
+        TeamLogoManager.ClearTeams();
+
         var leaders = TeamManager.Teams.OrderBy(team => ScoreKeeper.GetScore(team)).Reverse().ToList();
 
         Team winningTeam = leaders.First();
