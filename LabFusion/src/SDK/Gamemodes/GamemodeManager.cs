@@ -98,6 +98,16 @@ public static class GamemodeManager
     private static void OnDisconnect()
     {
         StopGamemode();
+
+        // Reset all metadata
+        var gamemode = ActiveGamemode;
+
+        if (gamemode != null)
+        {
+            gamemode.Metadata.ForceSetLocalMetadata(GamemodeKeys.ReadyKey, bool.FalseString);
+            gamemode.Metadata.ForceSetLocalMetadata(GamemodeKeys.StartedKey, bool.FalseString);
+            gamemode.Metadata.ForceSetLocalMetadata(GamemodeKeys.SelectedKey, bool.FalseString);
+        }
     }
 
     private static void SendGamemodeChangeNotification()

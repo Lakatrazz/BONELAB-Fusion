@@ -4,7 +4,10 @@ using Il2CppSLZ.Marrow.Circuits;
 using Il2CppUltEvents;
 
 using LabFusion.Data;
+using LabFusion.Marrow.Circuits;
 using LabFusion.Network;
+using LabFusion.Player;
+using LabFusion.Scene;
 using LabFusion.Utilities;
 
 namespace LabFusion.Marrow.Patching;
@@ -53,8 +56,10 @@ public static class EventActuatorPatches
 
         var originalCalls = ultEvent.PersistentCallsList;
 
-        var copiedEvent = new UltEvent<float>();
-        copiedEvent._PersistentCalls = new Il2CppSystem.Collections.Generic.List<PersistentCall>();
+        var copiedEvent = new UltEvent<float>
+        {
+            _PersistentCalls = new Il2CppSystem.Collections.Generic.List<PersistentCall>()
+        };
 
         foreach (var call in originalCalls)
         {
@@ -67,17 +72,18 @@ public static class EventActuatorPatches
 
         void NewCall(float parameter0)
         {
-            if (!NetworkInfo.HasServer || IgnoreOverride)
+            if (CrossSceneManager.InUnsyncedScene() || IgnoreOverride)
             {
                 RunOriginal(parameter0);
                 return;
             }
 
-            if (NetworkInfo.IsServer)
+            // Check owner
+            bool isOwner = CheckOwnership(actuator);
+
+            if (isOwner)
             {
                 replacement(actuator, parameter0);
-                RunOriginal(parameter0);
-                return;
             }
         }
 
@@ -85,6 +91,25 @@ public static class EventActuatorPatches
         {
             copiedEvent.Invoke(parameter0);
         }
+    }
+
+    private static bool CheckOwnership(EventActuator actuator)
+    {
+        var input = actuator.input;
+
+        if (input == null)
+        {
+            return CrossSceneManager.IsSceneHost();
+        }
+
+        var networkEntity = CircuitHelper.GetNetworkEntity(input);
+
+        if (networkEntity != null)
+        {
+            return networkEntity.IsOwner;
+        }
+
+        return CrossSceneManager.IsSceneHost();
     }
 
     private static void OnInputRose(EventActuator actuator, float f)
@@ -112,10 +137,10 @@ public static class EventActuatorPatches
         }
 
         using var writer = FusionWriter.Create(EventActuatorData.Size);
-        var data = EventActuatorData.Create(hashData, type, value);
+        var data = EventActuatorData.Create(PlayerIdManager.LocalSmallId, hashData, type, value);
         writer.Write(data);
 
         using var message = FusionMessage.ModuleCreate<EventActuatorMessage>(writer);
-        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+        MessageSender.SendToServer(NetworkChannel.Reliable, message);
     }
 }

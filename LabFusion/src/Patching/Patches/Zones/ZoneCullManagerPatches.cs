@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using HarmonyLib;
+﻿using HarmonyLib;
 
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow.Zones;
 
 using LabFusion.Entities;
 using LabFusion.Network;
-using LabFusion.Utilities;
 
 namespace LabFusion.Patching;
 
@@ -40,22 +33,9 @@ public static class ZoneCullManagerPatches
             return;
         }
         
-        // Try and find the zone hash from its culler id
-        if (!ZoneCullerPatches.CullerIdToZone.TryGetValue(cullerId, out var zoneCuller))
-        {
-            FusionLogger.Warn($"cullerId {cullerId} was not in the dictionary?");
-            return;
-        }
-
-        if (!ZoneCullerPatches.ZoneToHash.TryGetValue(zoneCuller, out var hash))
-        {
-            FusionLogger.Warn($"Zone {zoneCuller.name} was not in the dictionary?");
-            return;
-        }
-
         // Send message to move entity's active culler
         using var writer = FusionWriter.Create(EntityZoneRegisterData.Size);
-        var data = EntityZoneRegisterData.Create(networkEntity.OwnerId, networkEntity.Id, hash);
+        var data = EntityZoneRegisterData.Create(networkEntity.OwnerId, networkEntity.Id);
         writer.Write(data);
 
         using var message = FusionMessage.Create(NativeMessageTag.EntityZoneRegister, writer);

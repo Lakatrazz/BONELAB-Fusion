@@ -1,7 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.SDK.Modules;
-using LabFusion.Exceptions;
 using LabFusion.Marrow.Patching;
 using LabFusion.Utilities;
 
@@ -18,7 +17,9 @@ public enum EventActuatorType : byte
 
 public class EventActuatorData : IFusionSerializable
 {
-    public const int Size = ComponentHashData.Size + sizeof(byte) + sizeof(float);
+    public const int Size = ComponentHashData.Size + sizeof(byte) * 2 + sizeof(float);
+
+    public byte playerId;
 
     public ComponentHashData hashData;
 
@@ -28,13 +29,19 @@ public class EventActuatorData : IFusionSerializable
 
     public void Serialize(FusionWriter writer)
     {
+        writer.Write(playerId);
+
         writer.Write(hashData);
+
         writer.Write((byte)type);
+
         writer.Write(value);
     }
 
     public void Deserialize(FusionReader reader)
     {
+        playerId = reader.ReadByte();
+
         hashData = reader.ReadFusionSerializable<ComponentHashData>();
 
         type = (EventActuatorType)reader.ReadByte();
@@ -42,10 +49,11 @@ public class EventActuatorData : IFusionSerializable
         value = reader.ReadSingle();
     }
 
-    public static EventActuatorData Create(ComponentHashData hashData, EventActuatorType type, float value)
+    public static EventActuatorData Create(byte playerId, ComponentHashData hashData, EventActuatorType type, float value)
     {
         return new EventActuatorData()
         {
+            playerId = playerId,
             hashData = hashData,
             type = type,
             value = value,
@@ -61,10 +69,13 @@ public class EventActuatorMessage : ModuleMessageHandler
         using FusionReader reader = FusionReader.Create(bytes);
         var data = reader.ReadFusionSerializable<EventActuatorData>();
 
-        // Only handled by clients!
+        // Send message to other clients if server
         if (isServerHandled)
         {
-            throw new ExpectedClientException();
+            using var message = FusionMessage.ModuleCreate<EventActuatorMessage>(bytes);
+            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+
+            return;
         }
 
         var eventActuator = EventActuatorPatches.HashTable.GetComponentFromData(data.hashData);

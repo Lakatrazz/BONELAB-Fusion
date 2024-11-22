@@ -204,12 +204,16 @@ public static class PlayerHealthPatches
 
         float length = LobbyInfoManager.LobbyInfo.KnockoutLength;
 
+        float eyeLength = 10f;
+
         while (elapsed <= length)
         {
             elapsed += TimeUtilities.DeltaTime;
 
-            float progress = elapsed / length;
-            LocalVision.BlindColor = Color.Lerp(Color.black, Color.clear, Mathf.Pow(progress, 3f));
+            float eyeStart = Mathf.Max(length - eyeLength, 0f);
+
+            float eyeProgress = Mathf.Max(elapsed - eyeStart, 0f) / eyeLength;
+            LocalVision.BlindColor = Color.Lerp(Color.black, Color.clear, Mathf.Pow(eyeProgress, 3f));
 
             yield return null;
         }

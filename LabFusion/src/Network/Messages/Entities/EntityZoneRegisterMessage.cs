@@ -1,7 +1,12 @@
-﻿using LabFusion.Data;
+﻿using System.Collections;
+
+using Il2CppSLZ.Marrow.Interaction;
+
+using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Marrow.Zones;
-using LabFusion.Patching;
+
+using MelonLoader;
 
 namespace LabFusion.Network;
 
@@ -11,29 +16,25 @@ public class EntityZoneRegisterData : IFusionSerializable
 
     public byte ownerId;
     public ushort entityId;
-    public int zoneHash;
 
     public void Serialize(FusionWriter writer)
     {
         writer.Write(ownerId);
         writer.Write(entityId);
-        writer.Write(zoneHash);
     }
 
     public void Deserialize(FusionReader reader)
     {
         ownerId = reader.ReadByte();
         entityId = reader.ReadUInt16();
-        zoneHash = reader.ReadInt32();
     }
 
-    public static EntityZoneRegisterData Create(byte ownerId, ushort entityId, int zoneHash)
+    public static EntityZoneRegisterData Create(byte ownerId, ushort entityId)
     {
         return new EntityZoneRegisterData()
         {
             ownerId = ownerId,
             entityId = entityId,
-            zoneHash = zoneHash
         };
     }
 }
@@ -75,17 +76,19 @@ public class EntityZoneRegisterMessage : FusionMessageHandler
             return;
         }
 
-        // Find zone
-        var hash = data.zoneHash;
-        
-        if (!ZoneCullerPatches.HashToZone.TryGetValue(hash, out var culler))
+        // Unculling will cause the NetworkEntity to teleport to its pose
+        // Sometimes it can get immediately culled right after, so do it for a few frames
+        // Since its actually moving locations, this should make the zones track the entity properly
+        MelonCoroutines.Start(RepeatCull(marrowExtender.MarrowEntity));
+    }
+
+    private static IEnumerator RepeatCull(MarrowEntity entity)
+    {
+        for (var i = 0; i < 3; i++)
         {
-            return;
+            SafeZoneCuller.Cull(entity, false);
+
+            yield return null;
         }
-
-        var cullerId = culler._zoneId;
-
-        // Migrate entity
-        ZoneCullHelper.MigrateEntity(cullerId, marrowExtender.MarrowEntity);
     }
 }

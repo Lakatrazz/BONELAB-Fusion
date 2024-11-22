@@ -103,7 +103,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         _lastReceivedTime = TimeUtilities.TimeSinceStartup;
     }
 
-    private void TeleportToPose()
+    public void TeleportToPose()
     {
         for (var i = 0; i < _bodies.Length; i++)
         {

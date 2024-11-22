@@ -692,7 +692,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         NetworkPlayerManager.LateUpdateManager.Unregister(this);
     }
 
-    private void TeleportToPose()
+    public void TeleportToPose()
     {
         // Don't teleport if no pose
         if (!ReceivedPose || !HasRig)
