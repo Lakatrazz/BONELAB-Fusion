@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4401927656786099980}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.002, y: -0.061300002, z: 0.012835}
+  m_LocalPosition: {x: 0.002, y: -0.061300002, z: 0.0035}
   m_LocalScale: {x: 0.035324726, y: 0.035324726, z: 0.035324726}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -130,6 +130,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cosmeticPoint: 1
   hiddenInView: 1
+  hiddenInShop: 0
   rawPrice: 500
   previewIcon: {fileID: 2800000, guid: 17b658094c8596a4c8c52cd43b3caccd, type: 3}
-  authorOverride: Riggle

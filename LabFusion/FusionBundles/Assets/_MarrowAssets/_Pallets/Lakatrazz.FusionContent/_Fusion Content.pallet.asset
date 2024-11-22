@@ -19,7 +19,7 @@ MonoBehaviour:
   _unlockable: 0
   _redacted: 0
   _author: Lakatrazz
-  _version: 1.1.0
+  _version: 1.2.0
   _sdkVersion: 1.2.0
   _internal: 0
   _crates:
@@ -65,6 +65,9 @@ MonoBehaviour:
     text: 'Updated to Patch 6
 
       Made Mute Indicator a redacted spawnable'
+  - version: 1.2.0
+    title: Thanksgiving
+    text: Added custom UI
   _crateTitles:
   - Spawnable  BitMart
   - Spawnable  Achievement Board

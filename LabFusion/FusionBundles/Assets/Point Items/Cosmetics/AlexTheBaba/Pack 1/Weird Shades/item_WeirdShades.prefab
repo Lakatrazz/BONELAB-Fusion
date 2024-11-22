@@ -67,9 +67,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cosmeticPoint: 5
   hiddenInView: 1
+  hiddenInShop: 0
   rawPrice: 600
   previewIcon: {fileID: 2800000, guid: 60673f605fd93394fac33fd4c23da090, type: 3}
-  authorOverride: BaBaCorp
 --- !u!1001 &4851122567182704227
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -103,7 +103,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c18d913840469df4da63b2e18933ab8b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.0136
+      value: 0.0067
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c18d913840469df4da63b2e18933ab8b, type: 3}
       propertyPath: m_LocalRotation.w

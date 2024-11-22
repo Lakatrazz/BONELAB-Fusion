@@ -301,6 +301,9 @@ public class HideAndSeek : Gamemode
 
         while (seconds < maxSeconds)
         {
+            float progress = (float)seconds / (float)maxSeconds;
+            LocalVision.BlindColor = Color.Lerp(Color.black, Color.clear, progress);
+
             int remainingSeconds = maxSeconds - seconds;
             switch (remainingSeconds)
             {

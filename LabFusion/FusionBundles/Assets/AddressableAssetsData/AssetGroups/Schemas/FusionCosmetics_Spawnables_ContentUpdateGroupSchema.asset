@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5834b5087d578d24c926ce20cd31e6d6, type: 3}
-  m_Name: FusionContent_Levels_ContentUpdateGroupSchema
+  m_Name: FusionCosmetics_Spawnables_ContentUpdateGroupSchema
   m_EditorClassIdentifier: 
-  m_Group: {fileID: 11400000, guid: 7ea94b79b9397a644bb31da0895180bb, type: 2}
+  m_Group: {fileID: 11400000, guid: 537161f008d40834487ad5e44580a2fd, type: 2}
   m_StaticContent: 0

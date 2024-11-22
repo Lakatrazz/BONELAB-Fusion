@@ -42,7 +42,7 @@ public class BitMiner : PointItem
     {
         string suffix = bits != 1 ? "s" : "";
 
-        return $"Hires a team of hard working nullbodies to mine valuables from the depths of MythOS. Grants {bits} bit{suffix} per minute you are in a Fusion lobby with another person.";
+        return $"Hires a team of hard working nullbodies to mine valuables from the depths of MythOS. Grants {bits} bit{suffix} for every other player per minute you are in a Fusion lobby.";
     }
 
     public override void OnLateUpdate()

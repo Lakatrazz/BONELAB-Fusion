@@ -19,7 +19,7 @@ MonoBehaviour:
   _unlockable: 0
   _redacted: 0
   _author: Lakatrazz
-  _version: 1.0.1
+  _version: 1.1.0
   _sdkVersion: 1.2.0
   _internal: 0
   _crates:
@@ -103,6 +103,9 @@ MonoBehaviour:
   - version: 1.0.1
     title: Patch 6
     text: Updated to Patch 6
+  - version: 1.1.0
+    title: Thanksgiving
+    text: Adjusted cosmetic offsets
   _crateTitles:
   - Spawnable  Adventurers Hat
   - Spawnable  3D Glasses
