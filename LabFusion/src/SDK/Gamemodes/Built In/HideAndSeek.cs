@@ -1,7 +1,6 @@
 ﻿using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Warehouse;
 
-using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
@@ -9,6 +8,7 @@ using LabFusion.Menu;
 using LabFusion.Menu.Data;
 using LabFusion.Network;
 using LabFusion.Player;
+using LabFusion.SDK.Points;
 using LabFusion.SDK.Triggers;
 using LabFusion.Utilities;
 
@@ -17,7 +17,6 @@ using MelonLoader;
 using System.Collections;
 
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -32,6 +31,8 @@ public class HideAndSeek : Gamemode
     public static class Defaults
     {
         public const int SeekerCount = 1;
+
+        public const int BitReward = 50;
 
         public static readonly MonoDiscReference[] Tracks = new MonoDiscReference[]
         {
@@ -65,6 +66,8 @@ public class HideAndSeek : Gamemode
 
     private bool _hasBeenTagged = false;
     private bool _assignedDefaultTeam = false;
+
+    private readonly HashSet<ulong> _tagRewards = new();
 
     public override GroupElementData CreateSettingsGroup()
     {
@@ -189,6 +192,12 @@ public class HideAndSeek : Gamemode
                 PopupLength = 4f,
                 Type = NotificationType.INFORMATION,
             });
+
+            // Check bit reward
+            if (_tagRewards.Remove(playerId.LongId))
+            {
+                PointItemManager.RewardBits(Defaults.BitReward);
+            }
         }
     }
 
@@ -350,6 +359,8 @@ public class HideAndSeek : Gamemode
     {
         base.OnGamemodeStarted();
 
+        _tagRewards.Clear();
+
         _hasBeenTagged = false;
 
         SetDefaults();
@@ -450,7 +461,11 @@ public class HideAndSeek : Gamemode
         // Check if they're a hider, and if they are, tag them
         if (HiderTeam.HasPlayer(player.PlayerId))
         {
-            TagEvent.TryInvoke(player.PlayerId.LongId.ToString());
+            var longId = player.PlayerId.LongId;
+
+            _tagRewards.Add(longId);
+
+            TagEvent.TryInvoke(longId.ToString());
         }
     }
 }
