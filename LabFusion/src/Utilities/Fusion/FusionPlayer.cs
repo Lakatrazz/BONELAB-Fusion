@@ -205,24 +205,6 @@ public static class FusionPlayer
     }
 
     /// <summary>
-    /// Checks if we are allowed to unragdoll.
-    /// </summary>
-    /// <returns></returns>
-    public static bool CanUnragdoll()
-    {
-        // Check gamemode
-        if (GamemodeManager.IsGamemodeStarted)
-        {
-            var gamemode = GamemodeManager.ActiveGamemode;
-
-            if (gamemode.DisableManualUnragdoll)
-                return false;
-        }
-
-        return true;
-    }
-
-    /// <summary>
     /// Sets the mortality of the player.
     /// </summary>
     /// <param name="mortal"></param>

@@ -55,9 +55,7 @@ public static class PhysicsRigPatches
         if (__instance.manager.IsLocalPlayer())
         {
             // Check if we can unragdoll
-            var playerHealth = __instance.manager.health.TryCast<Player_Health>();
-
-            if (!ForceAllowUnragdoll && playerHealth.deathIsImminent && !FusionPlayer.CanUnragdoll())
+            if (!ForceAllowUnragdoll && LocalRagdoll.RagdollLocked)
             {
                 return false;
             }

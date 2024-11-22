@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-using HarmonyLib;
+﻿using HarmonyLib;
 
 using LabFusion.Data;
 using LabFusion.Network;
@@ -12,10 +10,6 @@ using LabFusion.Player;
 using LabFusion.Preferences;
 
 using Il2CppSLZ.Marrow;
-
-using MelonLoader;
-
-using UnityEngine;
 
 namespace LabFusion.Patching;
 
@@ -159,8 +153,6 @@ public static class HealthPatches
 [HarmonyPatch(typeof(Player_Health))]
 public static class PlayerHealthPatches
 {
-    private static bool _isKnockedOut = false;
-
     [HarmonyPrefix]
     [HarmonyPatch(nameof(Player_Health.Dying))]
     public static void Dying(Player_Health __instance)
@@ -175,69 +167,10 @@ public static class PlayerHealthPatches
             return;
         }
 
-        if (_isKnockedOut)
-        {
-            return;
-        }
-
         if (CommonPreferences.Knockout && CommonPreferences.Mortality && __instance.healthMode == Health.HealthMode.Invincible)
         {
-            MelonCoroutines.Start(KnockoutCoroutine(__instance));
+            LocalRagdoll.Knockout(LobbyInfoManager.LobbyInfo.KnockoutLength);
         }
-    }
-
-    private static IEnumerator KnockoutCoroutine(Player_Health health)
-    {
-        // Ragdoll the rig
-        var rigManager = health._rigManager;
-
-        rigManager.physicsRig.RagdollRig();
-
-        // Blind the player
-        LocalVision.Blind = true;
-        LocalVision.BlindColor = Color.black;
-
-        _isKnockedOut = true;
-
-        // Wait a certain amount of time to wake up
-        float elapsed = 0f;
-
-        float length = LobbyInfoManager.LobbyInfo.KnockoutLength;
-
-        float eyeLength = 10f;
-
-        while (elapsed <= length)
-        {
-            elapsed += TimeUtilities.DeltaTime;
-
-            float eyeStart = Mathf.Max(length - eyeLength, 0f);
-
-            float eyeProgress = Mathf.Max(elapsed - eyeStart, 0f) / eyeLength;
-            LocalVision.BlindColor = Color.Lerp(Color.black, Color.clear, Mathf.Pow(eyeProgress, 3f));
-
-            yield return null;
-        }
-
-        _isKnockedOut = false;
-
-        LocalVision.Blind = false;
-        LocalVision.BlindColor = Color.black;
-
-        // Make sure the rig still exists
-        if (rigManager == null)
-        {
-            yield break;
-        }
-
-        // Revive fully
-        health.SetFullHealth();
-
-        // Unragdoll the rig
-        PhysicsRigPatches.ForceAllowUnragdoll = true;
-
-        rigManager.physicsRig.UnRagdollRig();
-
-        PhysicsRigPatches.ForceAllowUnragdoll = false;
     }
 
     [HarmonyPrefix]
