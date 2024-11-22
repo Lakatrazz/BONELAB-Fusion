@@ -64,11 +64,15 @@ public static class FusionBitPopup
             var amountText = canvas.Find("amount").GetComponent<TMP_Text>();
             amountText.text = text;
 
+            Color color = Color.white;
+
             if (amount < 0)
             {
-                amountText.color = Color.red;
-                canvas.Find("bit").GetComponent<RawImage>().color = Color.red;
+                color = Color.red;
             }
+
+            amountText.color = color;
+            canvas.Find("bit").GetComponent<RawImage>().color = color;
 
             FusionAudio.Play2D(FusionContentLoader.BitGet.Asset, 1f);
 
