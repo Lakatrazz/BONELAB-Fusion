@@ -362,29 +362,4 @@ public class FusionMod : MelonMod
         // Late update gamemodes
         GamemodeManager.Internal_OnLateUpdate();
     }
-
-    public override void OnGUI()
-    {
-        InternalLayerHelpers.OnGUILayer();
-
-#if DEBUG
-        var emptyOptions = Array.Empty<GUILayoutOption>();
-
-        GUILayout.Label($"Bytes Up: {NetworkInfo.BytesUp}", emptyOptions);
-        GUILayout.Label($"Bytes Down: {NetworkInfo.BytesDown}", emptyOptions);
-
-        GUILayout.Label($"Network Entity Count: {NetworkEntityManager.IdManager.RegisteredEntities.EntityIdLookup.Count}", emptyOptions);
-
-        GUILayout.Label($"Active Download: {(ModIODownloader.IsDownloading ? ModIODownloader.CurrentTransaction.ModFile.ModId : "None")}", emptyOptions);
-        
-        if (ModIODownloader.IsDownloading)
-        {
-            GUILayout.Label($"Active Progress: {ModIODownloader.CurrentTransaction.Progress * 100f}%");
-        }
-        
-        GUILayout.Label($"Queued Downloads: {ModIODownloader.QueuedTransactions.Count}", emptyOptions);
-
-        GUILayout.Label($"Being Watched: False", emptyOptions);
-#endif
-    }
 }

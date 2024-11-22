@@ -205,8 +205,6 @@ public abstract class NetworkLayer
 
     public virtual void OnLateUpdateLayer() { }
 
-    public virtual void OnGUILayer() { }
-
     public virtual void OnUserJoin(PlayerId id) { }
 
     public virtual string GetServerCode()

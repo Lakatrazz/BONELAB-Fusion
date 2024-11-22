@@ -57,11 +57,6 @@ public static class InternalLayerHelpers
         CurrentNetworkLayer?.OnLateUpdateLayer();
     }
 
-    public static void OnGUILayer()
-    {
-        CurrentNetworkLayer?.OnGUILayer();
-    }
-
     public static void OnUserJoin(PlayerId id)
     {
         CurrentNetworkLayer?.OnUserJoin(id);
