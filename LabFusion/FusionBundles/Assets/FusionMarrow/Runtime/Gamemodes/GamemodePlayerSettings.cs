@@ -2,6 +2,8 @@ using UnityEngine;
 
 #if MELONLOADER
 using MelonLoader;
+
+using Il2CppInterop.Runtime.Attributes;
 #endif
 
 namespace LabFusion.Marrow.Integration
@@ -17,9 +19,13 @@ namespace LabFusion.Marrow.Integration
         public static GamemodePlayerSettings Instance { get; set; } = null;
 
         private string _avatarOverride = null;
+
+        [HideFromIl2Cpp]
         public string AvatarOverride => _avatarOverride;
 
         private float? _vitalityOverride = null;
+
+        [HideFromIl2Cpp]
         public float? VitalityOverride => _vitalityOverride;
 
         private void Awake()

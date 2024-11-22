@@ -35,7 +35,7 @@ MonoBehaviour:
   m_CheckForContentUpdateRestrictionsOption: 0
   m_MonoScriptBundleCustomNaming: Lakatrazz.FusionCosmetics
   m_RemoteCatalogBuildPath:
-    m_Id: BuiltPallets/StandaloneWindows64/Lakatrazz.FusionCosmetics
+    m_Id: BuiltPallets/Android/Lakatrazz.FusionCosmetics
   m_RemoteCatalogLoadPath:
     m_Id: 'PALLET_BARCODE:Lakatrazz.FusionCosmetics:'
   m_ContentStateBuildPathProfileVariableName: <default settings path>

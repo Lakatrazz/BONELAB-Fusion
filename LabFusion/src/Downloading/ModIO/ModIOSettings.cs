@@ -61,7 +61,7 @@ public static class ModIOSettings
 
         if (!File.Exists(settingsPath))
         {
-            FusionLogger.Error("Mod.IO token is missing! Please set it in the mods menu!");
+            FusionLogger.Error("mod.io token is missing! Please set it in the mods menu!");
 
             EndLoadToken(null);
 
@@ -81,7 +81,7 @@ public static class ModIOSettings
 
         if (!settingsTask.IsCompletedSuccessfully)
         {
-            FusionLogger.Error("Failed reading Mod.IO token from settings!");
+            FusionLogger.Error("Failed reading mod.io token from settings!");
 
             EndLoadToken(null);
 

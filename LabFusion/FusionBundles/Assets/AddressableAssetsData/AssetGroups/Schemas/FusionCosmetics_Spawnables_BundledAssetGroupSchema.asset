@@ -34,7 +34,7 @@ MonoBehaviour:
   m_RedirectLimit: -1
   m_RetryCount: 0
   m_BuildPath:
-    m_Id: BuiltPallets/StandaloneWindows64/Lakatrazz.FusionCosmetics
+    m_Id: BuiltPallets/Android/Lakatrazz.FusionCosmetics
   m_LoadPath:
     m_Id: 'PALLET_BARCODE:Lakatrazz.FusionCosmetics:'
   m_BundleMode: 1
