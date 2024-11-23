@@ -3,6 +3,7 @@
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Utilities;
+using LabFusion.Scene;
 
 using Il2CppSLZ.Marrow;
 
@@ -17,7 +18,7 @@ public static class PhysicsRigPatches
     [HarmonyPatch(nameof(PhysicsRig.RagdollRig))]
     public static bool RagdollRig(PhysicsRig __instance)
     {
-        if (!NetworkInfo.HasServer)
+        if (CrossSceneManager.InUnsyncedScene())
         {
             return true;
         }
@@ -47,7 +48,7 @@ public static class PhysicsRigPatches
     [HarmonyPatch(nameof(PhysicsRig.UnRagdollRig))]
     public static bool UnRagdollRig(PhysicsRig __instance)
     {
-        if (!NetworkInfo.HasServer)
+        if (CrossSceneManager.InUnsyncedScene())
         {
             return true;
         }
@@ -72,6 +73,29 @@ public static class PhysicsRigPatches
         if (__instance.shutdown)
         {
             __instance.TurnOnRig();
+        }
+
+        return true;
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(PhysicsRig.TurnOnRig))]
+    public static bool TurnOnRig(PhysicsRig __instance)
+    {
+        if (CrossSceneManager.InUnsyncedScene())
+        {
+            return true;
+        }
+
+        if (!__instance.manager.IsLocalPlayer())
+        {
+            return true;
+        }
+
+        // Check if we can unragdoll
+        if (!ForceAllowUnragdoll && LocalRagdoll.RagdollLocked)
+        {
+            return false;
         }
 
         return true;
