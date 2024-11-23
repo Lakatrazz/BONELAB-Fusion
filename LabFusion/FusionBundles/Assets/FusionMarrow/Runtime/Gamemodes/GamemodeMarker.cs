@@ -23,6 +23,7 @@ namespace LabFusion.Marrow.Integration
     [RegisterTypeInIl2Cpp]
 #else
     [DisallowMultipleComponent]
+    [HelpURL("https://github.com/Lakatrazz/BONELAB-Fusion/wiki/Gamemode-Maps#gamemode-markers")]
 #endif
     public sealed class GamemodeMarker : MonoBehaviour
     {
