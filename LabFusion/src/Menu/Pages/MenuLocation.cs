@@ -1,5 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
+using LabFusion.Extensions;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Proxies;
 using LabFusion.Network;
@@ -539,10 +540,10 @@ public static class MenuLocation
     {
         // Apply name and description
         var username = playerInfo.Username;
-        element.UsernameElement.Title = username;
+        element.UsernameElement.Title = username.RemoveRichTextExceptColor();
 
         element.NicknameElement.Title = "Nickname";
-        element.NicknameElement.Value = playerInfo.Nickname;
+        element.NicknameElement.Value = playerInfo.Nickname.RemoveRichTextExceptColor();
         element.NicknameElement.Interactable = false;
         element.NicknameElement.EmptyFormat = "No {0}";
 

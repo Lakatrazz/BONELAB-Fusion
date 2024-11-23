@@ -1,9 +1,9 @@
 ﻿using LabFusion.Data;
+using LabFusion.Extensions;
 using LabFusion.Marrow.Proxies;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.SDK.Lobbies;
-using LabFusion.Senders;
 
 using UnityEngine;
 
@@ -607,10 +607,10 @@ public static class MenuMatchmaking
 
     private static void ApplyPlayerToElement(PlayerElement element, PlayerInfo info)
     {
-        element.UsernameElement.Title = info.Username;
+        element.UsernameElement.Title = info.Username.RemoveRichTextExceptColor();
 
         element.NicknameElement.Title = "Nickname";
-        element.NicknameElement.Value = info.Nickname;
+        element.NicknameElement.Value = info.Nickname.RemoveRichTextExceptColor();
         element.NicknameElement.EmptyFormat = "No {0}";
 
         element.DescriptionElement.Title = "Description";
