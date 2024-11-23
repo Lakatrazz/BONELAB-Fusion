@@ -1,7 +1,6 @@
 ﻿using Il2CppSLZ.Marrow.Interaction;
 
 using LabFusion.Data;
-using LabFusion.Extensions;
 using LabFusion.MonoBehaviours;
 using LabFusion.Network;
 using LabFusion.Player;
@@ -65,6 +64,11 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         networkEntity.OnEntityUnregistered += OnPropUnregistered;
     }
 
+    private void OnEntityOwnershipTransfer(NetworkEntity entity, PlayerId player)
+    {
+        OnReregisterUpdates();
+    }
+
     private void InitializeBodies()
     {
         _bodies = MarrowEntity.Bodies;
@@ -89,8 +93,19 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         _componentExtenders = EntityComponentManager.ApplyComponents(NetworkEntity, new GameObject[] { MarrowEntity.gameObject });
     }
 
+    private int _receivedFrame = 0;
+
     public void OnReceivePose(EntityPose pose)
     {
+        var frameCount = TimeUtilities.FrameCount;
+
+        if (_receivedFrame == frameCount)
+        {
+            return;
+        }
+
+        _receivedFrame = frameCount;
+
         pose.CopyTo(EntityPose);
 
         UpdateReceiveTime();
@@ -172,6 +187,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
         entity.ConnectExtender(this);
 
+        entity.OnEntityOwnershipTransfer += OnEntityOwnershipTransfer;
+
         OnReregisterUpdates();
 
         _destroySensor = MarrowEntity.gameObject.AddComponent<DestroySensor>();
@@ -195,6 +212,9 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         IMarrowEntityExtender.Cache.Remove(MarrowEntity);
 
         entity.DisconnectExtender(this);
+
+        entity.OnEntityOwnershipTransfer -= OnEntityOwnershipTransfer;
+
         _networkEntity = null;
         _marrowEntity = null;
 
@@ -217,11 +237,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     public void OnEntityUpdate(float deltaTime)
     {
-        if (!NetworkEntity.IsOwner)
-        {
-            return;
-        }
-
+        // OnEntityUpdate is only registered when we own the prop
         OnOwnedUpdate();
     }
 
@@ -231,6 +247,25 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         var sentPose = _sentPose.bodies[index];
 
         return (sentPose.position - currentPose.position).sqrMagnitude > MinMoveSqrMagnitude || Quaternion.Angle(sentPose.rotation, currentPose.rotation) > MinMoveAngle; 
+    }
+
+    private void Sleep()
+    {
+        _isSleeping = true;
+
+        for (var i = 0; i < _bodies.Length; i++)
+        {
+            var body = _bodies[i];
+
+            if (!body.HasRigidbody)
+            {
+                continue;
+            }
+
+            var rb = body._rigidbody;
+
+            rb.Sleep();
+        }
     }
 
     private void CheckSleeping()
@@ -302,12 +337,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     public void OnEntityFixedUpdate(float deltaTime)
     {
-        // If we are the owner, or the prop has no owner, return
-        if (NetworkEntity.IsOwner || !NetworkEntity.HasOwner)
-        {
-            return;
-        }
-
+        // OnEntityFixedUpdate is only registered when we do not own the prop
         OnReceivedUpdate(deltaTime);
     }
 
@@ -330,7 +360,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
         if (timeSinceMessage >= 1f)
         {
-            _isSleeping = true;
+            Sleep();
             return;
         }
 
@@ -379,6 +409,8 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     public void OnEntityCull(bool isInactive)
     {
+        _isCulled = isInactive;
+
         // Culled
         if (isInactive)
         {
@@ -399,8 +431,19 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     {
         OnUnregisterUpdates();
 
-        NetworkEntityManager.UpdateManager.Register(this);
-        NetworkEntityManager.FixedUpdateManager.Register(this);
+        if (_isCulled)
+        {
+            return;
+        }
+
+        if (NetworkEntity.IsOwner)
+        {
+            NetworkEntityManager.UpdateManager.Register(this);
+        }
+        else
+        {
+            NetworkEntityManager.FixedUpdateManager.Register(this);
+        }
     }
 
     private void OnUnregisterUpdates()
