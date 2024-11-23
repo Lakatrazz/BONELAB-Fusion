@@ -31,7 +31,7 @@ public static class MenuCreator
     public static void OnInitializeMelon()
     {
         MenuPageHelper.OnInitializeMelon();
-        MenuToolbarHelper.OnInitializeMelon();
+        MenuPopupsHelper.OnInitializeMelon();
     }
 
     public static void CreateMenu()
@@ -257,7 +257,7 @@ public static class MenuCreator
 
         // Finally, populate the functions for all of the elements
         MenuPageHelper.PopulatePages(MenuGameObject);
-        MenuToolbarHelper.PopulateToolbar(menuTransform.Find("Popups/grid_Toolbar").gameObject);
+        MenuPopupsHelper.PopulatePopups(menuTransform.Find("Popups").gameObject);
     }
 
     private static void OnBackArrowPressed()
