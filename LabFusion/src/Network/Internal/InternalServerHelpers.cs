@@ -192,9 +192,9 @@ public static class InternalServerHelpers
             });
         }
 
-        MultiplayerHooking.Internal_OnPlayerLeave(playerId);
-
         DisposeUser(playerId);
+
+        MultiplayerHooking.Internal_OnPlayerLeave(playerId);
     }
 
     /// <summary>
