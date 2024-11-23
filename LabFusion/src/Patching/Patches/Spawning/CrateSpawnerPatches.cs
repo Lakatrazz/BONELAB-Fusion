@@ -1,8 +1,8 @@
 ﻿using HarmonyLib;
 
-using LabFusion.Network;
 using LabFusion.RPC;
 using LabFusion.Senders;
+using LabFusion.Scene;
 
 using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Marrow.Pool;
@@ -72,14 +72,14 @@ public static class CrateSpawnerAsyncPatches
     [HarmonyPatch(nameof(CrateSpawner._SpawnSpawnableAsync_d__26.MoveNext))]
     public static bool MoveNext(CrateSpawner._SpawnSpawnableAsync_d__26 __instance)
     {
-        // If there is NO server, the spawner can function as normal.
-        if (!NetworkInfo.HasServer)
+        // If this scene is unsynced, the spawner can function as normal.
+        if (CrossSceneManager.InUnsyncedScene())
         {
             return true;
         }
 
-        // If we aren't the server, don't allow a crate spawn
-        if (!NetworkInfo.IsServer)
+        // If we aren't the scene host, don't allow a crate spawn
+        if (!CrossSceneManager.IsSceneHost())
         {
             return false;
         }
