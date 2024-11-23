@@ -139,17 +139,17 @@ public static class PlayerSender
     public static void SendPlayerMetadataResponse(byte smallId, string key, string value)
     {
         // Make sure this is the server
-        if (NetworkInfo.IsServer)
+        if (!NetworkInfo.IsServer)
         {
-            using var writer = FusionWriter.Create(PlayerMetadataResponseData.GetSize(key, value));
-            var data = PlayerMetadataResponseData.Create(smallId, key, value);
-            writer.Write(data);
-
-            using var message = FusionMessage.Create(NativeMessageTag.PlayerMetadataResponse, writer);
-            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+            throw new ExpectedServerException();
         }
-        else
-            throw new ExpectedClientException();
+
+        using var writer = FusionWriter.Create(PlayerMetadataResponseData.GetSize(key, value));
+        var data = PlayerMetadataResponseData.Create(smallId, key, value);
+        writer.Write(data);
+
+        using var message = FusionMessage.Create(NativeMessageTag.PlayerMetadataResponse, writer);
+        MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
     }
 
     public static void SendPlayerAction(PlayerActionType type, byte? otherPlayer = null)
