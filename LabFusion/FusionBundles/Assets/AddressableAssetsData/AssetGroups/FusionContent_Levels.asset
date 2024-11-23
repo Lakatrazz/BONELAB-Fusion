@@ -10,15 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Pallets
+  m_Name: FusionContent_Levels
   m_EditorClassIdentifier: 
-  m_GroupName: Pallets
+  m_GroupName: FusionContent_Levels
   m_Data:
     m_SerializedData: []
-  m_GUID: 84fba15efdfa0b14b88566e4244e7200
+  m_GUID: 73ba22e42dc8df14f9ee91b6c8b96fc9
   m_SerializeEntries:
-  - m_GUID: e01287617603ab7469e3f5e659d08441
-    m_Address: Lakatrazz.FusionContent
+  - m_GUID: 466e42a64ccb19a44ae66d911bd7c3f3
+    m_Address: Level/Load Downloading
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e7e2d37e0bb9f3c4ba5626e11909b0b6
+    m_Address: Level/Fusion Testing
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -26,4 +31,6 @@ MonoBehaviour:
   m_Settings: {fileID: 11400000, guid: 9feda70c59f9cda489cd3a23e7f14dd9, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 5e20190195e34274790e19e34b860990, type: 2}
+    - {fileID: 11400000, guid: 1c6b7dde3d73e1a47b0d63b93a05dcf6, type: 2}
+    - {fileID: 11400000, guid: fe3a8071cde5e1a41b81b3a4d9b4c0a8, type: 2}
+    - {fileID: 11400000, guid: a0c52f2b285b54e40a2bd4b1e815163f, type: 2}
