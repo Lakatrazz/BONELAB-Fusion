@@ -31,6 +31,14 @@ namespace FusionHelper.Steamworks
         public void OnConnected(SteamNetConnectionStatusChangedCallback_t info)
         {
             SteamNetworkingSockets.SetConnectionPollGroup(info.m_hConn, PollGroup);
+
+            // If we aren't in the connected list yet, this is likely us
+            var steamId = SteamUser.GetSteamID().m_SteamID;
+
+            if (!ConnectedSteamIds.ContainsKey(steamId))
+            {
+                InsertConnection(steamId, info.m_hConn);
+            }
         }
 
         public void OnDisconnected(SteamNetConnectionStatusChangedCallback_t info)

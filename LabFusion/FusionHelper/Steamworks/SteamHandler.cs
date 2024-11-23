@@ -121,9 +121,6 @@ namespace FusionHelper.Steamworks
             id.SetSteamID64(steamId);
             ConnectionManager.Connection = SteamNetworkingSockets.ConnectP2P(ref id, 0, 0, Array.Empty<SteamNetworkingConfigValue_t>());
             
-            // The SocketManager also needs ourselves as a connection reference, so we can send messages to ourselves
-            SocketManager.InsertConnection(steamId, ConnectionManager.Connection);
-
             IsServer = true;
         }
 
