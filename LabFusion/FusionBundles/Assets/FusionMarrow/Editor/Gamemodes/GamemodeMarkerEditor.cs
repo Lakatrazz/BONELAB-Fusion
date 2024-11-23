@@ -14,6 +14,10 @@ namespace LabFusion.Marrow.Integration
     {
         public const string AddTeamMethodName = nameof(GamemodeMarker.AddTeam);
 
+        public const string LavaGangBarcode = "Lakatrazz.FusionContent.BoneTag.TeamLavaGang";
+
+        public const string SabrelakeBarcode = "Lakatrazz.FusionContent.BoneTag.TeamSabrelake";
+
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
@@ -86,6 +90,21 @@ namespace LabFusion.Marrow.Integration
             EditorGUI.BeginChangeCheck();
 
             barcode = EditorGUILayout.TextField("Team Tag", barcode);
+
+            if (barcode != LavaGangBarcode && GUILayout.Button("Set Team LavaGang"))
+            {
+                barcode = LavaGangBarcode;
+            }
+
+            if (barcode != SabrelakeBarcode && GUILayout.Button("Set Team Sabrelake"))
+            {
+                barcode = SabrelakeBarcode;
+            }
+
+            if (!string.IsNullOrWhiteSpace(barcode) && GUILayout.Button("Clear Team"))
+            {
+                barcode = null;
+            }
 
             // Override the life cycle event value
             if (EditorGUI.EndChangeCheck())
