@@ -1,6 +1,4 @@
-﻿using LabFusion.Extensions;
-
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace LabFusion.Entities;
 

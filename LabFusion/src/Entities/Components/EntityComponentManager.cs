@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Linq.Expressions;
+using System.Reflection;
 
 using LabFusion.Utilities;
 
@@ -31,7 +32,10 @@ public static class EntityComponentManager
             throw new ArgumentException($"Extender type {type.Name} was already registered.");
         }
 
-        ExtenderTypes[_lastExtenderIndex++] = type;
+        var index = _lastExtenderIndex++;
+
+        ExtenderTypes[index] = type;
+        ExtenderFactories[index] = CreateExtenderFactory(type);
 
 #if DEBUG
         FusionLogger.Log($"Registered {type.Name}");
@@ -44,9 +48,9 @@ public static class EntityComponentManager
 
         for (var i = 0; i < _lastExtenderIndex; i++)
         {
-            var type = ExtenderTypes[i];
+            var factory = ExtenderFactories[i];
 
-            var instance = Activator.CreateInstance(type) as IEntityComponentExtender;
+            var instance = factory();
 
             if (instance.TryRegister(networkEntity, parents))
             {
@@ -57,7 +61,14 @@ public static class EntityComponentManager
         return set;
     }
 
+    private static Func<IEntityComponentExtender> CreateExtenderFactory(Type type)
+    {
+        return Expression.Lambda<Func<IEntityComponentExtender>>(Expression.New(type)).Compile();
+    }
+
     private static int _lastExtenderIndex = 0;
 
     public static readonly Type[] ExtenderTypes = new Type[1024];
+
+    public static readonly Func<IEntityComponentExtender>[] ExtenderFactories = new Func<IEntityComponentExtender>[1024];
 }
