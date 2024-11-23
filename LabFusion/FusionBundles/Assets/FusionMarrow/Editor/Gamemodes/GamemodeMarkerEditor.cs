@@ -83,17 +83,13 @@ namespace LabFusion.Marrow.Integration
 
             var barcode = firstCall.PersistentArguments[0].String;
 
-            AssetWarehouse.Instance.TryGetDataCard<BoneTag>(new Barcode(barcode), out var teamTag);
-
             EditorGUI.BeginChangeCheck();
 
-            teamTag = EditorGUILayout.ObjectField("Team Tag", teamTag, typeof(BoneTag), false) as BoneTag;
+            barcode = EditorGUILayout.TextField("Team Tag", barcode);
 
             // Override the life cycle event value
             if (EditorGUI.EndChangeCheck())
             {
-                barcode = teamTag ? teamTag.Barcode.ToString() : string.Empty;
-
                 firstCall.SetArguments(barcode);
 
                 EditorUtility.SetDirty(lifeCycleEvent);
