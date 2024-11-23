@@ -9,7 +9,7 @@ namespace LabFusion.Network;
 
 public class SteamSocketManager : SocketManager
 {
-    public FusionDictionary<ulong, Connection> ConnectedSteamIds = new();
+    public Dictionary<ulong, Connection> ConnectedSteamIds = new();
 
     public override void OnConnecting(Connection connection, ConnectionInfo data)
     {

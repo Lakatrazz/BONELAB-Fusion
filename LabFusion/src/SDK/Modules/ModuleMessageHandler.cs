@@ -132,6 +132,6 @@ public abstract class ModuleMessageHandler : MessageHandler
         }
     }
 
-    public static FusionDictionary<string, Type> HandlerTypes { get; private set; } = new();
+    public static Dictionary<string, Type> HandlerTypes { get; private set; } = new();
     public static ModuleMessageHandler[] Handlers { get; private set; } = null;
 }

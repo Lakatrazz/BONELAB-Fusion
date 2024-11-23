@@ -49,7 +49,7 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
         _isValid = false;
     }
 
-    public PlayerId(ulong longId, byte smallId, FusionDictionary<string, string> metadata, List<string> equippedItems)
+    public PlayerId(ulong longId, byte smallId, Dictionary<string, string> metadata, List<string> equippedItems)
     {
         LongId = longId;
         SmallId = smallId;

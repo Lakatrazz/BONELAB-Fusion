@@ -8,7 +8,7 @@ namespace LabFusion.Network;
 public class DynamicsAssignData : IFusionSerializable
 {
     public string[] moduleHandlerNames;
-    public FusionDictionary<string, FusionDictionary<string, string>> gamemodeMetadatas;
+    public Dictionary<string, Dictionary<string, string>> gamemodeMetadatas;
 
     public void Serialize(FusionWriter writer)
     {
@@ -39,7 +39,7 @@ public class DynamicsAssignData : IFusionSerializable
         int length = reader.ReadInt32();
 
         // Read all active metadata info
-        gamemodeMetadatas = new FusionDictionary<string, FusionDictionary<string, string>>();
+        gamemodeMetadatas = new Dictionary<string, Dictionary<string, string>>();
         for (var i = 0; i < length; i++)
         {
             var barcode = reader.ReadString();

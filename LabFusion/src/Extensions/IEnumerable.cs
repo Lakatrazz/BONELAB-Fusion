@@ -10,30 +10,6 @@ public static class IEnumerableExtensions
         return enumerable.ElementAt(random);
     }
 
-    public static bool ContainsIL2CPP<T>(this HashSet<T> set, T item)
-    {
-        if (!PlatformHelper.IsAndroid)
-        {
-            return set.Contains(item);
-        }
-        else
-        {
-            return set.Any((i) => i.EqualsIL2CPP(item));
-        }
-    }
-
-    public static bool RemoveIL2CPP<T>(this HashSet<T> set, T item)
-    {
-        if (!PlatformHelper.IsAndroid)
-        {
-            return set.Remove(item);
-        }
-        else
-        {
-            return set.RemoveWhere((i) => i.EqualsIL2CPP(item)) > 0;
-        }
-    }
-
     public static bool ContainsInstance<T>(this List<T> list, T obj) where T : class
     {
         return list.Any((o) => o == obj);

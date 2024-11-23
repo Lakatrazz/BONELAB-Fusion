@@ -16,7 +16,7 @@ public class ConnectionRequestData : IFusionSerializable
     public Version version;
     public string avatarBarcode;
     public SerializedAvatarStats avatarStats;
-    public FusionDictionary<string, string> initialMetadata;
+    public Dictionary<string, string> initialMetadata;
     public List<string> initialEquippedItems;
 
     public bool IsValid { get; private set; } = true;

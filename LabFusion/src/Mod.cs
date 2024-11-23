@@ -33,6 +33,7 @@ using MelonLoader;
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Marrow;
+using LabFusion.RPC;
 
 namespace LabFusion;
 
@@ -179,11 +180,11 @@ public class FusionMod : MelonMod
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                isMenuItem = false,
-                isPopup = true,
-                message = "You do not have the Fusion AutoUpdater installed in your plugins folder!" +
+                SaveToMenu = false,
+                ShowPopup = true,
+                Message = "You do not have the Fusion AutoUpdater installed in your plugins folder!" +
                 "\nIt is recommended to install it in order to stay up to date.",
-                type = NotificationType.WARNING,
+                Type = NotificationType.WARNING,
             });
         }
 #endif

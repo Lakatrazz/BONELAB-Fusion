@@ -42,6 +42,25 @@ public static class EntityComponentManager
 #endif
     }
 
+    public static HashSet<IEntityComponentExtender> ApplyComponents(NetworkEntity networkEntity, GameObject parent)
+    {
+        var set = new HashSet<IEntityComponentExtender>();
+
+        for (var i = 0; i < _lastExtenderIndex; i++)
+        {
+            var factory = ExtenderFactories[i];
+
+            var instance = factory();
+
+            if (instance.TryRegister(networkEntity, parent))
+            {
+                set.Add(instance);
+            }
+        }
+
+        return set;
+    }
+
     public static HashSet<IEntityComponentExtender> ApplyComponents(NetworkEntity networkEntity, GameObject[] parents)
     {
         var set = new HashSet<IEntityComponentExtender>();

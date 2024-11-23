@@ -27,11 +27,11 @@ public class ComponentHashData : IFusionSerializable
 
 public class ComponentHashTable<TComponent> where TComponent : Component
 {
-    private readonly FusionDictionary<int, List<TComponent>> _hashToComponents = new();
-    private readonly FusionDictionary<TComponent, int> _componentToHash = new(new UnityComparer());
+    private readonly Dictionary<int, List<TComponent>> _hashToComponents = new();
+    private readonly Dictionary<TComponent, int> _componentToHash = new(new UnityComparer());
 
-    public FusionDictionary<int, List<TComponent>> HashToComponents => _hashToComponents;
-    public FusionDictionary<TComponent, int> ComponentToHash => _componentToHash;
+    public Dictionary<int, List<TComponent>> HashToComponents => _hashToComponents;
+    public Dictionary<TComponent, int> ComponentToHash => _componentToHash;
 
     public int AddComponent(int hash, TComponent component)
     {

@@ -90,7 +90,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
 
     private void InitializeComponents()
     {
-        _componentExtenders = EntityComponentManager.ApplyComponents(NetworkEntity, new GameObject[] { MarrowEntity.gameObject });
+        _componentExtenders = EntityComponentManager.ApplyComponents(NetworkEntity, MarrowEntity.gameObject);
     }
 
     private int _receivedFrame = 0;

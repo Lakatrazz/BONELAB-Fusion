@@ -27,9 +27,9 @@ public class CosmeticInstance
 
     public RigPoint itemPoint;
 
-    public FusionDictionary<Mirror, GameObject> mirrors = new(new UnityComparer());
+    public Dictionary<Mirror, GameObject> mirrors = new(new UnityComparer());
 
-    private FusionDictionary<RigPoint, AvatarCosmeticPoint> _avatarPoints = new();
+    private Dictionary<RigPoint, AvatarCosmeticPoint> _avatarPoints = new();
 
     private bool _destroyed = false;
     public bool IsDestroyed => _destroyed;

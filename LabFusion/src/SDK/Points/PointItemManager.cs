@@ -506,5 +506,5 @@ public static class PointItemManager
     public static IReadOnlyList<PointItem> LoadedItems => PointItems;
 
     internal static readonly List<PointItem> PointItems = new();
-    internal static readonly FusionDictionary<string, PointItem> PointItemLookup = new();
+    internal static readonly Dictionary<string, PointItem> PointItemLookup = new();
 }

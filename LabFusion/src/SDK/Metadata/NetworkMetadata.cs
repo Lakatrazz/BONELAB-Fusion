@@ -9,8 +9,8 @@ public delegate bool MetadataRemoveDelegate(string key);
 
 public class NetworkMetadata
 {
-    private readonly FusionDictionary<string, string> _localDictionary = new();
-    public FusionDictionary<string, string> LocalDictionary => _localDictionary;
+    private readonly Dictionary<string, string> _localDictionary = new();
+    public Dictionary<string, string> LocalDictionary => _localDictionary;
 
     // Change callbacks
     public event Action<string, string> OnMetadataChanged, OnMetadataRemoved;

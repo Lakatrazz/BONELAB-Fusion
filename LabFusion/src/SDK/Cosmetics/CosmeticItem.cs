@@ -29,7 +29,7 @@ public class CosmeticItem : PointItem
     // We use LateUpdate to cleanup accessories, so it should be hooked
     public override bool ImplementLateUpdate => true;
 
-    protected FusionDictionary<RigManager, CosmeticInstance> _accessoryInstances = new(new UnityComparer());
+    protected Dictionary<RigManager, CosmeticInstance> _accessoryInstances = new(new UnityComparer());
 
     private CosmeticVariables _variables = default;
 

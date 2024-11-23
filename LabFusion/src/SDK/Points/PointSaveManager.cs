@@ -154,6 +154,6 @@ public static class PointSaveManager
 
     private static List<string> _unlockedItems = new();
     private static List<string> _equippedItems = new();
-    private static FusionDictionary<string, int> _itemUpgrades = new();
+    private static Dictionary<string, int> _itemUpgrades = new();
     private static int _totalBits;
 }

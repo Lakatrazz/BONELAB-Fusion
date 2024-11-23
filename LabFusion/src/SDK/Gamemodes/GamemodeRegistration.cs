@@ -28,15 +28,15 @@ public static class GamemodeRegistration
         GamemodeLookup.Add(gamemodeInstance.Barcode, gamemodeInstance);
     }
 
-    public static FusionDictionary<string, FusionDictionary<string, string>> GetExistingMetadata()
+    public static Dictionary<string, Dictionary<string, string>> GetExistingMetadata()
     {
-        FusionDictionary<string, FusionDictionary<string, string>> metadata = new();
+        Dictionary<string, Dictionary<string, string>> metadata = new();
 
         for (var i = 0; i < Gamemodes.Count; i++)
         {
             var barcode = Gamemodes[i].Barcode;
 
-            var metadataPairs = new FusionDictionary<string, string>();
+            var metadataPairs = new Dictionary<string, string>();
 
             foreach (var pair in Gamemodes[i].Metadata.LocalDictionary)
             {
@@ -54,7 +54,7 @@ public static class GamemodeRegistration
         return GamemodeLookup.TryGetValue(barcode, out gamemode);
     }
 
-    public static void PopulateGamemodeMetadatas(FusionDictionary<string, FusionDictionary<string, string>> metadatas)
+    public static void PopulateGamemodeMetadatas(Dictionary<string, Dictionary<string, string>> metadatas)
     {
         foreach (var pair in metadatas)
         {
@@ -75,5 +75,5 @@ public static class GamemodeRegistration
     }
 
     public static List<Gamemode> Gamemodes { get; private set; } = new();
-    public static FusionDictionary<string, Gamemode> GamemodeLookup { get; private set; } = new();
+    public static Dictionary<string, Gamemode> GamemodeLookup { get; private set; } = new();
 }

@@ -23,7 +23,7 @@ public class RigGrabber
 
     private bool _isCulled = false;
 
-    private FusionDictionary<Handedness, GrabberData> _lastGrabs = new();
+    private Dictionary<Handedness, GrabberData> _lastGrabs = new();
 
     public RigGrabber(RigRefs references)
     {

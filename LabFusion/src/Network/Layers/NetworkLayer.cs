@@ -270,6 +270,6 @@ public abstract class NetworkLayer
     }
 
     public static readonly List<NetworkLayer> Layers = new();
-    public static readonly FusionDictionary<string, NetworkLayer> LayerLookup = new();
+    public static readonly Dictionary<string, NetworkLayer> LayerLookup = new();
     public static readonly List<NetworkLayer> SupportedLayers = new();
 }

@@ -1,62 +1,53 @@
-﻿using LabFusion.Data;
-using LabFusion.Extensions;
+﻿using LabFusion.Extensions;
 
 using Object = UnityEngine.Object;
 
-namespace LabFusion.Utilities
+namespace LabFusion.Utilities;
+
+public class FusionComponentCache<TSource, TComponent> where TSource : Object where TComponent : class
 {
-    public class FusionComponentCache<TSource, TComponent> where TSource : Object where TComponent : class
+    private readonly Dictionary<TSource, TComponent> _cache = new(new UnityComparer());
+
+    public ICollection<TComponent> Components => _cache.Values;
+
+    public TComponent Get(TSource source)
     {
-        private readonly FusionDictionary<TSource, TComponent> _Cache = new(new UnityComparer());
-        private readonly HashSet<TSource> _HashTable = new(new UnityComparer());
-
-        public ICollection<TComponent> Components => _Cache.Values;
-
-        public TComponent Get(TSource source)
+        if (_cache.TryGetValue(source, out var component))
         {
-            if (_HashTable.ContainsIL2CPP(source))
-                return _Cache[source];
-            return null;
+            return component;
         }
 
-        public bool TryGet(TSource source, out TComponent value)
-        {
-            if (!_HashTable.ContainsIL2CPP(source))
-            {
-                value = null;
-                return false;
-            }
+        return null;
+    }
 
-            value = _Cache[source];
-            return true;
-        }
+    public bool TryGet(TSource source, out TComponent value)
+    {
+        return _cache.TryGetValue(source, out value);
+    }
 
-        public bool ContainsSource(TSource source)
-        {
-            return _HashTable.ContainsIL2CPP(source);
-        }
+    public bool ContainsSource(TSource source)
+    {
+        return _cache.ContainsKey(source);
+    }
 
-        public void Add(TSource source, TComponent component)
+    public void Add(TSource source, TComponent component)
+    {
+        if (_cache.ContainsKey(source))
         {
-            if (_Cache.ContainsKey(source))
-            {
-                _Cache[source] = component;
+            _cache[source] = component;
 
 #if DEBUG
-                FusionLogger.Warn("Attempted to add component to a ComponentCache, but Source already existed. This is probably fine.");
+            FusionLogger.Warn("Attempted to add component to a ComponentCache, but Source already existed. This is probably fine.");
 #endif
 
-                return;
-            }
-
-            _HashTable.Add(source);
-            _Cache.Add(source, component);
+            return;
         }
 
-        public void Remove(TSource source)
-        {
-            _HashTable.RemoveIL2CPP(source);
-            _Cache.Remove(source);
-        }
+        _cache.Add(source, component);
+    }
+
+    public void Remove(TSource source)
+    {
+        _cache.Remove(source);
     }
 }
