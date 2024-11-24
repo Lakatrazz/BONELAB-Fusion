@@ -81,6 +81,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
     public IEnumerator DiscoverServer()
     {
         int port = ClientSettings.ProxyPort.Value;
+
         if (!(port >= 1024 && port <= 65535))
         {
             FusionLogger.Error("Custom port is invalid, using default! (28430)");
@@ -97,8 +98,13 @@ public abstract class ProxyNetworkLayer : NetworkLayer
             timeElapsed = 0;
             client.SendBroadcast(writer, port);
 
-            while (timeElapsed < 5)
+            // Wait every 5 seconds to try again incase it failed
+            while (timeElapsed < 5f)
             {
+                // Poll events while discovering
+                client.PollEvents();
+
+                // Tick time
                 timeElapsed += TimeUtilities.DeltaTime;
                 yield return null;
             }
