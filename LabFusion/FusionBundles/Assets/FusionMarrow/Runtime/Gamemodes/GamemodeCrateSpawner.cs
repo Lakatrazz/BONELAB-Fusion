@@ -24,6 +24,7 @@ namespace LabFusion.Marrow.Integration
 #else
     [RequireComponent(typeof(CrateSpawner))]
     [DisallowMultipleComponent]
+    [HelpURL("https://github.com/Lakatrazz/BONELAB-Fusion/wiki/Gamemode-Maps#gamemode-crate-spawners")]
 #endif
     public class GamemodeCrateSpawner : MonoBehaviour
     {

@@ -13,6 +13,9 @@ namespace LabFusion.Marrow.Integration
 {
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
+#else
+    [DisallowMultipleComponent]
+    [HelpURL("https://github.com/Lakatrazz/BONELAB-Fusion/wiki/Gamemode-Maps#gamemode-team-settings")]
 #endif
     public class GamemodeTeamSettings : MonoBehaviour
     {
