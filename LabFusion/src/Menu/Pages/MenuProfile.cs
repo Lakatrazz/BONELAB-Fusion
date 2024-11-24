@@ -14,6 +14,14 @@ public static class MenuProfile
 
     private static string PreviousAvatarTitle { get; set; } = null;
 
+    public static void OnInitializeMelon()
+    {
+        LocalPlayer.OnUsernameChanged += (v) =>
+        {
+            RefreshName();
+        };
+    }
+
     private static void UpdatePlayerIcon(PlayerElement element)
     {
         var avatarCrate = RigData.Refs.RigManager.AvatarCrate.Crate;
@@ -30,9 +38,20 @@ public static class MenuProfile
         ElementIconHelper.SetProfileIcon(element, avatarTitle, CrateFilterer.GetModId(avatarCrate.Pallet));
     }
 
-    public static void RefreshIcon()
+    private static void RefreshIcon()
     {
         UpdatePlayerIcon(ProfileElement);
+    }
+
+    private static void RefreshName()
+    {
+        if (ProfileElement == null)
+        {
+            return;
+        }
+
+        ProfileElement.UsernameElement
+            .WithTitle(LocalPlayer.Username);
     }
 
     public static void PopulateProfile(GameObject profilePage)

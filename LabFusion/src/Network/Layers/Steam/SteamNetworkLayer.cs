@@ -58,57 +58,18 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
     public override bool CheckValidation()
     {
-        // Make sure the API actually loaded
-        if (!SteamAPILoader.HasSteamAPI)
-        {
-            return false;
-        }
-
-        try
-        {
-            // Try loading the steam client
-            if (!SteamClient.IsValid)
-            {
-                SteamClient.Init(ApplicationID, false);
-            }
-
-            return true;
-        }
-        catch (Exception e)
-        {
-            FusionLogger.LogException($"initializing {Title} layer", e);
-            return false;
-        }
+        return SteamAPILoader.HasSteamAPI;
     }
 
     public override void OnInitializeLayer()
     {
-        try
-        {
-            if (!SteamClient.IsValid)
-            {
-                SteamClient.Init(ApplicationID, false);
-            }
-        }
-        catch (Exception e)
-        {
-            FusionLogger.Error($"Failed to initialize Steamworks! \n{e}");
-        }
-
-        _voiceManager = new UnityVoiceManager();
-        _voiceManager.Enable();
-
-        _matchmaker = new SteamMatchmaker();
-    }
-
-    public override void OnLateInitializeLayer()
-    {
         if (!SteamClient.IsValid)
         {
-            FusionLogger.Log("Steamworks failed to initialize!");
+            FusionLogger.Error("Steamworks failed to initialize!");
             return;
         }
 
+        // Get steam information
         SteamId = SteamClient.SteamId;
         PlayerIdManager.SetLongId(SteamId.Value);
         LocalPlayer.Username = GetUsername(SteamId.Value);
@@ -119,10 +80,17 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
         HookSteamEvents();
 
+        // Create managers
+        _voiceManager = new UnityVoiceManager();
+        _voiceManager.Enable();
+
+        _matchmaker = new SteamMatchmaker();
+
+        // Set initialized
         _isInitialized = true;
     }
 
-    public override void OnCleanupLayer()
+    public override void OnDeinitializeLayer()
     {
         Disconnect();
 
@@ -132,6 +100,62 @@ public abstract class SteamNetworkLayer : NetworkLayer
         _voiceManager = null;
 
         SteamAPI.Shutdown();
+    }
+
+    public override void LogIn()
+    {
+        if (SteamClient.IsValid)
+        {
+            return;
+        }
+
+        // Shutdown the game's steam client, if available
+        if (GameHasSteamworks())
+        {
+            ShutdownGameClient();
+        }
+
+        try
+        {
+            SteamClient.Init(ApplicationID, false);
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("initializing Steamworks", e);
+        }
+
+        InvokeLoggedInEvent();
+    }
+
+    public override void LogOut()
+    {
+        SteamClient.Shutdown();
+
+        InvokeLoggedOutEvent();
+    }
+
+    private const string STEAMWORKS_ASSEMBLY_NAME = "Il2CppFacepunch.Steamworks.Win64";
+
+    private static bool GameHasSteamworks()
+    {
+        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+        foreach (var assembly in assemblies)
+        {
+            if (assembly.FullName.StartsWith(STEAMWORKS_ASSEMBLY_NAME))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static void ShutdownGameClient()
+    {
+        FusionLogger.Log("Shutting down the game's Steamworks instance...");
+
+        Il2CppSteamworks.SteamClient.Shutdown();
     }
 
     public override void OnUpdateLayer()
@@ -345,7 +369,10 @@ public abstract class SteamNetworkLayer : NetworkLayer
         LobbyInfoManager.OnLobbyInfoChanged -= OnUpdateLobby;
 
         // Remove the local lobby
-        _localLobby.Leave();
+        if (_localLobby.Id == SteamId)
+        {
+            _localLobby.Leave();
+        }
     }
 
     private async void AwaitLobbyCreation()

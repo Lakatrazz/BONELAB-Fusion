@@ -37,6 +37,7 @@ public static class NetworkLayerDeterminer
     public static void LoadLayer()
     {
         var title = ClientSettings.NetworkLayerTitle.Value;
+
         if (!NetworkLayer.LayerLookup.TryGetValue(title, out var layer))
         {
             layer = GetDefaultLayer();

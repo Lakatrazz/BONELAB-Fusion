@@ -29,10 +29,6 @@ public static class MenuSettings
 
         PopulateDownloadingSettings(downloadingPage);
 
-        var networkLayerPage = rootPage.AddPage();
-
-        PopulateNetworkLayerSettings(networkLayerPage);
-
 #if DEBUG
         var debugPage = rootPage.AddPage();
 
@@ -45,7 +41,6 @@ public static class MenuSettings
 
         categoriesPage.AddElement<FunctionElement>("Client").Link(clientPage).WithColor(Color.white);
         categoriesPage.AddElement<FunctionElement>("Downloading").Link(downloadingPage).WithColor(Color.cyan);
-        categoriesPage.AddElement<FunctionElement>("Network Layer").Link(networkLayerPage).WithColor(Color.yellow);
 
 #if DEBUG
         categoriesPage.AddElement<FunctionElement>("Debug").Link(debugPage).WithColor(Color.red);
@@ -218,41 +213,6 @@ public static class MenuSettings
                     },
                 });
             });
-    }
-
-    private static int _lastLayerIndex;
-
-    private static void PopulateNetworkLayerSettings(PageElement page)
-    {
-        _lastLayerIndex = NetworkLayer.SupportedLayers.IndexOf(NetworkLayerDeterminer.LoadedLayer);
-
-        var changeLayerGroup = page.AddElement<GroupElement>("Change Layer");
-
-        changeLayerGroup.AddElement<FunctionElement>($"Active Layer: {NetworkLayerDeterminer.LoadedTitle}");
-
-        var targetLayerElement = changeLayerGroup.AddElement<FunctionElement>($"Target Layer: {ClientSettings.NetworkLayerTitle.Value}");
-        
-        changeLayerGroup.AddElement<FunctionElement>("Cycle Layer")
-            .Do(() =>
-            {
-                int count = NetworkLayer.SupportedLayers.Count;
-                if (count <= 0)
-                    return;
-
-                _lastLayerIndex++;
-                if (count <= _lastLayerIndex)
-                    _lastLayerIndex = 0;
-
-                ClientSettings.NetworkLayerTitle.Value = NetworkLayer.SupportedLayers[_lastLayerIndex].Title;
-            });
-
-        ClientSettings.NetworkLayerTitle.OnValueChanged += (v) =>
-        {
-            targetLayerElement.Title = $"Target Layer: {v}";
-        };
-
-        changeLayerGroup.AddElement<FunctionElement>("Apply Layer")
-            .Do(() => InternalLayerHelpers.UpdateLoadedLayer());
     }
 
 #if DEBUG

@@ -2,6 +2,7 @@
 
 using LabFusion.Menu.Gamemodes;
 using LabFusion.Marrow.Proxies;
+using LabFusion.Network;
 
 namespace LabFusion.Menu;
 
@@ -13,8 +14,11 @@ public static class MenuPageHelper
 
     public static void OnInitializeMelon()
     {
+        MenuProfile.OnInitializeMelon();
         MenuLocation.OnInitializeMelon();
         MenuGamemode.OnInitializeMelon();
+
+        NetworkLayerManager.OnLoggedInChanged += OnLoggedInChanged;
     }
 
     public static void PopulatePages(GameObject root)
@@ -34,7 +38,24 @@ public static class MenuPageHelper
         LogOutElement = transform.Find("button_LogOut").GetComponent<FunctionElement>()
             .Do(OnLogOutPressed);
 
-        OnLoggedOut();
+        UpdateLogIn();
+    }
+
+    private static void OnLoggedInChanged(bool value)
+    {
+        UpdateLogIn();
+    }
+
+    private static void UpdateLogIn()
+    {
+        if (NetworkLayerManager.LoggedIn)
+        {
+            OnLoggedIn();
+        }
+        else
+        {
+            OnLoggedOut();
+        }
     }
 
     private static void OnLoggedIn()
@@ -45,6 +66,8 @@ public static class MenuPageHelper
         }
 
         RootPage.DefaultPageIndex = 0;
+        RootPage.SelectSubPage(0);
+
         LogOutElement.gameObject.SetActive(true);
     }
 
@@ -56,11 +79,13 @@ public static class MenuPageHelper
         }
 
         RootPage.DefaultPageIndex = 6;
+        RootPage.SelectSubPage(6);
+
         LogOutElement.gameObject.SetActive(false);
     }
 
     private static void OnLogOutPressed()
     {
-
+        NetworkLayerManager.LogOut();
     }
 }

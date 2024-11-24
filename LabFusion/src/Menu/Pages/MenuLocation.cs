@@ -44,6 +44,7 @@ public static class MenuLocation
         MultiplayerHooking.OnDisconnect += OnDisconnect;
 
         LobbyInfoManager.OnLobbyInfoChanged += OnServerSettingsChanged;
+        LocalPlayer.OnUsernameChanged += OnUsernameChanged;
     }
 
     private static void OnConnect()
@@ -113,6 +114,22 @@ public static class MenuLocation
         }
     }
 
+    private static void OnUsernameChanged(string value)
+    {
+        if (LobbyElement == null)
+        {
+            return;
+        }
+
+        if (NetworkInfo.IsClient)
+        {
+            return;
+        }
+
+        LobbyElement.HostNameElement
+            .WithTitle(LocalPlayer.Username);
+    }
+
     private static void ApplyLobbyInfoToLobby(LobbyElement element, LobbyInfo info)
     {
         bool ownsSettings = NetworkInfo.IsServer || !NetworkInfo.HasServer;
@@ -152,7 +169,7 @@ public static class MenuLocation
         element.ServerNameElement.TextFormat = "{1}";
 
         element.HostNameElement
-            .WithTitle($"{LocalPlayer.Username}");
+            .WithTitle(LocalPlayer.Username);
 
         element.DescriptionElement
             .Cleared()

@@ -5,7 +5,7 @@ public static class NetworkInfo
     /// <summary>
     /// The current network interface. Not recommended to touch!
     /// </summary>
-    public static NetworkLayer CurrentNetworkLayer => InternalLayerHelpers.CurrentNetworkLayer;
+    public static NetworkLayer CurrentNetworkLayer => NetworkLayerManager.Layer;
 
     /// <summary>
     /// The current network lobby. Can be null. Allows you to read/write information from it.

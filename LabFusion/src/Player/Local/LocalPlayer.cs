@@ -38,8 +38,12 @@ public static class LocalPlayer
             _username = value;
 
             Metadata.TrySetMetadata(MetadataHelper.UsernameKey, value);
+
+            OnUsernameChanged?.InvokeSafe(value, "executing OnUsernameChanged");
         }
     }
+
+    public static event Action<string>? OnUsernameChanged;
 
     public static event Action? OnApplyInitialMetadata;
 

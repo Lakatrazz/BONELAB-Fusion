@@ -42,7 +42,14 @@ public static class NetworkHelper
     /// <returns>The server code.</returns>
     public static string GetServerCode()
     {
-        return NetworkInfo.CurrentNetworkLayer.GetServerCode();
+        var layer = NetworkLayerManager.Layer;
+
+        if (layer == null)
+        {
+            return null;
+        }
+
+        return layer.GetServerCode();
     }
 
     /// <summary>

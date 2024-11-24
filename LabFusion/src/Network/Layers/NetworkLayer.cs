@@ -23,6 +23,8 @@ public enum ServerPrivacy
 /// </summary>
 public abstract class NetworkLayer
 {
+    public static event Action<NetworkLayer> OnLoggedInEvent, OnLoggedOutEvent;
+
     private Type _type;
     private bool _hasType;
 
@@ -197,9 +199,21 @@ public abstract class NetworkLayer
 
     public abstract void OnInitializeLayer();
 
-    public virtual void OnLateInitializeLayer() { }
+    public abstract void OnDeinitializeLayer();
 
-    public abstract void OnCleanupLayer();
+    public abstract void LogIn();
+
+    public abstract void LogOut();
+
+    protected void InvokeLoggedInEvent()
+    {
+        OnLoggedInEvent?.Invoke(this);
+    }
+
+    protected void InvokeLoggedOutEvent()
+    {
+        OnLoggedOutEvent?.Invoke(this);
+    }
 
     public virtual void OnUpdateLayer() { }
 

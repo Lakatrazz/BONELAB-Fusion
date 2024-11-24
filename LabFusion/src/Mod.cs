@@ -152,8 +152,8 @@ public class FusionMod : MelonMod
         // Initialize level loading
         FusionSceneManager.Internal_OnInitializeMelon();
 
-        // Finally, initialize the network layer
-        OnInitializeNetworking();
+        // Initialize the networking manager
+        NetworkLayerManager.OnInitializeMelon();
 
 #if DEBUG
         FusionUnityLogger.OnInitializeMelon();
@@ -168,7 +168,6 @@ public class FusionMod : MelonMod
 
     public override void OnLateInitializeMelon()
     {
-        InternalLayerHelpers.OnLateInitializeLayer();
         PersistentAssetCreator.OnLateInitializeMelon();
         PlayerAdditionsHelper.OnInitializeMelon();
 
@@ -190,32 +189,10 @@ public class FusionMod : MelonMod
 #endif
     }
 
-    protected static void OnInitializeNetworking()
-    {
-        // If a layer is already set, don't initialize
-        if (NetworkInfo.CurrentNetworkLayer != null)
-        {
-            FusionLogger.Warn("Cannot initialize new network layer because a previous one is active!");
-            return;
-        }
-
-        // Validate the layer
-        NetworkLayerDeterminer.LoadLayer();
-
-        if (NetworkLayerDeterminer.LoadedLayer == null)
-        {
-            FusionLogger.Error("The target network layer is null!");
-            return;
-        }
-
-        // Finally, set the layer
-        InternalLayerHelpers.SetLayer(NetworkLayerDeterminer.LoadedLayer);
-    }
-
     public override void OnDeinitializeMelon()
     {
-        // Cleanup networking
-        InternalLayerHelpers.OnCleanupLayer();
+        // Log out of the current layer
+        NetworkLayerManager.LogOut();
 
         // Backup files
         FusionFileLoader.OnDeinitializeMelon();

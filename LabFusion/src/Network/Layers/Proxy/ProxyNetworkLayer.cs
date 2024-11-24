@@ -75,47 +75,6 @@ public abstract class ProxyNetworkLayer : NetworkLayer
 
         HookSteamEvents();
 
-        EventBasedNetListener listener = new();
-        client = new NetManager(listener)
-        {
-            UnconnectedMessagesEnabled = true,
-            BroadcastReceiveEnabled = true,
-            DisconnectOnUnreachable = true,
-            DisconnectTimeout = 10000,
-            PingInterval = 5000,
-        };
-        listener.NetworkReceiveEvent += EvaluateMessage;
-        listener.PeerConnectedEvent += (peer) =>
-        {
-            serverConnection = peer;
-            NetDataWriter writer = NewWriter(MessageTypes.SteamID);
-
-            listener.PeerDisconnectedEvent += (peer, disconnectInfo) =>
-            {
-                FusionLogger.Error("Proxy has disconnected, restarting server discovery!");
-                serverConnection = null;
-                MelonCoroutines.Start(DiscoverServer());
-            };
-
-            writer.Put(ApplicationID);
-            SendToProxyServer(writer);
-        };
-
-        listener.NetworkReceiveUnconnectedEvent += (endPoint, reader, messageType) =>
-        {
-            if (reader.TryGetString(out string data) && data == "YOU_FOUND_ME")
-            {
-                FusionLogger.Log("Found the proxy server!");
-                client.Connect(endPoint, "ProxyConnection");
-            }
-
-            reader.Recycle();
-        };
-
-        client.Start();
-        FusionLogger.Log("Beginning proxy discovery...");
-        MelonCoroutines.Start(DiscoverServer());
-
         _lobbyManager = new ProxyLobbyManager(this);
 
         _matchmaker = new ProxyMatchmaker(_lobbyManager);
@@ -254,21 +213,69 @@ public abstract class ProxyNetworkLayer : NetworkLayer
         dataReader.Recycle();
     }
 
-    public override void OnLateInitializeLayer()
-    {
-    }
-
-    public override void OnCleanupLayer()
+    public override void OnDeinitializeLayer()
     {
         Disconnect();
-
-        client.Stop();
-        serverConnection = null;
 
         UnHookSteamEvents();
 
         _voiceManager.Disable();
         _voiceManager = null;
+    }
+
+    public override void LogIn()
+    {
+        EventBasedNetListener listener = new();
+        client = new NetManager(listener)
+        {
+            UnconnectedMessagesEnabled = true,
+            BroadcastReceiveEnabled = true,
+            DisconnectOnUnreachable = true,
+            DisconnectTimeout = 10000,
+            PingInterval = 5000,
+        };
+        listener.NetworkReceiveEvent += EvaluateMessage;
+        listener.PeerConnectedEvent += (peer) =>
+        {
+            InvokeLoggedInEvent();
+
+            serverConnection = peer;
+            NetDataWriter writer = NewWriter(MessageTypes.SteamID);
+
+            listener.PeerDisconnectedEvent += (peer, disconnectInfo) =>
+            {
+                FusionLogger.Error("Proxy has disconnected, logging out!");
+                serverConnection = null;
+
+                InvokeLoggedOutEvent();
+            };
+
+            writer.Put(ApplicationID);
+            SendToProxyServer(writer);
+        };
+
+        listener.NetworkReceiveUnconnectedEvent += (endPoint, reader, messageType) =>
+        {
+            if (reader.TryGetString(out string data) && data == "YOU_FOUND_ME")
+            {
+                FusionLogger.Log("Found the proxy server!");
+                client.Connect(endPoint, "ProxyConnection");
+            }
+
+            reader.Recycle();
+        };
+
+        client.Start();
+        FusionLogger.Log("Beginning proxy discovery...");
+        MelonCoroutines.Start(DiscoverServer());
+    }
+
+    public override void LogOut()
+    {
+        client.Stop();
+        serverConnection = null;
+
+        InvokeLoggedOutEvent();
     }
 
     public override void OnUpdateLayer()
