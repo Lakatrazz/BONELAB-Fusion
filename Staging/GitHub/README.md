@@ -1,23 +1,48 @@
 ## **Fusion**
 #### Added:
-- Patch 6 Support
-- Input Devices setting for Voice Chat (no longer just Default)
-#### Fixed:
-- Mine Dive not creating multiple minecarts
-- Monogon Motorway not creating multiple gokarts
-- Hide and Seek blinding parenting to the skull instead of the camera, so avatar proportions affected the functionality
-- Muting causing voice chat to stop functioning
-- Dying inside of a vehicle causing you to get stuck ragdolled on respawn
+- Custom UI
+- Log-in menu
+- Circuit sync
+- RandomObject sync
+- Spawn Gun VFX in multiplayer
+- Mature mod toggle
+- Friendly fire toggle
+- Player join/leave VFX
+- "Knockout" mode (ragdoll instead of dying)
+- Level download waiting scene
+- Mod download blacklist
+- Matchmaking system
+- Gamemode ready system
+- Bit rewards for Hide and Seek
 #### Improved:
-- Default maximum download file size increased
-- Mute UI is now a spawnable instead of loaded from the asset bundle
-- Matchmaking tab lets you know when you don't have the Fusion Content pallet installed or updated
+- Crash prevention stability
+#### Fixed:
+- Quest support
+- Auto updater on Quest
+- Mod download failure (potentially)
+- Breaking without microphone access
+- Players getting flung into the void
+- Team Deathmatch
+#### Removed:
+- Platform discrimination
+- Vote kicking
+- BoneLib dependency
 
 ## **Fusion Auto Updater**
-- No changes
+- Fixed for Quest
 
-## **Marrow Integration**
-- No changes
+## **Fusion SDK**
+#### Added:
+- RPC Events
+- RPC Variables
+- Gamemode Scripts
+- Bit Transactor
+- Server Events
+- Ownership Events
+- Editor Scripts
 
 ## **Fusion Helper**
+- Updated to Fusion 1.9
+- Fixed some socket bugs
+
 - [Download Here](https://github.com/Lakatrazz/Fusion-Helper/releases/latest)
