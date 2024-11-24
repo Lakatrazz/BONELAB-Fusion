@@ -50,7 +50,6 @@ You can view the most recent changes and credits in the in game info box in Void
 
 ## Source
 - Fusion: https://github.com/Lakatrazz/BONELAB-Fusion
-- Fusion Module Example: https://github.com/Lakatrazz/Fusion-Module-Example
 - Fusion Helper: https://github.com/Lakatrazz/Fusion-Helper
 
 ## Soundtrack
