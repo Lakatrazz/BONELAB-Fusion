@@ -92,12 +92,17 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
     public override void OnDeinitializeLayer()
     {
+        _voiceManager.Disable();
+        _voiceManager = null;
+
+        _matchmaker = null;
+
+        _localLobby = default;
+        _currentLobby = null;
+
         Disconnect();
 
         UnHookSteamEvents();
-
-        _voiceManager.Disable();
-        _voiceManager = null;
 
         SteamAPI.Shutdown();
     }
@@ -343,6 +348,11 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
     private void OnPlayerJoin(PlayerId id)
     {
+        if (VoiceManager == null)
+        {
+            return;
+        }
+
         if (!id.IsMe)
         {
             VoiceManager.GetSpeaker(id);
@@ -351,11 +361,21 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
     private void OnPlayerLeave(PlayerId id)
     {
+        if (VoiceManager == null)
+        {
+            return;
+        }
+
         VoiceManager.RemoveSpeaker(id);
     }
 
     private void OnDisconnect()
     {
+        if (VoiceManager == null)
+        {
+            return;
+        }
+
         VoiceManager.ClearManager();
     }
 
