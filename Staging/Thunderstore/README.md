@@ -21,12 +21,13 @@ This means you can pick up your friends, throw them, stand on them, push them, a
 The entire campaign has been ensured completable, with nearly every custom event synced, as well as optimizations made to make the experience run as smoothly as possible.
 
 ## Supported Platforms
-- SteamVR
-- Oculus PCVR
-- Oculus Quest
+- Steam PCVR
+- Meta PCVR
+- Meta Quest
 
 ## Crossplay Support
-All platforms are able to crossplay together. In order to do so, you simply have to select the same "Networking Layer" in BONEMENU and restart the game. The option is under BONELAB Fusion -> Network Layer Manager -> Target Layer. Note that some layers may be unsupported on some platforms.
+All platforms are able to crossplay together. In order to do so, you must log in to the same Networking Layer upon opening the menu.<br>
+Note that the Meta Quest platform has "Proxy" versions of the PCVR layers, but they will connect to each other just fine.
 
 # Additional Content
 ## Modules, Gamemodes, and the Bitmart
@@ -36,6 +37,7 @@ Besides that, Fusion also has integrated gamemodes. The current gamemodes are:
 - Deathmatch, Free-for-all fighting!
 - Team Deathmatch, Kill as many players on the opposite team!
 - Entangled, Be constrained to a randomized partner!
+- Hide and Seek, Seekers try to find hiders as quick as possible!
 
 Custom maps can implement these gamemodes, and customize them specifically for their map.
 
