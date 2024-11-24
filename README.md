@@ -13,10 +13,6 @@ This mod is networked and built around Steam, but the networking system can be s
 Fusion supports a system called "Modules". This allows other code mods to add on and sync their own events in Fusion.
 Fusion also has an SDK for integrating features into Marrow™ SDK items, maps, and more.
 
-## Module Example
-The module example can be found here:
-https://github.com/Lakatrazz/Fusion-Module-Example
-
 ## Credits
 - BoneLib AutoUpdater: https://github.com/yowchap/BoneLib
 - Testing/Development Credits In Game
