@@ -1,15 +1,18 @@
 Added:
+- Custom UI
+- Log-in menu
+- Circuit sync
 - RandomObject sync
 - Spawn Gun VFX in multiplayer
 - Mature mod toggle
 - Friendly fire toggle
 - Player join/leave VFX
-- Custom UI
-- "Knockout" mode (instead of dying, you ragdoll temporarily)
+- "Knockout" mode (ragdoll instead of dying)
 - Level download waiting scene
 - Mod download blacklist
 - Matchmaking system
-- Gamemode waiting system
+- Gamemode ready system
+- Bit rewards for Hide and Seek
 Improved:
 - Crash prevention stability
 Fixed:
