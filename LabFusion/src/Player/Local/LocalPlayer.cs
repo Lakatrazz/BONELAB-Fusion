@@ -5,6 +5,7 @@ using Il2CppSLZ.VRMK;
 
 using LabFusion.Data;
 using LabFusion.Entities;
+using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.SDK.Metadata;
 using LabFusion.Utilities;
@@ -117,6 +118,11 @@ public static class LocalPlayer
     /// </summary>
     public static void ClearConstraints()
     {
+        if (!RigData.HasPlayer)
+        {
+            return;
+        }
+
         // Clear constraints
         try
         {
@@ -132,5 +138,21 @@ public static class LocalPlayer
         {
             FusionLogger.LogException("deleting constraints on local player", e);
         }
+    }
+
+    /// <summary>
+    /// Causes the Local Player to release everything they are currently grabbing.
+    /// </summary>
+    public static void ReleaseGrips()
+    {
+        if (!RigData.HasPlayer)
+        {
+            return;
+        }
+
+        var physicsRig = RigData.Refs.RigManager.physicsRig;
+
+        physicsRig.leftHand.TryDetach();
+        physicsRig.rightHand.TryDetach();
     }
 }

@@ -58,6 +58,9 @@ public static class LocalRagdoll
 
     private static IEnumerator KnockoutCoroutine(RigManager rigManager, float length)
     {
+        // Release all grips
+        LocalPlayer.ReleaseGrips();
+
         // Ragdoll the rig
         rigManager.physicsRig.RagdollRig();
 
