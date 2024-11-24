@@ -1,5 +1,3 @@
-using SLZ.Marrow.Warehouse;
-
 using System;
 
 using UltEvents;
@@ -21,12 +19,6 @@ namespace LabFusion.Marrow.Integration
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-
-            // Make sure the AssetWarehouse is initialized
-            if (!AssetWarehouse.ready)
-            {
-                return;
-            }
 
             var gamemodeMarker = target as GamemodeMarker;
 

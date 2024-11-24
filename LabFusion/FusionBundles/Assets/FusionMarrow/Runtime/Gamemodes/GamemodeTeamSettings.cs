@@ -4,6 +4,9 @@ using UnityEngine;
 using MelonLoader;
 
 using Il2CppInterop.Runtime.Attributes;
+#else
+using System;
+using System.Collections.Generic;
 #endif
 
 namespace LabFusion.Marrow.Integration
@@ -54,6 +57,18 @@ namespace LabFusion.Marrow.Integration
             _teamLogoOverrides[barcode] = logo;
         }
 #else
+        [Serializable]
+        public struct TeamOverride
+        {
+            public string teamBarcode;
+
+            public string overrideName;
+
+            public Texture2D overrideLogo;
+        }
+
+        public List<TeamOverride> teamOverrides = new();
+
         public void SetTeamName(string barcode, string name)
         {
 
