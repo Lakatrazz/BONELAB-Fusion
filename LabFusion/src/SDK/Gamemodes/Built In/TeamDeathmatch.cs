@@ -142,22 +142,22 @@ public class TeamDeathmatch : Gamemode
 
         if (musicSettings != null)
         {
-            if (musicSettings.VictorySongOverrides.TryGetValue(sabrelakeBarcode, out var sabrelakeVictory))
+            if (musicSettings.TeamVictorySongOverrides.TryGetValue(sabrelakeBarcode, out var sabrelakeVictory))
             {
                 sabrelakeVictoryReference = new MonoDiscReference(sabrelakeVictory);
             }
 
-            if (musicSettings.FailureSongOverrides.TryGetValue(sabrelakeBarcode, out var sabrelakeFailure))
+            if (musicSettings.TeamFailureSongOverrides.TryGetValue(sabrelakeBarcode, out var sabrelakeFailure))
             {
                 sabrelakeFailureReference = new MonoDiscReference(sabrelakeFailure);
             }
 
-            if (musicSettings.VictorySongOverrides.TryGetValue(lavaGangBarcode, out var lavaGangVictory))
+            if (musicSettings.TeamVictorySongOverrides.TryGetValue(lavaGangBarcode, out var lavaGangVictory))
             {
                 lavaGangVictoryReference = new MonoDiscReference(lavaGangVictory);
             }
 
-            if (musicSettings.FailureSongOverrides.TryGetValue(lavaGangBarcode, out var lavaGangFailure))
+            if (musicSettings.TeamFailureSongOverrides.TryGetValue(lavaGangBarcode, out var lavaGangFailure))
             {
                 lavaGangFailureReference = new MonoDiscReference(lavaGangFailure);
             }

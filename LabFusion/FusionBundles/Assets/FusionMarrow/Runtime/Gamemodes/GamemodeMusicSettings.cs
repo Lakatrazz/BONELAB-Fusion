@@ -4,12 +4,18 @@ using UnityEngine;
 using MelonLoader;
 
 using Il2CppInterop.Runtime.Attributes;
+#else
+using System;
+using System.Collections.Generic;
 #endif
 
 namespace LabFusion.Marrow.Integration
 {
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
+#else
+    [DisallowMultipleComponent]
+    [HelpURL("https://github.com/Lakatrazz/BONELAB-Fusion/wiki/Gamemode-Maps#gamemode-music-settings")]
 #endif
     public class GamemodeMusicSettings : MonoBehaviour
     {
@@ -18,25 +24,35 @@ namespace LabFusion.Marrow.Integration
 
         public static GamemodeMusicSettings Instance { get; set; } = null;
 
-        private readonly Dictionary<string, string> _victorySongOverrides = new();
+        private readonly Dictionary<string, string> _teamVictorySongOverrides = new();
 
         [HideFromIl2Cpp]
-        public Dictionary<string, string> VictorySongOverrides => _victorySongOverrides;
+        public Dictionary<string, string> TeamVictorySongOverrides => _teamVictorySongOverrides;
 
-        private readonly Dictionary<string, string> _failureSongOverrides = new();
-
-        [HideFromIl2Cpp]
-        public Dictionary<string, string> FailureSongOverrides => _failureSongOverrides;
-
-        private string _tieSongOverride = null;
+        private readonly Dictionary<string, string> _teamFailureSongOverrides = new();
 
         [HideFromIl2Cpp]
-        public string TieSongOverride => _tieSongOverride;
+        public Dictionary<string, string> TeamFailureSongOverrides => _teamFailureSongOverrides;
 
         private readonly HashSet<string> _songOverrides = new();
 
         [HideFromIl2Cpp]
         public HashSet<string> SongOverrides => _songOverrides;
+
+        private string _victorySongOverride = null;
+
+        [HideFromIl2Cpp]
+        public string VictorySongOverride => _victorySongOverride;
+
+        private string _failureSongOverride = null;
+
+        [HideFromIl2Cpp]
+        public string FailureSongOverride => _failureSongOverride;
+
+        private string _tieSongOverride = null;
+
+        [HideFromIl2Cpp]
+        public string TieSongOverride => _tieSongOverride;
 
         private void Awake()
         {
@@ -56,12 +72,22 @@ namespace LabFusion.Marrow.Integration
 
         public void SetVictorySong(string teamBarcode, string monoDiscBarcode)
         {
-            _victorySongOverrides[teamBarcode] = monoDiscBarcode;
+            _teamVictorySongOverrides[teamBarcode] = monoDiscBarcode;
+        }
+
+        public void SetVictorySong(string monoDiscBarcode)
+        {
+            _victorySongOverride = monoDiscBarcode;
         }
 
         public void SetFailureSong(string teamBarcode, string monoDiscBarcode)
         {
-            _failureSongOverrides[teamBarcode] = monoDiscBarcode;
+            _teamFailureSongOverrides[teamBarcode] = monoDiscBarcode;
+        }
+
+        public void SetFailureSong(string monoDiscBarcode)
+        {
+            _failureSongOverride = monoDiscBarcode;
         }
 
         public void SetTieSong(string monoDiscBarcode)
@@ -81,18 +107,51 @@ namespace LabFusion.Marrow.Integration
 
         public void ClearOverrides()
         {
-            _victorySongOverrides.Clear();
-            _failureSongOverrides.Clear();
-            _tieSongOverride = null;
+            _teamVictorySongOverrides.Clear();
+            _teamFailureSongOverrides.Clear();
+
             _songOverrides.Clear();
+
+            _victorySongOverride = null;
+            _failureSongOverride = null;
+            _tieSongOverride = null;
         }
 #else
+        [Serializable]
+        public struct TeamOverride
+        {
+            public string teamBarcode;
+
+            public string victorySongOverride;
+            public string failureSongOverride;
+        }
+
+        public List<TeamOverride> teamOverrides = new();
+
+        public List<string> songOverrides = new();
+
+        public string victorySongOverride = null;
+
+        public string failureSongOverride = null;
+
+        public string tieSongOverride = null;
+
         public void SetVictorySong(string teamBarcode, string monoDiscBarcode)
         {
 
         }
 
+        public void SetVictorySong(string monoDiscBarcode)
+        {
+
+        }
+
         public void SetFailureSong(string teamBarcode, string monoDiscBarcode)
+        {
+
+        }
+
+        public void SetFailureSong(string monoDiscBarcode)
         {
 
         }

@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1910159ced7b0ca439631241a1df5fd1, type: 3}
-  m_Name: Pallets_PalletGroupSchema
+  m_Name: FusionContent_BoneTags_PalletGroupSchema
   m_EditorClassIdentifier: 
-  m_Group: {fileID: 11400000, guid: 84fba15efdfa0b14b88566e4244e7200, type: 2}
+  m_Group: {fileID: 11400000, guid: 2df81566ac5262b4f8ba99dabce88403, type: 2}
   _pallet: {fileID: 11400000, guid: e01287617603ab7469e3f5e659d08441, type: 2}
   _marrowGame: {fileID: 0}

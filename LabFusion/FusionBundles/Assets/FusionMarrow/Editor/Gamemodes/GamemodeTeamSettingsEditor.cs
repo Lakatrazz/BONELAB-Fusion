@@ -10,9 +10,6 @@ namespace LabFusion.Marrow.Integration
     [CustomEditor(typeof(GamemodeTeamSettings))]
     public class GamemodeTeamSettingsEditor : Editor
     {
-        public const string SetTeamNameMethodName = nameof(GamemodeTeamSettings.SetTeamName);
-        public const string SetTeamLogoMethodName = nameof(GamemodeTeamSettings.SetTeamLogo);
-
         public const string LavaGangBarcode = "Lakatrazz.FusionContent.BoneTag.TeamLavaGang";
 
         public const string SabrelakeBarcode = "Lakatrazz.FusionContent.BoneTag.TeamSabrelake";

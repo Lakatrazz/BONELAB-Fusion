@@ -127,14 +127,14 @@ public class Deathmatch : Gamemode
             }
         }
 
-        if (musicSettings != null && musicSettings.VictorySongOverrides.Count > 0)
+        if (musicSettings != null && !string.IsNullOrWhiteSpace(musicSettings.VictorySongOverride))
         {
-            _victorySongReference = new MonoDiscReference(musicSettings.VictorySongOverrides.ElementAt(0).Value);
+            _victorySongReference = new MonoDiscReference(musicSettings.VictorySongOverride);
         }
 
-        if (musicSettings != null && musicSettings.FailureSongOverrides.Count > 0)
+        if (musicSettings != null && !string.IsNullOrWhiteSpace(musicSettings.FailureSongOverride))
         {
-            _victorySongReference = new MonoDiscReference(musicSettings.FailureSongOverrides.ElementAt(0).Value);
+            _failureSongReference = new MonoDiscReference(musicSettings.FailureSongOverride);
         }
 
         AudioReference[] playlist = AudioReference.CreateReferences(songReferences);
