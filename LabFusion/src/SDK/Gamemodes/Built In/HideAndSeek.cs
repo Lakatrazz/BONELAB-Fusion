@@ -17,6 +17,7 @@ using MelonLoader;
 using System.Collections;
 
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -295,47 +296,68 @@ public class HideAndSeek : Gamemode
             yield return null;
         }
 
+        float fadeLength = 1f;
+
         float elapsed = 0f;
+        float totalElapsed = 0f;
+
         int seconds = 0;
         int maxSeconds = 30;
 
+        bool secondPassed = true;
+
         while (seconds < maxSeconds)
         {
-            float progress = (float)seconds / (float)maxSeconds;
-            LocalVision.BlindColor = Color.Lerp(Color.black, Color.clear, progress);
+            // Calculate fade-in
+            float fadeStart = Mathf.Max(maxSeconds - fadeLength, 0f);
+            float fadeProgress = Mathf.Max(totalElapsed - fadeStart, 0f) / fadeLength;
 
-            int remainingSeconds = maxSeconds - seconds;
-            switch (remainingSeconds)
+            LocalVision.BlindColor = Color.Lerp(Color.black, Color.clear, fadeProgress);
+
+            // Check for second counter
+            if (secondPassed)
             {
-                case 30:
-                case 25:
-                case 20:
-                case 15:
-                case 10:
-                case 5:
-                case 4:
-                case 3:
-                case 2:
-                case 1:
-                    FusionNotifier.Send(new FusionNotification()
-                    {
-                        ShowPopup = true,
-                        Title = "Countdown",
-                        Message = $"{remainingSeconds}",
-                        PopupLength = 1f,
-                        Type = NotificationType.INFORMATION,
-                    });
-                    break;
+                int remainingSeconds = maxSeconds - seconds;
+                switch (remainingSeconds)
+                {
+                    case 30:
+                    case 25:
+                    case 20:
+                    case 15:
+                    case 10:
+                    case 5:
+                    case 4:
+                    case 3:
+                    case 2:
+                    case 1:
+                        FusionNotifier.Send(new FusionNotification()
+                        {
+                            ShowPopup = true,
+                            Title = "Countdown",
+                            Message = $"{remainingSeconds}",
+                            PopupLength = 1f,
+                            Type = NotificationType.INFORMATION,
+                        });
+                        break;
+                }
+
+                secondPassed = false;
             }
 
-            while (elapsed < 1f)
+            // Tick timer
+            elapsed += TimeUtilities.DeltaTime;
+            totalElapsed += TimeUtilities.DeltaTime;
+
+            // If a second passed, send the notification next frame
+            if (elapsed >= 1f)
             {
-                elapsed += TimeUtilities.DeltaTime;
-                yield return null;
+                elapsed -= 1f;
+                seconds++;
+
+                secondPassed = true;
             }
 
-            seconds++;
-            elapsed -= 1f;
+            yield return null;
         }
 
         LocalControls.UnlockMovement();
