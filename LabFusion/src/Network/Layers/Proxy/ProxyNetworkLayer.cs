@@ -225,6 +225,15 @@ public abstract class ProxyNetworkLayer : NetworkLayer
 
     public override void LogIn()
     {
+        // If a client is currently running, cancel it
+        if (client != null)
+        {
+            client.Stop();
+
+            client = null;
+            serverConnection = null;
+        }
+
         EventBasedNetListener listener = new();
         client = new NetManager(listener)
         {
@@ -272,7 +281,10 @@ public abstract class ProxyNetworkLayer : NetworkLayer
 
     public override void LogOut()
     {
+        // End the running client
         client.Stop();
+
+        client = null;
         serverConnection = null;
 
         InvokeLoggedOutEvent();
