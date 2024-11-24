@@ -12,12 +12,10 @@ using LabFusion.Senders;
 
 using Steamworks;
 
-using FusionHelper.Network;
-
 using LiteNetLib;
 using LiteNetLib.Utils;
 
-namespace LabFusion.Network;
+namespace LabFusion.Network.Proxy;
 
 public abstract class ProxyNetworkLayer : NetworkLayer
 {

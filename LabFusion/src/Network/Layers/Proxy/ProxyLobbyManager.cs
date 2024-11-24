@@ -1,13 +1,11 @@
-﻿using FusionHelper.Network;
-
-using LabFusion.Utilities;
+﻿using LabFusion.Utilities;
 
 using LiteNetLib;
 using LiteNetLib.Utils;
 
 using MelonLoader;
 
-namespace LabFusion.Network;
+namespace LabFusion.Network.Proxy;
 
 public class ProxyLobbyManager
 {

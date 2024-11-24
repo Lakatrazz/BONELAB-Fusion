@@ -1,9 +1,8 @@
-﻿namespace LabFusion.Network
-{
-    public sealed class ProxySteamVRNetworkLayer : ProxyNetworkLayer
-    {
-        public override uint ApplicationID => SteamVRNetworkLayer.SteamVRId;
+﻿namespace LabFusion.Network.Proxy;
 
-        public override string Title => "Proxy SteamVR";
-    }
+public sealed class ProxySteamVRNetworkLayer : ProxyNetworkLayer
+{
+    public override uint ApplicationID => SteamVRNetworkLayer.SteamVRId;
+
+    public override string Title => "Proxy SteamVR";
 }

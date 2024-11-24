@@ -1,4 +1,5 @@
-﻿using LabFusion.Preferences.Client;
+﻿using LabFusion.Network.Proxy;
+using LabFusion.Preferences.Client;
 using LabFusion.Utilities;
 
 namespace LabFusion.Network;

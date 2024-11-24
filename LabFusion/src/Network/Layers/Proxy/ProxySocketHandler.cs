@@ -1,10 +1,8 @@
 ﻿using LabFusion.Utilities;
 
-using FusionHelper.Network;
-
 using LiteNetLib.Utils;
 
-namespace LabFusion.Network;
+namespace LabFusion.Network.Proxy;
 
 public static class ProxySocketHandler
 {

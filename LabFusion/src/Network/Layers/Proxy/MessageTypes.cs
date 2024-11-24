@@ -1,4 +1,4 @@
-﻿namespace FusionHelper.Network;
+﻿namespace LabFusion.Network.Proxy;
 
 internal enum MessageTypes
 {

@@ -4,7 +4,7 @@ using MelonLoader;
 
 using System.Collections;
 
-namespace LabFusion.Network;
+namespace LabFusion.Network.Proxy;
 
 public sealed class ProxyMatchmaker : IMatchmaker
 {
