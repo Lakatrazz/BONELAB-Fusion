@@ -28,12 +28,14 @@ namespace LabFusion.Marrow.Integration
 
         public void OnDrawGizmos()
         {
-            if (previewCosmetic != null && previewCosmetic.TryGetCrate(out var crate) && crate.PreviewMesh.EditorAsset != null)
+            var previewMesh = GetPreviewMesh();
+
+            if (previewMesh != null)
             {
                 Gizmos.color = Color.cyan;
                 Gizmos.matrix = transform.localToWorldMatrix;
 
-                Gizmos.DrawMesh(crate.PreviewMesh.EditorAsset);
+                Gizmos.DrawMesh(previewMesh);
             }
             else
             {
@@ -41,6 +43,28 @@ namespace LabFusion.Marrow.Integration
                 Gizmos.matrix = transform.localToWorldMatrix;
                 Gizmos.DrawSphere(Vector3.zero, 0.02f);
             }
+        }
+
+        private Mesh GetPreviewMesh()
+        {
+            if (previewCosmetic != null && previewCosmetic.TryGetCrate(out var crate))
+            {
+                var mesh = crate.PreviewMesh.Asset != null ? crate.PreviewMesh.Asset : crate.PreviewMesh.EditorAsset;
+
+                if (mesh == null)
+                {
+                    return null;
+                }
+
+                if (mesh.vertices.Length <= 0 || mesh.normals.Length <= 0)
+                {
+                    return null;
+                }
+
+                return mesh;
+            }
+
+            return null;
         }
 #endif
     }
