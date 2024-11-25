@@ -65,11 +65,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 662eb8a0ba69d804b8eb7ce7c2f13958, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cosmeticPoint: 0
+  cosmeticPoint: 1
   hiddenInView: 1
+  hiddenInShop: 0
   rawPrice: 400
   previewIcon: {fileID: 2800000, guid: 8951005725010b049b4b6a9200738d12, type: 3}
-  authorOverride: BaBaCorp
 --- !u!1001 &3985128780923671026
 PrefabInstance:
   m_ObjectHideFlags: 0
