@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Linq.Expressions;
+using System.Reflection;
 
 using LabFusion.Utilities;
 
@@ -19,23 +20,45 @@ public static class EntityComponentManager
         FusionLogger.Log($"Populating EntityComponentExtender list from {targetAssembly.GetName().Name}!");
 #endif
 
-        AssemblyUtilities.LoadAllValid<IEntityComponentExtender>(targetAssembly, RegisterExtender);
+        AssemblyUtilities.LoadAllValid<IEntityComponentExtender>(targetAssembly, RegisterComponent);
     }
 
-    public static void RegisterExtender<T>() where T : IEntityComponentExtender => RegisterExtender(typeof(T));
+    public static void RegisterComponent<T>() where T : IEntityComponentExtender => RegisterComponent(typeof(T));
 
-    private static void RegisterExtender(Type type)
+    private static void RegisterComponent(Type type)
     {
         if (ExtenderTypes.Contains(type))
         {
             throw new ArgumentException($"Extender type {type.Name} was already registered.");
         }
 
-        ExtenderTypes[_lastExtenderIndex++] = type;
+        var index = _lastExtenderIndex++;
+
+        ExtenderTypes[index] = type;
+        ExtenderFactories[index] = CreateExtenderFactory(type);
 
 #if DEBUG
         FusionLogger.Log($"Registered {type.Name}");
 #endif
+    }
+
+    public static HashSet<IEntityComponentExtender> ApplyComponents(NetworkEntity networkEntity, GameObject parent)
+    {
+        var set = new HashSet<IEntityComponentExtender>();
+
+        for (var i = 0; i < _lastExtenderIndex; i++)
+        {
+            var factory = ExtenderFactories[i];
+
+            var instance = factory();
+
+            if (instance.TryRegister(networkEntity, parent))
+            {
+                set.Add(instance);
+            }
+        }
+
+        return set;
     }
 
     public static HashSet<IEntityComponentExtender> ApplyComponents(NetworkEntity networkEntity, GameObject[] parents)
@@ -44,9 +67,9 @@ public static class EntityComponentManager
 
         for (var i = 0; i < _lastExtenderIndex; i++)
         {
-            var type = ExtenderTypes[i];
+            var factory = ExtenderFactories[i];
 
-            var instance = Activator.CreateInstance(type) as IEntityComponentExtender;
+            var instance = factory();
 
             if (instance.TryRegister(networkEntity, parents))
             {
@@ -57,7 +80,14 @@ public static class EntityComponentManager
         return set;
     }
 
+    private static Func<IEntityComponentExtender> CreateExtenderFactory(Type type)
+    {
+        return Expression.Lambda<Func<IEntityComponentExtender>>(Expression.New(type)).Compile();
+    }
+
     private static int _lastExtenderIndex = 0;
 
     public static readonly Type[] ExtenderTypes = new Type[1024];
+
+    public static readonly Func<IEntityComponentExtender>[] ExtenderFactories = new Func<IEntityComponentExtender>[1024];
 }

@@ -1,14 +1,14 @@
-﻿using BoneLib.BoneMenu;
-
-using Il2CppSLZ.Marrow;
+﻿using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Warehouse;
 
-using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
+using LabFusion.Menu;
+using LabFusion.Menu.Data;
 using LabFusion.Network;
 using LabFusion.Player;
+using LabFusion.SDK.Points;
 using LabFusion.SDK.Triggers;
 using LabFusion.Utilities;
 
@@ -17,19 +17,23 @@ using MelonLoader;
 using System.Collections;
 
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 namespace LabFusion.SDK.Gamemodes;
 
 public class HideAndSeek : Gamemode
 {
-    public override string GamemodeName => "Hide And Seek";
+    public override string Title => "Hide And Seek";
 
-    public override string GamemodeCategory => "Fusion";
+    public override string Author => FusionMod.ModAuthor;
+
+    public override Texture Logo => MenuResources.GetGamemodeIcon(Title);
 
     public static class Defaults
     {
         public const int SeekerCount = 1;
+
+        public const int BitReward = 50;
 
         public static readonly MonoDiscReference[] Tracks = new MonoDiscReference[]
         {
@@ -64,14 +68,32 @@ public class HideAndSeek : Gamemode
     private bool _hasBeenTagged = false;
     private bool _assignedDefaultTeam = false;
 
-    public override void OnBoneMenuCreated(Page page)
-    {
-        base.OnBoneMenuCreated(page);
+    private readonly HashSet<ulong> _tagRewards = new();
 
-        page.CreateInt("Seeker Count", Color.yellow, startingValue: SeekerCount, increment: 1, minValue: 1, maxValue: 8, callback: (value) =>
+    public override GroupElementData CreateSettingsGroup()
+    {
+        var group = base.CreateSettingsGroup();
+
+        var generalGroup = new GroupElementData("General");
+
+        group.AddElement(generalGroup);
+
+        var seekerCountData = new IntElementData()
         {
-            SeekerCount = value;
-        });
+            Title = "Seeker Count",
+            Value = SeekerCount,
+            Increment = 1,
+            MinValue = 1,
+            MaxValue = 8,
+            OnValueChanged = (v) =>
+            {
+                SeekerCount = v;
+            },
+        };
+
+        generalGroup.AddElement(seekerCountData);
+
+        return group;
     }
 
     public override void OnGamemodeRegistered()
@@ -106,7 +128,7 @@ public class HideAndSeek : Gamemode
 
     protected bool OnValidateNametag(PlayerId id)
     {
-        if (!IsActive())
+        if (!IsStarted)
         {
             return true;
         }
@@ -135,7 +157,7 @@ public class HideAndSeek : Gamemode
             if (HiderTeam.PlayerCount <= 1)
             {
                 SeekerVictoryEvent.TryInvoke();
-                StopGamemode();
+                GamemodeManager.StopGamemode();
             }
             else
             {
@@ -144,35 +166,39 @@ public class HideAndSeek : Gamemode
         }
 
         // Were we tagged? Give a notification
-        if (playerId.IsOwner && !_hasBeenTagged)
+        if (playerId.IsMe && !_hasBeenTagged)
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                isPopup = true,
-                showTitleOnPopup = true,
-                title = "Tagged",
-                message = "You've been tagged! You are now a seeker!",
-                popupLength = 4f,
-                type = NotificationType.INFORMATION,
+                ShowPopup = true,
+                Title = "Tagged",
+                Message = "You've been tagged! You are now a seeker!",
+                PopupLength = 4f,
+                Type = NotificationType.INFORMATION,
             });
 
             _hasBeenTagged = true;
         }
 
         // Other player tagged?
-        if (!playerId.IsOwner)
+        if (!playerId.IsMe)
         {
             playerId.TryGetDisplayName(out var name);
 
             FusionNotifier.Send(new FusionNotification()
             {
-                isPopup = true,
-                showTitleOnPopup = true,
-                title = $"{name} Tagged",
-                message = $"{name} has been tagged and is now a seeker!",
-                popupLength = 4f,
-                type = NotificationType.INFORMATION,
+                ShowPopup = true,
+                Title = $"{name} Tagged",
+                Message = $"{name} has been tagged and is now a seeker!",
+                PopupLength = 4f,
+                Type = NotificationType.INFORMATION,
             });
+
+            // Check bit reward
+            if (_tagRewards.Remove(playerId.LongId))
+            {
+                PointItemManager.RewardBits(Defaults.BitReward);
+            }
         }
     }
 
@@ -180,12 +206,11 @@ public class HideAndSeek : Gamemode
     {
         FusionNotifier.Send(new FusionNotification()
         {
-            isPopup = true,
-            showTitleOnPopup = true,
-            title = "Seekers Won",
-            message = "All hiders have been found!",
-            popupLength = 4f,
-            type = NotificationType.INFORMATION,
+            ShowPopup = true,
+            Title = "Seekers Won",
+            Message = "All hiders have been found!",
+            PopupLength = 4f,
+            Type = NotificationType.INFORMATION,
         });
     }
 
@@ -194,7 +219,7 @@ public class HideAndSeek : Gamemode
         // Update nametags
         FusionOverrides.ForceUpdateOverrides();
 
-        if (!player.IsOwner)
+        if (!player.IsMe)
         {
             return;
         }
@@ -208,12 +233,11 @@ public class HideAndSeek : Gamemode
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                isPopup = true,
-                showTitleOnPopup = true,
-                title = "Hider",
-                message = "You are a hider! Don't let the seekers grab you!",
-                popupLength = 4,
-                type = NotificationType.INFORMATION,
+                ShowPopup = true,
+                Title = "Hider",
+                Message = "You are a hider! Don't let the seekers grab you!",
+                PopupLength = 4,
+                Type = NotificationType.INFORMATION,
             });
         }
 
@@ -221,12 +245,11 @@ public class HideAndSeek : Gamemode
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                isPopup = true,
-                showTitleOnPopup = true,
-                title = "Seeker",
-                message = "You are a seeker! Grab all hiders to win!",
-                popupLength = 2f,
-                type = NotificationType.INFORMATION,
+                ShowPopup = true,
+                Title = "Seeker",
+                Message = "You are a seeker! Grab all hiders to win!",
+                PopupLength = 2f,
+                Type = NotificationType.INFORMATION,
             });
 
             MelonCoroutines.Start(HideVisionAndReveal());
@@ -259,19 +282,8 @@ public class HideAndSeek : Gamemode
 
     private static IEnumerator HideVisionAndReveal()
     {
-        // Move to LocalVision later
-        var canvasGameObject = new GameObject("VISION OBSTRUCTION");
-        var canvas = canvasGameObject.AddComponent<Canvas>();
-
-        canvas.renderMode = RenderMode.WorldSpace;
-        var canvasTransform = canvasGameObject.transform;
-        canvasTransform.parent = RigData.Refs.Headset;
-        canvasTransform.localPosition = Vector3Extensions.forward * 0.1f;
-        canvasTransform.localRotation = Quaternion.Euler(0f, 180f, 0f);
-        canvasTransform.localScale = Vector3Extensions.one * 10f;
-
-        var image = canvas.gameObject.AddComponent<RawImage>();
-        image.color = Color.black;
+        LocalVision.Blind = true;
+        LocalVision.BlindColor = Color.black;
 
         // Lock movement so we can't move while vision is dark
         LocalControls.LockMovement();
@@ -284,60 +296,82 @@ public class HideAndSeek : Gamemode
             yield return null;
         }
 
+        float fadeLength = 1f;
+
         float elapsed = 0f;
+        float totalElapsed = 0f;
+
         int seconds = 0;
         int maxSeconds = 30;
 
+        bool secondPassed = true;
+
         while (seconds < maxSeconds)
         {
-            int remainingSeconds = maxSeconds - seconds;
-            switch (remainingSeconds)
+            // Calculate fade-in
+            float fadeStart = Mathf.Max(maxSeconds - fadeLength, 0f);
+            float fadeProgress = Mathf.Max(totalElapsed - fadeStart, 0f) / fadeLength;
+
+            LocalVision.BlindColor = Color.Lerp(Color.black, Color.clear, fadeProgress);
+
+            // Check for second counter
+            if (secondPassed)
             {
-                case 30:
-                case 25:
-                case 20:
-                case 15:
-                case 10:
-                case 5:
-                case 4:
-                case 3:
-                case 2:
-                case 1:
-                    FusionNotifier.Send(new FusionNotification()
-                    {
-                        isPopup = true,
-                        showTitleOnPopup = true,
-                        title = "Countdown",
-                        message = $"{remainingSeconds}",
-                        popupLength = 1f,
-                        type = NotificationType.INFORMATION,
-                    });
-                    break;
+                int remainingSeconds = maxSeconds - seconds;
+                switch (remainingSeconds)
+                {
+                    case 30:
+                    case 25:
+                    case 20:
+                    case 15:
+                    case 10:
+                    case 5:
+                    case 4:
+                    case 3:
+                    case 2:
+                    case 1:
+                        FusionNotifier.Send(new FusionNotification()
+                        {
+                            ShowPopup = true,
+                            Title = "Countdown",
+                            Message = $"{remainingSeconds}",
+                            PopupLength = 1f,
+                            Type = NotificationType.INFORMATION,
+                        });
+                        break;
+                }
+
+                secondPassed = false;
             }
 
-            while (elapsed < 1f)
+            // Tick timer
+            elapsed += TimeUtilities.DeltaTime;
+            totalElapsed += TimeUtilities.DeltaTime;
+
+            // If a second passed, send the notification next frame
+            if (elapsed >= 1f)
             {
-                elapsed += TimeUtilities.DeltaTime;
-                yield return null;
+                elapsed -= 1f;
+                seconds++;
+
+                secondPassed = true;
             }
 
-            seconds++;
-            elapsed -= 1f;
+            yield return null;
         }
 
         LocalControls.UnlockMovement();
 
+        LocalVision.Blind = false;
+
         FusionNotifier.Send(new FusionNotification()
         {
-            isPopup = true,
-            showTitleOnPopup = true,
-            title = "Countdown Over",
-            message = $"GO!",
-            popupLength = 0.5f,
-            type = NotificationType.INFORMATION,
+            ShowPopup = true,
+            Title = "Countdown Over",
+            Message = $"GO!",
+            PopupLength = 0.5f,
+            Type = NotificationType.INFORMATION,
         });
-
-        GameObject.Destroy(canvasGameObject);
     }
 
     private void SetDefaults()
@@ -346,9 +380,11 @@ public class HideAndSeek : Gamemode
         Playlist.Shuffle();
     }
 
-    protected override void OnStartGamemode()
+    public override void OnGamemodeStarted()
     {
-        base.OnStartGamemode();
+        base.OnGamemodeStarted();
+
+        _tagRewards.Clear();
 
         _hasBeenTagged = false;
 
@@ -369,9 +405,9 @@ public class HideAndSeek : Gamemode
         FusionOverrides.ForceUpdateOverrides();
     }
 
-    protected override void OnStopGamemode()
+    public override void OnGamemodeStopped()
     {
-        base.OnStopGamemode();
+        base.OnGamemodeStopped();
 
         _hasBeenTagged = false;
         _assignedDefaultTeam = false;
@@ -391,7 +427,7 @@ public class HideAndSeek : Gamemode
 
     protected override void OnUpdate()
     {
-        if (!IsActive())
+        if (!IsStarted)
         {
             return;
         }
@@ -450,7 +486,11 @@ public class HideAndSeek : Gamemode
         // Check if they're a hider, and if they are, tag them
         if (HiderTeam.HasPlayer(player.PlayerId))
         {
-            TagEvent.TryInvoke(player.PlayerId.LongId.ToString());
+            var longId = player.PlayerId.LongId;
+
+            _tagRewards.Add(longId);
+
+            TagEvent.TryInvoke(longId.ToString());
         }
     }
 }

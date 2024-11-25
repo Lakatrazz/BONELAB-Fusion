@@ -3,6 +3,7 @@
     "com.lakatrazz.marrowextrashaders": "https://github.com/Lakatrazz/Marrow-Extra-Shaders.git",
     "com.stresslevelzero.marrow.backlot": "1.2.0",
     "com.stresslevelzero.marrow.sdk": "1.2.0",
+    "com.unity.2d.sprite": "1.0.0",
     "com.unity.collab-proxy": "1.17.7",
     "com.unity.feature.development": "1.0.1",
     "com.unity.ide.rider": "3.0.16",

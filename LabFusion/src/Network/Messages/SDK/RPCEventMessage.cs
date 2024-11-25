@@ -1,5 +1,4 @@
-﻿using LabFusion.Data;
-using LabFusion.Entities;
+﻿using LabFusion.Entities;
 using LabFusion.Marrow.Integration;
 
 namespace LabFusion.Network;
@@ -48,10 +47,14 @@ public static class RPCEventSender
             entityId = entity.Id;
             componentIndex = extender.GetIndex(rpcEvent).Value;
         }
+        else if (rpcEvent.requiresOwnership && !NetworkInfo.IsServer)
+        {
+            return false;
+        }
 
         // Send the message
         using var writer = FusionWriter.Create();
-        var data = RPCEventData.Create(hasNetworkEntity, entityId, componentIndex, hashData);
+        var data = ComponentPathData.Create(hasNetworkEntity, entityId, componentIndex, hashData);
 
         writer.Write(data);
 
@@ -72,47 +75,6 @@ public static class RPCEventSender
     }
 }
 
-public class RPCEventData : IFusionSerializable
-{
-    public bool hasNetworkEntity;
-
-    public ushort entityId;
-    public ushort componentIndex;
-
-    public ComponentHashData hashData;
-
-    public void Serialize(FusionWriter writer)
-    {
-        writer.Write(hasNetworkEntity);
-
-        writer.Write(entityId);
-        writer.Write(componentIndex);
-
-        writer.Write(hashData);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        hasNetworkEntity = reader.ReadBoolean();
-
-        entityId = reader.ReadUInt16();
-        componentIndex = reader.ReadUInt16();
-
-        hashData = reader.ReadFusionSerializable<ComponentHashData>();
-    }
-
-    public static RPCEventData Create(bool hasNetworkEntity, ushort entityId, ushort componentIndex, ComponentHashData hashData)
-    {
-        return new RPCEventData()
-        {
-            hasNetworkEntity = hasNetworkEntity,
-            entityId = entityId,
-            componentIndex = componentIndex,
-            hashData = hashData,
-        };
-    }
-}
-
 public class RPCEventMessage : FusionMessageHandler
 {
     public override byte Tag => NativeMessageTag.RPCEvent;
@@ -120,7 +82,7 @@ public class RPCEventMessage : FusionMessageHandler
     public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
     {
         using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<RPCEventData>();
+        var data = reader.ReadFusionSerializable<ComponentPathData>();
 
         // Entity object
         if (data.hasNetworkEntity)

@@ -11,9 +11,14 @@ public static class MetadataHelper
     // Default keys
     public const string UsernameKey = "Username";
     public const string NicknameKey = "Nickname";
+    public const string DescriptionKey = "Description";
+
+    public const string AvatarTitleKey = "AvatarTitle";
+    public const string AvatarModIdKey = "AvatarModId";
+
     public const string LoadingKey = "IsLoading";
+
     public const string PermissionKey = "PermissionLevel";
-    public const string PlatformKey = "Platform";
 
     public static bool TryGetPermissionLevel(this PlayerId id, out PermissionLevel level)
     {

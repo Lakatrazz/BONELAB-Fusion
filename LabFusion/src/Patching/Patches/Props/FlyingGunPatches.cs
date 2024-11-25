@@ -51,7 +51,7 @@ public static class FlyingGunPatches
             return;
         }
 
-        if (!hand.manager.IsSelf())
+        if (!hand.manager.IsLocalPlayer())
         {
             return;
         }

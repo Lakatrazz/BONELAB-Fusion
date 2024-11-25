@@ -98,12 +98,12 @@ public class DescentData : LevelDataHandler
             return;
 
         // Check if we were holding the knife and we weren't attached to the noose
-        if (!Noose.rM.IsSelf())
+        if (!Noose.rM.IsLocalPlayer())
         {
             foreach (var hand in KnifeGrip.attachedHands)
             {
                 // Make sure this is our hand
-                if (hand.manager.IsSelf())
+                if (hand.manager.IsLocalPlayer())
                 {
                     AchievementManager.TryGetAchievement<Betrayal>(out var achievement);
                     achievement?.IncrementTask();
@@ -113,14 +113,11 @@ public class DescentData : LevelDataHandler
         }
     }
 
-    protected override void SceneAwake()
+    protected override void MainSceneInitialized()
     {
         Instance = this;
         _introEvents.Clear();
-    }
 
-    protected override void MainSceneInitialized()
-    {
         Noose = GameObject.FindObjectOfType<NooseBonelabIntro>(true);
         Elevator = GameObject.FindObjectOfType<TutorialElevator>(true);
         GameController = GameObject.FindObjectOfType<GameControl_Descent>(true);

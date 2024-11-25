@@ -42,31 +42,54 @@ public class BitMiner : PointItem
     {
         string suffix = bits != 1 ? "s" : "";
 
-        return $"Hires a team of hard working nullbodies to mine valuables from the depths of MythOS. Grants {bits} bit{suffix} per minute you are in a Fusion lobby with another person.";
+        return $"Hires a team of hard working nullbodies to mine valuables from the depths of MythOS. Grants {bits} bit{suffix} for every other player per minute you are in a Fusion lobby.";
     }
 
     public override void OnLateUpdate()
     {
-        if (IsUnlocked && IsEquipped && NetworkInfo.HasServer)
+        if (!IsUnlocked)
         {
-            if (PlayerIdManager.HasOtherPlayers)
-            {
-                _bitTime += TimeUtilities.DeltaTime;
+            return;
+        }
 
-                if (_bitTime > 60f)
-                {
-                    while (_bitTime > 60f)
-                    {
-                        _bitTime -= 60f;
-                        PointItemManager.RewardBits(1 + (UpgradeLevel + 1), false);
-                    }
-                }
-            }
-            else
+        if (!IsEquipped)
+        {
+            return;
+        }
+
+        if (!NetworkInfo.HasServer)
+        {
+            return;
+        }
+
+        if (!PlayerIdManager.HasOtherPlayers)
+        {
+            _bitTime = 0f;
+            return;
+        }
+
+        _bitTime += TimeUtilities.DeltaTime;
+
+        if (_bitTime > 60f)
+        {
+            while (_bitTime > 60f)
             {
-                _bitTime = 0f;
+                _bitTime -= 60f;
+                PointItemManager.RewardBits(CalculateBitReward(), false);
             }
         }
+    }
+
+    private int CalculateBitReward()
+    {
+        var baseCount = 2 + UpgradeLevel;
+
+        var otherPlayers = PlayerIdManager.PlayerCount - 1;
+
+        // Multiplicatively increase bits by player count
+        var finalCount = baseCount * otherPlayers;
+
+        return finalCount;
     }
 
     public override void LoadPreviewIcon(Action<Texture2D> onLoaded)

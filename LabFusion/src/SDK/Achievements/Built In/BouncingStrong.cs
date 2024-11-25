@@ -45,7 +45,7 @@ namespace LabFusion.SDK.Achievements
                 return;
 
             // Make sure this is us, and that we jumped
-            if (player.IsOwner && type == PlayerActionType.JUMP)
+            if (player.IsMe && type == PlayerActionType.JUMP)
             {
                 // Check current avatar
                 if (RigData.RigAvatarId == CommonBarcodes.STRONG_BARCODE)

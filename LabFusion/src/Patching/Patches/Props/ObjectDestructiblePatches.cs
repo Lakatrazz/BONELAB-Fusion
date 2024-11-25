@@ -83,7 +83,7 @@ namespace LabFusion.Patching
                 var data = ComponentIndexData.Create(PlayerIdManager.LocalSmallId, entity.Id, (byte)extender.GetIndex(destructible).Value);
                 writer.Write(data);
 
-                using var message = FusionMessage.Create(NativeMessageTag.ObjectDestructableDestroy, writer);
+                using var message = FusionMessage.Create(NativeMessageTag.ObjectDestructibleDestroy, writer);
                 MessageSender.SendToServer(NetworkChannel.Reliable, message);
             }
         }

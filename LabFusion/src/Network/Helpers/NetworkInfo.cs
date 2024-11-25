@@ -5,7 +5,7 @@ public static class NetworkInfo
     /// <summary>
     /// The current network interface. Not recommended to touch!
     /// </summary>
-    public static NetworkLayer CurrentNetworkLayer => InternalLayerHelpers.CurrentNetworkLayer;
+    public static NetworkLayer CurrentNetworkLayer => NetworkLayerManager.Layer;
 
     /// <summary>
     /// The current network lobby. Can be null. Allows you to read/write information from it.
@@ -60,6 +60,13 @@ public static class NetworkInfo
     /// <returns></returns>
     public static bool IsSpoofed(ulong userId)
     {
+        // If the network layer cannot validate the user id, then we can't properly spoof check
+        if (HasLayer && !CurrentNetworkLayer.RequiresValidId)
+        {
+            return false;
+        }
+
+        // If we haven't received any messages, then just assume it isn't spoofed
         if (!LastReceivedUser.HasValue)
         {
             return false;

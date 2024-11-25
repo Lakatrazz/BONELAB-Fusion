@@ -74,17 +74,14 @@ public class LevelRequestMessage : FusionMessageHandler
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                title = $"{data.title} Load Request",
-                message = new NotificationText($"{name} has requested to load {data.title}.", Color.yellow),
+                Title = $"{data.title} Load Request",
+                Message = new NotificationText($"{name} has requested to load {data.title}.", Color.yellow),
 
-                isMenuItem = true,
-                isPopup = true,
-                onCreateCategory = (c) =>
+                SaveToMenu = true,
+                ShowPopup = true,
+                OnAccepted = () =>
                 {
-                    c.CreateFunction($"Accept", Color.yellow, () =>
-                    {
-                        SceneStreamer.Load(new Barcode(data.barcode));
-                    });
+                    SceneStreamer.Load(new Barcode(data.barcode));
                 },
             });
         }

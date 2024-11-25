@@ -20,8 +20,6 @@ public static class PlayerAdditionsHelper
         MultiplayerHooking.OnDisconnect += () => { OnExitServer(RigData.Refs.RigManager); };
         LocalPlayer.OnLocalRigCreated += (rig) =>
         {
-            OnCreatedLocalPlayer(rig);
-
             if (NetworkInfo.HasServer)
             {
                 OnEnterServer(rig);
@@ -38,25 +36,12 @@ public static class PlayerAdditionsHelper
         MuteUIHelper.OnDeinitializeMelon();
     }
 
-    public static void OnAvatarChanged(RigManager manager)
-    {
-    }
-
-    public static void OnCreatedLocalPlayer(RigManager manager)
-    {
-        // Forward to the regular method
-        OnCreatedRig(manager);
-    }
-
-    public static void OnCreatedRig(RigManager manager)
-    {
-        OnAvatarChanged(manager);
-    }
-
     public static void OnEnterServer(RigManager manager)
     {
-        if (manager.IsNOC())
+        if (manager == null)
+        {
             return;
+        }
 
         // Create mute icon
         MuteUIHelper.OnCreateMuteUI(manager);
@@ -65,7 +50,6 @@ public static class PlayerAdditionsHelper
         PersistentAssetCreator.SetupImpactProperties(manager);
 
         // Enable unused experimental features
-        manager.health._testRagdollOnDeath = true;
         manager.health._testVisualDamage = true;
 
         // Remove level reloading on death
@@ -96,8 +80,10 @@ public static class PlayerAdditionsHelper
 
     public static void OnExitServer(RigManager manager)
     {
-        if (manager.IsNOC())
+        if (manager == null)
+        {
             return;
+        }
 
         // Disable mute icons
         MuteUIHelper.OnDestroyMuteUI();
@@ -119,7 +105,6 @@ public static class PlayerAdditionsHelper
         }
 
         // Remove experimental features
-        manager.health._testRagdollOnDeath = false;
         manager.health._testVisualDamage = false;
 
         // Add back slowmo on death

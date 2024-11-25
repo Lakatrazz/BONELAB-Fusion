@@ -1,24 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using LabFusion.Data;
-
-namespace LabFusion.Entities;
+﻿namespace LabFusion.Entities;
 
 public delegate void EntityIdEvent<TEntity>(ushort id, TEntity entity);
 
 public class EntityIdList<TEntity>
 {
-    private readonly FusionDictionary<ushort, TEntity> _idsToEntities = new();
-    private readonly FusionDictionary<TEntity, ushort> _entitiesToIds = new();
+    private readonly Dictionary<ushort, TEntity> _idsToEntities = new();
+    private readonly Dictionary<TEntity, ushort> _entitiesToIds = new();
 
     private readonly HashSet<ushort> _reservedIds = new();
 
-    public FusionDictionary<ushort, TEntity> IdEntityLookup => _idsToEntities;
-    public FusionDictionary<TEntity, ushort> EntityIdLookup => _entitiesToIds;
+    public Dictionary<ushort, TEntity> IdEntityLookup => _idsToEntities;
+    public Dictionary<TEntity, ushort> EntityIdLookup => _entitiesToIds;
 
     public HashSet<ushort> ReservedIds => _reservedIds;
 

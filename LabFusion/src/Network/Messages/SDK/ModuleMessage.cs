@@ -1,4 +1,6 @@
-﻿namespace LabFusion.Network;
+﻿using LabFusion.SDK.Modules;
+
+namespace LabFusion.Network;
 
 public class ModuleMessage : FusionMessageHandler
 {

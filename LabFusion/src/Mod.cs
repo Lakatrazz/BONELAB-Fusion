@@ -1,7 +1,5 @@
 ﻿using System.Reflection;
 
-using UnityEngine;
-
 using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Utilities;
@@ -16,10 +14,13 @@ using LabFusion.SDK.Lobbies;
 using LabFusion.SDK.Cosmetics;
 using LabFusion.Entities;
 using LabFusion.Downloading.ModIO;
-using LabFusion.BoneMenu;
 using LabFusion.Downloading;
 using LabFusion.Marrow;
-using LabFusion.Patching;
+using LabFusion.Menu;
+using LabFusion.SDK.Modules;
+using LabFusion.Bonelab;
+using LabFusion.Representation;
+using LabFusion.Player;
 
 #if DEBUG
 using LabFusion.Debugging;
@@ -30,8 +31,6 @@ using MelonLoader;
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Marrow;
-
-using ModuleHandler = LabFusion.SDK.Modules.ModuleHandler;
 
 namespace LabFusion;
 
@@ -45,10 +44,10 @@ public struct FusionVersion
     public const string VersionString = "0.0.0";
 #else
     public const byte VersionMajor = 1;
-    public const byte VersionMinor = 8;
+    public const byte VersionMinor = 9;
     public const short VersionPatch = 0;
 
-    public const string VersionString = "1.8.0";
+    public const string VersionString = "1.9.0";
 #endif
 }
 
@@ -90,23 +89,24 @@ public class FusionMod : MelonMod
         // Initialize data and hooks
         ByteRetriever.PopulateInitial();
         PDController.OnInitializeMelon();
-        ModuleHandler.Internal_HookAssemblies();
-        GamemodeRegistration.Internal_HookAssemblies();
         PointItemManager.HookEvents();
-
-        VoteKickHelper.Internal_OnInitializeMelon();
     }
 
     public override void OnInitializeMelon()
     {
-        // Prepare the bonemenu category
-        BoneMenuCreator.OnPrepareMainPage();
-
         // Pull files
         FusionFileLoader.OnInitializeMelon();
 
         // Load assetbundles
         FusionBundleLoader.OnBundleLoad();
+
+        // Initialize player
+        FusionPlayer.OnInitializeMelon();
+        LocalPlayer.OnInitializeMelon();
+        LocalVision.OnInitializeMelon();
+
+        // Register base modules
+        InitializeBaseModules();
 
         // Register our base handlers
         LevelDataHandler.OnInitializeMelon();
@@ -126,6 +126,9 @@ public class FusionMod : MelonMod
 
         FusionPopupManager.OnInitializeMelon();
 
+        GamemodeManager.OnInitializeMelon();
+        GamemodeConditionsChecker.OnInitializeMelon();
+
         // Hook into asset warehouse
         var onReady = () =>
         {
@@ -134,26 +137,34 @@ public class FusionMod : MelonMod
         };
         AssetWarehouse.OnReady(onReady);
 
-        // Patch manual HarmonyPatches
-        ManualPatcher.PatchAll(HarmonyInstance);
-
         // Create prefs
         FusionPreferences.OnInitializePreferences();
+
+        FusionPermissions.OnInitializeMelon();
+
+        LobbyInfoManager.OnInitialize();
+
+        MenuCreator.OnInitializeMelon();
 
         // Initialize level loading
         FusionSceneManager.Internal_OnInitializeMelon();
 
-        // Finally, initialize the network layer
-        OnInitializeNetworking();
+        // Initialize the networking manager
+        NetworkLayerManager.OnInitializeMelon();
 
 #if DEBUG
         FusionUnityLogger.OnInitializeMelon();
 #endif
     }
 
+    private static void InitializeBaseModules()
+    {
+        ModuleManager.RegisterModule<MarrowModule>();
+        ModuleManager.RegisterModule<BonelabModule>();
+    }
+
     public override void OnLateInitializeMelon()
     {
-        InternalLayerHelpers.OnLateInitializeLayer();
         PersistentAssetCreator.OnLateInitializeMelon();
         PlayerAdditionsHelper.OnInitializeMelon();
 
@@ -161,55 +172,29 @@ public class FusionMod : MelonMod
         // Check if the auto updater is installed
         _hasAutoUpdater = MelonPlugin.RegisteredMelons.Any((p) => p.Info.Name.Contains("LabFusion Updater"));
 
-        if (!_hasAutoUpdater && !PlatformHelper.IsAndroid)
+        if (!_hasAutoUpdater)
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                isMenuItem = false,
-                isPopup = true,
-                message = "You do not have the Fusion AutoUpdater installed in your plugins folder!" +
+                SaveToMenu = false,
+                ShowPopup = true,
+                Message = "You do not have the Fusion AutoUpdater installed in your plugins folder!" +
                 "\nIt is recommended to install it in order to stay up to date.",
-                type = NotificationType.WARNING,
+                Type = NotificationType.WARNING,
             });
         }
 #endif
     }
 
-    protected static void OnInitializeNetworking()
-    {
-        // If a layer is already set, don't initialize
-        if (NetworkInfo.CurrentNetworkLayer != null)
-        {
-            FusionLogger.Warn("Cannot initialize new network layer because a previous one is active!");
-            return;
-        }
-
-        // Validate the layer
-        NetworkLayerDeterminer.LoadLayer();
-
-        if (NetworkLayerDeterminer.LoadedLayer == null)
-        {
-            FusionLogger.Error("The target network layer is null!");
-            return;
-        }
-
-        // Finally, set the layer
-        InternalLayerHelpers.SetLayer(NetworkLayerDeterminer.LoadedLayer);
-    }
-
     public override void OnDeinitializeMelon()
     {
-        // Cleanup networking
-        InternalLayerHelpers.OnCleanupLayer();
-
-        VoteKickHelper.Internal_OnDeinitializeMelon();
+        // Log out of the current layer
+        NetworkLayerManager.LogOut();
 
         // Backup files
         FusionFileLoader.OnDeinitializeMelon();
 
         // Unhook assembly loads
-        ModuleHandler.Internal_UnhookAssemblies();
-        GamemodeRegistration.Internal_UnhookAssemblies();
         PointItemManager.UnhookEvents();
 
         // Unload assetbundles
@@ -227,21 +212,14 @@ public class FusionMod : MelonMod
         FusionPreferences.OnPreferencesLoaded();
     }
 
-    private static bool _initializedBoneMenu = false;
-
     public static void OnMainSceneInitialized()
     {
-        if (!_initializedBoneMenu)
-        {
-            BoneMenuCreator.OnPopulateMainPage();
-            _initializedBoneMenu = true;
-        }
-
         string sceneName = FusionSceneManager.Level.Title;
 
 #if DEBUG
         FusionLogger.Log($"Main scene {sceneName} was initialized.");
 #endif
+
         // Cache info
         NetworkEntityManager.OnCleanupIds();
 
@@ -253,12 +231,6 @@ public class FusionMod : MelonMod
         MultiplayerHooking.Internal_OnMainSceneInitialized();
 
         FusionPlayer.OnMainSceneInitialized();
-
-        // Stop the current gamemode
-        if (NetworkInfo.IsServer && Gamemode.ActiveGamemode != null && Gamemode.ActiveGamemode.AutoStopOnSceneLoad)
-        {
-            Gamemode.ActiveGamemode.StopGamemode();
-        }
     }
 
     public static void OnMainSceneInitializeDelayed()
@@ -272,6 +244,9 @@ public class FusionMod : MelonMod
         // Force enable radial menu
         RigData.Refs.RigManager.ControllerRig.TryCast<OpenControllerRig>().quickmenuEnabled = true;
         PlayerRefs.Instance.PlayerBodyVitals.quickmenuEnabled = true;
+
+        // Create the Fusion Menu
+        MenuCreator.CreateMenu();
     }
 
     public override void OnUpdate()
@@ -361,30 +336,5 @@ public class FusionMod : MelonMod
 
         // Late update gamemodes
         GamemodeManager.Internal_OnLateUpdate();
-    }
-
-    public override void OnGUI()
-    {
-        InternalLayerHelpers.OnGUILayer();
-
-#if DEBUG
-        var emptyOptions = Array.Empty<GUILayoutOption>();
-
-        GUILayout.Label($"Bytes Up: {NetworkInfo.BytesUp}", emptyOptions);
-        GUILayout.Label($"Bytes Down: {NetworkInfo.BytesDown}", emptyOptions);
-
-        GUILayout.Label($"Network Entity Count: {NetworkEntityManager.IdManager.RegisteredEntities.EntityIdLookup.Count}", emptyOptions);
-
-        GUILayout.Label($"Active Download: {(ModIODownloader.IsDownloading ? ModIODownloader.CurrentTransaction.ModFile.ModId : "None")}", emptyOptions);
-        
-        if (ModIODownloader.IsDownloading)
-        {
-            GUILayout.Label($"Active Progress: {ModIODownloader.CurrentTransaction.Progress * 100f}%");
-        }
-        
-        GUILayout.Label($"Queued Downloads: {ModIODownloader.QueuedTransactions.Count}", emptyOptions);
-
-        GUILayout.Label($"Being Watched: False", emptyOptions);
-#endif
     }
 }

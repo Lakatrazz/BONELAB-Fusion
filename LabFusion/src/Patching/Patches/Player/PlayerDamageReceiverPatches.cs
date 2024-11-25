@@ -2,6 +2,7 @@
 using LabFusion.Utilities;
 using LabFusion.Senders;
 using LabFusion.Entities;
+using LabFusion.Marrow;
 
 using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.AI;
@@ -39,7 +40,7 @@ public static class PlayerDamageReceiverPatches
         if (rm != null && attacker != null)
         {
             // Is the attacked person us?
-            if (rm.IsSelf())
+            if (rm.IsLocalPlayer())
             {
                 // Were we hit by another player?
                 if (NetworkPlayerManager.TryGetPlayer(attacker, out var player) && !player.NetworkEntity.IsOwner)
@@ -57,8 +58,14 @@ public static class PlayerDamageReceiverPatches
                 }
             }
             // Is the attacked person another player? Did we attack them?
-            else if (NetworkPlayerManager.TryGetPlayer(rm, out var player) && attacker.IsSelf())
+            else if (NetworkPlayerManager.TryGetPlayer(rm, out var player) && attacker.IsLocalPlayer())
             {
+                // Don't attack the other player if friendly fire is disabled
+                if (!NetworkCombatManager.CanAttack(player))
+                {
+                    return false;
+                }
+
                 // Send the damage over the network
                 PlayerSender.SendPlayerDamage(player.PlayerId, attack, __instance.bodyPart);
 

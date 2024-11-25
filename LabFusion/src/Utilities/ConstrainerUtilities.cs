@@ -4,14 +4,14 @@ using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Marrow;
 
 using LabFusion.Extensions;
-using LabFusion.Preferences;
+using LabFusion.Network;
 using LabFusion.Marrow;
 
 namespace LabFusion.Utilities;
 
 public static class ConstrainerUtilities
 {
-    public static bool PlayerConstraintsEnabled { get { return ServerSettingsManager.ActiveSettings.PlayerConstraintsEnabled.Value; } }
+    public static bool PlayerConstraintsEnabled { get { return LobbyInfoManager.LobbyInfo.PlayerConstraining; } }
 
     public static bool HasConstrainer { get { return GlobalConstrainer != null; } }
     public static Constrainer GlobalConstrainer { get; private set; }

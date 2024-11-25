@@ -83,4 +83,29 @@ public static class MarrowEntityPatches
 
         extender.OnEntityCull(isInactive);
     }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(MarrowEntity.Despawn))]
+    public static bool Despawn(MarrowEntity __instance)
+    {
+        // Make sure we have a server
+        if (!NetworkInfo.HasServer)
+        {
+            return true;
+        }
+
+        // Prevent despawning of players
+        if (IMarrowEntityExtender.Cache.TryGet(__instance, out var entity))
+        {
+            var player = entity.GetExtender<NetworkPlayer>();
+
+            if (player != null)
+            {
+                FusionLogger.Warn($"Prevented MarrowEntity.Despawn of player at ID {entity.Id}!");
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

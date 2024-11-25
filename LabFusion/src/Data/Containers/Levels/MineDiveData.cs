@@ -75,7 +75,7 @@ public class MineDiveData : LevelDataHandler
         MessageSender.SendFromServer(playerId, NetworkChannel.Reliable, message);
     }
 
-    protected override void SceneAwake()
+    private static void GetCartReferences()
     {
         _hasCreatedCarts = false;
 
@@ -149,6 +149,8 @@ public class MineDiveData : LevelDataHandler
 
     protected override void MainSceneInitialized()
     {
+        GetCartReferences();
+
         if (!NetworkInfo.IsServer)
         {
             return;

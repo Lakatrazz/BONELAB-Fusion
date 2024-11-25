@@ -71,7 +71,9 @@ public static class CosmeticItemHelper
             case RigPoint.HEAD_TOP:
                 Vector3 eyeCenter = GetEyeCenter(artRig);
 
-                eyeCenter += head.up * (avatar.HeadTop * 1.5f * avatar.height);
+                eyeCenter += head.up * (avatar.HeadTop * avatar.height);
+                eyeCenter -= head.forward * (avatar.ForeheadEllipseZ * avatar.height * 0.5f);
+
                 eyeCenter = head.InverseTransformPoint(eyeCenter);
 
                 position = head.position;

@@ -12,6 +12,7 @@ using LabFusion.Player;
 using LabFusion.RPC;
 using LabFusion.SDK.Achievements;
 using LabFusion.Utilities;
+using LabFusion.Scene;
 
 using HarmonyLib;
 
@@ -31,7 +32,7 @@ public static class SpawnGunPatches
             return;
         }
 
-        if (!hand.manager.IsSelf())
+        if (!hand.manager.IsLocalPlayer())
         {
             AddSpawnMenuPatches.DisableMethods = true;
         }
@@ -53,7 +54,7 @@ public static class SpawnGunPatches
             return;
         }
 
-        if (!hand.manager.IsSelf())
+        if (!hand.manager.IsLocalPlayer())
         {
             AddSpawnMenuPatches.DisableMethods = true;
         }
@@ -75,7 +76,7 @@ public static class SpawnGunPatches
             return;
         }
 
-        if (!NetworkInfo.HasServer)
+        if (CrossSceneManager.InUnsyncedScene())
         {
             return;
         }
@@ -106,7 +107,7 @@ public static class SpawnGunPatches
     [HarmonyPatch(nameof(SpawnGun.OnFire))]
     public static bool OnFirePrefix(SpawnGun __instance, ref SpawnableCrate __state)
     {
-        if (!NetworkInfo.HasServer)
+        if (CrossSceneManager.InUnsyncedScene())
         {
             return true;
         }
@@ -121,6 +122,23 @@ public static class SpawnGunPatches
         }
 
         return true;
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(nameof(SpawnGun.OnFire))]
+    public static void OnFirePostfix(SpawnGun __instance, ref SpawnableCrate __state)
+    {
+        if (CrossSceneManager.InUnsyncedScene())
+        {
+            return;
+        }
+
+        __instance._selectedCrate = __state;
+
+        if (__instance._selectedMode == UtilityModes.SPAWNER)
+        {
+            OnFireSpawn(__instance);
+        }
     }
 
     private static void OnFireSpawn(SpawnGun spawnGun)
@@ -151,6 +169,7 @@ public static class SpawnGunPatches
             spawnable = spawnable,
             position = transform.position,
             rotation = transform.rotation,
+            spawnEffect = true,
         };
 
         NetworkAssetSpawner.Spawn(info);
@@ -209,22 +228,5 @@ public static class SpawnGunPatches
         // Flash the spawn gun
         spawnGun.FlashScreen();
         spawnGun.SpawnFlareAsync().Forget();
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch(nameof(SpawnGun.OnFire))]
-    public static void OnFirePostfix(SpawnGun __instance, ref SpawnableCrate __state)
-    {
-        if (!NetworkInfo.HasServer)
-        {
-            return;
-        }
-
-        __instance._selectedCrate = __state;
-
-        if (__instance._selectedMode == UtilityModes.SPAWNER)
-        {
-            OnFireSpawn(__instance);
-        }
     }
 }

@@ -5,7 +5,7 @@ public static class NativeMessageTag
     public static readonly byte
         // Built in messages
         Unknown = 0,
-        
+
         // Connection messages
         // These should never change, they aren't game specific
         ConnectionRequest = 1,
@@ -50,9 +50,7 @@ public static class NativeMessageTag
 
         PuppetMasterKill = 30,
 
-        SimpleGripEvent = 31,
-
-        ObjectDestructableDestroy = 32,
+        ObjectDestructibleDestroy = 32,
 
         ArenaTransition = 33,
         ChallengeSelect = 34,
@@ -61,8 +59,6 @@ public static class NativeMessageTag
 
         DescentNoose = 37,
         DescentElevator = 38,
-
-        FunicularControllerEvent = 39,
 
         MagmaGateEvent = 40,
 
@@ -76,8 +72,6 @@ public static class NativeMessageTag
         ServerSettings = 45,
 
         KartRaceEvent = 46,
-
-        FlashlightToggle = 47,
 
         KeySlot = 48,
 
@@ -118,17 +112,11 @@ public static class NativeMessageTag
 
         PlayerRepTeleport = 69,
 
-        ZoneEncounterEvent = 70,
-
         HolodeckEvent = 71,
 
         SpawnGunSelect = 72,
 
         MineDiveCart = 73,
-
-        // Vote kicking
-        VoteKickRequest = 74,
-        VoteKickResponse = 75,
 
         MagazineClaim = 76,
 
@@ -152,5 +140,10 @@ public static class NativeMessageTag
         PointItemTriggerValue = 208,
 
         // RPC
-        RPCEvent = 209;
+        RPCEvent = 209,
+        RPCInt = 210,
+        RPCFloat = 211,
+        RPCBool = 212,
+        RPCString = 213,
+        RPCVector3 = 214;
 }

@@ -72,7 +72,7 @@ public class RigRefs
         {
             foreach (var hand in grip.attachedHands.ToArray())
             {
-                if (hand.manager.IsSelf())
+                if (hand.manager.IsLocalPlayer())
                     grip.TryDetach(hand);
             }
 

@@ -9,6 +9,7 @@ using LabFusion.Utilities;
 using LabFusion.Scene;
 
 using UnityEngine;
+using LabFusion.Menu;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -37,11 +38,15 @@ public class Entangled : Gamemode
 
         public void Dispose()
         {
-            if (!joint.IsNOC())
+            if (joint != null)
+            {
                 GameObject.Destroy(joint);
+            }
 
-            if (!lineInstance.IsNOC())
+            if (lineInstance != null)
+            {
                 GameObject.Destroy(lineInstance);
+            }
         }
 
         public bool IsValid()
@@ -56,18 +61,24 @@ public class Entangled : Gamemode
                 return;
 
             // Validate pelvis rigidbodies
-            if (selfPelvis.IsNOC() && PlayerRepUtilities.TryGetReferences(player1, out var ref1) && ref1.IsValid)
+            if (selfPelvis == null && PlayerRepUtilities.TryGetReferences(player1, out var ref1) && ref1.IsValid)
+            {
                 selfPelvis = ref1.RigManager.physicsRig.torso._pelvisRb;
+            }
 
-            if (otherPelvis.IsNOC() && PlayerRepUtilities.TryGetReferences(player2, out var ref2) && ref2.IsValid)
+            if (otherPelvis == null && PlayerRepUtilities.TryGetReferences(player2, out var ref2) && ref2.IsValid)
+            {
                 otherPelvis = ref2.RigManager.physicsRig.torso._pelvisRb;
+            }
 
             // If we have both pelvises, update them
             if (selfPelvis != null && otherPelvis != null)
             {
                 // Create joint if missing
-                if (joint.IsNOC())
+                if (joint == null)
+                {
                     CreateJoint();
+                }
 
                 // Update line renderer
                 lineInstance.SetActive(true);
@@ -107,8 +118,9 @@ public class Entangled : Gamemode
     public static Entangled Instance { get; private set; }
 
     // Set info for the gamemode
-    public override string GamemodeCategory => "Fusion";
-    public override string GamemodeName => "Entangled";
+    public override string Title => "Entangled";
+    public override string Author => FusionMod.ModAuthor;
+    public override Texture Logo => MenuResources.GetGamemodeIcon(Title);
 
     // Set parameters for the gamemode
     public override bool AutoStopOnSceneLoad => false;
@@ -199,7 +211,7 @@ public class Entangled : Gamemode
     protected override void OnUpdate()
     {
         // Make sure the gamemode is active
-        if (!IsActive())
+        if (!IsStarted)
         {
             return;
         }
@@ -216,7 +228,7 @@ public class Entangled : Gamemode
 
     protected void OnPlayerJoin(PlayerId id)
     {
-        if (!IsActive())
+        if (!IsStarted)
         {
             return;
         }
@@ -236,9 +248,9 @@ public class Entangled : Gamemode
         RemovePartners(id);
     }
 
-    protected override void OnStartGamemode()
+    public override void OnGamemodeStarted()
     {
-        base.OnStartGamemode();
+        base.OnGamemodeStarted();
 
         Playlist.StartPlaylist();
 
@@ -269,21 +281,20 @@ public class Entangled : Gamemode
         }
     }
 
-    protected override void OnStopGamemode()
+    public override void OnGamemodeStopped()
     {
-        base.OnStopGamemode();
+        base.OnGamemodeStopped();
 
         Playlist.StopPlaylist();
 
         // Send notification of gamemode stop
         FusionNotifier.Send(new FusionNotification()
         {
-            title = "Entangled Finish",
-            showTitleOnPopup = true,
-            message = $"The gamemode has ended!",
-            isMenuItem = false,
-            isPopup = true,
-            popupLength = 2f,
+            Title = "Entangled Finish",
+            Message = $"The gamemode has ended!",
+            SaveToMenu = false,
+            ShowPopup = true,
+            PopupLength = 2f,
         });
 
         // Remove all player partnerships
@@ -370,12 +381,11 @@ public class Entangled : Gamemode
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                title = "Entangled Partner Assignment",
-                showTitleOnPopup = true,
-                message = $"You have no assigned partner! Wait for a new person to join the lobby!",
-                isMenuItem = false,
-                isPopup = true,
-                popupLength = 5f,
+                Title = "Entangled Partner Assignment",
+                Message = $"You have no assigned partner! Wait for a new person to join the lobby!",
+                SaveToMenu = false,
+                ShowPopup = true,
+                PopupLength = 5f,
             });
 
             _partner = null;
@@ -398,12 +408,11 @@ public class Entangled : Gamemode
 
         FusionNotifier.Send(new FusionNotification()
         {
-            title = "Entangled Partner Assignment",
-            showTitleOnPopup = true,
-            message = $"Your partner is: {name}",
-            isMenuItem = false,
-            isPopup = true,
-            popupLength = 5f,
+            Title = "Entangled Partner Assignment",
+            Message = $"Your partner is: {name}",
+            SaveToMenu = false,
+            ShowPopup = true,
+            PopupLength = 5f,
         });
     }
 

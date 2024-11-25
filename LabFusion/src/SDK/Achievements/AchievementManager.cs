@@ -135,5 +135,5 @@ public static class AchievementManager
     public static IReadOnlyList<Achievement> LoadedAchievements => Achievements;
 
     internal static readonly List<Achievement> Achievements = new();
-    internal static readonly FusionDictionary<string, Achievement> AchievementLookup = new();
+    internal static readonly Dictionary<string, Achievement> AchievementLookup = new();
 }

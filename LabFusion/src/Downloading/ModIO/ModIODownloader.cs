@@ -1,4 +1,6 @@
-﻿using LabFusion.Utilities;
+﻿using LabFusion.Data;
+using LabFusion.Preferences.Client;
+using LabFusion.Utilities;
 
 using MelonLoader;
 
@@ -24,13 +26,17 @@ public static class ModIODownloader
     /// </summary>
     public static void CancelQueue()
     {
+#if DEBUG
+        FusionLogger.Warn("Cancelling queued mod transactions.");
+#endif
+
         var count = QueuedTransactions.Count;
 
         for (var i = 0; i < count; i++)
         {
             var transaction = QueuedTransactions.Dequeue();
 
-            transaction.Callback?.Invoke(DownloadCallbackInfo.FailedCallback);
+            transaction.Callback?.Invoke(DownloadCallbackInfo.CanceledCallback);
         }
     }
 
@@ -87,9 +93,28 @@ public static class ModIODownloader
 
             void OnRequestedMod(ModCallbackInfo info)
             {
-                if (info.result == ModResult.FAILED)
+                // Check if the mod request failed
+                if (info.result != ModResult.SUCCEEDED)
                 {
                     FusionLogger.Warn($"Failed getting a mod file for mod {modFile.ModId}, cancelling download!");
+
+                    FailDownload();
+                    return;
+                }
+
+                // Check for maturity
+                if (info.data.Mature && !ClientSettings.Downloading.DownloadMatureContent.Value)
+                {
+                    FusionLogger.Warn($"Skipped download of mod {info.data.NameId} due to it containing mature content.");
+
+                    FailDownload();
+                    return;
+                }
+
+                // Check for blacklist
+                if (ModBlacklist.IsBlacklisted(info.data.NameId) || ModBlacklist.IsBlacklisted(info.data.Id.ToString()))
+                {
+                    FusionLogger.Warn($"Skipped download of mod {info.data.NameId} due to it being blacklisted!");
 
                     FailDownload();
                     return;
@@ -125,6 +150,10 @@ public static class ModIODownloader
                 // If the token is null, it likely didn't load
                 if (string.IsNullOrWhiteSpace(token))
                 {
+#if DEBUG
+                    FusionLogger.Warn("Token is null, cancelling mod download.");
+#endif
+
                     FailDownload();
 
                     return;
@@ -152,7 +181,7 @@ public static class ModIODownloader
 
         // Send a request to mod.io for the headers
         // We don't want to read the whole content yet
-        HttpClientHandler handler = new HttpClientHandler()
+        var handler = new HttpClientHandler()
         {
             ClientCertificateOptions = ClientCertificateOption.Manual,
             ServerCertificateCustomValidationCallback = (_, _, _, _) => true
@@ -194,54 +223,33 @@ public static class ModIODownloader
             yield break;
         }
 
-        // Download the content into a MemoryStream
-        using var downloadStream = new MemoryStream();
-        var downloadTask = content.CopyToAsync(downloadStream);
+        // Install the content into a zip file
+        var zipPath = ModDownloadManager.DownloadPath + $"/m{modFile.ModId}f{modFile.FileId}.zip";
 
-        while (!downloadTask.IsCompleted)
+        // Make sure this using statement ends before we load the pallet, so that the file is not in use
+        using (var copyStream = new FileStream(zipPath, FileMode.Create))
         {
-            transaction.Report((float)downloadStream.Length / contentLength);
+            var copyTask = content.CopyToAsync(copyStream);
 
-            yield return null;
+            while (!copyTask.IsCompleted)
+            {
+                transaction.Report((float)copyStream.Length / contentLength);
+
+                yield return null;
+            }
+
+            if (!copyTask.IsCompletedSuccessfully)
+            {
+                FusionLogger.LogException("copying downloaded zip", copyTask.Exception);
+
+                FailDownload();
+
+                yield break;
+            }
         }
 
         // Set progress to 100%
         transaction.Report(1f);
-
-        // Make sure the download was successful
-        if (!downloadTask.IsCompletedSuccessfully)
-        {
-            FusionLogger.LogException("copying download to stream", downloadTask.Exception);
-
-            FailDownload();
-
-            yield break;
-        }
-
-        // Install the stream into a zip file
-        var zipPath = ModDownloadManager.DownloadPath + $"/m{modFile.ModId}f{modFile.FileId}.zip";
-
-        Task copyTask = null;
-
-        using var copyStream = new FileStream(zipPath, FileMode.Create);
-
-        // Copy the download to the zip file
-        downloadStream.Position = 0;
-        copyTask = downloadStream.CopyToAsync(copyStream);
-
-        while (!copyTask.IsCompleted)
-        {
-            yield return null;
-        }
-
-        if (!copyTask.IsCompletedSuccessfully)
-        {
-            FusionLogger.LogException("copying downloaded zip", copyTask.Exception);
-
-            FailDownload();
-
-            yield break;
-        }
 
         // Load the pallet
         ModDownloadManager.LoadPalletFromZip(zipPath, modFile, transaction.Temporary, OnScheduledLoad, transaction.Callback);

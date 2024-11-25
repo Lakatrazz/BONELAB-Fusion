@@ -61,6 +61,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private RigNameTag _nametag = null;
 
+    private RigIcon _icon = null;
+    public RigIcon Icon => _icon;
+
     private RigHeadUI _headUI = null;
     public RigHeadUI HeadUI => _headUI;
 
@@ -78,8 +81,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private bool _isSettingsDirty = false;
     private bool _isServerDirty = false;
-
-    private bool _isQuestUser = false;
 
     public SerializedPlayerSettings playerSettings = null;
 
@@ -120,12 +121,18 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         _nametag = new();
         _headUI = new();
 
+        _icon = new()
+        {
+            Visible = false
+        };
+
         _avatarSetter = new(networkEntity);
         _avatarSetter.OnAvatarChanged += UpdateAvatarSettings;
 
         // Register the default head UI elements so they're automatically spawned in
         HeadUI.RegisterElement(_nametag);
         HeadUI.RegisterElement(_avatarSetter.ProgressBar);
+        HeadUI.RegisterElement(_icon);
 
         networkEntity.HookOnRegistered(OnPlayerRegistered);
         networkEntity.OnEntityUnregistered += OnPlayerUnregistered;
@@ -245,7 +252,37 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void OnLevelLoad()
     {
+        if (CrossSceneManager.Purgatory)
+        {
+            return;
+        }
+
         FindRigManager();
+    }
+
+    private void OnPurgatoryChanged(bool purgatory)
+    {
+        // Don't care if this is our rig
+        if (NetworkEntity.IsOwner)
+        {
+            return;
+        }
+
+        // Don't update while loading
+        if (FusionSceneManager.IsLoading())
+        {
+            return;
+        }
+
+        // Puppet rig shouldn't exist in purgatory
+        if (purgatory)
+        {
+            DestroyPuppet();
+        }
+        else
+        {
+            FindRigManager();
+        }
     }
 
     private void HookPlayer()
@@ -258,12 +295,13 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         PlayerId.Metadata.OnMetadataChanged += OnMetadataChanged;
         PlayerId.OnDestroyedEvent += OnPlayerDestroyed;
 
-        MultiplayerHooking.OnServerSettingsChanged += OnServerSettingsChanged;
+        LobbyInfoManager.OnLobbyInfoChanged += OnServerSettingsChanged;
         FusionOverrides.OnOverridesChanged += OnServerSettingsChanged;
 
         // Find the rig for the current scene, and hook into scene loads
         FindRigManager();
         MultiplayerHooking.OnMainSceneInitialized += OnLevelLoad;
+        CrossSceneManager.OnPurgatoryChanged += OnPurgatoryChanged;
     }
 
     private void UnhookPlayer()
@@ -275,7 +313,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         PlayerId.Metadata.OnMetadataChanged -= OnMetadataChanged;
         PlayerId.OnDestroyedEvent -= OnPlayerDestroyed;
 
-        MultiplayerHooking.OnServerSettingsChanged -= OnServerSettingsChanged;
+        LobbyInfoManager.OnLobbyInfoChanged -= OnServerSettingsChanged;
         FusionOverrides.OnOverridesChanged -= OnServerSettingsChanged;
 
         // Remove cache
@@ -287,6 +325,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Unhook from scene loading events
         DestroyPuppet();
         MultiplayerHooking.OnMainSceneInitialized -= OnLevelLoad;
+        CrossSceneManager.OnPurgatoryChanged -= OnPurgatoryChanged;
     }
 
     private void DestroyPuppet()
@@ -315,17 +354,10 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             _username = name;
         }
 
-        _isQuestUser = PlayerId.Metadata.GetMetadata(MetadataHelper.PlatformKey) == "QUEST";
-
         // Update nametag
         if (!NetworkEntity.IsOwner)
         {
-            _nametag.SetUsername(Username, _isQuestUser);
-
-            if (HasRig)
-            {
-                _nametag.UpdateText();
-            }
+            _nametag.Username = Username;
         }
     }
 
@@ -618,7 +650,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void UpdateNametagVisibility()
     {
-        _nametag.Visible = CommonPreferences.NametagsEnabled && FusionOverrides.ValidateNametag(PlayerId);
+        _nametag.Visible = CommonPreferences.NameTags && FusionOverrides.ValidateNametag(PlayerId);
     }
 
     public void OnEntityCull(bool isInactive)
@@ -660,7 +692,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         NetworkPlayerManager.LateUpdateManager.Unregister(this);
     }
 
-    private void TeleportToPose()
+    public void TeleportToPose()
     {
         // Don't teleport if no pose
         if (!ReceivedPose || !HasRig)
@@ -669,7 +701,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         // Get teleport position
-        var pos = RigPose.pelvisPose.position;
+        var pos = RigPose.pelvisPose.PredictedPosition;
 
         // Get offset
         var offset = pos - RigSkeleton.physicsPelvis.position;
@@ -677,6 +709,21 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Apply offset to the marrow entity
         MarrowEntity.transform.position += offset;
 
+        // Zero the rig's velocity
+        foreach (var body in MarrowEntity.Bodies)
+        {
+            var rb = body._rigidbody;
+
+            if (rb == null)
+            {
+                continue;
+            }
+
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+        
+        // Reset PD controller
         _pelvisPDController.Reset();
     }
 
@@ -725,7 +772,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         pelvisPose.PredictPosition(deltaTime);
 
         // Check for stability teleport
-        float distSqr = (pelvisPosition - pelvisPose.position).sqrMagnitude;
+        float distSqr = (pelvisPosition - pelvisPose.PredictedPosition).sqrMagnitude;
         if (distSqr > (2f * (pelvisPose.velocity.magnitude + 1f)))
         {
             TeleportToPose();
@@ -733,7 +780,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         // Apply forces
-        pelvis.AddForce(_pelvisPDController.GetForce(pelvisPosition, pelvis.velocity, pelvisPose.position, pelvisPose.velocity), ForceMode.Acceleration);
+        pelvis.AddForce(_pelvisPDController.GetForce(pelvisPosition, pelvis.velocity, pelvisPose.PredictedPosition, pelvisPose.velocity), ForceMode.Acceleration);
 
         // We only want to apply angular force when ragdolled
         if (rigManager.physicsRig.torso.spineInternalMult <= 0f)

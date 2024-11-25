@@ -46,6 +46,19 @@ public class GripExtender : EntityComponentArrayExtender<Grip>
 
     protected void OnDetach(Hand hand)
     {
+        // Check if any other rigs are still holding this
+        // If they are, we shouldn't take ownership on detach
+        foreach (var grip in Components)
+        {
+            foreach (var grabbingHand in grip.attachedHands)
+            {
+                if (grabbingHand.manager != hand.manager)
+                {
+                    return;
+                }
+            }
+        }
+
         OnTransferOwner(hand);
     }
 
@@ -86,7 +99,7 @@ public class GripExtender : EntityComponentArrayExtender<Grip>
 
         // Determine the manager
         // Main player
-        if (hand.manager.IsSelf())
+        if (hand.manager.IsLocalPlayer())
         {
             NetworkEntityManager.TakeOwnership(NetworkEntity);
         }

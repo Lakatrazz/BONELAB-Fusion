@@ -8,7 +8,7 @@ namespace LabFusion.Data
         public static void OnInitializeMelon()
         {
             PermissionList.ReadFile();
-            BanList.ReadFile();
+            BanManager.ReadFile();
             ContactsList.ReadFile();
             PointSaveManager.ReadFile();
 
@@ -16,6 +16,9 @@ namespace LabFusion.Data
             AchievementSaveManager.ReadFile();
 
             ChangelogLoader.ReadFile();
+
+            ModBlacklist.OnInitializeMelon();
+            ModBlacklist.ReadFile();
         }
 
         public static void OnDeinitializeMelon()

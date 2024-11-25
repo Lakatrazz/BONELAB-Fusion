@@ -1,13 +1,11 @@
 ﻿using Il2CppSLZ.Bonelab;
 
-using LabFusion.BoneMenu;
 using LabFusion.Data;
 using LabFusion.Extensions;
+using LabFusion.Menu;
 using LabFusion.Scene;
 
 using UnityEngine;
-
-using Page = BoneLib.BoneMenu.Page;
 
 namespace LabFusion.Utilities;
 
@@ -45,17 +43,17 @@ public struct NotificationText
     /// <summary>
     /// The text.
     /// </summary>
-    public string text;
+    public string Text { get; set; }
 
     /// <summary>
     /// The color of the text.
     /// </summary>
-    public Color color;
+    public Color Color { get; set; }
 
     /// <summary>
     /// Should rich text be allowed?
     /// </summary>
-    public bool richText;
+    public bool RichText { get; set; }
 
     public NotificationText(string text) : this(text, Color.white) { }
 
@@ -66,9 +64,9 @@ public struct NotificationText
             text = text.RemoveRichText();
         }
 
-        this.text = text;
-        this.color = color;
-        this.richText = richText;
+        this.Text = text;
+        this.Color = color;
+        this.RichText = richText;
     }
 
     public static implicit operator NotificationText(string text)
@@ -86,44 +84,44 @@ public class FusionNotification
     /// <summary>
     /// The title of the notification.
     /// </summary>
-    public NotificationText title;
+    public NotificationText Title { get; set; } = new NotificationText("New Notification");
 
     /// <summary>
     /// The main body of the notification.
     /// </summary>
-    public NotificationText message;
+    public NotificationText Message { get; set; }
 
     // Popup settings
     /// <summary>
-    /// Should the title be used on the popup? (If false, it shows "New Notification".)
-    /// </summary>
-    public bool showTitleOnPopup = false;
-
-    /// <summary>
     /// Should this notification popup?
     /// </summary>
-    public bool isPopup = true;
+    public bool ShowPopup { get; set; } = true;
 
     /// <summary>
     /// How long the notification will be up.
     /// </summary>
-    public float popupLength = 2f;
+    public float PopupLength { get; set; } = 2f;
 
     /// <summary>
     /// The type of notification this is. Changes the icon.
     /// </summary>
-    public NotificationType type = NotificationType.INFORMATION;
+    public NotificationType Type { get; set; } = NotificationType.INFORMATION;
 
     // BoneMenu settings
     /// <summary>
     /// Will the notification popup inside of the menu tab?
     /// </summary>
-    public bool isMenuItem = true;
+    public bool SaveToMenu { get; set; } = true;
 
     /// <summary>
-    /// A hook for adding custom functions in the menu. Requires <see cref="isMenuItem"/> to be on.
+    /// Invoked when the notification is accepted. Requires <see cref="SaveToMenu"/> to be true.
     /// </summary>
-    public Action<Page> onCreateCategory = null;
+    public Action OnAccepted { get; set; } = null;
+
+    /// <summary>
+    /// Invoked when the notification is declined. Requires <see cref="SaveToMenu"/> to be true.
+    /// </summary>
+    public Action OnDeclined { get; set; } = null;
 }
 
 public static class FusionNotifier
@@ -133,7 +131,6 @@ public static class FusionNotifier
     public const float DefaultScaleTime = 0.4f;
 
     private static readonly Queue<FusionNotification> _queuedNotifications = new();
-    private static ulong _notificationNumber = 0;
 
     private static bool _hasEnabledTutorialRig = false;
 
@@ -151,49 +148,27 @@ public static class FusionNotifier
     {
         var notification = _queuedNotifications.Dequeue();
 
-        // Add to bonemenu
-        if (notification.isMenuItem)
+        // Add to the menu
+        if (notification.SaveToMenu)
         {
-            // Use a name generated with an index because BoneMenu returns an existing category if names match
-            string generated = $"Internal_Notification_Generated_{_notificationNumber}";
-            var page = BoneMenuCreator.NotificationCategory.CreatePage(generated, notification.title.color, 0, false);
-            var pageLink = BoneMenuCreator.NotificationCategory.CreatePageLink(page);
-
-            page.Name = notification.title.text;
-
-            _notificationNumber++;
-
-            if (!string.IsNullOrWhiteSpace(notification.message.text))
-                page.CreateFunction(notification.message.text, notification.message.color, null);
-
-            page.CreateFunction("Mark as Read", Color.red, () =>
-            {
-                BoneMenuCreator.RemoveNotification(pageLink);
-            });
-
-            notification.onCreateCategory.InvokeSafe(page, "executing Notification.OnCreateCategory");
+            MenuNotifications.AddNotification(notification);
         }
 
         // Show to the player
-        var rm = RigData.Refs.RigManager;
-
-        if (notification.isPopup && !rm.IsNOC())
+        if (notification.ShowPopup && RigData.HasPlayer)
         {
             var tutorialRig = TutorialRig.Instance;
             var headTitles = tutorialRig.headTitles;
 
             EnableTutorialRig();
 
-            string incomingTitle = "New Notification";
+            string incomingTitle = notification.Title.Text;
 
-            if (notification.showTitleOnPopup)
-                incomingTitle = notification.title.text;
-
-            string incomingSubTitle = notification.message.text;
+            string incomingSubTitle = notification.Message.Text;
 
             Sprite incomingSprite = GetPopupSprite(notification);
 
-            float holdTime = notification.popupLength;
+            float holdTime = notification.PopupLength;
 
             float timeToScale = Mathf.Lerp(0.05f, DefaultScaleTime, Mathf.Clamp01(holdTime - 1f));
 
@@ -206,7 +181,7 @@ public static class FusionNotifier
 
     private static Sprite GetPopupSprite(FusionNotification notification)
     {
-        Texture2D incomingTexture = notification.type switch
+        Texture2D incomingTexture = notification.Type switch
         {
             NotificationType.WARNING => FusionContentLoader.NotificationWarning.Asset,
             NotificationType.ERROR => FusionContentLoader.NotificationError.Asset,
@@ -226,32 +201,30 @@ public static class FusionNotifier
 
     internal static void EnableTutorialRig()
     {
-        var rm = RigData.Refs.RigManager;
-
-        if (!rm.IsNOC())
+        if (!RigData.HasPlayer)
         {
-            var tutorialRig = TutorialRig.Instance;
-            var headTitles = tutorialRig.headTitles;
-
-            // Make sure the tutorial rig/head titles are enabled
-            tutorialRig.gameObject.SetActive(true);
-            headTitles.gameObject.SetActive(true);
+            return;
         }
+
+        var tutorialRig = TutorialRig.Instance;
+        var headTitles = tutorialRig.headTitles;
+
+        // Make sure the tutorial rig/head titles are enabled
+        tutorialRig.gameObject.SetActive(true);
+        headTitles.gameObject.SetActive(true);
     }
 
     internal static bool IsPlayingNotification()
     {
-        var rm = RigData.Refs.RigManager;
-
-        if (!rm.IsNOC())
+        if (!RigData.HasPlayer)
         {
-            var tutorialRig = TutorialRig.Instance;
-            var headTitles = tutorialRig.headTitles;
-
-            return headTitles.headFollower.gameObject.activeInHierarchy;
+            return false;
         }
 
-        return false;
+        var tutorialRig = TutorialRig.Instance;
+        var headTitles = tutorialRig.headTitles;
+
+        return headTitles.headFollower.gameObject.activeInHierarchy;
     }
 
     internal static void OnUpdate()

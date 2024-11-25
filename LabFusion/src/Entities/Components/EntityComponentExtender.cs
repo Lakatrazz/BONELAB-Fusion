@@ -11,6 +11,19 @@ public abstract class EntityComponentExtender<TComponent> : IEntityComponentExte
 
     public TComponent Component => _component;
 
+    public bool TryRegister(NetworkEntity networkEntity, GameObject parent)
+    {
+        var component = GetComponent(parent);
+
+        if (component == null)
+        {
+            return false;
+        }
+
+        Register(networkEntity, component);
+        return true;
+    }
+
     public bool TryRegister(NetworkEntity networkEntity, GameObject[] parents)
     {
         foreach (var parent in parents)

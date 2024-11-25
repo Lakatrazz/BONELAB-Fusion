@@ -1,30 +1,35 @@
-﻿namespace LabFusion.SDK.Modules
+﻿namespace LabFusion.SDK.Modules;
+
+/// <summary>
+/// The base class for a Fusion module.
+/// </summary>
+public abstract class Module
 {
+    public abstract string Name { get; }
+    public virtual string Author { get; } = "Unknown";
+    public virtual Version Version { get; } = new();
+
+    public virtual ConsoleColor Color { get; } = ConsoleColor.Magenta;
+
     /// <summary>
-    /// The class to inherit from when creating a Fusion module.
+    /// The logger that the module can use to log information.
     /// </summary>
-    public abstract class Module
+    public ModuleLogger LoggerInstance { get; private set; }
+
+    internal void Register()
     {
-        /// <summary>
-        /// Logger for logging info from modules.
-        /// </summary>
-        public ModuleLogger LoggerInstance { get; internal set; }
+        LoggerInstance = new ModuleLogger(Name);
 
-        // Called internally when a module is setup
-        internal void ModuleLoaded(ModuleInfo info)
-        {
-            string name = info.name;
-            if (!string.IsNullOrWhiteSpace(info.abbreviation))
-                name = info.abbreviation;
-
-            LoggerInstance = new ModuleLogger(name);
-
-            OnModuleLoaded();
-        }
-
-        /// <summary>
-        /// Called when the module is initially loaded.
-        /// </summary>
-        public virtual void OnModuleLoaded() { }
+        OnModuleRegistered();
     }
+
+    /// <summary>
+    /// Called when the module is initially registered. Use this to hook into Fusion functions, register Module Messages, etc.
+    /// </summary>
+    protected virtual void OnModuleRegistered() { }
+
+    /// <summary>
+    /// Called when the module is unregistered. Use this to clean up anything affected by the module.
+    /// </summary>
+    protected virtual void OnModuleUnregistered() { }
 }

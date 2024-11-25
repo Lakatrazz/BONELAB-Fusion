@@ -4,6 +4,7 @@ using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Utilities;
 using LabFusion.Entities;
+using LabFusion.Player;
 
 using UnityEngine;
 
@@ -81,17 +82,21 @@ public static class ArtRigPatches
     private static void Internal_WaitForBarcode(RigManager __instance, Avatar newAvatar)
     {
         // First make sure our player hasn't been destroyed (ex. loading new scene)
-        if (__instance.IsNOC())
+        if (__instance == null)
+        {
             return;
+        }
 
         // Next check the avatar hasn't changed
         if (__instance._avatar != newAvatar)
+        {
             return;
+        }
 
         // Is this our local player? If so, sync the avatar change
-        if (__instance.IsSelf())
+        if (__instance.IsLocalPlayer())
         {
-            FusionPlayer.Internal_OnAvatarChanged(__instance, newAvatar, __instance.AvatarCrate.Barcode.ID);
+            LocalPlayer.InvokeAvatarChanged(newAvatar, __instance.AvatarCrate.Barcode.ID);
         }
         else if (NetworkPlayerManager.TryGetPlayer(__instance, out var player))
         {

@@ -14,14 +14,19 @@ namespace LabFusion.MonoBehaviours
 
         private void OnCollisionEnter(Collision collision)
         {
-            if (NetworkInfo.HasServer)
+            if (!NetworkInfo.HasServer)
             {
-                var rb = collision.rigidbody;
-                if (!rb)
-                    return;
-
-                ImpactUtilities.OnHitRigidbody(rb);
+                return;
             }
+
+            var rb = collision.rigidbody;
+
+            if (!rb)
+            {
+                return;
+            }
+
+            ImpactUtilities.OnHitRigidbody(rb);
         }
     }
 }

@@ -2,10 +2,12 @@
 using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Preferences;
+using LabFusion.Preferences.Server;
 
 using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Points;
 using LabFusion.SDK.Achievements;
+using LabFusion.SDK.Modules;
 
 using LabFusion.Data;
 using LabFusion.Entities;
@@ -37,8 +39,11 @@ public static class InternalServerHelpers
     /// </summary>
     public static void OnStartServer()
     {
+        // Apply initial metadata
+        LocalPlayer.InvokeApplyInitialMetadata();
+
         // Create local id
-        var id = new PlayerId(PlayerIdManager.LocalLongId, 0, GetInitialMetadata(), GetInitialEquippedItems());
+        var id = new PlayerId(PlayerIdManager.LocalLongId, 0, LocalPlayer.Metadata.LocalDictionary, GetInitialEquippedItems());
         id.Insert();
         PlayerIdManager.ApplyLocalId();
 
@@ -48,21 +53,17 @@ public static class InternalServerHelpers
         var names = ModuleMessageHandler.GetExistingTypeNames();
         ModuleMessageHandler.PopulateHandlerTable(names);
 
-        // Register gamemodes
-        var gamemodeNames = GamemodeRegistration.GetExistingTypeNames();
-        GamemodeRegistration.PopulateGamemodeTable(gamemodeNames);
-
         // Update hooks
         MultiplayerHooking.Internal_OnStartServer();
 
         // Send a notification
         FusionNotifier.Send(new FusionNotification()
         {
-            title = "Started Server",
-            message = "Started a server!",
-            isMenuItem = false,
-            isPopup = true,
-            type = NotificationType.SUCCESS,
+            Title = "Started Server",
+            Message = "Started a server!",
+            SaveToMenu = false,
+            ShowPopup = true,
+            Type = NotificationType.SUCCESS,
         });
 
         // Unlock achievement
@@ -87,11 +88,11 @@ public static class InternalServerHelpers
         // Send a notification
         FusionNotifier.Send(new FusionNotification()
         {
-            title = "Joined Server",
-            message = "Joined a server!",
-            isMenuItem = false,
-            isPopup = true,
-            type = NotificationType.SUCCESS,
+            Title = "Joined Server",
+            Message = "Joined a server!",
+            SaveToMenu = false,
+            ShowPopup = true,
+            Type = NotificationType.SUCCESS,
         });
 
         // Unlock achievement
@@ -104,16 +105,12 @@ public static class InternalServerHelpers
     /// </summary>
     public static void OnDisconnect(string reason = "")
     {
-        // Cleanup gamemodes
-        GamemodeRegistration.ClearGamemodeTable();
+        // Cleanup modules
         ModuleMessageHandler.ClearHandlerTable();
 
         // Cleanup information
         DisposeUsers();
         NetworkEntityManager.OnCleanupEntities();
-
-        // Cleanup prefs
-        ServerSettingsManager.OnReceiveHostSettings(null);
 
         // Update hooks
         MultiplayerHooking.Internal_OnDisconnect();
@@ -123,22 +120,22 @@ public static class InternalServerHelpers
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                title = "Disconnected from Server",
-                message = "Disconnected from the current server!",
-                isMenuItem = false,
-                isPopup = true,
+                Title = "Disconnected from Server",
+                Message = "Disconnected from the current server!",
+                SaveToMenu = false,
+                ShowPopup = true,
             });
         }
         else
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                title = "Disconnected from Server",
-                message = $"You were disconnected for reason: {reason}",
-                isMenuItem = true,
-                isPopup = true,
-                popupLength = 5f,
-                type = NotificationType.WARNING,
+                Title = "Disconnected from Server",
+                Message = $"You were disconnected for reason: {reason}",
+                SaveToMenu = true,
+                ShowPopup = true,
+                PopupLength = 5f,
+                Type = NotificationType.WARNING,
             });
         }
     }
@@ -163,10 +160,10 @@ public static class InternalServerHelpers
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                title = $"{name} Join",
-                message = $"{name} joined the server.",
-                isMenuItem = false,
-                isPopup = true,
+                Title = $"{name} Joined",
+                Message = $"{name} joined the server.",
+                SaveToMenu = false,
+                ShowPopup = true,
             });
         }
     }
@@ -188,40 +185,16 @@ public static class InternalServerHelpers
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                title = $"{name} Leave",
-                message = $"{name} left the server.",
-                isMenuItem = false,
-                isPopup = true,
+                Title = $"{name} Left",
+                Message = $"{name} left the server.",
+                SaveToMenu = false,
+                ShowPopup = true,
             });
         }
 
-        MultiplayerHooking.Internal_OnPlayerLeave(playerId);
-
         DisposeUser(playerId);
-    }
 
-    /// <summary>
-    /// Gets the default metadata for the local player.
-    /// </summary>
-    /// <returns></returns>
-    public static FusionDictionary<string, string> GetInitialMetadata()
-    {
-        // Create the dict
-        var metadata = new FusionDictionary<string, string> {
-            // Username
-            { MetadataHelper.UsernameKey, PlayerIdManager.LocalUsername },
-
-            // Nickname
-            { MetadataHelper.NicknameKey, PlayerIdManager.LocalNickname },
-
-            // Permission
-            { MetadataHelper.PermissionKey, NetworkInfo.IsServer ? PermissionLevel.OWNER.ToString() : PermissionLevel.DEFAULT.ToString() },
-
-            // Platform
-            { MetadataHelper.PlatformKey, PlatformHelper.GetPlatformName() },
-        };
-
-        return metadata;
+        MultiplayerHooking.Internal_OnPlayerLeave(playerId);
     }
 
     /// <summary>

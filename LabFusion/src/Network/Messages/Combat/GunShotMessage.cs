@@ -1,6 +1,6 @@
 ﻿using LabFusion.Data;
-using LabFusion.Patching;
 using LabFusion.Entities;
+using LabFusion.Marrow.Patching;
 
 namespace LabFusion.Network;
 

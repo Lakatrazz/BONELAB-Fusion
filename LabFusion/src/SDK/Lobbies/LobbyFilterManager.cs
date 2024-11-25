@@ -1,70 +1,60 @@
 ﻿using LabFusion.Network;
 
-namespace LabFusion.SDK.Lobbies
+namespace LabFusion.SDK.Lobbies;
+
+public static class LobbyFilterManager
 {
-    public static class LobbyFilterManager
+    private static readonly List<ILobbyFilter> _lobbyFilters = new();
+    public static List<ILobbyFilter> LobbyFilters => _lobbyFilters;
+
+    public static event Action<ILobbyFilter> OnAddedFilter;
+
+    public static void LoadBuiltInFilters()
     {
-        private static readonly List<ILobbyFilter> _lobbyFilters = new();
-        public static List<ILobbyFilter> LobbyFilters => _lobbyFilters;
-
-        public static event Action<ILobbyFilter> OnAddedFilter;
-
-        public static void LoadBuiltInFilters()
+        // Lobby length filter
+        var lengthFilter = new GenericLobbyFilter("Hide Full Lobbies", (l, i) =>
         {
-            // Lobby length filter
-            var lengthFilter = new GenericLobbyFilter("Hide Full Lobbies", (l, i) =>
-            {
-                return i.MaxPlayers > i.PlayerCount;
-            });
-            lengthFilter.SetActive(true);
+            return i.LobbyInfo.MaxPlayers > i.LobbyInfo.PlayerCount;
+        });
+        lengthFilter.SetActive(true);
 
-            AddLobbyFilter(lengthFilter);
+        AddLobbyFilter(lengthFilter);
 
-            // Outdated filter
-            var outdatedFilter = new GenericLobbyFilter("Hide Mismatching Versions", (l, i) =>
-            {
-                return NetworkVerification.CompareVersion(i.LobbyVersion, FusionMod.Version) == VersionResult.Ok;
-            });
-            outdatedFilter.SetActive(true);
-
-            AddLobbyFilter(outdatedFilter);
-
-            // Platform filters
-            var pcFilter = new GenericLobbyFilter("Hide PC Lobbies", (l, i) =>
-            {
-                return i.IsAndroid;
-            });
-            pcFilter.SetActive(false);
-
-            AddLobbyFilter(pcFilter);
-
-            var questFilter = new GenericLobbyFilter("Hide Quest Lobbies", (l, i) =>
-            {
-                return !i.IsAndroid;
-            });
-            questFilter.SetActive(false);
-
-            AddLobbyFilter(questFilter);
-        }
-
-        public static void AddLobbyFilter(ILobbyFilter filter)
+        // Outdated filter
+        var outdatedFilter = new GenericLobbyFilter("Hide Mismatching Versions", (l, i) =>
         {
-            _lobbyFilters.Add(filter);
+            return NetworkVerification.CompareVersion(i.LobbyInfo.LobbyVersion, FusionMod.Version) == VersionResult.Ok;
+        });
+        outdatedFilter.SetActive(true);
 
-            OnAddedFilter?.Invoke(filter);
-        }
+        AddLobbyFilter(outdatedFilter);
 
-        public static bool FilterLobby(INetworkLobby lobby, LobbyMetadataInfo info)
+        // Friends filter
+        var friendsFilter = new GenericLobbyFilter("Friends Only", (l, i) =>
         {
-            foreach (var filter in LobbyFilters)
+            return NetworkInfo.CurrentNetworkLayer.IsFriend(i.LobbyInfo.LobbyId);
+        });
+
+        AddLobbyFilter(friendsFilter);
+    }
+
+    public static void AddLobbyFilter(ILobbyFilter filter)
+    {
+        _lobbyFilters.Add(filter);
+
+        OnAddedFilter?.Invoke(filter);
+    }
+
+    public static bool FilterLobby(INetworkLobby lobby, LobbyMetadataInfo info)
+    {
+        foreach (var filter in LobbyFilters)
+        {
+            if (filter.IsActive() && !filter.FilterLobby(lobby, info))
             {
-                if (filter.IsActive() && !filter.FilterLobby(lobby, info))
-                {
-                    return false;
-                }
+                return false;
             }
-
-            return true;
         }
+
+        return true;
     }
 }

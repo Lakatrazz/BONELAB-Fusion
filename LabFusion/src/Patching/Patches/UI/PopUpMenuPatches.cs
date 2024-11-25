@@ -2,6 +2,7 @@
 
 using LabFusion.Network;
 using LabFusion.RPC;
+using LabFusion.Scene;
 
 using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.Bonelab;
@@ -54,7 +55,7 @@ public static class AddDevMenuPatch
     public static void OnSpawnDelegate(PopUpMenuView menu, Action originalDelegate)
     {
         // If there is no server, we can just spawn the original items as normal
-        if (!NetworkInfo.HasServer)
+        if (CrossSceneManager.InUnsyncedScene())
         {
             originalDelegate?.Invoke();
             return;

@@ -1,5 +1,4 @@
-﻿using LabFusion.Preferences;
-using LabFusion.Utilities;
+﻿using LabFusion.Preferences.Server;
 
 namespace LabFusion.Network;
 
@@ -43,7 +42,7 @@ public static class NetworkVerification
     /// <returns></returns>
     public static bool IsClientApproved(ulong userId)
     {
-        var privacy = ServerSettingsManager.SavedSettings.Privacy.Value;
+        var privacy = SavedServerSettings.Privacy.Value;
 
         switch (privacy)
         {
@@ -56,18 +55,5 @@ public static class NetworkVerification
             case ServerPrivacy.FRIENDS_ONLY:
                 return NetworkHelper.IsFriend(userId);
         }
-    }
-
-    public static bool IsPlatformAllowed(bool allowQuest, bool allowPC)
-    {
-        bool onQuest = PlatformHelper.IsAndroid;
-
-        if (!allowQuest && onQuest)
-            return false;
-
-        if (!allowPC && !onQuest)
-            return false;
-
-        return true;
     }
 }

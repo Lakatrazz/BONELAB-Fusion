@@ -2,6 +2,7 @@
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Preferences.Client;
+using LabFusion.Preferences.Server;
 
 using MelonLoader;
 
@@ -12,36 +13,6 @@ public static class FusionPreferences
     public static MelonPreferences_Category prefCategory;
 
     public static event Action OnPrefsLoaded;
-
-    internal static void SendServerSettings()
-    {
-        if (!NetworkInfo.IsServer)
-        {
-            return;
-        }
-
-        using var writer = FusionWriter.Create();
-        var data = ServerSettingsData.Create(SerializedServerSettings.Create());
-        writer.Write(data);
-
-        using var message = FusionMessage.Create(NativeMessageTag.ServerSettings, writer);
-        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-    }
-
-    internal static void SendServerSettings(ulong longId)
-    {
-        if (!NetworkInfo.IsServer)
-        {
-            return;
-        }
-
-        using var writer = FusionWriter.Create(ServerSettingsData.Size);
-        var data = ServerSettingsData.Create(SerializedServerSettings.Create());
-        writer.Write(data);
-
-        using var message = FusionMessage.Create(NativeMessageTag.ServerSettings, writer);
-        MessageSender.SendFromServer(longId, NetworkChannel.Reliable, message);
-    }
 
     internal static void SendClientSettings()
     {
@@ -63,7 +34,7 @@ public static class FusionPreferences
         // Create preferences
         prefCategory = MelonPreferences.CreateCategory("BONELAB Fusion");
 
-        ServerSettingsManager.OnInitialize(prefCategory);
+        SavedServerSettings.OnInitialize(prefCategory);
 
         ClientSettings.OnInitialize(prefCategory);
 

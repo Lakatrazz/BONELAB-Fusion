@@ -1,5 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
+using LabFusion.Marrow;
+using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
@@ -46,6 +48,16 @@ public class PlayerRepAvatarMessage : FusionMessageHandler
         var data = reader.ReadFusionSerializable<PlayerRepAvatarData>();
 
         string barcode = data.barcode;
+
+        // Check for avatar blacklist
+        if (ModBlacklist.IsBlacklisted(barcode))
+        {
+#if DEBUG
+            FusionLogger.Warn($"Switching player avatar from {data.barcode} to PolyBlank because it is blacklisted!");
+#endif
+
+            barcode = BONELABAvatarReferences.PolyBlankBarcode;
+        }
 
         // Swap the avatar for the rep
         if (NetworkPlayerManager.TryGetPlayer(data.smallId, out var player))

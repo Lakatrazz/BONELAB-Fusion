@@ -1,7 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Player;
 using LabFusion.Representation;
-using LabFusion.Preferences;
+using LabFusion.Preferences.Server;
 using LabFusion.Senders;
 using LabFusion.Exceptions;
 
@@ -86,19 +86,29 @@ public class PermissionCommandRequestMessage : FusionMessageHandler
             case PermissionCommandType.UNKNOWN:
                 break;
             case PermissionCommandType.KICK:
-                if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, ServerSettingsManager.ActiveSettings.KickingAllowed.Value))
+                if (otherPlayer.IsHost)
+                {
+                    return;
+                }
+
+                if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.Kicking))
                 {
                     NetworkHelper.KickUser(otherPlayer);
                 }
                 break;
             case PermissionCommandType.BAN:
-                if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, ServerSettingsManager.ActiveSettings.BanningAllowed.Value))
+                if (otherPlayer.IsHost)
+                {
+                    return;
+                }
+
+                if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.Banning))
                 {
                     NetworkHelper.BanUser(otherPlayer);
                 }
                 break;
             case PermissionCommandType.TELEPORT_TO_THEM:
-                if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, ServerSettingsManager.ActiveSettings.Teleportation.Value))
+                if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.Teleportation))
                 {
                     PlayerRepUtilities.TryGetReferences(otherPlayer, out var references);
 
@@ -107,7 +117,7 @@ public class PermissionCommandRequestMessage : FusionMessageHandler
                 }
                 break;
             case PermissionCommandType.TELEPORT_TO_US:
-                if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, ServerSettingsManager.ActiveSettings.Teleportation.Value))
+                if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.Teleportation))
                 {
                     PlayerRepUtilities.TryGetReferences(playerId, out var references);
 

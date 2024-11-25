@@ -1,8 +1,5 @@
-﻿using BoneLib.BoneMenu;
+﻿using Il2CppSLZ.Marrow.Warehouse;
 
-using Il2CppSLZ.Marrow.Warehouse;
-
-using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Integration;
@@ -16,6 +13,8 @@ using LabFusion.Utilities;
 using LabFusion.Scene;
 
 using UnityEngine;
+using LabFusion.Menu;
+using LabFusion.Menu.Data;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -29,26 +28,17 @@ public class TeamDeathmatch : Gamemode
 
     public static TeamDeathmatch Instance { get; private set; }
 
-    public bool OverrideValues { get => _overrideValues; }
-
-    protected string _lavaGangOverride = null;
-    protected string _sabrelakeOverride = null;
-
-    protected Texture2D _lavaGangLogoOverride = null;
-    protected Texture2D _sabrelakeLogoOverride = null;
-
     private const int _defaultMinutes = 3;
     private const int _minMinutes = 2;
     private const int _maxMinutes = 60;
 
-    public override string GamemodeCategory => "Fusion";
-    public override string GamemodeName => "Team Deathmatch";
+    public override string Title => "Team Deathmatch";
+    public override string Author => FusionMod.ModAuthor;
+    public override Texture Logo => MenuResources.GetGamemodeIcon(Title);
 
     public override bool DisableDevTools => true;
     public override bool DisableSpawnGun => true;
     public override bool DisableManualUnragdoll => true;
-
-    public override bool PreventNewJoins => !_enabledLateJoining;
 
     public TriggerEvent OneMinuteLeftTrigger { get; set; }
     public TriggerEvent NaturalEndTrigger { get; set; }
@@ -56,10 +46,10 @@ public class TeamDeathmatch : Gamemode
     private float _timeOfStart;
     private bool _oneMinuteLeft;
 
-    private bool _overrideValues;
-
     private int _savedMinutes = _defaultMinutes;
     private int _totalMinutes = _defaultMinutes;
+
+    private int _minimumPlayers = 4;
 
     private readonly TeamManager _teamManager = new();
     public TeamManager TeamManager => _teamManager;
@@ -73,98 +63,163 @@ public class TeamDeathmatch : Gamemode
     private readonly MusicPlaylist _musicPlaylist = new();
     public MusicPlaylist MusicPlaylist => _musicPlaylist;
 
-    private readonly FusionDictionary<PlayerId, TeamLogoInstance> _logoInstances = new();
+    private readonly TeamLogoManager _teamLogoManager = new();
+    public TeamLogoManager TeamLogoManager => _teamLogoManager;
 
     private string _avatarOverride = null;
     private float? _vitalityOverride = null;
 
-    private bool _enabledLateJoining = true;
-
-    public override void OnBoneMenuCreated(Page page)
+    public override GroupElementData CreateSettingsGroup()
     {
-        base.OnBoneMenuCreated(page);
+        var group = base.CreateSettingsGroup();
 
-        page.CreateInt("Round Minutes", Color.white, startingValue: _totalMinutes, increment: 1, minValue: _minMinutes, maxValue: _maxMinutes, callback: (v) =>
+        var generalGroup = new GroupElementData("General");
+
+        group.AddElement(generalGroup);
+
+        var roundMinutesData = new IntElementData()
         {
-            _totalMinutes = v;
-            _savedMinutes = v;
-        });
-    }
+            Title = "Round Minutes",
+            Value = _totalMinutes,
+            Increment = 1,
+            MinValue = _minMinutes,
+            MaxValue = _maxMinutes,
+            OnValueChanged = (v) =>
+            {
+                _totalMinutes = v;
+                _savedMinutes = v;
+            },
+        };
 
-    public void SetLateJoining(bool enabled)
-    {
-        _enabledLateJoining = enabled;
-    }
+        generalGroup.AddElement(roundMinutesData);
 
-    public void SetRoundLength(int minutes)
-    {
-        _totalMinutes = minutes;
-    }
-
-    public void SetAvatarOverride(string barcode)
-    {
-        _avatarOverride = barcode;
-
-        if (IsActive())
+        var minimumPlayersData = new IntElementData()
         {
-            FusionPlayer.SetAvatarOverride(barcode);
-        }
+            Title = "Minimum Players",
+            Value = _minimumPlayers,
+            Increment = 1,
+            MinValue = 2,
+            MaxValue = 255,
+            OnValueChanged = (v) =>
+            {
+                _minimumPlayers = v;
+            }
+        };
+
+        generalGroup.AddElement(minimumPlayersData);
+
+        return group;
     }
 
-    public void SetPlayerVitality(float vitality)
+    public void AddTeams()
     {
-        _vitalityOverride = vitality;
-
-        if (IsActive())
-        {
-            FusionPlayer.SetPlayerVitality(vitality);
-        }
-    }
-
-    public void SetTeamDisplayName(string teamName, string displayName)
-    {
-        var team = TeamManager.GetTeamByName(teamName);
-
-        if (team != null)
-        {
-            team.DisplayName = displayName;
-        }
-    }
-
-    public void SetTeamLogo(string teamName, Texture2D logo)
-    {
-        // var team = teams.FirstOrDefault((t) => t.TeamName == teamName);
-        // 
-        // if (team != null)
-        // {
-        //     team.SetLogo(logo);
-        // }
-    }
-
-    public void AddDefaultTeams()
-    {
+        // TODO: Clean up
+        // Clear all team settings
         TeamManager.ClearTeams();
         TeamMusicManager.ClearTeams();
+        TeamLogoManager.ClearTeams();
 
-        Team sabrelake = new(DefaultSabrelakeName);
-        Team lavaGang = new(DefaultLavaGangName);
+        // Get the default values
+        var sabrelakeBarcode = FusionBoneTagReferences.TeamSabrelakeReference.Barcode.ToString();
+        var lavaGangBarcode = FusionBoneTagReferences.TeamLavaGangReference.Barcode.ToString();
+
+        var sabrelakeVictoryReference = FusionMonoDiscReferences.SabrelakeVictoryReference;
+        var sabrelakeFailureReference = FusionMonoDiscReferences.SabrelakeFailureReference;
+
+        var lavaGangVictoryReference = FusionMonoDiscReferences.LavaGangVictoryReference;
+        var lavaGangFailureReference = FusionMonoDiscReferences.LavaGangFailureReference;
+
+        var tieReference = FusionMonoDiscReferences.ErmReference;
+
+        var sabrelakeLogo = FusionContentLoader.SabrelakeLogo.Asset;
+        var lavaGangLogo = FusionContentLoader.LavaGangLogo.Asset;
+
+        var sabrelakeDisplayName = DefaultSabrelakeName;
+        var lavaGangDisplayName = DefaultLavaGangName;
+
+        // Get overrides
+        var musicSettings = GamemodeMusicSettings.Instance;
+
+        if (musicSettings != null)
+        {
+            if (musicSettings.TeamVictorySongOverrides.TryGetValue(sabrelakeBarcode, out var sabrelakeVictory))
+            {
+                sabrelakeVictoryReference = new MonoDiscReference(sabrelakeVictory);
+            }
+
+            if (musicSettings.TeamFailureSongOverrides.TryGetValue(sabrelakeBarcode, out var sabrelakeFailure))
+            {
+                sabrelakeFailureReference = new MonoDiscReference(sabrelakeFailure);
+            }
+
+            if (musicSettings.TeamVictorySongOverrides.TryGetValue(lavaGangBarcode, out var lavaGangVictory))
+            {
+                lavaGangVictoryReference = new MonoDiscReference(lavaGangVictory);
+            }
+
+            if (musicSettings.TeamFailureSongOverrides.TryGetValue(lavaGangBarcode, out var lavaGangFailure))
+            {
+                lavaGangFailureReference = new MonoDiscReference(lavaGangFailure);
+            }
+
+            if (!string.IsNullOrWhiteSpace(musicSettings.TieSongOverride))
+            {
+                tieReference = new(musicSettings.TieSongOverride);
+            }
+        }
+
+        var teamSettings = GamemodeTeamSettings.Instance;
+
+        if (teamSettings != null)
+        {
+            if (teamSettings.TeamLogoOverrides.TryGetValue(sabrelakeBarcode, out var newSabrelakeLogo))
+            {
+                sabrelakeLogo = newSabrelakeLogo;
+            }
+
+            if (teamSettings.TeamLogoOverrides.TryGetValue(lavaGangBarcode, out var newLavaGangLogo))
+            {
+                lavaGangLogo = newLavaGangLogo;
+            }
+
+            if (teamSettings.TeamNameOverrides.TryGetValue(sabrelakeBarcode, out var newSabrelakeName))
+            {
+                sabrelakeDisplayName = newSabrelakeName;
+            }
+
+            if (teamSettings.TeamNameOverrides.TryGetValue(lavaGangBarcode, out var newLavaGangName))
+            {
+                lavaGangDisplayName = newLavaGangName;
+            }
+        }
+
+        // Create the teams
+        Team sabrelake = new(DefaultSabrelakeName)
+        {
+            DisplayName = sabrelakeDisplayName
+        };
+
+        Team lavaGang = new(DefaultLavaGangName)
+        {
+            DisplayName = lavaGangDisplayName
+        };
 
         TeamMusicManager.SetMusic(sabrelake, new TeamMusic()
         {
-            WinMusic = new AudioReference(FusionMonoDiscReferences.SabrelakeVictoryReference),
-            LoseMusic = new AudioReference(FusionMonoDiscReferences.SabrelakeFailureReference),
+            WinMusic = new AudioReference(sabrelakeVictoryReference),
+            LoseMusic = new AudioReference(sabrelakeFailureReference),
         });
 
         TeamMusicManager.SetMusic(lavaGang, new TeamMusic()
         {
-            WinMusic = new AudioReference(FusionMonoDiscReferences.LavaGangVictoryReference),
-            LoseMusic = new AudioReference(FusionMonoDiscReferences.LavaGangFailureReference),
+            WinMusic = new AudioReference(lavaGangVictoryReference),
+            LoseMusic = new AudioReference(lavaGangFailureReference),
         });
 
-        TeamMusicManager.TieMusic = new AudioReference(FusionMonoDiscReferences.ErmReference);
+        TeamMusicManager.TieMusic = new AudioReference(tieReference);
 
-        //sabrelake.SetLogo(FusionContentLoader.SabrelakeLogo.Asset);
-        //lavaGang.SetLogo(FusionContentLoader.LavaGangLogo.Asset);
+        TeamLogoManager.SetLogo(sabrelake, sabrelakeLogo);
+        TeamLogoManager.SetLogo(lavaGang, lavaGangLogo);
 
         TeamManager.AddTeam(sabrelake);
         TeamManager.AddTeam(lavaGang);
@@ -177,13 +232,14 @@ public class TeamDeathmatch : Gamemode
         Instance = this;
 
         MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
-        MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
         MultiplayerHooking.OnPlayerAction += OnPlayerAction;
         FusionOverrides.OnValidateNametag += OnValidateNametag;
 
         // Register team manager
         TeamManager.Register(this);
         TeamManager.OnAssignedToTeam += OnAssignedToTeam;
+
+        TeamLogoManager.Register(TeamManager);
 
         // Register score keeper
         _scoreKeeper = new(TeamManager);
@@ -197,8 +253,6 @@ public class TeamDeathmatch : Gamemode
 
         NaturalEndTrigger = new TriggerEvent(nameof(NaturalEndTrigger), Relay, true);
         NaturalEndTrigger.OnTriggered += OnNaturalEnd;
-
-        SetDefaultValues();
     }
 
     public override void OnGamemodeUnregistered()
@@ -214,6 +268,8 @@ public class TeamDeathmatch : Gamemode
         TeamManager.Unregister();
         TeamManager.OnAssignedToTeam -= OnAssignedToTeam;
 
+        TeamLogoManager.Unregister();
+
         // Unregister score keeper
         ScoreKeeper.Unregister();
         ScoreKeeper.OnScoreChanged -= OnScoreChanged;
@@ -221,7 +277,6 @@ public class TeamDeathmatch : Gamemode
         _scoreKeeper = null;
 
         MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
-        MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
         MultiplayerHooking.OnPlayerAction -= OnPlayerAction;
         FusionOverrides.OnValidateNametag -= OnValidateNametag;
 
@@ -230,15 +285,16 @@ public class TeamDeathmatch : Gamemode
         NaturalEndTrigger.UnregisterEvent();
     }
 
+    public override bool CheckReadyConditions()
+    {
+        return PlayerIdManager.PlayerCount >= _minimumPlayers;
+    }
+
     private void OnAssignedToTeam(PlayerId playerId, Team team)
     {
-        if (playerId.IsOwner)
+        if (playerId.IsMe)
         {
             OnSelfAssigned(team);
-        }
-        else
-        {
-            OnOtherAssigned(playerId, team);
         }
 
         // Update overrides
@@ -249,12 +305,11 @@ public class TeamDeathmatch : Gamemode
     {
         FusionNotification assignmentNotification = new FusionNotification()
         {
-            title = "Team Deathmatch Assignment",
-            showTitleOnPopup = true,
-            message = $"Your team is: {team.DisplayName}",
-            isMenuItem = false,
-            isPopup = true,
-            popupLength = 5f,
+            Title = "Team Deathmatch Assignment",
+            Message = $"Your team is: {team.DisplayName}",
+            SaveToMenu = false,
+            ShowPopup = true,
+            PopupLength = 5f,
         };
 
         FusionNotifier.Send(assignmentNotification);
@@ -263,14 +318,9 @@ public class TeamDeathmatch : Gamemode
         FusionSceneManager.HookOnTargetLevelLoad(() => InitializeTeamSpawns(team));
     }
 
-    private void OnOtherAssigned(PlayerId playerId, Team team)
-    {
-        AddLogo(playerId, team);
-    }
-
     protected bool OnValidateNametag(PlayerId id)
     {
-        if (!IsActive())
+        if (!IsStarted)
         {
             return true;
         }
@@ -278,48 +328,39 @@ public class TeamDeathmatch : Gamemode
         return TeamManager.GetPlayerTeam(id) == TeamManager.GetLocalTeam();
     }
 
-    public override void OnMainSceneInitialized()
-    {
-        if (!_overrideValues)
-        {
-            SetDefaultValues();
-        }
-        else
-        {
-            _overrideValues = false;
-        }
-    }
-
-    public override void OnLoadingBegin()
-    {
-        _overrideValues = false;
-    }
-
-    public void SetDefaultValues()
+    public void ApplyGamemodeSettings()
     {
         _totalMinutes = _savedMinutes;
 
-        AudioReference[] playlist = AudioReference.CreateReferences(FusionMonoDiscReferences.CombatSongReferences);
+        var songReferences = FusionMonoDiscReferences.CombatSongReferences;
+
+        var musicSettings = GamemodeMusicSettings.Instance;
+
+        if (musicSettings != null && musicSettings.SongOverrides.Count > 0)
+        {
+            songReferences = new MonoDiscReference[musicSettings.SongOverrides.Count];
+
+            for (var i = 0; i < songReferences.Length; i++)
+            {
+                songReferences[i] = new(musicSettings.SongOverrides.ElementAt(i));
+            }
+        }
+
+        AudioReference[] playlist = AudioReference.CreateReferences(songReferences);
+
         MusicPlaylist.SetPlaylist(playlist);
 
-        AddDefaultTeams();
+        AddTeams();
 
         _avatarOverride = null;
         _vitalityOverride = null;
 
-        _enabledLateJoining = true;
-    }
+        var playerSettings = GamemodePlayerSettings.Instance;
 
-    public void SetOverriden()
-    {
-        if (FusionSceneManager.IsLoading())
+        if (playerSettings != null)
         {
-            if (!_overrideValues)
-            {
-                SetDefaultValues();
-            }
-
-            _overrideValues = true;
+            _avatarOverride = playerSettings.AvatarOverride;
+            _vitalityOverride = playerSettings.VitalityOverride;
         }
     }
 
@@ -370,7 +411,7 @@ public class TeamDeathmatch : Gamemode
             return;
         }
 
-        if (!IsActive())
+        if (!IsStarted)
         {
             return;
         }
@@ -402,7 +443,7 @@ public class TeamDeathmatch : Gamemode
             }
 
             // If we are the killer, increment our achievement
-            if (otherPlayer.IsOwner)
+            if (otherPlayer.IsMe)
             {
                 AchievementManager.IncrementAchievements<KillerAchievement>();
             }
@@ -415,27 +456,20 @@ public class TeamDeathmatch : Gamemode
     /// <param name="id"></param>
     protected void OnPlayerJoin(PlayerId id)
     {
-        if (NetworkInfo.IsServer && IsActive())
+        if (NetworkInfo.IsServer && IsStarted)
         {
-            AssignTeam(id);
-        }
-    }
-
-    protected void OnPlayerLeave(PlayerId id)
-    {
-        if (_logoInstances.TryGetValue(id, out var instance))
-        {
-            instance.Cleanup();
-            _logoInstances.Remove(id);
+            TeamManager.AssignToSmallestTeam(id);
         }
     }
 
     /// <summary>
     /// Called when the host begins the gamemode. Affects the local player, but also the host so it can send messages to other players.
     /// </summary>
-    protected override void OnStartGamemode()
+    public override void OnGamemodeStarted()
     {
-        base.OnStartGamemode();
+        base.OnGamemodeStarted();
+
+        ApplyGamemodeSettings();
 
         MusicPlaylist.StartPlaylist();
 
@@ -476,11 +510,13 @@ public class TeamDeathmatch : Gamemode
     /// <summary>
     /// Called when the host ends the active gamemode. Called events affect the local player.
     /// </summary>
-    protected override void OnStopGamemode()
+    public override void OnGamemodeStopped()
     {
-        base.OnStopGamemode();
+        base.OnGamemodeStopped();
 
         MusicPlaylist.StopPlaylist();
+
+        TeamLogoManager.ClearTeams();
 
         var leaders = TeamManager.Teams.OrderBy(team => ScoreKeeper.GetScore(team)).Reverse().ToList();
 
@@ -513,15 +549,14 @@ public class TeamDeathmatch : Gamemode
         // Show the winners in a notification
         FusionNotifier.Send(new FusionNotification()
         {
-            title = "Team Deathmatch Completed",
-            showTitleOnPopup = true,
+            Title = "Team Deathmatch Completed",
 
-            message = message,
+            Message = message,
 
-            popupLength = 6f,
+            PopupLength = 6f,
 
-            isMenuItem = false,
-            isPopup = true,
+            SaveToMenu = false,
+            ShowPopup = true,
         });
 
         _timeOfStart = 0f;
@@ -532,9 +567,6 @@ public class TeamDeathmatch : Gamemode
 
         // Remove ammo
         FusionPlayer.SetAmmo(0);
-
-        // Remove all team logos
-        RemoveLogos();
 
         // Push nametag updates
         FusionOverrides.ForceUpdateOverrides();
@@ -560,7 +592,7 @@ public class TeamDeathmatch : Gamemode
         base.OnUpdate();
 
         // Make sure the gamemode is active
-        if (!IsActive())
+        if (!IsStarted)
         {
             return;
         }
@@ -573,8 +605,6 @@ public class TeamDeathmatch : Gamemode
         {
             return;
         }
-
-        UpdateLogos();
 
         // Get time left
         float minutesLeft = GetMinutesLeft();
@@ -592,53 +622,19 @@ public class TeamDeathmatch : Gamemode
         // Should the gamemode end?
         if (minutesLeft <= 0f)
         {
-            StopGamemode();
+            GamemodeManager.StopGamemode();
             NaturalEndTrigger.TryInvoke();
         }
-    }
-
-    protected void UpdateLogos()
-    {
-        // Update logos
-        foreach (var logo in _logoInstances.Values)
-        {
-            // Change visibility
-            bool visible = logo.team == TeamManager.GetLocalTeam();
-            if (visible != logo.IsShown())
-            {
-                logo.Toggle(visible);
-            }
-
-            // Update position
-            logo.Update();
-        }
-    }
-
-    protected void AddLogo(PlayerId id, Team team)
-    {
-        var logo = new TeamLogoInstance(id, team);
-        _logoInstances.Add(id, logo);
-    }
-
-    protected void RemoveLogos()
-    {
-        foreach (var logo in _logoInstances.Values)
-        {
-            logo.Cleanup();
-        }
-
-        _logoInstances.Clear();
     }
 
     private void OnOneMinuteLeft()
     {
         FusionNotifier.Send(new()
         {
-            title = "Team Deathmatch Timer",
-            showTitleOnPopup = true,
-            message = "One minute left!",
-            isMenuItem = false,
-            isPopup = true,
+            Title = "Team Deathmatch Timer",
+            Message = "One minute left!",
+            SaveToMenu = false,
+            ShowPopup = true,
         });
     }
 
@@ -681,7 +677,7 @@ public class TeamDeathmatch : Gamemode
         {
             winMusic.LoadClip((clip) =>
             {
-                FusionAudio.Play2D(clip, 0.2f);
+                SafeAudio3dPlayer.Play2dOneShot(clip, SafeAudio3dPlayer.NonDiegeticMusic, SafeAudio3dPlayer.MusicVolume);
             });
 
             return;
@@ -691,7 +687,7 @@ public class TeamDeathmatch : Gamemode
 
         AudioLoader.LoadMonoDisc(randomChoice, (c) =>
         {
-            FusionAudio.Play2D(c, 0.2f);
+            SafeAudio3dPlayer.Play2dOneShot(c, SafeAudio3dPlayer.NonDiegeticMusic, SafeAudio3dPlayer.MusicVolume);
         });
     }
 
@@ -703,7 +699,7 @@ public class TeamDeathmatch : Gamemode
         {
             loseMusic.LoadClip((clip) =>
             {
-                FusionAudio.Play2D(clip, 0.2f);
+                SafeAudio3dPlayer.Play2dOneShot(clip, SafeAudio3dPlayer.NonDiegeticMusic, SafeAudio3dPlayer.MusicVolume);
             });
 
             return;
@@ -713,7 +709,7 @@ public class TeamDeathmatch : Gamemode
 
         AudioLoader.LoadMonoDisc(randomChoice, (c) =>
         {
-            FusionAudio.Play2D(c, 0.2f);
+            SafeAudio3dPlayer.Play2dOneShot(c, SafeAudio3dPlayer.NonDiegeticMusic, SafeAudio3dPlayer.MusicVolume);
         });
     }
 
@@ -728,14 +724,14 @@ public class TeamDeathmatch : Gamemode
 
         tieMusic.LoadClip((clip) =>
         {
-            FusionAudio.Play2D(clip, 0.2f);
+            SafeAudio3dPlayer.Play2dOneShot(clip, SafeAudio3dPlayer.NonDiegeticMusic, SafeAudio3dPlayer.MusicVolume);
         });
     }
 
     protected static void InitializeTeamSpawns(Team team)
     {
         // Get all spawn points
-        List<Transform> transforms = new List<Transform>();
+        var transforms = new List<Transform>();
         BoneTagReference tag = null;
 
         if (team.TeamName == DefaultSabrelakeName)
@@ -771,27 +767,19 @@ public class TeamDeathmatch : Gamemode
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                title = "Team Deathmatch Point",
-                showTitleOnPopup = true,
-                message = $"{localTeam.DisplayName}'s score is {score}!",
-                isMenuItem = false,
-                isPopup = true,
-                popupLength = 0.7f,
+                Title = "Team Deathmatch Point",
+                Message = $"{localTeam.DisplayName}'s score is {score}!",
+                SaveToMenu = false,
+                ShowPopup = true,
+                PopupLength = 0.7f,
             });
         }
     }
 
     protected void SetTeams()
     {
-        // Shuffle the player teams
-        var players = new List<PlayerId>(PlayerIdManager.PlayerIds);
-        players.Shuffle();
-
         // Assign every team
-        foreach (var player in players)
-        {
-            AssignTeam(player);
-        }
+        TeamManager.AssignToRandomTeams();
     }
 
     protected void ResetTeams()
@@ -801,13 +789,5 @@ public class TeamDeathmatch : Gamemode
 
         // Reset all scores
         ScoreKeeper.ResetScores();
-    }
-
-    protected void AssignTeam(PlayerId id)
-    {
-        // Get team with fewest players
-        var newTeam = TeamManager.GetTeamWithFewestPlayers();
-
-        TeamManager.TryAssignTeam(id, newTeam);
     }
 }

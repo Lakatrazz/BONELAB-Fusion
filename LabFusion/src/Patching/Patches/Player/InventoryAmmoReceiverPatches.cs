@@ -1,18 +1,15 @@
 ﻿using HarmonyLib;
 
-using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.RPC;
 using LabFusion.Utilities;
+using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow.Interaction;
-using LabFusion.Entities;
 using Il2CppSLZ.Marrow;
 
-
 namespace LabFusion.Patching;
-
 
 [HarmonyPatch(typeof(InventoryAmmoReceiver), nameof(InventoryAmmoReceiver.OnHandGrab))]
 public class InventoryAmmoReceiverGrab
@@ -24,7 +21,7 @@ public class InventoryAmmoReceiverGrab
             return true;
         }
 
-        if (!__instance._parentRigManager.IsSelf())
+        if (!__instance._parentRigManager.IsLocalPlayer())
         {
             return true;
         }
@@ -108,7 +105,7 @@ public class InventoryAmmoReceiverDrop
             return true;
         }
 
-        if (!__instance._parentRigManager.IsSelf())
+        if (!__instance._parentRigManager.IsLocalPlayer())
         {
             return true;
         }

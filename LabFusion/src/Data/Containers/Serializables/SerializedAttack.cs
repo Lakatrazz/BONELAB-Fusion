@@ -2,6 +2,7 @@
 using Il2CppSLZ.Marrow.Data;
 
 using LabFusion.Network;
+using LabFusion.Scene;
 
 using UnityEngine;
 
@@ -22,7 +23,7 @@ public class SerializedAttack : IFusionSerializable
     {
         writer.Write(attack.damage);
         writer.Write((int)attack.attackType);
-        writer.Write(attack.origin);
+        writer.Write(NetworkTransformManager.EncodePosition(attack.origin));
         writer.Write(attack.direction);
         writer.Write(attack.normal);
     }
@@ -31,7 +32,7 @@ public class SerializedAttack : IFusionSerializable
     {
         float damage = reader.ReadSingle();
         AttackType attackType = (AttackType)reader.ReadInt32();
-        Vector3 origin = reader.ReadVector3();
+        Vector3 origin = NetworkTransformManager.DecodePosition(reader.ReadVector3());
         Vector3 direction = reader.ReadVector3();
         Vector3 normal = reader.ReadVector3();
 

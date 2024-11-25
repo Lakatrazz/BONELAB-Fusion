@@ -57,7 +57,7 @@ public static class RigData
         // Update avatar
         if (manager._avatar != null)
         {
-            FusionPlayer.Internal_OnAvatarChanged(manager, manager._avatar, manager.AvatarCrate.Barcode.ID);
+            LocalPlayer.InvokeAvatarChanged(manager._avatar, manager.AvatarCrate.Barcode.ID);
         }
     }
 

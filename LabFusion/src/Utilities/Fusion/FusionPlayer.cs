@@ -1,7 +1,4 @@
-﻿using BoneLib;
-
-using LabFusion.Data;
-using LabFusion.Extensions;
+﻿using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Preferences;
 using LabFusion.Player;
@@ -9,6 +6,8 @@ using LabFusion.Representation;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Senders;
 using LabFusion.Scene;
+using LabFusion.Marrow;
+using LabFusion.Extensions;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
 using Il2CppSLZ.Marrow.Warehouse;
@@ -18,7 +17,6 @@ using Il2CppSLZ.Marrow;
 using UnityEngine;
 
 using Avatar = Il2CppSLZ.VRMK.Avatar;
-using LabFusion.Marrow;
 
 namespace LabFusion.Utilities;
 
@@ -30,9 +28,32 @@ public static class FusionPlayer
     public static float? VitalityOverride { get; internal set; } = null;
     public static string AvatarOverride { get; internal set; } = null;
 
+    private static bool _brokeBounds = false;
+
+    internal static void OnInitializeMelon()
+    {
+        LobbyInfoManager.OnLobbyInfoChanged += OnLobbyInfoChanged;
+        LocalPlayer.OnAvatarChanged += OnAvatarChanged;
+    }
+
+    private static void OnLobbyInfoChanged()
+    {
+        // Update mortality
+        if (!GamemodeManager.IsGamemodeStarted)
+        {
+            ResetMortality();
+        }
+    }
+
     internal static void OnMainSceneInitialized()
     {
         LastAttacker = null;
+
+        if (_brokeBounds)
+        {
+            Physics.autoSimulation = true;
+            _brokeBounds = false;
+        }
     }
 
     internal static void OnUpdate()
@@ -55,35 +76,40 @@ public static class FusionPlayer
         var rm = RigData.Refs.RigManager;
         var position = rm.physicsRig.feet.transform.position;
 
-        if (!position.IsNanOrInf())
+        if (NetworkTransformManager.IsInBounds(position))
         {
             return;
         }
 
 #if DEBUG
-        FusionLogger.Warn("Player was sent out of floating point, reloading scene.");
+        FusionLogger.Warn("Player was sent out of bounds, reloading scene.");
 #endif
+
+        // Incase we hit NaN, don't simulate physics!
+        Physics.autoSimulation = false;
+        _brokeBounds = true;
 
         if (NetworkInfo.HasServer && !NetworkInfo.IsServer)
         {
-            NetworkHelper.Disconnect("Game Crash");
+            NetworkHelper.Disconnect("Left Bounds");
         }
 
         SceneStreamer.Reload();
 
         FusionNotifier.Send(new FusionNotification()
         {
-            isPopup = true,
-            showTitleOnPopup = true,
-            title = "Whoops! Sorry about that!",
-            type = NotificationType.WARNING,
-            message = "The scene was reloaded due to a physics crash.",
-            popupLength = 6f,
+            ShowPopup = true,
+            Title = "Whoops! Sorry about that!",
+            Type = NotificationType.WARNING,
+            Message = "The scene was reloaded due to being sent far out of bounds.",
+            PopupLength = 6f,
         });
     }
 
-    internal static void Internal_OnAvatarChanged(RigManager rigManager, Avatar avatar, string barcode)
+    private static void OnAvatarChanged(Avatar avatar, string barcode)
     {
+        var rigManager = RigData.Refs.RigManager;
+
         // Save the stats
         RigData.RigAvatarStats = new SerializedAvatarStats(avatar);
         RigData.RigAvatarId = barcode;
@@ -97,7 +123,16 @@ public static class FusionPlayer
             Internal_ChangePlayerHealth();
 
         // Check player avatar
-        var crate = rigManager.AvatarCrate.Crate;
+        var crateReference = new AvatarCrateReference(barcode);
+
+        var crate = crateReference.Crate;
+
+        if (crate != null)
+        {
+            // Apply metadata
+            LocalPlayer.Metadata.TrySetMetadata(MetadataHelper.AvatarTitleKey, crate.Title);
+            LocalPlayer.Metadata.TrySetMetadata(MetadataHelper.AvatarModIdKey, CrateFilterer.GetModId(crate.Pallet).ToString());
+        }
 
         if (AvatarOverride != null && !FusionAvatar.IsMatchingAvatar(barcode, AvatarOverride))
         {
@@ -108,18 +143,15 @@ public static class FusionPlayer
         {
             if (PlayerIdManager.LocalId != null && PlayerIdManager.LocalId.TryGetPermissionLevel(out var level))
             {
-                var requirement = ServerSettingsManager.ActiveSettings.CustomAvatarsAllowed.Value;
+                var requirement = LobbyInfoManager.LobbyInfo.CustomAvatars;
 
                 if (!FusionPermissions.HasSufficientPermissions(level, requirement))
                 {
                     // Change to polyblank, we don't have permission
-                    rigManager.SwapAvatarCrate(new Barcode(FusionAvatar.POLY_BLANK_BARCODE), true);
+                    rigManager.SwapAvatarCrate(new Barcode(BONELABAvatarReferences.PolyBlankBarcode), true);
                 }
             }
         }
-
-        // Invoke hooks and other events
-        PlayerAdditionsHelper.OnAvatarChanged(rigManager);
     }
 
     /// <summary>
@@ -138,14 +170,16 @@ public static class FusionPlayer
     }
 
     /// <summary>
-    /// Checks if the rigmanager is ourselves.
+    /// Checks if the RigManager is the local player.
     /// </summary>
     /// <param name="rigManager"></param>
     /// <returns></returns>
-    public static bool IsSelf(this RigManager rigManager)
+    public static bool IsLocalPlayer(this RigManager rigManager)
     {
         if (!RigData.HasPlayer)
+        {
             return true;
+        }
 
         return rigManager == RigData.Refs.RigManager;
     }
@@ -171,43 +205,27 @@ public static class FusionPlayer
     }
 
     /// <summary>
-    /// Checks if we are allowed to unragdoll.
-    /// </summary>
-    /// <returns></returns>
-    public static bool CanUnragdoll()
-    {
-        // Check gamemode
-        if (Gamemode.ActiveGamemode != null)
-        {
-            var gamemode = Gamemode.ActiveGamemode;
-
-            if (gamemode.DisableManualUnragdoll)
-                return false;
-        }
-
-        return true;
-    }
-
-    /// <summary>
     /// Sets the mortality of the player.
     /// </summary>
-    /// <param name="isMortal"></param>
-    public static void SetMortality(bool isMortal)
+    /// <param name="mortal"></param>
+    public static void SetMortality(bool mortal)
     {
+        if (!RigData.HasPlayer)
+        {
+            return;
+        }
+
         var rm = RigData.Refs.RigManager;
 
-        if (!rm.IsNOC())
-        {
-            var playerHealth = rm.health.TryCast<Player_Health>();
+        var playerHealth = rm.health.TryCast<Player_Health>();
 
-            if (isMortal)
-            {
-                playerHealth.healthMode = Health.HealthMode.Mortal;
-            }
-            else
-            {
-                playerHealth.healthMode = Health.HealthMode.Invincible;
-            }
+        if (mortal)
+        {
+            playerHealth.healthMode = Health.HealthMode.Mortal;
+        }
+        else
+        {
+            playerHealth.healthMode = Health.HealthMode.Invincible;
         }
     }
 
@@ -217,9 +235,19 @@ public static class FusionPlayer
     public static void ResetMortality()
     {
         if (!NetworkInfo.HasServer)
+        {
             return;
+        }
 
-        SetMortality(CommonPreferences.IsMortal);
+        // Knockout mode can't die
+        if (CommonPreferences.Knockout)
+        {
+            SetMortality(false);
+        }
+        else
+        {
+            SetMortality(CommonPreferences.Mortality);
+        }
     }
 
     /// <summary>
@@ -297,7 +325,7 @@ public static class FusionPlayer
                 // If the avatar forcing doesn't work, change into polyblank
                 if (!success)
                 {
-                    rm.SwapAvatarCrate(new Barcode(FusionAvatar.POLY_BLANK_BARCODE), true);
+                    rm.SwapAvatarCrate(new Barcode(BONELABAvatarReferences.PolyBlankBarcode), true);
                 }
             }));
         }

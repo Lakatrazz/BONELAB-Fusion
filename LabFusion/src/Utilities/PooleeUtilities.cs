@@ -68,20 +68,20 @@ public static class PooleeUtilities
         MessageSender.SendToServer(NetworkChannel.Reliable, message);
     }
 
-    public static void RequestSpawn(string barcode, SerializedTransform serializedTransform, uint trackerId)
+    public static void RequestSpawn(string barcode, SerializedTransform serializedTransform, uint trackerId, bool spawnEffect)
     {
         using var writer = FusionWriter.Create(SpawnRequestData.Size);
-        var data = SpawnRequestData.Create(PlayerIdManager.LocalSmallId, barcode, serializedTransform, trackerId);
+        var data = SpawnRequestData.Create(PlayerIdManager.LocalSmallId, barcode, serializedTransform, trackerId, spawnEffect);
         writer.Write(data);
 
         using var message = FusionMessage.Create(NativeMessageTag.SpawnRequest, writer);
         MessageSender.SendToServer(NetworkChannel.Reliable, message);
     }
 
-    public static void SendSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, uint trackerId = 0)
+    public static void SendSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, uint trackerId = 0, bool spawnEffect = false)
     {
         using var writer = FusionWriter.Create(SpawnResponseData.GetSize(barcode));
-        var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, trackerId);
+        var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, trackerId, spawnEffect);
         writer.Write(data);
 
         using var message = FusionMessage.Create(NativeMessageTag.SpawnResponse, writer);

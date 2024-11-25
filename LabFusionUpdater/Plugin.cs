@@ -4,7 +4,6 @@
 using MelonLoader;
 using MelonLoader.Utils;
 
-using System;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
@@ -13,18 +12,11 @@ using static MelonLoader.MelonLogger;
 
 namespace LabFusionUpdater;
 
-public struct FusionUpdaterVersion
-{
-    public const byte versionMajor = 1;
-    public const byte versionMinor = 0;
-    public const short versionPatch = 0;
-}
-
 public class FusionUpdaterPlugin : MelonPlugin
 {
     public const string Name = "LabFusion Updater";
     public const string Author = "Lakatrazz";
-    public static readonly Version Version = new(FusionUpdaterVersion.versionMajor, FusionUpdaterVersion.versionMinor, FusionUpdaterVersion.versionPatch);
+    public const string Version = "1.1.0";
 
     public static FusionUpdaterPlugin Instance { get; private set; }
     public static Instance Logger { get; private set; }
@@ -66,10 +58,5 @@ public class FusionUpdaterPlugin : MelonPlugin
         {
             Updater.UpdateMod();
         }
-    }
-
-    public override void OnApplicationQuit() 
-    {
-        Updater.UpdatePlugin();
     }
 }

@@ -41,8 +41,27 @@ public static class CrossSceneManager
         return NetworkInfo.IsServer;
     }
 
+    /// <summary>
+    /// Checks if the current scene should not be synced (usually if there is no server, or if this is in <see cref="Purgatory"/>.
+    /// </summary>
+    /// <returns>If the scene is unsynced.</returns>
+    public static bool InUnsyncedScene()
+    {
+        return !NetworkInfo.HasServer || Purgatory;
+    }
+
     public static bool InCurrentScene(PlayerId player)
     {
+        if (player.IsMe)
+        {
+            return true;
+        }
+
+        if (InUnsyncedScene())
+        {
+            return false;
+        }
+
         return true;
     }
 

@@ -1,10 +1,5 @@
-﻿using LabFusion.Network;
-using LabFusion.Player;
+﻿using LabFusion.Player;
 using LabFusion.Senders;
-
-using Il2CppSLZ.Marrow;
-
-using BoneLib.BoneMenu;
 
 namespace LabFusion.Utilities;
 
@@ -13,7 +8,6 @@ public delegate void ServerEvent();
 public delegate void UpdateEvent();
 public delegate void PlayerUpdate(PlayerId playerId);
 public delegate void PlayerAction(PlayerId playerId, PlayerActionType type, PlayerId otherPlayer = null);
-public delegate void LobbyMenuAction(Page page, INetworkLobby lobby);
 
 /// <summary>
 /// Hooks for getting events from the server, players, etc.
@@ -29,7 +23,6 @@ public static class MultiplayerHooking
     public static event PlayerUpdate OnPlayerJoin, OnPlayerLeave;
     public static event PlayerAction OnPlayerAction;
     public static event PlayerUpdate OnPlayerCatchup;
-    public static event LobbyMenuAction OnLobbyCategoryCreated;
 
     internal static bool Internal_OnShouldAllowConnection(PlayerId playerId, out string reason)
     {
@@ -62,13 +55,6 @@ public static class MultiplayerHooking
     internal static void Internal_OnPlayerAction(PlayerId id, PlayerActionType type, PlayerId otherPlayer = null) => OnPlayerAction.InvokeSafe(id, type, otherPlayer, "executing OnPlayerAction hook");
 
     internal static void Internal_OnPlayerCatchup(PlayerId playerId) => OnPlayerCatchup.InvokeSafe(playerId, "executing OnPlayerCatchup hook");
-
-    internal static void Internal_OnLobbyCategoryCreated(Page page, INetworkLobby lobby) => OnLobbyCategoryCreated.InvokeSafe(page, lobby, "executing OnLobbyCategoryCreated");
-
-    // Settings updates
-    public static event ServerEvent OnServerSettingsChanged;
-
-    internal static void Internal_OnServerSettingsChanged() => OnServerSettingsChanged.InvokeSafe("executing server settings changed hook");
 
     // Unity hooks
     /// <summary>

@@ -1,5 +1,4 @@
-﻿using Il2CppSLZ.Marrow.Audio;
-using Il2CppSLZ.Marrow.Warehouse;
+﻿using Il2CppSLZ.Marrow.Warehouse;
 
 using LabFusion.Extensions;
 using LabFusion.Marrow;
@@ -12,10 +11,11 @@ using LabFusion.Senders;
 using LabFusion.Utilities;
 using LabFusion.Scene;
 using LabFusion.SDK.Triggers;
+using LabFusion.Menu;
 
 using UnityEngine;
 
-using BoneLib.BoneMenu;
+using LabFusion.Menu.Data;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -31,14 +31,13 @@ public class Deathmatch : Gamemode
     private const int _maxMinutes = 60;
 
     // Default metadata keys
-    public override string GamemodeCategory => "Fusion";
-    public override string GamemodeName => "Deathmatch";
+    public override string Title => "Deathmatch";
+    public override string Author => FusionMod.ModAuthor;
+    public override Texture Logo => MenuResources.GetGamemodeIcon(Title);
 
     public override bool DisableDevTools => true;
     public override bool DisableSpawnGun => true;
     public override bool DisableManualUnragdoll => true;
-
-    public override bool PreventNewJoins => !_enabledLateJoining;
 
     public TriggerEvent OneMinuteLeftTrigger { get; set; }
     public TriggerEvent NaturalEndTrigger { get; set; }
@@ -57,39 +56,101 @@ public class Deathmatch : Gamemode
     private int _savedMinutes = _defaultMinutes;
     private int _totalMinutes = _defaultMinutes;
 
-    private bool _hasOverridenValues = false;
+    private int _minimumPlayers = 2;
 
     private string _avatarOverride = null;
     private float? _vitalityOverride = null;
 
-    private bool _enabledLateJoining = true;
+    private MonoDiscReference _victorySongReference = null;
+    private MonoDiscReference _failureSongReference = null;
 
-    public override void OnBoneMenuCreated(Page page)
+    public override GroupElementData CreateSettingsGroup()
     {
-        base.OnBoneMenuCreated(page);
+        var group = base.CreateSettingsGroup();
 
-        page.CreateInt("Round Minutes", Color.white, startingValue: _totalMinutes, increment: 1, minValue: _minMinutes, maxValue: _maxMinutes, callback: (v) =>
+        var generalGroup = new GroupElementData("General");
+
+        group.AddElement(generalGroup);
+
+        var roundMinutesData = new IntElementData()
         {
-            _totalMinutes = v;
-            _savedMinutes = v;
-        });
+            Title = "Round Minutes",
+            Value = _totalMinutes,
+            Increment = 1,
+            MinValue = _minMinutes,
+            MaxValue = _maxMinutes,
+            OnValueChanged = (v) =>
+            {
+                _totalMinutes = v;
+                _savedMinutes = v;
+            },
+        };
+
+        generalGroup.AddElement(roundMinutesData);
+
+        var minimumPlayersData = new IntElementData()
+        {
+            Title = "Minimum Players",
+            Value = _minimumPlayers,
+            Increment = 1,
+            MinValue = 2,
+            MaxValue = 255,
+            OnValueChanged = (v) =>
+            {
+                _minimumPlayers = v;
+            }
+        };
+
+        generalGroup.AddElement(minimumPlayersData);
+
+        return group;
     }
 
-    public override void OnMainSceneInitialized()
+    public void ApplyGamemodeSettings()
     {
-        if (!_hasOverridenValues)
-        {
-            SetDefaultValues();
-        }
-        else
-        {
-            _hasOverridenValues = false;
-        }
-    }
+        _totalMinutes = _savedMinutes;
 
-    public override void OnLoadingBegin()
-    {
-        _hasOverridenValues = false;
+        _victorySongReference = FusionMonoDiscReferences.LavaGangVictoryReference;
+        _failureSongReference = FusionMonoDiscReferences.LavaGangFailureReference;
+
+        var songReferences = FusionMonoDiscReferences.CombatSongReferences;
+
+        var musicSettings = GamemodeMusicSettings.Instance;
+
+        if (musicSettings != null && musicSettings.SongOverrides.Count > 0)
+        {
+            songReferences = new MonoDiscReference[musicSettings.SongOverrides.Count];
+
+            for (var i = 0; i < songReferences.Length; i++)
+            {
+                songReferences[i] = new(musicSettings.SongOverrides.ElementAt(i));
+            }
+        }
+
+        if (musicSettings != null && !string.IsNullOrWhiteSpace(musicSettings.VictorySongOverride))
+        {
+            _victorySongReference = new MonoDiscReference(musicSettings.VictorySongOverride);
+        }
+
+        if (musicSettings != null && !string.IsNullOrWhiteSpace(musicSettings.FailureSongOverride))
+        {
+            _failureSongReference = new MonoDiscReference(musicSettings.FailureSongOverride);
+        }
+
+        AudioReference[] playlist = AudioReference.CreateReferences(songReferences);
+
+        Playlist.SetPlaylist(playlist);
+
+        _avatarOverride = null;
+        _vitalityOverride = null;
+
+        var playerSettings = GamemodePlayerSettings.Instance;
+
+        if (playerSettings != null)
+        {
+            _avatarOverride = playerSettings.AvatarOverride;
+            _vitalityOverride = playerSettings.VitalityOverride;
+        }
     }
 
     public void SetDefaultValues()
@@ -101,45 +162,11 @@ public class Deathmatch : Gamemode
 
         _avatarOverride = null;
         _vitalityOverride = null;
-
-        _enabledLateJoining = true;
-    }
-
-    public void SetOverriden()
-    {
-        if (FusionSceneManager.IsLoading())
-        {
-            if (!_hasOverridenValues)
-                SetDefaultValues();
-
-            _hasOverridenValues = true;
-        }
-    }
-
-    public void SetLateJoining(bool enabled)
-    {
-        _enabledLateJoining = enabled;
     }
 
     public void SetRoundLength(int minutes)
     {
         _totalMinutes = minutes;
-    }
-
-    public void SetAvatarOverride(string barcode)
-    {
-        _avatarOverride = barcode;
-
-        if (IsActive())
-            FusionPlayer.SetAvatarOverride(barcode);
-    }
-
-    public void SetPlayerVitality(float vitality)
-    {
-        _vitalityOverride = vitality;
-
-        if (IsActive())
-            FusionPlayer.SetPlayerVitality(vitality);
     }
 
     public IReadOnlyList<PlayerId> GetPlayersByScore()
@@ -232,8 +259,6 @@ public class Deathmatch : Gamemode
         // Register score keeper
         ScoreKeeper.Register(Metadata);
         ScoreKeeper.OnScoreChanged += OnScoreChanged;
-
-        SetDefaultValues();
     }
 
     public override void OnGamemodeUnregistered()
@@ -258,7 +283,7 @@ public class Deathmatch : Gamemode
 
     protected bool OnValidateNametag(PlayerId id)
     {
-        if (!IsActive())
+        if (!IsStarted)
             return true;
 
         return false;
@@ -266,7 +291,7 @@ public class Deathmatch : Gamemode
 
     protected void OnPlayerAction(PlayerId player, PlayerActionType type, PlayerId otherPlayer = null)
     {
-        if (!IsActive())
+        if (!IsStarted)
         {
             return;
         }
@@ -275,7 +300,7 @@ public class Deathmatch : Gamemode
         {
             case PlayerActionType.DEATH:
                 // If we died, we can't get the Rampage achievement
-                if (player.IsOwner)
+                if (player.IsMe)
                 {
                     _hasDied = true;
                 }
@@ -290,7 +315,7 @@ public class Deathmatch : Gamemode
                     }
 
                     // If we are the killer, increment our achievement
-                    if (otherPlayer.IsOwner)
+                    if (otherPlayer.IsMe)
                     {
                         AchievementManager.IncrementAchievements<KillerAchievement>();
                     }
@@ -299,9 +324,16 @@ public class Deathmatch : Gamemode
         }
     }
 
-    protected override void OnStartGamemode()
+    public override bool CheckReadyConditions()
     {
-        base.OnStartGamemode();
+        return PlayerIdManager.PlayerCount >= _minimumPlayers;
+    }
+
+    public override void OnGamemodeStarted()
+    {
+        base.OnGamemodeStarted();
+
+        ApplyGamemodeSettings();
 
         Playlist.StartPlaylist();
 
@@ -312,11 +344,10 @@ public class Deathmatch : Gamemode
 
         FusionNotifier.Send(new FusionNotification()
         {
-            title = "Deathmatch Started",
-            showTitleOnPopup = true,
-            message = "Good luck!",
-            isMenuItem = false,
-            isPopup = true,
+            Title = "Deathmatch Started",
+            Message = "Good luck!",
+            SaveToMenu = false,
+            ShowPopup = true,
         });
 
         // Reset time
@@ -364,32 +395,39 @@ public class Deathmatch : Gamemode
         });
     }
 
-    protected static void OnVictoryStatus(bool isVictory = false)
+    protected void OnVictoryStatus(bool isVictory = false)
     {
         MonoDiscReference stingerReference;
+
         if (isVictory)
         {
-            stingerReference = FusionMonoDiscReferences.LavaGangVictoryReference;
+            stingerReference = _victorySongReference;
         }
         else
         {
-            stingerReference = FusionMonoDiscReferences.LavaGangFailureReference;
+            stingerReference = _failureSongReference;
+        }
+
+        if (stingerReference == null)
+        {
+            return;
         }
 
         var dataCard = stingerReference.DataCard;
+
         if (dataCard == null)
         {
             return;
         }
 
         dataCard.AudioClip.LoadAsset((Il2CppSystem.Action<AudioClip>)((c) => {
-            Audio3dManager.Play2dOneShot(c, Audio3dManager.nonDiegeticMusic, new Il2CppSystem.Nullable<float>(Audio3dManager.audio_MusicVolume), new Il2CppSystem.Nullable<float>(1f));
+            SafeAudio3dPlayer.Play2dOneShot(c, SafeAudio3dPlayer.NonDiegeticMusic, SafeAudio3dPlayer.MusicVolume);
         }));
     }
 
-    protected override void OnStopGamemode()
+    public override void OnGamemodeStopped()
     {
-        base.OnStopGamemode();
+        base.OnGamemodeStopped();
 
         Playlist.StopPlaylist();
 
@@ -446,15 +484,14 @@ public class Deathmatch : Gamemode
         // Show the winners in a notification
         FusionNotifier.Send(new FusionNotification()
         {
-            title = "Deathmatch Completed",
-            showTitleOnPopup = true,
+            Title = "Deathmatch Completed",
 
-            message = message,
+            Message = message,
 
-            popupLength = 6f,
+            PopupLength = 6f,
 
-            isMenuItem = false,
-            isPopup = true,
+            SaveToMenu = false,
+            ShowPopup = true,
         });
 
         _timeOfStart = 0f;
@@ -487,7 +524,7 @@ public class Deathmatch : Gamemode
     protected override void OnUpdate()
     {
         // Also make sure the gamemode is active
-        if (!IsActive())
+        if (!IsStarted)
         {
             return;
         }
@@ -517,7 +554,7 @@ public class Deathmatch : Gamemode
         // Should the gamemode end?
         if (minutesLeft <= 0f)
         {
-            StopGamemode();
+            GamemodeManager.StopGamemode();
             NaturalEndTrigger.TryInvoke();
         }
     }
@@ -526,11 +563,10 @@ public class Deathmatch : Gamemode
     {
         FusionNotifier.Send(new FusionNotification()
         {
-            title = "Deathmatch Timer",
-            showTitleOnPopup = true,
-            message = "One minute left!",
-            isMenuItem = false,
-            isPopup = true,
+            Title = "Deathmatch Timer",
+            Message = "One minute left!",
+            SaveToMenu = false,
+            ShowPopup = true,
         });
     }
 
@@ -546,16 +582,15 @@ public class Deathmatch : Gamemode
 
     private void OnScoreChanged(PlayerId player, int score)
     {
-        if (player.IsOwner && score != 0)
+        if (player.IsMe && score != 0)
         {
             FusionNotifier.Send(new FusionNotification()
             {
-                title = "Deathmatch Point",
-                showTitleOnPopup = true,
-                message = $"New score is {score}!",
-                isMenuItem = false,
-                isPopup = true,
-                popupLength = 0.7f,
+                Title = "Deathmatch Point",
+                Message = $"New score is {score}!",
+                SaveToMenu = false,
+                ShowPopup = true,
+                PopupLength = 0.7f,
             });
         }
     }

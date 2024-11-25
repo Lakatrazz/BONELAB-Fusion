@@ -1,9 +1,33 @@
 ﻿using Il2CppSLZ.Marrow.Warehouse;
 
+using LabFusion.Downloading.ModIO;
+
 namespace LabFusion.Marrow;
 
 public static class CrateFilterer
 {
+    public static int GetModId(Pallet pallet)
+    {
+        // Get the mod info
+        var manifest = GetManifest(pallet);
+
+        if (manifest == null)
+        {
+            return -1;
+        }
+
+        var modListing = manifest.ModListing;
+
+        var modTarget = ModIOManager.GetTargetFromListing(modListing);
+
+        if (modTarget == null)
+        {
+            return -1;
+        }
+
+        return (int)modTarget.ModId;
+    }
+
     public static PalletManifest GetManifest(Pallet pallet)
     {
         var manifests = AssetWarehouse.Instance.palletManifests;

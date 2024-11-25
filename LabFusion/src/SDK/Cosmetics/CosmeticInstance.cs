@@ -27,9 +27,9 @@ public class CosmeticInstance
 
     public RigPoint itemPoint;
 
-    public FusionDictionary<Mirror, GameObject> mirrors = new(new UnityComparer());
+    public Dictionary<Mirror, GameObject> mirrors = new(new UnityComparer());
 
-    private FusionDictionary<RigPoint, AvatarCosmeticPoint> _avatarPoints = new();
+    private Dictionary<RigPoint, AvatarCosmeticPoint> _avatarPoints = new();
 
     private bool _destroyed = false;
     public bool IsDestroyed => _destroyed;
@@ -62,7 +62,7 @@ public class CosmeticInstance
 
     private void Unhook()
     {
-        if (!rigManager.IsNOC())
+        if (rigManager != null)
         {
             rigManager.OnPostLateUpdate -= (Il2Action)OnPostLateUpdate;
             OpenControllerRig.OnPauseStateChange -= (Il2ActionBool)OnPauseStateChange;
@@ -229,20 +229,24 @@ public class CosmeticInstance
 
     public bool IsValid()
     {
-        return !rigManager.IsNOC() && !accessory.IsNOC();
+        return rigManager != null && accessory != null;
     }
 
     public void Cleanup()
     {
         _destroyed = true;
 
-        if (!accessory.IsNOC())
+        if (accessory != null)
+        {
             GameObject.Destroy(accessory);
+        }
 
         foreach (var mirror in mirrors)
         {
-            if (!mirror.Value.IsNOC())
+            if (mirror.Value != null)
+            {
                 GameObject.Destroy(mirror.Value);
+            }
         }
 
         mirrors.Clear();

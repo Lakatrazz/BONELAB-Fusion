@@ -1,4 +1,5 @@
 ﻿using LabFusion.Network;
+using LabFusion.Player;
 using LabFusion.Senders;
 
 using MelonLoader;
@@ -7,24 +8,29 @@ using UnityEngine;
 
 namespace LabFusion.Preferences.Client;
 
-public struct ClientSettings
+public static class ClientSettings
 {
     // Selected network layer
     public static FusionPref<string> NetworkLayerTitle { get; internal set; }
     public static FusionPref<int> ProxyPort { get; internal set; }
 
     // Nametag settings
-    public static FusionPref<bool> NametagsEnabled { get; internal set; }
-    public static FusionPref<Color> NametagColor { get; internal set; }
+    public static FusionPref<bool> NameTags { get; internal set; }
+
+    public static Color NameTagColor => Color.HSVToRGB(NameTagHue.Value, NameTagSaturation.Value, NameTagValue.Value);
+
+    public static FusionPref<float> NameTagHue { get; internal set; }
+    public static FusionPref<float> NameTagSaturation { get; internal set; }
+    public static FusionPref<float> NameTagValue { get; internal set; }
 
     // Nickname settings
     public static FusionPref<string> Nickname { get; internal set; }
     public static FusionPref<NicknameVisibility> NicknameVisibility { get; internal set; }
 
-    public static VoiceChatSettings VoiceChat { get; private set; }
+    // Description settings
+    public static FusionPref<string> Description { get; internal set; }
 
-    // Gamemode settings
-    public static FusionPref<bool> GamemodeLateJoining { get; internal set; }
+    public static VoiceChatSettings VoiceChat { get; private set; }
 
     public static DownloadingSettings Downloading { get; private set; }
 
@@ -35,18 +41,35 @@ public struct ClientSettings
         ProxyPort = new FusionPref<int>(category, "Proxy Port", 28340, PrefUpdateMode.IGNORE);
 
         // Nametag
-        NametagsEnabled = new FusionPref<bool>(category, "Client Nametags Enabled", true, PrefUpdateMode.LOCAL_UPDATE);
-        NametagColor = new FusionPref<Color>(category, "Nametag Color", Color.white, PrefUpdateMode.CLIENT_UPDATE);
+        NameTags = new FusionPref<bool>(category, "Client Nametags Enabled", true, PrefUpdateMode.SERVER_UPDATE);
+
+        NameTagHue = new FusionPref<float>(category, "NameTag Hue", 0f, PrefUpdateMode.CLIENT_UPDATE);
+        NameTagSaturation = new FusionPref<float>(category, "NameTag Saturation", 0f, PrefUpdateMode.CLIENT_UPDATE);
+        NameTagValue = new FusionPref<float>(category, "NameTag Value", 1f, PrefUpdateMode.CLIENT_UPDATE);
 
         // Nickname
         Nickname = new FusionPref<string>(category, "Nickname", string.Empty, PrefUpdateMode.IGNORE);
-        NicknameVisibility = new FusionPref<NicknameVisibility>(category, "Nickname Visibility", Senders.NicknameVisibility.SHOW_WITH_PREFIX, PrefUpdateMode.LOCAL_UPDATE);
+        NicknameVisibility = new FusionPref<NicknameVisibility>(category, "Nickname Visibility", Senders.NicknameVisibility.SHOW_WITH_PREFIX, PrefUpdateMode.SERVER_UPDATE);
+
+        LocalPlayer.Metadata.TrySetMetadata(MetadataHelper.NicknameKey, Nickname.Value);
+
+        Nickname.OnValueChanged += (v) =>
+        {
+            LocalPlayer.Metadata.TrySetMetadata(MetadataHelper.NicknameKey, v);
+        };
+
+        // Description
+        Description = new FusionPref<string>(category, "Description", string.Empty, PrefUpdateMode.IGNORE);
+
+        LocalPlayer.Metadata.TrySetMetadata(MetadataHelper.DescriptionKey, Description.Value);
+
+        Description.OnValueChanged += (v) =>
+        {
+            LocalPlayer.Metadata.TrySetMetadata(MetadataHelper.DescriptionKey, v);
+        };
 
         VoiceChat = new VoiceChatSettings();
         VoiceChat.CreatePrefs(category);
-
-        // Gamemodes
-        GamemodeLateJoining = new FusionPref<bool>(category, "Gamemode Late Joining", true, PrefUpdateMode.IGNORE);
 
         Downloading = new DownloadingSettings();
         Downloading.CreatePrefs(category);

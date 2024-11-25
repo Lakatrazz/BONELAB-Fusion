@@ -1,147 +1,79 @@
-﻿using LabFusion.BoneMenu;
-using LabFusion.Data;
+﻿using LabFusion.Data;
 using LabFusion.Utilities;
+
 using System.Reflection;
 
-namespace LabFusion.SDK.Gamemodes
+namespace LabFusion.SDK.Gamemodes;
+
+public static class GamemodeRegistration
 {
-    public static class GamemodeRegistration
+    public static void LoadGamemodes(Assembly assembly)
     {
-        internal static void Internal_HookAssemblies()
+        if (assembly == null)
         {
-            AppDomain.CurrentDomain.AssemblyLoad += Internal_AssemblyLoad;
+            throw new NullReferenceException("Tried loading gamemodes from a null assembly!");
         }
 
-        internal static void Internal_UnhookAssemblies()
-        {
-            AppDomain.CurrentDomain.AssemblyLoad -= Internal_AssemblyLoad;
-        }
-
-        private static void Internal_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
-        {
-            LoadGamemodes(args.LoadedAssembly);
-        }
-
-        public static void LoadGamemodes(Assembly assembly)
-        {
-            if (assembly == null)
-                throw new NullReferenceException("Tried loading gamemodes from a null assembly!");
-
-            AssemblyUtilities.LoadAllValid<Gamemode>(assembly, RegisterGamemode);
-        }
-
-        public static void RegisterGamemode<T>() where T : Gamemode => RegisterGamemode(typeof(T));
-
-        private static void RegisterGamemode(Type type)
-        {
-            if (GamemodeTypes.Contains(type))
-                throw new ArgumentException($"Gamemode {type.Name} was already registered.");
-
-            GamemodeTypes.Add(type);
-        }
-
-        public static string[] GetExistingTypeNames()
-        {
-            string[] array = new string[GamemodeTypes.Count];
-            for (var i = 0; i < array.Length; i++)
-            {
-                array[i] = GamemodeTypes[i].AssemblyQualifiedName;
-            }
-            return array;
-        }
-
-        public static FusionDictionary<string, string>[] GetExistingMetadata()
-        {
-            FusionDictionary<string, string>[] metadata = new FusionDictionary<string, string>[Gamemodes.Length];
-
-            for (var i = 0; i < metadata.Length; i++)
-            {
-                metadata[i] = Gamemodes[i].Metadata.LocalDictionary;
-            }
-
-            return metadata;
-        }
-
-        public static void PopulateGamemodeTable(string[] names)
-        {
-            Gamemodes = new Gamemode[names.Length];
-
-            for (ushort i = 0; i < names.Length; i++)
-            {
-                var type = Type.GetType(names[i]);
-                if (type != null && GamemodeTypes.Contains(type))
-                {
-                    var handler = Internal_CreateGamemode(type, i);
-                    Gamemodes[i] = handler;
-                    handler.GamemodeRegistered();
-                }
-            }
-
-            BoneMenuCreator.RefreshGamemodes();
-        }
-
-        public static void PopulateGamemodeMetadatas(FusionDictionary<string, string>[] metadatas)
-        {
-            for (var i = 0; i < Gamemodes.Length && i < metadatas.Length; i++)
-            {
-                var gamemode = Gamemodes[i];
-                var metadata = metadatas[i];
-
-                if (gamemode != null && metadata != null)
-                {
-                    foreach (var pair in metadata)
-                    {
-                        gamemode.Metadata.ForceSetLocalMetadata(pair.Key, pair.Value);
-                    }
-                }
-            }
-        }
-
-        public static void ClearGamemodeTable()
-        {
-            // Force stop gamemodes
-            if (Gamemodes != null && Gamemodes.Length > 0)
-            {
-                foreach (var gamemode in Gamemodes)
-                {
-                    if (gamemode == null)
-                        continue;
-
-                    gamemode.Internal_SetGamemodeState(false);
-                    gamemode.GamemodeUnregistered();
-                }
-            }
-
-            GamemodeManager.Internal_SetActiveGamemode(null);
-            BoneMenuCreator.ClearGamemodes();
-
-            Gamemodes = null;
-        }
-
-        private static Gamemode Internal_CreateGamemode(Type type, ushort tag)
-        {
-            var gamemode = Activator.CreateInstance(type) as Gamemode;
-            gamemode._tag = tag;
-            return gamemode;
-        }
-
-        public static ushort? GetGamemodeTag(Type type)
-        {
-            if (Gamemodes != null)
-            {
-                for (ushort i = 0; i < Gamemodes.Length; i++)
-                {
-                    var other = Gamemodes[i];
-                    if (other.GetType() == type)
-                        return i;
-                }
-            }
-
-            return null;
-        }
-
-
-        internal static readonly List<Type> GamemodeTypes = new List<Type>();
-        internal static Gamemode[] Gamemodes = null;
+        AssemblyUtilities.LoadAllValid<Gamemode>(assembly, RegisterGamemode);
     }
+
+    public static void RegisterGamemode<T>() where T : Gamemode => RegisterGamemode(typeof(T));
+
+    private static void RegisterGamemode(Type type)
+    {
+        var gamemodeInstance = Activator.CreateInstance(type) as Gamemode;
+        gamemodeInstance.GamemodeRegistered();
+
+        Gamemodes.Add(gamemodeInstance);
+        GamemodeLookup.Add(gamemodeInstance.Barcode, gamemodeInstance);
+    }
+
+    public static Dictionary<string, Dictionary<string, string>> GetExistingMetadata()
+    {
+        Dictionary<string, Dictionary<string, string>> metadata = new();
+
+        for (var i = 0; i < Gamemodes.Count; i++)
+        {
+            var barcode = Gamemodes[i].Barcode;
+
+            var metadataPairs = new Dictionary<string, string>();
+
+            foreach (var pair in Gamemodes[i].Metadata.LocalDictionary)
+            {
+                metadataPairs.Add(pair.Key, pair.Value);
+            }
+
+            metadata.Add(barcode, metadataPairs);
+        }
+
+        return metadata;
+    }
+
+    public static bool TryGetGamemode(string barcode, out Gamemode gamemode)
+    {
+        return GamemodeLookup.TryGetValue(barcode, out gamemode);
+    }
+
+    public static void PopulateGamemodeMetadatas(Dictionary<string, Dictionary<string, string>> metadatas)
+    {
+        foreach (var pair in metadatas)
+        {
+            var barcode = pair.Key;
+
+            if (!TryGetGamemode(barcode, out var gamemode))
+            {
+                continue;
+            }
+
+            var metadata = pair.Value;
+
+            foreach (var metadataPair in metadata)
+            {
+                gamemode.Metadata.ForceSetLocalMetadata(metadataPair.Key, metadataPair.Value);
+            }
+        }
+    }
+
+    public static List<Gamemode> Gamemodes { get; private set; } = new();
+    public static Dictionary<string, Gamemode> GamemodeLookup { get; private set; } = new();
 }

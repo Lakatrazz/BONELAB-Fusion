@@ -4,28 +4,10 @@ namespace LabFusion.Extensions;
 
 public static class IEnumerableExtensions
 {
-    public static bool ContainsIL2CPP<T>(this HashSet<T> set, T item)
+    public static T GetRandom<T>(this IEnumerable<T> enumerable)
     {
-        if (!PlatformHelper.IsAndroid)
-        {
-            return set.Contains(item);
-        }
-        else
-        {
-            return set.Any((i) => i.EqualsIL2CPP(item));
-        }
-    }
-
-    public static bool RemoveIL2CPP<T>(this HashSet<T> set, T item)
-    {
-        if (!PlatformHelper.IsAndroid)
-        {
-            return set.Remove(item);
-        }
-        else
-        {
-            return set.RemoveWhere((i) => i.EqualsIL2CPP(item)) > 0;
-        }
+        int random = UnityEngine.Random.Range(0, enumerable.Count());
+        return enumerable.ElementAt(random);
     }
 
     public static bool ContainsInstance<T>(this List<T> list, T obj) where T : class

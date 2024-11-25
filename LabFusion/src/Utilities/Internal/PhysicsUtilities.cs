@@ -18,7 +18,7 @@ internal static class PhysicsUtilities
             return;
         }
 
-        var mode = CommonPreferences.TimeScaleMode;
+        var mode = CommonPreferences.SlowMoMode;
         var references = RigData.Refs;
         var rm = references.RigManager;
 

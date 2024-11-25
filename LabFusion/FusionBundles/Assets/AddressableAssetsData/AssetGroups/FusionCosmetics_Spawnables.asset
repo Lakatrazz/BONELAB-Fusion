@@ -15,7 +15,7 @@ MonoBehaviour:
   m_GroupName: FusionCosmetics_Spawnables
   m_Data:
     m_SerializedData: []
-  m_GUID: c21962cc790a2844b893220795a9e883
+  m_GUID: 537161f008d40834487ad5e44580a2fd
   m_SerializeEntries:
   - m_GUID: 81687bf37e32a2e459bb2d3333c0eb69
     m_Address: Spawnable/Adventurers Hat
@@ -731,6 +731,6 @@ MonoBehaviour:
   m_Settings: {fileID: 11400000, guid: 9feda70c59f9cda489cd3a23e7f14dd9, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 3519366ced7c94b459b3bac3563ca658, type: 2}
-    - {fileID: 11400000, guid: 435e42bc04d053e4a88f0a0bc75dccef, type: 2}
-    - {fileID: 11400000, guid: 1268e82e96b6563459e73267035982c1, type: 2}
+    - {fileID: 11400000, guid: 8c785d630a74a06468851f480b0eb890, type: 2}
+    - {fileID: 11400000, guid: d7f2eb567d2afe84792792aa5b13a6c2, type: 2}
+    - {fileID: 11400000, guid: 87c19d9a697f8944e87a784d3b9161be, type: 2}

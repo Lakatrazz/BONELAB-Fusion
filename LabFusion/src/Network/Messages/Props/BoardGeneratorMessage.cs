@@ -1,6 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Patching;
+using LabFusion.Scene;
 
 using UnityEngine;
 
@@ -42,7 +43,7 @@ public class BoardPointData : IFusionSerializable
 
     public void Serialize(FusionWriter writer)
     {
-        writer.Write(point);
+        writer.Write(NetworkTransformManager.EncodePosition(point));
         writer.Write(hasBody);
         writer.Write(entityId);
         writer.Write(bodyIndex);
@@ -50,7 +51,7 @@ public class BoardPointData : IFusionSerializable
 
     public void Deserialize(FusionReader reader)
     {
-        point = reader.ReadVector3();
+        point = NetworkTransformManager.DecodePosition(reader.ReadVector3());
         hasBody = reader.ReadBoolean();
         entityId = reader.ReadUInt16();
         bodyIndex = reader.ReadUInt16();

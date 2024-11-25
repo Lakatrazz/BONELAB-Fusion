@@ -30,7 +30,7 @@ public static class TimeManagerPatches
             return true;
         }
 
-        var mode = CommonPreferences.TimeScaleMode;
+        var mode = CommonPreferences.SlowMoMode;
 
         switch (mode)
         {
@@ -76,7 +76,7 @@ public static class TimeManagerPatches
             return;
         }
 
-        var mode = CommonPreferences.TimeScaleMode;
+        var mode = CommonPreferences.SlowMoMode;
 
         switch (mode)
         {

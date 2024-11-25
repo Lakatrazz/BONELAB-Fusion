@@ -12,9 +12,9 @@ namespace LabFusion.Patching;
 [HarmonyPatch(typeof(ZoneCuller))]
 public static class ZoneCullerPatches
 {
-    public static readonly FusionDictionary<int, ZoneCuller> CullerIdToZone = new();
-    public static readonly FusionDictionary<int, ZoneCuller> HashToZone = new();
-    public static readonly FusionDictionary<ZoneCuller, int> ZoneToHash = new(new UnityComparer());
+    public static readonly Dictionary<int, ZoneCuller> CullerIdToZone = new();
+    public static readonly Dictionary<int, ZoneCuller> HashToZone = new();
+    public static readonly Dictionary<ZoneCuller, int> ZoneToHash = new(new UnityComparer());
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(ZoneCuller.OnEnable))]

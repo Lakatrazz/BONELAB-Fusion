@@ -18,6 +18,6 @@ namespace LabFusion.Data
             GameController = GameObject.FindObjectOfType<BaseGameController>();
         }
 
-        public static bool HasGameController => !GameController.IsNOC();
+        public static bool HasGameController => GameController != null;
     }
 }

@@ -11,23 +11,50 @@ public abstract class EntityComponentArrayExtender<TComponent> : IEntityComponen
 
     public TComponent[] Components => _components;
 
-    public bool TryRegister(NetworkEntity networkEntity, GameObject[] parents)
+    public bool TryRegister(NetworkEntity networkEntity, GameObject parent)
     {
-        List<TComponent> components = new();
+        // Check if the parent even has this component first
+        if (parent.GetComponentInChildren<TComponent>(true) == null)
+        {
+            return false;
+        }
 
         // Get all valid components from parents
+        TComponent[] components = parent.GetComponentsInChildren<TComponent>(true);
+
+        Register(networkEntity, components);
+        return true;
+    }
+
+    public bool TryRegister(NetworkEntity networkEntity, GameObject[] parents)
+    {
+        // Check if the parent even has this component first
+        bool hasComponent = false;
+
+        foreach (var parent in parents)
+        {
+            if (parent.GetComponentInChildren<TComponent>(true) != null)
+            {
+                hasComponent = true;
+                break;
+            }
+        }
+
+        if (!hasComponent)
+        {
+            return false;
+        }
+
+        // Get all valid components from parents
+        List<TComponent> components = new();
+
         foreach (var parent in parents)
         {
             components.AddRange(parent.GetComponentsInChildren<TComponent>(true));
         }
 
-        if (components.Count > 0)
-        {
-            Register(networkEntity, components.ToArray());
-            return true;
-        }
-
-        return false;
+        Register(networkEntity, components.ToArray());
+        return true;
     }
 
     public void Register(NetworkEntity networkEntity, TComponent[] components)

@@ -1,9 +1,15 @@
-﻿using Il2CppSLZ.Marrow;
-using Il2CppSLZ.Marrow.Interaction;
+﻿using System.Collections;
 
-using LabFusion.Data;
+using Il2CppSLZ.Marrow;
+using Il2CppSLZ.Marrow.Interaction;
+using Il2CppSLZ.Marrow.Pool;
+using Il2CppSLZ.Marrow.VFX;
+
 using LabFusion.Extensions;
 using LabFusion.Representation;
+using LabFusion.Utilities;
+
+using MelonLoader;
 
 using UnityEngine;
 
@@ -29,6 +35,9 @@ public class RigPuppet
 
     private void OnPuppetCreated(RigManager rig, Action<RigManager> onPuppetCreated = null)
     {
+        // Add poolee to the PhysicsRig for spawn/despawn VFX
+        rig.physicsRig.gameObject.AddComponent<Poolee>();
+
         // Swap the open controllers for generic controllers
         // Left hand
         var leftHaptor = rig.ControllerRig.leftController.haptor;
@@ -60,16 +69,43 @@ public class RigPuppet
 
         // Invoke callback
         onPuppetCreated?.Invoke(rig);
+
+        // Play spawn VFX
+        MelonCoroutines.Start(WaitAndCallSpawnEffect(rig.physicsRig.marrowEntity));
+    }
+
+    private static IEnumerator WaitAndCallSpawnEffect(MarrowEntity marrowEntity)
+    {
+        float elapsed = 0f;
+
+        while (elapsed < 0.2f)
+        {
+            elapsed += TimeUtilities.DeltaTime;
+            yield return null;
+        }
+
+        if (marrowEntity == null)
+        {
+            yield break;
+        }
+
+        SpawnEffects.CallSpawnEffect(marrowEntity);
     }
 
     public void DestroyPuppet()
     {
-        if (HasPuppet)
+        if (!HasPuppet)
         {
-            _selfReferences.LeftHand.TryDetach();
-            _selfReferences.RightHand.TryDetach();
-
-            GameObject.Destroy(_selfReferences.RigManager.gameObject);
+            return;
         }
+
+        var marrowEntity = _selfReferences.RigManager.physicsRig.marrowEntity;
+
+        SpawnEffects.CallDespawnEffect(marrowEntity);
+
+        _selfReferences.LeftHand.TryDetach();
+        _selfReferences.RightHand.TryDetach();
+
+        GameObject.Destroy(_selfReferences.RigManager.gameObject);
     }
 }

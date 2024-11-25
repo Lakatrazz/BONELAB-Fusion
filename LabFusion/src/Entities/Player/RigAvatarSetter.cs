@@ -69,7 +69,7 @@ public class RigAvatarSetter
             return;
         }
 
-        long maxBytes = ClientSettings.Downloading.MaxFileSize.Value * 1000000;
+        long maxBytes = DataConversions.ConvertMegabytesToBytes(ClientSettings.Downloading.MaxFileSize.Value);
 
         var owner = _entity.OwnerId.SmallId;
 
@@ -95,7 +95,7 @@ public class RigAvatarSetter
     {
         ProgressBar.Visible = false;
 
-        if (info.result == ModResult.FAILED)
+        if (info.result != ModResult.SUCCEEDED)
         {
             FusionLogger.Warn($"Failed downloading avatar for rig {_entity.Id}!");
             return;
@@ -135,8 +135,6 @@ public class RigAvatarSetter
         {
             references.SwapAvatarCrate(AvatarBarcode, OnSwapAvatar, OnPrepareAvatar);
 
-            PlayerAdditionsHelper.OnAvatarChanged(references.RigManager);
-
             _isAvatarDirty = false;
         }
 
@@ -155,7 +153,7 @@ public class RigAvatarSetter
 
         if (!success)
         {
-            _references.SwapAvatarCrate(FusionAvatar.POLY_BLANK_BARCODE, OnSwapFallback, OnPrepareAvatar);
+            _references.SwapAvatarCrate(BONELABAvatarReferences.PolyBlankBarcode, OnSwapFallback, OnPrepareAvatar);
         }
         else
         {
@@ -176,7 +174,7 @@ public class RigAvatarSetter
             Transform transform = avatar.transform;
 
             // Polyblank should just scale based on the custom avatar height
-            if (barcode == FusionAvatar.POLY_BLANK_BARCODE)
+            if (barcode == BONELABAvatarReferences.PolyBlankBarcode)
             {
                 float newHeight = _stats.height;
                 transform.localScale = Vector3Extensions.one * (newHeight / 1.76f);

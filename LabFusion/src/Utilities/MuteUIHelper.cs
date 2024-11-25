@@ -119,9 +119,9 @@ public static class MuteUIHelper
 
             FusionNotifier.Send(new FusionNotification()
             {
-                isPopup = true,
-                isMenuItem = false,
-                message = mutedPref.Value ? "Muted" : "Unmuted",
+                ShowPopup = true,
+                SaveToMenu = false,
+                Message = mutedPref.Value ? "Muted" : "Unmuted",
             });
         }));
 
@@ -182,7 +182,7 @@ public static class MuteUIHelper
             _mutePage = null;
         }
 
-        if (!_indicatorPoolee.IsNOC())
+        if (_indicatorPoolee != null)
         {
             _indicatorPoolee.Despawn();
 
