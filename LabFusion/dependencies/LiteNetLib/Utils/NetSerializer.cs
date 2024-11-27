@@ -1,4 +1,7 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Runtime.Serialization;
 
@@ -221,7 +224,7 @@ namespace LiteNetLib.Utils
                 {
                     var itm = default(TProperty);
                     itm.Deserialize(r);
-                    if (i < listCount)
+                    if(i < listCount)
                         list[i] = itm;
                     else
                         list.Add(itm);
@@ -419,6 +422,12 @@ namespace LiteNetLib.Utils
             protected override void ElementWrite(NetDataWriter w, ref IPEndPoint prop) { w.Put(prop); }
             protected override void ElementRead(NetDataReader r, out IPEndPoint prop) { prop = r.GetNetEndPoint(); }
         }
+        
+        private class GuidSerializer<T> : FastCallSpecificAuto<T, Guid>
+        {
+            protected override void ElementWrite(NetDataWriter w, ref Guid guid) { w.Put(guid); }
+            protected override void ElementRead(NetDataReader r, out Guid guid) { guid = r.GetGuid(); }
+        }
 
         private class StringSerializer<T> : FastCallSpecific<T, string>
         {
@@ -487,7 +496,7 @@ namespace LiteNetLib.Utils
                     var s = _serializers[i];
                     if (s.Type == CallType.Basic)
                         s.Read(obj, reader);
-                    else if (s.Type == CallType.Array)
+                    else if(s.Type == CallType.Array)
                         s.ReadArray(obj, reader);
                     else
                         s.ReadList(obj, reader);
@@ -566,13 +575,16 @@ namespace LiteNetLib.Utils
             _maxStringLength = maxStringLength;
         }
 
-        private ClassInfo<T> RegisterInternal<T>()
+        private ClassInfo<T> RegisterInternal<
+#if NET5_0_OR_GREATER
+        [DynamicallyAccessedMembers(Trimming.SerializerMemberTypes)]
+#endif
+            T>()
         {
             if (ClassInfo<T>.Instance != null)
                 return ClassInfo<T>.Instance;
 
-            Type t = typeof(T);
-            var props = t.GetProperties(
+            var props = typeof(T).GetProperties(
                 BindingFlags.Instance |
                 BindingFlags.Public |
                 BindingFlags.GetProperty |
@@ -639,6 +651,8 @@ namespace LiteNetLib.Utils
                     serialzer = new CharSerializer<T>();
                 else if (elementType == typeof(IPEndPoint))
                     serialzer = new IPEndPointSerializer<T>();
+                else if (elementType == typeof(Guid))
+                    serialzer = new GuidSerializer<T>();
                 else
                 {
                     _registeredTypes.TryGetValue(elementType, out var customType);
@@ -661,7 +675,11 @@ namespace LiteNetLib.Utils
         }
 
         /// <exception cref="InvalidTypeException"><typeparamref name="T"/>'s fields are not supported, or it has no fields</exception>
-        public void Register<T>()
+        public void Register<
+#if NET5_0_OR_GREATER
+            [DynamicallyAccessedMembers(Trimming.SerializerMemberTypes)]
+#endif
+        T>()
         {
             RegisterInternal<T>();
         }
@@ -672,7 +690,11 @@ namespace LiteNetLib.Utils
         /// <param name="reader">NetDataReader with packet</param>
         /// <returns>Returns packet if packet in reader is matched type</returns>
         /// <exception cref="InvalidTypeException"><typeparamref name="T"/>'s fields are not supported, or it has no fields</exception>
-        public T Deserialize<T>(NetDataReader reader) where T : class, new()
+        public T Deserialize<
+#if NET5_0_OR_GREATER
+            [DynamicallyAccessedMembers(Trimming.SerializerMemberTypes)]
+#endif
+        T>(NetDataReader reader) where T : class, new()
         {
             var info = RegisterInternal<T>();
             var result = new T();
@@ -694,7 +716,11 @@ namespace LiteNetLib.Utils
         /// <param name="target">Deserialization target</param>
         /// <returns>Returns true if packet in reader is matched type</returns>
         /// <exception cref="InvalidTypeException"><typeparamref name="T"/>'s fields are not supported, or it has no fields</exception>
-        public bool Deserialize<T>(NetDataReader reader, T target) where T : class, new()
+        public bool Deserialize<
+#if NET5_0_OR_GREATER
+            [DynamicallyAccessedMembers(Trimming.SerializerMemberTypes)]
+#endif
+        T>(NetDataReader reader, T target) where T : class, new()
         {
             var info = RegisterInternal<T>();
             try
@@ -714,7 +740,11 @@ namespace LiteNetLib.Utils
         /// <param name="writer">Serialization target NetDataWriter</param>
         /// <param name="obj">Object to serialize</param>
         /// <exception cref="InvalidTypeException"><typeparamref name="T"/>'s fields are not supported, or it has no fields</exception>
-        public void Serialize<T>(NetDataWriter writer, T obj) where T : class, new()
+        public void Serialize<
+#if NET5_0_OR_GREATER
+            [DynamicallyAccessedMembers(Trimming.SerializerMemberTypes)]
+#endif
+        T>(NetDataWriter writer, T obj) where T : class, new()
         {
             RegisterInternal<T>().Write(obj, writer);
         }
@@ -724,7 +754,11 @@ namespace LiteNetLib.Utils
         /// </summary>
         /// <param name="obj">Object to serialize</param>
         /// <returns>byte array with serialized data</returns>
-        public byte[] Serialize<T>(T obj) where T : class, new()
+        public byte[] Serialize<
+#if NET5_0_OR_GREATER
+            [DynamicallyAccessedMembers(Trimming.SerializerMemberTypes)]
+#endif
+        T>(T obj) where T : class, new()
         {
             if (_writer == null)
                 _writer = new NetDataWriter();

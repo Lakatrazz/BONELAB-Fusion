@@ -1,4 +1,6 @@
-﻿namespace LiteNetLib
+﻿using System;
+
+namespace LiteNetLib
 {
     public partial class NetManager
     {
@@ -12,7 +14,7 @@
         public int PacketPoolSize = 1000;
 
         public int PoolCount => _poolCount;
-
+        
         private NetPacket PoolGetWithData(PacketProperty property, byte[] data, int start, int length)
         {
             int headerSize = NetPacket.GetHeaderSize(property);
@@ -39,17 +41,20 @@
 
         internal NetPacket PoolGetPacket(int size)
         {
+            if (size > NetConstants.MaxPacketSize)
+                return new NetPacket(size);
+
             NetPacket packet;
             lock (_poolLock)
             {
                 packet = _poolHead;
                 if (packet == null)
                     return new NetPacket(size);
-
+                
                 _poolHead = _poolHead.Next;
                 _poolCount--;
             }
-
+            
             packet.Size = size;
             if (packet.RawData.Length < size)
                 packet.RawData = new byte[size];
@@ -63,7 +68,7 @@
                 //Don't pool big packets. Save memory
                 return;
             }
-
+            
             //Clean fragmented flag
             packet.RawData[0] = 0;
             lock (_poolLock)
