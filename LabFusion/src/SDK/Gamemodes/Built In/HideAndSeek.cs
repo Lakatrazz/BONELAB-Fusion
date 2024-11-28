@@ -17,7 +17,6 @@ using MelonLoader;
 using System.Collections;
 
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -33,7 +32,11 @@ public class HideAndSeek : Gamemode
     {
         public const int SeekerCount = 1;
 
-        public const int BitReward = 50;
+        public const int SeekerBitReward = 50;
+
+        public const int HiderBitReward = 100;
+
+        public const int TimeLimit = 10;
 
         public static readonly MonoDiscReference[] Tracks = new MonoDiscReference[]
         {
@@ -46,6 +49,8 @@ public class HideAndSeek : Gamemode
             BONELABMonoDiscReferences.ConcreteCryptReference, // concrete crypt
         };
     }
+
+    public int TimeLimit { get; set; } = Defaults.TimeLimit;
 
     public int SeekerCount { get; set; } = Defaults.SeekerCount;
 
@@ -62,13 +67,19 @@ public class HideAndSeek : Gamemode
     public Team HiderTeam => _hiderTeam;
 
     public TriggerEvent TagEvent { get; set; }
-
+    public TriggerEvent OneMinuteLeftEvent { get; set; }
     public TriggerEvent SeekerVictoryEvent { get; set; }
+    public TriggerEvent HiderVictoryEvent { get; set; }
 
     private bool _hasBeenTagged = false;
     private bool _assignedDefaultTeam = false;
 
     private readonly HashSet<ulong> _tagRewards = new();
+
+    private float _elapsedTime = 0f;
+
+    public float ElapsedSeconds => _elapsedTime;
+    public int ElapsedMinutes => Mathf.FloorToInt(ElapsedSeconds / 60f);
 
     public override GroupElementData CreateSettingsGroup()
     {
@@ -93,6 +104,21 @@ public class HideAndSeek : Gamemode
 
         generalGroup.AddElement(seekerCountData);
 
+        var timeLimitData = new IntElementData()
+        {
+            Title = "Time Limit",
+            Value = TimeLimit,
+            Increment = 1,
+            MinValue = 1,
+            MaxValue = 60,
+            OnValueChanged = (v) =>
+            {
+                TimeLimit = v;
+            },
+        };
+
+        generalGroup.AddElement(timeLimitData);
+
         return group;
     }
 
@@ -109,8 +135,14 @@ public class HideAndSeek : Gamemode
         TagEvent = new TriggerEvent("TagPlayer", Relay, false);
         TagEvent.OnTriggeredWithValue += OnTagTriggered;
 
+        OneMinuteLeftEvent = new TriggerEvent("OneMinuteLeft", Relay, true);
+        OneMinuteLeftEvent.OnTriggered += OnOneMinuteLeft;
+
         SeekerVictoryEvent = new TriggerEvent("SeekerVictory", Relay, true);
         SeekerVictoryEvent.OnTriggered += OnSeekerVictory;
+
+        HiderVictoryEvent = new TriggerEvent("HiderVictory", Relay, true);
+        HiderVictoryEvent.OnTriggered += OnHiderVictory;
     }
 
     public override void OnGamemodeUnregistered()
@@ -122,8 +154,14 @@ public class HideAndSeek : Gamemode
         TagEvent.UnregisterEvent();
         TagEvent = null;
 
+        OneMinuteLeftEvent.UnregisterEvent();
+        OneMinuteLeftEvent = null;
+
         SeekerVictoryEvent.UnregisterEvent();
         SeekerVictoryEvent = null;
+
+        HiderVictoryEvent.UnregisterEvent();
+        HiderVictoryEvent = null;
     }
 
     protected bool OnValidateNametag(PlayerId id)
@@ -197,12 +235,23 @@ public class HideAndSeek : Gamemode
             // Check bit reward
             if (_tagRewards.Remove(playerId.LongId))
             {
-                PointItemManager.RewardBits(Defaults.BitReward);
+                PointItemManager.RewardBits(Defaults.SeekerBitReward);
             }
         }
     }
 
-    public void OnSeekerVictory()
+    private void OnOneMinuteLeft()
+    {
+        FusionNotifier.Send(new FusionNotification()
+        {
+            Title = "Hide And Seek Timer",
+            Message = "One minute left!",
+            SaveToMenu = false,
+            ShowPopup = true,
+        });
+    }
+
+    private void OnSeekerVictory()
     {
         FusionNotifier.Send(new FusionNotification()
         {
@@ -212,6 +261,28 @@ public class HideAndSeek : Gamemode
             PopupLength = 4f,
             Type = NotificationType.INFORMATION,
         });
+    }
+
+    private void OnHiderVictory()
+    {
+        FusionNotifier.Send(new FusionNotification()
+        {
+            ShowPopup = true,
+            Title = "Hiders Won",
+            Message = "The hiders weren't found in time!",
+            PopupLength = 4f,
+            Type = NotificationType.INFORMATION,
+        });
+
+        // We are a hider and won!
+        if (TeamManager.GetLocalTeam() == HiderTeam)
+        {
+            var seekerCount = SeekerTeam.PlayerCount;
+
+            var bitReward = Defaults.HiderBitReward * seekerCount;
+
+            PointItemManager.RewardBits(bitReward);
+        }
     }
 
     private void OnAssignedToTeam(PlayerId player, Team team)
@@ -403,6 +474,10 @@ public class HideAndSeek : Gamemode
 
         // Update nametags
         FusionOverrides.ForceUpdateOverrides();
+
+        _elapsedTime = 0f;
+        _lastCheckedMinutes = 0;
+        _oneMinuteLeft = false;
     }
 
     public override void OnGamemodeStopped()
@@ -423,8 +498,13 @@ public class HideAndSeek : Gamemode
 
         // Update nametags
         FusionOverrides.ForceUpdateOverrides();
+
+        _elapsedTime = 0f;
+        _lastCheckedMinutes = 0;
+        _oneMinuteLeft = false;
     }
 
+    private bool _oneMinuteLeft = false;
     protected override void OnUpdate()
     {
         if (!IsStarted)
@@ -432,7 +512,39 @@ public class HideAndSeek : Gamemode
             return;
         }
 
+        _elapsedTime += TimeUtilities.DeltaTime;
+
         Playlist.Update();
+
+        if (TeamManager.GetLocalTeam() == HiderTeam)
+        {
+            OnHiderUpdate();
+        }
+
+        // Check for one minute left
+        if (NetworkInfo.IsServer && !_oneMinuteLeft && (TimeLimit - ElapsedMinutes) == 1)
+        {
+            OneMinuteLeftEvent.TryInvoke();
+            _oneMinuteLeft = true;
+        }
+
+        // Check for time limit
+        if (ElapsedMinutes >= TimeLimit)
+        {
+            HiderVictoryEvent?.TryInvoke();
+            GamemodeManager.StopGamemode();
+        }
+    }
+
+    private int _lastCheckedMinutes = 0;
+    private void OnHiderUpdate()
+    {
+        if (_lastCheckedMinutes != ElapsedMinutes)
+        {
+            _lastCheckedMinutes = ElapsedMinutes;
+
+            PointItemManager.RewardBits(Defaults.HiderBitReward);
+        }
     }
 
     private void AssignTeams()

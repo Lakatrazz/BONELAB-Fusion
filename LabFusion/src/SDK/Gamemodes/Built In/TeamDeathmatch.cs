@@ -15,6 +15,7 @@ using LabFusion.Scene;
 using UnityEngine;
 using LabFusion.Menu;
 using LabFusion.Menu.Data;
+using LabFusion.SDK.Metadata;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -43,11 +44,15 @@ public class TeamDeathmatch : Gamemode
     public TriggerEvent OneMinuteLeftTrigger { get; set; }
     public TriggerEvent NaturalEndTrigger { get; set; }
 
+    public MetadataFloat Vitality { get; set; }
+
     private float _timeOfStart;
     private bool _oneMinuteLeft;
 
     private int _savedMinutes = _defaultMinutes;
     private int _totalMinutes = _defaultMinutes;
+
+    private float _savedVitality = 1f;
 
     private int _minimumPlayers = 4;
 
@@ -67,7 +72,6 @@ public class TeamDeathmatch : Gamemode
     public TeamLogoManager TeamLogoManager => _teamLogoManager;
 
     private string _avatarOverride = null;
-    private float? _vitalityOverride = null;
 
     public override GroupElementData CreateSettingsGroup()
     {
@@ -98,7 +102,7 @@ public class TeamDeathmatch : Gamemode
             Title = "Minimum Players",
             Value = _minimumPlayers,
             Increment = 1,
-            MinValue = 2,
+            MinValue = 1,
             MaxValue = 255,
             OnValueChanged = (v) =>
             {
@@ -107,6 +111,21 @@ public class TeamDeathmatch : Gamemode
         };
 
         generalGroup.AddElement(minimumPlayersData);
+
+        var vitalityData = new FloatElementData()
+        {
+            Title = "Vitality",
+            Value = _savedVitality,
+            Increment = 0.2f,
+            MinValue = 0.2f,
+            MaxValue = 100f,
+            OnValueChanged = (v) =>
+            {
+                _savedVitality = v;
+            }
+        };
+
+        generalGroup.AddElement(vitalityData);
 
         return group;
     }
@@ -253,6 +272,11 @@ public class TeamDeathmatch : Gamemode
 
         NaturalEndTrigger = new TriggerEvent(nameof(NaturalEndTrigger), Relay, true);
         NaturalEndTrigger.OnTriggered += OnNaturalEnd;
+
+        // Create metadata
+        Vitality = new MetadataFloat(nameof(Vitality), Metadata);
+
+        Metadata.OnMetadataChanged += OnMetadataChanged;
     }
 
     public override void OnGamemodeUnregistered()
@@ -280,10 +304,35 @@ public class TeamDeathmatch : Gamemode
         MultiplayerHooking.OnPlayerAction -= OnPlayerAction;
         FusionOverrides.OnValidateNametag -= OnValidateNametag;
 
+        Metadata.OnMetadataChanged -= OnMetadataChanged;
+
         // Destroy triggers
         OneMinuteLeftTrigger.UnregisterEvent();
         NaturalEndTrigger.UnregisterEvent();
     }
+
+    private new void OnMetadataChanged(string key, string value)
+    {
+        switch (key)
+        {
+            case nameof(Vitality):
+                OnApplyVitality();
+                break;
+        }
+    }
+
+    private void OnApplyVitality()
+    {
+        if (!IsStarted)
+        {
+            return;
+        }
+
+        var vitality = Vitality.GetValue();
+
+        FusionPlayer.SetPlayerVitality(vitality);
+    }
+
 
     public override bool CheckReadyConditions()
     {
@@ -353,15 +402,22 @@ public class TeamDeathmatch : Gamemode
         AddTeams();
 
         _avatarOverride = null;
-        _vitalityOverride = null;
+
+        float newVitality = _savedVitality;
 
         var playerSettings = GamemodePlayerSettings.Instance;
 
         if (playerSettings != null)
         {
             _avatarOverride = playerSettings.AvatarOverride;
-            _vitalityOverride = playerSettings.VitalityOverride;
+
+            if (playerSettings.VitalityOverride.HasValue)
+            {
+                newVitality = playerSettings.VitalityOverride.Value;
+            }
         }
+
+        Vitality.SetValue(newVitality);
     }
 
     private int GetRewardedBits()
@@ -406,11 +462,6 @@ public class TeamDeathmatch : Gamemode
     /// <param name="otherPlayer"></param>
     protected void OnPlayerAction(PlayerId player, PlayerActionType type, PlayerId otherPlayer = null)
     {
-        if (!NetworkInfo.IsServer)
-        {
-            return;
-        }
-
         if (!IsStarted)
         {
             return;
@@ -500,10 +551,7 @@ public class TeamDeathmatch : Gamemode
                 FusionPlayer.SetAvatarOverride(_avatarOverride);
             }
 
-            if (_vitalityOverride.HasValue)
-            {
-                FusionPlayer.SetPlayerVitality(_vitalityOverride.Value);
-            }
+            OnApplyVitality();
         });
     }
 

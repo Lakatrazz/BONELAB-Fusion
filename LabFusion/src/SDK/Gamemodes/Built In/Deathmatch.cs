@@ -16,6 +16,7 @@ using LabFusion.Menu;
 using UnityEngine;
 
 using LabFusion.Menu.Data;
+using LabFusion.SDK.Metadata;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -42,6 +43,8 @@ public class Deathmatch : Gamemode
     public TriggerEvent OneMinuteLeftTrigger { get; set; }
     public TriggerEvent NaturalEndTrigger { get; set; }
 
+    public MetadataFloat Vitality { get; set; }
+
     private readonly PlayerScoreKeeper _scoreKeeper = new();
     public PlayerScoreKeeper ScoreKeeper => _scoreKeeper;
 
@@ -58,8 +61,9 @@ public class Deathmatch : Gamemode
 
     private int _minimumPlayers = 2;
 
+    private float _savedVitality = 1f;
+
     private string _avatarOverride = null;
-    private float? _vitalityOverride = null;
 
     private MonoDiscReference _victorySongReference = null;
     private MonoDiscReference _failureSongReference = null;
@@ -93,7 +97,7 @@ public class Deathmatch : Gamemode
             Title = "Minimum Players",
             Value = _minimumPlayers,
             Increment = 1,
-            MinValue = 2,
+            MinValue = 1,
             MaxValue = 255,
             OnValueChanged = (v) =>
             {
@@ -102,6 +106,21 @@ public class Deathmatch : Gamemode
         };
 
         generalGroup.AddElement(minimumPlayersData);
+
+        var vitalityData = new FloatElementData()
+        {
+            Title = "Vitality",
+            Value = _savedVitality,
+            Increment = 0.2f,
+            MinValue = 0.2f,
+            MaxValue = 100f,
+            OnValueChanged = (v) =>
+            {
+                _savedVitality = v;
+            }
+        };
+
+        generalGroup.AddElement(vitalityData);
 
         return group;
     }
@@ -142,31 +161,22 @@ public class Deathmatch : Gamemode
         Playlist.SetPlaylist(playlist);
 
         _avatarOverride = null;
-        _vitalityOverride = null;
+
+        float newVitality = _savedVitality;
 
         var playerSettings = GamemodePlayerSettings.Instance;
 
         if (playerSettings != null)
         {
             _avatarOverride = playerSettings.AvatarOverride;
-            _vitalityOverride = playerSettings.VitalityOverride;
+
+            if (playerSettings.VitalityOverride.HasValue)
+            {
+                newVitality = playerSettings.VitalityOverride.Value;
+            }
         }
-    }
 
-    public void SetDefaultValues()
-    {
-        _totalMinutes = _savedMinutes;
-
-        AudioReference[] playlist = AudioReference.CreateReferences(FusionMonoDiscReferences.CombatSongReferences);
-        Playlist.SetPlaylist(playlist);
-
-        _avatarOverride = null;
-        _vitalityOverride = null;
-    }
-
-    public void SetRoundLength(int minutes)
-    {
-        _totalMinutes = minutes;
+        Vitality.SetValue(newVitality);
     }
 
     public IReadOnlyList<PlayerId> GetPlayersByScore()
@@ -256,6 +266,11 @@ public class Deathmatch : Gamemode
         NaturalEndTrigger = new TriggerEvent(nameof(NaturalEndTrigger), Relay, true);
         NaturalEndTrigger.OnTriggered += OnNaturalEnd;
 
+        // Create metadata
+        Vitality = new MetadataFloat(nameof(Vitality), Metadata);
+
+        Metadata.OnMetadataChanged += OnMetadataChanged;
+
         // Register score keeper
         ScoreKeeper.Register(Metadata);
         ScoreKeeper.OnScoreChanged += OnScoreChanged;
@@ -272,6 +287,8 @@ public class Deathmatch : Gamemode
         MultiplayerHooking.OnPlayerAction -= OnPlayerAction;
         FusionOverrides.OnValidateNametag -= OnValidateNametag;
 
+        Metadata.OnMetadataChanged -= OnMetadataChanged;
+
         // Destroy triggers
         OneMinuteLeftTrigger.UnregisterEvent();
         NaturalEndTrigger.UnregisterEvent();
@@ -279,6 +296,16 @@ public class Deathmatch : Gamemode
         // Unregister score keeper
         ScoreKeeper.Unregister();
         ScoreKeeper.OnScoreChanged -= OnScoreChanged;
+    }
+
+    private new void OnMetadataChanged(string key, string value)
+    {
+        switch (key)
+        {
+            case nameof(Vitality):
+                OnApplyVitality();
+                break;
+        }
     }
 
     protected bool OnValidateNametag(PlayerId id)
@@ -305,7 +332,7 @@ public class Deathmatch : Gamemode
                     _hasDied = true;
                 }
                 break;
-            case PlayerActionType.DEATH_BY_OTHER_PLAYER:
+            case PlayerActionType.DYING_BY_OTHER_PLAYER:
                 if (otherPlayer != null && otherPlayer != player)
                 {
                     // Increment score for that player
@@ -390,9 +417,20 @@ public class Deathmatch : Gamemode
             if (_avatarOverride != null)
                 FusionPlayer.SetAvatarOverride(_avatarOverride);
 
-            if (_vitalityOverride.HasValue)
-                FusionPlayer.SetPlayerVitality(_vitalityOverride.Value);
+            OnApplyVitality();
         });
+    }
+
+    private void OnApplyVitality()
+    {
+        if (!IsStarted)
+        {
+            return;
+        }
+
+        var vitality = Vitality.GetValue();
+
+        FusionPlayer.SetPlayerVitality(vitality);
     }
 
     protected void OnVictoryStatus(bool isVictory = false)
