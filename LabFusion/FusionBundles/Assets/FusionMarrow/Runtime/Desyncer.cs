@@ -11,7 +11,7 @@ namespace LabFusion.Marrow.Integration
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
 #else
-    [DisallowMultipleComponents]
+    [DisallowMultipleComponent]
 #endif
     public class Desyncer : MonoBehaviour
     {
