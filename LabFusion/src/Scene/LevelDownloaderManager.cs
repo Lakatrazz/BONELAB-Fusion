@@ -51,10 +51,6 @@ public static class LevelDownloaderManager
         _downloadingBarcode = info.levelBarcode;
         _downloadingInfo = info;
 
-        // Cancel all currently queued downloads.
-        // They aren't as important as the level, and anything waiting for a download likely won't exist anymore in the new scene.
-        ModIODownloader.CancelQueue();
-
         // Get the maximum amount of bytes that we download before cancelling, to make sure the level isn't too big
         long maxBytes = DataConversions.ConvertMegabytesToBytes(ClientSettings.Downloading.MaxLevelSize.Value);
 
@@ -66,6 +62,7 @@ public static class LevelDownloaderManager
             beginDownloadCallback = OnDownloadBegin,
             finishDownloadCallback = OnDownloadFinished,
             maxBytes = maxBytes,
+            highPriority = true,
         });
     }
 

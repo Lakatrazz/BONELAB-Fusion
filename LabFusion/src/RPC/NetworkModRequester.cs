@@ -41,6 +41,8 @@ public static class NetworkModRequester
         public long? maxBytes;
 
         public IProgress<float> reporter;
+
+        public bool highPriority;
     }
 
     private static uint _lastTrackedRequest = 0;
@@ -111,6 +113,12 @@ public static class NetworkModRequester
             installInfo.beginDownloadCallback?.Invoke(info);
 
             bool temporary = !ClientSettings.Downloading.KeepDownloadedMods.Value;
+
+            // If high priority, cancel other downloads
+            if (installInfo.highPriority)
+            {
+                ModIODownloader.CancelQueue();
+            }
 
             ModIODownloader.EnqueueDownload(new ModTransaction()
             {
