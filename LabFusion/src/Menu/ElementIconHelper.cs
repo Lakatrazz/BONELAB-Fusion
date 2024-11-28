@@ -1,7 +1,4 @@
-﻿using Il2CppSLZ.Marrow.Warehouse;
-
-using LabFusion.Downloading.ModIO;
-using LabFusion.Marrow;
+﻿using LabFusion.Downloading.ModIO;
 using LabFusion.Marrow.Proxies;
 
 namespace LabFusion.Menu;
@@ -27,6 +24,11 @@ public static class ElementIconHelper
         {
             ModIOThumbnailDownloader.GetThumbnail(modId, (texture) =>
             {
+                if (element == null)
+                {
+                    return;
+                }
+
                 element.PlayerIcon.texture = texture;
                 element.PlayerIconFitter.aspectRatio = WideAspectRatio;
             });
@@ -50,6 +52,11 @@ public static class ElementIconHelper
         {
             ModIOThumbnailDownloader.GetThumbnail(modId, (texture) =>
             {
+                if (element == null)
+                {
+                    return;
+                }
+
                 element.PlayerIcon.texture = texture;
                 element.PlayerIconFitter.aspectRatio = WideAspectRatio;
             });
@@ -71,6 +78,11 @@ public static class ElementIconHelper
         {
             ModIOThumbnailDownloader.GetThumbnail(modId, (texture) =>
             {
+                if (element == null)
+                {
+                    return;
+                }
+
                 element.LevelIcon.texture = texture;
             });
         }
@@ -91,6 +103,11 @@ public static class ElementIconHelper
         {
             ModIOThumbnailDownloader.GetThumbnail(modId, (texture) =>
             {
+                if (element == null)
+                {
+                    return;
+                }
+
                 element.LevelIcon.texture = texture;
             });
         }
