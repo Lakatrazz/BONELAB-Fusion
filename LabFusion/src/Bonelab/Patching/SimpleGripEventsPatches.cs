@@ -5,6 +5,7 @@ using LabFusion.Player;
 using LabFusion.Utilities;
 using LabFusion.Entities;
 using LabFusion.Bonelab.Extenders;
+using LabFusion.Marrow.Integration;
 
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Interaction;
@@ -23,19 +24,20 @@ public static class SimpleGripEventsPatches
         {
             return false;
         }
-        else if (GetExtender(__instance, hand, out var syncable, out var extender))
+
+        if (GetExtender(__instance, hand, out var entity, out var extender))
         {
             // Decompiled code from CPP2IL
             if (__instance.doNotRetriggerOnMultiGirp)
             {
                 if (!__instance.leftHand && !__instance.rightHand)
                 {
-                    SendGripEvent(syncable.Id, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.ATTACH);
+                    SendGripEvent(entity.Id, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.ATTACH);
                 }
             }
             else
             {
-                SendGripEvent(syncable.Id, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.ATTACH);
+                SendGripEvent(entity.Id, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.ATTACH);
             }
         }
 
@@ -50,7 +52,8 @@ public static class SimpleGripEventsPatches
         {
             return false;
         }
-        else if (GetExtender(__instance, hand, out var syncable, out var extender))
+
+        if (GetExtender(__instance, hand, out var entity, out var extender))
         {
             // Decompiled code from CPP2IL
             if (__instance.doNotRetriggerOnMultiGirp)
@@ -68,7 +71,7 @@ public static class SimpleGripEventsPatches
                     return true;
                 }
             }
-            SendGripEvent(syncable.Id, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.DETACH);
+            SendGripEvent(entity.Id, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.DETACH);
         }
 
         return true;
@@ -85,16 +88,21 @@ public static class SimpleGripEventsPatches
     [HarmonyPatch(nameof(SimpleGripEvents.OnAttachedUpdateDelegate))]
     public static void OnAttachedUpdateDelegatePostfix(SimpleGripEvents __instance, Hand hand)
     {
-        if (GetExtender(__instance, hand, out var syncable, out var extender))
+        if (IsPlayerRep(__instance, hand))
+        {
+            return;
+        }
+
+        if (GetExtender(__instance, hand, out var entity, out var extender))
         {
             if (hand._indexButtonDown)
             {
-                SendGripEvent(syncable.Id, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.TRIGGER_DOWN);
+                SendGripEvent(entity.Id, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.TRIGGER_DOWN);
             }
 
             if (hand.Controller.GetMenuTap())
             {
-                SendGripEvent(syncable.Id, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.MENU_TAP);
+                SendGripEvent(entity.Id, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.MENU_TAP);
             }
         }
     }
@@ -114,16 +122,19 @@ public static class SimpleGripEventsPatches
         entity = null;
         extender = null;
 
+        // Make sure there is a server
         if (!NetworkInfo.HasServer)
         {
             return false;
         }
 
+        // Make sure the grabbing hand is the local player
         if (!hand.manager.IsLocalPlayer())
         {
             return false;
         }
 
+        // Get the extender
         if (!SimpleGripEventsExtender.Cache.TryGet(__instance, out entity))
         {
             return false;
@@ -131,13 +142,19 @@ public static class SimpleGripEventsPatches
 
         extender = entity.GetExtender<SimpleGripEventsExtender>();
 
+        // Check for desync script
+        if (Desyncer.Cache.ContainsSource(__instance.gameObject))
+        {
+            return false;
+        }
+
         return true;
     }
 
-    private static void SendGripEvent(ushort syncId, byte gripEventIndex, SimpleGripEventType type)
+    private static void SendGripEvent(ushort entityId, byte gripEventIndex, SimpleGripEventType type)
     {
         using var writer = FusionWriter.Create(SimpleGripEventData.Size);
-        var data = SimpleGripEventData.Create(PlayerIdManager.LocalSmallId, syncId, gripEventIndex, type);
+        var data = SimpleGripEventData.Create(PlayerIdManager.LocalSmallId, entityId, gripEventIndex, type);
         writer.Write(data);
 
         using var message = FusionMessage.ModuleCreate<SimpleGripEventMessage>(writer);
