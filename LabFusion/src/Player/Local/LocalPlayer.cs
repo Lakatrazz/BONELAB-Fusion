@@ -1,7 +1,6 @@
 ﻿#nullable enable
 
 using Il2CppSLZ.Marrow;
-using Il2CppSLZ.VRMK;
 
 using LabFusion.Data;
 using LabFusion.Entities;
@@ -9,6 +8,10 @@ using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.SDK.Metadata;
 using LabFusion.Utilities;
+
+using Avatar = Il2CppSLZ.VRMK.Avatar;
+
+using UnityEngine;
 
 namespace LabFusion.Player;
 
@@ -154,5 +157,23 @@ public static class LocalPlayer
 
         physicsRig.leftHand.TryDetach();
         physicsRig.rightHand.TryDetach();
+    }
+
+    /// <summary>
+    /// Teleports the Local Player to their checkpoint.
+    /// </summary>
+    public static void TeleportToCheckpoint()
+    {
+        if (!RigData.HasPlayer)
+        {
+            return;
+        }
+
+        var rigManager = RigData.Refs.RigManager;
+        var physicsRig = rigManager.physicsRig;
+
+        physicsRig.TeleportToPose();
+
+        physicsRig.marrowEntity.transform.position += rigManager.checkpointPosition - physicsRig.feet.transform.position;
     }
 }

@@ -154,6 +154,23 @@ public static class HealthPatches
 public static class PlayerHealthPatches
 {
     [HarmonyPrefix]
+    [HarmonyPatch(nameof(Player_Health.ApplyKillDamage))]
+    public static void ApplyKillDamage(Player_Health __instance)
+    {
+        if (!NetworkInfo.HasServer)
+        {
+            return;
+        }
+
+        if (!__instance._rigManager.IsLocalPlayer())
+        {
+            return;
+        }
+
+        LocalPlayer.TeleportToCheckpoint();
+    }
+
+    [HarmonyPrefix]
     [HarmonyPatch(nameof(Player_Health.Dying))]
     public static void Dying(Player_Health __instance)
     {
