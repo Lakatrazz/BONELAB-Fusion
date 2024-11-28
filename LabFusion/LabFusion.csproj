@@ -257,6 +257,7 @@
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Cosmetics\CosmeticRoot.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Cosmetics\RigPoint.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\DeathTrigger.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Desyncer.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Events\CelebrationEvents.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Events\OwnershipEvents.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Events\ServerEvents.cs" />
