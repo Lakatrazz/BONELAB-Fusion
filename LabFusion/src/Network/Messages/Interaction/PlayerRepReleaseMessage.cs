@@ -63,9 +63,16 @@ public class PlayerRepReleaseMessage : FusionMessageHandler
 
         var player = data.GetPlayer();
 
-        if (player != null)
+        if (player == null)
         {
-            player.Grabber.Detach(data.handedness);
+            return;
         }
+
+        if (!player.HasRig)
+        {
+            return;
+        }
+
+        player.Grabber.Detach(data.handedness);
     }
 }

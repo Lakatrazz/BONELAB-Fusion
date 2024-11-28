@@ -90,6 +90,12 @@ public class SerializedEntityGrab : SerializedGrab
             return;
         }
 
+        // Don't grab if the player rig doesn't exist
+        if (!player.HasRig)
+        {
+            return;
+        }
+
         // Get the hand and its starting values
         Hand hand = player.RigRefs.GetHand(handedness);
 

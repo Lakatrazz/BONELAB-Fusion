@@ -1,6 +1,11 @@
 ﻿using LabFusion.Network;
 using LabFusion.Player;
+using LabFusion.Scene;
 using LabFusion.Utilities;
+
+using MelonLoader;
+
+using System.Collections;
 
 namespace LabFusion.Entities;
 
@@ -71,17 +76,47 @@ public static class NetworkEntityManager
 
     private static void OnPlayerCatchup(PlayerId playerId)
     {
-        foreach (var entity in IdManager.RegisteredEntities.IdEntityLookup)
+        MelonCoroutines.Start(SendCatchupCoroutine(playerId));
+    }
+
+    private static IEnumerator SendCatchupCoroutine(PlayerId playerId)
+    {
+        var catchupQueue = new Queue<NetworkEntity>(IdManager.RegisteredEntities.IdEntityLookup.Values);
+
+        while (catchupQueue.Count > 0 && !FusionSceneManager.IsLoading() && playerId.IsValid)
         {
-            try
+            var entity = catchupQueue.Dequeue();
+
+            if (!entity.IsRegistered)
             {
-                entity.Value.InvokeCatchup(playerId);
+                continue;
             }
-            catch (Exception e)
+
+            bool sent = SendCatchup(entity, playerId);
+
+            if (!sent)
             {
-                FusionLogger.LogException("sending catchup for NetworkEntity", e);
+                continue;
             }
+
+            yield return null;
+
+            yield return null;
         }
+    }
+
+    private static bool SendCatchup(NetworkEntity entity, PlayerId playerId)
+    {
+        try
+        {
+            return entity.InvokeCatchup(playerId);
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("sending catchup for NetworkEntity", e);
+        }
+
+        return false;
     }
 
     public static void OnUpdate(float deltaTime)

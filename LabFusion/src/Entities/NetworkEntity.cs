@@ -68,9 +68,16 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
         return default;
     }
 
-    public void InvokeCatchup(PlayerId playerId)
+    public bool InvokeCatchup(PlayerId playerId)
     {
+        if (OnEntityCatchup == null)
+        {
+            return false;
+        }
+
         OnEntityCatchup?.Invoke(this, playerId);
+
+        return true;
     }
 
     public void HookOnRegistered(NetworkEntityDelegate registeredCallback)
