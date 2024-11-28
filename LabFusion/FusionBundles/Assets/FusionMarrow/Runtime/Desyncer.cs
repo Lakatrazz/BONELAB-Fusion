@@ -12,6 +12,7 @@ namespace LabFusion.Marrow.Integration
     [RegisterTypeInIl2Cpp]
 #else
     [DisallowMultipleComponent]
+    [HelpURL("https://github.com/Lakatrazz/BONELAB-Fusion/wiki/Modifier-Scripts#desyncer")]
 #endif
     public class Desyncer : MonoBehaviour
     {

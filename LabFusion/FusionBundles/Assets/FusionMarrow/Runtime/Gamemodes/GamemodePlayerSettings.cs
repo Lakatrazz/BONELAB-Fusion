@@ -10,6 +10,8 @@ namespace LabFusion.Marrow.Integration
 {
 #if MELONLOADER
     [RegisterTypeInIl2Cpp]
+#else
+    [HelpURL("https://github.com/Lakatrazz/BONELAB-Fusion/wiki/Gamemode-Maps#gamemode-player-settings")]
 #endif
     public class GamemodePlayerSettings : MonoBehaviour
     {
@@ -54,6 +56,11 @@ namespace LabFusion.Marrow.Integration
             _vitalityOverride = vitality;
         }
 #else
+        public string avatarOverride = null;
+
+        [Min(0f)]
+        public float vitalityOverride = 0f;
+
         public void SetAvatar(string avatarBarcode)
         {
         }
