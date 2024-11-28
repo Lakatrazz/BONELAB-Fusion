@@ -1,5 +1,4 @@
 ﻿using LabFusion.Data;
-using LabFusion.Preferences;
 using LabFusion.Preferences.Server;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Utilities;
@@ -8,7 +7,7 @@ namespace LabFusion.Network;
 
 public static class LobbyInfoManager
 {
-    private static LobbyInfo _lobbyInfo = null;
+    private static LobbyInfo _lobbyInfo = LobbyInfo.Empty;
     public static LobbyInfo LobbyInfo
     {
         get
@@ -44,6 +43,14 @@ public static class LobbyInfoManager
         // Make sure we actually have a Network Layer
         if (NetworkInfo.CurrentNetworkLayer == null)
         {
+            LobbyInfo = LobbyInfo.Empty;
+            return;
+        }
+
+        // If there is no server, empty the lobby info
+        if (!NetworkInfo.HasServer)
+        {
+            LobbyInfo = LobbyInfo.Empty;
             return;
         }
 

@@ -1,5 +1,4 @@
 ﻿using LabFusion.Marrow;
-using LabFusion.Menu;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Preferences.Server;
@@ -15,6 +14,8 @@ namespace LabFusion.Data;
 [Serializable]
 public class LobbyInfo
 {
+    public static readonly LobbyInfo Empty = new();
+
     // Info
     [JsonPropertyName("lobbyId")]
     public ulong LobbyId { get; set; }
