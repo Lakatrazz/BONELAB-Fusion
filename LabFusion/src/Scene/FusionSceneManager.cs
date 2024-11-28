@@ -169,7 +169,8 @@ public static partial class FusionSceneManager
     private static void OnDownloadSucceeded() 
     {
         // We can now load the level
-        LoadTargetScene();
+        // Hook the level load incase we're in the loading screen
+        HookOnDelayedLevelLoad(LoadTargetScene);
 
         _hasStartedDownloadingTarget = false;
     }
