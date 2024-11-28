@@ -5,7 +5,6 @@ using LabFusion.Downloading.ModIO;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Proxies;
-using LabFusion.Network;
 using LabFusion.Preferences.Client;
 using LabFusion.Representation;
 using LabFusion.Utilities;

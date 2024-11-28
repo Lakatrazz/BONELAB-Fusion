@@ -167,6 +167,11 @@ public static class PlayerHealthPatches
             return;
         }
 
+        if (__instance.healthMode == Health.HealthMode.Mortal)
+        {
+            return;
+        }
+
         LocalPlayer.TeleportToCheckpoint();
     }
 

@@ -170,10 +170,19 @@ public static class LocalPlayer
         }
 
         var rigManager = RigData.Refs.RigManager;
+
         var physicsRig = rigManager.physicsRig;
+        var marrowEntity = physicsRig.marrowEntity;
 
-        physicsRig.TeleportToPose();
+        for (var i = 0; i < marrowEntity._defaultPoseCache.Length; i++)
+        {
+            var pose = marrowEntity._defaultPoseCache[i];
+            var body = marrowEntity.Bodies[i];
 
-        physicsRig.marrowEntity.transform.position += rigManager.checkpointPosition - physicsRig.feet.transform.position;
+            body.transform.localPosition = pose.position;
+            body.transform.localRotation = pose.rotation;
+        }
+
+        marrowEntity.transform.position += rigManager.checkpointPosition - physicsRig.feet.transform.position;
     }
 }
