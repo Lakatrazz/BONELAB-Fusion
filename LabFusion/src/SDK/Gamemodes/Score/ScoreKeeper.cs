@@ -37,6 +37,13 @@ public abstract class ScoreKeeper<TProperty>
         }
 
         var property = GetPropertyWithKey(key);
+
+        // If the property doesn't exist, don't invoke a score change
+        if (property == null)
+        {
+            return;
+        }
+
         int score = 0;
 
         if (int.TryParse(value, out var parsedScore))
@@ -107,6 +114,8 @@ public abstract class ScoreKeeper<TProperty>
         foreach (var value in _propertyToScore.Values)
         {
             value.SetValue(0);
+
+            value.Remove();
         }
     }
 }

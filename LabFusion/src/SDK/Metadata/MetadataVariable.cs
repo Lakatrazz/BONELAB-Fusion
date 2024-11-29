@@ -18,6 +18,11 @@ public class MetadataVariable
         Metadata = metadata;
     }
 
+    public void Remove()
+    {
+        Metadata.TryRemoveMetadata(Key);
+    }
+
     public void SetValue(string value)
     {
         Metadata.TrySetMetadata(Key, value);
