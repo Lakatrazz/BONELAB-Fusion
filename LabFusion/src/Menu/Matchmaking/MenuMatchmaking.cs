@@ -277,9 +277,9 @@ public static class MenuMatchmaking
     private static IEnumerable<IMatchmaker.LobbyInfo> SortLobbies(IEnumerable<IMatchmaker.LobbyInfo> lobbies)
     {
         return lobbies
+            .OrderBy(l => l.metadata.LobbyInfo.LobbyHostName)
             .OrderByDescending(l => l.metadata.LobbyInfo.PlayerCount)
             .OrderByDescending(l => l.metadata.LobbyInfo.LobbyVersion)
-            .OrderBy(l => l.metadata.LobbyInfo.LobbyHostName)
             .OrderBy(l => l.metadata.LobbyInfo.LevelTitle)
             .Where(CheckLobbyVisibility);
     }
