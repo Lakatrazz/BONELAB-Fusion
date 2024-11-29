@@ -274,6 +274,16 @@ public static class MenuMatchmaking
         return lobbies.Where(CheckLobbyVisibility);
     }
 
+    private static IEnumerable<IMatchmaker.LobbyInfo> SortLobbies(IEnumerable<IMatchmaker.LobbyInfo> lobbies)
+    {
+        return lobbies
+            .OrderByDescending(l => l.metadata.LobbyInfo.PlayerCount)
+            .OrderByDescending(l => l.metadata.LobbyInfo.LobbyVersion)
+            .OrderBy(l => l.metadata.LobbyInfo.LobbyHostName)
+            .OrderBy(l => l.metadata.LobbyInfo.LevelTitle)
+            .Where(CheckLobbyVisibility);
+    }
+
     public static bool LoadLobbiesIntoBrowser(IEnumerable<IMatchmaker.LobbyInfo> lobbies) 
     {
         MatchmakingPage.SelectSubPage(4);
@@ -282,12 +292,7 @@ public static class MenuMatchmaking
         SearchResultsElement.RemoveElements<LobbyResultElement>();
 
         // Sort lobbies
-        var sortedLobbies = lobbies
-            .OrderBy(l => l.metadata.LobbyInfo.LobbyHostName)
-            .OrderBy(l => l.metadata.LobbyInfo.LevelTitle)
-            .OrderByDescending(l => l.metadata.LobbyInfo.PlayerCount)
-            .OrderByDescending(l => l.metadata.LobbyInfo.LobbyVersion)
-            .Where(CheckLobbyVisibility);
+        var sortedLobbies = SortLobbies(lobbies);
 
         // Add all lobbies to the list
         foreach (var lobby in sortedLobbies)
@@ -307,11 +312,7 @@ public static class MenuMatchmaking
     {
         _isSearchingLobbies = false;
 
-        var sortedLobbies = info.lobbies
-            .OrderBy(l => l.metadata.LobbyInfo.LobbyHostName)
-            .OrderBy(l => l.metadata.LobbyInfo.LevelTitle)
-            .OrderBy(l => l.metadata.LobbyInfo.LobbyVersion)
-            .Where(CheckLobbyVisibility)
+        var sortedLobbies = SortLobbies(info.lobbies)
             .Where(l => LobbyFilterManager.FilterLobby(l.lobby, l.metadata));
 
         // Enable buttons
