@@ -285,7 +285,8 @@ public static class MenuMatchmaking
         var sortedLobbies = lobbies
             .OrderBy(l => l.metadata.LobbyInfo.LobbyHostName)
             .OrderBy(l => l.metadata.LobbyInfo.LevelTitle)
-            .OrderBy(l => l.metadata.LobbyInfo.LobbyVersion)
+            .OrderByDescending(l => l.metadata.LobbyInfo.PlayerCount)
+            .OrderByDescending(l => l.metadata.LobbyInfo.LobbyVersion)
             .Where(CheckLobbyVisibility);
 
         // Add all lobbies to the list
