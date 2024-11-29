@@ -51,6 +51,11 @@ public static class MenuSettings
         // Visual
         var visualGroup = page.AddElement<GroupElement>("Visuals");
 
+        visualGroup.AddElement<FloatElement>("Menu Size")
+            .AsPref(ClientSettings.MenuSize)
+            .WithIncrement(0.1f)
+            .WithLimits(1f, 2f);
+
         visualGroup.AddElement<BoolElement>("NameTags")
             .AsPref(ClientSettings.NameTags);
 

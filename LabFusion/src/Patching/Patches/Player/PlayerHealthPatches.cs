@@ -145,7 +145,7 @@ public static class HealthPatches
             PhysicsRigPatches.ForceAllowUnragdoll = false;
 
             // Teleport so we don't fling
-            __instance._rigManager.TeleportToPose(__instance._rigManager.checkpointPosition, __instance._rigManager.checkpointFwd, true);
+            LocalPlayer.TeleportToCheckpoint();
         }
     }
 }

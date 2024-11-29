@@ -20,6 +20,8 @@ namespace LabFusion.Marrow.Proxies
 
         public Action OnShown;
 
+        public Action OnEnabled, OnDisabled;
+
         public MenuPage CurrentPage { get; set; } = null;
 
         private List<MenuPage> _subPages = null;
@@ -70,6 +72,13 @@ namespace LabFusion.Marrow.Proxies
         private void OnEnable()
         {
             ResetPages();
+
+            OnEnabled?.Invoke();
+        }
+
+        private void OnDisable()
+        {
+            OnDisabled?.Invoke();
         }
 
         public void ShowPage()
