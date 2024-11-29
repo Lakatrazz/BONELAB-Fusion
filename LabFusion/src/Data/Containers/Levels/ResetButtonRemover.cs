@@ -13,8 +13,11 @@ public sealed class ResetButtonRemover : LevelDataHandler
 
     // List of all blacklisted names
     private static readonly string[] _blacklistedButtons = new string[] {
-        "button_1_5x_Float_Powered_Entity_RESET",
-        "button_1_5x_Float_Powered_Entity_HUB",
+        "_Powered_Entity_RESET",
+        "_Powered_Entity_HUB",
+        "_Powered_Entity_RELOAD",
+        "_Powered_RELOAD",
+        "_Powered_HUB",
         "button_1x_Float_Floor",
     };
 
@@ -27,7 +30,7 @@ public sealed class ResetButtonRemover : LevelDataHandler
         }
 
         // Get all buttons
-        var buttons = GameObject.FindObjectsOfType<ButtonNode>();
+        var buttons = GameObject.FindObjectsOfType<ButtonNode>(true);
 
         for (var i = 0; i < buttons.Length; i++)
         {
