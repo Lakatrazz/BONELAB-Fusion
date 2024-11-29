@@ -79,8 +79,6 @@ public static class GamemodeManager
         Gamemode.OnSelectedKeyChanged += OnSelectedKeyChanged;
         Gamemode.OnReadyKeyChanged += OnReadyKeyChanged;
 
-        MultiplayerHooking.OnShouldAllowConnection += OnUserJoinCheck;
-
         MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
 
         MultiplayerHooking.OnDisconnect += OnDisconnect;
@@ -254,18 +252,6 @@ public static class GamemodeManager
         StartTimer = DefaultTime;
 
         _startTimerActive = false;
-    }
-
-    private static bool OnUserJoinCheck(PlayerId playerId, out string reason)
-    {
-        if (IsGamemodeStarted)
-        {
-            reason = $"{ActiveGamemode.Title} is in a round! Please wait for it to end!";
-            return false;
-        }
-
-        reason = "";
-        return true;
     }
 
     /// <summary>
