@@ -3,6 +3,7 @@
 using LabFusion.RPC;
 using LabFusion.Senders;
 using LabFusion.Scene;
+using LabFusion.Marrow.Integration;
 
 using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Marrow.Pool;
@@ -78,13 +79,19 @@ public static class CrateSpawnerAsyncPatches
             return true;
         }
 
+        var spawner = __instance.__4__this;
+
+        // Check if this CrateSpawner has a Desyncer
+        if (Desyncer.Cache.ContainsSource(spawner.gameObject))
+        {
+            return true;
+        }
+
         // If we aren't the scene host, don't allow a crate spawn
         if (!CrossSceneManager.IsSceneHost())
         {
             return false;
         }
-
-        var spawner = __instance.__4__this;
 
         // Make sure this isn't already spawning
         if (CurrentlySpawning.Any((found) => found == spawner))
