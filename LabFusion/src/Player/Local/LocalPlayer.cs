@@ -8,10 +8,9 @@ using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.SDK.Metadata;
 using LabFusion.Utilities;
+using LabFusion.Marrow.Extensions;
 
 using Avatar = Il2CppSLZ.VRMK.Avatar;
-
-using UnityEngine;
 
 namespace LabFusion.Player;
 
@@ -174,14 +173,7 @@ public static class LocalPlayer
         var physicsRig = rigManager.physicsRig;
         var marrowEntity = physicsRig.marrowEntity;
 
-        for (var i = 0; i < marrowEntity._defaultPoseCache.Length; i++)
-        {
-            var pose = marrowEntity._defaultPoseCache[i];
-            var body = marrowEntity.Bodies[i];
-
-            body.transform.localPosition = pose.position;
-            body.transform.localRotation = pose.rotation;
-        }
+        marrowEntity.ResetPose();
 
         marrowEntity.transform.position += rigManager.checkpointPosition - physicsRig.feet.transform.position;
     }
