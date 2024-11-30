@@ -47,9 +47,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cosmeticPoint: 7
   hiddenInView: 1
+  hiddenInShop: 0
   rawPrice: 4000
   previewIcon: {fileID: 2800000, guid: 4f3cc6e5ddcefed44a3ec8f27031749c, type: 3}
-  authorOverride: BaBaCorp
 --- !u!1001 &176459750488094519
 PrefabInstance:
   m_ObjectHideFlags: 0

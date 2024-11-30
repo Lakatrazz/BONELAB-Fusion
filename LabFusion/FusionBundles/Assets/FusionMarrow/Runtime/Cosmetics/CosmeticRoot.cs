@@ -35,6 +35,20 @@ namespace LabFusion.Marrow.Integration
         public int rawPrice = 100;
 
         public Texture2D previewIcon = null;
+
+        private void OnDrawGizmos()
+        {
+            var mesh = Resources.Load<Mesh>($"Meshes/{cosmeticPoint}");
+
+            if (mesh == null)
+            {
+                return;
+            }
+
+            Gizmos.color = new Color(0f, 1f, 1f, 0.5f);
+
+            Gizmos.DrawMesh(mesh, transform.position, transform.rotation);
+        }
 #endif
     }
 }
