@@ -45,9 +45,9 @@ public struct FusionVersion
 #else
     public const byte VersionMajor = 1;
     public const byte VersionMinor = 9;
-    public const short VersionPatch = 2;
+    public const short VersionPatch = 3;
 
-    public const string VersionString = "1.9.2";
+    public const string VersionString = "1.9.3";
 #endif
 }
 
