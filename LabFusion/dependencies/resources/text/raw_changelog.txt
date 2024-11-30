@@ -1,13 +1,13 @@
 Added:
-- Player vitality setting to DM/TDM
-- Time limit to Hide and Seek
-- Death triggers in Fusion SDK
-- Desyncer script in Fusion SDK
+- CrateSpawner support to Desyncer script
 Improved:
-- Priority of level downloads
+- Lobby sorting
 Fixed:
-- Error when LobbyInfo isn't available
-- Incompatability with scene bootstrap overriding
-- Knockout getting you stuck in the kill barrier
-- Extreme host lag when players join servers
-- Fix thumbnail download errors when changing scenes
+- Random player teleports
+- DM scoring issues (potentially)
+- Player element hooks not being cleared
+- Victory Trophy not being rewarded
+- Dev Tools not disabling in Gamemodes
+- Hub and Reset buttons not being disabled
+Removed:
+- Gamemode late join prevention

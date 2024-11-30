@@ -1,23 +1,23 @@
 ## **Fusion**
 #### Added:
-- Player vitality setting to DM/TDM
-- Time limit to Hide and Seek
+- CrateSpawner support to Desyncer script
 #### Improved:
-- Priority of level downloads
+- Lobby sorting
 #### Fixed:
-- Error when LobbyInfo isn't available
-- Incompatability with scene bootstrap overriding
-- Knockout getting you stuck in the kill barrier
-- Extreme host lag when players join servers
-- Fix thumbnail download errors when changing scenes
+- Random player teleports
+- DM scoring issues (potentially)
+- Player element hooks not being cleared
+- Victory Trophy not being rewarded
+- Dev Tools not disabling in Gamemodes
+- Hub and Reset buttons not being disabled
+#### Removed:
+- Gamemode late join prevention
 
 ## **Fusion Auto Updater**
 - No changes
 
 ## **Fusion SDK**
-#### Added:
-- Death Trigger script
-- Desyncer script
+- No changes
 
 ## **Fusion Helper**
 - [Download Here](https://github.com/Lakatrazz/Fusion-Helper/releases/latest)
