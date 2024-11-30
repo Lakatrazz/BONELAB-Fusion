@@ -1,11 +1,13 @@
 ﻿using HarmonyLib;
 
+using Il2CppSLZ.Marrow;
+using Il2CppSLZ.Marrow.AI;
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow.Utilities;
 
-using LabFusion.Entities;
 using LabFusion.Network;
 using LabFusion.Player;
+using LabFusion.Utilities;
 
 using UnityEngine;
 
@@ -37,23 +39,17 @@ public static class ObjectCleanupVolumePatches
             return;
         }
 
-        var marrowEntity = marrowBody.Entity;
+        // Only check for TriggerRefProxy so we don't accidentally trigger on something like the Body Log
+        var triggerRefProxy = marrowBody.GetComponent<TriggerRefProxy>();
 
-        if (!IMarrowEntityExtender.Cache.TryGet(marrowEntity, out var networkEntity))
+        if (triggerRefProxy == null || triggerRefProxy.root == null)
         {
             return;
         }
 
-        // Check if this NetworkEntity is owned by us
-        if (!networkEntity.IsOwner)
-        {
-            return;
-        }
+        var rigManager = RigManager.Cache.Get(triggerRefProxy.root);
 
-        // If this is a player, and it's owned by us, then it is us
-        var networkPlayer = networkEntity.GetExtender<NetworkPlayer>();
-
-        if (networkPlayer == null)
+        if (rigManager == null || !rigManager.IsLocalPlayer())
         {
             return;
         }
