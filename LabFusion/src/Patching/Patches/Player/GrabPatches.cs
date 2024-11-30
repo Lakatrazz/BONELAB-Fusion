@@ -12,46 +12,6 @@ using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Patching;
 
-[HarmonyPatch(typeof(BarrelGrip))]
-public static class BarrelGripPatches
-{
-    [HarmonyPostfix]
-    [HarmonyPatch(nameof(BarrelGrip.UpdateJointConfiguration))]
-    public static void UpdateJointConfiguration(Hand hand) => GripPatches.UpdateJointConfiguration(hand);
-}
-
-[HarmonyPatch(typeof(SphereGrip))]
-public static class SphereGripPatches
-{
-    [HarmonyPostfix]
-    [HarmonyPatch(nameof(SphereGrip.UpdateJointConfiguration))]
-    public static void UpdateJointConfiguration(Hand hand) => GripPatches.UpdateJointConfiguration(hand);
-}
-
-[HarmonyPatch(typeof(GenericGrip))]
-public static class GenericGripPatches
-{
-    [HarmonyPostfix]
-    [HarmonyPatch(nameof(GenericGrip.UpdateJointConfiguration))]
-    public static void UpdateJointConfiguration(Hand hand) => GripPatches.UpdateJointConfiguration(hand);
-}
-
-[HarmonyPatch(typeof(TargetGrip))]
-public static class TargetGripPatches
-{
-    [HarmonyPostfix]
-    [HarmonyPatch(nameof(TargetGrip.UpdateJointConfiguration))]
-    public static void UpdateJointConfiguration(Hand hand) => GripPatches.UpdateJointConfiguration(hand);
-}
-
-[HarmonyPatch(typeof(CylinderGrip))]
-public static class CylinderGripPatches
-{
-    [HarmonyPostfix]
-    [HarmonyPatch(nameof(CylinderGrip.UpdateJointConfiguration))]
-    public static void UpdateJointConfiguration(Hand hand) => GripPatches.UpdateJointConfiguration(hand);
-}
-
 [HarmonyPatch(typeof(ForcePullGrip), nameof(ForcePullGrip.OnFarHandHoverUpdate))]
 public static class ForcePullPatches
 {
@@ -80,23 +40,6 @@ public static class ForcePullPatches
 public static class GripPatches
 {
     public static readonly ComponentHashTable<Grip> HashTable = new();
-
-    // This is just referenced by other grip patches, not actually a patch itself
-    public static void UpdateJointConfiguration(Hand hand)
-    {
-        if (!NetworkInfo.HasServer)
-        {
-            return;
-        }
-
-        if (NetworkPlayerManager.HasExternalPlayer(hand.manager))
-        {
-            var joint = hand.joint;
-
-            joint.breakForce = float.PositiveInfinity;
-            joint.breakTorque = float.PositiveInfinity;
-        }
-    }
 
     [HarmonyPatch(nameof(Grip.Awake))]
     [HarmonyPrefix]
