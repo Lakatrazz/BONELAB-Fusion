@@ -634,6 +634,7 @@ public static class MenuLocation
         else
         {
             var volumeElement = element.VolumeElement
+                .Cleared()
                 .WithTitle("Volume")
                 .WithIncrement(0.1f)
                 .WithLimits(0f, 2f);
@@ -649,6 +650,7 @@ public static class MenuLocation
 
         // Permissions element
         var permissionsElement = element.PermissionsElement
+            .Cleared()
             .WithTitle("Permissions")
             .WithColor(Color.yellow);
 
