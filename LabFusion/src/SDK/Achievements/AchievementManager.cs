@@ -93,8 +93,13 @@ public static class AchievementManager
         return list;
     }
 
-    public static void LoadVictoryItems()
+    public static void CheckCompletionistUnlocks()
     {
+        if (!IsCompleted())
+        {
+            return;
+        }
+
         // Unlock victory trophy
         PointSaveManager.UnlockItem(FusionSpawnableReferences.VictoryTrophyReference.Barcode.ID);
     }

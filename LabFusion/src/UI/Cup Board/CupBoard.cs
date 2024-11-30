@@ -53,6 +53,8 @@ namespace LabFusion.UI
             var progress = AchievementManager.GetAchievementProgress();
             LoadEffects(progress);
             LoadMusic(progress);
+
+            AchievementManager.CheckCompletionistUnlocks();
         }
 
         private void LoadEffects(float progress)

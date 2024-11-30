@@ -88,12 +88,6 @@ public static class AchievementSaveManager
         {
             _achievementPointers = data.Pointers;
         }
-
-        // If all achievements are completed, unlock victory items
-        if (AchievementManager.IsCompleted())
-        {
-            AchievementManager.LoadVictoryItems();
-        }
     }
 
     public static void SaveAchievement(Achievement achievement)
