@@ -142,7 +142,7 @@ public class Deathmatch : Gamemode
 
             for (var i = 0; i < songReferences.Length; i++)
             {
-                songReferences[i] = new(musicSettings.SongOverrides.ElementAt(i));
+                songReferences[i] = new(musicSettings.SongOverrides[i]);
             }
         }
 
@@ -159,6 +159,7 @@ public class Deathmatch : Gamemode
         AudioReference[] playlist = AudioReference.CreateReferences(songReferences);
 
         Playlist.SetPlaylist(playlist);
+        Playlist.Shuffle();
 
         _avatarOverride = null;
 

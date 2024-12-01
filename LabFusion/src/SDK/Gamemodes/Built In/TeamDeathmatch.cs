@@ -391,13 +391,14 @@ public class TeamDeathmatch : Gamemode
 
             for (var i = 0; i < songReferences.Length; i++)
             {
-                songReferences[i] = new(musicSettings.SongOverrides.ElementAt(i));
+                songReferences[i] = new(musicSettings.SongOverrides[i]);
             }
         }
 
         AudioReference[] playlist = AudioReference.CreateReferences(songReferences);
 
         MusicPlaylist.SetPlaylist(playlist);
+        MusicPlaylist.Shuffle();
 
         AddTeams();
 

@@ -34,10 +34,10 @@ namespace LabFusion.Marrow.Integration
         [HideFromIl2Cpp]
         public Dictionary<string, string> TeamFailureSongOverrides => _teamFailureSongOverrides;
 
-        private readonly HashSet<string> _songOverrides = new();
+        private readonly List<string> _songOverrides = new();
 
         [HideFromIl2Cpp]
-        public HashSet<string> SongOverrides => _songOverrides;
+        public List<string> SongOverrides => _songOverrides;
 
         private string _victorySongOverride = null;
 
