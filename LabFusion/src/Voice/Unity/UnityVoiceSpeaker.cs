@@ -23,7 +23,6 @@ public class UnityVoiceSpeaker : VoiceSpeaker
     {
         // Save the id
         _id = id;
-        OnContactUpdated(ContactsList.GetContact(id));
 
         // Hook into contact info changing
         ContactsList.OnContactUpdated += OnContactUpdated;
@@ -34,7 +33,10 @@ public class UnityVoiceSpeaker : VoiceSpeaker
         Source.clip = AudioClip.Create("UnityVoice", UnityVoice.SampleRate,
                     1, UnityVoice.SampleRate, true, (PCMReaderCallback)PcmReaderCallback);
 
-        _source.Play();
+        Source.Play();
+
+        // Update the contact info
+        OnContactUpdated(ContactsList.GetContact(id));
 
         // Set the rep's audio source
         VerifyRep();
@@ -55,6 +57,11 @@ public class UnityVoiceSpeaker : VoiceSpeaker
 
     private void OnContactUpdated(Contact contact)
     {
+        if (contact.id != _id.LongId)
+        {
+            return;
+        }
+
         Volume = contact.volume;
     }
 

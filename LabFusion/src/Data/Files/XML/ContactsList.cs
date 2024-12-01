@@ -128,7 +128,9 @@ namespace LabFusion.Data
             }
 
             if (!updated)
+            {
                 _contacts.Add(contact);
+            }
 
             OnContactUpdated?.Invoke(contact);
 

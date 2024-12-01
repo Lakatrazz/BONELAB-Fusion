@@ -42,7 +42,22 @@ public abstract class VoiceSpeaker : IVoiceSpeaker
     public bool IsDestroyed { get { return _isDestroyed; } }
 
     protected float _volume = 1f;
-    public float Volume { get { return _volume; } set { _volume = value; } }
+    public float Volume
+    {
+        get
+        {
+            return _volume;
+        }
+        set
+        {
+            _volume = value;
+
+            if (Source != null)
+            {
+                Source.volume = value;
+            }
+        }
+    }
 
     public bool MicrophoneDisabled { get { return _hasPlayer && _player.MicrophoneDisabled; } }
 
@@ -50,6 +65,8 @@ public abstract class VoiceSpeaker : IVoiceSpeaker
     {
         _sourceGo = new GameObject($"{ID.SmallId} Voice Source");
         _source = _sourceGo.AddComponent<AudioSource>();
+
+        _source.volume = Volume;
 
         GameObject.DontDestroyOnLoad(_source);
         GameObject.DontDestroyOnLoad(_sourceGo);
