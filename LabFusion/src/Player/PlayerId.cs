@@ -13,7 +13,7 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
     public bool IsValid => _isValid;
     private bool _isValid = false;
 
-    public bool IsHost => SmallId == PlayerIdManager.LocalSmallId;
+    public bool IsHost => SmallId == PlayerIdManager.HostSmallId;
 
     public ulong LongId { get; private set; }
     public byte SmallId { get; private set; }

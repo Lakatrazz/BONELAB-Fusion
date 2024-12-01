@@ -138,7 +138,7 @@ public class RigNameTag : IHeadUIElement
 
             _nametagText.font = PersistentAssetCreator.Font;
 
-            GetIcons(_nametagTransform);
+            GetIcons(_nametagText.transform);
 
             UpdateText();
         });
@@ -158,9 +158,9 @@ public class RigNameTag : IHeadUIElement
         _nametagTransform = null;
     }
 
-    private void GetIcons(Transform nameTagTransform)
+    private void GetIcons(Transform textTransform)
     {
-        var icons = nameTagTransform.Find("Icons");
+        var icons = textTransform.Find("Icons");
 
         if (icons == null)
         {
