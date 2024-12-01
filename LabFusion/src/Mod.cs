@@ -44,10 +44,10 @@ public struct FusionVersion
     public const string VersionString = "0.0.0";
 #else
     public const byte VersionMajor = 1;
-    public const byte VersionMinor = 9;
-    public const short VersionPatch = 3;
+    public const byte VersionMinor = 10;
+    public const short VersionPatch = 0;
 
-    public const string VersionString = "1.9.3";
+    public const string VersionString = "1.10.0";
 #endif
 }
 
