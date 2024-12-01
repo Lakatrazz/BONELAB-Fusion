@@ -223,6 +223,8 @@ public class FusionMod : MelonMod
         // Cache info
         NetworkEntityManager.OnCleanupIds();
 
+        ModIOThumbnailDownloader.ClearCache();
+
         RigData.OnCacheRigInfo();
         PersistentAssetCreator.OnMainSceneInitialized();
         ConstrainerUtilities.OnMainSceneInitialized();
