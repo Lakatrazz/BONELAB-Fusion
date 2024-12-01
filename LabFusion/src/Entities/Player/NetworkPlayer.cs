@@ -119,7 +119,12 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         _pelvisPDController = new();
         _puppet = new();
-        _nametag = new();
+
+        _nametag = new()
+        {
+            CrownVisible = playerId.IsHost,
+        };
+
         _headUI = new();
 
         _icon = new()
