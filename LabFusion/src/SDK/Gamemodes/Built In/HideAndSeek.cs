@@ -151,6 +151,8 @@ public class HideAndSeek : Gamemode
 
         TeamManager.Unregister();
 
+        TeamManager.OnAssignedToTeam -= OnAssignedToTeam;
+
         TagEvent.UnregisterEvent();
         TagEvent = null;
 
