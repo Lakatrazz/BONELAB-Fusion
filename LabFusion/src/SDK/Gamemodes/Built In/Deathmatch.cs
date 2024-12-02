@@ -25,8 +25,6 @@ public class Deathmatch : Gamemode
     private const int _minPlayerBits = 30;
     private const int _maxPlayerBits = 250;
 
-    public static Deathmatch Instance { get; private set; }
-
     private const int _defaultMinutes = 3;
     private const int _minMinutes = 2;
     private const int _maxMinutes = 60;
@@ -254,8 +252,6 @@ public class Deathmatch : Gamemode
 
     public override void OnGamemodeRegistered()
     {
-        Instance = this;
-
         // Add hooks
         MultiplayerHooking.OnPlayerAction += OnPlayerAction;
         FusionOverrides.OnValidateNametag += OnValidateNametag;
@@ -279,11 +275,6 @@ public class Deathmatch : Gamemode
 
     public override void OnGamemodeUnregistered()
     {
-        if (Instance == this)
-        {
-            Instance = null;
-        }
-
         // Remove hooks
         MultiplayerHooking.OnPlayerAction -= OnPlayerAction;
         FusionOverrides.OnValidateNametag -= OnValidateNametag;
