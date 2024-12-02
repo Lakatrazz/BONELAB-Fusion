@@ -5,13 +5,14 @@ using Il2CppTMPro;
 
 using LabFusion.Extensions;
 using LabFusion.Marrow;
+using LabFusion.UI;
 using LabFusion.Utilities;
 
 using UnityEngine;
 
 namespace LabFusion.Entities;
 
-public class RigNameTag : IHeadUIElement
+public class RigNameTag : IPopupLayoutElement
 {
     private Transform _nametagTransform = null;
     private Poolee _nametagPoolee = null;

@@ -6,6 +6,7 @@ using Il2CppSLZ.Marrow.Pool;
 using Il2CppTMPro;
 
 using LabFusion.Marrow;
+using LabFusion.UI;
 using LabFusion.Utilities;
 
 using MelonLoader;
@@ -15,7 +16,7 @@ using UnityEngine.UI;
 
 namespace LabFusion.Entities;
 
-public class RigProgressBar : IHeadUIElement, IProgress<float>
+public class RigProgressBar : IPopupLayoutElement, IProgress<float>
 {
     private const string _visibilityParameterName = "Visible";
 

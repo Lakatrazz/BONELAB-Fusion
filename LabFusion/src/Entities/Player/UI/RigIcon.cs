@@ -2,13 +2,14 @@
 using Il2CppSLZ.Marrow.Pool;
 
 using LabFusion.Marrow;
+using LabFusion.UI;
 
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace LabFusion.Entities;
 
-public class RigIcon : IHeadUIElement
+public class RigIcon : IPopupLayoutElement
 {
     private Transform _iconTransform;
     private Poolee _iconPoolee;

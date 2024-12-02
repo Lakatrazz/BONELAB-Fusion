@@ -5,23 +5,11 @@ using Il2CppSLZ.Marrow.Pool;
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
+using LabFusion.UI;
 
 using UnityEngine;
 
 namespace LabFusion.Entities;
-
-public interface IHeadUIElement
-{
-    int Priority { get; }
-
-    Transform Transform { get; }
-
-    bool Visible { get; set; }
-
-    void Spawn(Transform parent);
-
-    void Despawn();
-}
 
 public class RigHeadUI
 {
@@ -52,7 +40,7 @@ public class RigHeadUI
         }
     }
 
-    private readonly HashSet<IHeadUIElement> _elements = new();
+    private readonly HashSet<IPopupLayoutElement> _elements = new();
 
     public void Spawn()
     {
@@ -82,7 +70,7 @@ public class RigHeadUI
         DespawnElements();
     }
 
-    public void RegisterElement(IHeadUIElement element)
+    public void RegisterElement(IPopupLayoutElement element)
     {
         bool added = _elements.Add(element);
 
@@ -102,7 +90,7 @@ public class RigHeadUI
         SortElements();
     }
 
-    public void UnregisterElement(IHeadUIElement element)
+    public void UnregisterElement(IPopupLayoutElement element)
     {
         bool removed = _elements.Remove(element);
 
