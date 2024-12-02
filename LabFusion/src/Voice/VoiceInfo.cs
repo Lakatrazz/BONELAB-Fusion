@@ -42,20 +42,13 @@ public static class VoiceInfo
     public static bool HasVoiceActivity => (VoiceManager?.GetReceiver()?.HasVoiceActivity()).GetValueOrDefault();
 
     /// <summary>
-    /// Returns if the player can't speak (muted, deafened, or dying).
+    /// Returns if the player can't speak.
     /// </summary>
     public static bool IsMuted
     {
         get
         {
-            bool isDying = false;
-
-            if (RigData.HasPlayer)
-            {
-                isDying = RigData.Refs.Health.deathIsImminent;
-            }
-
-            return ClientSettings.VoiceChat.Muted.Value || isDying || IsDeafened;
+            return ClientSettings.VoiceChat.Muted.Value || IsDeafened;
         }
     }
 
