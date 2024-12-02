@@ -33,7 +33,7 @@ public static class FusionPlayer
     internal static void OnInitializeMelon()
     {
         LobbyInfoManager.OnLobbyInfoChanged += OnLobbyInfoChanged;
-        LocalPlayer.OnAvatarChanged += OnAvatarChanged;
+        LocalAvatar.OnAvatarChanged += OnAvatarChanged;
     }
 
     private static void OnLobbyInfoChanged()

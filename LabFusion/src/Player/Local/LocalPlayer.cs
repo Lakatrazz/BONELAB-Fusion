@@ -10,13 +10,9 @@ using LabFusion.SDK.Metadata;
 using LabFusion.Utilities;
 using LabFusion.Marrow.Extensions;
 
-using Avatar = Il2CppSLZ.VRMK.Avatar;
-
 namespace LabFusion.Player;
 
 public delegate void PlayerGrabDelegate(Hand hand, Grip grip);
-
-public delegate void PlayerAvatarDelegate(Avatar avatar, string barcode);
 
 public static class LocalPlayer
 {
@@ -24,8 +20,6 @@ public static class LocalPlayer
     public static PlayerGrabDelegate? OnRelease { get; set; }
 
     public static Action<RigManager>? OnLocalRigCreated { get; set; }
-
-    public static event PlayerAvatarDelegate? OnAvatarChanged;
 
     public static bool RagdollOnDeath => NetworkInfo.HasServer;
 
@@ -56,6 +50,8 @@ public static class LocalPlayer
     {
         Metadata.OnTrySetMetadata += OnTrySetMetadata;
         Metadata.OnTryRemoveMetadata += OnTryRemoveMetadata;
+
+        LocalAvatar.OnInitializeMelon();
     }
 
     private static bool OnTrySetMetadata(string key, string value)
@@ -84,11 +80,6 @@ public static class LocalPlayer
         }
 
         return true;
-    }
-
-    internal static void InvokeAvatarChanged(Avatar avatar, string barcode)
-    {
-        OnAvatarChanged?.InvokeSafe(avatar, barcode, "executing LocalPlayer.OnAvatarChanged");
     }
 
     internal static void InvokeApplyInitialMetadata()

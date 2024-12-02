@@ -24,6 +24,10 @@ public class Juggernaut : Gamemode
 
         public const float JuggernautVitality = 20f;
 
+        public const float SurvivorHeight = 1.76f;
+
+        public const float JuggernautHeight = 2.288f;
+
         public const int MaxPoints = 20;
     }
 
@@ -97,6 +101,8 @@ public class Juggernaut : Gamemode
         {
             ClearTeams();
         }
+
+        LocalAvatar.HeightOverride = null;
     }
 
     public void ApplyGamemodeSettings()
@@ -316,6 +322,7 @@ public class Juggernaut : Gamemode
             });
 
             FusionPlayer.SetPlayerVitality(Defaults.SurvivorVitality);
+            LocalAvatar.HeightOverride = Defaults.SurvivorHeight;
         }
 
         if (team == JuggernautTeam)
@@ -330,6 +337,7 @@ public class Juggernaut : Gamemode
             });
 
             FusionPlayer.SetPlayerVitality(Defaults.JuggernautVitality);
+            LocalAvatar.HeightOverride = Defaults.JuggernautHeight;
         }
     }
 
