@@ -15,7 +15,7 @@ MonoBehaviour:
   _barcode:
     _id: Lakatrazz.FusionContent.Spawnable.HealthBar
   _title: Health Bar
-  _description: 
+  _description: An entity's health bar.
   _unlockable: 0
   _redacted: 1
   _tags:
