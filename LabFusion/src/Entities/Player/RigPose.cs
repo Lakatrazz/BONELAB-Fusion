@@ -12,8 +12,8 @@ public class RigPose : IFusionSerializable
 
     public BodyPose pelvisPose = new();
 
-    public SerializedHand physicsLeftHand = null;
-    public SerializedHand physicsRightHand = null;
+    public SerializedController leftController = null;
+    public SerializedController rightController = null;
 
     public float feetOffset = 0f;
 
@@ -35,8 +35,8 @@ public class RigPose : IFusionSerializable
         pelvisPose.angularVelocity = skeleton.physicsPelvis.angularVelocity;
 
         // Read hands
-        physicsLeftHand = new(skeleton.physicsLeftHand, skeleton.physicsLeftHand.Controller);
-        physicsRightHand = new(skeleton.physicsRightHand, skeleton.physicsRightHand.Controller);
+        leftController = new(skeleton.physicsLeftHand.Controller);
+        rightController = new(skeleton.physicsRightHand.Controller);
 
         // Read feet offset
         feetOffset = skeleton.remapRig._feetOffset;
@@ -57,8 +57,8 @@ public class RigPose : IFusionSerializable
         writer.Write(pelvisPose);
 
         // Write hands
-        writer.Write(physicsLeftHand);
-        writer.Write(physicsRightHand);
+        writer.Write(leftController);
+        writer.Write(rightController);
 
         // Write feet offset
         writer.Write(feetOffset);
@@ -79,8 +79,8 @@ public class RigPose : IFusionSerializable
         pelvisPose = reader.ReadFusionSerializable<BodyPose>();
 
         // Read hands
-        physicsLeftHand = reader.ReadFusionSerializable<SerializedHand>();
-        physicsRightHand = reader.ReadFusionSerializable<SerializedHand>();
+        leftController = reader.ReadFusionSerializable<SerializedController>();
+        rightController = reader.ReadFusionSerializable<SerializedController>();
 
         // Read feet offset
         feetOffset = reader.ReadSingle();

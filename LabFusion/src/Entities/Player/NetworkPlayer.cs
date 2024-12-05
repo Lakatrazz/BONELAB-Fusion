@@ -524,10 +524,10 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         switch (hand.handedness)
         {
             case Handedness.LEFT:
-                RigPose.physicsLeftHand?.CopyTo(hand, hand.Controller);
+                RigPose.leftController?.CopyTo(hand.Controller);
                 break;
             case Handedness.RIGHT:
-                RigPose.physicsRightHand?.CopyTo(hand, hand.Controller);
+                RigPose.rightController?.CopyTo(hand.Controller);
                 break;
         }
     }

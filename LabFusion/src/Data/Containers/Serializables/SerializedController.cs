@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace LabFusion.Data;
 
-public class SerializedHand : IFusionSerializable
+public class SerializedController : IFusionSerializable
 {
     public const int Size = sizeof(float) * 3 + sizeof(byte) * 12;
 
@@ -32,9 +32,9 @@ public class SerializedHand : IFusionSerializable
 
     public const float PRECISION_MULTIPLIER = 255f;
 
-    public SerializedHand() { }
+    public SerializedController() { }
 
-    public SerializedHand(Hand hand, BaseController controller)
+    public SerializedController(BaseController controller)
     {
         indexCurl = controller._processedIndex;
         middleCurl = controller._processedMiddle;
@@ -55,7 +55,7 @@ public class SerializedHand : IFusionSerializable
         thumbstickAxis = controller._thumbstickAxis;
     }
 
-    public void CopyTo(Hand hand, BaseController controller)
+    public void CopyTo(BaseController controller)
     {
         controller._processedIndex = indexCurl;
         controller._processedMiddle = middleCurl;

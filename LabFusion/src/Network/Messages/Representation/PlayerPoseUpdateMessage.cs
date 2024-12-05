@@ -9,7 +9,7 @@ namespace LabFusion.Network;
 public class PlayerPoseUpdateData : IFusionSerializable
 {
     public const int Size = sizeof(byte) + sizeof(float) * 7 + SerializedLocalTransform.Size
-        * RigAbstractor.TransformSyncCount + SerializedTransform.Size + SerializedSmallQuaternion.Size + SerializedHand.Size * 2;
+        * RigAbstractor.TransformSyncCount + SerializedTransform.Size + SerializedSmallQuaternion.Size + SerializedController.Size * 2;
 
     public byte playerId;
 
