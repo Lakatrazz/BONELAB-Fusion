@@ -331,14 +331,19 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read as the reader does not have enough data remaining. Expected 4 byte array length header but reader only has {0} bytes remaining.", Length - Position));
         }
+
         int num = BigEndianHelper.ReadInt32(buffer, Position);
+
         if (Position + 4 + num > Length)
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", num, Length - Position - 4));
         }
-        byte[] array = ByteRetriever.Rent(num);
+
+        var array = new byte[num];
+
         Buffer.BlockCopy(buffer, Position + 4, array, 0, num);
         Position += 4 + num;
+
         return array;
     }
 
@@ -1036,7 +1041,9 @@ public class FusionReader : IDisposable
         {
             throw new IndexOutOfRangeException(string.Format("Failed to read data from reader as the reader does not have enough data remaining. Expected {0} bytes but reader only has {1} bytes remaining.", length, Length - Position));
         }
-        byte[] result = ByteRetriever.Rent(length);
+
+        var result = new byte[length];
+
         ReadRawInto(result, 0, length);
         return result;
     }

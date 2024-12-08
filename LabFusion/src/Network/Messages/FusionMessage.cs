@@ -121,7 +121,8 @@ public unsafe class FusionMessage : IDisposable
 
     public byte[] ToByteArray()
     {
-        byte[] bytes = ByteRetriever.Rent(Length);
+        var bytes = new byte[Length];
+
         Marshal.Copy((IntPtr)_buffer, bytes, 0, Length);
 
         return bytes;

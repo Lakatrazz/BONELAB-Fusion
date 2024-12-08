@@ -1,6 +1,5 @@
 ﻿using LabFusion.Data;
 using LabFusion.Player;
-using LabFusion.Utilities;
 using LabFusion.Voice;
 
 namespace LabFusion.Network;
@@ -27,7 +26,6 @@ public class PlayerVoiceChatData : IFusionSerializable, IDisposable
     public void Dispose()
     {
         GC.SuppressFinalize(this);
-        ByteRetriever.Return(bytes);
     }
 
     public static PlayerVoiceChatData Create(byte smallId, byte[] voiceData)

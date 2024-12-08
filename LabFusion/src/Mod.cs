@@ -87,7 +87,6 @@ public class FusionMod : MelonMod
         SteamAPILoader.OnLoadSteamAPI();
 
         // Initialize data and hooks
-        ByteRetriever.PopulateInitial();
         PDController.OnInitializeMelon();
         PointItemManager.HookEvents();
     }

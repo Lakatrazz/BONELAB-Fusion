@@ -10,6 +10,8 @@ namespace LabFusion.Network;
 
 public class FusionWriter : IDisposable
 {
+    public const int DefaultSize = 16;
+
     public int Position { get; set; }
 
     public int Length
@@ -36,7 +38,7 @@ public class FusionWriter : IDisposable
     /// <returns></returns>
     public static FusionWriter Create()
     {
-        return Create(ByteRetriever.DefaultSize);
+        return Create(DefaultSize);
     }
 
     /// <summary>
@@ -48,8 +50,8 @@ public class FusionWriter : IDisposable
     {
         return new FusionWriter
         {
-            buffer = ByteRetriever.Rent(initialCapacity),
-            Position = 0
+            buffer = new byte[initialCapacity],
+            Position = 0,
         };
     }
 
@@ -432,7 +434,5 @@ public class FusionWriter : IDisposable
     public void Dispose()
     {
         GC.SuppressFinalize(this);
-
-        ByteRetriever.Return(buffer);
     }
 }
