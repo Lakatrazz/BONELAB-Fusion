@@ -53,6 +53,11 @@ public static class LocalRagdoll
             return;
         }
 
+        if (KnockedOut)
+        {
+            return;
+        }
+
         MelonCoroutines.Start(KnockoutCoroutine(RigData.Refs.RigManager, length));
     }
 
