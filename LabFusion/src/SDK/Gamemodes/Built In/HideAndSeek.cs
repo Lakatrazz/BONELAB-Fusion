@@ -34,7 +34,7 @@ public class HideAndSeek : Gamemode
 
         public const int SeekerBitReward = 50;
 
-        public const int HiderBitReward = 100;
+        public const int HiderBitReward = 20;
 
         public const int TimeLimit = 10;
 
