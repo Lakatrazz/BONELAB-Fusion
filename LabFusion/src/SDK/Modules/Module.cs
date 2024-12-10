@@ -1,4 +1,6 @@
-﻿namespace LabFusion.SDK.Modules;
+﻿using LabFusion.Marrow.Proxies;
+
+namespace LabFusion.SDK.Modules;
 
 /// <summary>
 /// The base class for a Fusion module.
@@ -32,4 +34,14 @@ public abstract class Module
     /// Called when the module is unregistered. Use this to clean up anything affected by the module.
     /// </summary>
     protected virtual void OnModuleUnregistered() { }
+
+    /// <summary>
+    /// Allows the creation of elements in the Modules category of the Settings menu. 
+    /// Added elements are placed in a premade group with the module's name.
+    /// </summary>
+    /// <param name="moduleGroup"></param>
+    public virtual void OnCreateSettings(GroupElement moduleGroup) 
+    {
+        throw new NotImplementedException();
+    }
 }

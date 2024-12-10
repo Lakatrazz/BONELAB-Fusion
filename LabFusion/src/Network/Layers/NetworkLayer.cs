@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 
 using LabFusion.Data;
+using LabFusion.Marrow.Proxies;
 using LabFusion.Player;
 using LabFusion.Utilities;
 using LabFusion.Voice;
@@ -132,6 +133,16 @@ public abstract class NetworkLayer
     /// <param name="userId"></param>
     /// <returns></returns>
     public virtual bool IsFriend(ulong userId) => false;
+
+    /// <summary>
+    /// Allows the creation of elements in the Network Layers category of the Settings menu. 
+    /// Added elements are placed in a premade group with the layers's name.
+    /// </summary>
+    /// <param name="layerGroup"></param>
+    public virtual void OnCreateSettings(GroupElement layerGroup) 
+    {
+        throw new NotImplementedException();
+    }
 
     /// <summary>
     /// Sends the message to the specified user if this is a server.

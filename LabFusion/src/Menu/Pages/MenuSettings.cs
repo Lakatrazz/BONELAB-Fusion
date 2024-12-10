@@ -2,11 +2,14 @@
 
 using LabFusion.Data;
 using LabFusion.Downloading.ModIO;
+using LabFusion.Entities;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Proxies;
+using LabFusion.Network;
 using LabFusion.Preferences.Client;
 using LabFusion.Representation;
+using LabFusion.SDK.Modules;
 using LabFusion.Utilities;
 using LabFusion.Voice;
 
@@ -20,12 +23,11 @@ public static class MenuSettings
     {
         var rootPage = settingsPage.transform.Find("scrollRect_Options/Viewport/Content").GetComponent<PageElement>();
 
+        // Base Fusion Settings
         var clientPage = rootPage.AddPage();
-
         PopulateClientSettings(clientPage);
 
         var downloadingPage = rootPage.AddPage();
-
         PopulateDownloadingSettings(downloadingPage);
 
 #if DEBUG
@@ -34,12 +36,69 @@ public static class MenuSettings
         PopulateDebugSettings(debugPage);
 #endif
 
+        // Network Layer Settings
+        var networkLayerPage = rootPage.AddPage();
+        foreach (var networkLayer in NetworkLayer.Layers)
+        {
+            FusionLogger.Log($"Created settings for {networkLayer.Title}");
+            var networkLayerGroup = networkLayerPage.AddElement<GroupElement>(networkLayer.Title);
+            // If exception is thrown, then settings arent implemented, and a category should not be added
+            try
+            {
+                networkLayer.OnCreateSettings(networkLayerGroup);
+            }
+            catch (Exception ex)
+            {
+                networkLayerPage.RemoveElement(networkLayerGroup);
+
+                if (ex is NotImplementedException)
+                {
+#if DEBUG
+                    FusionLogger.Log($"Layer {networkLayer.Title} has no settings to implement.");
+#endif
+                }
+                else
+                {
+                    FusionLogger.LogException($"creating {networkLayer.Title} settings", ex);
+                }
+            }
+        }
+
+        // Module Settings
+        var modulePage = rootPage.AddPage();
+        foreach (var module in ModuleManager.Modules)
+        {
+            var moduleGroup = modulePage.AddElement<GroupElement>(module.Name);
+            // If exception is thrown, then settings arent implemented, and a category should not be added
+            try
+            {
+                module.OnCreateSettings(moduleGroup);
+            }
+            catch (Exception ex)
+            {
+                modulePage.RemoveElement(moduleGroup);
+
+                if (ex is NotImplementedException)
+                {
+#if DEBUG
+                    FusionLogger.Log($"Layer {module.Name} has no settings to implement.");
+#endif
+                }
+                else
+                {
+                    FusionLogger.LogException($"creating {module.Name} settings", ex);
+                }
+            }
+        }
+
         // Categories
         var categoriesRoot = settingsPage.transform.Find("scrollRect_Categories/Viewport/Content").GetComponent<PageElement>();
         var categoriesPage = categoriesRoot.AddPage("Default");
 
         categoriesPage.AddElement<FunctionElement>("Client").Link(clientPage).WithColor(Color.white);
         categoriesPage.AddElement<FunctionElement>("Downloading").Link(downloadingPage).WithColor(Color.cyan);
+        categoriesPage.AddElement<FunctionElement>("Network Layers").Link(networkLayerPage).WithColor(Color.white);
+        categoriesPage.AddElement<FunctionElement>("Modules").Link(modulePage).WithColor(Color.white);
 
 #if DEBUG
         categoriesPage.AddElement<FunctionElement>("Debug").Link(debugPage).WithColor(Color.red);
