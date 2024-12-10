@@ -5,10 +5,11 @@ using LabFusion.Utilities;
 using LabFusion.Preferences.Client;
 using LabFusion.Voice;
 using LabFusion.Voice.Unity;
+using LabFusion.Marrow.Proxies;
+using LabFusion.Menu;
+using LabFusion.Senders;
 
 using MelonLoader;
-
-using LabFusion.Senders;
 
 using Steamworks;
 
@@ -76,6 +77,24 @@ public abstract class ProxyNetworkLayer : NetworkLayer
         _lobbyManager = new ProxyLobbyManager(this);
 
         _matchmaker = new ProxyMatchmaker(_lobbyManager);
+    }
+
+    public override void OnCreateSettings(GroupElement layerGroup)
+    {
+        // Don't create UI if on PC
+        if (!PlatformHelper.IsAndroid)
+            base.OnCreateSettings(layerGroup);
+
+        var portElement = layerGroup.AddElement<IntElement>("Proxy Port")
+        .AsPref(ClientSettings.ProxyPort)
+        .WithIncrement(1)
+        .WithLimits(0, 65535);
+
+        layerGroup.AddElement<IntElement>("Increment")
+        .WithIncrement(1)
+        .WithLimits(0, 200)
+        .WithValue(10)
+        .OnValueChanged += (val) => portElement.Increment = val;
     }
 
     public IEnumerator DiscoverServer()
