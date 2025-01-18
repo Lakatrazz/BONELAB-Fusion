@@ -14,6 +14,8 @@ public class RigSkeleton
 
     public Rigidbody physicsPelvis = null;
 
+    public Rigidbody physicsFeet = null;
+
     public Hand physicsLeftHand = null;
     public Hand physicsRightHand = null;
 
@@ -28,6 +30,7 @@ public class RigSkeleton
         var physicsRig = rigManager.physicsRig;
 
         physicsPelvis = physicsRig.m_pelvis.GetComponent<Rigidbody>();
+        physicsFeet = physicsRig.feet.GetComponent<Rigidbody>();
 
         physicsLeftHand = physicsRig.leftHand;
         physicsRightHand = physicsRig.rightHand;

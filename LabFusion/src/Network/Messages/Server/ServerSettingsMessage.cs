@@ -1,6 +1,10 @@
 ﻿using LabFusion.Data;
 using LabFusion.Exceptions;
 
+#if DEBUG
+using LabFusion.Utilities;
+#endif
+
 using System.Text.Json;
 
 namespace LabFusion.Network;

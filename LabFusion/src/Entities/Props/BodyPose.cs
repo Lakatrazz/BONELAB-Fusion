@@ -17,6 +17,14 @@ public class BodyPose : IFusionSerializable
 
     public Vector3 PredictedPosition => position + _positionPrediction;
 
+    public void ReadFrom(Rigidbody rigidbody)
+    {
+        position = rigidbody.position;
+        rotation = rigidbody.rotation;
+        velocity = rigidbody.velocity;
+        angularVelocity = rigidbody.angularVelocity;
+    }
+
     public void CopyTo(BodyPose target)
     {
         target.position = position;

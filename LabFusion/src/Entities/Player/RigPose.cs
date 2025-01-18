@@ -12,6 +12,8 @@ public class RigPose : IFusionSerializable
 
     public BodyPose pelvisPose = new();
 
+    public BodyPose feetPose = new();
+
     public SerializedController leftController = null;
     public SerializedController rightController = null;
 
@@ -28,11 +30,9 @@ public class RigPose : IFusionSerializable
         // Read playspace
         trackedPlayspace = SerializedSmallQuaternion.Compress(skeleton.trackedPlayspace.rotation);
 
-        // Read pelvis
-        pelvisPose.position = skeleton.physicsPelvis.position;
-        pelvisPose.rotation = skeleton.physicsPelvis.rotation;
-        pelvisPose.velocity = skeleton.physicsPelvis.velocity;
-        pelvisPose.angularVelocity = skeleton.physicsPelvis.angularVelocity;
+        // Read bodies
+        pelvisPose.ReadFrom(skeleton.physicsPelvis);
+        feetPose.ReadFrom(skeleton.physicsFeet);
 
         // Read hands
         leftController = new(skeleton.physicsLeftHand.Controller);
@@ -53,8 +53,9 @@ public class RigPose : IFusionSerializable
         // Write playspace
         writer.Write(trackedPlayspace);
 
-        // Write pelvis
+        // Write bodies
         writer.Write(pelvisPose);
+        writer.Write(feetPose);
 
         // Write hands
         writer.Write(leftController);
@@ -75,8 +76,9 @@ public class RigPose : IFusionSerializable
         // Read playspace
         trackedPlayspace = reader.ReadFusionSerializable<SerializedSmallQuaternion>();
 
-        // Read pelvis
+        // Read bodies
         pelvisPose = reader.ReadFusionSerializable<BodyPose>();
+        feetPose = reader.ReadFusionSerializable<BodyPose>();
 
         // Read hands
         leftController = reader.ReadFusionSerializable<SerializedController>();

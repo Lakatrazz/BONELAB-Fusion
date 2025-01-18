@@ -88,6 +88,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     public bool HasRig => RigRefs != null && RigRefs.IsValid;
 
     private PDController _pelvisPDController = null;
+    private PDController _feetPDController = null;
 
     // Voice chat integration
     private float _maxMicrophoneDistance = 30f;
@@ -118,6 +119,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         _playerId = playerId;
 
         _pelvisPDController = new();
+        _feetPDController = new();
+
         _puppet = new();
 
         _nametag = new()
@@ -565,7 +568,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         if (!NetworkEntity.IsOwner)
         {
-            OnApplyPelvisForces(deltaTime);
+            OnApplyBodyForces(deltaTime);
         }
     }
 
@@ -720,6 +723,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         // Reset PD controller
         _pelvisPDController.Reset();
+        _feetPDController.Reset();
     }
 
     private void OnOwnedUpdate()
@@ -734,7 +738,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         MessageSender.SendToServer(NetworkChannel.Unreliable, message);
     }
 
-    private void OnApplyPelvisForces(float deltaTime)
+    private void OnApplyBodyForces(float deltaTime)
     {
         if (!ReceivedPose)
         {
@@ -742,11 +746,13 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         var pelvisPose = RigPose.pelvisPose;
+        var feetPose = RigPose.feetPose;
 
-        // Stop pelvis
-        if (pelvisPose == null)
+        // Stop bodies
+        if (pelvisPose == null || feetPose == null)
         {
             _pelvisPDController.Reset();
+            _feetPDController.Reset();
             return;
         }
 
@@ -756,15 +762,20 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         if (rigManager.activeSeat)
         {
             _pelvisPDController.Reset();
+            _feetPDController.Reset();
             return;
         }
 
         var pelvis = RigSkeleton.physicsPelvis;
-        Vector3 pelvisPosition = pelvis.position;
-        Quaternion pelvisRotation = pelvis.rotation;
+        var pelvisPosition = pelvis.position;
+        var pelvisRotation = pelvis.rotation;
+
+        var feet = RigSkeleton.physicsFeet;
+        var feetPosition = feet.position;
 
         // Move position with prediction
         pelvisPose.PredictPosition(deltaTime);
+        feetPose.PredictPosition(deltaTime);
 
         // Check for stability teleport
         float distSqr = (pelvisPosition - pelvisPose.PredictedPosition).sqrMagnitude;
@@ -776,6 +787,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         // Apply forces
         pelvis.AddForce(_pelvisPDController.GetForce(pelvisPosition, pelvis.velocity, pelvisPose.PredictedPosition, pelvisPose.velocity), ForceMode.Acceleration);
+        feet.AddForce(_feetPDController.GetForce(feetPosition, feet.velocity, feetPose.PredictedPosition, feetPose.velocity), ForceMode.Acceleration);
 
         // We only want to apply angular force when ragdolled
         if (rigManager.physicsRig.torso.spineInternalMult <= 0f)
