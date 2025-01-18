@@ -24,29 +24,25 @@ public static class SteamAPILoader
         }
 
         // Extracts steam api 64 and loads it into the game
-        string sdkPath = PersistentData.GetPath($"steam_api64.dll");
+        string apiPath = PersistentData.GetPath($"steam_api64.dll");
 
-        // Make sure the file doesn't already exist
-        if (!File.Exists(sdkPath))
-        {
-            File.WriteAllBytes(sdkPath, EmbeddedResource.LoadFromAssembly(FusionMod.FusionAssembly, ResourcePaths.SteamAPIPath));
-        }
-        else
-        {
-            FusionLogger.Log("steam_api64.dll already exists, skipping extraction.");
-        }
+        ExtractAPI(apiPath, false);
 
-        _libraryPtr = DllTools.LoadLibrary(sdkPath);
-
-        if (_libraryPtr != IntPtr.Zero)
+        if (TryLoadAPI(apiPath, out var libraryPtr, out var errorCode))
         {
-            FusionLogger.Log("Successfully loaded steam_api64.dll into the application!");
-            HasSteamAPI = true;
+            OnLoadAPI(libraryPtr);
         }
-        else
+        // 193 is a corrupted file
+        else if (errorCode == 193)
         {
-            uint errorCode = DllTools.GetLastError();
-            FusionLogger.Error($"Failed to load steam_api64.dll into the application.\nError Code: {errorCode}");
+            FusionLogger.Error("steam_api64.dll was corrupted, attempting re-extraction...");
+
+            ExtractAPI(apiPath, true);
+
+            if (TryLoadAPI(apiPath, out libraryPtr, out _))
+            {
+                OnLoadAPI(libraryPtr);
+            }
         }
     }
 
@@ -59,5 +55,42 @@ public static class SteamAPILoader
         DllTools.FreeLibrary(_libraryPtr);
 
         HasSteamAPI = false;
+    }
+
+    private static void ExtractAPI(string path, bool overwrite = false)
+    {
+        if (!File.Exists(path) || overwrite)
+        {
+            File.WriteAllBytes(path, EmbeddedResource.LoadFromAssembly(FusionMod.FusionAssembly, ResourcePaths.SteamAPIPath));
+        }
+        else
+        {
+            FusionLogger.Log("steam_api64.dll already exists, skipping extraction.");
+        }
+    }
+
+    private static bool TryLoadAPI(string path, out IntPtr libraryPtr, out uint errorCode)
+    {
+        errorCode = 0;
+
+        libraryPtr = DllTools.LoadLibrary(path);
+
+        if (libraryPtr != IntPtr.Zero)
+        {
+            return true;
+        }
+        else
+        {
+            errorCode = DllTools.GetLastError();
+            return false;
+        }
+    }
+
+    private static void OnLoadAPI(IntPtr libraryPtr)
+    {
+        _libraryPtr = libraryPtr;
+
+        FusionLogger.Log("Successfully loaded steam_api64.dll into the application!");
+        HasSteamAPI = true;
     }
 }
