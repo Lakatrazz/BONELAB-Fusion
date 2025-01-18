@@ -54,7 +54,7 @@ public static class DataSaver
         }
         catch (Exception e)
         {
-            FusionLogger.LogException($"reading save data at {path}", e);
+            FusionLogger.LogException($"deserializing save data at {path}", e);
 
             File.Delete(fullPath);
             return default;
