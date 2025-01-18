@@ -668,49 +668,64 @@ public static class MenuLocation
         element.ActionsElement.Clear();
         var actionsPage = element.ActionsElement.AddPage();
 
-        if (!player.IsMe && (NetworkInfo.IsServer || FusionPermissions.HasHigherPermissions(selfLevel, level)))
+        AddModerationGroup(activeLobbyInfo, actionsPage, player, selfLevel, level);
+    }
+
+    private static void AddModerationGroup(LobbyInfo lobbyInfo, PageElement actionsPage, PlayerId player, PermissionLevel selfLevel, PermissionLevel level)
+    {
+        if (player.IsMe)
         {
-            var moderationGroup = actionsPage.AddElement<GroupElement>("Moderation");
+            return;
+        }
 
-            // Kick button
-            if (FusionPermissions.HasSufficientPermissions(selfLevel, activeLobbyInfo.Kicking))
-            {
-                moderationGroup.AddElement<FunctionElement>("Kick")
-                    .WithColor(Color.red)
-                    .Do(() =>
-                    {
-                        PermissionSender.SendPermissionRequest(PermissionCommandType.KICK, player);
-                    });
-            }
+        bool sufficientPerms = FusionPermissions.HasSufficientPermissions(selfLevel, level) || NetworkInfo.IsServer;
+        bool higherPerms = FusionPermissions.HasHigherPermissions(selfLevel, level) || NetworkInfo.IsServer;
 
-            // Ban button
-            if (FusionPermissions.HasSufficientPermissions(selfLevel, activeLobbyInfo.Banning))
-            {
-                moderationGroup.AddElement<FunctionElement>("Ban")
-                    .WithColor(Color.red)
-                    .Do(() =>
-                    {
-                        PermissionSender.SendPermissionRequest(PermissionCommandType.BAN, player);
-                    });
-            }
+        if (!sufficientPerms && !higherPerms)
+        {
+            return;
+        }
 
-            // Teleport buttons
-            if (FusionPermissions.HasSufficientPermissions(selfLevel, activeLobbyInfo.Teleportation))
-            {
-                moderationGroup.AddElement<FunctionElement>("Teleport To Them")
-                    .WithColor(Color.red)
-                    .Do(() =>
-                    {
-                        PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_THEM, player);
-                    });
+        var moderationGroup = actionsPage.AddElement<GroupElement>("Moderation");
 
-                moderationGroup.AddElement<FunctionElement>("Teleport To Us")
-                    .WithColor(Color.red)
-                    .Do(() =>
-                    {
-                        PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_US, player);
-                    });
-            }
+        // Kick button
+        if (higherPerms && FusionPermissions.HasSufficientPermissions(selfLevel, lobbyInfo.Kicking))
+        {
+            moderationGroup.AddElement<FunctionElement>("Kick")
+                .WithColor(Color.red)
+                .Do(() =>
+                {
+                    PermissionSender.SendPermissionRequest(PermissionCommandType.KICK, player);
+                });
+        }
+
+        // Ban button
+        if (higherPerms && FusionPermissions.HasSufficientPermissions(selfLevel, lobbyInfo.Banning))
+        {
+            moderationGroup.AddElement<FunctionElement>("Ban")
+                .WithColor(Color.red)
+                .Do(() =>
+                {
+                    PermissionSender.SendPermissionRequest(PermissionCommandType.BAN, player);
+                });
+        }
+
+        // Teleport buttons
+        if (FusionPermissions.HasSufficientPermissions(selfLevel, lobbyInfo.Teleportation))
+        {
+            moderationGroup.AddElement<FunctionElement>("Teleport To Them")
+                .WithColor(Color.red)
+                .Do(() =>
+                {
+                    PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_THEM, player);
+                });
+
+            moderationGroup.AddElement<FunctionElement>("Teleport To Us")
+                .WithColor(Color.red)
+                .Do(() =>
+                {
+                    PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_US, player);
+                });
         }
     }
 
