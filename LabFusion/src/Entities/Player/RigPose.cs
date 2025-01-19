@@ -28,7 +28,7 @@ public class RigPose : IFusionSerializable
         }
 
         // Read playspace
-        trackedPlayspace = SerializedSmallQuaternion.Compress(skeleton.trackedPlayspace.localRotation);
+        trackedPlayspace = SerializedSmallQuaternion.Compress(skeleton.trackedPlayspace.rotation);
 
         // Read bodies
         pelvisPose.ReadFrom(skeleton.physicsPelvis);
