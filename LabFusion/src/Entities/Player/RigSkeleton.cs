@@ -10,7 +10,6 @@ public class RigSkeleton
 {
     public Transform[] trackedPoints = null;
 
-    public Transform trackedRemapRig = null;
     public Transform trackedPlayspace = null;
 
     public Rigidbody physicsPelvis = null;
@@ -26,7 +25,6 @@ public class RigSkeleton
     {
         RigAbstractor.FillTransformArray(ref trackedPoints, rigManager);
 
-        trackedRemapRig = rigManager.remapHeptaRig.transform;
         trackedPlayspace = rigManager.GetSmoothTurnTransform();
 
         var physicsRig = rigManager.physicsRig;

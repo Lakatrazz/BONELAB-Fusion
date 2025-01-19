@@ -8,7 +8,6 @@ public class RigPose : IFusionSerializable
 {
     public SerializedLocalTransform[] trackedPoints = new SerializedLocalTransform[RigAbstractor.TransformSyncCount];
 
-    public SerializedSmallQuaternion trackedRemapRig = SerializedSmallQuaternion.Default;
     public SerializedSmallQuaternion trackedPlayspace = SerializedSmallQuaternion.Default;
 
     public BodyPose pelvisPose = new();
@@ -28,9 +27,8 @@ public class RigPose : IFusionSerializable
             trackedPoints[i] = new SerializedLocalTransform(skeleton.trackedPoints[i]);
         }
 
-        // Read rotation
-        trackedRemapRig = SerializedSmallQuaternion.Compress(skeleton.trackedRemapRig.rotation);
-        trackedPlayspace = SerializedSmallQuaternion.Compress(skeleton.trackedPlayspace.localRotation);
+        // Read playspace
+        trackedPlayspace = SerializedSmallQuaternion.Compress(skeleton.trackedPlayspace.rotation);
 
         // Read bodies
         pelvisPose.ReadFrom(skeleton.physicsPelvis);
@@ -52,8 +50,7 @@ public class RigPose : IFusionSerializable
             writer.Write(trackedPoints[i]);
         }
 
-        // Write rotation
-        writer.Write(trackedRemapRig);
+        // Write playspace
         writer.Write(trackedPlayspace);
 
         // Write bodies
@@ -76,8 +73,7 @@ public class RigPose : IFusionSerializable
             trackedPoints[i] = reader.ReadFusionSerializable<SerializedLocalTransform>();
         }
 
-        // Read rotation
-        trackedRemapRig = reader.ReadFusionSerializable<SerializedSmallQuaternion>();
+        // Read playspace
         trackedPlayspace = reader.ReadFusionSerializable<SerializedSmallQuaternion>();
 
         // Read bodies

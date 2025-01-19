@@ -813,9 +813,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             TeleportToPose();
         }
 
-        // Update the player rotations
-        RigSkeleton.trackedRemapRig.rotation = RigPose.trackedRemapRig.Expand();
-        RigSkeleton.trackedPlayspace.localRotation = RigPose.trackedPlayspace.Expand();
+        // Update the playspace rotation
+        RigSkeleton.trackedPlayspace.rotation = RigPose.trackedPlayspace.Expand();
     }
 
     public void OnOverrideControllerRig()
