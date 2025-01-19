@@ -13,6 +13,7 @@ using UnityEngine;
 using System.Collections;
 
 using MelonLoader;
+using LabFusion.Player;
 
 namespace LabFusion.Patching;
 
@@ -72,54 +73,11 @@ public static class PowerPuncherPatches
             return;
         }
 
-        // Already knocked out?
-        if (_isKnockedOut)
-        {
-            // Reset timer
-            _knockedElapsed = 0f;
-        }
-        // Not knocked out?
-        else
-        {
-            // Get knockout time
-            var relativeVelocity = (__instance._host.Rb.velocity - marrowBody._rigidbody.velocity).magnitude;
-            var knockoutTime = Mathf.Clamp(relativeVelocity, 0f, 2f);
-        
-            // Start knockout
-            MelonCoroutines.Start(KnockoutRig(networkPlayer.RigRefs.RigManager, knockoutTime));
-        }
-    }
+        // Get knockout time
+        var relativeVelocity = (__instance._host.Rb.velocity - marrowBody._rigidbody.velocity).magnitude;
+        var knockoutTime = Mathf.Clamp(relativeVelocity, 0f, 2f);
 
-    private static bool _isKnockedOut = false;
-    private static float _knockedElapsed = 0f;
-
-    // In the future, replace with a universal knockout function
-    // This works for now though
-    private static IEnumerator KnockoutRig(RigManager rigManager, float time)
-    {
-        _isKnockedOut = true;
-
-        var physicsRig = rigManager.physicsRig;
-
-        physicsRig.RagdollRig();
-
-        _knockedElapsed = 0f;
-
-        while (_knockedElapsed < time)
-        {
-            _knockedElapsed += TimeUtilities.DeltaTime;
-            yield return null;
-        }
-
-        _knockedElapsed = 0f;
-
-        var health = rigManager.health;
-
-        if (health.alive && !health.deathIsImminent)
-        {
-            physicsRig.UnRagdollRig();
-        }
-
-        _isKnockedOut = false;
+        // Start knockout
+        LocalRagdoll.Knockout(knockoutTime);
     }
 }

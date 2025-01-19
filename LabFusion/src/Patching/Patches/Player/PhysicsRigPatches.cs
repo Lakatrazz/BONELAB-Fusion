@@ -12,36 +12,26 @@ namespace LabFusion.Patching;
 [HarmonyPatch(typeof(PhysicsRig))]
 public static class PhysicsRigPatches
 {
-    public static bool ForceAllowUnragdoll = false;
+    public static bool ForceAllowUnragdoll { get; set; } = false;
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(PhysicsRig.RagdollRig))]
-    public static bool RagdollRig(PhysicsRig __instance)
+    public static void RagdollRig(PhysicsRig __instance)
     {
         if (CrossSceneManager.InUnsyncedScene())
         {
-            return true;
+            return;
         }
 
         if (__instance.manager.IsLocalPlayer())
         {
-            using var writer = FusionWriter.Create(PlayerRepRagdollData.Size);
-            var data = PlayerRepRagdollData.Create(PlayerIdManager.LocalSmallId, true);
+            using var writer = FusionWriter.Create(PhysicsRigStateData.Size);
+            var data = PhysicsRigStateData.Create(PlayerIdManager.LocalSmallId, PhysicsRigStateType.RAGDOLL, true);
             writer.Write(data);
 
-            using var message = FusionMessage.Create(NativeMessageTag.PlayerRepRagdoll, writer);
+            using var message = FusionMessage.Create(NativeMessageTag.PhysicsRigState, writer);
             MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
-
-        // If not already shutdown, shutdown the rig
-        // This is required for patch 4 ragdolling
-        // Strangely, the bodyState system doesn't appear to properly call this
-        if (!__instance.shutdown)
-        {
-            __instance.ShutdownRig();
-        }
-
-        return true;
     }
 
     [HarmonyPrefix]
@@ -61,21 +51,35 @@ public static class PhysicsRigPatches
                 return false;
             }
 
-            using var writer = FusionWriter.Create(PlayerRepRagdollData.Size);
-            var data = PlayerRepRagdollData.Create(PlayerIdManager.LocalSmallId, false);
+            using var writer = FusionWriter.Create(PhysicsRigStateData.Size);
+            var data = PhysicsRigStateData.Create(PlayerIdManager.LocalSmallId, PhysicsRigStateType.RAGDOLL, false);
             writer.Write(data);
 
-            using var message = FusionMessage.Create(NativeMessageTag.PlayerRepRagdoll, writer);
+            using var message = FusionMessage.Create(NativeMessageTag.PhysicsRigState, writer);
             MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
 
-        // Unshutdown the rig if needed
-        if (__instance.shutdown)
+        return true;
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(PhysicsRig.ShutdownRig))]
+    public static void ShutdownRig(PhysicsRig __instance)
+    {
+        if (CrossSceneManager.InUnsyncedScene())
         {
-            __instance.TurnOnRig();
+            return;
         }
 
-        return true;
+        if (__instance.manager.IsLocalPlayer())
+        {
+            using var writer = FusionWriter.Create(PhysicsRigStateData.Size);
+            var data = PhysicsRigStateData.Create(PlayerIdManager.LocalSmallId, PhysicsRigStateType.SHUTDOWN, true);
+            writer.Write(data);
+
+            using var message = FusionMessage.Create(NativeMessageTag.PhysicsRigState, writer);
+            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        }
     }
 
     [HarmonyPrefix]
@@ -98,6 +102,53 @@ public static class PhysicsRigPatches
             return false;
         }
 
+        using var writer = FusionWriter.Create(PhysicsRigStateData.Size);
+        var data = PhysicsRigStateData.Create(PlayerIdManager.LocalSmallId, PhysicsRigStateType.SHUTDOWN, false);
+        writer.Write(data);
+
+        using var message = FusionMessage.Create(NativeMessageTag.PhysicsRigState, writer);
+        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+
         return true;
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(PhysicsRig.PhysicalLegs))]
+    public static void PhysicalLegs(PhysicsRig __instance)
+    {
+        if (CrossSceneManager.InUnsyncedScene())
+        {
+            return;
+        }
+
+        if (__instance.manager.IsLocalPlayer())
+        {
+            using var writer = FusionWriter.Create(PhysicsRigStateData.Size);
+            var data = PhysicsRigStateData.Create(PlayerIdManager.LocalSmallId, PhysicsRigStateType.PHYSICAL_LEGS, true);
+            writer.Write(data);
+
+            using var message = FusionMessage.Create(NativeMessageTag.PhysicsRigState, writer);
+            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        }
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(PhysicsRig.KinematicLegs))]
+    public static void KinematicLegs(PhysicsRig __instance)
+    {
+        if (CrossSceneManager.InUnsyncedScene())
+        {
+            return;
+        }
+
+        if (__instance.manager.IsLocalPlayer())
+        {
+            using var writer = FusionWriter.Create(PhysicsRigStateData.Size);
+            var data = PhysicsRigStateData.Create(PlayerIdManager.LocalSmallId, PhysicsRigStateType.PHYSICAL_LEGS, false);
+            writer.Write(data);
+
+            using var message = FusionMessage.Create(NativeMessageTag.PhysicsRigState, writer);
+            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        }
     }
 }

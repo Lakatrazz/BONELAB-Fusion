@@ -46,6 +46,39 @@ public static class LocalRagdoll
         }
     }
 
+    /// <summary>
+    /// Ragdolls or unragdolls the player.
+    /// </summary>
+    /// <param name="ragdolled"></param>
+    public static void ToggleRagdoll(bool ragdolled)
+    {
+        if (!RigData.HasPlayer)
+        {
+            return;
+        }
+
+        PhysicsRigPatches.ForceAllowUnragdoll = true;
+
+        var physicsRig = RigData.Refs.RigManager.physicsRig;
+
+        if (ragdolled)
+        {
+            physicsRig.ShutdownRig();
+            physicsRig.RagdollRig();
+        }
+        else
+        {
+            physicsRig.TurnOnRig();
+            physicsRig.UnRagdollRig();
+        }
+
+        PhysicsRigPatches.ForceAllowUnragdoll = false;
+    }
+    
+    /// <summary>
+    /// Knocks out the player for a certain amount of time. This will ragdoll the player and cause their vision to go black.
+    /// </summary>
+    /// <param name="length"></param>
     public static void Knockout(float length)
     {
         if (!RigData.HasPlayer)
@@ -67,7 +100,7 @@ public static class LocalRagdoll
         LocalPlayer.ReleaseGrips();
 
         // Ragdoll the rig
-        rigManager.physicsRig.RagdollRig();
+        ToggleRagdoll(true);
 
         // Blind the player
         LocalVision.Blind = true;
@@ -107,10 +140,6 @@ public static class LocalRagdoll
         rigManager.health.SetFullHealth();
 
         // Unragdoll the rig
-        PhysicsRigPatches.ForceAllowUnragdoll = true;
-
-        rigManager.physicsRig.UnRagdollRig();
-
-        PhysicsRigPatches.ForceAllowUnragdoll = false;
+        ToggleRagdoll(false);
     }
 }

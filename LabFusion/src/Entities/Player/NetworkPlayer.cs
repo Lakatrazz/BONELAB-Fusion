@@ -77,8 +77,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private RigAvatarSetter _avatarSetter = null;
     public RigAvatarSetter AvatarSetter => _avatarSetter;
 
-    private bool _isRagdollDirty = false;
-    private bool _ragdollState = false;
+    private bool _isPhysicsRigDirty = false;
+    private Queue<PhysicsRigStateData> _physicsRigStates = new();
 
     private bool _isSettingsDirty = false;
     private bool _isServerDirty = false;
@@ -255,8 +255,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         _isSettingsDirty = true;
         _isServerDirty = true;
 
-        _isRagdollDirty = true;
-        _ragdollState = false;
+        _isPhysicsRigDirty = true;
+        _physicsRigStates.Clear();
     }
 
     private void OnLevelLoad()
@@ -377,10 +377,10 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         OnMetadataChanged();
     }
 
-    public void SetRagdoll(bool isRagdolled)
+    public void EnqueuePhysicsRigState(PhysicsRigStateData data)
     {
-        _ragdollState = isRagdolled;
-        _isRagdollDirty = true;
+        _physicsRigStates.Enqueue(data);
+        _isPhysicsRigDirty = true;
     }
 
     public void SetSettings(SerializedPlayerSettings settings)
@@ -592,21 +592,17 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Resolve avatar changes
         AvatarSetter.Resolve(RigRefs);
 
-        // Toggle ragdoll mode
-        if (_isRagdollDirty)
+        // Apply physics rig states
+        if (_isPhysicsRigDirty)
         {
             var physicsRig = rm.physicsRig;
 
-            if (_ragdollState)
+            while (_physicsRigStates.Count > 0)
             {
-                physicsRig.RagdollRig();
-            }
-            else
-            {
-                physicsRig.UnRagdollRig();
+                _physicsRigStates.Dequeue().Apply(physicsRig);
             }
 
-            _isRagdollDirty = false;
+            _isPhysicsRigDirty = false;
         }
 
         // Update settings
@@ -789,8 +785,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         pelvis.AddForce(_pelvisPDController.GetForce(pelvisPosition, pelvis.velocity, pelvisPose.PredictedPosition, pelvisPose.velocity), ForceMode.Acceleration);
         feet.AddForce(_feetPDController.GetForce(feetPosition, feet.velocity, feetPose.PredictedPosition, feetPose.velocity), ForceMode.Acceleration);
 
-        // We only want to apply angular force when ragdolled
-        if (rigManager.physicsRig.torso.spineInternalMult <= 0f)
+        // Only apply angular force when the pelvis is free
+        if (!rigManager.physicsRig.ballLocoEnabled)
         {
             pelvis.AddTorque(_pelvisPDController.GetTorque(pelvisRotation, pelvis.angularVelocity, pelvisPose.rotation, pelvisPose.angularVelocity), ForceMode.Acceleration);
         }

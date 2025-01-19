@@ -51,7 +51,7 @@ public static class HeadSFXPatches
         // If ragdoll on death is enabled, ragdoll the player
         if (LocalPlayer.RagdollOnDeath)
         {
-            rm.physicsRig.RagdollRig();
+            LocalRagdoll.ToggleRagdoll(true);
         }
 
         // Notify the server about the death beginning
@@ -138,11 +138,7 @@ public static class HealthPatches
         // Unragdoll after respawning
         if (LocalPlayer.RagdollOnDeath)
         {
-            PhysicsRigPatches.ForceAllowUnragdoll = true;
-
-            __instance._rigManager.physicsRig.UnRagdollRig();
-
-            PhysicsRigPatches.ForceAllowUnragdoll = false;
+            LocalRagdoll.ToggleRagdoll(false);
 
             // Teleport so we don't fling
             LocalPlayer.TeleportToCheckpoint();
@@ -201,11 +197,7 @@ public static class PlayerHealthPatches
     {
         if (__instance._rigManager.IsLocalPlayer() && LocalPlayer.RagdollOnDeath)
         {
-            PhysicsRigPatches.ForceAllowUnragdoll = true;
-
-            __instance._rigManager.physicsRig.UnRagdollRig();
-
-            PhysicsRigPatches.ForceAllowUnragdoll = false;
+            LocalRagdoll.ToggleRagdoll(false);
         }
     }
 }

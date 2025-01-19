@@ -15,7 +15,7 @@ public static class NativeMessageTag
         PlayerPoseUpdate = 4,
         PlayerRepAvatar = 5,
         PlayerRepVitals = 6,
-        PlayerRepRagdoll = 7,
+        PhysicsRigState = 7,
         PlayerRepSeat = 8,
 
         PlayerRepGrab = 9,
