@@ -30,9 +30,6 @@ public static class LevelDownloaderManager
     private static string _downloadingBarcode = null;
     private static LevelDownloadInfo _downloadingInfo;
 
-    private static float _downloadTimer = 0f;
-    private static bool _loadedIntoWaitingScene = false;
-
     public static void OnInitializeMelon()
     {
         MultiplayerHooking.OnUpdate += OnUpdate;
@@ -72,11 +69,9 @@ public static class LevelDownloaderManager
         _downloadingLevel = true;
         _downloadingFile = info.modFile;
 
-        _downloadTimer = 0f;
-
-        _loadedIntoWaitingScene = false;
-
         CrossSceneManager.Purgatory = true;
+
+        LoadWaitingScene();
     }
 
     private static void OnDownloadFinished(DownloadCallbackInfo info)
@@ -118,16 +113,6 @@ public static class LevelDownloaderManager
         }
 
         float progress = ModIODownloader.CurrentTransaction.Progress;
-
-        // Tick timer
-        _downloadTimer += TimeUtilities.DeltaTime;
-
-        // If it's taken 5 seconds and we aren't halfway, then load into the waiting scene
-        if (!_loadedIntoWaitingScene && _downloadTimer >= 5f && progress < 0.5f)
-        {
-            LoadWaitingScene();
-            _loadedIntoWaitingScene = true;
-        }
 
         var ui = LevelDownloadUI.Instance;
 
