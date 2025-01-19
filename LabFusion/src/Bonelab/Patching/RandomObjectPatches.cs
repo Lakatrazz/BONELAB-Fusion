@@ -13,6 +13,8 @@ namespace LabFusion.Bonelab.Patching;
 [HarmonyPatch(typeof(RandomObject))]
 public static class RandomObjectPatches
 {
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(RandomObject.Randomizer))]
     public static bool RandomizerPrefix(RandomObject __instance)
     {
         if (!NetworkInfo.HasServer)
