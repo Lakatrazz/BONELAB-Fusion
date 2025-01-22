@@ -137,6 +137,16 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 610bd0d8ad6b9e240b639492b5e7ddd2
+    m_Address: Spawnable/Health Bar
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6314f27e9c618f141a910f508dd7f9be
+    m_Address: PreviewMesh/Health Bar
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 9feda70c59f9cda489cd3a23e7f14dd9, type: 2}
   m_SchemaSet:

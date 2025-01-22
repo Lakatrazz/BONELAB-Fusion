@@ -3,6 +3,7 @@
 using LabFusion.Extensions;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Integration;
+using LabFusion.Menu;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Senders;
@@ -17,6 +18,8 @@ public class Juggernaut : Gamemode
     public override string Title => "Juggernaut";
 
     public override string Author => FusionMod.ModAuthor;
+
+    public override Texture Logo => MenuResources.GetGamemodeIcon(Title);
 
     public static class Defaults
     {
