@@ -120,13 +120,35 @@ public abstract class SteamNetworkLayer : NetworkLayer
             ShutdownGameClient();
         }
 
+        bool succeeded;
+
         try
         {
             SteamClient.Init(ApplicationID, false);
+
+            succeeded = true;
         }
         catch (Exception e)
         {
             FusionLogger.LogException("initializing Steamworks", e);
+
+            succeeded = false;
+        }
+
+        if (!succeeded)
+        {
+            FusionNotifier.Send(new FusionNotification()
+            {
+                Title = "Log In Failed",
+                Message = "Failed connecting to Steamworks! Make sure Steam is running and signed in!",
+                SaveToMenu = false,
+                ShowPopup = true,
+                Type = NotificationType.ERROR,
+                PopupLength = 6f,
+            });
+
+            InvokeLoggedOutEvent();
+            return;
         }
 
         InvokeLoggedInEvent();
