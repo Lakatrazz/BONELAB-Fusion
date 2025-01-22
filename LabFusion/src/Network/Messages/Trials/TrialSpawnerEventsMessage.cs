@@ -31,7 +31,7 @@ namespace LabFusion.Network
     }
 
     [Net.DelayWhileTargetLoading]
-    public class TrialSpawnerEventsMessage : FusionMessageHandler
+    public class TrialSpawnerEventsMessage : NativeMessageHandler
     {
         public override byte Tag => NativeMessageTag.TrialSpawnerEvents;
 

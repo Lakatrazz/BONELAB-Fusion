@@ -35,7 +35,7 @@ namespace LabFusion.Network
         }
     }
 
-    public class PointItemEquipStateMessage : FusionMessageHandler
+    public class PointItemEquipStateMessage : NativeMessageHandler
     {
         public override byte Tag => NativeMessageTag.PointItemEquipState;
 

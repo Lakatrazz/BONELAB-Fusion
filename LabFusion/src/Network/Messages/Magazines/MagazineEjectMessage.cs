@@ -45,7 +45,7 @@ public class MagazineEjectData : IFusionSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class MagazineEjectMessage : FusionMessageHandler
+public class MagazineEjectMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.MagazineEject;
 

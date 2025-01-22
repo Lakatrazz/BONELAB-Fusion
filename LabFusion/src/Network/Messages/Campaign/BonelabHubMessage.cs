@@ -36,7 +36,7 @@ public class BonelabHubEventData : IFusionSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class BonelabHubEventMessage : FusionMessageHandler
+public class BonelabHubEventMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.BonelabHubEvent;
 

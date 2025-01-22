@@ -39,7 +39,7 @@ public class EntityZoneRegisterData : IFusionSerializable
     }
 }
 
-public class EntityZoneRegisterMessage : FusionMessageHandler
+public class EntityZoneRegisterMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.EntityZoneRegister;
 

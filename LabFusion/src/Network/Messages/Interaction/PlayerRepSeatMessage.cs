@@ -43,7 +43,7 @@ namespace LabFusion.Network
     }
 
     [Net.SkipHandleWhileLoading]
-    public class PlayerRepSeatMessage : FusionMessageHandler
+    public class PlayerRepSeatMessage : NativeMessageHandler
     {
         public override byte Tag => NativeMessageTag.PlayerRepSeat;
 

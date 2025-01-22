@@ -38,7 +38,7 @@ public class PlayerVoiceChatData : IFusionSerializable, IDisposable
     }
 }
 
-public class PlayerVoiceChatMessage : FusionMessageHandler
+public class PlayerVoiceChatMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerVoiceChat;
 

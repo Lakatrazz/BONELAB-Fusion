@@ -50,7 +50,7 @@ public class ModInfoRequestData : IFusionSerializable
     }
 }
 
-public class ModInfoRequestMessage : FusionMessageHandler
+public class ModInfoRequestMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.ModInfoRequest;
 

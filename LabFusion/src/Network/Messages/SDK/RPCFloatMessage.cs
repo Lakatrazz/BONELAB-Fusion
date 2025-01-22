@@ -84,7 +84,7 @@ public class RPCFloatData : IFusionSerializable
 }
 
 
-public class RPCFloatMessage : FusionMessageHandler
+public class RPCFloatMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.RPCFloat;
 

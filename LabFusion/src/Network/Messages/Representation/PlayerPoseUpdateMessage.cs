@@ -51,7 +51,7 @@ public class PlayerPoseUpdateData : IFusionSerializable
 }
 
 [Net.SkipHandleWhileLoading]
-public class PlayerPoseUpdateMessage : FusionMessageHandler
+public class PlayerPoseUpdateMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerPoseUpdate;
 

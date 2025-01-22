@@ -45,7 +45,7 @@ public class PlayerRepReleaseData : IFusionSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class PlayerRepReleaseMessage : FusionMessageHandler
+public class PlayerRepReleaseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerRepRelease;
 

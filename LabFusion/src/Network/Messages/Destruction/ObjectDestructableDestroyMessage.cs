@@ -7,7 +7,7 @@ using Il2CppSLZ.Marrow.Data;
 namespace LabFusion.Network;
 
 [Net.DelayWhileTargetLoading]
-public class ObjectDestructableDestroyMessage : FusionMessageHandler
+public class ObjectDestructableDestroyMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.ObjectDestructibleDestroy;
 

@@ -31,7 +31,7 @@ namespace LabFusion.Network
         }
     }
 
-    public class PointItemTriggerMessage : FusionMessageHandler
+    public class PointItemTriggerMessage : NativeMessageHandler
     {
         public override byte Tag => NativeMessageTag.PointItemTrigger;
 

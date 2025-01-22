@@ -43,7 +43,7 @@ public class ArenaTransitionData : IFusionSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class ArenaTransitionMessage : FusionMessageHandler
+public class ArenaTransitionMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.ArenaTransition;
 

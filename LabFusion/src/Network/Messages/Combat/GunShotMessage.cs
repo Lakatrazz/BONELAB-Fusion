@@ -42,7 +42,7 @@ public class GunShotData : IFusionSerializable
 }
 
 [Net.SkipHandleWhileLoading]
-public class GunShotMessage : FusionMessageHandler
+public class GunShotMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.GunShot;
 

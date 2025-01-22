@@ -73,7 +73,7 @@ public class KeySlotData : IFusionSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class KeySlotMessage : FusionMessageHandler
+public class KeySlotMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.KeySlot;
 

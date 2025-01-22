@@ -47,7 +47,7 @@ public class PermissionCommandRequestData : IFusionSerializable
     }
 }
 
-public class PermissionCommandRequestMessage : FusionMessageHandler
+public class PermissionCommandRequestMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PermissionCommandRequest;
 

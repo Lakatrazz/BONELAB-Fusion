@@ -41,7 +41,7 @@ public class DespawnRequestData : IFusionSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class DespawnRequestMessage : FusionMessageHandler
+public class DespawnRequestMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.DespawnRequest;
 

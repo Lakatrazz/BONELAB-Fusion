@@ -4,7 +4,7 @@ using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
-public abstract class FusionMessageHandler : MessageHandler
+public abstract class NativeMessageHandler : MessageHandler
 {
     public abstract byte Tag { get; }
 
@@ -17,14 +17,14 @@ public abstract class FusionMessageHandler : MessageHandler
         FusionLogger.Log($"Populating MessageHandler list from {targetAssembly.GetName().Name}!");
 #endif
 
-        AssemblyUtilities.LoadAllValid<FusionMessageHandler>(targetAssembly, RegisterHandler);
+        AssemblyUtilities.LoadAllValid<NativeMessageHandler>(targetAssembly, RegisterHandler);
     }
 
-    public static void RegisterHandler<T>() where T : FusionMessageHandler => RegisterHandler(typeof(T));
+    public static void RegisterHandler<T>() where T : NativeMessageHandler => RegisterHandler(typeof(T));
 
     protected static void RegisterHandler(Type type)
     {
-        FusionMessageHandler handler = Activator.CreateInstance(type) as FusionMessageHandler;
+        NativeMessageHandler handler = Activator.CreateInstance(type) as NativeMessageHandler;
 
         handler.NetAttributes = type.GetCustomAttributes<Net.NetAttribute>().ToArray();
 
@@ -73,5 +73,5 @@ public abstract class FusionMessageHandler : MessageHandler
         }
     }
 
-    public static readonly FusionMessageHandler[] Handlers = new FusionMessageHandler[byte.MaxValue];
+    public static readonly NativeMessageHandler[] Handlers = new NativeMessageHandler[byte.MaxValue];
 }

@@ -84,7 +84,7 @@ public class RPCStringData : IFusionSerializable
 }
 
 
-public class RPCStringMessage : FusionMessageHandler
+public class RPCStringMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.RPCString;
 

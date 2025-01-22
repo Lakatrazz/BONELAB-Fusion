@@ -35,7 +35,7 @@ public static class ProxySocketHandler
     {
         try
         {
-            FusionMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message), isServerHandled);
+            NativeMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message), isServerHandled);
         }
         catch (Exception e)
         {

@@ -84,7 +84,7 @@ public class RPCIntData : IFusionSerializable
 }
 
 
-public class RPCIntMessage : FusionMessageHandler
+public class RPCIntMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.RPCInt;
 

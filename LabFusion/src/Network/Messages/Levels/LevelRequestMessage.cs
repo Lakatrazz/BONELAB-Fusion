@@ -41,7 +41,7 @@ public class LevelRequestData : IFusionSerializable
     }
 }
 
-public class LevelRequestMessage : FusionMessageHandler
+public class LevelRequestMessage : NativeMessageHandler
 {
     private const float _requestCooldown = 10f;
     private static float _timeOfRequest = -1000f;

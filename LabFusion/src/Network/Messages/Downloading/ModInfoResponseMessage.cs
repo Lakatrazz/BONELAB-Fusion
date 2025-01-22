@@ -44,7 +44,7 @@ public class ModInfoResponseData : IFusionSerializable
     }
 }
 
-public class ModInfoResponseMessage : FusionMessageHandler
+public class ModInfoResponseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.ModInfoResponse;
 

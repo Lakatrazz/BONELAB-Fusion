@@ -39,7 +39,7 @@ public class MagazineInsertData : IFusionSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class MagazineInsertMessage : FusionMessageHandler
+public class MagazineInsertMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.MagazineInsert;
 

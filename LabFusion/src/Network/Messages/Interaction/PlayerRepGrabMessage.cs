@@ -66,7 +66,7 @@ public class PlayerRepGrabData : IFusionSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class PlayerRepGrabMessage : FusionMessageHandler
+public class PlayerRepGrabMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerRepGrab;
 

@@ -2,7 +2,7 @@
 
 namespace LabFusion.Network;
 
-public class EntityOwnershipRequestMessage : FusionMessageHandler
+public class EntityOwnershipRequestMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.EntityOwnershipRequest;
 

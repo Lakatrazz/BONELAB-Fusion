@@ -102,7 +102,7 @@ public class PhysicsRigStateData : IFusionSerializable
 }
 
 [Net.SkipHandleWhileLoading]
-public class PlayerRepRagdollMessage : FusionMessageHandler
+public class PlayerRepRagdollMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PhysicsRigState;
 

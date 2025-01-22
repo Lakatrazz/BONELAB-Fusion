@@ -40,7 +40,7 @@ public abstract class GrabGroupHandler
         AssemblyUtilities.LoadAllValid<GrabGroupHandler>(targetAssembly, RegisterHandler);
     }
 
-    public static void RegisterHandler<T>() where T : FusionMessageHandler => RegisterHandler(typeof(T));
+    public static void RegisterHandler<T>() where T : NativeMessageHandler => RegisterHandler(typeof(T));
 
     protected static void RegisterHandler(Type type)
     {

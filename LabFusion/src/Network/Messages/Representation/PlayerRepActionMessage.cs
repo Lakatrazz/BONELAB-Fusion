@@ -39,7 +39,7 @@ public class PlayerRepActionData : IFusionSerializable
     }
 }
 
-public class PlayerRepActionMessage : FusionMessageHandler
+public class PlayerRepActionMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerRepAction;
 

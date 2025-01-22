@@ -32,7 +32,7 @@ public class GamemodeMetadataRemoveData : IFusionSerializable
     }
 }
 
-public class GamemodeMetadataRemoveMessage : FusionMessageHandler
+public class GamemodeMetadataRemoveMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.GamemodeMetadataRemove;
 

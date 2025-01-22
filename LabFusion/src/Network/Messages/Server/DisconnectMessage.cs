@@ -31,7 +31,7 @@ namespace LabFusion.Network
         }
     }
 
-    public class DisconnectMessage : FusionMessageHandler
+    public class DisconnectMessage : NativeMessageHandler
     {
         public override byte Tag => NativeMessageTag.Disconnect;
 

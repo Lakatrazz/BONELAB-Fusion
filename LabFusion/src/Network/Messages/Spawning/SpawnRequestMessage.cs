@@ -56,7 +56,7 @@ public class SpawnRequestData : IFusionSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class SpawnRequestMessage : FusionMessageHandler
+public class SpawnRequestMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.SpawnRequest;
 

@@ -29,7 +29,7 @@ public class BodyLogEffectData : IFusionSerializable
 }
 
 [Net.SkipHandleWhileLoading]
-public class BodyLogEffectMessage : FusionMessageHandler
+public class BodyLogEffectMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.BodyLogEffect;
 

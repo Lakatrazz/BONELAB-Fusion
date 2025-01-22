@@ -51,7 +51,7 @@ public class GamemodeTriggerResponseData : IFusionSerializable
     }
 }
 
-public class GamemodeTriggerResponseMessage : FusionMessageHandler
+public class GamemodeTriggerResponseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.GamemodeTriggerResponse;
 

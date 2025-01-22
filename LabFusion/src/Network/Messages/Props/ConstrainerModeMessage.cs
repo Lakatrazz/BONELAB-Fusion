@@ -39,7 +39,7 @@ public class ConstrainerModeData : IFusionSerializable
 }
 
 [Net.SkipHandleWhileLoading]
-public class ConstrainerModeMessage : FusionMessageHandler
+public class ConstrainerModeMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.ConstrainerMode;
 

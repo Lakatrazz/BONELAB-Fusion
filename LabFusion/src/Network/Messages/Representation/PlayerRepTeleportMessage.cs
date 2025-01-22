@@ -39,7 +39,7 @@ public class PlayerRepTeleportData : IFusionSerializable
 }
 
 [Net.SkipHandleWhileLoading]
-public class PlayerRepTeleportMessage : FusionMessageHandler
+public class PlayerRepTeleportMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerRepTeleport;
 

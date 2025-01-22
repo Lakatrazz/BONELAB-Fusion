@@ -42,7 +42,7 @@ namespace LabFusion.Network
     }
 
     [Net.DelayWhileTargetLoading]
-    public class ChallengeSelectMessage : FusionMessageHandler
+    public class ChallengeSelectMessage : NativeMessageHandler
     {
         public override byte Tag => NativeMessageTag.ChallengeSelect;
 

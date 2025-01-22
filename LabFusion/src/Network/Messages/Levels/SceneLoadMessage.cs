@@ -38,7 +38,7 @@ public class SceneLoadData : IFusionSerializable
     }
 }
 
-public class SceneLoadMessage : FusionMessageHandler
+public class SceneLoadMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.SceneLoad;
 

@@ -111,7 +111,7 @@ public class ConstraintCreateData : IFusionSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class ConstraintCreateMessage : FusionMessageHandler
+public class ConstraintCreateMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.ConstraintCreate;
 

@@ -64,7 +64,7 @@ public class ConnectionRequestData : IFusionSerializable
     }
 }
 
-public class ConnectionRequestMessage : FusionMessageHandler
+public class ConnectionRequestMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.ConnectionRequest;
 

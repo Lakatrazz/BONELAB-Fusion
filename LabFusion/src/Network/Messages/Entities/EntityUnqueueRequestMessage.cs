@@ -33,7 +33,7 @@ public class EntityUnqueueRequestData : IFusionSerializable
     }
 }
 
-public class EntityUnqueueRequestMessage : FusionMessageHandler
+public class EntityUnqueueRequestMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.EntityUnqueueRequest;
 

@@ -37,7 +37,7 @@ public class NimbusGunNoclipData : IFusionSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class NimbusGunNoclipMessage : FusionMessageHandler
+public class NimbusGunNoclipMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.NimbusGunNoclip;
 

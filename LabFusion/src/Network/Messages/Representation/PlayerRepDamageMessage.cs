@@ -48,7 +48,7 @@ public class PlayerRepDamageData : IFusionSerializable
 }
 
 [Net.SkipHandleWhileLoading]
-public class PlayerRepDamageMessage : FusionMessageHandler
+public class PlayerRepDamageMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerRepDamage;
 

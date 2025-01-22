@@ -43,7 +43,7 @@ public class InventorySlotInsertData : IFusionSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class InventorySlotInsertMessage : FusionMessageHandler
+public class InventorySlotInsertMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.InventorySlotInsert;
 

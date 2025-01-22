@@ -46,7 +46,7 @@ public class SpawnGunSelectData : IFusionSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class SpawnGunSelectMessage : FusionMessageHandler
+public class SpawnGunSelectMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.SpawnGunSelect;
 

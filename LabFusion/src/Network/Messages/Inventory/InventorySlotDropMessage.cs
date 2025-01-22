@@ -46,7 +46,7 @@ public class InventorySlotDropData : IFusionSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class InventorySlotDropMessage : FusionMessageHandler
+public class InventorySlotDropMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.InventorySlotDrop;
 

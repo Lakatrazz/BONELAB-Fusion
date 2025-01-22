@@ -115,7 +115,7 @@ public class BoardGeneratorData : IFusionSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class BoardGeneratorMessage : FusionMessageHandler
+public class BoardGeneratorMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.BoardGenerator;
 

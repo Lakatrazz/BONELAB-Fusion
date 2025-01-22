@@ -35,7 +35,7 @@ namespace LabFusion.Network
     }
 
     [Net.SkipHandleWhileLoading]
-    public class SlowMoButtonMessage : FusionMessageHandler
+    public class SlowMoButtonMessage : NativeMessageHandler
     {
         public override byte Tag => NativeMessageTag.SlowMoButton;
 

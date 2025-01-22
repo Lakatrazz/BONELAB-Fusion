@@ -40,7 +40,7 @@ public class ConnectionResponseData : IFusionSerializable
     }
 }
 
-public class ConnectionResponseMessage : FusionMessageHandler
+public class ConnectionResponseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.ConnectionResponse;
 

@@ -142,7 +142,7 @@ public class PlayerRepVitalsData : IFusionSerializable
     }
 }
 
-public class PlayerRepVitalsMessage : FusionMessageHandler
+public class PlayerRepVitalsMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerRepVitals;
 

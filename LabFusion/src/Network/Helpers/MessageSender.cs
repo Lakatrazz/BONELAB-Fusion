@@ -73,7 +73,7 @@ public static class MessageSender
                 {
                     NetworkInfo.LastReceivedUser = PlayerIdManager.LocalLongId;
 
-                    FusionMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message.Buffer, message.Length), true);
+                    NativeMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message.Buffer, message.Length), true);
                 }
             }
         }
@@ -102,7 +102,7 @@ public static class MessageSender
                 {
                     NetworkInfo.LastReceivedUser = PlayerIdManager.LocalLongId;
 
-                    FusionMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message.Buffer, message.Length), false);
+                    NativeMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message.Buffer, message.Length), false);
                 }
             }
         }
@@ -132,7 +132,7 @@ public static class MessageSender
                 {
                     NetworkInfo.LastReceivedUser = PlayerIdManager.LocalLongId;
 
-                    FusionMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message.Buffer, message.Length), false);
+                    NativeMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message.Buffer, message.Length), false);
                 }
             }
         }
@@ -162,7 +162,7 @@ public static class MessageSender
                 {
                     NetworkInfo.LastReceivedUser = PlayerIdManager.LocalLongId;
 
-                    FusionMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message.Buffer, message.Length), false);
+                    NativeMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message.Buffer, message.Length), false);
                 }
             }
         }

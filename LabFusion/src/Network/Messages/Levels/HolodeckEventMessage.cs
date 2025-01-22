@@ -46,7 +46,7 @@ namespace LabFusion.Network
     }
 
     [Net.DelayWhileTargetLoading]
-    public class HolodeckEventMessage : FusionMessageHandler
+    public class HolodeckEventMessage : NativeMessageHandler
     {
         public override byte Tag => NativeMessageTag.HolodeckEvent;
 

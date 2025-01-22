@@ -84,7 +84,7 @@ public class RPCBoolData : IFusionSerializable
 }
 
 
-public class RPCBoolMessage : FusionMessageHandler
+public class RPCBoolMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.RPCBool;
 

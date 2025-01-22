@@ -34,7 +34,7 @@ namespace LabFusion.Network
     }
 
     [Net.DelayWhileTargetLoading]
-    public class BaseGameControllerMessage : FusionMessageHandler
+    public class BaseGameControllerMessage : NativeMessageHandler
     {
         public override byte Tag => NativeMessageTag.BaseGameController;
 

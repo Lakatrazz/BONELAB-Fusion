@@ -43,7 +43,7 @@ public class PlayerMetadataResponseData : IFusionSerializable
     }
 }
 
-public class PlayerMetadataResponseMessage : FusionMessageHandler
+public class PlayerMetadataResponseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerMetadataResponse;
 

@@ -32,7 +32,7 @@ public class InventoryAmmoReceiverDropData : IFusionSerializable
 }
 
 [Net.SkipHandleWhileLoading]
-public class InventoryAmmoReceiverDropMessage : FusionMessageHandler
+public class InventoryAmmoReceiverDropMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.InventoryAmmoReceiverDrop;
 

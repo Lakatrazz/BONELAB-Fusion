@@ -33,7 +33,7 @@ public class BodyLogToggleData : IFusionSerializable
 }
 
 [Net.SkipHandleWhileLoading]
-public class BodyLogToggleMessage : FusionMessageHandler
+public class BodyLogToggleMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.BodyLogToggle;
 

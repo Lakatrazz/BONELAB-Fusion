@@ -4,7 +4,7 @@ using LabFusion.Entities;
 namespace LabFusion.Network;
 
 [Net.DelayWhileTargetLoading]
-public class PuppetMasterKillMessage : FusionMessageHandler
+public class PuppetMasterKillMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PuppetMasterKill;
 

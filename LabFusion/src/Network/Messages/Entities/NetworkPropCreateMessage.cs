@@ -41,7 +41,7 @@ public class NetworkPropCreateData : IFusionSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class NetworkPropCreateMessage : FusionMessageHandler
+public class NetworkPropCreateMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.NetworkPropCreate;
 

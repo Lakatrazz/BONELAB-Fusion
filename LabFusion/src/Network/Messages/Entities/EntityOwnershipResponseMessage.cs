@@ -4,7 +4,7 @@ using LabFusion.Player;
 
 namespace LabFusion.Network;
 
-public class EntityOwnershipResponseMessage : FusionMessageHandler
+public class EntityOwnershipResponseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.EntityOwnershipResponse;
 

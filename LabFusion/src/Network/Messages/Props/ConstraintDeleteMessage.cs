@@ -38,7 +38,7 @@ public class ConstraintDeleteData : IFusionSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class ConstraintDeleteMessage : FusionMessageHandler
+public class ConstraintDeleteMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.ConstraintDelete;
 

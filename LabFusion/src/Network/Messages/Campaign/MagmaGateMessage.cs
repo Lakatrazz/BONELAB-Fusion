@@ -36,7 +36,7 @@ namespace LabFusion.Network
     }
 
     [Net.DelayWhileTargetLoading]
-    public class MagmaGateEventMessage : FusionMessageHandler
+    public class MagmaGateEventMessage : NativeMessageHandler
     {
         public override byte Tag => NativeMessageTag.MagmaGateEvent;
 

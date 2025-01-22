@@ -43,7 +43,7 @@ public class DescentElevatorData : IFusionSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class DescentElevatorMessage : FusionMessageHandler
+public class DescentElevatorMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.DescentElevator;
 

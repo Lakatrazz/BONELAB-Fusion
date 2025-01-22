@@ -39,7 +39,7 @@ public class DescentNooseData : IFusionSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class DescentNooseMessage : FusionMessageHandler
+public class DescentNooseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.DescentNoose;
 

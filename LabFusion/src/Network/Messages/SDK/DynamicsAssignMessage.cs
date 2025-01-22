@@ -59,7 +59,7 @@ public class DynamicsAssignData : IFusionSerializable
     }
 }
 
-public class DynamicsAssignMessage : FusionMessageHandler
+public class DynamicsAssignMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.DynamicsAssignment;
 

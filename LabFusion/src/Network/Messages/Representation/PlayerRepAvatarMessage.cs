@@ -38,7 +38,7 @@ public class PlayerRepAvatarData : IFusionSerializable
     }
 }
 
-public class PlayerRepAvatarMessage : FusionMessageHandler
+public class PlayerRepAvatarMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerRepAvatar;
 

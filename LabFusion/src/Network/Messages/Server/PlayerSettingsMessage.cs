@@ -32,7 +32,7 @@ public class PlayerSettingsData : IFusionSerializable
     }
 }
 
-public class PlayerSettingsMessage : FusionMessageHandler
+public class PlayerSettingsMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerSettings;
 

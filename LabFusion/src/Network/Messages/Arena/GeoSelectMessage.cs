@@ -27,7 +27,7 @@ namespace LabFusion.Network
     }
 
     [Net.DelayWhileTargetLoading]
-    public class GeoSelectMessage : FusionMessageHandler
+    public class GeoSelectMessage : NativeMessageHandler
     {
         public override byte Tag => NativeMessageTag.GeoSelect;
 

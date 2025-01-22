@@ -86,7 +86,7 @@ public class RPCVector3Data : IFusionSerializable
 }
 
 
-public class RPCVector3Message : FusionMessageHandler
+public class RPCVector3Message : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.RPCVector3;
 

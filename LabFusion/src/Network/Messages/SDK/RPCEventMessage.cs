@@ -75,7 +75,7 @@ public static class RPCEventSender
     }
 }
 
-public class RPCEventMessage : FusionMessageHandler
+public class RPCEventMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.RPCEvent;
 

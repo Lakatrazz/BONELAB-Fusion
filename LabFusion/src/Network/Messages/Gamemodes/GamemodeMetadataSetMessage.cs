@@ -36,7 +36,7 @@ public class GamemodeMetadataSetData : IFusionSerializable
     }
 }
 
-public class GamemodeMetadataSetMessage : FusionMessageHandler
+public class GamemodeMetadataSetMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.GamemodeMetadataSet;
 

@@ -32,7 +32,7 @@ public class ServerSettingsData : IFusionSerializable
     }
 }
 
-public class ServerSettingsMessage : FusionMessageHandler
+public class ServerSettingsMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.ServerSettings;
 

@@ -40,7 +40,7 @@ public class MagazineClaimData : IFusionSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class MagazineClaimMessage : FusionMessageHandler
+public class MagazineClaimMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.MagazineClaim;
 

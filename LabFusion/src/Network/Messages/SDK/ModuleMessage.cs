@@ -2,7 +2,7 @@
 
 namespace LabFusion.Network;
 
-public class ModuleMessage : FusionMessageHandler
+public class ModuleMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.Module;
 

@@ -46,7 +46,7 @@ public class EntityPoseUpdateData : IFusionSerializable
 }
 
 [Net.SkipHandleWhileLoading]
-public class EntityPoseUpdateMessage : FusionMessageHandler
+public class EntityPoseUpdateMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.EntityPoseUpdate;
 
