@@ -1,6 +1,6 @@
-﻿using LabFusion.Data;
-using LabFusion.Network;
+﻿using LabFusion.Network;
 using LabFusion.Preferences.Client;
+using LabFusion.Scene;
 
 namespace LabFusion.Voice;
 
@@ -55,7 +55,19 @@ public static class VoiceInfo
     /// <summary>
     /// Returns if voice chat is currently disabled, either via deafening or the server setting.
     /// </summary>
-    public static bool IsDeafened => ClientSettings.VoiceChat.Deafened.Value || !ServerVoiceEnabled;
+    public static bool IsDeafened
+    {
+        get
+        {
+            // Disable voice in loading screens
+            if (FusionSceneManager.IsLoading())
+            {
+                return true;
+            }
+
+            return ClientSettings.VoiceChat.Deafened.Value || !ServerVoiceEnabled;
+        }
+    }
 
     /// <summary>
     /// Returns if voice chat is enabled on the server's end.
