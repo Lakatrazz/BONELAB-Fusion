@@ -13,6 +13,8 @@ using Il2CppSLZ.Marrow;
 
 namespace LabFusion.SDK.Points;
 
+using System;
+
 // Terraria rarity levels
 public enum RarityLevel
 {

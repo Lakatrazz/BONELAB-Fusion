@@ -1,8 +1,10 @@
-﻿using LabFusion.Utilities;
+﻿using LabFusion.Math;
 
 using UnityEngine;
 
 namespace LabFusion.Extensions;
+
+using System;
 
 public static class Vector3Extensions
 {

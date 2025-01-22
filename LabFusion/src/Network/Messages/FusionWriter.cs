@@ -8,6 +8,8 @@ using UnityEngine;
 
 namespace LabFusion.Network;
 
+using System;
+
 public class FusionWriter : IDisposable
 {
     public const int DefaultSize = 16;

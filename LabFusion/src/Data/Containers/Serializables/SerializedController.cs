@@ -1,5 +1,6 @@
 ﻿using LabFusion.Network;
 using LabFusion.Utilities;
+using LabFusion.Math;
 
 using Il2CppSLZ.Marrow.Input;
 using Il2CppSLZ.Marrow;

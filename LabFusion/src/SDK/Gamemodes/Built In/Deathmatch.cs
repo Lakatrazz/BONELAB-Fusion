@@ -12,6 +12,7 @@ using LabFusion.Utilities;
 using LabFusion.Scene;
 using LabFusion.SDK.Triggers;
 using LabFusion.Menu;
+using LabFusion.Math;
 
 using UnityEngine;
 
@@ -19,6 +20,8 @@ using LabFusion.Menu.Data;
 using LabFusion.SDK.Metadata;
 
 namespace LabFusion.SDK.Gamemodes;
+
+using System;
 
 public class Deathmatch : Gamemode
 {

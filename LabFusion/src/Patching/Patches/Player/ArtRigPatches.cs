@@ -53,7 +53,9 @@ public static class ArtRigPatches
         var animatorJaw = avatar.animator.GetBoneTransform(HumanBodyBones.Jaw);
 
         if (animatorJaw != null)
+        {
             animatorJaw.rotation = __instance.artJaw.rotation;
+        }
     }
 
     [HarmonyPostfix]

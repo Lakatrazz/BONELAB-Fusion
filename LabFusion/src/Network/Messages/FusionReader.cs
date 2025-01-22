@@ -8,6 +8,8 @@ using UnityEngine;
 
 namespace LabFusion.Network;
 
+using System;
+
 public class FusionReader : IDisposable
 {
     private byte[] buffer;

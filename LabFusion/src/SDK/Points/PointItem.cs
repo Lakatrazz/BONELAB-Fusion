@@ -8,6 +8,8 @@ using Il2CppSLZ.Marrow;
 
 namespace LabFusion.SDK.Points;
 
+using System;
+
 [AttributeUsage(AttributeTargets.Class)]
 public sealed class CompiledPointItemAttribute : Attribute { }
 

@@ -5,6 +5,8 @@ using System.Text.Json.Serialization;
 
 namespace LabFusion.SDK.Points;
 
+using System;
+
 public static class PointSaveManager
 {
     [Serializable]

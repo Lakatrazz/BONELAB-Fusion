@@ -408,7 +408,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         _hasVoice = true;
     }
 
-    private void OnUpdateVoiceSource()
+    private void OnUpdateVoiceSource(float deltaTime)
     {
         if (!_hasVoice)
         {
@@ -417,6 +417,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         // Modify the source settings
         var rm = RigRefs.RigManager;
+
         if (HasRig)
         {
             var mouthSource = rm.physicsRig.headSfx.mouthSrc;
@@ -428,7 +429,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
                 _spatialized = true;
             }
 
-            MicrophoneDisabled = DistanceSqr > (_maxMicrophoneDistance * _maxMicrophoneDistance) * 1.2f;
+            MicrophoneDisabled = DistanceSqr > _maxMicrophoneDistance * _maxMicrophoneDistance * 1.2f;
         }
         else
         {
@@ -439,7 +440,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             _voiceSource.dopplerLevel = 0.5f;
 
             _spatialized = false;
-            MicrophoneDisabled = false;
+
+            MicrophoneDisabled = true;
         }
 
         // Update the jaw movement
@@ -449,7 +451,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
         else
         {
-            JawFlapper.UpdateJaw(_speaker.GetVoiceAmplitude());
+            JawFlapper.UpdateJaw(_speaker.GetVoiceAmplitude(), deltaTime);
         }
     }
 
@@ -546,14 +548,14 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         {
             OnOwnedUpdate();
 
-            JawFlapper.UpdateJaw(VoiceInfo.VoiceAmplitude);
+            JawFlapper.UpdateJaw(VoiceInfo.VoiceAmplitude, deltaTime);
         }
         else
         {
             OnHandUpdate(RigRefs.LeftHand);
             OnHandUpdate(RigRefs.RightHand);
 
-            OnUpdateVoiceSource();
+            OnUpdateVoiceSource(deltaTime);
 
             RigSkeleton.remapRig._feetOffset = RigPose.feetOffset;
         }

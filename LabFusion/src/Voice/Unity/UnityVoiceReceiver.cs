@@ -7,6 +7,8 @@ using UnityEngine;
 
 namespace LabFusion.Voice.Unity;
 
+using System;
+
 public sealed class UnityVoiceReceiver : IVoiceReceiver
 {
     private byte[] _uncompressedData = null;
@@ -95,14 +97,15 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
 
         int sampleCount = position - _lastSample;
 
+        if (sampleCount <= 0)
+        {
+            _hasVoiceActivity = false;
+            return;
+        }
+
         var audioData = new Il2CppStructArray<float>(sampleCount);
 
-        // Check if we have any samples
-        // If we don't, we don't need to waste the GetData call
-        if (sampleCount > 0)
-        {
-            _voiceClip.GetData(audioData, _lastSample);
-        }
+        _voiceClip.GetData(audioData, _lastSample);
 
         if (_loopedData)
         {
@@ -123,7 +126,7 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
         for (int i = 0; i < sampleCount; i++)
         {
             float sample = audioData[i] * VoiceVolume.DefaultSampleMultiplier;
-            _amplitude += Mathf.Abs(sample);
+            _amplitude += Math.Abs(sample);
 
             int elementPosition = i * elementSize;
 

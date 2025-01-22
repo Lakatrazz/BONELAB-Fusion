@@ -9,6 +9,8 @@ using PCMReaderCallback = UnityEngine.AudioClip.PCMReaderCallback;
 
 namespace LabFusion.Voice.Unity;
 
+using System;
+
 public class UnityVoiceSpeaker : VoiceSpeaker
 {
     private readonly Queue<float> _readingQueue = new();

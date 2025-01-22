@@ -7,6 +7,8 @@ using UnityEngine;
 
 namespace LabFusion.Entities;
 
+using System;
+
 public class TimedDespawnHandler
 {
     private TimedDespawner _despawner = null;

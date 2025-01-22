@@ -8,6 +8,7 @@ using LabFusion.Utilities;
 using LabFusion.UI;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
+using LabFusion.Math;
 
 using Il2CppTMPro;
 
@@ -18,6 +19,8 @@ using Il2CppSLZ.Props;
 using Il2CppSLZ.Marrow.Warehouse;
 
 namespace LabFusion.SDK.Points;
+
+using System;
 
 [RegisterTypeInIl2Cpp]
 public sealed class PointShopPanelView : FusionPanelView
