@@ -64,19 +64,10 @@ public class EventActuatorData : IFusionSerializable
 [Net.DelayWhileTargetLoading]
 public class EventActuatorMessage : ModuleMessageHandler
 {
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(bytes);
+        using FusionReader reader = FusionReader.Create(received.Bytes);
         var data = reader.ReadFusionSerializable<EventActuatorData>();
-
-        // Send message to other clients if server
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.ModuleCreate<EventActuatorMessage>(bytes);
-            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-
-            return;
-        }
 
         var eventActuator = EventActuatorPatches.HashTable.GetComponentFromData(data.hashData);
 

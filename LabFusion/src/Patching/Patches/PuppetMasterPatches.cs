@@ -32,14 +32,9 @@ public static class PuppetMasterPatches
             return;
         }
 
-        using (var writer = FusionWriter.Create(PropReferenceData.Size))
-        {
-            var data = PropReferenceData.Create(PlayerIdManager.LocalSmallId, entity.Id);
-            writer.Write(data);
+        var data = PropReferenceData.Create(PlayerIdManager.LocalSmallId, entity.Id);
 
-            using var message = FusionMessage.Create(NativeMessageTag.PuppetMasterKill, writer);
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
-        }
+        MessageRelay.RelayNative(data, NativeMessageTag.PuppetMasterKill, NetworkChannel.Reliable, RelayType.ToOtherClients);
 
         PuppetMasterExtender.LastKilled = entity;
     }

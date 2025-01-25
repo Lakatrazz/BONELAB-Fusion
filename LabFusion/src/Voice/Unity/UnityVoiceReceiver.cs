@@ -107,6 +107,9 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
 
         _voiceClip.GetData(audioData, _lastSample);
 
+        var pointer = audioData.Pointer;
+        var pointerSize = IntPtr.Size;
+
         if (_loopedData)
         {
             _lastSample = 0;
@@ -125,7 +128,7 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
 
         for (int i = 0; i < sampleCount; i++)
         {
-            float sample = audioData[i] * VoiceVolume.DefaultSampleMultiplier;
+            float sample = InteropUtilities.FloatArrayFastRead(pointer, pointerSize, i) * VoiceVolume.DefaultSampleMultiplier;
             _amplitude += Math.Abs(sample);
 
             int elementPosition = i * elementSize;

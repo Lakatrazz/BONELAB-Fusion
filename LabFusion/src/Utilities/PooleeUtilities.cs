@@ -44,12 +44,9 @@ public static class PooleeUtilities
         // Send response
         if (NetworkInfo.IsServer)
         {
-            using var writer = FusionWriter.Create(DespawnResponseData.Size);
             var data = DespawnResponseData.Create(PlayerIdManager.LocalSmallId, entityId, despawnEffect);
-            writer.Write(data);
 
-            using var message = FusionMessage.Create(NativeMessageTag.DespawnResponse, writer);
-            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+            MessageRelay.RelayNative(data, NativeMessageTag.DespawnResponse, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
         // Send request
         else
@@ -60,32 +57,22 @@ public static class PooleeUtilities
 
     public static void RequestDespawn(ushort entityId, bool despawnEffect)
     {
-        using var writer = FusionWriter.Create(DespawnRequestData.Size);
         var data = DespawnRequestData.Create(PlayerIdManager.LocalSmallId, entityId, despawnEffect);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.DespawnRequest, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.DespawnResponse, NetworkChannel.Reliable, RelayType.ToServer);
     }
 
     public static void RequestSpawn(string barcode, SerializedTransform serializedTransform, uint trackerId, bool spawnEffect)
     {
-        using var writer = FusionWriter.Create(SpawnRequestData.Size);
-        var data = SpawnRequestData.Create(PlayerIdManager.LocalSmallId, barcode, serializedTransform, trackerId, spawnEffect);
-        writer.Write(data);
+        var data = SpawnRequestData.Create(barcode, serializedTransform, trackerId, spawnEffect);
 
-        using var message = FusionMessage.Create(NativeMessageTag.SpawnRequest, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.SpawnRequest, NetworkChannel.Reliable, RelayType.ToServer);
     }
 
     public static void SendSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, uint trackerId = 0, bool spawnEffect = false)
     {
-        using var writer = FusionWriter.Create(SpawnResponseData.GetSize(barcode));
         var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform, trackerId, spawnEffect);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.SpawnResponse, writer);
-
-        MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.SpawnResponse, NetworkChannel.Reliable, RelayType.ToClients);
     }
 }

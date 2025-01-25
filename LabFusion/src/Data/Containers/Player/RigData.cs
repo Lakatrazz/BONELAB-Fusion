@@ -70,12 +70,9 @@ public static class RigData
         }
 
         // Send body vitals to network
-        using FusionWriter writer = FusionWriter.Create(PlayerRepVitalsData.Size);
         var data = PlayerRepVitalsData.Create(PlayerIdManager.LocalSmallId, PlayerRefs.Instance.PlayerBodyVitals);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.PlayerRepVitals, writer);
-        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepVitals, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 
     public static string GetAvatarBarcode()

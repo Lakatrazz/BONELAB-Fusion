@@ -2,7 +2,6 @@
 using LabFusion.Extensions;
 using LabFusion.Utilities;
 using LabFusion.Scene;
-using LabFusion.Exceptions;
 
 namespace LabFusion.Network;
 
@@ -14,6 +13,11 @@ public class SceneLoadData : IFusionSerializable
     public static int GetSize(string barcode, string loadBarcode)
     {
         return barcode.GetSize() + loadBarcode.GetSize();
+    }
+
+    public int? GetSize()
+    {
+        return levelBarcode.GetSize() + loadBarcode.GetSize();
     }
 
     public void Serialize(FusionWriter writer)
@@ -42,15 +46,12 @@ public class SceneLoadMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.SceneLoad;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
-    {
-        if (isServerHandled)
-        {
-            throw new ExpectedClientException();
-        }
+    public override ExpectedType ExpectedReceiver => ExpectedType.ClientsOnly;
 
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<SceneLoadData>();
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        var data = received.ReadData<SceneLoadData>();
+
 #if DEBUG
         FusionLogger.Log($"Received level load for {data.levelBarcode}!");
 #endif

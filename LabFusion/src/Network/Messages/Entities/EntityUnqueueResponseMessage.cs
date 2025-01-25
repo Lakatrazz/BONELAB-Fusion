@@ -38,17 +38,11 @@ public class EntityUnqueueResponseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.EntityUnqueueResponse;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
-    {
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<EntityUnqueueResponseData>();
+    public override ExpectedType ExpectedReceiver => ExpectedType.ClientsOnly;
 
-        // Make sure this isn't handled by the server
-        if (isServerHandled)
-        {
-            FusionLogger.Error($"Entity Unqueue Response was being handled on the server! Queued id was {data.queuedId}, allocated id was {data.allocatedId}.");
-            throw new ExpectedClientException();
-        }
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        var data = received.ReadData<EntityUnqueueResponseData>();
 
         var (success, entity) = NetworkEntityManager.IdManager.UnqueueEntity(data.queuedId, data.allocatedId);
 

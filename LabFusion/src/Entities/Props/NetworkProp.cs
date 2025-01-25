@@ -324,12 +324,9 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         }
 
         // Send pose
-        using var writer = FusionWriter.Create();
-        var data = EntityPoseUpdateData.Create(PlayerIdManager.LocalSmallId, NetworkEntity.Id, EntityPose);
-        writer.Write(data);
+        var data = EntityPoseUpdateData.Create(NetworkEntity.Id, EntityPose);
 
-        using var message = FusionMessage.Create(NativeMessageTag.EntityPoseUpdate, writer);
-        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Unreliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.EntityPoseUpdate, NetworkChannel.Unreliable, RelayType.ToOtherClients);
 
         // Update sent pose
         EntityPose.CopyTo(_sentPose);

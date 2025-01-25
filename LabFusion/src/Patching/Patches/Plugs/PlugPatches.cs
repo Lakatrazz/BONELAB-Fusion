@@ -138,12 +138,9 @@ public static class AmmoSocketPatches
             return;
         }
 
-        using var writer = FusionWriter.Create(MagazineInsertData.Size);
         var data = MagazineInsertData.Create(PlayerIdManager.LocalSmallId, magEntity.Id, gunEntity.Id);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.MagazineInsert, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.MagazineInsert, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 
     [HarmonyPatch(nameof(AmmoSocket.OnPlugUnlocked))]
@@ -186,14 +183,11 @@ public static class AmmoSocketPatches
             return;
         }
 
-        using var writer = FusionWriter.Create(MagazineEjectData.Size);
         Hand hand = ammoPlug.host.GetHand(0);
         Handedness handedness = hand != null ? hand.handedness : Handedness.UNDEFINED;
 
         var data = MagazineEjectData.Create(PlayerIdManager.LocalSmallId, magEntity.Id, gunEntity.Id, handedness);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.MagazineEject, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.MagazineEject, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 }

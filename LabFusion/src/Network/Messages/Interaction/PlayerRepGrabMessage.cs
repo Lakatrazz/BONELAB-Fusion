@@ -70,22 +70,14 @@ public class PlayerRepGrabMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerRepGrab;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<PlayerRepGrabData>();
+        var data = received.ReadData<PlayerRepGrabData>();
 
         // Make sure this isn't us
         if (data.smallId == PlayerIdManager.LocalSmallId)
         {
             return;
-        }
-
-        // Send message to other clients if server
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
         }
 
         // Apply grab

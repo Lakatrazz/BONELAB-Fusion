@@ -120,12 +120,9 @@ public static class PropSender
                 return;
             }
 
-            using var writer = FusionWriter.Create(NetworkPropCreateData.Size);
             var data = NetworkPropCreateData.Create(PlayerIdManager.LocalSmallId, hashData, newEntity.Id);
-            writer.Write(data);
 
-            using var message = FusionMessage.Create(NativeMessageTag.NetworkPropCreate, writer);
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+            MessageRelay.RelayNative(data, NativeMessageTag.NetworkPropCreate, NetworkChannel.Reliable, RelayType.ToOtherClients);
 
             OnFinish();
         }

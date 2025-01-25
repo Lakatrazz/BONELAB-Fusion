@@ -36,18 +36,9 @@ public class InventoryAmmoReceiverDropMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.InventoryAmmoReceiverDrop;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<InventoryAmmoReceiverDropData>();
-
-        // Send message to other clients if server
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-            return;
-        }
+        var data = received.ReadData<InventoryAmmoReceiverDropData>();
 
         var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.entityId);
 

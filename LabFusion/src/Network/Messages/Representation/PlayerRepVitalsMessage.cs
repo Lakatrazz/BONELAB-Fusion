@@ -146,20 +146,13 @@ public class PlayerRepVitalsMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerRepVitals;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<PlayerRepVitalsData>();
+        var data = received.ReadData<PlayerRepVitalsData>();
 
         if (NetworkPlayerManager.TryGetPlayer(data.smallId, out var player))
         {
             player.AvatarSetter.SetVitals(data.bodyVitals);
-        }
-
-        if (NetworkInfo.IsServer)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
         }
     }
 }

@@ -1,11 +1,15 @@
 ﻿using LabFusion.Network;
 
-namespace LabFusion.Data
-{
-    public interface IFusionSerializable 
-    {
-        void Serialize(FusionWriter writer);
+namespace LabFusion.Data;
 
-        void Deserialize(FusionReader reader);
+public interface IFusionSerializable 
+{
+    void Serialize(FusionWriter writer);
+
+    void Deserialize(FusionReader reader);
+
+    int? GetSize()
+    {
+        return null;
     }
 }

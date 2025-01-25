@@ -77,19 +77,9 @@ public class KeySlotMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.KeySlot;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<KeySlotData>();
-
-        // Send message to other clients if server
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-
-            return;
-        }
+        var data = received.ReadData<KeySlotData>();
 
         var key = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.keyId);
 

@@ -1,9 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Player;
 using LabFusion.Representation;
-using LabFusion.Preferences.Server;
 using LabFusion.Senders;
-using LabFusion.Exceptions;
 
 namespace LabFusion.Network;
 
@@ -51,15 +49,11 @@ public class PermissionCommandRequestMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PermissionCommandRequest;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
-    {
-        // This should only ever be handled by the server
-        if (!isServerHandled)
-        {
-            throw new ExpectedServerException();
-        }
+    public override ExpectedType ExpectedReceiver => ExpectedType.ServerOnly;
 
-        using FusionReader reader = FusionReader.Create(bytes);
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        using FusionReader reader = FusionReader.Create(received.Bytes);
         var data = reader.ReadFusionSerializable<PermissionCommandRequestData>();
 
         // Get the user

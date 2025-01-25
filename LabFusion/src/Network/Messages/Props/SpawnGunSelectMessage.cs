@@ -50,18 +50,9 @@ public class SpawnGunSelectMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.SpawnGunSelect;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<SpawnGunSelectData>();
-
-        // Send message to other clients if server
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-            return;
-        }
+        var data = received.ReadData<SpawnGunSelectData>();
 
         var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.gunId);
 

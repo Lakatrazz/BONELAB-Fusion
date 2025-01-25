@@ -72,7 +72,6 @@ public abstract class VoiceSpeaker : IVoiceSpeaker
         GameObject.DontDestroyOnLoad(_sourceGo);
         _sourceGo.hideFlags = HideFlags.DontUnloadUnusedAsset;
 
-        _source.rolloffMode = AudioRolloffMode.Linear;
         _source.loop = true;
     }
 

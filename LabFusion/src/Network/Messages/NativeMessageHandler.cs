@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 
+using LabFusion.Exceptions;
 using LabFusion.Utilities;
 
 namespace LabFusion.Network;
@@ -51,14 +52,26 @@ public abstract class NativeMessageHandler : MessageHandler
 
         try
         {
-            tag = buffer[0];
+            using var reader = FusionReader.Create(buffer.ToArray());
 
-            var messageSlice = buffer[1..];
-            byte[] message = messageSlice.ToArray();
+            var prefix = reader.ReadFusionSerializable<MessagePrefix>();
+            var message = reader.ReadBytes();
+
+            tag = prefix.Tag;
 
             if (Handlers[tag] != null)
             {
-                Handlers[tag].Internal_HandleMessage(message, isServerHandled);
+                var payload = new ReceivedMessage()
+                {
+                    Type = prefix.Type,
+                    Channel = prefix.Channel,
+                    Sender = prefix.Sender,
+                    Target = prefix.Target,
+                    Bytes = message,
+                    IsServerHandled = isServerHandled,
+                };
+
+                Handlers[tag].Internal_HandleMessage(payload);
             }
 #if DEBUG
             else
@@ -71,6 +84,62 @@ public abstract class NativeMessageHandler : MessageHandler
         {
             FusionLogger.Error($"Failed handling network message of tag {tag} with reason: {e.Message}\nTrace:{e.StackTrace}");
         }
+    }
+
+    public sealed override void Handle(ReceivedMessage received)
+    {
+        if (ExpectedReceiver == ExpectedType.ServerOnly && !received.IsServerHandled)
+        {
+            throw new ExpectedServerException();
+        }
+        else if (ExpectedReceiver == ExpectedType.ClientsOnly && received.IsServerHandled)
+        {
+            throw new ExpectedClientException();
+        }
+
+        switch (received.Type)
+        {
+            case RelayType.ToServer:
+                if (!received.IsServerHandled)
+                {
+                    throw new ExpectedServerException();
+                }
+                break;
+            case RelayType.ToClients:
+                if (received.IsServerHandled)
+                {
+                    using var message = FusionMessage.Create(Tag, received);
+
+                    MessageSender.BroadcastMessage(received.Channel, message);
+
+                    return;
+                }
+                break;
+            case RelayType.ToOtherClients:
+                if (received.IsServerHandled)
+                {
+                    using var message = FusionMessage.Create(Tag, received);
+
+                    MessageSender.BroadcastMessageExcept(received.Sender.Value, received.Channel, message, false);
+
+                    return;
+                }
+                break;
+            case RelayType.ToTarget:
+                if (received.IsServerHandled)
+                {
+                    using var message = FusionMessage.Create(Tag, received);
+
+                    MessageSender.SendFromServer(received.Target.Value, received.Channel, message);
+
+                    return;
+                }
+                break;
+        }
+
+        OnHandleMessage(received);
+
+        HandleMessage(received.Bytes, received.IsServerHandled);
     }
 
     public static readonly NativeMessageHandler[] Handlers = new NativeMessageHandler[byte.MaxValue];

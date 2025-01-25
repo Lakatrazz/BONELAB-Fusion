@@ -1,6 +1,5 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
-using LabFusion.Exceptions;
 using LabFusion.Player;
 
 namespace LabFusion.Network;
@@ -44,15 +43,11 @@ public class ConnectionResponseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.ConnectionResponse;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
-    {
-        using FusionReader reader = FusionReader.Create(bytes);
+    public override ExpectedType ExpectedReceiver => ExpectedType.ClientsOnly;
 
-        // This should only ever be handled client side!
-        if (isServerHandled)
-        {
-            throw new ExpectedClientException();
-        }
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        using FusionReader reader = FusionReader.Create(received.Bytes);
 
         var data = reader.ReadFusionSerializable<ConnectionResponseData>();
 

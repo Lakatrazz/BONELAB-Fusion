@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 
 using LabFusion.Network;
-using LabFusion.Player;
 using LabFusion.Bonelab.Extenders;
 
 using Il2CppSLZ.Bonelab;
@@ -11,7 +10,7 @@ namespace LabFusion.Bonelab.Patching;
 [HarmonyPatch(typeof(PropFlashlight))]
 public static class PropFlashlightPatches
 {
-    public static bool IgnorePatches = false;
+    public static bool IgnorePatches { get; set; } = false;
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(PropFlashlight.SwitchLight))]
@@ -22,31 +21,25 @@ public static class PropFlashlightPatches
             return true;
         }
 
-        if (NetworkInfo.HasServer && PropFlashlightExtender.Cache.TryGet(__instance, out var entity) && !entity.IsOwner)
+        if (!NetworkInfo.HasServer)
         {
-            return false;
+            return true;
         }
 
-        return true;
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch(nameof(PropFlashlight.SwitchLight))]
-    public static void SwitchLightPostfix(PropFlashlight __instance)
-    {
-        if (IgnorePatches)
+        if (!PropFlashlightExtender.Cache.TryGet(__instance, out var entity))
         {
-            return;
+            return true;
         }
 
-        if (NetworkInfo.HasServer && PropFlashlightExtender.Cache.TryGet(__instance, out var entity))
+        if (entity.IsOwner)
         {
-            using var writer = FusionWriter.Create(FlashlightToggleData.Size);
-            var data = FlashlightToggleData.Create(PlayerIdManager.LocalSmallId, entity.Id, __instance.lightOn);
-            writer.Write(data);
+            var toggledLight = !__instance.lightOn;
 
-            using var message = FusionMessage.ModuleCreate<FlashlightToggleMessage>(writer);
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+            var data = FlashlightToggleData.Create(entity.Id, toggledLight);
+
+            MessageRelay.RelayModule<FlashlightToggleMessage, FlashlightToggleData>(data, NetworkChannel.Reliable, RelayType.ToClients);
         }
+
+        return false;
     }
 }

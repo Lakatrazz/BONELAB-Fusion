@@ -106,19 +106,9 @@ public class PlayerRepRagdollMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PhysicsRigState;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using var reader = FusionReader.Create(bytes);
-
-        var data = reader.ReadFusionSerializable<PhysicsRigStateData>();
-
-        // Send message to other clients if server
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessageExcept(data.entityId, NetworkChannel.Reliable, message, false);
-            return;
-        }
+        var data = received.ReadData<PhysicsRigStateData>();
 
         if (NetworkPlayerManager.TryGetPlayer(data.entityId, out var player))
         {

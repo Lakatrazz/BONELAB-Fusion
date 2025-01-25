@@ -160,12 +160,9 @@ public class MineDiveData : LevelDataHandler
 
         CreateExtraCarts(_cartAmount);
 
-        using var writer = FusionWriter.Create();
         var data = MineDiveCartData.Create(_cartAmount);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.MineDiveCart, writer);
-        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.MineDiveCart, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 
     public static void CreateExtraCarts(int amount)

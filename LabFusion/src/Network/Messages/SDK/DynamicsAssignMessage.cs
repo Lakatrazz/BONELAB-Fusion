@@ -1,5 +1,4 @@
 ﻿using LabFusion.Data;
-using LabFusion.Exceptions;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Modules;
 
@@ -63,15 +62,11 @@ public class DynamicsAssignMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.DynamicsAssignment;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
-    {
-        if (NetworkInfo.IsServer || isServerHandled)
-        {
-            throw new ExpectedClientException();
-        }
+    public override ExpectedType ExpectedReceiver => ExpectedType.ClientsOnly;
 
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<DynamicsAssignData>();
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        var data = received.ReadData<DynamicsAssignData>();
 
         // Modules
         ModuleMessageHandler.PopulateHandlerTable(data.moduleHandlerNames);

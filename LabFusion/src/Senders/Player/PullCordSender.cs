@@ -12,12 +12,9 @@ public static class PullCordSender
             return;
         }
 
-        using var writer = FusionWriter.Create(BodyLogToggleData.Size);
         var data = BodyLogToggleData.Create(PlayerIdManager.LocalSmallId, isEnabled);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.BodyLogToggle, writer);
-        MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.BodyLogToggle, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 
     public static void SendBodyLogEffect()
@@ -27,12 +24,8 @@ public static class PullCordSender
             return;
         }
 
-        using var writer = FusionWriter.Create(BodyLogEffectData.Size);
         var data = BodyLogEffectData.Create(PlayerIdManager.LocalSmallId);
-        writer.Write(data);
 
-        // Effects dont have to be reliable
-        using var message = FusionMessage.Create(NativeMessageTag.BodyLogEffect, writer);
-        MessageSender.BroadcastMessage(NetworkChannel.Unreliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.BodyLogEffect, NetworkChannel.Unreliable, RelayType.ToOtherClients);
     }
 }

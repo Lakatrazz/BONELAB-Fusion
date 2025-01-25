@@ -8,20 +8,17 @@ public class EntityPoseUpdateData : IFusionSerializable
     public const int DefaultSize = sizeof(byte) + sizeof(ushort);
     public const int RigidbodySize = sizeof(float) * 9 + SerializedSmallQuaternion.Size;
 
-    public byte ownerId;
     public ushort entityId;
     public EntityPose pose;
 
     public void Serialize(FusionWriter writer)
     {
-        writer.Write(ownerId);
         writer.Write(entityId);
         writer.Write(pose);
     }
 
     public void Deserialize(FusionReader reader)
     {
-        ownerId = reader.ReadByte();
         entityId = reader.ReadUInt16();
         pose = reader.ReadFusionSerializable<EntityPose>();
     }
@@ -32,11 +29,10 @@ public class EntityPoseUpdateData : IFusionSerializable
         return entity;
     }
 
-    public static EntityPoseUpdateData Create(byte ownerId, ushort entityId, EntityPose pose)
+    public static EntityPoseUpdateData Create(ushort entityId, EntityPose pose)
     {
         var data = new EntityPoseUpdateData
         {
-            ownerId = ownerId,
             entityId = entityId,
             pose = pose,
         };
@@ -50,23 +46,15 @@ public class EntityPoseUpdateMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.EntityPoseUpdate;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<EntityPoseUpdateData>();
-
-        // Send message to other clients if server
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessageExcept(data.ownerId, NetworkChannel.Unreliable, message);
-        }
+        var data = received.ReadData<EntityPoseUpdateData>();
 
         // Find the network entity
         var entity = data.GetEntity();
 
         // Validate the entity
-        if (entity == null || !entity.IsRegistered || entity.OwnerId == null || entity.OwnerId != data.ownerId)
+        if (entity == null || !entity.IsRegistered || entity.OwnerId == null || entity.OwnerId != received.Sender)
         {
             return;
         }

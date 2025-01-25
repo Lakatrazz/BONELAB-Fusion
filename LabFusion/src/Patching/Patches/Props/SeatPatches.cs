@@ -106,12 +106,9 @@ public static class SeatPatches
 
         var extender = entity.GetExtender<SeatExtender>();
 
-        using var writer = FusionWriter.Create(PlayerRepSeatData.Size);
         var data = PlayerRepSeatData.Create(PlayerIdManager.LocalSmallId, entity.Id, (byte)extender.GetIndex(__instance).Value, true);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.PlayerRepSeat, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepSeat, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 
     [HarmonyPrefix]
@@ -137,11 +134,8 @@ public static class SeatPatches
 
         var extender = entity.GetExtender<SeatExtender>();
 
-        using var writer = FusionWriter.Create(PlayerRepSeatData.Size);
         var data = PlayerRepSeatData.Create(PlayerIdManager.LocalSmallId, entity.Id, (byte)extender.GetIndex(__instance).Value, false);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.PlayerRepSeat, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepSeat, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 }

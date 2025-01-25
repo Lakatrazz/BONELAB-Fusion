@@ -16,6 +16,8 @@ public class BonelabHubEventData : IFusionSerializable
 {
     public BonelabHubEventType type;
 
+    public int? GetSize() => sizeof(byte);
+
     public void Serialize(FusionWriter writer)
     {
         writer.Write((byte)type);
@@ -40,14 +42,17 @@ public class BonelabHubEventMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.BonelabHubEvent;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    public override ExpectedType ExpectedReceiver => ExpectedType.ClientsOnly;
+
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<BonelabHubEventData>();
+        var data = received.ReadData<BonelabHubEventData>();
+
         GameControl_HubPatches.IgnorePatches = true;
+
         var controller = HubData.GameController;
 
-        if (!NetworkInfo.IsServer && controller)
+        if (controller)
         {
             switch (data.type)
             {

@@ -48,19 +48,11 @@ public class RandomObjectData : IFusionSerializable
 
 public class RandomObjectMessage : ModuleMessageHandler
 {
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using var reader = FusionReader.Create(bytes);
+        using var reader = FusionReader.Create(received.Bytes);
 
         var data = reader.ReadFusionSerializable<RandomObjectData>();
-
-        // Send message to other clients if server
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.ModuleCreate<RandomObjectMessage>(bytes);
-            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-            return;
-        }
 
         // Right now only syncs RandomObject on individual objects (props, avatars, etc). No scene syncing yet.
         var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.entityId);

@@ -20,16 +20,14 @@ namespace LabFusion.Senders
 
         public static void SendTrialSpawnerEvent(Trial_SpawnerEvents spawnerEvent)
         {
-            if (NetworkInfo.IsServer)
+            if (!NetworkInfo.IsServer)
             {
-                using var writer = FusionWriter.Create();
-                var data = TrialSpawnerEventsData.Create(spawnerEvent);
-                writer.Write(data);
-
-                using var message = FusionMessage.Create(NativeMessageTag.TrialSpawnerEvents, writer);
-                MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+                return;
             }
-        }
 
+            var data = TrialSpawnerEventsData.Create(spawnerEvent);
+
+            MessageRelay.RelayNative(data, NativeMessageTag.TrialSpawnerEvents, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        }
     }
 }

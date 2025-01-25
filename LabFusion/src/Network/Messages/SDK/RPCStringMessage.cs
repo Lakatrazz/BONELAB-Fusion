@@ -41,14 +41,10 @@ public static class RPCStringSender
         }
 
         // Send the message
-        using var writer = FusionWriter.Create();
         var pathData = ComponentPathData.Create(hasNetworkEntity, entityId, componentIndex, hashData);
         var stringData = RPCStringData.Create(pathData, value);
 
-        writer.Write(stringData);
-
-        using var message = FusionMessage.Create(NativeMessageTag.RPCString, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(stringData, NativeMessageTag.RPCString, NetworkChannel.Reliable, RelayType.ToClients);
 
         return true;
     }
@@ -88,18 +84,9 @@ public class RPCStringMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.RPCString;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        // If we are the server, broadcast the message to all clients
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.Create(NativeMessageTag.RPCString, bytes);
-            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-            return;
-        }
-
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<RPCStringData>();
+        var data = received.ReadData<RPCStringData>();
 
         // Entity object
         if (data.pathData.hasNetworkEntity)

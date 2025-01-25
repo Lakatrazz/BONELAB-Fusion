@@ -79,10 +79,9 @@ public class RPCEventMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.RPCEvent;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<ComponentPathData>();
+        var data = received.ReadData<ComponentPathData>();
 
         // Entity object
         if (data.hasNetworkEntity)

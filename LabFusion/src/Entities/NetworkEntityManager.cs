@@ -171,12 +171,9 @@ public static class NetworkEntityManager
             return;
         }
 
-        using var writer = FusionWriter.Create(EntityUnqueueRequestData.Size);
         var data = EntityUnqueueRequestData.Create(PlayerIdManager.LocalSmallId, queuedId);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.EntityUnqueueRequest, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.EntityUnqueueRequest, NetworkChannel.Reliable, RelayType.ToServer);
     }
 
     public static void TransferOwnership(NetworkEntity entity, PlayerId ownerId)
@@ -202,12 +199,9 @@ public static class NetworkEntityManager
             return;
         }
 
-        using var writer = FusionWriter.Create(EntityPlayerData.Size);
         var request = EntityPlayerData.Create(ownerId.SmallId, entity.Id);
-        writer.Write(request);
 
-        using var message = FusionMessage.Create(NativeMessageTag.EntityOwnershipRequest, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(request, NativeMessageTag.EntityOwnershipRequest, NetworkChannel.Reliable, RelayType.ToServer);
     }
 
     public static void TakeOwnership(NetworkEntity entity)

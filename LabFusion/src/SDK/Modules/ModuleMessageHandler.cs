@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-using LabFusion.Data;
+using LabFusion.Exceptions;
 using LabFusion.Network;
 using LabFusion.Utilities;
 
@@ -99,7 +99,7 @@ public abstract class ModuleMessageHandler : MessageHandler
         return null;
     }
 
-    public static void ReadMessage(byte[] bytes, bool isServerHandled = false)
+    public static void ReadMessage(ReceivedMessage received)
     {
         if (Handlers == null)
         {
@@ -112,24 +112,50 @@ public abstract class ModuleMessageHandler : MessageHandler
 
         try
         {
-            ushort tag = BitConverter.ToUInt16(bytes, 0);
-            var buffer = new byte[bytes.Length - 2];
+            ushort tag = BitConverter.ToUInt16(received.Bytes, 0);
+            var buffer = new byte[received.Bytes.Length - 2];
 
             for (var i = 0; i < buffer.Length; i++)
             {
-                buffer[i] = bytes[i + 2];
+                buffer[i] = received.Bytes[i + 2];
             }
 
             // Since modules cannot be assumed to exist for everyone, we need to null check
             if (Handlers.Length > tag && Handlers[tag] != null)
             {
-                Handlers[tag].Internal_HandleMessage(buffer, isServerHandled);
+                var payload = new ReceivedMessage()
+                {
+                    Type = received.Type,
+                    Channel = received.Channel,
+                    Sender = received.Sender,
+                    Target = received.Target,
+                    Bytes = buffer,
+                    IsServerHandled = received.IsServerHandled,
+                };
+
+                Handlers[tag].Internal_HandleMessage(payload);
             }
         }
         catch (Exception e)
         {
             FusionLogger.Error($"Failed handling network message with reason: {e.Message}\nTrace:{e.StackTrace}");
         }
+    }
+
+    public sealed override void Handle(ReceivedMessage received)
+    {
+        if (ExpectedReceiver == ExpectedType.ServerOnly && !received.IsServerHandled)
+        {
+            throw new ExpectedServerException();
+        }
+        else if (ExpectedReceiver == ExpectedType.ClientsOnly && received.IsServerHandled)
+        {
+            throw new ExpectedClientException();
+        }
+
+        OnHandleMessage(received);
+
+        HandleMessage(received.Bytes, received.IsServerHandled);
     }
 
     public static Dictionary<string, Type> HandlerTypes { get; private set; } = new();

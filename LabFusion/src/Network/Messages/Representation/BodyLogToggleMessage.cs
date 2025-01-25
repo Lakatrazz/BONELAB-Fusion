@@ -37,22 +37,14 @@ public class BodyLogToggleMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.BodyLogToggle;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<BodyLogToggleData>();
+        var data = received.ReadData<BodyLogToggleData>();
 
         // Set the enabled state of the body log
         if (NetworkPlayerManager.TryGetPlayer(data.smallId, out var player) && !player.NetworkEntity.IsOwner)
         {
             player.SetBallEnabled(data.isEnabled);
-        }
-
-        // Bounce the message back
-        if (NetworkInfo.IsServer)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
         }
     }
 }

@@ -179,12 +179,9 @@ public static class GrabHelper
             // Write the default grip values
             serializedGrab.WriteDefaultGrip(hand, grip);
 
-            using var writer = FusionWriter.Create(PlayerRepGrabData.Size + serializedGrab.GetSize());
             var data = PlayerRepGrabData.Create(smallId, handedness, group, serializedGrab);
-            writer.Write(data);
 
-            using var message = FusionMessage.Create(NativeMessageTag.PlayerRepGrab, writer);
-            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+            MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepGrab, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
     }
 
@@ -207,11 +204,8 @@ public static class GrabHelper
             return;
         }
 
-        using var writer = FusionWriter.Create(PlayerRepReleaseData.Size);
         var data = PlayerRepReleaseData.Create(PlayerIdManager.LocalSmallId, handedness);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.PlayerRepRelease, writer);
-        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepRelease, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 }

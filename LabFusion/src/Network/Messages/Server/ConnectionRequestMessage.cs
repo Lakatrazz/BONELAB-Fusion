@@ -5,7 +5,6 @@ using LabFusion.Utilities;
 using LabFusion.Scene;
 using LabFusion.Preferences.Server;
 using LabFusion.Senders;
-using LabFusion.Exceptions;
 using LabFusion.Entities;
 
 namespace LabFusion.Network;
@@ -68,14 +67,11 @@ public class ConnectionRequestMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.ConnectionRequest;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
-    {
-        if (!isServerHandled)
-        {
-            throw new ExpectedServerException();
-        }
+    public override ExpectedType ExpectedReceiver => ExpectedType.ServerOnly;
 
-        using FusionReader reader = FusionReader.Create(bytes);
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        using FusionReader reader = FusionReader.Create(received.Bytes);
         var data = reader.ReadFusionSerializable<ConnectionRequestData>();
 
         // Make sure the id isn't spoofed.

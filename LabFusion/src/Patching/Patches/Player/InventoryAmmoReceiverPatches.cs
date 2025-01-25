@@ -86,12 +86,9 @@ public class InventoryAmmoReceiverGrab
         }
 
         // Send claim message
-        using var writer = FusionWriter.Create(MagazineClaimData.Size);
         var data = MagazineClaimData.Create(PlayerIdManager.LocalSmallId, info.entity.Id, handedness);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.MagazineClaim, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.MagazineClaim, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 }
 
@@ -137,12 +134,9 @@ public class InventoryAmmoReceiverDrop
             PooleeUtilities.RequestDespawn(entity.Id, false);
 
             // Play the ammo release sound effect
-            using var writer = FusionWriter.Create(InventoryAmmoReceiverDropData.Size);
             var data = InventoryAmmoReceiverDropData.Create(PlayerIdManager.LocalId);
-            writer.Write(data);
 
-            using var message = FusionMessage.Create(NativeMessageTag.InventoryAmmoReceiverDrop, writer);
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+            MessageRelay.RelayNative(data, NativeMessageTag.InventoryAmmoReceiverDrop, NetworkChannel.Reliable, RelayType.ToClients);
         }
 
         return false;

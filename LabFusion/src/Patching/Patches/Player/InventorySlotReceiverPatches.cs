@@ -60,13 +60,10 @@ public class InventorySlotReceiverPatches
             }
         }
 
-        // Send a receiver grab message
-        using var writer = FusionWriter.Create(InventorySlotDropData.Size);
+        // Send a receiver drop message
         var data = InventorySlotDropData.Create(slotEntity.Id, PlayerIdManager.LocalSmallId, index.Value, handedness);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.InventorySlotDrop, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.InventorySlotDrop, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 
     [HarmonyPrefix]
@@ -127,11 +124,8 @@ public class InventorySlotReceiverDrop
             return;
         }
 
-        using var writer = FusionWriter.Create(InventorySlotInsertData.Size);
         var data = InventorySlotInsertData.Create(slotEntity.Id, PlayerIdManager.LocalSmallId, weaponEntity.Id, index.Value);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.InventorySlotInsert, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.InventorySlotInsert, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 }

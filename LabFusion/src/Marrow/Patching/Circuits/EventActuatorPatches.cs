@@ -136,11 +136,8 @@ public static class EventActuatorPatches
             return;
         }
 
-        using var writer = FusionWriter.Create(EventActuatorData.Size);
         var data = EventActuatorData.Create(PlayerIdManager.LocalSmallId, hashData, type, value);
-        writer.Write(data);
 
-        using var message = FusionMessage.ModuleCreate<EventActuatorMessage>(writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayModule<EventActuatorMessage, EventActuatorData>(data, NetworkChannel.Reliable, RelayType.ToClients);
     }
 }

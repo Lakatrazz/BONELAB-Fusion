@@ -1,47 +1,42 @@
 ﻿using LabFusion.Data;
 using LabFusion.Exceptions;
 
-namespace LabFusion.Network
+namespace LabFusion.Network;
+
+public class MineDiveCartData : IFusionSerializable
 {
-    public class MineDiveCartData : IFusionSerializable
+    public int amount;
+
+    public void Serialize(FusionWriter writer)
     {
-        public int amount;
-
-        public void Serialize(FusionWriter writer)
-        {
-            writer.Write(amount);
-        }
-
-        public void Deserialize(FusionReader reader)
-        {
-            amount = reader.ReadInt32();
-        }
-
-        public static MineDiveCartData Create(int amount)
-        {
-            return new MineDiveCartData()
-            {
-                amount = amount,
-            };
-        }
+        writer.Write(amount);
     }
 
-    [Net.DelayWhileTargetLoading]
-    public class MineDiveCartMessage : NativeMessageHandler
+    public void Deserialize(FusionReader reader)
     {
-        public override byte Tag => NativeMessageTag.MineDiveCart;
+        amount = reader.ReadInt32();
+    }
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    public static MineDiveCartData Create(int amount)
+    {
+        return new MineDiveCartData()
         {
-            using FusionReader reader = FusionReader.Create(bytes);
-            var data = reader.ReadFusionSerializable<MineDiveCartData>();
+            amount = amount,
+        };
+    }
+}
 
-            if (!NetworkInfo.IsServer)
-            {
-                MineDiveData.CreateExtraCarts(data.amount);
-            }
-            else
-                throw new ExpectedClientException();
-        }
+[Net.DelayWhileTargetLoading]
+public class MineDiveCartMessage : NativeMessageHandler
+{
+    public override byte Tag => NativeMessageTag.MineDiveCart;
+
+    public override ExpectedType ExpectedReceiver => ExpectedType.ClientsOnly;
+
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        var data = received.ReadData<MineDiveCartData>();
+
+        MineDiveData.CreateExtraCarts(data.amount);
     }
 }

@@ -108,12 +108,9 @@ public static class BoardSpawnerAsyncPatches
                 var endPoint = GetPointData(boardGenerator.EndPoint, boardGenerator.EndRb);
 
                 // Send the generator message
-                using var writer = FusionWriter.Create(BoardGeneratorData.Size);
                 var data = BoardGeneratorData.Create(PlayerIdManager.LocalSmallId, boardId, boardGeneratorId, firstPoint, endPoint);
-                writer.Write(data);
 
-                using var message = FusionMessage.Create(NativeMessageTag.BoardGenerator, writer);
-                MessageSender.SendToServer(NetworkChannel.Reliable, message);
+                MessageRelay.RelayNative(data, NativeMessageTag.BoardGenerator, NetworkChannel.Reliable, RelayType.ToClients);
             }
         });
 

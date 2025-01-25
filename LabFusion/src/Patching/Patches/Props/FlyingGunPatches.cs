@@ -69,11 +69,8 @@ public static class FlyingGunPatches
             return;
         }
 
-        using var writer = FusionWriter.Create(NimbusGunNoclipData.Size);
         var data = NimbusGunNoclipData.Create(PlayerIdManager.LocalSmallId, entity.Id, __instance._noClipping);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.NimbusGunNoclip, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.NimbusGunNoclip, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 }

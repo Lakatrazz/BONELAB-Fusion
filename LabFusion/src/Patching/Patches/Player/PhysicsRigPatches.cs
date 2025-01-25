@@ -25,12 +25,9 @@ public static class PhysicsRigPatches
 
         if (__instance.manager.IsLocalPlayer())
         {
-            using var writer = FusionWriter.Create(PhysicsRigStateData.Size);
             var data = PhysicsRigStateData.Create(PlayerIdManager.LocalSmallId, PhysicsRigStateType.RAGDOLL, true);
-            writer.Write(data);
 
-            using var message = FusionMessage.Create(NativeMessageTag.PhysicsRigState, writer);
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
     }
 
@@ -51,12 +48,9 @@ public static class PhysicsRigPatches
                 return false;
             }
 
-            using var writer = FusionWriter.Create(PhysicsRigStateData.Size);
             var data = PhysicsRigStateData.Create(PlayerIdManager.LocalSmallId, PhysicsRigStateType.RAGDOLL, false);
-            writer.Write(data);
 
-            using var message = FusionMessage.Create(NativeMessageTag.PhysicsRigState, writer);
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
 
         return true;
@@ -73,12 +67,9 @@ public static class PhysicsRigPatches
 
         if (__instance.manager.IsLocalPlayer())
         {
-            using var writer = FusionWriter.Create(PhysicsRigStateData.Size);
             var data = PhysicsRigStateData.Create(PlayerIdManager.LocalSmallId, PhysicsRigStateType.SHUTDOWN, true);
-            writer.Write(data);
 
-            using var message = FusionMessage.Create(NativeMessageTag.PhysicsRigState, writer);
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
     }
 
@@ -102,12 +93,9 @@ public static class PhysicsRigPatches
             return false;
         }
 
-        using var writer = FusionWriter.Create(PhysicsRigStateData.Size);
         var data = PhysicsRigStateData.Create(PlayerIdManager.LocalSmallId, PhysicsRigStateType.SHUTDOWN, false);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.PhysicsRigState, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, NetworkChannel.Reliable, RelayType.ToOtherClients);
 
         return true;
     }
@@ -123,12 +111,9 @@ public static class PhysicsRigPatches
 
         if (__instance.manager.IsLocalPlayer())
         {
-            using var writer = FusionWriter.Create(PhysicsRigStateData.Size);
             var data = PhysicsRigStateData.Create(PlayerIdManager.LocalSmallId, PhysicsRigStateType.PHYSICAL_LEGS, true);
-            writer.Write(data);
 
-            using var message = FusionMessage.Create(NativeMessageTag.PhysicsRigState, writer);
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
     }
 
@@ -143,12 +128,9 @@ public static class PhysicsRigPatches
 
         if (__instance.manager.IsLocalPlayer())
         {
-            using var writer = FusionWriter.Create(PhysicsRigStateData.Size);
             var data = PhysicsRigStateData.Create(PlayerIdManager.LocalSmallId, PhysicsRigStateType.PHYSICAL_LEGS, false);
-            writer.Write(data);
 
-            using var message = FusionMessage.Create(NativeMessageTag.PhysicsRigState, writer);
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+            MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
     }
 }

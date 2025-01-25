@@ -52,33 +52,25 @@ public class PlayerRepDamageMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerRepDamage;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<PlayerRepDamageData>();
+        var data = received.ReadData<PlayerRepDamageData>();
 
-        // If we are the server, relay it to the desired user
-        if (isServerHandled)
+        if (data.damagedId != PlayerIdManager.LocalSmallId)
         {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.SendFromServer(data.damagedId, NetworkChannel.Reliable, message);
-            return;
+            throw new Exception($"Expected target {data.damagedId}!");
         }
 
-        // Otherwise, take the damage
-        if (data.damagedId == PlayerIdManager.LocalSmallId)
-        {
-            // Get player health
-            var rm = RigData.Refs.RigManager;
-            var health = rm.health;
+        // Get player health
+        var rm = RigData.Refs.RigManager;
+        var health = rm.health;
 
-            // Get attack and find the collider
-            var attack = data.attack.attack;
+        // Get attack and find the collider
+        var attack = data.attack.attack;
 
-            // Track the damager
-            FusionPlayer.LastAttacker = data.damagerId;
+        // Track the damager
+        FusionPlayer.LastAttacker = data.damagerId;
 
-            health.OnReceivedDamage(attack, data.part);
-        }
+        health.OnReceivedDamage(attack, data.part);
     }
 }

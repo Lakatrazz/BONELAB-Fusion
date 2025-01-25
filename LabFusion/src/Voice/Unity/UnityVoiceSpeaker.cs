@@ -13,13 +13,9 @@ using System;
 
 public class UnityVoiceSpeaker : VoiceSpeaker
 {
-    private readonly Queue<float> _readingQueue = new();
+    public UnityVoiceFilter VoiceFilter { get; set; } = null;
 
     private float _amplitude = 0f;
-
-    private bool _clearedAudio = false;
-
-    private bool _isReadyToRead = false;
 
     public UnityVoiceSpeaker(PlayerId id)
     {
@@ -32,8 +28,9 @@ public class UnityVoiceSpeaker : VoiceSpeaker
         // Create the audio source and clip
         CreateAudioSource();
 
-        Source.clip = AudioClip.Create("UnityVoice", UnityVoice.SampleRate,
-                    1, UnityVoice.SampleRate, true, (PCMReaderCallback)PcmReaderCallback);
+        Source.clip = AudioClip.Create("UnityVoice", 256, 1, UnityVoice.SampleRate, false, (PCMReaderCallback)PcmReaderCallback);
+
+        VoiceFilter = Source.gameObject.AddComponent<UnityVoiceFilter>();
 
         Source.Play();
 
@@ -67,41 +64,10 @@ public class UnityVoiceSpeaker : VoiceSpeaker
         Volume = contact.volume;
     }
 
-    private void ClearVoiceData()
-    {
-        _readingQueue.Clear();
-    }
-
-    public override void Update()
-    {
-        // Have more than enough data to read
-        if (_readingQueue.Count >= UnityVoice.SampleRate / 5 && !_isReadyToRead)
-        {
-            _isReadyToRead = true;
-        }
-        // Already read through all our data, so wait for another batch
-        else if (_readingQueue.Count <= 0)
-        {
-            _isReadyToRead = false;
-        }
-
-        // Check for voice clearing
-        if (!_clearedAudio && _amplitude <= VoiceVolume.SilencingVolume)
-        {
-            _clearedAudio = true;
-            ClearVoiceData();
-        }
-        else if (_clearedAudio && _amplitude >= VoiceVolume.MinimumVoiceVolume)
-        {
-            _clearedAudio = false;
-        }
-    }
-
     public override void OnVoiceDataReceived(byte[] data)
     {
         if (MicrophoneDisabled)
         {
-            ClearVoiceData();
             return;
         }
 
@@ -112,12 +78,25 @@ public class UnityVoiceSpeaker : VoiceSpeaker
         // Convert the byte array back to a float array and enqueue it
         float volumeMultiplier = GetVoiceMultiplier();
 
+        float amplitude = 0f;
+        int sampleCount = 0;
+
         for (int i = 0; i < decompressed.Length; i += sizeof(float))
         {
             float value = BitConverter.ToSingle(decompressed, i) * volumeMultiplier;
 
-            _readingQueue.Enqueue(value);
+            VoiceFilter.ReadingQueue.Enqueue(value);
+
+            amplitude += Math.Abs(value);
+            sampleCount++;
         }
+
+        if (sampleCount > 0)
+        {
+            amplitude /= sampleCount;
+        }
+
+        _amplitude = amplitude;
     }
 
     private float GetVoiceMultiplier()
@@ -135,22 +114,10 @@ public class UnityVoiceSpeaker : VoiceSpeaker
 
     private void PcmReaderCallback(Il2CppStructArray<float> data)
     {
-        _amplitude = 0f;
-
+        // Setting all the data to 1 so it can be multiplied by the audio filter
         for (int i = 0; i < data.Length; i++)
         {
-            float output = 0f;
-
-            if (_readingQueue.Count > 0 && _isReadyToRead)
-            {
-                output = _readingQueue.Dequeue();
-            }
-
-            data[i] = output;
-
-            _amplitude += Math.Abs(output);
+            data[i] = 1f;
         }
-
-        _amplitude /= data.Length;
     }
 }

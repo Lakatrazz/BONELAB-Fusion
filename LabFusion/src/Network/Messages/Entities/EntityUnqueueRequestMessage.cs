@@ -1,6 +1,5 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
-using LabFusion.Exceptions;
 
 namespace LabFusion.Network;
 
@@ -37,24 +36,16 @@ public class EntityUnqueueRequestMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.EntityUnqueueRequest;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    public override ExpectedType ExpectedReceiver => ExpectedType.ServerOnly;
+
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        if (!isServerHandled)
-        {
-            throw new ExpectedServerException();
-        }
-
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<EntityUnqueueRequestData>();
-
-        using var writer = FusionWriter.Create(EntityUnqueueResponseData.Size);
+        var data = received.ReadData<EntityUnqueueRequestData>();
 
         var allocatedId = NetworkEntityManager.IdManager.RegisteredEntities.AllocateNewId();
+
         var response = EntityUnqueueResponseData.Create(data.queuedId, allocatedId);
 
-        writer.Write(response);
-
-        using var message = FusionMessage.Create(NativeMessageTag.EntityUnqueueResponse, writer);
-        MessageSender.SendFromServer(data.userId, NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(response, NativeMessageTag.EntityUnqueueResponse, NetworkChannel.Reliable, RelayType.ToTarget, data.userId);
     }
 }

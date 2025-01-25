@@ -1,5 +1,5 @@
-﻿using LabFusion.SDK.Modules;
-using LabFusion.Utilities;
+﻿using LabFusion.Data;
+using LabFusion.SDK.Modules;
 
 using System.Runtime.InteropServices;
 
@@ -9,6 +9,59 @@ public enum NetworkChannel : byte
 {
     Reliable,
     Unreliable,
+}
+
+public class MessagePrefix : IFusionSerializable
+{
+    public byte Tag { get; set; }
+    public RelayType Type { get; set; }
+    public NetworkChannel Channel { get; set; }
+    public byte? Sender { get; set; } = null;
+    public byte? Target { get; set; } = null;
+
+    public int? GetSize()
+    {
+        return Type switch
+        {
+            RelayType.ToServer or RelayType.ToClients or RelayType.ToOtherClients => sizeof(byte) * 4,
+            RelayType.ToTarget => sizeof(byte) * 5,
+            _ => sizeof(byte) * 3,
+        };
+    }
+
+    public void Serialize(FusionWriter writer)
+    {
+        writer.Write(Tag);
+        writer.Write((byte)Type);
+        writer.Write((byte)Channel);
+
+        if (Type != RelayType.None)
+        {
+            writer.Write(Sender.Value);
+        }
+
+        if (Type == RelayType.ToTarget)
+        {
+            writer.Write(Target.Value);
+        }
+    }
+
+    public void Deserialize(FusionReader reader)
+    {
+        Tag = reader.ReadByte();
+        Type = (RelayType)reader.ReadByte();
+        Channel = (NetworkChannel)reader.ReadByte();
+
+        if (Type != RelayType.None)
+        {
+            Sender = reader.ReadByte();
+        }
+
+        if (Type == RelayType.ToTarget)
+        {
+            Target = reader.ReadByte();
+        }
+    }
 }
 
 public unsafe class FusionMessage : IDisposable
@@ -44,54 +97,82 @@ public unsafe class FusionMessage : IDisposable
         };
     }
 
-    public static FusionMessage Create(byte tag, FusionWriter writer)
+    public static FusionMessage Create(byte tag, FusionWriter writer, RelayType relayType = RelayType.None, NetworkChannel channel = NetworkChannel.Reliable, byte? sender = null, byte? target = null)
     {
-        return Create(tag, writer.Buffer, writer.Length);
+        return Create(tag, writer.Buffer, relayType, channel, sender, target);
     }
 
-    public static FusionMessage Create(byte tag, byte[] buffer, int length = -1)
+    public static FusionMessage Create(byte tag, byte[] buffer, RelayType relayType = RelayType.None, NetworkChannel channel = NetworkChannel.Reliable, byte? sender = null, byte? target = null)
     {
-        if (length <= 0)
+        var prefix = new MessagePrefix()
         {
-            length = buffer.Length;
-        }
+            Tag = tag,
+            Type = relayType,
+            Channel = channel,
+            Sender = sender,
+            Target = target,
+        };
 
-        int size = length + 1;
+        using var writer = FusionWriter.Create(prefix.GetSize().Value + sizeof(int) + buffer.Length);
+
+        writer.Write(prefix);
+        writer.Write(buffer);
+
+        int size = writer.Length;
         var message = Create(size);
 
-        message._buffer[0] = tag;
-        for (var i = 0; i < length; i++)
+        for (var i = 0; i < size; i++)
         {
-            message._buffer[i + 1] = buffer[i];
+            message._buffer[i] = writer.Buffer[i];
         }
 
         return message;
     }
 
-    public static FusionMessage ModuleCreate<TMessage>(FusionWriter writer) where TMessage : ModuleMessageHandler
+    public static FusionMessage Create(byte tag, ReceivedMessage received)
     {
-        return ModuleCreate(typeof(TMessage), writer);
-    }
-
-    public static FusionMessage ModuleCreate<TMessage>(byte[] buffer) where TMessage : ModuleMessageHandler
-    {
-        return ModuleCreate(typeof(TMessage), buffer);
-    }
-
-    public static FusionMessage ModuleCreate(Type type, FusionWriter writer)
-    {
-        return ModuleCreate(type, writer.Buffer, writer.Length);
-    }
-
-    public static FusionMessage ModuleCreate(Type type, byte[] buffer, int length = -1)
-    {
-        if (length <= 0)
+        var prefix = new MessagePrefix()
         {
-            length = buffer.Length;
+            Tag = tag,
+            Type = received.Type,
+            Channel = received.Channel,
+            Sender = received.Sender,
+            Target = received.Target,
+        };
+
+        using var writer = FusionWriter.Create(prefix.GetSize().Value + sizeof(int) + received.Bytes.Length);
+
+        writer.Write(prefix);
+        writer.Write(received.Bytes);
+
+        int size = writer.Length;
+        var message = Create(size);
+
+        for (var i = 0; i < size; i++)
+        {
+            message._buffer[i] = writer.Buffer[i];
         }
 
-        int size = length + 3;
+        return message;
+    }
 
+    public static FusionMessage ModuleCreate<TMessage>(FusionWriter writer, RelayType relayType = RelayType.None, NetworkChannel channel = NetworkChannel.Reliable, byte? sender = null, byte? target = null) where TMessage : ModuleMessageHandler
+    {
+        return ModuleCreate(typeof(TMessage), writer, relayType, channel, sender, target);
+    }
+
+    public static FusionMessage ModuleCreate<TMessage>(byte[] buffer, RelayType relayType = RelayType.None, NetworkChannel channel = NetworkChannel.Reliable, byte? sender = null, byte? target = null) where TMessage : ModuleMessageHandler
+    {
+        return ModuleCreate(typeof(TMessage), buffer, relayType, channel, sender, target);
+    }
+
+    public static FusionMessage ModuleCreate(Type type, FusionWriter writer, RelayType relayType = RelayType.None, NetworkChannel channel = NetworkChannel.Reliable, byte? sender = null, byte? target = null)
+    {
+        return ModuleCreate(type, writer.Buffer, relayType, channel, sender, target);
+    }
+
+    public static FusionMessage ModuleCreate(Type type, byte[] buffer, RelayType relayType = RelayType.None, NetworkChannel channel = NetworkChannel.Reliable, byte? sender = null, byte? target = null)
+    {
         // Assign the module type
         var tag = ModuleMessageHandler.GetHandlerTag(type);
 
@@ -101,14 +182,36 @@ public unsafe class FusionMessage : IDisposable
             var value = tag.Value;
             var tagBytes = BitConverter.GetBytes((ushort)value);
 
-            var message = Create(size);
-            message._buffer[0] = NativeMessageTag.Module;
-            message._buffer[1] = tagBytes[0];
-            message._buffer[2] = tagBytes[1];
-
-            for (var i = 0; i < length; i++)
+            var prefix = new MessagePrefix()
             {
-                message._buffer[i + 3] = buffer[i];
+                Tag = NativeMessageTag.Module,
+                Type = relayType,
+                Channel = channel,
+                Sender = sender,
+                Target = target,
+            };
+
+            using var writer = FusionWriter.Create(prefix.GetSize().Value + sizeof(int) + buffer.Length + 2);
+
+            writer.Write(prefix);
+
+            var expandedBuffer = new byte[buffer.Length + 2];
+            expandedBuffer[0] = tagBytes[0];
+            expandedBuffer[1] = tagBytes[1];
+
+            for (var i = 0; i < buffer.Length; i++)
+            {
+                expandedBuffer[i + 2] = buffer[i];
+            }
+
+            writer.Write(expandedBuffer);
+
+            int size = writer.Length;
+            var message = Create(size);
+
+            for (var i = 0; i < size; i++)
+            {
+                message._buffer[i] = writer.Buffer[i];
             }
 
             return message;

@@ -141,11 +141,8 @@ public static class NetworkModRequester
         }
 
         // Send the request to the server
-        using var writer = FusionWriter.Create(ModInfoRequestData.Size);
-        var data = ModInfoRequestData.Create(PlayerIdManager.LocalSmallId, info.target, info.barcode, trackerId);
-        writer.Write(data);
+        var data = ModInfoRequestData.Create(info.barcode, trackerId);
 
-        using var request = FusionMessage.Create(NativeMessageTag.ModInfoRequest, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, request);
+        MessageRelay.RelayNative(data, NativeMessageTag.ModInfoRequest, NetworkChannel.Reliable, RelayType.ToTarget, info.target);
     }
 }

@@ -1,76 +1,79 @@
 ﻿using LabFusion.Data;
 using LabFusion.Patching;
 
-namespace LabFusion.Network
+namespace LabFusion.Network;
+
+public enum MagmaGateEventType
 {
-    public enum MagmaGateEventType
+    UNKNOWN = 0,
+    BUTTONS_SETUP = 1,
+    OBJECTIVE_COMPLETE_SETUP = 2,
+    LOSE_SEQUENCE = 3,
+    DOOR_DISSOLVE = 4,
+}
+
+public class MagmaGateEventData : IFusionSerializable
+{
+    public MagmaGateEventType type;
+
+    public void Serialize(FusionWriter writer)
     {
-        UNKNOWN = 0,
-        BUTTONS_SETUP = 1,
-        OBJECTIVE_COMPLETE_SETUP = 2,
-        LOSE_SEQUENCE = 3,
-        DOOR_DISSOLVE = 4,
+        writer.Write((byte)type);
     }
 
-    public class MagmaGateEventData : IFusionSerializable
+    public void Deserialize(FusionReader reader)
     {
-        public MagmaGateEventType type;
-
-        public void Serialize(FusionWriter writer)
-        {
-            writer.Write((byte)type);
-        }
-
-        public void Deserialize(FusionReader reader)
-        {
-            type = (MagmaGateEventType)reader.ReadByte();
-        }
-
-        public static MagmaGateEventData Create(MagmaGateEventType type)
-        {
-            return new MagmaGateEventData()
-            {
-                type = type,
-            };
-        }
+        type = (MagmaGateEventType)reader.ReadByte();
     }
 
-    [Net.DelayWhileTargetLoading]
-    public class MagmaGateEventMessage : NativeMessageHandler
+    public static MagmaGateEventData Create(MagmaGateEventType type)
     {
-        public override byte Tag => NativeMessageTag.MagmaGateEvent;
-
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        return new MagmaGateEventData()
         {
-            using FusionReader reader = FusionReader.Create(bytes);
-            var data = reader.ReadFusionSerializable<MagmaGateEventData>();
-            var controller = MagmaGateData.GameController;
-            MagmaGatePatches.IgnorePatches = true;
+            type = type,
+        };
+    }
+}
 
-            // We ONLY handle this for clients, this message should only ever be sent by the server!
-            if (!NetworkInfo.IsServer && controller)
-            {
-                switch (data.type)
-                {
-                    default:
-                    case MagmaGateEventType.UNKNOWN:
-                        break;
-                    case MagmaGateEventType.BUTTONS_SETUP:
-                        controller.LevelSetup();
-                        break;
-                    case MagmaGateEventType.OBJECTIVE_COMPLETE_SETUP:
-                        controller.ObjectiveComplete();
-                        break;
-                    case MagmaGateEventType.LOSE_SEQUENCE:
-                        controller.LoseSequence();
-                        break;
-                    case MagmaGateEventType.DOOR_DISSOLVE:
-                        controller.DoorDissolve();
-                        break;
-                }
-            }
+[Net.DelayWhileTargetLoading]
+public class MagmaGateEventMessage : NativeMessageHandler
+{
+    public override byte Tag => NativeMessageTag.MagmaGateEvent;
 
-            MagmaGatePatches.IgnorePatches = false;
+    public override ExpectedType ExpectedReceiver => ExpectedType.ClientsOnly;
+
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        var data = received.ReadData<MagmaGateEventData>();
+
+        var controller = MagmaGateData.GameController;
+
+        if (!controller)
+        {
+            return;
         }
+
+        MagmaGatePatches.IgnorePatches = true;
+
+        switch (data.type)
+        {
+            default:
+            case MagmaGateEventType.UNKNOWN:
+                break;
+            case MagmaGateEventType.BUTTONS_SETUP:
+                controller.LevelSetup();
+                break;
+            case MagmaGateEventType.OBJECTIVE_COMPLETE_SETUP:
+                controller.ObjectiveComplete();
+                break;
+            case MagmaGateEventType.LOSE_SEQUENCE:
+                controller.LoseSequence();
+                break;
+            case MagmaGateEventType.DOOR_DISSOLVE:
+                controller.DoorDissolve();
+                break;
+        }
+
+        MagmaGatePatches.IgnorePatches = false;
     }
 }

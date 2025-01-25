@@ -48,16 +48,12 @@ public class CrateSpawnerMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.CrateSpawner;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
-    {
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<CrateSpawnerData>();
+    public override ExpectedType ExpectedReceiver => ExpectedType.ClientsOnly;
 
-        // This should only be handled by clients
-        if (isServerHandled)
-        {
-            throw new ExpectedClientException();
-        }
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        using FusionReader reader = FusionReader.Create(received.Bytes);
+        var data = reader.ReadFusionSerializable<CrateSpawnerData>();
 
         if (data.placer != null)
         {

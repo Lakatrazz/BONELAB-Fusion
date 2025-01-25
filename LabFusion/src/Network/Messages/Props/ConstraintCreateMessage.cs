@@ -5,12 +5,12 @@ using LabFusion.Patching;
 using LabFusion.Extensions;
 using LabFusion.SDK.Achievements;
 using LabFusion.Entities;
+using LabFusion.Scene;
 
 using UnityEngine;
 
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow;
-using LabFusion.Scene;
 
 namespace LabFusion.Network;
 
@@ -115,16 +115,15 @@ public class ConstraintCreateMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.ConstraintCreate;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<ConstraintCreateData>();
+        var data = received.ReadData<ConstraintCreateData>();
 
         var constrainerEntity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.constrainerId);
         bool hasConstrainer = constrainerEntity != null;
 
         // Send message to other clients if server
-        if (isServerHandled)
+        if (received.IsServerHandled)
         {
             // Make sure we have a constrainer server side (and it's being held)
             if (hasConstrainer)
@@ -144,7 +143,9 @@ public class ConstraintCreateMessage : NativeMessageHandler
         }
 
         if (!data.tracker1.gameObject || !data.tracker2.gameObject)
+        {
             return;
+        }
 
         // Check if player constraining is disabled and if this is attempting to constrain a player
         if (!ConstrainerUtilities.PlayerConstraintsEnabled)

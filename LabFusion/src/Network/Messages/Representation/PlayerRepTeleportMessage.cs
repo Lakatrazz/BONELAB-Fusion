@@ -1,5 +1,4 @@
 ﻿using LabFusion.Data;
-using LabFusion.Exceptions;
 using LabFusion.Extensions;
 using LabFusion.Player;
 using LabFusion.Scene;
@@ -43,16 +42,11 @@ public class PlayerRepTeleportMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerRepTeleport;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
-    {
-        // Don't teleport if we're the server
-        if (isServerHandled)
-        {
-            throw new ExpectedClientException();
-        }
+    public override ExpectedType ExpectedReceiver => ExpectedType.ClientsOnly;
 
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<PlayerRepTeleportData>();
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        var data = received.ReadData<PlayerRepTeleportData>();
 
         // Make sure this is us
         if (data.teleportedUser != PlayerIdManager.LocalSmallId)

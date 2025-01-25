@@ -36,16 +36,11 @@ public class ServerSettingsMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.ServerSettings;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
-    {
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<ServerSettingsData>();
+    public override ExpectedType ExpectedReceiver => ExpectedType.ClientsOnly;
 
-        // ONLY clients should receive this!
-        if (NetworkInfo.IsServer)
-        {
-            throw new ExpectedClientException();
-        }
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        var data = received.ReadData<ServerSettingsData>();
 
         LobbyInfoManager.LobbyInfo = data.lobbyInfo;
 

@@ -4,7 +4,6 @@ using Il2CppSLZ.Marrow.Audio;
 using Il2CppSLZ.Marrow;
 
 using LabFusion.Data;
-using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Representation;
@@ -91,6 +90,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private PDController _feetPDController = null;
 
     // Voice chat integration
+    private float _minMicrophoneDistance = 1f;
     private float _maxMicrophoneDistance = 30f;
 
     private IVoiceSpeaker _speaker = null;
@@ -434,9 +434,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         else
         {
             _voiceSource.spatialBlend = 0f;
-            _voiceSource.minDistance = 0f;
-            _voiceSource.maxDistance = 30f;
-            _voiceSource.reverbZoneMix = 0f;
             _voiceSource.dopplerLevel = 0.5f;
 
             _spatialized = false;
@@ -461,16 +458,17 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             return;
 
         var rm = RigRefs.RigManager;
+
         if (HasRig && rm._avatar)
         {
             float heightMult = rm._avatar.height / 1.76f;
 
             _voiceSource.spatialBlend = 1f;
-            _voiceSource.reverbZoneMix = 0.1f;
 
+            _minMicrophoneDistance = 1f * heightMult;
             _maxMicrophoneDistance = 30f * heightMult;
 
-            _voiceSource.SetRealisticRolloff(0.5f, _maxMicrophoneDistance);
+            _voiceSource.minDistance = _minMicrophoneDistance;
 
             // Set the mixer
             if (_voiceSource.outputAudioMixerGroup == null)
@@ -728,12 +726,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     {
         RigPose.ReadSkeleton(RigSkeleton);
 
-        using var writer = FusionWriter.Create(PlayerPoseUpdateData.Size);
         var data = PlayerPoseUpdateData.Create(PlayerId, RigPose);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.PlayerPoseUpdate, writer);
-        MessageSender.SendToServer(NetworkChannel.Unreliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerPoseUpdate, NetworkChannel.Unreliable, RelayType.ToOtherClients);
     }
 
     private void OnApplyBodyForces(float deltaTime)

@@ -9,16 +9,12 @@ public class ModInfoResponseData : IFusionSerializable
 {
     public const int Size = sizeof(byte) * 2 + sizeof(uint);
 
-    public byte target;
-
     public SerializedModIOFile modFile;
 
     public uint trackerId;
 
     public void Serialize(FusionWriter writer)
     {
-        writer.Write(target);
-
         writer.Write(modFile);
 
         writer.Write(trackerId);
@@ -26,18 +22,15 @@ public class ModInfoResponseData : IFusionSerializable
 
     public void Deserialize(FusionReader reader)
     {
-        target = reader.ReadByte();
-
         modFile = reader.ReadFusionSerializable<SerializedModIOFile>();
 
         trackerId = reader.ReadUInt32();
     }
 
-    public static ModInfoResponseData Create(byte target, SerializedModIOFile modFile, uint trackerId)
+    public static ModInfoResponseData Create(SerializedModIOFile modFile, uint trackerId)
     {
         return new ModInfoResponseData()
         {
-            target = target,
             modFile = modFile,
             trackerId = trackerId,
         };
@@ -48,24 +41,15 @@ public class ModInfoResponseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.ModInfoResponse;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
         // Read request
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<ModInfoResponseData>();
-
-        // If we're the server, send to the desired recipient
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.SendFromServer(data.target, NetworkChannel.Reliable, message);
-            return;
-        }
+        var data = received.ReadData<ModInfoResponseData>();
 
         // Make sure we're the target
-        if (data.target != PlayerIdManager.LocalSmallId)
+        if (received.Target != PlayerIdManager.LocalSmallId)
         {
-            throw new Exception($"Received a ModInfoResponse, but we were not the desired target of {data.target}!");
+            throw new Exception($"Received a ModInfoResponse, but we were not the desired target of {received.Target.Value}!");
         }
 
         // Run the callback

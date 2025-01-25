@@ -4,7 +4,7 @@ using LabFusion.Voice;
 
 namespace LabFusion.Network;
 
-public class PlayerVoiceChatData : IFusionSerializable, IDisposable
+public class PlayerVoiceChatData : IFusionSerializable
 {
     public const int Size = sizeof(byte);
 
@@ -23,11 +23,6 @@ public class PlayerVoiceChatData : IFusionSerializable, IDisposable
         bytes = reader.ReadBytes();
     }
 
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-    }
-
     public static PlayerVoiceChatData Create(byte smallId, byte[] voiceData)
     {
         return new PlayerVoiceChatData()
@@ -42,17 +37,9 @@ public class PlayerVoiceChatMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerVoiceChat;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using var reader = FusionReader.Create(bytes);
-        using var data = reader.ReadFusionSerializable<PlayerVoiceChatData>();
-
-        // Bounce the message back
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Unreliable, message);
-        }
+        var data = received.ReadData<PlayerVoiceChatData>();
 
         // Check if voice chat is active
         if (VoiceInfo.IsDeafened)

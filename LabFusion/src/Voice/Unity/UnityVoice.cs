@@ -4,7 +4,7 @@ namespace LabFusion.Voice.Unity;
 
 public static class UnityVoice
 {
-    public const int SampleRate = 16000;
+    public static int SampleRate => AudioSettings.outputSampleRate;
 
     public const int ClipLength = 1;
 

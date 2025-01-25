@@ -11,30 +11,26 @@ public class FlashlightToggleData : IFusionSerializable
 {
     public const int Size = sizeof(byte) * 2 + sizeof(ushort);
 
-    public byte smallId;
-    public ushort syncId;
+    public ushort entityId;
     public bool isEnabled;
 
     public void Serialize(FusionWriter writer)
     {
-        writer.Write(smallId);
-        writer.Write(syncId);
+        writer.Write(entityId);
         writer.Write(isEnabled);
     }
 
     public void Deserialize(FusionReader reader)
     {
-        smallId = reader.ReadByte();
-        syncId = reader.ReadUInt16();
+        entityId = reader.ReadUInt16();
         isEnabled = reader.ReadBoolean();
     }
 
-    public static FlashlightToggleData Create(byte smallId, ushort syncId, bool isEnabled)
+    public static FlashlightToggleData Create(ushort syncId, bool isEnabled)
     {
         return new FlashlightToggleData()
         {
-            smallId = smallId,
-            syncId = syncId,
+            entityId = syncId,
             isEnabled = isEnabled,
         };
     }
@@ -43,21 +39,12 @@ public class FlashlightToggleData : IFusionSerializable
 [Net.DelayWhileTargetLoading]
 public class FlashlightToggleMessage : ModuleMessageHandler
 {
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(bytes);
+        using FusionReader reader = FusionReader.Create(received.Bytes);
         var data = reader.ReadFusionSerializable<FlashlightToggleData>();
 
-        // Send message to other clients if server
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.ModuleCreate<FlashlightToggleMessage>(bytes);
-            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-
-            return;
-        }
-
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.syncId);
+        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.entityId);
 
         if (entity == null)
         {
@@ -75,7 +62,9 @@ public class FlashlightToggleMessage : ModuleMessageHandler
         flashlight.lightOn = !data.isEnabled;
 
         PropFlashlightPatches.IgnorePatches = true;
+
         flashlight.SwitchLight();
+
         PropFlashlightPatches.IgnorePatches = false;
     }
 }

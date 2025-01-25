@@ -33,22 +33,14 @@ public class BodyLogEffectMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.BodyLogEffect;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<BodyLogEffectData>();
+        var data = received.ReadData<BodyLogEffectData>();
 
         // Play the effect
         if (NetworkPlayerManager.TryGetPlayer(data.smallId, out var player) && !player.NetworkEntity.IsOwner)
         {
             player.PlayPullCordEffects();
-        }
-
-        // Bounce the message back
-        if (NetworkInfo.IsServer)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Unreliable, message);
         }
     }
 }

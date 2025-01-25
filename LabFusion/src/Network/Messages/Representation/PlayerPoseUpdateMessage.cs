@@ -55,18 +55,9 @@ public class PlayerPoseUpdateMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerPoseUpdate;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<PlayerPoseUpdateData>();
-
-        // Send message to other clients if server
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessageExcept(data.playerId, NetworkChannel.Unreliable, message, false);
-            return;
-        }
+        var data = received.ReadData<PlayerPoseUpdateData>();
 
         // Make sure this isn't us
         if (data.playerId == PlayerIdManager.LocalSmallId)

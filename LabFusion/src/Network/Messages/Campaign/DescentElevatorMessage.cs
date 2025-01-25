@@ -47,15 +47,14 @@ public class DescentElevatorMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.DescentElevator;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<DescentElevatorData>();
+        var data = received.ReadData<DescentElevatorData>();
 
         // Send message to other clients if server
-        if (isServerHandled)
+        if (received.IsServerHandled)
         {
-            using var message = FusionMessage.Create(Tag, bytes);
+            using var message = FusionMessage.Create(Tag, received.Bytes);
             MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
             return;
         }

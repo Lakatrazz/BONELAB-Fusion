@@ -47,15 +47,12 @@ public class PlayerMetadataResponseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerMetadataResponse;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
-    {
-        if (isServerHandled)
-        {
-            throw new ExpectedClientException();
-        }
+    public override ExpectedType ExpectedReceiver => ExpectedType.ClientsOnly;
 
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<PlayerMetadataResponseData>();
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        var data = received.ReadData<PlayerMetadataResponseData>();
+
         var playerId = PlayerIdManager.GetPlayerId(data.smallId);
 
         if (playerId != null)

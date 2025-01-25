@@ -45,19 +45,10 @@ public class ButtonChargeData : IFusionSerializable
 [Net.DelayWhileTargetLoading]
 public class ButtonChargeMessage : ModuleMessageHandler
 {
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(bytes);
+        using FusionReader reader = FusionReader.Create(received.Bytes);
         var data = reader.ReadFusionSerializable<ButtonChargeData>();
-
-        // Send message to other clients if server
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.ModuleCreate<ButtonChargeMessage>(bytes);
-            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-
-            return;
-        }
 
         var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.entityId);
 

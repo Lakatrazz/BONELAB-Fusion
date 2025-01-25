@@ -8,19 +8,9 @@ public class PuppetMasterKillMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PuppetMasterKill;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<PropReferenceData>();
-
-        // Send message to other clients if server
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-
-            return;
-        }
+        var data = received.ReadData<PropReferenceData>();
 
         var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.syncId);
 
@@ -41,7 +31,9 @@ public class PuppetMasterKillMessage : NativeMessageHandler
 
         // Kill the puppet
         PuppetMasterPatches.IgnorePatches = true;
+
         extender.Component.Kill();
+
         PuppetMasterPatches.IgnorePatches = false;
     }
 }

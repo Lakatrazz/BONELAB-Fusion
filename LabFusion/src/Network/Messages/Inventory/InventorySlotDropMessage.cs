@@ -50,18 +50,9 @@ public class InventorySlotDropMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.InventorySlotDrop;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<InventorySlotDropData>();
-
-        // Send message to other clients if server
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessageExcept(data.grabber, NetworkChannel.Reliable, message, false);
-            return;
-        }
+        var data = received.ReadData<InventorySlotDropData>();
 
         var slotEntity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.slotEntityId);
 
@@ -88,7 +79,9 @@ public class InventorySlotDropMessage : NativeMessageHandler
         }
 
         InventorySlotReceiverPatches.IgnorePatches = true;
+
         slotReceiver.DropWeapon();
+
         InventorySlotReceiverPatches.IgnorePatches = false;
 
         if (data.handedness == Handedness.UNDEFINED)
@@ -105,6 +98,7 @@ public class InventorySlotDropMessage : NativeMessageHandler
             }
 
             var hand = grabber.RigRefs.GetHand(data.handedness);
+
             if (hand)
             {
                 hand.gameObject.GetComponent<HandSFX>().BodySlot();

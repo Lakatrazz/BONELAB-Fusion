@@ -45,25 +45,11 @@ public class NetworkPropCreateMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.NetworkPropCreate;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<NetworkPropCreateData>();
+        var data = received.ReadData<NetworkPropCreateData>();
 
         var marrowEntity = MarrowEntityHelper.GetEntityFromData(data.hashData);
-
-        // If this is handled by the server, broadcast the prop creation
-        if (isServerHandled)
-        {
-            if (marrowEntity != null && !marrowEntity.gameObject.IsSyncWhitelisted())
-            {
-                return;
-            }
-
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessageExcept(data.ownerId, NetworkChannel.Reliable, message, false);
-            return;
-        }
 
         // Make sure the marrow entity exists
         if (marrowEntity == null)

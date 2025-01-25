@@ -55,14 +55,9 @@ public static class SpawnSender
 
     private static void Internal_OnSendCratePlacer(CrateSpawner placer, ushort spawnedId)
     {
-        using (var writer = FusionWriter.Create(CrateSpawnerData.Size))
-        {
-            var data = CrateSpawnerData.Create(spawnedId, placer.gameObject);
-            writer.Write(data);
+        var data = CrateSpawnerData.Create(spawnedId, placer.gameObject);
 
-            using var message = FusionMessage.Create(NativeMessageTag.CrateSpawner, writer);
-            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
-        }
+        MessageRelay.RelayNative(data, NativeMessageTag.CrateSpawner, NetworkChannel.Reliable, RelayType.ToOtherClients);
 
         // Insert the catchup hook for future users
         var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(spawnedId);

@@ -1,5 +1,4 @@
 ﻿using LabFusion.Data;
-using LabFusion.Exceptions;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Utilities;
 
@@ -40,15 +39,11 @@ public class GamemodeMetadataSetMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.GamemodeMetadataSet;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
-    {
-        if (isServerHandled)
-        {
-            throw new ExpectedClientException();
-        }
+    public override ExpectedType ExpectedReceiver => ExpectedType.ClientsOnly;
 
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<GamemodeMetadataSetData>();
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        var data = received.ReadData<GamemodeMetadataSetData>();
 
         if (GamemodeManager.TryGetGamemode(data.gamemodeBarcode, out var gamemode))
         {

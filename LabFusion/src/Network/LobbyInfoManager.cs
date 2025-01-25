@@ -80,12 +80,9 @@ public static class LobbyInfoManager
             return;
         }
 
-        using var writer = FusionWriter.Create();
         var data = ServerSettingsData.Create();
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.ServerSettings, writer);
-        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.ServerSettings, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 
     internal static void SendLobbyInfo(ulong longId)

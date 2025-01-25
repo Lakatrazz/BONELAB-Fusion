@@ -54,19 +54,10 @@ public class SimpleGripEventData : IFusionSerializable
 [Net.DelayWhileTargetLoading]
 public class SimpleGripEventMessage : ModuleMessageHandler
 {
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(bytes);
+        using FusionReader reader = FusionReader.Create(received.Bytes);
         var data = reader.ReadFusionSerializable<SimpleGripEventData>();
-
-        // Send message to other clients if server
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.ModuleCreate<SimpleGripEventMessage>(bytes);
-            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-
-            return;
-        }
 
         var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.syncId);
 

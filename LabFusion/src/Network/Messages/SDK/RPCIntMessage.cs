@@ -41,14 +41,10 @@ public static class RPCIntSender
         }
 
         // Send the message
-        using var writer = FusionWriter.Create();
         var pathData = ComponentPathData.Create(hasNetworkEntity, entityId, componentIndex, hashData);
         var intData = RPCIntData.Create(pathData, value);
 
-        writer.Write(intData);
-
-        using var message = FusionMessage.Create(NativeMessageTag.RPCInt, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(intData, NativeMessageTag.RPCInt, NetworkChannel.Reliable, RelayType.ToClients);
 
         return true;
     }
@@ -88,18 +84,9 @@ public class RPCIntMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.RPCInt;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        // If we are the server, broadcast the message to all clients
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.Create(NativeMessageTag.RPCInt, bytes);
-            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-            return;
-        }
-
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<RPCIntData>();
+        var data = received.ReadData<RPCIntData>();
 
         // Entity object
         if (data.pathData.hasNetworkEntity)

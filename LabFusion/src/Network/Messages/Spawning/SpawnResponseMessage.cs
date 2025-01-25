@@ -83,14 +83,11 @@ public class SpawnResponseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.SpawnResponse;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
-    {
-        if (isServerHandled)
-        {
-            throw new ExpectedClientException();
-        }
+    public override ExpectedType ExpectedReceiver => ExpectedType.ClientsOnly;
 
-        using var reader = FusionReader.Create(bytes);
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        using var reader = FusionReader.Create(received.Bytes);
         var data = reader.ReadFusionSerializable<SpawnResponseData>();
 
         byte owner = data.owner;

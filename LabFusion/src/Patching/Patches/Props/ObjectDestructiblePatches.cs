@@ -79,12 +79,9 @@ namespace LabFusion.Patching
             // Send object destroy
             if (entity.IsOwner)
             {
-                using var writer = FusionWriter.Create(ComponentIndexData.Size);
                 var data = ComponentIndexData.Create(PlayerIdManager.LocalSmallId, entity.Id, (byte)extender.GetIndex(destructible).Value);
-                writer.Write(data);
 
-                using var message = FusionMessage.Create(NativeMessageTag.ObjectDestructibleDestroy, writer);
-                MessageSender.SendToServer(NetworkChannel.Reliable, message);
+                MessageRelay.RelayNative(data, NativeMessageTag.ObjectDestructibleDestroy, NetworkChannel.Reliable, RelayType.ToOtherClients);
             }
         }
 

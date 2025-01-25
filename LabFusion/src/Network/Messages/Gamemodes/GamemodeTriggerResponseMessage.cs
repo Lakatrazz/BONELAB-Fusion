@@ -55,17 +55,9 @@ public class GamemodeTriggerResponseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.GamemodeTriggerResponse;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-            return;
-        }
-
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<GamemodeTriggerResponseData>();
+        var data = received.ReadData<GamemodeTriggerResponseData>();
 
         if (!GamemodeManager.TryGetGamemode(data.gamemodeBarcode, out var gamemode))
         {

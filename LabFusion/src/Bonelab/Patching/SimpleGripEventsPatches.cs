@@ -153,11 +153,8 @@ public static class SimpleGripEventsPatches
 
     private static void SendGripEvent(ushort entityId, byte gripEventIndex, SimpleGripEventType type)
     {
-        using var writer = FusionWriter.Create(SimpleGripEventData.Size);
         var data = SimpleGripEventData.Create(PlayerIdManager.LocalSmallId, entityId, gripEventIndex, type);
-        writer.Write(data);
 
-        using var message = FusionMessage.ModuleCreate<SimpleGripEventMessage>(writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayModule<SimpleGripEventMessage, SimpleGripEventData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 }

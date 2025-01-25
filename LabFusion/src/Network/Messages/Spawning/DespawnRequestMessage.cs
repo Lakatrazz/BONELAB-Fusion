@@ -45,22 +45,13 @@ public class DespawnRequestMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.DespawnRequest;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        // If we aren't the server, throw an error
-        if (!isServerHandled)
-        {
-            throw new ExpectedServerException();
-        }
-
-        using var reader = FusionReader.Create(bytes);
+        using var reader = FusionReader.Create(received.Bytes);
         var readData = reader.ReadFusionSerializable<DespawnRequestData>();
 
-        using var writer = FusionWriter.Create(DespawnResponseData.Size);
-        var data = DespawnResponseData.Create(readData.despawnerId, readData.entityId, readData.despawnEffect);
-        writer.Write(data);
+        var writtenData = DespawnResponseData.Create(readData.despawnerId, readData.entityId, readData.despawnEffect);
 
-        using var message = FusionMessage.Create(NativeMessageTag.DespawnResponse, writer);
-        MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(writtenData, NativeMessageTag.DespawnResponse, NetworkChannel.Reliable, RelayType.ToClients);
     }
 }

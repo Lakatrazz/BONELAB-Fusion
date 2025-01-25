@@ -11,7 +11,7 @@ namespace LabFusion.Patching;
 [HarmonyPatch(typeof(ConstraintTracker))]
 public static class ConstraintTrackerPatches
 {
-    public static bool IgnorePatches = false;
+    public static bool IgnorePatches { get; set; } = false;
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(ConstraintTracker.DeleteConstraint))]
@@ -34,12 +34,9 @@ public static class ConstraintTrackerPatches
             return true;
         }
 
-        using var writer = FusionWriter.Create(ConstraintDeleteData.Size);
         var data = ConstraintDeleteData.Create(PlayerIdManager.LocalSmallId, constraintEntity.Id);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.ConstraintDelete, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.ConstraintDelete, NetworkChannel.Reliable, RelayType.ToClients);
 
         // Return false, because constraints are deleted server side
         return false;

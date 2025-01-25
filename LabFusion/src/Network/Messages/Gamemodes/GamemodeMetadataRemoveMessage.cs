@@ -36,15 +36,11 @@ public class GamemodeMetadataRemoveMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.GamemodeMetadataRemove;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
-    {
-        if (isServerHandled)
-        {
-            throw new ExpectedClientException();
-        }
+    public override ExpectedType ExpectedReceiver => ExpectedType.ClientsOnly;
 
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<GamemodeMetadataRemoveData>();
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        var data = received.ReadData<GamemodeMetadataRemoveData>();
 
         if (GamemodeManager.TryGetGamemode(data.gamemodeBarcode, out var gamemode))
         {

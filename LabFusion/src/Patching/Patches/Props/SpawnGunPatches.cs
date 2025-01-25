@@ -95,12 +95,9 @@ public static class SpawnGunPatches
             barcode = crate.Barcode.ID;
         }
 
-        using var writer = FusionWriter.Create(SpawnGunSelectData.GetSize(barcode));
         var data = SpawnGunSelectData.Create(PlayerIdManager.LocalSmallId, entity.Id, barcode);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.SpawnGunSelect, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.SpawnGunSelect, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 
     [HarmonyPrefix]

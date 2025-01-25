@@ -3,28 +3,21 @@ using LabFusion.Player;
 
 using UnityEngine;
 
-namespace LabFusion.Senders
+namespace LabFusion.Senders;
+
+public static class KeySender
 {
-    public static class KeySender
+    public static void SendStaticKeySlot(ushort keyId, GameObject receiver)
     {
-        public static void SendStaticKeySlot(ushort keyId, GameObject receiver)
-        {
-            using var writer = FusionWriter.Create(KeySlotData.Size);
-            var data = KeySlotData.Create(PlayerIdManager.LocalSmallId, KeySlotType.INSERT_STATIC, keyId, receiver);
-            writer.Write(data);
+        var data = KeySlotData.Create(PlayerIdManager.LocalSmallId, KeySlotType.INSERT_STATIC, keyId, receiver);
 
-            using var message = FusionMessage.Create(NativeMessageTag.KeySlot, writer);
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
-        }
+        MessageRelay.RelayNative(data, NativeMessageTag.KeySlot, NetworkChannel.Reliable, RelayType.ToOtherClients);
+    }
 
-        public static void SendPropKeySlot(ushort keyId, ushort receiverId, byte receiverIndex)
-        {
-            using var writer = FusionWriter.Create(KeySlotData.Size);
-            var data = KeySlotData.Create(PlayerIdManager.LocalSmallId, KeySlotType.INSERT_PROP, keyId, null, receiverId, receiverIndex);
-            writer.Write(data);
+    public static void SendPropKeySlot(ushort keyId, ushort receiverId, byte receiverIndex)
+    {
+        var data = KeySlotData.Create(PlayerIdManager.LocalSmallId, KeySlotType.INSERT_PROP, keyId, null, receiverId, receiverIndex);
 
-            using var message = FusionMessage.Create(NativeMessageTag.KeySlot, writer);
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
-        }
+        MessageRelay.RelayNative(data, NativeMessageTag.KeySlot, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 }

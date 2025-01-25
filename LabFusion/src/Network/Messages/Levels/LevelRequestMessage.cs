@@ -48,14 +48,10 @@ public class LevelRequestMessage : NativeMessageHandler
 
     public override byte Tag => NativeMessageTag.LevelRequest;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
-    {
-        // Make sure this is the server
-        if (!isServerHandled)
-        {
-            throw new ExpectedServerException();
-        }
+    public override ExpectedType ExpectedReceiver => ExpectedType.ServerOnly;
 
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
         // Prevent request spamming
         if (TimeUtilities.TimeSinceStartup - _timeOfRequest <= _requestCooldown)
         {
@@ -64,8 +60,7 @@ public class LevelRequestMessage : NativeMessageHandler
 
         _timeOfRequest = TimeUtilities.TimeSinceStartup;
 
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<LevelRequestData>();
+        var data = received.ReadData<LevelRequestData>();
 
         // Get player and their username
         var id = PlayerIdManager.GetPlayerId(data.smallId);

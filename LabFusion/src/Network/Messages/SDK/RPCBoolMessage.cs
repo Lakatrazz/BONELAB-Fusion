@@ -41,14 +41,10 @@ public static class RPCBoolSender
         }
 
         // Send the message
-        using var writer = FusionWriter.Create();
         var pathData = ComponentPathData.Create(hasNetworkEntity, entityId, componentIndex, hashData);
-        var intData = RPCBoolData.Create(pathData, value);
+        var boolData = RPCBoolData.Create(pathData, value);
 
-        writer.Write(intData);
-
-        using var message = FusionMessage.Create(NativeMessageTag.RPCBool, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(boolData, NativeMessageTag.RPCBool, NetworkChannel.Reliable, RelayType.ToClients);
 
         return true;
     }
@@ -88,18 +84,9 @@ public class RPCBoolMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.RPCBool;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        // If we are the server, broadcast the message to all clients
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.Create(NativeMessageTag.RPCBool, bytes);
-            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-            return;
-        }
-
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<RPCBoolData>();
+        var data = received.ReadData<RPCBoolData>();
 
         // Entity object
         if (data.pathData.hasNetworkEntity)

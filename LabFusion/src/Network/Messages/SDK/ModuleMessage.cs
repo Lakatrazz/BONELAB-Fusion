@@ -6,8 +6,8 @@ public class ModuleMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.Module;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        ModuleMessageHandler.ReadMessage(bytes, isServerHandled);
+        ModuleMessageHandler.ReadMessage(received);
     }
 }

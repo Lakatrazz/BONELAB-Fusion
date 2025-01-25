@@ -42,10 +42,9 @@ public class PlayerRepAvatarMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerRepAvatar;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<PlayerRepAvatarData>();
+        var data = received.ReadData<PlayerRepAvatarData>();
 
         string barcode = data.barcode;
 
@@ -63,13 +62,6 @@ public class PlayerRepAvatarMessage : NativeMessageHandler
         if (NetworkPlayerManager.TryGetPlayer(data.smallId, out var player))
         {
             player.AvatarSetter.SwapAvatar(data.stats, barcode);
-        }
-
-        // Bounce the message back
-        if (NetworkInfo.IsServer)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message);
         }
     }
 }

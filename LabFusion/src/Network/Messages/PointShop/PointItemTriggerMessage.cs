@@ -2,54 +2,44 @@
 using LabFusion.SDK.Points;
 using LabFusion.Player;
 
-namespace LabFusion.Network
+namespace LabFusion.Network;
+
+public class PointItemTriggerData : IFusionSerializable
 {
-    public class PointItemTriggerData : IFusionSerializable
+    public byte smallId;
+    public string barcode;
+
+    public void Serialize(FusionWriter writer)
     {
-        public byte smallId;
-        public string barcode;
-
-        public void Serialize(FusionWriter writer)
-        {
-            writer.Write(smallId);
-            writer.Write(barcode);
-        }
-
-        public void Deserialize(FusionReader reader)
-        {
-            smallId = reader.ReadByte();
-            barcode = reader.ReadString();
-        }
-
-        public static PointItemTriggerData Create(byte smallId, string barcode)
-        {
-            return new PointItemTriggerData()
-            {
-                smallId = smallId,
-                barcode = barcode,
-            };
-        }
+        writer.Write(smallId);
+        writer.Write(barcode);
     }
 
-    public class PointItemTriggerMessage : NativeMessageHandler
+    public void Deserialize(FusionReader reader)
     {
-        public override byte Tag => NativeMessageTag.PointItemTrigger;
+        smallId = reader.ReadByte();
+        barcode = reader.ReadString();
+    }
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    public static PointItemTriggerData Create(byte smallId, string barcode)
+    {
+        return new PointItemTriggerData()
         {
-            using var reader = FusionReader.Create(bytes);
-            var data = reader.ReadFusionSerializable<PointItemTriggerData>();
-            // Send message to other clients if server
-            if (isServerHandled)
-            {
-                using var message = FusionMessage.Create(Tag, bytes);
-                MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-            }
-            else
-            {
-                var id = PlayerIdManager.GetPlayerId(data.smallId);
-                PointItemManager.Internal_OnTriggerItem(id, data.barcode);
-            }
-        }
+            smallId = smallId,
+            barcode = barcode,
+        };
+    }
+}
+
+public class PointItemTriggerMessage : NativeMessageHandler
+{
+    public override byte Tag => NativeMessageTag.PointItemTrigger;
+
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        var data = received.ReadData<PointItemTriggerData>();
+
+        var id = PlayerIdManager.GetPlayerId(data.smallId);
+        PointItemManager.Internal_OnTriggerItem(id, data.barcode);
     }
 }

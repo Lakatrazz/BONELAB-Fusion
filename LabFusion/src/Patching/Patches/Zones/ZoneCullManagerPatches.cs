@@ -34,11 +34,8 @@ public static class ZoneCullManagerPatches
         }
         
         // Send message to move entity's active culler
-        using var writer = FusionWriter.Create(EntityZoneRegisterData.Size);
         var data = EntityZoneRegisterData.Create(networkEntity.OwnerId, networkEntity.Id);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.EntityZoneRegister, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.EntityZoneRegister, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 }

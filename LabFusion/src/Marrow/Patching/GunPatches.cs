@@ -112,10 +112,8 @@ public static class GunPatches
                 var ammoCount = __instance._magState != null ? (byte)__instance._magState.AmmoCount : (byte)0;
 
                 var data = GunShotData.Create(PlayerIdManager.LocalSmallId, ammoCount, gunEntity.Id, (byte)gunExtender.GetIndex(__instance).Value);
-                writer.Write(data);
 
-                using var message = FusionMessage.Create(NativeMessageTag.GunShot, writer);
-                MessageSender.SendToServer(NetworkChannel.Reliable, message);
+                MessageRelay.RelayNative(data, NativeMessageTag.GunShot, NetworkChannel.Reliable, RelayType.ToOtherClients);
             }
         }
         catch (Exception e)

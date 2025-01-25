@@ -43,18 +43,9 @@ public class PlayerRepActionMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerRepAction;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using var reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<PlayerRepActionData>();
-
-        // Send message to other clients if server
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-            return;
-        }
+        var data = received.ReadData<PlayerRepActionData>();
 
         if (!NetworkPlayerManager.TryGetPlayer(data.smallId, out var player))
         {

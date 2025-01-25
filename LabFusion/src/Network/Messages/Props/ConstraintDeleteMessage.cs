@@ -42,18 +42,9 @@ public class ConstraintDeleteMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.ConstraintDelete;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<ConstraintDeleteData>();
-
-        // Send message to all clients if server
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-            return;
-        }
+        var data = received.ReadData<ConstraintDeleteData>();
 
         var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.constraintId);
 

@@ -49,18 +49,9 @@ public class MagazineEjectMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.MagazineEject;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<MagazineEjectData>();
-
-        // Send message to other clients if server
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-            return;
-        }
+        var data = received.ReadData<MagazineEjectData>();
 
         var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.gunId);
 

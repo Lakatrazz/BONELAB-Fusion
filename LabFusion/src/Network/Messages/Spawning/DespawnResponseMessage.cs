@@ -5,6 +5,7 @@ using LabFusion.Entities;
 using MelonLoader;
 
 using System.Collections;
+
 using Il2CppSLZ.Marrow.VFX;
 
 namespace LabFusion.Network;
@@ -51,10 +52,10 @@ public class DespawnResponseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.DespawnResponse;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
         // Despawn the poolee if it exists
-        using var reader = FusionReader.Create(bytes);
+        using var reader = FusionReader.Create(received.Bytes);
         var data = reader.ReadFusionSerializable<DespawnResponseData>();
 
         MelonCoroutines.Start(Internal_WaitForValidDespawn(data.despawnerId, data.entityId, data.despawnEffect));

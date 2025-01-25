@@ -119,18 +119,9 @@ public class BoardGeneratorMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.BoardGenerator;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        // Send message to all clients if server
-        if (isServerHandled)
-        {
-            using var message = FusionMessage.Create(Tag, bytes);
-            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
-            return;
-        }
-
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<BoardGeneratorData>();
+        var data = received.ReadData<BoardGeneratorData>();
 
         var board = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.boardId);
 
