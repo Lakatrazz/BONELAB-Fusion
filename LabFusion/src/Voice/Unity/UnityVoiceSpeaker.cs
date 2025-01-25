@@ -2,6 +2,7 @@
 
 using LabFusion.Data;
 using LabFusion.Player;
+using LabFusion.Utilities;
 
 using UnityEngine;
 
@@ -15,7 +16,41 @@ public class UnityVoiceSpeaker : VoiceSpeaker
 {
     public UnityVoiceFilter VoiceFilter { get; set; } = null;
 
+    private bool _playing = false;
+    public bool Playing
+    {
+        get
+        {
+            return _playing;
+        }
+        set
+        {
+            if (_playing == value)
+            {
+                return;
+            }
+
+            _playing = value;
+
+            if (value)
+            {
+                VoiceFilter.enabled = true;
+                Source.Play();
+            }
+            else
+            {
+                Source.Stop();
+                VoiceFilter.enabled = false;
+
+                VoiceFilter.ReadingQueue.Clear();
+                _amplitude = 0f;
+            }
+        }
+    }
+
     private float _amplitude = 0f;
+
+    private float _silentTimer = 0f;
 
     public UnityVoiceSpeaker(PlayerId id)
     {
@@ -46,6 +81,24 @@ public class UnityVoiceSpeaker : VoiceSpeaker
         return _amplitude;
     }
 
+    public override void Update()
+    {
+        if (!Playing)
+        {
+            return;
+        }
+
+        if (VoiceFilter.ReadingQueue.Count <= 0 || _amplitude < VoiceVolume.MinimumVoiceVolume)
+        {
+            _silentTimer += TimeUtilities.DeltaTime;
+        }
+
+        if (_silentTimer > 1f)
+        {
+            Playing = false;
+        } 
+    }
+
     public override void Cleanup()
     {
         // Unhook contact updating
@@ -68,6 +121,7 @@ public class UnityVoiceSpeaker : VoiceSpeaker
     {
         if (MicrophoneDisabled)
         {
+            Playing = false;
             return;
         }
 
@@ -97,6 +151,10 @@ public class UnityVoiceSpeaker : VoiceSpeaker
         }
 
         _amplitude = amplitude;
+
+        Playing = true;
+
+        _silentTimer = 0f;
     }
 
     private float GetVoiceMultiplier()
