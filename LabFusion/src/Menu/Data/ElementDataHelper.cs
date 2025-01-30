@@ -13,7 +13,7 @@ public static class ElementDataHelper
         element.MaxValue = data.MaxValue;
         element.Value = data.Value;
 
-        element.OnValueChanged = (v) => { data.Value = v; };
+        element.OnValueChanged = (v) => data.Value = v;
     }
 
     public static void ApplyFloatData(FloatElement element, FloatElementData data)
@@ -24,7 +24,7 @@ public static class ElementDataHelper
         element.MaxValue = data.MaxValue;
         element.Value = data.Value;
 
-        element.OnValueChanged = (v) => { data.Value = v; };
+        element.OnValueChanged = (v) => data.Value = v;
     }
 
     public static void ApplyBoolData(BoolElement element, BoolElementData data)
@@ -32,7 +32,7 @@ public static class ElementDataHelper
         element.Title = data.Title;
         element.Value = data.Value;
 
-        element.OnValueChanged = (v) => { data.Value = v; };
+        element.OnValueChanged = (v) => data.Value = v;
     }
 
     public static void ApplyStringData(StringElement element, StringElementData data)
@@ -40,13 +40,36 @@ public static class ElementDataHelper
         element.Title = data.Title;
         element.Value = data.Value;
 
-        element.OnValueChanged = (v) => { data.Value = v; };
+        element.OnValueChanged = (v) => data.Value = v;
     }
 
     public static void ApplyFunctionData(FunctionElement element, FunctionElementData data)
     {
         element.Title = data.Title;
         element.OnPressed = data.OnPressed;
+    }
+
+    public static void ApplyEnumData(EnumElement element, EnumElementData data)
+    {
+        element.Title = data.Title;
+        element.Value = data.Value;
+        element.EnumType = data.EnumType;
+        element.OnValueChanged = (v) => data.Value = v;
+    }
+
+    public static void ApplyGroupData(GroupElement group, GroupElementData data)
+    {
+        foreach (var elementData in data.Elements)
+        {
+            try
+            {
+                AddElementToGroup(group, elementData);
+            }
+            catch (Exception e)
+            {
+                FusionLogger.LogException($"adding ElementData {elementData.Title}", e);
+            }
+        }
     }
 
     private static void AddElementToGroup(GroupElement group, ElementData data)
@@ -86,20 +109,11 @@ public static class ElementDataHelper
             var functionElement = group.AddElement<FunctionElement>(functionData.Title);
             ApplyFunctionData(functionElement, functionData);
         }
-    }
 
-    public static void ApplyGroupData(GroupElement group, GroupElementData data)
-    {
-        foreach (var elementData in data.Elements)
+        if (data is EnumElementData enumData)
         {
-            try
-            {
-                AddElementToGroup(group, elementData);
-            }
-            catch (Exception e)
-            {
-                FusionLogger.LogException($"adding ElementData {elementData.Title}", e);
-            }
+            var enumElement = group.AddElement<EnumElement>(enumData.Title);
+            ApplyEnumData(enumElement, enumData);
         }
     }
 }
