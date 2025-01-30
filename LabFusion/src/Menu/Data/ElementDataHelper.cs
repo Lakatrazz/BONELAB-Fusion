@@ -8,6 +8,7 @@ public static class ElementDataHelper
     public static void ApplyIntData(IntElement element, IntElementData data)
     {
         element.Title = data.Title;
+        element.Color = data.Color;
         element.Increment = data.Increment;
         element.MinValue = data.MinValue;
         element.MaxValue = data.MaxValue;
@@ -19,6 +20,7 @@ public static class ElementDataHelper
     public static void ApplyFloatData(FloatElement element, FloatElementData data)
     {
         element.Title = data.Title;
+        element.Color = data.Color;
         element.Increment = data.Increment;
         element.MinValue = data.MinValue;
         element.MaxValue = data.MaxValue;
@@ -30,6 +32,7 @@ public static class ElementDataHelper
     public static void ApplyBoolData(BoolElement element, BoolElementData data)
     {
         element.Title = data.Title;
+        element.Color = data.Color;
         element.Value = data.Value;
 
         element.OnValueChanged = (v) => data.Value = v;
@@ -38,6 +41,7 @@ public static class ElementDataHelper
     public static void ApplyStringData(StringElement element, StringElementData data)
     {
         element.Title = data.Title;
+        element.Color = data.Color;
         element.Value = data.Value;
 
         element.OnValueChanged = (v) => data.Value = v;
@@ -46,19 +50,30 @@ public static class ElementDataHelper
     public static void ApplyFunctionData(FunctionElement element, FunctionElementData data)
     {
         element.Title = data.Title;
+        element.Color = data.Color;
+
         element.OnPressed = data.OnPressed;
     }
 
     public static void ApplyEnumData(EnumElement element, EnumElementData data)
     {
         element.Title = data.Title;
+        element.Color = data.Color;
+
         element.Value = data.Value;
         element.EnumType = data.EnumType;
         element.OnValueChanged = (v) => data.Value = v;
     }
 
+    public static void ApplyLabelData(LabelElement element, LabelElementData data)
+    {
+        element.Title = data.Title;
+        element.Color = data.Color;
+    }
+
     public static void ApplyGroupData(GroupElement group, GroupElementData data)
     {
+        group.Color = data.Color;
         foreach (var elementData in data.Elements)
         {
             try
@@ -114,6 +129,11 @@ public static class ElementDataHelper
         {
             var enumElement = group.AddElement<EnumElement>(enumData.Title);
             ApplyEnumData(enumElement, enumData);
+        }
+        if (data is LabelElementData labelData)
+        {
+            var labelElement = group.AddElement<LabelElement>(labelData.Title);
+            ApplyLabelData(labelElement, labelData);
         }
     }
 }
