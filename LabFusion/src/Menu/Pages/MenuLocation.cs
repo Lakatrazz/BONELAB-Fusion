@@ -793,7 +793,10 @@ public static class MenuLocation
                 if (FusionPermissions.HasSufficientPermissions(selfLevel, activeLobbyInfo.Teleportation))
                 {
                     foreach (var playerId in PlayerIdManager.PlayerIds)
-                        PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_US, playerId);
+                    {
+                        if (playerId != PlayerIdManager.LocalSmallId)
+                            PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_US, playerId);
+                    }
                 }
             });
     }
