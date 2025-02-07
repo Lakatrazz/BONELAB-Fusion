@@ -1,7 +1,9 @@
 #if MELONLOADER
+
 using Il2CppSLZ.Bonelab;
 
 using MelonLoader;
+
 #endif
 
 using UnityEngine;
@@ -10,12 +12,16 @@ using UnityEngine.UI;
 namespace LabFusion.Marrow.Proxies
 {
 #if MELONLOADER
+
     [RegisterTypeInIl2Cpp]
 #endif
     public class ScrollButtonProxy : MonoBehaviour
     {
 #if MELONLOADER
-        public ScrollButtonProxy(IntPtr intPtr) : base(intPtr) { }
+
+        public ScrollButtonProxy(IntPtr intPtr) : base(intPtr)
+        {
+        }
 
         private void Awake()
         {
@@ -35,8 +41,8 @@ namespace LabFusion.Marrow.Proxies
             scrollButton.incremental = true; // Make sure this is incremental so its constant steps
 
             scrollButton.scrollFrequency = 1f;
-            scrollButton.signedStepSize = 1f;
-            scrollButton.stepSize = 1f;
+            scrollButton.signedStepSize = 0.65f;
+            scrollButton.stepSize = 0.65f;
 
             var grid = GetComponentInParent<ScrollRect>().transform.Find("Viewport/Content");
             var elementsContainer = grid.GetComponent<ScrollElementsContainer>();
@@ -49,6 +55,7 @@ namespace LabFusion.Marrow.Proxies
             scrollButton.scrollElementsContainer = elementsContainer;
             scrollButton.scrollbar = transform.parent.GetComponentInChildren<Scrollbar>();
         }
+
 #endif
     }
 }
