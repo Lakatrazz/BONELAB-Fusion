@@ -73,9 +73,6 @@ public static class PlayerAdditionsHelper
         // Head and feet
         physRig.feet.gameObject.AddComponent<CollisionSyncer>();
         physRig.m_head.gameObject.AddComponent<CollisionSyncer>();
-
-        // Apply mortality
-        FusionPlayer.ResetMortality();
     }
 
     public static void OnExitServer(RigManager manager)

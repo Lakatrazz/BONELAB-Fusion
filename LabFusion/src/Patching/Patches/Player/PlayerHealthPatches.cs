@@ -121,12 +121,14 @@ public static class HealthPatches
     [HarmonyPatch(nameof(Health.Respawn))]
     public static void Respawn(Health __instance)
     {
-        if (!NetworkInfo.HasServer)
+        if (!__instance._rigManager.IsLocalPlayer())
         {
             return;
         }
 
-        if (!__instance._rigManager.IsLocalPlayer())
+        LocalHealth.InvokeRespawn();
+
+        if (!NetworkInfo.HasServer)
         {
             return;
         }

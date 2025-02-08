@@ -15,6 +15,10 @@ public delegate void PlayerAvatarDelegate(Avatar avatar, string barcode);
 public static class LocalAvatar
 {
     private static float? _heightOverride = null;
+
+    /// <summary>
+    /// An override for the Local Player's height in meters. Setting to null will apply the default avatar height.
+    /// </summary>
     public static float? HeightOverride
     {
         get
@@ -24,12 +28,14 @@ public static class LocalAvatar
         set
         {
             _heightOverride = value;
+
+            RefreshAvatar();
         }
     }
 
     public static event PlayerAvatarDelegate? OnAvatarChanged;
 
-    public static void OnInitializeMelon()
+    internal static void OnInitializeMelon()
     {
         OnAvatarChanged += OnOverrideHeight;
     }
@@ -64,5 +70,19 @@ public static class LocalAvatar
         {
             newAvatar.transform.localScale = newScale;
         });
+    }
+    
+    /// <summary>
+    /// Refreshes the avatar that the Local Player is currently using.
+    /// </summary>
+    public static void RefreshAvatar()
+    {
+        if (!RigData.HasPlayer)
+        {
+            return;
+        }
+
+        var rigManager = RigData.Refs.RigManager;
+        rigManager.SwapAvatarCrate(rigManager.AvatarCrate.Barcode);
     }
 }
