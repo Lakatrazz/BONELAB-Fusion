@@ -76,15 +76,21 @@ namespace LabFusion.Marrow.Integration
         {
             List<GamemodeMarker> markers = new();
 
+            bool tagIsValid = tag != null;
+
             foreach (var marker in Markers)
             {
-                if (tag == null)
+                bool markerHasTeam = marker.TeamBarcodes != null && marker.TeamBarcodes.Count > 0;
+
+                // If filtering for a null tag, the marker should also have no teams
+                // Otherwise, the marker should have a team, or it's invalid for this filter
+                if (tagIsValid != markerHasTeam) 
                 {
-                    markers.Add(marker);
                     continue;
                 }
 
-                if (marker.TeamBarcodes == null || marker.TeamBarcodes.Count <= 0)
+                // The marker can just be added if theres no team in the filter and marker
+                if (!tagIsValid)
                 {
                     markers.Add(marker);
                     continue;
