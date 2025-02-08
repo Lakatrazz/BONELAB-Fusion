@@ -169,7 +169,7 @@ public static class MenuLocation
         element.ServerNameElement.TextFormat = "{1}";
 
         element.HostNameElement
-            .WithTitle(LocalPlayer.Username);
+            .WithTitle(info.LobbyHostName);
 
         element.DescriptionElement
             .Cleared()
@@ -796,9 +796,23 @@ public static class MenuLocation
         var cleanupGroup = element.AddElement<GroupElement>("Cleanup");
 
         var despawnAllElement = cleanupGroup.AddElement<FunctionElement>("Despawn All")
+            .Do(() => PooleeUtilities.DespawnAll());
+        var playersGroup = element.AddElement<GroupElement>("Players");
+
+        FusionPermissions.FetchPermissionLevel(PlayerIdManager.LocalLongId, out var selfLevel, out _);
+        var activeLobbyInfo = LobbyInfoManager.LobbyInfo;
+
+        var teleportAllElement = playersGroup.AddElement<FunctionElement>("Teleport All")
             .Do(() =>
             {
-                PooleeUtilities.DespawnAll();
+                if (FusionPermissions.HasSufficientPermissions(selfLevel, activeLobbyInfo.Teleportation))
+                {
+                    foreach (var playerId in PlayerIdManager.PlayerIds)
+                    {
+                        if (playerId != PlayerIdManager.LocalSmallId)
+                            PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_US, playerId);
+                    }
+                }
             });
     }
 }

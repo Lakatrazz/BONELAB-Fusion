@@ -72,7 +72,6 @@ public static class MenuPageHelper
         MenuProfile.PopulateProfile(transform.Find("page_Profile").gameObject);
         MenuLocation.PopulateLocation(transform.Find("page_Location").gameObject);
         MenuMatchmaking.PopulateMatchmaking(transform.Find("page_Matchmaking").gameObject);
-        MenuSettings.PopulateSettings(transform.Find("page_Settings").gameObject);
         MenuGamemode.PopulateGamemode(transform.Find("page_Gamemode").gameObject);
         MenuNotifications.PopulateNotifications(transform.Find("page_Notifications").gameObject);
         MenuLogIn.PopulateLogIn(transform.Find("page_LogIn").gameObject);
@@ -107,6 +106,7 @@ public static class MenuPageHelper
             return;
         }
 
+        MenuSettings.PopulateSettings(RootPage.transform.Find("page_Settings").gameObject);
         RootPage.DefaultPageIndex = 0;
         RootPage.SelectSubPage(0);
 

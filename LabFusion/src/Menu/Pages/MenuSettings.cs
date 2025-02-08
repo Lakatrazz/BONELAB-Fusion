@@ -84,7 +84,7 @@ public static class MenuSettings
         var valueElement = nameTagColorGroup.AddElement<FloatElement>("Value")
             .WithIncrement(0.05f)
             .WithLimits(0f, 1f)
-            .AsPref(ClientSettings.NameTagValue, OnColorElementChanged); ;
+            .AsPref(ClientSettings.NameTagValue, OnColorElementChanged);
 
         void OnColorElementChanged(float value)
         {
@@ -220,6 +220,7 @@ public static class MenuSettings
     }
 
 #if DEBUG
+
     private static void PopulateDebugSettings(PageElement page)
     {
         var generalGroup = page.AddElement<GroupElement>("General");
@@ -255,5 +256,6 @@ public static class MenuSettings
                 }
             });
     }
+
 #endif
 }
