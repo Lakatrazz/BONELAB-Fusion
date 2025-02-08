@@ -2,7 +2,6 @@
 using LabFusion.Extensions;
 using LabFusion.Player;
 using LabFusion.Scene;
-using LabFusion.Utilities;
 
 using UnityEngine;
 
@@ -55,6 +54,6 @@ public class PlayerRepTeleportMessage : NativeMessageHandler
         }
 
         // Teleport the player
-        FusionPlayer.Teleport(data.position, Vector3Extensions.forward);
+        LocalPlayer.TeleportToPosition(data.position, Vector3Extensions.forward);
     }
 }

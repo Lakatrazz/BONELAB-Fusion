@@ -331,9 +331,8 @@ public class TeamDeathmatch : Gamemode
 
         var vitality = Vitality.GetValue();
 
-        FusionPlayer.SetPlayerVitality(vitality);
+        LocalHealth.VitalityOverride = vitality;
     }
-
 
     public override bool CheckReadyConditions()
     {
@@ -539,7 +538,7 @@ public class TeamDeathmatch : Gamemode
         FusionSceneManager.HookOnTargetLevelLoad(() =>
         {
             // Force mortality
-            FusionPlayer.SetMortality(true);
+            LocalHealth.MortalityOverride = true;
 
             // Setup ammo
             FusionPlayer.SetAmmo(1000);
@@ -613,7 +612,7 @@ public class TeamDeathmatch : Gamemode
         _oneMinuteLeft = false;
 
         // Reset mortality
-        FusionPlayer.ResetMortality();
+        LocalHealth.MortalityOverride = null;
 
         // Remove ammo
         FusionPlayer.SetAmmo(0);
@@ -623,7 +622,7 @@ public class TeamDeathmatch : Gamemode
 
         // Reset overrides
         FusionPlayer.ClearAvatarOverride();
-        FusionPlayer.ClearPlayerVitality();
+        LocalHealth.VitalityOverride = null;
     }
 
     public float GetTimeElapsed()
@@ -780,8 +779,6 @@ public class TeamDeathmatch : Gamemode
 
     protected static void InitializeTeamSpawns(Team team)
     {
-        // Get all spawn points
-        var transforms = new List<Transform>();
         BoneTagReference tag = null;
 
         if (team.TeamName == DefaultSabrelakeName)
@@ -793,20 +790,8 @@ public class TeamDeathmatch : Gamemode
             tag = FusionBoneTagReferences.TeamLavaGangReference;
         }
 
-        var markers = GamemodeMarker.FilterMarkers(tag);
-
-        foreach (var marker in markers)
-        {
-            transforms.Add(marker.transform);
-        }
-
-        FusionPlayer.SetSpawnPoints(transforms.ToArray());
-
-        // Teleport to a random spawn point
-        if (FusionPlayer.TryGetSpawnPoint(out var spawn))
-        {
-            FusionPlayer.Teleport(spawn.position, spawn.forward);
-        }
+        GamemodeHelper.SetSpawnPoints(GamemodeMarker.FilterMarkers(tag));
+        GamemodeHelper.TeleportToSpawnPoint();
     }
 
     private void OnScoreChanged(Team team, int score)

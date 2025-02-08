@@ -6,6 +6,7 @@ using LabFusion.Marrow.Integration;
 using LabFusion.Menu;
 using LabFusion.Network;
 using LabFusion.Player;
+using LabFusion.Scene;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 
@@ -92,6 +93,14 @@ public class Juggernaut : Gamemode
 
             AssignTeams();
         }
+
+        FusionSceneManager.HookOnTargetLevelLoad(() =>
+        {
+            LocalHealth.MortalityOverride = true;
+
+            GamemodeHelper.SetSpawnPoints(GamemodeMarker.FilterMarkers(null));
+            GamemodeHelper.TeleportToSpawnPoint();
+        });
     }
 
     public override void OnGamemodeStopped()
@@ -106,6 +115,24 @@ public class Juggernaut : Gamemode
         }
 
         LocalAvatar.HeightOverride = null;
+
+        LocalHealth.MortalityOverride = null;
+        LocalHealth.RegenerationOverride = null;
+        LocalHealth.VitalityOverride = null;
+
+        GamemodeHelper.ResetSpawnPoints();
+    }
+
+    protected override void OnUpdate()
+    {
+        // Make sure the gamemode is active
+        if (!IsStarted)
+        {
+            return;
+        }
+
+        // Update music
+        Playlist.Update();
     }
 
     public void ApplyGamemodeSettings()
@@ -324,7 +351,9 @@ public class Juggernaut : Gamemode
                 Type = NotificationType.INFORMATION,
             });
 
-            FusionPlayer.SetPlayerVitality(Defaults.SurvivorVitality);
+            LocalHealth.VitalityOverride = Defaults.SurvivorVitality;
+            LocalHealth.RegenerationOverride = false;
+
             LocalAvatar.HeightOverride = Defaults.SurvivorHeight;
         }
 
@@ -339,7 +368,9 @@ public class Juggernaut : Gamemode
                 Type = NotificationType.INFORMATION,
             });
 
-            FusionPlayer.SetPlayerVitality(Defaults.JuggernautVitality);
+            LocalHealth.VitalityOverride = Defaults.JuggernautVitality;
+            LocalHealth.RegenerationOverride = false;
+
             LocalAvatar.HeightOverride = Defaults.JuggernautHeight;
         }
     }

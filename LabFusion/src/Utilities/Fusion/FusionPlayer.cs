@@ -3,7 +3,6 @@ using LabFusion.Network;
 using LabFusion.Preferences;
 using LabFusion.Player;
 using LabFusion.Representation;
-using LabFusion.SDK.Gamemodes;
 using LabFusion.Senders;
 using LabFusion.Scene;
 using LabFusion.Marrow;
@@ -11,7 +10,6 @@ using LabFusion.Extensions;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
 using Il2CppSLZ.Marrow.Warehouse;
-using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow;
 
 using UnityEngine;
@@ -25,24 +23,13 @@ public static class FusionPlayer
     public static byte? LastAttacker { get; internal set; }
     public static readonly List<Transform> SpawnPoints = new();
 
-    public static float? VitalityOverride { get; internal set; } = null;
     public static string AvatarOverride { get; internal set; } = null;
 
     private static bool _brokeBounds = false;
 
     internal static void OnInitializeMelon()
     {
-        LobbyInfoManager.OnLobbyInfoChanged += OnLobbyInfoChanged;
         LocalAvatar.OnAvatarChanged += OnAvatarChanged;
-    }
-
-    private static void OnLobbyInfoChanged()
-    {
-        // Update mortality
-        if (!GamemodeManager.IsGamemodeStarted)
-        {
-            ResetMortality();
-        }
     }
 
     internal static void OnMainSceneInitialized()
@@ -116,11 +103,6 @@ public static class FusionPlayer
 
         // Send avatar change
         PlayerSender.SendPlayerAvatar(RigData.RigAvatarStats, barcode);
-
-        // Update player values
-        // Check player health
-        if (VitalityOverride.HasValue)
-            Internal_ChangePlayerHealth();
 
         // Check player avatar
         var crateReference = new AvatarCrateReference(barcode);
@@ -205,68 +187,6 @@ public static class FusionPlayer
     }
 
     /// <summary>
-    /// Sets the mortality of the player.
-    /// </summary>
-    /// <param name="mortal"></param>
-    public static void SetMortality(bool mortal)
-    {
-        if (!RigData.HasPlayer)
-        {
-            return;
-        }
-
-        var rm = RigData.Refs.RigManager;
-
-        var playerHealth = rm.health.TryCast<Player_Health>();
-
-        if (mortal)
-        {
-            playerHealth.healthMode = Health.HealthMode.Mortal;
-        }
-        else
-        {
-            playerHealth.healthMode = Health.HealthMode.Invincible;
-        }
-    }
-
-    /// <summary>
-    /// Resets the mortality to the server settings.
-    /// </summary>
-    public static void ResetMortality()
-    {
-        if (!NetworkInfo.HasServer)
-        {
-            return;
-        }
-
-        // Knockout mode can't die
-        if (CommonPreferences.Knockout)
-        {
-            SetMortality(false);
-        }
-        else
-        {
-            SetMortality(CommonPreferences.Mortality);
-        }
-    }
-
-    /// <summary>
-    /// Teleports the player to a point.
-    /// </summary>
-    /// <param name="position"></param>
-    /// <param name=""></param>
-    public static void Teleport(Vector3 position, Vector3 fwdSnap, bool zeroVelocity = true)
-    {
-        if (!RigData.HasPlayer)
-            return;
-
-        var rm = RigData.Refs.RigManager;
-
-        rm.Teleport(position, fwdSnap, zeroVelocity);
-        rm.physicsRig.ResetHands(Handedness.BOTH);
-    }
-
-    /// <summary>
     /// Sets the custom spawn points for the player.
     /// </summary>
     /// <param name="points"></param>
@@ -295,18 +215,6 @@ public static class FusionPlayer
         AvatarOverride = null;
     }
 
-    public static void SetPlayerVitality(float vitality)
-    {
-        VitalityOverride = vitality;
-        Internal_ChangePlayerHealth();
-    }
-
-    public static void ClearPlayerVitality()
-    {
-        VitalityOverride = null;
-        Internal_ChangePlayerHealth();
-    }
-
     private static void Internal_ChangeAvatar()
     {
         // Check avatar override
@@ -328,26 +236,6 @@ public static class FusionPlayer
                     rm.SwapAvatarCrate(new Barcode(BONELABAvatarReferences.PolyBlankBarcode), true);
                 }
             }));
-        }
-    }
-
-    private static void Internal_ChangePlayerHealth()
-    {
-        if (RigData.HasPlayer)
-        {
-            var rm = RigData.Refs.RigManager;
-            var avatar = rm._avatar;
-
-            if (VitalityOverride.HasValue)
-            {
-                avatar._vitality = VitalityOverride.Value;
-                rm.health.SetAvatar(avatar);
-            }
-            else
-            {
-                avatar.RefreshBodyMeasurements();
-                rm.health.SetAvatar(avatar);
-            }
         }
     }
 

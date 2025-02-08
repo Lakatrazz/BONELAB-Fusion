@@ -5,6 +5,7 @@ using LabFusion.SDK.Gamemodes;
 
 using UnityEngine;
 using UnityEngine.UI;
+using static Il2CppSLZ.Bonelab.BaseGameController;
 
 namespace LabFusion.Menu.Gamemodes;
 
@@ -144,7 +145,9 @@ public static class MenuGamemode
 
         if (activeGamemode != null)
         {
-            GamemodeIcon.texture = activeGamemode.Logo;
+            var logo = activeGamemode.Logo ? activeGamemode.Logo : MenuResources.GetGamemodeIcon(MenuResources.ModsIconTitle);
+
+            GamemodeIcon.texture = logo;
 
             GamemodeTitle.Title = activeGamemode.Title;
 

@@ -349,7 +349,7 @@ public class HideAndSeek : Gamemode
         {
             var feetPosition = player.RigRefs.RigManager.physicsRig.feet.transform.position;
 
-            FusionPlayer.Teleport(feetPosition, Vector3.forward, true);
+            LocalPlayer.TeleportToPosition(feetPosition, Vector3.forward);
         }
     }
 

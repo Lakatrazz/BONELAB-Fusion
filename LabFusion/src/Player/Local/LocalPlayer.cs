@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using Il2CppSLZ.Marrow;
+using Il2CppSLZ.Marrow.Interaction;
 
 using LabFusion.Data;
 using LabFusion.Entities;
@@ -9,6 +10,8 @@ using LabFusion.Network;
 using LabFusion.SDK.Metadata;
 using LabFusion.Utilities;
 using LabFusion.Marrow.Extensions;
+
+using UnityEngine;
 
 namespace LabFusion.Player;
 
@@ -52,6 +55,7 @@ public static class LocalPlayer
         Metadata.OnTryRemoveMetadata += OnTryRemoveMetadata;
 
         LocalAvatar.OnInitializeMelon();
+        LocalHealth.OnInitializeMelon();
     }
 
     private static bool OnTrySetMetadata(string key, string value)
@@ -161,11 +165,51 @@ public static class LocalPlayer
 
         var rigManager = RigData.Refs.RigManager;
 
+        TeleportToPosition(rigManager.checkpointPosition, rigManager.checkpointFwd);
+    }
+
+    /// <summary>
+    /// Teleports the Local Player to a set position.
+    /// </summary>
+    /// <param name="position">The point to teleport to in world space.</param>
+    public static void TeleportToPosition(Vector3 position)
+    {
+        if (!RigData.HasPlayer)
+        {
+            return;
+        }
+
+        var rigManager = RigData.Refs.RigManager;
+
         var physicsRig = rigManager.physicsRig;
         var marrowEntity = physicsRig.marrowEntity;
 
         marrowEntity.ResetPose();
 
-        marrowEntity.transform.position += rigManager.checkpointPosition - physicsRig.feet.transform.position;
+        rigManager.Teleport(position, true);
+        physicsRig.ResetHands(Handedness.BOTH);
+    }
+
+    /// <summary>
+    /// Teleports the Local Player to a set position and forward direction.
+    /// </summary>
+    /// <param name="position">The point to teleport to in world space.</param>
+    /// <param name="forward">The forward direction that the player will face in world space.</param>
+    public static void TeleportToPosition(Vector3 position, Vector3 forward)
+    {
+        if (!RigData.HasPlayer)
+        {
+            return;
+        }
+
+        var rigManager = RigData.Refs.RigManager;
+
+        var physicsRig = rigManager.physicsRig;
+        var marrowEntity = physicsRig.marrowEntity;
+
+        marrowEntity.ResetPose();
+
+        rigManager.Teleport(position, forward, true);
+        physicsRig.ResetHands(Handedness.BOTH);
     }
 }

@@ -383,27 +383,14 @@ public class Deathmatch : Gamemode
         FusionSceneManager.HookOnTargetLevelLoad(() =>
         {
             // Force mortality
-            FusionPlayer.SetMortality(true);
+            LocalHealth.MortalityOverride = true;
 
             // Setup ammo
             FusionPlayer.SetAmmo(1000);
 
             // Get all spawn points
-            var transforms = new List<Transform>();
-            var markers = GamemodeMarker.FilterMarkers(null);
-
-            foreach (var marker in markers)
-            {
-                transforms.Add(marker.transform);
-            }
-
-            FusionPlayer.SetSpawnPoints(transforms.ToArray());
-
-            // Teleport to a random spawn point
-            if (FusionPlayer.TryGetSpawnPoint(out var spawn))
-            {
-                FusionPlayer.Teleport(spawn.position, spawn.forward);
-            }
+            GamemodeHelper.SetSpawnPoints(GamemodeMarker.FilterMarkers(null));
+            GamemodeHelper.TeleportToSpawnPoint();
 
             // Push nametag updates
             FusionOverrides.ForceUpdateOverrides();
@@ -425,7 +412,7 @@ public class Deathmatch : Gamemode
 
         var vitality = Vitality.GetValue();
 
-        FusionPlayer.SetPlayerVitality(vitality);
+        LocalHealth.VitalityOverride = vitality;
     }
 
     protected void OnVictoryStatus(bool isVictory = false)
@@ -531,7 +518,7 @@ public class Deathmatch : Gamemode
         _oneMinuteLeft = false;
 
         // Reset mortality
-        FusionPlayer.ResetMortality();
+        LocalHealth.MortalityOverride = null;
 
         // Remove ammo
         FusionPlayer.SetAmmo(0);
@@ -544,7 +531,7 @@ public class Deathmatch : Gamemode
 
         // Reset overrides
         FusionPlayer.ClearAvatarOverride();
-        FusionPlayer.ClearPlayerVitality();
+        LocalHealth.VitalityOverride = null;
     }
 
     public float GetTimeElapsed() => TimeUtilities.TimeSinceStartup - _timeOfStart;
@@ -556,7 +543,7 @@ public class Deathmatch : Gamemode
 
     protected override void OnUpdate()
     {
-        // Also make sure the gamemode is active
+        // Make sure the gamemode is active
         if (!IsStarted)
         {
             return;
