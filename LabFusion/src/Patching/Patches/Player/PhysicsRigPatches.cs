@@ -6,6 +6,7 @@ using LabFusion.Utilities;
 using LabFusion.Scene;
 
 using Il2CppSLZ.Marrow;
+using Il2CppSLZ.VRMK;
 
 namespace LabFusion.Patching;
 
@@ -13,6 +14,28 @@ namespace LabFusion.Patching;
 public static class PhysicsRigPatches
 {
     public static bool ForceAllowUnragdoll { get; set; } = false;
+
+    [HarmonyPostfix]
+    [HarmonyPatch(nameof(PhysicsRig.SetAvatar))]
+    public static void SetAvatarPostfix(PhysicsRig __instance, Avatar avatar)
+    {
+        if (!NetworkInfo.HasServer)
+        {
+            return;
+        }
+
+        if (__instance._impactProperties == null)
+        {
+            return;
+        }
+
+        // PhysicsRig sets surfaceData but not cachedSurfaceData
+        // Why are these even separate variables? WHO KNOWS!
+        foreach (var properties in __instance._impactProperties)
+        {
+            properties._cachedSurfaceData = properties.surfaceData;
+        }
+    }
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(PhysicsRig.RagdollRig))]

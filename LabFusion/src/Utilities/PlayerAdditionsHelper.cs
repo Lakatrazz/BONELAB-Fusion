@@ -1,10 +1,11 @@
 ﻿using LabFusion.MonoBehaviours;
 using LabFusion.Data;
-using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Player;
 
 using Il2CppSLZ.Marrow;
+
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 using UnityEngine;
 
@@ -86,6 +87,8 @@ public static class PlayerAdditionsHelper
         MuteUIHelper.OnDestroyMuteUI();
 
         // Remove impact properties
+        manager.physicsRig._impactProperties = new Il2CppReferenceArray<ImpactProperties>(0);
+
         var impactProperties = manager.GetComponentsInChildren<ImpactProperties>(true);
 
         foreach (var properties in impactProperties)
