@@ -16,6 +16,8 @@ public static class VoiceVolume
 
     public static float GetGlobalVolumeMultiplier()
     {
-        return ClientSettings.VoiceChat.GlobalVolume.Value * Audio3dManager.audio_SFXVolume;
+        float audioPercent = Audio3dManager.audio_SFXVolume * 0.1f;
+
+        return ClientSettings.VoiceChat.GlobalVolume.Value * audioPercent;
     }
 }
