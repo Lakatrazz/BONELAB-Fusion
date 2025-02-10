@@ -22,6 +22,14 @@ public class Juggernaut : Gamemode
 
     public override Texture Logo => MenuResources.GetGamemodeIcon(Title);
 
+    public override bool AutoHolsterOnDeath => true;
+
+    public override bool DisableDevTools => true;
+
+    public override bool DisableSpawnGun => true;
+
+    public override bool DisableManualUnragdoll => true;
+
     public static class Defaults
     {
         public const float SurvivorVitality = 1f;
