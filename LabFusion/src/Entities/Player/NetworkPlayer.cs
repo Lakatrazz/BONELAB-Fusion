@@ -433,9 +433,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
         else
         {
-            _voiceSource.spatialBlend = 0f;
-            _voiceSource.dopplerLevel = 0.5f;
-
             _spatialized = false;
 
             MicrophoneDisabled = true;
@@ -463,18 +460,10 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         {
             float heightMult = rm._avatar.height / 1.76f;
 
-            _voiceSource.spatialBlend = 1f;
-
             _minMicrophoneDistance = 1f * heightMult;
             _maxMicrophoneDistance = 30f * heightMult;
 
             _voiceSource.minDistance = _minMicrophoneDistance;
-
-            // Set the mixer
-            if (_voiceSource.outputAudioMixerGroup == null)
-            {
-                _voiceSource.outputAudioMixerGroup = Audio3dManager.npcVocals;
-            }
         }
     }
 

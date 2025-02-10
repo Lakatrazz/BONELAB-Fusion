@@ -1,41 +1,40 @@
 ﻿using Il2CppSLZ.Marrow.Audio;
 using UnityEngine;
 
-namespace LabFusion.Utilities
+namespace LabFusion.Utilities;
+
+public static class FusionAudio
 {
-    public static class FusionAudio
+    public static AudioSource Play2D(AudioClip clip, float volume = 1f)
     {
-        public static AudioSource Play2D(AudioClip clip, float volume = 1f)
-        {
-            GameObject go = new("Fusion 2D Audio Source");
-            var source = go.AddComponent<AudioSource>();
-            source.volume = volume;
-            source.clip = clip;
-            source.spatialBlend = 0f;
+        GameObject go = new("Fusion 2D Audio Source");
+        var source = go.AddComponent<AudioSource>();
+        source.volume = volume;
+        source.clip = clip;
+        source.spatialBlend = 0f;
 
-            source.outputAudioMixerGroup = Audio3dManager.inHead;
+        source.outputAudioMixerGroup = Audio3dManager.inHead;
 
-            source.Play();
+        source.Play();
 
-            return source;
-        }
+        return source;
+    }
 
-        public static AudioSource Play3D(Vector3 position, AudioClip clip, float volume = 1f, bool loop = false)
-        {
-            GameObject go = new("Fusion 3D Audio Source");
-            var source = go.AddComponent<AudioSource>();
-            go.transform.position = position;
+    public static AudioSource Play3D(Vector3 position, AudioClip clip, float volume = 1f, bool loop = false)
+    {
+        GameObject go = new("Fusion 3D Audio Source");
+        var source = go.AddComponent<AudioSource>();
+        go.transform.position = position;
 
-            source.volume = volume;
-            source.clip = clip;
-            source.spatialBlend = 1f;
-            source.loop = loop;
+        source.volume = volume;
+        source.clip = clip;
+        source.spatialBlend = 1f;
+        source.loop = loop;
 
-            source.outputAudioMixerGroup = Audio3dManager.hardInteraction;
+        source.outputAudioMixerGroup = Audio3dManager.hardInteraction;
 
-            source.Play();
+        source.Play();
 
-            return source;
-        }
+        return source;
     }
 }

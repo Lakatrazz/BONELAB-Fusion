@@ -67,6 +67,9 @@ public abstract class VoiceSpeaker : IVoiceSpeaker
         _source = _sourceGo.AddComponent<AudioSource>();
 
         _source.volume = Volume;
+        _source.outputAudioMixerGroup = null;
+        _source.spatialBlend = 1f;
+        _source.dopplerLevel = 0.5f;
 
         GameObject.DontDestroyOnLoad(_source);
         GameObject.DontDestroyOnLoad(_sourceGo);

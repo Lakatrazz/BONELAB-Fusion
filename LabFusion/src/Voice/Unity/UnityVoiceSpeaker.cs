@@ -130,7 +130,7 @@ public class UnityVoiceSpeaker : VoiceSpeaker
         byte[] decompressed = VoiceCompressor.DecompressVoiceData(data);
 
         // Convert the byte array back to a float array and enqueue it
-        float volumeMultiplier = GetVoiceMultiplier();
+        float volumeMultiplier = VoiceVolume.GetGlobalVolumeMultiplier();
 
         float amplitude = 0f;
         int sampleCount = 0;
@@ -155,19 +155,6 @@ public class UnityVoiceSpeaker : VoiceSpeaker
         Playing = true;
 
         _silentTimer = 0f;
-    }
-
-    private float GetVoiceMultiplier()
-    {
-        float mult = VoiceVolume.GetGlobalVolumeMultiplier();
-
-        // If the audio is 2D, lower the volume
-        if (_source.spatialBlend <= 0f)
-        {
-            mult *= 0.25f;
-        }
-
-        return mult;
     }
 
     private void PcmReaderCallback(Il2CppStructArray<float> data)

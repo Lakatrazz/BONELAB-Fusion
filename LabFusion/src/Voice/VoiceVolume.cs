@@ -1,4 +1,6 @@
-﻿using LabFusion.Preferences.Client;
+﻿using Il2CppSLZ.Marrow.Audio;
+
+using LabFusion.Preferences.Client;
 
 namespace LabFusion.Voice;
 
@@ -14,6 +16,6 @@ public static class VoiceVolume
 
     public static float GetGlobalVolumeMultiplier()
     {
-        return ClientSettings.VoiceChat.GlobalVolume.Value;
+        return ClientSettings.VoiceChat.GlobalVolume.Value * Audio3dManager.audio_SFXVolume;
     }
 }
