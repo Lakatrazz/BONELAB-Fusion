@@ -20,4 +20,9 @@ public static class SafeAudio3dPlayer
     {
         Audio3dManager.PlayAtPoint(clips, position, mixer, volume, pitch, new(0f), new(1f), new(1f));
     }
+
+    public static void PlayAtPoint(AudioClip clip, Vector3 position, AudioMixerGroup mixer, float volume = 1f, float pitch = 1f)
+    {
+        Audio3dManager.PlayAtPoint(clip, position, mixer, volume, pitch, new(0f), new(1f), new(1f));
+    }
 }
