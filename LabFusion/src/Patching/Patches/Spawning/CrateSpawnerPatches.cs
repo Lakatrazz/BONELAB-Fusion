@@ -10,15 +10,17 @@ using Il2CppSLZ.Marrow.Pool;
 
 using UnityEngine;
 
+using Il2CppCysharp.Threading.Tasks;
+
 namespace LabFusion.Patching;
 
 // SpawnSpawnableAsync is used by the regular SpawnSpawnable as well, so we don't need to patch that
-[HarmonyPatch(typeof(CrateSpawner._SpawnSpawnableAsync_d__26))]
-public static class CrateSpawnerAsyncPatches
+[HarmonyPatch(typeof(CrateSpawner))]
+public static class CrateSpawnerPatches
 {
     public static readonly HashSet<CrateSpawner> CurrentlySpawning = new();
 
-    private static void NetworkedSpawnSpawnable(CrateSpawner spawner)
+    private static void NetworkedSpawnSpawnable(CrateSpawner spawner, UniTaskCompletionSource<Poolee> source)
     {
         var spawnable = spawner._spawnable;
         var transform = spawner.transform;
@@ -30,17 +32,21 @@ public static class CrateSpawnerAsyncPatches
             rotation = transform.rotation,
             spawnCallback = (info) =>
             {
-                OnNetworkSpawn(spawner, info);
+                OnNetworkSpawn(spawner, info, source);
             },
         });
 
         CurrentlySpawning.Add(spawner);
     }
 
-    private static void OnNetworkSpawn(CrateSpawner spawner, NetworkAssetSpawner.SpawnCallbackInfo info)
+    private static void OnNetworkSpawn(CrateSpawner spawner, NetworkAssetSpawner.SpawnCallbackInfo info, UniTaskCompletionSource<Poolee> source)
     {
         var spawned = info.spawned;
         spawner.OnFinishNetworkSpawn(spawned);
+
+        var poolee = Poolee.Cache.Get(spawned);
+
+        source.TrySetResult(poolee);
 
         // Make sure we actually have a network entity
         if (info.entity == null)
@@ -70,8 +76,8 @@ public static class CrateSpawnerAsyncPatches
     }
 
     [HarmonyPrefix]
-    [HarmonyPatch(nameof(CrateSpawner._SpawnSpawnableAsync_d__26.MoveNext))]
-    public static bool MoveNext(CrateSpawner._SpawnSpawnableAsync_d__26 __instance)
+    [HarmonyPatch(nameof(CrateSpawner.SpawnSpawnableAsync))]
+    public static bool SpawnSpawnableAsyncPrefix(CrateSpawner __instance, bool isHidden, ref UniTask<Poolee> __result)
     {
         // If this scene is unsynced, the spawner can function as normal.
         if (CrossSceneManager.InUnsyncedScene())
@@ -79,7 +85,7 @@ public static class CrateSpawnerAsyncPatches
             return true;
         }
 
-        var spawner = __instance.__4__this;
+        var spawner = __instance;
 
         // Check if this CrateSpawner has a Desyncer
         if (Desyncer.Cache.ContainsSource(spawner.gameObject))
@@ -90,17 +96,22 @@ public static class CrateSpawnerAsyncPatches
         // If we aren't the scene host, don't allow a crate spawn
         if (!CrossSceneManager.IsSceneHost())
         {
+            __result = new UniTask<Poolee>(null);
             return false;
         }
 
         // Make sure this isn't already spawning
         if (CurrentlySpawning.Any((found) => found == spawner))
         {
+            __result = new UniTask<Poolee>(null);
             return false;
         }
+        
+        var source = new UniTaskCompletionSource<Poolee>();
+        __result = new UniTask<Poolee>(source.TryCast<IUniTaskSource<Poolee>>(), default);
 
         // Otherwise, manually sync this spawn over the network
-        NetworkedSpawnSpawnable(spawner);
+        NetworkedSpawnSpawnable(spawner, source);
 
         return false;
     }
