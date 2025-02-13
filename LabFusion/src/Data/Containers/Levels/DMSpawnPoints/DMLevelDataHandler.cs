@@ -1,4 +1,5 @@
-﻿using LabFusion.Marrow.Integration;
+﻿using LabFusion.Marrow;
+using LabFusion.Marrow.Integration;
 
 using UnityEngine;
 
@@ -16,6 +17,9 @@ public abstract class DMLevelDataHandler : LevelDataHandler
             GameObject spawnPoint = new("Gamemode Marker");
             spawnPoint.transform.position = DeathmatchSpawnPoints[i];
             spawnPoint.AddComponent<GamemodeMarker>();
+
+            spawnPoint.AddComponent<GamemodeMarker>().AddTeam(FusionBoneTagReferences.TeamLavaGangReference.Barcode.ID);
+            spawnPoint.AddComponent<GamemodeMarker>().AddTeam(FusionBoneTagReferences.TeamSabrelakeReference.Barcode.ID);
         }
     }
 }
