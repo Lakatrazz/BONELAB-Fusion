@@ -22,7 +22,6 @@ public static class MultiplayerHooking
     public static event ServerEvent OnStartServer, OnJoinServer, OnDisconnect;
     public static event PlayerUpdate OnPlayerJoin, OnPlayerLeave;
     public static event PlayerAction OnPlayerAction;
-    public static event PlayerUpdate OnPlayerCatchup;
 
     internal static bool Internal_OnShouldAllowConnection(PlayerId playerId, out string reason)
     {
@@ -53,8 +52,6 @@ public static class MultiplayerHooking
     internal static void Internal_OnPlayerLeave(PlayerId id) => OnPlayerLeave.InvokeSafe(id, "executing OnPlayerLeave hook");
 
     internal static void Internal_OnPlayerAction(PlayerId id, PlayerActionType type, PlayerId otherPlayer = null) => OnPlayerAction.InvokeSafe(id, type, otherPlayer, "executing OnPlayerAction hook");
-
-    internal static void Internal_OnPlayerCatchup(PlayerId playerId) => OnPlayerCatchup.InvokeSafe(playerId, "executing OnPlayerCatchup hook");
 
     // Unity hooks
     /// <summary>

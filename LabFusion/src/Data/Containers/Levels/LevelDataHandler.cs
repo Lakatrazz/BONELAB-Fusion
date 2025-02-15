@@ -49,7 +49,7 @@ public abstract class LevelDataHandler
     {
         // Hook functions
         MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
-        MultiplayerHooking.OnPlayerCatchup += OnPlayerCatchup;
+        CatchupManager.OnPlayerCatchup += OnPlayerCatchup;
 
         // Register all of our handlers
         RegisterHandlersFromAssembly(FusionMod.FusionAssembly);

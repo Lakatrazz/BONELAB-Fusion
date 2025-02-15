@@ -28,7 +28,7 @@ public static class NetworkEntityManager
 
     public static void OnInitializeManager()
     {
-        MultiplayerHooking.OnPlayerCatchup += OnPlayerCatchup;
+        CatchupManager.OnPlayerCatchup += OnPlayerCatchup;
     }
 
     public static void OnCleanupIds()

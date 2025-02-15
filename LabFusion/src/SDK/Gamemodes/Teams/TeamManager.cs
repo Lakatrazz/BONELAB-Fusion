@@ -281,4 +281,14 @@ public class TeamManager
 
         return lowestTeam;
     }
+
+    /// <summary>
+    /// Checks if a certain player is on the same team as the local player.
+    /// </summary>
+    /// <param name="player">The player to check.</param>
+    /// <returns>If the player is a teammate.</returns>
+    public bool IsTeammate(PlayerId player)
+    {
+        return GetLocalTeam() == GetPlayerTeam(player);
+    }
 }

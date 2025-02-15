@@ -339,6 +339,16 @@ public class TeamDeathmatch : Gamemode
         return PlayerIdManager.PlayerCount >= _minimumPlayers;
     }
 
+    public override bool CanAttack(PlayerId player)
+    {
+        if (!IsStarted)
+        {
+            return true;
+        }
+
+        return !TeamManager.IsTeammate(player);
+    }
+
     private void OnAssignedToTeam(PlayerId playerId, Team team)
     {
         if (playerId.IsMe)
@@ -374,7 +384,7 @@ public class TeamDeathmatch : Gamemode
             return true;
         }
 
-        return TeamManager.GetPlayerTeam(id) == TeamManager.GetLocalTeam();
+        return TeamManager.IsTeammate(id);
     }
 
     public void ApplyGamemodeSettings()

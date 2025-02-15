@@ -8,11 +8,10 @@ public static class NetworkCombatManager
 {
     public static bool CanAttack(NetworkPlayer player)
     {
-        // For now, have friendly fire always on for gamemodes
-        // In the future, check teams
+        // If a Gamemode is active, check if the gamemode gives attack permission
         if (GamemodeManager.IsGamemodeStarted)
         {
-            return true;
+            return GamemodeManager.ActiveGamemode.CanAttack(player.PlayerId);
         }
 
         bool friendlyFire = LobbyInfoManager.LobbyInfo.FriendlyFire;

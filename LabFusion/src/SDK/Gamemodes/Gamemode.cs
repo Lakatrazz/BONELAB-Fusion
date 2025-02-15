@@ -4,6 +4,7 @@ using LabFusion.Utilities;
 using LabFusion.SDK.Metadata;
 using LabFusion.SDK.Triggers;
 using LabFusion.Menu.Data;
+using LabFusion.Player;
 
 using UnityEngine;
 
@@ -251,4 +252,11 @@ public abstract class Gamemode
     protected virtual void OnMetadataChanged(string key, string value) { }
 
     protected virtual void OnMetadataRemoved(string key, string value) { }
+
+    /// <summary>
+    /// Checks if a player can be attacked by the local player.
+    /// </summary>
+    /// <param name="player">The player to check.</param>
+    /// <returns>True if the player can be attacked, False otherwise.</returns>
+    public virtual bool CanAttack(PlayerId player) => true;
 }

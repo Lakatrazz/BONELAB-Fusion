@@ -143,6 +143,16 @@ public class Juggernaut : Gamemode
         Playlist.Update();
     }
 
+    public override bool CanAttack(PlayerId player)
+    {
+        if (!IsStarted)
+        {
+            return true;
+        }
+
+        return !TeamManager.IsTeammate(player);
+    }
+
     public void ApplyGamemodeSettings()
     {
         _victorySongReference = FusionMonoDiscReferences.LavaGangVictoryReference;

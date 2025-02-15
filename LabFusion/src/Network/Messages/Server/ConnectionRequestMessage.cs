@@ -218,6 +218,6 @@ public class ConnectionRequestMessage : NativeMessageHandler
 
         // SERVER CATCHUP
         // Catchup hooked events
-        MultiplayerHooking.Internal_OnPlayerCatchup(playerId);
+        CatchupManager.InvokePlayerCatchup(playerId);
     }
 }

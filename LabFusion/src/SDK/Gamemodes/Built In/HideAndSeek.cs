@@ -173,7 +173,7 @@ public class HideAndSeek : Gamemode
             return true;
         }
 
-        return TeamManager.GetPlayerTeam(id) == TeamManager.GetLocalTeam();
+        return TeamManager.IsTeammate(id);
     }
 
     private void OnTagTriggered(string value)
