@@ -715,7 +715,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     {
         RigPose.ReadSkeleton(RigSkeleton);
 
-        var data = PlayerPoseUpdateData.Create(PlayerId, RigPose);
+        var data = PlayerPoseUpdateData.Create(RigPose);
 
         MessageRelay.RelayNative(data, NativeMessageTag.PlayerPoseUpdate, NetworkChannel.Unreliable, RelayType.ToOtherClients);
     }
