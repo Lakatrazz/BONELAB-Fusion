@@ -11,7 +11,7 @@ public enum PermissionCommandType
     KICK = 1,
     BAN = 2,
     TELEPORT_TO_THEM = 3,
-    TELEPORT_TO_US = 4,
+    TELEPORT_TO_ME = 4,
 }
 
 public class PermissionCommandRequestData : IFusionSerializable
@@ -110,7 +110,7 @@ public class PermissionCommandRequestMessage : NativeMessageHandler
                         PlayerSender.SendPlayerTeleport(playerId, references.RigManager.physicsRig.feet.transform.position);
                 }
                 break;
-            case PermissionCommandType.TELEPORT_TO_US:
+            case PermissionCommandType.TELEPORT_TO_ME:
                 if (otherPlayer != null && FusionPermissions.HasSufficientPermissions(level, LobbyInfoManager.LobbyInfo.Teleportation))
                 {
                     PlayerRepUtilities.TryGetReferences(playerId, out var references);

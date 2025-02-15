@@ -720,11 +720,11 @@ public static class MenuLocation
                     PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_THEM, player);
                 });
 
-            moderationGroup.AddElement<FunctionElement>("Teleport To Us")
+            moderationGroup.AddElement<FunctionElement>("Teleport To Me")
                 .WithColor(Color.red)
                 .Do(() =>
                 {
-                    PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_US, player);
+                    PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_ME, player);
                 });
         }
     }
@@ -810,7 +810,7 @@ public static class MenuLocation
                     foreach (var playerId in PlayerIdManager.PlayerIds)
                     {
                         if (playerId != PlayerIdManager.LocalSmallId)
-                            PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_US, playerId);
+                            PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_ME, playerId);
                     }
                 }
             });
