@@ -7,29 +7,25 @@ public class NimbusGunNoclipData : IFusionSerializable
 {
     public const int Size = sizeof(byte) * 2 + sizeof(ushort);
 
-    public byte smallId;
     public ushort syncId;
     public bool isEnabled;
 
     public void Serialize(FusionWriter writer)
     {
-        writer.Write(smallId);
         writer.Write(syncId);
         writer.Write(isEnabled);
     }
 
     public void Deserialize(FusionReader reader)
     {
-        smallId = reader.ReadByte();
         syncId = reader.ReadUInt16();
         isEnabled = reader.ReadBoolean();
     }
 
-    public static NimbusGunNoclipData Create(byte smallId, ushort syncId, bool isEnabled)
+    public static NimbusGunNoclipData Create(ushort syncId, bool isEnabled)
     {
         return new NimbusGunNoclipData()
         {
-            smallId = smallId,
             syncId = syncId,
             isEnabled = isEnabled,
         };
@@ -48,6 +44,11 @@ public class NimbusGunNoclipMessage : NativeMessageHandler
         var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.syncId);
 
         if (entity == null)
+        {
+            return;
+        }
+
+        if (received.Sender != entity.OwnerId.SmallId)
         {
             return;
         }

@@ -14,26 +14,22 @@ public class EntityZoneRegisterData : IFusionSerializable
 {
     public const int Size = sizeof(byte) + sizeof(ushort) + sizeof(int);
 
-    public byte ownerId;
     public ushort entityId;
 
     public void Serialize(FusionWriter writer)
     {
-        writer.Write(ownerId);
         writer.Write(entityId);
     }
 
     public void Deserialize(FusionReader reader)
     {
-        ownerId = reader.ReadByte();
         entityId = reader.ReadUInt16();
     }
 
-    public static EntityZoneRegisterData Create(byte ownerId, ushort entityId)
+    public static EntityZoneRegisterData Create(ushort entityId)
     {
         return new EntityZoneRegisterData()
         {
-            ownerId = ownerId,
             entityId = entityId,
         };
     }
@@ -47,10 +43,14 @@ public class EntityZoneRegisterMessage : NativeMessageHandler
     {
         var data = received.ReadData<EntityZoneRegisterData>();
 
-        // Get entity
         var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.entityId);
 
         if (entity == null)
+        {
+            return;
+        }
+
+        if (received.Sender != entity.OwnerId.SmallId)
         {
             return;
         }
