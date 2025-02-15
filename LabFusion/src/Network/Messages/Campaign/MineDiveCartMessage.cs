@@ -31,7 +31,7 @@ public class MineDiveCartMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.MineDiveCart;
 
-    public override ExpectedType ExpectedReceiver => ExpectedType.ClientsOnly;
+    public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {

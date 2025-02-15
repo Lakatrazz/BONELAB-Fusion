@@ -36,7 +36,7 @@ public class ServerSettingsMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.ServerSettings;
 
-    public override ExpectedType ExpectedReceiver => ExpectedType.ClientsOnly;
+    public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {

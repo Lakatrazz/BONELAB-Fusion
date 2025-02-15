@@ -49,7 +49,7 @@ public class PermissionCommandRequestMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PermissionCommandRequest;
 
-    public override ExpectedType ExpectedReceiver => ExpectedType.ServerOnly;
+    public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ServerOnly;
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {

@@ -88,11 +88,11 @@ public abstract class NativeMessageHandler : MessageHandler
 
     public sealed override void Handle(ReceivedMessage received)
     {
-        if (ExpectedReceiver == ExpectedType.ServerOnly && !received.IsServerHandled)
+        if (ExpectedReceiver == ExpectedReceiverType.ServerOnly && !received.IsServerHandled)
         {
             throw new ExpectedServerException();
         }
-        else if (ExpectedReceiver == ExpectedType.ClientsOnly && received.IsServerHandled)
+        else if (ExpectedReceiver == ExpectedReceiverType.ClientsOnly && received.IsServerHandled)
         {
             throw new ExpectedClientException();
         }

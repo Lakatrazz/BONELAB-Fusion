@@ -42,7 +42,7 @@ public class BonelabHubEventMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.BonelabHubEvent;
 
-    public override ExpectedType ExpectedReceiver => ExpectedType.ClientsOnly;
+    public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {

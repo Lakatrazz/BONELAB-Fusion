@@ -41,7 +41,7 @@ public class PlayerRepTeleportMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerRepTeleport;
 
-    public override ExpectedType ExpectedReceiver => ExpectedType.ClientsOnly;
+    public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {

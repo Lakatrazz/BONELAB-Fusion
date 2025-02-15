@@ -47,7 +47,7 @@ public class PlayerMetadataResponseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerMetadataResponse;
 
-    public override ExpectedType ExpectedReceiver => ExpectedType.ClientsOnly;
+    public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {

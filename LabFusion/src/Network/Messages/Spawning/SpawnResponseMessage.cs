@@ -83,7 +83,7 @@ public class SpawnResponseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.SpawnResponse;
 
-    public override ExpectedType ExpectedReceiver => ExpectedType.ClientsOnly;
+    public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
