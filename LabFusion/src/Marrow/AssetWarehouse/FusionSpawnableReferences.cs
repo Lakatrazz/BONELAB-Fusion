@@ -18,6 +18,8 @@ public static class FusionSpawnableReferences
 
     public static readonly SpawnableCrateReference ProgressBarReference = new("Lakatrazz.FusionContent.Spawnable.ProgressBar");
 
+    public static readonly SpawnableCrateReference HealthBarReference = new("Lakatrazz.FusionContent.Spawnable.HealthBar");
+
     public static readonly SpawnableCrateReference NameTagReference = new("Lakatrazz.FusionContent.Spawnable.NameTag");
 
     public static readonly SpawnableCrateReference HeadLayoutReference = new("Lakatrazz.FusionContent.Spawnable.HeadLayout");

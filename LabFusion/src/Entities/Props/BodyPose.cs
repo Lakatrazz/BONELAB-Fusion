@@ -7,6 +7,8 @@ namespace LabFusion.Entities;
 
 public class BodyPose : IFusionSerializable
 {
+    public const int Size = SerializedShortVector3.Size + SerializedSmallQuaternion.Size + SerializedSmallVector3.Size * 2;
+
     public Vector3 position = Vector3.zero;
     public Quaternion rotation = Quaternion.identity;
 
@@ -43,6 +45,11 @@ public class BodyPose : IFusionSerializable
     public void PredictPosition(float deltaTime)
     {
         _positionPrediction += velocity * deltaTime;
+    }
+
+    public int? GetSize()
+    {
+        return Size;
     }
 
     public void Serialize(FusionWriter writer)

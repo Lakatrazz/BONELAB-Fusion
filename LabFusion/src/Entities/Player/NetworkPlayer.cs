@@ -76,6 +76,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private RigAvatarSetter _avatarSetter = null;
     public RigAvatarSetter AvatarSetter => _avatarSetter;
 
+    private RigHealthBar _healthBar = null;
+    public RigHealthBar HealthBar => _healthBar;
+
     private bool _isPhysicsRigDirty = false;
     private Queue<PhysicsRigStateData> _physicsRigStates = new();
 
@@ -132,7 +135,12 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         _icon = new()
         {
-            Visible = false
+            Visible = false,
+        };
+
+        _healthBar = new()
+        {
+            Visible = false,
         };
 
         _avatarSetter = new(networkEntity);
@@ -142,6 +150,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         HeadUI.RegisterElement(_nametag);
         HeadUI.RegisterElement(_avatarSetter.ProgressBar);
         HeadUI.RegisterElement(_icon);
+        HeadUI.RegisterElement(_healthBar);
 
         networkEntity.HookOnRegistered(OnPlayerRegistered);
         networkEntity.OnEntityUnregistered += OnPlayerUnregistered;
@@ -396,6 +405,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             _nametag.UpdateText();
 
             _headUI.UpdateScale(RigRefs.RigManager);
+
+            _healthBar.UpdateHealth(RigRefs.RigManager);
         }
 
         UpdateVoiceSourceSettings();
@@ -516,10 +527,10 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         switch (hand.handedness)
         {
             case Handedness.LEFT:
-                RigPose.leftController?.CopyTo(hand.Controller);
+                RigPose.LeftController?.CopyTo(hand.Controller);
                 break;
             case Handedness.RIGHT:
-                RigPose.rightController?.CopyTo(hand.Controller);
+                RigPose.RightController?.CopyTo(hand.Controller);
                 break;
         }
     }
@@ -544,7 +555,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
             OnUpdateVoiceSource(deltaTime);
 
-            RigSkeleton.remapRig._feetOffset = RigPose.feetOffset;
+            RigSkeleton.remapRig._feetOffset = RigPose.FeetOffset;
         }
     }
 
@@ -698,7 +709,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         MarrowEntity.ResetPose();
 
         // Get teleport position
-        var pos = RigPose.pelvisPose.PredictedPosition;
+        var pos = RigPose.PelvisPose.PredictedPosition;
 
         // Get offset
         var offset = pos - RigSkeleton.physicsPelvis.transform.position;
@@ -727,8 +738,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             return;
         }
 
-        var pelvisPose = RigPose.pelvisPose;
-        var feetPose = RigPose.feetPose;
+        var pelvisPose = RigPose.PelvisPose;
+        var feetPose = RigPose.FeetPose;
 
         // Stop bodies
         if (pelvisPose == null || feetPose == null)
@@ -800,7 +811,11 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         // Update the playspace rotation
-        RigSkeleton.trackedPlayspace.rotation = RigPose.trackedPlayspace.Expand();
+        RigSkeleton.trackedPlayspace.rotation = RigPose.TrackedPlayspace.Expand();
+
+        // Update the health
+        HealthBar.Health = pose.Health;
+        RigSkeleton.health.curr_Health = pose.Health;
     }
 
     public void OnOverrideControllerRig()
@@ -813,7 +828,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
         {
             var trackedPoint = RigSkeleton.trackedPoints[i];
-            var posePoint = RigPose.trackedPoints[i];
+            var posePoint = RigPose.TrackedPoints[i];
 
             trackedPoint.SetLocalPositionAndRotation(posePoint.position, posePoint.rotation);
         }

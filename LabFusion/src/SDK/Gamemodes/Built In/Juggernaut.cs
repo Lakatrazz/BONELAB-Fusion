@@ -1,5 +1,6 @@
 ﻿using Il2CppSLZ.Marrow.Warehouse;
 
+using LabFusion.Entities;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Integration;
@@ -34,7 +35,7 @@ public class Juggernaut : Gamemode
     {
         public const float SurvivorVitality = 1f;
 
-        public const float JuggernautVitality = 20f;
+        public const float JuggernautVitality = 10f;
 
         public const float SurvivorHeight = 1.76f;
 
@@ -346,6 +347,15 @@ public class Juggernaut : Gamemode
         }
     }
 
+    private float CalculateJuggernautHealth()
+    {
+        var otherPlayers = Mathf.Max(1, PlayerIdManager.PlayerCount - 1);
+
+        float health = Defaults.JuggernautVitality * Mathf.Sqrt(otherPlayers);
+
+        return Mathf.Round(health * 0.1f) * 10f;
+    }
+
     private void OnAssignedToTeam(PlayerId player, Team team)
     {
         if (player.IsMe)
@@ -388,7 +398,7 @@ public class Juggernaut : Gamemode
                 Type = NotificationType.INFORMATION,
             });
 
-            LocalHealth.VitalityOverride = Defaults.JuggernautVitality;
+            LocalHealth.VitalityOverride = CalculateJuggernautHealth();
             LocalHealth.RegenerationOverride = false;
 
             LocalAvatar.HeightOverride = Defaults.JuggernautHeight;
@@ -397,6 +407,8 @@ public class Juggernaut : Gamemode
 
     private void OnOtherAssignedToTeam(PlayerId player, Team team)
     {
+        bool healthBarVisible = false;
+
         if (team == JuggernautTeam)
         {
             player.TryGetDisplayName(out var name);
@@ -409,6 +421,13 @@ public class Juggernaut : Gamemode
                 PopupLength = 2f,
                 Type = NotificationType.INFORMATION,
             });
+
+            healthBarVisible = true;
+        }
+
+        if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
+        {
+            networkPlayer.HealthBar.Visible = healthBarVisible;
         }
     }
 

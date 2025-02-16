@@ -21,6 +21,8 @@ public class RigSkeleton
 
     public RemapRig remapRig = null;
 
+    public Health health = null;
+
     public RigSkeleton(RigManager rigManager)
     {
         RigAbstractor.FillTransformArray(ref trackedPoints, rigManager);
@@ -36,5 +38,7 @@ public class RigSkeleton
         physicsRightHand = physicsRig.rightHand;
 
         remapRig = rigManager.remapHeptaRig;
+
+        health = rigManager.health;
     } 
 }
