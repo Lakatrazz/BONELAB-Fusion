@@ -167,26 +167,6 @@ public static class FusionPlayer
     }
 
     /// <summary>
-    /// Sets the ammo count of the local player for all types.
-    /// </summary>
-    /// <param name="count"></param>
-    public static void SetAmmo(int count)
-    {
-        var ammoInventory = AmmoInventory.Instance;
-
-        if (ammoInventory == null)
-        {
-            return;
-        }
-
-        ammoInventory.ClearAmmo();
-
-        ammoInventory.AddCartridge(ammoInventory.lightAmmoGroup, count);
-        ammoInventory.AddCartridge(ammoInventory.heavyAmmoGroup, count);
-        ammoInventory.AddCartridge(ammoInventory.mediumAmmoGroup, count);
-    }
-
-    /// <summary>
     /// Sets the custom spawn points for the player.
     /// </summary>
     /// <param name="points"></param>

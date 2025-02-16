@@ -551,7 +551,7 @@ public class TeamDeathmatch : Gamemode
             LocalHealth.MortalityOverride = true;
 
             // Setup ammo
-            FusionPlayer.SetAmmo(1000);
+            LocalInventory.SetAmmo(10000);
 
             // Push nametag updates
             FusionOverrides.ForceUpdateOverrides();
@@ -623,9 +623,6 @@ public class TeamDeathmatch : Gamemode
 
         // Reset mortality
         LocalHealth.MortalityOverride = null;
-
-        // Remove ammo
-        FusionPlayer.SetAmmo(0);
 
         // Push nametag updates
         FusionOverrides.ForceUpdateOverrides();

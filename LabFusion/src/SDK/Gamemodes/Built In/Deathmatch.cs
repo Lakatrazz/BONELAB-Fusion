@@ -386,7 +386,7 @@ public class Deathmatch : Gamemode
             LocalHealth.MortalityOverride = true;
 
             // Setup ammo
-            FusionPlayer.SetAmmo(1000);
+            LocalInventory.SetAmmo(10000);
 
             // Get all spawn points
             GamemodeHelper.SetSpawnPoints(GamemodeMarker.FilterMarkers(null));
@@ -519,9 +519,6 @@ public class Deathmatch : Gamemode
 
         // Reset mortality
         LocalHealth.MortalityOverride = null;
-
-        // Remove ammo
-        FusionPlayer.SetAmmo(0);
 
         // Remove spawn points
         FusionPlayer.ResetSpawnPoints();

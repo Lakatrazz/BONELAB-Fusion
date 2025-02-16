@@ -108,6 +108,8 @@ public class Juggernaut : Gamemode
 
             GamemodeHelper.SetSpawnPoints(GamemodeMarker.FilterMarkers(null));
             GamemodeHelper.TeleportToSpawnPoint();
+
+            LocalInventory.SetAmmo(10000);
         });
     }
 
