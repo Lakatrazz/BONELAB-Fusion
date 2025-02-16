@@ -74,6 +74,8 @@ public class Juggernaut : Gamemode
         TeamManager.OnAssignedToTeam += OnAssignedToTeam;
 
         MultiplayerHooking.OnPlayerAction += OnPlayerAction;
+        MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
+        MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
 
         // Register score keeper
         JuggernautScoreKeeper.Register(Metadata);
@@ -87,6 +89,8 @@ public class Juggernaut : Gamemode
         TeamManager.OnAssignedToTeam -= OnAssignedToTeam;
 
         MultiplayerHooking.OnPlayerAction -= OnPlayerAction;
+        MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
+        MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
 
         // Unregister score keeper
         JuggernautScoreKeeper.Unregister();
@@ -236,6 +240,33 @@ public class Juggernaut : Gamemode
                 GamemodeManager.StopGamemode();
             }
         }
+    }
+
+    private void OnPlayerJoin(PlayerId playerId)
+    {
+        if (!IsStarted || !NetworkInfo.IsServer)
+        {
+            return;
+        }
+
+        TeamManager.TryAssignTeam(playerId, SurvivorTeam);
+    }
+
+    private void OnPlayerLeave(PlayerId playerId)
+    {
+        if (!IsStarted || !NetworkInfo.IsServer)
+        {
+            return;
+        }
+
+        bool isJuggernaut = TeamManager.GetPlayerTeam(playerId) == JuggernautTeam;
+
+        if (isJuggernaut)
+        {
+            TeamManager.TryAssignTeam(PlayerIdManager.PlayerIds.GetRandom(), JuggernautTeam);
+        }
+
+        TeamManager.TryUnassignTeam(playerId);
     }
 
     private void CheckFinalScore()
