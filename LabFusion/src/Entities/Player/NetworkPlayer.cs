@@ -405,8 +405,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             _nametag.UpdateText();
 
             _headUI.UpdateScale(RigRefs.RigManager);
-
-            _healthBar.UpdateHealth(RigRefs.RigManager);
         }
 
         UpdateVoiceSourceSettings();
@@ -815,7 +813,10 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         // Update the health
         HealthBar.Health = pose.Health;
+        HealthBar.MaxHealth = pose.MaxHealth;
+
         RigSkeleton.health.curr_Health = pose.Health;
+        RigSkeleton.health.max_Health = pose.MaxHealth;
     }
 
     public void OnOverrideControllerRig()

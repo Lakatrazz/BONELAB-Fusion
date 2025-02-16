@@ -90,7 +90,7 @@ public class RigHealthBar : IPopupLayoutElement
     {
         var spawnable = new Spawnable()
         {
-            crateRef = FusionSpawnableReferences.ProgressBarReference,
+            crateRef = FusionSpawnableReferences.HealthBarReference,
             policyData = null,
         };
 
@@ -126,12 +126,6 @@ public class RigHealthBar : IPopupLayoutElement
         _poolee = null;
         _transform = null;
         _slider = null;
-    }
-
-    public void UpdateHealth(RigManager rigManager)
-    {
-        MaxHealth = rigManager.health.max_Health;
-        Health = rigManager.health.curr_Health;
     }
 
     private void UpdateVisuals()

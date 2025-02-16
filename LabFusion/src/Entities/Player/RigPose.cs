@@ -25,7 +25,9 @@ public class RigPose : IFusionSerializable
 
     public float FeetOffset { get; set; } = 0f;
 
-    public float Health { get; set; } = 0f;
+    public float Health { get; set; } = 100f;
+
+    public float MaxHealth { get; set; } = 100f;
 
     public int? GetSize()
     {
@@ -54,6 +56,7 @@ public class RigPose : IFusionSerializable
         // Read extra info
         FeetOffset = skeleton.remapRig._feetOffset;
         Health = skeleton.health.curr_Health;
+        MaxHealth = skeleton.health.max_Health;
     }
 
     public void Serialize(FusionWriter writer)
@@ -78,6 +81,7 @@ public class RigPose : IFusionSerializable
         // Write extra info
         writer.Write(FeetOffset);
         writer.Write(Health);
+        writer.Write(MaxHealth);
     }
 
     public void Deserialize(FusionReader reader)
@@ -102,5 +106,6 @@ public class RigPose : IFusionSerializable
         // Read extra info
         FeetOffset = reader.ReadSingle();
         Health = reader.ReadSingle();
+        MaxHealth = reader.ReadSingle();
     }
 }
