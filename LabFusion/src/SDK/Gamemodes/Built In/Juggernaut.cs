@@ -72,6 +72,7 @@ public class Juggernaut : Gamemode
         TeamManager.AddTeam(JuggernautTeam);
 
         TeamManager.OnAssignedToTeam += OnAssignedToTeam;
+        TeamManager.OnRemovedFromTeam += OnRemovedFromTeam;
 
         MultiplayerHooking.OnPlayerAction += OnPlayerAction;
         MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
@@ -87,6 +88,7 @@ public class Juggernaut : Gamemode
         TeamManager.Unregister();
 
         TeamManager.OnAssignedToTeam -= OnAssignedToTeam;
+        TeamManager.OnRemovedFromTeam -= OnRemovedFromTeam;
 
         MultiplayerHooking.OnPlayerAction -= OnPlayerAction;
         MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
@@ -400,7 +402,7 @@ public class Juggernaut : Gamemode
 
     private static int CalculateBitReward(int score)
     {
-        float percent = Mathf.Pow(score / Defaults.MaxPoints, 2f);
+        float percent = Mathf.Pow((float)score / (float)Defaults.MaxPoints, 2f);
 
         return Mathf.Clamp(Mathf.RoundToInt(percent * Defaults.MaxBits), 0, Defaults.MaxBits);
     }
@@ -414,6 +416,14 @@ public class Juggernaut : Gamemode
         else
         {
             OnOtherAssignedToTeam(player, team);
+        }
+    }
+
+    private void OnRemovedFromTeam(PlayerId player, Team team)
+    {
+        if (team == JuggernautTeam && NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
+        {
+            networkPlayer.HealthBar.Visible = false;
         }
     }
 
