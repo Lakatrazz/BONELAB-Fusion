@@ -227,7 +227,7 @@ public class Juggernaut : Gamemode
 
             JuggernautScoreKeeper.SetScore(otherPlayer, nextScore);
 
-            if (nextScore > Defaults.MaxPoints)
+            if (nextScore >= Defaults.MaxPoints)
             {
                 GamemodeManager.StopGamemode();
             }

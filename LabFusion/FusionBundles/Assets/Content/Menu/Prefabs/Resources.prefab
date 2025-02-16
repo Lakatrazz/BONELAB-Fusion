@@ -1596,7 +1596,7 @@ GameObject:
   - component: {fileID: 6985426031028231031}
   - component: {fileID: 4164292396941355903}
   m_Layer: 5
-  m_Name: Bone Smash
+  m_Name: Smash Bones
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
