@@ -8,6 +8,7 @@ using LabFusion.Menu;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Scene;
+using LabFusion.SDK.Points;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 
@@ -42,6 +43,8 @@ public class Juggernaut : Gamemode
         public const float JuggernautHeight = 2.288f;
 
         public const int MaxPoints = 20;
+
+        public const int MaxBits = 1000;
     }
 
     private readonly TeamManager _teamManager = new();
@@ -288,6 +291,14 @@ public class Juggernaut : Gamemode
             SaveToMenu = false,
             ShowPopup = true,
         });
+
+        // Reward bits
+        var bitReward = CalculateBitReward(selfScore);
+
+        if (bitReward > 0)
+        {
+            PointItemManager.RewardBits(bitReward);
+        }
     }
 
     private void OnVictoryStatus(bool isVictory = false)
@@ -347,13 +358,20 @@ public class Juggernaut : Gamemode
         }
     }
 
-    private float CalculateJuggernautHealth()
+    private static float CalculateJuggernautHealth()
     {
         var otherPlayers = Mathf.Max(1, PlayerIdManager.PlayerCount - 1);
 
         float health = Defaults.JuggernautVitality * Mathf.Sqrt(otherPlayers);
 
         return Mathf.Round(health * 0.1f) * 10f;
+    }
+
+    private static int CalculateBitReward(int score)
+    {
+        float percent = Mathf.Pow(score / Defaults.MaxPoints, 2f);
+
+        return Mathf.Clamp(Mathf.RoundToInt(percent * Defaults.MaxBits), 0, Defaults.MaxBits);
     }
 
     private void OnAssignedToTeam(PlayerId player, Team team)
