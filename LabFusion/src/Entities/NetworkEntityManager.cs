@@ -28,7 +28,7 @@ public static class NetworkEntityManager
 
     public static void OnInitializeManager()
     {
-        CatchupManager.OnPlayerCatchup += OnPlayerCatchup;
+        CatchupManager.OnPlayerServerCatchup += OnPlayerCatchup;
     }
 
     public static void OnCleanupIds()

@@ -8,7 +8,10 @@ namespace LabFusion.Network;
 /// </summary>
 public static class CatchupManager
 {
-    public static event Action<PlayerId> OnPlayerCatchup;
+    /// <summary>
+    /// Callback invoked when a new player joins the server and needs to be caught up on past server messages.
+    /// </summary>
+    public static event Action<PlayerId> OnPlayerServerCatchup;
 
-    internal static void InvokePlayerCatchup(PlayerId playerId) => OnPlayerCatchup.InvokeSafe(playerId, "executing OnPlayerCatchup hook");
+    internal static void InvokePlayerServerCatchup(PlayerId playerId) => OnPlayerServerCatchup.InvokeSafe(playerId, "executing OnPlayerCatchup hook");
 }
