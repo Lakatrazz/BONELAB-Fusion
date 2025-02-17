@@ -72,5 +72,7 @@ public class PlayerRepDamageMessage : NativeMessageHandler
         FusionPlayer.LastAttacker = data.damagerId;
 
         health.OnReceivedDamage(attack, data.part);
+
+        LocalHealth.InvokeAttackedByPlayer(attack, data.part, PlayerIdManager.GetPlayerId(data.damagerId));
     }
 }

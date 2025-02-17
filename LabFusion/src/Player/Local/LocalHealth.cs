@@ -1,4 +1,5 @@
 ﻿using Il2CppSLZ.Marrow;
+using Il2CppSLZ.Marrow.Combat;
 using Il2CppSLZ.VRMK;
 
 using LabFusion.Data;
@@ -55,7 +56,15 @@ public static class LocalHealth
         }
     }
 
+    /// <summary>
+    /// Callback that is invoked when the local player respawns.
+    /// </summary>
     public static event Action OnRespawn;
+
+    /// <summary>
+    /// Callback that is invoked when the local player is attacked by another player. Passes in the Attack, the hit BodyPart, and the attacking PlayerId.
+    /// </summary>
+    public static event Action<Attack, PlayerDamageReceiver.BodyPart, PlayerId> OnAttackedByPlayer;
 
     internal static void OnInitializeMelon()
     {
@@ -85,6 +94,11 @@ public static class LocalHealth
     internal static void InvokeRespawn()
     {
         OnRespawn?.InvokeSafe("executing LocalHealth.OnRespawn");
+    }
+
+    internal static void InvokeAttackedByPlayer(Attack attack, PlayerDamageReceiver.BodyPart bodyPart, PlayerId playerId)
+    {
+        OnAttackedByPlayer?.InvokeSafe(attack, bodyPart, playerId, "executing LocalHealth.OnAttackedByPlayer");
     }
 
     private static void OnLobbyInfoChanged()
