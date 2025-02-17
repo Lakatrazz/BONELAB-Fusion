@@ -551,7 +551,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
             OnUpdateVoiceSource(deltaTime);
 
-            RigSkeleton.remapRig._feetOffset = RigPose.FeetOffset;
+            RigSkeleton.remapRig._crouchTarget = RigPose.CrouchTarget;
         }
     }
 

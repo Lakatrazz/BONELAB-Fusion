@@ -21,7 +21,7 @@ public class RigPose : IFusionSerializable
     public SerializedController LeftController { get; set; } = null;
     public SerializedController RightController { get; set; } = null;
 
-    public float FeetOffset { get; set; } = 0f;
+    public float CrouchTarget { get; set; } = 0f;
 
     public float Health { get; set; } = 100f;
 
@@ -51,7 +51,7 @@ public class RigPose : IFusionSerializable
         RightController = new(skeleton.physicsRightHand.Controller);
 
         // Read extra info
-        FeetOffset = skeleton.remapRig._feetOffset;
+        CrouchTarget = skeleton.remapRig._crouchTarget;
         Health = skeleton.health.curr_Health;
         MaxHealth = skeleton.health.max_Health;
     }
@@ -75,7 +75,7 @@ public class RigPose : IFusionSerializable
         writer.Write(RightController);
 
         // Write extra info
-        writer.Write(FeetOffset);
+        writer.Write(CrouchTarget);
         writer.Write(Health);
         writer.Write(MaxHealth);
     }
@@ -99,7 +99,7 @@ public class RigPose : IFusionSerializable
         RightController = reader.ReadFusionSerializable<SerializedController>();
 
         // Read extra info
-        FeetOffset = reader.ReadSingle();
+        CrouchTarget = reader.ReadSingle();
         Health = reader.ReadSingle();
         MaxHealth = reader.ReadSingle();
     }
