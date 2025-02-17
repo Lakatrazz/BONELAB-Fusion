@@ -230,9 +230,9 @@ public static class GamemodeManager
             });
         }
 
-        StartTimer = DefaultTime;
-
         _startTimerActive = true;
+
+        StartTimer = DefaultTime;
     }
 
     private static void StopReadyTimer()
@@ -249,9 +249,9 @@ public static class GamemodeManager
             });
         }
 
-        StartTimer = DefaultTime;
-
         _startTimerActive = false;
+
+        StartTimer = DefaultTime;
     }
 
     /// <summary>

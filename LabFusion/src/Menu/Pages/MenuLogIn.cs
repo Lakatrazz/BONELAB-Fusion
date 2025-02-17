@@ -21,7 +21,7 @@ public static class MenuLogIn
             .WithTitle($"Target Layer: {ClientSettings.NetworkLayerTitle.Value}");
 
         var cycleLayerElement = layoutOptions.Find("button_CycleLayer").GetComponent<FunctionElement>()
-            .WithTitle("Cycle")
+            .WithTitle("Change Layer")
             .Do(() =>
             {
                 int count = NetworkLayer.SupportedLayers.Count;

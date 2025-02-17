@@ -229,9 +229,11 @@ public static class MenuGamemode
 
     private static void UpdateActionElements()
     {
-        SelectGamemodeElement.gameObject.SetActive(NetworkInfo.IsServer && SelectedGamemode != null);
+        bool newGamemodeSelected = SelectedGamemode != null && SelectedGamemode != GamemodeManager.ActiveGamemode;
 
-        if (SelectedGamemode != null)
+        SelectGamemodeElement.gameObject.SetActive(NetworkInfo.IsServer && newGamemodeSelected);
+
+        if (newGamemodeSelected)
         {
             SelectGamemodeElement.Title = $"Select {SelectedGamemode.Title}";
         }
