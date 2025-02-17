@@ -111,7 +111,7 @@ public static class LocalRagdoll
         // Wait a certain amount of time to wake up
         float elapsed = 0f;
 
-        float eyeLength = 10f;
+        float eyeLength = Mathf.Min(10f, length);
 
         while (elapsed <= length)
         {

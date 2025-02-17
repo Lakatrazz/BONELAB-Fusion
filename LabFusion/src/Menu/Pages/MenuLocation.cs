@@ -383,8 +383,8 @@ public static class MenuLocation
             .Cleared()
             .WithInteractability(ownsSettings)
             .AsPref(SavedServerSettings.KnockoutLength)
-            .WithLimits(10, 300)
-            .WithIncrement(10)
+            .WithLimits(5, 300)
+            .WithIncrement(5)
             .WithTitle("Knockout Length");
 
         PlayerConstrainingElement
