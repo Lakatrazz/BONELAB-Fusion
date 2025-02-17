@@ -16,6 +16,8 @@ public static class MenuMatchmakingGamemodes
     public static FunctionElement FindServerElement { get; private set; }
     public static FunctionElement CreateServerElement { get; private set; }
 
+    public static LabelElement DescriptionLabel { get; private set; }
+
     public static LabelElement SearchingLabel { get; private set; }
 
     public static LabelElement NoneFoundLabel { get; private set; }
@@ -115,6 +117,9 @@ public static class MenuMatchmakingGamemodes
             .WithTitle("Create Server")
             .Do(CreateGamemodeServer);
 
+        DescriptionLabel = queryLayout.Find("label_Description").GetComponent<LabelElement>()
+            .WithTitle("No description...");
+
         // Searching page
         var searchingPage = gamemodesTransform.Find("page_Searching");
 
@@ -141,6 +146,14 @@ public static class MenuMatchmakingGamemodes
         bool visible = SelectedGamemode != null;
         FindServerElement.gameObject.SetActive(visible);
         CreateServerElement.gameObject.SetActive(visible);
+        DescriptionLabel.gameObject.SetActive(visible);
+
+        if (visible)
+        {
+            string description = !string.IsNullOrWhiteSpace(SelectedGamemode.Description) ? SelectedGamemode.Description : "No description...";
+
+            DescriptionLabel.Title = description;
+        }
     }
 
     public static void RefreshGamemodes()

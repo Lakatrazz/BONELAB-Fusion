@@ -120,6 +120,9 @@ public class Entangled : Gamemode
     // Set info for the gamemode
     public override string Title => "Entangled";
     public override string Author => FusionMod.ModAuthor;
+    public override string Description =>
+        "Get tethered to a random player! " +
+        "No objectives except to mess around!";
     public override Texture Logo => MenuResources.GetGamemodeIcon(Title);
 
     // Set parameters for the gamemode

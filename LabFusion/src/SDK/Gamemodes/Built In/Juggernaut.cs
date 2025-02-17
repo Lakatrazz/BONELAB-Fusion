@@ -23,6 +23,11 @@ public class Juggernaut : Gamemode
 
     public override string Author => FusionMod.ModAuthor;
 
+    public override string Description => 
+        "One player becomes the Juggernaut, a massive beast with copious amounts of health! " +
+        "Defeat the Juggernaut to gain their power, and kill the remaining survivors! " +
+        "First Juggernaut to reach 20 kills wins. More Bits are given for each kill.";
+
     public override Texture Logo => MenuResources.GetGamemodeIcon(Title);
 
     public override bool AutoHolsterOnDeath => true;

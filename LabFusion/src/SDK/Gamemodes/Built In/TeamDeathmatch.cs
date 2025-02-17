@@ -36,6 +36,10 @@ public class TeamDeathmatch : Gamemode
 
     public override string Title => "Team Deathmatch";
     public override string Author => FusionMod.ModAuthor;
+    public override string Description =>
+        "Players are randomly selected to be placed in two separate teams. " +
+        "Kill players on the opposite team to gain points before the timer runs out! " +
+        "More Bits are given based on the amount of points your team gains compared to the other team.";
     public override Texture Logo => MenuResources.GetGamemodeIcon(Title);
 
     public override bool DisableDevTools => true;

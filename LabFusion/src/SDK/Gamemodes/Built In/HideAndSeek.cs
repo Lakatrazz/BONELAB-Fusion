@@ -26,6 +26,11 @@ public class HideAndSeek : Gamemode
 
     public override string Author => FusionMod.ModAuthor;
 
+    public override string Description =>
+        "Seekers are picked at random, while the rest of the players must hide! " +
+        "After a 30 second countdown, the seekers must grab other players to turn them into seekers! " +
+        "Once everyone becomes a seeker, the seekers win; however, if the time runs out before then, the hiders win!";
+
     public override Texture Logo => MenuResources.GetGamemodeIcon(Title);
 
     public static class Defaults
@@ -359,7 +364,7 @@ public class HideAndSeek : Gamemode
         LocalVision.BlindColor = Color.black;
 
         // Lock movement so we can't move while vision is dark
-        LocalControls.LockMovement();
+        LocalControls.LockedMovement = true;
 
         float notificationWait = 0f;
 
@@ -433,7 +438,7 @@ public class HideAndSeek : Gamemode
             yield return null;
         }
 
-        LocalControls.UnlockMovement();
+        LocalControls.LockedMovement = false;
 
         LocalVision.Blind = false;
 

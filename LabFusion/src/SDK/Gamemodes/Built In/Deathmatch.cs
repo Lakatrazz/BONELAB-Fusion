@@ -32,9 +32,12 @@ public class Deathmatch : Gamemode
     private const int _minMinutes = 2;
     private const int _maxMinutes = 60;
 
-    // Default metadata keys
     public override string Title => "Deathmatch";
     public override string Author => FusionMod.ModAuthor;
+    public override string Description =>
+        "All players are pitted against each other in a free for all! " +
+        "Kill other players to gain points before the timer runs out! " +
+        "More Bits are given based on the amount of players you kill compared to other players.";
     public override Texture Logo => MenuResources.GetGamemodeIcon(Title);
 
     public override bool DisableDevTools => true;

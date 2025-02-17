@@ -102,7 +102,6 @@ public class FusionMod : MelonMod
         // Initialize player
         FusionPlayer.OnInitializeMelon();
         LocalPlayer.OnInitializeMelon();
-        LocalVision.OnInitializeMelon();
 
         // Register base modules
         InitializeBaseModules();

@@ -28,7 +28,7 @@ public static class NetworkEntityManager
 
     public static void OnInitializeManager()
     {
-        CatchupManager.OnPlayerServerCatchup += OnPlayerCatchup;
+        CatchupManager.OnPlayerServerCatchup += OnPlayerServerCatchup;
     }
 
     public static void OnCleanupIds()
@@ -74,7 +74,7 @@ public static class NetworkEntityManager
         IdManager.QueuedEntities.Clear();
     }
 
-    private static void OnPlayerCatchup(PlayerId playerId)
+    private static void OnPlayerServerCatchup(PlayerId playerId)
     {
         MelonCoroutines.Start(SendCatchupCoroutine(playerId));
     }

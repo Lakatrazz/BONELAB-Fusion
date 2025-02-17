@@ -49,6 +49,11 @@ public abstract class Gamemode
     public abstract string Author { get; }
 
     /// <summary>
+    /// A short description of the Gamemode. Defaults to null.
+    /// </summary>
+    public virtual string Description => null;
+
+    /// <summary>
     /// A unique string that identifies the Gamemode. Defaults to "Author.Title".
     /// </summary>
     public virtual string Barcode => $"{Author}.{Title}";

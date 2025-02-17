@@ -1,17 +1,54 @@
-﻿namespace LabFusion.Player;
+﻿using LabFusion.Data;
+using LabFusion.Network;
+using LabFusion.Utilities;
+
+namespace LabFusion.Player;
 
 public static class LocalControls
 {
-    private static bool _lockedMovement = false;
-    public static bool LockedMovement => _lockedMovement;
+    public static bool LockedMovement { get; set; } = false;
 
-    public static void LockMovement()
+    private static bool? _doubleJumpOverride = null;
+    public static bool? DoubleJumpOverride
     {
-        _lockedMovement = true;
+        get
+        {
+            return _doubleJumpOverride;
+        }
+        set
+        {
+            _doubleJumpOverride = value;
+
+            OnOverrideControls();
+        }
     }
 
-    public static void UnlockMovement()
+    internal static void OnInitializeMelon()
     {
-        _lockedMovement = false;
+        MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
+    }
+
+    private static void OnMainSceneInitialized()
+    {
+        OnOverrideControls();
+    }
+
+    private static void OnOverrideControls()
+    {
+        if (!NetworkInfo.HasServer)
+        {
+            return;
+        }
+
+        if (!RigData.HasPlayer)
+        {
+            return;
+        }
+
+        var rigManager = RigData.Refs.RigManager;
+
+        var remapRig = rigManager.remapHeptaRig;
+
+        remapRig.doubleJump = DoubleJumpOverride.GetValueOrDefault();
     }
 }

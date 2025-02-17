@@ -57,6 +57,8 @@ public static class LocalPlayer
 
         LocalAvatar.OnInitializeMelon();
         LocalHealth.OnInitializeMelon();
+        LocalControls.OnInitializeMelon();
+        LocalVision.OnInitializeMelon();
     }
 
     private static bool OnTrySetMetadata(string key, string value)
