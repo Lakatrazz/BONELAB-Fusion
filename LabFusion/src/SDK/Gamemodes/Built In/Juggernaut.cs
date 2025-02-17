@@ -5,6 +5,7 @@ using LabFusion.Extensions;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Integration;
 using LabFusion.Menu;
+using LabFusion.Menu.Data;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Scene;
@@ -64,6 +65,24 @@ public class Juggernaut : Gamemode
 
     private MonoDiscReference _victorySongReference = null;
     private MonoDiscReference _failureSongReference = null;
+
+    private int _minimumPlayers = 2;
+    public int MinimumPlayers
+    {
+        get
+        {
+            return _minimumPlayers;
+        }
+        set
+        {
+            _minimumPlayers = value;
+
+            if (!IsStarted && IsSelected)
+            {
+                GamemodeManager.ValidateReadyConditions();
+            }
+        }
+    }
 
     public override void OnGamemodeRegistered()
     {
@@ -141,6 +160,37 @@ public class Juggernaut : Gamemode
         LocalHealth.VitalityOverride = null;
 
         GamemodeHelper.ResetSpawnPoints();
+    }
+
+    public override GroupElementData CreateSettingsGroup()
+    {
+        var group = base.CreateSettingsGroup();
+
+        var generalGroup = new GroupElementData("General");
+
+        group.AddElement(generalGroup);
+
+        var minimumPlayersData = new IntElementData()
+        {
+            Title = "Minimum Players",
+            Value = MinimumPlayers,
+            Increment = 1,
+            MinValue = 1,
+            MaxValue = 255,
+            OnValueChanged = (v) =>
+            {
+                MinimumPlayers = v;
+            }
+        };
+
+        generalGroup.AddElement(minimumPlayersData);
+
+        return group;
+    }
+
+    public override bool CheckReadyConditions()
+    {
+        return PlayerIdManager.PlayerCount >= MinimumPlayers;
     }
 
     protected override void OnUpdate()

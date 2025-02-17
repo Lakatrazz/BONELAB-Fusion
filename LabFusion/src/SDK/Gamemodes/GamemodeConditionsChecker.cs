@@ -5,7 +5,7 @@ namespace LabFusion.SDK.Gamemodes;
 
 public static class GamemodeConditionsChecker
 {
-    public static void OnInitializeMelon()
+    internal static void OnInitializeMelon()
     {
         GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
 
