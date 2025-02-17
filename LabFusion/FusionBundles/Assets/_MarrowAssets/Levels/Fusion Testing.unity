@@ -9558,6 +9558,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6855f156cc1410540a128194860722cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  teamTags:
+    _tags:
+    - _barcode:
+        _id: Lakatrazz.FusionContent.BoneTag.TeamLavaGang
 --- !u!1001 &698989462
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14164,6 +14168,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6855f156cc1410540a128194860722cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  teamTags:
+    _tags:
+    - _barcode:
+        _id: Lakatrazz.FusionContent.BoneTag.TeamSabrelake
 --- !u!1001 &1193754973
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21841,6 +21849,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6855f156cc1410540a128194860722cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  teamTags:
+    _tags:
+    - _barcode:
+        _id: Lakatrazz.FusionContent.BoneTag.TeamLavaGang
 --- !u!1001 &2116464510
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22051,3 +22063,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6855f156cc1410540a128194860722cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  teamTags:
+    _tags:
+    - _barcode:
+        _id: Lakatrazz.FusionContent.BoneTag.TeamSabrelake

@@ -56,6 +56,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 855b2547999c5e44b9621f4426dcbd23, type: 2}
   - {fileID: 11400000, guid: 8b17a4c919b2cb9439f7d3587b61ec57, type: 2}
   - {fileID: 11400000, guid: 31582503ed056f04ea43c5d2389cd688, type: 2}
+  - {fileID: 11400000, guid: 7d8026baff8d2884aaa1b01d0e7c8507, type: 2}
   _tags: []
   _changeLogs:
   - version: 1.0.0
@@ -103,4 +104,5 @@ MonoBehaviour:
   - BoneTag  Fusion Player
   - BoneTag  Team LavaGang
   - BoneTag  Team Sabrelake
+  - BoneTag  Spectator
   _palletDependencies: []
