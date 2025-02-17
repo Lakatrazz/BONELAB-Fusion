@@ -170,14 +170,14 @@ public static class MenuCreator
             FusionNotifier.Send(new FusionNotification()
             {
                 Title = "Failed to Open Menu",
-                Message = "The Fusion menu does not exist!",
+                Message = "The Fusion menu does not exist! Please reinstall the Fusion Content mod.io mod!",
                 Type = NotificationType.ERROR,
                 SaveToMenu = false,
                 ShowPopup = true,
-                PopupLength = 4f,
+                PopupLength = 6f,
             });
 
-            FusionLogger.Error("Tried opening the menu, but it doesn't exist!");
+            FusionLogger.Error("Tried opening the menu, but it doesn't exist! Please reinstall the Fusion Content mod.io mod!");
             return;
         }
 
