@@ -25,7 +25,7 @@ using System;
 
 public class Deathmatch : Gamemode
 {
-    private const int _minPlayerBits = 30;
+    private const int _minPlayerBits = 60;
     private const int _maxPlayerBits = 600;
 
     private const int _defaultMinutes = 3;

@@ -25,8 +25,8 @@ public class TeamDeathmatch : Gamemode
     public const string DefaultSabrelakeName = "Sabrelake";
     public const string DefaultLavaGangName = "Lava Gang";
 
-    private const int _minPlayerBits = 30;
-    private const int _maxPlayerBits = 250;
+    private const int _minPlayerBits = 80;
+    private const int _maxPlayerBits = 800;
 
     public static TeamDeathmatch Instance { get; private set; }
 
