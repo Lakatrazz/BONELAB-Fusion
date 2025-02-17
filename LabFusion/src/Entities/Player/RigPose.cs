@@ -18,8 +18,6 @@ public class RigPose : IFusionSerializable
 
     public BodyPose PelvisPose { get; set; } = new();
 
-    public BodyPose FeetPose { get; set; } = new();
-
     public SerializedController LeftController { get; set; } = null;
     public SerializedController RightController { get; set; } = null;
 
@@ -47,7 +45,6 @@ public class RigPose : IFusionSerializable
 
         // Read bodies
         PelvisPose.ReadFrom(skeleton.physicsPelvis);
-        FeetPose.ReadFrom(skeleton.physicsFeet);
 
         // Read hands
         LeftController = new(skeleton.physicsLeftHand.Controller);
@@ -72,7 +69,6 @@ public class RigPose : IFusionSerializable
 
         // Write bodies
         writer.Write(PelvisPose);
-        writer.Write(FeetPose);
 
         // Write hands
         writer.Write(LeftController);
@@ -97,7 +93,6 @@ public class RigPose : IFusionSerializable
 
         // Read bodies
         PelvisPose = reader.ReadFusionSerializable<BodyPose>();
-        FeetPose = reader.ReadFusionSerializable<BodyPose>();
 
         // Read hands
         LeftController = reader.ReadFusionSerializable<SerializedController>();

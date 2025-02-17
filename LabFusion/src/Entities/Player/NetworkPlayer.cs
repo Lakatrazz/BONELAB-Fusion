@@ -90,7 +90,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     public bool HasRig => RigRefs != null && RigRefs.IsValid;
 
     private PDController _pelvisPDController = null;
-    private PDController _feetPDController = null;
 
     // Voice chat integration
     private float _minMicrophoneDistance = 1f;
@@ -122,7 +121,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         _playerId = playerId;
 
         _pelvisPDController = new();
-        _feetPDController = new();
 
         _puppet = new();
 
@@ -717,7 +715,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         // Reset PD controller
         _pelvisPDController.Reset();
-        _feetPDController.Reset();
     }
 
     private void OnOwnedUpdate()
@@ -737,13 +734,11 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         var pelvisPose = RigPose.PelvisPose;
-        var feetPose = RigPose.FeetPose;
 
         // Stop bodies
-        if (pelvisPose == null || feetPose == null)
+        if (pelvisPose == null)
         {
             _pelvisPDController.Reset();
-            _feetPDController.Reset();
             return;
         }
 
@@ -753,7 +748,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         if (rigManager.activeSeat)
         {
             _pelvisPDController.Reset();
-            _feetPDController.Reset();
             return;
         }
 
@@ -761,12 +755,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         var pelvisPosition = pelvis.position;
         var pelvisRotation = pelvis.rotation;
 
-        var feet = RigSkeleton.physicsFeet;
-        var feetPosition = feet.position;
-
         // Move position with prediction
         pelvisPose.PredictPosition(deltaTime);
-        feetPose.PredictPosition(deltaTime);
 
         // Check for stability teleport
         float distSqr = (pelvisPosition - pelvisPose.PredictedPosition).sqrMagnitude;
@@ -778,7 +768,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         // Apply forces
         pelvis.AddForce(_pelvisPDController.GetForce(pelvisPosition, pelvis.velocity, pelvisPose.PredictedPosition, pelvisPose.velocity), ForceMode.Acceleration);
-        feet.AddForce(_feetPDController.GetForce(feetPosition, feet.velocity, feetPose.PredictedPosition, feetPose.velocity), ForceMode.Acceleration);
 
         // Only apply angular force when the pelvis is free
         if (!rigManager.physicsRig.ballLocoEnabled)
