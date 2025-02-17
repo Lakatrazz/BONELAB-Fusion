@@ -13,7 +13,7 @@ namespace LabFusion.Entities;
 
 public class RigHeadUI
 {
-    public const float OffsetHeight = 0.23f;
+    public const float OffsetHeight = 0.2f;
 
     private Poolee _layoutPoolee;
     private Transform _layoutTransform;

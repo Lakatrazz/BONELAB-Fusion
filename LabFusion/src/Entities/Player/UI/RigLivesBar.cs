@@ -8,19 +8,20 @@ using LabFusion.UI;
 using LabFusion.Utilities;
 
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace LabFusion.Entities;
 
-public class RigHealthBar : IPopupLayoutElement
+public class RigLivesBar : IPopupLayoutElement
 {
     private Poolee _poolee;
     private Transform _transform;
 
-    private Slider _slider;
-    private TMP_Text _text;
+    private GameObject _lifeTemplate = null;
+    private TMP_Text _damageText = null;
 
-    public int Priority => 1000;
+    private readonly List<GameObject> _lifeInstances = new();
+
+    public int Priority => 500;
 
     public Transform Transform => _transform;
 
@@ -51,45 +52,41 @@ public class RigHealthBar : IPopupLayoutElement
         }
     }
 
-    private float _health = 100f;
-
-    public float Health
+    private float _damage = 0f;
+    public float Damage
     {
         get
         {
-            return _health;
+            return _damage;
         }
         set
         {
-            _health = value;
+            _damage = value;
 
             UpdateVisuals();
         }
     }
 
-    private float _maxHealth = 100f;
-
-    public float MaxHealth
+    private int _lives = 0;
+    public int Lives
     {
         get
         {
-            return _maxHealth;
+            return _lives;
         }
         set
         {
-            _maxHealth = value;
+            _lives = value;
 
             UpdateVisuals();
         }
     }
-
-    public float HealthPercent => Health / MaxHealth;
 
     public void Spawn(Transform parent)
     {
         var spawnable = new Spawnable()
         {
-            crateRef = FusionSpawnableReferences.HealthBarReference,
+            crateRef = FusionSpawnableReferences.LivesBarReference,
             policyData = null,
         };
 
@@ -98,7 +95,6 @@ public class RigHealthBar : IPopupLayoutElement
         SafeAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, (poolee) =>
         {
             _poolee = poolee;
-            _slider = poolee.GetComponentInChildren<Slider>();
             _transform = poolee.transform;
 
             _transform.parent = parent;
@@ -106,8 +102,11 @@ public class RigHealthBar : IPopupLayoutElement
 
             poolee.gameObject.SetActive(Visible);
 
-            _text = poolee.GetComponentInChildren<TMP_Text>();
-            _text.font = PersistentAssetCreator.Font;
+            _lifeTemplate = _transform.Find("Canvas/Icons/Life").gameObject;
+            _lifeTemplate.SetActive(false);
+
+            _damageText = poolee.GetComponentInChildren<TMP_Text>();
+            _damageText.font = PersistentAssetCreator.Font;
 
             UpdateVisuals();
         });
@@ -124,19 +123,55 @@ public class RigHealthBar : IPopupLayoutElement
 
         _poolee = null;
         _transform = null;
-        _slider = null;
+
+        ClearLifeInstances();
     }
 
     private void UpdateVisuals()
     {
-        if (_slider != null)
+        CreateLifeInstances(Lives);
+
+        if (_damageText != null)
         {
-            _slider.value = HealthPercent;
+            _damageText.text = $"{Mathf.RoundToInt(Damage)}%";
+        }
+    }
+
+    private void ClearLifeInstances()
+    {
+        foreach (var life in _lifeInstances)
+        {
+            if (life != null)
+            {
+                GameObject.Destroy(life);
+            }
         }
 
-        if (_text != null)
+        _lifeInstances.Clear();
+    }
+
+    private void CreateLifeInstances(int count)
+    {
+        if (count == _lifeInstances.Count)
         {
-            _text.text = $"{Mathf.RoundToInt(Health)}/{Mathf.RoundToInt(MaxHealth)}";
+            return;
+        }
+
+        if (_lifeTemplate == null)
+        {
+            return;
+        }
+
+        ClearLifeInstances();
+
+        for (var i = 0; i < count; i++)
+        {
+            var life = GameObject.Instantiate(_lifeTemplate, _lifeTemplate.transform.parent, false);
+            life.transform.SetSiblingIndex(i);
+
+            life.SetActive(true);
+
+            _lifeInstances.Add(life);
         }
     }
 }

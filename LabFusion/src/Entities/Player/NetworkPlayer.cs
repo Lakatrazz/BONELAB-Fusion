@@ -79,6 +79,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private RigHealthBar _healthBar = null;
     public RigHealthBar HealthBar => _healthBar;
 
+    private RigLivesBar _livesBar = null;
+    public RigLivesBar LivesBar => _livesBar;
+
     private bool _isPhysicsRigDirty = false;
     private Queue<PhysicsRigStateData> _physicsRigStates = new();
 
@@ -141,6 +144,11 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             Visible = false,
         };
 
+        _livesBar = new()
+        {
+            Visible = false,
+        };
+
         _avatarSetter = new(networkEntity);
         _avatarSetter.OnAvatarChanged += UpdateAvatarSettings;
 
@@ -149,6 +157,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         HeadUI.RegisterElement(_avatarSetter.ProgressBar);
         HeadUI.RegisterElement(_icon);
         HeadUI.RegisterElement(_healthBar);
+        HeadUI.RegisterElement(_livesBar);
 
         networkEntity.HookOnRegistered(OnPlayerRegistered);
         networkEntity.OnEntityUnregistered += OnPlayerUnregistered;

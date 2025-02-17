@@ -38,6 +38,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0badcb66150c2e047b597f264efac3b2, type: 2}
   - {fileID: 11400000, guid: 74f02ca46ec27c847baff93b0068dc30, type: 2}
   - {fileID: 11400000, guid: b97d13a1f99779749aa13f61ce512d91, type: 2}
+  - {fileID: 11400000, guid: d3ee81dd057363f4abe1fd174be32acc, type: 2}
   _dataCards:
   - {fileID: 11400000, guid: 391bcea53f62c9d4983ac21ae088574b, type: 2}
   - {fileID: 11400000, guid: a5491b0dbbcbdb0488e0d00b312c3874, type: 2}
@@ -86,6 +87,7 @@ MonoBehaviour:
   - Spawnable  Icon
   - Level  Fusion Testing
   - Spawnable  Health Bar
+  - Spawnable  Lives Bar
   _datacardTitles:
   - MonoDisc  Phantasmagorical Appliances
   - MonoDisc  Appen Beyuge
