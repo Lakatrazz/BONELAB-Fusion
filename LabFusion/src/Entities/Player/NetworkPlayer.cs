@@ -1,6 +1,5 @@
 ﻿using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Bonelab;
-using Il2CppSLZ.Marrow.Audio;
 using Il2CppSLZ.Marrow;
 
 using LabFusion.Data;
@@ -12,6 +11,7 @@ using LabFusion.Scene;
 using LabFusion.Preferences;
 using LabFusion.Voice;
 using LabFusion.Marrow.Extensions;
+using LabFusion.Math;
 
 using MelonLoader;
 
@@ -538,6 +538,12 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             return;
         }
 
+        var remapRig = RigSkeleton.remapRig;
+
+        // SLZ doesn't clamp this by default, so it can create large values that make your rig go insanely fast
+        // Usually occurs after getting your legs stuck in the ground
+        remapRig._crouchSpeedLimit = ManagedMathf.Clamp01(remapRig._crouchSpeedLimit);
+
         if (NetworkEntity.IsOwner)
         {
             OnOwnedUpdate();
@@ -551,7 +557,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
             OnUpdateVoiceSource(deltaTime);
 
-            RigSkeleton.remapRig._crouchTarget = RigPose.CrouchTarget;
+            remapRig._crouchTarget = RigPose.CrouchTarget;
         }
     }
 
