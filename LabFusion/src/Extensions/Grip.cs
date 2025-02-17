@@ -36,25 +36,6 @@ public static class GripExtensions
         }
     }
 
-    public static SerializedTransform GetRelativeHand(this GripPair pair)
-    {
-        var handTransform = pair.hand.transform;
-        var gripTransform = pair.grip.Host.GetTransform();
-
-        return new SerializedTransform(gripTransform.InverseTransformPoint(handTransform.position), gripTransform.InverseTransformRotation(handTransform.rotation));
-    }
-
-    public static void SetRelativeHand(this Grip grip, Hand hand, SerializedTransform transform)
-    {
-        // Set the hand position so that the grip is created in the right spot
-        if (transform != null)
-        {
-            var gripTransform = grip.Host.GetTransform();
-
-            hand.transform.SetPositionAndRotation(gripTransform.TransformPoint(transform.position), gripTransform.TransformRotation(transform.rotation));
-        }
-    }
-
     public static void MoveIntoHand(this Grip grip, Hand hand)
     {
         var host = grip.Host.GetTransform();
