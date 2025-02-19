@@ -16,35 +16,31 @@ public enum SimpleGripEventType
 
 public class SimpleGripEventData : IFusionSerializable
 {
-    public const int Size = sizeof(byte) * 3 + sizeof(ushort);
+    public const int Size = sizeof(byte) * 2 + sizeof(ushort);
 
-    public byte smallId;
-    public ushort syncId;
+    public ushort entityId;
     public byte gripEventIndex;
     public SimpleGripEventType type;
 
     public void Serialize(FusionWriter writer)
     {
-        writer.Write(smallId);
-        writer.Write(syncId);
+        writer.Write(entityId);
         writer.Write(gripEventIndex);
         writer.Write((byte)type);
     }
 
     public void Deserialize(FusionReader reader)
     {
-        smallId = reader.ReadByte();
-        syncId = reader.ReadUInt16();
+        entityId = reader.ReadUInt16();
         gripEventIndex = reader.ReadByte();
         type = (SimpleGripEventType)reader.ReadByte();
     }
 
-    public static SimpleGripEventData Create(byte smallId, ushort syncId, byte gripEventIndex, SimpleGripEventType type)
+    public static SimpleGripEventData Create(ushort entityId, byte gripEventIndex, SimpleGripEventType type)
     {
         return new SimpleGripEventData()
         {
-            smallId = smallId,
-            syncId = syncId,
+            entityId = entityId,
             gripEventIndex = gripEventIndex,
             type = type
         };
@@ -56,10 +52,9 @@ public class SimpleGripEventMessage : ModuleMessageHandler
 {
     protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(received.Bytes);
-        var data = reader.ReadFusionSerializable<SimpleGripEventData>();
+        var data = received.ReadData<SimpleGripEventData>();
 
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.syncId);
+        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.entityId);
 
         if (entity == null)
         {

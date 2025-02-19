@@ -6,6 +6,7 @@ using LabFusion.Utilities;
 using LabFusion.Entities;
 using LabFusion.Bonelab.Extenders;
 using LabFusion.Marrow.Integration;
+using LabFusion.Scene;
 
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Interaction;
@@ -20,6 +21,11 @@ public static class SimpleGripEventsPatches
     [HarmonyPatch(nameof(SimpleGripEvents.OnAttachedDelegate))]
     public static bool OnAttachedDelegatePrefix(SimpleGripEvents __instance, Hand hand)
     {
+        if (CrossSceneManager.InUnsyncedScene())
+        {
+            return true;
+        }
+
         if (IsPlayerRep(__instance, hand))
         {
             return false;
@@ -39,6 +45,8 @@ public static class SimpleGripEventsPatches
             {
                 SendGripEvent(entity.Id, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.ATTACH);
             }
+
+            return false;
         }
 
         return true;
@@ -48,6 +56,11 @@ public static class SimpleGripEventsPatches
     [HarmonyPatch(nameof(SimpleGripEvents.OnDetachedDelegate))]
     public static bool OnDetachedDelegatePrefix(SimpleGripEvents __instance, Hand hand)
     {
+        if (CrossSceneManager.InUnsyncedScene())
+        {
+            return true;
+        }
+
         if (IsPlayerRep(__instance, hand))
         {
             return false;
@@ -71,7 +84,10 @@ public static class SimpleGripEventsPatches
                     return true;
                 }
             }
+
             SendGripEvent(entity.Id, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.DETACH);
+
+            return false;
         }
 
         return true;
@@ -81,16 +97,14 @@ public static class SimpleGripEventsPatches
     [HarmonyPatch(nameof(SimpleGripEvents.OnAttachedUpdateDelegate))]
     public static bool OnAttachedUpdateDelegatePrefix(SimpleGripEvents __instance, Hand hand)
     {
-        return !IsPlayerRep(__instance, hand);
-    }
+        if (CrossSceneManager.InUnsyncedScene())
+        {
+            return true;
+        }
 
-    [HarmonyPostfix]
-    [HarmonyPatch(nameof(SimpleGripEvents.OnAttachedUpdateDelegate))]
-    public static void OnAttachedUpdateDelegatePostfix(SimpleGripEvents __instance, Hand hand)
-    {
         if (IsPlayerRep(__instance, hand))
         {
-            return;
+            return false;
         }
 
         if (GetExtender(__instance, hand, out var entity, out var extender))
@@ -104,12 +118,21 @@ public static class SimpleGripEventsPatches
             {
                 SendGripEvent(entity.Id, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.MENU_TAP);
             }
+
+            return false;
         }
+
+        return true;
     }
 
     private static bool IsPlayerRep(SimpleGripEvents __instance, Hand hand)
     {
-        if (NetworkInfo.HasServer && NetworkPlayerManager.HasExternalPlayer(hand.manager) && SimpleGripEventsExtender.Cache.ContainsSource(__instance))
+        if (!NetworkInfo.HasServer)
+        {
+            return false;
+        }
+
+        if (NetworkPlayerManager.HasExternalPlayer(hand.manager) && SimpleGripEventsExtender.Cache.ContainsSource(__instance))
         {
             return true;
         }
@@ -153,8 +176,8 @@ public static class SimpleGripEventsPatches
 
     private static void SendGripEvent(ushort entityId, byte gripEventIndex, SimpleGripEventType type)
     {
-        var data = SimpleGripEventData.Create(PlayerIdManager.LocalSmallId, entityId, gripEventIndex, type);
+        var data = SimpleGripEventData.Create(entityId, gripEventIndex, type);
 
-        MessageRelay.RelayModule<SimpleGripEventMessage, SimpleGripEventData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<SimpleGripEventMessage, SimpleGripEventData>(data, NetworkChannel.Reliable, RelayType.ToClients);
     }
 }
