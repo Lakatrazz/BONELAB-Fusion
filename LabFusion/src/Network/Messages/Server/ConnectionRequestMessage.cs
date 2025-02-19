@@ -187,8 +187,14 @@ public class ConnectionRequestMessage : NativeMessageHandler
         // Now we send all of our other players to the new player
         foreach (var id in PlayerIdManager.PlayerIds)
         {
-            var barcode = CommonBarcodes.INVALID_AVATAR_BARCODE;
-            SerializedAvatarStats stats = new();
+            // Don't resend the new player to themselves
+            if (id.SmallId == playerId.SmallId)
+            {
+                continue;
+            }
+
+            string barcode;
+            SerializedAvatarStats stats;
 
             if (id.SmallId == PlayerIdManager.HostSmallId)
             {
@@ -199,6 +205,10 @@ public class ConnectionRequestMessage : NativeMessageHandler
             {
                 barcode = rep.AvatarSetter.AvatarBarcode;
                 stats = rep.AvatarSetter.AvatarStats;
+            }
+            else
+            {
+                continue;
             }
 
             ConnectionSender.SendPlayerCatchup(data.longId, id, barcode, stats);
