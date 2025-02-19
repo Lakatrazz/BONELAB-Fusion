@@ -10,8 +10,8 @@ using LabFusion.Utilities;
 using LabFusion.Scene;
 using LabFusion.Preferences;
 using LabFusion.Voice;
-using LabFusion.Marrow.Extensions;
 using LabFusion.Math;
+using LabFusion.Extensions;
 
 using MelonLoader;
 
@@ -716,17 +716,12 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             return;
         }
 
-        // Reset the MarrowEntity's pose
-        MarrowEntity.ResetPose();
+        // Find the target centerOfPressure position and teleport
+        var targetPelvis = RigPose.PelvisPose.PredictedPosition;
+        var offset = targetPelvis - RigSkeleton.physicsPelvis.transform.position;
+        var newPosition = RigRefs.RigManager.physicsRig.centerOfPressure.position + offset;
 
-        // Get teleport position
-        var pos = RigPose.PelvisPose.PredictedPosition;
-
-        // Get offset
-        var offset = pos - RigSkeleton.physicsPelvis.transform.position;
-
-        // Apply offset to the marrow entity
-        MarrowEntity.transform.position += offset;
+        RigRefs.RigManager.TeleportToPosition(newPosition, true);
 
         // Reset PD controller
         _pelvisPDController.Reset();

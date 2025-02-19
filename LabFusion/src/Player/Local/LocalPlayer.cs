@@ -184,20 +184,7 @@ public static class LocalPlayer
 
         var rigManager = RigData.Refs.RigManager;
 
-        var physicsRig = rigManager.physicsRig;
-        var marrowEntity = physicsRig.marrowEntity;
-
-        marrowEntity.ResetPose();
-        physicsRig.centerOfPressure.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-
-        TeleportRig(physicsRig, position);
-
-        physicsRig.ResetHands(Handedness.BOTH);
-
-        foreach (var rig in rigManager.remapRigs)
-        {
-            TeleportRig(rig, position);
-        }
+        rigManager.TeleportToPosition(position, true);
     }
 
     /// <summary>
@@ -214,36 +201,6 @@ public static class LocalPlayer
 
         var rigManager = RigData.Refs.RigManager;
 
-        var remapRig = rigManager.remapHeptaRig;
-        var physicsRig = rigManager.physicsRig;
-        var marrowEntity = physicsRig.marrowEntity;
-
-        marrowEntity.ResetPose();
-        physicsRig.centerOfPressure.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-
-        TeleportRig(physicsRig, position, forward);
-
-        physicsRig.ResetHands(Handedness.BOTH);
-
-        remapRig.SetTwist(Vector3.SignedAngle(remapRig.centerOfPressure.forward, forward, Vector3.up));
-        
-        foreach (var rig in rigManager.remapRigs)
-        {
-            TeleportRig(rig, position, forward);
-        }
-    }
-
-    private static void TeleportRig(Rig rig, Vector3 position)
-    {
-        var displace = SimpleTransform.Create(position - rig.centerOfPressure.position, Quaternion.identity);
-
-        rig.Teleport(displace, true);
-    }
-
-    private static void TeleportRig(Rig rig, Vector3 position, Vector3 forward)
-    {
-        var displace = SimpleTransform.Create(position - rig.centerOfPressure.position, Quaternion.FromToRotation(rig.centerOfPressure.forward, forward));
-
-        rig.Teleport(displace, true);
+        rigManager.TeleportToPosition(position, forward, true);
     }
 }
