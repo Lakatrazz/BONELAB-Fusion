@@ -358,10 +358,6 @@ public class Deathmatch : Gamemode
     {
         base.OnGamemodeStarted();
 
-        ApplyGamemodeSettings();
-
-        Playlist.StartPlaylist();
-
         if (NetworkInfo.IsServer)
         {
             ScoreKeeper.ResetScores();
@@ -381,29 +377,34 @@ public class Deathmatch : Gamemode
 
         // Reset death status
         _hasDied = false;
+    }
 
-        // Invoke player changes on level load
-        FusionSceneManager.HookOnTargetLevelLoad(() =>
+    public override void OnLevelReady()
+    {
+        ApplyGamemodeSettings();
+
+        Playlist.StartPlaylist();
+
+        // Force mortality
+        LocalHealth.MortalityOverride = true;
+
+        // Setup ammo
+        LocalInventory.SetAmmo(10000);
+
+        // Get all spawn points
+        GamemodeHelper.SetSpawnPoints(GamemodeMarker.FilterMarkers(null));
+        GamemodeHelper.TeleportToSpawnPoint();
+
+        // Push nametag updates
+        FusionOverrides.ForceUpdateOverrides();
+
+        // Apply vitality and avatar overrides
+        if (_avatarOverride != null)
         {
-            // Force mortality
-            LocalHealth.MortalityOverride = true;
+            FusionPlayer.SetAvatarOverride(_avatarOverride);
+        }
 
-            // Setup ammo
-            LocalInventory.SetAmmo(10000);
-
-            // Get all spawn points
-            GamemodeHelper.SetSpawnPoints(GamemodeMarker.FilterMarkers(null));
-            GamemodeHelper.TeleportToSpawnPoint();
-
-            // Push nametag updates
-            FusionOverrides.ForceUpdateOverrides();
-
-            // Apply vitality and avatar overrides
-            if (_avatarOverride != null)
-                FusionPlayer.SetAvatarOverride(_avatarOverride);
-
-            OnApplyVitality();
-        });
+        OnApplyVitality();
     }
 
     private void OnApplyVitality()

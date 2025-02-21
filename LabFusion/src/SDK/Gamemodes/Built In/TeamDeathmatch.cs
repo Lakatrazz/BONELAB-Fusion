@@ -535,10 +535,6 @@ public class TeamDeathmatch : Gamemode
     {
         base.OnGamemodeStarted();
 
-        ApplyGamemodeSettings();
-
-        MusicPlaylist.StartPlaylist();
-
         if (NetworkInfo.IsServer)
         {
             ResetTeams();
@@ -547,27 +543,30 @@ public class TeamDeathmatch : Gamemode
 
         _timeOfStart = TimeUtilities.TimeSinceStartup;
         _oneMinuteLeft = false;
+    }
 
-        // Invoke player changes on level load
-        FusionSceneManager.HookOnTargetLevelLoad(() =>
+    public override void OnLevelReady()
+    {
+        ApplyGamemodeSettings();
+
+        MusicPlaylist.StartPlaylist();
+
+        // Force mortality
+        LocalHealth.MortalityOverride = true;
+
+        // Setup ammo
+        LocalInventory.SetAmmo(10000);
+
+        // Push nametag updates
+        FusionOverrides.ForceUpdateOverrides();
+
+        // Apply vitality and avatar overrides
+        if (_avatarOverride != null)
         {
-            // Force mortality
-            LocalHealth.MortalityOverride = true;
+            FusionPlayer.SetAvatarOverride(_avatarOverride);
+        }
 
-            // Setup ammo
-            LocalInventory.SetAmmo(10000);
-
-            // Push nametag updates
-            FusionOverrides.ForceUpdateOverrides();
-
-            // Apply vitality and avatar overrides
-            if (_avatarOverride != null)
-            {
-                FusionPlayer.SetAvatarOverride(_avatarOverride);
-            }
-
-            OnApplyVitality();
-        });
+        OnApplyVitality();
     }
 
     /// <summary>

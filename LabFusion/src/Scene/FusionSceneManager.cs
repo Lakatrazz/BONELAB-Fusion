@@ -86,6 +86,8 @@ public static partial class FusionSceneManager
             {
                 _onTargetLevelLoad?.Invoke();
                 _onTargetLevelLoad = null;
+
+                MultiplayerHooking.InvokeTargetLevelLoaded();
             }
         }
 

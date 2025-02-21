@@ -125,26 +125,26 @@ public class Juggernaut : Gamemode
 
     public override void OnGamemodeStarted()
     {
-        ApplyGamemodeSettings();
-
-        Playlist.StartPlaylist();
-
         if (NetworkInfo.IsServer)
         {
             JuggernautScoreKeeper.ResetScores();
 
             AssignTeams();
         }
+    }
 
-        FusionSceneManager.HookOnTargetLevelLoad(() =>
-        {
-            LocalHealth.MortalityOverride = true;
+    public override void OnLevelReady()
+    {
+        ApplyGamemodeSettings();
 
-            GamemodeHelper.SetSpawnPoints(GamemodeMarker.FilterMarkers(null));
-            GamemodeHelper.TeleportToSpawnPoint();
+        Playlist.StartPlaylist();
 
-            LocalInventory.SetAmmo(10000);
-        });
+        LocalHealth.MortalityOverride = true;
+
+        GamemodeHelper.SetSpawnPoints(GamemodeMarker.FilterMarkers(null));
+        GamemodeHelper.TeleportToSpawnPoint();
+
+        LocalInventory.SetAmmo(10000);
     }
 
     public override void OnGamemodeStopped()

@@ -36,6 +36,17 @@ public static class GamemodeHelper
     }
 
     /// <summary>
+    /// Sets the Local Player's spawn point to a specific GamemodeMarker.
+    /// </summary>
+    /// <param name="marker">The marker to use as a spawn point.</param>
+    public static void SetSpawnPoint(GamemodeMarker marker)
+    {
+        var transforms = new Transform[] { marker.transform };
+
+        FusionPlayer.SetSpawnPoints(transforms);
+    }
+
+    /// <summary>
     /// Sets the Local Player's spawn point based on a list of GamemodeMarkers.
     /// </summary>
     /// <param name="markers">The markers to use for spawn points.</param>

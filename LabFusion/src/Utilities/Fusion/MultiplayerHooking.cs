@@ -59,11 +59,12 @@ public static class MultiplayerHooking
     /// </summary>
     public static event UpdateEvent OnUpdate, OnFixedUpdate, OnLateUpdate;
 
-    public static event UpdateEvent OnMainSceneInitialized, OnLoadingBegin;
+    public static event UpdateEvent OnMainSceneInitialized, OnTargetLevelLoaded, OnLoadingBegin;
 
     internal static void Internal_OnUpdate() => OnUpdate?.Invoke();
     internal static void Internal_OnFixedUpdate() => OnFixedUpdate?.Invoke();
     internal static void Internal_OnLateUpdate() => OnLateUpdate?.Invoke();
     internal static void Internal_OnMainSceneInitialized() => OnMainSceneInitialized.InvokeSafe("executing OnMainSceneInitialized hook");
+    internal static void InvokeTargetLevelLoaded() => OnTargetLevelLoaded.InvokeSafe("executing OnTargetLevelLoaded hook");
     internal static void Internal_OnLoadingBegin() => OnLoadingBegin.InvokeSafe("executing OnLoadingBegin hook");
 }

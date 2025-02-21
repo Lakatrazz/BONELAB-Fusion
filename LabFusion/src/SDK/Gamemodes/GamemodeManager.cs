@@ -80,8 +80,17 @@ public static class GamemodeManager
         Gamemode.OnReadyKeyChanged += OnReadyKeyChanged;
 
         MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
+        MultiplayerHooking.OnTargetLevelLoaded += OnTargetLevelLoaded;
 
         MultiplayerHooking.OnDisconnect += OnDisconnect;
+    }
+
+    private static void OnTargetLevelLoaded()
+    {
+        if (IsGamemodeStarted)
+        {
+            ActiveGamemode.OnLevelReady();
+        }
     }
 
     private static void OnMainSceneInitialized()
@@ -141,6 +150,11 @@ public static class GamemodeManager
         if (started)
         {
             gamemode.OnGamemodeStarted();
+
+            if (FusionSceneManager.HasTargetLoaded())
+            {
+                gamemode.OnLevelReady();
+            }
 
             OnGamemodeStarted?.InvokeSafe("executing OnGamemodeStarted");
 

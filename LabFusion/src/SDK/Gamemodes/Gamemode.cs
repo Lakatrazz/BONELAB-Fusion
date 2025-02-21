@@ -177,6 +177,12 @@ public abstract class Gamemode
 
     public virtual void OnMainSceneInitialized() { }
 
+    /// <summary>
+    /// Invoked after the Gamemode starts if a level is not loading.
+    /// While the Gamemode is started, this will be invoked every time the player loads into the server's target level.
+    /// </summary>
+    public virtual void OnLevelReady() { }
+
     public virtual void OnLoadingBegin() { }
 
     public virtual GroupElementData CreateSettingsGroup()
