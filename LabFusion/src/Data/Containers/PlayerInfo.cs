@@ -19,6 +19,9 @@ public class PlayerInfo
     [JsonPropertyName("nickname")]
     public string Nickname { get; set; }
 
+    [JsonPropertyName("description")]
+    public string Description { get; set; }
+
     [JsonPropertyName("permissionLevel")]
     public PermissionLevel PermissionLevel { get; set; }
 
@@ -36,6 +39,7 @@ public class PlayerInfo
 
         Username = playerId.Metadata.GetMetadata(MetadataHelper.UsernameKey);
         Nickname = playerId.Metadata.GetMetadata(MetadataHelper.NicknameKey);
+        Description = playerId.Metadata.GetMetadata(MetadataHelper.DescriptionKey);
 
         playerId.TryGetPermissionLevel(out var level);
         PermissionLevel = level;

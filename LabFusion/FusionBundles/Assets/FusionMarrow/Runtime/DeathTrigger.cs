@@ -6,6 +6,7 @@ using Il2CppSLZ.Marrow;
 
 using LabFusion.Network;
 using LabFusion.Entities;
+using LabFusion.Utilities;
 #endif
 
 using UnityEngine;
@@ -20,6 +21,10 @@ namespace LabFusion.Marrow.Integration
     public class DeathTrigger : MonoBehaviour
     {
 #if MELONLOADER
+        public static event Action OnKillPlayer;
+
+        public static bool? KillDamageOverride { get; set; } = null;
+
         private void OnTriggerEnter(Collider other)
         {
             if (!NetworkInfo.HasServer)
@@ -62,7 +67,12 @@ namespace LabFusion.Marrow.Integration
 
             var health = networkPlayer.RigRefs.RigManager.health.TryCast<Player_Health>();
 
-            health.ApplyKillDamage();
+            if (!KillDamageOverride.HasValue || KillDamageOverride.Value == true)
+            {
+                health.ApplyKillDamage();
+            }
+
+            OnKillPlayer?.InvokeSafe("executing OnKillPlayer hook");
         }
 #endif
     }

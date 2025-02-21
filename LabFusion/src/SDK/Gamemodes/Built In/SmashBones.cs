@@ -122,6 +122,7 @@ public class SmashBones : Gamemode
             var playerIndex = PlayerIdManager.LocalId.SmallId % spawnPoints.Count;
 
             GamemodeHelper.SetSpawnPoint(spawnPoints[playerIndex]);
+            GamemodeHelper.TeleportToSpawnPoint();
         }
     }
 

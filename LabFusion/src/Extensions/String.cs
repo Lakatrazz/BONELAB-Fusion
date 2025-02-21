@@ -32,6 +32,11 @@ public static class StringExtensions
 
     public static string RemoveRichText(this string str)
     {
+        if (string.IsNullOrWhiteSpace(str))
+        {
+            return str;
+        }
+
         Regex rich = new(@"<[^>]*>");
         string plainText = str;
 
@@ -45,6 +50,11 @@ public static class StringExtensions
 
     public static string RemoveRichTextExceptColor(this string str)
     {
+        if (string.IsNullOrWhiteSpace(str))
+        {
+            return str;
+        }
+
         Regex rich = new(@"<(?!\W*(?i)color(?-i)\W*)[^>]*>");
         string plainText = str;
 
@@ -59,7 +69,9 @@ public static class StringExtensions
     public static string LimitLength(this string str, int maxLength)
     {
         if (string.IsNullOrEmpty(str))
+        {
             return str;
+        }
 
         int plainLength = RemoveRichText(str).Length;
 

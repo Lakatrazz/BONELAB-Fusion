@@ -3,6 +3,7 @@ using LabFusion.Preferences.Client;
 using LabFusion.Representation;
 using LabFusion.Player;
 using LabFusion.Senders;
+using LabFusion.Safety;
 
 namespace LabFusion.Network;
 
@@ -36,6 +37,9 @@ public static class MetadataHelper
     {
         id.Metadata.TryGetMetadata(UsernameKey, out var username);
         id.Metadata.TryGetMetadata(NicknameKey, out var nickname);
+
+        username = TextFilter.Filter(username);
+        nickname = TextFilter.Filter(nickname);
 
         // Check validity
         if (FusionMasterList.VerifyPlayer(id.LongId, username) == FusionMasterResult.IMPERSONATOR)

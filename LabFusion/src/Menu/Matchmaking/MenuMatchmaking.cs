@@ -3,6 +3,7 @@ using LabFusion.Extensions;
 using LabFusion.Marrow.Proxies;
 using LabFusion.Network;
 using LabFusion.Representation;
+using LabFusion.Safety;
 using LabFusion.SDK.Lobbies;
 
 using UnityEngine;
@@ -390,8 +391,8 @@ public static class MenuMatchmaking
         element.LevelNameText.text = metadata.LobbyInfo.LevelTitle;
         element.LevelNameText.color = levelColor;
 
-        element.ServerNameText.text = ParseServerName(metadata.LobbyInfo.LobbyName, metadata.LobbyInfo.LobbyHostName);
-        element.HostNameText.text = metadata.LobbyInfo.LobbyHostName;
+        element.ServerNameText.text = ProfanityFilter.Filter(ParseServerName(metadata.LobbyInfo.LobbyName, metadata.LobbyInfo.LobbyHostName));
+        element.HostNameText.text = ProfanityFilter.Filter(metadata.LobbyInfo.LobbyHostName);
 
         element.PlayerCountText.text = string.Format($"{metadata.LobbyInfo.PlayerCount}/{metadata.LobbyInfo.MaxPlayers} Players");
         element.PlayerCountText.color = playerCountColor;
@@ -490,10 +491,10 @@ public static class MenuMatchmaking
         element.ServerNameElement.EmptyFormat = "No {0}";
         element.ServerNameElement.TextFormat = "{1}";
 
-        element.ServerNameElement.Value = ParseServerName(info.LobbyInfo.LobbyName, info.LobbyInfo.LobbyHostName);
+        element.ServerNameElement.Value = ProfanityFilter.Filter(ParseServerName(info.LobbyInfo.LobbyName, info.LobbyInfo.LobbyHostName));
 
         element.HostNameElement
-            .WithTitle(info.LobbyInfo.LobbyHostName);
+            .WithTitle(ProfanityFilter.Filter(info.LobbyInfo.LobbyHostName));
 
         element.DescriptionElement
             .Cleared()
@@ -502,7 +503,7 @@ public static class MenuMatchmaking
         element.DescriptionElement.EmptyFormat = "No {0}";
         element.DescriptionElement.TextFormat = "{1}";
 
-        element.DescriptionElement.Value = info.LobbyInfo.LobbyDescription;
+        element.DescriptionElement.Value = ProfanityFilter.Filter(info.LobbyInfo.LobbyDescription);
 
         element.MoreElement
             .Cleared()
@@ -609,14 +610,14 @@ public static class MenuMatchmaking
 
     private static void ApplyPlayerToElement(PlayerElement element, PlayerInfo info)
     {
-        element.UsernameElement.Title = info.Username.RemoveRichTextExceptColor();
+        element.UsernameElement.Title = TextFilter.Filter(info.Username);
 
         element.NicknameElement.Title = "Nickname";
-        element.NicknameElement.Value = info.Nickname.RemoveRichTextExceptColor();
+        element.NicknameElement.Value = TextFilter.Filter(info.Nickname);
         element.NicknameElement.EmptyFormat = "No {0}";
 
         element.DescriptionElement.Title = "Description";
-        element.DescriptionElement.Value = string.Empty;
+        element.DescriptionElement.Value = TextFilter.Filter(info.Description);
         element.DescriptionElement.EmptyFormat = "No {0}";
 
         element.PermissionsElement

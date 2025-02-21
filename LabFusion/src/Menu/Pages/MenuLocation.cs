@@ -7,6 +7,7 @@ using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Preferences.Server;
 using LabFusion.Representation;
+using LabFusion.Safety;
 using LabFusion.Scene;
 using LabFusion.Senders;
 using LabFusion.Utilities;
@@ -595,16 +596,16 @@ public static class MenuLocation
     private static void ApplyPlayerToElement(PlayerElement element, PlayerId player)
     {
         // Apply name and description
-        var username = player.Metadata.GetMetadata(MetadataHelper.UsernameKey);
+        var username = TextFilter.Filter(player.Metadata.GetMetadata(MetadataHelper.UsernameKey));
         element.UsernameElement.Title = username;
 
         element.NicknameElement.Title = "Nickname";
-        element.NicknameElement.Value = player.Metadata.GetMetadata(MetadataHelper.NicknameKey);
+        element.NicknameElement.Value = TextFilter.Filter(player.Metadata.GetMetadata(MetadataHelper.NicknameKey));
         element.NicknameElement.Interactable = false;
         element.NicknameElement.EmptyFormat = "No {0}";
 
         element.DescriptionElement.Title = "Description";
-        element.DescriptionElement.Value = player.Metadata.GetMetadata(MetadataHelper.DescriptionKey);
+        element.DescriptionElement.Value = TextFilter.Filter(player.Metadata.GetMetadata(MetadataHelper.DescriptionKey));
         element.DescriptionElement.Interactable = false;
         element.DescriptionElement.EmptyFormat = "No {0}";
 
