@@ -105,12 +105,24 @@ public class SmashBones : Gamemode
 
     public override void OnGamemodeStarted()
     {
+        LocalHealth.MortalityOverride = false;
+        LocalControls.DoubleJumpOverride = true;
+    }
+
+    public override void OnLevelReady()
+    {
         ApplyGamemodeSettings();
 
         Playlist.StartPlaylist();
 
-        LocalHealth.MortalityOverride = false;
-        LocalControls.DoubleJumpOverride = true;
+        var spawnPoints = GamemodeMarker.FilterMarkers(null);
+
+        if (spawnPoints.Count > 0)
+        {
+            var playerIndex = PlayerIdManager.LocalId.SmallId % spawnPoints.Count;
+
+            GamemodeHelper.SetSpawnPoint(spawnPoints[playerIndex]);
+        }
     }
 
     public override void OnGamemodeStopped()
@@ -119,6 +131,8 @@ public class SmashBones : Gamemode
 
         LocalHealth.MortalityOverride = null;
         LocalControls.DoubleJumpOverride = null;
+
+        GamemodeHelper.ResetSpawnPoints();
     }
 
     protected override void OnUpdate()
