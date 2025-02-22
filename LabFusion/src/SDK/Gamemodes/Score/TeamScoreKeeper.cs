@@ -12,14 +12,9 @@ public sealed class TeamScoreKeeper : ScoreKeeper<Team>
         _teamManager = teamManager;
     }
 
-    public override string GetKey()
-    {
-        return CommonKeys.ScoreKey;
-    }
-
     public override string GetKeyWithProperty(Team property)
     {
-        return KeyHelper.GetKeyWithProperty(GetKey(), property.TeamName);
+        return KeyHelper.GetKeyWithProperty(Key, property.TeamName);
     }
 
     public override Team GetPropertyWithKey(string key)

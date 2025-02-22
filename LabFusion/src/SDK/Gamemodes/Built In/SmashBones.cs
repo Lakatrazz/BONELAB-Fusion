@@ -1,5 +1,6 @@
 ﻿using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Marrow;
+using Il2CppSLZ.Marrow.Combat;
 
 using LabFusion.Marrow.Integration;
 using LabFusion.Marrow;
@@ -8,6 +9,9 @@ using LabFusion.Menu.Data;
 using LabFusion.Player;
 using LabFusion.Data;
 using LabFusion.Utilities;
+using LabFusion.SDK.Metadata;
+using LabFusion.Entities;
+using LabFusion.Math;
 
 using UnityEngine;
 
@@ -72,6 +76,21 @@ public class SmashBones : Gamemode
     private readonly MusicPlaylist _playlist = new();
     public MusicPlaylist Playlist => _playlist;
 
+    private readonly PlayerScoreKeeper _playerStocksKeeper = new();
+    public PlayerScoreKeeper PlayerStocksKeeper => _playerStocksKeeper;
+
+    private readonly MetadataPlayerDictionary<MetadataFloat> _playerDamageKeeper = new();
+    public MetadataPlayerDictionary<MetadataFloat> PlayerDamageKeeper => _playerDamageKeeper;
+
+    private readonly TeamManager _teamManager = new();
+    public TeamManager TeamManager => _teamManager;
+
+    private readonly Team _freeForAllTeam = new("Free For All");
+    public Team FreeForAllTeam => _freeForAllTeam;
+
+    private readonly Team _spectatorTeam = new("Spectators");
+    public Team SpectatorTeam => _spectatorTeam;
+
     public override GroupElementData CreateSettingsGroup()
     {
         var group = base.CreateSettingsGroup();
@@ -101,6 +120,93 @@ public class SmashBones : Gamemode
     public override bool CheckReadyConditions()
     {
         return PlayerIdManager.PlayerCount >= MinimumPlayers;
+    }
+
+    public override void OnGamemodeRegistered()
+    {
+        // Register teams
+        TeamManager.Register(this);
+        TeamManager.AddTeam(FreeForAllTeam);
+        TeamManager.AddTeam(SpectatorTeam);
+
+        // Register keepers
+        PlayerStocksKeeper.Register(Metadata, CommonKeys.LivesKey);
+        PlayerStocksKeeper.OnScoreChanged += OnLivesChanged;
+
+        PlayerDamageKeeper.Register(Metadata, CommonKeys.DamageKey);
+        PlayerDamageKeeper.OnVariableChanged += OnDamageChanged;
+
+        LocalHealth.OnAttackedByPlayer += OnAttackedByPlayer;
+    }
+
+    public override void OnGamemodeUnregistered()
+    {
+        // Unregister teams
+        TeamManager.Unregister();
+
+        // Unregister keepers
+        PlayerStocksKeeper.Unregister();
+        PlayerStocksKeeper.OnScoreChanged -= OnLivesChanged;
+
+        PlayerDamageKeeper.Unregister();
+        PlayerDamageKeeper.OnVariableChanged -= OnDamageChanged;
+
+        LocalHealth.OnAttackedByPlayer -= OnAttackedByPlayer;
+    }
+
+    private void OnAttackedByPlayer(Attack attack, PlayerDamageReceiver.BodyPart bodyPart, PlayerId player)
+    {
+        if (!IsStarted)
+        {
+            return;
+        }
+
+        // Increase damage
+        var damageVariable = PlayerDamageKeeper.GetVariable(PlayerIdManager.LocalId);
+        float damage = damageVariable.GetValue();
+
+        damage += attack.damage;
+
+        // Damage can only go between 0 -> 999
+        damage = ManagedMathf.Clamp(damage, 0f, 999f);
+
+        damageVariable.SetValue(damage);
+
+        // Apply knockback
+        var direction = attack.direction;
+
+        var magnitude = 10f + damage;
+
+        if (RigData.HasPlayer)
+        {
+            RigData.Refs.RigManager.physicsRig.torso._pelvisRb.AddForce(direction * magnitude, ForceMode.Impulse);
+        }
+    }
+
+    private void OnLivesChanged(PlayerId player, int lives)
+    {
+        if (!IsStarted)
+        {
+            return;
+        }
+
+        if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
+        {
+            networkPlayer.LivesBar.Lives = lives;
+        }
+    }
+
+    private void OnDamageChanged(PlayerId player, MetadataFloat damage)
+    {
+        if (!IsStarted)
+        {
+            return;
+        }
+
+        if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
+        {
+            networkPlayer.LivesBar.Damage = damage.GetValue();
+        }
     }
 
     public override void OnGamemodeStarted()

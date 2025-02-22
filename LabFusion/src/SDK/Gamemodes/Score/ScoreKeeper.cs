@@ -10,18 +10,35 @@ public abstract class ScoreKeeper<TProperty>
 
     private NetworkMetadata _metadata = null;
 
-    public abstract string GetKey();
+    public string Key { get; set; } = string.Empty;
 
     public abstract string GetKeyWithProperty(TProperty property);
 
     public abstract TProperty GetPropertyWithKey(string key);
 
-    public void Register(NetworkMetadata metadata)
+    /// <summary>
+    /// Registers the ScoreKeeper to a set NetworkMetadata with the default key of <see cref="CommonKeys.ScoreKey"/>.
+    /// If you are using multiple ScoreKeepers, it is recommended to provide your own key so that they do not conflict.
+    /// </summary>
+    /// <param name="metadata">The metadata to register to.</param>
+    public void Register(NetworkMetadata metadata) => Register(metadata, CommonKeys.ScoreKey);
+
+    /// <summary>
+    /// Registers the ScoreKeeper to a set NetworkMetadata with a specified key.
+    /// </summary>
+    /// <param name="metadata">The metadata to register to.</param>
+    /// <param name="key">The key that will be used to look up scores.</param>
+    public void Register(NetworkMetadata metadata, string key)
     {
         _metadata = metadata;
         _metadata.OnMetadataChanged += OnMetadataChanged;
+
+        Key = key;
     }
 
+    /// <summary>
+    /// Unregisters the ScoreKeeper from its registered metadata.
+    /// </summary>
     public void Unregister()
     {
         _metadata.OnMetadataChanged -= OnMetadataChanged;
@@ -31,7 +48,7 @@ public abstract class ScoreKeeper<TProperty>
     private void OnMetadataChanged(string key, string value)
     {
         // Check if this is a score key
-        if (!KeyHelper.KeyMatchesVariable(key, GetKey()))
+        if (!KeyHelper.KeyMatchesVariable(key, Key))
         {
             return;
         }
