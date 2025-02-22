@@ -187,7 +187,7 @@ public static class PlayerHealthPatches
             return;
         }
 
-        if (CommonPreferences.Knockout && CommonPreferences.Mortality && __instance.healthMode == Health.HealthMode.Invincible)
+        if (CommonPreferences.Knockout && CommonPreferences.Mortality && __instance.healthMode == Health.HealthMode.Invincible && !LocalHealth.MortalityOverride.HasValue)
         {
             LocalRagdoll.Knockout(LobbyInfoManager.LobbyInfo.KnockoutLength);
         }
