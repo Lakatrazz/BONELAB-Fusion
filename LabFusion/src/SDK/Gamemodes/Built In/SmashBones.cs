@@ -12,13 +12,28 @@ using LabFusion.Utilities;
 using LabFusion.SDK.Metadata;
 using LabFusion.Entities;
 using LabFusion.Math;
+using LabFusion.SDK.Triggers;
+using LabFusion.Network;
 
 using UnityEngine;
+
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace LabFusion.SDK.Gamemodes;
 
 public class SmashBones : Gamemode
 {
+    [Serializable]
+    public struct DamageInfo
+    {
+        [JsonPropertyName("longId")]
+        public ulong LongId { get; set; }
+
+        [JsonPropertyName("damage")]
+        public float Damage { get; set; }
+    }
+
     public override string Title => "Smash Bones";
 
     public override string Author => FusionMod.ModAuthor;
@@ -91,6 +106,8 @@ public class SmashBones : Gamemode
     private readonly Team _spectatorTeam = new("Spectators");
     public Team SpectatorTeam => _spectatorTeam;
 
+    public TriggerEvent PlayerDamageEvent { get; set; }
+
     public override GroupElementData CreateSettingsGroup()
     {
         var group = base.CreateSettingsGroup();
@@ -124,10 +141,15 @@ public class SmashBones : Gamemode
 
     public override void OnGamemodeRegistered()
     {
+        PlayerDamageEvent = new TriggerEvent("PlayerDamage", Relay, false);
+        PlayerDamageEvent.OnTriggeredWithValue += OnPlayerDamageEvent;
+
         // Register teams
         TeamManager.Register(this);
         TeamManager.AddTeam(FreeForAllTeam);
         TeamManager.AddTeam(SpectatorTeam);
+        TeamManager.OnAssignedToTeam += OnAssignedToTeam;
+        TeamManager.OnRemovedFromTeam += OnRemovedFromTeam;
 
         // Register keepers
         PlayerStocksKeeper.Register(Metadata, CommonKeys.LivesKey);
@@ -141,8 +163,12 @@ public class SmashBones : Gamemode
 
     public override void OnGamemodeUnregistered()
     {
+        PlayerDamageEvent.UnregisterEvent();
+
         // Unregister teams
         TeamManager.Unregister();
+        TeamManager.OnAssignedToTeam -= OnAssignedToTeam;
+        TeamManager.OnRemovedFromTeam -= OnRemovedFromTeam;
 
         // Unregister keepers
         PlayerStocksKeeper.Unregister();
@@ -152,6 +178,24 @@ public class SmashBones : Gamemode
         PlayerDamageKeeper.OnVariableChanged -= OnDamageChanged;
 
         LocalHealth.OnAttackedByPlayer -= OnAttackedByPlayer;
+    }
+
+    private void OnAssignedToTeam(PlayerId player, Team team)
+    {
+        bool livesVisible = team != SpectatorTeam;
+
+        if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
+        {
+            networkPlayer.LivesBar.Visible = livesVisible;
+        }
+    }
+
+    private void OnRemovedFromTeam(PlayerId player, Team team)
+    {
+        if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
+        {
+            networkPlayer.LivesBar.Visible = false;
+        }
     }
 
     private void OnAttackedByPlayer(Attack attack, PlayerDamageReceiver.BodyPart bodyPart, PlayerId player)
@@ -170,7 +214,11 @@ public class SmashBones : Gamemode
         // Damage can only go between 0 -> 999
         damage = ManagedMathf.Clamp(damage, 0f, 999f);
 
-        damageVariable.SetValue(damage);
+        PlayerDamageEvent.TryInvoke(JsonSerializer.Serialize(new DamageInfo()
+        {
+            LongId = PlayerIdManager.LocalLongId,
+            Damage = damage,
+        }));
 
         // Apply knockback
         var direction = attack.direction;
@@ -181,6 +229,20 @@ public class SmashBones : Gamemode
         {
             RigData.Refs.RigManager.physicsRig.torso._pelvisRb.AddForce(direction * magnitude, ForceMode.Impulse);
         }
+    }
+
+    private void OnPlayerDamageEvent(string value)
+    {
+        if (!IsStarted || !NetworkInfo.IsServer)
+        {
+            return;
+        }
+
+        var damageInfo = JsonSerializer.Deserialize<DamageInfo>(value);
+
+        var playerId = PlayerIdManager.GetPlayerId(damageInfo.LongId);
+
+        PlayerDamageKeeper.GetVariable(playerId).SetValue(damageInfo.Damage);
     }
 
     private void OnLivesChanged(PlayerId player, int lives)
@@ -213,6 +275,11 @@ public class SmashBones : Gamemode
     {
         LocalHealth.MortalityOverride = false;
         LocalControls.DoubleJumpOverride = true;
+
+        if (NetworkInfo.IsServer)
+        {
+            AssignTeams();
+        }
     }
 
     public override void OnLevelReady()
@@ -240,6 +307,23 @@ public class SmashBones : Gamemode
         LocalControls.DoubleJumpOverride = null;
 
         GamemodeHelper.ResetSpawnPoints();
+
+        TeamManager.UnassignAllPlayers();
+    }
+
+    private void AssignTeams()
+    {
+        foreach (var player in PlayerIdManager.PlayerIds)
+        {
+            SetupPlayer(player);
+        }
+    }
+
+    private void SetupPlayer(PlayerId player)
+    {
+        TeamManager.TryAssignTeam(player, FreeForAllTeam);
+        PlayerDamageKeeper.GetVariable(player).SetValue(0f);
+        PlayerStocksKeeper.SetScore(player, Defaults.StockCount);
     }
 
     protected override void OnUpdate()
