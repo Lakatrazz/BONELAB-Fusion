@@ -31,4 +31,6 @@ public static class FusionSpawnableReferences
     public static readonly SpawnableCrateReference IconReference = new("Lakatrazz.FusionContent.Spawnable.Icon");
 
     public static readonly SpawnableCrateReference FusionMenuReference = new("Lakatrazz.FusionContent.Spawnable.FusionMenu");
+
+    public static readonly SpawnableCrateReference DeathExplosionReference = new("Lakatrazz.FusionContent.Spawnable.DeathExplosion");
 }

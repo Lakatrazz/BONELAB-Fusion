@@ -28,4 +28,5 @@ public static class FusionMonoDiscReferences
         new("Lakatrazz.FusionContent.MonoDisc.AppenBeyuge"),
     };
 
+    public static readonly MonoDiscReference DeathExplosionReference = new("Lakatrazz.FusionContent.MonoDisc.DeathExplosion");
 }

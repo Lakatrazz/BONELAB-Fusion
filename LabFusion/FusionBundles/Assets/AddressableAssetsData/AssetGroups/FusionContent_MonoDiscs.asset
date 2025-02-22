@@ -157,6 +157,16 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aa4b1facb5248fa45ab8b7ca364c2f2c
+    m_Address: MonoDisc/Death Explosion
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 65f1f56b95a3a7444af0d2075670ab8f
+    m_Address: AudioClip/Death Explosion
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 9feda70c59f9cda489cd3a23e7f14dd9, type: 2}
   m_SchemaSet:

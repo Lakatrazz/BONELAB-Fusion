@@ -39,6 +39,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 74f02ca46ec27c847baff93b0068dc30, type: 2}
   - {fileID: 11400000, guid: b97d13a1f99779749aa13f61ce512d91, type: 2}
   - {fileID: 11400000, guid: d3ee81dd057363f4abe1fd174be32acc, type: 2}
+  - {fileID: 11400000, guid: d67a4b3824ac6394fae51419e2378b20, type: 2}
   _dataCards:
   - {fileID: 11400000, guid: 391bcea53f62c9d4983ac21ae088574b, type: 2}
   - {fileID: 11400000, guid: a5491b0dbbcbdb0488e0d00b312c3874, type: 2}
@@ -58,6 +59,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8b17a4c919b2cb9439f7d3587b61ec57, type: 2}
   - {fileID: 11400000, guid: 31582503ed056f04ea43c5d2389cd688, type: 2}
   - {fileID: 11400000, guid: 7d8026baff8d2884aaa1b01d0e7c8507, type: 2}
+  - {fileID: 11400000, guid: aa4b1facb5248fa45ab8b7ca364c2f2c, type: 2}
   _tags: []
   _changeLogs:
   - version: 1.0.0
@@ -88,6 +90,7 @@ MonoBehaviour:
   - Level  Fusion Testing
   - Spawnable  Health Bar
   - Spawnable  Lives Bar
+  - Spawnable  Death Explosion
   _datacardTitles:
   - MonoDisc  Phantasmagorical Appliances
   - MonoDisc  Appen Beyuge
@@ -107,4 +110,5 @@ MonoBehaviour:
   - BoneTag  Team LavaGang
   - BoneTag  Team Sabrelake
   - BoneTag  Spectator
+  - MonoDisc  Death Explosion
   _palletDependencies: []
