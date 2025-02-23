@@ -2,6 +2,9 @@
 
 namespace LabFusion.Network;
 
+/// <summary>
+/// All of the information about a received message that is being handled.
+/// </summary>
 public struct ReceivedMessage
 {
     /// <summary>

@@ -35,7 +35,13 @@ public static class ProxySocketHandler
     {
         try
         {
-            NativeMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message), isServerHandled);
+            var readableMessage = new ReadableMessage()
+            {
+                Buffer = new ReadOnlySpan<byte>(message),
+                IsServerHandled = isServerHandled,
+            };
+
+            NativeMessageHandler.ReadMessage(readableMessage);
         }
         catch (Exception e)
         {

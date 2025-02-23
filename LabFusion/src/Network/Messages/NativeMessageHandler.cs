@@ -43,19 +43,19 @@ public abstract class NativeMessageHandler : MessageHandler
         Handlers[index] = handler;
     }
 
-    public static unsafe void ReadMessage(ReadOnlySpan<byte> buffer, bool isServerHandled = false)
+    public static unsafe void ReadMessage(ReadableMessage message)
     {
-        int size = buffer.Length;
+        int size = message.Buffer.Length;
         NetworkInfo.BytesDown += size;
 
         byte tag = 0;
 
         try
         {
-            using var reader = FusionReader.Create(buffer.ToArray());
+            using var reader = FusionReader.Create(message.Buffer.ToArray());
 
             var prefix = reader.ReadFusionSerializable<MessagePrefix>();
-            var message = reader.ReadBytes();
+            var bytes = reader.ReadBytes();
 
             tag = prefix.Tag;
 
@@ -67,8 +67,8 @@ public abstract class NativeMessageHandler : MessageHandler
                     Channel = prefix.Channel,
                     Sender = prefix.Sender,
                     Target = prefix.Target,
-                    Bytes = message,
-                    IsServerHandled = isServerHandled,
+                    Bytes = bytes,
+                    IsServerHandled = message.IsServerHandled,
                 };
 
                 Handlers[tag].Internal_HandleMessage(payload);

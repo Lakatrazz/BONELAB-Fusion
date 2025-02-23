@@ -73,7 +73,13 @@ public static class MessageSender
                 {
                     NetworkInfo.LastReceivedUser = PlayerIdManager.LocalLongId;
 
-                    NativeMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message.Buffer, message.Length), true);
+                    var readableMessage = new ReadableMessage()
+                    {
+                        Buffer = new ReadOnlySpan<byte>(message.Buffer, message.Length),
+                        IsServerHandled = true,
+                    };
+
+                    NativeMessageHandler.ReadMessage(readableMessage);
                 }
             }
         }
@@ -102,7 +108,13 @@ public static class MessageSender
                 {
                     NetworkInfo.LastReceivedUser = PlayerIdManager.LocalLongId;
 
-                    NativeMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message.Buffer, message.Length), false);
+                    var readableMessage = new ReadableMessage()
+                    {
+                        Buffer = new ReadOnlySpan<byte>(message.Buffer, message.Length),
+                        IsServerHandled = false,
+                    };
+
+                    NativeMessageHandler.ReadMessage(readableMessage);
                 }
             }
         }
@@ -132,7 +144,13 @@ public static class MessageSender
                 {
                     NetworkInfo.LastReceivedUser = PlayerIdManager.LocalLongId;
 
-                    NativeMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message.Buffer, message.Length), false);
+                    var readableMessage = new ReadableMessage()
+                    {
+                        Buffer = new ReadOnlySpan<byte>(message.Buffer, message.Length),
+                        IsServerHandled = false,
+                    };
+
+                    NativeMessageHandler.ReadMessage(readableMessage);
                 }
             }
         }
@@ -162,7 +180,13 @@ public static class MessageSender
                 {
                     NetworkInfo.LastReceivedUser = PlayerIdManager.LocalLongId;
 
-                    NativeMessageHandler.ReadMessage(new ReadOnlySpan<byte>(message.Buffer, message.Length), false);
+                    var readableMessage = new ReadableMessage()
+                    {
+                        Buffer = new ReadOnlySpan<byte>(message.Buffer, message.Length),
+                        IsServerHandled = false,
+                    };
+
+                    NativeMessageHandler.ReadMessage(readableMessage);
                 }
             }
         }

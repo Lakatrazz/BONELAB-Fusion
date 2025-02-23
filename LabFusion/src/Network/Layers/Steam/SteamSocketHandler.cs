@@ -86,7 +86,14 @@ public static class SteamSocketHandler
             unsafe
             {
                 var messageSpan = new ReadOnlySpan<byte>(messageIntPtr.ToPointer(), dataBlockSize);
-                NativeMessageHandler.ReadMessage(messageSpan, isServerHandled);
+
+                var readableMessage = new ReadableMessage()
+                {
+                    Buffer = messageSpan,
+                    IsServerHandled = isServerHandled,
+                };
+
+                NativeMessageHandler.ReadMessage(readableMessage);
             }
         }
         catch (Exception e)
