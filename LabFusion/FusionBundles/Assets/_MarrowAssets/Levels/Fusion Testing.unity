@@ -13226,11 +13226,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   teamOverrides: []
   songOverrides:
-  - SLZ.BONELAB.Content.MonoDisc.BackThroughTheLab
-  - SLZ.BONELAB.Content.MonoDisc.BackToMythOS
-  victorySongOverride: SLZ.BONELAB.Content.MonoDisc.BonestepEndStem
-  failureSongOverride: SLZ.BONELAB.Content.MonoDisc.HallVortexEndStem
-  tieSongOverride: SLZ.BONELAB.Content.MonoDisc.RipToBitsEndStem
+  - _barcode:
+      _id: SLZ.BONELAB.Content.MonoDisc.BackThroughTheLab
+  - _barcode:
+      _id: SLZ.BONELAB.Content.MonoDisc.BackToMythOS
+  victorySongOverride:
+    _barcode:
+      _id: SLZ.BONELAB.Content.MonoDisc.BonestepEndStem
+  failureSongOverride:
+    _barcode:
+      _id: SLZ.BONELAB.Content.MonoDisc.HallVortexEndStem
+  tieSongOverride:
+    _barcode:
+      _id: SLZ.BONELAB.Content.MonoDisc.RipToBitsEndStem
 --- !u!114 &1077344384
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13245,6 +13253,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _AwakeEvent:
     _PersistentCalls:
+    - _Target: {fileID: 1077344383}
+      _MethodName: SetVictorySong
+      _PersistentArguments:
+      - _Type: 2
+        _Int: 0
+        _String: Lakatrazz.FusionContent.BoneTag.TeamSabrelake
+        _X: 0
+        _Y: 0
+        _Z: 0
+        _W: 0
+        _Object: {fileID: 0}
+      - _Type: 2
+        _Int: 0
+        _String: Lakatrazz.FusionContent.MonoDisc.AppenBeyuge
+        _X: 0
+        _Y: 0
+        _Z: 0
+        _W: 0
+        _Object: {fileID: 0}
     - _Target: {fileID: 1077344383}
       _MethodName: AddSong
       _PersistentArguments:
