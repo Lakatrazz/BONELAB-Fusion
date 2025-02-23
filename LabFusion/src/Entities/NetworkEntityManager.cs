@@ -206,6 +206,12 @@ public static class NetworkEntityManager
 
     public static void TakeOwnership(NetworkEntity entity)
     {
+        // Don't allow taking ownership while interaction is disabled
+        if (LocalControls.DisableInteraction)
+        {
+            return;
+        }
+
         TransferOwnership(entity, PlayerIdManager.LocalId);
     }
 }

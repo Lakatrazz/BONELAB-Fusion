@@ -19,7 +19,7 @@ public static class HandPatches
             return true;
         }
 
-        if (LocalControls.DisableGrabbing)
+        if (LocalControls.DisableInteraction)
         {
             __instance.HoveringReceiver = null;
             __instance.farHoveringReciever = null;

@@ -4,16 +4,16 @@ public static class LocalControls
 {
     public static bool LockedMovement { get; set; } = false;
 
-    private static bool _disableGrabbing = false;
-    public static bool DisableGrabbing
+    private static bool _disableInteraction = false;
+    public static bool DisableInteraction
     { 
         get
         {
-            return _disableGrabbing;
+            return _disableInteraction;
         }
         set
         {
-            _disableGrabbing = value;
+            _disableInteraction = value;
 
             if (value)
             {
