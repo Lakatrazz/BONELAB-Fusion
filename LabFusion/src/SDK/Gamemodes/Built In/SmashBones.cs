@@ -281,6 +281,7 @@ public class SmashBones : Gamemode
         if (NetworkInfo.IsServer)
         {
             PlayerStocksKeeper.SubtractScore(playerId, 1, false);
+            PlayerDamageKeeper.GetVariable(playerId).SetValue(0f);
         }
 
         SpawnExplosion(deathInfo.Position.ToUnityVector3(), -deathInfo.Direction.ToUnityVector3());
