@@ -255,7 +255,7 @@ public class SmashBones : Gamemode
         // Apply knockback
         var direction = attack.direction.normalized;
 
-        var magnitude = (1f + Mathf.Sqrt(damage)) * 2f;
+        var magnitude = (1f + Mathf.Sqrt(damage)) * 10f;
 
         if (RigData.HasPlayer)
         {
@@ -265,7 +265,10 @@ public class SmashBones : Gamemode
 
             magnitude *= Mathf.Sqrt(avatarMass);
 
-            pelvisRb.AddForce(direction * magnitude, ForceMode.Impulse);
+            var force = direction * magnitude;
+            var upForce = -Physics.gravity.normalized * magnitude * 0.1f;
+
+            pelvisRb.AddForce(force + upForce, ForceMode.Impulse);
 
             SlipGrip(rigManager.physicsRig.leftHand);
             SlipGrip(rigManager.physicsRig.rightHand);

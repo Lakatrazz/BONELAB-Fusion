@@ -40,11 +40,8 @@ public static class PhysLimbPatches
 
         bool left = __instance == physicsRig.legLf;
 
-        using var writer = FusionWriter.Create(PhysicsRigStateData.Size);
         var data = PhysicsRigStateData.Create(PlayerIdManager.LocalSmallId, PhysicsRigStateType.LEG_SHUTDOWN, true, left);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.PhysicsRigState, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 }
