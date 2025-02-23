@@ -10689,7 +10689,7 @@ MonoBehaviour:
       _PersistentArguments:
       - _Type: 2
         _Int: 0
-        _String: Lakatrazz.FusionContent.BoneTag.TeamLavaGang
+        _String: Lakatrazz.FusionContent.BoneTag.TeamSabrelake
         _X: 0
         _Y: 0
         _Z: 0
@@ -10708,7 +10708,7 @@ MonoBehaviour:
       _PersistentArguments:
       - _Type: 2
         _Int: 0
-        _String: Lakatrazz.FusionContent.BoneTag.TeamSabrelake
+        _String: Lakatrazz.FusionContent.BoneTag.TeamLavaGang
         _X: 0
         _Y: 0
         _Z: 0
@@ -10743,10 +10743,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   teamOverrides:
-  - teamBarcode: Lakatrazz.FusionContent.BoneTag.TeamLavaGang
+  - teamTag:
+      _barcode:
+        _id: Lakatrazz.FusionContent.BoneTag.TeamSabrelake
     overrideName: RED
     overrideLogo: {fileID: 0}
-  - teamBarcode: Lakatrazz.FusionContent.BoneTag.TeamSabrelake
+  - teamTag:
+      _barcode:
+        _id: Lakatrazz.FusionContent.BoneTag.TeamLavaGang
     overrideName: BLU
     overrideLogo: {fileID: 0}
 --- !u!1001 &836617676

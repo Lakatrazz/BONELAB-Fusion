@@ -35,17 +35,11 @@ namespace LabFusion.Marrow.Integration
 
             var musicSettings = target as GamemodeMusicSettings;
 
-            if (musicSettings.TryGetComponent<LifeCycleEvents>(out var lifeCycleEvent))
+            if (!musicSettings.TryGetComponent<LifeCycleEvents>(out var lifeCycleEvent))
             {
-                var helpBox = new HelpBox("The LifeCycleEvents on this GameObject is used to inject variables for these settings." +
-                    " Make sure nothing else is using the LifeCycleEvents on this same GameObject.", HelpBoxMessageType.Info);
-                root.Add(helpBox);
-            }
-            else
-            {
-                var helpBox = new HelpBox("If you want to change the music settings, please add" +
+                var warnBox = new HelpBox("If you want to change the music settings, please add" +
                     " a LifeCycleEvents to this GameObject!", HelpBoxMessageType.Warning);
-                root.Add(helpBox);
+                root.Add(warnBox);
 
                 var addLifeCycleEventsButton = new Button(() =>
                 {
@@ -73,6 +67,10 @@ namespace LabFusion.Marrow.Integration
 
             var tieSongOverride = new PropertyField(_tieSongOverrideProperty);
             root.Add(tieSongOverride);
+
+            var infoBox = new HelpBox("The LifeCycleEvents on this GameObject is used to inject variables for these settings." +
+    " Make sure nothing else is using the LifeCycleEvents on this same GameObject.", HelpBoxMessageType.Info);
+            root.Add(infoBox);
 
             root.RegisterCallback<SerializedPropertyChangeEvent>(evt =>
             {

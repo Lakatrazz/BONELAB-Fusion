@@ -25,27 +25,13 @@ namespace LabFusion.Marrow.Integration
         {
             var root = new VisualElement();
 
-            var tag = new PropertyField(_teamTagsProperty);
-            root.Add(tag);
-
             var gamemodeMarker = target as GamemodeMarker;
 
-            if (gamemodeMarker.TryGetComponent<LifeCycleEvents>(out var lifeCycleEvent))
+            if (!gamemodeMarker.TryGetComponent<LifeCycleEvents>(out var lifeCycleEvent))
             {
-                tag.RegisterCallback<SerializedPropertyChangeEvent>(evt =>
-                {
-                    OverrideLifeCycleEvent(gamemodeMarker, lifeCycleEvent);
-                });
-
-                var helpBox = new HelpBox("The LifeCycleEvents on this GameObject is used to inject variables for this marker." +
-                    " Make sure nothing else is using the LifeCycleEvents on this same GameObject.", HelpBoxMessageType.Info);
-                root.Add(helpBox);
-            }
-            else
-            {
-                var helpBox = new HelpBox("If you want to set a specific Team for this Gamemode Marker, please add" +
+                var warnBox = new HelpBox("If you want to set a specific Team for this Gamemode Marker, please add" +
                     " a LifeCycleEvents to this GameObject!", HelpBoxMessageType.Warning);
-                root.Add(helpBox);
+                root.Add(warnBox);
 
                 var addLifeCycleEventsButton = new Button(() =>
                 {
@@ -55,7 +41,21 @@ namespace LabFusion.Marrow.Integration
                     text = "Add LifeCycleEvents"
                 };
                 root.Add(addLifeCycleEventsButton);
+
+                return root;
             }
+
+            var tag = new PropertyField(_teamTagsProperty);
+            root.Add(tag);
+
+            var infoBox = new HelpBox("The LifeCycleEvents on this GameObject is used to inject variables for this marker." +
+    " Make sure nothing else is using the LifeCycleEvents on this same GameObject.", HelpBoxMessageType.Info);
+            root.Add(infoBox);
+
+            root.RegisterCallback<SerializedPropertyChangeEvent>(evt =>
+            {
+                OverrideLifeCycleEvent(gamemodeMarker, lifeCycleEvent);
+            });
 
             return root;
         }

@@ -3,17 +3,16 @@ using System;
 using UltEvents;
 
 using UnityEditor;
+using UnityEditor.UIElements;
+
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace LabFusion.Marrow.Integration
 {
     [CustomEditor(typeof(GamemodeTeamSettings))]
     public class GamemodeTeamSettingsEditor : Editor
     {
-        public const string LavaGangBarcode = "Lakatrazz.FusionContent.BoneTag.TeamLavaGang";
-
-        public const string SabrelakeBarcode = "Lakatrazz.FusionContent.BoneTag.TeamSabrelake";
-
         private SerializedProperty _teamOverridesProperty;
 
         public void OnEnable()
@@ -21,107 +20,52 @@ namespace LabFusion.Marrow.Integration
             _teamOverridesProperty = serializedObject.FindProperty(nameof(GamemodeTeamSettings.teamOverrides));
         }
 
-        public override void OnInspectorGUI()
+        public override VisualElement CreateInspectorGUI()
         {
+            var root = new VisualElement();
+
             var teamSettings = target as GamemodeTeamSettings;
 
-            var lifeCycleEvent = teamSettings.GetComponent<LifeCycleEvents>();
-
-            if (lifeCycleEvent != null)
+            if (!teamSettings.TryGetComponent<LifeCycleEvents>(out var lifeCycleEvent))
             {
-                OverrideLifeCycleEvent(teamSettings, lifeCycleEvent);
+                var warnBox = new HelpBox("If you want to change the team settings, please add" +
+                    " a LifeCycleEvents to this GameObject!", HelpBoxMessageType.Warning);
+                root.Add(warnBox);
 
-                EditorGUILayout.HelpBox("The LifeCycleEvents on this GameObject is used to inject variables for these settings." +
-                    " Make sure nothing else is using the LifeCycleEvents on this same GameObject.", MessageType.Info);
-            }
-            else
-            {
-                EditorGUILayout.HelpBox("If you want to change the team settings, please add" +
-                    " a LifeCycleEvents to this GameObject!", MessageType.Warning);
-
-                if (GUILayout.Button("Add LifeCycleEvents"))
+                var addLifeCycleEventsButton = new Button(() =>
                 {
                     Undo.AddComponent<LifeCycleEvents>(teamSettings.gameObject);
-                }
+                })
+                {
+                    text = "Add LifeCycleEvents"
+                };
+                root.Add(addLifeCycleEventsButton);
+
+                return root;
             }
+
+            var teamOverrides = new PropertyField(_teamOverridesProperty);
+            root.Add(teamOverrides);
+
+            var infoBox = new HelpBox("The LifeCycleEvents on this GameObject is used to inject variables for these settings." +
+                    " Make sure nothing else is using the LifeCycleEvents on this same GameObject.", HelpBoxMessageType.Info);
+            root.Add(infoBox);
+
+            root.RegisterCallback<SerializedPropertyChangeEvent>(evt =>
+            {
+                OverrideLifeCycleEvent(teamSettings, lifeCycleEvent);
+            }, TrickleDown.TrickleDown);
+
+            return root;
         }
 
         private void OverrideLifeCycleEvent(GamemodeTeamSettings teamSettings, LifeCycleEvents lifeCycleEvent)
         {
-            // Make sure the awake event is properly set up
-            if (lifeCycleEvent.AwakeEvent == null)
-            {
-                lifeCycleEvent.AwakeEvent = new UltEvent();
+            var ultEvent = new UltEvent();
 
-                EditorUtility.SetDirty(lifeCycleEvent);
-            }
+            ApplyToUltEvent(teamSettings, ultEvent);
 
-            var awakeEvent = lifeCycleEvent.AwakeEvent;
-
-            EditorGUI.BeginChangeCheck();
-
-            EditorGUILayout.PropertyField(_teamOverridesProperty);
-
-            if (!HasBarcode(teamSettings, LavaGangBarcode) && GUILayout.Button("Add LavaGang Override"))
-            {
-                teamSettings.teamOverrides.Add(new GamemodeTeamSettings.TeamOverride()
-                {
-                    teamBarcode = LavaGangBarcode,
-                });
-
-                EditorUtility.SetDirty(teamSettings);
-
-                ApplyChanges();
-            }
-
-            if (!HasBarcode(teamSettings, SabrelakeBarcode) && GUILayout.Button("Add Sabrelake Override"))
-            {
-                teamSettings.teamOverrides.Add(new GamemodeTeamSettings.TeamOverride()
-                {
-                    teamBarcode = SabrelakeBarcode,
-                });
-
-                EditorUtility.SetDirty(teamSettings);
-
-                ApplyChanges();
-            }
-
-            if (teamSettings.teamOverrides.Count > 0 && GUILayout.Button("Clear Overrides"))
-            {
-                teamSettings.teamOverrides.Clear();
-
-                EditorUtility.SetDirty(teamSettings);
-
-                ApplyChanges();
-            }
-
-            // Override the life cycle event value
-            if (EditorGUI.EndChangeCheck())
-            {
-                serializedObject.ApplyModifiedProperties();
-
-                ApplyChanges();
-            }
-
-            void ApplyChanges()
-            {
-                ApplyToUltEvent(teamSettings, awakeEvent);
-
-                EditorUtility.SetDirty(lifeCycleEvent);
-            }
-        }
-
-        private bool HasBarcode(GamemodeTeamSettings teamSettings, string barcode)
-        {
-            foreach (var teamOverride in teamSettings.teamOverrides)
-            {
-                if (teamOverride.teamBarcode == barcode)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            lifeCycleEvent.AwakeEvent = ultEvent;
         }
 
         private void ApplyToUltEvent(GamemodeTeamSettings teamSettings, UltEvent ultEvent)
@@ -137,7 +81,7 @@ namespace LabFusion.Marrow.Integration
                 {
                     var nameCall = ultEvent.AddPersistentCall(setTeamNameAction);
 
-                    nameCall.PersistentArguments[0].String = teamOverride.teamBarcode;
+                    nameCall.PersistentArguments[0].String = teamOverride.teamTag.Barcode.ID;
                     nameCall.PersistentArguments[1].String = teamOverride.overrideName;
                 }
 
@@ -145,7 +89,7 @@ namespace LabFusion.Marrow.Integration
                 {
                     var logoCall = ultEvent.AddPersistentCall(setTeamLogoAction);
 
-                    logoCall.PersistentArguments[0].String = teamOverride.teamBarcode;
+                    logoCall.PersistentArguments[0].String = teamOverride.teamTag.Barcode.ID;
                     logoCall.PersistentArguments[1].Object = teamOverride.overrideLogo;
                 }
             }

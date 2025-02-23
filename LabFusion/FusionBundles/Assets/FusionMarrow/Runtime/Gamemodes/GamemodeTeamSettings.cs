@@ -7,6 +7,8 @@ using Il2CppInterop.Runtime.Attributes;
 #else
 using System;
 using System.Collections.Generic;
+
+using SLZ.Marrow.Warehouse;
 #endif
 
 namespace LabFusion.Marrow.Integration
@@ -63,7 +65,7 @@ namespace LabFusion.Marrow.Integration
         [Serializable]
         public struct TeamOverride
         {
-            public string teamBarcode;
+            public BoneTagReference teamTag;
 
             public string overrideName;
 

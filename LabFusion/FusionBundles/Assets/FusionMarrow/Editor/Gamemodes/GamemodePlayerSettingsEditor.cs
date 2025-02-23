@@ -3,8 +3,9 @@ using System;
 using UltEvents;
 
 using UnityEditor;
+using UnityEditor.UIElements;
 
-using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace LabFusion.Marrow.Integration
 {
@@ -20,75 +21,55 @@ namespace LabFusion.Marrow.Integration
             _vitalityOverrideProperty = serializedObject.FindProperty(nameof(GamemodePlayerSettings.vitalityOverride));
         }
 
-        public override void OnInspectorGUI()
+        public override VisualElement CreateInspectorGUI()
         {
+            var root = new VisualElement();
+
             var playerSettings = target as GamemodePlayerSettings;
 
-            var lifeCycleEvent = playerSettings.GetComponent<LifeCycleEvents>();
-
-            if (lifeCycleEvent != null)
+            if (!playerSettings.TryGetComponent<LifeCycleEvents>(out var lifeCycleEvent))
             {
-                OverrideLifeCycleEvent(playerSettings, lifeCycleEvent);
+                var warnBox = new HelpBox("If you want to change the player settings, please add" +
+                    " a LifeCycleEvents to this GameObject!", HelpBoxMessageType.Warning);
+                root.Add(warnBox);
 
-                EditorGUILayout.HelpBox("The LifeCycleEvents on this GameObject is used to inject variables for these settings." +
-                    " Make sure nothing else is using the LifeCycleEvents on this same GameObject.", MessageType.Info);
-            }
-            else
-            {
-                EditorGUILayout.HelpBox("If you want to change the player settings, please add" +
-                    " a LifeCycleEvents to this GameObject!", MessageType.Warning);
-
-                if (GUILayout.Button("Add LifeCycleEvents"))
+                var addLifeCycleEventsButton = new Button(() =>
                 {
                     Undo.AddComponent<LifeCycleEvents>(playerSettings.gameObject);
-                }
+                })
+                {
+                    text = "Add LifeCycleEvents"
+                };
+                root.Add(addLifeCycleEventsButton);
+
+                return root;
             }
+
+            var avatarOverride = new PropertyField(_avatarOverrideProperty);
+            root.Add(avatarOverride);
+
+            var vitalityOverride = new PropertyField(_vitalityOverrideProperty);
+            root.Add(vitalityOverride);
+
+            var infoBox = new HelpBox("The LifeCycleEvents on this GameObject is used to inject variables for these settings." +
+    " Make sure nothing else is using the LifeCycleEvents on this same GameObject.", HelpBoxMessageType.Info);
+            root.Add(infoBox);
+
+            root.RegisterCallback<SerializedPropertyChangeEvent>(evt =>
+            {
+                OverrideLifeCycleEvent(playerSettings, lifeCycleEvent);
+            }, TrickleDown.TrickleDown);
+
+            return root;
         }
 
         private void OverrideLifeCycleEvent(GamemodePlayerSettings playerSettings, LifeCycleEvents lifeCycleEvent)
         {
-            // Make sure the awake event is properly set up
-            if (lifeCycleEvent.AwakeEvent == null)
-            {
-                lifeCycleEvent.AwakeEvent = new UltEvent();
+            var ultEvent = new UltEvent();
 
-                EditorUtility.SetDirty(lifeCycleEvent);
-            }
+            ApplyToUltEvent(playerSettings, ultEvent);
 
-            var awakeEvent = lifeCycleEvent.AwakeEvent;
-
-            EditorGUI.BeginChangeCheck();
-
-            EditorGUILayout.PropertyField(_avatarOverrideProperty);
-
-            EditorGUILayout.PropertyField(_vitalityOverrideProperty);
-
-            bool hasOverrides = !string.IsNullOrWhiteSpace(playerSettings.avatarOverride) || playerSettings.vitalityOverride > 0f;
-
-            if (hasOverrides && GUILayout.Button("Clear Overrides"))
-            {
-                playerSettings.avatarOverride = null;
-                playerSettings.vitalityOverride = 0f;
-
-                EditorUtility.SetDirty(playerSettings);
-
-                ApplyChanges();
-            }
-
-            // Override the life cycle event value
-            if (EditorGUI.EndChangeCheck())
-            {
-                serializedObject.ApplyModifiedProperties();
-
-                ApplyChanges();
-            }
-
-            void ApplyChanges()
-            {
-                ApplyToUltEvent(playerSettings, awakeEvent);
-
-                EditorUtility.SetDirty(lifeCycleEvent);
-            }
+            lifeCycleEvent.AwakeEvent = ultEvent;
         }
 
         private void ApplyToUltEvent(GamemodePlayerSettings playerSettings, UltEvent ultEvent)
@@ -98,10 +79,10 @@ namespace LabFusion.Marrow.Integration
             Action<string> setAvatarAction = playerSettings.SetAvatar;
             Action<float> setVitalityAction = playerSettings.SetVitality;
 
-            if (!string.IsNullOrWhiteSpace(playerSettings.avatarOverride))
+            if (playerSettings.avatarOverride.IsValid())
             {
                 var avatarCall = ultEvent.AddPersistentCall(setAvatarAction);
-                avatarCall.PersistentArguments[0].String = playerSettings.avatarOverride;
+                avatarCall.PersistentArguments[0].String = playerSettings.avatarOverride.Barcode.ID;
             }
 
             if (playerSettings.vitalityOverride > 0f)

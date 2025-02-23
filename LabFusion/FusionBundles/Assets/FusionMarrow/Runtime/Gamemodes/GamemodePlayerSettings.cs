@@ -4,6 +4,8 @@ using UnityEngine;
 using MelonLoader;
 
 using Il2CppInterop.Runtime.Attributes;
+#else
+using SLZ.Marrow.Warehouse;
 #endif
 
 namespace LabFusion.Marrow.Integration
@@ -56,7 +58,7 @@ namespace LabFusion.Marrow.Integration
             _vitalityOverride = vitality;
         }
 #else
-        public string avatarOverride = null;
+        public AvatarCrateReference avatarOverride = null;
 
         [Min(0f)]
         public float vitalityOverride = 0f;
