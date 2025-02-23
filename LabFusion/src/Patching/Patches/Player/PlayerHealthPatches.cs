@@ -151,9 +151,10 @@ public static class HealthPatches
 [HarmonyPatch(typeof(Player_Health))]
 public static class PlayerHealthPatches
 {
-    [HarmonyPrefix]
+    // Teleport AFTER ApplyKillDamage so that the player teleports properly and not extremely far away
+    [HarmonyPostfix]
     [HarmonyPatch(nameof(Player_Health.ApplyKillDamage))]
-    public static void ApplyKillDamage(Player_Health __instance)
+    public static void ApplyKillDamagePostfix(Player_Health __instance)
     {
         if (!NetworkInfo.HasServer)
         {

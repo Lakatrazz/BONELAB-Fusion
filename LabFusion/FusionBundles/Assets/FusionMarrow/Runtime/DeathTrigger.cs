@@ -60,7 +60,13 @@ namespace LabFusion.Marrow.Integration
 
             var networkPlayer = networkEntity.GetExtender<NetworkPlayer>();
 
-            if (networkEntity == null)
+            if (networkPlayer == null)
+            {
+                return;
+            }
+
+            // Only trigger for head
+            if (attachedRigidbody != networkPlayer.RigRefs.RigManager.physicsRig.torso._headRb)
             {
                 return;
             }

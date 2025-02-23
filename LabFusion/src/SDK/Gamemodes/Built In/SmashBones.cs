@@ -1,6 +1,9 @@
 ﻿using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Combat;
+using Il2CppSLZ.Marrow.Data;
+using Il2CppSLZ.Marrow.Pool;
+using Il2CppSLZ.Marrow.Audio;
 
 using LabFusion.Marrow.Integration;
 using LabFusion.Marrow;
@@ -32,6 +35,19 @@ public class SmashBones : Gamemode
 
         [JsonPropertyName("damage")]
         public float Damage { get; set; }
+    }
+
+    [Serializable]
+    public struct DeathInfo
+    {
+        [JsonPropertyName("longId")]
+        public ulong LongId { get; set; }
+
+        [JsonPropertyName("position")]
+        public JsonVector3 Position { get; set; }
+
+        [JsonPropertyName("direction")]
+        public JsonVector3 Direction { get; set; }
     }
 
     public override string Title => "Smash Bones";
@@ -107,6 +123,9 @@ public class SmashBones : Gamemode
     public Team SpectatorTeam => _spectatorTeam;
 
     public TriggerEvent PlayerDamageEvent { get; set; }
+    public TriggerEvent PlayerDeathEvent { get; set; }
+
+    private int _previousStocks = -1;
 
     public override GroupElementData CreateSettingsGroup()
     {
@@ -143,6 +162,9 @@ public class SmashBones : Gamemode
     {
         PlayerDamageEvent = new TriggerEvent("PlayerDamage", Relay, false);
         PlayerDamageEvent.OnTriggeredWithValue += OnPlayerDamageEvent;
+
+        PlayerDeathEvent = new TriggerEvent("PlayerDeath", Relay, false);
+        PlayerDeathEvent.OnTriggeredWithValue += OnPlayerDeathEvent;
 
         // Register teams
         TeamManager.Register(this);
@@ -245,6 +267,25 @@ public class SmashBones : Gamemode
         PlayerDamageKeeper.GetVariable(playerId).SetValue(damageInfo.Damage);
     }
 
+    private void OnPlayerDeathEvent(string value)
+    {
+        if (!IsStarted)
+        {
+            return;
+        }
+
+        var deathInfo = JsonSerializer.Deserialize<DeathInfo>(value);
+
+        var playerId = PlayerIdManager.GetPlayerId(deathInfo.LongId);
+
+        if (NetworkInfo.IsServer)
+        {
+            PlayerStocksKeeper.SubtractScore(playerId, 1, false);
+        }
+
+        SpawnExplosion(deathInfo.Position.ToUnityVector3(), -deathInfo.Direction.ToUnityVector3());
+    }
+
     private void OnLivesChanged(PlayerId player, int lives)
     {
         if (!IsStarted)
@@ -256,6 +297,31 @@ public class SmashBones : Gamemode
         {
             networkPlayer.LivesBar.Lives = lives;
         }
+
+        if (player.IsMe)
+        {
+            OnSelfLivesChanged(lives);
+        }
+    }
+
+    private void OnSelfLivesChanged(int lives)
+    {
+        bool stocksDecreased = _previousStocks > lives;
+
+        if (stocksDecreased)
+        {
+            FusionNotifier.Send(new FusionNotification()
+            {
+                Title = "Lost a Stock",
+                Message = $"You lost a stock! You are now down to {lives} stock{(lives != 1 ? "s" : "")}!",
+                SaveToMenu = false,
+                ShowPopup = true,
+                PopupLength = 4f,
+                Type = NotificationType.INFORMATION,
+            });
+        }
+
+        _previousStocks = lives;
     }
 
     private void OnDamageChanged(PlayerId player, MetadataFloat damage)
@@ -275,6 +341,9 @@ public class SmashBones : Gamemode
     {
         LocalHealth.MortalityOverride = false;
         LocalControls.DoubleJumpOverride = true;
+        DeathTrigger.KillDamageOverride = false;
+
+        DeathTrigger.OnKillPlayer += OnKillPlayer;
 
         if (NetworkInfo.IsServer)
         {
@@ -305,10 +374,52 @@ public class SmashBones : Gamemode
 
         LocalHealth.MortalityOverride = null;
         LocalControls.DoubleJumpOverride = null;
+        DeathTrigger.KillDamageOverride = null;
+
+        DeathTrigger.OnKillPlayer -= OnKillPlayer;
 
         GamemodeHelper.ResetSpawnPoints();
 
         TeamManager.UnassignAllPlayers();
+
+        _previousStocks = -1;
+    }
+
+    private void OnKillPlayer()
+    {
+        var pelvis = RigData.Refs.RigManager.physicsRig.torso._pelvisRb;
+
+        PlayerDeathEvent.TryInvoke(JsonSerializer.Serialize(new DeathInfo()
+        {
+            LongId = PlayerIdManager.LocalLongId,
+            Position = new(pelvis.position),
+            Direction = new(pelvis.velocity.normalized),
+        }));
+
+        GamemodeHelper.TeleportToSpawnPoint();
+    }
+
+    private void SpawnExplosion(Vector3 position, Vector3 forward)
+    {
+        var spawnable = new Spawnable()
+        {
+            crateRef = FusionSpawnableReferences.DeathExplosionReference,
+            policyData = null,
+        };
+
+        AssetSpawner.Register(spawnable);
+
+        SafeAssetSpawner.Spawn(spawnable, position, Quaternion.LookRotation(forward));
+
+        var sfxCard = FusionMonoDiscReferences.DeathExplosionReference.DataCard;
+
+        if (sfxCard != null)
+        {
+            sfxCard.AudioClip.LoadAsset((Il2CppSystem.Action<AudioClip>)(clip =>
+            {
+                SafeAudio3dPlayer.PlayAtPoint(clip, position, Audio3dManager.hardInteraction);
+            }));
+        }
     }
 
     private void AssignTeams()
