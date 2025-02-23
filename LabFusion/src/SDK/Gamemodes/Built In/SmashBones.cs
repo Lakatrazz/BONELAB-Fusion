@@ -255,7 +255,7 @@ public class SmashBones : Gamemode
         // Apply knockback
         var direction = attack.direction.normalized;
 
-        var magnitude = (1f + Mathf.Sqrt(damage)) * 7f;
+        var magnitude = (1f + Mathf.Sqrt(damage)) * 10f;
 
         if (RigData.HasPlayer)
         {
