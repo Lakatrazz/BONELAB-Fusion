@@ -139,7 +139,9 @@ public class CosmeticItem : PointItem
     {
         // Make sure theres accessory instances
         if (_accessoryInstances.Count <= 0)
+        {
             return;
+        }
 
         // Check if all instances are valid. Otherwise, clean them up
         List<CosmeticInstance> accessoriesToRemove = null;

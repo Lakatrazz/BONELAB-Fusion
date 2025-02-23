@@ -106,6 +106,65 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private readonly JawFlapper _flapper = new();
 
+    private bool _isCulled = false;
+
+    /// <summary>
+    /// Returns True if this NetworkPlayer is hidden due to being zone culled.
+    /// </summary>
+    public bool IsCulled
+    {
+        get
+        {
+            return _isCulled;
+        }
+        private set
+        {
+            _isCulled = value;
+
+            OnApplyVisiblity();
+        }
+    }
+
+    private bool _forceHide = false;
+
+    /// <summary>
+    /// Can be changed to forcefully hide this NetworkPlayer's rig.
+    /// </summary>
+    public bool ForceHide
+    {
+        get
+        {
+            return _forceHide;
+        }
+        set
+        {
+            _forceHide = value;
+
+            OnApplyVisiblity();
+        }
+    }
+
+    /// <summary>
+    /// Returns True if this NetworkPlayer is hidden.
+    /// </summary>
+    public bool IsHidden
+    {
+        get
+        {
+            if (ForceHide)
+            {
+                return true;
+            }
+
+            return IsCulled;
+        }
+    }
+
+    /// <summary>
+    /// Callback invoked when the <see cref="IsHidden"/> property changes.
+    /// </summary>
+    public event Action<bool> OnHiddenChanged;
+
     /// <summary>
     /// The distance of this PlayerRep's head to the local player's head (squared).
     /// </summary>
@@ -676,7 +735,19 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             return;
         }
 
-        if (isInactive)
+        IsCulled = isInactive;
+    }
+
+    private void OnApplyVisiblity()
+    {
+        if (NetworkEntity.IsOwner)
+        {
+            return;
+        }
+
+        bool hidden = IsHidden;
+
+        if (hidden)
         {
             OnCullExtras();
             OnUnregisterUpdates();
@@ -689,7 +760,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             TeleportToPose();
         }
 
-        Grabber.OnEntityCull(isInactive);
+        Grabber.OnEntityCull(hidden);
+
+        OnHiddenChanged?.InvokeSafe(hidden, "executing NetworkPlayer.OnHiddenChanged");
     }
 
     private void OnReregisterUpdates()

@@ -1,6 +1,6 @@
 ﻿using Il2CppSLZ.Marrow;
 
-using LabFusion.Data;
+using LabFusion.Entities;
 using LabFusion.Extensions;
 using LabFusion.Marrow.Integration;
 using LabFusion.SDK.Points;
@@ -34,6 +34,38 @@ public class CosmeticInstance
     private bool _destroyed = false;
     public bool IsDestroyed => _destroyed;
 
+    private bool _isPaused = false;
+    public bool IsPaused
+    {
+        get
+        {
+            return _isPaused;
+        }
+        set
+        {
+            _isPaused = value;
+
+            OnApplyVisibility();
+        }
+    }
+
+    private bool _isCulled = false;
+    private bool IsCulled
+    {
+        get
+        {
+            return _isCulled;
+        }
+        set
+        {
+            _isCulled = value;
+
+            OnApplyVisibility();
+        }
+    }
+
+    public NetworkPlayer NetworkPlayer { get; set; } = null;
+
     public CosmeticInstance(PointItemPayload payload, GameObject accessory, bool isHiddenInView, RigPoint itemPoint)
     {
         rigManager = payload.rigManager;
@@ -46,7 +78,12 @@ public class CosmeticInstance
 
         this.itemPoint = itemPoint;
 
-        UpdateVisibility(false);
+        if (NetworkPlayerManager.TryGetPlayer(rigManager, out var networkPlayer))
+        {
+            NetworkPlayer = networkPlayer;
+        }
+
+        OnApplyVisibility();
 
         Hook();
     }
@@ -58,6 +95,13 @@ public class CosmeticInstance
         rigManager.OnPostLateUpdate = Il2Delegate.Combine((Il2Action)OnPostLateUpdate, rigManager.OnPostLateUpdate).Cast<Il2Action>();
 
         OpenControllerRig.OnPauseStateChange += (Il2ActionBool)OnPauseStateChange;
+
+        // Hook into the NetworkPlayer's hiding event
+        if (NetworkPlayer != null)
+        {
+            NetworkPlayer.OnHiddenChanged += OnPlayerHiddenChanged;
+            IsCulled = NetworkPlayer.IsHidden;
+        }
     }
 
     private void Unhook()
@@ -67,12 +111,20 @@ public class CosmeticInstance
             rigManager.OnPostLateUpdate -= (Il2Action)OnPostLateUpdate;
             OpenControllerRig.OnPauseStateChange -= (Il2ActionBool)OnPauseStateChange;
         }
+
+        // Unhook from the NetworkPlayer's hiding event
+        if (NetworkPlayer != null)
+        {
+            NetworkPlayer.OnHiddenChanged -= OnPlayerHiddenChanged;
+        }
     }
 
     private void OnPostLateUpdate()
     {
         if (IsDestroyed)
+        {
             return;
+        }
 
         Update(itemPoint);
 
@@ -82,9 +134,21 @@ public class CosmeticInstance
     private void OnPauseStateChange(bool value)
     {
         if (IsDestroyed)
+        {
             return;
+        }
 
-        UpdateVisibility(value);
+        IsPaused = value;
+    }
+
+    private void OnPlayerHiddenChanged(bool hidden)
+    {
+        if (IsDestroyed)
+        {
+            return;
+        }
+
+        IsCulled = hidden;
     }
 
     private void UpdateAvatar(Avatar avatar)
@@ -105,20 +169,31 @@ public class CosmeticInstance
         }
     }
 
-    private void UpdateVisibility(bool paused)
+    private void OnApplyVisibility()
     {
-        if (!paused && isHiddenInView)
+        if (IsCulled)
         {
             accessory.SetActive(false);
+            return;
         }
-        else
+
+        if (!IsPaused && isHiddenInView)
         {
-            accessory.SetActive(true);
+            accessory.SetActive(false);
+            return;
         }
+
+        accessory.SetActive(true);
     }
 
     public void Update(RigPoint itemPoint)
     {
+        // Don't update position if this is culled
+        if (IsCulled)
+        {
+            return;
+        }
+
         // Compare avatar
         if (rigManager.avatar != avatar)
         {
@@ -184,7 +259,7 @@ public class CosmeticInstance
                 }
 
                 // Set the mirror accessory active or inactive
-                if (mirror.Key.rigManager != rigManager)
+                if (mirror.Key.rigManager != rigManager || IsCulled)
                 {
                     mirror.Value.SetActive(false);
                 }
