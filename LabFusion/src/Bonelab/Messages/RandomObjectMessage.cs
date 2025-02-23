@@ -50,9 +50,7 @@ public class RandomObjectMessage : ModuleMessageHandler
 {
     protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using var reader = FusionReader.Create(received.Bytes);
-
-        var data = reader.ReadFusionSerializable<RandomObjectData>();
+        var data = received.ReadData<RandomObjectData>();
 
         // Right now only syncs RandomObject on individual objects (props, avatars, etc). No scene syncing yet.
         var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.entityId);

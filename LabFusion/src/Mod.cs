@@ -21,6 +21,7 @@ using LabFusion.SDK.Modules;
 using LabFusion.Bonelab;
 using LabFusion.Representation;
 using LabFusion.Player;
+using LabFusion.SDK;
 
 #if DEBUG
 using LabFusion.Debugging;
@@ -157,6 +158,7 @@ public class FusionMod : MelonMod
 
     private static void InitializeBaseModules()
     {
+        ModuleManager.RegisterModule<SDKModule>();
         ModuleManager.RegisterModule<MarrowModule>();
         ModuleManager.RegisterModule<BonelabModule>();
     }

@@ -17,6 +17,8 @@ namespace LabFusion.Marrow.Integration
     public class Desyncer : MonoBehaviour
     {
 #if MELONLOADER
+        public Desyncer(IntPtr intPtr) : base(intPtr) { }
+
         public static FusionComponentCache<GameObject, Desyncer> Cache { get; } = new();
 
         private void Awake()

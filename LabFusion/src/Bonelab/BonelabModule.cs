@@ -5,7 +5,7 @@ namespace LabFusion.Bonelab;
 public class BonelabModule : Module
 {
     public override string Name => "BONELAB";
-    public override string Author => "Lakatrazz";
+    public override string Author => FusionMod.ModAuthor;
     public override Version Version => FusionMod.Version;
 
     public override ConsoleColor Color => ConsoleColor.Cyan;

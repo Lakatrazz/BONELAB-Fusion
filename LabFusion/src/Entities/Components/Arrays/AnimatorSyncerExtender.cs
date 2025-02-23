@@ -4,10 +4,17 @@ using LabFusion.Utilities;
 
 namespace LabFusion.Entities;
 
-public class OwnershipEventsExtender : EntityComponentArrayExtender<OwnershipEvents>
+public class AnimatorSyncerExtender : EntityComponentArrayExtender<AnimatorSyncer>
 {
-    protected override void OnRegister(NetworkEntity networkEntity, OwnershipEvents[] components)
+    public static readonly FusionComponentCache<AnimatorSyncer, NetworkEntity> Cache = new();
+
+    protected override void OnRegister(NetworkEntity networkEntity, AnimatorSyncer[] components)
     {
+        foreach (var grip in components)
+        {
+            Cache.Add(grip, networkEntity);
+        }
+
         networkEntity.OnEntityOwnershipTransfer += OnEntityOwnershipTransfer;
 
         // Invoke the event if the owner has already been set
@@ -17,8 +24,13 @@ public class OwnershipEventsExtender : EntityComponentArrayExtender<OwnershipEve
         }
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, OwnershipEvents[] components)
+    protected override void OnUnregister(NetworkEntity networkEntity, AnimatorSyncer[] components)
     {
+        foreach (var grip in components)
+        {
+            Cache.Remove(grip);
+        }
+
         networkEntity.OnEntityOwnershipTransfer -= OnEntityOwnershipTransfer;
     }
 
@@ -30,11 +42,11 @@ public class OwnershipEventsExtender : EntityComponentArrayExtender<OwnershipEve
         {
             try
             {
-                component.OnOwnerChanged(owner);
+                component.IsOwner = owner;
             }
             catch (Exception e)
             {
-                FusionLogger.LogException("running OwnershipEvents", e);
+                FusionLogger.LogException("running AnimatorSyncerExtender.OnEntityOwnershipTransfer", e);
             }
         }
     }

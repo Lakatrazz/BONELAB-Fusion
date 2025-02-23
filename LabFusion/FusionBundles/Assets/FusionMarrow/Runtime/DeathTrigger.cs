@@ -21,6 +21,8 @@ namespace LabFusion.Marrow.Integration
     public class DeathTrigger : MonoBehaviour
     {
 #if MELONLOADER
+        public DeathTrigger(IntPtr intPtr) : base(intPtr) { }
+
         public static event Action OnKillPlayer;
 
         public static bool? KillDamageOverride { get; set; } = null;
