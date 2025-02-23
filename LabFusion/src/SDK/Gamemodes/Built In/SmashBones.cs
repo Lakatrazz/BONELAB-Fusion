@@ -212,11 +212,12 @@ public class SmashBones : Gamemode
         if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
         {
             networkPlayer.LivesBar.Visible = !spectator;
+            networkPlayer.ForceHide = spectator;
         }
 
-        if (player.IsMe && RigData.HasPlayer)
+        if (player.IsMe)
         {
-            OnSetSpawn(spectator);
+            OnSelfAssignedToTeam(team);
         }
     }
 
@@ -225,7 +226,17 @@ public class SmashBones : Gamemode
         if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
         {
             networkPlayer.LivesBar.Visible = false;
+            networkPlayer.ForceHide = false;
         }
+    }
+
+    private void OnSelfAssignedToTeam(Team team)
+    {
+        bool spectator = team == SpectatorTeam;
+
+        LocalControls.DisableInteraction = spectator;
+
+        OnSetSpawn(spectator);
     }
 
     private void OnAttackedByPlayer(Attack attack, PlayerDamageReceiver.BodyPart bodyPart, PlayerId player)
@@ -343,8 +354,23 @@ public class SmashBones : Gamemode
 
         if (NetworkInfo.IsServer)
         {
-            PlayerStocksKeeper.SubtractScore(playerId, 1, false);
+            var stocks = PlayerStocksKeeper.GetScore(playerId);
+
+            var newStocks = stocks - 1;
+
+            if (newStocks < 0)
+            {
+                newStocks = 0;
+            }
+
+            PlayerStocksKeeper.SetScore(playerId, newStocks);
             PlayerDamageKeeper.GetVariable(playerId).SetValue(0f);
+
+            // Move the player to the spectator team if they lost all stocks
+            if (newStocks <= 0)
+            {
+                TeamManager.TryAssignTeam(playerId, SpectatorTeam);
+            }
         }
 
         SpawnExplosion(deathInfo.Position.ToUnityVector3(), -deathInfo.Direction.ToUnityVector3());
@@ -429,6 +455,7 @@ public class SmashBones : Gamemode
 
         LocalHealth.MortalityOverride = null;
         DeathTrigger.KillDamageOverride = null;
+        LocalControls.DisableInteraction = false;
 
         DeathTrigger.OnKillPlayer -= OnKillPlayer;
 
@@ -439,8 +466,13 @@ public class SmashBones : Gamemode
         _previousStocks = -1;
     }
 
-    private void OnSetSpawn(bool spectator)
+    private static void OnSetSpawn(bool spectator)
     {
+        if (!RigData.HasPlayer)
+        {
+            return;
+        }
+
         if (spectator)
         {
             GamemodeHelper.SetSpawnPoints(GamemodeMarker.FilterMarkers(FusionBoneTagReferences.SpectatorReference));
