@@ -253,9 +253,9 @@ public class SmashBones : Gamemode
         }));
 
         // Apply knockback
-        var direction = attack.direction;
+        var direction = attack.direction.normalized;
 
-        var magnitude = (1f + Mathf.Sqrt(damage)) * 0.5f;
+        var magnitude = (1f + Mathf.Sqrt(damage)) * 2f;
 
         if (RigData.HasPlayer)
         {
@@ -469,7 +469,7 @@ public class SmashBones : Gamemode
         {
             sfxCard.AudioClip.LoadAsset((Il2CppSystem.Action<AudioClip>)(clip =>
             {
-                SafeAudio3dPlayer.PlayAtPoint(clip, position, Audio3dManager.hardInteraction);
+                SafeAudio3dPlayer.PlayAtPoint(clip, position, Audio3dManager.hardInteraction, 1f, 1f, 50f);
             }));
         }
     }
