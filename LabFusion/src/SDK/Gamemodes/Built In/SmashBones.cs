@@ -17,6 +17,7 @@ using LabFusion.Entities;
 using LabFusion.Math;
 using LabFusion.SDK.Triggers;
 using LabFusion.Network;
+using LabFusion.Extensions;
 
 using UnityEngine;
 
@@ -254,7 +255,7 @@ public class SmashBones : Gamemode
         // Apply knockback
         var direction = attack.direction;
 
-        var magnitude = (1f + Mathf.Sqrt(damage)) * 0.1f;
+        var magnitude = (1f + Mathf.Sqrt(damage)) * 0.5f;
 
         if (RigData.HasPlayer)
         {
@@ -265,6 +266,41 @@ public class SmashBones : Gamemode
             magnitude *= Mathf.Sqrt(avatarMass);
 
             pelvisRb.AddForce(direction * magnitude, ForceMode.Impulse);
+
+            SlipGrip(rigManager.physicsRig.leftHand);
+            SlipGrip(rigManager.physicsRig.rightHand);
+        }
+    }
+
+    private void SlipGrip(Hand hand)
+    {
+        var attachedReceiver = hand.AttachedReceiver;
+
+        if (attachedReceiver == null)
+        {
+            return;
+        }
+
+        var grip = attachedReceiver.TryCast<Grip>();
+
+        if (grip == null)
+        {
+            return;
+        }
+
+        // Always detach static grips
+        if (grip.IsStatic)
+        {
+            hand.TryDetach();
+        }
+        else
+        {
+            bool chance = UnityEngine.Random.Range(0, 100) == 0;
+
+            if (chance)
+            {
+                hand.TryDetach();
+            }
         }
     }
 
@@ -463,7 +499,6 @@ public class SmashBones : Gamemode
 
         // Update music
         Playlist.Update();
-
 
         if (RigData.HasPlayer)
         {
