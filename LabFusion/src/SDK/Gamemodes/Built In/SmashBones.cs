@@ -266,7 +266,7 @@ public class SmashBones : Gamemode
             magnitude *= Mathf.Sqrt(avatarMass);
 
             var force = direction * magnitude;
-            var upForce = -Physics.gravity.normalized * magnitude * 0.6f;
+            var upForce = -Physics.gravity.normalized * magnitude * 0.3f;
 
             pelvisRb.AddForce(force + upForce, ForceMode.Impulse);
 
