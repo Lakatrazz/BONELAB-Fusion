@@ -80,9 +80,13 @@ public class SmashBones : Gamemode
 
         public const float DashSpeed = 10f;
 
-        public const float AirDashSpeed = 4.25f;
+        public const float AirDashSpeed = 6f;
+
+        public const float ExtraJumpVelocity = 8f;
 
         public const int StockCount = 3;
+
+        public const float ExtraJumpCooldown = 0.2f;
     }
 
     private int _minimumPlayers = 2;
@@ -395,7 +399,6 @@ public class SmashBones : Gamemode
     public override void OnGamemodeStarted()
     {
         LocalHealth.MortalityOverride = false;
-        LocalControls.DoubleJumpOverride = true;
         DeathTrigger.KillDamageOverride = false;
 
         DeathTrigger.OnKillPlayer += OnKillPlayer;
@@ -428,7 +431,6 @@ public class SmashBones : Gamemode
         Playlist.StopPlaylist();
 
         LocalHealth.MortalityOverride = null;
-        LocalControls.DoubleJumpOverride = null;
         DeathTrigger.KillDamageOverride = null;
 
         DeathTrigger.OnKillPlayer -= OnKillPlayer;
@@ -509,6 +511,7 @@ public class SmashBones : Gamemode
 
             ApplyDashing(rigManager);
             ApplyAutoRun(rigManager);
+            ApplyDoubleJump(rigManager);
         }
     }
 
@@ -571,6 +574,53 @@ public class SmashBones : Gamemode
         var limitError = (limitVelocity - kneeVelocity) * 5f;
 
         knee.AddForce((limitError + targetVelocity) * rigManager.avatar.massTotal, ForceMode.Force);
+    }
+
+    private static int _remainingJumps = 0;
+    private static float _airTime = 0f;
+
+    private static void ApplyDoubleJump(RigManager rigManager)
+    {
+        var physicsRig = rigManager.physicsRig;
+
+        if (!physicsRig.ballLocoEnabled)
+        {
+            return;
+        }
+
+        if (physicsRig.physG.isGrounded)
+        {
+            _remainingJumps = 1;
+            _airTime = 0f;
+            return;
+        }
+
+        _airTime += TimeUtilities.DeltaTime;
+
+        if (_airTime <= Defaults.ExtraJumpCooldown)
+        {
+            return;
+        }
+
+        if (_remainingJumps <= 0)
+        {
+            return;
+        }
+
+        var controllerRig = rigManager.ControllerRig;
+
+        if (controllerRig._secondaryAButtonUp)
+        {
+            _remainingJumps--;
+            _airTime = 0f;
+
+            var jumpVelocity = physicsRig.torso.rbPelvis.velocity;
+            jumpVelocity.y = Defaults.ExtraJumpVelocity;
+
+            SetPhysicsRigVelocity(physicsRig, jumpVelocity);
+
+            physicsRig.headSfx.JumpEffort();
+        }
     }
 
     private static float _dashCooldown = 0f;
@@ -636,6 +686,13 @@ public class SmashBones : Gamemode
         var targetVelocity = movementDirection * speed;
         targetVelocity.y = pelvisVelocity.y;
 
+        SetPhysicsRigVelocity(physicsRig, targetVelocity);
+    }
+
+    private static void SetPhysicsRigVelocity(PhysicsRig physicsRig, Vector3 velocity)
+    {
+        var pelvisVelocity = physicsRig.torso.rbPelvis.velocity;
+
         foreach (var rb in physicsRig.selfRbs)
         {
             if (rb == null)
@@ -643,7 +700,7 @@ public class SmashBones : Gamemode
                 continue;
             }
 
-            rb.velocity = rb.velocity - pelvisVelocity + targetVelocity;
+            rb.velocity = rb.velocity - pelvisVelocity + velocity;
         }
     }
 

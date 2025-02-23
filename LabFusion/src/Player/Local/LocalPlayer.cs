@@ -57,7 +57,6 @@ public static class LocalPlayer
 
         LocalAvatar.OnInitializeMelon();
         LocalHealth.OnInitializeMelon();
-        LocalControls.OnInitializeMelon();
         LocalVision.OnInitializeMelon();
     }
 
