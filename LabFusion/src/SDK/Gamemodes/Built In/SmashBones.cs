@@ -81,8 +81,6 @@ public class SmashBones : Gamemode
 
         public const float AirDashSpeed = 4.25f;
 
-        public const float DashFlickTimer = 0.3f;
-
         public const int StockCount = 3;
     }
 
@@ -231,7 +229,18 @@ public class SmashBones : Gamemode
         var damageVariable = PlayerDamageKeeper.GetVariable(PlayerIdManager.LocalId);
         float damage = damageVariable.GetValue();
 
-        damage += attack.damage;
+        float addedDamage = attack.damage;
+
+        switch (attack.attackType)
+        {
+            case AttackType.Blunt:
+                addedDamage *= 5f;
+                break;
+        }
+
+        addedDamage = ManagedMathf.Clamp(addedDamage, 0f, 12f);
+
+        damage += addedDamage;
 
         // Damage can only go between 0 -> 999
         damage = ManagedMathf.Clamp(damage, 0f, 999f);
@@ -245,11 +254,17 @@ public class SmashBones : Gamemode
         // Apply knockback
         var direction = attack.direction;
 
-        var magnitude = 10f + damage;
+        var magnitude = (1f + Mathf.Sqrt(damage)) * 0.1f;
 
         if (RigData.HasPlayer)
         {
-            RigData.Refs.RigManager.physicsRig.torso._pelvisRb.AddForce(direction * magnitude, ForceMode.Impulse);
+            var rigManager = RigData.Refs.RigManager;
+            var pelvisRb = rigManager.physicsRig.torso._pelvisRb;
+            var avatarMass = rigManager.avatar.massTotal;
+
+            magnitude *= Mathf.Sqrt(avatarMass);
+
+            pelvisRb.AddForce(direction * magnitude, ForceMode.Impulse);
         }
     }
 
@@ -455,6 +470,7 @@ public class SmashBones : Gamemode
             var rigManager = RigData.Refs.RigManager;
 
             ApplyDashing(rigManager);
+            ApplyAutoRun(rigManager);
         }
     }
 
@@ -470,6 +486,16 @@ public class SmashBones : Gamemode
             var rigManager = RigData.Refs.RigManager;
 
             ApplyAirControl(rigManager);
+        }
+    }
+
+    private static void ApplyAutoRun(RigManager rigManager) 
+    {
+        var remapHeptaRig = rigManager.remapHeptaRig;
+
+        if (remapHeptaRig.travState == RemapRig.TraversalState.Walk)
+        {
+            remapHeptaRig.travState = RemapRig.TraversalState.Jog;
         }
     }
 
@@ -509,10 +535,7 @@ public class SmashBones : Gamemode
         knee.AddForce((limitError + targetVelocity) * rigManager.avatar.massTotal, ForceMode.Force);
     }
 
-    private static int _flickCount = 0;
     private static float _dashCooldown = 0f;
-    private static float _flickTimer = 0f;
-    private static bool _wasFlicking = false;
     private static bool _dashedMidAir = false;
 
     private static void ApplyDashing(RigManager rigManager)
@@ -520,7 +543,6 @@ public class SmashBones : Gamemode
         if (_dashCooldown > 0f)
         {
             _dashCooldown -= TimeUtilities.DeltaTime;
-            _flickCount = 0;
             return;
         }
 
@@ -528,7 +550,6 @@ public class SmashBones : Gamemode
 
         if (!physicsRig.ballLocoEnabled)
         {
-            _flickCount = 0;
             return;
         }
 
@@ -536,7 +557,6 @@ public class SmashBones : Gamemode
 
         if (!grounded && _dashedMidAir)
         {
-            _flickCount = 0;
             return;
         }
         else if (grounded)
@@ -544,41 +564,19 @@ public class SmashBones : Gamemode
             _dashedMidAir = false;
         }
 
-        if (_flickTimer > 0f)
-        {
-            _flickTimer -= TimeUtilities.DeltaTime;
-
-            if (_flickTimer <= 0f)
-            {
-                _flickCount = 0;
-                _wasFlicking = false;
-                return;
-            }
-        }
-
         var controllerRig = rigManager.ControllerRig.TryCast<OpenControllerRig>();
 
-        bool flicking = controllerRig._wasOverFlickThresh;
+        bool stickDown = controllerRig._primaryStickDown;
 
-        if (flicking && !_wasFlicking)
+        if (stickDown)
         {
-            _flickCount++;
-            _flickTimer = Defaults.DashFlickTimer;
-        }
-
-        _wasFlicking = flicking;
-
-        if (_flickCount >= 2)
-        {
-            Dash(rigManager, controllerRig, physicsRig);
+            Dash(controllerRig, physicsRig);
             return;
         }
     }
 
-    private static void Dash(RigManager rigManager, OpenControllerRig controllerRig, PhysicsRig physicsRig)
+    private static void Dash(OpenControllerRig controllerRig, PhysicsRig physicsRig)
     {
-        _flickCount = 0;
-        _flickTimer = 0f;
         _dashCooldown = Defaults.DashCooldown;
 
         float speed = Defaults.DashSpeed;

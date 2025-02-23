@@ -134,6 +134,7 @@ public class RigLivesBar : IPopupLayoutElement
         if (_damageText != null)
         {
             _damageText.text = $"{Mathf.RoundToInt(Damage)}%";
+            _damageText.color = Color.Lerp(Color.white, new Color(0.6f, 0f, 0f, 1f), Damage / 300f);
         }
     }
 
