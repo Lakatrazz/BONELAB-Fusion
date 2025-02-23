@@ -255,7 +255,7 @@ public class SmashBones : Gamemode
         // Apply knockback
         var direction = attack.direction.normalized;
 
-        var magnitude = (1f + Mathf.Sqrt(damage)) * 5f;
+        var magnitude = (1f + Mathf.Sqrt(damage)) * 7f;
 
         if (RigData.HasPlayer)
         {
@@ -266,7 +266,7 @@ public class SmashBones : Gamemode
             magnitude *= Mathf.Sqrt(avatarMass);
 
             var force = direction * magnitude;
-            var upForce = -Physics.gravity.normalized * magnitude * 0.8f;
+            var upForce = -Physics.gravity.normalized * magnitude * 0.6f;
 
             pelvisRb.AddForce(force + upForce, ForceMode.Impulse);
 
