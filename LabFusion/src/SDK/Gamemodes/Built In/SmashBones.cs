@@ -207,11 +207,16 @@ public class SmashBones : Gamemode
 
     private void OnAssignedToTeam(PlayerId player, Team team)
     {
-        bool livesVisible = team != SpectatorTeam;
+        bool spectator = team == SpectatorTeam;
 
         if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
         {
-            networkPlayer.LivesBar.Visible = livesVisible;
+            networkPlayer.LivesBar.Visible = !spectator;
+        }
+
+        if (player.IsMe && RigData.HasPlayer)
+        {
+            OnSetSpawn(spectator);
         }
     }
 
@@ -415,15 +420,7 @@ public class SmashBones : Gamemode
 
         Playlist.StartPlaylist();
 
-        var spawnPoints = GamemodeMarker.FilterMarkers(null);
-
-        if (spawnPoints.Count > 0)
-        {
-            var playerIndex = PlayerIdManager.LocalId.SmallId % spawnPoints.Count;
-
-            GamemodeHelper.SetSpawnPoint(spawnPoints[playerIndex]);
-            GamemodeHelper.TeleportToSpawnPoint();
-        }
+        OnSetSpawn(SpectatorTeam.HasPlayer(PlayerIdManager.LocalId));
     }
 
     public override void OnGamemodeStopped()
@@ -440,6 +437,27 @@ public class SmashBones : Gamemode
         TeamManager.UnassignAllPlayers();
 
         _previousStocks = -1;
+    }
+
+    private void OnSetSpawn(bool spectator)
+    {
+        if (spectator)
+        {
+            GamemodeHelper.SetSpawnPoints(GamemodeMarker.FilterMarkers(FusionBoneTagReferences.SpectatorReference));
+        }
+        else
+        {
+            var spawnPoints = GamemodeMarker.FilterMarkers(null);
+
+            if (spawnPoints.Count > 0)
+            {
+                var playerIndex = PlayerIdManager.LocalId.SmallId % spawnPoints.Count;
+
+                GamemodeHelper.SetSpawnPoint(spawnPoints[playerIndex]);
+            }
+        }
+
+        GamemodeHelper.TeleportToSpawnPoint();
     }
 
     private void OnKillPlayer()
