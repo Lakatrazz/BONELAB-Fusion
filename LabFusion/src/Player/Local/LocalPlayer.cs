@@ -1,8 +1,6 @@
 ﻿#nullable enable
 
 using Il2CppSLZ.Marrow;
-using Il2CppSLZ.Marrow.Interaction;
-using Il2CppSLZ.Marrow.Utilities;
 
 using LabFusion.Data;
 using LabFusion.Entities;
@@ -10,7 +8,6 @@ using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.SDK.Metadata;
 using LabFusion.Utilities;
-using LabFusion.Marrow.Extensions;
 
 using UnityEngine;
 
