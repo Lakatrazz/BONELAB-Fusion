@@ -21,4 +21,17 @@ public static class LocalControls
             }
         }
     }
+
+    private static bool _disableSlowMo = false;
+    public static bool DisableSlowMo
+    {
+        get
+        {
+            return _disableSlowMo;
+        }
+        set
+        {
+            _disableSlowMo = value;
+        }
+    }
 }

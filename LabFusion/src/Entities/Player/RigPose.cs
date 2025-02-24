@@ -23,6 +23,8 @@ public class RigPose : IFusionSerializable
 
     public float CrouchTarget { get; set; } = 0f;
 
+    public float FeetOffset { get; set; } = 0f;
+
     public float Health { get; set; } = 100f;
 
     public float MaxHealth { get; set; } = 100f;
@@ -52,6 +54,7 @@ public class RigPose : IFusionSerializable
 
         // Read extra info
         CrouchTarget = skeleton.remapRig._crouchTarget;
+        FeetOffset = skeleton.remapRig._feetOffset;
         Health = skeleton.health.curr_Health;
         MaxHealth = skeleton.health.max_Health;
     }
@@ -76,6 +79,7 @@ public class RigPose : IFusionSerializable
 
         // Write extra info
         writer.Write(CrouchTarget);
+        writer.Write(FeetOffset);
         writer.Write(Health);
         writer.Write(MaxHealth);
     }
@@ -100,6 +104,7 @@ public class RigPose : IFusionSerializable
 
         // Read extra info
         CrouchTarget = reader.ReadSingle();
+        FeetOffset = reader.ReadSingle();
         Health = reader.ReadSingle();
         MaxHealth = reader.ReadSingle();
     }

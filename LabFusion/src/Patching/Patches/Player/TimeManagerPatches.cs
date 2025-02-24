@@ -4,6 +4,7 @@ using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Utilities;
 
 using LabFusion.Network;
+using LabFusion.Player;
 using LabFusion.Preferences;
 using LabFusion.Senders;
 
@@ -28,6 +29,11 @@ public static class TimeManagerPatches
         if (!NetworkInfo.HasServer)
         {
             return true;
+        }
+
+        if (LocalControls.DisableSlowMo)
+        {
+            return false;
         }
 
         var mode = CommonPreferences.SlowMoMode;

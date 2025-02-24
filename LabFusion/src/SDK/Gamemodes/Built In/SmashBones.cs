@@ -496,6 +496,7 @@ public class SmashBones : Gamemode
     {
         LocalHealth.MortalityOverride = false;
         DeathTrigger.KillDamageOverride = false;
+        LocalControls.DisableSlowMo = true;
 
         DeathTrigger.OnKillPlayer += OnKillPlayer;
 
@@ -534,6 +535,7 @@ public class SmashBones : Gamemode
         LocalHealth.MortalityOverride = null;
         DeathTrigger.KillDamageOverride = null;
         LocalControls.DisableInteraction = false;
+        LocalControls.DisableSlowMo = false;
 
         DeathTrigger.OnKillPlayer -= OnKillPlayer;
 
