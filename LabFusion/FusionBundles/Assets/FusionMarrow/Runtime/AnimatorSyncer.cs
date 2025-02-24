@@ -91,7 +91,7 @@ namespace LabFusion.Marrow.Integration
 
         private void SyncAnimator(int layer = 0)
         {
-            _syncTime = 0.5f;
+            _syncTime = 0.1f;
 
             var currentState = Animator.GetCurrentAnimatorStateInfo(layer);
 
