@@ -1,5 +1,6 @@
 ﻿using LabFusion.Patching;
 using LabFusion.Entities;
+using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
@@ -32,7 +33,14 @@ public class PuppetMasterKillMessage : NativeMessageHandler
         // Kill the puppet
         PuppetMasterPatches.IgnorePatches = true;
 
-        extender.Component.Kill();
+        try
+        {
+            extender.Component.Kill();
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("executing PuppetMaster.Kill", e);
+        }
 
         PuppetMasterPatches.IgnorePatches = false;
     }

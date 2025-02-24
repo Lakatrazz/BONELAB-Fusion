@@ -11,7 +11,7 @@ namespace LabFusion.Patching;
 [HarmonyPatch(typeof(PuppetMaster))]
 public static class PuppetMasterPatches
 {
-    public static bool IgnorePatches = false;
+    public static bool IgnorePatches { get; set; } = false;
 
     [HarmonyPatch(nameof(PuppetMaster.PostKill))]
     [HarmonyPrefix]
