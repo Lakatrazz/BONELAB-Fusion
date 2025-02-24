@@ -136,6 +136,9 @@ public class SmashBones : Gamemode
 
     private int _latestScore = 0;
 
+    private MonoDiscReference _victorySongReference = null;
+    private MonoDiscReference _failureSongReference = null;
+
     public override GroupElementData CreateSettingsGroup()
     {
         var group = base.CreateSettingsGroup();
@@ -575,6 +578,16 @@ public class SmashBones : Gamemode
             message += $"Your Place: {selfPlace}";
         }
 
+        // Play victory/failure sounds
+        int playerCount = PlayerIdManager.PlayerCount;
+
+        if (playerCount > 1)
+        {
+            bool isVictory = selfPlace <= 1;
+
+            OnVictoryStatus(isVictory);
+        }
+
         FusionNotifier.Send(new FusionNotification()
         {
             Title = "Smash Bones Completed",
@@ -878,6 +891,9 @@ public class SmashBones : Gamemode
 
     public void ApplyGamemodeSettings()
     {
+        _victorySongReference = FusionMonoDiscReferences.LavaGangVictoryReference;
+        _failureSongReference = FusionMonoDiscReferences.LavaGangFailureReference;
+
         var songReferences = FusionMonoDiscReferences.CombatSongReferences;
 
         var musicSettings = GamemodeMusicSettings.Instance;
@@ -892,9 +908,49 @@ public class SmashBones : Gamemode
             }
         }
 
+        if (musicSettings != null && !string.IsNullOrWhiteSpace(musicSettings.VictorySongOverride))
+        {
+            _victorySongReference = new MonoDiscReference(musicSettings.VictorySongOverride);
+        }
+
+        if (musicSettings != null && !string.IsNullOrWhiteSpace(musicSettings.FailureSongOverride))
+        {
+            _failureSongReference = new MonoDiscReference(musicSettings.FailureSongOverride);
+        }
+
         AudioReference[] playlist = AudioReference.CreateReferences(songReferences);
 
         Playlist.SetPlaylist(playlist);
         Playlist.Shuffle();
+    }
+
+    private void OnVictoryStatus(bool isVictory = false)
+    {
+        MonoDiscReference stingerReference;
+
+        if (isVictory)
+        {
+            stingerReference = _victorySongReference;
+        }
+        else
+        {
+            stingerReference = _failureSongReference;
+        }
+
+        if (stingerReference == null)
+        {
+            return;
+        }
+
+        var dataCard = stingerReference.DataCard;
+
+        if (dataCard == null)
+        {
+            return;
+        }
+
+        dataCard.AudioClip.LoadAsset((Il2CppSystem.Action<AudioClip>)((c) => {
+            SafeAudio3dPlayer.Play2dOneShot(c, SafeAudio3dPlayer.NonDiegeticMusic, SafeAudio3dPlayer.MusicVolume);
+        }));
     }
 }

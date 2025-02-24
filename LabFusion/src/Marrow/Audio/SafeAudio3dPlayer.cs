@@ -9,7 +9,7 @@ public static class SafeAudio3dPlayer
 {
     public static AudioMixerGroup NonDiegeticMusic => Audio3dManager.nonDiegeticMusic;
 
-    public static float MusicVolume => 0.2f;
+    public const float MusicVolume = 0.2f;
 
     public static void Play2dOneShot(AudioClip clip, AudioMixerGroup mixer, float volume = 1f, float pitch = 1f)
     {
