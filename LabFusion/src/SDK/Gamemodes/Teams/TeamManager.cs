@@ -50,6 +50,15 @@ public class TeamManager
 
         var player = KeyHelper.GetPlayerFromKey(key);
 
+        // If the key doesn't return a player, ignore it
+        if (player == null)
+        {
+#if DEBUG
+            FusionLogger.Warn($"Key {key} led to a null player on TeamManager.OnMetadataChanged.");
+#endif
+            return;
+        }
+
         var teamVariable = new MetadataVariable(key, Gamemode.Metadata);
 
         _playersToTeam[player] = teamVariable;
