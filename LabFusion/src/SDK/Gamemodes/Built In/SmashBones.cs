@@ -23,6 +23,7 @@ using UnityEngine;
 
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using LabFusion.SDK.Points;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -110,6 +111,9 @@ public class SmashBones : Gamemode
     private readonly MusicPlaylist _playlist = new();
     public MusicPlaylist Playlist => _playlist;
 
+    private readonly PlayerScoreKeeper _playerScoreKeeper = new();
+    public PlayerScoreKeeper PlayerScoreKeeper => _playerScoreKeeper;
+
     private readonly PlayerScoreKeeper _playerStocksKeeper = new();
     public PlayerScoreKeeper PlayerStocksKeeper => _playerStocksKeeper;
 
@@ -129,6 +133,8 @@ public class SmashBones : Gamemode
     public TriggerEvent PlayerDeathEvent { get; set; }
 
     private int _previousStocks = -1;
+
+    private int _latestScore = 0;
 
     public override GroupElementData CreateSettingsGroup()
     {
@@ -177,6 +183,8 @@ public class SmashBones : Gamemode
         TeamManager.OnRemovedFromTeam += OnRemovedFromTeam;
 
         // Register keepers
+        PlayerScoreKeeper.Register(Metadata);
+
         PlayerStocksKeeper.Register(Metadata, CommonKeys.LivesKey);
         PlayerStocksKeeper.OnScoreChanged += OnLivesChanged;
 
@@ -196,6 +204,8 @@ public class SmashBones : Gamemode
         TeamManager.OnRemovedFromTeam -= OnRemovedFromTeam;
 
         // Unregister keepers
+        PlayerScoreKeeper.Unregister();
+
         PlayerStocksKeeper.Unregister();
         PlayerStocksKeeper.OnScoreChanged -= OnLivesChanged;
 
@@ -392,6 +402,43 @@ public class SmashBones : Gamemode
         {
             OnSelfLivesChanged(lives);
         }
+
+        if (NetworkInfo.IsServer && lives <= 0)
+        {
+            _latestScore++;
+            PlayerScoreKeeper.SetScore(player, _latestScore);
+
+            CheckFreeForAllStocksVictory();
+        }
+    }
+
+    private void CheckFreeForAllStocksVictory()
+    {
+        var livingPlayers = new List<PlayerId>();
+
+        foreach (var player in PlayerIdManager.PlayerIds)
+        {
+            var stocks = PlayerStocksKeeper.GetScore(player);
+
+            if (stocks > 0)
+            {
+                livingPlayers.Add(player);
+            }
+        }
+
+        int minimumCount = PlayerIdManager.HasOtherPlayers ? 1 : 0;
+
+        if (livingPlayers.Count <= minimumCount)
+        {
+            _latestScore++;
+
+            foreach (var player in livingPlayers)
+            {
+                PlayerScoreKeeper.SetScore(player, _latestScore);
+            }
+
+            GamemodeManager.StopGamemode();
+        }
     }
 
     private void OnSelfLivesChanged(int lives)
@@ -400,15 +447,30 @@ public class SmashBones : Gamemode
 
         if (stocksDecreased)
         {
-            FusionNotifier.Send(new FusionNotification()
+            if (lives > 0)
             {
-                Title = "Lost a Stock",
-                Message = $"You lost a stock! You are now down to {lives} stock{(lives != 1 ? "s" : "")}!",
-                SaveToMenu = false,
-                ShowPopup = true,
-                PopupLength = 4f,
-                Type = NotificationType.INFORMATION,
-            });
+                FusionNotifier.Send(new FusionNotification()
+                {
+                    Title = "Lost a Stock",
+                    Message = $"You lost a stock! You are now down to {lives} stock{(lives != 1 ? "s" : "")}!",
+                    SaveToMenu = false,
+                    ShowPopup = true,
+                    PopupLength = 4f,
+                    Type = NotificationType.INFORMATION,
+                });
+            }
+            else
+            {
+                FusionNotifier.Send(new FusionNotification()
+                {
+                    Title = "Lost All Stocks!",
+                    Message = $"You lost all of your stocks! You are now a spectator!",
+                    SaveToMenu = false,
+                    ShowPopup = true,
+                    PopupLength = 4f,
+                    Type = NotificationType.INFORMATION,
+                });
+            }
         }
 
         _previousStocks = lives;
@@ -436,8 +498,21 @@ public class SmashBones : Gamemode
 
         if (NetworkInfo.IsServer)
         {
+            PlayerScoreKeeper.ResetScores();
+            _latestScore = 0;
+
             AssignTeams();
         }
+
+        FusionNotifier.Send(new FusionNotification()
+        {
+            Title = "Stock Smash",
+            Message = $"All players have {Defaults.StockCount} stocks! Knock players off the map to deplete their stocks and be the last one standing!",
+            ShowPopup = true,
+            SaveToMenu = false,
+            PopupLength = 4f,
+            Type = NotificationType.INFORMATION,
+        });
     }
 
     public override void OnLevelReady()
@@ -460,10 +535,57 @@ public class SmashBones : Gamemode
         DeathTrigger.OnKillPlayer -= OnKillPlayer;
 
         GamemodeHelper.ResetSpawnPoints();
+        GamemodeHelper.TeleportToSpawnPoint();
 
         TeamManager.UnassignAllPlayers();
 
         _previousStocks = -1;
+
+        CheckFinalScore();
+    }
+
+    private void CheckFinalScore()
+    {
+        // Get the winner message
+        var firstPlace = PlayerScoreKeeper.GetPlayerByPlace(0);
+        var secondPlace = PlayerScoreKeeper.GetPlayerByPlace(1);
+        var thirdPlace = PlayerScoreKeeper.GetPlayerByPlace(2);
+
+        var selfPlace = PlayerScoreKeeper.GetPlace(PlayerIdManager.LocalId) + 1;
+
+        string message = "No one ran out of stocks!";
+
+        if (firstPlace != null && firstPlace.TryGetDisplayName(out var name))
+        {
+            message = $"First Place: {name} \n";
+        }
+
+        if (secondPlace != null && secondPlace.TryGetDisplayName(out name))
+        {
+            message += $"Second Place: {name} \n";
+        }
+
+        if (thirdPlace != null && thirdPlace.TryGetDisplayName(out name))
+        {
+            message += $"Third Place: {name} \n";
+        }
+
+        if (selfPlace != -1 && selfPlace > 3)
+        {
+            message += $"Your Place: {selfPlace}";
+        }
+
+        FusionNotifier.Send(new FusionNotification()
+        {
+            Title = "Smash Bones Completed",
+
+            Message = message,
+
+            PopupLength = 6f,
+
+            SaveToMenu = false,
+            ShowPopup = true,
+        });
     }
 
     private static void OnSetSpawn(bool spectator)

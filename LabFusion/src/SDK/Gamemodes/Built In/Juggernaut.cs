@@ -329,11 +329,11 @@ public class Juggernaut : Gamemode
     private void CheckFinalScore()
     {
         // Get the winner message
-        var firstPlace = GetByScore(0);
-        var secondPlace = GetByScore(1);
-        var thirdPlace = GetByScore(2);
+        var firstPlace = JuggernautScoreKeeper.GetPlayerByPlace(0);
+        var secondPlace = JuggernautScoreKeeper.GetPlayerByPlace(1);
+        var thirdPlace = JuggernautScoreKeeper.GetPlayerByPlace(2);
 
-        var selfPlace = GetPlace(PlayerIdManager.LocalId);
+        var selfPlace = JuggernautScoreKeeper.GetPlace(PlayerIdManager.LocalId) + 1;
         var selfScore = JuggernautScoreKeeper.GetScore(PlayerIdManager.LocalId);
 
         string message = "No one scored points!";
@@ -577,43 +577,5 @@ public class Juggernaut : Gamemode
     private void ClearTeams()
     {
         TeamManager.UnassignAllPlayers();
-    }
-
-    public IReadOnlyList<PlayerId> GetPlayersByScore()
-    {
-        List<PlayerId> leaders = new(PlayerIdManager.PlayerIds);
-        leaders = leaders.OrderBy(id => JuggernautScoreKeeper.GetScore(id)).ToList();
-        leaders.Reverse();
-
-        return leaders;
-    }
-
-    public PlayerId GetByScore(int place)
-    {
-        var players = GetPlayersByScore();
-
-        if (players != null && players.Count > place)
-            return players[place];
-        return null;
-    }
-
-    public int GetPlace(PlayerId id)
-    {
-        var players = GetPlayersByScore();
-
-        if (players == null)
-        {
-            return -1;
-        }
-
-        for (var i = 0; i < players.Count; i++)
-        {
-            if (players[i] == id)
-            {
-                return i + 1;
-            }
-        }
-
-        return -1;
     }
 }
