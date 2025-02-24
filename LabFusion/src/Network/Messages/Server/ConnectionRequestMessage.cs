@@ -177,10 +177,6 @@ public class ConnectionRequestMessage : NativeMessageHandler
 
     private static void OnConnectionAllowed(PlayerId playerId, ConnectionRequestData data)
     {
-        // Insert this ID temporarily so we can send messages with the byte id
-        // This will be replaced with the actual ID instance in the connection response
-        playerId.Insert();
-
         // Send the new player to all existing players (and the new player so they know they exist)
         ConnectionSender.SendPlayerJoin(playerId, data.avatarBarcode, data.avatarStats);
 
@@ -229,9 +225,5 @@ public class ConnectionRequestMessage : NativeMessageHandler
 
         // Send the active server settings
         LobbyInfoManager.SendLobbyInfo(data.longId);
-
-        // SERVER CATCHUP
-        // Catchup hooked events
-        CatchupManager.InvokePlayerServerCatchup(playerId);
     }
 }

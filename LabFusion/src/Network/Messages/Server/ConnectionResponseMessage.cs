@@ -1,6 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Player;
+using static Il2CppSystem.Globalization.CultureInfo;
 
 namespace LabFusion.Network;
 
@@ -78,5 +79,18 @@ public class ConnectionResponseMessage : NativeMessageHandler
         {
             RigData.OnSendVitals();
         }
+
+        // Send catchup messages now that the user is registered
+        if (NetworkInfo.IsServer)
+        {
+            CatchupPlayer(data.playerId);
+        }
+    }
+
+    private static void CatchupPlayer(PlayerId player)
+    {
+        // SERVER CATCHUP
+        // Catchup hooked events
+        CatchupManager.InvokePlayerServerCatchup(player);
     }
 }

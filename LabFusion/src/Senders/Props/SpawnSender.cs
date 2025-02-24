@@ -75,18 +75,15 @@ public static class SpawnSender
     /// Sends a catchup sync message for a pool spawned object.
     /// </summary>
     /// <param name="syncable"></param>
-    public static void SendCatchupSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, ulong userId)
+    public static void SendCatchupSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, byte playerId)
     {
         if (!NetworkInfo.IsServer)
         {
             return;
         }
 
-        using var writer = FusionWriter.Create(SpawnResponseData.GetSize(barcode));
         var data = SpawnResponseData.Create(owner, barcode, syncId, serializedTransform);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.SpawnResponse, writer);
-        MessageSender.SendFromServer(userId, NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.SpawnResponse, NetworkChannel.Reliable, RelayType.ToTarget, playerId);
     }
 }
