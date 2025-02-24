@@ -34,4 +34,17 @@ public static class LocalControls
             _disableSlowMo = value;
         }
     }
+
+    private static bool _disableMagazinePouch = false;
+    public static bool DisableAmmoPouch
+    {
+        get
+        {
+            return _disableMagazinePouch;
+        }
+        set
+        {
+            _disableMagazinePouch = value;
+        }
+    }
 }

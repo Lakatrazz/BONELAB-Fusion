@@ -26,6 +26,11 @@ public class InventoryAmmoReceiverGrab
             return true;
         }
 
+        if (LocalControls.DisableAmmoPouch || LocalControls.DisableInteraction)
+        {
+            return false;
+        }
+
         try
         {
             var magazineData = __instance._selectedMagazineData;
