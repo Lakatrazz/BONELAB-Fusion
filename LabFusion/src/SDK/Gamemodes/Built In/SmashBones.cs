@@ -23,7 +23,6 @@ using UnityEngine;
 
 using System.Text.Json.Serialization;
 using System.Text.Json;
-using LabFusion.SDK.Points;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -287,6 +286,8 @@ public class SmashBones : Gamemode
 
         // Apply knockback
         var direction = attack.direction.normalized;
+        direction.y = 0f;
+        direction.Normalize();
 
         var magnitude = (1f + Mathf.Sqrt(damage)) * 10f;
 
@@ -298,10 +299,12 @@ public class SmashBones : Gamemode
 
             magnitude *= Mathf.Sqrt(avatarMass);
 
-            var force = direction * magnitude;
-            var upForce = -Physics.gravity.normalized * magnitude * 0.1f;
+            var punchForce = direction * magnitude;
+            var upForce = -Physics.gravity.normalized * magnitude * 0.2f;
 
-            pelvisRb.AddForce(force + upForce, ForceMode.Impulse);
+            var force = punchForce + upForce;
+
+            pelvisRb.AddForce(force, ForceMode.Impulse);
 
             SlipGrip(rigManager.physicsRig.leftHand);
             SlipGrip(rigManager.physicsRig.rightHand);
