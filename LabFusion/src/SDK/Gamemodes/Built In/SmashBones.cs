@@ -499,6 +499,9 @@ public class SmashBones : Gamemode
         LocalControls.DisableSlowMo = true;
         LocalControls.DisableAmmoPouch = true;
 
+        // Lock the avatar
+        LocalAvatar.AvatarOverride = LocalAvatar.AvatarBarcode;
+
         DeathTrigger.OnKillPlayer += OnKillPlayer;
 
         if (NetworkInfo.IsServer)
@@ -538,6 +541,8 @@ public class SmashBones : Gamemode
         LocalControls.DisableInteraction = false;
         LocalControls.DisableSlowMo = false;
         LocalControls.DisableAmmoPouch = false;
+
+        LocalAvatar.AvatarOverride = null;
 
         DeathTrigger.OnKillPlayer -= OnKillPlayer;
 

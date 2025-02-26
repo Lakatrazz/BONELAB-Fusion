@@ -1,20 +1,13 @@
 ﻿using LabFusion.Data;
 using LabFusion.Network;
-using LabFusion.Preferences;
 using LabFusion.Player;
-using LabFusion.Representation;
-using LabFusion.Senders;
 using LabFusion.Scene;
-using LabFusion.Marrow;
 using LabFusion.Extensions;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
-using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Marrow;
 
 using UnityEngine;
-
-using Avatar = Il2CppSLZ.VRMK.Avatar;
 
 namespace LabFusion.Utilities;
 
@@ -23,14 +16,7 @@ public static class FusionPlayer
     public static byte? LastAttacker { get; internal set; }
     public static readonly List<Transform> SpawnPoints = new();
 
-    public static string AvatarOverride { get; internal set; } = null;
-
     private static bool _brokeBounds = false;
-
-    internal static void OnInitializeMelon()
-    {
-        LocalAvatar.OnAvatarChanged += OnAvatarChanged;
-    }
 
     internal static void OnMainSceneInitialized()
     {
@@ -93,49 +79,6 @@ public static class FusionPlayer
         });
     }
 
-    private static void OnAvatarChanged(Avatar avatar, string barcode)
-    {
-        var rigManager = RigData.Refs.RigManager;
-
-        // Save the stats
-        RigData.RigAvatarStats = new SerializedAvatarStats(avatar);
-        RigData.RigAvatarId = barcode;
-
-        // Send avatar change
-        PlayerSender.SendPlayerAvatar(RigData.RigAvatarStats, barcode);
-
-        // Check player avatar
-        var crateReference = new AvatarCrateReference(barcode);
-
-        var crate = crateReference.Crate;
-
-        if (crate != null)
-        {
-            // Apply metadata
-            LocalPlayer.Metadata.TrySetMetadata(MetadataHelper.AvatarTitleKey, crate.Title);
-            LocalPlayer.Metadata.TrySetMetadata(MetadataHelper.AvatarModIdKey, CrateFilterer.GetModId(crate.Pallet).ToString());
-        }
-
-        if (AvatarOverride != null && !FusionAvatar.IsMatchingAvatar(barcode, AvatarOverride))
-        {
-            Internal_ChangeAvatar();
-        }
-        // If we don't have an avatar override set, check if we are allowed to use custom avatars
-        else if (crate != null && !crate.Pallet.IsInMarrowGame())
-        {
-            if (PlayerIdManager.LocalId != null && PlayerIdManager.LocalId.TryGetPermissionLevel(out var level))
-            {
-                var requirement = LobbyInfoManager.LobbyInfo.CustomAvatars;
-
-                if (!FusionPermissions.HasSufficientPermissions(level, requirement))
-                {
-                    // Change to polyblank, we don't have permission
-                    rigManager.SwapAvatarCrate(new Barcode(BONELABAvatarReferences.PolyBlankBarcode), true);
-                }
-            }
-        }
-    }
-
     /// <summary>
     /// Tries to get the player that we were last attacked by.
     /// </summary>
@@ -182,41 +125,6 @@ public static class FusionPlayer
     public static void ResetSpawnPoints()
     {
         SpawnPoints.Clear();
-    }
-
-    public static void SetAvatarOverride(string barcode)
-    {
-        AvatarOverride = barcode;
-        Internal_ChangeAvatar();
-    }
-
-    public static void ClearAvatarOverride()
-    {
-        AvatarOverride = null;
-    }
-
-    private static void Internal_ChangeAvatar()
-    {
-        // Check avatar override
-        if (RigData.HasPlayer && AssetWarehouse.ready && AvatarOverride != null)
-        {
-            var avatarCrate = CrateFilterer.GetCrate<AvatarCrate>(new Barcode(AvatarOverride));
-
-            if (avatarCrate == null)
-            {
-                return;
-            }
-
-            var rm = RigData.Refs.RigManager;
-            rm.SwapAvatarCrate(new Barcode(AvatarOverride), true, (Action<bool>)((success) =>
-            {
-                // If the avatar forcing doesn't work, change into polyblank
-                if (!success)
-                {
-                    rm.SwapAvatarCrate(new Barcode(BONELABAvatarReferences.PolyBlankBarcode), true);
-                }
-            }));
-        }
     }
 
     /// <summary>

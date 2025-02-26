@@ -101,7 +101,6 @@ public class FusionMod : MelonMod
         FusionBundleLoader.OnBundleLoad();
 
         // Initialize player
-        FusionPlayer.OnInitializeMelon();
         LocalPlayer.OnInitializeMelon();
 
         // Register base modules

@@ -363,7 +363,7 @@ public class Deathmatch : Gamemode
         // Apply vitality and avatar overrides
         if (_avatarOverride != null)
         {
-            FusionPlayer.SetAvatarOverride(_avatarOverride);
+            LocalAvatar.AvatarOverride = _avatarOverride;
         }
 
         OnApplyVitality();
@@ -493,7 +493,7 @@ public class Deathmatch : Gamemode
         FusionOverrides.ForceUpdateOverrides();
 
         // Reset overrides
-        FusionPlayer.ClearAvatarOverride();
+        LocalAvatar.AvatarOverride = null;
         LocalHealth.VitalityOverride = null;
     }
 

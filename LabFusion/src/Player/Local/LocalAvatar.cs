@@ -1,7 +1,13 @@
 ﻿#nullable enable
 
+using Il2CppSLZ.Marrow.Warehouse;
+
 using LabFusion.Data;
 using LabFusion.Extensions;
+using LabFusion.Marrow;
+using LabFusion.Network;
+using LabFusion.Representation;
+using LabFusion.Senders;
 using LabFusion.Utilities;
 
 using UnityEngine;
@@ -33,16 +39,104 @@ public static class LocalAvatar
         }
     }
 
+    private static string? _avatarOverride = null;
+    private static string? _storedAvatar = null;
+
+    public static string? AvatarOverride
+    {
+        get
+        {
+            return _avatarOverride;
+        }
+        set
+        {
+            if (value != null && _avatarOverride == null)
+            {
+                _storedAvatar = AvatarBarcode;
+            }
+
+            _avatarOverride = value;
+
+            RefreshAvatar();
+        }
+    }
+
+    public static string? AvatarBarcode { get; private set; } = null;
+
     public static event PlayerAvatarDelegate? OnAvatarChanged;
 
     internal static void OnInitializeMelon()
     {
-        OnAvatarChanged += OnOverrideHeight;
+        OnAvatarChanged += OnCheckAvatar;
     }
 
     internal static void InvokeAvatarChanged(Avatar avatar, string barcode)
     {
+        AvatarBarcode = barcode;
+
         OnAvatarChanged?.InvokeSafe(avatar, barcode, "executing LocalPlayer.OnAvatarChanged");
+    }
+
+    private static void OnCheckAvatar(Avatar avatar, string barcode)
+    {
+        // Save the stats
+        RigData.RigAvatarStats = new SerializedAvatarStats(avatar);
+        RigData.RigAvatarId = barcode;
+
+        // Send avatar change
+        PlayerSender.SendPlayerAvatar(RigData.RigAvatarStats, barcode);
+
+        var crateReference = new AvatarCrateReference(barcode);
+
+        var crate = crateReference.Crate;
+
+        if (crate != null)
+        {
+            // Apply metadata
+            LocalPlayer.Metadata.TrySetMetadata(MetadataHelper.AvatarTitleKey, crate.Title);
+            LocalPlayer.Metadata.TrySetMetadata(MetadataHelper.AvatarModIdKey, CrateFilterer.GetModId(crate.Pallet).ToString());
+        }
+
+        OnOverrideAvatar(avatar, barcode, crate);
+    }
+
+    private static bool CheckAvatarPrivileges(AvatarCrate? crate)
+    {
+        if (crate == null || crate.Pallet.IsInMarrowGame())
+        {
+            return true;
+        }
+
+        if (PlayerIdManager.LocalId == null || !PlayerIdManager.LocalId.TryGetPermissionLevel(out var level))
+        {
+            return true;
+        }
+
+        var requirement = LobbyInfoManager.LobbyInfo.CustomAvatars;
+
+        if (!FusionPermissions.HasSufficientPermissions(level, requirement))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static void OnOverrideAvatar(Avatar avatar, string barcode, AvatarCrate? crate)
+    {
+        if (!string.IsNullOrWhiteSpace(AvatarOverride) && !IsMatchingAvatar(barcode, AvatarOverride))
+        {
+            SwapAvatarCrate(AvatarOverride);
+            return;
+        }
+
+        if (!CheckAvatarPrivileges(crate))
+        {
+            SwapAvatarCrate(BONELABAvatarReferences.PolyBlankBarcode);
+            return;
+        }
+
+        OnOverrideHeight(avatar, barcode);
     }
 
     private static bool _overridingHeight = false;
@@ -83,6 +177,39 @@ public static class LocalAvatar
         }
 
         var rigManager = RigData.Refs.RigManager;
-        rigManager.SwapAvatarCrate(rigManager.AvatarCrate.Barcode);
+        rigManager.SwapAvatarCrate(rigManager.AvatarCrate.Barcode, true);
+    }
+
+    /// <summary>
+    /// Swaps the avatar that the Local Player is currently using.
+    /// </summary>
+    /// <param name="barcode">The avatar barcode to change to.</param>
+    public static void SwapAvatarCrate(string barcode)
+    {
+        if (!RigData.HasPlayer)
+        {
+            return;
+        }
+
+        var rigManager = RigData.Refs.RigManager;
+        rigManager.SwapAvatarCrate(new(barcode), true, (Action<bool>)(success =>
+        {
+            // Swap to PolyBlank in case of failure
+            if (!success)
+            {
+                rigManager.SwapAvatarCrate(new(BONELABAvatarReferences.PolyBlankBarcode), true);
+            }
+        }));
+    }
+
+    /// <summary>
+    /// Checks if an avatar barcode matches a target avatar. If the barcode is PolyBlank, it will also return true in case the avatar is not available.
+    /// </summary>
+    /// <param name="barcode">The barcode to check.</param>
+    /// <param name="target">The target avatar.</param>
+    /// <returns>If the avatars match.</returns>
+    public static bool IsMatchingAvatar(string barcode, string target)
+    {
+        return barcode == target || barcode == BONELABAvatarReferences.PolyBlankBarcode;
     }
 }
