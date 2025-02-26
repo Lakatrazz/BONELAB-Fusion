@@ -50,14 +50,25 @@ public static class LocalAvatar
         }
         set
         {
-            if (value != null && _avatarOverride == null)
+            bool overriding = value != null;
+            bool wasOverriding = _avatarOverride != null;
+
+            if (overriding && !wasOverriding)
             {
                 _storedAvatar = AvatarBarcode;
             }
 
             _avatarOverride = value;
 
-            RefreshAvatar();
+            if (!overriding && wasOverriding && !string.IsNullOrWhiteSpace(_storedAvatar))
+            {
+                SwapAvatarCrate(_storedAvatar);
+                _storedAvatar = null;
+            }
+            else
+            {
+                RefreshAvatar();
+            }
         }
     }
 
