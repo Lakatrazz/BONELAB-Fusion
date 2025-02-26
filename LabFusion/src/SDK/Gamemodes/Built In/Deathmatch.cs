@@ -184,44 +184,6 @@ public class Deathmatch : Gamemode
         Vitality.SetValue(newVitality);
     }
 
-    public IReadOnlyList<PlayerId> GetPlayersByScore()
-    {
-        List<PlayerId> leaders = new(PlayerIdManager.PlayerIds);
-        leaders = leaders.OrderBy(id => ScoreKeeper.GetScore(id)).ToList();
-        leaders.Reverse();
-
-        return leaders;
-    }
-
-    public PlayerId GetByScore(int place)
-    {
-        var players = GetPlayersByScore();
-
-        if (players != null && players.Count > place)
-            return players[place];
-        return null;
-    }
-
-    public int GetPlace(PlayerId id)
-    {
-        var players = GetPlayersByScore();
-
-        if (players == null)
-        {
-            return -1;
-        }
-
-        for (var i = 0; i < players.Count; i++)
-        {
-            if (players[i] == id)
-            {
-                return i + 1;
-            }
-        }
-
-        return -1;
-    }
-
     private int GetRewardedBits()
     {
         // Change the max bit count based on player count
@@ -456,11 +418,11 @@ public class Deathmatch : Gamemode
         Playlist.StopPlaylist();
 
         // Get the winner message
-        var firstPlace = GetByScore(0);
-        var secondPlace = GetByScore(1);
-        var thirdPlace = GetByScore(2);
+        var firstPlace = ScoreKeeper.GetPlayerByPlace(0);
+        var secondPlace = ScoreKeeper.GetPlayerByPlace(1);
+        var thirdPlace = ScoreKeeper.GetPlayerByPlace(2);
 
-        var selfPlace = GetPlace(PlayerIdManager.LocalId);
+        var selfPlace = ScoreKeeper.GetPlace(PlayerIdManager.LocalId);
         var selfScore = ScoreKeeper.GetScore(PlayerIdManager.LocalId);
 
         string message = "No one scored points!";
