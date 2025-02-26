@@ -222,11 +222,12 @@ public class SmashBones : Gamemode
     private void OnAssignedToTeam(PlayerId player, Team team)
     {
         bool spectator = team == SpectatorTeam;
+        bool selfSpectator = TeamManager.GetLocalTeam() == SpectatorTeam;
 
         if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
         {
             networkPlayer.LivesBar.Visible = !spectator;
-            networkPlayer.ForceHide = spectator;
+            networkPlayer.ForceHide = spectator && !selfSpectator;
         }
 
         if (player.IsMe)
@@ -251,6 +252,28 @@ public class SmashBones : Gamemode
         LocalControls.DisableInteraction = spectator;
 
         OnSetSpawn(spectator);
+
+        OnCheckPlayerHiding(spectator);
+    }
+
+    private void OnCheckPlayerHiding(bool selfSpectator)
+    {
+        foreach (var player in PlayerIdManager.PlayerIds)
+        {
+            if (player.IsMe)
+            {
+                continue;
+            }
+
+            if (!NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
+            {
+                continue;
+            }
+
+            bool spectator = TeamManager.GetPlayerTeam(player) == SpectatorTeam;
+
+            networkPlayer.ForceHide = spectator && !selfSpectator;
+        }
     }
 
     private void OnAttackedByPlayer(Attack attack, PlayerDamageReceiver.BodyPart bodyPart, PlayerId player)
