@@ -87,6 +87,8 @@ public class SmashBones : Gamemode
         public const int StockCount = 3;
 
         public const float ExtraJumpCooldown = 0.2f;
+
+        public const float MaxAvatarHeight = 4f;
     }
 
     private int _minimumPlayers = 2;
@@ -502,7 +504,8 @@ public class SmashBones : Gamemode
         LocalControls.DisableSlowMo = true;
         LocalControls.DisableAmmoPouch = true;
 
-        // Lock the avatar
+        // Lock the avatar and limit max height
+        LocalAvatar.HeightOverride = ManagedMathf.Clamp(LocalAvatar.AvatarHeight, 0f, Defaults.MaxAvatarHeight);
         LocalAvatar.AvatarOverride = LocalAvatar.AvatarBarcode;
 
         DeathTrigger.OnKillPlayer += OnKillPlayer;
@@ -545,6 +548,7 @@ public class SmashBones : Gamemode
         LocalControls.DisableSlowMo = false;
         LocalControls.DisableAmmoPouch = false;
 
+        LocalAvatar.HeightOverride = null;
         LocalAvatar.AvatarOverride = null;
 
         DeathTrigger.OnKillPlayer -= OnKillPlayer;
