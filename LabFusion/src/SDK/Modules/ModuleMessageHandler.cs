@@ -154,8 +154,6 @@ public abstract class ModuleMessageHandler : MessageHandler
         }
 
         OnHandleMessage(received);
-
-        HandleMessage(received.Bytes, received.IsServerHandled);
     }
 
     public static Dictionary<string, Type> HandlerTypes { get; private set; } = new();

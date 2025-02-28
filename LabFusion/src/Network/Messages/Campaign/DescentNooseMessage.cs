@@ -43,15 +43,14 @@ public class DescentNooseMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.DescentNoose;
 
-    public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(bytes);
-        var data = reader.ReadFusionSerializable<DescentNooseData>();
+        var data = received.ReadData<DescentNooseData>();
 
         // Send message to other clients if server
-        if (isServerHandled)
+        if (received.IsServerHandled)
         {
-            using var message = FusionMessage.Create(Tag, bytes);
+            using var message = FusionMessage.Create(Tag, received);
             MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
             return;
         }

@@ -138,8 +138,6 @@ public abstract class NativeMessageHandler : MessageHandler
         }
 
         OnHandleMessage(received);
-
-        HandleMessage(received.Bytes, received.IsServerHandled);
     }
 
     public static readonly NativeMessageHandler[] Handlers = new NativeMessageHandler[byte.MaxValue];

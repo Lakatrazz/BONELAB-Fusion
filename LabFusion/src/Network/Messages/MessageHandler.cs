@@ -71,11 +71,6 @@ public abstract class MessageHandler
         }
     }
 
-    [Obsolete("Please override OnHandleMessage instead.")]
-    public virtual void HandleMessage(byte[] bytes, bool isServerHandled = false)
-    {
-    }
-
     public abstract void Handle(ReceivedMessage received);
 
     protected virtual void OnHandleMessage(ReceivedMessage received) { }

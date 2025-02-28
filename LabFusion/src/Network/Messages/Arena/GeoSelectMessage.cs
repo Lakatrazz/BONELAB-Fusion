@@ -1,52 +1,53 @@
 ﻿using LabFusion.Data;
 using LabFusion.Patching;
 
-namespace LabFusion.Network
+namespace LabFusion.Network;
+
+public class GeoSelectData : IFusionSerializable
 {
-    public class GeoSelectData : IFusionSerializable
+    public byte geoIndex;
+
+    public void Serialize(FusionWriter writer)
     {
-        public byte geoIndex;
-
-        public void Serialize(FusionWriter writer)
-        {
-            writer.Write(geoIndex);
-        }
-
-        public void Deserialize(FusionReader reader)
-        {
-            geoIndex = reader.ReadByte();
-        }
-
-        public static GeoSelectData Create(byte geoIndex)
-        {
-            return new GeoSelectData()
-            {
-                geoIndex = geoIndex,
-            };
-        }
+        writer.Write(geoIndex);
     }
 
-    [Net.DelayWhileTargetLoading]
-    public class GeoSelectMessage : NativeMessageHandler
+    public void Deserialize(FusionReader reader)
     {
-        public override byte Tag => NativeMessageTag.GeoSelect;
+        geoIndex = reader.ReadByte();
+    }
 
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+    public static GeoSelectData Create(byte geoIndex)
+    {
+        return new GeoSelectData()
         {
-            using FusionReader reader = FusionReader.Create(bytes);
-            var data = reader.ReadFusionSerializable<GeoSelectData>();
-            var manager = ArenaData.GeoManager;
+            geoIndex = geoIndex,
+        };
+    }
+}
 
-            GeoManagerPatches.IgnorePatches = true;
+[Net.DelayWhileTargetLoading]
+public class GeoSelectMessage : NativeMessageHandler
+{
+    public override byte Tag => NativeMessageTag.GeoSelect;
 
-            // We ONLY handle this for clients, this message should only ever be sent by the server!
-            if (!NetworkInfo.IsServer && manager)
-            {
-                manager.ClearCurrentGeo();
-                manager.ToggleGeo(data.geoIndex);
-            }
+    public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
 
-            GeoManagerPatches.IgnorePatches = false;
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        var data = received.ReadData<GeoSelectData>();
+        var manager = ArenaData.GeoManager;
+
+        if (!manager)
+        {
+            return;
         }
+
+        GeoManagerPatches.IgnorePatches = true;
+
+        manager.ClearCurrentGeo();
+        manager.ToggleGeo(data.geoIndex);
+
+        GeoManagerPatches.IgnorePatches = false;
     }
 }

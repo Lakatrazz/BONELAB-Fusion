@@ -1,67 +1,69 @@
 ﻿using LabFusion.Data;
 using LabFusion.Patching;
 
-namespace LabFusion.Network
+namespace LabFusion.Network;
+
+public enum BaseGameControllerType
 {
-    public enum BaseGameControllerType
+    UNKNOWN = 0,
+    BeginSession = 1,
+    EndSession = 2,
+}
+
+public class BaseGameControllerData : IFusionSerializable
+{
+    public BaseGameControllerType type;
+
+    public void Serialize(FusionWriter writer)
     {
-        UNKNOWN = 0,
-        BeginSession = 1,
-        EndSession = 2,
+        writer.Write((byte)type);
     }
 
-    public class BaseGameControllerData : IFusionSerializable
+    public void Deserialize(FusionReader reader)
     {
-        public BaseGameControllerType type;
-
-        public void Serialize(FusionWriter writer)
-        {
-            writer.Write((byte)type);
-        }
-
-        public void Deserialize(FusionReader reader)
-        {
-            type = (BaseGameControllerType)reader.ReadByte();
-        }
-
-        public static BaseGameControllerData Create(BaseGameControllerType type)
-        {
-            return new BaseGameControllerData()
-            {
-                type = type,
-            };
-        }
+        type = (BaseGameControllerType)reader.ReadByte();
     }
 
-    [Net.DelayWhileTargetLoading]
-    public class BaseGameControllerMessage : NativeMessageHandler
+    public static BaseGameControllerData Create(BaseGameControllerType type)
     {
-        public override byte Tag => NativeMessageTag.BaseGameController;
-
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
+        return new BaseGameControllerData()
         {
-            using FusionReader reader = FusionReader.Create(bytes);
-            var data = reader.ReadFusionSerializable<BaseGameControllerData>();
-            BaseGameControllerPatches.IgnorePatches = true;
+            type = type,
+        };
+    }
+}
 
-            // We ONLY handle this for clients, this message should only ever be sent by the server!
-            if (!NetworkInfo.IsServer && GameControllerData.HasGameController)
-            {
-                switch (data.type)
-                {
-                    default:
-                    case BaseGameControllerType.UNKNOWN:
-                        break;
-                    case BaseGameControllerType.BeginSession:
-                        GameControllerData.GameController.BeginSession();
-                        break;
-                    case BaseGameControllerType.EndSession:
-                        GameControllerData.GameController.EndSession();
-                        break;
-                }
-            }
+[Net.DelayWhileTargetLoading]
+public class BaseGameControllerMessage : NativeMessageHandler
+{
+    public override byte Tag => NativeMessageTag.BaseGameController;
 
-            BaseGameControllerPatches.IgnorePatches = false;
+    public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
+
+    protected override void OnHandleMessage(ReceivedMessage received)
+    {
+        var data = received.ReadData<BaseGameControllerData>();
+
+        if (!GameControllerData.HasGameController)
+        {
+            return;
         }
+
+        BaseGameControllerPatches.IgnorePatches = true;
+
+        switch (data.type)
+        {
+            default:
+            case BaseGameControllerType.UNKNOWN:
+                break;
+            case BaseGameControllerType.BeginSession:
+                GameControllerData.GameController.BeginSession();
+                break;
+            case BaseGameControllerType.EndSession:
+                GameControllerData.GameController.EndSession();
+                break;
+        }
+
+        BaseGameControllerPatches.IgnorePatches = false;
     }
 }
