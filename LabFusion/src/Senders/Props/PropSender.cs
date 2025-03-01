@@ -30,7 +30,7 @@ public static class PropSender
             return;
         }
 
-        using var writer = FusionWriter.Create(NetworkPropCreateData.Size);
+        using var writer = FusionWriter.Create();
         var networkEntity = prop.NetworkEntity;
 
         var data = NetworkPropCreateData.Create(networkEntity.OwnerId, hashData, networkEntity.Id);

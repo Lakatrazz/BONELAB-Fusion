@@ -26,7 +26,7 @@ public static class LoadSender
             return;
         }
 
-        using FusionWriter writer = FusionWriter.Create(SceneLoadData.GetSize(barcode, loadBarcode));
+        using FusionWriter writer = FusionWriter.Create();
         var data = SceneLoadData.Create(barcode, loadBarcode);
         writer.Write(data);
 

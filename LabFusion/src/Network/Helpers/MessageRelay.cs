@@ -8,7 +8,7 @@ public static class MessageRelay
 {
     public static void RelayNative<TData>(TData data, byte tag, NetworkChannel channel, RelayType type, byte? target = null) where TData : IFusionSerializable
     {
-        using var writer = FusionWriter.Create(data.GetSize() ?? FusionWriter.DefaultSize);
+        using var writer = FusionWriter.Create();
 
         writer.Write(data);
 
@@ -21,7 +21,7 @@ public static class MessageRelay
 
     public static void RelayModule<TMessage, TData>(TData data, NetworkChannel channel, RelayType type, byte? target = null) where TMessage : ModuleMessageHandler where TData : IFusionSerializable
     {
-        using var writer = FusionWriter.Create(data.GetSize() ?? FusionWriter.DefaultSize);
+        using var writer = FusionWriter.Create();
 
         writer.Write(data);
 

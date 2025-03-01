@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Buffers;
+using System.Text;
 
 using LabFusion.Extensions;
 using LabFusion.Utilities;
@@ -12,7 +13,7 @@ using System;
 
 public class FusionWriter : IDisposable
 {
-    public const int DefaultSize = 16;
+    public const int MaxSize = 4096;
 
     public int Position { get; set; }
 
@@ -24,35 +25,19 @@ public class FusionWriter : IDisposable
         }
     }
 
-    private byte[] buffer;
+    private byte[] _buffer;
 
-    public byte[] Buffer
-    {
-        get
-        {
-            return buffer;
-        }
-    }
+    public ArraySegment<byte> Buffer => new(_buffer, 0, Length);
 
     /// <summary>
-    /// This is not recommended. Use Create(int initialCapacity) as resizing arrays costs performance.
+    /// Creates a new FusionWriter with a max size of <see cref="MaxSize"/>.
     /// </summary>
     /// <returns></returns>
     public static FusionWriter Create()
     {
-        return Create(DefaultSize);
-    }
-
-    /// <summary>
-    /// This is the recommended version. If you know a minimum size of your message, it can save a lot of performance.
-    /// </summary>
-    /// <param name="initialCapacity"></param>
-    /// <returns></returns>
-    public static FusionWriter Create(int initialCapacity)
-    {
         return new FusionWriter
         {
-            buffer = new byte[initialCapacity],
+            _buffer = ArrayPool<byte>.Shared.Rent(MaxSize),
             Position = 0,
         };
     }
@@ -87,9 +72,7 @@ public class FusionWriter : IDisposable
 
     public void Write(byte value)
     {
-        ArrayExtensions.EnsureLength(ref buffer, Position + 1);
-        buffer[Position++] = value;
-        ArrayExtensions.EnsureLength(ref buffer, Position);
+        _buffer[Position++] = value;
     }
 
     public void Write(byte? value)
@@ -102,40 +85,31 @@ public class FusionWriter : IDisposable
 
     public void Write(bool value)
     {
-        ArrayExtensions.EnsureLength(ref buffer, Position + 1);
         Write((byte)(value ? 1u : 0u));
     }
 
     public void Write(double value)
     {
-        ArrayExtensions.EnsureLength(ref buffer, Position + 8);
-        BigEndianHelper.WriteBytes(buffer, Position, value);
+        BigEndianHelper.WriteBytes(_buffer, Position, value);
         Position += 8;
-        ArrayExtensions.EnsureLength(ref buffer, Position);
     }
 
     public void Write(short value)
     {
-        ArrayExtensions.EnsureLength(ref buffer, Position + 2);
-        BigEndianHelper.WriteBytes(buffer, Position, value);
+        BigEndianHelper.WriteBytes(_buffer, Position, value);
         Position += 2;
-        ArrayExtensions.EnsureLength(ref buffer, Position);
     }
 
     public void Write(int value)
     {
-        ArrayExtensions.EnsureLength(ref buffer, Position + 4);
-        BigEndianHelper.WriteBytes(buffer, Position, value);
+        BigEndianHelper.WriteBytes(_buffer, Position, value);
         Position += 4;
-        ArrayExtensions.EnsureLength(ref buffer, Position);
     }
 
     public void Write(long value)
     {
-        ArrayExtensions.EnsureLength(ref buffer, Position + 8);
-        BigEndianHelper.WriteBytes(buffer, Position, value);
+        BigEndianHelper.WriteBytes(_buffer, Position, value);
         Position += 8;
-        ArrayExtensions.EnsureLength(ref buffer, Position);
     }
 
     public void Write(sbyte value)
@@ -145,10 +119,8 @@ public class FusionWriter : IDisposable
 
     public void Write(float value)
     {
-        ArrayExtensions.EnsureLength(ref buffer, Position + 4);
-        BigEndianHelper.WriteBytes(buffer, Position, value);
+        BigEndianHelper.WriteBytes(_buffer, Position, value);
         Position += 4;
-        ArrayExtensions.EnsureLength(ref buffer, Position);
     }
 
     public void Write(Vector3 value)
@@ -166,10 +138,8 @@ public class FusionWriter : IDisposable
 
     public void Write(ushort value)
     {
-        ArrayExtensions.EnsureLength(ref buffer, Position + 2);
-        BigEndianHelper.WriteBytes(buffer, Position, value);
+        BigEndianHelper.WriteBytes(_buffer, Position, value);
         Position += 2;
-        ArrayExtensions.EnsureLength(ref buffer, Position);
     }
 
     public void Write(ushort? value)
@@ -182,18 +152,14 @@ public class FusionWriter : IDisposable
 
     public void Write(uint value)
     {
-        ArrayExtensions.EnsureLength(ref buffer, Position + 4);
-        BigEndianHelper.WriteBytes(buffer, Position, value);
+        BigEndianHelper.WriteBytes(_buffer, Position, value);
         Position += 4;
-        ArrayExtensions.EnsureLength(ref buffer, Position);
     }
 
     public void Write(ulong value)
     {
-        ArrayExtensions.EnsureLength(ref buffer, Position + 8);
-        BigEndianHelper.WriteBytes(buffer, Position, value);
+        BigEndianHelper.WriteBytes(_buffer, Position, value);
         Position += 8;
-        ArrayExtensions.EnsureLength(ref buffer, Position);
     }
 
     public void Write(string value)
@@ -204,20 +170,24 @@ public class FusionWriter : IDisposable
     public void Write(string value, Encoding encoding)
     {
         int byteCount = encoding.GetByteCount(value);
-        ArrayExtensions.EnsureLength(ref buffer, Position + 4 + byteCount);
-        BigEndianHelper.WriteBytes(buffer, Position, byteCount);
-        encoding.GetBytes(value, 0, value.Length, buffer, Position + 4);
+
+        BigEndianHelper.WriteBytes(_buffer, Position, byteCount);
+        encoding.GetBytes(value, 0, value.Length, _buffer, Position + 4);
         Position += 4 + byteCount;
-        ArrayExtensions.EnsureLength(ref buffer, Position);
     }
 
     public void Write(byte[] value)
     {
-        ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Length);
-        BigEndianHelper.WriteBytes(buffer, Position, value.Length);
-        System.Buffer.BlockCopy(value, 0, buffer, Position + 4, value.Length);
+        BigEndianHelper.WriteBytes(_buffer, Position, value.Length);
+        System.Buffer.BlockCopy(value, 0, _buffer, Position + 4, value.Length);
         Position += 4 + value.Length;
-        ArrayExtensions.EnsureLength(ref buffer, Position);
+    }
+
+    public void Write(ArraySegment<byte> value)
+    {
+        BigEndianHelper.WriteBytes(_buffer, Position, value.Count);
+        System.Buffer.BlockCopy(value.Array, 0, _buffer, Position + 4, value.Count);
+        Position += 4 + value.Count;
     }
 
     public void Write(char[] value)
@@ -228,18 +198,17 @@ public class FusionWriter : IDisposable
     public void Write(char[] value, Encoding encoding)
     {
         int byteCount = encoding.GetByteCount(value);
-        ArrayExtensions.EnsureLength(ref buffer, Position + 4 + byteCount);
-        BigEndianHelper.WriteBytes(buffer, Position, byteCount);
-        encoding.GetBytes(value, 0, value.Length, buffer, Position + 4);
+
+        BigEndianHelper.WriteBytes(_buffer, Position, byteCount);
+        encoding.GetBytes(value, 0, value.Length, _buffer, Position + 4);
         Position += 4 + byteCount;
-        ArrayExtensions.EnsureLength(ref buffer, Position);
     }
 
     public void Write(ICollection<bool> value)
     {
         int num = (int)Math.Ceiling((double)value.Count / 8.0);
-        ArrayExtensions.EnsureLength(ref buffer, Position + 4 + num);
-        BigEndianHelper.WriteBytes(buffer, Position, value.Count);
+
+        BigEndianHelper.WriteBytes(_buffer, Position, value.Count);
         int num2 = 0;
         for (int i = 0; i < num; i++)
         {
@@ -254,16 +223,14 @@ public class FusionWriter : IDisposable
                 num2++;
                 num3--;
             }
-            buffer[Position + 4 + i] = b;
+            _buffer[Position + 4 + i] = b;
         }
         Position += 4 + num;
-        ArrayExtensions.EnsureLength(ref buffer, Position);
     }
 
     public void Write(ICollection<double> value)
     {
-        ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Count * 8);
-        BigEndianHelper.WriteBytes(buffer, Position, value.Count);
+        BigEndianHelper.WriteBytes(_buffer, Position, value.Count);
         int num = 0;
         int num2 = Position + 4;
         while (num < value.Count)
@@ -273,75 +240,65 @@ public class FusionWriter : IDisposable
             {
                 System.Array.Reverse(bytes);
             }
-            System.Buffer.BlockCopy(bytes, 0, buffer, num2, 8);
+            System.Buffer.BlockCopy(bytes, 0, _buffer, num2, 8);
             num++;
             num2 += 8;
         }
         Position += 4 + value.Count * 8;
-        ArrayExtensions.EnsureLength(ref buffer, Position);
     }
 
     public void Write(ICollection<short> value)
     {
-        ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Count * 2);
-        BigEndianHelper.WriteBytes(buffer, Position, value.Count);
+        BigEndianHelper.WriteBytes(_buffer, Position, value.Count);
         int num = 0;
         int num2 = Position + 4;
         while (num < value.Count)
         {
-            BigEndianHelper.WriteBytes(buffer, num2, value.ElementAt(num));
+            BigEndianHelper.WriteBytes(_buffer, num2, value.ElementAt(num));
             num++;
             num2 += 2;
         }
         Position += 4 + value.Count * 2;
-        ArrayExtensions.EnsureLength(ref buffer, Position);
     }
 
     public void Write(ICollection<int> value)
     {
-        ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Count * 4);
-        BigEndianHelper.WriteBytes(buffer, Position, value.Count);
+        BigEndianHelper.WriteBytes(_buffer, Position, value.Count);
         int num = 0;
         int num2 = Position + 4;
         while (num < value.Count)
         {
-            BigEndianHelper.WriteBytes(buffer, num2, value.ElementAt(num));
+            BigEndianHelper.WriteBytes(_buffer, num2, value.ElementAt(num));
             num++;
             num2 += 4;
         }
         Position += 4 + value.Count * 4;
-        ArrayExtensions.EnsureLength(ref buffer, Position);
     }
 
     public void Write(ICollection<long> value)
     {
-        ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Count * 8);
-        BigEndianHelper.WriteBytes(buffer, Position, value.Count);
+        BigEndianHelper.WriteBytes(_buffer, Position, value.Count);
         int num = 0;
         int num2 = Position + 4;
         while (num < value.Count)
         {
-            BigEndianHelper.WriteBytes(buffer, num2, value.ElementAt(num));
+            BigEndianHelper.WriteBytes(_buffer, num2, value.ElementAt(num));
             num++;
             num2 += 8;
         }
         Position += 4 + value.Count * 8;
-        ArrayExtensions.EnsureLength(ref buffer, Position);
     }
 
     public void Write(sbyte[] value)
     {
-        ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Length);
-        BigEndianHelper.WriteBytes(buffer, Position, value.Length);
-        System.Buffer.BlockCopy(value, 0, buffer, Position + 4, value.Length);
+        BigEndianHelper.WriteBytes(_buffer, Position, value.Length);
+        System.Buffer.BlockCopy(value, 0, _buffer, Position + 4, value.Length);
         Position += 4 + value.Length;
-        ArrayExtensions.EnsureLength(ref buffer, Position);
     }
 
     public void Write(ICollection<float> value)
     {
-        ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Count * 4);
-        BigEndianHelper.WriteBytes(buffer, Position, value.Count);
+        BigEndianHelper.WriteBytes(_buffer, Position, value.Count);
         int num = 0;
         int num2 = Position + 4;
         while (num < value.Count)
@@ -351,12 +308,11 @@ public class FusionWriter : IDisposable
             {
                 System.Array.Reverse(bytes);
             }
-            System.Buffer.BlockCopy(bytes, 0, buffer, num2, 4);
+            System.Buffer.BlockCopy(bytes, 0, _buffer, num2, 4);
             num++;
             num2 += 4;
         }
         Position += 4 + value.Count * 4;
-        ArrayExtensions.EnsureLength(ref buffer, Position);
     }
 
     public void Write(Dictionary<string, string> value)
@@ -367,10 +323,9 @@ public class FusionWriter : IDisposable
 
     public void Write(ICollection<string> value)
     {
-        ArrayExtensions.EnsureLength(ref buffer, Position + 4);
-        BigEndianHelper.WriteBytes(buffer, Position, value.Count);
+        BigEndianHelper.WriteBytes(_buffer, Position, value.Count);
         Position += 4;
-        ArrayExtensions.EnsureLength(ref buffer, Position);
+
         for (var i = 0; i < value.Count; i++)
         {
             Write(value.ElementAt(i));
@@ -379,62 +334,56 @@ public class FusionWriter : IDisposable
 
     public void Write(ICollection<ushort> value)
     {
-        ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Count * 2);
-        BigEndianHelper.WriteBytes(buffer, Position, value.Count);
+        BigEndianHelper.WriteBytes(_buffer, Position, value.Count);
         int num = 0;
         int num2 = Position + 4;
         while (num < value.Count)
         {
-            BigEndianHelper.WriteBytes(buffer, num2, value.ElementAt(num));
+            BigEndianHelper.WriteBytes(_buffer, num2, value.ElementAt(num));
             num++;
             num2 += 2;
         }
         Position += 4 + value.Count * 2;
-        ArrayExtensions.EnsureLength(ref buffer, Position);
     }
 
     public void Write(ICollection<uint> value)
     {
-        ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Count * 4);
-        BigEndianHelper.WriteBytes(buffer, Position, value.Count);
+        BigEndianHelper.WriteBytes(_buffer, Position, value.Count);
         int num = 0;
         int num2 = Position + 4;
         while (num < value.Count)
         {
-            BigEndianHelper.WriteBytes(buffer, num2, value.ElementAt(num));
+            BigEndianHelper.WriteBytes(_buffer, num2, value.ElementAt(num));
             num++;
             num2 += 4;
         }
         Position += 4 + value.Count * 4;
-        ArrayExtensions.EnsureLength(ref buffer, Position);
     }
 
     public void Write(ICollection<ulong> value)
     {
-        ArrayExtensions.EnsureLength(ref buffer, Position + 4 + value.Count * 8);
-        BigEndianHelper.WriteBytes(buffer, Position, value.Count);
+        BigEndianHelper.WriteBytes(_buffer, Position, value.Count);
         int num = 0;
         int num2 = Position + 4;
         while (num < value.Count)
         {
-            BigEndianHelper.WriteBytes(buffer, num2, value.ElementAt(num));
+            BigEndianHelper.WriteBytes(_buffer, num2, value.ElementAt(num));
             num++;
             num2 += 8;
         }
         Position += 4 + value.Count * 8;
-        ArrayExtensions.EnsureLength(ref buffer, Position);
     }
 
     public void WriteRaw(byte[] bytes, int offset, int length)
     {
-        ArrayExtensions.EnsureLength(ref buffer, Position + length);
-        System.Buffer.BlockCopy(bytes, offset, buffer, Position, length);
+        System.Buffer.BlockCopy(bytes, offset, _buffer, Position, length);
         Position += length;
-        ArrayExtensions.EnsureLength(ref buffer, Position);
     }
 
     public void Dispose()
     {
         GC.SuppressFinalize(this);
+
+        ArrayPool<byte>.Shared.Return(_buffer);
     }
 }

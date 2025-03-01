@@ -127,7 +127,7 @@ public static class ConstrainerPatches
             ConstraintTrackerPatches.IgnorePatches = false;
 
             // Send create message
-            using var writer = FusionWriter.Create(ConstraintCreateData.Size);
+            using var writer = FusionWriter.Create();
             var data = ConstraintCreateData.Create(PlayerIdManager.LocalSmallId, entity.Id, new ConstrainerPointPair(__instance));
             writer.Write(data);
 

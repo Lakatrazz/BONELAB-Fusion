@@ -23,7 +23,7 @@ public static class SpawnSender
             return;
         }
 
-        using var writer = FusionWriter.Create(CrateSpawnerData.Size);
+        using var writer = FusionWriter.Create();
         var data = CrateSpawnerData.Create(entity.Id, placer.gameObject);
         writer.Write(data);
 

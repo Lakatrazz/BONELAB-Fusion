@@ -11,11 +11,6 @@ public class PlayerPoseUpdateData : IFusionSerializable
 
     public RigPose pose;
 
-    public int? GetSize()
-    {
-        return Size;
-    }
-
     public void Serialize(FusionWriter writer)
     {
         writer.Write(pose);

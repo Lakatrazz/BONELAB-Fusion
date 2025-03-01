@@ -117,7 +117,7 @@ public static class PlayerSender
 
     public static void SendPlayerMetadataRequest(byte smallId, string key, string value)
     {
-        using var writer = FusionWriter.Create(PlayerMetadataRequestData.GetSize(key, value));
+        using var writer = FusionWriter.Create();
         var data = PlayerMetadataRequestData.Create(smallId, key, value);
         writer.Write(data);
 
@@ -133,7 +133,7 @@ public static class PlayerSender
             throw new ExpectedServerException();
         }
 
-        using var writer = FusionWriter.Create(PlayerMetadataResponseData.GetSize(key, value));
+        using var writer = FusionWriter.Create();
         var data = PlayerMetadataResponseData.Create(smallId, key, value);
         writer.Write(data);
 

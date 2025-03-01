@@ -47,11 +47,6 @@ public class BodyPose : IFusionSerializable
         _positionPrediction += velocity * deltaTime;
     }
 
-    public int? GetSize()
-    {
-        return Size;
-    }
-
     public void Serialize(FusionWriter writer)
     {
         writer.Write(SerializedShortVector3.Compress(position));

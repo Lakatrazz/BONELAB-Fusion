@@ -7,9 +7,4 @@ public interface IFusionSerializable
     void Serialize(FusionWriter writer);
 
     void Deserialize(FusionReader reader);
-
-    int? GetSize()
-    {
-        return null;
-    }
 }

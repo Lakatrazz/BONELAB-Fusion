@@ -108,7 +108,7 @@ public static class GunPatches
             // Make sure this is being grabbed by our main player
             if (__instance.triggerGrip && __instance.triggerGrip.attachedHands.Find((Il2CppSystem.Predicate<Hand>)((h) => h.manager.IsLocalPlayer())))
             {
-                using var writer = FusionWriter.Create(GunShotData.Size);
+                using var writer = FusionWriter.Create();
                 var ammoCount = __instance._magState != null ? (byte)__instance._magState.AmmoCount : (byte)0;
 
                 var data = GunShotData.Create(PlayerIdManager.LocalSmallId, ammoCount, gunEntity.Id, (byte)gunExtender.GetIndex(__instance).Value);

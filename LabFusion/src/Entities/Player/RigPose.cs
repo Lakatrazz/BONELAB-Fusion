@@ -29,11 +29,6 @@ public class RigPose : IFusionSerializable
 
     public float MaxHealth { get; set; } = 100f;
 
-    public int? GetSize()
-    {
-        return Size;
-    }
-
     public void ReadSkeleton(RigSkeleton skeleton)
     {
         // Read tracked points

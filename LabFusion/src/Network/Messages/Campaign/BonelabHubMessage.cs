@@ -16,8 +16,6 @@ public class BonelabHubEventData : IFusionSerializable
 {
     public BonelabHubEventType type;
 
-    public int? GetSize() => sizeof(byte);
-
     public void Serialize(FusionWriter writer)
     {
         writer.Write((byte)type);

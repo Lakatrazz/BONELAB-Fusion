@@ -19,16 +19,6 @@ public class MessagePrefix : IFusionSerializable
     public byte? Sender { get; set; } = null;
     public byte? Target { get; set; } = null;
 
-    public int? GetSize()
-    {
-        return Type switch
-        {
-            RelayType.ToServer or RelayType.ToClients or RelayType.ToOtherClients => sizeof(byte) * 4,
-            RelayType.ToTarget => sizeof(byte) * 5,
-            _ => sizeof(byte) * 3,
-        };
-    }
-
     public void Serialize(FusionWriter writer)
     {
         writer.Write(Tag);
@@ -102,7 +92,7 @@ public unsafe class FusionMessage : IDisposable
         return Create(tag, writer.Buffer, relayType, channel, sender, target);
     }
 
-    public static FusionMessage Create(byte tag, byte[] buffer, RelayType relayType = RelayType.None, NetworkChannel channel = NetworkChannel.Reliable, byte? sender = null, byte? target = null)
+    public static FusionMessage Create(byte tag, ArraySegment<byte> buffer, RelayType relayType = RelayType.None, NetworkChannel channel = NetworkChannel.Reliable, byte? sender = null, byte? target = null)
     {
         var prefix = new MessagePrefix()
         {
@@ -113,7 +103,7 @@ public unsafe class FusionMessage : IDisposable
             Target = target,
         };
 
-        using var writer = FusionWriter.Create(prefix.GetSize().Value + sizeof(int) + buffer.Length);
+        using var writer = FusionWriter.Create();
 
         writer.Write(prefix);
         writer.Write(buffer);
@@ -140,7 +130,7 @@ public unsafe class FusionMessage : IDisposable
             Target = received.Target,
         };
 
-        using var writer = FusionWriter.Create(prefix.GetSize().Value + sizeof(int) + received.Bytes.Length);
+        using var writer = FusionWriter.Create();
 
         writer.Write(prefix);
         writer.Write(received.Bytes);
@@ -171,7 +161,7 @@ public unsafe class FusionMessage : IDisposable
         return ModuleCreate(type, writer.Buffer, relayType, channel, sender, target);
     }
 
-    public static FusionMessage ModuleCreate(Type type, byte[] buffer, RelayType relayType = RelayType.None, NetworkChannel channel = NetworkChannel.Reliable, byte? sender = null, byte? target = null)
+    public static FusionMessage ModuleCreate(Type type, ArraySegment<byte> buffer, RelayType relayType = RelayType.None, NetworkChannel channel = NetworkChannel.Reliable, byte? sender = null, byte? target = null)
     {
         // Assign the module type
         var tag = ModuleMessageHandler.GetHandlerTag(type);
@@ -191,15 +181,15 @@ public unsafe class FusionMessage : IDisposable
                 Target = target,
             };
 
-            using var writer = FusionWriter.Create(prefix.GetSize().Value + sizeof(int) + buffer.Length + 2);
+            using var writer = FusionWriter.Create();
 
             writer.Write(prefix);
 
-            var expandedBuffer = new byte[buffer.Length + 2];
+            var expandedBuffer = new byte[buffer.Count + 2];
             expandedBuffer[0] = tagBytes[0];
             expandedBuffer[1] = tagBytes[1];
 
-            for (var i = 0; i < buffer.Length; i++)
+            for (var i = 0; i < buffer.Count; i++)
             {
                 expandedBuffer[i + 2] = buffer[i];
             }
