@@ -27,6 +27,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     public static readonly HashSet<NetworkPlayer> Players = new();
 
+    /// <summary>
+    /// Invoked when a NetworkPlayer's RigManager is created. This is also invoked for the Local Player's RigManager.
+    /// </summary>
     public static event Action<NetworkPlayer, RigManager> OnNetworkRigCreated;
 
     private NetworkEntity _networkEntity = null;
