@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 
 using LabFusion.Extensions;
-using LabFusion.Network;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Data;
 
-public class SerializedLocalTransform : IFusionSerializable
+public class SerializedLocalTransform : INetSerializable
 {
     public const int Size = SerializedShortVector3.Size + SerializedSmallQuaternion.Size;
     public static readonly SerializedLocalTransform Default = new(Vector3Extensions.zero, QuaternionExtensions.identity);
@@ -16,22 +16,24 @@ public class SerializedLocalTransform : IFusionSerializable
     private SerializedShortVector3 _compressedPosition;
     private SerializedSmallQuaternion _compressedRotation;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        _compressedPosition = SerializedShortVector3.Compress(position);
-        _compressedRotation = SerializedSmallQuaternion.Compress(rotation);
+        if (serializer.IsReader)
+        {
+            serializer.SerializeValue(ref _compressedPosition);
+            serializer.SerializeValue(ref _compressedRotation);
 
-        writer.Write(_compressedPosition);
-        writer.Write(_compressedRotation);
-    }
+            position = _compressedPosition.Expand();
+            rotation = _compressedRotation.Expand();
+        }
+        else
+        {
+            _compressedPosition = SerializedShortVector3.Compress(position);
+            _compressedRotation = SerializedSmallQuaternion.Compress(rotation);
 
-    public void Deserialize(FusionReader reader)
-    {
-        _compressedPosition = reader.ReadFusionSerializable<SerializedShortVector3>();
-        position = _compressedPosition.Expand();
-
-        _compressedRotation = reader.ReadFusionSerializable<SerializedSmallQuaternion>();
-        rotation = _compressedRotation.Expand();
+            serializer.SerializeValue(ref _compressedPosition);
+            serializer.SerializeValue(ref _compressedRotation);
+        }
     }
 
     public SerializedLocalTransform() { }

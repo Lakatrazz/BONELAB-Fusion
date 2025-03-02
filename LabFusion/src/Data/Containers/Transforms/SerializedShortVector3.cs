@@ -1,30 +1,22 @@
-﻿using LabFusion.Network;
+﻿using LabFusion.Network.Serialization;
 
 using UnityEngine;
 
 namespace LabFusion.Data;
 
-public class SerializedShortVector3 : IFusionSerializable
+public class SerializedShortVector3 : INetSerializable
 {
     public const int Size = sizeof(short) * 3 + sizeof(float);
 
     public short x, y, z;
     public float magnitude;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(x);
-        writer.Write(y);
-        writer.Write(z);
-        writer.Write(magnitude);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        x = reader.ReadInt16();
-        y = reader.ReadInt16();
-        z = reader.ReadInt16();
-        magnitude = reader.ReadSingle();
+        serializer.SerializeValue(ref x);
+        serializer.SerializeValue(ref y);
+        serializer.SerializeValue(ref z);
+        serializer.SerializeValue(ref magnitude);
     }
 
     public static SerializedShortVector3 Compress(Vector3 vector)

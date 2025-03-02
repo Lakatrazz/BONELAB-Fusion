@@ -1,10 +1,10 @@
-﻿using LabFusion.Data;
-using LabFusion.Entities;
+﻿using LabFusion.Entities;
 using LabFusion.Marrow.Patching;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class GunShotData : IFusionSerializable
+public class GunShotData : INetSerializable
 {
     public const int Size = sizeof(byte) * 2 + sizeof(ushort);
 
@@ -13,20 +13,12 @@ public class GunShotData : IFusionSerializable
     public ushort gunId;
     public byte gunIndex;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write(ammoCount);
-        writer.Write(gunId);
-        writer.Write(gunIndex);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        ammoCount = reader.ReadByte();
-        gunId = reader.ReadUInt16();
-        gunIndex = reader.ReadByte();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref ammoCount);
+        serializer.SerializeValue(ref gunId);
+        serializer.SerializeValue(ref gunIndex);
     }
 
     public static GunShotData Create(byte smallId, byte ammoCount, ushort gunId, byte gunIndex)

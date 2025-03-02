@@ -7,9 +7,11 @@ using LabFusion.Entities;
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow;
 
+using LabFusion.Network.Serialization;
+
 namespace LabFusion.Network;
 
-public class PlayerRepGrabData : IFusionSerializable
+public class PlayerRepGrabData : INetSerializable
 {
     public const int Size = sizeof(byte) * 3;
 
@@ -18,24 +20,13 @@ public class PlayerRepGrabData : IFusionSerializable
     public GrabGroup group;
     public SerializedGrab serializedGrab;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref handedness, Precision.OneByte);
+        serializer.SerializeValue(ref group, Precision.OneByte);
 
-        writer.Write((byte)handedness);
-        writer.Write((byte)group);
-
-        writer.Write(serializedGrab);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-
-        handedness = (Handedness)reader.ReadByte();
-        group = (GrabGroup)reader.ReadByte();
-
-        GrabGroupHandler.ReadGrab(ref serializedGrab, reader, group);
+        GrabGroupHandler.SerializeGrab(ref serializedGrab, serializer, group);
     }
 
     public Grip GetGrip()

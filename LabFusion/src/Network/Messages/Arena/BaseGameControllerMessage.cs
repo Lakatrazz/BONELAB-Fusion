@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Network.Serialization;
 using LabFusion.Patching;
 
 namespace LabFusion.Network;
@@ -10,18 +11,13 @@ public enum BaseGameControllerType
     EndSession = 2,
 }
 
-public class BaseGameControllerData : IFusionSerializable
+public class BaseGameControllerData : INetSerializable
 {
     public BaseGameControllerType type;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write((byte)type);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        type = (BaseGameControllerType)reader.ReadByte();
+        serializer.SerializeValue(ref type, Precision.OneByte);
     }
 
     public static BaseGameControllerData Create(BaseGameControllerType type)

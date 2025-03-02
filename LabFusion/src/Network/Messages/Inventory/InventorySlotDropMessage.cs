@@ -5,10 +5,11 @@ using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class InventorySlotDropData : IFusionSerializable
+public class InventorySlotDropData : INetSerializable
 {
     public const int Size = sizeof(byte) * 3 + sizeof(ushort);
 
@@ -17,20 +18,12 @@ public class InventorySlotDropData : IFusionSerializable
     public byte slotIndex;
     public Handedness handedness;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(slotEntityId);
-        writer.Write(grabber);
-        writer.Write(slotIndex);
-        writer.Write((byte)handedness);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        slotEntityId = reader.ReadUInt16();
-        grabber = reader.ReadByte();
-        slotIndex = reader.ReadByte();
-        handedness = (Handedness)reader.ReadByte();
+        serializer.SerializeValue(ref slotEntityId);
+        serializer.SerializeValue(ref grabber);
+        serializer.SerializeValue(ref slotIndex);
+        serializer.SerializeValue(ref handedness, Precision.OneByte);
     }
 
     public static InventorySlotDropData Create(ushort slotEntityId, byte grabber, byte slotIndex, Handedness handedness)

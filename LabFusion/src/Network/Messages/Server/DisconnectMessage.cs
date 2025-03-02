@@ -1,10 +1,10 @@
-﻿using LabFusion.Data;
-using LabFusion.Exceptions;
+﻿using LabFusion.Network.Serialization;
+
 using LabFusion.Player;
 
 namespace LabFusion.Network;
 
-public class DisconnectMessageData : IFusionSerializable
+public class DisconnectMessageData : INetSerializable
 {
     public ulong longId;
     public string reason;
@@ -18,16 +18,10 @@ public class DisconnectMessageData : IFusionSerializable
         };
     }
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(longId);
-        writer.Write(reason);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        longId = reader.ReadUInt64();
-        reason = reader.ReadString();
+        serializer.SerializeValue(ref longId);
+        serializer.SerializeValue(ref reason);
     }
 }
 
@@ -39,8 +33,7 @@ public class DisconnectMessage : NativeMessageHandler
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using var reader = FusionReader.Create(received.Bytes);
-        var data = reader.ReadFusionSerializable<DisconnectMessageData>();
+        var data = received.ReadData<DisconnectMessageData>();
 
         // If this is our id, disconnect ourselves
         if (data.longId == PlayerIdManager.LocalLongId)

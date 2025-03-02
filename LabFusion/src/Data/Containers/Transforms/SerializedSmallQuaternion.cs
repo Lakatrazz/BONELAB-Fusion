@@ -2,30 +2,23 @@
 
 using LabFusion.Network;
 using LabFusion.Extensions;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Data;
 
-public class SerializedSmallQuaternion : IFusionSerializable
+public class SerializedSmallQuaternion : INetSerializable
 {
     public const int Size = sizeof(byte) * 4;
     public static readonly SerializedSmallQuaternion Default = Compress(QuaternionExtensions.identity);
 
     public sbyte c1, c2, c3, c4;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(c1.ToByte());
-        writer.Write(c2.ToByte());
-        writer.Write(c3.ToByte());
-        writer.Write(c4.ToByte());
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        c1 = reader.ReadByte().ToSByte();
-        c2 = reader.ReadByte().ToSByte();
-        c3 = reader.ReadByte().ToSByte();
-        c4 = reader.ReadByte().ToSByte();
+        serializer.SerializeValue(ref c1);
+        serializer.SerializeValue(ref c2);
+        serializer.SerializeValue(ref c3);
+        serializer.SerializeValue(ref c4);
     }
 
     public static SerializedSmallQuaternion Compress(Quaternion quat)

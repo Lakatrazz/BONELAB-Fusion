@@ -1,8 +1,9 @@
 ﻿using LabFusion.Data;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class ComponentPathData : IFusionSerializable
+public class ComponentPathData : INetSerializable
 {
     public bool hasNetworkEntity;
 
@@ -11,24 +12,12 @@ public class ComponentPathData : IFusionSerializable
 
     public ComponentHashData hashData;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(hasNetworkEntity);
-
-        writer.Write(entityId);
-        writer.Write(componentIndex);
-
-        writer.Write(hashData);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        hasNetworkEntity = reader.ReadBoolean();
-
-        entityId = reader.ReadUInt16();
-        componentIndex = reader.ReadUInt16();
-
-        hashData = reader.ReadFusionSerializable<ComponentHashData>();
+        serializer.SerializeValue(ref hasNetworkEntity);
+        serializer.SerializeValue(ref entityId);
+        serializer.SerializeValue(ref componentIndex);
+        serializer.SerializeValue(ref hashData);
     }
 
     public static ComponentPathData Create(bool hasNetworkEntity, ushort entityId, ushort componentIndex, ComponentHashData hashData)

@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Network.Serialization;
 using LabFusion.Patching;
 
 namespace LabFusion.Network;
@@ -11,24 +12,17 @@ public enum DescentIntroType
     CONFIRM_FORCE_GRAB = 3,
 }
 
-public class DescentIntroData : IFusionSerializable
+public class DescentIntroData : INetSerializable
 {
     public byte smallId;
     public byte selectionNumber;
     public DescentIntroType type;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write(selectionNumber);
-        writer.Write((byte)type);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        selectionNumber = reader.ReadByte();
-        type = (DescentIntroType)reader.ReadByte();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref selectionNumber);
+        serializer.SerializeValue(ref type, Precision.OneByte);
     }
 
     public static DescentIntroData Create(byte smallId, byte selectionNumber, DescentIntroType type)

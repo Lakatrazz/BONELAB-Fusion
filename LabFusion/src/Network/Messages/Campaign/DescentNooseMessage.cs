@@ -1,6 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Patching;
 using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
@@ -11,21 +12,15 @@ public enum DescentNooseType
     CUT_NOOSE = 2,
 }
 
-public class DescentNooseData : IFusionSerializable
+public class DescentNooseData : INetSerializable
 {
     public byte smallId;
     public DescentNooseType type;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write((byte)type);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        type = (DescentNooseType)reader.ReadByte();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref type, Precision.OneByte);
     }
 
     public static DescentNooseData Create(byte smallId, DescentNooseType type)

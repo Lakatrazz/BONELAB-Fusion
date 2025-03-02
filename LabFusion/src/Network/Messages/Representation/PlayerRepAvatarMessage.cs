@@ -1,11 +1,12 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Marrow;
+using LabFusion.Network.Serialization;
 using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
-public class PlayerRepAvatarData : IFusionSerializable
+public class PlayerRepAvatarData : INetSerializable
 {
     public const int DefaultSize = sizeof(byte) + SerializedAvatarStats.Size;
 
@@ -13,18 +14,11 @@ public class PlayerRepAvatarData : IFusionSerializable
     public SerializedAvatarStats stats;
     public string barcode;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write(stats);
-        writer.Write(barcode);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        stats = reader.ReadFusionSerializable<SerializedAvatarStats>();
-        barcode = reader.ReadString();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref stats);
+        serializer.SerializeValue(ref barcode);
     }
 
     public static PlayerRepAvatarData Create(byte smallId, SerializedAvatarStats stats, string barcode)

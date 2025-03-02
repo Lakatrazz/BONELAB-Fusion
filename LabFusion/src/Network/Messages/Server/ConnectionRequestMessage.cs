@@ -6,10 +6,11 @@ using LabFusion.Scene;
 using LabFusion.Preferences.Server;
 using LabFusion.Senders;
 using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class ConnectionRequestData : IFusionSerializable
+public class ConnectionRequestData : INetSerializable
 {
     public ulong longId;
     public Version version;
@@ -20,30 +21,22 @@ public class ConnectionRequestData : IFusionSerializable
 
     public bool IsValid { get; private set; } = true;
 
-    public void Serialize(FusionWriter writer)
-    {
-        writer.Write(longId);
-        writer.Write(version);
-        writer.Write(avatarBarcode);
-        writer.Write(avatarStats);
-        writer.Write(initialMetadata);
-        writer.Write(initialEquippedItems);
-    }
-
-    public void Deserialize(FusionReader reader)
+    public void Serialize(INetSerializer serializer)
     {
         try
         {
-            longId = reader.ReadUInt64();
-            version = reader.ReadVersion();
-            avatarBarcode = reader.ReadString();
-            avatarStats = reader.ReadFusionSerializable<SerializedAvatarStats>();
-            initialMetadata = reader.ReadStringDictionary();
-            initialEquippedItems = reader.ReadStrings().ToList();
+            serializer.SerializeValue(ref longId);
+            serializer.SerializeValue(ref version);
+            serializer.SerializeValue(ref avatarBarcode);
+            serializer.SerializeValue(ref avatarStats);
+            serializer.SerializeValue(ref initialMetadata);
+            serializer.SerializeValue(ref initialEquippedItems);
         }
-        catch
+        catch (Exception e)
         {
             IsValid = false;
+
+            FusionLogger.LogException("serializing ConnectionRequestData", e);
         }
     }
 
@@ -71,8 +64,7 @@ public class ConnectionRequestMessage : NativeMessageHandler
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(received.Bytes);
-        var data = reader.ReadFusionSerializable<ConnectionRequestData>();
+        var data = received.ReadData<ConnectionRequestData>();
 
         // Make sure the id isn't spoofed.
         if (NetworkInfo.IsSpoofed(data.longId))
@@ -214,10 +206,10 @@ public class ConnectionRequestMessage : NativeMessageHandler
         LoadSender.SendLevelLoad(FusionSceneManager.Barcode, FusionSceneManager.LoadBarcode, data.longId);
 
         // Send the dynamics list
-        using (var writer = FusionWriter.Create())
+        using (var writer = NetWriter.Create())
         {
             var assignData = DynamicsAssignData.Create();
-            writer.Write(assignData);
+            assignData.Serialize(writer);
 
             using var message = FusionMessage.Create(NativeMessageTag.DynamicsAssignment, writer);
             MessageSender.SendFromServer(data.longId, NetworkChannel.Reliable, message);

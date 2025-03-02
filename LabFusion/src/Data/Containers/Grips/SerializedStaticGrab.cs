@@ -1,8 +1,9 @@
-﻿using LabFusion.Network;
-using LabFusion.Grabbables;
+﻿using LabFusion.Grabbables;
 using LabFusion.Patching;
 
 using Il2CppSLZ.Marrow;
+
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Data;
 
@@ -29,18 +30,11 @@ public class SerializedStaticGrab : SerializedGrab
         return Size;
     }
 
-    public override void Serialize(FusionWriter writer)
+    public override void Serialize(INetSerializer serializer)
     {
-        base.Serialize(writer);
+        base.Serialize(serializer);
 
-        writer.Write(gripHash);
-    }
-
-    public override void Deserialize(FusionReader reader)
-    {
-        base.Deserialize(reader);
-
-        gripHash = reader.ReadFusionSerializable<ComponentHashData>();
+        serializer.SerializeValue(ref gripHash);
     }
 
     public override Grip GetGrip()

@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Network.Serialization;
 using LabFusion.Patching;
 
 namespace LabFusion.Network;
@@ -13,21 +14,15 @@ public enum TimeTrialGameControllerType
     SetRequiredKillCount = 5,
 }
 
-public class TimeTrialGameControllerData : IFusionSerializable
+public class TimeTrialGameControllerData : INetSerializable
 {
     public TimeTrialGameControllerType type;
     public byte value;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write((byte)type);
-        writer.Write(value);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        type = (TimeTrialGameControllerType)reader.ReadByte();
-        value = reader.ReadByte();
+        serializer.SerializeValue(ref type, Precision.OneByte);
+        serializer.SerializeValue(ref value);
     }
 
     public static TimeTrialGameControllerData Create(TimeTrialGameControllerType type, int value)

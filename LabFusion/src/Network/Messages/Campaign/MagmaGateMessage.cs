@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Network.Serialization;
 using LabFusion.Patching;
 
 namespace LabFusion.Network;
@@ -12,18 +13,13 @@ public enum MagmaGateEventType
     DOOR_DISSOLVE = 4,
 }
 
-public class MagmaGateEventData : IFusionSerializable
+public class MagmaGateEventData : INetSerializable
 {
     public MagmaGateEventType type;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write((byte)type);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        type = (MagmaGateEventType)reader.ReadByte();
+        serializer.SerializeValue(ref type, Precision.OneByte);
     }
 
     public static MagmaGateEventData Create(MagmaGateEventType type)

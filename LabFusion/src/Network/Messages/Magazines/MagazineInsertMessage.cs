@@ -1,11 +1,11 @@
-﻿using LabFusion.Data;
-using LabFusion.Patching;
+﻿using LabFusion.Patching;
 using LabFusion.Extensions;
 using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class MagazineInsertData : IFusionSerializable
+public class MagazineInsertData : INetSerializable
 {
     public const int Size = sizeof(byte) + sizeof(ushort) * 2;
 
@@ -13,18 +13,11 @@ public class MagazineInsertData : IFusionSerializable
     public ushort magazineId;
     public ushort gunId;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write(magazineId);
-        writer.Write(gunId);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        magazineId = reader.ReadUInt16();
-        gunId = reader.ReadUInt16();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref magazineId);
+        serializer.SerializeValue(ref gunId);
     }
 
     public static MagazineInsertData Create(byte smallId, ushort magazineId, ushort gunId)

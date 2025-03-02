@@ -2,26 +2,21 @@
 using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow.Interaction;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class PlayerRepReleaseData : IFusionSerializable
+public class PlayerRepReleaseData : INetSerializable
 {
     public const int Size = sizeof(byte) * 2;
 
     public byte smallId;
     public Handedness handedness;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write((byte)handedness);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        handedness = (Handedness)reader.ReadByte();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref handedness, Precision.OneByte);
     }
 
     public NetworkPlayer GetPlayer()

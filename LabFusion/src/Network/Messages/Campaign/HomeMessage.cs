@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Network.Serialization;
 using LabFusion.Patching;
 
 namespace LabFusion.Network;
@@ -15,21 +16,15 @@ public enum HomeEventType
     SPLINE_LOOP_COUNTER = 7,
 }
 
-public class HomeEventData : IFusionSerializable
+public class HomeEventData : INetSerializable
 {
     public byte selectionNumber;
     public HomeEventType type;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(selectionNumber);
-        writer.Write((byte)type);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        selectionNumber = reader.ReadByte();
-        type = (HomeEventType)reader.ReadByte();
+        serializer.SerializeValue(ref selectionNumber);
+        serializer.SerializeValue(ref type, Precision.OneByte);
     }
 
     public static HomeEventData Create(byte selectionNumber, HomeEventType type)

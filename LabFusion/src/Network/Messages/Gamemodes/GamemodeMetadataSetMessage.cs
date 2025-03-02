@@ -1,27 +1,20 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Network.Serialization;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
-public class GamemodeMetadataSetData : IFusionSerializable
+public class GamemodeMetadataSetData : INetSerializable
 {
     public string gamemodeBarcode;
     public string key;
     public string value;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(gamemodeBarcode);
-        writer.Write(key);
-        writer.Write(value);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        gamemodeBarcode = reader.ReadString();
-        key = reader.ReadString();
-        value = reader.ReadString();
+        serializer.SerializeValue(ref gamemodeBarcode);
+        serializer.SerializeValue(ref key);
+        serializer.SerializeValue(ref value);
     }
 
     public static GamemodeMetadataSetData Create(string gamemodeBarcode, string key, string value)

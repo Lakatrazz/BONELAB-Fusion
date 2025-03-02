@@ -1,6 +1,6 @@
-﻿using LabFusion.Data;
-using LabFusion.Entities;
+﻿using LabFusion.Entities;
 using LabFusion.Marrow.Integration;
+using LabFusion.Network.Serialization;
 
 using UnityEngine;
 
@@ -52,23 +52,15 @@ public static class RPCVector3Sender
     }
 }
 
-public class RPCVector3Data : IFusionSerializable
+public class RPCVector3Data : INetSerializable
 {
     public ComponentPathData pathData;
     public Vector3 value;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(pathData);
-
-        writer.Write(value);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        pathData = reader.ReadFusionSerializable<ComponentPathData>();
-
-        value = reader.ReadVector3();
+        serializer.SerializeValue(ref pathData);
+        serializer.SerializeValue(ref value);
     }
 
     public static RPCVector3Data Create(ComponentPathData pathData, Vector3 value)

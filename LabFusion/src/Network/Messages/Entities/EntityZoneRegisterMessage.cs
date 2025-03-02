@@ -2,28 +2,23 @@
 
 using Il2CppSLZ.Marrow.Interaction;
 
-using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Marrow.Zones;
+using LabFusion.Network.Serialization;
 
 using MelonLoader;
 
 namespace LabFusion.Network;
 
-public class EntityZoneRegisterData : IFusionSerializable
+public class EntityZoneRegisterData : INetSerializable
 {
     public const int Size = sizeof(byte) + sizeof(ushort) + sizeof(int);
 
     public ushort entityId;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(entityId);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        entityId = reader.ReadUInt16();
+        serializer.SerializeValue(ref entityId);
     }
 
     public static EntityZoneRegisterData Create(ushort entityId)

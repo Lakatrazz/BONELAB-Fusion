@@ -1,13 +1,12 @@
 ﻿using LabFusion.Bonelab.Extenders;
-using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Network;
-
+using LabFusion.Network.Serialization;
 using LabFusion.SDK.Modules;
 
 namespace LabFusion.Bonelab;
 
-public class RandomObjectData : IFusionSerializable
+public class RandomObjectData : INetSerializable
 {
     public const int Size = sizeof(byte) + sizeof(ushort) * 3;
 
@@ -18,20 +17,12 @@ public class RandomObjectData : IFusionSerializable
 
     public ushort objectIndex;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write(entityId);
-        writer.Write(componentIndex);
-        writer.Write(objectIndex);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        entityId = reader.ReadUInt16();
-        componentIndex = reader.ReadUInt16();
-        objectIndex = reader.ReadUInt16();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref entityId);
+        serializer.SerializeValue(ref componentIndex);
+        serializer.SerializeValue(ref objectIndex);
     }
 
     public static RandomObjectData Create(byte smallId, ushort entityId, ushort componentIndex, ushort objectIndex)

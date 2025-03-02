@@ -1,11 +1,11 @@
 ﻿using Il2CppSLZ.Marrow;
 
-using LabFusion.Data;
+using LabFusion.Network.Serialization;
 using LabFusion.Patching;
 
 namespace LabFusion.Network;
 
-public class SlowMoButtonMessageData : IFusionSerializable
+public class SlowMoButtonMessageData : INetSerializable
 {
     public const int Size = sizeof(byte) * 2;
 
@@ -21,16 +21,10 @@ public class SlowMoButtonMessageData : IFusionSerializable
         };
     }
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write(isDecrease);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        isDecrease = reader.ReadBoolean();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref isDecrease);
     }
 }
 

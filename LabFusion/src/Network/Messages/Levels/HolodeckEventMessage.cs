@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Network.Serialization;
 using LabFusion.Patching;
 
 namespace LabFusion.Network;
@@ -10,27 +11,19 @@ public enum HolodeckEventType
     SELECT_MATERIAL = 2,
 }
 
-public class HolodeckEventData : IFusionSerializable
+public class HolodeckEventData : INetSerializable
 {
     public byte smallId;
     public HolodeckEventType type;
     public int selectionIndex;
     public bool toggleValue;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write((byte)type);
-        writer.Write((byte)selectionIndex);
-        writer.Write(toggleValue);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        type = (HolodeckEventType)reader.ReadByte();
-        selectionIndex = reader.ReadByte();
-        toggleValue = reader.ReadBoolean();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref type, Precision.OneByte);
+        serializer.SerializeValue(ref selectionIndex);
+        serializer.SerializeValue(ref toggleValue);
     }
 
     public static HolodeckEventData Create(byte smallId, HolodeckEventType type, int selectionIndex, bool toggleValue)

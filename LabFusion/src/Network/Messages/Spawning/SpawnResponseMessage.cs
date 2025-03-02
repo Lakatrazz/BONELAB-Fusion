@@ -9,7 +9,6 @@ using Il2CppSLZ.Marrow.Interaction;
 
 using LabFusion.Extensions;
 
-using LabFusion.Exceptions;
 using LabFusion.Senders;
 using LabFusion.RPC;
 using LabFusion.Marrow;
@@ -19,9 +18,11 @@ using LabFusion.Preferences.Client;
 
 using Il2CppSLZ.Marrow.VFX;
 
+using LabFusion.Network.Serialization;
+
 namespace LabFusion.Network;
 
-public class SpawnResponseData : IFusionSerializable
+public class SpawnResponseData : INetSerializable
 {
     public const int DefaultSize = sizeof(byte) * 2 + sizeof(ushort) + SerializedTransform.Size;
 
@@ -40,28 +41,16 @@ public class SpawnResponseData : IFusionSerializable
         return DefaultSize + barcode.GetSize();
     }
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(owner);
-        writer.Write(barcode);
-        writer.Write(entityId);
-        writer.Write(serializedTransform);
+        serializer.SerializeValue(ref owner);
+        serializer.SerializeValue(ref barcode);
+        serializer.SerializeValue(ref entityId);
+        serializer.SerializeValue(ref serializedTransform);
 
-        writer.Write(trackerId);
+        serializer.SerializeValue(ref trackerId);
 
-        writer.Write(spawnEffect);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        owner = reader.ReadByte();
-        barcode = reader.ReadString();
-        entityId = reader.ReadUInt16();
-        serializedTransform = reader.ReadFusionSerializable<SerializedTransform>();
-
-        trackerId = reader.ReadUInt32();
-
-        spawnEffect = reader.ReadBoolean();
+        serializer.SerializeValue(ref spawnEffect);
     }
 
     public static SpawnResponseData Create(byte owner, string barcode, ushort entityId, SerializedTransform serializedTransform, uint trackerId = 0, bool spawnEffect = false)
@@ -87,8 +76,7 @@ public class SpawnResponseMessage : NativeMessageHandler
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using var reader = FusionReader.Create(received.Bytes);
-        var data = reader.ReadFusionSerializable<SpawnResponseData>();
+        var data = received.ReadData<SpawnResponseData>();
 
         byte owner = data.owner;
         string barcode = data.barcode;

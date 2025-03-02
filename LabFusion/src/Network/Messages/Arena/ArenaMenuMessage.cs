@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Network.Serialization;
 using LabFusion.Patching;
 
 namespace LabFusion.Network;
@@ -15,21 +16,15 @@ public enum ArenaMenuType
     RESUME_SURVIVAL_FROM_ROUND = 7,
 }
 
-public class ArenaMenuData : IFusionSerializable
+public class ArenaMenuData : INetSerializable
 {
     public byte selectionNumber;
     public ArenaMenuType type;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(selectionNumber);
-        writer.Write((byte)type);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        selectionNumber = reader.ReadByte();
-        type = (ArenaMenuType)reader.ReadByte();
+        serializer.SerializeValue(ref selectionNumber);
+        serializer.SerializeValue(ref type, Precision.OneByte);
     }
 
     public static ArenaMenuData Create(byte selectionNumber, ArenaMenuType type)

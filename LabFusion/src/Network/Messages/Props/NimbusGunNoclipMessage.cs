@@ -1,25 +1,20 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class NimbusGunNoclipData : IFusionSerializable
+public class NimbusGunNoclipData : INetSerializable
 {
     public const int Size = sizeof(byte) * 2 + sizeof(ushort);
 
     public ushort syncId;
     public bool isEnabled;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(syncId);
-        writer.Write(isEnabled);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        syncId = reader.ReadUInt16();
-        isEnabled = reader.ReadBoolean();
+        serializer.SerializeValue(ref syncId);
+        serializer.SerializeValue(ref isEnabled);
     }
 
     public static NimbusGunNoclipData Create(ushort syncId, bool isEnabled)

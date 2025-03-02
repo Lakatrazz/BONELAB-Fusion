@@ -1,11 +1,12 @@
 ﻿using LabFusion.Data;
 using LabFusion.Downloading.ModIO;
+using LabFusion.Network.Serialization;
 using LabFusion.Player;
 using LabFusion.RPC;
 
 namespace LabFusion.Network;
 
-public class ModInfoResponseData : IFusionSerializable
+public class ModInfoResponseData : INetSerializable
 {
     public const int Size = sizeof(byte) * 2 + sizeof(uint);
 
@@ -13,18 +14,10 @@ public class ModInfoResponseData : IFusionSerializable
 
     public uint trackerId;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(modFile);
-
-        writer.Write(trackerId);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        modFile = reader.ReadFusionSerializable<SerializedModIOFile>();
-
-        trackerId = reader.ReadUInt32();
+        serializer.SerializeValue(ref modFile);
+        serializer.SerializeValue(ref trackerId);
     }
 
     public static ModInfoResponseData Create(SerializedModIOFile modFile, uint trackerId)

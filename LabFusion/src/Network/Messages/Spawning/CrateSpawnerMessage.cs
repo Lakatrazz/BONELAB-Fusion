@@ -1,6 +1,4 @@
-﻿using LabFusion.Data;
-using LabFusion.Utilities;
-using LabFusion.Exceptions;
+﻿using LabFusion.Utilities;
 using LabFusion.Patching;
 using LabFusion.Entities;
 
@@ -12,25 +10,21 @@ using System.Collections;
 
 using MelonLoader;
 
+using LabFusion.Network.Serialization;
+
 namespace LabFusion.Network;
 
-public class CrateSpawnerData : IFusionSerializable
+public class CrateSpawnerData : INetSerializable
 {
     public const int Size = sizeof(ushort);
 
     public ushort spawnedId;
     public GameObject placer;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(spawnedId);
-        writer.Write(placer);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        spawnedId = reader.ReadUInt16();
-        placer = reader.ReadGameObject();
+        serializer.SerializeValue(ref spawnedId);
+        serializer.SerializeValue(ref placer);
     }
 
     public static CrateSpawnerData Create(ushort spawnedId, GameObject placer)
@@ -52,8 +46,7 @@ public class CrateSpawnerMessage : NativeMessageHandler
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(received.Bytes);
-        var data = reader.ReadFusionSerializable<CrateSpawnerData>();
+        var data = received.ReadData<CrateSpawnerData>();
 
         if (data.placer != null)
         {

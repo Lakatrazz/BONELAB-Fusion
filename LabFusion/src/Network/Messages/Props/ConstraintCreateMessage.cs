@@ -11,10 +11,11 @@ using UnityEngine;
 
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class ConstraintCreateData : IFusionSerializable
+public class ConstraintCreateData : INetSerializable
 {
     public const int Size = sizeof(byte) * 2 + sizeof(ushort) * 3 + sizeof(float) * 12;
 
@@ -39,52 +40,35 @@ public class ConstraintCreateData : IFusionSerializable
     public ushort point1Id;
     public ushort point2Id;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
+        var encodedPoint1 = NetworkTransformManager.EncodePosition(point1);
+        var encodedPoint2 = NetworkTransformManager.EncodePosition(point2);
 
-        writer.Write(constrainerId);
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref constrainerId);
+        serializer.SerializeValue(ref mode, Precision.OneByte);
 
-        writer.Write((byte)mode);
+        serializer.SerializeValue(ref tracker1);
+        serializer.SerializeValue(ref tracker2);
 
-        writer.Write(tracker1);
-        writer.Write(tracker2);
+        serializer.SerializeValue(ref tracker1Transform);
+        serializer.SerializeValue(ref tracker2Transform);
 
-        writer.Write(tracker1Transform);
-        writer.Write(tracker2Transform);
+        serializer.SerializeValue(ref encodedPoint1);
+        serializer.SerializeValue(ref encodedPoint2);
 
-        writer.Write(NetworkTransformManager.EncodePosition(point1));
-        writer.Write(NetworkTransformManager.EncodePosition(point2));
+        serializer.SerializeValue(ref normal1);
+        serializer.SerializeValue(ref normal2);
 
-        writer.Write(normal1);
-        writer.Write(normal2);
+        serializer.SerializeValue(ref point1Id);
+        serializer.SerializeValue(ref point2Id);
 
-        writer.Write(point1Id);
-        writer.Write(point2Id);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-
-        constrainerId = reader.ReadUInt16();
-
-        mode = (Constrainer.ConstraintMode)reader.ReadByte();
-
-        tracker1 = reader.ReadFusionSerializable<SerializedGameObjectReference>();
-        tracker2 = reader.ReadFusionSerializable<SerializedGameObjectReference>();
-
-        tracker1Transform = reader.ReadFusionSerializable<SerializedTransform>();
-        tracker2Transform = reader.ReadFusionSerializable<SerializedTransform>();
-
-        point1 = NetworkTransformManager.DecodePosition(reader.ReadVector3());
-        point2 = NetworkTransformManager.DecodePosition(reader.ReadVector3());
-
-        normal1 = reader.ReadVector3();
-        normal2 = reader.ReadVector3();
-
-        point1Id = reader.ReadUInt16();
-        point2Id = reader.ReadUInt16();
+        if (serializer.IsReader)
+        {
+            point1 = NetworkTransformManager.DecodePosition(encodedPoint1);
+            point2 = NetworkTransformManager.DecodePosition(encodedPoint2);
+        }
     }
 
     public static ConstraintCreateData Create(byte smallId, ushort constrainerId, ConstrainerPointPair pair)

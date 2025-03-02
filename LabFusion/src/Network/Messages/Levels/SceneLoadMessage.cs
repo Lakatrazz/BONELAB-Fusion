@@ -1,24 +1,18 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Network.Serialization;
 using LabFusion.Scene;
 using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
-public class SceneLoadData : IFusionSerializable
+public class SceneLoadData : INetSerializable
 {
     public string levelBarcode;
     public string loadBarcode;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(levelBarcode);
-        writer.Write(loadBarcode);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        levelBarcode = reader.ReadString();
-        loadBarcode = reader.ReadString();
+        serializer.SerializeValue(ref levelBarcode);
+        serializer.SerializeValue(ref loadBarcode);
     }
 
     public static SceneLoadData Create(string levelBarcode, string loadBarcode)

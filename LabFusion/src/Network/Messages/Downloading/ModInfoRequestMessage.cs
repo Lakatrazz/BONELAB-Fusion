@@ -3,11 +3,12 @@
 using LabFusion.Data;
 using LabFusion.Downloading.ModIO;
 using LabFusion.Marrow;
+using LabFusion.Network.Serialization;
 using LabFusion.Player;
 
 namespace LabFusion.Network;
 
-public class ModInfoRequestData : IFusionSerializable
+public class ModInfoRequestData : INetSerializable
 {
     public const int Size = sizeof(byte) * 2 + sizeof(uint);
 
@@ -15,18 +16,10 @@ public class ModInfoRequestData : IFusionSerializable
 
     public uint trackerId;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(barcode);
-
-        writer.Write(trackerId);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        barcode = reader.ReadString();
-
-        trackerId = reader.ReadUInt32();
+        serializer.SerializeValue(ref barcode);
+        serializer.SerializeValue(ref trackerId);
     }
 
     public static ModInfoRequestData Create(string barcode, uint trackerId)

@@ -7,6 +7,7 @@ using Il2CppSLZ.Interaction;
 using Il2CppSLZ.Marrow;
 
 using UnityEngine;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
@@ -17,7 +18,7 @@ public enum KeySlotType
     INSERT_PROP = 2,
 }
 
-public class KeySlotData : IFusionSerializable
+public class KeySlotData : INetSerializable
 {
     public const int Size = sizeof(byte) * 2 + sizeof(ushort);
 
@@ -32,28 +33,16 @@ public class KeySlotData : IFusionSerializable
     public ushort? receiverId;
     public byte? receiverIndex;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write((byte)type);
-        writer.Write(keyId);
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref type, Precision.OneByte);
+        serializer.SerializeValue(ref keyId);
 
-        writer.Write(receiver);
+        serializer.SerializeValue(ref receiver);
 
-        writer.Write(receiverId);
-        writer.Write(receiverIndex);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        type = (KeySlotType)reader.ReadByte();
-        keyId = reader.ReadUInt16();
-
-        receiver = reader.ReadGameObject();
-
-        receiverId = reader.ReadUInt16Nullable();
-        receiverIndex = reader.ReadByteNullable();
+        serializer.SerializeValue(ref receiverId);
+        serializer.SerializeValue(ref receiverIndex);
     }
 
     public static KeySlotData Create(byte smallId, KeySlotType type, ushort keyId, GameObject receiver = null, ushort? receiverId = null, byte? receiverIndex = null)

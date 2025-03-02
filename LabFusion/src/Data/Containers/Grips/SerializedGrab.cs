@@ -1,13 +1,14 @@
-﻿using LabFusion.Network;
-using LabFusion.Entities;
+﻿using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Utilities;
 using Il2CppSLZ.Marrow.Interaction;
 
+using LabFusion.Network.Serialization;
+
 namespace LabFusion.Data;
 
-public abstract class SerializedGrab : IFusionSerializable
+public abstract class SerializedGrab : INetSerializable
 {
     public const int Size = sizeof(byte) + SerializedTransform.Size;
 
@@ -32,16 +33,10 @@ public abstract class SerializedGrab : IFusionSerializable
         return Size;
     }
 
-    public virtual void Serialize(FusionWriter writer)
+    public virtual void Serialize(INetSerializer serializer)
     {
-        writer.Write(isGrabbed);
-        writer.Write(targetInBase);
-    }
-
-    public virtual void Deserialize(FusionReader reader)
-    {
-        isGrabbed = reader.ReadBoolean();
-        targetInBase = reader.ReadFusionSerializable<SerializedTransform>();
+        serializer.SerializeValue(ref isGrabbed);
+        serializer.SerializeValue(ref targetInBase);
     }
 
     public abstract Grip GetGrip();

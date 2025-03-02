@@ -1,10 +1,11 @@
 ﻿using LabFusion.Data;
 using LabFusion.Network;
+using LabFusion.Network.Serialization;
 using LabFusion.Representation;
 
 namespace LabFusion.Entities;
 
-public class RigPose : IFusionSerializable
+public class RigPose : INetSerializable
 {
     public const int Size = SerializedLocalTransform.Size * RigAbstractor.TransformSyncCount +
         SerializedSmallQuaternion.Size +
@@ -12,22 +13,22 @@ public class RigPose : IFusionSerializable
         SerializedController.Size * 2 +
         sizeof(float) * 2;
 
-    public SerializedLocalTransform[] TrackedPoints { get; set; } = new SerializedLocalTransform[RigAbstractor.TransformSyncCount];
+    public SerializedLocalTransform[] TrackedPoints = new SerializedLocalTransform[RigAbstractor.TransformSyncCount];
 
-    public SerializedSmallQuaternion TrackedPlayspace { get; set; } = SerializedSmallQuaternion.Default;
+    public SerializedSmallQuaternion TrackedPlayspace = SerializedSmallQuaternion.Default;
 
-    public BodyPose PelvisPose { get; set; } = new();
+    public BodyPose PelvisPose = new();
 
-    public SerializedController LeftController { get; set; } = null;
-    public SerializedController RightController { get; set; } = null;
+    public SerializedController LeftController = null;
+    public SerializedController RightController = null;
 
-    public float CrouchTarget { get; set; } = 0f;
+    public float CrouchTarget = 0f;
 
-    public float FeetOffset { get; set; } = 0f;
+    public float FeetOffset = 0f;
 
-    public float Health { get; set; } = 100f;
+    public float Health = 100f;
 
-    public float MaxHealth { get; set; } = 100f;
+    public float MaxHealth = 100f;
 
     public void ReadSkeleton(RigSkeleton skeleton)
     {
@@ -54,53 +55,27 @@ public class RigPose : IFusionSerializable
         MaxHealth = skeleton.health.max_Health;
     }
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        // Write tracked points
         for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
         {
-            writer.Write(TrackedPoints[i]);
+            var trackedPoint = TrackedPoints[i];
+
+            serializer.SerializeValue(ref trackedPoint);
+
+            TrackedPoints[i] = trackedPoint;
         }
 
-        // Write playspace
-        writer.Write(TrackedPlayspace);
+        serializer.SerializeValue(ref TrackedPlayspace);
 
-        // Write bodies
-        writer.Write(PelvisPose);
+        serializer.SerializeValue(ref PelvisPose);
 
-        // Write hands
-        writer.Write(LeftController);
-        writer.Write(RightController);
+        serializer.SerializeValue(ref LeftController);
+        serializer.SerializeValue(ref RightController);
 
-        // Write extra info
-        writer.Write(CrouchTarget);
-        writer.Write(FeetOffset);
-        writer.Write(Health);
-        writer.Write(MaxHealth);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        // Read tracked points
-        for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
-        {
-            TrackedPoints[i] = reader.ReadFusionSerializable<SerializedLocalTransform>();
-        }
-
-        // Read playspace
-        TrackedPlayspace = reader.ReadFusionSerializable<SerializedSmallQuaternion>();
-
-        // Read bodies
-        PelvisPose = reader.ReadFusionSerializable<BodyPose>();
-
-        // Read hands
-        LeftController = reader.ReadFusionSerializable<SerializedController>();
-        RightController = reader.ReadFusionSerializable<SerializedController>();
-
-        // Read extra info
-        CrouchTarget = reader.ReadSingle();
-        FeetOffset = reader.ReadSingle();
-        Health = reader.ReadSingle();
-        MaxHealth = reader.ReadSingle();
+        serializer.SerializeValue(ref CrouchTarget);
+        serializer.SerializeValue(ref FeetOffset);
+        serializer.SerializeValue(ref Health);
+        serializer.SerializeValue(ref MaxHealth);
     }
 }

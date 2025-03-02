@@ -1,26 +1,20 @@
 ﻿using LabFusion.Extensions;
-using LabFusion.Network;
+using LabFusion.Network.Serialization;
 
 using UnityEngine;
 
 namespace LabFusion.Data;
 
-public class SerializedSmallDirection2D : IFusionSerializable
+public class SerializedSmallDirection2D : INetSerializable
 {
     public const int Size = sizeof(byte) * 2;
 
     public sbyte x, y;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(x);
-        writer.Write(y);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        x = reader.ReadSByte();
-        y = reader.ReadSByte();
+        serializer.SerializeValue(ref x);
+        serializer.SerializeValue(ref y);
     }
 
     public static SerializedSmallDirection2D Compress(Vector2 direction)

@@ -1,25 +1,20 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class BodyLogToggleData : IFusionSerializable
+public class BodyLogToggleData : INetSerializable
 {
     public const int Size = sizeof(byte) * 2;
 
     public byte smallId;
     public bool isEnabled;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write(isEnabled);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        isEnabled = reader.ReadBoolean();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref isEnabled);
     }
 
     public static BodyLogToggleData Create(byte smallId, bool isEnabled)

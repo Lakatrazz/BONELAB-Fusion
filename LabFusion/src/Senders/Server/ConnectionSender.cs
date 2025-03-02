@@ -1,5 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Network;
+using LabFusion.Network.Serialization;
 using LabFusion.Player;
 using LabFusion.Utilities;
 
@@ -16,9 +17,9 @@ public static class ConnectionSender
                 if (id.IsMe)
                     continue;
 
-                using FusionWriter writer = FusionWriter.Create();
+                using var writer = NetWriter.Create();
                 var disconnect = DisconnectMessageData.Create(id.LongId, reason);
-                writer.Write(disconnect);
+                writer.SerializeValue(ref disconnect);
 
                 using var message = FusionMessage.Create(NativeMessageTag.Disconnect, writer);
                 MessageSender.SendFromServer(id.LongId, NetworkChannel.Reliable, message);
@@ -30,9 +31,9 @@ public static class ConnectionSender
     {
         if (NetworkInfo.IsServer)
         {
-            using FusionWriter writer = FusionWriter.Create();
+            using var writer = NetWriter.Create();
             var disconnect = DisconnectMessageData.Create(userId, reason);
-            writer.Write(disconnect);
+            writer.SerializeValue(ref disconnect);
 
             using var message = FusionMessage.Create(NativeMessageTag.Disconnect, writer);
             MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
@@ -43,9 +44,9 @@ public static class ConnectionSender
     {
         if (NetworkInfo.IsServer)
         {
-            using FusionWriter writer = FusionWriter.Create();
+            using var writer = NetWriter.Create();
             var disconnect = DisconnectMessageData.Create(userId, reason);
-            writer.Write(disconnect);
+            writer.SerializeValue(ref disconnect);
 
             using var message = FusionMessage.Create(NativeMessageTag.Disconnect, writer);
             MessageSender.SendFromServer(userId, NetworkChannel.Reliable, message);
@@ -56,9 +57,10 @@ public static class ConnectionSender
     {
         if (NetworkInfo.HasServer)
         {
-            using FusionWriter writer = FusionWriter.Create();
+            using var writer = NetWriter.Create();
+
             var data = ConnectionRequestData.Create(PlayerIdManager.LocalLongId, FusionMod.Version, RigData.GetAvatarBarcode(), RigData.RigAvatarStats);
-            writer.Write(data);
+            data.Serialize(writer);
 
             using FusionMessage message = FusionMessage.Create(NativeMessageTag.ConnectionRequest, writer);
             MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
@@ -71,9 +73,9 @@ public static class ConnectionSender
 
     public static void SendPlayerCatchup(ulong newUser, PlayerId id, string avatar, SerializedAvatarStats stats)
     {
-        using FusionWriter writer = FusionWriter.Create();
+        using var writer = NetWriter.Create();
         var response = ConnectionResponseData.Create(id, avatar, stats, false);
-        writer.Write(response);
+        writer.SerializeValue(ref response);
 
         using var message = FusionMessage.Create(NativeMessageTag.ConnectionResponse, writer);
         MessageSender.SendFromServer(newUser, NetworkChannel.Reliable, message);
@@ -81,9 +83,9 @@ public static class ConnectionSender
 
     public static void SendPlayerJoin(PlayerId id, string avatar, SerializedAvatarStats stats)
     {
-        using FusionWriter writer = FusionWriter.Create();
+        using var writer = NetWriter.Create();
         var response = ConnectionResponseData.Create(id, avatar, stats, true);
-        writer.Write(response);
+        writer.SerializeValue(ref response);
 
         using var message = FusionMessage.Create(NativeMessageTag.ConnectionResponse, writer);
         MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);

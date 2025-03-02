@@ -1,10 +1,10 @@
-﻿using LabFusion.Data;
-using LabFusion.Senders;
+﻿using LabFusion.Senders;
 using LabFusion.Extensions;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class PlayerMetadataRequestData : IFusionSerializable
+public class PlayerMetadataRequestData : INetSerializable
 {
     public const int DefaultSize = sizeof(byte);
 
@@ -17,18 +17,11 @@ public class PlayerMetadataRequestData : IFusionSerializable
         return DefaultSize + key.GetSize() + value.GetSize();
     }
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write(key);
-        writer.Write(value);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        key = reader.ReadString();
-        value = reader.ReadString();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref key);
+        serializer.SerializeValue(ref value);
     }
 
     public static PlayerMetadataRequestData Create(byte smallId, string key, string value)
@@ -50,8 +43,7 @@ public class PlayerMetadataRequestMessage : NativeMessageHandler
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(received.Bytes);
-        var data = reader.ReadFusionSerializable<PlayerMetadataRequestData>();
+        var data = received.ReadData<PlayerMetadataRequestData>();
 
         // Send the response to all clients
         PlayerSender.SendPlayerMetadataResponse(data.smallId, data.key, data.value);

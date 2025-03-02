@@ -1,25 +1,20 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class PlayerSettingsData : IFusionSerializable
+public class PlayerSettingsData : INetSerializable
 {
     public const int Size = sizeof(byte) + SerializedPlayerSettings.Size;
 
     public byte smallId;
     public SerializedPlayerSettings settings;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write(settings);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        settings = reader.ReadFusionSerializable<SerializedPlayerSettings>();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref settings);
     }
 
     public static PlayerSettingsData Create(byte smallId, SerializedPlayerSettings settings)

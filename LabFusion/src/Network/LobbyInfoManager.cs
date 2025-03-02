@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Network.Serialization;
 using LabFusion.Preferences.Server;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.Utilities;
@@ -92,9 +93,9 @@ public static class LobbyInfoManager
             return;
         }
 
-        using var writer = FusionWriter.Create();
+        using var writer = NetWriter.Create();
         var data = ServerSettingsData.Create();
-        writer.Write(data);
+        writer.SerializeValue(ref data);
 
         using var message = FusionMessage.Create(NativeMessageTag.ServerSettings, writer);
         MessageSender.SendFromServer(longId, NetworkChannel.Reliable, message);

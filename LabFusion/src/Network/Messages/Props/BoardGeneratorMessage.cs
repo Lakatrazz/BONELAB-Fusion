@@ -8,9 +8,11 @@ using UnityEngine;
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow;
 
+using LabFusion.Network.Serialization;
+
 namespace LabFusion.Network;
 
-public class BoardPointData : IFusionSerializable
+public class BoardPointData : INetSerializable
 {
     public Vector3 point;
     public bool hasBody;
@@ -41,20 +43,19 @@ public class BoardPointData : IFusionSerializable
         return extender.GetComponent(bodyIndex);
     }
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(NetworkTransformManager.EncodePosition(point));
-        writer.Write(hasBody);
-        writer.Write(entityId);
-        writer.Write(bodyIndex);
-    }
+        var encodedPosition = NetworkTransformManager.EncodePosition(point);
 
-    public void Deserialize(FusionReader reader)
-    {
-        point = NetworkTransformManager.DecodePosition(reader.ReadVector3());
-        hasBody = reader.ReadBoolean();
-        entityId = reader.ReadUInt16();
-        bodyIndex = reader.ReadUInt16();
+        serializer.SerializeValue(ref encodedPosition);
+        serializer.SerializeValue(ref hasBody);
+        serializer.SerializeValue(ref entityId);
+        serializer.SerializeValue(ref bodyIndex);
+
+        if (serializer.IsReader)
+        {
+            point = NetworkTransformManager.DecodePosition(encodedPosition);
+        }
     }
 
     public static BoardPointData Create(Vector3 point, bool hasBody, ushort entityId, ushort bodyIndex)
@@ -69,7 +70,7 @@ public class BoardPointData : IFusionSerializable
     }
 }
 
-public class BoardGeneratorData : IFusionSerializable
+public class BoardGeneratorData : INetSerializable
 {
     public const int Size = sizeof(byte) * 2 + sizeof(ushort);
 
@@ -80,24 +81,14 @@ public class BoardGeneratorData : IFusionSerializable
     public BoardPointData firstPoint;
     public BoardPointData endPoint;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(ownerId);
-        writer.Write(boardId);
-        writer.Write(boardGeneratorId);
+        serializer.SerializeValue(ref ownerId);
+        serializer.SerializeValue(ref boardId);
+        serializer.SerializeValue(ref boardGeneratorId);
 
-        writer.Write(firstPoint);
-        writer.Write(endPoint);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        ownerId = reader.ReadByte();
-        boardId = reader.ReadUInt16();
-        boardGeneratorId = reader.ReadUInt16();
-
-        firstPoint = reader.ReadFusionSerializable<BoardPointData>();
-        endPoint = reader.ReadFusionSerializable<BoardPointData>();
+        serializer.SerializeValue(ref firstPoint);
+        serializer.SerializeValue(ref endPoint);
     }
 
     public static BoardGeneratorData Create(byte ownerId, ushort boardId, ushort boardGeneratorId, BoardPointData firstPoint, BoardPointData endPoint)

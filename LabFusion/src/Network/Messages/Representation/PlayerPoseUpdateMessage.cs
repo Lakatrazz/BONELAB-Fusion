@@ -1,24 +1,19 @@
-﻿using LabFusion.Data;
-using LabFusion.Player;
+﻿using LabFusion.Player;
 using LabFusion.Entities;
 using LabFusion.Utilities;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class PlayerPoseUpdateData : IFusionSerializable
+public class PlayerPoseUpdateData : INetSerializable
 {
     public const int Size = RigPose.Size;
 
     public RigPose pose;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(pose);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        pose = reader.ReadFusionSerializable<RigPose>();
+        serializer.SerializeValue(ref pose);
     }
 
     public static PlayerPoseUpdateData Create(RigPose pose)

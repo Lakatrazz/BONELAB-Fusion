@@ -1,10 +1,11 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
-public class SpawnRequestData : IFusionSerializable
+public class SpawnRequestData : INetSerializable
 {
     public const int Size = sizeof(byte) * 2 + SerializedTransform.Size;
 
@@ -15,24 +16,12 @@ public class SpawnRequestData : IFusionSerializable
 
     public bool spawnEffect;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(barcode);
-        writer.Write(serializedTransform);
-
-        writer.Write(trackerId);
-
-        writer.Write(spawnEffect);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        barcode = reader.ReadString();
-        serializedTransform = reader.ReadFusionSerializable<SerializedTransform>();
-
-        trackerId = reader.ReadUInt32();
-
-        spawnEffect = reader.ReadBoolean();
+        serializer.SerializeValue(ref barcode);
+        serializer.SerializeValue(ref serializedTransform);
+        serializer.SerializeValue(ref trackerId);
+        serializer.SerializeValue(ref spawnEffect);
     }
 
     public static SpawnRequestData Create(string barcode, SerializedTransform serializedTransform, uint trackerId, bool spawnEffect)
@@ -58,8 +47,7 @@ public class SpawnRequestMessage : NativeMessageHandler
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using var reader = FusionReader.Create(received.Bytes);
-        var data = reader.ReadFusionSerializable<SpawnRequestData>();
+        var data = received.ReadData<SpawnRequestData>();
 
         // Check for spawnable blacklist
         if (ModBlacklist.IsBlacklisted(data.barcode))

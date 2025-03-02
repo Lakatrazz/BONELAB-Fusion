@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Network.Serialization;
 using LabFusion.Patching;
 
 namespace LabFusion.Network;
@@ -19,18 +20,13 @@ public enum ArenaTransitionType
     SPAWN_LOOT = 11,
 }
 
-public class ArenaTransitionData : IFusionSerializable
+public class ArenaTransitionData : INetSerializable
 {
     public ArenaTransitionType type;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write((byte)type);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        type = (ArenaTransitionType)reader.ReadByte();
+        serializer.SerializeValue(ref type, Precision.OneByte);
     }
 
     public static ArenaTransitionData Create(ArenaTransitionType type)

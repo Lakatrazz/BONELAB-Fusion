@@ -4,10 +4,11 @@ using LabFusion.Extensions;
 using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow.Interaction;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class MagazineEjectData : IFusionSerializable
+public class MagazineEjectData : INetSerializable
 {
     public const int Size = sizeof(byte) * 2 + sizeof(ushort) * 2;
 
@@ -16,20 +17,12 @@ public class MagazineEjectData : IFusionSerializable
     public ushort gunId;
     public Handedness hand;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write(magazineId);
-        writer.Write(gunId);
-        writer.Write((byte)hand);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        magazineId = reader.ReadUInt16();
-        gunId = reader.ReadUInt16();
-        hand = (Handedness)reader.ReadByte();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref magazineId);
+        serializer.SerializeValue(ref gunId);
+        serializer.SerializeValue(ref hand, Precision.OneByte);
     }
 
     public static MagazineEjectData Create(byte smallId, ushort magazineId, ushort gunId, Handedness hand)

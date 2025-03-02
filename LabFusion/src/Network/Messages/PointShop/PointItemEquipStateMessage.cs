@@ -1,27 +1,20 @@
-﻿using LabFusion.Data;
-using LabFusion.SDK.Points;
+﻿using LabFusion.SDK.Points;
 using LabFusion.Player;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class PointItemEquipStateData : IFusionSerializable
+public class PointItemEquipStateData : INetSerializable
 {
     public byte smallId;
     public string barcode;
     public bool isEquipped;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write(barcode);
-        writer.Write(isEquipped);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        barcode = reader.ReadString();
-        isEquipped = reader.ReadBoolean();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref barcode);
+        serializer.SerializeValue(ref isEquipped);
     }
 
     public static PointItemEquipStateData Create(byte smallId, string barcode, bool isEquipped)

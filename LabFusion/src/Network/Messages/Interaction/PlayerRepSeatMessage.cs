@@ -1,10 +1,10 @@
-﻿using LabFusion.Data;
-using LabFusion.Entities;
+﻿using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 using LabFusion.Patching;
 
 namespace LabFusion.Network;
 
-public class PlayerRepSeatData : IFusionSerializable
+public class PlayerRepSeatData : INetSerializable
 {
     public const int Size = sizeof(byte) * 3 + sizeof(ushort);
 
@@ -13,20 +13,12 @@ public class PlayerRepSeatData : IFusionSerializable
     public byte seatIndex;
     public bool isIngress;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write(syncId);
-        writer.Write(seatIndex);
-        writer.Write(isIngress);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        syncId = reader.ReadUInt16();
-        seatIndex = reader.ReadByte();
-        isIngress = reader.ReadBoolean();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref syncId);
+        serializer.SerializeValue(ref seatIndex);
+        serializer.SerializeValue(ref isIngress);
     }
 
     public static PlayerRepSeatData Create(byte smallId, ushort syncId, byte seatIndex, bool isIngress)

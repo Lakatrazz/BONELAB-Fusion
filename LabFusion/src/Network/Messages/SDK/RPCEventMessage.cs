@@ -1,5 +1,6 @@
 ﻿using LabFusion.Entities;
 using LabFusion.Marrow.Integration;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
@@ -53,10 +54,10 @@ public static class RPCEventSender
         }
 
         // Send the message
-        using var writer = FusionWriter.Create();
+        using var writer = NetWriter.Create();
         var data = ComponentPathData.Create(hasNetworkEntity, entityId, componentIndex, hashData);
 
-        writer.Write(data);
+        writer.SerializeValue(ref data);
 
         using var message = FusionMessage.Create(NativeMessageTag.RPCEvent, writer);
 

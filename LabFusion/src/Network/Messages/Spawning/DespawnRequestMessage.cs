@@ -1,9 +1,8 @@
-﻿using LabFusion.Data;
-using LabFusion.Exceptions;
+﻿using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class DespawnRequestData : IFusionSerializable
+public class DespawnRequestData : INetSerializable
 {
     public const int Size = sizeof(ushort) + sizeof(byte) * 2;
 
@@ -12,20 +11,12 @@ public class DespawnRequestData : IFusionSerializable
 
     public bool despawnEffect;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(despawnerId);
-        writer.Write(entityId);
+        serializer.SerializeValue(ref despawnerId);
+        serializer.SerializeValue(ref entityId);
 
-        writer.Write(despawnEffect);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        despawnerId = reader.ReadByte();
-        entityId = reader.ReadUInt16();
-
-        despawnEffect = reader.ReadBoolean();
+        serializer.SerializeValue(ref despawnEffect);
     }
 
     public static DespawnRequestData Create(byte despawnerId, ushort entityId, bool despawnEffect)
@@ -47,8 +38,7 @@ public class DespawnRequestMessage : NativeMessageHandler
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using var reader = FusionReader.Create(received.Bytes);
-        var readData = reader.ReadFusionSerializable<DespawnRequestData>();
+        var readData = received.ReadData<DespawnRequestData>();
 
         var writtenData = DespawnResponseData.Create(readData.despawnerId, readData.entityId, readData.despawnEffect);
 

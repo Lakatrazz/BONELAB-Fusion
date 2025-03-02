@@ -1,4 +1,5 @@
 ﻿using LabFusion.Network;
+using LabFusion.Network.Serialization;
 
 using UnityEngine;
 
@@ -9,7 +10,7 @@ namespace LabFusion.Data;
 // We manually send proportions, stats, and mass incase of not having an avatar
 // And also stat modifier mods (Quicksilver, StatModifier, Spiderlab)
 // This has a LOT of data, so this should ONLY be sent when necessary!
-public class SerializedAvatarStats : IFusionSerializable
+public class SerializedAvatarStats : INetSerializable
 {
     public const int Size = sizeof(float) * 73 + SerializedSoftEllipse.Size * 8;
 
@@ -294,193 +295,92 @@ public class SerializedAvatarStats : IFusionSerializable
         avatar._massTotal = massTotal;
     }
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        // Write scale
-        writer.Write(localScale);
+        serializer.SerializeValue(ref localScale);
 
-        // Write ellipse/offset values
-        writer.Write(headTop);
-        writer.Write(chinY);
-        writer.Write(underbustY);
-        writer.Write(waistY);
-        writer.Write(highHipY);
-        writer.Write(crotchBottom);
+        serializer.SerializeValue(ref headTop);
+        serializer.SerializeValue(ref chinY);
+        serializer.SerializeValue(ref underbustY);
+        serializer.SerializeValue(ref waistY);
+        serializer.SerializeValue(ref highHipY);
+        serializer.SerializeValue(ref crotchBottom);
 
-        writer.Write(headEllipseX);
-        writer.Write(jawEllipseX);
-        writer.Write(neckEllipseX);
-        writer.Write(chestEllipseX);
-        writer.Write(waistEllipseX);
-        writer.Write(highHipsEllipseX);
-        writer.Write(hipsEllipseX);
+        serializer.SerializeValue(ref headEllipseX);
+        serializer.SerializeValue(ref jawEllipseX);
+        serializer.SerializeValue(ref neckEllipseX);
+        serializer.SerializeValue(ref chestEllipseX);
+        serializer.SerializeValue(ref waistEllipseX);
+        serializer.SerializeValue(ref highHipsEllipseX);
+        serializer.SerializeValue(ref hipsEllipseX);
 
-        writer.Write(headEllipseZ);
-        writer.Write(jawEllipseZ);
-        writer.Write(neckEllipseZ);
-        writer.Write(sternumEllipseZ);
-        writer.Write(chestEllipseZ);
-        writer.Write(waistEllipseZ);
-        writer.Write(highHipsEllipseZ);
-        writer.Write(hipsEllipseZ);
+        serializer.SerializeValue(ref headEllipseZ);
+        serializer.SerializeValue(ref jawEllipseZ);
+        serializer.SerializeValue(ref neckEllipseZ);
+        serializer.SerializeValue(ref sternumEllipseZ);
+        serializer.SerializeValue(ref chestEllipseZ);
+        serializer.SerializeValue(ref waistEllipseZ);
+        serializer.SerializeValue(ref highHipsEllipseZ);
+        serializer.SerializeValue(ref hipsEllipseZ);
 
-        writer.Write(headEllipseNegZ);
-        writer.Write(jawEllipseNegZ);
-        writer.Write(neckEllipseNegZ);
-        writer.Write(sternumEllipseNegZ);
-        writer.Write(chestEllipseNegZ);
-        writer.Write(waistEllipseNegZ);
-        writer.Write(highHipsEllipseNegZ);
-        writer.Write(hipsEllipseNegZ);
+        serializer.SerializeValue(ref headEllipseNegZ);
+        serializer.SerializeValue(ref jawEllipseNegZ);
+        serializer.SerializeValue(ref neckEllipseNegZ);
+        serializer.SerializeValue(ref sternumEllipseNegZ);
+        serializer.SerializeValue(ref chestEllipseNegZ);
+        serializer.SerializeValue(ref waistEllipseNegZ);
+        serializer.SerializeValue(ref highHipsEllipseNegZ);
+        serializer.SerializeValue(ref hipsEllipseNegZ);
 
-        // Write soft ellipses
-        writer.Write(thighUpperEllipse);
-        writer.Write(kneeEllipse);
-        writer.Write(calfEllipse);
-        writer.Write(ankleEllipse);
-        writer.Write(upperarmEllipse);
-        writer.Write(elbowEllipse);
-        writer.Write(forearmEllipse);
-        writer.Write(wristEllipse);
+        serializer.SerializeValue(ref thighUpperEllipse);
+        serializer.SerializeValue(ref kneeEllipse);
+        serializer.SerializeValue(ref calfEllipse);
+        serializer.SerializeValue(ref ankleEllipse);
+        serializer.SerializeValue(ref upperarmEllipse);
+        serializer.SerializeValue(ref elbowEllipse);
+        serializer.SerializeValue(ref forearmEllipse);
+        serializer.SerializeValue(ref wristEllipse);
 
-        // Write proportions
-        writer.Write(eyeHeight);
-        writer.Write(heightPercent);
-        writer.Write(c1HeightPercent);
-        writer.Write(height);
-        writer.Write(t1HeightPercent);
-        writer.Write(skullHeight);
-        writer.Write(sacrumHeightPercent);
-        writer.Write(chestHeight);
-        writer.Write(chestToShoulderPerc);
-        writer.Write(pelvisHeight);
-        writer.Write(legUpperPercent);
-        writer.Write(clavicleLength);
-        writer.Write(armUpperPercent);
-        writer.Write(legUpperLength);
-        writer.Write(armUpperLength);
-        writer.Write(armLowerPercent);
-        writer.Write(legLowerPercent);
-        writer.Write(armLowerLength);
-        writer.Write(legLowerLength);
-        writer.Write(carpalPercent);
-        writer.Write(palmOffsetLength);
-        writer.Write(sternumOffsetPercent);
-        writer.Write(footLength);
-        writer.Write(carpalLength);
-        writer.Write(armPercent);
-        writer.Write(shoulderToPalmPercent);
-        writer.Write(armLength);
+        serializer.SerializeValue(ref eyeHeight);
+        serializer.SerializeValue(ref heightPercent);
+        serializer.SerializeValue(ref c1HeightPercent);
+        serializer.SerializeValue(ref height);
+        serializer.SerializeValue(ref t1HeightPercent);
+        serializer.SerializeValue(ref skullHeight);
+        serializer.SerializeValue(ref sacrumHeightPercent);
+        serializer.SerializeValue(ref chestHeight);
+        serializer.SerializeValue(ref chestToShoulderPerc);
+        serializer.SerializeValue(ref pelvisHeight);
+        serializer.SerializeValue(ref legUpperPercent);
+        serializer.SerializeValue(ref clavicleLength);
+        serializer.SerializeValue(ref armUpperPercent);
+        serializer.SerializeValue(ref legUpperLength);
+        serializer.SerializeValue(ref armUpperLength);
+        serializer.SerializeValue(ref armLowerPercent);
+        serializer.SerializeValue(ref legLowerPercent);
+        serializer.SerializeValue(ref armLowerLength);
+        serializer.SerializeValue(ref legLowerLength);
+        serializer.SerializeValue(ref carpalPercent);
+        serializer.SerializeValue(ref palmOffsetLength);
+        serializer.SerializeValue(ref sternumOffsetPercent);
+        serializer.SerializeValue(ref footLength);
+        serializer.SerializeValue(ref carpalLength);
+        serializer.SerializeValue(ref armPercent);
+        serializer.SerializeValue(ref shoulderToPalmPercent);
+        serializer.SerializeValue(ref armLength);
 
-        // Write stats
-        writer.Write(agility);
-        writer.Write(speed);
-        writer.Write(strengthUpper);
-        writer.Write(strengthLower);
-        writer.Write(vitality);
-        writer.Write(intelligence);
+        serializer.SerializeValue(ref agility);
+        serializer.SerializeValue(ref speed);
+        serializer.SerializeValue(ref strengthUpper);
+        serializer.SerializeValue(ref strengthLower);
+        serializer.SerializeValue(ref vitality);
+        serializer.SerializeValue(ref intelligence);
 
-        // Write mass
-        writer.Write(massArm);
-        writer.Write(massChest);
-        writer.Write(massHead);
-        writer.Write(massLeg);
-        writer.Write(massPelvis);
-        writer.Write(massTotal);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        // Read scale
-        localScale = reader.ReadVector3();
-
-        // Read ellipse/offset values
-        headTop = reader.ReadSingle();
-        chinY = reader.ReadSingle();
-        underbustY = reader.ReadSingle();
-        waistY = reader.ReadSingle();
-        highHipY = reader.ReadSingle();
-        crotchBottom = reader.ReadSingle();
-
-        headEllipseX = reader.ReadSingle();
-        jawEllipseX = reader.ReadSingle();
-        neckEllipseX = reader.ReadSingle();
-        chestEllipseX = reader.ReadSingle();
-        waistEllipseX = reader.ReadSingle();
-        highHipsEllipseX = reader.ReadSingle();
-        hipsEllipseX = reader.ReadSingle();
-
-        headEllipseZ = reader.ReadSingle();
-        jawEllipseZ = reader.ReadSingle();
-        neckEllipseZ = reader.ReadSingle();
-        sternumEllipseZ = reader.ReadSingle();
-        chestEllipseZ = reader.ReadSingle();
-        waistEllipseZ = reader.ReadSingle();
-        highHipsEllipseZ = reader.ReadSingle();
-        hipsEllipseZ = reader.ReadSingle();
-
-        headEllipseNegZ = reader.ReadSingle();
-        jawEllipseNegZ = reader.ReadSingle();
-        neckEllipseNegZ = reader.ReadSingle();
-        sternumEllipseNegZ = reader.ReadSingle();
-        chestEllipseNegZ = reader.ReadSingle();
-        waistEllipseNegZ = reader.ReadSingle();
-        highHipsEllipseNegZ = reader.ReadSingle();
-        hipsEllipseNegZ = reader.ReadSingle();
-
-        // Read soft ellipses
-        thighUpperEllipse = reader.ReadFusionSerializable<SerializedSoftEllipse>();
-        kneeEllipse = reader.ReadFusionSerializable<SerializedSoftEllipse>();
-        calfEllipse = reader.ReadFusionSerializable<SerializedSoftEllipse>();
-        ankleEllipse = reader.ReadFusionSerializable<SerializedSoftEllipse>();
-        upperarmEllipse = reader.ReadFusionSerializable<SerializedSoftEllipse>();
-        elbowEllipse = reader.ReadFusionSerializable<SerializedSoftEllipse>();
-        forearmEllipse = reader.ReadFusionSerializable<SerializedSoftEllipse>();
-        wristEllipse = reader.ReadFusionSerializable<SerializedSoftEllipse>();
-
-        // Read proportions
-        eyeHeight = reader.ReadSingle();
-        heightPercent = reader.ReadSingle();
-        c1HeightPercent = reader.ReadSingle();
-        height = reader.ReadSingle();
-        t1HeightPercent = reader.ReadSingle();
-        skullHeight = reader.ReadSingle();
-        sacrumHeightPercent = reader.ReadSingle();
-        chestHeight = reader.ReadSingle();
-        chestToShoulderPerc = reader.ReadSingle();
-        pelvisHeight = reader.ReadSingle();
-        legUpperPercent = reader.ReadSingle();
-        clavicleLength = reader.ReadSingle();
-        armUpperPercent = reader.ReadSingle();
-        legUpperLength = reader.ReadSingle();
-        armUpperLength = reader.ReadSingle();
-        armLowerPercent = reader.ReadSingle();
-        legLowerPercent = reader.ReadSingle();
-        armLowerLength = reader.ReadSingle();
-        legLowerLength = reader.ReadSingle();
-        carpalPercent = reader.ReadSingle();
-        palmOffsetLength = reader.ReadSingle();
-        sternumOffsetPercent = reader.ReadVector3();
-        footLength = reader.ReadSingle();
-        carpalLength = reader.ReadSingle();
-        armPercent = reader.ReadSingle();
-        shoulderToPalmPercent = reader.ReadSingle();
-        armLength = reader.ReadSingle();
-
-        // Read stats
-        agility = reader.ReadSingle();
-        speed = reader.ReadSingle();
-        strengthUpper = reader.ReadSingle();
-        strengthLower = reader.ReadSingle();
-        vitality = reader.ReadSingle();
-        intelligence = reader.ReadSingle();
-
-        // Read mass
-        massArm = reader.ReadSingle();
-        massChest = reader.ReadSingle();
-        massHead = reader.ReadSingle();
-        massLeg = reader.ReadSingle();
-        massPelvis = reader.ReadSingle();
-        massTotal = reader.ReadSingle();
+        serializer.SerializeValue(ref massArm);
+        serializer.SerializeValue(ref massChest);
+        serializer.SerializeValue(ref massHead);
+        serializer.SerializeValue(ref massLeg);
+        serializer.SerializeValue(ref massPelvis);
+        serializer.SerializeValue(ref massTotal);
     }
 }

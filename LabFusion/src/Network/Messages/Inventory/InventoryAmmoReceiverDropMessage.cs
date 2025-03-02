@@ -1,25 +1,21 @@
-﻿using LabFusion.Data;
-using LabFusion.Entities;
+﻿using LabFusion.Entities;
 using LabFusion.Marrow;
 
 using Il2CppSLZ.Marrow.Audio;
 
+using LabFusion.Network.Serialization;
+
 namespace LabFusion.Network;
 
-public class InventoryAmmoReceiverDropData : IFusionSerializable
+public class InventoryAmmoReceiverDropData : INetSerializable
 {
     public const int Size = sizeof(ushort);
 
     public ushort entityId;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(entityId);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        entityId = reader.ReadUInt16();
+        serializer.SerializeValue(ref entityId);
     }
 
     public static InventoryAmmoReceiverDropData Create(ushort entityId)

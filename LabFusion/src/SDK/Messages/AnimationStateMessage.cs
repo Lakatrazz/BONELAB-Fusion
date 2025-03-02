@@ -1,41 +1,27 @@
-﻿using LabFusion.Data;
-using LabFusion.Entities;
+﻿using LabFusion.Entities;
 using LabFusion.Marrow.Integration;
 using LabFusion.Network;
+using LabFusion.Network.Serialization;
 using LabFusion.SDK.Modules;
 
 namespace LabFusion.SDK.Messages;
 
-public class AnimationStateData : IFusionSerializable
+public class AnimationStateData : INetSerializable
 {
-    public ComponentPathData ComponentData { get; set; }
+    public ComponentPathData ComponentData;
 
-    public int StateNameHash { get; set; }
+    public int StateNameHash;
 
-    public int Layer { get; set; }
+    public int Layer;
 
-    public float NormalizedTime { get; set; }
+    public float NormalizedTime;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(ComponentData);
-
-        writer.Write(StateNameHash);
-
-        writer.Write(Layer);
-
-        writer.Write(NormalizedTime);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        ComponentData = reader.ReadFusionSerializable<ComponentPathData>();
-
-        StateNameHash = reader.ReadInt32();
-
-        Layer = reader.ReadInt32();
-
-        NormalizedTime = reader.ReadSingle();
+        serializer.SerializeValue(ref ComponentData);
+        serializer.SerializeValue(ref StateNameHash);
+        serializer.SerializeValue(ref Layer);
+        serializer.SerializeValue(ref NormalizedTime);
     }
 }
 

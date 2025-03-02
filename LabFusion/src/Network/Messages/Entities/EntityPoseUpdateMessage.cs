@@ -1,9 +1,10 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class EntityPoseUpdateData : IFusionSerializable
+public class EntityPoseUpdateData : INetSerializable
 {
     public const int DefaultSize = sizeof(byte) + sizeof(ushort);
     public const int RigidbodySize = sizeof(float) * 9 + SerializedSmallQuaternion.Size;
@@ -11,16 +12,10 @@ public class EntityPoseUpdateData : IFusionSerializable
     public ushort entityId;
     public EntityPose pose;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(entityId);
-        writer.Write(pose);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        entityId = reader.ReadUInt16();
-        pose = reader.ReadFusionSerializable<EntityPose>();
+        serializer.SerializeValue(ref entityId);
+        serializer.SerializeValue(ref pose);
     }
 
     public NetworkEntity GetEntity()

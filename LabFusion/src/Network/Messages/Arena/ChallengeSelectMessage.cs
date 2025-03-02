@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Network.Serialization;
 using LabFusion.Patching;
 
 namespace LabFusion.Network;
@@ -10,24 +11,17 @@ public enum ChallengeSelectType
     ON_CHALLENGE_SELECT = 2,
 }
 
-public class ChallengeSelectData : IFusionSerializable
+public class ChallengeSelectData : INetSerializable
 {
     public byte menuIndex;
     public byte challengeNumber;
     public ChallengeSelectType type;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(menuIndex);
-        writer.Write(challengeNumber);
-        writer.Write((byte)type);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        menuIndex = reader.ReadByte();
-        challengeNumber = reader.ReadByte();
-        type = (ChallengeSelectType)reader.ReadByte();
+        serializer.SerializeValue(ref menuIndex);
+        serializer.SerializeValue(ref challengeNumber);
+        serializer.SerializeValue(ref type, Precision.OneByte);
     }
 
     public static ChallengeSelectData Create(byte menuIndex, byte challengeNumber, ChallengeSelectType type)

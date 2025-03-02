@@ -1,25 +1,20 @@
-﻿using LabFusion.Data;
-using LabFusion.Patching;
-using LabFusion.Exceptions;
+﻿using LabFusion.Patching;
 
 using UnityEngine;
 
 using Il2CppSLZ.Bonelab;
 
+using LabFusion.Network.Serialization;
+
 namespace LabFusion.Network;
 
-public class TrialSpawnerEventsData : IFusionSerializable
+public class TrialSpawnerEventsData : INetSerializable
 {
     public GameObject trialSpawnerEvents;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(trialSpawnerEvents);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        trialSpawnerEvents = reader.ReadGameObject();
+        serializer.SerializeValue(ref trialSpawnerEvents);
     }
 
     public static TrialSpawnerEventsData Create(Trial_SpawnerEvents trialSpawnerEvents)
@@ -40,8 +35,7 @@ public class TrialSpawnerEventsMessage : NativeMessageHandler
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(received.Bytes);
-        var data = reader.ReadFusionSerializable<TrialSpawnerEventsData>();
+        var data = received.ReadData<TrialSpawnerEventsData>();
         var go = data.trialSpawnerEvents;
 
         var events = go.GetComponent<Trial_SpawnerEvents>();

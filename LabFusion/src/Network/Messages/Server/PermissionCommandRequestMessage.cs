@@ -1,4 +1,4 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Network.Serialization;
 using LabFusion.Player;
 using LabFusion.Representation;
 using LabFusion.Senders;
@@ -14,24 +14,17 @@ public enum PermissionCommandType
     TELEPORT_TO_ME = 4,
 }
 
-public class PermissionCommandRequestData : IFusionSerializable
+public class PermissionCommandRequestData : INetSerializable
 {
     public byte smallId;
     public PermissionCommandType type;
     public byte? otherPlayer;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write((byte)type);
-        writer.Write(otherPlayer);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        type = (PermissionCommandType)reader.ReadByte();
-        otherPlayer = reader.ReadByteNullable();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref type, Precision.OneByte);
+        serializer.SerializeValue(ref otherPlayer);
     }
 
     public static PermissionCommandRequestData Create(byte smallId, PermissionCommandType type, byte? otherPlayer = null)
@@ -53,8 +46,7 @@ public class PermissionCommandRequestMessage : NativeMessageHandler
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(received.Bytes);
-        var data = reader.ReadFusionSerializable<PermissionCommandRequestData>();
+        var data = received.ReadData<PermissionCommandRequestData>();
 
         // Get the user
         PlayerId playerId = PlayerIdManager.GetPlayerId(data.smallId);

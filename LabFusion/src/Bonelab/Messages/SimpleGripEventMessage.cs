@@ -1,7 +1,7 @@
 ﻿using LabFusion.Bonelab.Extenders;
-using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Network;
+using LabFusion.Network.Serialization;
 using LabFusion.SDK.Modules;
 
 namespace LabFusion.Bonelab;
@@ -14,7 +14,7 @@ public enum SimpleGripEventType
     DETACH = 3,
 }
 
-public class SimpleGripEventData : IFusionSerializable
+public class SimpleGripEventData : INetSerializable
 {
     public const int Size = sizeof(byte) * 2 + sizeof(ushort);
 
@@ -22,18 +22,11 @@ public class SimpleGripEventData : IFusionSerializable
     public byte gripEventIndex;
     public SimpleGripEventType type;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(entityId);
-        writer.Write(gripEventIndex);
-        writer.Write((byte)type);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        entityId = reader.ReadUInt16();
-        gripEventIndex = reader.ReadByte();
-        type = (SimpleGripEventType)reader.ReadByte();
+        serializer.SerializeValue(ref entityId);
+        serializer.SerializeValue(ref gripEventIndex);
+        serializer.SerializeValue(ref type, Precision.OneByte);
     }
 
     public static SimpleGripEventData Create(ushort entityId, byte gripEventIndex, SimpleGripEventType type)

@@ -1,11 +1,12 @@
-﻿using LabFusion.Data;
-using LabFusion.Entities;
+﻿using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow;
 
+using LabFusion.Network.Serialization;
+
 namespace LabFusion.Network;
 
-public class ConstrainerModeData : IFusionSerializable
+public class ConstrainerModeData : INetSerializable
 {
     public const int Size = sizeof(byte) * 2 + sizeof(ushort);
 
@@ -13,18 +14,11 @@ public class ConstrainerModeData : IFusionSerializable
     public ushort constrainerId;
     public Constrainer.ConstraintMode mode;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write(constrainerId);
-        writer.Write((byte)mode);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        constrainerId = reader.ReadUInt16();
-        mode = (Constrainer.ConstraintMode)reader.ReadByte();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref constrainerId);
+        serializer.SerializeValue(ref mode, Precision.OneByte);
     }
 
     public static ConstrainerModeData Create(byte smallId, ushort constrainerId, Constrainer.ConstraintMode mode)

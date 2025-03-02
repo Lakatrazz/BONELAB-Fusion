@@ -1,20 +1,16 @@
 ﻿using LabFusion.Data;
+using LabFusion.Network.Serialization;
 using LabFusion.Patching;
 
 namespace LabFusion.Network;
 
-public class GeoSelectData : IFusionSerializable
+public class GeoSelectData : INetSerializable
 {
     public byte geoIndex;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(geoIndex);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        geoIndex = reader.ReadByte();
+        serializer.SerializeValue(ref geoIndex);
     }
 
     public static GeoSelectData Create(byte geoIndex)

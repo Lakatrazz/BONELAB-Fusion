@@ -2,6 +2,7 @@
 using LabFusion.Player;
 
 using Il2CppSLZ.Marrow.Warehouse;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Senders;
 
@@ -26,9 +27,9 @@ public static class LoadSender
             return;
         }
 
-        using FusionWriter writer = FusionWriter.Create();
+        using var writer = NetWriter.Create();
         var data = SceneLoadData.Create(barcode, loadBarcode);
-        writer.Write(data);
+        writer.SerializeValue(ref data);
 
         using var message = FusionMessage.Create(NativeMessageTag.SceneLoad, writer);
         MessageSender.SendFromServer(userId, NetworkChannel.Reliable, message);

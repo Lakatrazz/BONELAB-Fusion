@@ -2,10 +2,11 @@
 using LabFusion.Patching;
 using LabFusion.Entities;
 using LabFusion.Utilities;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class ConstraintDeleteData : IFusionSerializable
+public class ConstraintDeleteData : INetSerializable
 {
     public const int Size = sizeof(byte) + sizeof(ushort) * 2;
 
@@ -13,18 +14,10 @@ public class ConstraintDeleteData : IFusionSerializable
 
     public ushort constraintId;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-
-        writer.Write(constraintId);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-
-        constraintId = reader.ReadUInt16();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref constraintId);
     }
 
     public static ConstraintDeleteData Create(byte smallId, ushort constraintId)

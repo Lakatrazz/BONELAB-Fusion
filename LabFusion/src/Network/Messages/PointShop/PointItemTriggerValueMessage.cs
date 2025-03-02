@@ -1,11 +1,11 @@
-﻿using LabFusion.Data;
-using LabFusion.SDK.Points;
+﻿using LabFusion.SDK.Points;
 using LabFusion.Player;
 using LabFusion.Extensions;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class PointItemTriggerValueData : IFusionSerializable
+public class PointItemTriggerValueData : INetSerializable
 {
     public const int DefaultSize = sizeof(byte);
 
@@ -18,18 +18,11 @@ public class PointItemTriggerValueData : IFusionSerializable
         return DefaultSize + barcode.GetSize() + value.GetSize();
     }
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write(barcode);
-        writer.Write(value);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        barcode = reader.ReadString();
-        value = reader.ReadString();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref barcode);
+        serializer.SerializeValue(ref value);
     }
 
     public static PointItemTriggerValueData Create(byte smallId, string barcode, string value)

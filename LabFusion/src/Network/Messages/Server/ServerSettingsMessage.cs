@@ -1,5 +1,5 @@
 ﻿using LabFusion.Data;
-using LabFusion.Exceptions;
+using LabFusion.Network.Serialization;
 
 #if DEBUG
 using LabFusion.Utilities;
@@ -9,16 +9,28 @@ using System.Text.Json;
 
 namespace LabFusion.Network;
 
-public class ServerSettingsData : IFusionSerializable
+public class ServerSettingsData : INetSerializable
 {
     public LobbyInfo lobbyInfo;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
+    {
+        if (serializer is NetWriter writer)
+        {
+            Serialize(writer);
+        }
+        else if (serializer is NetReader reader)
+        {
+            Deserialize(reader);
+        }
+    }
+
+    public void Serialize(NetWriter writer)
     {
         writer.Write(JsonSerializer.Serialize(lobbyInfo));
     }
 
-    public void Deserialize(FusionReader reader)
+    public void Deserialize(NetReader reader)
     {
         lobbyInfo = JsonSerializer.Deserialize<LobbyInfo>(reader.ReadString());
     }

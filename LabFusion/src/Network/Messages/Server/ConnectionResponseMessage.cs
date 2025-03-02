@@ -1,31 +1,23 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 using LabFusion.Player;
-using static Il2CppSystem.Globalization.CultureInfo;
 
 namespace LabFusion.Network;
 
-public class ConnectionResponseData : IFusionSerializable
+public class ConnectionResponseData : INetSerializable
 {
     public PlayerId playerId = null;
     public string avatarBarcode = null;
     public SerializedAvatarStats avatarStats = null;
     public bool isInitialJoin = false;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(playerId);
-        writer.Write(avatarBarcode);
-        writer.Write(avatarStats);
-        writer.Write(isInitialJoin);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        playerId = reader.ReadFusionSerializable<PlayerId>();
-        avatarBarcode = reader.ReadString();
-        avatarStats = reader.ReadFusionSerializable<SerializedAvatarStats>();
-        isInitialJoin = reader.ReadBoolean();
+        serializer.SerializeValue(ref playerId);
+        serializer.SerializeValue(ref avatarBarcode);
+        serializer.SerializeValue(ref avatarStats);
+        serializer.SerializeValue(ref isInitialJoin);
     }
 
     public static ConnectionResponseData Create(PlayerId id, string avatarBarcode, SerializedAvatarStats stats, bool isInitialJoin)
@@ -48,9 +40,7 @@ public class ConnectionResponseMessage : NativeMessageHandler
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(received.Bytes);
-
-        var data = reader.ReadFusionSerializable<ConnectionResponseData>();
+        var data = received.ReadData<ConnectionResponseData>();
 
         // Insert the id into our list
         data.playerId.Insert();

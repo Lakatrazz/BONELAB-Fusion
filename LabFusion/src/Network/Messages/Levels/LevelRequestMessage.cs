@@ -1,6 +1,4 @@
-﻿using LabFusion.Data;
-using LabFusion.Exceptions;
-using LabFusion.Player;
+﻿using LabFusion.Player;
 using LabFusion.Utilities;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
@@ -8,26 +6,21 @@ using Il2CppSLZ.Marrow.Warehouse;
 
 using UnityEngine;
 
+using LabFusion.Network.Serialization;
+
 namespace LabFusion.Network;
 
-public class LevelRequestData : IFusionSerializable
+public class LevelRequestData : INetSerializable
 {
     public byte smallId;
     public string barcode;
     public string title;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write(barcode);
-        writer.Write(title);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        barcode = reader.ReadString();
-        title = reader.ReadString();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref barcode);
+        serializer.SerializeValue(ref title);
     }
 
     public static LevelRequestData Create(byte smallId, string barcode, string title)

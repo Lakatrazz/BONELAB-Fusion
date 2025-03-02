@@ -1,13 +1,14 @@
-﻿using LabFusion.Data;
-using LabFusion.Extensions;
+﻿using LabFusion.Extensions;
 using LabFusion.Patching;
 using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow.Warehouse;
 
+using LabFusion.Network.Serialization;
+
 namespace LabFusion.Network;
 
-public class SpawnGunSelectData : IFusionSerializable
+public class SpawnGunSelectData : INetSerializable
 {
     public const int Size = sizeof(byte) + sizeof(ushort);
 
@@ -20,18 +21,11 @@ public class SpawnGunSelectData : IFusionSerializable
         return Size + barcode.GetSize();
     }
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write(gunId);
-        writer.Write(barcode);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        gunId = reader.ReadUInt16();
-        barcode = reader.ReadString();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref gunId);
+        serializer.SerializeValue(ref barcode);
     }
 
     public static SpawnGunSelectData Create(byte smallId, ushort gunId, string barcode)

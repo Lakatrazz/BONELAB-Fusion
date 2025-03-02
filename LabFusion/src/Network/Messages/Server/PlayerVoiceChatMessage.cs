@@ -1,26 +1,20 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Network.Serialization;
 using LabFusion.Player;
 using LabFusion.Voice;
 
 namespace LabFusion.Network;
 
-public class PlayerVoiceChatData : IFusionSerializable
+public class PlayerVoiceChatData : INetSerializable
 {
     public const int Size = sizeof(byte);
 
     public byte smallId;
     public byte[] bytes;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write(bytes);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        bytes = reader.ReadBytes();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref bytes);
     }
 
     public static PlayerVoiceChatData Create(byte smallId, byte[] voiceData)

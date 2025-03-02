@@ -1,24 +1,19 @@
 ﻿using LabFusion.Data;
 using LabFusion.SDK.Points;
 using LabFusion.Player;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class PointItemTriggerData : IFusionSerializable
+public class PointItemTriggerData : INetSerializable
 {
     public byte smallId;
     public string barcode;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write(barcode);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        barcode = reader.ReadString();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref barcode);
     }
 
     public static PointItemTriggerData Create(byte smallId, string barcode)

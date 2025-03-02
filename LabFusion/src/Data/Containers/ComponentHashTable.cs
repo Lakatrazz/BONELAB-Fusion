@@ -1,27 +1,21 @@
 ﻿using LabFusion.Extensions;
-using LabFusion.Network;
+using LabFusion.Network.Serialization;
 
 using UnityEngine;
 
 namespace LabFusion.Data;
 
-public class ComponentHashData : IFusionSerializable
+public class ComponentHashData : INetSerializable
 {
     public const int Size = sizeof(int) * 2;
 
     public int hash;
     public int index;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(hash);
-        writer.Write(index);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        hash = reader.ReadInt32();
-        index = reader.ReadInt32();
+        serializer.SerializeValue(ref hash);
+        serializer.SerializeValue(ref index);
     }
 }
 

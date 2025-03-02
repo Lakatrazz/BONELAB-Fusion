@@ -5,9 +5,11 @@ using LabFusion.Extensions;
 
 namespace LabFusion.Data;
 
+using LabFusion.Network.Serialization;
+
 using System;
 
-public class SerializedQuaternion : IFusionSerializable
+public class SerializedQuaternion : INetSerializable
 {
     public short c1, c2, c3;
     public byte loss; // Lost component in compression
@@ -17,20 +19,12 @@ public class SerializedQuaternion : IFusionSerializable
     // The amount we multiply / divide by to preserve precision when using shorts
     public const float PRECISION_OFFSET = 10000.0f;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(c1);
-        writer.Write(c2);
-        writer.Write(c3);
-        writer.Write(loss);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        c1 = reader.ReadInt16();
-        c2 = reader.ReadInt16();
-        c3 = reader.ReadInt16();
-        loss = reader.ReadByte();
+        serializer.SerializeValue(ref c1);
+        serializer.SerializeValue(ref c2);
+        serializer.SerializeValue(ref c3);
+        serializer.SerializeValue(ref loss);
     }
 
     public static SerializedQuaternion Compress(Quaternion quat)

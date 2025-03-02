@@ -1,6 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Marrow.Integration;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
@@ -50,23 +51,15 @@ public static class RPCBoolSender
     }
 }
 
-public class RPCBoolData : IFusionSerializable
+public class RPCBoolData : INetSerializable
 {
     public ComponentPathData pathData;
     public bool value;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(pathData);
-
-        writer.Write(value);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        pathData = reader.ReadFusionSerializable<ComponentPathData>();
-
-        value = reader.ReadBoolean();
+        serializer.SerializeValue(ref pathData);
+        serializer.SerializeValue(ref value);
     }
 
     public static RPCBoolData Create(ComponentPathData pathData, bool value)

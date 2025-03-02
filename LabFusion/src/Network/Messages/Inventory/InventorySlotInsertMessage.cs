@@ -2,10 +2,11 @@
 using LabFusion.Patching;
 using LabFusion.Extensions;
 using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class InventorySlotInsertData : IFusionSerializable
+public class InventorySlotInsertData : INetSerializable
 {
     public const int Size = sizeof(byte) * 2 + sizeof(ushort) * 2;
 
@@ -14,20 +15,12 @@ public class InventorySlotInsertData : IFusionSerializable
     public ushort syncId;
     public byte slotIndex;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(slotEntityId);
-        writer.Write(inserter);
-        writer.Write(syncId);
-        writer.Write(slotIndex);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        slotEntityId = reader.ReadUInt16();
-        inserter = reader.ReadByte();
-        syncId = reader.ReadUInt16();
-        slotIndex = reader.ReadByte();
+        serializer.SerializeValue(ref slotEntityId);
+        serializer.SerializeValue(ref inserter);
+        serializer.SerializeValue(ref syncId);
+        serializer.SerializeValue(ref slotIndex);
     }
 
     public static InventorySlotInsertData Create(ushort slotEntityId, byte inserter, ushort syncId, byte slotIndex)

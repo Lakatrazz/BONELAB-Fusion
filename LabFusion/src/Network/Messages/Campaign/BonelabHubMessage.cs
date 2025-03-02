@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Network.Serialization;
 using LabFusion.Patching;
 
 namespace LabFusion.Network;
@@ -12,18 +13,13 @@ public enum BonelabHubEventType
     BW_BOX_DESTROYED = 4,
 }
 
-public class BonelabHubEventData : IFusionSerializable
+public class BonelabHubEventData : INetSerializable
 {
     public BonelabHubEventType type;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write((byte)type);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        type = (BonelabHubEventType)reader.ReadByte();
+        serializer.SerializeValue(ref type, Precision.OneByte);
     }
 
     public static BonelabHubEventData Create(BonelabHubEventType type)

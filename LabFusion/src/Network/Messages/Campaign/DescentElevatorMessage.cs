@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Network.Serialization;
 using LabFusion.Patching;
 
 namespace LabFusion.Network;
@@ -15,21 +16,15 @@ public enum DescentElevatorType
     CLOSE_DOORS = 7,
 }
 
-public class DescentElevatorData : IFusionSerializable
+public class DescentElevatorData : INetSerializable
 {
     public byte smallId;
     public DescentElevatorType type;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write((byte)type);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        type = (DescentElevatorType)reader.ReadByte();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref type, Precision.OneByte);
     }
 
     public static DescentElevatorData Create(byte smallId, DescentElevatorType type)

@@ -1,6 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Marrow.Integration;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
@@ -50,23 +51,15 @@ public static class RPCFloatSender
     }
 }
 
-public class RPCFloatData : IFusionSerializable
+public class RPCFloatData : INetSerializable
 {
     public ComponentPathData pathData;
     public float value;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(pathData);
-
-        writer.Write(value);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        pathData = reader.ReadFusionSerializable<ComponentPathData>();
-
-        value = reader.ReadSingle();
+        serializer.SerializeValue(ref pathData);
+        serializer.SerializeValue(ref value);
     }
 
     public static RPCFloatData Create(ComponentPathData pathData, float value)

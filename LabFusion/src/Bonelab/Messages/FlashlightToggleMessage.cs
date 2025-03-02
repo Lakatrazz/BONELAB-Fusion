@@ -1,29 +1,23 @@
-﻿using LabFusion.Data;
-using LabFusion.Bonelab.Patching;
+﻿using LabFusion.Bonelab.Patching;
 using LabFusion.Entities;
 using LabFusion.Network;
 using LabFusion.SDK.Modules;
 using LabFusion.Bonelab.Extenders;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Bonelab;
 
-public class FlashlightToggleData : IFusionSerializable
+public class FlashlightToggleData : INetSerializable
 {
     public const int Size = sizeof(byte) * 2 + sizeof(ushort);
 
     public ushort entityId;
     public bool isEnabled;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(entityId);
-        writer.Write(isEnabled);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        entityId = reader.ReadUInt16();
-        isEnabled = reader.ReadBoolean();
+        serializer.SerializeValue(ref entityId);
+        serializer.SerializeValue(ref isEnabled);
     }
 
     public static FlashlightToggleData Create(ushort syncId, bool isEnabled)
@@ -41,8 +35,7 @@ public class FlashlightToggleMessage : ModuleMessageHandler
 {
     protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(received.Bytes);
-        var data = reader.ReadFusionSerializable<FlashlightToggleData>();
+        var data = received.ReadData<FlashlightToggleData>();
 
         var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.entityId);
 

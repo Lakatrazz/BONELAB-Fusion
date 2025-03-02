@@ -6,6 +6,8 @@ using LabFusion.Utilities;
 
 using Il2CppSLZ.Marrow.Circuits;
 
+using LabFusion.Network.Serialization;
+
 namespace LabFusion.Marrow;
 
 public enum EventActuatorType : byte
@@ -15,7 +17,7 @@ public enum EventActuatorType : byte
     ROSEONESHOT,
 }
 
-public class EventActuatorData : IFusionSerializable
+public class EventActuatorData : INetSerializable
 {
     public const int Size = ComponentHashData.Size + sizeof(byte) * 2 + sizeof(float);
 
@@ -27,26 +29,12 @@ public class EventActuatorData : IFusionSerializable
 
     public float value;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(playerId);
-
-        writer.Write(hashData);
-
-        writer.Write((byte)type);
-
-        writer.Write(value);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        playerId = reader.ReadByte();
-
-        hashData = reader.ReadFusionSerializable<ComponentHashData>();
-
-        type = (EventActuatorType)reader.ReadByte();
-
-        value = reader.ReadSingle();
+        serializer.SerializeValue(ref playerId);
+        serializer.SerializeValue(ref hashData);
+        serializer.SerializeValue(ref type, Precision.OneByte);
+        serializer.SerializeValue(ref value);
     }
 
     public static EventActuatorData Create(byte playerId, ComponentHashData hashData, EventActuatorType type, float value)
@@ -66,8 +54,7 @@ public class EventActuatorMessage : ModuleMessageHandler
 {
     protected override void OnHandleMessage(ReceivedMessage received)
     {
-        using FusionReader reader = FusionReader.Create(received.Bytes);
-        var data = reader.ReadFusionSerializable<EventActuatorData>();
+        var data = received.ReadData<EventActuatorData>();
 
         var eventActuator = EventActuatorPatches.HashTable.GetComponentFromData(data.hashData);
 

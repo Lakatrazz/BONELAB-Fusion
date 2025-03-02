@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 
 using LabFusion.Exceptions;
+using LabFusion.Network.Serialization;
 using LabFusion.Utilities;
 
 namespace LabFusion.Network;
@@ -52,9 +53,11 @@ public abstract class NativeMessageHandler : MessageHandler
 
         try
         {
-            using var reader = FusionReader.Create(message.Buffer.ToArray());
+            using var reader = NetReader.Create(message.Buffer.ToArray());
 
-            var prefix = reader.ReadFusionSerializable<MessagePrefix>();
+            MessagePrefix prefix = null;
+            reader.SerializeValue(ref prefix);
+
             var bytes = reader.ReadBytes();
 
             tag = prefix.Tag;

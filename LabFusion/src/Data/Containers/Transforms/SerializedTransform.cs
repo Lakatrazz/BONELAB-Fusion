@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 
 using LabFusion.Extensions;
-using LabFusion.Network;
 using LabFusion.Scene;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Data;
 
-public class SerializedTransform : IFusionSerializable
+public class SerializedTransform : INetSerializable
 {
     public const ushort Size = sizeof(float) * 3 + SerializedQuaternion.Size;
     public static readonly SerializedTransform Default = new(Vector3Extensions.zero, QuaternionExtensions.identity);
@@ -16,18 +16,23 @@ public class SerializedTransform : IFusionSerializable
 
     private SerializedQuaternion _compressedRotation;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(NetworkTransformManager.EncodePosition(position));
-        writer.Write(_compressedRotation);
-    }
+        var position = this.position;
 
-    public void Deserialize(FusionReader reader)
-    {
-        position = NetworkTransformManager.DecodePosition(reader.ReadVector3());
+        if (!serializer.IsReader)
+        {
+            position = NetworkTransformManager.EncodePosition(position);
+        }
 
-        _compressedRotation = reader.ReadFusionSerializable<SerializedQuaternion>();
-        rotation = _compressedRotation.Expand();
+        serializer.SerializeValue(ref position);
+        serializer.SerializeValue(ref _compressedRotation);
+
+        if (serializer.IsReader)
+        {
+            this.position = NetworkTransformManager.DecodePosition(position);
+            this.rotation = _compressedRotation.Expand();
+        }
     }
 
     public SerializedTransform() { }

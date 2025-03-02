@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Network.Serialization;
 using LabFusion.Patching;
 
 namespace LabFusion.Network;
@@ -12,21 +13,15 @@ public enum KartRaceEventType
     END_RACE = 4,
 }
 
-public class KartRaceEventData : IFusionSerializable
+public class KartRaceEventData : INetSerializable
 {
     public byte smallId;
     public KartRaceEventType type;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write((byte)type);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        type = (KartRaceEventType)reader.ReadByte();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref type, Precision.OneByte);
     }
 
     public static KartRaceEventData Create(byte smallId, KartRaceEventType type)

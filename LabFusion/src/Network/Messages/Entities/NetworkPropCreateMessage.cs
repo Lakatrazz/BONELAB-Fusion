@@ -4,10 +4,11 @@ using LabFusion.Senders;
 using LabFusion.Entities;
 using LabFusion.Player;
 using LabFusion.Marrow;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class NetworkPropCreateData : IFusionSerializable
+public class NetworkPropCreateData : INetSerializable
 {
     public const int Size = sizeof(byte) + sizeof(ushort);
 
@@ -15,18 +16,11 @@ public class NetworkPropCreateData : IFusionSerializable
     public ComponentHashData hashData;
     public ushort entityId;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(ownerId);
-        writer.Write(hashData);
-        writer.Write(entityId);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        ownerId = reader.ReadByte();
-        hashData = reader.ReadFusionSerializable<ComponentHashData>();
-        entityId = reader.ReadUInt16();
+        serializer.SerializeValue(ref ownerId);
+        serializer.SerializeValue(ref hashData);
+        serializer.SerializeValue(ref entityId);
     }
 
     public static NetworkPropCreateData Create(byte ownerId, ComponentHashData hashData, ushort entityId)

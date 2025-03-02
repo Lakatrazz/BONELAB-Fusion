@@ -7,9 +7,11 @@ using Il2CppSLZ.Marrow;
 
 using UnityEngine;
 
+using LabFusion.Network.Serialization;
+
 namespace LabFusion.Data;
 
-public class SerializedController : IFusionSerializable
+public class SerializedController : INetSerializable
 {
     public const int Size = sizeof(float) * 3 + sizeof(byte) * 12;
 
@@ -122,50 +124,53 @@ public class SerializedController : IFusionSerializable
         }
     }
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write((byte)(indexCurl * PRECISION_MULTIPLIER));
-        writer.Write((byte)(middleCurl * PRECISION_MULTIPLIER));
-        writer.Write((byte)(ringCurl * PRECISION_MULTIPLIER));
-        writer.Write((byte)(pinkyCurl * PRECISION_MULTIPLIER));
-        writer.Write((byte)(thumbCurl * PRECISION_MULTIPLIER));
+        SerializeCompressedFloat(serializer, ref indexCurl);
+        SerializeCompressedFloat(serializer, ref middleCurl);
+        SerializeCompressedFloat(serializer, ref ringCurl);
+        SerializeCompressedFloat(serializer, ref pinkyCurl);
+        SerializeCompressedFloat(serializer, ref thumbCurl);
 
-        writer.Write((byte)(solvedGrip * PRECISION_MULTIPLIER));
-        writer.Write((byte)(primaryAxis * PRECISION_MULTIPLIER));
+        SerializeCompressedFloat(serializer, ref solvedGrip);
+        SerializeCompressedFloat(serializer, ref primaryAxis);
 
-        writer.Write((byte)controllerType);
-        writer.Write((byte)gesturePose);
-        writer.Write((byte)(gesturePoseIntensity * PRECISION_MULTIPLIER));
+        serializer.SerializeValue(ref controllerType, Precision.OneByte);
+        serializer.SerializeValue(ref gesturePose, Precision.OneByte);
+        SerializeCompressedFloat(serializer, ref gesturePoseIntensity);
 
-        writer.Write(primaryInteractionButton);
-        writer.Write(secondaryInteractionButton);
+        serializer.SerializeValue(ref primaryInteractionButton);
+        serializer.SerializeValue(ref secondaryInteractionButton);
 
-        writer.Write(SerializedSmallDirection2D.Compress(thumbstickAxis));
+        SerializedSmallDirection2D thumbstickAxis = null;
+
+        if (!serializer.IsReader)
+        {
+            thumbstickAxis = SerializedSmallDirection2D.Compress(this.thumbstickAxis);
+        }
+
+        serializer.SerializeValue(ref thumbstickAxis);
+
+        if (serializer.IsReader)
+        {
+            this.thumbstickAxis = thumbstickAxis.Expand();
+        }
     }
 
-    public void Deserialize(FusionReader reader)
+    private static void SerializeCompressedFloat(INetSerializer serializer, ref float value)
     {
-        indexCurl = ReadCompressedFloat(reader);
-        middleCurl = ReadCompressedFloat(reader);
-        ringCurl = ReadCompressedFloat(reader);
-        pinkyCurl = ReadCompressedFloat(reader);
-        thumbCurl = ReadCompressedFloat(reader);
+        byte compressed = 0;
 
-        solvedGrip = ReadCompressedFloat(reader);
-        primaryAxis = ReadCompressedFloat(reader);
+        if (!serializer.IsReader)
+        {
+            compressed = (byte)(value * PRECISION_MULTIPLIER);
+        }
 
-        controllerType = (XRControllerType)reader.ReadByte();
-        gesturePose = (BaseController.GesturePose)reader.ReadByte();
-        gesturePoseIntensity = ReadCompressedFloat(reader);
+        serializer.SerializeValue(ref compressed);
 
-        primaryInteractionButton = reader.ReadBoolean();
-        secondaryInteractionButton = reader.ReadBoolean();
-
-        thumbstickAxis = reader.ReadFusionSerializable<SerializedSmallDirection2D>().Expand();
-    }
-
-    private static float ReadCompressedFloat(FusionReader reader)
-    {
-        return ((float)reader.ReadByte()) / PRECISION_MULTIPLIER;
+        if (serializer.IsReader)
+        {
+            value = ((float)compressed) / PRECISION_MULTIPLIER;
+        }
     }
 }

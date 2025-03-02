@@ -1,20 +1,16 @@
 ﻿using LabFusion.Data;
 using LabFusion.Exceptions;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class MineDiveCartData : IFusionSerializable
+public class MineDiveCartData : INetSerializable
 {
     public int amount;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(amount);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        amount = reader.ReadInt32();
+        serializer.SerializeValue(ref amount);
     }
 
     public static MineDiveCartData Create(int amount)

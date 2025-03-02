@@ -1,25 +1,19 @@
-﻿using LabFusion.Data;
-using LabFusion.Entities;
+﻿using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class EntityUnqueueRequestData : IFusionSerializable
+public class EntityUnqueueRequestData : INetSerializable
 {
     public const int Size = sizeof(byte) + sizeof(ushort);
 
     public byte userId;
     public ushort queuedId;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(userId);
-        writer.Write(queuedId);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        userId = reader.ReadByte();
-        queuedId = reader.ReadUInt16();
+        serializer.SerializeValue(ref userId);
+        serializer.SerializeValue(ref queuedId);
     }
 
     public static EntityUnqueueRequestData Create(byte userId, ushort queuedId)

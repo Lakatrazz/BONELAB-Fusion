@@ -1,8 +1,8 @@
-﻿using LabFusion.Network;
-using LabFusion.Grabbables;
+﻿using LabFusion.Grabbables;
 using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Data;
 
@@ -26,20 +26,12 @@ public class SerializedEntityGrab : SerializedGrab
         this.id = id;
     }
 
-    public override void Serialize(FusionWriter writer)
+    public override void Serialize(INetSerializer serializer)
     {
-        base.Serialize(writer);
+        base.Serialize(serializer);
 
-        writer.Write(index);
-        writer.Write(id);
-    }
-
-    public override void Deserialize(FusionReader reader)
-    {
-        base.Deserialize(reader);
-
-        index = reader.ReadUInt16();
-        id = reader.ReadUInt16();
+        serializer.SerializeValue(ref index);
+        serializer.SerializeValue(ref id);
     }
 
     public Grip GetGrip(out NetworkEntity entity)

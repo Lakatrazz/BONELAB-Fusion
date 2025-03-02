@@ -1,50 +1,50 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Network.Serialization;
+
 using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Modules;
 
 namespace LabFusion.Network;
 
-public class DynamicsAssignData : IFusionSerializable
+public class DynamicsAssignData : INetSerializable
 {
     public string[] moduleHandlerNames;
     public Dictionary<string, Dictionary<string, string>> gamemodeMetadatas;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        // Write module names
-        writer.Write(moduleHandlerNames);
+        serializer.SerializeValue(ref moduleHandlerNames);
 
-        // Write the length of metadata
-        int length = gamemodeMetadatas.Count;
-        writer.Write(length);
-
-        // Write all metadata
-        foreach (var pair in gamemodeMetadatas)
+        if (serializer.IsReader)
         {
-            var barcode = pair.Key;
-            var metadata = pair.Value;
+            int length = 0;
+            serializer.SerializeValue(ref length);
 
-            writer.Write(barcode);
-            writer.Write(metadata);
+            gamemodeMetadatas = new(length);
+
+            for (var i = 0; i < length; i++)
+            {
+                string barcode = null;
+                Dictionary<string, string> metadata = null;
+
+                serializer.SerializeValue(ref barcode);
+                serializer.SerializeValue(ref metadata);
+
+                gamemodeMetadatas.Add(barcode, metadata);
+            }
         }
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        // Read the module and gamemode names
-        moduleHandlerNames = reader.ReadStrings();
-
-        // Read the length of metadata
-        int length = reader.ReadInt32();
-
-        // Read all active metadata info
-        gamemodeMetadatas = new Dictionary<string, Dictionary<string, string>>();
-        for (var i = 0; i < length; i++)
+        else
         {
-            var barcode = reader.ReadString();
-            var metadata = reader.ReadStringDictionary();
+            int length = gamemodeMetadatas.Count;
+            serializer.SerializeValue(ref length);
 
-            gamemodeMetadatas.Add(barcode, metadata);
+            foreach (var pair in gamemodeMetadatas)
+            {
+                var barcode = pair.Key;
+                var metadata = pair.Value;
+
+                serializer.SerializeValue(ref barcode);
+                serializer.SerializeValue(ref metadata);
+            }
         }
     }
 

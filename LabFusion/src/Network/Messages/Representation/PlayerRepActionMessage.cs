@@ -1,12 +1,12 @@
-﻿using LabFusion.Data;
-using LabFusion.Entities;
+﻿using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 using LabFusion.Player;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
-public class PlayerRepActionData : IFusionSerializable
+public class PlayerRepActionData : INetSerializable
 {
     public const int Size = sizeof(byte) * 3;
 
@@ -14,18 +14,11 @@ public class PlayerRepActionData : IFusionSerializable
     public PlayerActionType type;
     public byte? otherPlayer;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write((byte)type);
-        writer.Write(otherPlayer);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        type = (PlayerActionType)reader.ReadByte();
-        otherPlayer = reader.ReadByteNullable();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref type, Precision.OneByte);
+        serializer.SerializeValue(ref otherPlayer);
     }
 
     public static PlayerRepActionData Create(byte smallId, PlayerActionType type, byte? otherPlayer = null)

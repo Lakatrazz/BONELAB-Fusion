@@ -1,27 +1,20 @@
-﻿using LabFusion.Data;
-using LabFusion.Entities;
-using LabFusion.Exceptions;
+﻿using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
-public class EntityUnqueueResponseData : IFusionSerializable
+public class EntityUnqueueResponseData : INetSerializable
 {
     public const int Size = sizeof(ushort) * 2;
 
     public ushort queuedId;
     public ushort allocatedId;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(queuedId);
-        writer.Write(allocatedId);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        queuedId = reader.ReadUInt16();
-        allocatedId = reader.ReadUInt16();
+        serializer.SerializeValue(ref queuedId);
+        serializer.SerializeValue(ref allocatedId);
     }
 
     public static EntityUnqueueResponseData Create(ushort queuedId, ushort allocatedId)

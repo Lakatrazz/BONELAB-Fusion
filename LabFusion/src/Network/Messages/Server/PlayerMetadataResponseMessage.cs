@@ -1,11 +1,10 @@
-﻿using LabFusion.Data;
-using LabFusion.Exceptions;
-using LabFusion.Extensions;
+﻿using LabFusion.Extensions;
+using LabFusion.Network.Serialization;
 using LabFusion.Player;
 
 namespace LabFusion.Network;
 
-public class PlayerMetadataResponseData : IFusionSerializable
+public class PlayerMetadataResponseData : INetSerializable
 {
     public const int DefaultSize = sizeof(byte);
 
@@ -18,18 +17,11 @@ public class PlayerMetadataResponseData : IFusionSerializable
         return DefaultSize + key.GetSize() + value.GetSize();
     }
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-        writer.Write(key);
-        writer.Write(value);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
-        key = reader.ReadString();
-        value = reader.ReadString();
+        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref key);
+        serializer.SerializeValue(ref value);
     }
 
     public static PlayerMetadataResponseData Create(byte smallId, string key, string value)

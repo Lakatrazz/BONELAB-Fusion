@@ -1,14 +1,14 @@
 ﻿using Il2CppSLZ.Marrow.Combat;
 using Il2CppSLZ.Marrow.Data;
 
-using LabFusion.Network;
+using LabFusion.Network.Serialization;
 using LabFusion.Scene;
 
 using UnityEngine;
 
 namespace LabFusion.Data;
 
-public class SerializedAttack : IFusionSerializable
+public class SerializedAttack : INetSerializable
 {
     public Attack attack;
 
@@ -19,34 +19,43 @@ public class SerializedAttack : IFusionSerializable
         this.attack = attack;
     }
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(attack.damage);
-        writer.Write((int)attack.attackType);
-        writer.Write(NetworkTransformManager.EncodePosition(attack.origin));
-        writer.Write(attack.direction);
-        writer.Write(attack.normal);
-    }
+        float damage = 0f;
+        AttackType attackType = AttackType.None;
+        Vector3 origin = Vector3.zero;
+        Vector3 direction = Vector3.zero;
+        Vector3 normal = Vector3.zero;
 
-    public void Deserialize(FusionReader reader)
-    {
-        float damage = reader.ReadSingle();
-        AttackType attackType = (AttackType)reader.ReadInt32();
-        Vector3 origin = NetworkTransformManager.DecodePosition(reader.ReadVector3());
-        Vector3 direction = reader.ReadVector3();
-        Vector3 normal = reader.ReadVector3();
-
-        attack = new Attack()
+        if (!serializer.IsReader)
         {
-            damage = damage,
-            attackType = attackType,
-            origin = origin,
-            direction = direction,
-            normal = normal,
-            backFacing = false,
-            collider = null,
-            OrderInPool = 0,
-            proxy = null,
-        };
+            damage = attack.damage;
+            attackType = attack.attackType;
+            origin = NetworkTransformManager.EncodePosition(attack.origin);
+            direction = attack.direction;
+            normal = attack.normal;
+        }
+
+        serializer.SerializeValue(ref damage);
+        serializer.SerializeValue(ref attackType);
+        serializer.SerializeValue(ref origin);
+        serializer.SerializeValue(ref direction);
+        serializer.SerializeValue(ref normal);
+
+        if (serializer.IsReader)
+        {
+            attack = new Attack()
+            {
+                damage = damage,
+                attackType = attackType,
+                origin = NetworkTransformManager.DecodePosition(origin),
+                direction = direction,
+                normal = normal,
+                backFacing = false,
+                collider = null,
+                OrderInPool = 0,
+                proxy = null,
+            };
+        }
     }
 }

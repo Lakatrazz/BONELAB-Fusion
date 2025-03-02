@@ -1,7 +1,5 @@
-﻿using LabFusion.Network;
-using LabFusion.Player;
-using LabFusion.Entities;
-using LabFusion.Utilities;
+﻿using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 
 using UnityEngine;
 
@@ -9,7 +7,7 @@ using Il2CppSLZ.Marrow.Interaction;
 
 namespace LabFusion.Data;
 
-public class SerializedGameObjectReference : IFusionSerializable
+public class SerializedGameObjectReference : INetSerializable
 {
     private enum ReferenceType
     {
@@ -29,7 +27,19 @@ public class SerializedGameObjectReference : IFusionSerializable
         gameObject = go;
     }
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
+    {
+        if (serializer is NetWriter writer)
+        {
+            Serialize(writer);
+        }
+        else if (serializer is NetReader reader)
+        {
+            Serialize(reader);
+        }
+    }
+
+    public void Serialize(NetWriter writer)
     {
         if (gameObject == null)
         {
@@ -55,7 +65,7 @@ public class SerializedGameObjectReference : IFusionSerializable
         }
     }
 
-    public void Deserialize(FusionReader reader)
+    public void Deserialize(NetReader reader)
     {
         var type = (ReferenceType)reader.ReadByte();
 
@@ -92,7 +102,7 @@ public class SerializedGameObjectReference : IFusionSerializable
                 }
                 break;
             case ReferenceType.FULL_PATH:
-                gameObject = reader.ReadGameObject();
+                reader.SerializeValue(ref gameObject);
                 break;
         }
     }

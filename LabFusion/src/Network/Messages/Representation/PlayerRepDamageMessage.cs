@@ -1,13 +1,14 @@
 ﻿using LabFusion.Data;
 using LabFusion.Player;
 using LabFusion.Utilities;
+using LabFusion.Network.Serialization;
 
 using Il2CppSLZ.Marrow.Combat;
 using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Network;
 
-public class PlayerRepDamageData : IFusionSerializable
+public class PlayerRepDamageData : INetSerializable
 {
     public const int Size = sizeof(byte) * 2 + sizeof(float);
 
@@ -17,22 +18,13 @@ public class PlayerRepDamageData : IFusionSerializable
     public SerializedAttack attack;
     public PlayerDamageReceiver.BodyPart part;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(damagerId);
-        writer.Write(damagedId);
+        serializer.SerializeValue(ref damagerId);
+        serializer.SerializeValue(ref damagedId);
 
-        writer.Write(attack);
-        writer.Write((ushort)part);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        damagerId = reader.ReadByte();
-        damagedId = reader.ReadByte();
-
-        attack = reader.ReadFusionSerializable<SerializedAttack>();
-        part = (PlayerDamageReceiver.BodyPart)reader.ReadUInt16();
+        serializer.SerializeValue(ref attack);
+        serializer.SerializeValue(ref part, Precision.OneByte);
     }
 
     public static PlayerRepDamageData Create(byte damagerId, byte damagedId, Attack attack, PlayerDamageReceiver.BodyPart part)

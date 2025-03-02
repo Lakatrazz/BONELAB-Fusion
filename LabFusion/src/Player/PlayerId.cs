@@ -1,5 +1,5 @@
-﻿using LabFusion.Data;
-using LabFusion.Network;
+﻿using LabFusion.Network;
+using LabFusion.Network.Serialization;
 using LabFusion.SDK.Metadata;
 using LabFusion.SDK.Points;
 using LabFusion.Senders;
@@ -7,7 +7,7 @@ using LabFusion.Utilities;
 
 namespace LabFusion.Player;
 
-public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
+public class PlayerId : INetSerializable, IEquatable<PlayerId>
 {
     public bool IsMe => LongId == PlayerIdManager.LocalLongId;
     public bool IsValid => _isValid;
@@ -201,37 +201,35 @@ public class PlayerId : IFusionSerializable, IEquatable<PlayerId>
         UnhookMetadata();
     }
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(LongId);
-        writer.Write(SmallId);
+        var longId = LongId;
+        var smallId = SmallId;
+        var metadata = Metadata.LocalDictionary;
+        var equippedItems = _internalEquippedItems.ToArray();
 
-        // Write the player metadata
-        writer.Write(Metadata.LocalDictionary);
+        serializer.SerializeValue(ref longId);
+        serializer.SerializeValue(ref smallId);
 
-        writer.Write(_internalEquippedItems);
-    }
+        serializer.SerializeValue(ref metadata);
+        serializer.SerializeValue(ref equippedItems);
 
-    public void Deserialize(FusionReader reader)
-    {
-        LongId = reader.ReadUInt64();
-        SmallId = reader.ReadByte();
-
-        // Read the player metadata
-        var metadata = reader.ReadStringDictionary();
-        foreach (var pair in metadata)
+        if (serializer.IsReader)
         {
-            Metadata.ForceSetLocalMetadata(pair.Key, pair.Value);
+            LongId = longId;
+            SmallId = smallId;
+
+            foreach (var pair in metadata)
+            {
+                Metadata.ForceSetLocalMetadata(pair.Key, pair.Value);
+            }
+
+            foreach (var item in equippedItems)
+            {
+                Internal_ForceSetEquipped(item, true);
+            }
+
+            OnAfterCreateId();
         }
-
-        // Read equipped items
-        var equippedItems = reader.ReadStrings();
-
-        foreach (var item in equippedItems)
-        {
-            Internal_ForceSetEquipped(item, true);
-        }
-
-        OnAfterCreateId();
     }
 }

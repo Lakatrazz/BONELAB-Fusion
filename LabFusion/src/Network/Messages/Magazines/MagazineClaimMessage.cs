@@ -1,12 +1,13 @@
-﻿using LabFusion.Data;
-using LabFusion.Utilities;
+﻿using LabFusion.Utilities;
 using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow.Interaction;
 
+using LabFusion.Network.Serialization;
+
 namespace LabFusion.Network;
 
-public class MagazineClaimData : IFusionSerializable
+public class MagazineClaimData : INetSerializable
 {
     public const int Size = sizeof(byte) + sizeof(ushort);
 
@@ -14,18 +15,11 @@ public class MagazineClaimData : IFusionSerializable
     public ushort entityId;
     public Handedness handedness;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(owner);
-        writer.Write(entityId);
-        writer.Write((byte)handedness);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        owner = reader.ReadByte();
-        entityId = reader.ReadUInt16();
-        handedness = (Handedness)reader.ReadByte();
+        serializer.SerializeValue(ref owner);
+        serializer.SerializeValue(ref entityId);
+        serializer.SerializeValue(ref handedness, Precision.OneByte);
     }
 
     public static MagazineClaimData Create(byte owner, ushort entityId, Handedness handedness)

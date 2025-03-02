@@ -1,7 +1,7 @@
 ﻿using Il2CppSLZ.Marrow;
 
-using LabFusion.Data;
 using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
@@ -13,7 +13,7 @@ public enum PhysicsRigStateType
     PHYSICAL_LEGS,
 }
 
-public class PhysicsRigStateData : IFusionSerializable
+public class PhysicsRigStateData : INetSerializable
 {
     public const int Size = sizeof(byte) * 4;
 
@@ -24,24 +24,12 @@ public class PhysicsRigStateData : IFusionSerializable
 
     public bool left;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(entityId);
-
-        writer.Write((byte)type);
-        writer.Write(enabled);
-
-        writer.Write(left);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        entityId = reader.ReadByte();
-
-        type = (PhysicsRigStateType)reader.ReadByte();
-        enabled = reader.ReadBoolean();
-
-        left = reader.ReadBoolean();
+        serializer.SerializeValue(ref entityId);
+        serializer.SerializeValue(ref type, Precision.OneByte);
+        serializer.SerializeValue(ref enabled);
+        serializer.SerializeValue(ref left);
     }
 
     public void Apply(PhysicsRig physicsRig)

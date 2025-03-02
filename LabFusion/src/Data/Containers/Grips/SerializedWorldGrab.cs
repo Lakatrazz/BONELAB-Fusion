@@ -3,6 +3,7 @@ using LabFusion.Grabbables;
 using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Data;
 
@@ -29,18 +30,11 @@ public class SerializedWorldGrab : SerializedGrab
         return Size;
     }
 
-    public override void Serialize(FusionWriter writer)
+    public override void Serialize(INetSerializer serializer)
     {
-        base.Serialize(writer);
+        base.Serialize(serializer);
 
-        writer.Write(grabberId);
-    }
-
-    public override void Deserialize(FusionReader reader)
-    {
-        base.Deserialize(reader);
-
-        grabberId = reader.ReadByte();
+        serializer.SerializeValue(ref grabberId);
     }
 
     public override Grip GetGrip()

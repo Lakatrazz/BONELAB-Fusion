@@ -1,4 +1,4 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
@@ -40,13 +40,14 @@ public struct ReceivedMessage
     /// <summary>
     /// Reads the serializable that was written into this message.
     /// </summary>
-    /// <typeparam name="TData"></typeparam>
+    /// <typeparam name="TSerializable"></typeparam>
     /// <returns>The read data.</returns>
-    public readonly TData ReadData<TData>() where TData : IFusionSerializable, new()
+    public readonly TSerializable ReadData<TSerializable>() where TSerializable : INetSerializable, new()
     {
-        using var reader = FusionReader.Create(Bytes);
+        using var reader = NetReader.Create(Bytes);
 
-        var data = reader.ReadFusionSerializable<TData>();
+        TSerializable data = default;
+        reader.SerializeValue(ref data);
 
         return data;
     }

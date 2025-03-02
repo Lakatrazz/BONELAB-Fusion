@@ -1,22 +1,17 @@
-﻿using LabFusion.Data;
-using LabFusion.Entities;
+﻿using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
-public class BodyLogEffectData : IFusionSerializable
+public class BodyLogEffectData : INetSerializable
 {
     public const int Size = sizeof(byte);
 
     public byte smallId;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(smallId);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        smallId = reader.ReadByte();
+        serializer.SerializeValue(ref smallId);
     }
 
     public static BodyLogEffectData Create(byte smallId)

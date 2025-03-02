@@ -8,9 +8,11 @@ using System.Collections;
 
 using Il2CppSLZ.Marrow.VFX;
 
+using LabFusion.Network.Serialization;
+
 namespace LabFusion.Network;
 
-public class DespawnResponseData : IFusionSerializable
+public class DespawnResponseData : INetSerializable
 {
     public const int Size = sizeof(ushort) + sizeof(byte) * 2;
 
@@ -19,20 +21,12 @@ public class DespawnResponseData : IFusionSerializable
 
     public bool despawnEffect;
 
-    public void Serialize(FusionWriter writer)
+    public void Serialize(INetSerializer serializer)
     {
-        writer.Write(despawnerId);
-        writer.Write(entityId);
+        serializer.SerializeValue(ref despawnerId);
+        serializer.SerializeValue(ref entityId);
 
-        writer.Write(despawnEffect);
-    }
-
-    public void Deserialize(FusionReader reader)
-    {
-        despawnerId = reader.ReadByte();
-        entityId = reader.ReadUInt16();
-
-        despawnEffect = reader.ReadBoolean();
+        serializer.SerializeValue(ref despawnEffect);
     }
 
     public static DespawnResponseData Create(byte despawnerId, ushort entityId, bool despawnEffect)
@@ -55,8 +49,7 @@ public class DespawnResponseMessage : NativeMessageHandler
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         // Despawn the poolee if it exists
-        using var reader = FusionReader.Create(received.Bytes);
-        var data = reader.ReadFusionSerializable<DespawnResponseData>();
+        var data = received.ReadData<DespawnResponseData>();
 
         MelonCoroutines.Start(Internal_WaitForValidDespawn(data.despawnerId, data.entityId, data.despawnEffect));
     }
