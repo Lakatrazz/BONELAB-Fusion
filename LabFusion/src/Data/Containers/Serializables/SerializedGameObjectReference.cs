@@ -35,7 +35,7 @@ public class SerializedGameObjectReference : INetSerializable
         }
         else if (serializer is NetReader reader)
         {
-            Serialize(reader);
+            Deserialize(reader);
         }
     }
 
@@ -43,7 +43,7 @@ public class SerializedGameObjectReference : INetSerializable
     {
         if (gameObject == null)
         {
-            writer.Write((byte)ReferenceType.NULL);
+            writer.Write(ReferenceType.NULL, Precision.OneByte);
             return;
         }
 
@@ -53,21 +53,21 @@ public class SerializedGameObjectReference : INetSerializable
         {
             var extender = entity.GetExtender<MarrowBodyExtender>();
 
-            writer.Write((byte)ReferenceType.NETWORK_ENTITY);
+            writer.Write(ReferenceType.NETWORK_ENTITY, Precision.OneByte);
             writer.Write(entity.Id);
             writer.Write(extender.GetIndex(marrowBody).Value);
         }
         // Write the full path to the object
         else
         {
-            writer.Write((byte)ReferenceType.FULL_PATH);
-            writer.Write(gameObject);
+            writer.Write(ReferenceType.FULL_PATH, Precision.OneByte);
+            writer.SerializeValue(ref gameObject);
         }
     }
 
     public void Deserialize(NetReader reader)
     {
-        var type = (ReferenceType)reader.ReadByte();
+        var type = reader.ReadEnum<ReferenceType>(Precision.OneByte);
 
         switch (type)
         {
