@@ -1,22 +1,23 @@
-﻿using LabFusion.Utilities;
-using System.Runtime.InteropServices;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace LabFusion.Network.Serialization;
 
 public static class NetSerializerExtensions
 {
-    public static void SerializeValue(this INetSerializer serializer, ref object value)
+    public static void SerializeValueByJson(this INetSerializer serializer, ref object value)
     {
-        bool hasValue = value != null;
-
-        serializer.SerializeValue(ref hasValue);
-
-        if (!hasValue)
+        if (!SerializeNullable(serializer, ref value))
         {
             return;
         }
 
+        var type = SerializeType(serializer, ref value);
+
+        SerializeJson(serializer, ref value, type);
+    }
+
+    private static Type SerializeType(INetSerializer serializer, ref object value)
+    {
         string typeName = null;
 
         if (!serializer.IsReader)
@@ -28,13 +29,134 @@ public static class NetSerializerExtensions
 
         var type = Type.GetType(typeName);
 
-        if (type.IsValueType)
+        return type;
+    }
+
+    private static bool SerializeNullable(INetSerializer serializer, ref object value)
+    {
+        bool hasValue = value != null;
+
+        serializer.SerializeValue(ref hasValue);
+
+        if (!hasValue)
         {
-            var json = JsonSerializer.SerializeToUtf8Bytes(value);
+            return false;
+        }
 
-            serializer.SerializeValue(ref json);
+        return true;
+    }
 
-            value = JsonSerializer.Deserialize(json, type);
+    private static void SerializeJson(INetSerializer serializer, ref object value, Type type)
+    {
+        var options = new JsonSerializerOptions()
+        {
+            IncludeFields = true,
+            IgnoreReadOnlyFields = true,
+            IgnoreReadOnlyProperties = true,
+        };
+
+        var json = JsonSerializer.SerializeToUtf8Bytes(value, options);
+
+        serializer.SerializeValue(ref json);
+
+        if (serializer.IsReader)
+        {
+            value = JsonSerializer.Deserialize(json, type, options);
+        }
+    }
+
+    public static void SerializeValue(this INetSerializer serializer, ref object value)
+    {
+        if (!SerializeNullable(serializer, ref value))
+        { 
+            return; 
+        }
+
+        var type = SerializeType(serializer, ref value);
+
+        if (type == typeof(int))
+        {
+            int casted = (int)value;
+            serializer.SerializeValue(ref casted);
+            value = casted;
+        }
+        else if (type == typeof(uint))
+        {
+            uint casted = (uint)value;
+            serializer.SerializeValue(ref casted);
+            value = casted;
+        }
+        else if (type == typeof(short))
+        {
+            short casted = (short)value;
+            serializer.SerializeValue(ref casted);
+            value = casted;
+        }
+        else if (type == typeof(ushort))
+        {
+            ushort casted = (ushort)value;
+            serializer.SerializeValue(ref casted);
+            value = casted;
+        }
+        else if (type == typeof(long))
+        {
+            long casted = (long)value;
+            serializer.SerializeValue(ref casted);
+            value = casted;
+        }
+        else if (type == typeof(ulong))
+        {
+            ulong casted = (ulong)value;
+            serializer.SerializeValue(ref casted);
+            value = casted;
+        }
+        else if (type == typeof(double))
+        {
+            double casted = (double)value;
+            serializer.SerializeValue(ref casted);
+            value = casted;
+        }
+        else if (type == typeof(bool))
+        {
+            bool casted = (bool)value;
+            serializer.SerializeValue(ref casted);
+            value = casted;
+        }
+        else if (type == typeof(byte))
+        {
+            byte casted = (byte)value;
+            serializer.SerializeValue(ref casted);
+            value = casted;
+        }
+        else if (type == typeof(sbyte))
+        {
+            sbyte casted = (sbyte)value;
+            serializer.SerializeValue(ref casted);
+            value = casted;
+        }
+        else if (type == typeof(byte?))
+        {
+            byte? casted = value as byte?;
+            serializer.SerializeValue(ref casted);
+            value = casted;
+        }
+        else if (type == typeof(ushort?))
+        {
+            ushort? casted = value as ushort?;
+            serializer.SerializeValue(ref casted);
+            value = casted;
+        }
+        else if (type == typeof(byte[]))
+        {
+            byte[] casted = value as byte[];
+            serializer.SerializeValue(ref casted);
+            value = casted;
+        }
+        else if (type == typeof(string))
+        {
+            string casted = value as string;
+            serializer.SerializeValue(ref casted);
+            value = casted;
         }
         else if (type.IsAssignableTo(typeof(INetSerializable)))
         {
@@ -42,7 +164,18 @@ public static class NetSerializerExtensions
 
             serializer.SerializeValue(ref serializable, type);
 
-            value = serializable;
+            if (serializer.IsReader)
+            {
+                value = serializable;
+            }
+        }
+        else if (type.IsValueType || type.IsSerializable)
+        {
+            SerializeJson(serializer, ref value, type);
+        }
+        else
+        {
+            throw new NotSupportedException($"Serialization of type {type.FullName} is not supported.");
         }
     }
 
