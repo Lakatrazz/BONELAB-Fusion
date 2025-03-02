@@ -124,7 +124,7 @@ public class InventorySlotReceiverDrop
             return;
         }
 
-        var data = InventorySlotInsertData.Create(slotEntity.Id, PlayerIdManager.LocalSmallId, weaponEntity.Id, index.Value);
+        var data = InventorySlotInsertData.Create(slotEntity.Id, weaponEntity.Id, index.Value);
 
         MessageRelay.RelayNative(data, NativeMessageTag.InventorySlotInsert, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }

@@ -15,4 +15,6 @@ public interface IMarrowEntityExtender : IEntityExtender
     void OnEntityCull(bool isInactive);
 
     void TeleportToPose();
+
+    void HookOnReady(Action callback);
 }

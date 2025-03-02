@@ -21,7 +21,7 @@ public class ConstraintCreateData : INetSerializable
 
     public byte smallId;
 
-    public ushort constrainerId;
+    public ushort? constrainerId;
 
     public Constrainer.ConstraintMode mode;
 
@@ -71,7 +71,7 @@ public class ConstraintCreateData : INetSerializable
         }
     }
 
-    public static ConstraintCreateData Create(byte smallId, ushort constrainerId, ConstrainerPointPair pair)
+    public static ConstraintCreateData Create(byte smallId, ushort? constrainerId, ConstrainerPointPair pair)
     {
         return new ConstraintCreateData()
         {
@@ -103,7 +103,7 @@ public class ConstraintCreateMessage : NativeMessageHandler
     {
         var data = received.ReadData<ConstraintCreateData>();
 
-        var constrainerEntity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.constrainerId);
+        var constrainerEntity = data.constrainerId.HasValue ? NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.constrainerId.Value) : null;
         bool hasConstrainer = constrainerEntity != null;
 
         // Send message to other clients if server

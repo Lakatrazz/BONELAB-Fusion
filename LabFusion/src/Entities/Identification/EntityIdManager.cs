@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using LabFusion.Data;
-using LabFusion.Utilities;
+﻿using LabFusion.Utilities;
 
 namespace LabFusion.Entities;
 
@@ -19,10 +12,14 @@ public class EntityIdManager<TEntity> where TEntity : INetworkRegistrable
 
     public EntityIdList<TEntity> QueuedEntities => _queuedEntities;
 
+    public event Action<TEntity> OnEntityRegistered, OnEntityUnregistered;
+
     public void RegisterEntity(ushort id, TEntity entity)
     {
         RegisteredEntities.AddEntity(id, entity);
         entity.Register(id);
+
+        OnEntityRegistered?.InvokeSafe(entity, "executing OnEntityRegistered hook");
     }
 
     public void UnregisterEntity(ushort id)
@@ -37,6 +34,8 @@ public class EntityIdManager<TEntity> where TEntity : INetworkRegistrable
         RegisteredEntities.RemoveEntity(id);
 
         entity.Unregister();
+
+        OnEntityUnregistered?.InvokeSafe(entity, "executing OnEntityUnregistered hook");
     }
 
     public void UnregisterEntity(TEntity entity)

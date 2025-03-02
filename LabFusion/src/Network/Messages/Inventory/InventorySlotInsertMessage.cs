@@ -1,8 +1,8 @@
-﻿using LabFusion.Data;
-using LabFusion.Patching;
+﻿using LabFusion.Patching;
 using LabFusion.Extensions;
 using LabFusion.Entities;
 using LabFusion.Network.Serialization;
+using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
@@ -11,25 +11,22 @@ public class InventorySlotInsertData : INetSerializable
     public const int Size = sizeof(byte) * 2 + sizeof(ushort) * 2;
 
     public ushort slotEntityId;
-    public byte inserter;
-    public ushort syncId;
+    public ushort weaponId;
     public byte slotIndex;
 
     public void Serialize(INetSerializer serializer)
     {
         serializer.SerializeValue(ref slotEntityId);
-        serializer.SerializeValue(ref inserter);
-        serializer.SerializeValue(ref syncId);
+        serializer.SerializeValue(ref weaponId);
         serializer.SerializeValue(ref slotIndex);
     }
 
-    public static InventorySlotInsertData Create(ushort slotEntityId, byte inserter, ushort syncId, byte slotIndex)
+    public static InventorySlotInsertData Create(ushort slotEntityId, ushort weaponId, byte slotIndex)
     {
         return new InventorySlotInsertData()
         {
             slotEntityId = slotEntityId,
-            inserter = inserter,
-            syncId = syncId,
+            weaponId = weaponId,
             slotIndex = slotIndex,
         };
     }
@@ -44,40 +41,57 @@ public class InventorySlotInsertMessage : NativeMessageHandler
     {
         var data = received.ReadData<InventorySlotInsertData>();
 
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.syncId);
+        FusionLogger.Log($"Weapon id: {data.weaponId}, Slot Entity Id: {data.slotEntityId}");
 
-        if (entity == null)
+        NetworkEntity weaponEntity = null;
+        NetworkEntity slotEntity = null;
+
+        NetworkEntityManager.HookEntityRegistered(data.weaponId, OnWeaponRegistered);
+
+        void OnWeaponRegistered(NetworkEntity entity)
         {
-            return;
+            weaponEntity = entity;
+
+            NetworkEntityManager.HookEntityRegistered(data.slotEntityId, OnSlotRegistered);
         }
 
-        var weaponExtender = entity.GetExtender<WeaponSlotExtender>();
-
-        if (weaponExtender == null)
+        void OnSlotRegistered(NetworkEntity entity)
         {
-            return;
+            slotEntity = entity;
+
+            var slotEntityExtender = slotEntity.GetExtender<IMarrowEntityExtender>();
+
+            if (slotEntityExtender == null)
+            {
+                return;
+            }
+
+            slotEntityExtender.HookOnReady(OnSlotReady);
         }
 
-        var slotEntity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.slotEntityId);
-
-        if (slotEntity == null)
+        void OnSlotReady()
         {
-            return;
+            var weaponExtender = weaponEntity.GetExtender<WeaponSlotExtender>();
+
+            if (weaponExtender == null)
+            {
+                return;
+            }
+
+            var slotExtender = slotEntity.GetExtender<InventorySlotReceiverExtender>();
+
+            if (slotExtender == null)
+            {
+                return;
+            }
+
+            weaponExtender.Component.interactableHost.TryDetach();
+
+            InventorySlotReceiverDrop.PreventInsertCheck = true;
+
+            slotExtender.GetComponent(data.slotIndex).InsertInSlot(weaponExtender.Component.interactableHost);
+
+            InventorySlotReceiverDrop.PreventInsertCheck = false;
         }
-
-        var slotExtender = slotEntity.GetExtender<InventorySlotReceiverExtender>();
-
-        if (slotExtender == null)
-        {
-            return;
-        }
-
-        weaponExtender.Component.interactableHost.TryDetach();
-
-        InventorySlotReceiverDrop.PreventInsertCheck = true;
-
-        slotExtender.GetComponent(data.slotIndex).InsertInSlot(weaponExtender.Component.interactableHost);
-
-        InventorySlotReceiverDrop.PreventInsertCheck = false;
     }
 }

@@ -8,32 +8,32 @@ public class PlayerRepSeatData : INetSerializable
 {
     public const int Size = sizeof(byte) * 3 + sizeof(ushort);
 
-    public byte smallId;
-    public ushort syncId;
+    public byte sitterId;
+    public ushort seatId;
     public byte seatIndex;
     public bool isIngress;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref smallId);
-        serializer.SerializeValue(ref syncId);
+        serializer.SerializeValue(ref sitterId);
+        serializer.SerializeValue(ref seatId);
         serializer.SerializeValue(ref seatIndex);
         serializer.SerializeValue(ref isIngress);
     }
 
-    public static PlayerRepSeatData Create(byte smallId, ushort syncId, byte seatIndex, bool isIngress)
+    public static PlayerRepSeatData Create(byte sitterId, ushort seatId, byte seatIndex, bool isIngress)
     {
         return new PlayerRepSeatData
         {
-            smallId = smallId,
-            syncId = syncId,
+            sitterId = sitterId,
+            seatId = seatId,
             seatIndex = seatIndex,
             isIngress = isIngress,
         };
     }
 }
 
-[Net.SkipHandleWhileLoading]
+[Net.DelayWhileTargetLoading]
 public class PlayerRepSeatMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerRepSeat;
@@ -42,29 +42,38 @@ public class PlayerRepSeatMessage : NativeMessageHandler
     {
         var data = received.ReadData<PlayerRepSeatData>();
 
-        if (!NetworkPlayerManager.TryGetPlayer(data.smallId, out var player))
+        if (!NetworkPlayerManager.TryGetPlayer(data.sitterId, out var player))
         {
             return;
         }
 
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.syncId);
+        NetworkEntity seatEntity = null;
 
-        if (entity == null)
+        NetworkEntityManager.HookEntityRegistered(data.seatId, OnSeatRegistered);
+
+        void OnSeatRegistered(NetworkEntity entity)
         {
-            return;
+            seatEntity = entity;
+
+            player.HookOnReady(OnPlayerReady);
         }
 
-        var seatExtender = entity.GetExtender<SeatExtender>();
-
-        if (seatExtender == null)
+        void OnPlayerReady()
         {
-            return;
-        }
+            var seatExtender = seatEntity.GetExtender<SeatExtender>();
 
-        var seat = seatExtender.GetComponent(data.seatIndex);
+            if (seatExtender == null)
+            {
+                return;
+            }
 
-        if (seat)
-        {
+            var seat = seatExtender.GetComponent(data.seatIndex);
+
+            if (seat == null)
+            {
+                return;
+            }
+
             SeatPatches.IgnorePatches = true;
 
             if (data.isIngress)
@@ -75,8 +84,6 @@ public class PlayerRepSeatMessage : NativeMessageHandler
             {
                 player.RigRefs.RigManager.activeSeat.EgressRig(true);
             }
-
-            SeatPatches.IgnorePatches = false;
         }
     }
 }

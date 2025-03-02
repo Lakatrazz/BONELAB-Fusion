@@ -134,15 +134,17 @@ public static class ConstrainerPatches
         // If this is a received message, setup the constraints
         else
         {
+            var pointPair = new ConstrainerPointPair(__instance);
+
             // Register first tracker
             var firstEntity = new NetworkEntity();
-            var firstConstraint = new NetworkConstraint(firstEntity, firstTracker);
-
+            var firstConstraint = new NetworkConstraint(firstEntity, firstTracker) { PointPair = pointPair };
+            
             NetworkEntityManager.IdManager.RegisterEntity(FirstId, firstEntity);
 
             // Register second tracker
             var secondEntity = new NetworkEntity();
-            var secondConstraint = new NetworkConstraint(secondEntity, secondTracker);
+            var secondConstraint = new NetworkConstraint(secondEntity, secondTracker) { PointPair = pointPair };
 
             NetworkEntityManager.IdManager.RegisterEntity(SecondId, secondEntity);
         }

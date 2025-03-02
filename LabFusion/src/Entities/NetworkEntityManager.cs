@@ -26,15 +26,20 @@ public static class NetworkEntityManager
     private static readonly EntityValidationList _ownershipTransferValidators = new();
     public static EntityValidationList OwnershipTransferValidators => _ownershipTransferValidators;
 
+    private static readonly Dictionary<ushort, List<NetworkEntityDelegate>> _entityRegisteredCallbacks = new();
+
     public static void OnInitializeManager()
     {
         CatchupManager.OnPlayerServerCatchup += OnPlayerServerCatchup;
+        IdManager.OnEntityRegistered += OnEntityRegistered;
     }
 
     public static void OnCleanupIds()
     {
         IdManager.RegisteredEntities.ClearId();
         IdManager.QueuedEntities.ClearId();
+
+        _entityRegisteredCallbacks.Clear();
     }
 
     public static void OnCleanupEntities()
@@ -72,6 +77,30 @@ public static class NetworkEntityManager
         }
 
         IdManager.QueuedEntities.Clear();
+
+        _entityRegisteredCallbacks.Clear();
+    }
+
+    private static void OnEntityRegistered(NetworkEntity entity)
+    {
+        var id = entity.Id;
+
+        if (_entityRegisteredCallbacks.TryGetValue(id, out var callbacks))
+        {
+            foreach (var callback in callbacks)
+            {
+                try
+                {
+                    callback(entity);
+                }
+                catch (Exception e)
+                {
+                    FusionLogger.LogException("executing NetworkEntityManager.EntityRegisteredCallback", e);
+                }
+            }
+
+            _entityRegisteredCallbacks.Remove(id);
+        }
     }
 
     private static void OnPlayerServerCatchup(PlayerId playerId)
@@ -213,5 +242,24 @@ public static class NetworkEntityManager
         }
 
         TransferOwnership(entity, PlayerIdManager.LocalId);
+    }
+
+    public static void HookEntityRegistered(ushort id, NetworkEntityDelegate callback)
+    {
+        var entity = IdManager.RegisteredEntities.GetEntity(id);
+
+        if (entity != null)
+        {
+            callback(entity);
+        }
+        else
+        {
+            if (!_entityRegisteredCallbacks.ContainsKey(id))
+            {
+                _entityRegisteredCallbacks[id] = new();
+            }
+
+            _entityRegisteredCallbacks[id].Add(callback);
+        }
     }
 }

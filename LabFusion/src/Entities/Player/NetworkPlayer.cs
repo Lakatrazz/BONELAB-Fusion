@@ -949,6 +949,9 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         // Run events
         OnNetworkRigCreated?.InvokeSafe(this, rigManager, "executing OnNetworkRigCreated hook");
+
+        _onReadyCallback?.InvokeSafe("executing NetworkPlayer.OnReadyCallback");
+        _onReadyCallback = null;
     }
 
     private Il2CppSystem.Action _onAvatarSwappedAction = null;
@@ -1015,5 +1018,19 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         _componentExtenders.Clear();
+    }
+
+    private Action _onReadyCallback = null;
+
+    public void HookOnReady(Action callback)
+    {
+        if (HasRig)
+        {
+            callback();
+        }
+        else
+        {
+            _onReadyCallback += callback;
+        }
     }
 }

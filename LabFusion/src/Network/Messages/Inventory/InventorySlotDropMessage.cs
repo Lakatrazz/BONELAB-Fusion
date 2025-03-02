@@ -1,5 +1,4 @@
-﻿using LabFusion.Data;
-using LabFusion.Patching;
+﻿using LabFusion.Patching;
 using LabFusion.Extensions;
 using LabFusion.Entities;
 

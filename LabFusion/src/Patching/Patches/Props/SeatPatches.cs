@@ -20,7 +20,7 @@ namespace LabFusion.Patching;
 [HarmonyPatch(typeof(Seat))]
 public static class SeatPatches
 {
-    public static bool IgnorePatches = false;
+    public static bool IgnorePatches { get; set; } = false;
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(Seat.OnTriggerStay))]
@@ -47,6 +47,7 @@ public static class SeatPatches
     {
         if (IgnorePatches)
         {
+            IgnorePatches = false;
             return true;
         }
 
@@ -115,6 +116,12 @@ public static class SeatPatches
     [HarmonyPatch(nameof(Seat.DeRegister))]
     public static void DeRegister(Seat __instance)
     {
+        if (IgnorePatches)
+        {
+            IgnorePatches = false;
+            return;
+        }
+
         if (!NetworkInfo.HasServer)
         {
             return;

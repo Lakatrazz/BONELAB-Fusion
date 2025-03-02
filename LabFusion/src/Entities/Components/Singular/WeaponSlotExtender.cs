@@ -6,7 +6,7 @@ namespace LabFusion.Entities;
 
 public class WeaponSlotExtender : EntityComponentExtender<WeaponSlot>
 {
-    public static FusionComponentCache<WeaponSlot, NetworkEntity> Cache = new();
+    public static readonly FusionComponentCache<WeaponSlot, NetworkEntity> Cache = new();
 
     protected override void OnRegister(NetworkEntity networkEntity, WeaponSlot component)
     {

@@ -5,7 +5,6 @@ using LabFusion.MonoBehaviours;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Utilities;
-
 using UnityEngine;
 
 namespace LabFusion.Entities;
@@ -205,6 +204,10 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         {
             _globalSleepOffset = 0;
         }
+
+        // Invoke ready callback
+        _onReadyCallback?.InvokeSafe("executing NetworkProp.OnReadyCallback");
+        _onReadyCallback = null;
     }
 
     private void OnPropUnregistered(NetworkEntity entity)
@@ -447,5 +450,19 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
     {
         NetworkEntityManager.UpdateManager.Unregister(this);
         NetworkEntityManager.FixedUpdateManager.Unregister(this);
+    }
+
+    private Action _onReadyCallback = null;
+
+    public void HookOnReady(Action callback)
+    {
+        if (MarrowEntity != null && NetworkEntity.IsRegistered)
+        {
+            callback();
+        }
+        else
+        {
+            _onReadyCallback += callback;
+        }
     }
 }
