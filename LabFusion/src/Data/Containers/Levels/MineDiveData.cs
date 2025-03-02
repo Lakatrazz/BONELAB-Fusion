@@ -67,12 +67,9 @@ public class MineDiveData : LevelDataHandler
             return;
         }
 
-        using var writer = FusionWriter.Create();
         var data = MineDiveCartData.Create(_cartAmount);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.MineDiveCart, writer);
-        MessageSender.SendFromServer(playerId, NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.MineDiveCart, NetworkChannel.Reliable, RelayType.ToTarget, playerId.SmallId);
     }
 
     private static void GetCartReferences()

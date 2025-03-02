@@ -8,12 +8,9 @@ public static class ArenaSender
     {
         if (NetworkInfo.IsServer)
         {
-            using var writer = FusionWriter.Create();
             var data = ArenaTransitionData.Create(type);
-            writer.Write(data);
 
-            using var message = FusionMessage.Create(NativeMessageTag.ArenaTransition, writer);
-            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+            MessageRelay.RelayNative(data, NativeMessageTag.ArenaTransition, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
     }
 
@@ -21,12 +18,9 @@ public static class ArenaSender
     {
         if (NetworkInfo.IsServer)
         {
-            using var writer = FusionWriter.Create();
             var data = ChallengeSelectData.Create(menuIndex, challengeNumber, type);
-            writer.Write(data);
 
-            using var message = FusionMessage.Create(NativeMessageTag.ChallengeSelect, writer);
-            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+            MessageRelay.RelayNative(data, NativeMessageTag.ChallengeSelect, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
     }
 
@@ -34,12 +28,9 @@ public static class ArenaSender
     {
         if (NetworkInfo.IsServer)
         {
-            using var writer = FusionWriter.Create();
             var data = GeoSelectData.Create(geoIndex);
-            writer.Write(data);
 
-            using var message = FusionMessage.Create(NativeMessageTag.GeoSelect, writer);
-            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+            MessageRelay.RelayNative(data, NativeMessageTag.GeoSelect, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
     }
 
@@ -47,12 +38,9 @@ public static class ArenaSender
     {
         if (NetworkInfo.IsServer)
         {
-            using var writer = FusionWriter.Create();
             var data = ArenaMenuData.Create(selectionNumber, type);
-            writer.Write(data);
 
-            using var message = FusionMessage.Create(NativeMessageTag.ArenaMenu, writer);
-            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+            MessageRelay.RelayNative(data, NativeMessageTag.ArenaMenu, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
     }
 

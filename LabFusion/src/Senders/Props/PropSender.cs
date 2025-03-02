@@ -30,14 +30,11 @@ public static class PropSender
             return;
         }
 
-        using var writer = FusionWriter.Create();
         var networkEntity = prop.NetworkEntity;
 
         var data = NetworkPropCreateData.Create(networkEntity.OwnerId, hashData, networkEntity.Id);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.NetworkPropCreate, writer);
-        MessageSender.SendFromServer(playerId, NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.NetworkPropCreate, NetworkChannel.Reliable, RelayType.ToTarget, playerId.SmallId);
     }
 
     private struct PropCreationInfo

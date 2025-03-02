@@ -127,12 +127,9 @@ public static class ConstrainerPatches
             ConstraintTrackerPatches.IgnorePatches = false;
 
             // Send create message
-            using var writer = FusionWriter.Create();
             var data = ConstraintCreateData.Create(PlayerIdManager.LocalSmallId, entity.Id, new ConstrainerPointPair(__instance));
-            writer.Write(data);
 
-            using var message = FusionMessage.Create(NativeMessageTag.ConstraintCreate, writer);
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+            MessageRelay.RelayNative(data, NativeMessageTag.ConstraintCreate, NetworkChannel.Reliable, RelayType.ToServer);
         }
         // If this is a received message, setup the constraints
         else

@@ -117,12 +117,9 @@ public static class PlayerSender
 
     public static void SendPlayerMetadataRequest(byte smallId, string key, string value)
     {
-        using var writer = FusionWriter.Create();
         var data = PlayerMetadataRequestData.Create(smallId, key, value);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.PlayerMetadataRequest, writer);
-        MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerMetadataRequest, NetworkChannel.Reliable, RelayType.ToServer);
     }
 
     public static void SendPlayerMetadataResponse(byte smallId, string key, string value)
@@ -133,12 +130,9 @@ public static class PlayerSender
             throw new ExpectedServerException();
         }
 
-        using var writer = FusionWriter.Create();
         var data = PlayerMetadataResponseData.Create(smallId, key, value);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.PlayerMetadataResponse, writer);
-        MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.PlayerMetadataResponse, NetworkChannel.Reliable, RelayType.ToClients);
     }
 
     public static void SendPlayerAction(PlayerActionType type, byte? otherPlayer = null)

@@ -20,52 +20,45 @@ public static class CampaignSender
         MessageRelay.RelayNative(data, NativeMessageTag.BonelabHubEvent, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 
-    public static void SendDescentIntro(DescentIntroEvent introEvent, ulong? target = null)
+    public static void SendDescentIntro(DescentIntroEvent introEvent, PlayerId target = null)
     {
-        using var writer = FusionWriter.Create();
         var data = DescentIntroData.Create(PlayerIdManager.LocalSmallId, (byte)introEvent.selectionNumber, introEvent.type);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.DescentIntro, writer);
-        if (target.HasValue)
-            MessageSender.SendFromServer(target.Value, NetworkChannel.Reliable, message);
+        if (target != null)
+        {
+            MessageRelay.RelayNative(data, NativeMessageTag.DescentIntro, NetworkChannel.Reliable, RelayType.ToTarget, target.SmallId);
+        }
         else
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+        {
+            MessageRelay.RelayNative(data, NativeMessageTag.DescentIntro, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        }
     }
 
-    public static void SendDescentNoose(DescentNooseEvent nooseEvent, ulong? target = null)
+    public static void SendDescentNoose(DescentNooseEvent nooseEvent, PlayerId? target = null)
     {
-        using var writer = FusionWriter.Create();
         var data = DescentNooseData.Create(nooseEvent.smallId, nooseEvent.type);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.DescentNoose, writer);
-
-        if (target.HasValue)
+        if (target != null)
         {
-            MessageSender.SendFromServer(target.Value, NetworkChannel.Reliable, message);
+            MessageRelay.RelayNative(data, NativeMessageTag.DescentNoose, NetworkChannel.Reliable, RelayType.ToTarget, target.SmallId);
         }
         else
         {
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+            MessageRelay.RelayNative(data, NativeMessageTag.DescentNoose, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
     }
 
-    public static void SendDescentElevator(DescentElevatorEvent elevatorEvent, ulong? target = null)
+    public static void SendDescentElevator(DescentElevatorEvent elevatorEvent, PlayerId? target = null)
     {
-        using var writer = FusionWriter.Create();
         var data = DescentElevatorData.Create(PlayerIdManager.LocalSmallId, elevatorEvent.type);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.DescentElevator, writer);
-
-        if (target.HasValue)
+        if (target != null)
         {
-            MessageSender.SendFromServer(target.Value, NetworkChannel.Reliable, message);
+            MessageRelay.RelayNative(data, NativeMessageTag.DescentElevator, NetworkChannel.Reliable, RelayType.ToTarget, target.SmallId);
         }
         else
         {
-            MessageSender.SendToServer(NetworkChannel.Reliable, message);
+            MessageRelay.RelayNative(data, NativeMessageTag.DescentElevator, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
     }
 
@@ -78,11 +71,8 @@ public static class CampaignSender
 
     public static void SendMagmaGateEvent(MagmaGateEventType type)
     {
-        using var writer = FusionWriter.Create();
         var data = MagmaGateEventData.Create(type);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.MagmaGateEvent, writer);
-        MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.MagmaGateEvent, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 }

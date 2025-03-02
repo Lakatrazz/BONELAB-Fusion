@@ -3,6 +3,7 @@ using LabFusion.Data;
 using LabFusion.Utilities;
 using LabFusion.Scene;
 using LabFusion.Entities;
+using LabFusion.Player;
 
 using Il2CppSLZ.Marrow.Warehouse;
 
@@ -16,19 +17,16 @@ public static class SpawnSender
     /// <param name="placer"></param>
     /// <param name="syncable"></param>
     /// <param name="userId"></param>
-    public static void SendCratePlacerCatchup(CrateSpawner placer, NetworkEntity entity, ulong userId)
+    public static void SendCratePlacerCatchup(CrateSpawner placer, NetworkEntity entity, PlayerId player)
     {
         if (!NetworkInfo.IsServer)
         {
             return;
         }
 
-        using var writer = FusionWriter.Create();
         var data = CrateSpawnerData.Create(entity.Id, placer.gameObject);
-        writer.Write(data);
 
-        using var message = FusionMessage.Create(NativeMessageTag.CrateSpawner, writer);
-        MessageSender.SendFromServer(userId, NetworkChannel.Reliable, message);
+        MessageRelay.RelayNative(data, NativeMessageTag.CrateSpawner, NetworkChannel.Reliable, RelayType.ToTarget, player.SmallId);
     }
 
     /// <summary>

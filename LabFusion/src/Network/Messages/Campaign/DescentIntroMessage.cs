@@ -51,35 +51,26 @@ public class DescentIntroMessage : NativeMessageHandler
     {
         var data = received.ReadData<DescentIntroData>();
 
-        // Send message to other clients if server
-        if (received.IsServerHandled)
-        {
-            using var message = FusionMessage.Create(Tag, received);
-            MessageSender.BroadcastMessageExcept(data.smallId, NetworkChannel.Reliable, message, false);
-        }
-        else
-        {
-            GameControl_DescentPatches.IgnorePatches = true;
-            Control_UI_BodyMeasurementsPatches.IgnorePatches = true;
+        GameControl_DescentPatches.IgnorePatches = true;
+        Control_UI_BodyMeasurementsPatches.IgnorePatches = true;
 
-            switch (data.type)
-            {
-                default:
-                case DescentIntroType.UNKNOWN:
-                    break;
-                case DescentIntroType.SEQUENCE:
-                    DescentData.GameController.SEQUENCE(data.selectionNumber);
-                    break;
-                case DescentIntroType.BUTTON_CONFIRM:
-                    DescentData.BodyMeasurementsUI.BUTTON_CONFIRM();
-                    break;
-                case DescentIntroType.CONFIRM_FORCE_GRAB:
-                    DescentData.GameController.CONFIRMFORCEGRAB();
-                    break;
-            }
-
-            GameControl_DescentPatches.IgnorePatches = false;
-            Control_UI_BodyMeasurementsPatches.IgnorePatches = false;
+        switch (data.type)
+        {
+            default:
+            case DescentIntroType.UNKNOWN:
+                break;
+            case DescentIntroType.SEQUENCE:
+                DescentData.GameController.SEQUENCE(data.selectionNumber);
+                break;
+            case DescentIntroType.BUTTON_CONFIRM:
+                DescentData.BodyMeasurementsUI.BUTTON_CONFIRM();
+                break;
+            case DescentIntroType.CONFIRM_FORCE_GRAB:
+                DescentData.GameController.CONFIRMFORCEGRAB();
+                break;
         }
+
+        GameControl_DescentPatches.IgnorePatches = false;
+        Control_UI_BodyMeasurementsPatches.IgnorePatches = false;
     }
 }

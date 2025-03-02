@@ -129,14 +129,10 @@ public class ConstraintCreateMessage : NativeMessageHandler
             if (hasConstrainer)
             {
                 // Recreate the message so we can assign server-side sync ids
-                using var writer = FusionWriter.Create();
                 data.point1Id = NetworkEntityManager.IdManager.RegisteredEntities.AllocateNewId();
                 data.point2Id = NetworkEntityManager.IdManager.RegisteredEntities.AllocateNewId();
 
-                writer.Write(data);
-
-                using var message = FusionMessage.Create(Tag, writer);
-                MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                MessageRelay.RelayNative(data, Tag, NetworkChannel.Reliable, RelayType.ToClients);
             }
 
             return;

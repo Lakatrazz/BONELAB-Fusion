@@ -9,12 +9,9 @@ namespace LabFusion.Senders
         {
             if (NetworkInfo.IsServer)
             {
-                using var writer = FusionWriter.Create();
                 var data = TimeTrialGameControllerData.Create(type, value);
-                writer.Write(data);
 
-                using var message = FusionMessage.Create(NativeMessageTag.TimeTrial_GameController, writer);
-                MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
+                MessageRelay.RelayNative(data, NativeMessageTag.TimeTrial_GameController, NetworkChannel.Reliable, RelayType.ToOtherClients);
             }
         }
 
