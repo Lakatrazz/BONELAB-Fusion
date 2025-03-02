@@ -92,6 +92,6 @@ public static class StringExtensions
 
     public static int GetSize(this string str, Encoding encoding)
     {
-        return encoding.GetByteCount(str) + 4;
+        return encoding.GetByteCount(str) + sizeof(int);
     }
 }

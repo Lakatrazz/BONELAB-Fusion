@@ -5,12 +5,16 @@ namespace LabFusion.Network;
 
 public class ComponentPathData : INetSerializable
 {
+    public const int Size = sizeof(byte) + sizeof(ushort) * 2 + ComponentHashData.Size;
+
     public bool hasNetworkEntity;
 
     public ushort entityId;
     public ushort componentIndex;
 
     public ComponentHashData hashData;
+
+    public int? GetSize() => Size;
 
     public void Serialize(INetSerializer serializer)
     {

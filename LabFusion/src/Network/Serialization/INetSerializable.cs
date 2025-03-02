@@ -2,5 +2,7 @@
 
 public interface INetSerializable
 {
+    int? GetSize() => null;
+
     void Serialize(INetSerializer serializer);
 }

@@ -11,6 +11,11 @@ public class PlayerVoiceChatData : INetSerializable
     public byte smallId;
     public byte[] bytes;
 
+    public int? GetSize()
+    {
+        return sizeof(byte) + 1 + sizeof(byte) * bytes.Length;
+    }
+
     public void Serialize(INetSerializer serializer)
     {
         serializer.SerializeValue(ref smallId);

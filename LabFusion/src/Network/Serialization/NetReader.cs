@@ -1,6 +1,7 @@
 ﻿using LabFusion.Extensions;
 using LabFusion.Utilities;
 
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace LabFusion.Network.Serialization;
@@ -199,17 +200,25 @@ public sealed class NetReader : INetSerializer, IDisposable
 
     public TEnum ReadEnum<TEnum>() where TEnum : Enum
     {
-        return (TEnum)(object)ReadInt32();
+        var value = ReadInt32();
+
+        return Unsafe.As<int, TEnum>(ref value);
     }
 
     public TEnum ReadEnum<TEnum>(Precision precision) where TEnum : Enum
     {
-        return precision switch
+        switch (precision)
         {
-            Precision.TwoBytes => (TEnum)(object)ReadInt16(),
-            Precision.OneByte => (TEnum)(object)ReadByte(),
-            _ => (TEnum)(object)ReadInt32(),
-        };
+            default:
+                var full = ReadInt32();
+                return Unsafe.As<int, TEnum>(ref full);
+            case Precision.TwoBytes:
+                var twoBytes = ReadInt16();
+                return Unsafe.As<short, TEnum>(ref twoBytes);
+            case Precision.OneByte:
+                var oneByte = ReadByte();
+                return Unsafe.As<byte, TEnum>(ref oneByte);
+        }
     }
 
     public byte? ReadByteNullable()

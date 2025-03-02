@@ -8,7 +8,7 @@ public static class MessageRelay
 {
     public static void RelayNative<TData>(TData data, byte tag, NetworkChannel channel, RelayType type, byte? target = null) where TData : INetSerializable
     {
-        using var writer = NetWriter.Create();
+        using var writer = NetWriter.Create(data.GetSize());
 
         data.Serialize(writer);
 
@@ -21,7 +21,7 @@ public static class MessageRelay
 
     public static void RelayModule<TMessage, TData>(TData data, NetworkChannel channel, RelayType type, byte? target = null) where TMessage : ModuleMessageHandler where TData : INetSerializable
     {
-        using var writer = NetWriter.Create();
+        using var writer = NetWriter.Create(data.GetSize());
 
         data.Serialize(writer);
 

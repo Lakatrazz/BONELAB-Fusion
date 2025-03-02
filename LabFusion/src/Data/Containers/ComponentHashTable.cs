@@ -12,6 +12,8 @@ public class ComponentHashData : INetSerializable
     public int hash;
     public int index;
 
+    public int? GetSize() => Size;
+
     public void Serialize(INetSerializer serializer)
     {
         serializer.SerializeValue(ref hash);

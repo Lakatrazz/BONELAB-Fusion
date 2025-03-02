@@ -2,6 +2,7 @@
 using LabFusion.Utilities;
 
 using System.Buffers;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace LabFusion.Network.Serialization;
@@ -25,6 +26,13 @@ public sealed class NetWriter : INetSerializer, IDisposable
     /// </summary>
     /// <returns></returns>
     public static NetWriter Create() => Create(DefaultCapacity);
+
+    /// <summary>
+    /// Creates a new NetWriter with a set capacity if not null, or <see cref="DefaultCapacity"/> if it is null.
+    /// </summary>
+    /// <param name="capacity">The maximum amount of bytes that can be written into this writer.</param>
+    /// <returns></returns>
+    public static NetWriter Create(int? capacity) => Create(capacity ?? DefaultCapacity);
 
     /// <summary>
     /// Creates a new NetWriter with a set capacity.
@@ -154,7 +162,7 @@ public sealed class NetWriter : INetSerializer, IDisposable
 
     public void Write<TEnum>(TEnum value) where TEnum : Enum
     {
-        Write(Convert.ToInt32(value));
+        Write(Unsafe.As<TEnum, int>(ref value));
     }
 
     public void Write<TEnum>(TEnum value, Precision precision) where TEnum : Enum
@@ -162,13 +170,13 @@ public sealed class NetWriter : INetSerializer, IDisposable
         switch (precision)
         {
             default:
-                Write(Convert.ToInt32(value));
+                Write(Unsafe.As<TEnum, int>(ref value));
                 break;
             case Precision.TwoBytes:
-                Write(Convert.ToInt16(value));
+                Write(Unsafe.As<TEnum, short>(ref value));
                 break;
             case Precision.OneByte:
-                Write(Convert.ToByte(value));
+                Write(Unsafe.As<TEnum, byte>(ref value));
                 break;
         }
     }

@@ -1,5 +1,5 @@
-﻿using LabFusion.Data;
-using LabFusion.Entities;
+﻿using LabFusion.Entities;
+using LabFusion.Extensions;
 using LabFusion.Marrow.Integration;
 using LabFusion.Network.Serialization;
 
@@ -55,6 +55,11 @@ public class RPCStringData : INetSerializable
 {
     public ComponentPathData pathData;
     public string value;
+
+    public int? GetSize()
+    {
+        return ComponentPathData.Size + value.GetSize();
+    }
 
     public void Serialize(INetSerializer serializer)
     {

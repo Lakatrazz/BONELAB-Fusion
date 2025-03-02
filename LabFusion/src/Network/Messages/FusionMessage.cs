@@ -20,6 +20,11 @@ public class MessagePrefix : INetSerializable
     public byte? Sender = null;
     public byte? Target = null;
 
+    public int? GetSize()
+    {
+        return sizeof(byte) * 7;
+    }
+
     public void Serialize(INetSerializer serializer)
     {
         serializer.SerializeValue(ref Tag);
@@ -87,7 +92,7 @@ public unsafe class FusionMessage : IDisposable
             Target = target,
         };
 
-        using var writer = NetWriter.Create();
+        using var writer = NetWriter.Create(prefix.GetSize().Value + buffer.Count);
 
         writer.SerializeValue(ref prefix);
         writer.Write(buffer);
@@ -114,7 +119,7 @@ public unsafe class FusionMessage : IDisposable
             Target = received.Target,
         };
 
-        using var writer = NetWriter.Create();
+        using var writer = NetWriter.Create(prefix.GetSize().Value + received.Bytes.Length);
 
         writer.SerializeValue(ref prefix);
         writer.Write(received.Bytes);
@@ -150,50 +155,46 @@ public unsafe class FusionMessage : IDisposable
         // Assign the module type
         var tag = ModuleMessageHandler.GetHandlerTag(type);
 
-        // Make sure the tag is valid, otherwise we dont return a message
-        if (tag.HasValue)
-        {
-            var value = tag.Value;
-            var tagBytes = BitConverter.GetBytes((ushort)value);
-
-            var prefix = new MessagePrefix()
-            {
-                Tag = NativeMessageTag.Module,
-                Type = relayType,
-                Channel = channel,
-                Sender = sender,
-                Target = target,
-            };
-
-            using var writer = NetWriter.Create();
-
-            writer.SerializeValue(ref prefix);
-
-            var expandedBuffer = new byte[buffer.Count + 2];
-            expandedBuffer[0] = tagBytes[0];
-            expandedBuffer[1] = tagBytes[1];
-
-            for (var i = 0; i < buffer.Count; i++)
-            {
-                expandedBuffer[i + 2] = buffer[i];
-            }
-
-            writer.Write(expandedBuffer);
-
-            int size = writer.Length;
-            var message = Create(size);
-
-            for (var i = 0; i < size; i++)
-            {
-                message._buffer[i] = writer.Buffer[i];
-            }
-
-            return message;
-        }
-        else
+        if (!tag.HasValue)
         {
             return null;
         }
+
+        var value = tag.Value;
+
+        var prefix = new MessagePrefix()
+        {
+            Tag = NativeMessageTag.Module,
+            Type = relayType,
+            Channel = channel,
+            Sender = sender,
+            Target = target,
+        };
+
+        using var writer = NetWriter.Create(prefix.GetSize().Value + buffer.Count + sizeof(ushort));
+
+        writer.SerializeValue(ref prefix);
+
+        var expandedBuffer = new byte[buffer.Count + sizeof(ushort)];
+        expandedBuffer[0] = (byte)(value >> 8);
+        expandedBuffer[1] = (byte)value;
+
+        for (var i = 0; i < buffer.Count; i++)
+        {
+            expandedBuffer[i + 2] = buffer[i];
+        }
+
+        writer.Write(expandedBuffer);
+
+        int size = writer.Length;
+        var message = Create(size);
+
+        for (var i = 0; i < size; i++)
+        {
+            message._buffer[i] = writer.Buffer[i];
+        }
+
+        return message;
     }
 
     public byte[] ToByteArray()

@@ -3,6 +3,7 @@
 using LabFusion.Exceptions;
 using LabFusion.Network;
 using LabFusion.Utilities;
+using static Il2CppSystem.Uri;
 
 namespace LabFusion.SDK.Modules;
 
@@ -40,7 +41,6 @@ public abstract class ModuleMessageHandler : MessageHandler
 
     public static void PopulateHandlerTable(string[] names)
     {
-
         Handlers = new ModuleMessageHandler[names.Length];
 
         for (ushort i = 0; i < names.Length; i++)
@@ -51,7 +51,9 @@ public abstract class ModuleMessageHandler : MessageHandler
             {
                 Type type = HandlerTypes[handlerName];
                 var handler = CreateHandler(type, i);
+
                 Handlers[i] = handler;
+                HandlerLookup[type] = handler;
             }
             else
             {
@@ -80,20 +82,9 @@ public abstract class ModuleMessageHandler : MessageHandler
             return null;
         }
 
-        for (ushort i = 0; i < Handlers.Length; i++)
+        if (HandlerLookup.TryGetValue(type, out var handler))
         {
-            var other = Handlers[i];
-
-            // We don't have one for this slot. Skip.
-            if (other == null)
-            {
-                continue;
-            }
-
-            if (other.GetType().AssemblyQualifiedName == type.AssemblyQualifiedName)
-            {
-                return i;
-            }
+            return handler.Tag;
         }
 
         return null;
@@ -112,8 +103,10 @@ public abstract class ModuleMessageHandler : MessageHandler
 
         try
         {
-            ushort tag = BitConverter.ToUInt16(received.Bytes, 0);
-            var buffer = new byte[received.Bytes.Length - 2];
+            var bytes = received.Bytes;
+
+            ushort tag = (ushort)((bytes[0] << 8) | bytes[1]);
+            var buffer = new byte[bytes.Length - sizeof(ushort)];
 
             for (var i = 0; i < buffer.Length; i++)
             {
@@ -157,5 +150,6 @@ public abstract class ModuleMessageHandler : MessageHandler
     }
 
     public static Dictionary<string, Type> HandlerTypes { get; private set; } = new();
+    public static Dictionary<Type, ModuleMessageHandler> HandlerLookup { get; private set; } = new();
     public static ModuleMessageHandler[] Handlers { get; private set; } = null;
 }
