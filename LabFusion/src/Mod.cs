@@ -22,6 +22,7 @@ using LabFusion.Bonelab;
 using LabFusion.Representation;
 using LabFusion.Player;
 using LabFusion.SDK;
+using LabFusion.RPC;
 
 #if DEBUG
 using LabFusion.Debugging;
@@ -90,6 +91,7 @@ public class FusionMod : MelonMod
         // Initialize data and hooks
         PDController.OnInitializeMelon();
         PointItemManager.HookEvents();
+        RpcManager.OnInitialize();
     }
 
     public override void OnInitializeMelon()
@@ -114,6 +116,7 @@ public class FusionMod : MelonMod
         GamemodeRegistration.LoadGamemodes(FusionAssembly);
         PointItemManager.LoadItems(FusionAssembly);
         AchievementManager.LoadAchievements(FusionAssembly);
+        RpcManager.LoadRpcs(FusionAssembly);
 
         EntityComponentManager.RegisterComponentsFromAssembly(FusionAssembly);
 

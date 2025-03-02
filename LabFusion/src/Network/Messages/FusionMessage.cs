@@ -92,7 +92,7 @@ public unsafe class FusionMessage : IDisposable
             Target = target,
         };
 
-        using var writer = NetWriter.Create(prefix.GetSize().Value + buffer.Count);
+        using var writer = NetWriter.Create(prefix.GetSize().Value + buffer.Count + sizeof(int));
 
         writer.SerializeValue(ref prefix);
         writer.Write(buffer);
@@ -119,7 +119,7 @@ public unsafe class FusionMessage : IDisposable
             Target = received.Target,
         };
 
-        using var writer = NetWriter.Create(prefix.GetSize().Value + received.Bytes.Length);
+        using var writer = NetWriter.Create(prefix.GetSize().Value + received.Bytes.Length + sizeof(int));
 
         writer.SerializeValue(ref prefix);
         writer.Write(received.Bytes);
@@ -171,7 +171,7 @@ public unsafe class FusionMessage : IDisposable
             Target = target,
         };
 
-        using var writer = NetWriter.Create(prefix.GetSize().Value + buffer.Count + sizeof(ushort));
+        using var writer = NetWriter.Create(prefix.GetSize().Value + buffer.Count + sizeof(ushort) + sizeof(int));
 
         writer.SerializeValue(ref prefix);
 
