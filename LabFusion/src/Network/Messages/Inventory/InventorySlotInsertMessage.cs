@@ -2,7 +2,6 @@
 using LabFusion.Extensions;
 using LabFusion.Entities;
 using LabFusion.Network.Serialization;
-using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
@@ -40,8 +39,6 @@ public class InventorySlotInsertMessage : NativeMessageHandler
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<InventorySlotInsertData>();
-
-        FusionLogger.Log($"Weapon id: {data.weaponId}, Slot Entity Id: {data.slotEntityId}");
 
         NetworkEntity weaponEntity = null;
         NetworkEntity slotEntity = null;
