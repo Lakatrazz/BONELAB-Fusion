@@ -6,20 +6,20 @@ namespace LabFusion.Entities;
 
 public class OwnershipEventsExtender : EntityComponentArrayExtender<OwnershipEvents>
 {
-    protected override void OnRegister(NetworkEntity networkEntity, OwnershipEvents[] components)
+    protected override void OnRegister(NetworkEntity entity, OwnershipEvents[] components)
     {
-        networkEntity.OnEntityOwnershipTransfer += OnEntityOwnershipTransfer;
+        entity.OnEntityOwnershipTransfer += OnEntityOwnershipTransfer;
 
         // Invoke the event if the owner has already been set
-        if (networkEntity.HasOwner)
+        if (entity.HasOwner)
         {
-            OnEntityOwnershipTransfer(networkEntity, networkEntity.OwnerId);
+            OnEntityOwnershipTransfer(entity, entity.OwnerId);
         }
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, OwnershipEvents[] components)
+    protected override void OnUnregister(NetworkEntity entity, OwnershipEvents[] components)
     {
-        networkEntity.OnEntityOwnershipTransfer -= OnEntityOwnershipTransfer;
+        entity.OnEntityOwnershipTransfer -= OnEntityOwnershipTransfer;
     }
 
     private void OnEntityOwnershipTransfer(NetworkEntity entity, PlayerId playerId)

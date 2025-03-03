@@ -8,15 +8,15 @@ public class InteractableHostExtender : EntityComponentArrayExtender<Interactabl
 {
     public static readonly FusionComponentCache<InteractableHost, NetworkEntity> Cache = new();
 
-    protected override void OnRegister(NetworkEntity networkEntity, InteractableHost[] components)
+    protected override void OnRegister(NetworkEntity entity, InteractableHost[] components)
     {
         foreach (var host in components)
         {
-            Cache.Add(host, networkEntity);
+            Cache.Add(host, entity);
         }
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, InteractableHost[] components)
+    protected override void OnUnregister(NetworkEntity entity, InteractableHost[] components)
     {
         foreach (var host in components)
         {

@@ -7,15 +7,15 @@ public class RPCEventExtender : EntityComponentArrayExtender<RPCEvent>
 {
     public static readonly FusionComponentCache<RPCEvent, NetworkEntity> Cache = new();
 
-    protected override void OnRegister(NetworkEntity networkEntity, RPCEvent[] components)
+    protected override void OnRegister(NetworkEntity entity, RPCEvent[] components)
     {
         foreach (var component in components)
         {
-            Cache.Add(component, networkEntity);
+            Cache.Add(component, entity);
         }
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, RPCEvent[] components)
+    protected override void OnUnregister(NetworkEntity entity, RPCEvent[] components)
     {
         foreach (var component in components)
         {

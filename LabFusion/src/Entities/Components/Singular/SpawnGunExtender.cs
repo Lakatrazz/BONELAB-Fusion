@@ -18,9 +18,9 @@ public class SpawnGunExtender : EntityComponentExtender<SpawnGun>
     private Poolee _poolee = null;
 
 
-    protected override void OnRegister(NetworkEntity networkEntity, SpawnGun component)
+    protected override void OnRegister(NetworkEntity entity, SpawnGun component)
     {
-        Cache.Add(component, networkEntity);
+        Cache.Add(component, entity);
 
         if (NetworkInfo.IsServer)
         {
@@ -35,7 +35,7 @@ public class SpawnGunExtender : EntityComponentExtender<SpawnGun>
         }
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, SpawnGun component)
+    protected override void OnUnregister(NetworkEntity entity, SpawnGun component)
     {
         Cache.Remove(component);
 

@@ -14,9 +14,9 @@ public class ConstrainerExtender : EntityComponentExtender<Constrainer>
 
     private Poolee _poolee = null;
 
-    protected override void OnRegister(NetworkEntity networkEntity, Constrainer component)
+    protected override void OnRegister(NetworkEntity entity, Constrainer component)
     {
-        Cache.Add(component, networkEntity);
+        Cache.Add(component, entity);
 
         if (CrossSceneManager.IsSceneHost())
         {
@@ -28,7 +28,7 @@ public class ConstrainerExtender : EntityComponentExtender<Constrainer>
         }
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, Constrainer component)
+    protected override void OnUnregister(NetworkEntity entity, Constrainer component)
     {
         Cache.Remove(component);
 

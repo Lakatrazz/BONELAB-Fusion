@@ -11,21 +11,21 @@ public class GripExtender : EntityComponentArrayExtender<Grip>
     private Grip.HandDelegate _onAttachDelegate = null;
     private Grip.HandDelegate _onDetachDelegate = null;
 
-    protected override void OnRegister(NetworkEntity networkEntity, Grip[] components)
+    protected override void OnRegister(NetworkEntity entity, Grip[] components)
     {
         _onAttachDelegate = (Grip.HandDelegate)((hand) => { OnAttach(hand); });
         _onDetachDelegate = (Grip.HandDelegate)((hand) => { OnDetach(hand); });
 
         foreach (var grip in components)
         {
-            Cache.Add(grip, networkEntity);
+            Cache.Add(grip, entity);
 
             grip.attachedHandDelegate += _onAttachDelegate;
             grip.detachedHandDelegate += _onDetachDelegate;
         }
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, Grip[] components)
+    protected override void OnUnregister(NetworkEntity entity, Grip[] components)
     {
         foreach (var grip in components)
         {

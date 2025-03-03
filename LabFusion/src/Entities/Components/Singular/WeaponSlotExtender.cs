@@ -8,12 +8,12 @@ public class WeaponSlotExtender : EntityComponentExtender<WeaponSlot>
 {
     public static readonly FusionComponentCache<WeaponSlot, NetworkEntity> Cache = new();
 
-    protected override void OnRegister(NetworkEntity networkEntity, WeaponSlot component)
+    protected override void OnRegister(NetworkEntity entity, WeaponSlot component)
     {
-        Cache.Add(component, networkEntity);
+        Cache.Add(component, entity);
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, WeaponSlot component)
+    protected override void OnUnregister(NetworkEntity entity, WeaponSlot component)
     {
         Cache.Remove(component);
     }

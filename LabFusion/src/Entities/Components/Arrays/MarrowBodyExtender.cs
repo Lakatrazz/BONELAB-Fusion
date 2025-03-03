@@ -1,5 +1,4 @@
-﻿using Il2CppSLZ.Interaction;
-using Il2CppSLZ.Marrow.Interaction;
+﻿using Il2CppSLZ.Marrow.Interaction;
 
 using LabFusion.Utilities;
 
@@ -9,15 +8,15 @@ public class MarrowBodyExtender : EntityComponentArrayExtender<MarrowBody>
 {
     public static readonly FusionComponentCache<MarrowBody, NetworkEntity> Cache = new();
 
-    protected override void OnRegister(NetworkEntity networkEntity, MarrowBody[] components)
+    protected override void OnRegister(NetworkEntity entity, MarrowBody[] components)
     {
         foreach (var body in components)
         {
-            Cache.Add(body, networkEntity);
+            Cache.Add(body, entity);
         }
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, MarrowBody[] components)
+    protected override void OnUnregister(NetworkEntity entity, MarrowBody[] components)
     {
         foreach (var body in components)
         {

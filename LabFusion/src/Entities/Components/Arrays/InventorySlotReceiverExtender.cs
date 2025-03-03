@@ -10,24 +10,24 @@ public class InventorySlotReceiverExtender : EntityComponentArrayExtender<Invent
 {
     public static readonly FusionComponentCache<InventorySlotReceiver, NetworkEntity> Cache = new();
 
-    protected override void OnRegister(NetworkEntity networkEntity, InventorySlotReceiver[] components)
+    protected override void OnRegister(NetworkEntity entity, InventorySlotReceiver[] components)
     {
         foreach (var component in components)
         {
-            Cache.Add(component, networkEntity);
+            Cache.Add(component, entity);
         }
 
-        networkEntity.OnEntityCatchup += OnEntityCatchup;
+        entity.OnEntityCatchup += OnEntityCatchup;
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, InventorySlotReceiver[] components)
+    protected override void OnUnregister(NetworkEntity entity, InventorySlotReceiver[] components)
     {
         foreach (var component in components)
         {
             Cache.Remove(component);
         }
 
-        networkEntity.OnEntityCatchup -= OnEntityCatchup;
+        entity.OnEntityCatchup -= OnEntityCatchup;
     }
 
     private void OnEntityCatchup(NetworkEntity entity, PlayerId player)

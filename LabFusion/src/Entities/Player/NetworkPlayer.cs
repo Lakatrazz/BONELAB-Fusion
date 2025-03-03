@@ -915,6 +915,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     {
         _pose = null;
         _receivedPose = false;
+
+        UnregisterComponents();
     }
 
     private void OnFoundRigManager(RigManager rigManager)
@@ -978,10 +980,11 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void OnAvatarSwapped()
     {
-        RegisterComponents();
+        RegisterDynamicComponents();
     }
 
-    private HashSet<IEntityComponentExtender> _componentExtenders = null;
+    private HashSet<IEntityComponentExtender> _registeredComponentExtenders = null;
+    private HashSet<IEntityComponentExtender> _dynamicComponentExtenders = null;
 
     private void RegisterComponents()
     {
@@ -991,33 +994,60 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         var physicsRig = RigRefs.RigManager.physicsRig;
-        var avatar = RigRefs.RigManager.avatar;
 
-        var parents = new GameObject[] { physicsRig.gameObject, avatar.gameObject };
+        _registeredComponentExtenders = EntityComponentManager.ApplyComponents(NetworkEntity, physicsRig.gameObject);
 
-        RegisterComponents(parents);
+        RegisterDynamicComponents();
     }
 
-    private void RegisterComponents(GameObject[] parents)
+    private void RegisterDynamicComponents()
     {
-        UnregisterComponents();
-
-        _componentExtenders = EntityComponentManager.ApplyComponents(NetworkEntity, parents);
-    }
-
-    private void UnregisterComponents()
-    {
-        if (_componentExtenders == null)
+        if (!HasRig)
         {
             return;
         }
 
-        foreach (var extender in _componentExtenders)
+        UnregisterDynamicComponents();
+
+        var avatar = RigRefs.RigManager.avatar;
+
+        _dynamicComponentExtenders = EntityComponentManager.ApplyDynamicComponents(NetworkEntity, avatar.gameObject);
+    }
+
+    private void UnregisterComponents()
+    {
+        UnregisterDynamicComponents();
+
+        if (_registeredComponentExtenders != null)
         {
-            extender.Unregister();
+            foreach (var extender in _registeredComponentExtenders)
+            {
+                extender.Unregister();
+            }
+
+            _registeredComponentExtenders.Clear();
+        }
+    }
+
+    private void UnregisterDynamicComponents()
+    {
+        if (_registeredComponentExtenders != null)
+        {
+            foreach (var extender in _registeredComponentExtenders)
+            {
+                extender.UnregisterDynamics();
+            }
         }
 
-        _componentExtenders.Clear();
+        if (_dynamicComponentExtenders != null)
+        {
+            foreach (var extender in _dynamicComponentExtenders)
+            {
+                extender.Unregister();
+            }
+
+            _dynamicComponentExtenders.Clear();
+        }
     }
 
     private Action _onReadyCallback = null;

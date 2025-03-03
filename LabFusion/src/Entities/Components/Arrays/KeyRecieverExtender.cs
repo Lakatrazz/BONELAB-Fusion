@@ -8,15 +8,15 @@ public class KeyRecieverExtender : EntityComponentArrayExtender<KeyReceiver>
 {
     public static FusionComponentCache<KeyReceiver, NetworkEntity> Cache = new();
 
-    protected override void OnRegister(NetworkEntity networkEntity, KeyReceiver[] components)
+    protected override void OnRegister(NetworkEntity entity, KeyReceiver[] components)
     {
         foreach (var key in components)
         {
-            Cache.Add(key, networkEntity);
+            Cache.Add(key, entity);
         }
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, KeyReceiver[] components)
+    protected override void OnUnregister(NetworkEntity entity, KeyReceiver[] components)
     {
         foreach (var key in components)
         {

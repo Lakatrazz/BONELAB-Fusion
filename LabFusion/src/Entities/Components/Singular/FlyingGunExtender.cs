@@ -16,9 +16,9 @@ public class FlyingGunExtender : EntityComponentExtender<FlyingGun>
 
     private Poolee _poolee = null;
 
-    protected override void OnRegister(NetworkEntity networkEntity, FlyingGun component)
+    protected override void OnRegister(NetworkEntity entity, FlyingGun component)
     {
-        Cache.Add(component, networkEntity);
+        Cache.Add(component, entity);
 
         if (NetworkInfo.IsServer)
         {
@@ -33,7 +33,7 @@ public class FlyingGunExtender : EntityComponentExtender<FlyingGun>
         }
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, FlyingGun component)
+    protected override void OnUnregister(NetworkEntity entity, FlyingGun component)
     {
         Cache.Remove(component);
 

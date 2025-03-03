@@ -8,12 +8,12 @@ public class InventoryAmmoReceiverExtender : EntityComponentExtender<InventoryAm
 {
     public static readonly FusionComponentCache<InventoryAmmoReceiver, NetworkEntity> Cache = new();
 
-    protected override void OnRegister(NetworkEntity networkEntity, InventoryAmmoReceiver component)
+    protected override void OnRegister(NetworkEntity entity, InventoryAmmoReceiver component)
     {
-        Cache.Add(component, networkEntity);
+        Cache.Add(component, entity);
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, InventoryAmmoReceiver component)
+    protected override void OnUnregister(NetworkEntity entity, InventoryAmmoReceiver component)
     {
         Cache.Remove(component);
     }

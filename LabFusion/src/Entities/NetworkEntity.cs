@@ -68,6 +68,19 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
         return default;
     }
 
+    public IEntityExtender GetExtender(Type type)
+    {
+        foreach (var extender in _extenders)
+        {
+            if (type.IsAssignableFrom(extender.GetType()))
+            {
+                return extender;
+            }
+        }
+
+        return null;
+    }
+
     public bool InvokeCatchup(PlayerId playerId)
     {
         if (OnEntityCatchup == null)

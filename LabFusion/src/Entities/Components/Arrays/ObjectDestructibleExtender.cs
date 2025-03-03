@@ -8,15 +8,15 @@ public class ObjectDestructibleExtender : EntityComponentArrayExtender<ObjectDes
 {
     public static FusionComponentCache<ObjectDestructible, NetworkEntity> Cache = new();
 
-    protected override void OnRegister(NetworkEntity networkEntity, ObjectDestructible[] components)
+    protected override void OnRegister(NetworkEntity entity, ObjectDestructible[] components)
     {
         foreach (var component in components)
         {
-            Cache.Add(component, networkEntity);
+            Cache.Add(component, entity);
         }
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, ObjectDestructible[] components)
+    protected override void OnUnregister(NetworkEntity entity, ObjectDestructible[] components)
     {
         foreach (var component in components)
         {

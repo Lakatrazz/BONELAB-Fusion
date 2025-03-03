@@ -11,9 +11,9 @@ public class AtvExtender : EntityComponentExtender<Atv>
     private Il2CppSystem.Action _onSeatRegistered = null;
     private Il2CppSystem.Action _onSeatDeregistered = null;
 
-    protected override void OnRegister(NetworkEntity networkEntity, Atv component)
+    protected override void OnRegister(NetworkEntity entity, Atv component)
     {
-        Cache.Add(component, networkEntity);
+        Cache.Add(component, entity);
 
         var driverSeat = component.driverSeat;
 
@@ -27,7 +27,7 @@ public class AtvExtender : EntityComponentExtender<Atv>
         }
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, Atv component)
+    protected override void OnUnregister(NetworkEntity entity, Atv component)
     {
         Cache.Remove(component);
 

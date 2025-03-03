@@ -11,30 +11,30 @@ public class PuppetMasterExtender : EntityComponentExtender<PuppetMaster>
 
     public static NetworkEntity LastKilled = null;
 
-    protected override void OnRegister(NetworkEntity networkEntity, PuppetMaster component)
+    protected override void OnRegister(NetworkEntity entity, PuppetMaster component)
     {
-        Cache.Add(component, networkEntity);
+        Cache.Add(component, entity);
 
-        networkEntity.OnEntityOwnershipTransfer += OnPuppetOwnershipTransfer;
+        entity.OnEntityOwnershipTransfer += OnPuppetOwnershipTransfer;
 
         // Update puppet drives if theres already an owner
         if (NetworkEntity.HasOwner)
         {
-            OnPuppetOwnershipTransfer(networkEntity, networkEntity.OwnerId);
+            OnPuppetOwnershipTransfer(entity, entity.OwnerId);
         }
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, PuppetMaster component)
+    protected override void OnUnregister(NetworkEntity entity, PuppetMaster component)
     {
         Cache.Remove(component);
 
-        networkEntity.OnEntityOwnershipTransfer -= OnPuppetOwnershipTransfer;
+        entity.OnEntityOwnershipTransfer -= OnPuppetOwnershipTransfer;
     }
 
-    private void OnPuppetOwnershipTransfer(NetworkEntity networkEntity, PlayerId playerId)
+    private void OnPuppetOwnershipTransfer(NetworkEntity entity, PlayerId playerId)
     {
         // If we aren't the owner, clear the puppet's pd drives so we can control it with forces
-        bool isOwner = networkEntity.IsOwner;
+        bool isOwner = entity.IsOwner;
 
         float muscleWeightMaster = Component.muscleWeight;
         float muscleSpring = Component.muscleSpring;

@@ -10,24 +10,24 @@ public class SeatExtender : EntityComponentArrayExtender<Seat>
 {
     public static readonly FusionComponentCache<Seat, NetworkEntity> Cache = new();
 
-    protected override void OnRegister(NetworkEntity networkEntity, Seat[] components)
+    protected override void OnRegister(NetworkEntity entity, Seat[] components)
     {
         foreach (var component in components)
         {
-            Cache.Add(component, networkEntity);
+            Cache.Add(component, entity);
         }
 
-        networkEntity.OnEntityCatchup += OnEntityCatchup;
+        entity.OnEntityCatchup += OnEntityCatchup;
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, Seat[] components)
+    protected override void OnUnregister(NetworkEntity entity, Seat[] components)
     {
         foreach (var component in components)
         {
             Cache.Remove(component);
         }
 
-        networkEntity.OnEntityCatchup -= OnEntityCatchup;
+        entity.OnEntityCatchup -= OnEntityCatchup;
     }
 
     private void OnEntityCatchup(NetworkEntity entity, PlayerId player)

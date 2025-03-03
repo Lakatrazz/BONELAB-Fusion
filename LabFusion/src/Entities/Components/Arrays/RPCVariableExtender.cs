@@ -7,15 +7,15 @@ public class RPCVariableExtender : EntityComponentArrayExtender<RPCVariable>
 {
     public static readonly FusionComponentCache<RPCVariable, NetworkEntity> Cache = new();
 
-    protected override void OnRegister(NetworkEntity networkEntity, RPCVariable[] components)
+    protected override void OnRegister(NetworkEntity entity, RPCVariable[] components)
     {
         foreach (var component in components)
         {
-            Cache.Add(component, networkEntity);
+            Cache.Add(component, entity);
         }
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, RPCVariable[] components)
+    protected override void OnUnregister(NetworkEntity entity, RPCVariable[] components)
     {
         foreach (var component in components)
         {

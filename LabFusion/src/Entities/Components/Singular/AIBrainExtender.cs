@@ -8,12 +8,12 @@ public class AIBrainExtender : EntityComponentExtender<AIBrain>
 {
     public static FusionComponentCache<AIBrain, NetworkEntity> Cache = new();
 
-    protected override void OnRegister(NetworkEntity networkEntity, AIBrain component)
+    protected override void OnRegister(NetworkEntity entity, AIBrain component)
     {
-        Cache.Add(component, networkEntity);
+        Cache.Add(component, entity);
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, AIBrain component)
+    protected override void OnUnregister(NetworkEntity entity, AIBrain component)
     {
         Cache.Remove(component);
     }

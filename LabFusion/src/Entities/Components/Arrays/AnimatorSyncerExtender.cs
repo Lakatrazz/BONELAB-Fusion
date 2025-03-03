@@ -8,30 +8,30 @@ public class AnimatorSyncerExtender : EntityComponentArrayExtender<AnimatorSynce
 {
     public static readonly FusionComponentCache<AnimatorSyncer, NetworkEntity> Cache = new();
 
-    protected override void OnRegister(NetworkEntity networkEntity, AnimatorSyncer[] components)
+    protected override void OnRegister(NetworkEntity entity, AnimatorSyncer[] components)
     {
         foreach (var grip in components)
         {
-            Cache.Add(grip, networkEntity);
+            Cache.Add(grip, entity);
         }
 
-        networkEntity.OnEntityOwnershipTransfer += OnEntityOwnershipTransfer;
+        entity.OnEntityOwnershipTransfer += OnEntityOwnershipTransfer;
 
         // Invoke the event if the owner has already been set
-        if (networkEntity.HasOwner)
+        if (entity.HasOwner)
         {
-            OnEntityOwnershipTransfer(networkEntity, networkEntity.OwnerId);
+            OnEntityOwnershipTransfer(entity, entity.OwnerId);
         }
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, AnimatorSyncer[] components)
+    protected override void OnUnregister(NetworkEntity entity, AnimatorSyncer[] components)
     {
         foreach (var grip in components)
         {
             Cache.Remove(grip);
         }
 
-        networkEntity.OnEntityOwnershipTransfer -= OnEntityOwnershipTransfer;
+        entity.OnEntityOwnershipTransfer -= OnEntityOwnershipTransfer;
     }
 
     private void OnEntityOwnershipTransfer(NetworkEntity entity, PlayerId playerId)

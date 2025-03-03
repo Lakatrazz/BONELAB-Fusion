@@ -118,7 +118,7 @@ public class FusionMod : MelonMod
         AchievementManager.LoadAchievements(FusionAssembly);
         RpcManager.LoadRpcs(FusionAssembly);
 
-        EntityComponentManager.RegisterComponentsFromAssembly(FusionAssembly);
+        EntityComponentManager.LoadComponents(FusionAssembly);
 
         LobbyFilterManager.LoadBuiltInFilters();
 

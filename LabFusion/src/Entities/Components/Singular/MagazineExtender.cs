@@ -11,9 +11,9 @@ public class MagazineExtender : EntityComponentExtender<Magazine>
 
     private TimedDespawnHandler _despawnHandler = null;
 
-    protected override void OnRegister(NetworkEntity networkEntity, Magazine component)
+    protected override void OnRegister(NetworkEntity entity, Magazine component)
     {
-        Cache.Add(component, networkEntity);
+        Cache.Add(component, entity);
 
         if (NetworkInfo.IsServer)
         {
@@ -22,7 +22,7 @@ public class MagazineExtender : EntityComponentExtender<Magazine>
         }
     }
 
-    protected override void OnUnregister(NetworkEntity networkEntity, Magazine component)
+    protected override void OnUnregister(NetworkEntity entity, Magazine component)
     {
         Cache.Remove(component);
 

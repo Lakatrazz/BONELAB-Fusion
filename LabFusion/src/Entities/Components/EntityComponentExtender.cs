@@ -11,7 +11,7 @@ public abstract class EntityComponentExtender<TComponent> : IEntityComponentExte
 
     public TComponent Component => _component;
 
-    public bool TryRegister(NetworkEntity networkEntity, GameObject parent)
+    public bool TryRegister(NetworkEntity entity, GameObject parent)
     {
         var component = GetComponent(parent);
 
@@ -20,41 +20,18 @@ public abstract class EntityComponentExtender<TComponent> : IEntityComponentExte
             return false;
         }
 
-        Register(networkEntity, component);
+        Register(entity, component);
         return true;
     }
 
-    public bool TryRegister(NetworkEntity networkEntity, GameObject[] parents)
+    public void Register(NetworkEntity entity, TComponent component)
     {
-        foreach (var parent in parents)
-        {
-            var component = GetComponent(parent);
-
-            if (component == null)
-            {
-                continue;
-            }
-
-            Register(networkEntity, component);
-            return true;
-        }
-
-        return false;
-    }
-
-    protected virtual TComponent GetComponent(GameObject go)
-    {
-        return go.GetComponentInChildren<TComponent>(true);
-    }
-
-    public void Register(NetworkEntity networkEntity, TComponent component)
-    {
-        _networkEntity = networkEntity;
+        _networkEntity = entity;
         _component = component;
 
-        networkEntity.ConnectExtender(this);
+        entity.ConnectExtender(this);
 
-        networkEntity.OnEntityUnregistered += Unregister;
+        entity.OnEntityUnregistered += Unregister;
 
         OnRegister(NetworkEntity, Component);
     }
@@ -67,16 +44,16 @@ public abstract class EntityComponentExtender<TComponent> : IEntityComponentExte
         }
     }
 
-    public void Unregister(NetworkEntity networkEntity)
+    public void Unregister(NetworkEntity entity)
     {
         if (_networkEntity == null)
         {
             return;
         }
 
-        networkEntity.OnEntityUnregistered -= Unregister;
+        entity.OnEntityUnregistered -= Unregister;
 
-        networkEntity.DisconnectExtender(this);
+        entity.DisconnectExtender(this);
 
         OnUnregister(NetworkEntity, Component);
 
@@ -84,6 +61,11 @@ public abstract class EntityComponentExtender<TComponent> : IEntityComponentExte
         _component = null;
     }
 
-    protected abstract void OnRegister(NetworkEntity networkEntity, TComponent component);
-    protected abstract void OnUnregister(NetworkEntity networkEntity, TComponent component);
+    public void RegisterDynamics(NetworkEntity entity, GameObject parent) { }
+    public void UnregisterDynamics() { }
+
+    protected abstract void OnRegister(NetworkEntity entity, TComponent component);
+    protected abstract void OnUnregister(NetworkEntity entity, TComponent component);
+
+    protected virtual TComponent GetComponent(GameObject go) => go.GetComponentInChildren<TComponent>(true);
 }
