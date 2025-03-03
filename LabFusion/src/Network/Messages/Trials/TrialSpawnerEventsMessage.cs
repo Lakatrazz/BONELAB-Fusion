@@ -1,27 +1,23 @@
 ﻿using LabFusion.Patching;
-
-using UnityEngine;
-
-using Il2CppSLZ.Bonelab;
-
 using LabFusion.Network.Serialization;
+using LabFusion.Data;
 
 namespace LabFusion.Network;
 
 public class TrialSpawnerEventsData : INetSerializable
 {
-    public GameObject trialSpawnerEvents;
+    public ComponentHashData HashData;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref trialSpawnerEvents);
+        serializer.SerializeValue(ref HashData);
     }
 
-    public static TrialSpawnerEventsData Create(Trial_SpawnerEvents trialSpawnerEvents)
+    public static TrialSpawnerEventsData Create(ComponentHashData hashData)
     {
         return new TrialSpawnerEventsData()
         {
-            trialSpawnerEvents = trialSpawnerEvents.gameObject,
+            HashData = hashData,
         };
     }
 }
@@ -36,14 +32,16 @@ public class TrialSpawnerEventsMessage : NativeMessageHandler
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<TrialSpawnerEventsData>();
-        var go = data.trialSpawnerEvents;
 
-        var events = go.GetComponent<Trial_SpawnerEvents>();
+        var trialSpawnerEvents = Trial_SpawnerEventsPatches.HashTable.GetComponentFromData(data.HashData);
+
+        if (trialSpawnerEvents == null)
+        {
+            return;
+        }
 
         Trial_SpawnerEventsPatches.IgnorePatches = true;
 
-        events.OnSpawnerDeath();
-
-        Trial_SpawnerEventsPatches.IgnorePatches = false;
+        trialSpawnerEvents.OnSpawnerDeath();
     }
 }

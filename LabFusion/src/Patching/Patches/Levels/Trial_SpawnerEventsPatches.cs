@@ -1,35 +1,68 @@
 ﻿using HarmonyLib;
 
 using LabFusion.Network;
-using LabFusion.Senders;
+using LabFusion.Data;
+using LabFusion.Marrow;
+using LabFusion.Utilities;
 
 using Il2CppSLZ.Bonelab;
 
-namespace LabFusion.Patching
+namespace LabFusion.Patching;
+
+[HarmonyPatch(typeof(Trial_SpawnerEvents))]
+public static class Trial_SpawnerEventsPatches
 {
-    [HarmonyPatch(typeof(Trial_SpawnerEvents))]
-    public static class Trial_SpawnerEventsPatches
+    public static bool IgnorePatches { get; set; } = false;
+
+    public static readonly ComponentHashTable<Trial_SpawnerEvents> HashTable = new();
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(Trial_SpawnerEvents.OnEnable))]
+    public static void OnEnablePrefix(Trial_SpawnerEvents __instance)
     {
-        public static bool IgnorePatches = false;
+        var hash = GameObjectHasher.GetHierarchyHash(__instance.gameObject);
 
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(Trial_SpawnerEvents.OnSpawnerDeath))]
-        public static bool OnSpawnerDeath(Trial_SpawnerEvents __instance)
+        var index = HashTable.AddComponent(hash, __instance);
+
+#if DEBUG
+        if (index > 0)
         {
-            if (IgnorePatches)
-                return true;
+            FusionLogger.Log($"Trial_SpawnerEvents {__instance.name} had a conflicting hash {hash} and has been added at index {index}.");
+        }
+#endif
+    }
 
-            if (NetworkInfo.HasServer)
-            {
-                if (NetworkInfo.IsServer)
-                {
-                    TrialSender.SendTrialSpawnerEvent(__instance);
-                }
-                else
-                    return false;
-            }
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(Trial_SpawnerEvents.OnDisable))]
+    public static void OnDisablePrefix(Trial_SpawnerEvents __instance)
+    {
+        HashTable.RemoveComponent(__instance);
+    }
 
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(Trial_SpawnerEvents.OnSpawnerDeath))]
+    public static bool OnSpawnerDeath(Trial_SpawnerEvents __instance)
+    {
+        if (IgnorePatches)
+        {
+            IgnorePatches = false;
             return true;
         }
+
+        if (!NetworkInfo.HasServer)
+        {
+            return true;
+        }
+
+        if (NetworkInfo.IsServer)
+        {
+            var hashData = HashTable.GetDataFromComponent(__instance);
+
+            var data = TrialSpawnerEventsData.Create(hashData);
+
+            MessageRelay.RelayNative(data, NativeMessageTag.TrialSpawnerEvents, NetworkChannel.Reliable, RelayType.ToClients);
+        }
+
+        return false;
     }
 }
