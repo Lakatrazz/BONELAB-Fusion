@@ -7,11 +7,13 @@ namespace LabFusion.Network;
 
 public class InventorySlotInsertData : INetSerializable
 {
-    public const int Size = sizeof(byte) * 2 + sizeof(ushort) * 2;
+    public const int Size = sizeof(ushort) * 2 + sizeof(byte);
 
     public ushort slotEntityId;
     public ushort weaponId;
     public byte slotIndex;
+
+    public int? GetSize() => Size;
 
     public void Serialize(INetSerializer serializer)
     {
