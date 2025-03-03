@@ -17,7 +17,7 @@ MonoBehaviour:
   _title: Info Board
   _description: News terminal that pipes the most recent Fusion news into your instance.
   _unlockable: 0
-  _redacted: 0
+  _redacted: 1
   _tags:
   - Fusion
   _boneTags:

@@ -18,7 +18,7 @@ MonoBehaviour:
   _description: Void-powered shop connected directly to all of MythOS's clothing
     centers.
   _unlockable: 0
-  _redacted: 0
+  _redacted: 1
   _tags:
   - Fusion
   _boneTags:
