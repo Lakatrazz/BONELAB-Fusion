@@ -6,14 +6,12 @@ namespace LabFusion.Network;
 
 public class PlayerVoiceChatData : INetSerializable
 {
-    public const int Size = sizeof(byte);
-
     public byte smallId;
     public byte[] bytes;
 
     public int? GetSize()
     {
-        return sizeof(byte) + 1 + sizeof(byte) * bytes.Length;
+        return sizeof(byte) + sizeof(int) + sizeof(byte) * bytes.Length;
     }
 
     public void Serialize(INetSerializer serializer)
