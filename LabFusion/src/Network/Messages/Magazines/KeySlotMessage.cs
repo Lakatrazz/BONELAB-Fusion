@@ -1,4 +1,4 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Network.Serialization;
 using LabFusion.Patching;
 using LabFusion.Entities;
 using LabFusion.Extensions;
@@ -7,7 +7,6 @@ using Il2CppSLZ.Interaction;
 using Il2CppSLZ.Marrow;
 
 using UnityEngine;
-using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
@@ -141,7 +140,5 @@ public class KeySlotMessage : NativeMessageHandler
                 propKeyReceiver.OnInteractableHostEnter(propHost);
                 break;
         }
-
-        KeyRecieverPatches.IgnorePatches = false;
     }
 }

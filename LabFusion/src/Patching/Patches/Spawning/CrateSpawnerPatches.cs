@@ -138,7 +138,14 @@ public static class CrateSpawnerPatches
         __result = new UniTask<Poolee>(source.TryCast<IUniTaskSource<Poolee>>(), default);
 
         // Otherwise, manually sync this spawn over the network
-        NetworkedSpawnSpawnable(spawner, source);
+        try
+        {
+            NetworkedSpawnSpawnable(spawner, source);
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException($"networking CrateSpawner {spawner.name}", e);
+        }
 
         return false;
     }
