@@ -11,155 +11,154 @@ using Il2CppSLZ.Marrow;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace LabFusion.Patching
+namespace LabFusion.Patching;
+
+[HarmonyPatch(typeof(ObjectDestructible))]
+public static class ObjectDestructiblePatches
 {
-    [HarmonyPatch(typeof(ObjectDestructible))]
-    public static class ObjectDestructiblePatches
+    public class ObjectDestructibleState
     {
-        public class ObjectDestructibleState
+        public bool isDead;
+        public LootTableData lootTable;
+
+        public Vector3 spawnPosition;
+        public Quaternion spawnRotation;
+
+        public bool ignoringPatch = false;
+
+        public ObjectDestructibleState(ObjectDestructible destructible)
         {
-            public bool isDead;
-            public LootTableData lootTable;
+            lootTable = destructible.lootTable;
+            isDead = destructible._isDead;
 
-            public Vector3 spawnPosition;
-            public Quaternion spawnRotation;
+            var spawnTarget = destructible.spawnTarget;
 
-            public bool ignoringPatch = false;
-
-            public ObjectDestructibleState(ObjectDestructible destructible)
+            if (spawnTarget == null)
             {
-                lootTable = destructible.lootTable;
-                isDead = destructible._isDead;
-
-                var spawnTarget = destructible.spawnTarget;
-
-                if (spawnTarget == null)
-                {
-                    spawnTarget = destructible.transform;
-                }
-
-                spawnPosition = spawnTarget.position;
-                spawnRotation = spawnTarget.rotation;
+                spawnTarget = destructible.transform;
             }
+
+            spawnPosition = spawnTarget.position;
+            spawnRotation = spawnTarget.rotation;
+        }
+    }
+
+    public static bool IgnorePatches { get; set; } = false;
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(ObjectDestructible.Awake))]
+    public static void Awake(ObjectDestructible __instance)
+    {
+        // The OnDestruction action gets reset when the destructible is despawned
+        // But the UnityEvent is never reset, so we can hook into that instead
+        void OnDestruct()
+        {
+            OnDestruction(__instance);
+        }
+        var destructAction = (UnityAction)OnDestruct;
+
+        __instance.OnDestruct.AddListener(destructAction);
+    }
+
+    private static void OnDestruction(ObjectDestructible destructible)
+    {
+        if (!NetworkInfo.HasServer)
+        {
+            return;
         }
 
-        public static bool IgnorePatches = false;
+        var entity = ObjectDestructibleExtender.Cache.Get(destructible);
 
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(ObjectDestructible.Awake))]
-        public static void Awake(ObjectDestructible __instance)
+        if (entity == null)
         {
-            // The OnDestruction action gets reset when the destructible is despawned
-            // But the UnityEvent is never reset, so we can hook into that instead
-            void OnDestruct()
-            {
-                OnDestruction(__instance);
-            }
-            var destructAction = (UnityAction)OnDestruct;
-
-            __instance.OnDestruct.AddListener(destructAction);
+            return;
         }
 
-        private static void OnDestruction(ObjectDestructible destructible)
+        var extender = entity.GetExtender<ObjectDestructibleExtender>();
+
+        // Send object destroy
+        if (entity.IsOwner)
         {
-            if (!NetworkInfo.HasServer)
-            {
-                return;
-            }
+            var data = ComponentIndexData.Create(entity.Id, extender.GetIndex(destructible).Value);
 
-            var entity = ObjectDestructibleExtender.Cache.Get(destructible);
-
-            if (entity == null)
-            {
-                return;
-            }
-
-            var extender = entity.GetExtender<ObjectDestructibleExtender>();
-
-            // Send object destroy
-            if (entity.IsOwner)
-            {
-                var data = ComponentIndexData.Create(PlayerIdManager.LocalSmallId, entity.Id, (byte)extender.GetIndex(destructible).Value);
-
-                MessageRelay.RelayNative(data, NativeMessageTag.ObjectDestructibleDestroy, NetworkChannel.Reliable, RelayType.ToOtherClients);
-            }
+            MessageRelay.RelayNative(data, NativeMessageTag.ObjectDestructibleDestroy, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
+    }
 
-        [HarmonyPatch(nameof(ObjectDestructible.TakeDamage))]
-        [HarmonyPrefix]
-        public static bool TakeDamagePrefix(ObjectDestructible __instance, Vector3 normal, float damage, bool crit, AttackType attackType, ref ObjectDestructibleState __state)
+    [HarmonyPatch(nameof(ObjectDestructible.TakeDamage))]
+    [HarmonyPrefix]
+    public static bool TakeDamagePrefix(ObjectDestructible __instance, Vector3 normal, float damage, bool crit, AttackType attackType, ref ObjectDestructibleState __state)
+    {
+        __state = new(__instance);
+
+        // Make sure we have a server
+        if (!NetworkInfo.HasServer)
         {
-            __state = new(__instance);
-
-            // Make sure we have a server
-            if (!NetworkInfo.HasServer)
-            {
-                return true;
-            }
-
-            // Clear loot table
-            __instance.lootTable = null;
-
-            // Make sure patches aren't being ignored
-            if (IgnorePatches)
-            {
-                return true;
-            }
-
-            if (ObjectDestructibleExtender.Cache.TryGet(__instance, out var entity) && !entity.IsOwner)
-            {
-                __state.ignoringPatch = true;
-                return false;
-            }
-
-            PooleeDespawnPatch.IgnorePatch = true;
             return true;
         }
 
-        [HarmonyPatch(nameof(ObjectDestructible.TakeDamage))]
-        [HarmonyPostfix]
-        public static void TakeDamagePostfix(ObjectDestructible __instance, Vector3 normal, float damage, bool crit, AttackType attackType, ref ObjectDestructibleState __state)
+        // Clear loot table
+        __instance.lootTable = null;
+
+        // Make sure patches aren't being ignored
+        if (IgnorePatches)
         {
-            PooleeDespawnPatch.IgnorePatch = false;
+            return true;
+        }
 
-            // Make sure we have a server
-            if (!NetworkInfo.HasServer)
+        if (ObjectDestructibleExtender.Cache.TryGet(__instance, out var entity) && !entity.IsOwner)
+        {
+            __state.ignoringPatch = true;
+            return false;
+        }
+
+        PooleeDespawnPatch.IgnorePatch = true;
+        return true;
+    }
+
+    [HarmonyPatch(nameof(ObjectDestructible.TakeDamage))]
+    [HarmonyPostfix]
+    public static void TakeDamagePostfix(ObjectDestructible __instance, Vector3 normal, float damage, bool crit, AttackType attackType, ref ObjectDestructibleState __state)
+    {
+        PooleeDespawnPatch.IgnorePatch = false;
+
+        // Make sure we have a server
+        if (!NetworkInfo.HasServer)
+        {
+            return;
+        }
+
+        // Reset loot table
+        __instance.lootTable = __state.lootTable;
+
+        // Check if patches are being ignored
+        if (IgnorePatches)
+        {
+            return;
+        }
+
+        // Check if the prefix was ignored
+        if (__state.ignoringPatch)
+        {
+            return;
+        }
+
+        // Check if we need to spawn loot
+        bool destroyed = __instance._isDead && !__state.isDead;
+        if (destroyed && __instance.lootTable != null)
+        {
+            var spawnable = __instance.lootTable.GetLootItem();
+
+            NetworkAssetSpawner.Spawn(new NetworkAssetSpawner.SpawnRequestInfo()
             {
-                return;
-            }
-
-            // Reset loot table
-            __instance.lootTable = __state.lootTable;
-
-            // Check if patches are being ignored
-            if (IgnorePatches)
-            {
-                return;
-            }
-
-            // Check if the prefix was ignored
-            if (__state.ignoringPatch)
-            {
-                return;
-            }
-
-            // Check if we need to spawn loot
-            bool destroyed = __instance._isDead && !__state.isDead;
-            if (destroyed && __instance.lootTable != null)
-            {
-                var spawnable = __instance.lootTable.GetLootItem();
-
-                NetworkAssetSpawner.Spawn(new NetworkAssetSpawner.SpawnRequestInfo()
+                spawnable = spawnable,
+                position = __state.spawnPosition,
+                rotation = __state.spawnRotation,
+                spawnCallback = (info) =>
                 {
-                    spawnable = spawnable,
-                    position = __state.spawnPosition,
-                    rotation = __state.spawnRotation,
-                    spawnCallback = (info) =>
-                    {
-                        __instance.OnLootSpawn?.Invoke(__instance, spawnable, info.spawned);
-                    }
-                });
-            }
+                    __instance.OnLootSpawn?.Invoke(__instance, spawnable, info.spawned);
+                }
+            });
         }
     }
 }

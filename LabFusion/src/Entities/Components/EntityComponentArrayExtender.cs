@@ -82,6 +82,11 @@ public abstract class EntityComponentArrayExtender<TComponent> : IEntityComponen
 
     public void UnregisterDynamics()
     {
+        if (_dynamicComponents == null)
+        {
+            return;
+        }
+
         if (_dynamicComponents.Count <= 0)
         {
             return;

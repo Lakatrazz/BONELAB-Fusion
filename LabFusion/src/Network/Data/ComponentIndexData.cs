@@ -4,26 +4,25 @@ namespace LabFusion.Network;
 
 public class ComponentIndexData : INetSerializable
 {
-    public const int Size = sizeof(byte) * 2 + sizeof(ushort);
+    public const int Size = sizeof(ushort) * 2;
 
-    public byte smallId;
-    public ushort syncId;
-    public byte componentIndex;
+    public ushort EntityId;
+    public ushort ComponentIndex;
+
+    public int? GetSize() => Size;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref smallId);
-        serializer.SerializeValue(ref syncId);
-        serializer.SerializeValue(ref componentIndex);
+        serializer.SerializeValue(ref EntityId);
+        serializer.SerializeValue(ref ComponentIndex);
     }
 
-    public static ComponentIndexData Create(byte smallId, ushort syncId, byte componentIndex)
+    public static ComponentIndexData Create(ushort entityId, ushort componentIndex)
     {
         return new ComponentIndexData()
         {
-            smallId = smallId,
-            syncId = syncId,
-            componentIndex = componentIndex,
+            EntityId = entityId,
+            ComponentIndex = componentIndex,
         };
     }
 }
