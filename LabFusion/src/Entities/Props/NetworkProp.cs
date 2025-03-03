@@ -5,6 +5,7 @@ using LabFusion.MonoBehaviours;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Utilities;
+
 using UnityEngine;
 
 namespace LabFusion.Entities;
