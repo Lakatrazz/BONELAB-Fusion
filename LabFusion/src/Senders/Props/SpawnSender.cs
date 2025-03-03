@@ -4,6 +4,7 @@ using LabFusion.Utilities;
 using LabFusion.Scene;
 using LabFusion.Entities;
 using LabFusion.Player;
+using LabFusion.Patching;
 
 using Il2CppSLZ.Marrow.Warehouse;
 
@@ -14,17 +15,19 @@ public static class SpawnSender
     /// <summary>
     /// Sends a catchup for the OnPlaceEvent for a CrateSpawner.
     /// </summary>
-    /// <param name="placer"></param>
-    /// <param name="syncable"></param>
-    /// <param name="userId"></param>
-    public static void SendCratePlacerCatchup(CrateSpawner placer, NetworkEntity entity, PlayerId player)
+    /// <param name="spawner"></param>
+    /// <param name="entity"></param>
+    /// <param name="player"></param>
+    public static void SendCrateSpawnerCatchup(CrateSpawner spawner, NetworkEntity entity, PlayerId player)
     {
         if (!NetworkInfo.IsServer)
         {
             return;
         }
 
-        var data = CrateSpawnerData.Create(entity.Id, placer.gameObject);
+        var hashData = CrateSpawnerPatches.HashTable.GetDataFromComponent(spawner);
+
+        var data = CrateSpawnerData.Create(entity.Id, hashData);
 
         MessageRelay.RelayNative(data, NativeMessageTag.CrateSpawner, NetworkChannel.Reliable, RelayType.ToTarget, player.SmallId);
     }
@@ -32,9 +35,9 @@ public static class SpawnSender
     /// <summary>
     /// Sends the OnPlaceEvent for a CrateSpawner.
     /// </summary>
-    /// <param name="placer"></param>
+    /// <param name="spawner"></param>
     /// <param name="go"></param>
-    public static void SendCratePlacerEvent(CrateSpawner placer, ushort spawnedId)
+    public static void SendCrateSpawnerEvent(CrateSpawner spawner, ushort spawnedId)
     {
         if (!NetworkInfo.IsServer)
         {
@@ -46,14 +49,16 @@ public static class SpawnSender
         {
             DelayUtilities.Delay(() =>
             {
-                Internal_OnSendCratePlacer(placer, spawnedId);
+                OnSendCrateSpawner(spawner, spawnedId);
             }, 5);
         });
     }
 
-    private static void Internal_OnSendCratePlacer(CrateSpawner placer, ushort spawnedId)
+    private static void OnSendCrateSpawner(CrateSpawner spawner, ushort spawnedId)
     {
-        var data = CrateSpawnerData.Create(spawnedId, placer.gameObject);
+        var hashData = CrateSpawnerPatches.HashTable.GetDataFromComponent(spawner);
+
+        var data = CrateSpawnerData.Create(spawnedId, hashData);
 
         MessageRelay.RelayNative(data, NativeMessageTag.CrateSpawner, NetworkChannel.Reliable, RelayType.ToOtherClients);
 
@@ -64,7 +69,7 @@ public static class SpawnSender
         {
             entity.OnEntityCatchup += (entity, player) =>
             {
-                SendCratePlacerCatchup(placer, entity, player);
+                SendCrateSpawnerCatchup(spawner, entity, player);
             };
         }
     }

@@ -1,7 +1,6 @@
 ﻿using Il2CppSLZ.Marrow.Interaction;
 
 using LabFusion.Data;
-using LabFusion.Network;
 using LabFusion.Patching;
 
 namespace LabFusion.Marrow;

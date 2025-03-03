@@ -4,6 +4,9 @@ using LabFusion.RPC;
 using LabFusion.Senders;
 using LabFusion.Scene;
 using LabFusion.Marrow.Integration;
+using LabFusion.Data;
+using LabFusion.Marrow;
+using LabFusion.Utilities;
 
 using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Marrow.Pool;
@@ -14,11 +17,35 @@ using Il2CppCysharp.Threading.Tasks;
 
 namespace LabFusion.Patching;
 
-// SpawnSpawnableAsync is used by the regular SpawnSpawnable as well, so we don't need to patch that
 [HarmonyPatch(typeof(CrateSpawner))]
 public static class CrateSpawnerPatches
 {
+    public static readonly ComponentHashTable<CrateSpawner> HashTable = new();
+
     public static readonly HashSet<CrateSpawner> CurrentlySpawning = new();
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(CrateSpawner.Awake))]
+    public static void Awake(CrateSpawner __instance)
+    {
+        var hash = GameObjectHasher.GetHierarchyHash(__instance.gameObject);
+
+        var index = HashTable.AddComponent(hash, __instance);
+
+#if DEBUG
+        if (index > 0)
+        {
+            FusionLogger.Log($"CrateSpawner {__instance.name} had a conflicting hash {hash} and has been added at index {index}.");
+        }
+#endif
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(CrateSpawner.OnDestroy))]
+    public static void OnDestroy(CrateSpawner __instance)
+    {
+        HashTable.RemoveComponent(__instance);
+    }
 
     private static void NetworkedSpawnSpawnable(CrateSpawner spawner, UniTaskCompletionSource<Poolee> source)
     {
@@ -57,7 +84,7 @@ public static class CrateSpawnerPatches
         // Send spawn message
         var spawnedId = info.entity.Id;
 
-        SpawnSender.SendCratePlacerEvent(spawner, spawnedId);
+        SpawnSender.SendCrateSpawnerEvent(spawner, spawnedId);
     }
 
     public static void OnFinishNetworkSpawn(this CrateSpawner spawner, GameObject go)

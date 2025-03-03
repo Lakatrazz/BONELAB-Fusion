@@ -1,16 +1,7 @@
-﻿using LabFusion.Utilities;
-using LabFusion.Patching;
+﻿using LabFusion.Patching;
 using LabFusion.Entities;
-
-using UnityEngine;
-
-using Il2CppSLZ.Marrow.Warehouse;
-
-using System.Collections;
-
-using MelonLoader;
-
 using LabFusion.Network.Serialization;
+using LabFusion.Data;
 
 namespace LabFusion.Network;
 
@@ -18,21 +9,21 @@ public class CrateSpawnerData : INetSerializable
 {
     public const int Size = sizeof(ushort);
 
-    public ushort spawnedId;
-    public GameObject placer;
+    public ushort SpawnedId;
+    public ComponentHashData HashData;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref spawnedId);
-        serializer.SerializeValue(ref placer);
+        serializer.SerializeValue(ref SpawnedId);
+        serializer.SerializeValue(ref HashData);
     }
 
-    public static CrateSpawnerData Create(ushort spawnedId, GameObject placer)
+    public static CrateSpawnerData Create(ushort spawnedId, ComponentHashData hashData)
     {
         return new CrateSpawnerData()
         {
-            spawnedId = spawnedId,
-            placer = placer,
+            SpawnedId = spawnedId,
+            HashData = hashData,
         };
     }
 }
@@ -48,41 +39,24 @@ public class CrateSpawnerMessage : NativeMessageHandler
     {
         var data = received.ReadData<CrateSpawnerData>();
 
-        if (data.placer != null)
+        var crateSpawner = CrateSpawnerPatches.HashTable.GetComponentFromData(data.HashData);
+
+        if (crateSpawner == null)
         {
-            MelonCoroutines.Start(Internal_WaitForSyncable(data.placer, data.spawnedId));
-        }
-    }
-
-    private static IEnumerator Internal_WaitForSyncable(GameObject placer, ushort spawnId)
-    {
-        float startTime = TimeUtilities.TimeSinceStartup;
-
-        NetworkEntity entity = null;
-
-        while (entity == null && TimeUtilities.TimeSinceStartup - startTime <= 1f)
-        {
-            yield return null;
-
-            entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(spawnId);
+            return;
         }
 
-        if (entity == null)
+        NetworkEntityManager.HookEntityRegistered(data.SpawnedId, OnSpawnedRegistered);
+
+        void OnSpawnedRegistered(NetworkEntity entity)
         {
-            yield break;
-        }
+            var pooleeExtender = entity.GetExtender<PooleeExtender>();
 
-        var pooleeExtender = entity.GetExtender<PooleeExtender>();
+            if (pooleeExtender == null)
+            {
+                return;
+            }
 
-        if (pooleeExtender == null)
-        {
-            yield break;
-        }
-
-        var crateSpawner = placer.GetComponentInChildren<CrateSpawner>(true);
-
-        if (crateSpawner)
-        {
             crateSpawner.OnFinishNetworkSpawn(pooleeExtender.Component.gameObject);
         }
     }
