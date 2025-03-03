@@ -85,9 +85,9 @@ public class RPCEventMessage : NativeMessageHandler
         var data = received.ReadData<ComponentPathData>();
 
         // Entity object
-        if (data.hasNetworkEntity)
+        if (data.HasEntity)
         {
-            var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.entityId);
+            var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.EntityId);
 
             if (entity == null)
             {
@@ -101,7 +101,7 @@ public class RPCEventMessage : NativeMessageHandler
                 return;
             }
 
-            var rpcEvent = extender.GetComponent(data.componentIndex);
+            var rpcEvent = extender.GetComponent(data.ComponentIndex);
 
             if (rpcEvent == null)
             {
@@ -113,7 +113,7 @@ public class RPCEventMessage : NativeMessageHandler
         // Scene object
         else
         {
-            var rpcEvent = RPCEvent.HashTable.GetComponentFromData(data.hashData);
+            var rpcEvent = RPCEvent.HashTable.GetComponentFromData(data.HashData);
 
             if (rpcEvent == null)
             {

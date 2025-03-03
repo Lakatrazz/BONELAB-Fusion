@@ -7,31 +7,31 @@ public class ComponentPathData : INetSerializable
 {
     public const int Size = sizeof(byte) + sizeof(ushort) * 2 + ComponentHashData.Size;
 
-    public bool hasNetworkEntity;
+    public bool HasEntity;
 
-    public ushort entityId;
-    public ushort componentIndex;
+    public ushort EntityId;
+    public ushort ComponentIndex;
 
-    public ComponentHashData hashData;
+    public ComponentHashData HashData;
 
     public int? GetSize() => Size;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref hasNetworkEntity);
-        serializer.SerializeValue(ref entityId);
-        serializer.SerializeValue(ref componentIndex);
-        serializer.SerializeValue(ref hashData);
+        serializer.SerializeValue(ref HasEntity);
+        serializer.SerializeValue(ref EntityId);
+        serializer.SerializeValue(ref ComponentIndex);
+        serializer.SerializeValue(ref HashData);
     }
 
-    public static ComponentPathData Create(bool hasNetworkEntity, ushort entityId, ushort componentIndex, ComponentHashData hashData)
+    public static ComponentPathData Create(bool hasEntity, ushort entityId, ushort componentIndex, ComponentHashData hashData)
     {
         return new ComponentPathData()
         {
-            hasNetworkEntity = hasNetworkEntity,
-            entityId = entityId,
-            componentIndex = componentIndex,
-            hashData = hashData,
+            HasEntity = hasEntity,
+            EntityId = entityId,
+            ComponentIndex = componentIndex,
+            HashData = hashData,
         };
     }
 }

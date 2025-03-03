@@ -31,9 +31,9 @@ public class AnimationStateMessage : ModuleMessageHandler
     {
         var data = received.ReadData<AnimationStateData>();
 
-        if (data.ComponentData.hasNetworkEntity)
+        if (data.ComponentData.HasEntity)
         {
-            var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.ComponentData.entityId);
+            var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.ComponentData.EntityId);
 
             if (entity == null)
             {
@@ -47,7 +47,7 @@ public class AnimationStateMessage : ModuleMessageHandler
                 return;
             }
 
-            var animatorSyncer = extender.GetComponent(data.ComponentData.componentIndex);
+            var animatorSyncer = extender.GetComponent(data.ComponentData.ComponentIndex);
 
             if (animatorSyncer == null)
             {
@@ -58,7 +58,7 @@ public class AnimationStateMessage : ModuleMessageHandler
         }
         else
         {
-            var animatorSyncer = AnimatorSyncer.HashTable.GetComponentFromData(data.ComponentData.hashData);
+            var animatorSyncer = AnimatorSyncer.HashTable.GetComponentFromData(data.ComponentData.HashData);
 
             if (animatorSyncer == null)
             {

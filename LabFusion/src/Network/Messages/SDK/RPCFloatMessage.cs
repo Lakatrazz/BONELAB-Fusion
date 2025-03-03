@@ -82,9 +82,9 @@ public class RPCFloatMessage : NativeMessageHandler
         var data = received.ReadData<RPCFloatData>();
 
         // Entity object
-        if (data.pathData.hasNetworkEntity)
+        if (data.pathData.HasEntity)
         {
-            var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.pathData.entityId);
+            var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.pathData.EntityId);
 
             if (entity == null)
             {
@@ -98,7 +98,7 @@ public class RPCFloatMessage : NativeMessageHandler
                 return;
             }
 
-            var rpcVariable = extender.GetComponent(data.pathData.componentIndex);
+            var rpcVariable = extender.GetComponent(data.pathData.ComponentIndex);
 
             if (rpcVariable == null)
             {
@@ -117,7 +117,7 @@ public class RPCFloatMessage : NativeMessageHandler
         // Scene object
         else
         {
-            var rpcVariable = RPCVariable.HashTable.GetComponentFromData(data.pathData.hashData);
+            var rpcVariable = RPCVariable.HashTable.GetComponentFromData(data.pathData.HashData);
 
             if (rpcVariable == null)
             {

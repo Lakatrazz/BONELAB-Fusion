@@ -4,59 +4,25 @@ using LabFusion.Entities;
 using LabFusion.Extensions;
 
 using Il2CppSLZ.Interaction;
-using Il2CppSLZ.Marrow;
 
-using UnityEngine;
+using Il2CppSLZ.Marrow;
 
 namespace LabFusion.Network;
 
-public enum KeySlotType
-{
-    UNKNOWN = 0,
-    INSERT_STATIC = 1,
-    INSERT_PROP = 2,
-}
-
 public class KeySlotData : INetSerializable
 {
-    public const int Size = sizeof(byte) * 2 + sizeof(ushort);
+    public const int Size = sizeof(ushort) + ComponentPathData.Size;
 
-    public byte smallId;
-    public KeySlotType type;
-    public ushort keyId;
+    public ushort KeyId;
+    public ComponentPathData ReceiverData;
 
-    // Static receiver
-    public GameObject receiver;
-
-    // Prop receiver
-    public ushort? receiverId;
-    public byte? receiverIndex;
+    public int? GetSize() => Size;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref smallId);
-        serializer.SerializeValue(ref type, Precision.OneByte);
-        serializer.SerializeValue(ref keyId);
+        serializer.SerializeValue(ref KeyId);
 
-        serializer.SerializeValue(ref receiver);
-
-        serializer.SerializeValue(ref receiverId);
-        serializer.SerializeValue(ref receiverIndex);
-    }
-
-    public static KeySlotData Create(byte smallId, KeySlotType type, ushort keyId, GameObject receiver = null, ushort? receiverId = null, byte? receiverIndex = null)
-    {
-        return new KeySlotData()
-        {
-            smallId = smallId,
-            type = type,
-            keyId = keyId,
-
-            receiver = receiver,
-
-            receiverId = receiverId,
-            receiverIndex = receiverIndex,
-        };
+        serializer.SerializeValue(ref ReceiverData);
     }
 }
 
@@ -69,76 +35,73 @@ public class KeySlotMessage : NativeMessageHandler
     {
         var data = received.ReadData<KeySlotData>();
 
-        var key = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.keyId);
+        var keyEntity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.KeyId);
 
-        if (key == null)
+        if (keyEntity == null)
         {
             return;
         }
 
-        var keyExtender = key.GetExtender<KeyExtender>();
+        var keyExtender = keyEntity.GetExtender<KeyExtender>();
 
         if (keyExtender == null)
         {
             return;
         }
 
-        KeyRecieverPatches.IgnorePatches = true;
+        var key = keyExtender.Component;
 
-        switch (data.type)
+        var host = InteractableHost.Cache.Get(key.gameObject);
+
+        if (host == null)
         {
-            default:
-            case KeySlotType.UNKNOWN:
-                break;
-            case KeySlotType.INSERT_STATIC:
-                if (data.receiver == null)
-                {
-                    break;
-                }
-
-                var keyReceiver = data.receiver.GetComponent<KeyReceiver>();
-
-                if (keyReceiver == null)
-                {
-                    break;
-                }
-
-                var host = InteractableHost.Cache.Get(keyExtender.Component.gameObject);
-
-                // Insert the key and detach grips
-                host.TryDetach();
-
-                keyReceiver.OnInteractableHostEnter(host);
-                break;
-            case KeySlotType.INSERT_PROP:
-                var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.receiverId.Value);
-
-                if (entity == null)
-                {
-                    break;
-                }
-
-                var keyReceiverExtender = entity.GetExtender<KeyRecieverExtender>();
-
-                if (keyExtender == null)
-                {
-                    break;
-                }
-
-                var propKeyReceiver = keyReceiverExtender.GetComponent(data.receiverIndex.Value);
-
-                if (propKeyReceiver == null)
-                {
-                    break;
-                }
-
-                var propHost = InteractableHost.Cache.Get(keyExtender.Component.gameObject);
-
-                // Insert the key and detach grips
-                propHost.TryDetach();
-
-                propKeyReceiver.OnInteractableHostEnter(propHost);
-                break;
+            return;
         }
+
+        if (data.ReceiverData.HasEntity)
+        {
+            var receiverEntity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.ReceiverData.EntityId);
+
+            if (receiverEntity == null)
+            {
+                return;
+            }
+
+            var receiverExtender = receiverEntity.GetExtender<KeyReceiverExtender>();
+
+            if (receiverExtender == null)
+            {
+                return;
+            }
+
+            var receiver = receiverExtender.GetComponent(data.ReceiverData.ComponentIndex);
+
+            if (receiver == null)
+            {
+                return;
+            }
+
+            OnFoundKey(host, receiver);
+        }
+        else
+        {
+            var receiver = KeyReceiverPatches.HashTable.GetComponentFromData(data.ReceiverData.HashData);
+
+            if (receiver == null)
+            {
+                return;
+            }
+
+            OnFoundKey(host, receiver);
+        }
+    }
+
+    private static void OnFoundKey(InteractableHost keyHost, KeyReceiver receiver)
+    {
+        KeyReceiverPatches.IgnorePatches = true;
+
+        keyHost.TryDetach();
+
+        receiver.OnInteractableHostEnter(keyHost);
     }
 }

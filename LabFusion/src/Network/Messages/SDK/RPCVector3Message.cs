@@ -83,9 +83,9 @@ public class RPCVector3Message : NativeMessageHandler
         var data = received.ReadData<RPCVector3Data>();
 
         // Entity object
-        if (data.pathData.hasNetworkEntity)
+        if (data.pathData.HasEntity)
         {
-            var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.pathData.entityId);
+            var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.pathData.EntityId);
 
             if (entity == null)
             {
@@ -99,7 +99,7 @@ public class RPCVector3Message : NativeMessageHandler
                 return;
             }
 
-            var rpcVariable = extender.GetComponent(data.pathData.componentIndex);
+            var rpcVariable = extender.GetComponent(data.pathData.ComponentIndex);
 
             if (rpcVariable == null)
             {
@@ -118,7 +118,7 @@ public class RPCVector3Message : NativeMessageHandler
         // Scene object
         else
         {
-            var rpcVariable = RPCVariable.HashTable.GetComponentFromData(data.pathData.hashData);
+            var rpcVariable = RPCVariable.HashTable.GetComponentFromData(data.pathData.HashData);
 
             if (rpcVariable == null)
             {
