@@ -2,17 +2,18 @@
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 using LabFusion.Utilities;
+using LabFusion.Voice.Unity;
 
 using MelonLoader;
 
 using UnityEngine;
 
-namespace LabFusion.Voice.Unity;
+namespace LabFusion.Voice;
 
 [RegisterTypeInIl2Cpp]
-public sealed class UnityVoiceFilter : MonoBehaviour
+public sealed class AudioStreamFilter : MonoBehaviour
 {
-    public UnityVoiceFilter(IntPtr intPtr) : base(intPtr) { }
+    public AudioStreamFilter(IntPtr intPtr) : base(intPtr) { }
 
     [HideFromIl2Cpp]
     public Queue<float> ReadingQueue { get; } = new();

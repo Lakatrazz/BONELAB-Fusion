@@ -14,7 +14,7 @@ using System;
 
 public class UnityVoiceSpeaker : VoiceSpeaker
 {
-    public UnityVoiceFilter VoiceFilter { get; set; } = null;
+    public AudioStreamFilter StreamFilter { get; set; } = null;
 
     private bool _playing = false;
     public bool Playing
@@ -34,15 +34,15 @@ public class UnityVoiceSpeaker : VoiceSpeaker
 
             if (value)
             {
-                VoiceFilter.enabled = true;
+                StreamFilter.enabled = true;
                 Source.Play();
             }
             else
             {
                 Source.Stop();
-                VoiceFilter.enabled = false;
+                StreamFilter.enabled = false;
 
-                VoiceFilter.ReadingQueue.Clear();
+                StreamFilter.ReadingQueue.Clear();
                 _amplitude = 0f;
             }
         }
@@ -65,7 +65,7 @@ public class UnityVoiceSpeaker : VoiceSpeaker
 
         Source.clip = AudioClip.Create("UnityVoice", 256, 1, UnityVoice.SampleRate, false, (PCMReaderCallback)PcmReaderCallback);
 
-        VoiceFilter = Source.gameObject.AddComponent<UnityVoiceFilter>();
+        StreamFilter = Source.gameObject.AddComponent<AudioStreamFilter>();
 
         Source.Play();
 
@@ -88,7 +88,7 @@ public class UnityVoiceSpeaker : VoiceSpeaker
             return;
         }
 
-        if (VoiceFilter.ReadingQueue.Count <= 0 || _amplitude < VoiceVolume.MinimumVoiceVolume)
+        if (StreamFilter.ReadingQueue.Count <= 0 || _amplitude < VoiceVolume.MinimumVoiceVolume)
         {
             _silentTimer += TimeUtilities.DeltaTime;
         }
@@ -139,7 +139,7 @@ public class UnityVoiceSpeaker : VoiceSpeaker
         {
             float value = Math.Clamp(BitConverter.ToSingle(decompressed, i) * volumeMultiplier, -1f, 1f);
 
-            VoiceFilter.ReadingQueue.Enqueue(value);
+            StreamFilter.ReadingQueue.Enqueue(value);
 
             amplitude += Math.Abs(value);
             sampleCount++;
