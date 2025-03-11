@@ -3,7 +3,6 @@
 using LabFusion.Exceptions;
 using LabFusion.Network;
 using LabFusion.Utilities;
-using static Il2CppSystem.Uri;
 
 namespace LabFusion.SDK.Modules;
 

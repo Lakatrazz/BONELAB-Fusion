@@ -1,12 +1,10 @@
-﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
-
-using LabFusion.Data;
+﻿using LabFusion.Data;
 using LabFusion.Player;
 using LabFusion.Utilities;
+using LabFusion.Math;
+using LabFusion.Audio;
 
 using UnityEngine;
-
-using PCMReaderCallback = UnityEngine.AudioClip.PCMReaderCallback;
 
 namespace LabFusion.Voice.Unity;
 
@@ -15,6 +13,14 @@ using System;
 public class UnityVoiceSpeaker : VoiceSpeaker
 {
     public AudioStreamFilter StreamFilter { get; set; } = null;
+
+    public AudioLowPassFilter LowPassFilter { get; set; } = null;
+
+    public float Frequency { get; set; } = 25000f;
+
+    public float TargetFrequency { get; set; } = 25000f;
+
+    public float OcclusionMultiplier { get; set; } = 1f;
 
     private bool _playing = false;
     public bool Playing
@@ -36,6 +42,12 @@ public class UnityVoiceSpeaker : VoiceSpeaker
             {
                 StreamFilter.enabled = true;
                 Source.Play();
+
+                // Update frequency changes
+                CheckLowPass();
+                CalculateTargetFrequency();
+
+                Frequency = TargetFrequency;
             }
             else
             {
@@ -63,9 +75,12 @@ public class UnityVoiceSpeaker : VoiceSpeaker
         // Create the audio source and clip
         CreateAudioSource();
 
-        Source.clip = AudioClip.Create("UnityVoice", 256, 1, UnityVoice.SampleRate, false, (PCMReaderCallback)PcmReaderCallback);
+        Source.clip = AudioInfo.ToneClip;
 
         StreamFilter = Source.gameObject.AddComponent<AudioStreamFilter>();
+        LowPassFilter = Source.gameObject.AddComponent<AudioLowPassFilter>();
+
+        LowPassFilter.lowpassResonanceQ = 0.1f;
 
         Source.Play();
 
@@ -80,6 +95,8 @@ public class UnityVoiceSpeaker : VoiceSpeaker
     {
         return _amplitude;
     }
+
+    private float _lowPassCheckTimer = 0f;
 
     public override void Update()
     {
@@ -96,7 +113,62 @@ public class UnityVoiceSpeaker : VoiceSpeaker
         if (_silentTimer > 1f)
         {
             Playing = false;
-        } 
+        }
+
+        if (_lowPassCheckTimer < 0.05f)
+        {
+            _lowPassCheckTimer += TimeUtilities.DeltaTime;
+        }
+        else
+        {
+            CheckLowPass();
+            _lowPassCheckTimer = 0f;
+        }
+
+        CalculateTargetFrequency();
+
+        Frequency = ManagedMathf.Lerp(Frequency, TargetFrequency, Smoothing.CalculateDecay(24f, TimeUtilities.DeltaTime));
+
+        LowPassFilter.cutoffFrequency = Frequency;
+    }
+
+    private void CalculateTargetFrequency()
+    {
+        float highFrequency = 25000f;
+        float spatialFrequency = 7000f;
+
+        if (!RigData.HasPlayer)
+        {
+            TargetFrequency = highFrequency * OcclusionMultiplier;
+            return;
+        }
+
+        var listenerPosition = RigData.Refs.Headset.position;
+        var listenerDirection = RigData.Refs.Headset.forward;
+
+        var sourcePosition = Source.transform.position;
+
+        var audioDot = Vector3.Dot(listenerDirection, (listenerPosition - sourcePosition).normalized);
+        var remappedDot = Math.Clamp((audioDot + 1f) * 0.5f, 0f, 1f);
+
+        var newFrequency = ManagedMathf.Lerp(highFrequency, spatialFrequency, MathF.Sqrt(remappedDot)) * OcclusionMultiplier;
+
+        TargetFrequency = newFrequency;
+    }
+
+    private void CheckLowPass()
+    {
+        OcclusionMultiplier = 1f;
+
+        if (!RigData.HasPlayer)
+        {
+            return;
+        }
+
+        var listener = RigData.Refs.Headset.position;
+        var source = Source.transform.position;
+
+        OcclusionMultiplier = AudioOcclusion.RaycastOcclusionMultiplier(listener, source);
     }
 
     public override void Cleanup()
@@ -137,7 +209,7 @@ public class UnityVoiceSpeaker : VoiceSpeaker
 
         for (int i = 0; i < decompressed.Length; i += sizeof(float))
         {
-            float value = Math.Clamp(BitConverter.ToSingle(decompressed, i) * volumeMultiplier, -1f, 1f);
+            float value = Math.Clamp(BitConverter.ToSingle(decompressed, i) * volumeMultiplier, -10f, 10f);
 
             StreamFilter.ReadingQueue.Enqueue(value);
 
@@ -155,14 +227,5 @@ public class UnityVoiceSpeaker : VoiceSpeaker
         Playing = true;
 
         _silentTimer = 0f;
-    }
-
-    private void PcmReaderCallback(Il2CppStructArray<float> data)
-    {
-        // Setting all the data to 1 so it can be multiplied by the audio filter
-        for (int i = 0; i < data.Length; i++)
-        {
-            data[i] = 1f;
-        }
     }
 }

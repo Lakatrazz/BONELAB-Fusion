@@ -2,13 +2,12 @@
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 using LabFusion.Utilities;
-using LabFusion.Voice.Unity;
 
 using MelonLoader;
 
 using UnityEngine;
 
-namespace LabFusion.Voice;
+namespace LabFusion.Audio;
 
 [RegisterTypeInIl2Cpp]
 public sealed class AudioStreamFilter : MonoBehaviour
@@ -19,7 +18,7 @@ public sealed class AudioStreamFilter : MonoBehaviour
     public Queue<float> ReadingQueue { get; } = new();
 
     [HideFromIl2Cpp]
-    public float[] ReadingArray { get; } = new float[UnityVoice.SampleRate];
+    public float[] ReadingArray { get; } = new float[AudioInfo.OutputSampleRate];
 
     public unsafe void OnAudioFilterRead(Il2CppStructArray<float> data, int channels)
     {

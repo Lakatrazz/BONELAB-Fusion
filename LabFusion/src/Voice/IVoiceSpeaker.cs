@@ -70,6 +70,7 @@ public abstract class VoiceSpeaker : IVoiceSpeaker
         _source.outputAudioMixerGroup = null;
         _source.spatialBlend = 1f;
         _source.dopplerLevel = 0.5f;
+        _source.spread = 60f;
 
         GameObject.DontDestroyOnLoad(_source);
         GameObject.DontDestroyOnLoad(_sourceGo);

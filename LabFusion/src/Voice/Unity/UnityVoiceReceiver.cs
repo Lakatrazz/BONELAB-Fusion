@@ -2,6 +2,7 @@
 
 using LabFusion.Preferences.Client;
 using LabFusion.Utilities;
+using LabFusion.Audio;
 
 using UnityEngine;
 
@@ -74,7 +75,7 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
 
         if (enabled && !isRecording)
         {
-            _voiceClip = Microphone.Start(microphoneName, true, UnityVoice.ClipLength, UnityVoice.SampleRate);
+            _voiceClip = Microphone.Start(microphoneName, true, UnityVoice.ClipLength, AudioInfo.OutputSampleRate);
         }
         else if (!enabled && isRecording)
         {
@@ -92,7 +93,7 @@ public sealed class UnityVoiceReceiver : IVoiceReceiver
         if (position < _lastSample)
         {
             _loopedData = true;
-            position = UnityVoice.SampleRate;
+            position = AudioInfo.OutputSampleRate;
         }
 
         int sampleCount = position - _lastSample;
