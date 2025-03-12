@@ -538,8 +538,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         {
             float heightMult = rm._avatar.height / 1.76f;
 
-            _minMicrophoneDistance = 1f * heightMult;
-            _maxMicrophoneDistance = 30f * heightMult;
+            _minMicrophoneDistance = 3f * MathF.Sqrt(heightMult);
+            _maxMicrophoneDistance = 30f * MathF.Sqrt(heightMult);
 
             _voiceSource.minDistance = _minMicrophoneDistance;
         }

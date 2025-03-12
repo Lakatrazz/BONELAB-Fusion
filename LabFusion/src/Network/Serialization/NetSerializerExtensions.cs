@@ -280,7 +280,7 @@ public static class NetSerializerExtensions
 
                 serializer.SerializeValue(ref readString);
 
-                value[i] = readString;
+                value.Add(readString);
             }
         }
         else

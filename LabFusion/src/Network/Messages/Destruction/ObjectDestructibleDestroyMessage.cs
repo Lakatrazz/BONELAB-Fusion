@@ -26,14 +26,14 @@ public class ObjectDestructibleDestroyMessage : NativeMessageHandler
             }
 
             var objectDestructible = extender.GetComponent(data.ComponentIndex);
+
             ObjectDestructiblePatches.IgnorePatches = true;
             PooleeDespawnPatch.IgnorePatch = true;
 
             try
             {
-                objectDestructible._bloodied = true;
                 objectDestructible._hits = objectDestructible.reqHitCount + 1;
-                objectDestructible.TakeDamage(Vector3Extensions.up, float.PositiveInfinity, false);
+                objectDestructible.TakeDamage(Vector3Extensions.up, objectDestructible._health + 1f, false);
             }
             catch (Exception e)
             {

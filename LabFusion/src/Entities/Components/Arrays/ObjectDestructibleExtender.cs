@@ -40,7 +40,9 @@ public class ObjectDestructibleExtender : EntityComponentArrayExtender<ObjectDes
 
     private void OnEntityCatchup(ObjectDestructible destructible, NetworkEntity entity, PlayerId player)
     {
-        if (!destructible._isDead)
+        bool destroyed = destructible._isDead || destructible.IsDespawned;
+
+        if (!destroyed)
         {
             return;
         }

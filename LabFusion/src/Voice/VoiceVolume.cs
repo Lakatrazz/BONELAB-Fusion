@@ -8,7 +8,7 @@ public static class VoiceVolume
 {
     public const float DefaultSampleMultiplier = 10f;
 
-    public const float DefaultVolumeMultiplier = 2f;
+    public const float DefaultVolumeMultiplier = 2.5f;
 
     public const float MinimumVoiceVolume = 0.3f;
 

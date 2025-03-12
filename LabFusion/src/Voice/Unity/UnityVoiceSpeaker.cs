@@ -209,7 +209,7 @@ public class UnityVoiceSpeaker : VoiceSpeaker
 
         for (int i = 0; i < decompressed.Length; i += sizeof(float))
         {
-            float value = Math.Clamp(BitConverter.ToSingle(decompressed, i) * volumeMultiplier, -10f, 10f);
+            float value = BitConverter.ToSingle(decompressed, i) * volumeMultiplier;
 
             StreamFilter.ReadingQueue.Enqueue(value);
 

@@ -1,5 +1,4 @@
-﻿using LabFusion.Network;
-using LabFusion.Network.Serialization;
+﻿using LabFusion.Network.Serialization;
 
 using UnityEngine;
 
