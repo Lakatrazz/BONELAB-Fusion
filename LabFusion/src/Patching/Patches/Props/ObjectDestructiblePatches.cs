@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 
 using LabFusion.Network;
-using LabFusion.Player;
 using LabFusion.Entities;
 using LabFusion.RPC;
 
@@ -31,12 +30,7 @@ public static class ObjectDestructiblePatches
             lootTable = destructible.lootTable;
             isDead = destructible._isDead;
 
-            var spawnTarget = destructible.spawnTarget;
-
-            if (spawnTarget == null)
-            {
-                spawnTarget = destructible.transform;
-            }
+            var spawnTarget = destructible.spawnTarget ?? destructible.transform;
 
             spawnPosition = spawnTarget.position;
             spawnRotation = spawnTarget.rotation;
