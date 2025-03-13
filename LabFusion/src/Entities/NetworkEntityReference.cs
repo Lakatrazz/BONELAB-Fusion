@@ -11,7 +11,7 @@ public struct NetworkEntityReference : INetSerializable
 
     public ushort Id;
 
-    public int? GetSize() => Size;
+    public readonly int? GetSize() => Size;
 
     public void Serialize(INetSerializer serializer)
     {
