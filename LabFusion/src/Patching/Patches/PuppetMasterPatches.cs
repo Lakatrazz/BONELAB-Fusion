@@ -32,7 +32,7 @@ public static class PuppetMasterPatches
             return;
         }
 
-        var data = PropReferenceData.Create(PlayerIdManager.LocalSmallId, entity.Id);
+        var data = new NetworkEntityReference(entity);
 
         MessageRelay.RelayNative(data, NativeMessageTag.PuppetMasterKill, NetworkChannel.Reliable, RelayType.ToOtherClients);
 

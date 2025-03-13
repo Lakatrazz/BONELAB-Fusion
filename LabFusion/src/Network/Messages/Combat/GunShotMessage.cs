@@ -8,24 +8,21 @@ public class GunShotData : INetSerializable
 {
     public const int Size = sizeof(byte) * 2 + sizeof(ushort);
 
-    public byte smallId;
     public byte ammoCount;
     public ushort gunId;
     public byte gunIndex;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref smallId);
         serializer.SerializeValue(ref ammoCount);
         serializer.SerializeValue(ref gunId);
         serializer.SerializeValue(ref gunIndex);
     }
 
-    public static GunShotData Create(byte smallId, byte ammoCount, ushort gunId, byte gunIndex)
+    public static GunShotData Create(byte ammoCount, ushort gunId, byte gunIndex)
     {
         return new GunShotData()
         {
-            smallId = smallId,
             ammoCount = ammoCount,
             gunId = gunId,
             gunIndex = gunIndex,

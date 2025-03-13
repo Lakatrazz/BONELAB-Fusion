@@ -11,37 +11,33 @@ public class PuppetMasterKillMessage : NativeMessageHandler
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
-        var data = received.ReadData<PropReferenceData>();
+        var data = received.ReadData<NetworkEntityReference>();
 
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.syncId);
-
-        if (entity == null)
+        data.HookEntityRegistered((entity) =>
         {
-            return;
-        }
+            var extender = entity.GetExtender<PuppetMasterExtender>();
 
-        var extender = entity.GetExtender<PuppetMasterExtender>();
+            if (extender == null)
+            {
+                return;
+            }
 
-        if (extender == null)
-        {
-            return;
-        }
+            // Save the most recent killed NPC
+            PuppetMasterExtender.LastKilled = entity;
 
-        // Save the most recent killed NPC
-        PuppetMasterExtender.LastKilled = entity;
+            // Kill the puppet
+            PuppetMasterPatches.IgnorePatches = true;
 
-        // Kill the puppet
-        PuppetMasterPatches.IgnorePatches = true;
+            try
+            {
+                extender.Component.Kill();
+            }
+            catch (Exception e)
+            {
+                FusionLogger.LogException("executing PuppetMaster.Kill", e);
+            }
 
-        try
-        {
-            extender.Component.Kill();
-        }
-        catch (Exception e)
-        {
-            FusionLogger.LogException("executing PuppetMaster.Kill", e);
-        }
-
-        PuppetMasterPatches.IgnorePatches = false;
+            PuppetMasterPatches.IgnorePatches = false;
+        });
     }
 }
