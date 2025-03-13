@@ -10,8 +10,6 @@ public class RandomObjectData : INetSerializable
 {
     public const int Size = sizeof(byte) + sizeof(ushort) * 3;
 
-    public byte smallId;
-
     public ushort entityId;
     public ushort componentIndex;
 
@@ -19,17 +17,15 @@ public class RandomObjectData : INetSerializable
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref smallId);
         serializer.SerializeValue(ref entityId);
         serializer.SerializeValue(ref componentIndex);
         serializer.SerializeValue(ref objectIndex);
     }
 
-    public static RandomObjectData Create(byte smallId, ushort entityId, ushort componentIndex, ushort objectIndex)
+    public static RandomObjectData Create(ushort entityId, ushort componentIndex, ushort objectIndex)
     {
         return new RandomObjectData()
         {
-            smallId = smallId,
             entityId = entityId,
             componentIndex = componentIndex,
             objectIndex = objectIndex,

@@ -18,6 +18,7 @@ public static class PropFlashlightPatches
     {
         if (IgnorePatches)
         {
+            IgnorePatches = false;
             return true;
         }
 
@@ -35,7 +36,7 @@ public static class PropFlashlightPatches
         {
             var toggledLight = !__instance.lightOn;
 
-            var data = FlashlightToggleData.Create(entity.Id, toggledLight);
+            var data = FlashlightToggleData.Create(new(entity), toggledLight);
 
             MessageRelay.RelayModule<FlashlightToggleMessage, FlashlightToggleData>(data, NetworkChannel.Reliable, RelayType.ToClients);
         }

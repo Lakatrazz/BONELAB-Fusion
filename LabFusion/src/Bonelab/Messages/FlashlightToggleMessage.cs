@@ -9,23 +9,26 @@ namespace LabFusion.Bonelab;
 
 public class FlashlightToggleData : INetSerializable
 {
-    public const int Size = sizeof(byte) * 2 + sizeof(ushort);
+    public const int Size = NetworkEntityReference.Size + sizeof(bool);
 
-    public ushort entityId;
-    public bool isEnabled;
+    public NetworkEntityReference FlashlightEntity;
+
+    public bool LightOn;
+
+    public int? GetSize() => Size;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref entityId);
-        serializer.SerializeValue(ref isEnabled);
+        serializer.SerializeValue(ref FlashlightEntity);
+        serializer.SerializeValue(ref LightOn);
     }
 
-    public static FlashlightToggleData Create(ushort syncId, bool isEnabled)
+    public static FlashlightToggleData Create(NetworkEntityReference flashlightEntity, bool lightOn)
     {
         return new FlashlightToggleData()
         {
-            entityId = syncId,
-            isEnabled = isEnabled,
+            FlashlightEntity = flashlightEntity,
+            LightOn = lightOn,
         };
     }
 }
@@ -37,27 +40,21 @@ public class FlashlightToggleMessage : ModuleMessageHandler
     {
         var data = received.ReadData<FlashlightToggleData>();
 
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.entityId);
-
-        if (entity == null)
+        data.FlashlightEntity.HookEntityRegistered((entity) =>
         {
-            return;
-        }
+            var extender = entity.GetExtender<PropFlashlightExtender>();
 
-        var extender = entity.GetExtender<PropFlashlightExtender>();
+            if (extender == null)
+            {
+                return;
+            }
 
-        if (extender == null)
-        {
-            return;
-        }
+            var flashlight = extender.Component;
+            flashlight.lightOn = !data.LightOn;
 
-        var flashlight = extender.Component;
-        flashlight.lightOn = !data.isEnabled;
+            PropFlashlightPatches.IgnorePatches = true;
 
-        PropFlashlightPatches.IgnorePatches = true;
-
-        flashlight.SwitchLight();
-
-        PropFlashlightPatches.IgnorePatches = false;
+            flashlight.SwitchLight();
+        });
     }
 }
