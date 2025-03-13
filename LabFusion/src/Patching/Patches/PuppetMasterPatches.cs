@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 
 using LabFusion.Network;
-using LabFusion.Player;
 using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow.PuppetMasta;
