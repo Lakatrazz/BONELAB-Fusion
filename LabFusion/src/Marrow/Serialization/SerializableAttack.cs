@@ -6,18 +6,22 @@ using LabFusion.Scene;
 
 using UnityEngine;
 
-namespace LabFusion.Data;
+namespace LabFusion.Marrow.Serialization;
 
-public class SerializedAttack : INetSerializable
+public class SerializableAttack : INetSerializable
 {
-    public Attack attack;
+    public const int Size = + sizeof(float) * 10 + sizeof(int);
 
-    public SerializedAttack() { }
+    public Attack Attack;
 
-    public SerializedAttack(Attack attack)
+    public SerializableAttack() { }
+
+    public SerializableAttack(Attack attack)
     {
-        this.attack = attack;
+        this.Attack = attack;
     }
+
+    public int? GetSize() => Size;
 
     public void Serialize(INetSerializer serializer)
     {
@@ -29,11 +33,11 @@ public class SerializedAttack : INetSerializable
 
         if (!serializer.IsReader)
         {
-            damage = attack.damage;
-            attackType = attack.attackType;
-            origin = NetworkTransformManager.EncodePosition(attack.origin);
-            direction = attack.direction;
-            normal = attack.normal;
+            damage = Attack.damage;
+            attackType = Attack.attackType;
+            origin = NetworkTransformManager.EncodePosition(Attack.origin);
+            direction = Attack.direction;
+            normal = Attack.normal;
         }
 
         serializer.SerializeValue(ref damage);
@@ -44,7 +48,7 @@ public class SerializedAttack : INetSerializable
 
         if (serializer.IsReader)
         {
-            attack = new Attack()
+            Attack = new Attack()
             {
                 damage = damage,
                 attackType = attackType,

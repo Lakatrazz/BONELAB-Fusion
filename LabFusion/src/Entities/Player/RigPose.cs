@@ -1,5 +1,5 @@
 ﻿using LabFusion.Data;
-using LabFusion.Network;
+using LabFusion.Marrow.Serialization;
 using LabFusion.Network.Serialization;
 using LabFusion.Representation;
 
@@ -10,7 +10,7 @@ public class RigPose : INetSerializable
     public const int Size = SerializedLocalTransform.Size * RigAbstractor.TransformSyncCount +
         SerializedSmallQuaternion.Size +
         BodyPose.Size * 2 +
-        SerializedController.Size * 2 +
+        SerializableController.Size * 2 +
         sizeof(float) * 2;
 
     public SerializedLocalTransform[] TrackedPoints = new SerializedLocalTransform[RigAbstractor.TransformSyncCount];
@@ -19,8 +19,8 @@ public class RigPose : INetSerializable
 
     public BodyPose PelvisPose = new();
 
-    public SerializedController LeftController = null;
-    public SerializedController RightController = null;
+    public SerializableController LeftController = null;
+    public SerializableController RightController = null;
 
     public float CrouchTarget = 0f;
 

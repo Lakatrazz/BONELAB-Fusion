@@ -2,6 +2,7 @@
 using LabFusion.Player;
 using LabFusion.Utilities;
 using LabFusion.Network.Serialization;
+using LabFusion.Marrow.Serialization;
 
 using Il2CppSLZ.Marrow.Combat;
 using Il2CppSLZ.Marrow;
@@ -15,7 +16,7 @@ public class PlayerRepDamageData : INetSerializable
     public byte damagerId;
     public byte damagedId;
 
-    public SerializedAttack attack;
+    public SerializableAttack attack;
     public PlayerDamageReceiver.BodyPart part;
 
     public void Serialize(INetSerializer serializer)
@@ -58,7 +59,7 @@ public class PlayerRepDamageMessage : NativeMessageHandler
         var health = rm.health;
 
         // Get attack and find the collider
-        var attack = data.attack.attack;
+        var attack = data.attack.Attack;
 
         // Track the damager
         FusionPlayer.LastAttacker = data.damagerId;
