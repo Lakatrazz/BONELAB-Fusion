@@ -16,9 +16,11 @@ public class UnityVoiceSpeaker : VoiceSpeaker
 
     public AudioLowPassFilter LowPassFilter { get; set; } = null;
 
-    public float Frequency { get; set; } = 25000f;
+    public const float HighFrequency = 25000f;
 
-    public float TargetFrequency { get; set; } = 25000f;
+    public float Frequency { get; set; } = HighFrequency;
+
+    public float TargetFrequency { get; set; } = HighFrequency;
 
     public float OcclusionMultiplier { get; set; } = 1f;
 
@@ -45,8 +47,8 @@ public class UnityVoiceSpeaker : VoiceSpeaker
 
                 // Update frequency changes
                 CheckLowPass();
-                CalculateTargetFrequency();
 
+                TargetFrequency = HighFrequency * OcclusionMultiplier;
                 Frequency = TargetFrequency;
             }
             else
@@ -125,35 +127,11 @@ public class UnityVoiceSpeaker : VoiceSpeaker
             _lowPassCheckTimer = 0f;
         }
 
-        CalculateTargetFrequency();
+        TargetFrequency = HighFrequency * OcclusionMultiplier;
 
         Frequency = ManagedMathf.Lerp(Frequency, TargetFrequency, Smoothing.CalculateDecay(24f, TimeUtilities.DeltaTime));
 
         LowPassFilter.cutoffFrequency = Frequency;
-    }
-
-    private void CalculateTargetFrequency()
-    {
-        float highFrequency = 25000f;
-        float spatialFrequency = 7000f;
-
-        if (!RigData.HasPlayer)
-        {
-            TargetFrequency = highFrequency * OcclusionMultiplier;
-            return;
-        }
-
-        var listenerPosition = RigData.Refs.Headset.position;
-        var listenerDirection = RigData.Refs.Headset.forward;
-
-        var sourcePosition = Source.transform.position;
-
-        var audioDot = Vector3.Dot(listenerDirection, (listenerPosition - sourcePosition).normalized);
-        var remappedDot = Math.Clamp((audioDot + 1f) * 0.5f, 0f, 1f);
-
-        var newFrequency = ManagedMathf.Lerp(highFrequency, spatialFrequency, MathF.Sqrt(remappedDot)) * OcclusionMultiplier;
-
-        TargetFrequency = newFrequency;
     }
 
     private void CheckLowPass()
