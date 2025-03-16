@@ -1,14 +1,15 @@
 ﻿using HarmonyLib;
 
-using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Entities;
 using LabFusion.Utilities;
+using LabFusion.Scene;
 
 using UnityEngine;
 
 using Il2CppSLZ.Marrow;
+using Il2CppSLZ.Marrow.Interaction;
 
 namespace LabFusion.Patching;
 
@@ -43,51 +44,69 @@ public struct ConstrainerPointPair
 [HarmonyPatch(typeof(Constrainer))]
 public static class ConstrainerPatches
 {
-
     public static bool IsReceivingConstraints = false;
     public static ushort FirstId;
     public static ushort SecondId;
+
+    private static bool IsPlayer(MarrowBody body)
+    {
+        if (body == null)
+        {
+            return false;
+        }
+
+        if (!MarrowBodyExtender.Cache.TryGet(body, out var entity))
+        {
+            return false;
+        }
+
+        return entity.GetExtender<NetworkPlayer>() != null;
+    }
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(Constrainer.PrimaryButtonUp))]
     public static bool PrimaryButtonUpPrefix(Constrainer __instance)
     {
         if (IsReceivingConstraints)
-            return true;
-
-        if (NetworkInfo.HasServer)
         {
-            // No logic for constraint removing
-            if (__instance.mode == Constrainer.ConstraintMode.Remove)
+            return true;
+        }
+
+        if (CrossSceneManager.InUnsyncedScene())
+        {
+            return true;
+        }
+
+        // No logic for constraint removing
+        if (__instance.mode == Constrainer.ConstraintMode.Remove)
+        {
+            return true;
+        }
+
+        // Prevent player constraining if its disabled
+        if (!ConstrainerUtilities.PlayerConstraintsEnabled)
+        {
+            bool preventPlayer = false;
+
+            if (IsPlayer(__instance._mb1))
             {
-                return true;
+                __instance._gO1 = null;
+                __instance._mb1 = null;
+                preventPlayer = true;
             }
 
-            // Prevent player constraining if its disabled
-            if (!ConstrainerUtilities.PlayerConstraintsEnabled)
+            if (IsPlayer(__instance._mb2))
             {
-                bool preventPlayer = false;
+                __instance._gO2 = null;
+                __instance._mb2 = null;
+                preventPlayer = true;
+            }
 
-                if (__instance._mb1.IsPartOfPlayer())
-                {
-                    __instance._gO1 = null;
-                    __instance._mb1 = null;
-                    preventPlayer = true;
-                }
-
-                if (__instance._mb2.IsPartOfPlayer())
-                {
-                    __instance._gO2 = null;
-                    __instance._mb2 = null;
-                    preventPlayer = true;
-                }
-
-                if (preventPlayer)
-                {
-                    __instance._raycastMissedOnDown = true;
-                    __instance.sfx.Release();
-                    return false;
-                }
+            if (preventPlayer)
+            {
+                __instance._raycastMissedOnDown = true;
+                __instance.sfx.Release();
+                return false;
             }
         }
 
@@ -98,6 +117,11 @@ public static class ConstrainerPatches
     [HarmonyPatch(nameof(Constrainer.PrimaryButtonUp))]
     public static void PrimaryButtonUpPostfix(Constrainer __instance)
     {
+        if (CrossSceneManager.InUnsyncedScene())
+        {
+            return;
+        }
+
         var go1 = __instance._gO1;
         var go2 = __instance._gO2;
 
@@ -106,15 +130,12 @@ public static class ConstrainerPatches
             return;
         }
 
-        if (!NetworkInfo.HasServer)
-        {
-            return;
-        }
-
         var firstTracker = __instance._gO1.GetComponents<ConstraintTracker>().LastOrDefault();
 
         if (firstTracker == null)
+        {
             return;
+        }
 
         var secondTracker = firstTracker.otherTracker;
 
@@ -154,7 +175,7 @@ public static class ConstrainerPatches
     [HarmonyPatch(nameof(Constrainer.OnTriggerGripUpdate))]
     public static bool OnTriggerGripUpdatePrefix(Constrainer __instance, Hand hand)
     {
-        if (!NetworkInfo.HasServer)
+        if (CrossSceneManager.InUnsyncedScene())
         {
             return true;
         }
@@ -170,10 +191,15 @@ public static class ConstrainerPatches
             {
                 // Send mode message
                 Constrainer.ConstraintMode nextMode = __instance.mode;
+
                 if (nextMode == Constrainer.ConstraintMode.Remove)
+                {
                     nextMode = Constrainer.ConstraintMode.Tether;
+                }
                 else
+                {
                     nextMode++;
+                }
 
                 var data = ConstrainerModeData.Create(PlayerIdManager.LocalSmallId, syncable.Id, nextMode);
 

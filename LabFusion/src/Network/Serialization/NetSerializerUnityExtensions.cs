@@ -1,6 +1,4 @@
-﻿using LabFusion.Utilities;
-
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace LabFusion.Network.Serialization;
 
@@ -19,29 +17,5 @@ public static class NetSerializerUnityExtensions
         serializer.SerializeValue(ref value.x);
         serializer.SerializeValue(ref value.y);
         serializer.SerializeValue(ref value.z);
-    }
-
-    public static void SerializeValue(this INetSerializer serializer, ref GameObject value)
-    {
-        string path = "null";
-
-        if (!serializer.IsReader)
-        {
-            path = value.GetFullPath();
-        }
-
-        serializer.SerializeValue(ref path);
-
-        if (serializer.IsReader)
-        {
-            if (path == "null")
-            {
-                value = null;
-            }
-            else
-            {
-                value = GameObjectUtilities.GetGameObject(path);
-            }
-        }
     }
 }
