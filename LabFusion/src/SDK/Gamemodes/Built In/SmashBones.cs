@@ -653,14 +653,7 @@ public class SmashBones : Gamemode
         }
         else
         {
-            var spawnPoints = GamemodeMarker.FilterMarkers(null);
-
-            if (spawnPoints.Count > 0)
-            {
-                var playerIndex = PlayerIdManager.LocalId.SmallId % spawnPoints.Count;
-
-                GamemodeHelper.SetSpawnPoint(spawnPoints[playerIndex]);
-            }
+            GamemodeHelper.SetSpawnPoints(GamemodeMarker.FilterMarkers(null));
         }
 
         GamemodeHelper.TeleportToSpawnPoint();
