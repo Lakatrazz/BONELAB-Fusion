@@ -44,7 +44,12 @@ public static class PooleeUtilities
         // Send response
         if (NetworkInfo.IsServer)
         {
-            var data = DespawnResponseData.Create(PlayerIdManager.LocalSmallId, entityId, despawnEffect);
+            var data = new DespawnResponseData()
+            {
+                Despawner = new(PlayerIdManager.LocalSmallId),
+                Entity = new(entityId),
+                DespawnEffect = despawnEffect,
+            };
 
             MessageRelay.RelayNative(data, NativeMessageTag.DespawnResponse, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
@@ -57,7 +62,11 @@ public static class PooleeUtilities
 
     public static void RequestDespawn(ushort entityId, bool despawnEffect)
     {
-        var data = DespawnRequestData.Create(PlayerIdManager.LocalSmallId, entityId, despawnEffect);
+        var data = new DespawnRequestData()
+        {
+            Entity = new NetworkEntityReference(entityId),
+            DespawnEffect = despawnEffect,
+        };
 
         MessageRelay.RelayNative(data, NativeMessageTag.DespawnResponse, NetworkChannel.Reliable, RelayType.ToServer);
     }

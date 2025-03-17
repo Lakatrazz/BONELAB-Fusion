@@ -1,43 +1,30 @@
-﻿using LabFusion.Data;
-using LabFusion.Utilities;
+﻿using LabFusion.Utilities;
 using LabFusion.Entities;
-
-using MelonLoader;
-
-using System.Collections;
+using LabFusion.Network.Serialization;
+using LabFusion.Player;
 
 using Il2CppSLZ.Marrow.VFX;
-
-using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
 public class DespawnResponseData : INetSerializable
 {
-    public const int Size = sizeof(ushort) + sizeof(byte) * 2;
+    public const int Size = PlayerReference.Size + NetworkEntityReference.Size + sizeof(bool);
 
-    public byte despawnerId;
-    public ushort entityId;
+    public PlayerReference Despawner;
 
-    public bool despawnEffect;
+    public NetworkEntityReference Entity;
+
+    public bool DespawnEffect;
+
+    public int? GetSize() => Size;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref despawnerId);
-        serializer.SerializeValue(ref entityId);
+        serializer.SerializeValue(ref Despawner);
+        serializer.SerializeValue(ref Entity);
 
-        serializer.SerializeValue(ref despawnEffect);
-    }
-
-    public static DespawnResponseData Create(byte despawnerId, ushort entityId, bool despawnEffect)
-    {
-        return new DespawnResponseData()
-        {
-            despawnerId = despawnerId,
-            entityId = entityId,
-
-            despawnEffect = despawnEffect,
-        };
+        serializer.SerializeValue(ref DespawnEffect);
     }
 }
 
@@ -51,59 +38,41 @@ public class DespawnResponseMessage : NativeMessageHandler
         // Despawn the poolee if it exists
         var data = received.ReadData<DespawnResponseData>();
 
-        MelonCoroutines.Start(Internal_WaitForValidDespawn(data.despawnerId, data.entityId, data.despawnEffect));
-    }
-
-    private static IEnumerator Internal_WaitForValidDespawn(byte despawnerId, ushort entityId, bool despawnEffect)
-    {
-        // Delay at most 300 frames until this entity exists
-        int i = 0;
-        while (!NetworkEntityManager.IdManager.RegisteredEntities.HasEntity(entityId))
+        data.Entity.HookEntityRegistered((entity) =>
         {
-            yield return null;
-
-            i++;
-
-            if (i >= 300)
+            // Don't allow the despawning of players
+            if (entity.GetExtender<NetworkPlayer>() != null)
             {
-                yield break;
+                return;
             }
-        }
 
-        // Get the entity from the valid id
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(entityId);
+            var pooleeExtender = entity.GetExtender<PooleeExtender>();
 
-        if (entity == null)
-        {
-            yield break;
-        }
+            if (pooleeExtender == null)
+            {
+                return;
+            }
 
-        var pooleeExtender = entity.GetExtender<PooleeExtender>();
+            PooleeUtilities.CanDespawn = true;
 
-        if (pooleeExtender == null)
-        {
-            yield break;
-        }
-
-        PooleeUtilities.CanDespawn = true;
-
-        var poolee = pooleeExtender.Component;
+            var poolee = pooleeExtender.Component;
 
 #if DEBUG
-        FusionLogger.Log($"Unregistering entity at ID {entity.Id} after despawning.");
+            FusionLogger.Log($"Unregistering entity at ID {entity.Id} after despawning.");
 #endif
 
-        var marrowEntity = entity.GetExtender<IMarrowEntityExtender>();
+            var marrowEntity = entity.GetExtender<IMarrowEntityExtender>();
 
-        if (marrowEntity != null && despawnEffect)
-        {
-            SpawnEffects.CallDespawnEffect(marrowEntity.MarrowEntity);
-        }
+            if (marrowEntity != null && data.DespawnEffect)
+            {
+                SpawnEffects.CallDespawnEffect(marrowEntity.MarrowEntity);
+            }
 
-        poolee.Despawn();
+            poolee.Despawn();
 
-        NetworkEntityManager.IdManager.UnregisterEntity(entity);
+            NetworkEntityManager.IdManager.UnregisterEntity(entity);
 
-        PooleeUtilities.CanDespawn = false;
+            PooleeUtilities.CanDespawn = false;
+        });
     }
 }

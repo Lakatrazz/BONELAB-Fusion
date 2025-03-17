@@ -1,33 +1,23 @@
-﻿using LabFusion.Network.Serialization;
+﻿using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
 public class DespawnRequestData : INetSerializable
 {
-    public const int Size = sizeof(ushort) + sizeof(byte) * 2;
+    public const int Size = NetworkEntityReference.Size + sizeof(bool);
 
-    public byte despawnerId;
-    public ushort entityId;
+    public NetworkEntityReference Entity;
 
-    public bool despawnEffect;
+    public bool DespawnEffect;
+
+    public int? GetSize() => Size;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref despawnerId);
-        serializer.SerializeValue(ref entityId);
+        serializer.SerializeValue(ref Entity);
 
-        serializer.SerializeValue(ref despawnEffect);
-    }
-
-    public static DespawnRequestData Create(byte despawnerId, ushort entityId, bool despawnEffect)
-    {
-        return new DespawnRequestData()
-        {
-            despawnerId = despawnerId,
-            entityId = entityId,
-
-            despawnEffect = despawnEffect,
-        };
+        serializer.SerializeValue(ref DespawnEffect);
     }
 }
 
@@ -38,10 +28,15 @@ public class DespawnRequestMessage : NativeMessageHandler
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
-        var readData = received.ReadData<DespawnRequestData>();
+        var data = received.ReadData<DespawnRequestData>();
 
-        var writtenData = DespawnResponseData.Create(readData.despawnerId, readData.entityId, readData.despawnEffect);
+        var response = new DespawnResponseData()
+        {
+            Despawner = new(received.Sender.Value),
+            Entity = data.Entity,
+            DespawnEffect = data.DespawnEffect,
+        };
 
-        MessageRelay.RelayNative(writtenData, NativeMessageTag.DespawnResponse, NetworkChannel.Reliable, RelayType.ToClients);
+        MessageRelay.RelayNative(response, NativeMessageTag.DespawnResponse, NetworkChannel.Reliable, RelayType.ToClients);
     }
 }
