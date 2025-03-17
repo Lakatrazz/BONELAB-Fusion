@@ -23,7 +23,11 @@ public class NetworkConstraint : IEntityExtender
 
     public ConstraintTracker Tracker => _tracker;
 
+    public bool IsFirst { get; set; } = false;
+
     public ConstrainerPointPair PointPair { get; set; }
+
+    public ushort OtherId { get; set; } = 0;
 
     public NetworkConstraint(NetworkEntity networkEntity, ConstraintTracker tracker)
     {
@@ -68,8 +72,15 @@ public class NetworkConstraint : IEntityExtender
 
     private void OnEntityCatchup(NetworkEntity entity, PlayerId player)
     {
+        if (!IsFirst)
+        {
+            return;
+        }
+
         // Send create message
         var data = ConstraintCreateData.Create(PlayerIdManager.LocalSmallId, null, PointPair);
+        data.Point1Id = NetworkEntity.Id;
+        data.Point2Id = OtherId;
 
         MessageRelay.RelayNative(data, NativeMessageTag.ConstraintCreate, NetworkChannel.Reliable, RelayType.ToTarget, player);
     }

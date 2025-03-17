@@ -16,6 +16,8 @@ public static class ConstrainerUtilities
     public static bool HasConstrainer { get { return GlobalConstrainer != null; } }
     public static Constrainer GlobalConstrainer { get; private set; }
 
+    private static Action _constrainerCreatedCallback = null;
+
     public static void OnMainSceneInitialized()
     {
         // Get the constrainer crate so we can create a global constrainer
@@ -33,17 +35,36 @@ public static class ConstrainerUtilities
         }
 
         // Load the asset so we can create it
-        crate.LoadAsset((Il2CppSystem.Action<GameObject>)((go) =>
-        {
-            // Make sure the GameObject exists
-            if (go == null)
-            {
-                return;
-            }
+        var loadCallback = OnConstrainerLoaded;
 
-            var constrainer = GameObject.Instantiate(go, new Vector3(1000f, 1000f, 1000f), QuaternionExtensions.identity);
-            GlobalConstrainer = constrainer.GetComponent<Constrainer>();
-            constrainer.SetActive(false);
-        }));
+        crate.LoadAsset(loadCallback);
+    }
+
+    private static void OnConstrainerLoaded(GameObject go)
+    {
+        if (go == null)
+        {
+            _constrainerCreatedCallback = null;
+            return;
+        }
+
+        var constrainer = GameObject.Instantiate(go, new Vector3(1000f, 1000f, 1000f), QuaternionExtensions.identity);
+        GlobalConstrainer = constrainer.GetComponent<Constrainer>();
+        constrainer.SetActive(false);
+
+        _constrainerCreatedCallback?.InvokeSafe("executing Constrainer Created callback");
+        _constrainerCreatedCallback = null;
+    }
+
+    public static void HookConstrainerCreated(Action callback)
+    {
+        if (HasConstrainer)
+        {
+            callback?.Invoke();
+        }
+        else
+        {
+            _constrainerCreatedCallback += callback;
+        }
     }
 }

@@ -140,6 +140,11 @@ public class ConstraintCreateMessage : NativeMessageHandler
 
         void OnSecondTrackerFound(GameObject tracker2)
         {
+            ConstrainerUtilities.HookConstrainerCreated(OnConstrainerReady);
+        }
+
+        void OnConstrainerReady()
+        {
             bool tracker1HasPlayer = TryGetPlayer(data.Tracker1, out var tracker1Player);
             bool tracker2HasPlayer = TryGetPlayer(data.Tracker2, out var tracker2Player);
 
@@ -149,11 +154,6 @@ public class ConstraintCreateMessage : NativeMessageHandler
                 {
                     return;
                 }
-            }
-
-            if (!ConstrainerUtilities.HasConstrainer)
-            {
-                return;
             }
 
             // Get the synced constrainer

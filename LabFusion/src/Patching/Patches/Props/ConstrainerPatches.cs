@@ -159,7 +159,7 @@ public static class ConstrainerPatches
 
             // Register first tracker
             var firstEntity = new NetworkEntity();
-            var firstConstraint = new NetworkConstraint(firstEntity, firstTracker) { PointPair = pointPair };
+            var firstConstraint = new NetworkConstraint(firstEntity, firstTracker) { PointPair = pointPair, IsFirst = true, OtherId = SecondId, };
             
             NetworkEntityManager.IdManager.RegisterEntity(FirstId, firstEntity);
 
