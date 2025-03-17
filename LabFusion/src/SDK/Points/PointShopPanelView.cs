@@ -9,6 +9,7 @@ using LabFusion.UI;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
 using LabFusion.Math;
+using LabFusion.Bonelab;
 
 using Il2CppTMPro;
 
@@ -625,7 +626,7 @@ public sealed class PointShopPanelView : FusionPanelView
             // Spawn a gachapon containing the item
             var gachaSpawnable = new Spawnable()
             {
-                crateRef = BONELABSpawnableReferences.GachaCapsuleReference,
+                crateRef = BonelabSpawnableReferences.GachaCapsuleReference,
                 policyData = null,
             };
 

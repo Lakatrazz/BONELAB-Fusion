@@ -2,6 +2,7 @@
 
 using Il2CppSLZ.Marrow.Warehouse;
 
+using LabFusion.Bonelab;
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
@@ -146,7 +147,7 @@ public static class LocalAvatar
 
         if (!CheckAvatarPrivileges(crate))
         {
-            SwapAvatarCrate(BONELABAvatarReferences.PolyBlankBarcode);
+            SwapAvatarCrate(BonelabAvatarReferences.PolyBlankBarcode);
             return;
         }
 
@@ -211,7 +212,7 @@ public static class LocalAvatar
             // Swap to PolyBlank in case of failure
             if (!success)
             {
-                rigManager.SwapAvatarCrate(new(BONELABAvatarReferences.PolyBlankBarcode), true);
+                rigManager.SwapAvatarCrate(new(BonelabAvatarReferences.PolyBlankBarcode), true);
             }
         }));
     }
@@ -224,6 +225,6 @@ public static class LocalAvatar
     /// <returns>If the avatars match.</returns>
     public static bool IsMatchingAvatar(string barcode, string target)
     {
-        return barcode == target || barcode == BONELABAvatarReferences.PolyBlankBarcode;
+        return barcode == target || barcode == BonelabAvatarReferences.PolyBlankBarcode;
     }
 }

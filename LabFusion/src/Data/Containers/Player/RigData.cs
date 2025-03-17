@@ -5,10 +5,9 @@ using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Senders;
 using LabFusion.Entities;
+using LabFusion.Marrow;
 
 using Il2CppSLZ.Bonelab;
-
-using CommonBarcodes = LabFusion.Utilities.CommonBarcodes;
 
 namespace LabFusion.Data;
 
@@ -17,7 +16,7 @@ public static class RigData
     public static RigRefs Refs { get; private set; } = new RigRefs();
     public static bool HasPlayer => Refs.IsValid;
 
-    public static string RigAvatarId { get; internal set; } = CommonBarcodes.INVALID_AVATAR_BARCODE;
+    public static string RigAvatarId { get; internal set; } = MarrowBarcodes.EmptyBarcode;
     public static SerializedAvatarStats RigAvatarStats { get; internal set; } = null;
 
     public static Vector3 RigSpawn { get; private set; }
@@ -84,6 +83,6 @@ public static class RigData
             return rm.AvatarCrate.Barcode.ID;
         }
 
-        return CommonBarcodes.INVALID_AVATAR_BARCODE;
+        return MarrowBarcodes.EmptyBarcode;
     }
 }

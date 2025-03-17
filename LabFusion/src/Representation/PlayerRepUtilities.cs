@@ -95,7 +95,7 @@ public static class PlayerRepUtilities
         // Set the bone tag to the fusion player tag instead of the default player tag
         var entity = rigManager.physicsRig.marrowEntity;
 
-        entity.Tags.Tags.RemoveAll((Il2CppSystem.Predicate<BoneTagReference>)((tag) => tag.Barcode == BONELABBoneTagReferences.PlayerReference.Barcode));
+        entity.Tags.Tags.RemoveAll((Il2CppSystem.Predicate<BoneTagReference>)((tag) => tag.Barcode == MarrowBoneTagReferences.PlayerReference.Barcode));
         
         entity.Tags.Tags.Add(FusionBoneTagReferences.FusionPlayerReference);
 

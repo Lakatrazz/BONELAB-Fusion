@@ -272,8 +272,10 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     internal void Internal_OnAvatarChanged(string barcode)
     {
-        if (!FusionAvatar.IsMatchingAvatar(barcode, AvatarSetter.AvatarBarcode))
+        if (!LocalAvatar.IsMatchingAvatar(barcode, AvatarSetter.AvatarBarcode))
+        {
             AvatarSetter.SetAvatarDirty();
+        }
     }
 
     public void PlayPullCordEffects()

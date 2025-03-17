@@ -2,7 +2,7 @@
 
 namespace LabFusion.Marrow;
 
-public static class BONELABBoneTagReferences
+public static class MarrowBoneTagReferences
 {
     public static readonly BoneTagReference PlayerReference = new("SLZ.Marrow.BoneTag.Player");
 }

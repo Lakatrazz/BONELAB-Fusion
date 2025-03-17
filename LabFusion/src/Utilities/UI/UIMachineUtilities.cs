@@ -55,7 +55,7 @@ public static class UIMachineUtilities
 
         var tagQuery = new TagQuery
         {
-            BoneTag = BONELABBoneTagReferences.PlayerReference,
+            BoneTag = MarrowBoneTagReferences.PlayerReference,
         };
 
         zoneEvent.activatorTags.Tags.Add(tagQuery);

@@ -1,6 +1,6 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Bonelab;
+using LabFusion.Data;
 using LabFusion.Entities;
-using LabFusion.Marrow;
 using LabFusion.Network.Serialization;
 using LabFusion.Utilities;
 
@@ -49,7 +49,7 @@ public class PlayerRepAvatarMessage : NativeMessageHandler
             FusionLogger.Warn($"Switching player avatar from {data.barcode} to PolyBlank because it is blacklisted!");
 #endif
 
-            barcode = BONELABAvatarReferences.PolyBlankBarcode;
+            barcode = BonelabAvatarReferences.PolyBlankBarcode;
         }
 
         // Swap the avatar for the rep

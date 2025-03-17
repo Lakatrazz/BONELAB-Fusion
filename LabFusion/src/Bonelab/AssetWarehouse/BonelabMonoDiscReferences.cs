@@ -1,8 +1,8 @@
 ﻿using Il2CppSLZ.Marrow.Warehouse;
 
-namespace LabFusion.Marrow;
+namespace LabFusion.Bonelab;
 
-public static class BONELABMonoDiscReferences
+public static class BonelabMonoDiscReferences
 {
     public static readonly MonoDiscReference ItDoBeGroovinReference = new("SLZ.BONELAB.Content.MonoDisc.ItDoBeGroovin");
 

@@ -6,6 +6,7 @@ using Il2CppSLZ.Marrow;
 using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Marrow;
+using LabFusion.Bonelab;
 
 namespace LabFusion.Utilities;
 
@@ -18,10 +19,12 @@ public static class ConstrainerUtilities
 
     private static Action _constrainerCreatedCallback = null;
 
+    public const string ConstrainerAssetGUID = "bf9c97bf88c22dc4f981578e75d9aa12";
+
     public static void OnMainSceneInitialized()
     {
         // Get the constrainer crate so we can create a global constrainer
-        var crate = CrateFilterer.GetCrate<SpawnableCrate>(new Barcode(CommonBarcodes.CONSTRAINER_BARCODE));
+        var crate = CrateFilterer.GetCrate<SpawnableCrate>(BonelabSpawnableReferences.ConstrainerReference.Barcode);
 
         if (crate == null)
         {
@@ -31,7 +34,7 @@ public static class ConstrainerUtilities
         // If this was replaced, fix the GameObject GUID
         if (!crate.Pallet.IsInMarrowGame())
         {
-            crate.MainAsset = new MarrowAsset(CommonBarcodes.CONSTRAINER_ASSET_GUID);
+            crate.MainAsset = new MarrowAsset(ConstrainerAssetGUID);
         }
 
         // Load the asset so we can create it

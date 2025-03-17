@@ -1,6 +1,7 @@
 ﻿using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Warehouse;
 
+using LabFusion.Bonelab;
 using LabFusion.Entities;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
@@ -45,13 +46,13 @@ public class HideAndSeek : Gamemode
 
         public static readonly MonoDiscReference[] Tracks = new MonoDiscReference[]
         {
-            BONELABMonoDiscReferences.TheRecurringDreamReference,
-            BONELABMonoDiscReferences.HeavyStepsReference,
-            BONELABMonoDiscReferences.StankFaceReference,
-            BONELABMonoDiscReferences.AlexInWonderlandReference,
-            BONELABMonoDiscReferences.ItDoBeGroovinReference,
+            BonelabMonoDiscReferences.TheRecurringDreamReference,
+            BonelabMonoDiscReferences.HeavyStepsReference,
+            BonelabMonoDiscReferences.StankFaceReference,
+            BonelabMonoDiscReferences.AlexInWonderlandReference,
+            BonelabMonoDiscReferences.ItDoBeGroovinReference,
 
-            BONELABMonoDiscReferences.ConcreteCryptReference, // concrete crypt
+            BonelabMonoDiscReferences.ConcreteCryptReference, // concrete crypt
         };
     }
 
