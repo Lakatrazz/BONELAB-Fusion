@@ -12,10 +12,32 @@ public static class NetSerializerUnityExtensions
         serializer.SerializeValue(ref color.a);
     }
 
+    public static void SerializeValue(this INetSerializer serializer, ref Quaternion value)
+    {
+        serializer.SerializeValue(ref value.x);
+        serializer.SerializeValue(ref value.y);
+        serializer.SerializeValue(ref value.z);
+        serializer.SerializeValue(ref value.w);
+    }
+
+    public static void SerializeValue(this INetSerializer serializer, ref Vector4 value)
+    {
+        serializer.SerializeValue(ref value.x);
+        serializer.SerializeValue(ref value.y);
+        serializer.SerializeValue(ref value.z);
+        serializer.SerializeValue(ref value.w);
+    }
+
     public static void SerializeValue(this INetSerializer serializer, ref Vector3 value)
     {
         serializer.SerializeValue(ref value.x);
         serializer.SerializeValue(ref value.y);
         serializer.SerializeValue(ref value.z);
+    }
+
+    public static void SerializeValue(this INetSerializer serializer, ref Vector2 value)
+    {
+        serializer.SerializeValue(ref value.x);
+        serializer.SerializeValue(ref value.y);
     }
 }
