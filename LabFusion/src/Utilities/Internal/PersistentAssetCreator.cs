@@ -35,7 +35,10 @@ internal static class PersistentAssetCreator
 
     private static void GetHandPose()
     {
-        SoftGrabPose = RigData.Refs.RigManager.worldGripHandPose;
+        if (RigData.HasPlayer)
+        {
+            SoftGrabPose = RigData.Refs.RigManager.worldGripHandPose;
+        }
 
         if (SoftGrabPose != null)
         {

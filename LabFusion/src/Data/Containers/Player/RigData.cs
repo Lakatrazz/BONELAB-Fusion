@@ -32,11 +32,19 @@ public static class RigData
 
     public static void OnCacheRigInfo()
     {
-        var manager = PlayerRefs.Instance.PlayerRigManager;
+        var playerRefs = PlayerRefs.Instance;
+
+        if (playerRefs == null)
+        {
+            FusionLogger.Error("PlayerRefs does not exist, cannot get the player's RigManager!");
+            return;
+        }
+
+        var manager = playerRefs.PlayerRigManager;
 
         if (manager == null)
         {
-            FusionLogger.Error("Failed to find the Player's RigManager!");
+            FusionLogger.Error("Failed to get the player's RigManager!");
             return;
         }
 
