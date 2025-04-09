@@ -62,9 +62,8 @@ internal static class PersistentAssetCreator
 
     private static void CreateTextFont()
     {
-        // I don't want to use asset bundles in this mod.
-        // Is this a bad method? Sure, but it only runs once.
-        // So WHO CARES!
+        // This font is paid but included in the game, so I'm going to messily loop for it
+        // Could probably do something to load it with addressables but this works
         var fonts = Resources.FindObjectsOfTypeAll<TMP_FontAsset>();
         foreach (var font in fonts)
         {
