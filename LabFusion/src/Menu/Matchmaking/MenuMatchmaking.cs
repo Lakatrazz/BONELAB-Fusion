@@ -22,6 +22,12 @@ public static class MenuMatchmaking
 
     public static GroupElement SandboxFiltersGroupElement { get; private set; }
 
+    // Page Buttons
+    public static FunctionElement GamemodeOptionElement { get; private set; }
+    public static FunctionElement SandboxOptionElement { get; private set; }
+    public static FunctionElement BrowseOptionElement { get; private set; }
+    public static FunctionElement CodeOptionElement { get; private set; }
+
     // Code
     public static StringElement CodeElement { get; private set; }
 
@@ -42,6 +48,8 @@ public static class MenuMatchmaking
     public static void PopulateMatchmaking(GameObject matchmakingPage)
     {
         MatchmakingPage = matchmakingPage.GetComponent<MenuPage>();
+
+        MatchmakingPage.OnShown += OnMatchmakingPageShown;
 
         // Get options references
         var optionsTransform = matchmakingPage.transform.Find("page_Options");
@@ -69,49 +77,60 @@ public static class MenuMatchmaking
         PopulateBrowser(browserTransform);
     }
     
+    private static void OnMatchmakingPageShown()
+    {
+        var networkLayer = NetworkInfo.CurrentNetworkLayer;
+
+        bool supportsMatchmaking = networkLayer.Matchmaker != null;
+        
+        GamemodeOptionElement.gameObject.SetActive(supportsMatchmaking);
+        SandboxOptionElement.gameObject.SetActive(supportsMatchmaking);
+        BrowseOptionElement.gameObject.SetActive(supportsMatchmaking);
+    }
+
     private static void PopulateOptions(Transform optionsTransform)
     {
         var grid = optionsTransform.Find("grid_Options");
 
         // Gamemode
-        var gamemodeElement = grid.Find("button_Gamemode").GetComponent<FunctionElement>();
+        GamemodeOptionElement = grid.Find("button_Gamemode").GetComponent<FunctionElement>();
 
-        gamemodeElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Gamemode";
-        gamemodeElement.Do(() =>
+        GamemodeOptionElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Gamemode";
+        GamemodeOptionElement.Do(() =>
         {
             MatchmakingPage.SelectSubPage(1);
         });
 
         // Sandbox
-        var sandboxElement = grid.Find("button_Sandbox").GetComponent<FunctionElement>();
-        sandboxElement.Do(() =>
+        SandboxOptionElement = grid.Find("button_Sandbox").GetComponent<FunctionElement>();
+        SandboxOptionElement.Do(() =>
         {
             MatchmakingPage.SelectSubPage(2);
 
             RefreshBrowser();
         });
 
-        sandboxElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Sandbox";
+        SandboxOptionElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Sandbox";
 
         // Browse
-        var browseElement = grid.Find("button_Browse").GetComponent<FunctionElement>();
-        browseElement.Do(() =>
+        BrowseOptionElement = grid.Find("button_Browse").GetComponent<FunctionElement>();
+        BrowseOptionElement.Do(() =>
         {
             MatchmakingPage.SelectSubPage(4);
 
             RefreshBrowser();
         });
 
-        browseElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Browse";
+        BrowseOptionElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Browse";
 
         // Enter Code
-        var codeElement = grid.Find("button_Code").GetComponent<FunctionElement>();
-        codeElement.Do(() =>
+        CodeOptionElement = grid.Find("button_Code").GetComponent<FunctionElement>();
+        CodeOptionElement.Do(() =>
         {
             MatchmakingPage.SelectSubPage(3);
         });
 
-        codeElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Enter Code";
+        CodeOptionElement.transform.Find("label_Title").GetComponent<LabelElement>().Title = "Enter Code";
     }
 
     private static void PopulateCode(Transform codeTransform)
