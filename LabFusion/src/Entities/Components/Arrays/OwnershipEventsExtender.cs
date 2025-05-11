@@ -8,6 +8,11 @@ public class OwnershipEventsExtender : EntityComponentArrayExtender<OwnershipEve
 {
     protected override void OnRegister(NetworkEntity entity, OwnershipEvents[] components)
     {
+        foreach (var component in components)
+        {
+            component.Entity = entity;
+        }
+
         entity.OnEntityOwnershipTransfer += OnEntityOwnershipTransfer;
 
         // Invoke the event if the owner has already been set
@@ -19,6 +24,11 @@ public class OwnershipEventsExtender : EntityComponentArrayExtender<OwnershipEve
 
     protected override void OnUnregister(NetworkEntity entity, OwnershipEvents[] components)
     {
+        foreach (var component in components)
+        {
+            component.Entity = null;
+        }
+
         entity.OnEntityOwnershipTransfer -= OnEntityOwnershipTransfer;
     }
 
