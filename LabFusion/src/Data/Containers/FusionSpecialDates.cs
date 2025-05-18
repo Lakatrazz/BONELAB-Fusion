@@ -1,6 +1,4 @@
-﻿using LabFusion.Utilities;
-
-namespace LabFusion.Data;
+﻿namespace LabFusion.Data;
 
 using System;
 
@@ -34,10 +32,6 @@ public static class FusionSpecialDates
     public static FusionDate GetCurrentDate()
     {
         var time = DateTime.Now;
-
-#if DEBUG
-        FusionLogger.Log($"Retrieving date. Month is {(Month)time.Month}. Day is {time.Day}. Year is {time.Year}.");
-#endif
 
         switch ((Month)time.Month)
         {
