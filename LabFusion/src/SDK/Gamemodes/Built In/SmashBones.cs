@@ -89,6 +89,10 @@ public class SmashBones : Gamemode
         public const float ExtraJumpCooldown = 0.2f;
 
         public const float MaxAvatarHeight = 4f;
+
+        public const bool DropItems = true;
+
+        public const float ItemFrequency = 10f;
     }
 
     private int _minimumPlayers = 2;
@@ -584,6 +588,11 @@ public class SmashBones : Gamemode
         _previousStocks = -1;
 
         CheckFinalScore();
+
+        if (NetworkInfo.IsServer)
+        {
+            GamemodeDropper.DespawnItems();
+        }
     }
 
     private void CheckFinalScore()
@@ -730,6 +739,11 @@ public class SmashBones : Gamemode
             ApplyAutoRun(rigManager);
             ApplyDoubleJump(rigManager);
         }
+
+        if (NetworkInfo.IsServer && Defaults.DropItems)
+        {
+            UpdateItemDroppers();
+        }
     }
 
     protected override void OnFixedUpdate()
@@ -744,6 +758,25 @@ public class SmashBones : Gamemode
             var rigManager = RigData.Refs.RigManager;
 
             ApplyAirControl(rigManager);
+        }
+    }
+
+    private static float _itemDropTimer = 0f;
+
+    private static void UpdateItemDroppers()
+    {
+        _itemDropTimer += Time.deltaTime;
+
+        if (_itemDropTimer < Defaults.ItemFrequency)
+        {
+            return;
+        }
+
+        _itemDropTimer = 0f;
+
+        if (GamemodeDropper.DroppedItemCount < GamemodeDropperSettings.GetMaxItems())
+        {
+            GamemodeDropper.DropItem();
         }
     }
 

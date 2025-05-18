@@ -15,6 +15,7 @@ public class MarrowModule : Module
     {
         ModuleMessageHandler.RegisterHandler<ButtonChargeMessage>();
         ModuleMessageHandler.RegisterHandler<EventActuatorMessage>();
+        ModuleMessageHandler.RegisterHandler<GamemodeDropperMessage>();
 
         MultiplayerHooking.OnMainSceneInitialized += NetworkGunManager.OnMainSceneInitialized;
     }

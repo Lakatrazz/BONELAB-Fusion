@@ -264,6 +264,8 @@
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Events\ServerEvents.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Functions\BitTransactor.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodeCrateSpawner.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodeDropper.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodeDropperSettings.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodeEvents.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodeMarker.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodeMusicSettings.cs" />
