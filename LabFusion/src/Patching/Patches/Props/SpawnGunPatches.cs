@@ -163,10 +163,10 @@ public static class SpawnGunPatches
 
         var info = new NetworkAssetSpawner.SpawnRequestInfo()
         {
-            spawnable = spawnable,
-            position = transform.position,
-            rotation = transform.rotation,
-            spawnEffect = true,
+            Spawnable = spawnable,
+            Position = transform.position,
+            Rotation = transform.rotation,
+            SpawnEffect = true,
         };
 
         NetworkAssetSpawner.Spawn(info);

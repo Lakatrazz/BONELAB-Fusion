@@ -52,10 +52,10 @@ public class InventoryAmmoReceiverGrab
             var transform = __instance.transform;
             var info = new NetworkAssetSpawner.SpawnRequestInfo()
             {
-                spawnable = magazineData.spawnable,
-                position = transform.position,
-                rotation = transform.rotation,
-                spawnCallback = (info) =>
+                Spawnable = magazineData.spawnable,
+                Position = transform.position,
+                Rotation = transform.rotation,
+                SpawnCallback = (info) =>
                 {
                     OnMagazineSpawned(info, handedness);
                 }
@@ -77,7 +77,7 @@ public class InventoryAmmoReceiverGrab
 
     private static void OnMagazineSpawned(NetworkAssetSpawner.SpawnCallbackInfo info, Handedness handedness)
     {
-        var magazine = info.spawned.GetComponent<Magazine>();
+        var magazine = info.Spawned.GetComponent<Magazine>();
         if (magazine == null)
         {
             return;
@@ -91,7 +91,7 @@ public class InventoryAmmoReceiverGrab
         }
 
         // Send claim message
-        var data = MagazineClaimData.Create(PlayerIdManager.LocalSmallId, info.entity.Id, handedness);
+        var data = MagazineClaimData.Create(PlayerIdManager.LocalSmallId, info.Entity.Id, handedness);
 
         MessageRelay.RelayNative(data, NativeMessageTag.MagazineClaim, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }

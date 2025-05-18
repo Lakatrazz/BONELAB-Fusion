@@ -204,8 +204,8 @@ public class SpawnResponseMessage : NativeMessageHandler
         {
             NetworkAssetSpawner.OnSpawnComplete(trackerId, new NetworkAssetSpawner.SpawnCallbackInfo()
             {
-                spawned = go,
-                entity = newEntity,
+                Spawned = go,
+                Entity = newEntity,
             });
         }
     }

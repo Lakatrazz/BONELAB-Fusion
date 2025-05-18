@@ -145,12 +145,12 @@ public static class ObjectDestructiblePatches
 
             NetworkAssetSpawner.Spawn(new NetworkAssetSpawner.SpawnRequestInfo()
             {
-                spawnable = spawnable,
-                position = __state.spawnPosition,
-                rotation = __state.spawnRotation,
-                spawnCallback = (info) =>
+                Spawnable = spawnable,
+                Position = __state.spawnPosition,
+                Rotation = __state.spawnRotation,
+                SpawnCallback = (info) =>
                 {
-                    __instance.OnLootSpawn?.Invoke(__instance, spawnable, info.spawned);
+                    __instance.OnLootSpawn?.Invoke(__instance, spawnable, info.Spawned);
                 }
             });
         }

@@ -71,11 +71,11 @@ namespace LabFusion.Marrow.Integration
 
             NetworkAssetSpawner.Spawn(new NetworkAssetSpawner.SpawnRequestInfo()
             {
-                position = randomDropper.transform.position,
-                rotation = randomDropper.transform.rotation,
-                spawnable = new Spawnable() { crateRef = drop.ItemCrateReference, policyData = null },
-                spawnEffect = true,
-                spawnCallback = OnItemSpawned,
+                Position = randomDropper.transform.position,
+                Rotation = randomDropper.transform.rotation,
+                Spawnable = new Spawnable() { crateRef = drop.ItemCrateReference, policyData = null },
+                SpawnEffect = true,
+                SpawnCallback = OnItemSpawned,
             });
 
             return true;
@@ -84,7 +84,7 @@ namespace LabFusion.Marrow.Integration
         private static void OnItemSpawned(NetworkAssetSpawner.SpawnCallbackInfo info)
         {
             MessageRelay.RelayModule<GamemodeDropperMessage, GamemodeDropperData>(
-                new GamemodeDropperData() { Entity = new(info.entity.Id) }, NetworkChannel.Reliable, RelayType.ToClients);
+                new GamemodeDropperData() { Entity = new(info.Entity.Id) }, NetworkChannel.Reliable, RelayType.ToClients);
         }
 
         public static bool DespawnItems()
@@ -94,7 +94,7 @@ namespace LabFusion.Marrow.Integration
                 return false;
             }
 
-            foreach (var item in DroppedItems) 
+            foreach (var item in DroppedItems.ToArray()) 
             {
                 if (item == null)
                 {

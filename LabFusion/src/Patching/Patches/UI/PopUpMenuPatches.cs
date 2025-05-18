@@ -68,16 +68,16 @@ public static class AddDevMenuPatch
 
         var spawnGunInfo = new NetworkAssetSpawner.SpawnRequestInfo()
         {
-            spawnable = spawnGun,
-            position = transform.position,
-            rotation = transform.rotation
+            Spawnable = spawnGun,
+            Position = transform.position,
+            Rotation = transform.rotation
         };
 
         var nimbusGunInfo = new NetworkAssetSpawner.SpawnRequestInfo()
         {
-            spawnable = nimbusGun,
-            position = transform.position,
-            rotation = transform.rotation
+            Spawnable = nimbusGun,
+            Position = transform.position,
+            Rotation = transform.rotation
         };
 
         NetworkAssetSpawner.Spawn(spawnGunInfo);

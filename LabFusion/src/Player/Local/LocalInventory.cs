@@ -25,6 +25,24 @@ public static class LocalInventory
     }
 
     /// <summary>
+    /// Adds to the local player's ammo count for all types.
+    /// </summary>
+    /// <param name="count"></param>
+    public static void AddAmmo(int count)
+    {
+        var ammoInventory = AmmoInventory.Instance;
+
+        if (ammoInventory == null)
+        {
+            return;
+        }
+
+        ammoInventory.AddCartridge(ammoInventory.lightAmmoGroup, count);
+        ammoInventory.AddCartridge(ammoInventory.heavyAmmoGroup, count);
+        ammoInventory.AddCartridge(ammoInventory.mediumAmmoGroup, count);
+    }
+
+    /// <summary>
     /// Clears the local player's ammo.
     /// </summary>
     public static void ClearAmmo()

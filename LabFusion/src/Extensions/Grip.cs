@@ -112,9 +112,6 @@ public static class GripExtensions
         {
             // Begin the initial detach
             grip.ForceDetach(hand);
-
-            // Instant detach the hand in one frame
-            grip.OnDetachedFromHand(hand);
         }
     }
 }

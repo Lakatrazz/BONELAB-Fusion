@@ -44,13 +44,13 @@ public static class WeaponSpawnerPatches
 
             NetworkAssetSpawner.Spawn(new NetworkAssetSpawner.SpawnRequestInfo()
             {
-                spawnable = staticProfiles.lightAmmoSpawnable,
-                spawnEffect = false,
-                position = spawnTarg.position,
-                rotation = spawnTarg.rotation,
-                spawnCallback = (info) =>
+                Spawnable = staticProfiles.lightAmmoSpawnable,
+                SpawnEffect = false,
+                Position = spawnTarg.position,
+                Rotation = spawnTarg.rotation,
+                SpawnCallback = (info) =>
                 {
-                    var poolee = Poolee.Cache.Get(info.spawned);
+                    var poolee = Poolee.Cache.Get(info.Spawned);
 
                     __instance.lightAmmoPoolee = poolee;
                 }
@@ -63,13 +63,13 @@ public static class WeaponSpawnerPatches
 
             NetworkAssetSpawner.Spawn(new NetworkAssetSpawner.SpawnRequestInfo()
             {
-                spawnable = staticProfiles.medAmmoSpawnable,
-                spawnEffect = false,
-                position = spawnTarg.position,
-                rotation = spawnTarg.rotation,
-                spawnCallback = (info) =>
+                Spawnable = staticProfiles.medAmmoSpawnable,
+                SpawnEffect = false,
+                Position = spawnTarg.position,
+                Rotation = spawnTarg.rotation,
+                SpawnCallback = (info) =>
                 {
-                    var poolee = Poolee.Cache.Get(info.spawned);
+                    var poolee = Poolee.Cache.Get(info.Spawned);
 
                     __instance.medAmmoPoolee = poolee;
                 }
@@ -82,13 +82,13 @@ public static class WeaponSpawnerPatches
 
             NetworkAssetSpawner.Spawn(new NetworkAssetSpawner.SpawnRequestInfo()
             {
-                spawnable = staticProfiles.heavyAmmoSpawnable,
-                spawnEffect = false,
-                position = spawnTarg.position,
-                rotation = spawnTarg.rotation,
-                spawnCallback = (info) =>
+                Spawnable = staticProfiles.heavyAmmoSpawnable,
+                SpawnEffect = false,
+                Position = spawnTarg.position,
+                Rotation = spawnTarg.rotation,
+                SpawnCallback = (info) =>
                 {
-                    var poolee = Poolee.Cache.Get(info.spawned);
+                    var poolee = Poolee.Cache.Get(info.Spawned);
 
                     __instance.heavyAmmoPoolee = poolee;
                 }
@@ -149,13 +149,13 @@ public static class WeaponSpawnerPatches
         {
             NetworkAssetSpawner.Spawn(new NetworkAssetSpawner.SpawnRequestInfo()
             {
-                spawnable = spawnable,
-                spawnEffect = false,
-                position = __instance.defSpawn.position,
-                rotation = __instance.defSpawn.rotation,
-                spawnCallback = (info) =>
+                Spawnable = spawnable,
+                SpawnEffect = false,
+                Position = __instance.defSpawn.position,
+                Rotation = __instance.defSpawn.rotation,
+                SpawnCallback = (info) =>
                 {
-                    OnWeaponSpawned(__instance, info.spawned);
+                    OnWeaponSpawned(__instance, info.Spawned);
                 }
             });
         }
@@ -167,13 +167,13 @@ public static class WeaponSpawnerPatches
     {
         NetworkAssetSpawner.Spawn(new NetworkAssetSpawner.SpawnRequestInfo()
         {
-            spawnable = pack.weaponSpawnable,
-            spawnEffect = false,
-            position = pack.weaponSpawn.position,
-            rotation = pack.weaponSpawn.rotation,
-            spawnCallback = (info) =>
+            Spawnable = pack.weaponSpawnable,
+            SpawnEffect = false,
+            Position = pack.weaponSpawn.position,
+            Rotation = pack.weaponSpawn.rotation,
+            SpawnCallback = (info) =>
             {
-                var spawned = info.spawned;
+                var spawned = info.Spawned;
 
                 var poolee = Poolee.Cache.Get(spawned);
                 var host = InteractableHost.Cache.Get(spawned);

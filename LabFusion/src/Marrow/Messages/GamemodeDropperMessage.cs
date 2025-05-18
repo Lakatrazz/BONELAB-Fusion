@@ -34,9 +34,9 @@ public class GamemodeDropperMessage : ModuleMessageHandler
 
             if (propExtender != null && pooleeExtender != null)
             {
-                var droppedItem = propExtender.MarrowEntity.gameObject.AddComponent<DroppedItem>();
+                var gamemodeItem = propExtender.MarrowEntity.gameObject.AddComponent<GamemodeItem>();
 
-                droppedItem.Initialize(entity, pooleeExtender.Component);
+                gamemodeItem.Initialize(entity, pooleeExtender.Component);
             }
         });
     }

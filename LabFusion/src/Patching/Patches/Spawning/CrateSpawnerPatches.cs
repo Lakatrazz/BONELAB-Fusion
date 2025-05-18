@@ -54,10 +54,10 @@ public static class CrateSpawnerPatches
 
         NetworkAssetSpawner.Spawn(new NetworkAssetSpawner.SpawnRequestInfo()
         {
-            spawnable = spawnable,
-            position = transform.position,
-            rotation = transform.rotation,
-            spawnCallback = (info) =>
+            Spawnable = spawnable,
+            Position = transform.position,
+            Rotation = transform.rotation,
+            SpawnCallback = (info) =>
             {
                 OnNetworkSpawn(spawner, info, source);
             },
@@ -68,7 +68,7 @@ public static class CrateSpawnerPatches
 
     private static void OnNetworkSpawn(CrateSpawner spawner, NetworkAssetSpawner.SpawnCallbackInfo info, UniTaskCompletionSource<Poolee> source)
     {
-        var spawned = info.spawned;
+        var spawned = info.Spawned;
         spawner.OnFinishNetworkSpawn(spawned);
 
         var poolee = Poolee.Cache.Get(spawned);
@@ -76,13 +76,13 @@ public static class CrateSpawnerPatches
         source.TrySetResult(poolee);
 
         // Make sure we actually have a network entity
-        if (info.entity == null)
+        if (info.Entity == null)
         {
             return;
         }
 
         // Send spawn message
-        var spawnedId = info.entity.Id;
+        var spawnedId = info.Entity.Id;
 
         SpawnSender.SendCrateSpawnerEvent(spawner, spawnedId);
     }

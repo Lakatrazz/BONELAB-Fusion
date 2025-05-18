@@ -68,7 +68,7 @@ public static class PooleeUtilities
             DespawnEffect = despawnEffect,
         };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.DespawnResponse, NetworkChannel.Reliable, RelayType.ToServer);
+        MessageRelay.RelayNative(data, NativeMessageTag.DespawnRequest, NetworkChannel.Reliable, RelayType.ToServer);
     }
 
     public static void RequestSpawn(string barcode, SerializedTransform serializedTransform, uint trackerId, bool spawnEffect)

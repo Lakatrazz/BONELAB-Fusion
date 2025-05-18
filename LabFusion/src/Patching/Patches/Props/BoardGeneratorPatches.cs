@@ -91,16 +91,16 @@ public static class BoardSpawnerAsyncPatches
 
         NetworkAssetSpawner.Spawn(new NetworkAssetSpawner.SpawnRequestInfo()
         {
-            spawnable = randomSpawnable,
-            position = middle,
-            rotation = rotation,
-            spawnCallback = (info) =>
+            Spawnable = randomSpawnable,
+            Position = middle,
+            Rotation = rotation,
+            SpawnCallback = (info) =>
             {
                 // Apply scale
-                info.spawned.transform.localScale = GetBoardScale(distance.magnitude);
+                info.Spawned.transform.localScale = GetBoardScale(distance.magnitude);
 
                 // Get the entity ids
-                var boardId = info.entity.Id;
+                var boardId = info.Entity.Id;
                 var boardGeneratorId = generatorEntity.Id;
 
                 // Get points

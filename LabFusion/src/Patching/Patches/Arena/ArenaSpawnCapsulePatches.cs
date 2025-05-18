@@ -43,10 +43,10 @@ public static class SpawnCapsuleLaunchSequencePatches
 
         NetworkAssetSpawner.Spawn(new NetworkAssetSpawner.SpawnRequestInfo()
         {
-            spawnable = enemyProfile.spawnable,
-            position = spawnCapsule.transform.position,
-            rotation = Quaternion.identity,
-            spawnCallback = (info) =>
+            Spawnable = enemyProfile.spawnable,
+            Position = spawnCapsule.transform.position,
+            Rotation = Quaternion.identity,
+            SpawnCallback = (info) =>
             {
                 spawnCapsule.OnSpawn?.Invoke();
 
@@ -57,7 +57,7 @@ public static class SpawnCapsuleLaunchSequencePatches
                     enemyProfile = __instance.enemyProfile,
                 };
 
-                spawnEvent._CoLaunchSequenceArena_b__0(info.spawned);
+                spawnEvent._CoLaunchSequenceArena_b__0(info.Spawned);
 
                 // Disable the hoi-poi
                 spawnCapsule.gameObject.SetActive(false);
