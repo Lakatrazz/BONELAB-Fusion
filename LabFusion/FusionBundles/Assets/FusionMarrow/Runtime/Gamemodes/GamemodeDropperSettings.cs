@@ -58,7 +58,7 @@ namespace LabFusion.Marrow.Integration
             new ItemDrop() { ItemCrateReference = new("c1534c5a-e963-4a7c-8c7e-1195546f7942"), Probability = 50f, }, // Toy Balloon Gun
             new ItemDrop() { ItemCrateReference = new("c1534c5a-c6a8-45d0-aaa2-2c954465764d"), Probability = 3f, }, // Dev Manipulator
             new ItemDrop() { ItemCrateReference = new("c1534c5a-e777-4d15-b0c1-3195426f6172"), Probability = 10f, }, // Boardgun
-            new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.PropHealthPickup"), Probability = 20f, }, // Prop_Health Pickup
+            // new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.PropHealthPickup"), Probability = 20f, }, // Prop_Health Pickup, add functionality later
 
             // Props
             new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.CardboardBoxHeadsetA"), Probability = 60f, }, // Cardboard Box Headset A
