@@ -25,9 +25,13 @@ public class GamemodeItem : MonoBehaviour
 {
     public GamemodeItem(IntPtr intPtr) : base(intPtr) { }
 
-    public const float MaxUnusedTime = 20f;
+    public const float MaxUnheldTime = 20f;
 
-    public const int MaxBladeHits = 7;
+    public const float MaxHeldTime = 60f;
+
+    public const int MaxMeleeHits = 10;
+
+    public const int MaxDamagelessHits = MaxMeleeHits * 3;
 
     private NetworkEntity _entity = null;
     private NetworkProp _prop = null;
@@ -42,6 +46,9 @@ public class GamemodeItem : MonoBehaviour
 
     private StabSlash _stabSlash = null;
     private StabSlash.BladeAudio _bladeAudio = null;
+
+    private ImpactSFX _impactSFX = null;
+    private Il2CppSystem.Action<Collision, float> _onSignificantCollisionDelegate = null;
 
     private bool _isDespawned = false;
 
@@ -89,6 +96,14 @@ public class GamemodeItem : MonoBehaviour
         if (_stabSlash != null)
         {
             _bladeAudio = _stabSlash.bladeAudio;
+        }
+
+        _impactSFX = marrowEntity.GetComponent<ImpactSFX>();
+
+        if (_impactSFX != null)
+        {
+            _onSignificantCollisionDelegate = (Action<Collision, float>)OnImpactSFXCollision;
+            _impactSFX.OnSignificantCollision += _onSignificantCollisionDelegate;
         }
     }
 
@@ -148,6 +163,16 @@ public class GamemodeItem : MonoBehaviour
         _hostManager = null;
     }
 
+    private void UnhookComponents()
+    {
+        if (_impactSFX != null)
+        {
+            _impactSFX.OnSignificantCollision -= _onSignificantCollisionDelegate;
+            _onSignificantCollisionDelegate = null;
+            _impactSFX = null;
+        }
+    }
+
     private void OnHandAttached(InteractableHost host, Hand hand)
     {
         HasBeenInteracted = true;
@@ -190,6 +215,7 @@ public class GamemodeItem : MonoBehaviour
         GamemodeDropper.DroppedItems.Remove(_poolee);
 
         UnhookHost();
+        UnhookComponents();
 
         _entity = null;
         _prop = null;
@@ -222,6 +248,7 @@ public class GamemodeItem : MonoBehaviour
         if (NetworkInfo.IsServer)
         {
             CheckTimedDespawn();
+            CheckHeldDespawn();
         }
 
         CheckGunDespawn();
@@ -231,7 +258,7 @@ public class GamemodeItem : MonoBehaviour
     {
         ApplyLowGravity();
 
-        CheckMeleeDespawn();
+        CheckStabSlashDespawn();
     }
 
     private void ApplyLowGravity()
@@ -241,21 +268,22 @@ public class GamemodeItem : MonoBehaviour
             return;
         }
 
-        if (_marrowEntity == null || _marrowEntity.Bodies.Count <= 0)
+        if (_marrowEntity == null)
         {
             return;
         }
 
-        var marrowBody = _marrowEntity.Bodies[0];
+        var antiGravity = -Physics.gravity * 0.9f;
 
-        if (marrowBody == null || !marrowBody.HasRigidbody)
+        foreach (var body in _marrowEntity.Bodies)
         {
-            return;
+            if (body == null || !body.HasRigidbody)
+            {
+                continue;
+            }
+
+            body._rigidbody.AddForce(antiGravity, ForceMode.Acceleration);
         }
-
-        var rigidbody = marrowBody._rigidbody;
-
-        rigidbody.AddForce(-Physics.gravity * 0.9f, ForceMode.Acceleration);
     }
 
     private float _despawnTimer = 0f;
@@ -270,7 +298,7 @@ public class GamemodeItem : MonoBehaviour
 
         _despawnTimer += Time.deltaTime;
 
-        if (_despawnTimer >= MaxUnusedTime)
+        if (_despawnTimer >= MaxUnheldTime)
         {
             NetworkAssetSpawner.Despawn(new NetworkAssetSpawner.DespawnRequestInfo()
             {
@@ -280,21 +308,37 @@ public class GamemodeItem : MonoBehaviour
         }
     }
 
+    private float _heldDespawnTimer = 0f;
+
+    private void CheckHeldDespawn()
+    {
+        if (!IsHeld)
+        {
+            return;
+        }
+
+        _heldDespawnTimer += Time.deltaTime;
+
+        if (_heldDespawnTimer >= MaxHeldTime)
+        {
+            NetworkAssetSpawner.Despawn(new NetworkAssetSpawner.DespawnRequestInfo()
+            {
+                EntityId = _entity.Id,
+                DespawnEffect = true,
+            });
+        }
+    }
+
+    private bool CanCheckItemUse()
+    {
+        return HasBeenInteracted && _entity.IsOwner && !_attemptedDespawn;
+    }
+
     private bool _attemptedDespawn = false;
 
     private void CheckGunDespawn()
     {
-        if (_attemptedDespawn)
-        {
-            return;
-        }
-
-        if (!HasBeenInteracted)
-        {
-            return;
-        }
-
-        if (!_entity.IsOwner)
+        if (!CanCheckItemUse())
         {
             return;
         }
@@ -324,24 +368,14 @@ public class GamemodeItem : MonoBehaviour
     private int _bladeHits = 0;
     private float _bladeHitCooldown = 0f;
 
-    private void CheckMeleeDespawn()
+    private void CheckStabSlashDespawn()
     {
         if (_bladeAudio == null)
         {
             return;
         }
 
-        if (_attemptedDespawn)
-        {
-            return;
-        }
-
-        if (!HasBeenInteracted)
-        {
-            return;
-        }
-
-        if (!_entity.IsOwner)
+        if (!CanCheckItemUse())
         {
             _lastImpactTime = _bladeAudio._nextImpactTime;
             return;
@@ -364,13 +398,48 @@ public class GamemodeItem : MonoBehaviour
             _bladeHits++;
             _bladeHitCooldown = 0.1f;
 
-            if (_bladeHits >= 7)
+            if (_bladeHits >= MaxMeleeHits)
             {
                 DespawnFromItemUse();
             }
 
             _lastImpactTime = _bladeAudio._nextImpactTime;
+        }
+    }
 
+    private int _impactSFXHits = 0;
+    private float _lastImpactSFXTime = 0f;
+
+    private void OnImpactSFXCollision(Collision collision, float velSquared)
+    {
+        if (!CanCheckItemUse())
+        {
+            return;
+        }
+
+        if (Time.timeSinceLevelLoad - _lastImpactSFXTime < 0.1f)
+        {
+            return;
+        }
+
+        if (velSquared < _impactSFX._minVelSquared)
+        {
+            return;
+        }
+
+        var maxHits = _impactSFX.bluntAttack ? MaxMeleeHits : MaxDamagelessHits;
+
+        bool hitRigidbody = collision.rigidbody != null;
+
+        if (hitRigidbody)
+        {
+            _impactSFXHits++;
+            _lastImpactSFXTime = Time.timeSinceLevelLoad;
+
+            if (_impactSFXHits >= maxHits)
+            {
+                DespawnFromItemUse();
+            }
         }
     }
 

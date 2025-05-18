@@ -74,12 +74,19 @@ public static class LocalRagdoll
 
         PhysicsRigPatches.ForceAllowUnragdoll = false;
     }
-    
+
     /// <summary>
     /// Knocks out the player for a certain amount of time. This will ragdoll the player and cause their vision to go black.
     /// </summary>
     /// <param name="length"></param>
-    public static void Knockout(float length)
+    public static void Knockout(float length) => Knockout(length, true);
+
+    /// <summary>
+    /// Knocks out the player for a certain amount of time. This will ragdoll the player and, if blind is true, cause their vision to go black.
+    /// </summary>
+    /// <param name="length"></param>
+    /// <param name="blind"></param>
+    public static void Knockout(float length, bool blind)
     {
         if (!RigData.HasPlayer)
         {
@@ -91,10 +98,10 @@ public static class LocalRagdoll
             return;
         }
 
-        MelonCoroutines.Start(KnockoutCoroutine(RigData.Refs.RigManager, length));
+        MelonCoroutines.Start(KnockoutCoroutine(RigData.Refs.RigManager, length, blind));
     }
 
-    private static IEnumerator KnockoutCoroutine(RigManager rigManager, float length)
+    private static IEnumerator KnockoutCoroutine(RigManager rigManager, float length, bool blind)
     {
         // Release all grips
         LocalPlayer.ReleaseGrips();
@@ -103,7 +110,7 @@ public static class LocalRagdoll
         ToggleRagdoll(true);
 
         // Blind the player
-        LocalVision.Blind = true;
+        LocalVision.Blind = blind;
         LocalVision.BlindColor = Color.black;
 
         _knockedOut = true;

@@ -44,7 +44,7 @@ namespace LabFusion.Marrow.Integration
             new ItemDrop() { ItemCrateReference = new("c1534c5a-6441-40aa-a070-909542617365"), Probability = 25f, }, // Baseball Bat
             new ItemDrop() { ItemCrateReference = new("c1534c5a-1f5a-4993-bbc1-03be4d656c65"), Probability = 19f, }, // Sledgehammer
             new ItemDrop() { ItemCrateReference = new("c1534c5a-6d15-47c7-9ad4-b04156696b69"), Probability = 50f, }, // Viking Shield
-            new ItemDrop() { ItemCrateReference = new("c1534c5a-282b-4430-b009-58954b617461"), Probability = 0.9f, }, // Katana
+            new ItemDrop() { ItemCrateReference = new("c1534c5a-282b-4430-b009-58954b617461"), Probability = 1f, }, // Katana
             new ItemDrop() { ItemCrateReference = new("c1534c5a-f6f9-4c96-b88e-91d74c656164"), Probability = 53f, }, // Lead Pipe
             new ItemDrop() { ItemCrateReference = new("c1534c5a-4774-460f-a814-149541786546"), Probability = 30f, }, // Axe Firefighter
             new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.ElectricGuitar"), Probability = 41f, }, // Electric Guitar
@@ -65,11 +65,11 @@ namespace LabFusion.Marrow.Integration
             new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.CardboardBoxHeadsetB"), Probability = 55f, }, // Cardboard Box Headset B
             new ItemDrop() { ItemCrateReference = new("c1534c5a-5be2-49d6-884e-d35c576f6f64"), Probability = 83f, }, // Crate 1m Wooden
             new ItemDrop() { ItemCrateReference = new("c1534c5a-837c-43ca-b4b5-33d842617365"), Probability = 63f, }, // Baseball
-            new ItemDrop() { ItemCrateReference = new("c1534c5a-f938-40cb-8be5-23db41706f6c"), Probability = 70f, }, // Apollo
+            new ItemDrop() { ItemCrateReference = new("c1534c5a-f938-40cb-8be5-23db41706f6c"), Probability = 60f, }, // Apollo
             new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.ApolloGold"), Probability = 5f, }, // Apollo Gold
-            new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.BlueApollo"), Probability = 35f, }, // Apollo Blue
-            new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.Propbroom"), Probability = 66f, }, // Broom
-            new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.BowlingBall"), Probability = 67f, }, // Bowling Ball
+            new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.BlueApollo"), Probability = 30f, }, // Apollo Blue
+            new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.Propbroom"), Probability = 65f, }, // Broom
+            new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.BowlingBall"), Probability = 70f, }, // Bowling Ball
             new ItemDrop() { ItemCrateReference = new("c1534c5a-1e43-4d94-a504-31d457617465"), Probability = 78f, }, // Watermelon
             new ItemDrop() { ItemCrateReference = new("c1534c5a-6f93-4d58-b9a9-ca1c50726f70"), Probability = 68f, }, // Brick
             new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.Died20"), Probability = 70f, }, // Die D20
@@ -140,9 +140,16 @@ namespace LabFusion.Marrow.Integration
 
             foreach (var drop in itemDrops)
             {
-                randomValue -= drop.Probability;
+                float probability = drop.Probability;
 
-                if (randomValue < 0f)
+                if (probability <= 0f)
+                {
+                    continue;
+                }
+
+                randomValue -= probability;
+
+                if (randomValue <= 0f)
                 {
                     return drop;
                 }

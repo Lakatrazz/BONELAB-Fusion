@@ -272,20 +272,32 @@ public class Juggernaut : Gamemode
             return;
         }
 
-        // Don't count self kills
-        if (player == otherPlayer)
+        bool selfKill = player == otherPlayer;
+
+        bool juggernautWasKilled = TeamManager.GetPlayerTeam(player) == JuggernautTeam;
+
+        bool juggernautGotKill = TeamManager.GetPlayerTeam(otherPlayer) == JuggernautTeam;
+
+        if (selfKill)
         {
+            // Juggernaut killed themselves? Give the title to a random player
+            if (juggernautWasKilled && PlayerIdManager.HasOtherPlayers)
+            {
+                var otherPlayers = PlayerIdManager.PlayerIds.Where(id => id.SmallId != player.SmallId);
+                SwapJuggernaut(otherPlayers.GetRandom(), player);
+            }
+
             return;
         }
 
         // Juggernaut was killed?
-        if (TeamManager.GetPlayerTeam(player) == JuggernautTeam)
+        if (juggernautWasKilled)
         {
             SwapJuggernaut(otherPlayer, player);
         }
 
         // Juggernaut killed the player?
-        if (TeamManager.GetPlayerTeam(otherPlayer) == JuggernautTeam)
+        if (juggernautGotKill)
         {
             var score = JuggernautScoreKeeper.GetScore(otherPlayer);
             var nextScore = score + 1;
@@ -514,6 +526,7 @@ public class Juggernaut : Gamemode
 
             LocalHealth.VitalityOverride = CalculateJuggernautHealth();
             LocalHealth.RegenerationOverride = false;
+            LocalHealth.SetFullHealth();
 
             LocalAvatar.HeightOverride = Defaults.JuggernautHeight;
         }

@@ -66,6 +66,21 @@ public static class LocalHealth
     /// </summary>
     public static event Action<Attack, PlayerDamageReceiver.BodyPart, PlayerId> OnAttackedByPlayer;
 
+    /// <summary>
+    /// Sets the Local Player's health to full.
+    /// </summary>
+    public static void SetFullHealth()
+    {
+        if (!RigData.HasPlayer)
+        {
+            return;
+        }
+
+        var health = RigData.Refs.Health;
+
+        health.SetFullHealth();
+    }
+
     internal static void OnInitializeMelon()
     {
         LocalAvatar.OnAvatarChanged += OnAvatarChanged;
