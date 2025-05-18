@@ -765,7 +765,7 @@ public class SmashBones : Gamemode
 
     private static void UpdateItemDroppers()
     {
-        _itemDropTimer += Time.deltaTime;
+        _itemDropTimer += TimeUtilities.DeltaTime;
 
         if (_itemDropTimer < Defaults.ItemFrequency)
         {

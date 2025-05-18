@@ -1,5 +1,4 @@
-﻿using Il2CppCysharp.Threading.Tasks;
-using Il2CppInterop.Runtime.Attributes;
+﻿using Il2CppInterop.Runtime.Attributes;
 
 using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Interaction;
@@ -18,12 +17,17 @@ using UnityEngine;
 
 namespace LabFusion.SDK.MonoBehaviours;
 
+/// <summary>
+/// Custom logic applied to dropped items for Gamemodes.
+/// </summary>
 [RegisterTypeInIl2Cpp]
 public class GamemodeItem : MonoBehaviour
 {
     public GamemodeItem(IntPtr intPtr) : base(intPtr) { }
 
     public const float MaxUnusedTime = 20f;
+
+    public const int MaxBladeHits = 7;
 
     private NetworkEntity _entity = null;
     private NetworkProp _prop = null;
@@ -35,6 +39,9 @@ public class GamemodeItem : MonoBehaviour
     private MarrowEntity _marrowEntity = null;
 
     private GunExtender _gunExtender = null;
+
+    private StabSlash _stabSlash = null;
+    private StabSlash.BladeAudio _bladeAudio = null;
 
     private bool _isDespawned = false;
 
@@ -57,6 +64,7 @@ public class GamemodeItem : MonoBehaviour
             _marrowEntity = _prop.MarrowEntity;
 
             HookHost();
+            CheckComponents(_marrowEntity);
         }
 
         CheckExtenders(entity);
@@ -71,6 +79,16 @@ public class GamemodeItem : MonoBehaviour
         if (gunExtender != null)
         {
             HookGun(gunExtender);
+        }
+    }
+
+    private void CheckComponents(MarrowEntity marrowEntity)
+    {
+        _stabSlash = marrowEntity.GetComponent<StabSlash>();
+
+        if (_stabSlash != null)
+        {
+            _bladeAudio = _stabSlash.bladeAudio;
         }
     }
 
@@ -89,7 +107,7 @@ public class GamemodeItem : MonoBehaviour
                 gun.hammerState = Gun.HammerStates.COCKED;
                 gun.slideState = Gun.SlideStates.RETURNED;
 
-                gun.isMagEjectOnEmpty = true;
+                gun.isMagEjectOnEmpty = true; // This prevents ejecting the mag in any way, I don't care enough to reset this so rip pooling in gamemode maps ig
             };
 
             awaiter.OnCompleted(continuation);
@@ -167,7 +185,7 @@ public class GamemodeItem : MonoBehaviour
 
         _isDespawned = true;
         HasBeenInteracted = false;
-        _despawnedGun = false;
+        _attemptedDespawn = false;
 
         GamemodeDropper.DroppedItems.Remove(_poolee);
 
@@ -212,6 +230,8 @@ public class GamemodeItem : MonoBehaviour
     private void FixedUpdate()
     {
         ApplyLowGravity();
+
+        CheckMeleeDespawn();
     }
 
     private void ApplyLowGravity()
@@ -260,11 +280,11 @@ public class GamemodeItem : MonoBehaviour
         }
     }
 
-    private bool _despawnedGun = false;
+    private bool _attemptedDespawn = false;
 
     private void CheckGunDespawn()
     {
-        if (_despawnedGun)
+        if (_attemptedDespawn)
         {
             return;
         }
@@ -296,13 +316,72 @@ public class GamemodeItem : MonoBehaviour
 
         if (!isLoaded)
         {
-            NetworkAssetSpawner.Despawn(new NetworkAssetSpawner.DespawnRequestInfo()
-            {
-                EntityId = _entity.Id,
-                DespawnEffect = true,
-            });
-
-            _despawnedGun = true;
+            DespawnFromItemUse();
         }
+    }
+
+    private float _lastImpactTime = 0f;
+    private int _bladeHits = 0;
+    private float _bladeHitCooldown = 0f;
+
+    private void CheckMeleeDespawn()
+    {
+        if (_bladeAudio == null)
+        {
+            return;
+        }
+
+        if (_attemptedDespawn)
+        {
+            return;
+        }
+
+        if (!HasBeenInteracted)
+        {
+            return;
+        }
+
+        if (!_entity.IsOwner)
+        {
+            _lastImpactTime = _bladeAudio._nextImpactTime;
+            return;
+        }
+
+        if (_bladeHitCooldown > 0f)
+        {
+            _bladeHitCooldown -= Time.deltaTime;
+
+            _lastImpactTime = _bladeAudio._nextImpactTime;
+            return;
+        }
+
+        bool bladeHit = !Mathf.Approximately(_bladeAudio._nextImpactTime, _lastImpactTime);
+
+        bool hitRigidbody = _bladeAudio._relCol.collider != null && _bladeAudio._relCol.collider.attachedRigidbody != null;
+
+        if (bladeHit && hitRigidbody)
+        {
+            _bladeHits++;
+            _bladeHitCooldown = 0.1f;
+
+            if (_bladeHits >= 7)
+            {
+                DespawnFromItemUse();
+            }
+
+            _lastImpactTime = _bladeAudio._nextImpactTime;
+
+        }
+    }
+
+    private void DespawnFromItemUse()
+    {
+        NetworkAssetSpawner.Despawn(new NetworkAssetSpawner.DespawnRequestInfo()
+        {
+            EntityId = _entity.Id,
+            DespawnEffect = true,
+        });
+
+        _attemptedDespawn = true;
     }
 }
