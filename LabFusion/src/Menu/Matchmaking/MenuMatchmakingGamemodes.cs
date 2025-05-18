@@ -145,7 +145,7 @@ public static class MenuMatchmakingGamemodes
     {
         bool visible = SelectedGamemode != null;
         FindServerElement.gameObject.SetActive(visible);
-        CreateServerElement.gameObject.SetActive(visible);
+        CreateServerElement.gameObject.SetActive(visible && !NetworkInfo.IsServer);
         DescriptionLabel.gameObject.SetActive(visible);
 
         if (visible)
