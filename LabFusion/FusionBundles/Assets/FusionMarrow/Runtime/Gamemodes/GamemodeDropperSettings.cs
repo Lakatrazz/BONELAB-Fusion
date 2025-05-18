@@ -138,13 +138,11 @@ namespace LabFusion.Marrow.Integration
             var totalProbability = itemDrops.Sum(d => d.Probability);
             var randomValue = UnityEngine.Random.Range(0f, totalProbability);
 
-            float sum = 0f;
-
             foreach (var drop in itemDrops)
             {
-                sum += drop.Probability;
+                randomValue -= drop.Probability;
 
-                if (randomValue <= sum)
+                if (randomValue < 0f)
                 {
                     return drop;
                 }
