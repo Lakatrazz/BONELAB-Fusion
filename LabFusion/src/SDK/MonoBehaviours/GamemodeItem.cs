@@ -54,7 +54,23 @@ public class GamemodeItem : MonoBehaviour
 
     private Il2CppSystem.Action<InteractableHost, Hand> _onHandAttachedDelegate = null;
 
-    public bool IsHeld => _host != null && _host.HandCount() > 0;
+    public bool IsHeld
+    {
+        get
+        {
+            if (_hostManager)
+            {
+                return _hostManager.grabbedHosts.Count > 0;
+            }
+
+            if (_host)
+            {
+                return _host.HandCount() > 0;
+            }
+
+            return false;
+        }
+    }
 
     public bool HasBeenInteracted { get; private set; } = false;
 
