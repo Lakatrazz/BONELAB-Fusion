@@ -50,6 +50,11 @@ namespace LabFusion.Marrow.Integration
 
             var marrowEntity = marrowBody.Entity;
 
+            if (marrowEntity == null)
+            {
+                return;
+            }
+
             if (!IMarrowEntityExtender.Cache.TryGet(marrowEntity, out var networkEntity))
             {
                 return;

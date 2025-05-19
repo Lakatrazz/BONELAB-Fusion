@@ -153,6 +153,11 @@ public class RigHeadUI
 
     public void UpdateScale(RigManager rigManager)
     {
+        if (!Spawned)
+        {
+            return;
+        }
+
         var avatar = rigManager.avatar;
 
         if (!avatar)

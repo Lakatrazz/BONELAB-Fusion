@@ -50,6 +50,12 @@ public static class CrateSpawnerPatches
     private static void NetworkedSpawnSpawnable(CrateSpawner spawner, UniTaskCompletionSource<Poolee> source)
     {
         var spawnable = spawner._spawnable;
+
+        if (spawnable == null || !spawnable.crateRef.IsValid())
+        {
+            return;
+        }
+
         var transform = spawner.transform;
 
         NetworkAssetSpawner.Spawn(new NetworkAssetSpawner.SpawnRequestInfo()
