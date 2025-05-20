@@ -73,5 +73,16 @@ public abstract class MessageHandler
 
     public abstract void Handle(ReceivedMessage received);
 
+    /// <summary>
+    /// Invoked on the server's end before a message is relayed. Return true if the message is valid and can be relayed.
+    /// </summary>
+    /// <param name="received"></param>
+    /// <returns></returns>
+    protected virtual bool OnPreRelayMessage(ReceivedMessage received) => true;
+
+    /// <summary>
+    /// Invoked when the recipient has received the message and the message is ready to trigger its logic.
+    /// </summary>
+    /// <param name="received"></param>
     protected virtual void OnHandleMessage(ReceivedMessage received) { }
 }

@@ -4,6 +4,7 @@ using LabFusion.Data;
 using LabFusion.Network;
 using LabFusion.Preferences;
 using LabFusion.Senders;
+using LabFusion.Utilities;
 
 using UnityEngine;
 
@@ -41,25 +42,71 @@ public static class LocalControls
         set
         {
             _disableSlowMo = value;
+
+            OnOverrideSlowMo();
         }
     }
 
-    private static bool _disableMagazinePouch = false;
+    public static bool SlowMoEnabled
+    {
+        get
+        {
+            if (!NetworkInfo.HasServer)
+            {
+                return true;
+            }
+
+            if (DisableSlowMo)
+            {
+                return false;
+            }
+
+            return CommonPreferences.SlowMoMode switch
+            {
+                TimeScaleMode.DISABLED => false,
+                TimeScaleMode.HOST_ONLY => NetworkInfo.IsServer,
+                _ => true,
+            };
+        }
+    }
+
+    private static bool _disableAmmoPouch = false;
     public static bool DisableAmmoPouch
     {
         get
         {
-            return _disableMagazinePouch;
+            return _disableAmmoPouch;
         }
         set
         {
-            _disableMagazinePouch = value;
+            _disableAmmoPouch = value;
         }
+    }
+
+    internal static void OnInitializeMelon()
+    {
+        MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
+        LobbyInfoManager.OnLobbyInfoChanged += OnLobbyInfoChanged;
+    }
+
+    private static void OnMainSceneInitialized()
+    {
+        OnOverrideSlowMo();
+    }
+
+    private static void OnLobbyInfoChanged()
+    {
+        OnOverrideSlowMo();
     }
 
     internal static void OnFixedUpdate() 
     {
         UpdateSlowMo();
+    }
+
+    private static void OnOverrideSlowMo()
+    {
+        TimeManager.slowMoEnabled = SlowMoEnabled;
     }
 
     private static void UpdateSlowMo()
@@ -86,7 +133,7 @@ public static class LocalControls
 
     private static void ApplyLowGravity()
     {
-        if (DisableSlowMo || !TimeManager.slowMoEnabled)
+        if (!TimeManager.slowMoEnabled)
         {
             return;
         }

@@ -89,6 +89,48 @@ public abstract class ModuleMessageHandler : MessageHandler
         return null;
     }
 
+    public static bool PreRelayMessage(ReceivedMessage received)
+    {
+        if (Handlers == null)
+        {
+#if DEBUG
+            FusionLogger.Warn("We received a ModuleMessage, but Handlers were not registered yet.");
+#endif
+
+            return false;
+        }
+
+        try
+        {
+            var bytes = received.Bytes;
+
+            ushort tag = GetTag(bytes);
+            var buffer = GetBuffer(bytes);
+
+            // Since modules cannot be assumed to exist for everyone, we need to null check
+            if (Handlers.Length > tag && Handlers[tag] != null)
+            {
+                var payload = new ReceivedMessage()
+                {
+                    Type = received.Type,
+                    Channel = received.Channel,
+                    Sender = received.Sender,
+                    Target = received.Target,
+                    Bytes = buffer,
+                    IsServerHandled = received.IsServerHandled,
+                };
+
+                return Handlers[tag].OnPreRelayMessage(payload);
+            }
+        }
+        catch (Exception e)
+        {
+            FusionLogger.Error($"Failed checking PreRelayMessage with reason: {e.Message}\nTrace:{e.StackTrace}");
+        }
+
+        return true;
+    }
+
     public static void ReadMessage(ReceivedMessage received)
     {
         if (Handlers == null)
@@ -104,13 +146,8 @@ public abstract class ModuleMessageHandler : MessageHandler
         {
             var bytes = received.Bytes;
 
-            ushort tag = (ushort)((bytes[0] << 8) | bytes[1]);
-            var buffer = new byte[bytes.Length - sizeof(ushort)];
-
-            for (var i = 0; i < buffer.Length; i++)
-            {
-                buffer[i] = received.Bytes[i + 2];
-            }
+            ushort tag = GetTag(bytes);
+            var buffer = GetBuffer(bytes);
 
             // Since modules cannot be assumed to exist for everyone, we need to null check
             if (Handlers.Length > tag && Handlers[tag] != null)
@@ -132,6 +169,23 @@ public abstract class ModuleMessageHandler : MessageHandler
         {
             FusionLogger.Error($"Failed handling network message with reason: {e.Message}\nTrace:{e.StackTrace}");
         }
+    }
+
+    private static ushort GetTag(byte[] bytes)
+    {
+        return (ushort)((bytes[0] << 8) | bytes[1]);
+    }
+
+    private static byte[] GetBuffer(byte[] bytes)
+    {
+        var buffer = new byte[bytes.Length - sizeof(ushort)];
+
+        for (var i = 0; i < buffer.Length; i++)
+        {
+            buffer[i] = bytes[i + 2];
+        }
+
+        return buffer;
     }
 
     public sealed override void Handle(ReceivedMessage received)

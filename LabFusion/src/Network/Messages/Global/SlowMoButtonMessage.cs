@@ -2,29 +2,21 @@
 
 using LabFusion.Network.Serialization;
 using LabFusion.Patching;
+using LabFusion.Player;
+using LabFusion.Preferences;
+using LabFusion.Senders;
 
 namespace LabFusion.Network;
 
 public class SlowMoButtonMessageData : INetSerializable
 {
-    public const int Size = sizeof(byte) * 2;
+    public int? GetSize() => sizeof(byte);
 
-    public byte smallId;
-    public bool isDecrease;
-
-    public static SlowMoButtonMessageData Create(byte smallId, bool isDecrease)
-    {
-        return new SlowMoButtonMessageData()
-        {
-            smallId = smallId,
-            isDecrease = isDecrease
-        };
-    }
+    public bool Decrease;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref smallId);
-        serializer.SerializeValue(ref isDecrease);
+        serializer.SerializeValue(ref Decrease);
     }
 }
 
@@ -33,13 +25,27 @@ public class SlowMoButtonMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.SlowMoButton;
 
+    protected override bool OnPreRelayMessage(ReceivedMessage received)
+    {
+        var mode = CommonPreferences.SlowMoMode;
+
+        return mode switch
+        {
+            TimeScaleMode.DISABLED => false,
+            TimeScaleMode.LOW_GRAVITY => false,
+            TimeScaleMode.CLIENT_SIDE => false,
+            TimeScaleMode.HOST_ONLY => received.Sender == PlayerIdManager.HostSmallId,
+            _ => true,
+        };
+    }
+
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<SlowMoButtonMessageData>();
 
         TimeManagerPatches.IgnorePatches = true;
 
-        if (data.isDecrease)
+        if (data.Decrease)
         {
             TimeManager.DECREASE_TIMESCALE();
         }

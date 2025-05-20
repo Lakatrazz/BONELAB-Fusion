@@ -4,7 +4,6 @@ using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Utilities;
 
 using LabFusion.Network;
-using LabFusion.Player;
 using LabFusion.Preferences;
 using LabFusion.Senders;
 
@@ -31,29 +30,19 @@ public static class TimeManagerPatches
             return true;
         }
 
-        if (LocalControls.DisableSlowMo)
-        {
-            return false;
-        }
-
         var mode = CommonPreferences.SlowMoMode;
 
         switch (mode)
         {
-            case TimeScaleMode.DISABLED:
-                return false;
             case TimeScaleMode.LOW_GRAVITY:
 
                 int step = Mathf.Min(TimeManager.CurrentTimeScaleStep + 1, TimeManager.max_timeScaleStep);
                 TimeManager.cur_timeScaleStep = step;
                 TimeManager.cur_intensity = Mathf.Pow(2f, step);
 
-                Time.timeScale = 1f;
-                Time.fixedDeltaTime = 1f / MarrowGame.xr.Display.GetRecommendedPhysFrequency();
+                ResetTimeScale();
 
                 return false;
-            case TimeScaleMode.CLIENT_SIDE_UNSTABLE:
-                return true;
             case TimeScaleMode.EVERYONE:
                 TimeScaleSender.SendSlowMoButton(true);
                 break;
@@ -98,9 +87,14 @@ public static class TimeManagerPatches
             case TimeScaleMode.LOW_GRAVITY:
                 TimeManager.cur_intensity = 1f;
 
-                Time.timeScale = 1f;
-                Time.fixedDeltaTime = 1f / MarrowGame.xr.Display.GetRecommendedPhysFrequency();
+                ResetTimeScale();
                 break;
         }
+    }
+
+    private static void ResetTimeScale()
+    {
+        Time.timeScale = 1f;
+        Time.fixedDeltaTime = 1f / MarrowGame.xr.Display.GetRecommendedPhysFrequency();
     }
 }

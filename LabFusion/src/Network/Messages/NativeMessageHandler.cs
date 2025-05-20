@@ -100,6 +100,11 @@ public abstract class NativeMessageHandler : MessageHandler
             throw new ExpectedClientException();
         }
 
+        if (received.IsServerHandled && !OnPreRelayMessage(received))
+        {
+            return;
+        }
+
         switch (received.Type)
         {
             case RelayType.ToServer:

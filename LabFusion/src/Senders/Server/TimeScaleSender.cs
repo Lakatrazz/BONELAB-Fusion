@@ -9,15 +9,13 @@ public enum TimeScaleMode
     LOW_GRAVITY = 1,
     HOST_ONLY = 2,
     EVERYONE = 3,
-    CLIENT_SIDE_UNSTABLE = 4,
+    CLIENT_SIDE = 4,
 }
 
 public static class TimeScaleSender
 {
-    public static void SendSlowMoButton(bool isDecrease)
+    public static void SendSlowMoButton(bool decrease)
     {
-        var data = SlowMoButtonMessageData.Create(PlayerIdManager.LocalSmallId, isDecrease);
-
-        MessageRelay.RelayNative(data, NativeMessageTag.SlowMoButton, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayNative(new SlowMoButtonMessageData() { Decrease = decrease }, NativeMessageTag.SlowMoButton, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 }
