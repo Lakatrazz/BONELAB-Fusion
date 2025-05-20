@@ -95,6 +95,7 @@ public class GamemodeItem : MonoBehaviour
         GamemodeDropper.DroppedItems.Add(poolee);
     }
 
+    [HideFromIl2Cpp]
     private void CheckExtenders(NetworkEntity entity)
     {
         var gunExtender = entity.GetExtender<GunExtender>();
@@ -123,6 +124,7 @@ public class GamemodeItem : MonoBehaviour
         }
     }
 
+    [HideFromIl2Cpp]
     private void HookGun(GunExtender gunExtender)
     {
         _gunExtender = gunExtender;
