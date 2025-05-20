@@ -72,22 +72,22 @@ namespace LabFusion.Marrow.Integration
             // new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.PropHealthPickup"), Probability = 20f, }, // Prop_Health Pickup, add functionality later
 
             // Props
-            new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.CardboardBoxHeadsetA"), Probability = 60f, }, // Cardboard Box Headset A
-            new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.CardboardBoxHeadsetB"), Probability = 55f, }, // Cardboard Box Headset B
-            new ItemDrop() { ItemCrateReference = new("c1534c5a-5be2-49d6-884e-d35c576f6f64"), Probability = 83f, }, // Crate 1m Wooden
-            new ItemDrop() { ItemCrateReference = new("c1534c5a-837c-43ca-b4b5-33d842617365"), Probability = 63f, }, // Baseball
-            new ItemDrop() { ItemCrateReference = new("c1534c5a-f938-40cb-8be5-23db41706f6c"), Probability = 60f, }, // Apollo
+            new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.CardboardBoxHeadsetA"), Probability = 70f, }, // Cardboard Box Headset A
+            new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.CardboardBoxHeadsetB"), Probability = 60f, }, // Cardboard Box Headset B
+            new ItemDrop() { ItemCrateReference = new("c1534c5a-5be2-49d6-884e-d35c576f6f64"), Probability = 90f, }, // Crate 1m Wooden
+            new ItemDrop() { ItemCrateReference = new("c1534c5a-837c-43ca-b4b5-33d842617365"), Probability = 75f, }, // Baseball
+            new ItemDrop() { ItemCrateReference = new("c1534c5a-f938-40cb-8be5-23db41706f6c"), Probability = 70f, }, // Apollo
             new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.ApolloGold"), Probability = 5f, }, // Apollo Gold
             new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.BlueApollo"), Probability = 30f, }, // Apollo Blue
-            new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.Propbroom"), Probability = 65f, }, // Broom
-            new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.BowlingBall"), Probability = 70f, }, // Bowling Ball
-            new ItemDrop() { ItemCrateReference = new("c1534c5a-1e43-4d94-a504-31d457617465"), Probability = 78f, }, // Watermelon
-            new ItemDrop() { ItemCrateReference = new("c1534c5a-6f93-4d58-b9a9-ca1c50726f70"), Probability = 68f, }, // Brick
-            new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.Died20"), Probability = 70f, }, // Die D20
-            new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.ClayPotA"), Probability = 69f, }, // Clay Pot A
-            new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.ClayVase"), Probability = 51f, }, // Clay Vase
-            new ItemDrop() { ItemCrateReference = new("c1534c5a-9629-4660-8439-186b50726f70"), Probability = 70f, }, // Coffee Cup
-            new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.BowlingPin"), Probability = 70f, }, // Bowling Pin
+            new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.Propbroom"), Probability = 75f, }, // Broom
+            new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.BowlingBall"), Probability = 80f, }, // Bowling Ball
+            new ItemDrop() { ItemCrateReference = new("c1534c5a-1e43-4d94-a504-31d457617465"), Probability = 88f, }, // Watermelon
+            new ItemDrop() { ItemCrateReference = new("c1534c5a-6f93-4d58-b9a9-ca1c50726f70"), Probability = 73f, }, // Brick
+            new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.Died20"), Probability = 60f, }, // Die D20
+            new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.ClayPotA"), Probability = 75f, }, // Clay Pot A
+            new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.ClayVase"), Probability = 60f, }, // Clay Vase
+            new ItemDrop() { ItemCrateReference = new("c1534c5a-9629-4660-8439-186b50726f70"), Probability = 85f, }, // Coffee Cup
+            new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.BowlingPin"), Probability = 80f, }, // Bowling Pin
             new ItemDrop() { ItemCrateReference = new("c1534c5a-3199-4102-91e2-8ac650726f70"), Probability = 45f, }, // Gym D20
             new ItemDrop() {ItemCrateReference = new("c1534c5a-202f-43f8-9a6c-1e9450726f70"), Probability = 5f, }, // Monkey
 
