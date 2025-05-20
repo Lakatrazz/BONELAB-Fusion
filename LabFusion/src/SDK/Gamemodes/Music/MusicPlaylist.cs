@@ -2,6 +2,7 @@
 
 using LabFusion.Extensions;
 using LabFusion.Marrow;
+using LabFusion.Utilities;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -26,9 +27,12 @@ public class MusicPlaylist
     private bool _isActive = false;
     public bool IsActive => _isActive;
 
+    private bool _loadingTrack = false;
+
     public void StartPlaylist()
     {
         _isActive = true;
+        _loadingTrack = false;
 
         NextTrack();
     }
@@ -38,20 +42,27 @@ public class MusicPlaylist
         StopMusic();
 
         _isActive = false;
+        _loadingTrack = false;
     }
 
     private void PlayMusic()
     {
+        _loadingTrack = true;
+
         var currentTrack = GetCurrentTrack();
 
         currentTrack.LoadClip((clip) =>
         {
+            _loadingTrack = false;
+
             Audio2dPlugin.Audio2dManager.CueOverrideMusic(clip, Volume, 0.2f, 0.2f, LoopSingle, false);
         });
     }
 
     private void StopMusic()
     {
+        _loadingTrack = false;
+
         var audio2dManager = Audio2dPlugin.Audio2dManager;
 
         bool noOriginalMusic = audio2dManager._overridenMusicClip == null;
@@ -131,6 +142,12 @@ public class MusicPlaylist
     {
         // Make sure we're currently playing tracks
         if (!IsActive)
+        {
+            return;
+        }
+
+        // Wait for the current track to finish loading
+        if (_loadingTrack)
         {
             return;
         }
