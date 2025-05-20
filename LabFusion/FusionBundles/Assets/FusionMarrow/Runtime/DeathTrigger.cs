@@ -2,11 +2,11 @@
 using MelonLoader;
 
 using Il2CppSLZ.Marrow.Interaction;
-using Il2CppSLZ.Marrow;
 
 using LabFusion.Network;
 using LabFusion.Entities;
 using LabFusion.Utilities;
+using LabFusion.RPC;
 #endif
 
 using UnityEngine;
@@ -60,25 +60,43 @@ namespace LabFusion.Marrow.Integration
                 return;
             }
 
+            OnNetworkEntityEnter(attachedRigidbody, networkEntity);
+        }
+
+        private static void OnNetworkEntityEnter(Rigidbody rigidbody, NetworkEntity networkEntity)
+        {
+            var networkPlayer = networkEntity.GetExtender<NetworkPlayer>();
+
+            if (networkPlayer != null)
+            {
+                OnNetworkPlayerEnter(rigidbody, networkEntity, networkPlayer);
+                return;
+            }
+
+            var networkProp = networkEntity.GetExtender<NetworkProp>();
+
+            if (networkProp != null)
+            {
+                OnNetworkPropEnter(networkEntity);
+                return;
+            }
+        }
+
+        private static void OnNetworkPlayerEnter(Rigidbody rigidbody, NetworkEntity networkEntity, NetworkPlayer networkPlayer)
+        {
+            // Only kill if this is the Local Player
             if (!networkEntity.IsOwner)
             {
                 return;
             }
 
-            var networkPlayer = networkEntity.GetExtender<NetworkPlayer>();
-
-            if (networkPlayer == null)
-            {
-                return;
-            }
-
             // Only trigger for head
-            if (attachedRigidbody != networkPlayer.RigRefs.RigManager.physicsRig.torso._headRb)
+            if (rigidbody != networkPlayer.RigRefs.RigManager.physicsRig.torso._headRb)
             {
                 return;
             }
 
-            var health = networkPlayer.RigRefs.RigManager.health.TryCast<Player_Health>();
+            var health = networkPlayer.RigRefs.Health;
 
             if (!KillDamageOverride.HasValue || KillDamageOverride.Value == true)
             {
@@ -86,6 +104,21 @@ namespace LabFusion.Marrow.Integration
             }
 
             OnKillPlayer?.InvokeSafe("executing OnKillPlayer hook");
+        }
+
+        private static void OnNetworkPropEnter(NetworkEntity networkEntity)
+        {
+            // Only despawn triggered props if this is the host
+            if (!NetworkInfo.IsServer)
+            {
+                return;
+            }
+
+            NetworkAssetSpawner.Despawn(new NetworkAssetSpawner.DespawnRequestInfo()
+            {
+                EntityId = networkEntity.Id,
+                DespawnEffect = true,
+            });
         }
 #endif
     }
