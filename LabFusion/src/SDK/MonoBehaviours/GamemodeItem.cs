@@ -300,7 +300,14 @@ public class GamemodeItem : MonoBehaviour
                 continue;
             }
 
-            body._rigidbody.AddForce(antiGravity, ForceMode.Acceleration);
+            var rigidbody = body._rigidbody;
+
+            if (!rigidbody.useGravity)
+            {
+                continue;
+            }
+
+            rigidbody.AddForce(antiGravity, ForceMode.Acceleration);
         }
     }
 

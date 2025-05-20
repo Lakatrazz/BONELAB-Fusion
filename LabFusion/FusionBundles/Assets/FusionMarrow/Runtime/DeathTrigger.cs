@@ -27,6 +27,11 @@ namespace LabFusion.Marrow.Integration
 
         public static bool? KillDamageOverride { get; set; } = null;
 
+        private void Awake()
+        {
+            gameObject.layer = (int)MarrowLayers.EntityTrigger;
+        }
+
         private void OnTriggerEnter(Collider other)
         {
             if (!NetworkInfo.HasServer)
@@ -34,21 +39,14 @@ namespace LabFusion.Marrow.Integration
                 return;
             }
 
-            var attachedRigidbody = other.attachedRigidbody;
+            var tracker = Tracker.Cache.Get(other.gameObject);
 
-            if (attachedRigidbody == null)
+            if (tracker == null)
             {
                 return;
             }
 
-            var marrowBody = MarrowBody.Cache.Get(attachedRigidbody.gameObject);
-
-            if (marrowBody == null)
-            {
-                return;
-            }
-
-            var marrowEntity = marrowBody.Entity;
+            var marrowEntity = tracker.Entity;
 
             if (marrowEntity == null)
             {
@@ -60,16 +58,16 @@ namespace LabFusion.Marrow.Integration
                 return;
             }
 
-            OnNetworkEntityEnter(attachedRigidbody, networkEntity);
+            OnNetworkEntityEnter(networkEntity);
         }
 
-        private static void OnNetworkEntityEnter(Rigidbody rigidbody, NetworkEntity networkEntity)
+        private static void OnNetworkEntityEnter(NetworkEntity networkEntity)
         {
             var networkPlayer = networkEntity.GetExtender<NetworkPlayer>();
 
             if (networkPlayer != null)
             {
-                OnNetworkPlayerEnter(rigidbody, networkEntity, networkPlayer);
+                OnNetworkPlayerEnter(networkEntity, networkPlayer);
                 return;
             }
 
@@ -82,16 +80,10 @@ namespace LabFusion.Marrow.Integration
             }
         }
 
-        private static void OnNetworkPlayerEnter(Rigidbody rigidbody, NetworkEntity networkEntity, NetworkPlayer networkPlayer)
+        private static void OnNetworkPlayerEnter(NetworkEntity networkEntity, NetworkPlayer networkPlayer)
         {
             // Only kill if this is the Local Player
             if (!networkEntity.IsOwner)
-            {
-                return;
-            }
-
-            // Only trigger for head
-            if (rigidbody != networkPlayer.RigRefs.RigManager.physicsRig.torso._headRb)
             {
                 return;
             }
