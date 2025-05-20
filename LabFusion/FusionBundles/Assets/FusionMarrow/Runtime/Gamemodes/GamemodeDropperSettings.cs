@@ -44,7 +44,7 @@ namespace LabFusion.Marrow.Integration
             new ItemDrop() { ItemCrateReference = new("c1534c5a-6441-40aa-a070-909542617365"), Probability = 25f, }, // Baseball Bat
             new ItemDrop() { ItemCrateReference = new("c1534c5a-1f5a-4993-bbc1-03be4d656c65"), Probability = 19f, }, // Sledgehammer
             new ItemDrop() { ItemCrateReference = new("c1534c5a-6d15-47c7-9ad4-b04156696b69"), Probability = 50f, }, // Viking Shield
-            new ItemDrop() { ItemCrateReference = new("c1534c5a-282b-4430-b009-58954b617461"), Probability = 1f, }, // Katana
+            new ItemDrop() { ItemCrateReference = new("c1534c5a-282b-4430-b009-58954b617461"), Probability = 5f, }, // Katana
             new ItemDrop() { ItemCrateReference = new("c1534c5a-f6f9-4c96-b88e-91d74c656164"), Probability = 53f, }, // Lead Pipe
             new ItemDrop() { ItemCrateReference = new("c1534c5a-4774-460f-a814-149541786546"), Probability = 30f, }, // Axe Firefighter
             new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.ElectricGuitar"), Probability = 41f, }, // Electric Guitar
@@ -56,7 +56,7 @@ namespace LabFusion.Marrow.Integration
 
             // Gadgets
             new ItemDrop() { ItemCrateReference = new("c1534c5a-e963-4a7c-8c7e-1195546f7942"), Probability = 50f, }, // Toy Balloon Gun
-            new ItemDrop() { ItemCrateReference = new("c1534c5a-c6a8-45d0-aaa2-2c954465764d"), Probability = 3f, }, // Dev Manipulator
+            new ItemDrop() { ItemCrateReference = new("c1534c5a-c6a8-45d0-aaa2-2c954465764d"), Probability = 5f, }, // Dev Manipulator
             new ItemDrop() { ItemCrateReference = new("c1534c5a-e777-4d15-b0c1-3195426f6172"), Probability = 10f, }, // Boardgun
             // new ItemDrop() { ItemCrateReference = new("SLZ.BONELAB.Content.Spawnable.PropHealthPickup"), Probability = 20f, }, // Prop_Health Pickup, add functionality later
 
