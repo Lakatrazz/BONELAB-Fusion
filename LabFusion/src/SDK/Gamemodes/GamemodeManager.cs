@@ -240,6 +240,7 @@ public static class GamemodeManager
                 Title = "Gamemode Ready",
                 Type = NotificationType.SUCCESS,
                 ShowPopup = true,
+                SaveToMenu = false,
                 PopupLength = 2f,
             });
         }
