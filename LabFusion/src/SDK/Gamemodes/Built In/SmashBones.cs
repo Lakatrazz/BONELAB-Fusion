@@ -340,7 +340,7 @@ public class SmashBones : Gamemode
         }
     }
 
-    private void SlipGrip(Hand hand)
+    private static void SlipGrip(Hand hand)
     {
         var attachedReceiver = hand.AttachedReceiver;
 
@@ -361,15 +361,43 @@ public class SmashBones : Gamemode
         {
             hand.TryDetach();
         }
+        else if (IsPlayerGrip(grip))
+        {
+            RandomDetachHand(hand, 50f);
+        }
         else
         {
-            bool chance = UnityEngine.Random.Range(0, 100) == 0;
-
-            if (chance)
-            {
-                hand.TryDetach();
-            }
+            RandomDetachHand(hand, 5f);
         }
+    }
+
+    private static void RandomDetachHand(Hand hand, float percentChance)
+    {
+        var random = UnityEngine.Random.Range(0f, 100f);
+
+        if (random <= percentChance)
+        {
+            hand.TryDetach();
+        }
+    }
+
+    private static bool IsPlayerGrip(Grip grip)
+    {
+        var marrowEntity = grip._marrowEntity;
+
+        if (marrowEntity == null)
+        {
+            return false;
+        }
+
+        if (!IMarrowEntityExtender.Cache.TryGet(marrowEntity, out var networkEntity))
+        {
+            return false;
+        }
+
+        var networkPlayer = networkEntity.GetExtender<NetworkPlayer>();
+
+        return networkPlayer != null;
     }
 
     private void OnPlayerDamageEvent(string value)
