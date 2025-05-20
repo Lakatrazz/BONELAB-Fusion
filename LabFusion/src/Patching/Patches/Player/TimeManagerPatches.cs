@@ -15,7 +15,7 @@ namespace LabFusion.Patching;
 [HarmonyPatch(typeof(TimeManager))]
 public static class TimeManagerPatches
 {
-    public static bool IgnorePatches = false;
+    public static bool IgnorePatches { get; set; } = false;
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(TimeManager.DECREASE_TIMESCALE))]

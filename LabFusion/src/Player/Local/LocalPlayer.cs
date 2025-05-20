@@ -57,6 +57,11 @@ public static class LocalPlayer
         LocalVision.OnInitializeMelon();
     }
 
+    internal static void OnFixedUpdate()
+    {
+        LocalControls.OnFixedUpdate();
+    }
+
     private static bool OnTrySetMetadata(string key, string value)
     {
         Metadata.ForceSetLocalMetadata(key, value);

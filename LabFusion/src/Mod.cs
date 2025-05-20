@@ -308,7 +308,7 @@ public class FusionMod : MelonMod
     {
         TimeUtilities.OnEarlyFixedUpdate();
 
-        PhysicsUtilities.OnUpdateTimescale();
+        LocalPlayer.OnFixedUpdate();
 
         PDController.OnFixedUpdate();
 
