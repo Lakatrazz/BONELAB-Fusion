@@ -88,7 +88,7 @@ public class SmashBones : Gamemode
 
         public const float ExtraJumpCooldown = 0.2f;
 
-        public const float MaxAvatarHeight = 4f;
+        public const float MaxAvatarHeight = 3f;
 
         public const bool DropItems = true;
 
