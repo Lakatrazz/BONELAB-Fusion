@@ -232,7 +232,7 @@ public class FusionMod : MelonMod
         ConstrainerUtilities.OnMainSceneInitialized();
 
         // Update hooks
-        MultiplayerHooking.Internal_OnMainSceneInitialized();
+        MultiplayerHooking.InvokeOnMainSceneInitialized();
 
         FusionPlayer.OnMainSceneInitialized();
     }
@@ -295,7 +295,7 @@ public class FusionMod : MelonMod
         InternalLayerHelpers.OnUpdateLayer();
 
         // Update hooks
-        MultiplayerHooking.Internal_OnUpdate();
+        MultiplayerHooking.InvokeOnUpdate();
 
         // Update gamemodes
         GamemodeManager.Internal_OnUpdate();
@@ -319,7 +319,7 @@ public class FusionMod : MelonMod
         NetworkEntityManager.OnFixedUpdate(deltaTime);
 
         // Update hooks
-        MultiplayerHooking.Internal_OnFixedUpdate();
+        MultiplayerHooking.InvokeOnFixedUpdate();
 
         // Update gamemodes
         GamemodeManager.Internal_OnFixedUpdate();
@@ -336,7 +336,7 @@ public class FusionMod : MelonMod
         InternalLayerHelpers.OnLateUpdateLayer();
 
         // Late update hooks
-        MultiplayerHooking.Internal_OnLateUpdate();
+        MultiplayerHooking.InvokeOnLateUpdate();
 
         // Late update gamemodes
         GamemodeManager.Internal_OnLateUpdate();

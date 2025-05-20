@@ -99,8 +99,8 @@ public class Juggernaut : Gamemode
         TeamManager.OnRemovedFromTeam += OnRemovedFromTeam;
 
         MultiplayerHooking.OnPlayerAction += OnPlayerAction;
-        MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
-        MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
+        MultiplayerHooking.OnPlayerJoined += OnPlayerJoin;
+        MultiplayerHooking.OnPlayerLeft += OnPlayerLeave;
 
         // Register score keeper
         JuggernautScoreKeeper.Register(Metadata);
@@ -115,8 +115,8 @@ public class Juggernaut : Gamemode
         TeamManager.OnRemovedFromTeam -= OnRemovedFromTeam;
 
         MultiplayerHooking.OnPlayerAction -= OnPlayerAction;
-        MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
-        MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
+        MultiplayerHooking.OnPlayerJoined -= OnPlayerJoin;
+        MultiplayerHooking.OnPlayerLeft -= OnPlayerLeave;
 
         // Unregister score keeper
         JuggernautScoreKeeper.Unregister();

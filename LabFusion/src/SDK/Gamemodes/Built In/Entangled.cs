@@ -144,51 +144,22 @@ public class Entangled : Gamemode
     protected PlayerId _partner = null;
     protected List<EntangledTether> _tethers = new List<EntangledTether>();
 
-    private bool _hasOverridenValues = false;
-
     public override void OnGamemodeRegistered()
     {
         Instance = this;
-
-        // Add hooks
-        MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
-        MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
 
         SetDefaultValues();
     }
 
     public override void OnMainSceneInitialized()
     {
-        if (!_hasOverridenValues)
-        {
-            SetDefaultValues();
-        }
-        else
-        {
-            _hasOverridenValues = false;
-        }
+        SetDefaultValues();
     }
 
     public void SetDefaultValues()
     {
         var song = new AudioReference(FusionMonoDiscReferences.GeoGrpFellDownTheStairsReference);
         Playlist.SetPlaylist(song);
-    }
-
-    public void SetOverriden()
-    {
-        if (FusionSceneManager.IsLoading())
-        {
-            if (!_hasOverridenValues)
-                SetDefaultValues();
-
-            _hasOverridenValues = true;
-        }
-    }
-
-    public override void OnLoadingBegin()
-    {
-        _hasOverridenValues = false;
     }
 
     public override void OnGamemodeUnregistered()
@@ -205,10 +176,6 @@ public class Entangled : Gamemode
         }
 
         _tethers.Clear();
-
-        // Remove hooks
-        MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
-        MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
     }
 
     protected override void OnUpdate()
@@ -229,13 +196,8 @@ public class Entangled : Gamemode
         }
     }
 
-    protected void OnPlayerJoin(PlayerId id)
+    protected override void OnPlayerJoined(PlayerId id)
     {
-        if (!IsStarted)
-        {
-            return;
-        }
-
         var unassignedPlayers = GetUnassignedPlayers();
 
         if (unassignedPlayers.Count > 0)
@@ -246,7 +208,7 @@ public class Entangled : Gamemode
             AssignPartners(id, null);
     }
 
-    protected void OnPlayerLeave(PlayerId id)
+    protected override void OnPlayerLeft(PlayerId id)
     {
         RemovePartners(id);
     }

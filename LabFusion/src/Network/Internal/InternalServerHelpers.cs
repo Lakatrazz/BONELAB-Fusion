@@ -54,7 +54,7 @@ public static class InternalServerHelpers
         ModuleMessageHandler.PopulateHandlerTable(names);
 
         // Update hooks
-        MultiplayerHooking.Internal_OnStartServer();
+        MultiplayerHooking.InvokeOnStartedServer();
 
         // Send a notification
         FusionNotifier.Send(new FusionNotification()
@@ -83,7 +83,7 @@ public static class InternalServerHelpers
         FusionPreferences.SendClientSettings();
 
         // Update hooks
-        MultiplayerHooking.Internal_OnJoinServer();
+        MultiplayerHooking.InvokeOnJoinedServer();
 
         // Send a notification
         FusionNotifier.Send(new FusionNotification()
@@ -113,7 +113,7 @@ public static class InternalServerHelpers
         NetworkEntityManager.OnCleanupEntities();
 
         // Update hooks
-        MultiplayerHooking.Internal_OnDisconnect();
+        MultiplayerHooking.InvokeOnDisconnected();
 
         // Send a notification
         if (string.IsNullOrWhiteSpace(reason))
@@ -153,7 +153,7 @@ public static class InternalServerHelpers
         InternalLayerHelpers.OnUserJoin(id);
 
         // Update hooks
-        MultiplayerHooking.Internal_OnPlayerJoin(id);
+        MultiplayerHooking.InvokeOnPlayerJoined(id);
 
         // Send notification
         if (isInitialJoin && id.TryGetDisplayName(out var name))
@@ -194,7 +194,7 @@ public static class InternalServerHelpers
 
         DisposeUser(playerId);
 
-        MultiplayerHooking.Internal_OnPlayerLeave(playerId);
+        MultiplayerHooking.InvokeOnPlayerLeft(playerId);
     }
 
     /// <summary>

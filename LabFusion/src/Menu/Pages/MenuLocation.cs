@@ -40,9 +40,9 @@ public static class MenuLocation
 
     public static void OnInitializeMelon()
     {
-        MultiplayerHooking.OnStartServer += OnConnect;
-        MultiplayerHooking.OnJoinServer += OnConnect;
-        MultiplayerHooking.OnDisconnect += OnDisconnect;
+        MultiplayerHooking.OnStartedServer += OnConnect;
+        MultiplayerHooking.OnJoinedServer += OnConnect;
+        MultiplayerHooking.OnDisconnected += OnDisconnect;
 
         LobbyInfoManager.OnLobbyInfoChanged += OnServerSettingsChanged;
         LocalPlayer.OnUsernameChanged += OnUsernameChanged;

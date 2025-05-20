@@ -82,7 +82,7 @@ public static class GamemodeManager
         MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
         MultiplayerHooking.OnTargetLevelLoaded += OnTargetLevelLoaded;
 
-        MultiplayerHooking.OnDisconnect += OnDisconnect;
+        MultiplayerHooking.OnDisconnected += OnDisconnect;
     }
 
     private static void OnTargetLevelLoaded()

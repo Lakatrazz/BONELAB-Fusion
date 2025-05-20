@@ -157,7 +157,7 @@ public class ConnectionRequestMessage : NativeMessageHandler
         var playerId = new PlayerId(data.longId, newSmallId.Value, data.initialMetadata, data.initialEquippedItems);
 
         // Finally, check for dynamic connection disallowing
-        if (!MultiplayerHooking.Internal_OnShouldAllowConnection(playerId, out string reason))
+        if (!MultiplayerHooking.CheckShouldAllowConnection(playerId, out string reason))
         {
             ConnectionSender.SendConnectionDeny(data.longId, reason);
             return;

@@ -16,9 +16,9 @@ public static class PlayerAdditionsHelper
     public static void OnInitializeMelon()
     {
         // Hook multiplayer events
-        MultiplayerHooking.OnJoinServer += () => { OnEnterServer(RigData.Refs.RigManager); };
-        MultiplayerHooking.OnStartServer += () => { OnEnterServer(RigData.Refs.RigManager); };
-        MultiplayerHooking.OnDisconnect += () => { OnExitServer(RigData.Refs.RigManager); };
+        MultiplayerHooking.OnJoinedServer += () => { OnEnterServer(RigData.Refs.RigManager); };
+        MultiplayerHooking.OnStartedServer += () => { OnEnterServer(RigData.Refs.RigManager); };
+        MultiplayerHooking.OnDisconnected += () => { OnExitServer(RigData.Refs.RigManager); };
         LocalPlayer.OnLocalRigCreated += (rig) =>
         {
             if (NetworkInfo.HasServer)

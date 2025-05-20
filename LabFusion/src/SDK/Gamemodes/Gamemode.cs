@@ -90,7 +90,8 @@ public abstract class Gamemode
     internal void GamemodeRegistered()
     {
         MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
-        MultiplayerHooking.OnLoadingBegin += OnLoadingBegin;
+        MultiplayerHooking.OnPlayerJoined += OnPlayerJoinedCallback;
+        MultiplayerHooking.OnPlayerLeft += OnPlayerLeftCallback;
 
         // Metadata
         Metadata.OnTrySetMetadata += OnTrySetMetadata;
@@ -110,7 +111,6 @@ public abstract class Gamemode
     internal void GamemodeUnregistered()
     {
         MultiplayerHooking.OnMainSceneInitialized -= OnMainSceneInitialized;
-        MultiplayerHooking.OnLoadingBegin -= OnLoadingBegin;
 
         // Metadata
         Metadata.OnTrySetMetadata -= OnTrySetMetadata;
@@ -163,16 +163,44 @@ public abstract class Gamemode
         return true;
     }
 
+    /// <summary>
+    /// Invoked when this Gamemode is selected for the server.
+    /// </summary>
     public virtual void OnGamemodeSelected() { }
+
+    /// <summary>
+    /// Invoked when this Gamemode is deselected for the server.
+    /// </summary>
     public virtual void OnGamemodeDeselected() { }
 
+    /// <summary>
+    /// Invoked when this Gamemode starts.
+    /// </summary>
     public virtual void OnGamemodeStarted() { }
+
+    /// <summary>
+    /// Invoked when this Gamemode stops.
+    /// </summary>
     public virtual void OnGamemodeStopped() { }
 
+    /// <summary>
+    /// Invoked when this Gamemode meets all ready conditions.
+    /// </summary>
     public virtual void OnGamemodeReady() { }
+
+    /// <summary>
+    /// Invoked when this Gamemode no longer meets its ready conditions.
+    /// </summary>
     public virtual void OnGamemodeUnready() { }
 
+    /// <summary>
+    /// Invoked when this Gamemode is registered.
+    /// </summary>
     public virtual void OnGamemodeRegistered() { }
+
+    /// <summary>
+    /// Invoked when this Gamemode is unregistered.
+    /// </summary>
     public virtual void OnGamemodeUnregistered() { }
 
     public virtual void OnMainSceneInitialized() { }
@@ -183,7 +211,37 @@ public abstract class Gamemode
     /// </summary>
     public virtual void OnLevelReady() { }
 
-    public virtual void OnLoadingBegin() { }
+    /// <summary>
+    /// Invoked if a new Player joins while the Gamemode is already started.
+    /// </summary>
+    /// <param name="playerId"></param>
+    protected virtual void OnPlayerJoined(PlayerId playerId) { }
+
+    /// <summary>
+    /// Invoked if a Player leaves while the Gamemode is still active.
+    /// </summary>
+    /// <param name="playerId"></param>
+    protected virtual void OnPlayerLeft(PlayerId playerId) { }
+
+    private void OnPlayerJoinedCallback(PlayerId playerId)
+    {
+        if (!IsStarted)
+        {
+            return;
+        }
+
+        OnPlayerJoined(playerId);
+    }
+
+    private void OnPlayerLeftCallback(PlayerId playerId)
+    {
+        if (!IsStarted)
+        {
+            return;
+        }
+
+        OnPlayerLeft(playerId);
+    }
 
     public virtual GroupElementData CreateSettingsGroup()
     {

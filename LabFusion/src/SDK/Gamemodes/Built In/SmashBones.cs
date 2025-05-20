@@ -565,6 +565,14 @@ public class SmashBones : Gamemode
         OnSetSpawn(SpectatorTeam.HasPlayer(PlayerIdManager.LocalId));
     }
 
+    protected override void OnPlayerJoined(PlayerId playerId)
+    {
+        if (NetworkInfo.IsServer)
+        {
+            TeamManager.TryAssignTeam(playerId, SpectatorTeam);
+        }
+    }
+
     public override void OnGamemodeStopped()
     {
         Playlist.StopPlaylist();

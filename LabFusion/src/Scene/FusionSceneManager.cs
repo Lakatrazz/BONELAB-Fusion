@@ -16,8 +16,8 @@ public static partial class FusionSceneManager
     internal static void Internal_OnInitializeMelon()
     {
         // Hook into events
-        MultiplayerHooking.OnStartServer += Internal_OnCleanup;
-        MultiplayerHooking.OnDisconnect += Internal_OnCleanup;
+        MultiplayerHooking.OnStartedServer += Internal_OnCleanup;
+        MultiplayerHooking.OnDisconnected += Internal_OnCleanup;
 
         // Prepare level downloading
         LevelDownloaderManager.OnInitializeMelon();
@@ -64,8 +64,6 @@ public static partial class FusionSceneManager
                 {
                     LoadSender.SendLevelLoad(Barcode, LoadBarcode);
                 }
-
-                MultiplayerHooking.Internal_OnLoadingBegin();
             }
         }
         else if (_prevLevelBarcode == null)

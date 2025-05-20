@@ -481,9 +481,9 @@ public abstract class ProxyNetworkLayer : NetworkLayer
     private void HookSteamEvents()
     {
         // Add server hooks
-        MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
-        MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
-        MultiplayerHooking.OnDisconnect += OnDisconnect;
+        MultiplayerHooking.OnPlayerJoined += OnPlayerJoin;
+        MultiplayerHooking.OnPlayerLeft += OnPlayerLeave;
+        MultiplayerHooking.OnDisconnected += OnDisconnect;
 
         LobbyInfoManager.OnLobbyInfoChanged += OnUpdateLobby;
 
@@ -511,9 +511,9 @@ public abstract class ProxyNetworkLayer : NetworkLayer
     private void UnHookSteamEvents()
     {
         // Remove server hooks
-        MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
-        MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
-        MultiplayerHooking.OnDisconnect -= OnDisconnect;
+        MultiplayerHooking.OnPlayerJoined -= OnPlayerJoin;
+        MultiplayerHooking.OnPlayerLeft -= OnPlayerLeave;
+        MultiplayerHooking.OnDisconnected -= OnDisconnect;
 
         LobbyInfoManager.OnLobbyInfoChanged -= OnUpdateLobby;
     }

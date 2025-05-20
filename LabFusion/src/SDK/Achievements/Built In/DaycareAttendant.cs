@@ -20,16 +20,16 @@ namespace LabFusion.SDK.Achievements
 
         protected override void OnRegister()
         {
-            MultiplayerHooking.OnJoinServer += OnJoinServer;
-            MultiplayerHooking.OnStartServer += OnJoinServer;
-            MultiplayerHooking.OnDisconnect += OnDisconnect;
+            MultiplayerHooking.OnJoinedServer += OnJoinServer;
+            MultiplayerHooking.OnStartedServer += OnJoinServer;
+            MultiplayerHooking.OnDisconnected += OnDisconnect;
         }
 
         protected override void OnUnregister()
         {
-            MultiplayerHooking.OnJoinServer -= OnJoinServer;
-            MultiplayerHooking.OnStartServer -= OnJoinServer;
-            MultiplayerHooking.OnDisconnect -= OnDisconnect;
+            MultiplayerHooking.OnJoinedServer -= OnJoinServer;
+            MultiplayerHooking.OnStartedServer -= OnJoinServer;
+            MultiplayerHooking.OnDisconnected -= OnDisconnect;
 
             // Incase it wasn't removed
             MultiplayerHooking.OnLateUpdate -= OnLateUpdate;

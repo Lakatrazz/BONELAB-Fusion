@@ -78,6 +78,6 @@ public class PlayerRepActionMessage : NativeMessageHandler
         }
 
         // Inform the hooks
-        MultiplayerHooking.Internal_OnPlayerAction(player.PlayerId, data.type, otherPlayer);
+        MultiplayerHooking.InvokeOnPlayerAction(player.PlayerId, data.type, otherPlayer);
     }
 }

@@ -255,7 +255,7 @@ public class TeamDeathmatch : Gamemode
 
         Instance = this;
 
-        MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
+        MultiplayerHooking.OnPlayerJoined += OnPlayerJoin;
         MultiplayerHooking.OnPlayerAction += OnPlayerAction;
         FusionOverrides.OnValidateNametag += OnValidateNametag;
 
@@ -305,7 +305,7 @@ public class TeamDeathmatch : Gamemode
 
         _scoreKeeper = null;
 
-        MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
+        MultiplayerHooking.OnPlayerJoined -= OnPlayerJoin;
         MultiplayerHooking.OnPlayerAction -= OnPlayerAction;
         FusionOverrides.OnValidateNametag -= OnValidateNametag;
 

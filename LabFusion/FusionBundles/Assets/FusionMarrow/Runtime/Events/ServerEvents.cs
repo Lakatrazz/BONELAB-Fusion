@@ -29,9 +29,9 @@ namespace LabFusion.Marrow.Integration
 
         private void Awake()
         {
-            MultiplayerHooking.OnJoinServer += OnServerJoined;
-            MultiplayerHooking.OnStartServer += OnServerJoined;
-            MultiplayerHooking.OnDisconnect += OnServerLeft;
+            MultiplayerHooking.OnJoinedServer += OnServerJoined;
+            MultiplayerHooking.OnStartedServer += OnServerJoined;
+            MultiplayerHooking.OnDisconnected += OnServerLeft;
             
             // If we're already in a server, invoke the UltEvent
             if (HasServer())
@@ -42,9 +42,9 @@ namespace LabFusion.Marrow.Integration
 
         private void OnDestroy()
         {
-            MultiplayerHooking.OnJoinServer -= OnServerJoined;
-            MultiplayerHooking.OnStartServer -= OnServerJoined;
-            MultiplayerHooking.OnDisconnect -= OnServerLeft;
+            MultiplayerHooking.OnJoinedServer -= OnServerJoined;
+            MultiplayerHooking.OnStartedServer -= OnServerJoined;
+            MultiplayerHooking.OnDisconnected -= OnServerLeft;
         }
 
         private void OnServerJoined()

@@ -29,10 +29,10 @@ public static class LobbyInfoManager
     {
         // Hook lobby updates
         MultiplayerHooking.OnMainSceneInitialized += PushLobbyUpdate;
-        MultiplayerHooking.OnPlayerJoin += (_) => { PushLobbyUpdate(); };
-        MultiplayerHooking.OnPlayerLeave += (_) => { PushLobbyUpdate(); };
-        MultiplayerHooking.OnStartServer += PushLobbyUpdate;
-        MultiplayerHooking.OnDisconnect += PushLobbyUpdate;
+        MultiplayerHooking.OnPlayerJoined += (_) => { PushLobbyUpdate(); };
+        MultiplayerHooking.OnPlayerLeft += (_) => { PushLobbyUpdate(); };
+        MultiplayerHooking.OnStartedServer += PushLobbyUpdate;
+        MultiplayerHooking.OnDisconnected += PushLobbyUpdate;
 
         SavedServerSettings.OnSavedServerSettingsChanged += PushLobbyUpdate;
 

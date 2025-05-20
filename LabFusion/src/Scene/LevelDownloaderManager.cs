@@ -34,7 +34,7 @@ public static class LevelDownloaderManager
     {
         MultiplayerHooking.OnUpdate += OnUpdate;
 
-        MultiplayerHooking.OnDisconnect += OnDisconnect;
+        MultiplayerHooking.OnDisconnected += OnDisconnect;
     }
 
     private static void OnDisconnect()

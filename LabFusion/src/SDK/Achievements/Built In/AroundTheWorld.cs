@@ -22,13 +22,13 @@ namespace LabFusion.SDK.Achievements
         protected override void OnRegister()
         {
             MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
-            MultiplayerHooking.OnDisconnect += OnDisconnect;
+            MultiplayerHooking.OnDisconnected += OnDisconnect;
         }
 
         protected override void OnUnregister()
         {
             MultiplayerHooking.OnMainSceneInitialized -= OnMainSceneInitialized;
-            MultiplayerHooking.OnDisconnect -= OnDisconnect;
+            MultiplayerHooking.OnDisconnected -= OnDisconnect;
         }
 
         private void OnMainSceneInitialized()
