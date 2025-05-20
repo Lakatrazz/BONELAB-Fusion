@@ -94,6 +94,8 @@ public class RigLivesBar : IPopupLayoutElement
 
         SafeAssetSpawner.Spawn(spawnable, Vector3.zero, Quaternion.identity, (poolee) =>
         {
+            ClearLifeInstances();
+
             _poolee = poolee;
             _transform = poolee.transform;
 

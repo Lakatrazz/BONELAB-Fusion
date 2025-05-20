@@ -36,7 +36,7 @@ public class AnimatorSyncerExtender : EntityComponentArrayExtender<AnimatorSynce
 
     private void OnEntityOwnershipTransfer(NetworkEntity entity, PlayerId playerId)
     {
-        bool owner = playerId.IsMe;
+        bool owner = playerId != null && playerId.IsMe;
 
         foreach (var component in Components)
         {

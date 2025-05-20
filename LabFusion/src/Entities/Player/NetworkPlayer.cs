@@ -753,6 +753,16 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         bool hidden = IsHidden;
 
+        if (HasRig)
+        {
+            ApplyHidden(hidden);
+        }
+
+        OnHiddenChanged?.InvokeSafe(hidden, "executing NetworkPlayer.OnHiddenChanged");
+    }
+
+    private void ApplyHidden(bool hidden)
+    {
         if (hidden)
         {
             OnCullExtras();
@@ -767,8 +777,6 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         Grabber.OnEntityCull(hidden);
-
-        OnHiddenChanged?.InvokeSafe(hidden, "executing NetworkPlayer.OnHiddenChanged");
     }
 
     private void OnReregisterUpdates()
