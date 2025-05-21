@@ -5,6 +5,7 @@ using LabFusion.Utilities;
 using LabFusion.Preferences.Client;
 using LabFusion.Voice;
 using LabFusion.Voice.Unity;
+using LabFusion.UI.Popups;
 
 using MelonLoader;
 
@@ -160,7 +161,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
                 if (PlayerIdManager.HasPlayerId(longId))
                 {
                     // Update the mod so it knows this user has left
-                    InternalServerHelpers.OnUserLeave(longId);
+                    InternalServerHelpers.OnPlayerLeft(longId);
 
                     // Send disconnect notif to everyone
                     ConnectionSender.SendDisconnect(longId);
@@ -311,7 +312,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
         if (serverConnection == null)
         {
             FusionLogger.Warn("Attempting to send data to a null server peer! Is the proxy active?");
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 SaveToMenu = false,
                 ShowPopup = true,

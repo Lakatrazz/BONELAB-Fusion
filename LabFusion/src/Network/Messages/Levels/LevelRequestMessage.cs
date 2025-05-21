@@ -1,5 +1,6 @@
 ﻿using LabFusion.Player;
 using LabFusion.Utilities;
+using LabFusion.UI.Popups;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
 using Il2CppSLZ.Marrow.Warehouse;
@@ -60,7 +61,7 @@ public class LevelRequestMessage : NativeMessageHandler
 
         if (id != null && id.TryGetDisplayName(out var name))
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 Title = $"{data.title} Load Request",
                 Message = new NotificationText($"{name} has requested to load {data.title}.", Color.yellow),

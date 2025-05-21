@@ -1,15 +1,10 @@
 ﻿using LabFusion.Player;
-using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Preferences;
-using LabFusion.Preferences.Server;
-
-using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Points;
 using LabFusion.SDK.Achievements;
 using LabFusion.SDK.Modules;
-
-using LabFusion.Data;
+using LabFusion.UI.Popups;
 using LabFusion.Entities;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
@@ -56,15 +51,7 @@ public static class InternalServerHelpers
         // Update hooks
         MultiplayerHooking.InvokeOnStartedServer();
 
-        // Send a notification
-        FusionNotifier.Send(new FusionNotification()
-        {
-            Title = "Started Server",
-            Message = "Started a server!",
-            SaveToMenu = false,
-            ShowPopup = true,
-            Type = NotificationType.SUCCESS,
-        });
+        NetworkNotifications.SendStartedServerNotification();
 
         // Unlock achievement
         if (AchievementManager.TryGetAchievement<HeadOfHouse>(out var achievement))
@@ -85,15 +72,7 @@ public static class InternalServerHelpers
         // Update hooks
         MultiplayerHooking.InvokeOnJoinedServer();
 
-        // Send a notification
-        FusionNotifier.Send(new FusionNotification()
-        {
-            Title = "Joined Server",
-            Message = "Joined a server!",
-            SaveToMenu = false,
-            ShowPopup = true,
-            Type = NotificationType.SUCCESS,
-        });
+        NetworkNotifications.SendJoinedServerNotification();
 
         // Unlock achievement
         if (AchievementManager.TryGetAchievement<WarmWelcome>(out var achievement))
@@ -115,36 +94,14 @@ public static class InternalServerHelpers
         // Update hooks
         MultiplayerHooking.InvokeOnDisconnected();
 
-        // Send a notification
-        if (string.IsNullOrWhiteSpace(reason))
-        {
-            FusionNotifier.Send(new FusionNotification()
-            {
-                Title = "Disconnected from Server",
-                Message = "Disconnected from the current server!",
-                SaveToMenu = false,
-                ShowPopup = true,
-            });
-        }
-        else
-        {
-            FusionNotifier.Send(new FusionNotification()
-            {
-                Title = "Disconnected from Server",
-                Message = $"You were disconnected for reason: {reason}",
-                SaveToMenu = true,
-                ShowPopup = true,
-                PopupLength = 5f,
-                Type = NotificationType.WARNING,
-            });
-        }
+        NetworkNotifications.SendDisconnectedNotification(reason);
     }
 
     /// <summary>
     /// Updates information about the new user.
     /// </summary>
     /// <param name="id"></param>
-    public static void OnUserJoin(PlayerId id, bool isInitialJoin)
+    public static void OnPlayerJoined(PlayerId id, bool isInitialJoin)
     {
         // Send client info
         FusionPreferences.SendClientSettings();
@@ -158,13 +115,7 @@ public static class InternalServerHelpers
         // Send notification
         if (isInitialJoin && id.TryGetDisplayName(out var name))
         {
-            FusionNotifier.Send(new FusionNotification()
-            {
-                Title = $"{name} Joined",
-                Message = $"{name} joined the server.",
-                SaveToMenu = false,
-                ShowPopup = true,
-            });
+            NetworkNotifications.SendPlayerJoinedNotification(name);
         }
     }
 
@@ -172,7 +123,7 @@ public static class InternalServerHelpers
     /// Cleans up a single user after they have left.
     /// </summary>
     /// <param name="longId"></param>
-    public static void OnUserLeave(ulong longId)
+    public static void OnPlayerLeft(ulong longId)
     {
         var playerId = PlayerIdManager.GetPlayerId(longId);
 
@@ -183,13 +134,7 @@ public static class InternalServerHelpers
         // Send notification
         if (playerId.TryGetDisplayName(out var name))
         {
-            FusionNotifier.Send(new FusionNotification()
-            {
-                Title = $"{name} Left",
-                Message = $"{name} left the server.",
-                SaveToMenu = false,
-                ShowPopup = true,
-            });
+            NetworkNotifications.SendPlayerLeftNotification(name);
         }
 
         DisposeUser(playerId);

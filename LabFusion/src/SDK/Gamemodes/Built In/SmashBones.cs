@@ -18,6 +18,7 @@ using LabFusion.Math;
 using LabFusion.SDK.Triggers;
 using LabFusion.Network;
 using LabFusion.Extensions;
+using LabFusion.UI.Popups;
 
 using UnityEngine;
 
@@ -524,11 +525,11 @@ public class SmashBones : Gamemode
 
         if (stocksDecreased)
         {
-            FusionNotifier.Cancel(NotificationTag);
+            Notifier.Cancel(NotificationTag);
 
             if (lives > 0)
             {
-                FusionNotifier.Send(new FusionNotification()
+                Notifier.Send(new Notification()
                 {
                     Title = "Lost a Stock",
                     Message = $"You lost a stock! You are now down to {lives} stock{(lives != 1 ? "s" : "")}!",
@@ -541,7 +542,7 @@ public class SmashBones : Gamemode
             }
             else
             {
-                FusionNotifier.Send(new FusionNotification()
+                Notifier.Send(new Notification()
                 {
                     Title = "Lost All Stocks!",
                     Message = $"You lost all of your stocks! You are now a spectator!",
@@ -591,9 +592,9 @@ public class SmashBones : Gamemode
             AssignTeams();
         }
 
-        FusionNotifier.Cancel(NotificationTag);
+        Notifier.Cancel(NotificationTag);
 
-        FusionNotifier.Send(new FusionNotification()
+        Notifier.Send(new Notification()
         {
             Title = "Stock Smash",
             Message = $"All players have {Defaults.StockCount} stocks! Knock players off the map to deplete their stocks and be the last one standing!",
@@ -693,9 +694,9 @@ public class SmashBones : Gamemode
             OnVictoryStatus(isVictory);
         }
 
-        FusionNotifier.Cancel(NotificationTag);
+        Notifier.Cancel(NotificationTag);
 
-        FusionNotifier.Send(new FusionNotification()
+        Notifier.Send(new Notification()
         {
             Title = "Smash Bones Completed",
             Tag = NotificationTag,

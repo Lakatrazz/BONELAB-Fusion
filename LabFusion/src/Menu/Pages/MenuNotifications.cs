@@ -2,6 +2,7 @@
 
 using LabFusion.Marrow.Proxies;
 using LabFusion.Utilities;
+using LabFusion.UI.Popups;
 
 using UnityEngine;
 
@@ -13,7 +14,7 @@ public static class MenuNotifications
 
     public static PageElement NotificationPageElement { get; private set; } = null;
 
-    public static List<FusionNotification> SavedNotifications { get; private set; } = new();
+    public static List<Notification> SavedNotifications { get; private set; } = new();
 
     public static void PopulateNotifications(GameObject notificationsPage)
     {
@@ -71,14 +72,14 @@ public static class MenuNotifications
         }
     }
 
-    public static void AddNotification(FusionNotification notification)
+    public static void AddNotification(Notification notification)
     {
         SavedNotifications.Insert(0, notification);
 
         CreateNotification(notification);
     }
 
-    private static void CreateNotification(FusionNotification notification)
+    private static void CreateNotification(Notification notification)
     {
         if (NotificationPageElement == null)
         {

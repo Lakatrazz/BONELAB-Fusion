@@ -2,6 +2,7 @@
 using LabFusion.SDK.Achievements;
 using LabFusion.Marrow;
 using LabFusion.Scene;
+using LabFusion.Utilities;
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,9 +12,9 @@ using Il2CppTMPro;
 using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.Marrow.Pool;
 
-namespace LabFusion.Utilities;
+namespace LabFusion.UI.Popups;
 
-public static class FusionAchievementPopup
+public static class AchievementPopup
 {
     public const float DefaultDuration = 5f;
     public static readonly Vector3 LocalPosition = new(0f, -0.06f, 0.9f);

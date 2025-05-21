@@ -4,6 +4,7 @@ using LabFusion.Player;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 using LabFusion.Entities;
+using LabFusion.UI.Popups;
 
 using System.Reflection;
 
@@ -249,7 +250,7 @@ public static class PointItemManager
 
         if (popup)
         {
-            FusionBitPopup.Send(bits);
+            BitPopup.Send(bits);
         }
 
         OnBitCountChanged.InvokeSafe("executing OnBitCountChanged");
@@ -271,7 +272,7 @@ public static class PointItemManager
 
         if (popup)
         {
-            FusionBitPopup.Send(-bits);
+            BitPopup.Send(-bits);
         }
 
         OnBitCountChanged.InvokeSafe("executing OnBitCountChanged");

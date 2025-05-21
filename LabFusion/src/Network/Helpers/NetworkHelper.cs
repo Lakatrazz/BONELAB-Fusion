@@ -1,8 +1,8 @@
 ﻿using LabFusion.Data;
 using LabFusion.Player;
 using LabFusion.Senders;
-using LabFusion.Utilities;
 using LabFusion.Representation;
+using LabFusion.UI.Popups;
 
 namespace LabFusion.Network;
 
@@ -85,7 +85,7 @@ public static class NetworkHelper
             if (!id.TryGetDisplayName(out var name))
                 name = "Wacky Willy";
 
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 Title = "Failed to Kick User",
 
@@ -114,7 +114,7 @@ public static class NetworkHelper
             if (!id.TryGetDisplayName(out var name))
                 name = "Wacky Willy";
 
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 Title = "Failed to Ban User",
 

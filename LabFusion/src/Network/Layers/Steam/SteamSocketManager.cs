@@ -43,7 +43,7 @@ public class SteamSocketManager : SocketManager
         if (PlayerIdManager.HasPlayerId(longId))
         {
             // Update the mod so it knows this user has left
-            InternalServerHelpers.OnUserLeave(pair.Key);
+            InternalServerHelpers.OnPlayerLeft(pair.Key);
 
             // Send disconnect notif to everyone
             ConnectionSender.SendDisconnect(longId);

@@ -23,6 +23,7 @@ using LabFusion.Representation;
 using LabFusion.Player;
 using LabFusion.SDK;
 using LabFusion.RPC;
+using LabFusion.UI.Popups;
 
 #if DEBUG
 using LabFusion.Debugging;
@@ -125,7 +126,7 @@ public class FusionMod : MelonMod
         NetworkEntityManager.OnInitializeManager();
         NetworkPlayerManager.OnInitializeManager();
 
-        FusionPopupManager.OnInitializeMelon();
+        PopupManager.OnInitializeMelon();
 
         GamemodeManager.OnInitializeMelon();
         GamemodeConditionsChecker.OnInitializeMelon();
@@ -269,7 +270,7 @@ public class FusionMod : MelonMod
         FusionSceneManager.Internal_UpdateScene();
 
         // Update popups
-        FusionPopupManager.OnUpdate();
+        PopupManager.OnUpdate();
 
         // Update network players
         float deltaTime = TimeUtilities.DeltaTime;

@@ -15,6 +15,7 @@ using LabFusion.Math;
 using LabFusion.Menu;
 using LabFusion.Menu.Data;
 using LabFusion.SDK.Metadata;
+using LabFusion.UI.Popups;
 
 using UnityEngine;
 
@@ -366,7 +367,7 @@ public class TeamDeathmatch : Gamemode
 
     private void OnSelfAssigned(Team team)
     {
-        FusionNotification assignmentNotification = new FusionNotification()
+        Notification assignmentNotification = new Notification()
         {
             Title = "Team Deathmatch Assignment",
             Message = $"Your team is: {team.DisplayName}",
@@ -375,7 +376,7 @@ public class TeamDeathmatch : Gamemode
             PopupLength = 5f,
         };
 
-        FusionNotifier.Send(assignmentNotification);
+        Notifier.Send(assignmentNotification);
 
         // Invoke spawn point changes on level load
         FusionSceneManager.HookOnTargetLevelLoad(() => InitializeTeamSpawns(team));
@@ -609,7 +610,7 @@ public class TeamDeathmatch : Gamemode
         }
 
         // Show the winners in a notification
-        FusionNotifier.Send(new FusionNotification()
+        Notifier.Send(new Notification()
         {
             Title = "Team Deathmatch Completed",
 
@@ -688,7 +689,7 @@ public class TeamDeathmatch : Gamemode
 
     private void OnOneMinuteLeft()
     {
-        FusionNotifier.Send(new()
+        Notifier.Send(new()
         {
             Title = "Team Deathmatch Timer",
             Message = "One minute left!",
@@ -810,7 +811,7 @@ public class TeamDeathmatch : Gamemode
 
         if (team == localTeam && score > 0)
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 Title = "Team Deathmatch Point",
                 Message = $"{localTeam.DisplayName}'s score is {score}!",

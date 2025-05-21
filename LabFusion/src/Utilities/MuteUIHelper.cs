@@ -1,4 +1,4 @@
-﻿using LabFusion.Extensions;
+﻿using LabFusion.UI.Popups;
 using LabFusion.Preferences.Client;
 using LabFusion.Voice;
 using LabFusion.Marrow;
@@ -119,9 +119,9 @@ public static class MuteUIHelper
             mutedPref.Value = !mutedPref.Value;
             popUpMenu.Deactivate();
 
-            FusionNotifier.Cancel(NotificationTag);
+            Notifier.Cancel(NotificationTag);
 
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 ShowPopup = true,
                 SaveToMenu = false,

@@ -2,6 +2,7 @@
 using Il2CppSLZ.Marrow.Warehouse;
 
 using LabFusion.Utilities;
+using LabFusion.UI.Popups;
 
 namespace LabFusion.Downloading;
 
@@ -63,7 +64,7 @@ public static class ModForklift
             // Send download notification
             if (pallet != null)
             {
-                FusionNotifier.Send(new()
+                Notifier.Send(new()
                 {
                     ShowPopup = true,
                     Title = "Download Completed",

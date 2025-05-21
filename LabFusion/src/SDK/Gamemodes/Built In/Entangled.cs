@@ -7,9 +7,10 @@ using LabFusion.Representation;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 using LabFusion.Scene;
+using LabFusion.UI.Popups;
+using LabFusion.Menu;
 
 using UnityEngine;
-using LabFusion.Menu;
 
 namespace LabFusion.SDK.Gamemodes;
 
@@ -253,7 +254,7 @@ public class Entangled : Gamemode
         Playlist.StopPlaylist();
 
         // Send notification of gamemode stop
-        FusionNotifier.Send(new FusionNotification()
+        Notifier.Send(new Notification()
         {
             Title = "Entangled Finish",
             Message = $"The gamemode has ended!",
@@ -344,7 +345,7 @@ public class Entangled : Gamemode
     {
         if (id == null)
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 Title = "Entangled Partner Assignment",
                 Message = $"You have no assigned partner! Wait for a new person to join the lobby!",
@@ -371,7 +372,7 @@ public class Entangled : Gamemode
 
         id.TryGetDisplayName(out var name);
 
-        FusionNotifier.Send(new FusionNotification()
+        Notifier.Send(new Notification()
         {
             Title = "Entangled Partner Assignment",
             Message = $"Your partner is: {name}",

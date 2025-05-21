@@ -1,6 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Marrow;
 using LabFusion.Scene;
+using LabFusion.Utilities;
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,9 +11,9 @@ using Il2CppTMPro;
 using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.Marrow.Pool;
 
-namespace LabFusion.Utilities;
+namespace LabFusion.UI.Popups;
 
-public static class FusionBitPopup
+public static class BitPopup
 {
     private static readonly Queue<int> _bitQueue = new();
 

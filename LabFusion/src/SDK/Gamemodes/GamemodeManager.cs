@@ -1,5 +1,5 @@
 ﻿using LabFusion.Network;
-using LabFusion.Player;
+using LabFusion.UI.Popups;
 using LabFusion.Scene;
 using LabFusion.SDK.Metadata;
 using LabFusion.Utilities;
@@ -125,11 +125,11 @@ public static class GamemodeManager
 
     private static void SendGamemodeChangeNotification()
     {
-        FusionNotifier.Cancel(NotificationTag);
+        Notifier.Cancel(NotificationTag);
 
         if (ActiveGamemode != null)
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 Message = $"{ActiveGamemode.Title} is selected! Waiting until conditions are met...",
                 Title = "Gamemode Selected",
@@ -142,7 +142,7 @@ public static class GamemodeManager
         }
         else
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 Message = "The server is now in Sandbox mode!",
                 Title = "Gamemode Deselected",
@@ -246,9 +246,9 @@ public static class GamemodeManager
     {
         if (ActiveGamemode != null)
         {
-            FusionNotifier.Cancel(NotificationTag);
+            Notifier.Cancel(NotificationTag);
 
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 Message = $"{ActiveGamemode.Title} is ready! Starting in {DefaultTime} seconds!",
                 Title = "Gamemode Ready",
@@ -269,9 +269,9 @@ public static class GamemodeManager
     {
         if (ActiveGamemode != null)
         {
-            FusionNotifier.Cancel(NotificationTag);
+            Notifier.Cancel(NotificationTag);
 
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 Message = $"{ActiveGamemode.Title} is no longer ready.",
                 Title = "Gamemode Unready",

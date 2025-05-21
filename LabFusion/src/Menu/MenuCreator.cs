@@ -9,6 +9,7 @@ using LabFusion.Downloading.ModIO;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Proxies;
 using LabFusion.Utilities;
+using LabFusion.UI.Popups;
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -93,7 +94,7 @@ public static class MenuCreator
         {
             default:
             case FusionPalletReferences.PalletStatus.MISSING:
-                FusionNotifier.Send(new FusionNotification()
+                Notifier.Send(new Notification()
                 {
                     Title = "Missing Fusion Content",
                     Message = "The Fusion Content mod is missing! Beginning download...",
@@ -106,7 +107,7 @@ public static class MenuCreator
                 DownloadContent();
                 return false;
             case FusionPalletReferences.PalletStatus.OUTDATED:
-                FusionNotifier.Send(new FusionNotification()
+                Notifier.Send(new Notification()
                 {
                     Title = "Outdated Fusion Content",
                     Message = "The installed Fusion Content mod is outdated! Updating...",
@@ -139,7 +140,7 @@ public static class MenuCreator
 
             if (info.result != ModResult.SUCCEEDED)
             {
-                FusionNotifier.Send(new FusionNotification()
+                Notifier.Send(new Notification()
                 {
                     Title = "Download Failed",
                     Message = "The Fusion Content failed to install! Make sure you are logged into mod.io in VoidG114 or BONELAB Hub!",
@@ -167,7 +168,7 @@ public static class MenuCreator
         // Make sure the page has been spawned properly
         if (_menuPageIndex < 0)
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 Title = "Failed to Open Menu",
                 Message = "The Fusion menu does not exist! Please reinstall the Fusion Content mod.io mod!",

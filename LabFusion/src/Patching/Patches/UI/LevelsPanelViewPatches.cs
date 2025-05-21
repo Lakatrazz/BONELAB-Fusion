@@ -3,6 +3,7 @@
 using LabFusion.Network;
 using LabFusion.Senders;
 using LabFusion.Utilities;
+using LabFusion.UI.Popups;
 
 using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Bonelab;
@@ -24,7 +25,7 @@ namespace LabFusion.Patching
                     LoadSender.SendLevelRequest(crate);
 
                     // Notify the user they've requested a level
-                    FusionNotifier.Send(new FusionNotification()
+                    Notifier.Send(new Notification()
                     {
                         Title = "Requested Level",
                         Message = $"Sent a level request for {crate.Title}!",

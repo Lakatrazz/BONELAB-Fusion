@@ -8,7 +8,7 @@ using LabFusion.Menu;
 using LabFusion.Menu.Data;
 using LabFusion.Network;
 using LabFusion.Player;
-using LabFusion.Scene;
+using LabFusion.UI.Popups;
 using LabFusion.SDK.Points;
 using LabFusion.Senders;
 using LabFusion.Utilities;
@@ -380,7 +380,7 @@ public class Juggernaut : Gamemode
             OnVictoryStatus(isVictory);
         }
 
-        FusionNotifier.Send(new FusionNotification()
+        Notifier.Send(new Notification()
         {
             Title = "Juggernaut Completed",
 
@@ -447,7 +447,7 @@ public class Juggernaut : Gamemode
 
         if (player.IsMe)
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 ShowPopup = true,
                 Title = "Juggernaut Point",
@@ -498,7 +498,7 @@ public class Juggernaut : Gamemode
     {
         if (team == SurvivorTeam)
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 ShowPopup = true,
                 Title = "Survivor",
@@ -515,7 +515,7 @@ public class Juggernaut : Gamemode
 
         if (team == JuggernautTeam)
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 ShowPopup = true,
                 Title = "Juggernaut",
@@ -540,7 +540,7 @@ public class Juggernaut : Gamemode
         {
             player.TryGetDisplayName(out var name);
 
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 ShowPopup = true,
                 Title = $"Juggernaut {name}",

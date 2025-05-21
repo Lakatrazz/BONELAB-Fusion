@@ -12,6 +12,7 @@ using LabFusion.Utilities;
 using LabFusion.SDK.Triggers;
 using LabFusion.Menu;
 using LabFusion.Math;
+using LabFusion.UI.Popups;
 
 using UnityEngine;
 
@@ -324,7 +325,7 @@ public class Deathmatch : Gamemode
             ScoreKeeper.ResetScores();
         }
 
-        FusionNotifier.Send(new FusionNotification()
+        Notifier.Send(new Notification()
         {
             Title = "Deathmatch Started",
             Message = "Good luck!",
@@ -467,7 +468,7 @@ public class Deathmatch : Gamemode
         }
 
         // Show the winners in a notification
-        FusionNotifier.Send(new FusionNotification()
+        Notifier.Send(new Notification()
         {
             Title = "Deathmatch Completed",
 
@@ -543,7 +544,7 @@ public class Deathmatch : Gamemode
 
     private void OnOneMinuteLeft()
     {
-        FusionNotifier.Send(new FusionNotification()
+        Notifier.Send(new Notification()
         {
             Title = "Deathmatch Timer",
             Message = "One minute left!",
@@ -566,7 +567,7 @@ public class Deathmatch : Gamemode
     {
         if (player.IsMe && score != 0)
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 Title = "Deathmatch Point",
                 Message = $"New score is {score}!",

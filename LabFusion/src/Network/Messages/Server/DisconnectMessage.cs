@@ -43,7 +43,7 @@ public class DisconnectMessage : NativeMessageHandler
         // Otherwise, disconnect the other person in the lobby
         else
         {
-            InternalServerHelpers.OnUserLeave(data.longId);
+            InternalServerHelpers.OnPlayerLeft(data.longId);
         }
     }
 }

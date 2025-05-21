@@ -12,6 +12,7 @@ using LabFusion.Player;
 using LabFusion.SDK.Points;
 using LabFusion.SDK.Triggers;
 using LabFusion.Utilities;
+using LabFusion.UI.Popups;
 
 using MelonLoader;
 
@@ -214,7 +215,7 @@ public class HideAndSeek : Gamemode
         // Were we tagged? Give a notification
         if (playerId.IsMe && !_hasBeenTagged)
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 ShowPopup = true,
                 Title = "Tagged",
@@ -231,7 +232,7 @@ public class HideAndSeek : Gamemode
         {
             playerId.TryGetDisplayName(out var name);
 
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 ShowPopup = true,
                 Title = $"{name} Tagged",
@@ -250,7 +251,7 @@ public class HideAndSeek : Gamemode
 
     private void OnOneMinuteLeft()
     {
-        FusionNotifier.Send(new FusionNotification()
+        Notifier.Send(new Notification()
         {
             Title = "Hide And Seek Timer",
             Message = "One minute left!",
@@ -261,7 +262,7 @@ public class HideAndSeek : Gamemode
 
     private void OnSeekerVictory()
     {
-        FusionNotifier.Send(new FusionNotification()
+        Notifier.Send(new Notification()
         {
             ShowPopup = true,
             Title = "Seekers Won",
@@ -273,7 +274,7 @@ public class HideAndSeek : Gamemode
 
     private void OnHiderVictory()
     {
-        FusionNotifier.Send(new FusionNotification()
+        Notifier.Send(new Notification()
         {
             ShowPopup = true,
             Title = "Hiders Won",
@@ -310,7 +311,7 @@ public class HideAndSeek : Gamemode
 
         if (team == HiderTeam)
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 ShowPopup = true,
                 Title = "Hider",
@@ -322,7 +323,7 @@ public class HideAndSeek : Gamemode
 
         if (team == SeekerTeam)
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 ShowPopup = true,
                 Title = "Seeker",
@@ -409,7 +410,7 @@ public class HideAndSeek : Gamemode
                     case 3:
                     case 2:
                     case 1:
-                        FusionNotifier.Send(new FusionNotification()
+                        Notifier.Send(new Notification()
                         {
                             ShowPopup = true,
                             Title = "Countdown",
@@ -443,7 +444,7 @@ public class HideAndSeek : Gamemode
 
         LocalVision.Blind = false;
 
-        FusionNotifier.Send(new FusionNotification()
+        Notifier.Send(new Notification()
         {
             ShowPopup = true,
             Title = "Countdown Over",

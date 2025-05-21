@@ -2,6 +2,7 @@
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Scene;
+using LabFusion.UI.Popups;
 using LabFusion.Extensions;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
@@ -69,7 +70,7 @@ public static class FusionPlayer
 
         SceneStreamer.Reload();
 
-        FusionNotifier.Send(new FusionNotification()
+        Notifier.Send(new Notification()
         {
             ShowPopup = true,
             Title = "Whoops! Sorry about that!",

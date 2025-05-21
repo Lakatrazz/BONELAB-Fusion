@@ -7,7 +7,7 @@ using LabFusion.Marrow;
 using LabFusion.Marrow.Proxies;
 using LabFusion.Preferences.Client;
 using LabFusion.Representation;
-using LabFusion.Utilities;
+using LabFusion.UI.Popups;
 using LabFusion.Voice;
 
 using UnityEngine;
@@ -205,7 +205,7 @@ public static class MenuSettings
                     {
                         if (info.result != Downloading.ModResult.SUCCEEDED)
                         {
-                            FusionNotifier.Send(new FusionNotification()
+                            Notifier.Send(new Notification()
                             {
                                 Title = "Download Failed",
                                 Message = "Failed to download Fusion Cosmetics!",

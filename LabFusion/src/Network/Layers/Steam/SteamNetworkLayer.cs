@@ -1,6 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Player;
 using LabFusion.Utilities;
+using LabFusion.UI.Popups;
 
 using Steamworks;
 using Steamworks.Data;
@@ -137,7 +138,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
         if (!succeeded)
         {
-            FusionNotifier.Send(new FusionNotification()
+            Notifier.Send(new Notification()
             {
                 Title = "Log In Failed",
                 Message = "Failed connecting to Steamworks! Make sure Steam is running and signed in!",
