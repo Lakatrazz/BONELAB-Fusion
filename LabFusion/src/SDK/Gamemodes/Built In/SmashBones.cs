@@ -88,11 +88,20 @@ public class SmashBones : Gamemode
 
         public const float ExtraJumpCooldown = 0.2f;
 
-        public const float MaxAvatarHeight = 3f;
-
         public const bool DropItems = true;
 
         public const float ItemFrequency = 10f;
+
+        // Avatar heights
+        public const float MaxAvatarHeight = 3f;
+
+        public const float SecondDashHeight = 1.6f;
+
+        public const float SecondJumpHeight = 1.3f;
+
+        public const float NoDashHeight = 2f;
+
+        public const float NoJumpHeight = 2.5f;
     }
 
     private int _minimumPlayers = 2;
@@ -867,6 +876,17 @@ public class SmashBones : Gamemode
 
     private static void ApplyDoubleJump(RigManager rigManager)
     {
+        int maxJumps = 1;
+
+        if (LocalAvatar.AvatarHeight >= Defaults.NoJumpHeight)
+        {
+            maxJumps--;
+        }
+        else if (LocalAvatar.AvatarHeight <= Defaults.SecondJumpHeight)
+        {
+            maxJumps++;
+        }
+
         var physicsRig = rigManager.physicsRig;
 
         if (!physicsRig.ballLocoEnabled)
@@ -876,7 +896,7 @@ public class SmashBones : Gamemode
 
         if (physicsRig.physG.isGrounded)
         {
-            _remainingJumps = 1;
+            _remainingJumps = maxJumps;
             _airTime = 0f;
             return;
         }
@@ -910,10 +930,21 @@ public class SmashBones : Gamemode
     }
 
     private static float _dashCooldown = 0f;
-    private static bool _dashedMidAir = false;
+    private static int _midAirDashCount = 0;
 
     private static void ApplyDashing(RigManager rigManager)
     {
+        int maxAirDashes = 1;
+
+        if (LocalAvatar.AvatarHeight >= Defaults.NoDashHeight)
+        {
+            maxAirDashes--;
+        }
+        else if (LocalAvatar.AvatarHeight <= Defaults.SecondDashHeight)
+        {
+            maxAirDashes++;
+        }
+
         if (_dashCooldown > 0f)
         {
             _dashCooldown -= TimeUtilities.DeltaTime;
@@ -929,13 +960,13 @@ public class SmashBones : Gamemode
 
         bool grounded = physicsRig.physG.isGrounded;
 
-        if (!grounded && _dashedMidAir)
+        if (!grounded && (_midAirDashCount >= maxAirDashes))
         {
             return;
         }
         else if (grounded)
         {
-            _dashedMidAir = false;
+            _midAirDashCount = 0;
         }
 
         var controllerRig = rigManager.ControllerRig.TryCast<OpenControllerRig>();
@@ -957,7 +988,7 @@ public class SmashBones : Gamemode
 
         if (!physicsRig.physG.isGrounded)
         {
-            _dashedMidAir = true;
+            _midAirDashCount++;
             speed = Defaults.AirDashSpeed;
         }
 
