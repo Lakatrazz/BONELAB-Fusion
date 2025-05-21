@@ -334,8 +334,8 @@ public class SmashBones : Gamemode
             var rigManager = RigData.Refs.RigManager;
             var pelvisRb = rigManager.physicsRig.torso._pelvisRb;
             var avatarMass = rigManager.avatar.massTotal;
-
-            magnitude *= Mathf.Sqrt(avatarMass);
+            
+            magnitude *= MathF.Pow(avatarMass, 0.7f);
 
             var punchForce = direction * magnitude;
             var upForce = -Physics.gravity.normalized * magnitude * 0.2f;
