@@ -28,6 +28,10 @@ public static class MenuSettings
 
         PopulateDownloadingSettings(downloadingPage);
 
+        var safetyPage = rootPage.AddPage();
+
+        PopulateSafetySettings(safetyPage);
+
 #if DEBUG
         var debugPage = rootPage.AddPage();
 
@@ -40,6 +44,7 @@ public static class MenuSettings
 
         categoriesPage.AddElement<FunctionElement>("Client").Link(clientPage).WithColor(Color.white);
         categoriesPage.AddElement<FunctionElement>("Downloading").Link(downloadingPage).WithColor(Color.cyan);
+        categoriesPage.AddElement<FunctionElement>("Safety").Link(safetyPage).WithColor(Color.yellow);
 
 #if DEBUG
         categoriesPage.AddElement<FunctionElement>("Debug").Link(debugPage).WithColor(Color.red);
@@ -179,6 +184,9 @@ public static class MenuSettings
         generalGroup.AddElement<BoolElement>("Keep Downloaded Mods")
             .AsPref(ClientSettings.Downloading.KeepDownloadedMods);
 
+        generalGroup.AddElement<BoolElement>("Notify Downloads")
+            .AsPref(ClientSettings.Downloading.NotifyDownloads);
+
         generalGroup.AddElement<IntElement>("Max File Size (MB)")
             .AsPref(ClientSettings.Downloading.MaxFileSize)
             .WithIncrement(10)
@@ -217,6 +225,14 @@ public static class MenuSettings
                     },
                 });
             });
+    }
+
+    private static void PopulateSafetySettings(PageElement page)
+    {
+        var generalGroup = page.AddElement<GroupElement>("General");
+
+        generalGroup.AddElement<BoolElement>("Filter Profanity")
+            .AsPref(ClientSettings.Safety.FilterProfanity);
     }
 
 #if DEBUG

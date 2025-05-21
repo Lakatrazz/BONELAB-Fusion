@@ -1,4 +1,6 @@
-﻿namespace LabFusion.Safety;
+﻿using LabFusion.Preferences.Client;
+
+namespace LabFusion.Safety;
 
 /// <summary>
 /// A simple profanity filter that blocks some of the more offensive words.
@@ -29,6 +31,11 @@ public static class ProfanityFilter
     /// <returns>The filtered text.</returns>
     public static string Filter(string text)
     {
+        if (!ClientSettings.Safety.FilterProfanity.Value)
+        {
+            return text;
+        }
+
         if (string.IsNullOrWhiteSpace(text))
         {
             return text;
@@ -49,6 +56,11 @@ public static class ProfanityFilter
     /// <returns></returns>
     public static bool ContainsProfanity(string text)
     {
+        if (!ClientSettings.Safety.FilterProfanity.Value)
+        {
+            return false;
+        }
+
         if (string.IsNullOrWhiteSpace(text))
         {
             return false;

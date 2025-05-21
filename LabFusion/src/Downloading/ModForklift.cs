@@ -64,14 +64,7 @@ public static class ModForklift
             // Send download notification
             if (pallet != null)
             {
-                Notifier.Send(new()
-                {
-                    ShowPopup = true,
-                    Title = "Download Completed",
-                    Type = NotificationType.SUCCESS,
-                    PopupLength = 4,
-                    Message = $"Finished installing {pallet.Title}!"
-                });
+                DownloadNotifications.SendDownloadNotification(pallet.Title);
             }
 
             // Invoke complete callback

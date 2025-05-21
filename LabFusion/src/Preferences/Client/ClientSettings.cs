@@ -37,6 +37,8 @@ public static class ClientSettings
 
     public static DownloadingSettings Downloading { get; private set; }
 
+    public static SafetySettings Safety { get; private set; }
+
     public static void OnInitialize(MelonPreferences_Category category)
     {
         // Client settings
@@ -79,5 +81,8 @@ public static class ClientSettings
 
         Downloading = new DownloadingSettings();
         Downloading.CreatePrefs(category);
+
+        Safety = new SafetySettings();
+        Safety.CreatePrefs(category);
     }
 }
