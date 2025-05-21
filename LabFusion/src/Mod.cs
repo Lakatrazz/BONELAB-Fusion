@@ -298,7 +298,7 @@ public class FusionMod : MelonMod
         MultiplayerHooking.InvokeOnUpdate();
 
         // Update gamemodes
-        GamemodeManager.Internal_OnUpdate();
+        GamemodeManager.OnUpdate();
 
         // Update delayed events at the very end of the frame
         DelayUtilities.Internal_OnUpdate();
@@ -322,7 +322,7 @@ public class FusionMod : MelonMod
         MultiplayerHooking.InvokeOnFixedUpdate();
 
         // Update gamemodes
-        GamemodeManager.Internal_OnFixedUpdate();
+        GamemodeManager.OnFixedUpdate();
     }
 
     public override void OnLateUpdate()
@@ -339,6 +339,6 @@ public class FusionMod : MelonMod
         MultiplayerHooking.InvokeOnLateUpdate();
 
         // Late update gamemodes
-        GamemodeManager.Internal_OnLateUpdate();
+        GamemodeManager.OnLateUpdate();
     }
 }

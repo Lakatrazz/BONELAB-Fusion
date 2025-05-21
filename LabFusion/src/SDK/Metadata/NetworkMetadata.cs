@@ -72,4 +72,33 @@ public class NetworkMetadata
             _localDictionary.Remove(key);
         }
     }
+
+    public void ClearLocalMetadata()
+    {
+        var keys = _localDictionary.Keys.ToArray();
+
+        foreach (var key in keys)
+        {
+            OnMetadataRemoved?.Invoke(key, _localDictionary[key]);
+
+            _localDictionary.Remove(key);
+        }
+    }
+
+    public void ClearLocalMetadataExcept(Predicate<string> predicate)
+    {
+        var keys = _localDictionary.Keys.ToArray();
+
+        foreach (var key in keys)
+        {
+            if (predicate(key))
+            {
+                continue;
+            }
+
+            OnMetadataRemoved?.Invoke(key, _localDictionary[key]);
+
+            _localDictionary.Remove(key);
+        }
+    }
 }

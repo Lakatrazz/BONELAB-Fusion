@@ -323,6 +323,11 @@ public abstract class Gamemode
     protected virtual void OnMetadataRemoved(string key, string value) { }
 
     /// <summary>
+    /// Clears all of the Gamemode's non persistent metadata locally. Does not remove it from the server. This should only be used when the Gamemode is finished.
+    /// </summary>
+    public void ClearMetadata() => Metadata.ClearLocalMetadataExcept(GamemodeKeys.PersistentKeys);
+
+    /// <summary>
     /// Checks if a player can be attacked by the local player.
     /// </summary>
     /// <param name="player">The player to check.</param>

@@ -9,7 +9,6 @@ using LabFusion.SDK.Achievements;
 using LabFusion.SDK.Points;
 using LabFusion.Senders;
 using LabFusion.Utilities;
-using LabFusion.Scene;
 using LabFusion.SDK.Triggers;
 using LabFusion.Menu;
 using LabFusion.Math;

@@ -24,12 +24,16 @@ public static class GamemodeManager
             if (_activeGamemode != null)
             {
                 _activeGamemode.OnGamemodeDeselected();
+
+                _activeGamemode.ClearMetadata();
             }
 
             _activeGamemode = value;
 
             if (value != null)
             {
+                value.ClearMetadata();
+
                 value.OnGamemodeSelected();
             }
 
@@ -228,6 +232,8 @@ public static class GamemodeManager
             FusionLogger.Log($"Gamemode {gamemode.Title} is no longer ready!");
 #endif
         }
+
+        gamemode.ClearMetadata();
     }
 
     private static void StartReadyTimer()
@@ -425,18 +431,14 @@ public static class GamemodeManager
         ActiveGamemode.Metadata.TrySetMetadata(GamemodeKeys.ReadyKey, bool.FalseString);
     }
 
-    internal static void Internal_OnFixedUpdate()
+    internal static void OnFixedUpdate()
     {
-        if (ActiveGamemode != null)
-            ActiveGamemode.FixedUpdate();
+        ActiveGamemode?.FixedUpdate();
     }
 
-    internal static void Internal_OnUpdate()
+    internal static void OnUpdate()
     {
-        if (ActiveGamemode != null)
-        {
-            ActiveGamemode.Update();
-        }
+        ActiveGamemode?.Update();
 
         // Countdown timer
         if (!FusionSceneManager.IsLoading() && !IsGamemodeStarted && IsGamemodeReady && _startTimerActive)
@@ -453,10 +455,9 @@ public static class GamemodeManager
         }
     }
 
-    internal static void Internal_OnLateUpdate()
+    internal static void OnLateUpdate()
     {
-        if (ActiveGamemode != null)
-            ActiveGamemode.LateUpdate();
+        ActiveGamemode?.LateUpdate();
     }
 
     /// <summary>
