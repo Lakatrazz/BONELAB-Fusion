@@ -99,9 +99,7 @@ public class SmashBones : Gamemode
 
         public const float SecondJumpHeight = 1.3f;
 
-        public const float NoDashHeight = 2f;
-
-        public const float NoJumpHeight = 2.5f;
+        public const float WeakMobilityHeight = 1.9f;
     }
 
     private int _minimumPlayers = 2;
@@ -335,7 +333,7 @@ public class SmashBones : Gamemode
             var pelvisRb = rigManager.physicsRig.torso._pelvisRb;
             var avatarMass = rigManager.avatar.massTotal;
             
-            magnitude *= MathF.Pow(avatarMass, 0.7f);
+            magnitude *= MathF.Pow(avatarMass, 0.8f);
 
             var punchForce = direction * magnitude;
             var upForce = -Physics.gravity.normalized * magnitude * 0.2f;
@@ -877,14 +875,12 @@ public class SmashBones : Gamemode
     private static void ApplyDoubleJump(RigManager rigManager)
     {
         int maxJumps = 1;
+        float jumpVelocityMultiplier = CalculateMobilityMultiplier(LocalAvatar.AvatarHeight);
 
-        if (LocalAvatar.AvatarHeight >= Defaults.NoJumpHeight)
-        {
-            maxJumps--;
-        }
-        else if (LocalAvatar.AvatarHeight <= Defaults.SecondJumpHeight)
+        if (LocalAvatar.AvatarHeight <= Defaults.SecondJumpHeight)
         {
             maxJumps++;
+            jumpVelocityMultiplier *= 0.7f;
         }
 
         var physicsRig = rigManager.physicsRig;
@@ -921,7 +917,7 @@ public class SmashBones : Gamemode
             _airTime = 0f;
 
             var jumpVelocity = physicsRig.torso.rbPelvis.velocity;
-            jumpVelocity.y = Defaults.ExtraJumpVelocity;
+            jumpVelocity.y = Defaults.ExtraJumpVelocity * jumpVelocityMultiplier;
 
             SetPhysicsRigVelocity(physicsRig, jumpVelocity);
 
@@ -935,12 +931,9 @@ public class SmashBones : Gamemode
     private static void ApplyDashing(RigManager rigManager)
     {
         int maxAirDashes = 1;
+        float dashSpeedMultiplier = CalculateMobilityMultiplier(LocalAvatar.AvatarHeight);
 
-        if (LocalAvatar.AvatarHeight >= Defaults.NoDashHeight)
-        {
-            maxAirDashes--;
-        }
-        else if (LocalAvatar.AvatarHeight <= Defaults.SecondDashHeight)
+        if (LocalAvatar.AvatarHeight <= Defaults.SecondDashHeight)
         {
             maxAirDashes++;
         }
@@ -975,12 +968,12 @@ public class SmashBones : Gamemode
 
         if (stickDown)
         {
-            Dash(controllerRig, physicsRig);
+            Dash(controllerRig, physicsRig, dashSpeedMultiplier);
             return;
         }
     }
 
-    private static void Dash(OpenControllerRig controllerRig, PhysicsRig physicsRig)
+    private static void Dash(OpenControllerRig controllerRig, PhysicsRig physicsRig, float speedMultiplier = 1f)
     {
         _dashCooldown = Defaults.DashCooldown;
 
@@ -991,6 +984,8 @@ public class SmashBones : Gamemode
             _midAirDashCount++;
             speed = Defaults.AirDashSpeed;
         }
+
+        speed *= speedMultiplier;
 
         var movementAxis = controllerRig.GetPrimaryAxis();
         var movementDirection = controllerRig.m_head.rotation * new Vector3(movementAxis.x, 0f, movementAxis.y);
@@ -1004,6 +999,20 @@ public class SmashBones : Gamemode
         targetVelocity.y = pelvisVelocity.y;
 
         SetPhysicsRigVelocity(physicsRig, targetVelocity);
+    }
+
+    private static float CalculateMobilityMultiplier(float avatarHeight)
+    {
+        float mobility = 1f;
+
+        if (avatarHeight >= Defaults.WeakMobilityHeight)
+        {
+            float percentHeight = (avatarHeight - Defaults.WeakMobilityHeight) / (Defaults.MaxAvatarHeight - Defaults.WeakMobilityHeight) * 0.6f;
+
+            mobility = 1f - MathF.Pow(ManagedMathf.Clamp01(percentHeight), 2f);
+        }
+
+        return mobility;
     }
 
     private static void SetPhysicsRigVelocity(PhysicsRig physicsRig, Vector3 velocity)

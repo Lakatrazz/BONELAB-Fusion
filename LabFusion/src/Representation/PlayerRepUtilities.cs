@@ -3,7 +3,6 @@ using UnityEngine.Rendering.Universal;
 
 using LabFusion.Utilities;
 using LabFusion.Data;
-using LabFusion.Extensions;
 using LabFusion.Marrow;
 using LabFusion.Entities;
 
