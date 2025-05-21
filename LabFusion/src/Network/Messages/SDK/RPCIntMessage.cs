@@ -1,7 +1,8 @@
-﻿using LabFusion.Data;
-using LabFusion.Entities;
+﻿using LabFusion.Entities;
 using LabFusion.Marrow.Integration;
 using LabFusion.Network.Serialization;
+using LabFusion.Player;
+using LabFusion.Scene;
 
 namespace LabFusion.Network;
 
@@ -48,6 +49,37 @@ public static class RPCIntSender
         MessageRelay.RelayNative(intData, NativeMessageTag.RPCInt, NetworkChannel.Reliable, RelayType.ToClients);
 
         return true;
+    }
+
+    public static void CatchupValue(RPCInt rpcInt, PlayerId playerId)
+    {
+        // Make sure we are the level host
+        if (!CrossSceneManager.IsSceneHost())
+        {
+            return;
+        }
+
+        // Get the rpc event
+        var hashData = RPCVariable.HashTable.GetDataFromComponent(rpcInt);
+
+        var hasNetworkEntity = false;
+        ushort entityId = 0;
+        ushort componentIndex = 0;
+
+        if (RPCVariableExtender.Cache.TryGet(rpcInt, out var entity))
+        {
+            hasNetworkEntity = true;
+            var extender = entity.GetExtender<RPCVariableExtender>();
+
+            entityId = entity.Id;
+            componentIndex = extender.GetIndex(rpcInt).Value;
+        }
+
+        // Send the message
+        var pathData = ComponentPathData.Create(hasNetworkEntity, entityId, componentIndex, hashData);
+        var boolData = RPCIntData.Create(pathData, rpcInt.GetLatestValue());
+
+        MessageRelay.RelayNative(boolData, NativeMessageTag.RPCInt, NetworkChannel.Reliable, RelayType.ToTarget, playerId.SmallId);
     }
 }
 

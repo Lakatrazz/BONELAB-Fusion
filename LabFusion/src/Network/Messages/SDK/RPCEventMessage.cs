@@ -76,6 +76,7 @@ public static class RPCEventSender
     }
 }
 
+[Net.DelayWhileTargetLoading]
 public class RPCEventMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.RPCEvent;

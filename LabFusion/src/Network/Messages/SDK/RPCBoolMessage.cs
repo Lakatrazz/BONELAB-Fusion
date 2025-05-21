@@ -1,13 +1,14 @@
-﻿using LabFusion.Data;
-using LabFusion.Entities;
+﻿using LabFusion.Entities;
 using LabFusion.Marrow.Integration;
 using LabFusion.Network.Serialization;
+using LabFusion.Player;
+using LabFusion.Scene;
 
 namespace LabFusion.Network;
 
 public static class RPCBoolSender
 {
-    public static bool SetValue(RPCBool rpcBool, bool value) 
+    public static bool SetValue(RPCBool rpcBool, bool value)
     {
         // Make sure we have a server
         if (!NetworkInfo.HasServer)
@@ -48,6 +49,37 @@ public static class RPCBoolSender
         MessageRelay.RelayNative(boolData, NativeMessageTag.RPCBool, NetworkChannel.Reliable, RelayType.ToClients);
 
         return true;
+    }
+
+    public static void CatchupValue(RPCBool rpcBool, PlayerId playerId)
+    {
+        // Make sure we are the level host
+        if (!CrossSceneManager.IsSceneHost())
+        {
+            return;
+        }
+
+        // Get the rpc event
+        var hashData = RPCVariable.HashTable.GetDataFromComponent(rpcBool);
+
+        var hasNetworkEntity = false;
+        ushort entityId = 0;
+        ushort componentIndex = 0;
+
+        if (RPCVariableExtender.Cache.TryGet(rpcBool, out var entity))
+        {
+            hasNetworkEntity = true;
+            var extender = entity.GetExtender<RPCVariableExtender>();
+
+            entityId = entity.Id;
+            componentIndex = extender.GetIndex(rpcBool).Value;
+        }
+
+        // Send the message
+        var pathData = ComponentPathData.Create(hasNetworkEntity, entityId, componentIndex, hashData);
+        var boolData = RPCBoolData.Create(pathData, rpcBool.GetLatestValue());
+
+        MessageRelay.RelayNative(boolData, NativeMessageTag.RPCBool, NetworkChannel.Reliable, RelayType.ToTarget, playerId.SmallId);
     }
 }
 
