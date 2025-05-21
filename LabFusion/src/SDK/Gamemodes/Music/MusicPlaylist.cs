@@ -55,7 +55,10 @@ public class MusicPlaylist
         {
             _loadingTrack = false;
 
-            Audio2dPlugin.Audio2dManager.CueOverrideMusic(clip, Volume, 0.2f, 0.2f, LoopSingle, false);
+            if (IsActive)
+            {
+                Audio2dPlugin.Audio2dManager.CueOverrideMusic(clip, Volume, 0.2f, 0.2f, LoopSingle, false);
+            }
         });
     }
 
