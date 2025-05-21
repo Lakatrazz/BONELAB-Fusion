@@ -325,7 +325,7 @@ public class SmashBones : Gamemode
         direction.y = 0f;
         direction.Normalize();
 
-        var magnitude = (1f + Mathf.Sqrt(damage)) * 10f;
+        var magnitude = (1f + MathF.Sqrt(damage)) * 10f;
 
         if (RigData.HasPlayer)
         {
@@ -333,7 +333,7 @@ public class SmashBones : Gamemode
             var pelvisRb = rigManager.physicsRig.torso._pelvisRb;
             var avatarMass = rigManager.avatar.massTotal;
             
-            magnitude *= MathF.Pow(avatarMass, 0.8f);
+            magnitude *= CalculateMassContribution(avatarMass);
 
             var punchForce = direction * magnitude;
             var upForce = -Physics.gravity.normalized * magnitude * 0.2f;
@@ -345,6 +345,11 @@ public class SmashBones : Gamemode
             SlipGrip(rigManager.physicsRig.leftHand);
             SlipGrip(rigManager.physicsRig.rightHand);
         }
+    }
+
+    private static float CalculateMassContribution(float avatarMass)
+    {
+        return MathF.Pow(avatarMass / 80f, 0.8f) * 10f;
     }
 
     private static void SlipGrip(Hand hand)
