@@ -91,6 +91,11 @@ public class FusionNotification
     /// </summary>
     public NotificationText Message { get; set; }
 
+    /// <summary>
+    /// An identifying tag for the notification. Used for cancelling specific notifications when they are not needed.
+    /// </summary>
+    public string Tag { get; set; } = null;
+
     // Popup settings
     /// <summary>
     /// Should this notification popup?
@@ -130,45 +135,118 @@ public static class FusionNotifier
 
     public const float DefaultScaleTime = 0.4f;
 
-    private static readonly Queue<FusionNotification> _queuedNotifications = new();
+    private static readonly List<FusionNotification> _queuedNotifications = new();
+
+    private static FusionNotification _currentNotification = null;
+    public static FusionNotification CurrentNotification => _currentNotification;
 
     private static bool _hasEnabledTutorialRig = false;
+
+    public static List<FusionNotification> GetNotificationsByTag(string tag)
+    {
+        List<FusionNotification> taggedNotifications = new();
+
+        foreach (var queued in _queuedNotifications)
+        {
+            if (queued.Tag == tag)
+            {
+                taggedNotifications.Add(queued);
+            }
+        }
+
+        if (CurrentNotification != null && CurrentNotification.Tag == tag)
+        {
+            taggedNotifications.Add(CurrentNotification);
+        }
+
+        return taggedNotifications;
+    }
+
+    public static List<FusionNotification> GetAllNotifications()
+    {
+        List<FusionNotification> notifications = new();
+
+        notifications.AddRange(_queuedNotifications);
+
+        if (CurrentNotification != null)
+        {
+            notifications.Add(CurrentNotification);
+        }
+
+        return notifications;
+    }
 
     public static void Send(FusionNotification notification)
     {
         QueueNotification(notification);
     }
 
-    private static void QueueNotification(FusionNotification notification)
+    public static void Cancel(FusionNotification notification) 
     {
-        _queuedNotifications.Enqueue(notification);
+        if (_queuedNotifications.Contains(notification))
+        {
+            _queuedNotifications.Remove(notification);
+        }
+
+        if (CurrentNotification == notification)
+        {
+            _currentNotification = null;
+            StopHeadTitles();
+        }
     }
 
-    private static void DequeueNotification()
+    public static void Cancel(string tag)
     {
-        var notification = _queuedNotifications.Dequeue();
+        var notifications = GetNotificationsByTag(tag);
 
-        // Add to the menu
+        foreach (var notification in notifications) 
+        {
+            Cancel(notification);
+        }
+    }
+
+    public static void CancelAll()
+    {
+        var notifications = GetAllNotifications();
+
+        foreach (var notification in notifications)
+        {
+            Cancel(notification);
+        }
+    }
+
+    private static void QueueNotification(FusionNotification notification)
+    {
+        _queuedNotifications.Add(notification);
+
+        // Add to the menu as soon as its queued
+        // This way it will still show up even if cancelled
         if (notification.SaveToMenu)
         {
             MenuNotifications.AddNotification(notification);
         }
+    }
+
+    private static void DequeueNotification()
+    {
+        _currentNotification = _queuedNotifications[0];
+        _queuedNotifications.RemoveAt(0);
 
         // Show to the player
-        if (notification.ShowPopup && RigData.HasPlayer)
+        if (CurrentNotification.ShowPopup && RigData.HasPlayer)
         {
             var tutorialRig = TutorialRig.Instance;
             var headTitles = tutorialRig.headTitles;
 
             EnableTutorialRig();
 
-            string incomingTitle = notification.Title.Text;
+            string incomingTitle = CurrentNotification.Title.Text;
 
-            string incomingSubTitle = notification.Message.Text;
+            string incomingSubTitle = CurrentNotification.Message.Text;
 
-            Sprite incomingSprite = GetPopupSprite(notification);
+            Sprite incomingSprite = GetPopupSprite(CurrentNotification);
 
-            float holdTime = notification.PopupLength;
+            float holdTime = CurrentNotification.PopupLength;
 
             float timeToScale = Mathf.Lerp(0.05f, DefaultScaleTime, Mathf.Clamp01(holdTime - 1f));
 
@@ -227,6 +305,25 @@ public static class FusionNotifier
         return headTitles.headFollower.gameObject.activeInHierarchy;
     }
 
+    private static void StopHeadTitles()
+    {
+        if (!RigData.HasPlayer)
+        {
+            return;
+        }
+
+        var tutorialRig = TutorialRig.Instance;
+
+        if (tutorialRig == null)
+        {
+            return;
+        }
+
+        var headTitles = tutorialRig.headTitles;
+
+        headTitles.CLOSEDISPLAY();
+    }
+
     internal static void OnUpdate()
     {
         // Make sure we aren't loading so we can dequeue existing notifications
@@ -238,16 +335,20 @@ public static class FusionNotifier
                 EnableTutorialRig();
                 _hasEnabledTutorialRig = true;
             }
-            else
+            else if (!IsPlayingNotification())
             {
+                _currentNotification = null;
+
                 // Dequeue notifications
-                if (_queuedNotifications.Count > 0 && !IsPlayingNotification())
+                if (_queuedNotifications.Count > 0)
                 {
                     DequeueNotification();
                 }
             }
         }
         else
+        {
             _hasEnabledTutorialRig = false;
+        }
     }
 }

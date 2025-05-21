@@ -72,6 +72,8 @@ public class SmashBones : Gamemode
 
     public override bool DisableManualUnragdoll => true;
 
+    public const string NotificationTag = "SmashBones";
+
     public static class Defaults
     {
         public const float AirControlSpeed = 5f;
@@ -522,12 +524,15 @@ public class SmashBones : Gamemode
 
         if (stocksDecreased)
         {
+            FusionNotifier.Cancel(NotificationTag);
+
             if (lives > 0)
             {
                 FusionNotifier.Send(new FusionNotification()
                 {
                     Title = "Lost a Stock",
                     Message = $"You lost a stock! You are now down to {lives} stock{(lives != 1 ? "s" : "")}!",
+                    Tag = NotificationTag,
                     SaveToMenu = false,
                     ShowPopup = true,
                     PopupLength = 4f,
@@ -540,6 +545,7 @@ public class SmashBones : Gamemode
                 {
                     Title = "Lost All Stocks!",
                     Message = $"You lost all of your stocks! You are now a spectator!",
+                    Tag = NotificationTag,
                     SaveToMenu = false,
                     ShowPopup = true,
                     PopupLength = 4f,
@@ -585,10 +591,13 @@ public class SmashBones : Gamemode
             AssignTeams();
         }
 
+        FusionNotifier.Cancel(NotificationTag);
+
         FusionNotifier.Send(new FusionNotification()
         {
             Title = "Stock Smash",
             Message = $"All players have {Defaults.StockCount} stocks! Knock players off the map to deplete their stocks and be the last one standing!",
+            Tag = NotificationTag,
             ShowPopup = true,
             SaveToMenu = false,
             PopupLength = 4f,
@@ -684,9 +693,12 @@ public class SmashBones : Gamemode
             OnVictoryStatus(isVictory);
         }
 
+        FusionNotifier.Cancel(NotificationTag);
+
         FusionNotifier.Send(new FusionNotification()
         {
             Title = "Smash Bones Completed",
+            Tag = NotificationTag,
 
             Message = message,
 
@@ -730,7 +742,7 @@ public class SmashBones : Gamemode
         GamemodeHelper.TeleportToSpawnPoint();
     }
 
-    private void SpawnExplosion(Vector3 position, Vector3 forward)
+    private static void SpawnExplosion(Vector3 position, Vector3 forward)
     {
         var spawnable = new Spawnable()
         {

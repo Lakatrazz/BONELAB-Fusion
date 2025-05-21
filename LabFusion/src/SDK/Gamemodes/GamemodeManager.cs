@@ -77,6 +77,8 @@ public static class GamemodeManager
 
     public const float DefaultTime = 30f;
 
+    public const string NotificationTag = "Gamemode";
+
     public static void OnInitializeMelon()
     {
         Gamemode.OnStartedKeyChanged += OnStartedKeyChanged;
@@ -123,12 +125,15 @@ public static class GamemodeManager
 
     private static void SendGamemodeChangeNotification()
     {
+        FusionNotifier.Cancel(NotificationTag);
+
         if (ActiveGamemode != null)
         {
             FusionNotifier.Send(new FusionNotification()
             {
                 Message = $"{ActiveGamemode.Title} is selected! Waiting until conditions are met...",
                 Title = "Gamemode Selected",
+                Tag = NotificationTag,
                 Type = NotificationType.INFORMATION,
                 ShowPopup = true,
                 SaveToMenu = false,
@@ -141,6 +146,7 @@ public static class GamemodeManager
             {
                 Message = "The server is now in Sandbox mode!",
                 Title = "Gamemode Deselected",
+                Tag = NotificationTag,
                 Type = NotificationType.INFORMATION,
                 ShowPopup = true,
                 SaveToMenu = false,
@@ -240,10 +246,13 @@ public static class GamemodeManager
     {
         if (ActiveGamemode != null)
         {
+            FusionNotifier.Cancel(NotificationTag);
+
             FusionNotifier.Send(new FusionNotification()
             {
                 Message = $"{ActiveGamemode.Title} is ready! Starting in {DefaultTime} seconds!",
                 Title = "Gamemode Ready",
+                Tag = NotificationTag,
                 Type = NotificationType.SUCCESS,
                 ShowPopup = true,
                 SaveToMenu = false,
@@ -260,10 +269,13 @@ public static class GamemodeManager
     {
         if (ActiveGamemode != null)
         {
+            FusionNotifier.Cancel(NotificationTag);
+
             FusionNotifier.Send(new FusionNotification()
             {
                 Message = $"{ActiveGamemode.Title} is no longer ready.",
                 Title = "Gamemode Unready",
+                Tag = NotificationTag,
                 Type = NotificationType.ERROR,
                 ShowPopup = true,
                 PopupLength = 2f,

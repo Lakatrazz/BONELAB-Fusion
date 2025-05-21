@@ -23,6 +23,8 @@ public static class MuteUIHelper
 
     private static Camera _headsetCamera = null;
 
+    public const string NotificationTag = "Mute";
+
     public static void OnInitializeMelon()
     {
         ClientSettings.VoiceChat.Muted.OnValueChanged += OnMutedChanged;
@@ -117,11 +119,14 @@ public static class MuteUIHelper
             mutedPref.Value = !mutedPref.Value;
             popUpMenu.Deactivate();
 
+            FusionNotifier.Cancel(NotificationTag);
+
             FusionNotifier.Send(new FusionNotification()
             {
                 ShowPopup = true,
                 SaveToMenu = false,
                 Message = mutedPref.Value ? "Muted" : "Unmuted",
+                Tag = NotificationTag,
             });
         }));
 
