@@ -51,6 +51,10 @@ public static class TimeManagerPatches
                 {
                     TimeScaleSender.SendSlowMoButton(true);
                 }
+                else
+                {
+                    return false;
+                }
                 break;
         }
 
@@ -59,16 +63,16 @@ public static class TimeManagerPatches
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(TimeManager.TOGGLE_TIMESCALE))]
-    public static void TOGGLE_TIMESCALE()
+    public static bool TOGGLE_TIMESCALE()
     {
         if (IgnorePatches)
         {
-            return;
+            return true;
         }
 
         if (!NetworkInfo.HasServer)
         {
-            return;
+            return true;
         }
 
         var mode = CommonPreferences.SlowMoMode;
@@ -83,6 +87,10 @@ public static class TimeManagerPatches
                 {
                     TimeScaleSender.SendSlowMoButton(false);
                 }
+                else
+                {
+                    return false;
+                }
                 break;
             case TimeScaleMode.LOW_GRAVITY:
                 TimeManager.cur_intensity = 1f;
@@ -90,6 +98,8 @@ public static class TimeManagerPatches
                 ResetTimeScale();
                 break;
         }
+
+        return true;
     }
 
     private static void ResetTimeScale()

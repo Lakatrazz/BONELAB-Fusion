@@ -1,5 +1,4 @@
 ﻿using LabFusion.Network;
-using LabFusion.Player;
 
 namespace LabFusion.Senders;
 

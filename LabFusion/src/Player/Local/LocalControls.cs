@@ -64,7 +64,6 @@ public static class LocalControls
             return CommonPreferences.SlowMoMode switch
             {
                 TimeScaleMode.DISABLED => false,
-                TimeScaleMode.HOST_ONLY => NetworkInfo.IsServer,
                 _ => true,
             };
         }
