@@ -1,11 +1,29 @@
 ﻿using LabFusion.Entities;
 using LabFusion.Marrow.Integration;
-using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
 public static class RPCEventSender
 {
+    private static RelayType ConvertRPCRelayType(RPCEvent.RPCRelayType relayType)
+    {
+        return relayType switch
+        {
+            RPCEvent.RPCRelayType.ToClients => RelayType.ToClients,
+            RPCEvent.RPCRelayType.ToOtherClients => RelayType.ToOtherClients,
+            _ => RelayType.ToServer,
+        };
+    }
+
+    private static NetworkChannel ConvertRPCChannel(RPCEvent.RPCChannel channel)
+    {
+        return channel switch
+        {
+            RPCEvent.RPCChannel.Reliable => NetworkChannel.Reliable,
+            _ => NetworkChannel.Unreliable,
+        };
+    }
+
     public static bool Invoke(RPCEvent rpcEvent) 
     {
         // Make sure we have a server
@@ -14,18 +32,9 @@ public static class RPCEventSender
             return false;
         }
 
-        var target = (RPCEvent.RPCTarget)rpcEvent.Target;
+        var relayType = ConvertRPCRelayType(rpcEvent.RelayType);
 
-        // If the target is to clients, but we aren't the server, we can't send the message
-        if (target == RPCEvent.RPCTarget.Clients && !NetworkInfo.IsHost)
-        {
-            return false;
-        }
-
-        var channel = (RPCEvent.RPCChannel)rpcEvent.Channel;
-
-        // Convert to network channel
-        var networkChannel = channel == RPCEvent.RPCChannel.Reliable ? NetworkChannel.Reliable : NetworkChannel.Unreliable;
+        var channel = ConvertRPCChannel(rpcEvent.Channel);
 
         // Get the rpc event
         var hashData = RPCEvent.HashTable.GetDataFromComponent(rpcEvent);
@@ -54,25 +63,11 @@ public static class RPCEventSender
         }
 
         // Send the message
-        using var writer = NetWriter.Create();
         var data = ComponentPathData.Create(hasNetworkEntity, entityId, componentIndex, hashData);
 
-        writer.SerializeValue(ref data);
+        MessageRelay.RelayNative(data, NativeMessageTag.RPCEvent, channel, relayType);
 
-        using var message = FusionMessage.Create(NativeMessageTag.RPCEvent, writer);
-
-        switch (target)
-        {
-            case RPCEvent.RPCTarget.Server:
-                MessageSender.SendToServer(networkChannel, message);
-                return true;
-            case RPCEvent.RPCTarget.Clients:
-                MessageSender.BroadcastMessage(networkChannel, message);
-                return true;
-        }
-
-        // Target wasn't valid?
-        return false;
+        return true;
     }
 }
 

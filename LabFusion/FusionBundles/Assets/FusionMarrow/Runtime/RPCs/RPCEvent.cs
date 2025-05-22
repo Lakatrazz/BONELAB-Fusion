@@ -25,10 +25,11 @@ namespace LabFusion.Marrow.Integration
 #endif
     public class RPCEvent : MonoBehaviour
     {
-        public enum RPCTarget
+        public enum RPCRelayType
         {
-            Server,
-            Clients
+            ToServer,
+            ToClients,
+            ToOtherClients
         }
 
         public enum RPCChannel
@@ -42,7 +43,7 @@ namespace LabFusion.Marrow.Integration
 
         public static readonly ComponentHashTable<RPCEvent> HashTable = new();
 
-        public Il2CppValueField<int> target;
+        public Il2CppValueField<int> relayType;
 
         public Il2CppValueField<int> channel;
 
@@ -50,17 +51,17 @@ namespace LabFusion.Marrow.Integration
 
         public Il2CppReferenceField<UltEventHolder> onEventReceivedHolder;
 
-        private int _targetCached;
+        private int _relayTypeCached;
         private int _channelCached;
         private bool _requiresOwnershipCached;
 
-        public int Target => _targetCached;
-        public int Channel => _channelCached;
+        public RPCRelayType RelayType => (RPCRelayType)_relayTypeCached;
+        public RPCChannel Channel => (RPCChannel)_channelCached;
         public bool RequiresOwnership => _requiresOwnershipCached;
 
         private void Awake()
         {
-            _targetCached = target.Get();
+            _relayTypeCached = relayType.Get();
             _channelCached = channel.Get();
             _requiresOwnershipCached = requiresOwnership.Get();
 
@@ -84,7 +85,7 @@ namespace LabFusion.Marrow.Integration
             return RPCEventSender.Invoke(this);
         }
 #else
-        public RPCTarget target = RPCTarget.Server;
+        public RPCRelayType relayType = RPCRelayType.ToServer;
 
         public RPCChannel channel = RPCChannel.Reliable;
 
