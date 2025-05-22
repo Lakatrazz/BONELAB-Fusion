@@ -111,8 +111,8 @@ public static class LocalAvatar
         if (crate != null)
         {
             // Apply metadata
-            LocalPlayer.Metadata.TrySetMetadata(MetadataHelper.AvatarTitleKey, crate.Title);
-            LocalPlayer.Metadata.TrySetMetadata(MetadataHelper.AvatarModIdKey, CrateFilterer.GetModId(crate.Pallet).ToString());
+            LocalPlayer.Metadata.AvatarTitle.SetValue(crate.Title);
+            LocalPlayer.Metadata.AvatarModID.SetValue(CrateFilterer.GetModId(crate.Pallet));
         }
 
         OnOverrideAvatar(avatar, barcode, crate);

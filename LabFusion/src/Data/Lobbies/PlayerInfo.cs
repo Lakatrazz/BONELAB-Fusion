@@ -37,9 +37,9 @@ public class PlayerInfo
     {
         LongId = playerId.LongId;
 
-        Username = playerId.Metadata.GetMetadata(MetadataHelper.UsernameKey);
-        Nickname = playerId.Metadata.GetMetadata(MetadataHelper.NicknameKey);
-        Description = playerId.Metadata.GetMetadata(MetadataHelper.DescriptionKey);
+        Username = playerId.Metadata.Username.GetValue();
+        Nickname = playerId.Metadata.Nickname.GetValue();
+        Description = playerId.Metadata.Description.GetValue();
 
         playerId.TryGetPermissionLevel(out var level);
         PermissionLevel = level;
@@ -50,11 +50,7 @@ public class PlayerInfo
             AvatarTitle = crate.Title;
         }
 
-        AvatarTitle = playerId.Metadata.GetMetadata(MetadataHelper.AvatarTitleKey);
-
-        if (int.TryParse(playerId.Metadata.GetMetadata(MetadataHelper.AvatarModIdKey), out var modId))
-        {
-            AvatarModId = modId;
-        }
+        AvatarTitle = playerId.Metadata.AvatarTitle.GetValue();
+        AvatarModId = playerId.Metadata.AvatarModID.GetValue();
     }
 }

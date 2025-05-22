@@ -37,13 +37,7 @@ public static class LoadSender
 
     public static void SendLoadingState(bool isLoading)
     {
-        if (!NetworkInfo.HasServer || PlayerIdManager.LocalId == null)
-        {
-            return;
-        }
-
-        // Set the loading metadata
-        PlayerIdManager.LocalId.Metadata.TrySetMetadata(MetadataHelper.LoadingKey, isLoading.ToString());
+        LocalPlayer.Metadata.Loading.SetValue(isLoading);
     }
 
     public static void SendLevelLoad(string barcode, string loadBarcode)

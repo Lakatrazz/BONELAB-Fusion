@@ -251,7 +251,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
 
         // Wait for loading
-        while (FusionSceneManager.IsDelayedLoading() || PlayerId.Metadata.GetMetadata(MetadataHelper.LoadingKey) == bool.TrueString)
+        while (FusionSceneManager.IsDelayedLoading() || PlayerId.Metadata.Loading.GetValue())
         {
             if (FusionSceneManager.IsLoading())
             {
@@ -381,7 +381,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         NetworkEntity.LockOwner();
 
         // Hook into the player's events
-        PlayerId.Metadata.OnMetadataChanged += OnMetadataChanged;
+        PlayerId.Metadata.Metadata.OnMetadataChanged += OnMetadataChanged;
         PlayerId.OnDestroyedEvent += OnPlayerDestroyed;
 
         LobbyInfoManager.OnLobbyInfoChanged += OnServerSettingsChanged;
@@ -399,7 +399,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         NetworkEntity.UnlockOwner();
 
         // Unhook from the player's events
-        PlayerId.Metadata.OnMetadataChanged -= OnMetadataChanged;
+        PlayerId.Metadata.Metadata.OnMetadataChanged -= OnMetadataChanged;
         PlayerId.OnDestroyedEvent -= OnPlayerDestroyed;
 
         LobbyInfoManager.OnLobbyInfoChanged -= OnServerSettingsChanged;

@@ -6,7 +6,6 @@ using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Extensions;
 using LabFusion.Network;
-using LabFusion.SDK.Metadata;
 using LabFusion.Utilities;
 
 using UnityEngine;
@@ -35,7 +34,7 @@ public static class LocalPlayer
         {
             _username = value;
 
-            Metadata.TrySetMetadata(MetadataHelper.UsernameKey, value);
+            Metadata.Username.SetValue(value);
 
             OnUsernameChanged?.InvokeSafe(value, "executing OnUsernameChanged");
         }
@@ -45,12 +44,14 @@ public static class LocalPlayer
 
     public static event Action? OnApplyInitialMetadata;
 
-    public static NetworkMetadata Metadata { get; } = new();
+    public static PlayerMetadata Metadata { get; } = new();
 
     internal static void OnInitializeMelon()
     {
-        Metadata.OnTrySetMetadata += OnTrySetMetadata;
-        Metadata.OnTryRemoveMetadata += OnTryRemoveMetadata;
+        Metadata.CreateMetadata();
+
+        Metadata.Metadata.OnTrySetMetadata += OnTrySetMetadata;
+        Metadata.Metadata.OnTryRemoveMetadata += OnTryRemoveMetadata;
 
         LocalAvatar.OnInitializeMelon();
         LocalHealth.OnInitializeMelon();
@@ -65,28 +66,22 @@ public static class LocalPlayer
 
     private static bool OnTrySetMetadata(string key, string value)
     {
-        Metadata.ForceSetLocalMetadata(key, value);
+        Metadata.Metadata.ForceSetLocalMetadata(key, value);
 
         var localId = PlayerIdManager.LocalId;
 
-        if (localId != null)
-        {
-            localId.Metadata.TrySetMetadata(key, value);
-        }
+        localId?.Metadata.Metadata.TrySetMetadata(key, value);
 
         return true;
     }
 
     private static bool OnTryRemoveMetadata(string key)
     {
-        Metadata.ForceRemoveLocalMetadata(key);
+        Metadata.Metadata.ForceRemoveLocalMetadata(key);
 
         var localId = PlayerIdManager.LocalId;
 
-        if (localId != null)
-        {
-            localId.Metadata.TryRemoveMetadata(key);
-        }
+        localId?.Metadata.Metadata.TryRemoveMetadata(key);
 
         return true;
     }

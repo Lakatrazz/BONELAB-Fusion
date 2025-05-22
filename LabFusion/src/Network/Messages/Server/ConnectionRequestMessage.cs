@@ -51,7 +51,7 @@ public class ConnectionRequestData : INetSerializable
             version = version,
             avatarBarcode = avatarBarcode,
             avatarStats = stats,
-            initialMetadata = LocalPlayer.Metadata.LocalDictionary,
+            initialMetadata = LocalPlayer.Metadata.Metadata.LocalDictionary,
             initialEquippedItems = InternalServerHelpers.GetInitialEquippedItems(),
         };
     }
@@ -161,7 +161,7 @@ public class ConnectionRequestMessage : NativeMessageHandler
         }
 
         // Append metadata with info
-        data.initialMetadata[MetadataHelper.PermissionKey] = level.ToString();
+        data.initialMetadata[nameof(PlayerMetadata.PermissionLevel)] = level.ToString();
 
         // Create new PlayerID
         var playerId = new PlayerId(data.longId, newSmallId.Value, data.initialMetadata, data.initialEquippedItems);

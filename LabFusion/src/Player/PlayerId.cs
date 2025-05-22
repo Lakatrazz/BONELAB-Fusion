@@ -18,8 +18,8 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
     public ulong LongId { get; private set; }
     public byte SmallId { get; private set; }
 
-    private readonly NetworkMetadata _metadata = new();
-    public NetworkMetadata Metadata => _metadata;
+    private readonly PlayerMetadata _metadata = new();
+    public PlayerMetadata Metadata => _metadata;
 
     private Action _onDestroyedEvent = null;
     public event Action OnDestroyedEvent
@@ -51,6 +51,8 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
 
     public PlayerId(ulong longId, byte smallId, Dictionary<string, string> metadata, List<string> equippedItems)
     {
+        Metadata.CreateMetadata();
+
         LongId = longId;
         SmallId = smallId;
 
@@ -58,7 +60,7 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
 
         foreach (var pair in metadata)
         {
-            Metadata.ForceSetLocalMetadata(pair.Key, pair.Value);
+            Metadata.Metadata.ForceSetLocalMetadata(pair.Key, pair.Value);
         }
 
         OnAfterCreateId();
@@ -73,14 +75,16 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
 
     private void HookMetadata()
     {
-        Metadata.OnTrySetMetadata += OnTrySetMetadata;
-        Metadata.OnTryRemoveMetadata += OnTryRemoveMetadata;
+        Metadata.Metadata.OnTrySetMetadata += OnTrySetMetadata;
+        Metadata.Metadata.OnTryRemoveMetadata += OnTryRemoveMetadata;
     }
 
     private void UnhookMetadata()
     {
-        Metadata.OnTrySetMetadata -= OnTrySetMetadata;
-        Metadata.OnTryRemoveMetadata -= OnTryRemoveMetadata;
+        Metadata.Metadata.OnTrySetMetadata -= OnTrySetMetadata;
+        Metadata.Metadata.OnTryRemoveMetadata -= OnTryRemoveMetadata;
+
+        Metadata.DestroyMetadata();
     }
 
     private bool OnTrySetMetadata(string key, string value)
@@ -205,7 +209,7 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
     {
         var longId = LongId;
         var smallId = SmallId;
-        var metadata = Metadata.LocalDictionary;
+        var metadata = Metadata.Metadata.LocalDictionary;
         var equippedItems = _internalEquippedItems.ToArray();
 
         serializer.SerializeValue(ref longId);
@@ -221,7 +225,7 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
 
             foreach (var pair in metadata)
             {
-                Metadata.ForceSetLocalMetadata(pair.Key, pair.Value);
+                Metadata.Metadata.ForceSetLocalMetadata(pair.Key, pair.Value);
             }
 
             foreach (var item in equippedItems)

@@ -9,21 +9,11 @@ namespace LabFusion.Network;
 
 public static class MetadataHelper
 {
-    // Default keys
-    public const string UsernameKey = "Username";
-    public const string NicknameKey = "Nickname";
-    public const string DescriptionKey = "Description";
-
-    public const string AvatarTitleKey = "AvatarTitle";
-    public const string AvatarModIdKey = "AvatarModId";
-
-    public const string LoadingKey = "IsLoading";
-
-    public const string PermissionKey = "PermissionLevel";
-
     public static bool TryGetPermissionLevel(this PlayerId id, out PermissionLevel level)
     {
-        if (id.Metadata.TryGetMetadata(PermissionKey, out string rawLevel) && Enum.TryParse(rawLevel, out PermissionLevel newLevel))
+        var rawLevel = id.Metadata.PermissionLevel.GetValue();
+
+        if (Enum.TryParse(rawLevel, out PermissionLevel newLevel))
         {
             level = newLevel;
             return true;
@@ -35,8 +25,8 @@ public static class MetadataHelper
 
     public static bool TryGetDisplayName(this PlayerId id, out string name)
     {
-        id.Metadata.TryGetMetadata(UsernameKey, out var username);
-        id.Metadata.TryGetMetadata(NicknameKey, out var nickname);
+        var username = id.Metadata.Username.GetValue();
+        var nickname = id.Metadata.Nickname.GetValue();
 
         username = TextFilter.Filter(username);
         nickname = TextFilter.Filter(nickname);

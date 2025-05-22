@@ -59,21 +59,21 @@ public static class ClientSettings
         Nickname = new FusionPref<string>(category, "Nickname", string.Empty, PrefUpdateMode.IGNORE);
         NicknameVisibility = new FusionPref<NicknameVisibility>(category, "Nickname Visibility", Senders.NicknameVisibility.SHOW_WITH_PREFIX, PrefUpdateMode.SERVER_UPDATE);
 
-        LocalPlayer.Metadata.TrySetMetadata(MetadataHelper.NicknameKey, Nickname.Value);
+        LocalPlayer.Metadata.Nickname.SetValue(Nickname.Value);
 
         Nickname.OnValueChanged += (v) =>
         {
-            LocalPlayer.Metadata.TrySetMetadata(MetadataHelper.NicknameKey, v);
+            LocalPlayer.Metadata.Nickname.SetValue(v);
         };
 
         // Description
         Description = new FusionPref<string>(category, "Description", string.Empty, PrefUpdateMode.IGNORE);
 
-        LocalPlayer.Metadata.TrySetMetadata(MetadataHelper.DescriptionKey, Description.Value);
+        LocalPlayer.Metadata.Description.SetValue(Description.Value);
 
         Description.OnValueChanged += (v) =>
         {
-            LocalPlayer.Metadata.TrySetMetadata(MetadataHelper.DescriptionKey, v);
+            LocalPlayer.Metadata.Description.SetValue(v);
         };
 
         VoiceChat = new VoiceChatSettings();

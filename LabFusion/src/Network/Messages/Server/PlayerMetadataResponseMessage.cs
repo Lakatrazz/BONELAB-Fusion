@@ -47,9 +47,6 @@ public class PlayerMetadataResponseMessage : NativeMessageHandler
 
         var playerId = PlayerIdManager.GetPlayerId(data.smallId);
 
-        if (playerId != null)
-        {
-            playerId.Metadata.ForceSetLocalMetadata(data.key, data.value);
-        }
+        playerId?.Metadata.Metadata.ForceSetLocalMetadata(data.key, data.value);
     }
 }

@@ -486,13 +486,8 @@ public static class MenuLocation
             };
 
             // Apply icon
-            var avatarTitle = player.Metadata.GetMetadata(MetadataHelper.AvatarTitleKey);
-            var modId = -1;
-
-            if (int.TryParse(player.Metadata.GetMetadata(MetadataHelper.AvatarModIdKey), out var rawModId))
-            {
-                modId = rawModId;
-            }
+            var avatarTitle = player.Metadata.AvatarTitle.GetValue();
+            var modId = player.Metadata.AvatarModID.GetValue();
 
             if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer) && networkPlayer.HasRig)
             {
@@ -596,27 +591,22 @@ public static class MenuLocation
     private static void ApplyPlayerToElement(PlayerElement element, PlayerId player)
     {
         // Apply name and description
-        var username = TextFilter.Filter(player.Metadata.GetMetadata(MetadataHelper.UsernameKey));
+        var username = TextFilter.Filter(player.Metadata.Username.GetValue());
         element.UsernameElement.Title = username;
 
         element.NicknameElement.Title = "Nickname";
-        element.NicknameElement.Value = TextFilter.Filter(player.Metadata.GetMetadata(MetadataHelper.NicknameKey));
+        element.NicknameElement.Value = TextFilter.Filter(player.Metadata.Nickname.GetValue());
         element.NicknameElement.Interactable = false;
         element.NicknameElement.EmptyFormat = "No {0}";
 
         element.DescriptionElement.Title = "Description";
-        element.DescriptionElement.Value = TextFilter.Filter(player.Metadata.GetMetadata(MetadataHelper.DescriptionKey));
+        element.DescriptionElement.Value = TextFilter.Filter(player.Metadata.Description.GetValue());
         element.DescriptionElement.Interactable = false;
         element.DescriptionElement.EmptyFormat = "No {0}";
 
         // Apply icon
-        var avatarTitle = player.Metadata.GetMetadata(MetadataHelper.AvatarTitleKey);
-        var modId = -1;
-
-        if (int.TryParse(player.Metadata.GetMetadata(MetadataHelper.AvatarModIdKey), out var rawModId))
-        {
-            modId = rawModId;
-        }
+        var avatarTitle = player.Metadata.AvatarTitle.GetValue();
+        var modId = player.Metadata.AvatarModID.GetValue();
 
         ElementIconHelper.SetProfileIcon(element, avatarTitle, modId);
 
