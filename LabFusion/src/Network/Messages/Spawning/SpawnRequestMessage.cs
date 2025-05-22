@@ -1,6 +1,7 @@
 ﻿using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Network.Serialization;
+using LabFusion.Safety;
 using LabFusion.Utilities;
 
 namespace LabFusion.Network;
@@ -50,7 +51,7 @@ public class SpawnRequestMessage : NativeMessageHandler
         var data = received.ReadData<SpawnRequestData>();
 
         // Check for spawnable blacklist
-        if (ModBlacklist.IsBlacklisted(data.barcode))
+        if (ModBlacklist.IsBlacklisted(data.barcode) || GlobalModBlacklistManager.IsBarcodeBlacklisted(data.barcode))
         {
 #if DEBUG
             FusionLogger.Warn($"Blocking server spawn of spawnable {data.barcode} because it is blacklisted!");

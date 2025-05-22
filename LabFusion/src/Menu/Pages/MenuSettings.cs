@@ -289,6 +289,19 @@ public static class MenuSettings
             {
                 ProfanityListManager.ExportWord(_profanityWord);
             });
+
+        developerGroup.AddElement<FunctionElement>("Export Sample Global Mod Blacklist")
+            .Do(() =>
+            {
+                GlobalModBlacklistManager.List.Mods.Add(new ModInfo()
+                {
+                    ModID = -1,
+                    Barcodes = { "Barcode Goes Here", },
+                    NameID = "name-id",
+                });
+
+                GlobalModBlacklistManager.ExportFile();
+            });
     }
 
 #endif

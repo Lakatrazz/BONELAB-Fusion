@@ -2,6 +2,7 @@
 using LabFusion.Data;
 using LabFusion.Entities;
 using LabFusion.Network.Serialization;
+using LabFusion.Safety;
 using LabFusion.Utilities;
 
 namespace LabFusion.Network;
@@ -43,7 +44,7 @@ public class PlayerRepAvatarMessage : NativeMessageHandler
         string barcode = data.barcode;
 
         // Check for avatar blacklist
-        if (ModBlacklist.IsBlacklisted(barcode))
+        if (ModBlacklist.IsBlacklisted(barcode) || GlobalModBlacklistManager.IsBarcodeBlacklisted(barcode))
         {
 #if DEBUG
             FusionLogger.Warn($"Switching player avatar from {data.barcode} to PolyBlank because it is blacklisted!");

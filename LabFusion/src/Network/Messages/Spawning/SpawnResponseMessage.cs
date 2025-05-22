@@ -1,24 +1,22 @@
 ﻿using LabFusion.Data;
 using LabFusion.Player;
 using LabFusion.Utilities;
-
-using Il2CppSLZ.Marrow.Pool;
-using Il2CppSLZ.Marrow.Warehouse;
-using Il2CppSLZ.Marrow.Data;
-using Il2CppSLZ.Marrow.Interaction;
-
 using LabFusion.Extensions;
-
 using LabFusion.Senders;
 using LabFusion.RPC;
 using LabFusion.Marrow;
 using LabFusion.Entities;
 using LabFusion.Downloading;
 using LabFusion.Preferences.Client;
+using LabFusion.Network.Serialization;
+using LabFusion.Safety;
+
+using Il2CppSLZ.Marrow.Pool;
+using Il2CppSLZ.Marrow.Warehouse;
+using Il2CppSLZ.Marrow.Data;
+using Il2CppSLZ.Marrow.Interaction;
 
 using Il2CppSLZ.Marrow.VFX;
-
-using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
@@ -85,7 +83,7 @@ public class SpawnResponseMessage : NativeMessageHandler
         var spawnEffect = data.spawnEffect;
 
         // Check for spawnable blacklist
-        if (ModBlacklist.IsBlacklisted(barcode))
+        if (ModBlacklist.IsBlacklisted(barcode) || GlobalModBlacklistManager.IsBarcodeBlacklisted(barcode))
         {
 #if DEBUG
             FusionLogger.Warn($"Blocking client spawn of spawnable {data.barcode} because it is blacklisted!");

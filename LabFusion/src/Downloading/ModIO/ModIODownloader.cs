@@ -1,5 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Preferences.Client;
+using LabFusion.Safety;
 using LabFusion.Utilities;
 
 using MelonLoader;
@@ -112,7 +113,8 @@ public static class ModIODownloader
                 }
 
                 // Check for blacklist
-                if (ModBlacklist.IsBlacklisted(info.data.NameId) || ModBlacklist.IsBlacklisted(info.data.Id.ToString()))
+                if (ModBlacklist.IsBlacklisted(info.data.NameId) || ModBlacklist.IsBlacklisted(info.data.Id.ToString())
+                    || GlobalModBlacklistManager.IsNameIDBlacklisted(info.data.NameId) || GlobalModBlacklistManager.IsModIDBlacklisted(info.data.Id))
                 {
                     FusionLogger.Warn($"Skipped download of mod {info.data.NameId} due to it being blacklisted!");
 

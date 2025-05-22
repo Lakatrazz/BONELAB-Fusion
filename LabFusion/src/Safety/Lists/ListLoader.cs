@@ -6,5 +6,6 @@ public static class ListLoader
     {
         GlobalBanManager.FetchFile();
         ProfanityListManager.FetchFile();
+        GlobalModBlacklistManager.FetchFile();
     }
 }

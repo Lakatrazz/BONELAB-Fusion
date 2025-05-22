@@ -34,7 +34,7 @@ public static class GlobalBanManager
 {
     public const string FileName = "globalBans.json";
 
-    public static GlobalBanList BanList { get; private set; } = new();
+    public static GlobalBanList List { get; private set; } = new();
 
     public static void FetchFile()
     {
@@ -43,12 +43,12 @@ public static class GlobalBanManager
 
     private static void OnFileFetched(string text)
     {
-        BanList = DataSaver.ReadJsonFromText<GlobalBanList>(text);
+        List = DataSaver.ReadJsonFromText<GlobalBanList>(text);
     }
 
     public static void ExportFile()
     {
-        DataSaver.WriteJsonToFile(FileName, BanList);
+        DataSaver.WriteJsonToFile(FileName, List);
     }
 
     public static void ExportBan(PlayerInfo playerInfo, string reason)
@@ -73,23 +73,23 @@ public static class GlobalBanManager
             Platforms = platforms,
         };
 
-        BanList.Bans.RemoveAll((info) => info.Platforms.Contains(platform));
+        List.Bans.RemoveAll((info) => info.Platforms.Contains(platform));
 
-        BanList.Bans.Add(globalBanInfo);
+        List.Bans.Add(globalBanInfo);
 
         ExportFile();
     }
 
     public static void ExportPardon(PlatformInfo platform)
     {
-        BanList.Bans.RemoveAll((info) => info.Platforms.Contains(platform));
+        List.Bans.RemoveAll((info) => info.Platforms.Contains(platform));
 
         ExportFile();
     }
 
     public static bool IsBanned(PlatformInfo platform)
     {
-        return BanList.Bans.Any((info) =>
+        return List.Bans.Any((info) =>
         {
             return info.Platforms.Contains(platform);
         });
@@ -97,7 +97,7 @@ public static class GlobalBanManager
 
     public static GlobalBanInfo GetBanInfo(PlatformInfo platform)
     {
-        foreach (var ban in BanList.Bans)
+        foreach (var ban in List.Bans)
         {
             if (ban.Platforms.Contains(platform))
             {
