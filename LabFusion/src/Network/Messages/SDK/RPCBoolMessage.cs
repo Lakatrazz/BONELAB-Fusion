@@ -83,6 +83,7 @@ public static class RPCBoolSender
     }
 }
 
+[Net.SkipHandleWhileLoading]
 public class RPCBoolData : INetSerializable
 {
     public ComponentPathData pathData;

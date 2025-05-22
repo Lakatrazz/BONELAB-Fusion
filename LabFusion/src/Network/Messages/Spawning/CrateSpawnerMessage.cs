@@ -29,7 +29,7 @@ public class CrateSpawnerData : INetSerializable
     }
 }
 
-[Net.DelayWhileTargetLoading]
+[Net.SkipHandleWhileLoading]
 public class CrateSpawnerMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.CrateSpawner;

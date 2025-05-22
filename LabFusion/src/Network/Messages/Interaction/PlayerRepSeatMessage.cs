@@ -33,7 +33,7 @@ public class PlayerRepSeatData : INetSerializable
     }
 }
 
-[Net.DelayWhileTargetLoading]
+[Net.SkipHandleWhileLoading]
 public class PlayerRepSeatMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.PlayerRepSeat;

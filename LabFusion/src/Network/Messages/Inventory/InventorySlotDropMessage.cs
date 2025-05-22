@@ -37,7 +37,7 @@ public class InventorySlotDropData : INetSerializable
     }
 }
 
-[Net.DelayWhileTargetLoading]
+[Net.SkipHandleWhileLoading]
 public class InventorySlotDropMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.InventorySlotDrop;

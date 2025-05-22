@@ -84,6 +84,7 @@ public static class RPCFloatSender
     }
 }
 
+[Net.SkipHandleWhileLoading]
 public class RPCFloatData : INetSerializable
 {
     public ComponentPathData pathData;

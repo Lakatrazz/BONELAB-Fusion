@@ -85,6 +85,7 @@ public static class RPCVector3Sender
     }
 }
 
+[Net.SkipHandleWhileLoading]
 public class RPCVector3Data : INetSerializable
 {
     public ComponentPathData pathData;

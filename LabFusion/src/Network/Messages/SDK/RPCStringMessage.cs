@@ -84,6 +84,7 @@ public static class RPCStringSender
     }
 }
 
+[Net.SkipHandleWhileLoading]
 public class RPCStringData : INetSerializable
 {
     public ComponentPathData pathData;

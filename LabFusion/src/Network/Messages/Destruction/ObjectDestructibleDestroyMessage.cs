@@ -5,7 +5,7 @@ using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
-[Net.DelayWhileTargetLoading]
+[Net.SkipHandleWhileLoading]
 public class ObjectDestructibleDestroyMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.ObjectDestructibleDestroy;

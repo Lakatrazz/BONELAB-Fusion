@@ -83,6 +83,7 @@ public static class RPCIntSender
     }
 }
 
+[Net.SkipHandleWhileLoading]
 public class RPCIntData : INetSerializable
 {
     public ComponentPathData pathData;
