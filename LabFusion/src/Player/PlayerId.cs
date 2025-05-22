@@ -1,6 +1,5 @@
 ﻿using LabFusion.Network;
 using LabFusion.Network.Serialization;
-using LabFusion.SDK.Metadata;
 using LabFusion.SDK.Points;
 using LabFusion.Senders;
 using LabFusion.Utilities;
@@ -19,6 +18,10 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
     public byte SmallId { get; private set; }
 
     private readonly PlayerMetadata _metadata = new();
+
+    /// <summary>
+    /// This Player's metadata. Only use this for getting metadata. To set your metadata, use <see cref="LocalPlayer.Metadata"/>.
+    /// </summary>
     public PlayerMetadata Metadata => _metadata;
 
     private Action _onDestroyedEvent = null;
