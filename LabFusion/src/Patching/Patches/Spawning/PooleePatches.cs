@@ -42,7 +42,7 @@ public class PooleeOnDespawnPatch
 [HarmonyPatch(typeof(Poolee), nameof(Poolee.Despawn))]
 public class PooleeDespawnPatch
 {
-    public static bool IgnorePatch = false;
+    public static bool IgnorePatch { get; set; } = false;
 
     private static bool CheckPlayerDespawn(Poolee __instance)
     {

@@ -106,7 +106,6 @@ public static class ObjectDestructiblePatches
             return false;
         }
 
-        PooleeDespawnPatch.IgnorePatch = true;
         return true;
     }
 
@@ -114,8 +113,6 @@ public static class ObjectDestructiblePatches
     [HarmonyPostfix]
     public static void TakeDamagePostfix(ObjectDestructible __instance, Vector3 normal, float damage, bool crit, AttackType attackType, ref ObjectDestructibleState __state)
     {
-        PooleeDespawnPatch.IgnorePatch = false;
-
         // Make sure we have a server
         if (!NetworkInfo.HasServer)
         {

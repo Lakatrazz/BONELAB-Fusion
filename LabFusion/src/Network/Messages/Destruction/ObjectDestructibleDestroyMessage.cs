@@ -28,7 +28,6 @@ public class ObjectDestructibleDestroyMessage : NativeMessageHandler
             var objectDestructible = extender.GetComponent(data.ComponentIndex);
 
             ObjectDestructiblePatches.IgnorePatches = true;
-            PooleeDespawnPatch.IgnorePatch = true;
 
             try
             {
@@ -41,7 +40,6 @@ public class ObjectDestructibleDestroyMessage : NativeMessageHandler
             }
 
             ObjectDestructiblePatches.IgnorePatches = false;
-            PooleeDespawnPatch.IgnorePatch = false;
         }
     }
 }
