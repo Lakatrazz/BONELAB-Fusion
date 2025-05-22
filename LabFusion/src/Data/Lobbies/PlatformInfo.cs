@@ -2,10 +2,10 @@
 
 using System.Text.Json.Serialization;
 
-namespace LabFusion.Safety;
+namespace LabFusion.Data;
 
 [Serializable]
-public class ListPlatform : IEquatable<ListPlatform>
+public class PlatformInfo : IEquatable<PlatformInfo>
 {
     [JsonPropertyName("platformId")]
     public ulong PlatformId { get; set; }
@@ -13,7 +13,7 @@ public class ListPlatform : IEquatable<ListPlatform>
     [JsonPropertyName("platform")]
     public string Platform { get; set; }
 
-    public ListPlatform(ulong platformId)
+    public PlatformInfo(ulong platformId)
     {
         PlatformId = platformId;
 
@@ -23,19 +23,19 @@ public class ListPlatform : IEquatable<ListPlatform>
         }
     }
 
-    public bool Equals(ListPlatform other)
+    public bool Equals(PlatformInfo other)
     {
         return other is not null && PlatformId == other.PlatformId && Platform == other.Platform;
     }
 
     public override bool Equals(object obj)
     {
-        return Equals(obj as ListPlatform);
+        return Equals(obj as PlatformInfo);
     }
 
     public override int GetHashCode() => PlatformId.GetHashCode() ^ Platform.GetHashCode();
 
-    public static bool operator ==(ListPlatform x, ListPlatform y)
+    public static bool operator ==(PlatformInfo x, PlatformInfo y)
     {
         if (x is null)
         {
@@ -45,7 +45,7 @@ public class ListPlatform : IEquatable<ListPlatform>
         return x.Equals(y);
     }
 
-    public static bool operator !=(ListPlatform x, ListPlatform y)
+    public static bool operator !=(PlatformInfo x, PlatformInfo y)
     {
         if (x is null)
         {

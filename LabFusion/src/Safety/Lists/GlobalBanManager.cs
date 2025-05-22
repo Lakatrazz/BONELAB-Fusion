@@ -16,10 +16,10 @@ public class GlobalBanInfo
     public string Reason { get; set; } = null;
 
     [JsonPropertyName("games")]
-    public List<ListGame> Games { get; set; } = new();
+    public List<GameInfo> Games { get; set; } = new();
 
     [JsonPropertyName("platforms")]
-    public List<ListPlatform> Platforms { get; set; } = new();
+    public List<PlatformInfo> Platforms { get; set; } = new();
 }
 
 [Serializable]
@@ -52,14 +52,14 @@ public static class GlobalBanManager
 
     public static void Ban(PlayerInfo playerInfo, string reason)
     {
-        var game = new ListGame() { Game = Application.productName };
-        var games = new List<ListGame>
+        var game = new GameInfo() { Game = Application.productName };
+        var games = new List<GameInfo>
         {
             game,
         };
 
-        var platform = new ListPlatform(playerInfo.LongId);
-        var platforms = new List<ListPlatform>
+        var platform = new PlatformInfo(playerInfo.LongId);
+        var platforms = new List<PlatformInfo>
         {
             platform
         };
@@ -79,7 +79,7 @@ public static class GlobalBanManager
         ExportFile();
     }
 
-    public static void Pardon(ListPlatform platform)
+    public static void Pardon(PlatformInfo platform)
     {
         BanList.Bans.RemoveAll((info) => info.Platforms.Contains(platform));
     }

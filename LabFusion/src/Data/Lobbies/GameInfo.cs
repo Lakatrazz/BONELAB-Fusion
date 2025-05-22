@@ -1,26 +1,26 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace LabFusion.Safety;
+namespace LabFusion.Data;
 
 [Serializable]
-public class ListGame : IEquatable<ListGame>
+public class GameInfo : IEquatable<GameInfo>
 {
     [JsonPropertyName("game")]
     public string Game { get; set; }
 
-    public bool Equals(ListGame other)
+    public bool Equals(GameInfo other)
     {
         return other is not null && Game == other.Game;
     }
 
     public override bool Equals(object obj)
     {
-        return Equals(obj as ListGame);
+        return Equals(obj as GameInfo);
     }
 
     public override int GetHashCode() => Game.GetHashCode();
 
-    public static bool operator ==(ListGame x, ListGame y)
+    public static bool operator ==(GameInfo x, GameInfo y)
     {
         if (x is null)
         {
@@ -30,7 +30,7 @@ public class ListGame : IEquatable<ListGame>
         return x.Equals(y);
     }
 
-    public static bool operator !=(ListGame x, ListGame y)
+    public static bool operator !=(GameInfo x, GameInfo y)
     {
         if (x is null)
         {
