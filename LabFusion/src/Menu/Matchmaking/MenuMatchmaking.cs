@@ -678,7 +678,7 @@ public static class MenuMatchmaking
             .WithColor(Color.red)
             .Do(() =>
             {
-                GlobalBanManager.Ban(info, "Reason Goes Here");
+                GlobalBanManager.ExportBan(info, "Reason Goes Here");
             });
     }
 #endif

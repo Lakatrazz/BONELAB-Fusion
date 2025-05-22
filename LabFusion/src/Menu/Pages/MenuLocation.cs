@@ -758,7 +758,7 @@ public static class MenuLocation
             .WithColor(Color.red)
             .Do(() =>
             {
-                GlobalBanManager.Ban(new PlayerInfo(player), "Reason Goes Here");
+                GlobalBanManager.ExportBan(new PlayerInfo(player), "Reason Goes Here");
             });
     }
 #endif

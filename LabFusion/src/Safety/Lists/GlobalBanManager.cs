@@ -50,7 +50,7 @@ public static class GlobalBanManager
         DataSaver.WriteJsonToFile(FileName, BanList);
     }
 
-    public static void Ban(PlayerInfo playerInfo, string reason)
+    public static void ExportBan(PlayerInfo playerInfo, string reason)
     {
         var game = new GameInfo() { Game = Application.productName };
         var games = new List<GameInfo>
@@ -79,8 +79,10 @@ public static class GlobalBanManager
         ExportFile();
     }
 
-    public static void Pardon(PlatformInfo platform)
+    public static void ExportPardon(PlatformInfo platform)
     {
         BanList.Bans.RemoveAll((info) => info.Platforms.Contains(platform));
+
+        ExportFile();
     }
 }
