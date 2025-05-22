@@ -24,6 +24,7 @@ using LabFusion.Player;
 using LabFusion.SDK;
 using LabFusion.RPC;
 using LabFusion.UI.Popups;
+using LabFusion.Safety;
 
 #if DEBUG
 using LabFusion.Debugging;
@@ -99,6 +100,7 @@ public class FusionMod : MelonMod
     {
         // Pull files
         FusionFileLoader.OnInitializeMelon();
+        ListLoader.OnInitializeMelon();
 
         // Load assetbundles
         FusionBundleLoader.OnBundleLoad();

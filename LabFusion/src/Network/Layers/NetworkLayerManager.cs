@@ -1,10 +1,10 @@
-﻿using LabFusion.Preferences.Client;
-
-namespace LabFusion.Network;
+﻿namespace LabFusion.Network;
 
 public static class NetworkLayerManager
 {
     public static NetworkLayer Layer { get; private set; } = null;
+
+    public static bool HasLayer => Layer != null;
 
     private static bool _loggedIn = false;
     public static bool LoggedIn

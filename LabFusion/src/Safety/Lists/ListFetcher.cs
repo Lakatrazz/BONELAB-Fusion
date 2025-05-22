@@ -4,6 +4,8 @@ using MelonLoader;
 
 using LabFusion.Utilities;
 
+using System.Net;
+
 namespace LabFusion.Safety;
 
 public static class ListFetcher
@@ -41,7 +43,15 @@ public static class ListFetcher
             yield break;
         }
 
-        var content = responseTask.Result.Content;
+        var responseResult = responseTask.Result;
+
+        if (responseResult.StatusCode != HttpStatusCode.OK)
+        {
+            FusionLogger.Warn($"Failed to fetch {url} with code: {responseResult.StatusCode}");
+            yield break;
+        }
+
+        var content = responseResult.Content;
 
         var stringTask = content.ReadAsStringAsync();
 

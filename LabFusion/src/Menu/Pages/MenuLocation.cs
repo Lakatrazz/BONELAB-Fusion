@@ -679,6 +679,10 @@ public static class MenuLocation
         var actionsPage = element.ActionsElement.AddPage();
 
         AddModerationGroup(activeLobbyInfo, actionsPage, player, selfLevel, level);
+
+#if DEBUG
+        AddDeveloperGroup(actionsPage, player);
+#endif
     }
 
     private static void AddModerationGroup(LobbyInfo lobbyInfo, PageElement actionsPage, PlayerId player, PermissionLevel selfLevel, PermissionLevel level)
@@ -738,6 +742,26 @@ public static class MenuLocation
                 });
         }
     }
+
+#if DEBUG
+    private static void AddDeveloperGroup(PageElement actionsPage, PlayerId player)
+    {
+        if (player.IsMe)
+        {
+            return;
+        }
+
+        var developerGroup = actionsPage.AddElement<GroupElement>("Developer")
+            .WithColor(Color.yellow);
+
+        developerGroup.AddElement<FunctionElement>("Export Global Ban")
+            .WithColor(Color.red)
+            .Do(() =>
+            {
+                GlobalBanManager.Ban(new PlayerInfo(player), "Reason Goes Here");
+            });
+    }
+#endif
 
     public static void PopulateLocation(GameObject locationPage)
     {

@@ -42,7 +42,7 @@ public static class PointSaveManager
 
     public static void WriteToFile()
     {
-        DataSaver.WriteJson(_filePath, PointSaveData.CreateCurrent());
+        DataSaver.WriteJsonToFile(_filePath, PointSaveData.CreateCurrent());
     }
 
     public static void WriteBackup()
@@ -56,7 +56,7 @@ public static class PointSaveManager
 
     public static void ReadFile()
     {
-        var data = DataSaver.ReadJson<PointSaveData>(_filePath);
+        var data = DataSaver.ReadJsonFromFile<PointSaveData>(_filePath);
 
         if (data == null)
         {

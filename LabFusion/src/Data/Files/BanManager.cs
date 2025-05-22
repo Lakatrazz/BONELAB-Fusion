@@ -21,7 +21,7 @@ public class BanList
 
 public static class BanManager
 {
-    private const string _fileName = "bans.json";
+    public const string FileName = "bans.json";
 
     public static BanList BanList { get; private set; } = new();
 
@@ -29,7 +29,7 @@ public static class BanManager
     {
         BanList = new();
 
-        var deserializedList = DataSaver.ReadJson<BanList>(_fileName);
+        var deserializedList = DataSaver.ReadJsonFromFile<BanList>(FileName);
 
         if (deserializedList != null)
         {
@@ -39,7 +39,7 @@ public static class BanManager
 
     private static void WriteFile()
     {
-        DataSaver.WriteJson(_fileName, BanList);
+        DataSaver.WriteJsonToFile(FileName, BanList);
     }
 
     public static void Ban(PlayerInfo playerInfo, string reason)
