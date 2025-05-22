@@ -12,7 +12,7 @@ public static class PooleeUtilities
 
     public static void DespawnAll()
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }
@@ -42,7 +42,7 @@ public static class PooleeUtilities
     public static void SendDespawn(ushort entityId, bool despawnEffect)
     {
         // Send response
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             var data = new DespawnResponseData()
             {

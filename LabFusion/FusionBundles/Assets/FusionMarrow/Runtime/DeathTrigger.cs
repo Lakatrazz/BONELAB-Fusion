@@ -101,7 +101,7 @@ namespace LabFusion.Marrow.Integration
         private static void OnNetworkPropEnter(NetworkEntity networkEntity)
         {
             // Only despawn triggered props if this is the host
-            if (!NetworkInfo.IsServer)
+            if (!NetworkInfo.IsHost)
             {
                 return;
             }

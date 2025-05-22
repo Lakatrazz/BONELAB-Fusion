@@ -42,7 +42,7 @@ public static class LobbyInfoManager
     public static void PushLobbyUpdate()
     {
         // Make sure we actually have a Network Layer
-        if (NetworkInfo.CurrentNetworkLayer == null)
+        if (NetworkLayerManager.Layer == null)
         {
             LobbyInfo = LobbyInfo.Empty;
             return;
@@ -68,7 +68,7 @@ public static class LobbyInfoManager
         LobbyInfo = info;
 
         // If a server is active, send the info
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             SendLobbyInfo();
         }
@@ -76,7 +76,7 @@ public static class LobbyInfoManager
 
     private static void SendLobbyInfo()
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }
@@ -88,7 +88,7 @@ public static class LobbyInfoManager
 
     internal static void SendLobbyInfo(ulong longId)
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }

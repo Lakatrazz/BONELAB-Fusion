@@ -38,7 +38,7 @@ public static class RPCFloatSender
             entityId = entity.Id;
             componentIndex = extender.GetIndex(rpcFloat).Value;
         }
-        else if (rpcFloat.RequiresOwnership && !NetworkInfo.IsServer)
+        else if (rpcFloat.RequiresOwnership && !NetworkInfo.IsHost)
         {
             return false;
         }

@@ -6,7 +6,7 @@ namespace LabFusion.Senders
     {
         public static void SendGameControllerEvent(BaseGameControllerType type)
         {
-            if (NetworkInfo.IsServer)
+            if (NetworkInfo.IsHost)
             {
                 var data = BaseGameControllerData.Create(type);
 

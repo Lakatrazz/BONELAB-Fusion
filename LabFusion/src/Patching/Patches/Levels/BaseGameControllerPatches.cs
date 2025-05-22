@@ -21,7 +21,7 @@ namespace LabFusion.Patching
 
             if (NetworkInfo.HasServer)
             {
-                if (!NetworkInfo.IsServer)
+                if (!NetworkInfo.IsHost)
                     return false;
                 else
                 {
@@ -41,7 +41,7 @@ namespace LabFusion.Patching
 
             if (NetworkInfo.HasServer)
             {
-                if (!NetworkInfo.IsServer)
+                if (!NetworkInfo.IsHost)
                     return false;
                 else
                 {

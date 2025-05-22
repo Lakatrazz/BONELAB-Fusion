@@ -30,7 +30,7 @@ namespace LabFusion.Patching
             if (IgnorePatches)
                 return true;
 
-            if (NetworkInfo.HasServer && !NetworkInfo.IsServer)
+            if (NetworkInfo.HasServer && !NetworkInfo.IsHost)
             {
                 return false;
             }

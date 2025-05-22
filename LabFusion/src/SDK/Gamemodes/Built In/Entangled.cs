@@ -221,7 +221,7 @@ public class Entangled : Gamemode
         Playlist.StartPlaylist();
 
         // Recursively assign players until there are no more pairs left
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             var unassignedPlayers = GetUnassignedPlayers();
 
@@ -264,7 +264,7 @@ public class Entangled : Gamemode
         });
 
         // Remove all player partnerships
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             foreach (var player in PlayerIdManager.PlayerIds)
             {

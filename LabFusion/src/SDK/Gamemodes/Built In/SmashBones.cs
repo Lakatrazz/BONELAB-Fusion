@@ -423,7 +423,7 @@ public class SmashBones : Gamemode
 
     private void OnPlayerDamageEvent(string value)
     {
-        if (!IsStarted || !NetworkInfo.IsServer)
+        if (!IsStarted || !NetworkInfo.IsHost)
         {
             return;
         }
@@ -446,7 +446,7 @@ public class SmashBones : Gamemode
 
         var playerId = PlayerIdManager.GetPlayerId(deathInfo.LongId);
 
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             var stocks = PlayerStocksKeeper.GetScore(playerId);
 
@@ -487,7 +487,7 @@ public class SmashBones : Gamemode
             OnSelfLivesChanged(lives);
         }
 
-        if (NetworkInfo.IsServer && lives <= 0)
+        if (NetworkInfo.IsHost && lives <= 0)
         {
             _latestScore++;
             PlayerScoreKeeper.SetScore(player, _latestScore);
@@ -590,7 +590,7 @@ public class SmashBones : Gamemode
 
         DeathTrigger.OnKillPlayer += OnKillPlayer;
 
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             PlayerScoreKeeper.ResetScores();
             _latestScore = 0;
@@ -623,7 +623,7 @@ public class SmashBones : Gamemode
 
     protected override void OnPlayerJoined(PlayerId playerId)
     {
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             TeamManager.TryAssignTeam(playerId, SpectatorTeam);
         }
@@ -653,7 +653,7 @@ public class SmashBones : Gamemode
 
         CheckFinalScore();
 
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             GamemodeDropper.DespawnItems();
         }
@@ -807,7 +807,7 @@ public class SmashBones : Gamemode
             ApplyDoubleJump(rigManager);
         }
 
-        if (NetworkInfo.IsServer && Defaults.DropItems)
+        if (NetworkInfo.IsHost && Defaults.DropItems)
         {
             UpdateItemDroppers();
         }

@@ -18,11 +18,11 @@ public static class MessageSender
         if (message == null)
             return;
 
-        if (NetworkInfo.CurrentNetworkLayer != null)
+        if (NetworkLayerManager.Layer != null)
         {
             NetworkInfo.BytesUp += message.Length;
 
-            NetworkInfo.CurrentNetworkLayer.SendFromServer(userId, channel, message);
+            NetworkLayerManager.Layer.SendFromServer(userId, channel, message);
         }
     }
 
@@ -39,11 +39,11 @@ public static class MessageSender
             return;
         }
 
-        if (NetworkInfo.CurrentNetworkLayer != null)
+        if (NetworkLayerManager.Layer != null)
         {
             NetworkInfo.BytesUp += message.Length;
 
-            NetworkInfo.CurrentNetworkLayer.SendFromServer(userId, channel, message);
+            NetworkLayerManager.Layer.SendFromServer(userId, channel, message);
         }
     }
 
@@ -59,13 +59,13 @@ public static class MessageSender
             return;
         }
 
-        if (NetworkInfo.CurrentNetworkLayer != null)
+        if (NetworkLayerManager.Layer != null)
         {
             NetworkInfo.BytesUp += message.Length;
 
-            if (!NetworkInfo.IsServer)
+            if (!NetworkInfo.IsHost)
             {
-                NetworkInfo.CurrentNetworkLayer.SendToServer(channel, message);
+                NetworkLayerManager.Layer.SendToServer(channel, message);
             }
             else
             {
@@ -95,14 +95,14 @@ public static class MessageSender
         if (message == null)
             return;
 
-        if (NetworkInfo.CurrentNetworkLayer != null)
+        if (NetworkLayerManager.Layer != null)
         {
             NetworkInfo.BytesUp += message.Length;
 
-            NetworkInfo.CurrentNetworkLayer.BroadcastMessage(channel, message);
+            NetworkLayerManager.Layer.BroadcastMessage(channel, message);
 
             // Backup incase the message cannot be sent to the host, which this targets.
-            if (!NetworkInfo.ServerCanSendToHost && NetworkInfo.IsServer)
+            if (!NetworkInfo.ServerCanSendToHost && NetworkInfo.IsHost)
             {
                 unsafe
                 {
@@ -131,14 +131,14 @@ public static class MessageSender
         if (message == null)
             return;
 
-        if (NetworkInfo.CurrentNetworkLayer != null)
+        if (NetworkLayerManager.Layer != null)
         {
             NetworkInfo.BytesUp += message.Length;
 
-            NetworkInfo.CurrentNetworkLayer.BroadcastMessageExcept(userId, channel, message, ignoreHost);
+            NetworkLayerManager.Layer.BroadcastMessageExcept(userId, channel, message, ignoreHost);
 
             // Backup incase the message cannot be sent to the host, which this targets.
-            if (!ignoreHost && userId != PlayerIdManager.LocalSmallId && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsServer)
+            if (!ignoreHost && userId != PlayerIdManager.LocalSmallId && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsHost)
             {
                 unsafe
                 {
@@ -167,14 +167,14 @@ public static class MessageSender
         if (message == null)
             return;
 
-        if (NetworkInfo.CurrentNetworkLayer != null)
+        if (NetworkLayerManager.Layer != null)
         {
             NetworkInfo.BytesUp += message.Length;
 
-            NetworkInfo.CurrentNetworkLayer.BroadcastMessageExcept(userId, channel, message, ignoreHost);
+            NetworkLayerManager.Layer.BroadcastMessageExcept(userId, channel, message, ignoreHost);
 
             // Backup incase the message cannot be sent to the host, which this targets.
-            if (!ignoreHost && userId != PlayerIdManager.LocalLongId && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsServer)
+            if (!ignoreHost && userId != PlayerIdManager.LocalLongId && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsHost)
             {
                 unsafe
                 {
@@ -202,7 +202,7 @@ public static class MessageSender
         if (message == null)
             return;
 
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             BroadcastMessageExcept(0, channel, message);
         }

@@ -93,7 +93,7 @@ public static class PlayerSender
 
     public static void SendPlayerTeleport(byte target, Vector3 position)
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }
@@ -125,7 +125,7 @@ public static class PlayerSender
     public static void SendPlayerMetadataResponse(byte smallId, string key, string value)
     {
         // Make sure this is the server
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             throw new ExpectedServerException();
         }

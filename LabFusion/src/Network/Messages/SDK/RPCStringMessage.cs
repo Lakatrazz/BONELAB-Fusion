@@ -38,7 +38,7 @@ public static class RPCStringSender
             entityId = entity.Id;
             componentIndex = extender.GetIndex(rpcString).Value;
         }
-        else if (rpcString.RequiresOwnership && !NetworkInfo.IsServer)
+        else if (rpcString.RequiresOwnership && !NetworkInfo.IsHost)
         {
             return false;
         }

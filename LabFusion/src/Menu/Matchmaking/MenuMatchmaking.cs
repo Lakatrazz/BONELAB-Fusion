@@ -79,7 +79,7 @@ public static class MenuMatchmaking
     
     private static void OnMatchmakingPageShown()
     {
-        var networkLayer = NetworkInfo.CurrentNetworkLayer;
+        var networkLayer = NetworkLayerManager.Layer;
 
         bool supportsMatchmaking = networkLayer.Matchmaker != null;
         
@@ -248,7 +248,7 @@ public static class MenuMatchmaking
 
         _isSearchingLobbies = true;
 
-        NetworkInfo.CurrentNetworkLayer.Matchmaker?.RequestLobbies(OnLobbiesRequested);
+        NetworkLayerManager.Layer.Matchmaker?.RequestLobbies(OnLobbiesRequested);
     }
 
     private static bool CheckLobbyVisibility(IMatchmaker.LobbyInfo info)
@@ -258,7 +258,7 @@ public static class MenuMatchmaking
             case ServerPrivacy.PUBLIC:
                 return true;
             case ServerPrivacy.FRIENDS_ONLY:
-                return NetworkInfo.CurrentNetworkLayer.IsFriend(info.metadata.LobbyInfo.LobbyId);
+                return NetworkLayerManager.Layer.IsFriend(info.metadata.LobbyInfo.LobbyId);
             default:
                 return false;
         }

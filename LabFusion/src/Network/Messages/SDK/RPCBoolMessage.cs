@@ -37,7 +37,7 @@ public static class RPCBoolSender
             entityId = entity.Id;
             componentIndex = extender.GetIndex(rpcBool).Value;
         }
-        else if (rpcBool.RequiresOwnership && !NetworkInfo.IsServer)
+        else if (rpcBool.RequiresOwnership && !NetworkInfo.IsHost)
         {
             return false;
         }

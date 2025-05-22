@@ -70,7 +70,7 @@ public static class SpawnSender
     /// <param name="syncable"></param>
     public static void SendCatchupSpawn(byte owner, string barcode, ushort syncId, SerializedTransform serializedTransform, byte playerId)
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }

@@ -102,7 +102,7 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
 
     private bool HasMetadataPermissions()
     {
-        return NetworkInfo.IsServer || IsMe;
+        return NetworkInfo.IsHost || IsMe;
     }
 
     public bool Equals(PlayerId other)

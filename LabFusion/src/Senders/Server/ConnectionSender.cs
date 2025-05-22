@@ -10,7 +10,7 @@ public static class ConnectionSender
 {
     public static void SendDisconnectToAll(string reason = "")
     {
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             foreach (var id in PlayerIdManager.PlayerIds)
             {
@@ -29,7 +29,7 @@ public static class ConnectionSender
 
     public static void SendDisconnect(ulong userId, string reason = "")
     {
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             using var writer = NetWriter.Create();
             var disconnect = DisconnectMessageData.Create(userId, reason);
@@ -42,7 +42,7 @@ public static class ConnectionSender
 
     public static void SendConnectionDeny(ulong userId, string reason = "")
     {
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             using var writer = NetWriter.Create();
             var disconnect = DisconnectMessageData.Create(userId, reason);

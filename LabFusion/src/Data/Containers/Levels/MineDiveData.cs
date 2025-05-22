@@ -148,7 +148,7 @@ public class MineDiveData : LevelDataHandler
     {
         GetCartReferences();
 
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }

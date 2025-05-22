@@ -50,7 +50,7 @@ namespace LabFusion.Patching
 
             if (NetworkInfo.HasServer)
             {
-                if (NetworkInfo.IsServer)
+                if (NetworkInfo.IsHost)
                 {
                     CampaignSender.SendKartRaceEvent(KartRaceEventType.RESET_RACE);
                 }

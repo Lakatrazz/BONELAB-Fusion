@@ -263,7 +263,7 @@ public class GamemodeItem : MonoBehaviour
 
     private void Update()
     {
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             CheckTimedDespawn();
             CheckHeldDespawn();

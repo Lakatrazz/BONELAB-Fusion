@@ -74,7 +74,7 @@ public class TriggerEvent
 
     public bool CanInvoke()
     {
-        if (ServerOnly && !NetworkInfo.IsServer)
+        if (ServerOnly && !NetworkInfo.IsHost)
         {
             return false;
         }

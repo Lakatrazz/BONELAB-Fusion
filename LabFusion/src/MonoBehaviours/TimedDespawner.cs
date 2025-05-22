@@ -48,7 +48,7 @@ public class TimedDespawner : MonoBehaviour
     private void LateUpdate()
     {
         // Make sure this is the server, otherwise we shouldn't despawn it
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }

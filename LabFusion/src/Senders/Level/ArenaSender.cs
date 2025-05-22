@@ -6,7 +6,7 @@ public static class ArenaSender
 {
     public static void SendArenaTransition(ArenaTransitionType type)
     {
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             var data = ArenaTransitionData.Create(type);
 
@@ -16,7 +16,7 @@ public static class ArenaSender
 
     public static void SendChallengeSelect(byte menuIndex, byte challengeNumber, ChallengeSelectType type)
     {
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             var data = ChallengeSelectData.Create(menuIndex, challengeNumber, type);
 
@@ -26,7 +26,7 @@ public static class ArenaSender
 
     public static void SendGeometryChange(byte geoIndex)
     {
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             var data = GeoSelectData.Create(geoIndex);
 
@@ -36,7 +36,7 @@ public static class ArenaSender
 
     public static void SendMenuSelection(byte selectionNumber, ArenaMenuType type)
     {
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             var data = ArenaMenuData.Create(selectionNumber, type);
 

@@ -17,7 +17,7 @@ public class SceneLoadPatch
     public static bool Reload()
     {
         // Check if we need to exit early
-        if (!IgnorePatches && NetworkInfo.HasServer && !NetworkInfo.IsServer)
+        if (!IgnorePatches && NetworkInfo.HasServer && !NetworkInfo.IsHost)
         {
             return false;
         }
@@ -30,7 +30,7 @@ public class SceneLoadPatch
     public static bool BarcodeLoad(Barcode levelBarcode, Barcode loadLevelBarcode = null)
     {
         // Check if we need to exit early
-        if (!IgnorePatches && NetworkInfo.HasServer && !NetworkInfo.IsServer)
+        if (!IgnorePatches && NetworkInfo.HasServer && !NetworkInfo.IsHost)
         {
             return false;
         }
@@ -43,7 +43,7 @@ public class SceneLoadPatch
     public static bool CrateLoad(LevelCrateReference level, LevelCrateReference loadLevel)
     {
         // Check if we need to exit early
-        if (!IgnorePatches && NetworkInfo.HasServer && !NetworkInfo.IsServer)
+        if (!IgnorePatches && NetworkInfo.HasServer && !NetworkInfo.IsHost)
         {
             return false;
         }

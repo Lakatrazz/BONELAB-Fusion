@@ -20,7 +20,7 @@ public class FlyingGunExtender : EntityComponentExtender<FlyingGun>
     {
         Cache.Add(component, entity);
 
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             _despawnHandler = new();
             _despawnHandler.Register(component._host, component._host.marrowEntity._poolee);

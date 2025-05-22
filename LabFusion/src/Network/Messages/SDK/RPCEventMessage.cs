@@ -17,7 +17,7 @@ public static class RPCEventSender
         var target = (RPCEvent.RPCTarget)rpcEvent.Target;
 
         // If the target is to clients, but we aren't the server, we can't send the message
-        if (target == RPCEvent.RPCTarget.Clients && !NetworkInfo.IsServer)
+        if (target == RPCEvent.RPCTarget.Clients && !NetworkInfo.IsHost)
         {
             return false;
         }
@@ -48,7 +48,7 @@ public static class RPCEventSender
             entityId = entity.Id;
             componentIndex = extender.GetIndex(rpcEvent).Value;
         }
-        else if (rpcEvent.requiresOwnership && !NetworkInfo.IsServer)
+        else if (rpcEvent.requiresOwnership && !NetworkInfo.IsHost)
         {
             return false;
         }

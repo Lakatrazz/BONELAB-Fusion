@@ -60,7 +60,7 @@ public static partial class FusionSceneManager
                 LoadSender.SendLoadingState(true);
 
                 // Send level load
-                if (NetworkInfo.IsServer)
+                if (NetworkInfo.IsHost)
                 {
                     LoadSender.SendLevelLoad(Barcode, LoadBarcode);
                 }

@@ -41,7 +41,7 @@ public static class MessageRelay
                 MessageSender.SendToServer(channel, message);
                 break;
             case RelayType.ToClients:
-                if (NetworkInfo.IsServer)
+                if (NetworkInfo.IsHost)
                 {
                     MessageSender.BroadcastMessage(channel, message);
                 }
@@ -51,7 +51,7 @@ public static class MessageRelay
                 }
                 break;
             case RelayType.ToOtherClients:
-                if (NetworkInfo.IsServer)
+                if (NetworkInfo.IsHost)
                 {
                     MessageSender.BroadcastMessageExcept(sender.Value, channel, message, false);
                 }
@@ -61,7 +61,7 @@ public static class MessageRelay
                 }
                 break;
             case RelayType.ToTarget:
-                if (NetworkInfo.IsServer)
+                if (NetworkInfo.IsHost)
                 {
                     MessageSender.SendFromServer(target.Value, channel, message);
                 }

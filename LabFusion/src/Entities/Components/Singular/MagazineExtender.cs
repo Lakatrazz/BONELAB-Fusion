@@ -15,7 +15,7 @@ public class MagazineExtender : EntityComponentExtender<Magazine>
     {
         Cache.Add(component, entity);
 
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             _despawnHandler = new();
             _despawnHandler.Register(component.interactableHost, component._poolee);

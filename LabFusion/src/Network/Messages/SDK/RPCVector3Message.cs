@@ -39,7 +39,7 @@ public static class RPCVector3Sender
             entityId = entity.Id;
             componentIndex = extender.GetIndex(rpcVector3).Value;
         }
-        else if (rpcVector3.RequiresOwnership && !NetworkInfo.IsServer)
+        else if (rpcVector3.RequiresOwnership && !NetworkInfo.IsHost)
         {
             return false;
         }

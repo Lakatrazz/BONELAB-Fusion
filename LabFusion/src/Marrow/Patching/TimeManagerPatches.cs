@@ -47,7 +47,7 @@ public static class TimeManagerPatches
                 TimeScaleSender.SendSlowMoButton(true);
                 break;
             case TimeScaleMode.HOST_ONLY:
-                if (NetworkInfo.IsServer)
+                if (NetworkInfo.IsHost)
                 {
                     TimeScaleSender.SendSlowMoButton(true);
                 }
@@ -83,7 +83,7 @@ public static class TimeManagerPatches
                 TimeScaleSender.SendSlowMoButton(false);
                 break;
             case TimeScaleMode.HOST_ONLY:
-                if (NetworkInfo.IsServer)
+                if (NetworkInfo.IsHost)
                 {
                     TimeScaleSender.SendSlowMoButton(false);
                 }

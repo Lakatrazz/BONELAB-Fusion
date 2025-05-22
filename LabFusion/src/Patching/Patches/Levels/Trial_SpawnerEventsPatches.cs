@@ -54,7 +54,7 @@ public static class Trial_SpawnerEventsPatches
             return true;
         }
 
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             var hashData = HashTable.GetDataFromComponent(__instance);
 

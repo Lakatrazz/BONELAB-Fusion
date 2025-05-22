@@ -21,7 +21,7 @@ public struct LobbyMetadataInfo
         return new LobbyMetadataInfo()
         {
             LobbyInfo = LobbyInfoManager.LobbyInfo,
-            HasServerOpen = NetworkInfo.IsServer,
+            HasServerOpen = NetworkInfo.IsHost,
         };
     }
 

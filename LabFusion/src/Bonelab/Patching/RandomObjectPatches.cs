@@ -32,7 +32,7 @@ public static class RandomObjectPatches
         var extender = entity.GetExtender<RandomObjectExtender>();
 
         // If we're the server, manually determine an object from the list and sync it
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             ushort objectIndex = (ushort)Random.Range(0, __instance.Objects.Count);
 

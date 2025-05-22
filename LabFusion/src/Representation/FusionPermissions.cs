@@ -39,7 +39,7 @@ public static class FusionPermissions
 
     private static void OnUpdateInitialMetadata()
     {
-        var permissionLevel = NetworkInfo.IsServer ? PermissionLevel.OWNER.ToString() : PermissionLevel.DEFAULT.ToString();
+        var permissionLevel = NetworkInfo.IsHost ? PermissionLevel.OWNER.ToString() : PermissionLevel.DEFAULT.ToString();
         LocalPlayer.Metadata.TrySetMetadata(MetadataHelper.PermissionKey, permissionLevel);
     }
 
@@ -49,7 +49,7 @@ public static class FusionPermissions
         color = Color.white;
 
         // Get server level permissions
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             if (longId == PlayerIdManager.LocalLongId)
                 level = PermissionLevel.OWNER;
@@ -84,7 +84,7 @@ public static class FusionPermissions
         // Set in server
         var playerId = PlayerIdManager.GetPlayerId(longId);
 
-        if (playerId != null && NetworkInfo.IsServer)
+        if (playerId != null && NetworkInfo.IsHost)
         {
             playerId.Metadata.TrySetMetadata(MetadataHelper.PermissionKey, level.ToString());
         }

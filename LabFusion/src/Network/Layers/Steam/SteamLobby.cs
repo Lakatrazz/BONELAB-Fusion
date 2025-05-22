@@ -30,7 +30,7 @@ namespace LabFusion.Network
 
         public override Action CreateJoinDelegate(ulong lobbyId)
         {
-            if (NetworkInfo.CurrentNetworkLayer is SteamNetworkLayer steamLayer)
+            if (NetworkLayerManager.Layer is SteamNetworkLayer steamLayer)
             {
                 return () =>
                 {

@@ -22,7 +22,7 @@ public class SpawnGunExtender : EntityComponentExtender<SpawnGun>
     {
         Cache.Add(component, entity);
 
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             _despawnHandler = new();
             _despawnHandler.Register(component.host, component._poolee);

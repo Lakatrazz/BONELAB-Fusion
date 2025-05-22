@@ -18,7 +18,7 @@ namespace LabFusion.Patching
             try
             {
                 // Prevent the menu from loading a different level if we aren't the host
-                if (NetworkInfo.HasServer && !NetworkInfo.IsServer)
+                if (NetworkInfo.HasServer && !NetworkInfo.IsHost)
                 {
                     // Send level request
                     LevelCrate crate = __instance._levelCrates[idx + (__instance._currentPage * __instance.items.Count)];

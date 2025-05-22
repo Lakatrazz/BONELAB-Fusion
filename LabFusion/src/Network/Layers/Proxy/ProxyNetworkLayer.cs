@@ -26,7 +26,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
 
     public override string Title => "Proxy";
 
-    public override bool IsServer => _isServerActive;
+    public override bool IsHost => _isServerActive;
     public override bool IsClient => _isConnectionActive;
 
     public override bool RequiresValidId => false;
@@ -34,7 +34,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
     public SteamId SteamId;
 
     private INetworkLobby _currentLobby;
-    public override INetworkLobby CurrentLobby => _currentLobby;
+    public override INetworkLobby Lobby => _currentLobby;
 
     private IVoiceManager _voiceManager;
     public override IVoiceManager VoiceManager => _voiceManager;
@@ -350,7 +350,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
 
     public override void BroadcastMessage(NetworkChannel channel, FusionMessage message)
     {
-        if (IsServer)
+        if (IsHost)
         {
             ProxySocketHandler.BroadcastToClients(channel, message);
         }
@@ -377,7 +377,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
 
     public override void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message)
     {
-        if (!IsServer)
+        if (!IsHost)
         {
             return;
         }
@@ -522,7 +522,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
     public void OnUpdateLobby()
     {
         // Make sure the lobby exists
-        if (CurrentLobby == null)
+        if (Lobby == null)
         {
 #if DEBUG
             FusionLogger.Warn("Tried updating the proxy lobby, but it was null!");
@@ -531,7 +531,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
         }
 
         // Write active info about the lobby
-        LobbyMetadataHelper.WriteInfo(CurrentLobby);
+        LobbyMetadataHelper.WriteInfo(Lobby);
 
         // Request Steam Friends
         NetDataWriter writer = NewWriter(MessageTypes.SteamFriends);

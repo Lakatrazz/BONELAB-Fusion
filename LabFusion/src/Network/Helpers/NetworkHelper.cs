@@ -16,7 +16,7 @@ public static class NetworkHelper
     /// </summary>
     public static void StartServer()
     {
-        NetworkInfo.CurrentNetworkLayer?.StartServer();
+        NetworkLayerManager.Layer?.StartServer();
     }
 
     /// <summary>
@@ -24,7 +24,7 @@ public static class NetworkHelper
     /// </summary>
     public static void Disconnect(string reason = "")
     {
-        NetworkInfo.CurrentNetworkLayer?.Disconnect(reason);
+        NetworkLayerManager.Layer?.Disconnect(reason);
     }
 
     /// <summary>
@@ -33,7 +33,7 @@ public static class NetworkHelper
     /// <param name="code"></param>
     public static void JoinServerByCode(string code)
     {
-        NetworkInfo.CurrentNetworkLayer?.JoinServerByCode(code);
+        NetworkLayerManager.Layer?.JoinServerByCode(code);
     }
 
     /// <summary>
@@ -57,7 +57,7 @@ public static class NetworkHelper
     /// </summary>
     public static void RefreshServerCode()
     {
-        NetworkInfo.CurrentNetworkLayer.RefreshServerCode();
+        NetworkLayerManager.Layer.RefreshServerCode();
     }
 
     /// <summary>
@@ -67,8 +67,8 @@ public static class NetworkHelper
     /// <returns></returns>
     public static bool IsFriend(ulong userId)
     {
-        if (NetworkInfo.CurrentNetworkLayer != null)
-            return NetworkInfo.CurrentNetworkLayer.IsFriend(userId);
+        if (NetworkLayerManager.Layer != null)
+            return NetworkLayerManager.Layer.IsFriend(userId);
 
         return false;
     }

@@ -109,7 +109,7 @@ public static class MenuGamemode
 
         SettingsGrid.SetActive(true);
 
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             ApplySettingsData(gamemode);
         }
@@ -139,7 +139,7 @@ public static class MenuGamemode
         SettingsPageElement.Clear();
         SettingsGrid.SetActive(true);
 
-        GamemodeSelectionGrid.gameObject.SetActive(NetworkInfo.IsServer);
+        GamemodeSelectionGrid.gameObject.SetActive(NetworkInfo.IsHost);
 
         var activeGamemode = GamemodeManager.ActiveGamemode;
 
@@ -151,7 +151,7 @@ public static class MenuGamemode
 
             GamemodeTitle.Title = activeGamemode.Title;
 
-            GamemodeSelectionGrid.gameObject.SetActive(NetworkInfo.IsServer);
+            GamemodeSelectionGrid.gameObject.SetActive(NetworkInfo.IsHost);
 
             ApplySettingsData(activeGamemode);
 
@@ -231,14 +231,14 @@ public static class MenuGamemode
     {
         bool newGamemodeSelected = SelectedGamemode != null && SelectedGamemode != GamemodeManager.ActiveGamemode;
 
-        SelectGamemodeElement.gameObject.SetActive(NetworkInfo.IsServer && newGamemodeSelected);
+        SelectGamemodeElement.gameObject.SetActive(NetworkInfo.IsHost && newGamemodeSelected);
 
         if (newGamemodeSelected)
         {
             SelectGamemodeElement.Title = $"Select {SelectedGamemode.Title}";
         }
 
-        ExitGamemodeElement.gameObject.SetActive(NetworkInfo.IsServer && GamemodeManager.ActiveGamemode != null);
+        ExitGamemodeElement.gameObject.SetActive(NetworkInfo.IsHost && GamemodeManager.ActiveGamemode != null);
 
         if (GamemodeManager.ActiveGamemode != null)
         {

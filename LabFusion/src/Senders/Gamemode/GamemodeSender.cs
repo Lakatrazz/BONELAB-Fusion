@@ -15,7 +15,7 @@ public static class GamemodeSender
     public static void SendGamemodeMetadataSet(string gamemodeBarcode, string key, string value)
     {
         // Make sure this is the server
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             throw new ExpectedServerException();
         }
@@ -28,7 +28,7 @@ public static class GamemodeSender
     public static void SendGamemodeMetadataRemove(string gamemodeBarcode, string key)
     {
         // Make sure this is the server
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             throw new ExpectedServerException();
         }

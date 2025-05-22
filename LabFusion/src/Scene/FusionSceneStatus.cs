@@ -44,7 +44,7 @@ public static partial class FusionSceneManager
     public static bool HasTargetLoaded()
     {
         // If we are the host or have no server, just do the normal load check
-        if (!NetworkInfo.HasServer || NetworkInfo.IsServer)
+        if (!NetworkInfo.HasServer || NetworkInfo.IsHost)
         {
             return IsLoadDone();
         }

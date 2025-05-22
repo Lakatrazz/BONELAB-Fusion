@@ -102,7 +102,7 @@ public static class GamemodeManager
     private static void OnMainSceneInitialized()
     {
         // Stop the current gamemode
-        if (NetworkInfo.IsServer && IsGamemodeStarted && ActiveGamemode.AutoStopOnSceneLoad)
+        if (NetworkInfo.IsHost && IsGamemodeStarted && ActiveGamemode.AutoStopOnSceneLoad)
         {
             StopGamemode();
         }
@@ -293,7 +293,7 @@ public static class GamemodeManager
     /// <param name="gamemode">The Gamemode to select.</param>
     public static void SelectGamemode(Gamemode gamemode)
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }
@@ -311,7 +311,7 @@ public static class GamemodeManager
     /// </summary>
     public static void DeselectGamemode()
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }
@@ -339,7 +339,7 @@ public static class GamemodeManager
     /// </summary>
     public static void StartGamemode()
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }
@@ -367,7 +367,7 @@ public static class GamemodeManager
     /// </summary>
     public static void StopGamemode()
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }
@@ -385,7 +385,7 @@ public static class GamemodeManager
     /// </summary>
     public static void ValidateReadyConditions()
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }
@@ -412,7 +412,7 @@ public static class GamemodeManager
     /// </summary>
     public static void ReadyGamemode()
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }
@@ -430,7 +430,7 @@ public static class GamemodeManager
     /// </summary>
     public static void UnreadyGamemode()
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }

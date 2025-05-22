@@ -59,7 +59,7 @@ namespace LabFusion.Marrow.Integration
 
         public bool IsHost()
         {
-            return NetworkInfo.IsServer;
+            return NetworkInfo.IsHost;
         }
 
         public bool HasServer()

@@ -24,11 +24,11 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
     public override bool RequiresValidId => true;
 
-    public override bool IsServer => _isServerActive;
+    public override bool IsHost => _isServerActive;
     public override bool IsClient => _isConnectionActive;
 
     private INetworkLobby _currentLobby;
-    public override INetworkLobby CurrentLobby => _currentLobby;
+    public override INetworkLobby Lobby => _currentLobby;
 
     private IVoiceManager _voiceManager = null;
     public override IVoiceManager VoiceManager => _voiceManager;
@@ -218,7 +218,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
     public override void BroadcastMessage(NetworkChannel channel, FusionMessage message)
     {
-        if (IsServer)
+        if (IsHost)
         {
             SteamSocketHandler.BroadcastToClients(SteamSocket, channel, message);
         }
@@ -246,7 +246,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
     public override void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message)
     {
         // Make sure this is actually the server
-        if (!IsServer)
+        if (!IsHost)
         {
             return;
         }
@@ -439,7 +439,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
     public void OnUpdateLobby()
     {
         // Make sure the lobby exists
-        if (CurrentLobby == null)
+        if (Lobby == null)
         {
 #if DEBUG
             FusionLogger.Warn("Tried updating the steam lobby, but it was null!");
@@ -448,6 +448,6 @@ public abstract class SteamNetworkLayer : NetworkLayer
         }
 
         // Write active info about the lobby
-        LobbyMetadataHelper.WriteInfo(CurrentLobby);
+        LobbyMetadataHelper.WriteInfo(Lobby);
     }
 }

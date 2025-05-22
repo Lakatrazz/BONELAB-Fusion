@@ -13,7 +13,7 @@ namespace LabFusion.Senders
         {
             if (NetworkInfo.HasServer)
             {
-                if (NetworkInfo.IsServer)
+                if (NetworkInfo.IsHost)
                     action();
                 else
                     return false;

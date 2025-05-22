@@ -296,7 +296,7 @@ public class Deathmatch : Gamemode
                 if (otherPlayer != null && otherPlayer != player)
                 {
                     // Increment score for that player
-                    if (NetworkInfo.IsServer)
+                    if (NetworkInfo.IsHost)
                     {
                         ScoreKeeper.AddScore(otherPlayer);
                     }
@@ -320,7 +320,7 @@ public class Deathmatch : Gamemode
     {
         base.OnGamemodeStarted();
 
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             ScoreKeeper.ResetScores();
         }
@@ -516,7 +516,7 @@ public class Deathmatch : Gamemode
         Playlist.Update();
 
         // Make sure we are a server
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }

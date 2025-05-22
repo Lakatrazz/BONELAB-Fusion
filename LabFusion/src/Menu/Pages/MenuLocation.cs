@@ -133,7 +133,7 @@ public static class MenuLocation
 
     private static void ApplyLobbyInfoToLobby(LobbyElement element, LobbyInfo info)
     {
-        bool ownsSettings = NetworkInfo.IsServer || !NetworkInfo.HasServer;
+        bool ownsSettings = NetworkInfo.IsHost || !NetworkInfo.HasServer;
 
         string emptyFormat = ownsSettings ? "Click to add {0}" : "No {0}";
 
@@ -282,7 +282,7 @@ public static class MenuLocation
         element.AdminGrid.SetActive(ownsSettings);
 
         // This also shouldn't show while not in a server
-        element.CodeGrid.SetActive(NetworkInfo.IsServer);
+        element.CodeGrid.SetActive(NetworkInfo.IsHost);
 
         // Change interactability for all elements
         element.Interactable = ownsSettings;
@@ -290,7 +290,7 @@ public static class MenuLocation
 
     private static void ApplyServerSettingsToLobby(LobbyElement element)
     {
-        bool ownsSettings = NetworkInfo.IsServer || !NetworkInfo.HasServer;
+        bool ownsSettings = NetworkInfo.IsHost || !NetworkInfo.HasServer;
 
         string emptyFormat = ownsSettings ? "Click to add {0}" : "No {0}";
 
@@ -453,7 +453,7 @@ public static class MenuLocation
         element.AdminGrid.SetActive(ownsSettings);
 
         // This also shouldn't show while not in a server
-        element.CodeGrid.SetActive(NetworkInfo.IsServer);
+        element.CodeGrid.SetActive(NetworkInfo.IsHost);
 
         // Change interactability for all elements
         element.Interactable = ownsSettings;
@@ -663,7 +663,7 @@ public static class MenuLocation
             FusionPermissions.TrySetPermission(player.LongId, username, (PermissionLevel)v);
         };
 
-        permissionsElement.Interactable = !player.IsMe && NetworkInfo.IsServer;
+        permissionsElement.Interactable = !player.IsMe && NetworkInfo.IsHost;
 
         // Platform ID element
         var platformIDElement = element.PlatformIDElement
@@ -692,8 +692,8 @@ public static class MenuLocation
             return;
         }
 
-        bool sufficientPerms = FusionPermissions.HasSufficientPermissions(selfLevel, level) || NetworkInfo.IsServer;
-        bool higherPerms = FusionPermissions.HasHigherPermissions(selfLevel, level) || NetworkInfo.IsServer;
+        bool sufficientPerms = FusionPermissions.HasSufficientPermissions(selfLevel, level) || NetworkInfo.IsHost;
+        bool higherPerms = FusionPermissions.HasHigherPermissions(selfLevel, level) || NetworkInfo.IsHost;
 
         if (!sufficientPerms && !higherPerms)
         {

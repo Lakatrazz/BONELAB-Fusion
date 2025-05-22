@@ -17,7 +17,7 @@ public static class PropSender
     /// <param name="prop"></param>
     public static void SendCatchupCreation(NetworkProp prop, PlayerId playerId)
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }

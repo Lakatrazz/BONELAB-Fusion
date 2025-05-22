@@ -38,7 +38,7 @@ public static class CrossSceneManager
     // But for now, just use the global host
     public static bool IsSceneHost()
     {
-        return NetworkInfo.IsServer;
+        return NetworkInfo.IsHost;
     }
 
     /// <summary>

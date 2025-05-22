@@ -57,10 +57,10 @@ public abstract class NetworkLayer
     /// <summary>
     /// Returns true if this layer is hosting a server.
     /// </summary>
-    public virtual bool IsServer => false;
+    public virtual bool IsHost => false;
 
     /// <summary>
-    /// Returns true if this layer is a client inside of a server (still returns true if this is the host!)
+    /// Returns true if this layer is a client inside of a server. This also returns true for the host.
     /// </summary>
     public virtual bool IsClient => false;
 
@@ -70,9 +70,9 @@ public abstract class NetworkLayer
     public virtual bool ServerCanSendToHost => true;
 
     /// <summary>
-    /// Returns the current active lobby.
+    /// Returns the active lobby.
     /// </summary>
-    public virtual INetworkLobby CurrentLobby => null;
+    public virtual INetworkLobby Lobby => null;
 
     /// <summary>
     /// Returns the used voice manager.

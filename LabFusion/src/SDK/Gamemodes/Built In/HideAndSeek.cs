@@ -198,7 +198,7 @@ public class HideAndSeek : Gamemode
             return;
         }
 
-        if (NetworkInfo.IsServer && HiderTeam.HasPlayer(playerId))
+        if (NetworkInfo.IsHost && HiderTeam.HasPlayer(playerId))
         {
             // If this was the last player, end the game
             if (HiderTeam.PlayerCount <= 1)
@@ -340,7 +340,7 @@ public class HideAndSeek : Gamemode
 
     private static void TeleportToHost()
     {
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             return;
         }
@@ -474,7 +474,7 @@ public class HideAndSeek : Gamemode
 
         LocalPlayer.OnGrab += OnLocalPlayerGrab;
 
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             AssignTeams();
         }
@@ -500,7 +500,7 @@ public class HideAndSeek : Gamemode
 
         LocalPlayer.OnGrab -= OnLocalPlayerGrab;
 
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             ClearTeams();
         }
@@ -531,7 +531,7 @@ public class HideAndSeek : Gamemode
         }
 
         // Check for one minute left
-        if (NetworkInfo.IsServer && !_oneMinuteLeft && (TimeLimit - ElapsedMinutes) == 1)
+        if (NetworkInfo.IsHost && !_oneMinuteLeft && (TimeLimit - ElapsedMinutes) == 1)
         {
             OneMinuteLeftEvent.TryInvoke();
             _oneMinuteLeft = true;

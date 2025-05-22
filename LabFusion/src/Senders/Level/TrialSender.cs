@@ -7,7 +7,7 @@ public static class TrialSender
 {
     public static void SendTimeTrialEvent(TimeTrialGameControllerType type, int value)
     {
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             var data = TimeTrialGameControllerData.Create(type, value);
 

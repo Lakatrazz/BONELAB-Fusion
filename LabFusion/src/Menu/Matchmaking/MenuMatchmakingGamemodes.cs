@@ -54,7 +54,7 @@ public static class MenuMatchmakingGamemodes
 
         SearchingLabel.Title = searchingText;
 
-       var matchmaker = NetworkInfo.CurrentNetworkLayer.Matchmaker;
+       var matchmaker = NetworkLayerManager.Layer.Matchmaker;
 
         if (matchmaker != null)
         {
@@ -145,7 +145,7 @@ public static class MenuMatchmakingGamemodes
     {
         bool visible = SelectedGamemode != null;
         FindServerElement.gameObject.SetActive(visible);
-        CreateServerElement.gameObject.SetActive(visible && !NetworkInfo.IsServer);
+        CreateServerElement.gameObject.SetActive(visible && !NetworkInfo.IsHost);
         DescriptionLabel.gameObject.SetActive(visible);
 
         if (visible)

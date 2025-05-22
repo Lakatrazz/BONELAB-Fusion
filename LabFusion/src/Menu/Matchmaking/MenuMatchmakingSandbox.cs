@@ -36,7 +36,7 @@ public static class MenuMatchmakingSandbox
 
         SearchingLabel.Title = searchingText;
 
-        var matchmaker = NetworkInfo.CurrentNetworkLayer.Matchmaker;
+        var matchmaker = NetworkLayerManager.Layer.Matchmaker;
 
         if (matchmaker != null)
         {

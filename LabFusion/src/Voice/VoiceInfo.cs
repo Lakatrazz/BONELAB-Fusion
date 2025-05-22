@@ -9,7 +9,7 @@ public static class VoiceInfo
     /// <summary>
     /// The current voice manager. Can be null. Contains information about player voice chat.
     /// </summary>
-    public static IVoiceManager VoiceManager => NetworkInfo.CurrentNetworkLayer?.VoiceManager;
+    public static IVoiceManager VoiceManager => NetworkLayerManager.Layer?.VoiceManager;
 
     /// <summary>
     /// Returns if the voice manager supports speaking.

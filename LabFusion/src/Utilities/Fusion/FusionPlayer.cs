@@ -63,7 +63,7 @@ public static class FusionPlayer
         Physics.autoSimulation = false;
         _brokeBounds = true;
 
-        if (NetworkInfo.HasServer && !NetworkInfo.IsServer)
+        if (NetworkInfo.HasServer && !NetworkInfo.IsHost)
         {
             NetworkHelper.Disconnect("Left Bounds");
         }

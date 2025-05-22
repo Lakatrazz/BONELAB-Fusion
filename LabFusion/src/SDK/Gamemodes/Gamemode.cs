@@ -142,7 +142,7 @@ public abstract class Gamemode
     private bool OnTrySetMetadata(string key, string value)
     {
         // We can only change metadata as the server!
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return false;
         }
@@ -154,7 +154,7 @@ public abstract class Gamemode
     private bool OnTryRemoveMetadata(string key)
     {
         // We can only remove metadata as the server!
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return false;
         }

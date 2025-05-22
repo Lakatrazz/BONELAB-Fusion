@@ -66,7 +66,7 @@ public class DescentData : LevelDataHandler
     {
         var value = new DescentIntroEvent(selectionNumber, type);
 
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
             _introEvents.Add(value);
 
         return value;
@@ -76,7 +76,7 @@ public class DescentData : LevelDataHandler
     {
         var value = new DescentNooseEvent(smallId, type);
 
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
             _nooseEvents.Add(value);
 
         return value;
@@ -86,7 +86,7 @@ public class DescentData : LevelDataHandler
     {
         var value = new DescentElevatorEvent(type);
 
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
             _elevatorEvents.Add(value);
 
         return value;

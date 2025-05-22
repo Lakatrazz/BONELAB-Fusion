@@ -20,7 +20,7 @@ public static class FadeAndDespawnVolumePatches
         }
 
         // Make sure we aren't the server
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             return;
         }

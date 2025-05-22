@@ -10,7 +10,7 @@ public static class LoadSender
 {
     public static void SendLevelRequest(LevelCrate crate)
     {
-        if (NetworkInfo.IsServer)
+        if (NetworkInfo.IsHost)
         {
             return;
         }
@@ -22,7 +22,7 @@ public static class LoadSender
 
     public static void SendLevelLoad(string barcode, string loadBarcode, ulong userId)
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }
@@ -48,7 +48,7 @@ public static class LoadSender
 
     public static void SendLevelLoad(string barcode, string loadBarcode)
     {
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return;
         }

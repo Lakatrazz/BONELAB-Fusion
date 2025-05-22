@@ -29,7 +29,7 @@ public static class SpawnCapsuleLaunchSequencePatches
         }
 
         // If we aren't the host, don't allow a spawn
-        if (!NetworkInfo.IsServer)
+        if (!NetworkInfo.IsHost)
         {
             return false;
         }

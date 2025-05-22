@@ -1,45 +1,53 @@
 ﻿namespace LabFusion.Network;
 
+/// <summary>
+/// Provides information about the status of the server.
+/// </summary>
 public static class NetworkInfo
 {
     /// <summary>
-    /// The current network interface. Not recommended to touch!
+    /// The active network transport layer. Points to <see cref="NetworkLayerManager.Layer"/>.
     /// </summary>
-    public static NetworkLayer CurrentNetworkLayer => NetworkLayerManager.Layer;
+    public static NetworkLayer Layer => NetworkLayerManager.Layer;
 
     /// <summary>
-    /// The current network lobby. Can be null. Allows you to read/write information from it.
+    /// Returns the active network platform. If no layer is active, then it will return "None".
+    /// </summary>
+    public static string Platform => HasLayer ? Layer.Platform : "None";
+
+    /// <summary>
+    /// Returns if there is an active network layer.
+    /// </summary>
+    public static bool HasLayer => NetworkLayerManager.HasLayer;
+
+    /// <summary>
+    /// The active network lobby. Can be null. Allows you to read/write information from it.
     /// <para>Note that this will not write info for a lobby you have joined, but only a lobby you are hosting.</para>
     /// </summary>
-    public static INetworkLobby CurrentLobby => CurrentNetworkLayer.CurrentLobby;
-
-    /// <summary>
-    /// Returns true if a network layer has been established.
-    /// </summary>
-    public static bool HasLayer => CurrentNetworkLayer != null;
+    public static INetworkLobby Lobby => Layer.Lobby;
 
     /// <summary>
     /// Returns true if the user is currently in a server.
     /// </summary>
-    public static bool HasServer => HasLayer && (CurrentNetworkLayer.IsServer || CurrentNetworkLayer.IsClient);
+    public static bool HasServer => HasLayer && (Layer.IsHost || Layer.IsClient);
 
     /// <summary>
-    /// Returns true if this user is the host or server.
+    /// Returns if the user is hosting the active server.
     /// </summary>
-    public static bool IsServer => HasLayer && CurrentNetworkLayer.IsServer;
+    public static bool IsHost => HasLayer && Layer.IsHost;
 
     /// <summary>
-    /// Returns true if this user is a client and not the server or host.
+    /// Returns if the user is a client in the server and is not the host.
     /// </summary>
-    public static bool IsClient => HasLayer && CurrentNetworkLayer.IsClient && !CurrentNetworkLayer.IsServer;
+    public static bool IsClient => HasLayer && Layer.IsClient && !Layer.IsHost;
 
     /// <summary>
     /// Returns true if the networking solution allows the server to send messages to the host (Actual Server Logic vs P2P).
     /// </summary>
-    public static bool ServerCanSendToHost => HasLayer && CurrentNetworkLayer.ServerCanSendToHost;
+    public static bool ServerCanSendToHost => HasLayer && Layer.ServerCanSendToHost;
 
     /// <summary>
-    /// The amount of bytes downloaded this frame.
+    /// The amount of bytes received this frame.
     /// </summary>
     public static int BytesDown { get; internal set; }
 
@@ -61,7 +69,7 @@ public static class NetworkInfo
     public static bool IsSpoofed(ulong userId)
     {
         // If the network layer cannot validate the user id, then we can't properly spoof check
-        if (HasLayer && !CurrentNetworkLayer.RequiresValidId)
+        if (HasLayer && !Layer.RequiresValidId)
         {
             return false;
         }
