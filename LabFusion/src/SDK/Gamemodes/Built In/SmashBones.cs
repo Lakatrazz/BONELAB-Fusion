@@ -95,14 +95,20 @@ public class SmashBones : Gamemode
 
         public const float ItemFrequency = 10f;
 
-        // Avatar heights
         public const float MaxAvatarHeight = 3f;
 
+        // Abilities
         public const float SecondDashHeight = 1.6f;
 
         public const float SecondJumpHeight = 1.3f;
 
-        public const float WeakMobilityHeight = 1.9f;
+        public const float WeakJumpHeight = 1.8f;
+
+        public const float WeakestJumpHeight = MaxAvatarHeight;
+
+        public const float WeakMobilityMass = 100f;
+
+        public const float WeakestMobilityMass = 250f;
     }
 
     private int _minimumPlayers = 2;
@@ -865,6 +871,8 @@ public class SmashBones : Gamemode
             return;
         }
 
+        float airControlMultiplier = CalculateMobilityMultiplier(LocalAvatar.AvatarMass);
+
         var controllerRig = rigManager.ControllerRig;
 
         var movementAxis = controllerRig.GetPrimaryAxis();
@@ -884,7 +892,7 @@ public class SmashBones : Gamemode
         var limitVelocity = Vector3.ClampMagnitude(kneeVelocity, Defaults.AirControlSpeed);
         var limitError = (limitVelocity - kneeVelocity) * 5f;
 
-        knee.AddForce((limitError + targetVelocity) * rigManager.avatar.massTotal, ForceMode.Force);
+        knee.AddForce((limitError + targetVelocity) * rigManager.avatar.massTotal * airControlMultiplier, ForceMode.Force);
     }
 
     private static int _remainingJumps = 0;
@@ -893,7 +901,7 @@ public class SmashBones : Gamemode
     private static void ApplyDoubleJump(RigManager rigManager)
     {
         int maxJumps = 1;
-        float jumpVelocityMultiplier = CalculateMobilityMultiplier(LocalAvatar.AvatarHeight);
+        float jumpVelocityMultiplier = CalculateJumpMultiplier(LocalAvatar.AvatarHeight);
 
         if (LocalAvatar.AvatarHeight <= Defaults.SecondJumpHeight)
         {
@@ -949,7 +957,7 @@ public class SmashBones : Gamemode
     private static void ApplyDashing(RigManager rigManager)
     {
         int maxAirDashes = 1;
-        float dashSpeedMultiplier = CalculateMobilityMultiplier(LocalAvatar.AvatarHeight);
+        float dashSpeedMultiplier = CalculateMobilityMultiplier(LocalAvatar.AvatarMass);
 
         if (LocalAvatar.AvatarHeight <= Defaults.SecondDashHeight)
         {
@@ -1019,18 +1027,32 @@ public class SmashBones : Gamemode
         SetPhysicsRigVelocity(physicsRig, targetVelocity);
     }
 
-    private static float CalculateMobilityMultiplier(float avatarHeight)
+    private static float CalculateJumpMultiplier(float avatarHeight)
     {
-        float mobility = 1f;
+        float jumpMultiplier = 1f;
 
-        if (avatarHeight >= Defaults.WeakMobilityHeight)
+        if (avatarHeight >= Defaults.WeakJumpHeight)
         {
-            float percentHeight = (avatarHeight - Defaults.WeakMobilityHeight) / (Defaults.MaxAvatarHeight - Defaults.WeakMobilityHeight) * 0.6f;
+            float percentHeight = ManagedMathf.Clamp01((avatarHeight - Defaults.WeakJumpHeight) / (Defaults.MaxAvatarHeight - Defaults.WeakJumpHeight)) * 0.4f;
 
-            mobility = 1f - MathF.Pow(ManagedMathf.Clamp01(percentHeight), 2f);
+            jumpMultiplier = 1f - percentHeight;
         }
 
-        return mobility;
+        return jumpMultiplier;
+    }
+
+    private static float CalculateMobilityMultiplier(float avatarMass)
+    {
+        float mobilityMultiplier = 1f;
+
+        if (avatarMass >= Defaults.WeakMobilityMass)
+        {
+            float percentMass = ManagedMathf.Clamp01((avatarMass - Defaults.WeakMobilityMass) / (Defaults.WeakestMobilityMass - Defaults.WeakMobilityMass)) * 0.8f;
+
+            mobilityMultiplier = 1f - percentMass;
+        }
+
+        return mobilityMultiplier;
     }
 
     private static void SetPhysicsRigVelocity(PhysicsRig physicsRig, Vector3 velocity)

@@ -77,6 +77,8 @@ public static class LocalAvatar
 
     public static float AvatarHeight { get; private set; } = 1.76f;
 
+    public static float AvatarMass { get; private set; } = 84f;
+
     public static event PlayerAvatarDelegate? OnAvatarChanged;
 
     internal static void OnInitializeMelon()
@@ -88,6 +90,7 @@ public static class LocalAvatar
     {
         AvatarBarcode = barcode;
         AvatarHeight = avatar.height;
+        AvatarMass = avatar.massTotal;
 
         OnAvatarChanged?.InvokeSafe(avatar, barcode, "executing LocalPlayer.OnAvatarChanged");
     }
