@@ -45,9 +45,14 @@ public abstract class NetworkLayer
     }
 
     /// <summary>
-    /// The Title of this NetworkLayer. Used for saving preferences.
+    /// The Title of this NetworkLayer to be displayed.
     /// </summary>
     public virtual string Title => Type.AssemblyQualifiedName;
+
+    /// <summary>
+    /// The Platform of this NetworkLayer. Necessary for validating platform ID related things such as bans.
+    /// </summary>
+    public abstract string Platform { get; }
 
     /// <summary>
     /// Returns true if this layer is hosting a server.

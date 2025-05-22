@@ -20,6 +20,8 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
     public override string Title => "Steam";
 
+    public override string Platform => "Steam";
+
     public override bool RequiresValidId => true;
 
     public override bool IsServer => _isServerActive;
