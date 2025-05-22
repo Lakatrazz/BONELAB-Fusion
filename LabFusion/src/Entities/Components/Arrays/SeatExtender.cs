@@ -17,7 +17,7 @@ public class SeatExtender : EntityComponentArrayExtender<Seat>
             Cache.Add(component, entity);
         }
 
-        entity.OnEntityCatchup += OnEntityCatchup;
+        entity.OnEntityDataCatchup += OnEntityDataCatchup;
     }
 
     protected override void OnUnregister(NetworkEntity entity, Seat[] components)
@@ -27,18 +27,18 @@ public class SeatExtender : EntityComponentArrayExtender<Seat>
             Cache.Remove(component);
         }
 
-        entity.OnEntityCatchup -= OnEntityCatchup;
+        entity.OnEntityDataCatchup -= OnEntityDataCatchup;
     }
 
-    private void OnEntityCatchup(NetworkEntity entity, PlayerId player)
+    private void OnEntityDataCatchup(NetworkEntity entity, PlayerId player)
     {
         foreach (var component in Components)
         {
-            OnEntityCatchup(component, entity, player);
+            OnEntityDataCatchup(component, entity, player);
         }
     }
 
-    private void OnEntityCatchup(Seat seat, NetworkEntity entity, PlayerId player)
+    private void OnEntityDataCatchup(Seat seat, NetworkEntity entity, PlayerId player)
     {
         if (seat.rigManager == null)
         {

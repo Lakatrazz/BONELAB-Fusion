@@ -2,6 +2,7 @@
 using LabFusion.Entities;
 using LabFusion.Network.Serialization;
 using LabFusion.Data;
+using LabFusion.Senders;
 
 namespace LabFusion.Network;
 
@@ -33,8 +34,6 @@ public class CrateSpawnerMessage : NativeMessageHandler
 {
     public override byte Tag => NativeMessageTag.CrateSpawner;
 
-    public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
-
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<CrateSpawnerData>();
@@ -58,6 +57,11 @@ public class CrateSpawnerMessage : NativeMessageHandler
             }
 
             crateSpawner.OnFinishNetworkSpawn(pooleeExtender.Component.gameObject);
+
+            entity.OnEntityDataCatchup += (entity, player) =>
+            {
+                SpawnSender.SendCrateSpawnerCatchup(crateSpawner, entity, player);
+            };
         }
     }
 }

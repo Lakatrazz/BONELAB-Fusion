@@ -105,10 +105,10 @@ public static class NetworkEntityManager
 
     private static void OnPlayerServerCatchup(PlayerId playerId)
     {
-        MelonCoroutines.Start(SendCatchupCoroutine(playerId));
+        MelonCoroutines.Start(SendCreationCatchupCoroutine(playerId));
     }
 
-    private static IEnumerator SendCatchupCoroutine(PlayerId playerId)
+    private static IEnumerator SendCreationCatchupCoroutine(PlayerId playerId)
     {
         var catchupQueue = new Queue<NetworkEntity>(IdManager.RegisteredEntities.IdEntityLookup.Values);
 
@@ -121,7 +121,7 @@ public static class NetworkEntityManager
                 continue;
             }
 
-            bool sent = SendCatchup(entity, playerId);
+            bool sent = SendCreationCatchup(entity, playerId);
 
             if (!sent)
             {
@@ -134,15 +134,15 @@ public static class NetworkEntityManager
         }
     }
 
-    private static bool SendCatchup(NetworkEntity entity, PlayerId playerId)
+    private static bool SendCreationCatchup(NetworkEntity entity, PlayerId playerId)
     {
         try
         {
-            return entity.InvokeCatchup(playerId);
+            return entity.InvokeCreationCatchup(playerId);
         }
         catch (Exception e)
         {
-            FusionLogger.LogException("sending catchup for NetworkEntity", e);
+            FusionLogger.LogException("sending creation catchup for NetworkEntity", e);
         }
 
         return false;
@@ -228,7 +228,11 @@ public static class NetworkEntityManager
             return;
         }
 
-        var request = EntityPlayerData.Create(ownerId.SmallId, entity.Id);
+        var request = new EntityPlayerData()
+        {
+            PlayerId = ownerId.SmallId,
+            Entity = new(entity),
+        };
 
         MessageRelay.RelayNative(request, NativeMessageTag.EntityOwnershipRequest, NetworkChannel.Reliable, RelayType.ToServer);
     }

@@ -71,12 +71,16 @@ public class NetworkPropCreateMessage : NativeMessageHandler
         NetworkEntityManager.IdManager.RegisterEntity(data.entityId, networkEntity);
 
         // Set the owner to the received owner id
-        networkEntity.SetOwner(PlayerIdManager.GetPlayerId(data.ownerId));
+        var ownerId = PlayerIdManager.GetPlayerId(data.ownerId);
 
-        // Insert catchup hook for future users
-        networkEntity.OnEntityCatchup += (entity, player) =>
+        networkEntity.SetOwner(ownerId);
+
+        // Insert creation catchup hook for future users
+        networkEntity.OnEntityCreationCatchup += (entity, player) =>
         {
             PropSender.SendCatchupCreation(networkProp, player);
         };
+
+        CatchupManager.RequestEntityDataCatchup(new(networkEntity));
     }
 }

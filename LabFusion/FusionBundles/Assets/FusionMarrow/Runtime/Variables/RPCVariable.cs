@@ -1,7 +1,6 @@
-using Il2CppInterop.Runtime.Attributes;
-
 #if MELONLOADER
 using Il2CppInterop.Runtime.InteropTypes.Fields;
+using Il2CppInterop.Runtime.Attributes;
 
 using Il2CppUltEvents;
 

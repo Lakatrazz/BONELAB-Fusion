@@ -12,7 +12,11 @@ public class EntityOwnershipRequestMessage : NativeMessageHandler
         var data = received.ReadData<EntityPlayerData>();
 
         // Send response
-        var response = EntityPlayerData.Create(data.playerId, data.entityId);
+        var response = new EntityPlayerData()
+        {
+            PlayerId = data.PlayerId,
+            Entity = new(data.Entity.Id),
+        };
 
         MessageRelay.RelayNative(response, NativeMessageTag.EntityOwnershipResponse, NetworkChannel.Reliable, RelayType.ToClients);
     }

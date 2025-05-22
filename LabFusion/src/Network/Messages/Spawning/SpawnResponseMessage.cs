@@ -178,8 +178,10 @@ public class SpawnResponseMessage : NativeMessageHandler
         if (marrowEntity != null)
         {
             // Create a network entity
+            var ownerId = PlayerIdManager.GetPlayerId(owner);
+
             newEntity = new();
-            newEntity.SetOwner(PlayerIdManager.GetPlayerId(owner));
+            newEntity.SetOwner(ownerId);
 
             // Setup a network prop
             NetworkProp newProp = new(newEntity, marrowEntity);
@@ -188,7 +190,7 @@ public class SpawnResponseMessage : NativeMessageHandler
             NetworkEntityManager.IdManager.RegisterEntity(entityId, newEntity);
 
             // Insert the catchup hook for future users
-            newEntity.OnEntityCatchup += (entity, player) =>
+            newEntity.OnEntityCreationCatchup += (entity, player) =>
             {
                 SpawnSender.SendCatchupSpawn(owner, barcode, entityId, new SerializedTransform(go.transform), player);
             };
@@ -197,6 +199,8 @@ public class SpawnResponseMessage : NativeMessageHandler
             {
                 SpawnEffects.CallSpawnEffect(marrowEntity);
             }
+
+            CatchupManager.RequestEntityDataCatchup(new(newEntity));
         }
 
         // Invoke spawn callback

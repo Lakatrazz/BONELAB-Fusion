@@ -17,7 +17,7 @@ public class InventorySlotReceiverExtender : EntityComponentArrayExtender<Invent
             Cache.Add(component, entity);
         }
 
-        entity.OnEntityCatchup += OnEntityCatchup;
+        entity.OnEntityDataCatchup += OnEntityDataCatchup;
     }
 
     protected override void OnUnregister(NetworkEntity entity, InventorySlotReceiver[] components)
@@ -27,10 +27,10 @@ public class InventorySlotReceiverExtender : EntityComponentArrayExtender<Invent
             Cache.Remove(component);
         }
 
-        entity.OnEntityCatchup -= OnEntityCatchup;
+        entity.OnEntityDataCatchup -= OnEntityDataCatchup;
     }
 
-    private void OnEntityCatchup(NetworkEntity entity, PlayerId player)
+    private void OnEntityDataCatchup(NetworkEntity entity, PlayerId player)
     {
         foreach (var component in Components)
         {

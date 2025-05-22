@@ -42,7 +42,7 @@ public class NetworkConstraint : IEntityExtender
     {
         entity.ConnectExtender(this);
 
-        entity.OnEntityCatchup += OnEntityCatchup;
+        entity.OnEntityCreationCatchup += OnEntityCreationCatchup;
 
         Cache.Add(Tracker, NetworkEntity);
 
@@ -54,7 +54,7 @@ public class NetworkConstraint : IEntityExtender
     {
         entity.DisconnectExtender(this);
 
-        entity.OnEntityCatchup -= OnEntityCatchup;
+        entity.OnEntityCreationCatchup -= OnEntityCreationCatchup;
 
         if (Tracker != null)
         {
@@ -70,7 +70,7 @@ public class NetworkConstraint : IEntityExtender
         _networkEntity = null;
     }
 
-    private void OnEntityCatchup(NetworkEntity entity, PlayerId player)
+    private void OnEntityCreationCatchup(NetworkEntity entity, PlayerId player)
     {
         if (!IsFirst)
         {

@@ -964,6 +964,12 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
         _onReadyCallback?.InvokeSafe("executing NetworkPlayer.OnReadyCallback");
         _onReadyCallback = null;
+
+        // If this isn't us, then catch up any data
+        if (!NetworkEntity.IsOwner)
+        {
+            CatchupManager.RequestEntityDataCatchup(new(NetworkEntity));
+        }
     }
 
     private Il2CppSystem.Action _onAvatarSwappedAction = null;

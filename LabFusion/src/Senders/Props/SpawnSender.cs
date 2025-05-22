@@ -20,11 +20,6 @@ public static class SpawnSender
     /// <param name="player"></param>
     public static void SendCrateSpawnerCatchup(CrateSpawner spawner, NetworkEntity entity, PlayerId player)
     {
-        if (!NetworkInfo.IsServer)
-        {
-            return;
-        }
-
         var hashData = CrateSpawnerPatches.HashTable.GetDataFromComponent(spawner);
 
         var data = CrateSpawnerData.Create(entity.Id, hashData);
@@ -39,11 +34,6 @@ public static class SpawnSender
     /// <param name="go"></param>
     public static void SendCrateSpawnerEvent(CrateSpawner spawner, ushort spawnedId)
     {
-        if (!NetworkInfo.IsServer)
-        {
-            return;
-        }
-
         // Wait for the level to load and for 5 frames before sending messages
         FusionSceneManager.HookOnLevelLoad(() =>
         {
@@ -67,7 +57,7 @@ public static class SpawnSender
 
         if (entity != null)
         {
-            entity.OnEntityCatchup += (entity, player) =>
+            entity.OnEntityDataCatchup += (entity, player) =>
             {
                 SendCrateSpawnerCatchup(spawner, entity, player);
             };

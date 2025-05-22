@@ -8,27 +8,27 @@ public class PlayerRepSeatData : INetSerializable
 {
     public const int Size = sizeof(byte) * 3 + sizeof(ushort);
 
-    public byte sitterId;
-    public ushort seatId;
-    public byte seatIndex;
-    public bool isIngress;
+    public byte SitterId;
+    public ushort SeatId;
+    public byte SeatIndex;
+    public bool IsIngress;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref sitterId);
-        serializer.SerializeValue(ref seatId);
-        serializer.SerializeValue(ref seatIndex);
-        serializer.SerializeValue(ref isIngress);
+        serializer.SerializeValue(ref SitterId);
+        serializer.SerializeValue(ref SeatId);
+        serializer.SerializeValue(ref SeatIndex);
+        serializer.SerializeValue(ref IsIngress);
     }
 
     public static PlayerRepSeatData Create(byte sitterId, ushort seatId, byte seatIndex, bool isIngress)
     {
         return new PlayerRepSeatData
         {
-            sitterId = sitterId,
-            seatId = seatId,
-            seatIndex = seatIndex,
-            isIngress = isIngress,
+            SitterId = sitterId,
+            SeatId = seatId,
+            SeatIndex = seatIndex,
+            IsIngress = isIngress,
         };
     }
 }
@@ -42,14 +42,14 @@ public class PlayerRepSeatMessage : NativeMessageHandler
     {
         var data = received.ReadData<PlayerRepSeatData>();
 
-        if (!NetworkPlayerManager.TryGetPlayer(data.sitterId, out var player))
+        if (!NetworkPlayerManager.TryGetPlayer(data.SitterId, out var player))
         {
             return;
         }
 
         NetworkEntity seatEntity = null;
 
-        NetworkEntityManager.HookEntityRegistered(data.seatId, OnSeatRegistered);
+        NetworkEntityManager.HookEntityRegistered(data.SeatId, OnSeatRegistered);
 
         void OnSeatRegistered(NetworkEntity entity)
         {
@@ -67,7 +67,7 @@ public class PlayerRepSeatMessage : NativeMessageHandler
                 return;
             }
 
-            var seat = seatExtender.GetComponent(data.seatIndex);
+            var seat = seatExtender.GetComponent(data.SeatIndex);
 
             if (seat == null)
             {
@@ -76,7 +76,7 @@ public class PlayerRepSeatMessage : NativeMessageHandler
 
             SeatPatches.IgnorePatches = true;
 
-            if (data.isIngress)
+            if (data.IsIngress)
             {
                 seat.IngressRig(player.RigRefs.RigManager);
             }

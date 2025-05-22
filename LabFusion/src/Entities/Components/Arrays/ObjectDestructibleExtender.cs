@@ -17,7 +17,7 @@ public class ObjectDestructibleExtender : EntityComponentArrayExtender<ObjectDes
             Cache.Add(component, entity);
         }
 
-        entity.OnEntityCatchup += OnEntityCatchup;
+        entity.OnEntityDataCatchup += OnEntityDataCatchup;
     }
 
     protected override void OnUnregister(NetworkEntity entity, ObjectDestructible[] components)
@@ -27,18 +27,18 @@ public class ObjectDestructibleExtender : EntityComponentArrayExtender<ObjectDes
             Cache.Remove(component);
         }
 
-        entity.OnEntityCatchup -= OnEntityCatchup;
+        entity.OnEntityDataCatchup -= OnEntityDataCatchup;
     }
 
-    private void OnEntityCatchup(NetworkEntity entity, PlayerId player)
+    private void OnEntityDataCatchup(NetworkEntity entity, PlayerId player)
     {
         foreach (var destructible in Components)
         {
-            OnEntityCatchup(destructible, entity, player);
+            OnEntityDataCatchup(destructible, entity, player);
         }
     }
 
-    private void OnEntityCatchup(ObjectDestructible destructible, NetworkEntity entity, PlayerId player)
+    private void OnEntityDataCatchup(ObjectDestructible destructible, NetworkEntity entity, PlayerId player)
     {
         bool destroyed = destructible._isDead || destructible.IsDespawned;
 

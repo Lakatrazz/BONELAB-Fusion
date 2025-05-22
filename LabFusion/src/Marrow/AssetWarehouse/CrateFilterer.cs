@@ -43,6 +43,11 @@ public static class CrateFilterer
 
     public static bool HasCrate<TCrate>(Barcode barcode) where TCrate : Crate
     {
+        if (barcode == null)
+        {
+            return false;
+        }
+
         var warehouse = AssetWarehouse.Instance;
 
         if (!warehouse._crateRegistry.ContainsKey(barcode))
@@ -55,6 +60,11 @@ public static class CrateFilterer
 
     public static TCrate GetCrate<TCrate>(Barcode barcode) where TCrate : Crate
     {
+        if (barcode == null)
+        {
+            return null;
+        }
+
         var warehouse = AssetWarehouse.Instance;
 
         if (!warehouse._crateRegistry.ContainsKey(barcode))

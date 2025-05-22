@@ -1,5 +1,6 @@
 ﻿using LabFusion.Utilities;
 using LabFusion.Player;
+using LabFusion.Network;
 
 using Il2CppSLZ.Marrow.PuppetMasta;
 
@@ -7,15 +8,17 @@ namespace LabFusion.Entities;
 
 public class PuppetMasterExtender : EntityComponentExtender<PuppetMaster>
 {
-    public static FusionComponentCache<PuppetMaster, NetworkEntity> Cache = new();
+    public static readonly FusionComponentCache<PuppetMaster, NetworkEntity> Cache = new();
 
-    public static NetworkEntity LastKilled = null;
+    public static NetworkEntity LastKilled { get; set; } = null;
 
     protected override void OnRegister(NetworkEntity entity, PuppetMaster component)
     {
         Cache.Add(component, entity);
 
         entity.OnEntityOwnershipTransfer += OnPuppetOwnershipTransfer;
+
+        entity.OnEntityDataCatchup += OnEntityDataCatchup;
 
         // Update puppet drives if theres already an owner
         if (NetworkEntity.HasOwner)
@@ -29,6 +32,8 @@ public class PuppetMasterExtender : EntityComponentExtender<PuppetMaster>
         Cache.Remove(component);
 
         entity.OnEntityOwnershipTransfer -= OnPuppetOwnershipTransfer;
+
+        entity.OnEntityDataCatchup -= OnEntityDataCatchup;
     }
 
     private void OnPuppetOwnershipTransfer(NetworkEntity entity, PlayerId playerId)
@@ -50,6 +55,16 @@ public class PuppetMasterExtender : EntityComponentExtender<PuppetMaster>
             {
                 muscle.MusclePdDrive(0f, 0f, 0f);
             }
+        }
+    }
+
+    private void OnEntityDataCatchup(NetworkEntity entity, PlayerId player)
+    {
+        if (Component.isDead)
+        {
+            var data = new NetworkEntityReference(entity);
+
+            MessageRelay.RelayNative(data, NativeMessageTag.PuppetMasterKill, NetworkChannel.Reliable, RelayType.ToTarget, player.SmallId);
         }
     }
 }

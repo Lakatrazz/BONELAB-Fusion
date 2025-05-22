@@ -38,8 +38,25 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
 
     public bool IsOwnerLocked => _isOwnerLocked;
 
+    /// <summary>
+    /// Invoked when the entity is unregistered.
+    /// </summary>
     public event NetworkEntityDelegate OnEntityUnregistered;
-    public event NetworkEntityPlayerDelegate OnEntityCatchup, OnEntityOwnershipTransfer;
+
+    /// <summary>
+    /// Invoked when a Player becomes the entity's new sync owner.
+    /// </summary>
+    public NetworkEntityPlayerDelegate OnEntityOwnershipTransfer;
+
+    /// <summary>
+    /// Invoked when a new Player joins the server and the creation of this NetworkEntity needs to be caught up.
+    /// </summary>
+    public event NetworkEntityPlayerDelegate OnEntityCreationCatchup;
+
+    /// <summary>
+    /// Invoked on the entity owner's end when a Player finishes creating this NetworkEntity and needs its data to be caught up.
+    /// </summary>
+    public event NetworkEntityPlayerDelegate OnEntityDataCatchup;
 
     private NetworkEntityDelegate _registeredCallback = null;
 
@@ -81,14 +98,26 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
         return null;
     }
 
-    public bool InvokeCatchup(PlayerId playerId)
+    public bool InvokeCreationCatchup(PlayerId playerId)
     {
-        if (OnEntityCatchup == null)
+        if (OnEntityCreationCatchup == null)
         {
             return false;
         }
 
-        OnEntityCatchup?.Invoke(this, playerId);
+        OnEntityCreationCatchup?.Invoke(this, playerId);
+
+        return true;
+    }
+
+    public bool InvokeDataCatchup(PlayerId playerId)
+    {
+        if (OnEntityDataCatchup == null)
+        {
+            return false;
+        }
+
+        OnEntityDataCatchup?.Invoke(this, playerId);
 
         return true;
     }
@@ -139,7 +168,8 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
         OnEntityUnregistered?.Invoke(this);
 
         OnEntityUnregistered = null;
-        OnEntityCatchup = null;
+        OnEntityCreationCatchup = null;
+        OnEntityDataCatchup = null;
 
         RemoveOwner();
     }

@@ -120,9 +120,10 @@ public static class NativeMessageTag
 
         MagazineClaim = 76,
 
-        // Mod downloading
         ModInfoRequest = 77,
         ModInfoResponse = 78,
+
+        EntityDataRequest = 79,
 
         // SDK messages
         // Module setup
