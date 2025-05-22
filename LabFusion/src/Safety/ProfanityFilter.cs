@@ -9,21 +9,6 @@ public static class ProfanityFilter
 {
     private const char _censorCharacter = '*';
 
-    // This list contains offensive words, read at your own discretion
-    // Words will be added as players use them in usernames, nicknames, descriptions, etc.
-    // If you find any words that should be added to the list, create a pull request to submit them.
-    private static readonly string[] _censoredWords = new string[]
-    {
-        "nigger",
-        "nigga",
-        "fag",
-        "faggot",
-        "dildo",
-        "sex",
-        "rape",
-        "raping",
-    };
-
     /// <summary>
     /// Returns text replaced by an asterisk if it contains profanity, or unedited otherwise.
     /// </summary>
@@ -68,7 +53,7 @@ public static class ProfanityFilter
 
         var lower = text.ToLower();
 
-        foreach (var word in _censoredWords)
+        foreach (var word in ProfanityListManager.List.Words)
         {
             if (lower.Contains(word.ToLower()))
             {

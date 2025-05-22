@@ -7,6 +7,7 @@ using LabFusion.Marrow;
 using LabFusion.Marrow.Proxies;
 using LabFusion.Preferences.Client;
 using LabFusion.Representation;
+using LabFusion.Safety;
 using LabFusion.UI.Popups;
 using LabFusion.Voice;
 
@@ -237,6 +238,8 @@ public static class MenuSettings
 
 #if DEBUG
 
+    private static string _profanityWord = null;
+
     private static void PopulateDebugSettings(PageElement page)
     {
         var generalGroup = page.AddElement<GroupElement>("General");
@@ -270,6 +273,21 @@ public static class MenuSettings
                     physRig.rightHand.rb.AddForce(Vector3Extensions.up * force, ForceMode.VelocityChange);
                     physRig.leftHand.rb.AddForce(Vector3Extensions.down * force, ForceMode.VelocityChange);
                 }
+            });
+
+        var developerGroup = page.AddElement<GroupElement>("Developer");
+
+        developerGroup.AddElement<StringElement>("Word")
+            .WithValue(_profanityWord)
+            .OnValueChanged += (v) =>
+            {
+                _profanityWord = v;
+            };
+
+        developerGroup.AddElement<FunctionElement>("Export Word to Profanity List")
+            .Do(() =>
+            {
+                ProfanityListManager.ExportWord(_profanityWord);
             });
     }
 
