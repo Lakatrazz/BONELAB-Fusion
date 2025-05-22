@@ -328,7 +328,7 @@ public class SmashBones : Gamemode
         direction.y = 0f;
         direction.Normalize();
 
-        var magnitude = (1f + MathF.Pow(damage, 0.6f)) * 10f;
+        var magnitude = (1f + MathF.Pow(damage, 0.8f)) * 3f;
 
         if (RigData.HasPlayer)
         {
