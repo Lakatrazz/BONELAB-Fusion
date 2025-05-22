@@ -5,7 +5,6 @@ using LabFusion.SDK.Gamemodes;
 
 using UnityEngine;
 using UnityEngine.UI;
-using static Il2CppSLZ.Bonelab.BaseGameController;
 
 namespace LabFusion.Menu.Gamemodes;
 

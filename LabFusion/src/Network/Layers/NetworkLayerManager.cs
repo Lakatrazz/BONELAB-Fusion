@@ -36,7 +36,7 @@ public static class NetworkLayerManager
     /// </summary>
     public static event Action<bool> OnLoggedInChanged;
 
-    public static void OnInitializeMelon()
+    internal static void OnInitializeMelon()
     {
         NetworkLayer.OnLoggedInEvent += OnLoggedIn;
         NetworkLayer.OnLoggedOutEvent += OnLoggedOut;

@@ -2,7 +2,7 @@
 using LabFusion.Menu.Gamemodes;
 using LabFusion.Network;
 using LabFusion.SDK.Gamemodes;
-
+using LabFusion.SDK.Lobbies;
 using UnityEngine;
 
 namespace LabFusion.Menu;
@@ -75,8 +75,9 @@ public static class MenuMatchmakingGamemodes
             gamemodeBarcode = SelectedGamemode.Barcode;
         }
 
-        var gamemodeLobbies = info.lobbies
-            .Where((lobby) => lobby.metadata.LobbyInfo.GamemodeBarcode == gamemodeBarcode);
+        var gamemodeLobbies = info.Lobbies
+            .Where(l => l.Metadata.LobbyInfo.GamemodeBarcode == gamemodeBarcode)
+            .Where(l => LobbyFilterManager.CheckPersistentFilters(l.Lobby, l.Metadata));
 
         bool foundLobbies = MenuMatchmaking.LoadLobbiesIntoBrowser(gamemodeLobbies);
 

@@ -88,14 +88,14 @@ public sealed class ProxyMatchmaker : IMatchmaker
 
             netLobbies.Add(new IMatchmaker.LobbyInfo()
             {
-                lobby = networkLobby,
-                metadata = metadata,
+                Lobby = networkLobby,
+                Metadata = metadata,
             });
         }
 
         var info = new IMatchmaker.MatchmakerCallbackInfo()
         {
-            lobbies = netLobbies.ToArray(),
+            Lobbies = netLobbies.ToArray(),
         };
 
         callback?.Invoke(info);

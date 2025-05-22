@@ -338,9 +338,9 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
         Matchmaker.RequestLobbies((info) =>
         {
-            foreach (var lobby in info.lobbies)
+            foreach (var lobby in info.Lobbies)
             {
-                var lobbyCode = lobby.metadata.LobbyInfo.LobbyCode;
+                var lobbyCode = lobby.Metadata.LobbyInfo.LobbyCode;
                 var inputCode = code;
 
 #if DEBUG
@@ -351,7 +351,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
                 // Makes it easier to input
                 if (lobbyCode.ToLower() == code.ToLower())
                 {
-                    JoinServer(lobby.metadata.LobbyInfo.LobbyId);
+                    JoinServer(lobby.Metadata.LobbyInfo.LobbyId);
                     break;
                 }
             }

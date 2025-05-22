@@ -7,6 +7,7 @@ using LabFusion.Preferences.Server;
 using LabFusion.Senders;
 using LabFusion.Entities;
 using LabFusion.Network.Serialization;
+using LabFusion.Safety;
 
 namespace LabFusion.Network;
 
@@ -147,6 +148,15 @@ public class ConnectionRequestMessage : NativeMessageHandler
         if (NetworkHelper.IsBanned(data.longId))
         {
             ConnectionSender.SendConnectionDeny(data.longId, "Banned from Server");
+            return;
+        }
+
+        // Check for global banning
+        var globalBanInfo = GlobalBanManager.GetBanInfo(new PlatformInfo(data.longId));
+
+        if (globalBanInfo != null && SavedServerSettings.Privacy.Value != ServerPrivacy.FRIENDS_ONLY)
+        {
+            ConnectionSender.SendConnectionDeny(data.longId, globalBanInfo.Reason);
             return;
         }
 

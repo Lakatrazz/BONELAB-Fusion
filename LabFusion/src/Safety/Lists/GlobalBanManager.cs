@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Network;
 
 using System.Text.Json.Serialization;
 
@@ -84,5 +85,38 @@ public static class GlobalBanManager
         BanList.Bans.RemoveAll((info) => info.Platforms.Contains(platform));
 
         ExportFile();
+    }
+
+    public static bool IsBanned(PlatformInfo platform)
+    {
+        return BanList.Bans.Any((info) =>
+        {
+            return info.Platforms.Contains(platform);
+        });
+    }
+
+    public static GlobalBanInfo GetBanInfo(PlatformInfo platform)
+    {
+        foreach (var ban in BanList.Bans)
+        {
+            if (ban.Platforms.Contains(platform))
+            {
+                return ban;
+            }
+        }
+
+        return null;
+    }
+
+    public static bool IsBanned(LobbyInfo lobby)
+    {
+        var platform = new PlatformInfo(lobby.LobbyId);
+
+        if (!IsBanned(platform))
+        {
+            return false;
+        }
+
+        return lobby.Privacy != ServerPrivacy.FRIENDS_ONLY;
     }
 }

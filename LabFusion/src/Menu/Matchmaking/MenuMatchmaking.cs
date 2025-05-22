@@ -253,12 +253,12 @@ public static class MenuMatchmaking
 
     private static bool CheckLobbyVisibility(IMatchmaker.LobbyInfo info)
     {
-        switch (info.metadata.LobbyInfo.Privacy)
+        switch (info.Metadata.LobbyInfo.Privacy)
         {
             case ServerPrivacy.PUBLIC:
                 return true;
             case ServerPrivacy.FRIENDS_ONLY:
-                return NetworkLayerManager.Layer.IsFriend(info.metadata.LobbyInfo.LobbyId);
+                return NetworkLayerManager.Layer.IsFriend(info.Metadata.LobbyInfo.LobbyId);
             default:
                 return false;
         }
@@ -266,7 +266,7 @@ public static class MenuMatchmaking
 
     private static bool CheckLobbySearch(IMatchmaker.LobbyInfo info, string query)
     {
-        var metadata = info.metadata;
+        var metadata = info.Metadata;
         var levelName = metadata.LobbyInfo.LevelTitle.ToLower();
         var serverName = metadata.LobbyInfo.LobbyName.ToLower();
         var hostName = metadata.LobbyInfo.LobbyHostName.ToLower();
@@ -297,10 +297,10 @@ public static class MenuMatchmaking
     private static IEnumerable<IMatchmaker.LobbyInfo> SortLobbies(IEnumerable<IMatchmaker.LobbyInfo> lobbies)
     {
         return lobbies
-            .OrderBy(l => l.metadata.LobbyInfo.LobbyHostName)
-            .OrderByDescending(l => l.metadata.LobbyInfo.PlayerCount)
-            .OrderByDescending(l => l.metadata.LobbyInfo.LobbyVersion)
-            .OrderBy(l => l.metadata.LobbyInfo.LevelTitle)
+            .OrderBy(l => l.Metadata.LobbyInfo.LobbyHostName)
+            .OrderByDescending(l => l.Metadata.LobbyInfo.PlayerCount)
+            .OrderByDescending(l => l.Metadata.LobbyInfo.LobbyVersion)
+            .OrderBy(l => l.Metadata.LobbyInfo.LevelTitle)
             .Where(CheckLobbyVisibility);
     }
 
@@ -332,8 +332,9 @@ public static class MenuMatchmaking
     {
         _isSearchingLobbies = false;
 
-        var sortedLobbies = SortLobbies(info.lobbies)
-            .Where(l => LobbyFilterManager.FilterLobby(l.lobby, l.metadata));
+        var sortedLobbies = SortLobbies(info.Lobbies)
+            .Where(l => LobbyFilterManager.CheckOptionalFilters(l.Lobby, l.Metadata))
+            .Where(l => LobbyFilterManager.CheckPersistentFilters(l.Lobby, l.Metadata));
 
         // Enable buttons
         SearchBarElement.gameObject.SetActive(true);
@@ -365,7 +366,7 @@ public static class MenuMatchmaking
         MatchmakingPage.SelectSubPage(4);
         BrowserPage.SelectSubPage(1);
 
-        ApplyServerMetadataToLobby(LobbyPanel, info.lobby, info.metadata);
+        ApplyServerMetadataToLobby(LobbyPanel, info.Lobby, info.Metadata);
     }
 
     private static void OnShowPlayer(PlayerInfo info)
@@ -381,7 +382,7 @@ public static class MenuMatchmaking
     {
         element.GetReferences();
 
-        var metadata = info.metadata;
+        var metadata = info.Metadata;
 
         element.OnPressed = () =>
         {
