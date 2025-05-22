@@ -84,9 +84,7 @@ public static class MenuProfile
         RefreshIcon();
 
         // Disable unnecessary elements
+        ProfileElement.OptionsGameObject.SetActive(false);
         ProfileElement.ActionsGrid.SetActive(false);
-
-        ProfileElement.VolumeElement.gameObject.SetActive(false);
-        ProfileElement.PermissionsElement.gameObject.SetActive(false);
     }
 }

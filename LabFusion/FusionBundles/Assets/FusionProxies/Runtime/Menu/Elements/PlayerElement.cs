@@ -1,4 +1,6 @@
 #if MELONLOADER
+using LabFusion.Menu;
+
 using MelonLoader;
 
 using UnityEngine;
@@ -35,8 +37,12 @@ namespace LabFusion.Marrow.Proxies
         public RawImage PlayerIcon { get; set; } = null;
         public AspectRatioFitter PlayerIconFitter { get; set; } = null;
 
+        public GameObject OptionsGameObject { get; set; } = null;
+        public PageElement OptionsElement { get; set; } = null;
+
         public FloatElement VolumeElement { get; set; } = null;
         public EnumElement PermissionsElement { get; set; } = null;
+        public StringElement PlatformIDElement { get; set; } = null;
 
         public LabelElement UsernameElement { get; set; } = null;
         public StringElement NicknameElement { get; set; } = null;
@@ -69,8 +75,15 @@ namespace LabFusion.Marrow.Proxies
             PlayerIcon = optionsGrid.Find("label_ProfileIcon/icon_Mask/icon_Player").GetComponent<RawImage>();
             PlayerIconFitter = PlayerIcon.GetComponent<AspectRatioFitter>();
 
-            VolumeElement = optionsGrid.Find("button_Volume").GetComponent<FloatElement>();
-            PermissionsElement = optionsGrid.Find("button_Permissions").GetComponent<EnumElement>();
+            OptionsGameObject = optionsGrid.Find("scrollRect_ProfileOptions").gameObject;
+            OptionsElement = OptionsGameObject.transform.Find("Viewport/Content").GetComponent<PageElement>();
+
+            var optionsPage = OptionsElement.AddPage("Options");
+            VolumeElement = optionsPage.AddElement<FloatElement>("Volume");
+            PermissionsElement = optionsPage.AddElement<EnumElement>("Permissions");
+            PlatformIDElement = optionsPage.AddElement<StringElement>("Platform ID").WithInteractability(false);
+
+            PlatformIDElement.EmptyFormat = "No Platform ID";
 
             var infoGrid = mainPanel.Find("grid_PlayerInfo");
 

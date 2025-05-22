@@ -647,6 +647,13 @@ public static class MenuMatchmaking
         element.PermissionsElement.Value = info.PermissionLevel;
         element.PermissionsElement.EnumType = typeof(PermissionLevel);
 
+        element.PlatformIDElement
+            .WithTitle("Platform ID")
+            .WithColor(Color.red)
+            .WithInteractability(false);
+
+        element.PlatformIDElement.Value = info.LongId.ToString();
+
         ElementIconHelper.SetProfileIcon(element, info.AvatarTitle, info.AvatarModId);
 
         // Disable unnecessary elements

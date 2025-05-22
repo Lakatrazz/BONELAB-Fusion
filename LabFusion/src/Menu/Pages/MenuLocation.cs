@@ -665,6 +665,15 @@ public static class MenuLocation
 
         permissionsElement.Interactable = !player.IsMe && NetworkInfo.IsServer;
 
+        // Platform ID element
+        var platformIDElement = element.PlatformIDElement
+            .Cleared()
+            .WithTitle("Platform ID")
+            .WithColor(Color.red)
+            .WithInteractability(false);
+
+        platformIDElement.Value = player.LongId.ToString();
+
         // Actions
         element.ActionsElement.Clear();
         var actionsPage = element.ActionsElement.AddPage();
