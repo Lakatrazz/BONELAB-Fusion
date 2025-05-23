@@ -14,12 +14,13 @@ using SLZ.Marrow.Utilities;
 
 using SLZ.Marrow;
 using SLZ.Marrow.Warehouse;
-using System.Collections.Generic;
 
+using System.Collections.Generic;
 #endif
 
 #if UNITY_EDITOR
 using UnityEditor;
+using UnityEditor.SceneManagement;
 #endif
 
 namespace LabFusion.Marrow.Integration
@@ -123,6 +124,11 @@ namespace LabFusion.Marrow.Integration
 
         private void OnSceneGUI(SceneView sceneView)
         {
+            if (PrefabStageUtility.GetCurrentPrefabStage() != null)
+            {
+                return;
+            }
+
             Handles.color = Color.red;
             Handles.ArrowHandleCap(0, transform.position, Quaternion.LookRotation(Vector3.down), 0.5f, EventType.Repaint);
         }
