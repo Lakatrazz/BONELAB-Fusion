@@ -6,6 +6,7 @@ using MelonLoader;
 using Il2CppUltEvents;
 
 using Il2CppInterop.Runtime.InteropTypes.Fields;
+using Il2CppInterop.Runtime.Attributes;
 
 using LabFusion.Utilities;
 using LabFusion.Player;
@@ -25,9 +26,9 @@ namespace LabFusion.Marrow.Integration
 #if MELONLOADER
         public PlayerEvents(IntPtr intPtr) : base(intPtr) { }
 
-        public Il2CppReferenceField<UltEventHolder> onPlayerJoinedHolder;
+        public Il2CppReferenceField<UltEventHolder> onPlayerLoadedHolder;
 
-        public Il2CppReferenceField<UltEventHolder> onPlayerLeftHolder;
+        public Il2CppReferenceField<UltEventHolder> onPlayerUnloadedHolder;
 
         public Il2CppReferenceField<UltEventHolder> onAllPlayersLoadedHolder;
 
@@ -35,37 +36,62 @@ namespace LabFusion.Marrow.Integration
 
         private void Awake()
         {
-            MultiplayerHooking.OnPlayerJoined += OnPlayerJoined;
-            MultiplayerHooking.OnPlayerLeft += OnPlayerLeft;
+            NetworkSceneManager.OnPlayerLoadedIntoLevel += OnPlayerLoadedIntoLevel;
+            NetworkSceneManager.OnPlayerStartedLoading += OnPlayerStartedLoading;
             NetworkSceneManager.OnAllPlayersLoaded += OnAllPlayersLoaded;
+
+            MultiplayerHooking.OnPlayerLeft += OnPlayerLeft;
         }
 
         private void OnDestroy()
         {
-            MultiplayerHooking.OnPlayerJoined -= OnPlayerJoined;
-            MultiplayerHooking.OnPlayerLeft -= OnPlayerLeft;
+            NetworkSceneManager.OnPlayerLoadedIntoLevel -= OnPlayerLoadedIntoLevel;
+            NetworkSceneManager.OnPlayerStartedLoading -= OnPlayerStartedLoading;
             NetworkSceneManager.OnAllPlayersLoaded -= OnAllPlayersLoaded;
+
+            MultiplayerHooking.OnPlayerLeft -= OnPlayerLeft;
         }
 
-        private void OnPlayerJoined(PlayerId playerId)
+        [HideFromIl2Cpp]
+        private void OnPlayerLoadedIntoLevel(PlayerId playerId, string barcode)
+        {
+            if (barcode != FusionSceneManager.Barcode)
+            {
+                return;
+            }
+
+            _latestPlayerID = playerId.SmallId;
+
+            onPlayerLoadedHolder.Get()?.Invoke();
+        }
+
+        [HideFromIl2Cpp]
+        private void OnPlayerStartedLoading(PlayerId playerId)
         {
             _latestPlayerID = playerId.SmallId;
 
-            onPlayerJoinedHolder.Get()?.Invoke();
+            onPlayerUnloadedHolder.Get()?.Invoke();
         }
 
-        private void OnPlayerLeft(PlayerId playerId)
-        {
-            _latestPlayerID = playerId.SmallId;
-
-            onPlayerLeftHolder.Get()?.Invoke();
-        }
-
+        [HideFromIl2Cpp]
         private void OnAllPlayersLoaded()
         {
             _latestPlayerID = -1;
 
             onAllPlayersLoadedHolder.Get()?.Invoke();
+        }
+
+        [HideFromIl2Cpp]
+        private void OnPlayerLeft(PlayerId playerId)
+        {
+            if (playerId.Metadata.Loading.GetValue())
+            {
+                return;
+            }
+
+            _latestPlayerID = playerId.SmallId;
+
+            onPlayerUnloadedHolder.Get()?.Invoke();
         }
 
         public int GetLatestPlayerID()
@@ -112,9 +138,9 @@ namespace LabFusion.Marrow.Integration
 
         public int GetLevelHostID() => GetHostID();
 #else
-        public UltEventHolder onPlayerJoinedHolder;
+        public UltEventHolder onPlayerLoadedHolder;
 
-        public UltEventHolder onPlayerLeftHolder;
+        public UltEventHolder onPlayerUnloadedHolder;
 
         public UltEventHolder onAllPlayersLoadedHolder;
 
