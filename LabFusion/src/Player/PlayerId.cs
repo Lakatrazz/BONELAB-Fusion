@@ -8,6 +8,11 @@ namespace LabFusion.Player;
 
 public class PlayerId : INetSerializable, IEquatable<PlayerId>
 {
+    /// <summary>
+    /// Invoked when any PlayerId's metadata changes. Passes in the PlayerId, key, and value.
+    /// </summary>
+    public static event Action<PlayerId, string, string> OnMetadataChangedEvent, OnMetadataRemovedEvent;
+
     public bool IsMe => LongId == PlayerIdManager.LocalLongId;
     public bool IsValid => _isValid;
     private bool _isValid = false;
@@ -80,6 +85,9 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
     {
         Metadata.Metadata.OnTrySetMetadata += OnTrySetMetadata;
         Metadata.Metadata.OnTryRemoveMetadata += OnTryRemoveMetadata;
+
+        Metadata.Metadata.OnMetadataChanged += OnMetadataChanged;
+        Metadata.Metadata.OnMetadataRemoved += OnMetadataRemoved;
     }
 
     private void UnhookMetadata()
@@ -87,7 +95,20 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
         Metadata.Metadata.OnTrySetMetadata -= OnTrySetMetadata;
         Metadata.Metadata.OnTryRemoveMetadata -= OnTryRemoveMetadata;
 
+        Metadata.Metadata.OnMetadataChanged -= OnMetadataChanged;
+        Metadata.Metadata.OnMetadataRemoved -= OnMetadataRemoved;
+
         Metadata.DestroyMetadata();
+    }
+
+    private void OnMetadataChanged(string key, string value)
+    {
+        OnMetadataChangedEvent?.InvokeSafe(this, key, value, "executing OnMetadataChangedEvent");
+    }
+
+    private void OnMetadataRemoved(string key, string value)
+    {
+        OnMetadataRemovedEvent?.InvokeSafe(this, key, value, "executing OnMetadataRemovedEvent");
     }
 
     private bool OnTrySetMetadata(string key, string value)

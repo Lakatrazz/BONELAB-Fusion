@@ -152,6 +152,7 @@ public class FusionMod : MelonMod
 
         // Initialize level loading
         FusionSceneManager.Internal_OnInitializeMelon();
+        NetworkSceneManager.OnInitializeMelon();
 
         // Initialize the networking manager
         NetworkLayerManager.OnInitializeMelon();
