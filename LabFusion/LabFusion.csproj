@@ -261,6 +261,7 @@
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Desyncer.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Events\CelebrationEvents.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Events\OwnershipEvents.cs" />
+    <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Events\PlayerEvents.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Events\ServerEvents.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Functions\BitTransactor.cs" />
     <Compile Include="FusionBundles\Assets\FusionMarrow\Runtime\Gamemodes\GamemodeCrateSpawner.cs" />
