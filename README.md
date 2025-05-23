@@ -13,6 +13,17 @@ This mod is networked and built around Steam, but the networking system can be s
 Fusion supports a system called "Modules". This allows other code mods to add on and sync their own events in Fusion.
 Fusion also has an SDK for integrating features into Marrow™ SDK items, maps, and more.
 
+## Lists
+Fusion pulls a few lists from another [GitHub repository](https://github.com/Lakatrazz/Fusion-Lists/) so that certain limits can be remotely updated.
+
+These lists include:
+- Global Ban List
+- Profanity List
+- Global Mod Blacklist
+
+Note that additions to these lists are only for extreme cases. If you would like to see the criteria required to be added to these lists, or view what is currently on these
+lists, you can [visit the repository.](https://github.com/Lakatrazz/Fusion-Lists/)
+
 ## Credits
 - BoneLib AutoUpdater: https://github.com/yowchap/BoneLib
 - Testing/Development Credits In Game
