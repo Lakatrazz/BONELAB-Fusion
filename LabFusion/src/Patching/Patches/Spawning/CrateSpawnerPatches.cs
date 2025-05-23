@@ -108,6 +108,35 @@ public static class CrateSpawnerPatches
         poolee.OnDespawnDelegate += (Action<GameObject>)spawner.OnPooleeDespawn;
     }
 
+    private static bool IsSingleplayerOnly(CrateSpawner crateSpawner)
+    {
+        // Check if this CrateSpawner has a Desyncer
+        if (Desyncer.Cache.ContainsSource(crateSpawner.gameObject))
+        {
+            return true;
+        }
+
+        var spawnable = crateSpawner._spawnable;
+
+        if (spawnable == null)
+        {
+            return false;
+        }
+
+        if (!spawnable.crateRef.IsValid() || spawnable.crateRef.Crate == null)
+        {
+            return false;
+        }
+
+        // Check for the Singleplayer Only tag
+        if (CrateFilterer.HasTags(spawnable.crateRef.Crate, FusionTags.SingleplayerOnly))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     [HarmonyPrefix]
     [HarmonyPatch(nameof(CrateSpawner.SpawnSpawnableAsync))]
     public static bool SpawnSpawnableAsyncPrefix(CrateSpawner __instance, bool isHidden, ref UniTask<Poolee> __result)
@@ -120,8 +149,7 @@ public static class CrateSpawnerPatches
 
         var spawner = __instance;
 
-        // Check if this CrateSpawner has a Desyncer
-        if (Desyncer.Cache.ContainsSource(spawner.gameObject))
+        if (IsSingleplayerOnly(spawner))
         {
             return true;
         }

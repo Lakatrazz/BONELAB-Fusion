@@ -1,5 +1,8 @@
-﻿using LabFusion.Data;
+﻿using Il2CppSLZ.Marrow.Warehouse;
+
+using LabFusion.Data;
 using LabFusion.Entities;
+using LabFusion.Marrow;
 using LabFusion.Network.Serialization;
 using LabFusion.Safety;
 using LabFusion.Utilities;
@@ -55,6 +58,16 @@ public class SpawnRequestMessage : NativeMessageHandler
         {
 #if DEBUG
             FusionLogger.Warn($"Blocking server spawn of spawnable {data.barcode} because it is blacklisted!");
+#endif
+
+            return;
+        }
+
+        // Check for singleplayer only tag
+        if (CrateFilterer.HasTags<SpawnableCrate>(new(data.barcode), FusionTags.SingleplayerOnly))
+        {
+#if DEBUG
+            FusionLogger.Warn($"Blocking server spawn of spawnable {data.barcode} because it is tagged Singleplayer Only!");
 #endif
 
             return;

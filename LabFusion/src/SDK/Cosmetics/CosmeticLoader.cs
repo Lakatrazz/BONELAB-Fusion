@@ -13,8 +13,8 @@ public static class CosmeticLoader
 {
     public static readonly string[] RequiredTags = new[]
     {
-        "Fusion",
-        "Cosmetic",
+        FusionTags.Fusion,
+        FusionTags.Cosmetic,
     };
 
     public static void OnAssetWarehouseReady()

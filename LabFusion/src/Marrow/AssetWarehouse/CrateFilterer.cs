@@ -129,4 +129,16 @@ public static class CrateFilterer
 
         return true;
     }
+
+    public static bool HasTags<TCrate>(Barcode barcode, params string[] tags) where TCrate : Crate
+    {
+        var crate = GetCrate<TCrate>(barcode);
+
+        if (crate == null)
+        {
+            return false;
+        }
+
+        return HasTags(crate, tags);
+    }
 }
