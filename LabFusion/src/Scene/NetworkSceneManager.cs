@@ -1,4 +1,5 @@
-﻿using LabFusion.Network;
+﻿using Il2CppSLZ.Marrow.Warehouse;
+using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Utilities;
 
@@ -58,6 +59,11 @@ public static class NetworkSceneManager
     /// </summary>
     public static event Action<PlayerId, string> OnPlayerLoadedIntoLevel;
 
+    /// <summary>
+    /// Invoked when a player begins to load into a different level. Passes in the PlayerId.
+    /// </summary>
+    public static event Action<PlayerId> OnPlayerStartedLoading;
+
     private static bool _allPlayersLoaded = false;
 
     internal static void OnInitializeMelon()
@@ -85,18 +91,19 @@ public static class NetworkSceneManager
         {
             var loading = playerId.Metadata.Loading.GetValue();
 
+            var barcode = playerId.Metadata.LevelBarcode.GetValue();
+
             if (!loading)
             {
-                InvokePlayerLoaded(playerId, playerId.Metadata.LevelBarcode.GetValue());
+                OnPlayerLoadedIntoLevel?.InvokeSafe(playerId, barcode, "executing OnPlayerLoadedIntoLevel");
+
+                CheckAllPlayersLoaded();
+            }
+            else
+            {
+                OnPlayerStartedLoading?.InvokeSafe(playerId, "executing OnPlayerStartedLoading");
             }
         }
-    }
-
-    private static void InvokePlayerLoaded(PlayerId playerId, string barcode)
-    {
-        OnPlayerLoadedIntoLevel?.InvokeSafe(playerId, barcode, "executing OnPlayerLoadedIntoLevel");
-
-        CheckAllPlayersLoaded();
     }
 
     private static void CheckAllPlayersLoaded()
