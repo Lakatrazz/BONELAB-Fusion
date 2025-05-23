@@ -9,6 +9,7 @@ using Il2CppInterop.Runtime.InteropTypes.Fields;
 
 using LabFusion.Network;
 using LabFusion.Utilities;
+using LabFusion.Player;
 #else
 using UltEvents;
 #endif
@@ -66,6 +67,21 @@ namespace LabFusion.Marrow.Integration
         {
             return NetworkInfo.HasServer;
         }
+
+        public string GetServerName()
+        {
+            if (!NetworkInfo.HasServer)
+            {
+                return null;
+            }
+
+            return LobbyInfoManager.LobbyInfo.LobbyName;
+        }
+
+        public int GetPlayerCount()
+        {
+            return PlayerIdManager.PlayerCount;
+        }
 #else
         public UltEventHolder onServerJoinedHolder;
 
@@ -79,6 +95,16 @@ namespace LabFusion.Marrow.Integration
         public bool HasServer()
         {
             return false;
+        }
+
+        public string GetServerName()
+        {
+            return null;
+        }
+
+        public int GetPlayerCount()
+        {
+            return 0;
         }
 #endif
     }
