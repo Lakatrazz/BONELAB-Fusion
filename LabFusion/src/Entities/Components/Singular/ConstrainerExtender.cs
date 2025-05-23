@@ -8,7 +8,7 @@ namespace LabFusion.Entities;
 
 public class ConstrainerExtender : EntityComponentExtender<Constrainer>
 {
-    public static FusionComponentCache<Constrainer, NetworkEntity> Cache = new();
+    public static readonly FusionComponentCache<Constrainer, NetworkEntity> Cache = new();
 
     private Grip.HandDelegate _onAttachDelegate = null;
 
@@ -18,7 +18,7 @@ public class ConstrainerExtender : EntityComponentExtender<Constrainer>
     {
         Cache.Add(component, entity);
 
-        if (CrossSceneManager.IsSceneHost())
+        if (NetworkSceneManager.IsLevelHost)
         {
             _poolee = Poolee.Cache.Get(component.gameObject);
 

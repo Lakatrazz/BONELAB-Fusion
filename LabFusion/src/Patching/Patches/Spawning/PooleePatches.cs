@@ -14,7 +14,7 @@ public class PooleeOnDespawnPatch
 {
     public static void Postfix(Poolee __instance)
     {
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }
@@ -79,7 +79,7 @@ public class PooleeDespawnPatch
     public static bool Prefix(Poolee __instance)
     {
         // Make sure we have a server
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }
@@ -96,16 +96,16 @@ public class PooleeDespawnPatch
             return false;
         }
 
-        bool isSceneHost = CrossSceneManager.IsSceneHost();
+        bool isLevelHost = NetworkSceneManager.IsLevelHost;
 
-        // If we are not the scene host, and we don't allow despawns currently, then don't let the entity be despawned
-        if (!isSceneHost && !PooleeUtilities.CanDespawn && PooleeExtender.Cache.ContainsSource(__instance))
+        // If we are not the level host, and we don't allow despawns currently, then don't let the entity be despawned
+        if (!isLevelHost && !PooleeUtilities.CanDespawn && PooleeExtender.Cache.ContainsSource(__instance))
         {
             return false;
         }
 
         // If we are the scene host, sync the poolee despawn
-        if (isSceneHost)
+        if (isLevelHost)
         {
             CheckForDespawn(__instance);
         }

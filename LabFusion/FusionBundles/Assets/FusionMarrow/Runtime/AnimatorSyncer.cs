@@ -53,7 +53,7 @@ namespace LabFusion.Marrow.Integration
 
         private void Update()
         {
-            if (CrossSceneManager.InUnsyncedScene())
+            if (!NetworkSceneManager.IsLevelNetworked)
             {
                 return;
             }
@@ -66,7 +66,7 @@ namespace LabFusion.Marrow.Integration
             }
             else
             {
-                ownership = CrossSceneManager.IsSceneHost();
+                ownership = NetworkSceneManager.IsLevelHost;
             }
 
             if (!ownership)

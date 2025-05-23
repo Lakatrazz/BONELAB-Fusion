@@ -23,13 +23,13 @@ public static class WeaponSpawnerPatches
     [HarmonyPatch(nameof(WeaponSpawner.SpawnDefaultAmmo))]
     public static bool SpawnDefaultAmmoPrefix(WeaponSpawner __instance)
     {
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }
 
-        // Only the scene host should control the WeaponSpawner
-        if (!CrossSceneManager.IsSceneHost())
+        // Only the level host should control the WeaponSpawner
+        if (!NetworkSceneManager.IsLevelHost)
         {
             return false;
         }
@@ -102,13 +102,13 @@ public static class WeaponSpawnerPatches
     [HarmonyPatch(nameof(WeaponSpawner.OnWeaponSelected))]
     public static bool OnWeaponSelectedPrefix(WeaponSpawner __instance, SpawnableCrateReference scr)
     {
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }
 
-        // Only the scene host should control the WeaponSpawner
-        if (!CrossSceneManager.IsSceneHost())
+        // Only the level host should control the WeaponSpawner
+        if (!NetworkSceneManager.IsLevelHost)
         {
             return false;
         }

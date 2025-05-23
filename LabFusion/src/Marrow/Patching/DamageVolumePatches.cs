@@ -17,7 +17,7 @@ public static class DamageVolumePatches
     [HarmonyPatch(nameof(DamageVolume.OnTriggerEnter))]
     public static bool OnTriggerEnterPrefix(Collider other)
     {
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }

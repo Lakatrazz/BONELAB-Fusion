@@ -72,7 +72,7 @@ public static class EventActuatorPatches
 
         void NewCall(float parameter0)
         {
-            if (CrossSceneManager.InUnsyncedScene() || IgnoreOverride)
+            if (!NetworkSceneManager.IsLevelNetworked || IgnoreOverride)
             {
                 RunOriginal(parameter0);
                 return;
@@ -99,7 +99,7 @@ public static class EventActuatorPatches
 
         if (input == null)
         {
-            return CrossSceneManager.IsSceneHost();
+            return NetworkSceneManager.IsLevelHost;
         }
 
         var networkEntity = CircuitHelper.GetNetworkEntity(input);
@@ -109,7 +109,7 @@ public static class EventActuatorPatches
             return networkEntity.IsOwner;
         }
 
-        return CrossSceneManager.IsSceneHost();
+        return NetworkSceneManager.IsLevelHost;
     }
 
     private static void OnInputRose(EventActuator actuator, float f)

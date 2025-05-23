@@ -55,7 +55,7 @@ public static class RPCFloatSender
     public static void CatchupValue(RPCFloat rpcFloat, PlayerId playerId)
     {
         // Make sure we are the level host
-        if (!CrossSceneManager.IsSceneHost())
+        if (!NetworkSceneManager.IsLevelHost)
         {
             return;
         }

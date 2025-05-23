@@ -341,7 +341,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private void OnLevelLoad()
     {
-        if (CrossSceneManager.Purgatory)
+        if (NetworkSceneManager.Purgatory)
         {
             return;
         }
@@ -390,7 +390,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Find the rig for the current scene, and hook into scene loads
         FindRigManager();
         MultiplayerHooking.OnMainSceneInitialized += OnLevelLoad;
-        CrossSceneManager.OnPurgatoryChanged += OnPurgatoryChanged;
+        NetworkSceneManager.OnPurgatoryChanged += OnPurgatoryChanged;
     }
 
     private void UnhookPlayer()
@@ -414,7 +414,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         // Unhook from scene loading events
         DestroyPuppet();
         MultiplayerHooking.OnMainSceneInitialized -= OnLevelLoad;
-        CrossSceneManager.OnPurgatoryChanged -= OnPurgatoryChanged;
+        NetworkSceneManager.OnPurgatoryChanged -= OnPurgatoryChanged;
     }
 
     private void DestroyPuppet()

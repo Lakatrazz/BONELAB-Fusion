@@ -41,7 +41,7 @@ public static class PhysicsRigPatches
     [HarmonyPatch(nameof(PhysicsRig.RagdollRig))]
     public static void RagdollRig(PhysicsRig __instance)
     {
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }
@@ -58,7 +58,7 @@ public static class PhysicsRigPatches
     [HarmonyPatch(nameof(PhysicsRig.UnRagdollRig))]
     public static bool UnRagdollRig(PhysicsRig __instance)
     {
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }
@@ -83,7 +83,7 @@ public static class PhysicsRigPatches
     [HarmonyPatch(nameof(PhysicsRig.ShutdownRig))]
     public static void ShutdownRig(PhysicsRig __instance)
     {
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }
@@ -100,7 +100,7 @@ public static class PhysicsRigPatches
     [HarmonyPatch(nameof(PhysicsRig.TurnOnRig))]
     public static bool TurnOnRig(PhysicsRig __instance)
     {
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }
@@ -127,7 +127,7 @@ public static class PhysicsRigPatches
     [HarmonyPatch(nameof(PhysicsRig.PhysicalLegs))]
     public static void PhysicalLegs(PhysicsRig __instance)
     {
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }
@@ -144,7 +144,7 @@ public static class PhysicsRigPatches
     [HarmonyPatch(nameof(PhysicsRig.KinematicLegs))]
     public static void KinematicLegs(PhysicsRig __instance)
     {
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }

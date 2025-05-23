@@ -55,7 +55,7 @@ public static class AddDevMenuPatch
     public static void OnSpawnDelegate(PopUpMenuView menu, Action originalDelegate)
     {
         // If there is no server, we can just spawn the original items as normal
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             originalDelegate?.Invoke();
             return;

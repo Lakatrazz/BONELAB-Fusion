@@ -113,7 +113,7 @@ public static class CrateSpawnerPatches
     public static bool SpawnSpawnableAsyncPrefix(CrateSpawner __instance, bool isHidden, ref UniTask<Poolee> __result)
     {
         // If this scene is unsynced, the spawner can function as normal.
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }
@@ -127,7 +127,7 @@ public static class CrateSpawnerPatches
         }
 
         // If we aren't the scene host, don't allow a crate spawn
-        if (!CrossSceneManager.IsSceneHost())
+        if (!NetworkSceneManager.IsLevelHost)
         {
             __result = new UniTask<Poolee>(null);
             return false;

@@ -17,7 +17,7 @@ public static class PhysLimbPatches
     [HarmonyPatch(nameof(PhysLimb.ShutdownLimb))]
     public static void ShutdownLimb(PhysLimb __instance)
     {
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }

@@ -56,7 +56,7 @@ public static class RPCVector3Sender
     public static void CatchupValue(RPCVector3 rpcVector3, PlayerId playerId)
     {
         // Make sure we are the level host
-        if (!CrossSceneManager.IsSceneHost())
+        if (!NetworkSceneManager.IsLevelHost)
         {
             return;
         }

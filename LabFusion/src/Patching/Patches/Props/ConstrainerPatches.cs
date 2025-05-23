@@ -72,7 +72,7 @@ public static class ConstrainerPatches
             return true;
         }
 
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }
@@ -117,7 +117,7 @@ public static class ConstrainerPatches
     [HarmonyPatch(nameof(Constrainer.PrimaryButtonUp))]
     public static void PrimaryButtonUpPostfix(Constrainer __instance)
     {
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }
@@ -179,7 +179,7 @@ public static class ConstrainerPatches
     [HarmonyPatch(nameof(Constrainer.OnTriggerGripUpdate))]
     public static bool OnTriggerGripUpdatePrefix(Constrainer __instance, Hand hand)
     {
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }

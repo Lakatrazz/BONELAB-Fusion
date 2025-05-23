@@ -40,7 +40,7 @@ public static class LevelDownloaderManager
     private static void OnDisconnect()
     {
         // Incase the player gets stuck in purgatory, disable it on disconnect
-        CrossSceneManager.Purgatory = false;
+        NetworkSceneManager.Purgatory = false;
     }
 
     public static void DownloadLevel(LevelDownloadInfo info)
@@ -69,14 +69,14 @@ public static class LevelDownloaderManager
         _downloadingLevel = true;
         _downloadingFile = info.modFile;
 
-        CrossSceneManager.Purgatory = true;
+        NetworkSceneManager.Purgatory = true;
 
         LoadWaitingScene();
     }
 
     private static void OnDownloadFinished(DownloadCallbackInfo info)
     {
-        CrossSceneManager.Purgatory = false;
+        NetworkSceneManager.Purgatory = false;
 
         _downloadingLevel = false;
         _downloadingFile = new ModIOFile(-1);

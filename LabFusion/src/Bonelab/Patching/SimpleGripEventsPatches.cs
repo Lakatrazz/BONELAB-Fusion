@@ -21,7 +21,7 @@ public static class SimpleGripEventsPatches
     [HarmonyPatch(nameof(SimpleGripEvents.OnAttachedDelegate))]
     public static bool OnAttachedDelegatePrefix(SimpleGripEvents __instance, Hand hand)
     {
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }
@@ -56,7 +56,7 @@ public static class SimpleGripEventsPatches
     [HarmonyPatch(nameof(SimpleGripEvents.OnDetachedDelegate))]
     public static bool OnDetachedDelegatePrefix(SimpleGripEvents __instance, Hand hand)
     {
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }
@@ -97,7 +97,7 @@ public static class SimpleGripEventsPatches
     [HarmonyPatch(nameof(SimpleGripEvents.OnAttachedUpdateDelegate))]
     public static bool OnAttachedUpdateDelegatePrefix(SimpleGripEvents __instance, Hand hand)
     {
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }

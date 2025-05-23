@@ -76,7 +76,7 @@ public static class SpawnGunPatches
             return;
         }
 
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }
@@ -104,7 +104,7 @@ public static class SpawnGunPatches
     [HarmonyPatch(nameof(SpawnGun.OnFire))]
     public static bool OnFirePrefix(SpawnGun __instance, ref SpawnableCrate __state)
     {
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }
@@ -125,7 +125,7 @@ public static class SpawnGunPatches
     [HarmonyPatch(nameof(SpawnGun.OnFire))]
     public static void OnFirePostfix(SpawnGun __instance, ref SpawnableCrate __state)
     {
-        if (CrossSceneManager.InUnsyncedScene())
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }

@@ -54,7 +54,7 @@ public static class RPCBoolSender
     public static void CatchupValue(RPCBool rpcBool, PlayerId playerId)
     {
         // Make sure we are the level host
-        if (!CrossSceneManager.IsSceneHost())
+        if (!NetworkSceneManager.IsLevelHost)
         {
             return;
         }
