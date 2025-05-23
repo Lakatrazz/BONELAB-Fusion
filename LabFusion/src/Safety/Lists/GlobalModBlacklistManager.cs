@@ -1,4 +1,5 @@
 ﻿using LabFusion.Data;
+using LabFusion.Network;
 
 using System.Text.Json.Serialization;
 
@@ -32,18 +33,35 @@ public static class GlobalModBlacklistManager
         DataSaver.WriteJsonToFile(FileName, List);
     }
 
+    public static bool BlacklistEnabled => LobbyInfoManager.LobbyInfo.Privacy == ServerPrivacy.PUBLIC;
+
     public static bool IsBarcodeBlacklisted(string barcode)
     {
+        if (!BlacklistEnabled)
+        {
+            return false;
+        }
+
         return List.Mods.Any(m => m.Barcodes.Contains(barcode));
     }
 
     public static bool IsModIDBlacklisted(int modID)
     {
+        if (!BlacklistEnabled)
+        {
+            return false;
+        }
+
         return List.Mods.Any(m => m.ModID != -1 && m.ModID == modID);
     }
 
     public static bool IsNameIDBlacklisted(string nameID)
     {
+        if (!BlacklistEnabled)
+        {
+            return false;
+        }
+
         return List.Mods.Any(m => !string.IsNullOrWhiteSpace(m.NameID) && m.NameID == nameID);
     }
 }
