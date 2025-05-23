@@ -6,6 +6,7 @@ using LabFusion.Bonelab;
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Marrow;
+using LabFusion.Math;
 using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Senders;
@@ -157,6 +158,25 @@ public static class LocalAvatar
         OnOverrideHeight(avatar, barcode);
     }
 
+    private static float? ProcessHeightOverride(float avatarHeight)
+    {
+        float? heightOverride = HeightOverride;
+
+        if (heightOverride.HasValue)
+        {
+            return heightOverride;
+        }
+
+        float maxAvatarHeight = ManagedMathf.Clamp(LobbyInfoManager.LobbyInfo.MaxAvatarHeight, 2f, 30f);
+
+        if (NetworkInfo.HasServer && avatarHeight > maxAvatarHeight)
+        {
+            return maxAvatarHeight;
+        }
+
+        return null;
+    }
+
     private static bool _overridingHeight = false;
     private static void OnOverrideHeight(Avatar avatar, string barcode)
     {
@@ -166,13 +186,15 @@ public static class LocalAvatar
             return;
         }
 
-        if (HeightOverride == null)
+        float? heightOverride = ProcessHeightOverride(avatar.height);
+
+        if (!heightOverride.HasValue)
         {
             return;
         }
 
         float originalHeight = avatar.height;
-        float newHeight = HeightOverride.Value;
+        float newHeight = heightOverride.Value;
 
         Vector3 newScale = (newHeight / originalHeight) * avatar.transform.localScale;
 

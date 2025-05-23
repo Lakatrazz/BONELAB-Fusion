@@ -30,6 +30,7 @@ public static class MenuLocation
     public static BoolElement KnockoutElement { get; private set; }
     public static IntElement KnockoutLengthElement { get; private set; }
     public static BoolElement PlayerConstrainingElement { get; private set; }
+    public static FloatElement MaxAvatarHeightElement { get; private set; }
 
     public static EnumElement DevToolsElement { get; private set; }
     public static EnumElement ConstrainerElement { get; private set; }
@@ -229,6 +230,14 @@ public static class MenuLocation
             .WithTitle("Player Constraining")
             .WithValue(info.PlayerConstraining);
 
+        MaxAvatarHeightElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .WithLimits(2f, 30f)
+            .WithIncrement(1f)
+            .WithTitle("Max Avatar Height")
+            .WithValue(info.MaxAvatarHeight);
+
         // Permissions
         DevToolsElement
             .Cleared()
@@ -393,6 +402,14 @@ public static class MenuLocation
             .WithInteractability(ownsSettings)
             .AsPref(SavedServerSettings.PlayerConstraining)
             .WithTitle("Player Constraining");
+
+        MaxAvatarHeightElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .AsPref(SavedServerSettings.MaxAvatarHeight)
+            .WithLimits(2f, 30f)
+            .WithIncrement(1f)
+            .WithTitle("Max Avatar Height");
 
         // Permissions
         DevToolsElement
@@ -803,6 +820,8 @@ public static class MenuLocation
         KnockoutLengthElement = generalGroup.AddElement<IntElement>("Knockout Length");
 
         PlayerConstrainingElement = generalGroup.AddElement<BoolElement>("Player Constraining");
+
+        MaxAvatarHeightElement = generalGroup.AddElement<FloatElement>("Max Avatar Height");
 
         // Permissions
         var permissionGroup = element.AddElement<GroupElement>("Permissions");

@@ -573,6 +573,10 @@ public static class MenuMatchmaking
             .WithInteractability(false)
             .WithValue(info.LobbyInfo.PlayerConstraining);
 
+        generalGroup.AddElement<FloatElement>("Max Avatar Height")
+            .WithInteractability(false)
+            .WithValue(info.LobbyInfo.MaxAvatarHeight);
+
         // Permissions
         var permissionsGroup = settingsPage.AddElement<GroupElement>("Permissions");
 

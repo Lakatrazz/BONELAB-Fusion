@@ -89,6 +89,9 @@ public class LobbyInfo
     [JsonPropertyName("knockoutLength")]
     public int KnockoutLength { get; set; }
 
+    [JsonPropertyName("maxAvatarHeight")]
+    public float MaxAvatarHeight { get; set; }
+
     // Permissions
     [JsonPropertyName("devTools")]
     public PermissionLevel DevTools { get; set; }
@@ -151,6 +154,7 @@ public class LobbyInfo
         FriendlyFire = SavedServerSettings.FriendlyFire.Value;
         Knockout = SavedServerSettings.Knockout.Value;
         KnockoutLength = SavedServerSettings.KnockoutLength.Value;
+        MaxAvatarHeight = SavedServerSettings.MaxAvatarHeight.Value;
 
         // Permissions
         DevTools = SavedServerSettings.DevTools.Value;

@@ -92,12 +92,6 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
 
     private void UnhookMetadata()
     {
-        Metadata.Metadata.OnTrySetMetadata -= OnTrySetMetadata;
-        Metadata.Metadata.OnTryRemoveMetadata -= OnTryRemoveMetadata;
-
-        Metadata.Metadata.OnMetadataChanged -= OnMetadataChanged;
-        Metadata.Metadata.OnMetadataRemoved -= OnMetadataRemoved;
-
         Metadata.DestroyMetadata();
     }
 
