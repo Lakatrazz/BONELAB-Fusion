@@ -2,13 +2,13 @@
 
 public readonly struct ModIOFile
 {
-    public int ModId { get; }
+    public int ModID { get; }
 
-    public int? FileId { get; }
+    public int? FileID { get; }
 
-    public ModIOFile(int modId, int? fileId = null)
+    public ModIOFile(int modID, int? fileID = null)
     {
-        ModId = modId;
-        FileId = fileId;
+        ModID = modID;
+        FileID = fileID;
     }
 }

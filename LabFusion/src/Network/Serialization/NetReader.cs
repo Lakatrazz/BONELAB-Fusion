@@ -245,6 +245,18 @@ public sealed class NetReader : INetSerializer, IDisposable
         return null;
     }
 
+    public int? ReadInt32Nullable()
+    {
+        var hasValue = ReadBoolean();
+
+        if (hasValue)
+        {
+            return ReadInt32();
+        }
+
+        return null;
+    }
+
     public void SerializeValue(ref byte value) => value = ReadByte();
 
     public void SerializeValue(ref bool value) => value = ReadBoolean();
@@ -280,6 +292,8 @@ public sealed class NetReader : INetSerializer, IDisposable
     public void SerializeValue(ref byte? value) => value = ReadByteNullable();
 
     public void SerializeValue(ref ushort? value) => value = ReadUInt16Nullable();
+
+    public void SerializeValue(ref int? value) => value = ReadInt32Nullable();
 
     public void Dispose()
     {

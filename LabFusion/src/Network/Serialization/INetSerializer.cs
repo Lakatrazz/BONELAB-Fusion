@@ -38,5 +38,7 @@ public interface INetSerializer
 
     void SerializeValue(ref byte? value);
 
+    void SerializeValue(ref int? value);
+
     void SerializeValue(ref ushort? value);
 }

@@ -54,18 +54,18 @@ public static class ModIODownloader
     public static ModTransaction GetTransaction(int modId)
     {
         // Check if the current transaction is for this mod
-        if (IsDownloading && CurrentTransaction.ModFile.ModId == modId)
+        if (IsDownloading && CurrentTransaction.ModFile.ModID == modId)
         {
             return CurrentTransaction;
         }
 
         // Look through queued transactions
-        return QueuedTransactions.FirstOrDefault((transaction) => transaction.ModFile.ModId == modId);
+        return QueuedTransactions.FirstOrDefault((transaction) => transaction.ModFile.ModID == modId);
     }
 
     public static void EnqueueDownload(ModTransaction transaction)
     {
-        var existingTransaction = GetTransaction(transaction.ModFile.ModId);
+        var existingTransaction = GetTransaction(transaction.ModFile.ModID);
 
         // If this mod is already being downloaded, just forward the download to the existing transaction
         if (existingTransaction != null)
@@ -87,17 +87,17 @@ public static class ModIODownloader
         // Validate the mod file
         ModIOFile modFile = transaction.ModFile;
 
-        if (!modFile.FileId.HasValue)
+        if (!modFile.FileID.HasValue)
         {
             // Request the latest file id
-            ModIOManager.GetMod(modFile.ModId, OnRequestedMod);
+            ModIOManager.GetMod(modFile.ModID, OnRequestedMod);
 
             void OnRequestedMod(ModCallbackInfo info)
             {
                 // Check if the mod request failed
                 if (info.result != ModResult.SUCCEEDED)
                 {
-                    FusionLogger.Warn($"Failed getting a mod file for mod {modFile.ModId}, cancelling download!");
+                    FusionLogger.Warn($"Failed getting a mod file for mod {modFile.ModID}, cancelling download!");
 
                     FailDownload();
                     return;
@@ -126,7 +126,7 @@ public static class ModIODownloader
 
                 if (!platform.HasValue)
                 {
-                    FusionLogger.Warn($"Tried beginning download for mod {modFile.ModId}, but it had no valid platforms!");
+                    FusionLogger.Warn($"Tried beginning download for mod {modFile.ModID}, but it had no valid platforms!");
 
                     FailDownload();
                     return;
@@ -144,7 +144,7 @@ public static class ModIODownloader
 
         void OnReceivedFile(ModIOFile modFile)
         {
-            string url = ModIOSettings.FormatDownloadPath(modFile.ModId, modFile.FileId.Value);
+            string url = ModIOSettings.FormatDownloadPath(modFile.ModID, modFile.FileID.Value);
             ModIOSettings.LoadToken(OnTokenLoaded);
 
             void OnTokenLoaded(string token)
@@ -218,7 +218,7 @@ public static class ModIODownloader
 
         if (maxBytes.HasValue && contentLength > maxBytes.Value)
         {
-            FusionLogger.Warn($"Skipped download of mod {modFile.ModId} due to the file size being too large.");
+            FusionLogger.Warn($"Skipped download of mod {modFile.ModID} due to the file size being too large.");
 
             FailDownload();
 
@@ -226,7 +226,7 @@ public static class ModIODownloader
         }
 
         // Install the content into a zip file
-        var zipPath = ModDownloadManager.DownloadPath + $"/m{modFile.ModId}f{modFile.FileId}.zip";
+        var zipPath = ModDownloadManager.DownloadPath + $"/m{modFile.ModID}f{modFile.FileID}.zip";
 
         // Make sure this using statement ends before we load the pallet, so that the file is not in use
         using (var copyStream = new FileStream(zipPath, FileMode.Create))

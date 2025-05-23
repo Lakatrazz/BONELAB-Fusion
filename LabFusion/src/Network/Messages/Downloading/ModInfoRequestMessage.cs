@@ -1,7 +1,7 @@
 ﻿using Il2CppSLZ.Marrow.Warehouse;
 
-using LabFusion.Data;
 using LabFusion.Downloading.ModIO;
+using LabFusion.Extensions;
 using LabFusion.Marrow;
 using LabFusion.Network.Serialization;
 using LabFusion.Player;
@@ -10,24 +10,24 @@ namespace LabFusion.Network;
 
 public class ModInfoRequestData : INetSerializable
 {
-    public const int Size = sizeof(byte) * 2 + sizeof(uint);
+    public int? GetSize() => Barcode.GetSize() + sizeof(uint);
 
-    public string barcode;
+    public string Barcode;
 
-    public uint trackerId;
+    public uint TrackerID;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref barcode);
-        serializer.SerializeValue(ref trackerId);
+        serializer.SerializeValue(ref Barcode);
+        serializer.SerializeValue(ref TrackerID);
     }
 
-    public static ModInfoRequestData Create(string barcode, uint trackerId)
+    public static ModInfoRequestData Create(string barcode, uint trackerID)
     {
         return new ModInfoRequestData()
         {
-            barcode = barcode,
-            trackerId = trackerId,
+            Barcode = barcode,
+            TrackerID = trackerID,
         };
     }
 }
@@ -48,7 +48,7 @@ public class ModInfoRequestMessage : NativeMessageHandler
         }
 
         // Get the crate from the barcode
-        var crate = CrateFilterer.GetCrate<Crate>(new(data.barcode));
+        var crate = CrateFilterer.GetCrate<Crate>(new(data.Barcode));
 
         if (crate == null)
         {
@@ -72,7 +72,7 @@ public class ModInfoRequestMessage : NativeMessageHandler
         }
 
         var modListing = manifest.ModListing;
-
+        
         var modTarget = ModIOManager.GetTargetFromListing(modListing);
 
         if (modTarget == null)
@@ -83,7 +83,7 @@ public class ModInfoRequestMessage : NativeMessageHandler
         // Write and send response
         var modFile = new SerializedModIOFile(new ModIOFile((int)modTarget.ModId, (int)modTarget.ModfileId));
 
-        var writtenData = ModInfoResponseData.Create(modFile, data.trackerId);
+        var writtenData = ModInfoResponseData.Create(modFile, data.TrackerID);
 
         MessageRelay.RelayNative(writtenData, NativeMessageTag.ModInfoResponse, NetworkChannel.Reliable, RelayType.ToTarget, received.Sender.Value);
     }

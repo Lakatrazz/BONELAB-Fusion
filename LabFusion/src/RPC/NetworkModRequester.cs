@@ -15,8 +15,9 @@ public static class NetworkModRequester
 {
     public struct ModCallbackInfo
     {
-        public ModIOFile modFile;
-        public bool hasFile;
+        public ModIOFile ModFile;
+        public bool HasFile;
+        public string Platform;
     }
 
     public struct ModRequestInfo
@@ -100,7 +101,7 @@ public static class NetworkModRequester
         {
             receivedCallback = true;
 
-            if (!info.hasFile)
+            if (!info.HasFile)
             {
 #if DEBUG
                 FusionLogger.Warn("Mod info did not have a file, cancelling download.");
@@ -122,7 +123,7 @@ public static class NetworkModRequester
 
             ModIODownloader.EnqueueDownload(new ModTransaction()
             {
-                ModFile = info.modFile,
+                ModFile = info.ModFile,
                 Temporary = temporary,
                 Callback = installInfo.finishDownloadCallback,
                 MaxBytes = installInfo.maxBytes,
@@ -141,7 +142,11 @@ public static class NetworkModRequester
         }
 
         // Send the request to the server
-        var data = ModInfoRequestData.Create(info.barcode, trackerId);
+        var data = new ModInfoRequestData()
+        {
+            Barcode = info.barcode,
+            TrackerID = trackerId,
+        };
 
         MessageRelay.RelayNative(data, NativeMessageTag.ModInfoRequest, NetworkChannel.Reliable, RelayType.ToTarget, info.target);
     }

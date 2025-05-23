@@ -67,7 +67,7 @@ public static class LevelDownloaderManager
     {
         _initializedDownloadUI = false;
         _downloadingLevel = true;
-        _downloadingFile = info.modFile;
+        _downloadingFile = info.ModFile;
 
         NetworkSceneManager.Purgatory = true;
 
@@ -147,9 +147,9 @@ public static class LevelDownloaderManager
 
         ui.LevelIcon.texture = levelIcon;
 
-        if (_downloadingFile.ModId != -1)
+        if (_downloadingFile.ModID != -1)
         {
-            ModIOThumbnailDownloader.GetThumbnail(_downloadingFile.ModId, (texture) =>
+            ModIOThumbnailDownloader.GetThumbnail(_downloadingFile.ModID, (texture) =>
             {
                 ui.LevelIcon.texture = texture;
             });

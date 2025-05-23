@@ -1,5 +1,4 @@
-﻿using LabFusion.Data;
-using LabFusion.Downloading.ModIO;
+﻿using LabFusion.Downloading.ModIO;
 using LabFusion.Network.Serialization;
 using LabFusion.Player;
 using LabFusion.RPC;
@@ -10,22 +9,22 @@ public class ModInfoResponseData : INetSerializable
 {
     public const int Size = sizeof(byte) * 2 + sizeof(uint);
 
-    public SerializedModIOFile modFile;
+    public SerializedModIOFile ModFile;
 
-    public uint trackerId;
+    public uint TrackerID;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref modFile);
-        serializer.SerializeValue(ref trackerId);
+        serializer.SerializeValue(ref ModFile);
+        serializer.SerializeValue(ref TrackerID);
     }
 
-    public static ModInfoResponseData Create(SerializedModIOFile modFile, uint trackerId)
+    public static ModInfoResponseData Create(SerializedModIOFile modFile, uint trackerID)
     {
         return new ModInfoResponseData()
         {
-            modFile = modFile,
-            trackerId = trackerId,
+            ModFile = modFile,
+            TrackerID = trackerID,
         };
     }
 }
@@ -46,10 +45,11 @@ public class ModInfoResponseMessage : NativeMessageHandler
         }
 
         // Run the callback
-        NetworkModRequester.OnResponseReceived(data.trackerId, new NetworkModRequester.ModCallbackInfo()
+        NetworkModRequester.OnResponseReceived(data.TrackerID, new NetworkModRequester.ModCallbackInfo()
         {
-            modFile = data.modFile.File,
-            hasFile = data.modFile.HasFile,
-        });
+            ModFile = data.ModFile.File,
+            HasFile = data.ModFile.HasFile,
+            Platform = data.ModFile.Platform,
+        });;
     }
 }

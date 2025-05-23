@@ -193,8 +193,8 @@ public static class ModDownloadManager
         var modIoModTarget = new ModIOModTarget()
         {
             GameId = ModIOSettings.GameId,
-            ModId = modFile.ModId,
-            ModfileId = modFile.FileId.Value,
+            ModId = modFile.ModID,
+            ModfileId = modFile.FileID.Value,
         };
         targets.Add(ModIOManager.GetActivePlatform(), modIoModTarget);
 

@@ -201,6 +201,16 @@ public sealed class NetWriter : INetSerializer, IDisposable
         }
     }
 
+    public void Write(int? value)
+    {
+        Write(value.HasValue);
+
+        if (value.HasValue)
+        {
+            Write(value.Value);
+        }
+    }
+
     public void SerializeValue(ref byte value) => Write(value);
 
     public void SerializeValue(ref bool value) => Write(value);
@@ -236,6 +246,8 @@ public sealed class NetWriter : INetSerializer, IDisposable
     public void SerializeValue(ref byte? value) => Write(value);
 
     public void SerializeValue(ref ushort? value) => Write(value);
+
+    public void SerializeValue(ref int? value) => Write(value);
 
     public void Dispose()
     {
