@@ -13,11 +13,28 @@ public class BonelabModule : Module
 
     protected override void OnModuleRegistered()
     {
-        ModuleMessageHandler.RegisterHandler<RandomObjectMessage>();
-        ModuleMessageHandler.RegisterHandler<SimpleGripEventMessage>();
-        ModuleMessageHandler.RegisterHandler<FlashlightToggleMessage>();
+        ModuleMessageHandler.RegisterHandler<ArenaMenuMessage>();
+        ModuleMessageHandler.RegisterHandler<ArenaTransitionMessage>();
+        ModuleMessageHandler.RegisterHandler<ChallengeSelectMessage>();
+        ModuleMessageHandler.RegisterHandler<GeoSelectMessage>();
+
         ModuleMessageHandler.RegisterHandler<BonelabHubEventMessage>();
         ModuleMessageHandler.RegisterHandler<DescentElevatorMessage>();
+        ModuleMessageHandler.RegisterHandler<DescentIntroMessage>();
+        ModuleMessageHandler.RegisterHandler<DescentNooseMessage>();
+        ModuleMessageHandler.RegisterHandler<HomeEventMessage>();
+        ModuleMessageHandler.RegisterHandler<KartRaceEventMessage>();
+        ModuleMessageHandler.RegisterHandler<MagmaGateEventMessage>();
+        ModuleMessageHandler.RegisterHandler<MineDiveCartMessage>();
+
+        ModuleMessageHandler.RegisterHandler<BaseGameControllerMessage>();
+        ModuleMessageHandler.RegisterHandler<HolodeckEventMessage>();
+        ModuleMessageHandler.RegisterHandler<TimeTrialGameControllerMessage>();
+        ModuleMessageHandler.RegisterHandler<TrialSpawnerEventsMessage>();
+
+        ModuleMessageHandler.RegisterHandler<FlashlightToggleMessage>();
+        ModuleMessageHandler.RegisterHandler<RandomObjectMessage>();
+        ModuleMessageHandler.RegisterHandler<SimpleGripEventMessage>();
     }
 
     protected override void OnModuleUnregistered()

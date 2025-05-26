@@ -4,10 +4,12 @@ using LabFusion.Network;
 using LabFusion.Data;
 using LabFusion.Marrow;
 using LabFusion.Utilities;
+using LabFusion.Bonelab.Messages;
+using LabFusion.Scene;
 
 using Il2CppSLZ.Bonelab;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Bonelab.Patching;
 
 [HarmonyPatch(typeof(Trial_SpawnerEvents))]
 public static class Trial_SpawnerEventsPatches
@@ -49,18 +51,16 @@ public static class Trial_SpawnerEventsPatches
             return true;
         }
 
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }
 
-        if (NetworkInfo.IsHost)
+        if (NetworkSceneManager.IsLevelHost)
         {
             var hashData = HashTable.GetDataFromComponent(__instance);
 
-            var data = TrialSpawnerEventsData.Create(hashData);
-
-            MessageRelay.RelayNative(data, NativeMessageTag.TrialSpawnerEvents, NetworkChannel.Reliable, RelayType.ToClients);
+            MessageRelay.RelayModule<TrialSpawnerEventsMessage, TrialSpawnerEventsData>(new() { HashData = hashData }, NetworkChannel.Reliable, RelayType.ToClients);
         }
 
         return false;

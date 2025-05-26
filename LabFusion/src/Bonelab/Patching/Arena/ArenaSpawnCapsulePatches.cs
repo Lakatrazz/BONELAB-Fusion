@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using HarmonyLib;
+﻿using HarmonyLib;
 
 using Il2CppSLZ.Bonelab;
 
-using LabFusion.Network;
 using LabFusion.RPC;
+using LabFusion.Scene;
 
 using UnityEngine;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Bonelab.Patching;
 
 [HarmonyPatch(typeof(Arena_SpawnCapsule._CoLaunchSequenceArena_d__9))]
 public static class SpawnCapsuleLaunchSequencePatches
@@ -22,14 +16,14 @@ public static class SpawnCapsuleLaunchSequencePatches
     [HarmonyPatch(nameof(Arena_SpawnCapsule._CoLaunchSequenceArena_d__9.MoveNext))]
     public static bool MoveNext(Arena_SpawnCapsule._CoLaunchSequenceArena_d__9 __instance)
     {
-        // Make sure we have a server
-        if (!NetworkInfo.HasServer)
+        // Make sure the level is networked
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }
 
-        // If we aren't the host, don't allow a spawn
-        if (!NetworkInfo.IsHost)
+        // If we aren't the level host, don't allow a spawn
+        if (!NetworkSceneManager.IsLevelHost)
         {
             return false;
         }

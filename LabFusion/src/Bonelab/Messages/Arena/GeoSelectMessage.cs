@@ -1,37 +1,31 @@
 ﻿using LabFusion.Data;
 using LabFusion.Network.Serialization;
-using LabFusion.Patching;
+using LabFusion.Bonelab.Patching;
+using LabFusion.Network;
+using LabFusion.SDK.Modules;
+using LabFusion.Utilities;
 
-namespace LabFusion.Network;
+namespace LabFusion.Bonelab.Messages;
 
 public class GeoSelectData : INetSerializable
 {
-    public byte geoIndex;
+    public byte GeoIndex;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref geoIndex);
-    }
-
-    public static GeoSelectData Create(byte geoIndex)
-    {
-        return new GeoSelectData()
-        {
-            geoIndex = geoIndex,
-        };
+        serializer.SerializeValue(ref GeoIndex);
     }
 }
 
 [Net.DelayWhileTargetLoading]
-public class GeoSelectMessage : NativeMessageHandler
+public class GeoSelectMessage : ModuleMessageHandler
 {
-    public override byte Tag => NativeMessageTag.GeoSelect;
-
     public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<GeoSelectData>();
+
         var manager = ArenaData.GeoManager;
 
         if (!manager)
@@ -41,8 +35,15 @@ public class GeoSelectMessage : NativeMessageHandler
 
         GeoManagerPatches.IgnorePatches = true;
 
-        manager.ClearCurrentGeo();
-        manager.ToggleGeo(data.geoIndex);
+        try
+        {
+            manager.ClearCurrentGeo();
+            manager.ToggleGeo(data.GeoIndex);
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("handling GeoSelectMessage", e);
+        }
 
         GeoManagerPatches.IgnorePatches = false;
     }

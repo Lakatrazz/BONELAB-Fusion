@@ -1,8 +1,11 @@
 ﻿using LabFusion.Data;
 using LabFusion.Network.Serialization;
-using LabFusion.Patching;
+using LabFusion.Bonelab.Patching;
+using LabFusion.Network;
+using LabFusion.SDK.Modules;
+using LabFusion.Utilities;
 
-namespace LabFusion.Network;
+namespace LabFusion.Bonelab.Messages;
 
 public enum HomeEventType
 {
@@ -18,30 +21,19 @@ public enum HomeEventType
 
 public class HomeEventData : INetSerializable
 {
-    public byte selectionNumber;
-    public HomeEventType type;
+    public byte SelectionNumber;
+    public HomeEventType Type;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref selectionNumber);
-        serializer.SerializeValue(ref type, Precision.OneByte);
-    }
-
-    public static HomeEventData Create(byte selectionNumber, HomeEventType type)
-    {
-        return new HomeEventData()
-        {
-            selectionNumber = selectionNumber,
-            type = type,
-        };
+        serializer.SerializeValue(ref SelectionNumber);
+        serializer.SerializeValue(ref Type, Precision.OneByte);
     }
 }
 
 [Net.DelayWhileTargetLoading]
-public class HomeEventMessage : NativeMessageHandler
+public class HomeEventMessage : ModuleMessageHandler
 {
-    public override byte Tag => NativeMessageTag.HomeEvent;
-
     public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
 
     protected override void OnHandleMessage(ReceivedMessage received)
@@ -50,12 +42,17 @@ public class HomeEventMessage : NativeMessageHandler
 
         var controller = HomeData.GameController;
 
-        HomePatches.IgnorePatches = true;
+        if (!controller)
+        {
+            return;
+        }
+
+        GameControl_OutroPatches.IgnorePatches = true;
         TaxiControllerPatches.IgnorePatches = true;
 
-        if (controller)
+        try
         {
-            switch (data.type)
+            switch (data.Type)
             {
                 default:
                 case HomeEventType.UNKNOWN:
@@ -85,8 +82,12 @@ public class HomeEventMessage : NativeMessageHandler
                     break;
             }
         }
+        catch (Exception e) 
+        {
+            FusionLogger.LogException("handling HomeMessage", e);
+        }
 
-        HomePatches.IgnorePatches = false;
+        GameControl_OutroPatches.IgnorePatches = false;
         TaxiControllerPatches.IgnorePatches = false;
     }
 }

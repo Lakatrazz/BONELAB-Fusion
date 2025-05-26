@@ -1,8 +1,10 @@
-﻿using LabFusion.Patching;
+﻿using LabFusion.Bonelab.Patching;
 using LabFusion.Network.Serialization;
 using LabFusion.Data;
+using LabFusion.SDK.Modules;
+using LabFusion.Network;
 
-namespace LabFusion.Network;
+namespace LabFusion.Bonelab.Messages;
 
 public class TrialSpawnerEventsData : INetSerializable
 {
@@ -12,21 +14,11 @@ public class TrialSpawnerEventsData : INetSerializable
     {
         serializer.SerializeValue(ref HashData);
     }
-
-    public static TrialSpawnerEventsData Create(ComponentHashData hashData)
-    {
-        return new TrialSpawnerEventsData()
-        {
-            HashData = hashData,
-        };
-    }
 }
 
 [Net.DelayWhileTargetLoading]
-public class TrialSpawnerEventsMessage : NativeMessageHandler
+public class TrialSpawnerEventsMessage : ModuleMessageHandler
 {
-    public override byte Tag => NativeMessageTag.TrialSpawnerEvents;
-
     public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
 
     protected override void OnHandleMessage(ReceivedMessage received)

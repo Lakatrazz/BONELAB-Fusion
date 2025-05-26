@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 using MelonLoader;
+using LabFusion.Bonelab.Messages;
 
 namespace LabFusion.Data;
 
@@ -67,9 +68,7 @@ public class MineDiveData : LevelDataHandler
             return;
         }
 
-        var data = MineDiveCartData.Create(_cartAmount);
-
-        MessageRelay.RelayNative(data, NativeMessageTag.MineDiveCart, NetworkChannel.Reliable, RelayType.ToTarget, playerId.SmallId);
+        MessageRelay.RelayModule<MineDiveCartMessage, MineDiveCartData>(new MineDiveCartData() { Amount = _cartAmount }, NetworkChannel.Reliable, RelayType.ToTarget, playerId.SmallId);
     }
 
     private static void GetCartReferences()
@@ -157,9 +156,7 @@ public class MineDiveData : LevelDataHandler
 
         CreateExtraCarts(_cartAmount);
 
-        var data = MineDiveCartData.Create(_cartAmount);
-
-        MessageRelay.RelayNative(data, NativeMessageTag.MineDiveCart, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<MineDiveCartMessage, MineDiveCartData>(new MineDiveCartData() { Amount = _cartAmount }, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 
     public static void CreateExtraCarts(int amount)

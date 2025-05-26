@@ -52,19 +52,10 @@ public static class NativeMessageTag
 
         ObjectDestructibleDestroy = 32,
 
-        ArenaTransition = 33,
-        ChallengeSelect = 34,
-        ArenaMenu = 35,
-        GeoSelect = 36,
-
-        MagmaGateEvent = 40,
-
         BodyLogEffect = 42,
 
         PlayerSettings = 44,
         ServerSettings = 45,
-
-        KartRaceEvent = 46,
 
         KeySlot = 48,
 
@@ -78,8 +69,6 @@ public static class NativeMessageTag
 
         BoardGenerator = 54,
 
-        HomeEvent = 55,
-
         CrateSpawner = 56,
 
         TimeScale = 57,
@@ -88,16 +77,11 @@ public static class NativeMessageTag
         PlayerMetadataRequest = 59,
         PlayerMetadataResponse = 60,
 
-        TrialSpawnerEvents = 61,
-
         LevelRequest = 62,
 
         BodyLogToggle = 63,
 
         PlayerRepDamage = 64,
-
-        TimeTrial_GameController = 65,
-        BaseGameController = 66,
 
         PlayerVoiceChat = 67,
 
@@ -105,11 +89,7 @@ public static class NativeMessageTag
 
         PlayerRepTeleport = 69,
 
-        HolodeckEvent = 71,
-
         SpawnGunSelect = 72,
-
-        MineDiveCart = 73,
 
         MagazineClaim = 76,
 

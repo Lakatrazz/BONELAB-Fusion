@@ -1,38 +1,29 @@
 ﻿using LabFusion.Data;
-using LabFusion.Exceptions;
+using LabFusion.Network;
 using LabFusion.Network.Serialization;
+using LabFusion.SDK.Modules;
 
-namespace LabFusion.Network;
+namespace LabFusion.Bonelab.Messages;
 
 public class MineDiveCartData : INetSerializable
 {
-    public int amount;
+    public int Amount;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref amount);
-    }
-
-    public static MineDiveCartData Create(int amount)
-    {
-        return new MineDiveCartData()
-        {
-            amount = amount,
-        };
+        serializer.SerializeValue(ref Amount);
     }
 }
 
 [Net.DelayWhileTargetLoading]
-public class MineDiveCartMessage : NativeMessageHandler
+public class MineDiveCartMessage : ModuleMessageHandler
 {
-    public override byte Tag => NativeMessageTag.MineDiveCart;
-
     public override ExpectedReceiverType ExpectedReceiver => ExpectedReceiverType.ClientsOnly;
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<MineDiveCartData>();
 
-        MineDiveData.CreateExtraCarts(data.amount);
+        MineDiveData.CreateExtraCarts(data.Amount);
     }
 }
