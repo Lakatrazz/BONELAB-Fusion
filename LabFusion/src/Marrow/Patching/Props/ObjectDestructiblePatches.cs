@@ -1,8 +1,9 @@
 ﻿using HarmonyLib;
 
 using LabFusion.Network;
-using LabFusion.Entities;
 using LabFusion.RPC;
+using LabFusion.Marrow.Extenders;
+using LabFusion.Marrow.Messages;
 
 using Il2CppSLZ.Marrow.Data;
 using Il2CppSLZ.Marrow;
@@ -10,7 +11,7 @@ using Il2CppSLZ.Marrow;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Marrow.Patching;
 
 [HarmonyPatch(typeof(ObjectDestructible))]
 public static class ObjectDestructiblePatches
@@ -75,7 +76,7 @@ public static class ObjectDestructiblePatches
         {
             var data = ComponentIndexData.Create(entity.Id, extender.GetIndex(destructible).Value);
 
-            MessageRelay.RelayNative(data, NativeMessageTag.ObjectDestructibleDestroy, NetworkChannel.Reliable, RelayType.ToOtherClients);
+            MessageRelay.RelayModule<ObjectDestructibleDestroyMessage, ComponentIndexData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
     }
 

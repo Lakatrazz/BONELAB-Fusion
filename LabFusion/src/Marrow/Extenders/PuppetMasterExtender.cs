@@ -1,10 +1,12 @@
 ﻿using LabFusion.Utilities;
 using LabFusion.Player;
 using LabFusion.Network;
+using LabFusion.Entities;
+using LabFusion.Marrow.Messages;
 
 using Il2CppSLZ.Marrow.PuppetMasta;
 
-namespace LabFusion.Entities;
+namespace LabFusion.Marrow.Extenders;
 
 public class PuppetMasterExtender : EntityComponentExtender<PuppetMaster>
 {
@@ -64,7 +66,7 @@ public class PuppetMasterExtender : EntityComponentExtender<PuppetMaster>
         {
             var data = new NetworkEntityReference(entity);
 
-            MessageRelay.RelayNative(data, NativeMessageTag.PuppetMasterKill, NetworkChannel.Reliable, RelayType.ToTarget, player.SmallId);
+            MessageRelay.RelayModule<PuppetMasterKillMessage, NetworkEntityReference>(data, NetworkChannel.Reliable, RelayType.ToTarget, player.SmallId);
         }
     }
 }

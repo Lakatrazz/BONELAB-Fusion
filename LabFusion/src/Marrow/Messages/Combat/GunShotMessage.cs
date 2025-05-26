@@ -1,8 +1,10 @@
 ﻿using LabFusion.Entities;
 using LabFusion.Marrow.Patching;
 using LabFusion.Network.Serialization;
+using LabFusion.SDK.Modules;
+using LabFusion.Network;
 
-namespace LabFusion.Network;
+namespace LabFusion.Marrow.Messages;
 
 public class GunShotData : INetSerializable
 {
@@ -31,10 +33,8 @@ public class GunShotData : INetSerializable
 }
 
 [Net.SkipHandleWhileLoading]
-public class GunShotMessage : NativeMessageHandler
+public class GunShotMessage : ModuleMessageHandler
 {
-    public override byte Tag => NativeMessageTag.GunShot;
-
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<GunShotData>();

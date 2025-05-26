@@ -2,8 +2,9 @@
 
 using LabFusion.Network;
 using LabFusion.Utilities;
-using LabFusion.Player;
+using LabFusion.Marrow.Messages;
 using LabFusion.Entities;
+using LabFusion.Scene;
 
 using Il2CppSLZ.Marrow;
 
@@ -40,7 +41,7 @@ public static class GunPatches
             return true;
         }
 
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }
@@ -112,7 +113,7 @@ public static class GunPatches
 
                 var data = GunShotData.Create(ammoCount, gunEntity.Id, (byte)gunExtender.GetIndex(__instance).Value);
 
-                MessageRelay.RelayNative(data, NativeMessageTag.GunShot, NetworkChannel.Reliable, RelayType.ToOtherClients);
+                MessageRelay.RelayModule<GunShotMessage, GunShotData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
             }
         }
         catch (Exception e)

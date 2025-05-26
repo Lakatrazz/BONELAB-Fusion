@@ -1,12 +1,12 @@
 ﻿using LabFusion.Network;
-using LabFusion.Entities;
+using LabFusion.Marrow.Extenders;
 
 using Il2CppSLZ.Marrow.PuppetMasta;
 using Il2CppSLZ.Marrow.Combat;
 
 using HarmonyLib;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Marrow.Patching;
 
 [HarmonyPatch(typeof(SubBehaviourHealth))]
 public static class SubBehaviourHealthPatches

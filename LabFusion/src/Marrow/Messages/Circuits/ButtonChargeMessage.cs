@@ -4,7 +4,7 @@ using LabFusion.SDK.Modules;
 using LabFusion.Marrow.Extenders;
 using LabFusion.Network.Serialization;
 
-namespace LabFusion.Marrow;
+namespace LabFusion.Marrow.Messages;
 
 public class ButtonChargeData : INetSerializable
 {

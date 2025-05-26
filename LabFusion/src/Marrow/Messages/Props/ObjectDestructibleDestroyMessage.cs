@@ -1,15 +1,16 @@
-﻿using LabFusion.Patching;
+﻿using LabFusion.Marrow.Patching;
+using LabFusion.Marrow.Extenders;
 using LabFusion.Extensions;
 using LabFusion.Entities;
 using LabFusion.Utilities;
+using LabFusion.SDK.Modules;
+using LabFusion.Network;
 
-namespace LabFusion.Network;
+namespace LabFusion.Marrow.Messages;
 
 [Net.SkipHandleWhileLoading]
-public class ObjectDestructibleDestroyMessage : NativeMessageHandler
+public class ObjectDestructibleDestroyMessage : ModuleMessageHandler
 {
-    public override byte Tag => NativeMessageTag.ObjectDestructibleDestroy;
-
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<ComponentIndexData>();

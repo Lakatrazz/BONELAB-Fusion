@@ -2,10 +2,12 @@
 
 using LabFusion.Network;
 using LabFusion.Entities;
+using LabFusion.Marrow.Extenders;
+using LabFusion.Marrow.Messages;
 
 using Il2CppSLZ.Marrow.PuppetMasta;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Marrow.Patching;
 
 [HarmonyPatch(typeof(PuppetMaster))]
 public static class PuppetMasterPatches
@@ -33,7 +35,7 @@ public static class PuppetMasterPatches
 
         var data = new NetworkEntityReference(entity);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.PuppetMasterKill, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<PuppetMasterKillMessage, NetworkEntityReference>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
 
         PuppetMasterExtender.LastKilled = entity;
     }

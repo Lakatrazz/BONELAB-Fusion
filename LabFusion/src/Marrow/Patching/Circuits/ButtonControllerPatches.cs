@@ -5,6 +5,7 @@ using Il2CppSLZ.Marrow.Circuits;
 using LabFusion.Marrow.Extenders;
 using LabFusion.Network;
 using LabFusion.Player;
+using LabFusion.Marrow.Messages;
 
 using UnityEngine;
 

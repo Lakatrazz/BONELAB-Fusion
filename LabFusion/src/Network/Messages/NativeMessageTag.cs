@@ -46,12 +46,6 @@ public static class NativeMessageTag
         MagazineInsert = 27,
         MagazineEject = 28,
 
-        GunShot = 29,
-
-        PuppetMasterKill = 30,
-
-        ObjectDestructibleDestroy = 32,
-
         BodyLogEffect = 42,
 
         PlayerSettings = 44,

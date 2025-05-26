@@ -1,14 +1,15 @@
-﻿using LabFusion.Patching;
+﻿using LabFusion.Marrow.Patching;
 using LabFusion.Entities;
 using LabFusion.Utilities;
+using LabFusion.Network;
+using LabFusion.SDK.Modules;
+using LabFusion.Marrow.Extenders;
 
-namespace LabFusion.Network;
+namespace LabFusion.Marrow.Messages;
 
 [Net.SkipHandleWhileLoading]
-public class PuppetMasterKillMessage : NativeMessageHandler
+public class PuppetMasterKillMessage : ModuleMessageHandler
 {
-    public override byte Tag => NativeMessageTag.PuppetMasterKill;
-
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<NetworkEntityReference>();

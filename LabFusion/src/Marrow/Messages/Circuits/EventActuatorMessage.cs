@@ -8,7 +8,7 @@ using Il2CppSLZ.Marrow.Circuits;
 
 using LabFusion.Network.Serialization;
 
-namespace LabFusion.Marrow;
+namespace LabFusion.Marrow.Messages;
 
 public enum EventActuatorType : byte
 {

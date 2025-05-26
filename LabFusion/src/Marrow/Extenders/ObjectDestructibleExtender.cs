@@ -1,10 +1,12 @@
 ﻿using LabFusion.Utilities;
 using LabFusion.Player;
 using LabFusion.Network;
+using LabFusion.Entities;
+using LabFusion.Marrow.Messages;
 
 using Il2CppSLZ.Marrow;
 
-namespace LabFusion.Entities;
+namespace LabFusion.Marrow.Extenders;
 
 public class ObjectDestructibleExtender : EntityComponentArrayExtender<ObjectDestructible>
 {
@@ -49,6 +51,6 @@ public class ObjectDestructibleExtender : EntityComponentArrayExtender<ObjectDes
 
         var data = ComponentIndexData.Create(entity.Id, GetIndex(destructible).Value);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.ObjectDestructibleDestroy, NetworkChannel.Reliable, RelayType.ToTarget, player);
+        MessageRelay.RelayModule<ObjectDestructibleDestroyMessage, ComponentIndexData>(data, NetworkChannel.Reliable, RelayType.ToTarget, player);
     }
 }

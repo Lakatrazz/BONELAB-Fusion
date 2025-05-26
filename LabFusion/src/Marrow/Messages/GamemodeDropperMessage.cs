@@ -4,7 +4,7 @@ using LabFusion.Network.Serialization;
 using LabFusion.Entities;
 using LabFusion.SDK.MonoBehaviours;
 
-namespace LabFusion.Marrow;
+namespace LabFusion.Marrow.Messages;
 
 public class GamemodeDropperData : INetSerializable
 {
