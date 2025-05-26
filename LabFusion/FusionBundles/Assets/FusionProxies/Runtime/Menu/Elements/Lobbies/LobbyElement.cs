@@ -30,6 +30,7 @@ namespace LabFusion.Marrow.Proxies
         }
 
         public RawImage LevelIcon { get; set; } = null;
+        public RawImage GamemodeIcon { get; private set; } = null;
 
         public MenuPage LobbyPage { get; set; } = null;
 
@@ -80,7 +81,10 @@ namespace LabFusion.Marrow.Proxies
 
             var levelInfoGrid = mainPanel.Find("grid_LevelInfo");
 
-            LevelIcon = levelInfoGrid.Find("background_Level/icon_Level").GetComponent<RawImage>();
+            var levelBackground = levelInfoGrid.Find("background_Level");
+
+            LevelIcon = levelBackground.Find("icon_Level").GetComponent<RawImage>();
+            GamemodeIcon = levelBackground.Find("icon_Gamemode").GetComponent<RawImage>();
 
             LevelNameElement = levelInfoGrid.Find("label_LevelName").GetComponent<LabelElement>();
             ServerVersionElement = levelInfoGrid.Find("label_ServerVersion").GetComponent<LabelElement>();

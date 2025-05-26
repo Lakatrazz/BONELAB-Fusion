@@ -9,6 +9,7 @@ using LabFusion.Preferences.Server;
 using LabFusion.Representation;
 using LabFusion.Safety;
 using LabFusion.Scene;
+using LabFusion.SDK.Gamemodes;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 
@@ -76,7 +77,7 @@ public static class MenuLocation
             .WithTitle("Create Server")
             .Do(NetworkHelper.StartServer);
 
-        UpdateLevelIcon(element);
+        UpdateLobbyIcons(element);
 
         OnServerSettingsChanged();
     }
@@ -88,14 +89,15 @@ public static class MenuLocation
             .WithTitle("Disconnect")
             .Do(() => { NetworkHelper.Disconnect(); });
 
-        UpdateLevelIcon(element);
+        UpdateLobbyIcons(element);
 
         OnServerSettingsChanged();
     }
 
-    private static void UpdateLevelIcon(LobbyElement element)
+    private static void UpdateLobbyIcons(LobbyElement element)
     {
         ElementIconHelper.SetLevelIcon(element, FusionSceneManager.Title, CrateFilterer.GetModId(FusionSceneManager.Level.Pallet));
+        ElementIconHelper.SetGamemodeIcon(element, GamemodeManager.ActiveGamemode?.Title);
     }
 
     private static void OnServerSettingsChanged()

@@ -1,5 +1,6 @@
 ﻿using LabFusion.Downloading.ModIO;
 using LabFusion.Marrow.Proxies;
+using UnityEngine.Profiling.Memory.Experimental;
 
 namespace LabFusion.Menu;
 
@@ -86,6 +87,23 @@ public static class ElementIconHelper
                 element.LevelIcon.texture = texture;
             });
         }
+    }
+
+    public static void SetGamemodeIcon(LobbyElement element, string gamemodeTitle)
+    {
+        var gamemodeIcon = MenuResources.GetGamemodeIcon(MenuResources.SandboxIconTitle);
+
+        if (!string.IsNullOrWhiteSpace(gamemodeTitle))
+        {
+            gamemodeIcon = MenuResources.GetGamemodeIcon(gamemodeTitle);
+        }
+
+        if (gamemodeIcon == null)
+        {
+            gamemodeIcon = MenuResources.GetGamemodeIcon(MenuResources.ModsIconTitle);
+        }
+
+        element.GamemodeIcon.texture = gamemodeIcon;
     }
 
     public static void SetLevelResultIcon(LobbyResultElement element, string levelTitle, int modId = -1)

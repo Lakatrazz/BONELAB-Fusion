@@ -530,8 +530,8 @@ public static class MenuMatchmaking
             .WithTitle("More...")
             .Do(() => { element.LobbyPage.SelectSubPage(1); });
 
-        // Apply level icon
         ElementIconHelper.SetLevelIcon(element, info.LobbyInfo.LevelTitle, info.LobbyInfo.LevelModId);
+        ElementIconHelper.SetGamemodeIcon(element, info.LobbyInfo.GamemodeTitle);
 
         // Fill out lists
         // Settings list
