@@ -29,11 +29,16 @@ public static class CatchupManager
         RequestEntityDataCatchup(entity.OwnerID ?? PlayerIDManager.GetHostID(), entityReference);
     }
 
-    public static void RequestEntityDataCatchup(PlayerID ownerId, NetworkEntityReference entityReference)
+    public static void RequestEntityDataCatchup(PlayerID ownerID, NetworkEntityReference entityReference)
     {
+        if (ownerID.IsMe)
+        {
+            return;
+        }
+
         var data = new EntityPlayerData() { PlayerId = PlayerIDManager.LocalSmallID, Entity = entityReference };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.EntityDataRequest, NetworkChannel.Reliable, RelayType.ToTarget, ownerId.SmallID);
+        MessageRelay.RelayNative(data, NativeMessageTag.EntityDataRequest, NetworkChannel.Reliable, RelayType.ToTarget, ownerID.SmallID);
     }
 
     internal static void InvokePlayerServerCatchup(PlayerID playerId) => OnPlayerServerCatchup.InvokeSafe(playerId, "executing OnPlayerCatchup hook");

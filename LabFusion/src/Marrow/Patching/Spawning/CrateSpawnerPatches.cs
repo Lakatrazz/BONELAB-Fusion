@@ -75,7 +75,6 @@ public static class CrateSpawnerPatches
     private static void OnNetworkSpawn(CrateSpawner spawner, NetworkAssetSpawner.SpawnCallbackInfo info, UniTaskCompletionSource<Poolee> source)
     {
         var spawned = info.Spawned;
-        spawner.OnFinishNetworkSpawn(spawned);
 
         var poolee = Poolee.Cache.Get(spawned);
 
@@ -91,11 +90,6 @@ public static class CrateSpawnerPatches
         var spawnedId = info.Entity.ID;
 
         CrateSpawnerMessage.SendCrateSpawnerMessage(spawner, spawnedId);
-
-        info.Entity.OnEntityDataCatchup += (entity, player) =>
-        {
-            CrateSpawnerMessage.SendCrateSpawnerMessage(spawner, entity.ID, player);
-        };
     }
 
     public static void OnFinishNetworkSpawn(this CrateSpawner spawner, GameObject go)

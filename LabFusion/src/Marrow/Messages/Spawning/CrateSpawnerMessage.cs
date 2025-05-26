@@ -79,7 +79,7 @@ public class CrateSpawnerMessage : ModuleMessageHandler
         }
         else
         {
-            MessageRelay.RelayModule<CrateSpawnerMessage, CrateSpawnerData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
+            MessageRelay.RelayModule<CrateSpawnerMessage, CrateSpawnerData>(data, NetworkChannel.Reliable, RelayType.ToClients);
         }
     }
 }
