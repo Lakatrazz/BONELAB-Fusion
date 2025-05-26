@@ -40,7 +40,7 @@ public class PointItemEquipStateMessage : NativeMessageHandler
         {
             var id = PlayerIdManager.GetPlayerId(data.smallId);
 
-            id.Internal_ForceSetEquipped(data.barcode, data.isEquipped);
+            id.ForceSetEquipped(data.barcode, data.isEquipped);
         }
     }
 }
