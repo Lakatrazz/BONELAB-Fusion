@@ -71,7 +71,7 @@ public static class MessageSender
             {
                 unsafe
                 {
-                    NetworkInfo.LastReceivedUser = PlayerIdManager.LocalLongId;
+                    NetworkInfo.LastReceivedUser = PlayerIDManager.LocalPlatformID;
 
                     var readableMessage = new ReadableMessage()
                     {
@@ -106,7 +106,7 @@ public static class MessageSender
             {
                 unsafe
                 {
-                    NetworkInfo.LastReceivedUser = PlayerIdManager.LocalLongId;
+                    NetworkInfo.LastReceivedUser = PlayerIDManager.LocalPlatformID;
 
                     var readableMessage = new ReadableMessage()
                     {
@@ -138,11 +138,11 @@ public static class MessageSender
             NetworkLayerManager.Layer.BroadcastMessageExcept(userId, channel, message, ignoreHost);
 
             // Backup incase the message cannot be sent to the host, which this targets.
-            if (!ignoreHost && userId != PlayerIdManager.LocalSmallId && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsHost)
+            if (!ignoreHost && userId != PlayerIDManager.LocalSmallID && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsHost)
             {
                 unsafe
                 {
-                    NetworkInfo.LastReceivedUser = PlayerIdManager.LocalLongId;
+                    NetworkInfo.LastReceivedUser = PlayerIDManager.LocalPlatformID;
 
                     var readableMessage = new ReadableMessage()
                     {
@@ -174,11 +174,11 @@ public static class MessageSender
             NetworkLayerManager.Layer.BroadcastMessageExcept(userId, channel, message, ignoreHost);
 
             // Backup incase the message cannot be sent to the host, which this targets.
-            if (!ignoreHost && userId != PlayerIdManager.LocalLongId && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsHost)
+            if (!ignoreHost && userId != PlayerIDManager.LocalPlatformID && !NetworkInfo.ServerCanSendToHost && NetworkInfo.IsHost)
             {
                 unsafe
                 {
-                    NetworkInfo.LastReceivedUser = PlayerIdManager.LocalLongId;
+                    NetworkInfo.LastReceivedUser = PlayerIDManager.LocalPlatformID;
 
                     var readableMessage = new ReadableMessage()
                     {

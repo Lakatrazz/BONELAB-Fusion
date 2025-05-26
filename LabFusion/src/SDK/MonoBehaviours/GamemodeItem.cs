@@ -327,7 +327,7 @@ public class GamemodeItem : MonoBehaviour
         {
             NetworkAssetSpawner.Despawn(new NetworkAssetSpawner.DespawnRequestInfo()
             {
-                EntityId = _entity.Id,
+                EntityId = _entity.ID,
                 DespawnEffect = HasBeenInteracted,
             });
         }
@@ -348,7 +348,7 @@ public class GamemodeItem : MonoBehaviour
         {
             NetworkAssetSpawner.Despawn(new NetworkAssetSpawner.DespawnRequestInfo()
             {
-                EntityId = _entity.Id,
+                EntityId = _entity.ID,
                 DespawnEffect = true,
             });
         }
@@ -472,7 +472,7 @@ public class GamemodeItem : MonoBehaviour
     {
         NetworkAssetSpawner.Despawn(new NetworkAssetSpawner.DespawnRequestInfo()
         {
-            EntityId = _entity.Id,
+            EntityId = _entity.ID,
             DespawnEffect = true,
         });
 

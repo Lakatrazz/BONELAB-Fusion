@@ -74,7 +74,7 @@ public static class ObjectDestructiblePatches
         // Send object destroy
         if (entity.IsOwner)
         {
-            var data = ComponentIndexData.Create(entity.Id, extender.GetIndex(destructible).Value);
+            var data = ComponentIndexData.Create(entity.ID, extender.GetIndex(destructible).Value);
 
             MessageRelay.RelayModule<ObjectDestructibleDestroyMessage, ComponentIndexData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }

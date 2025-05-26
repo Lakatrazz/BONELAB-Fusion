@@ -45,7 +45,7 @@ public class PlayerVoiceChatMessage : NativeMessageHandler
         }
 
         // Read the voice chat
-        var id = PlayerIdManager.GetPlayerId(data.smallId);
+        var id = PlayerIDManager.GetPlayerID(data.smallId);
 
         if (id != null)
         {

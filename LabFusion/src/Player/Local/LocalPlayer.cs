@@ -68,7 +68,7 @@ public static class LocalPlayer
     {
         Metadata.Metadata.ForceSetLocalMetadata(key, value);
 
-        var localId = PlayerIdManager.LocalId;
+        var localId = PlayerIDManager.LocalID;
 
         localId?.Metadata.Metadata.TrySetMetadata(key, value);
 
@@ -79,7 +79,7 @@ public static class LocalPlayer
     {
         Metadata.Metadata.ForceRemoveLocalMetadata(key);
 
-        var localId = PlayerIdManager.LocalId;
+        var localId = PlayerIDManager.LocalID;
 
         localId?.Metadata.Metadata.TryRemoveMetadata(key);
 
@@ -102,7 +102,7 @@ public static class LocalPlayer
             return null;
         }
 
-        if (NetworkPlayerManager.TryGetPlayer(PlayerIdManager.LocalId, out var player))
+        if (NetworkPlayerManager.TryGetPlayer(PlayerIDManager.LocalID, out var player))
         {
             return player;
         }

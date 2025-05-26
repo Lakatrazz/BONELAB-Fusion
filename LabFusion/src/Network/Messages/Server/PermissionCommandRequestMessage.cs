@@ -49,20 +49,20 @@ public class PermissionCommandRequestMessage : NativeMessageHandler
         var data = received.ReadData<PermissionCommandRequestData>();
 
         // Get the user
-        PlayerId playerId = PlayerIdManager.GetPlayerId(data.smallId);
+        PlayerID playerId = PlayerIDManager.GetPlayerID(data.smallId);
 
         // Check for spoofing
-        if (NetworkInfo.IsSpoofed(playerId.LongId))
+        if (NetworkInfo.IsSpoofed(playerId.PlatformID))
         {
             return;
         }
 
         // Get the user's permissions
-        PlayerId otherPlayer = null;
+        PlayerID otherPlayer = null;
 
         if (data.otherPlayer.HasValue)
         {
-            otherPlayer = PlayerIdManager.GetPlayerId(data.otherPlayer.Value);
+            otherPlayer = PlayerIDManager.GetPlayerID(data.otherPlayer.Value);
         }
 
         FusionPermissions.FetchPermissionLevel(playerId, out var level, out _);

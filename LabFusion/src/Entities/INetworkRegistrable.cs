@@ -8,9 +8,9 @@ namespace LabFusion.Entities;
 
 public interface INetworkRegistrable
 {
-    ushort Id { get; }
+    ushort ID { get; }
 
-    ushort QueueId { get; }
+    ushort QueueID { get; }
 
     bool IsRegistered { get; }
 

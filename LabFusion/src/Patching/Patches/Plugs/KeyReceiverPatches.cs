@@ -87,13 +87,13 @@ public static class KeyReceiverPatches
             hasEntity = true;
             var extender = receiverEntity.GetExtender<KeyReceiverExtender>();
 
-            entityId = receiverEntity.Id;
+            entityId = receiverEntity.ID;
             componentIndex = extender.GetIndex(__instance).Value;
         }
 
         var data = new KeySlotData()
         {
-            KeyId = keyEntity.Id,
+            KeyId = keyEntity.ID,
             ReceiverData = ComponentPathData.Create(hasEntity, entityId, componentIndex, hashData),
         };
 

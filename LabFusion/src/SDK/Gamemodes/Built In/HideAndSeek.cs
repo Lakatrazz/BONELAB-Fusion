@@ -173,7 +173,7 @@ public class HideAndSeek : Gamemode
         HiderVictoryEvent = null;
     }
 
-    protected bool OnValidateNametag(PlayerId id)
+    protected bool OnValidateNametag(PlayerID id)
     {
         if (!IsStarted)
         {
@@ -191,7 +191,7 @@ public class HideAndSeek : Gamemode
             return;
         }
 
-        var playerId = PlayerIdManager.GetPlayerId(userId);
+        var playerId = PlayerIDManager.GetPlayerID(userId);
 
         if (playerId == null)
         {
@@ -242,7 +242,7 @@ public class HideAndSeek : Gamemode
             });
 
             // Check bit reward
-            if (_tagRewards.Remove(playerId.LongId))
+            if (_tagRewards.Remove(playerId.PlatformID))
             {
                 PointItemManager.RewardBits(Defaults.SeekerBitReward);
             }
@@ -294,7 +294,7 @@ public class HideAndSeek : Gamemode
         }
     }
 
-    private void OnAssignedToTeam(PlayerId player, Team team)
+    private void OnAssignedToTeam(PlayerID player, Team team)
     {
         // Update nametags
         FusionOverrides.ForceUpdateOverrides();
@@ -345,9 +345,9 @@ public class HideAndSeek : Gamemode
             return;
         }
 
-        var host = PlayerIdManager.GetHostId();
+        var host = PlayerIDManager.GetHostID();
 
-        if (!NetworkPlayerManager.TryGetPlayer(host.SmallId, out var player))
+        if (!NetworkPlayerManager.TryGetPlayer(host.SmallID, out var player))
         {
             return;
         }
@@ -559,7 +559,7 @@ public class HideAndSeek : Gamemode
     private void AssignTeams()
     {
         // Shuffle the players for randomness
-        var players = new List<PlayerId>(PlayerIdManager.PlayerIds);
+        var players = new List<PlayerID>(PlayerIDManager.PlayerIds);
         players.Shuffle();
 
         // Assign seekers
@@ -588,7 +588,7 @@ public class HideAndSeek : Gamemode
     private void OnLocalPlayerGrab(Hand hand, Grip grip)
     {
         // If we aren't a seeker, ignore
-        if (!SeekerTeam.HasPlayer(PlayerIdManager.LocalId))
+        if (!SeekerTeam.HasPlayer(PlayerIDManager.LocalID))
         {
             return;
         }
@@ -607,7 +607,7 @@ public class HideAndSeek : Gamemode
         // Check if they're a hider, and if they are, tag them
         if (HiderTeam.HasPlayer(player.PlayerId))
         {
-            var longId = player.PlayerId.LongId;
+            var longId = player.PlayerId.PlatformID;
 
             _tagRewards.Add(longId);
 

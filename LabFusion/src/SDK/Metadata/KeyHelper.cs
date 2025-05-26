@@ -31,17 +31,17 @@ public static class KeyHelper
         return key[propertyStartIndex..];
     }
 
-    public static string GetKeyFromPlayer(string variable, PlayerId player)
+    public static string GetKeyFromPlayer(string variable, PlayerID player)
     {
         if (player == null)
         {
             return string.Empty;
         }
 
-        return GetKeyWithProperty(variable, player.LongId.ToString());
+        return GetKeyWithProperty(variable, player.PlatformID.ToString());
     }
 
-    public static PlayerId GetPlayerFromKey(string key)
+    public static PlayerID GetPlayerFromKey(string key)
     {
         var idProperty = GetPropertyFromKey(key);
 
@@ -50,6 +50,6 @@ public static class KeyHelper
             throw new FormatException($"Key {key} was not in the correct format. (Property: {idProperty})");
         }
 
-        return PlayerIdManager.GetPlayerId(longId);
+        return PlayerIDManager.GetPlayerID(longId);
     }
 }

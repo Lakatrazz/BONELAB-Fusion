@@ -22,6 +22,8 @@ public class MarrowModule : Module
 
         ModuleMessageHandler.RegisterHandler<ObjectDestructibleDestroyMessage>();
 
+        ModuleMessageHandler.RegisterHandler<CrateSpawnerMessage>();
+
         ModuleMessageHandler.RegisterHandler<GamemodeDropperMessage>();
 
         MultiplayerHooking.OnMainSceneInitialized += NetworkGunManager.OnMainSceneInitialized;

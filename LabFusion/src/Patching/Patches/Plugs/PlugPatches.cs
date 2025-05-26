@@ -138,7 +138,7 @@ public static class AmmoSocketPatches
             return;
         }
 
-        var data = MagazineInsertData.Create(PlayerIdManager.LocalSmallId, magEntity.Id, gunEntity.Id);
+        var data = MagazineInsertData.Create(PlayerIDManager.LocalSmallID, magEntity.ID, gunEntity.ID);
 
         MessageRelay.RelayNative(data, NativeMessageTag.MagazineInsert, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
@@ -186,7 +186,7 @@ public static class AmmoSocketPatches
         Hand hand = ammoPlug.host.GetHand(0);
         Handedness handedness = hand != null ? hand.handedness : Handedness.UNDEFINED;
 
-        var data = MagazineEjectData.Create(PlayerIdManager.LocalSmallId, magEntity.Id, gunEntity.Id, handedness);
+        var data = MagazineEjectData.Create(PlayerIDManager.LocalSmallID, magEntity.ID, gunEntity.ID, handedness);
 
         MessageRelay.RelayNative(data, NativeMessageTag.MagazineEject, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }

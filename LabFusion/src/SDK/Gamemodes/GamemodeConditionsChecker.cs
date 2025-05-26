@@ -20,7 +20,7 @@ public static class GamemodeConditionsChecker
         AutoCheckConditions();
     }
 
-    private static void OnPlayerCountChanged(PlayerId player)
+    private static void OnPlayerCountChanged(PlayerID player)
     {
         AutoCheckConditions();
     }

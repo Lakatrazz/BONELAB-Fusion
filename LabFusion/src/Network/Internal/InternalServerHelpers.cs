@@ -16,14 +16,14 @@ namespace LabFusion.Network;
 /// </summary>
 public static class InternalServerHelpers
 {
-    private static void DisposeUser(PlayerId id)
+    private static void DisposeUser(PlayerID id)
     {
         id?.Cleanup();
     }
 
     private static void DisposeUsers()
     {
-        foreach (var id in PlayerIdManager.PlayerIds.ToList())
+        foreach (var id in PlayerIDManager.PlayerIds.ToList())
         {
             DisposeUser(id);
         }
@@ -38,9 +38,9 @@ public static class InternalServerHelpers
         LocalPlayer.InvokeApplyInitialMetadata();
 
         // Create local id
-        var id = new PlayerId(PlayerIdManager.LocalLongId, 0, LocalPlayer.Metadata.Metadata.LocalDictionary, GetInitialEquippedItems());
+        var id = new PlayerID(PlayerIDManager.LocalPlatformID, 0, LocalPlayer.Metadata.Metadata.LocalDictionary, GetInitialEquippedItems());
         id.Insert();
-        PlayerIdManager.ApplyLocalId();
+        PlayerIDManager.ApplyLocalID();
 
         NetworkPlayerManager.CreateLocalPlayer();
 
@@ -101,7 +101,7 @@ public static class InternalServerHelpers
     /// Updates information about the new user.
     /// </summary>
     /// <param name="id"></param>
-    public static void OnPlayerJoined(PlayerId id, bool isInitialJoin)
+    public static void OnPlayerJoined(PlayerID id, bool isInitialJoin)
     {
         // Send client info
         FusionPreferences.SendClientSettings();
@@ -125,7 +125,7 @@ public static class InternalServerHelpers
     /// <param name="longId"></param>
     public static void OnPlayerLeft(ulong longId)
     {
-        var playerId = PlayerIdManager.GetPlayerId(longId);
+        var playerId = PlayerIDManager.GetPlayerID(longId);
 
         // Make sure the player exists in our game
         if (playerId == null)

@@ -146,24 +146,24 @@ public class DescentData : LevelDataHandler
 
     public void CacheValues() => MainSceneInitialized();
 
-    protected override void PlayerCatchup(PlayerId playerId)
+    protected override void PlayerCatchup(PlayerID playerId)
     {
         // Send all intro events
         foreach (var intro in _introEvents)
         {
-            MessageRelay.RelayModule<DescentIntroMessage, DescentIntroData>(new DescentIntroData() { Type = intro.Type, SelectionNumber = (byte)intro.SelectionNumber }, NetworkChannel.Reliable, RelayType.ToTarget, playerId.SmallId);
+            MessageRelay.RelayModule<DescentIntroMessage, DescentIntroData>(new DescentIntroData() { Type = intro.Type, SelectionNumber = (byte)intro.SelectionNumber }, NetworkChannel.Reliable, RelayType.ToTarget, playerId.SmallID);
         }
 
         // Send all noose events
         foreach (var noose in _nooseEvents)
         {
-            MessageRelay.RelayModule<DescentNooseMessage, DescentNooseData>(new DescentNooseData() { Type = noose.Type, PlayerId = noose.PlayerId }, NetworkChannel.Reliable, RelayType.ToTarget, playerId.SmallId);
+            MessageRelay.RelayModule<DescentNooseMessage, DescentNooseData>(new DescentNooseData() { Type = noose.Type, PlayerId = noose.PlayerId }, NetworkChannel.Reliable, RelayType.ToTarget, playerId.SmallID);
         }
 
         // Send all elevator events
         foreach (var elevator in _elevatorEvents)
         {
-            MessageRelay.RelayModule<DescentElevatorMessage, DescentElevatorData>(new DescentElevatorData() { Type = elevator.Type }, NetworkChannel.Reliable, RelayType.ToTarget, playerId.SmallId);
+            MessageRelay.RelayModule<DescentElevatorMessage, DescentElevatorData>(new DescentElevatorData() { Type = elevator.Type }, NetworkChannel.Reliable, RelayType.ToTarget, playerId.SmallID);
         }
     }
 }

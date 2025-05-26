@@ -126,7 +126,7 @@ public static class LocalAvatar
             return true;
         }
 
-        if (PlayerIdManager.LocalId == null || !PlayerIdManager.LocalId.TryGetPermissionLevel(out var level))
+        if (PlayerIDManager.LocalID == null || !PlayerIDManager.LocalID.TryGetPermissionLevel(out var level))
         {
             return true;
         }

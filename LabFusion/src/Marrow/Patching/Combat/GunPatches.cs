@@ -111,7 +111,7 @@ public static class GunPatches
             {
                 var ammoCount = __instance._magState != null ? (byte)__instance._magState.AmmoCount : (byte)0;
 
-                var data = GunShotData.Create(ammoCount, gunEntity.Id, (byte)gunExtender.GetIndex(__instance).Value);
+                var data = GunShotData.Create(ammoCount, gunEntity.ID, (byte)gunExtender.GetIndex(__instance).Value);
 
                 MessageRelay.RelayModule<GunShotMessage, GunShotData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
             }

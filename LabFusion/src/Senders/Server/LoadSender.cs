@@ -15,7 +15,7 @@ public static class LoadSender
             return;
         }
 
-        var data = LevelRequestData.Create(PlayerIdManager.LocalSmallId, crate.Barcode.ID, crate.Title);
+        var data = LevelRequestData.Create(PlayerIDManager.LocalSmallID, crate.Barcode.ID, crate.Title);
 
         MessageRelay.RelayNative(data, NativeMessageTag.LevelRequest, NetworkChannel.Reliable, RelayType.ToServer);
     }

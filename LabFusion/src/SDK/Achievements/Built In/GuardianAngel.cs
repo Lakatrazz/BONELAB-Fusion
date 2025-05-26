@@ -27,7 +27,7 @@ public class GuardianAngel : Achievement
         MultiplayerHooking.OnPlayerAction -= OnPlayerAction;
     }
 
-    private void OnPlayerAction(PlayerId player, PlayerActionType type, PlayerId otherPlayer)
+    private void OnPlayerAction(PlayerID player, PlayerActionType type, PlayerID otherPlayer)
     {
         // Was the person saved?
         if (!player.IsMe && type == PlayerActionType.RECOVERY)

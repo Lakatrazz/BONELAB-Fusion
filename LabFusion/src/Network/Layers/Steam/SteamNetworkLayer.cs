@@ -74,7 +74,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
         // Get steam information
         SteamId = SteamClient.SteamId;
-        PlayerIdManager.SetLongId(SteamId.Value);
+        PlayerIDManager.SetLongID(SteamId.Value);
         LocalPlayer.Username = GetUsername(SteamId.Value);
 
         FusionLogger.Log($"Steamworks initialized with SteamID {SteamId} and ApplicationID {ApplicationID}!");
@@ -213,7 +213,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
     public override bool IsFriend(ulong userId)
     {
-        return userId == PlayerIdManager.LocalLongId || new Friend(userId).IsFriend;
+        return userId == PlayerIDManager.LocalPlatformID || new Friend(userId).IsFriend;
     }
 
     public override void BroadcastMessage(NetworkChannel channel, FusionMessage message)
@@ -235,11 +235,11 @@ public abstract class SteamNetworkLayer : NetworkLayer
 
     public override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message)
     {
-        var id = PlayerIdManager.GetPlayerId(userId);
+        var id = PlayerIDManager.GetPlayerID(userId);
 
         if (id != null)
         {
-            SendFromServer(id.LongId, channel, message);
+            SendFromServer(id.PlatformID, channel, message);
         }
     }
 
@@ -371,7 +371,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
         AwaitLobbyCreation();
     }
 
-    private void OnPlayerJoin(PlayerId id)
+    private void OnPlayerJoin(PlayerID id)
     {
         if (VoiceManager == null)
         {
@@ -384,7 +384,7 @@ public abstract class SteamNetworkLayer : NetworkLayer
         }
     }
 
-    private void OnPlayerLeave(PlayerId id)
+    private void OnPlayerLeave(PlayerID id)
     {
         if (VoiceManager == null)
         {

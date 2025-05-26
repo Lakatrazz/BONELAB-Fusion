@@ -6,21 +6,21 @@ using LabFusion.Utilities;
 
 namespace LabFusion.Player;
 
-public class PlayerId : INetSerializable, IEquatable<PlayerId>
+public class PlayerID : INetSerializable, IEquatable<PlayerID>
 {
     /// <summary>
     /// Invoked when any PlayerId's metadata changes. Passes in the PlayerId, key, and value.
     /// </summary>
-    public static event Action<PlayerId, string, string> OnMetadataChangedEvent, OnMetadataRemovedEvent;
+    public static event Action<PlayerID, string, string> OnMetadataChangedEvent, OnMetadataRemovedEvent;
 
-    public bool IsMe => LongId == PlayerIdManager.LocalLongId;
+    public bool IsMe => PlatformID == PlayerIDManager.LocalPlatformID;
     public bool IsValid => _isValid;
     private bool _isValid = false;
 
-    public bool IsHost => SmallId == PlayerIdManager.HostSmallId;
+    public bool IsHost => SmallID == PlayerIDManager.HostSmallID;
 
-    public ulong LongId { get; private set; }
-    public byte SmallId { get; private set; }
+    public ulong PlatformID { get; private set; }
+    public byte SmallID { get; private set; }
 
     private readonly PlayerMetadata _metadata = new();
 
@@ -52,17 +52,17 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
     private List<string> _equippedItems = new();
     public List<string> EquippedItems => _equippedItems;
 
-    public PlayerId() 
+    public PlayerID() 
     {
         _isValid = false;
     }
 
-    public PlayerId(ulong longId, byte smallId, Dictionary<string, string> metadata, List<string> equippedItems)
+    public PlayerID(ulong longId, byte smallId, Dictionary<string, string> metadata, List<string> equippedItems)
     {
         Metadata.CreateMetadata();
 
-        LongId = longId;
-        SmallId = smallId;
+        PlatformID = longId;
+        SmallID = smallId;
 
         _equippedItems = equippedItems;
 
@@ -112,7 +112,7 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
             return false;
         }
 
-        PlayerSender.SendPlayerMetadataRequest(SmallId, key, value);
+        PlayerSender.SendPlayerMetadataRequest(SmallID, key, value);
         return true;
     }
 
@@ -127,19 +127,19 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
         return NetworkInfo.IsHost || IsMe;
     }
 
-    public bool Equals(PlayerId other)
+    public bool Equals(PlayerID other)
     {
         if (other == null)
         {
             return false;
         }
 
-        return SmallId == other.SmallId;
+        return SmallID == other.SmallID;
     }
 
     public override bool Equals(object obj)
     {
-        if (obj is not PlayerId other)
+        if (obj is not PlayerID other)
         {
             return false;
         }
@@ -149,14 +149,14 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
 
     public override int GetHashCode()
     {
-        return SmallId.GetHashCode();
+        return SmallID.GetHashCode();
     }
 
-    public static implicit operator byte(PlayerId id) => id.SmallId;
+    public static implicit operator byte(PlayerID id) => id.SmallID;
 
-    public static implicit operator ulong(PlayerId id) => id.LongId;
+    public static implicit operator ulong(PlayerID id) => id.PlatformID;
 
-    public static bool IsNullOrInvalid(PlayerId id)
+    public static bool IsNullOrInvalid(PlayerID id)
     {
         return id == null || !id.IsValid;
     }
@@ -187,9 +187,9 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
 
     public void Insert()
     {
-        if (PlayerIdManager.PlayerIds.Any((id) => id.SmallId == SmallId))
+        if (PlayerIDManager.PlayerIds.Any((id) => id.SmallID == SmallID))
         {
-            var list = PlayerIdManager.PlayerIds.Where((id) => id.SmallId == SmallId).ToList();
+            var list = PlayerIDManager.PlayerIds.Where((id) => id.SmallID == SmallID).ToList();
 
             for (var i = 0; i < list.Count; i++)
             {
@@ -197,7 +197,7 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
             }
         }
 
-        PlayerIdManager.PlayerIds.Add(this);
+        PlayerIDManager.PlayerIds.Add(this);
     }
 
     public void Cleanup()
@@ -208,11 +208,11 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
             return;
         }
 
-        PlayerIdManager.PlayerIds.Remove(this);
+        PlayerIDManager.PlayerIds.Remove(this);
 
-        if (PlayerIdManager.LocalId == this)
+        if (PlayerIDManager.LocalID == this)
         {
-            PlayerIdManager.RemoveLocalId();
+            PlayerIDManager.RemoveLocalID();
         }
 
         _isValid = false;
@@ -230,8 +230,8 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
             Metadata.CreateMetadata();
         }
 
-        var longId = LongId;
-        var smallId = SmallId;
+        var longId = PlatformID;
+        var smallId = SmallID;
         var metadata = Metadata.Metadata.LocalDictionary;
         var equippedItems = _equippedItems.ToArray();
 
@@ -243,8 +243,8 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
 
         if (serializer.IsReader)
         {
-            LongId = longId;
-            SmallId = smallId;
+            PlatformID = longId;
+            SmallID = smallId;
 
             foreach (var pair in metadata)
             {

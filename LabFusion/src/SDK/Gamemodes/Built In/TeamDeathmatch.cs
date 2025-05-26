@@ -341,10 +341,10 @@ public class TeamDeathmatch : Gamemode
 
     public override bool CheckReadyConditions()
     {
-        return PlayerIdManager.PlayerCount >= _minimumPlayers;
+        return PlayerIDManager.PlayerCount >= _minimumPlayers;
     }
 
-    public override bool CanAttack(PlayerId player)
+    public override bool CanAttack(PlayerID player)
     {
         if (!IsStarted)
         {
@@ -354,7 +354,7 @@ public class TeamDeathmatch : Gamemode
         return !TeamManager.IsTeammate(player);
     }
 
-    private void OnAssignedToTeam(PlayerId playerId, Team team)
+    private void OnAssignedToTeam(PlayerID playerId, Team team)
     {
         if (playerId.IsMe)
         {
@@ -382,7 +382,7 @@ public class TeamDeathmatch : Gamemode
         FusionSceneManager.HookOnTargetLevelLoad(() => InitializeTeamSpawns(team));
     }
 
-    protected bool OnValidateNametag(PlayerId id)
+    protected bool OnValidateNametag(PlayerID id)
     {
         if (!IsStarted)
         {
@@ -439,7 +439,7 @@ public class TeamDeathmatch : Gamemode
     private int GetRewardedBits()
     {
         // Change the max bit count based on player count
-        int playerCount = PlayerIdManager.PlayerCount - 1;
+        int playerCount = PlayerIDManager.PlayerCount - 1;
 
         // 10 and 100 are the min and max values for the max bit count
         float playerPercent = (float)playerCount / 4f;
@@ -476,7 +476,7 @@ public class TeamDeathmatch : Gamemode
     /// <param name="player"></param>
     /// <param name="type"></param>
     /// <param name="otherPlayer"></param>
-    protected void OnPlayerAction(PlayerId player, PlayerActionType type, PlayerId otherPlayer = null)
+    protected void OnPlayerAction(PlayerID player, PlayerActionType type, PlayerID otherPlayer = null)
     {
         if (!IsStarted)
         {
@@ -521,7 +521,7 @@ public class TeamDeathmatch : Gamemode
     /// Automatically has the host assign a team to a newly joined player.
     /// </summary>
     /// <param name="id"></param>
-    protected void OnPlayerJoin(PlayerId id)
+    protected void OnPlayerJoin(PlayerID id)
     {
         if (NetworkInfo.IsHost && IsStarted)
         {

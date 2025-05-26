@@ -84,14 +84,14 @@ public static class FusionPlayer
     /// Tries to get the player that we were last attacked by.
     /// </summary>
     /// <returns></returns>
-    public static bool TryGetLastAttacker(out PlayerId id)
+    public static bool TryGetLastAttacker(out PlayerID id)
     {
         id = null;
 
         if (!LastAttacker.HasValue)
             return false;
 
-        id = PlayerIdManager.GetPlayerId(LastAttacker.Value);
+        id = PlayerIDManager.GetPlayerID(LastAttacker.Value);
         return id != null;
     }
 

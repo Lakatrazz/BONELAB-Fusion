@@ -10,13 +10,13 @@ namespace LabFusion.Entities;
 
 public interface INetworkOwnable
 {
-    PlayerId OwnerId { get; }
+    PlayerID OwnerID { get; }
 
     bool IsOwner { get; }
 
     bool IsOwnerLocked { get; }
 
-    void SetOwner(PlayerId ownerId);
+    void SetOwner(PlayerID ownerId);
 
     void LockOwner();
 

@@ -86,7 +86,7 @@ namespace LabFusion.Marrow.Integration
         private static void OnItemSpawned(NetworkAssetSpawner.SpawnCallbackInfo info)
         {
             MessageRelay.RelayModule<GamemodeDropperMessage, GamemodeDropperData>(
-                new GamemodeDropperData() { Entity = new(info.Entity.Id) }, NetworkChannel.Reliable, RelayType.ToClients);
+                new GamemodeDropperData() { Entity = new(info.Entity.ID) }, NetworkChannel.Reliable, RelayType.ToClients);
         }
 
         public static bool DespawnItems()

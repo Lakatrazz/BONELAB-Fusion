@@ -34,7 +34,7 @@ public static class ZoneCullManagerPatches
         }
         
         // Send message to move entity's active culler
-        var data = EntityZoneRegisterData.Create(networkEntity.Id);
+        var data = EntityZoneRegisterData.Create(networkEntity.ID);
 
         MessageRelay.RelayNative(data, NativeMessageTag.EntityZoneRegister, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }

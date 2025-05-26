@@ -33,9 +33,9 @@ public class PlayerInfo
 
     public PlayerInfo() { }
 
-    public PlayerInfo(PlayerId playerId)
+    public PlayerInfo(PlayerID playerId)
     {
-        LongId = playerId.LongId;
+        LongId = playerId.PlatformID;
 
         Username = playerId.Metadata.Username.GetValue();
         Nickname = playerId.Metadata.Nickname.GetValue();

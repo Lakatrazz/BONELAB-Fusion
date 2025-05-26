@@ -44,7 +44,7 @@ public class PointItemTriggerValueMessage : NativeMessageHandler
     {
         var data = received.ReadData<PointItemTriggerValueData>();
 
-        var id = PlayerIdManager.GetPlayerId(data.smallId);
+        var id = PlayerIDManager.GetPlayerID(data.smallId);
         PointItemManager.Internal_OnTriggerItem(id, data.barcode, data.value);
     }
 }

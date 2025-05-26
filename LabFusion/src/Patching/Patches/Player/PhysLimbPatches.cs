@@ -40,7 +40,7 @@ public static class PhysLimbPatches
 
         bool left = __instance == physicsRig.legLf;
 
-        var data = PhysicsRigStateData.Create(PlayerIdManager.LocalSmallId, PhysicsRigStateType.LEG_SHUTDOWN, true, left);
+        var data = PhysicsRigStateData.Create(PlayerIDManager.LocalSmallID, PhysicsRigStateType.LEG_SHUTDOWN, true, left);
 
         MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }

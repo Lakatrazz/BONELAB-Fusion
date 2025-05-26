@@ -151,7 +151,7 @@ public static partial class FusionSceneManager
                     LevelDownloaderManager.DownloadLevel(new LevelDownloaderManager.LevelDownloadInfo()
                     {
                         levelBarcode = _targetServerScene,
-                        levelHost = PlayerIdManager.HostSmallId,
+                        levelHost = PlayerIDManager.HostSmallID,
                         onDownloadSucceeded = OnDownloadSucceeded,
                         onDownloadFailed = OnDownloadFailed,
                         onDownloadCanceled = OnDownloadCanceled,

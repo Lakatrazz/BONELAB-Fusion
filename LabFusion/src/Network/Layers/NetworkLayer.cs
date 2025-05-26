@@ -176,11 +176,11 @@ public abstract class NetworkLayer
     /// <param name="message"></param>
     public virtual void BroadcastMessageExcept(byte userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
     {
-        foreach (var id in PlayerIdManager.PlayerIds)
+        foreach (var id in PlayerIDManager.PlayerIds)
         {
-            if (id.SmallId != userId && (id.SmallId != 0 || !ignoreHost))
+            if (id.SmallID != userId && (id.SmallID != 0 || !ignoreHost))
             {
-                SendFromServer(id.SmallId, channel, message);
+                SendFromServer(id.SmallID, channel, message);
             }
         }
     }
@@ -193,11 +193,11 @@ public abstract class NetworkLayer
     /// <param name="message"></param>
     public virtual void BroadcastMessageExcept(ulong userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
     {
-        foreach (var id in PlayerIdManager.PlayerIds)
+        foreach (var id in PlayerIDManager.PlayerIds)
         {
-            if (id.LongId != userId && (id.SmallId != 0 || !ignoreHost))
+            if (id.PlatformID != userId && (id.SmallID != 0 || !ignoreHost))
             {
-                SendFromServer(id.SmallId, channel, message);
+                SendFromServer(id.SmallID, channel, message);
             }
         }
     }
@@ -224,7 +224,7 @@ public abstract class NetworkLayer
 
     public virtual void OnLateUpdateLayer() { }
 
-    public virtual void OnUserJoin(PlayerId id) { }
+    public virtual void OnUserJoin(PlayerID id) { }
 
     public virtual string GetServerCode()
     {

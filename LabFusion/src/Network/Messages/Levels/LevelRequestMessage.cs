@@ -57,7 +57,7 @@ public class LevelRequestMessage : NativeMessageHandler
         var data = received.ReadData<LevelRequestData>();
 
         // Get player and their username
-        var id = PlayerIdManager.GetPlayerId(data.smallId);
+        var id = PlayerIDManager.GetPlayerID(data.smallId);
 
         if (id != null && id.TryGetDisplayName(out var name))
         {

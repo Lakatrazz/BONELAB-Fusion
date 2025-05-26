@@ -1,73 +1,73 @@
 ﻿namespace LabFusion.Player;
 
-public static class PlayerIdManager
+public static class PlayerIDManager
 {
     public const int MaxNameLength = 32;
 
     public const int MinPlayerId = 0;
     public const int MaxPlayerId = byte.MaxValue;
 
-    public static readonly HashSet<PlayerId> PlayerIds = new();
+    public static readonly HashSet<PlayerID> PlayerIds = new();
     public static int PlayerCount => PlayerIds.Count;
     public static bool HasOtherPlayers => PlayerCount > 1;
 
-    public static ulong LocalLongId { get; private set; }
-    public static byte LocalSmallId { get; private set; }
-    public static PlayerId LocalId { get; private set; }
+    public static ulong LocalPlatformID { get; private set; }
+    public static byte LocalSmallID { get; private set; }
+    public static PlayerID LocalID { get; private set; }
 
-    public const byte HostSmallId = 0;
+    public const byte HostSmallID = 0;
 
-    public static byte? GetUnusedPlayerId()
+    public static byte? GetUnusedPlayerID()
     {
         for (byte i = 0; i < 255; i++)
         {
-            if (GetPlayerId(i) == null)
+            if (GetPlayerID(i) == null)
                 return i;
         }
         return null;
     }
 
-    public static PlayerId GetHostId()
+    public static PlayerID GetHostID()
     {
-        return GetPlayerId(HostSmallId);
+        return GetPlayerID(HostSmallID);
     }
 
-    public static PlayerId GetPlayerId(byte smallId)
+    public static PlayerID GetPlayerID(byte smallId)
     {
-        return PlayerIds.FirstOrDefault(x => x.SmallId == smallId);
+        return PlayerIds.FirstOrDefault(x => x.SmallID == smallId);
     }
 
-    public static PlayerId GetPlayerId(ulong longId)
+    public static PlayerID GetPlayerID(ulong longId)
     {
-        return PlayerIds.FirstOrDefault(x => x.LongId == longId);
+        return PlayerIds.FirstOrDefault(x => x.PlatformID == longId);
     }
 
-    public static bool HasPlayerId(byte smallId) => GetPlayerId(smallId) != null;
+    public static bool HasPlayerID(byte smallId) => GetPlayerID(smallId) != null;
 
-    public static bool HasPlayerId(ulong longId) => GetPlayerId(longId) != null;
+    public static bool HasPlayerID(ulong longId) => GetPlayerID(longId) != null;
 
-    internal static void ApplyLocalId()
+    internal static void ApplyLocalID()
     {
-        var id = GetPlayerId(LocalLongId);
+        var id = GetPlayerID(LocalPlatformID);
         if (id != null)
         {
-            LocalId = id;
-            LocalSmallId = id.SmallId;
+            LocalID = id;
+            LocalSmallID = id.SmallID;
         }
         else
         {
-            LocalId = null;
-            LocalSmallId = 0;
+            LocalID = null;
+            LocalSmallID = 0;
         }
     }
 
-    internal static void RemoveLocalId()
+    internal static void RemoveLocalID()
     {
-        LocalId = null;
+        LocalID = null;
     }
 
-    public static void SetLongId(ulong longId)
+    public static void SetLongID(ulong longID)
     {
-        LocalLongId = longId;
+        LocalPlatformID = longID;
     }
 }

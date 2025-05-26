@@ -20,7 +20,7 @@ public static class NetworkPlayerManager
     public static void OnInitializeManager()
     {
         // Reserve all player ids
-        for (var i = PlayerIdManager.MinPlayerId; i <= PlayerIdManager.MaxPlayerId; i++)
+        for (var i = PlayerIDManager.MinPlayerId; i <= PlayerIDManager.MaxPlayerId; i++)
         {
             NetworkEntityManager.IdManager.RegisteredEntities.ReserveId((ushort)i);
         }
@@ -91,15 +91,15 @@ public static class NetworkPlayerManager
 
     public static NetworkPlayer CreateLocalPlayer()
     {
-        return CreateNetworkPlayer(PlayerIdManager.LocalId);
+        return CreateNetworkPlayer(PlayerIDManager.LocalID);
     }
 
-    public static NetworkPlayer CreateNetworkPlayer(PlayerId playerId)
+    public static NetworkPlayer CreateNetworkPlayer(PlayerID playerId)
     {
         NetworkEntity networkEntity = new();
         NetworkPlayer networkPlayer = new(networkEntity, playerId);
 
-        NetworkEntityManager.IdManager.RegisterEntity(playerId.SmallId, networkEntity);
+        NetworkEntityManager.IdManager.RegisterEntity(playerId.SmallID, networkEntity);
 
         return networkPlayer;
     }

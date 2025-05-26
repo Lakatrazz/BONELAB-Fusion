@@ -70,7 +70,7 @@ public class NetworkConstraint : IEntityExtender
         _networkEntity = null;
     }
 
-    private void OnEntityCreationCatchup(NetworkEntity entity, PlayerId player)
+    private void OnEntityCreationCatchup(NetworkEntity entity, PlayerID player)
     {
         if (!IsFirst)
         {
@@ -78,8 +78,8 @@ public class NetworkConstraint : IEntityExtender
         }
 
         // Send create message
-        var data = ConstraintCreateData.Create(PlayerIdManager.LocalSmallId, null, PointPair);
-        data.Point1Id = NetworkEntity.Id;
+        var data = ConstraintCreateData.Create(PlayerIDManager.LocalSmallID, null, PointPair);
+        data.Point1Id = NetworkEntity.ID;
         data.Point2Id = OtherId;
 
         MessageRelay.RelayNative(data, NativeMessageTag.ConstraintCreate, NetworkChannel.Reliable, RelayType.ToTarget, player);

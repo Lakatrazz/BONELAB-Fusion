@@ -5,8 +5,8 @@ using LabFusion.Senders;
 using LabFusion.Scene;
 using LabFusion.Marrow.Integration;
 using LabFusion.Data;
-using LabFusion.Marrow;
 using LabFusion.Utilities;
+using LabFusion.Marrow.Messages;
 
 using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Marrow.Pool;
@@ -15,7 +15,7 @@ using UnityEngine;
 
 using Il2CppCysharp.Threading.Tasks;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Marrow.Patching;
 
 [HarmonyPatch(typeof(CrateSpawner))]
 public static class CrateSpawnerPatches
@@ -88,9 +88,14 @@ public static class CrateSpawnerPatches
         }
 
         // Send spawn message
-        var spawnedId = info.Entity.Id;
+        var spawnedId = info.Entity.ID;
 
-        SpawnSender.SendCrateSpawnerEvent(spawner, spawnedId);
+        CrateSpawnerMessage.SendCrateSpawnerMessage(spawner, spawnedId);
+
+        info.Entity.OnEntityDataCatchup += (entity, player) =>
+        {
+            CrateSpawnerMessage.SendCrateSpawnerMessage(spawner, entity.ID, player);
+        };
     }
 
     public static void OnFinishNetworkSpawn(this CrateSpawner spawner, GameObject go)

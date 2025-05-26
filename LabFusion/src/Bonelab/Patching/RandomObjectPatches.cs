@@ -37,7 +37,7 @@ public static class RandomObjectPatches
             ushort objectIndex = (ushort)Random.Range(0, __instance.Objects.Count);
 
             // Send the message to sync it
-            var data = RandomObjectData.Create(entity.Id, extender.GetIndex(__instance).Value, objectIndex);
+            var data = RandomObjectData.Create(entity.ID, extender.GetIndex(__instance).Value, objectIndex);
 
             MessageRelay.RelayModule<RandomObjectMessage, RandomObjectData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }

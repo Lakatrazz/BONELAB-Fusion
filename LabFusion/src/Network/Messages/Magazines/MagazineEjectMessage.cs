@@ -67,7 +67,7 @@ public class MagazineEjectMessage : NativeMessageHandler
 
             var ammoPlug = ammoSocketExtender.Component._magazinePlug;
 
-            if (ammoPlug.magazine && MagazineExtender.Cache.TryGet(ammoPlug.magazine, out var magEntity) && magEntity.Id == data.magazineId)
+            if (ammoPlug.magazine && MagazineExtender.Cache.TryGet(ammoPlug.magazine, out var magEntity) && magEntity.ID == data.magazineId)
             {
                 ammoPlug.ForceEject();
 

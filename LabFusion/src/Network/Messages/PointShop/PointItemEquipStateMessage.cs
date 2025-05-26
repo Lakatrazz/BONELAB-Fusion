@@ -38,7 +38,7 @@ public class PointItemEquipStateMessage : NativeMessageHandler
 
         if (PointItemManager.TryGetPointItem(data.barcode, out var item))
         {
-            var id = PlayerIdManager.GetPlayerId(data.smallId);
+            var id = PlayerIDManager.GetPlayerID(data.smallId);
 
             id.ForceSetEquipped(data.barcode, data.isEquipped);
         }

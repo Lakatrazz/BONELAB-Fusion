@@ -49,7 +49,7 @@ public class PlayerRepDamageMessage : NativeMessageHandler
     {
         var data = received.ReadData<PlayerRepDamageData>();
 
-        if (data.damagedId != PlayerIdManager.LocalSmallId)
+        if (data.damagedId != PlayerIDManager.LocalSmallID)
         {
             throw new Exception($"Expected target {data.damagedId}!");
         }
@@ -66,6 +66,6 @@ public class PlayerRepDamageMessage : NativeMessageHandler
 
         health.OnReceivedDamage(attack, data.part);
 
-        LocalHealth.InvokeAttackedByPlayer(attack, data.part, PlayerIdManager.GetPlayerId(data.damagerId));
+        LocalHealth.InvokeAttackedByPlayer(attack, data.part, PlayerIDManager.GetPlayerID(data.damagerId));
     }
 }

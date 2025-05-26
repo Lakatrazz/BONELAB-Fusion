@@ -35,7 +35,7 @@ public static class RPCFloatSender
             hasNetworkEntity = true;
             var extender = entity.GetExtender<RPCVariableExtender>();
 
-            entityId = entity.Id;
+            entityId = entity.ID;
             componentIndex = extender.GetIndex(rpcFloat).Value;
         }
         else if (rpcFloat.RequiresOwnership && !NetworkInfo.IsHost)
@@ -52,7 +52,7 @@ public static class RPCFloatSender
         return true;
     }
 
-    public static void CatchupValue(RPCFloat rpcFloat, PlayerId playerId)
+    public static void CatchupValue(RPCFloat rpcFloat, PlayerID playerId)
     {
         // Make sure we are the level host
         if (!NetworkSceneManager.IsLevelHost)
@@ -72,7 +72,7 @@ public static class RPCFloatSender
             hasNetworkEntity = true;
             var extender = entity.GetExtender<RPCVariableExtender>();
 
-            entityId = entity.Id;
+            entityId = entity.ID;
             componentIndex = extender.GetIndex(rpcFloat).Value;
         }
 
@@ -80,7 +80,7 @@ public static class RPCFloatSender
         var pathData = ComponentPathData.Create(hasNetworkEntity, entityId, componentIndex, hashData);
         var boolData = RPCFloatData.Create(pathData, rpcFloat.GetLatestValue());
 
-        MessageRelay.RelayNative(boolData, NativeMessageTag.RPCFloat, NetworkChannel.Reliable, RelayType.ToTarget, playerId.SmallId);
+        MessageRelay.RelayNative(boolData, NativeMessageTag.RPCFloat, NetworkChannel.Reliable, RelayType.ToTarget, playerId.SmallID);
     }
 }
 

@@ -25,7 +25,7 @@ public struct PointItemPayload
     public PointItemPayloadType type;
     public RigManager rigManager;
     public Mirror mirror;
-    public PlayerId playerId;
+    public PlayerID playerId;
 }
 
 public sealed class PointItemUpgrade
@@ -264,13 +264,13 @@ public abstract class PointItem
 
     public void Trigger()
     {
-        PointItemManager.Internal_OnTriggerItem(PlayerIdManager.LocalId, Barcode);
+        PointItemManager.Internal_OnTriggerItem(PlayerIDManager.LocalID, Barcode);
         PointItemSender.SendPointItemTrigger(Barcode);
     }
 
     public void Trigger(string value)
     {
-        PointItemManager.Internal_OnTriggerItem(PlayerIdManager.LocalId, Barcode, value);
+        PointItemManager.Internal_OnTriggerItem(PlayerIDManager.LocalID, Barcode, value);
         PointItemSender.SendPointItemTrigger(Barcode, value);
     }
 

@@ -109,7 +109,7 @@ namespace LabFusion.Marrow.Integration
                 hasNetworkEntity = true;
                 var extender = entity.GetExtender<AnimatorSyncerExtender>();
 
-                entityId = entity.Id;
+                entityId = entity.ID;
                 componentIndex = extender.GetIndex(this).Value;
             }
 

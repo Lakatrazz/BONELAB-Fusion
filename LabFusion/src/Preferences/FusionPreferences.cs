@@ -21,7 +21,7 @@ public static class FusionPreferences
             return;
         }
 
-        var data = PlayerSettingsData.Create(PlayerIdManager.LocalSmallId, SerializedPlayerSettings.Create());
+        var data = PlayerSettingsData.Create(PlayerIDManager.LocalSmallID, SerializedPlayerSettings.Create());
 
         MessageRelay.RelayNative(data, NativeMessageTag.PlayerSettings, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }

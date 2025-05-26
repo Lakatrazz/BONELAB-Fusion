@@ -45,7 +45,7 @@ public class EntityZoneRegisterMessage : NativeMessageHandler
             return;
         }
 
-        if (received.Sender != entity.OwnerId.SmallId)
+        if (received.Sender != entity.OwnerID.SmallID)
         {
             return;
         }

@@ -49,7 +49,7 @@ public class EntityIdManager<TEntity> where TEntity : INetworkRegistrable
         // Unregister the entity
         if (entity.IsRegistered)
         {
-            UnregisterEntity(entity.Id);
+            UnregisterEntity(entity.ID);
         }
     }
 

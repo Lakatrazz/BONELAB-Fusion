@@ -30,7 +30,7 @@ public class InventorySlotReceiverExtender : EntityComponentArrayExtender<Invent
         entity.OnEntityDataCatchup -= OnEntityDataCatchup;
     }
 
-    private void OnEntityDataCatchup(NetworkEntity entity, PlayerId player)
+    private void OnEntityDataCatchup(NetworkEntity entity, PlayerID player)
     {
         foreach (var component in Components)
         {
@@ -38,7 +38,7 @@ public class InventorySlotReceiverExtender : EntityComponentArrayExtender<Invent
         }
     }
 
-    private void OnEntityCatchup(InventorySlotReceiver receiver, NetworkEntity entity, PlayerId player)
+    private void OnEntityCatchup(InventorySlotReceiver receiver, NetworkEntity entity, PlayerID player)
     {
         if (receiver._slottedWeapon == null)
         {
@@ -59,7 +59,7 @@ public class InventorySlotReceiverExtender : EntityComponentArrayExtender<Invent
             return;
         }
 
-        var data = InventorySlotInsertData.Create(entity.Id, weaponEntity.Id, index.Value);
+        var data = InventorySlotInsertData.Create(entity.ID, weaponEntity.ID, index.Value);
 
         MessageRelay.RelayNative(data, NativeMessageTag.InventorySlotInsert, NetworkChannel.Reliable, RelayType.ToTarget, player);
     }

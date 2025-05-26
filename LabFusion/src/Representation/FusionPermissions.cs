@@ -51,7 +51,7 @@ public static class FusionPermissions
         // Get server level permissions
         if (NetworkInfo.IsHost)
         {
-            if (longId == PlayerIdManager.LocalLongId)
+            if (longId == PlayerIDManager.LocalPlatformID)
             {
                 level = PermissionLevel.OWNER;
             }
@@ -69,7 +69,7 @@ public static class FusionPermissions
         // Get client side permissions
         else
         {
-            var id = PlayerIdManager.GetPlayerId(longId);
+            var id = PlayerIDManager.GetPlayerID(longId);
 
             if (id == null)
             {
@@ -88,7 +88,7 @@ public static class FusionPermissions
         PermissionList.SetPermission(longId, username, level);
 
         // Set in server
-        var playerId = PlayerIdManager.GetPlayerId(longId);
+        var playerId = PlayerIDManager.GetPlayerID(longId);
 
         if (playerId != null && NetworkInfo.IsHost)
         {

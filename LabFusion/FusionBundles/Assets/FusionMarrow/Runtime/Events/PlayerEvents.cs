@@ -53,22 +53,22 @@ namespace LabFusion.Marrow.Integration
         }
 
         [HideFromIl2Cpp]
-        private void OnPlayerLoadedIntoLevel(PlayerId playerId, string barcode)
+        private void OnPlayerLoadedIntoLevel(PlayerID playerId, string barcode)
         {
             if (barcode != FusionSceneManager.Barcode)
             {
                 return;
             }
 
-            _latestPlayerID = playerId.SmallId;
+            _latestPlayerID = playerId.SmallID;
 
             onPlayerLoadedHolder.Get()?.Invoke();
         }
 
         [HideFromIl2Cpp]
-        private void OnPlayerStartedLoading(PlayerId playerId)
+        private void OnPlayerStartedLoading(PlayerID playerId)
         {
-            _latestPlayerID = playerId.SmallId;
+            _latestPlayerID = playerId.SmallID;
 
             onPlayerUnloadedHolder.Get()?.Invoke();
         }
@@ -82,14 +82,14 @@ namespace LabFusion.Marrow.Integration
         }
 
         [HideFromIl2Cpp]
-        private void OnPlayerLeft(PlayerId playerId)
+        private void OnPlayerLeft(PlayerID playerId)
         {
             if (playerId.Metadata.Loading.GetValue())
             {
                 return;
             }
 
-            _latestPlayerID = playerId.SmallId;
+            _latestPlayerID = playerId.SmallID;
 
             onPlayerUnloadedHolder.Get()?.Invoke();
         }
@@ -106,7 +106,7 @@ namespace LabFusion.Marrow.Integration
                 return null;
             }
 
-            var player = PlayerIdManager.GetPlayerId((byte)playerID);
+            var player = PlayerIDManager.GetPlayerID((byte)playerID);
 
             if (player == null)
             {
@@ -123,7 +123,7 @@ namespace LabFusion.Marrow.Integration
                 return -1;
             }
 
-            return PlayerIdManager.LocalSmallId;
+            return PlayerIDManager.LocalSmallID;
         }
 
         public int GetHostID()
@@ -133,7 +133,7 @@ namespace LabFusion.Marrow.Integration
                 return -1;
             }
 
-            return PlayerIdManager.HostSmallId;
+            return PlayerIDManager.HostSmallID;
         }
 
         public int GetLevelHostID() => GetHostID();

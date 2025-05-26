@@ -36,7 +36,7 @@ public class DisconnectMessage : NativeMessageHandler
         var data = received.ReadData<DisconnectMessageData>();
 
         // If this is our id, disconnect ourselves
-        if (data.longId == PlayerIdManager.LocalLongId)
+        if (data.longId == PlayerIDManager.LocalPlatformID)
         {
             NetworkHelper.Disconnect(data.reason);
         }

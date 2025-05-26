@@ -34,7 +34,7 @@ public static class ConstraintTrackerPatches
             return true;
         }
 
-        var data = ConstraintDeleteData.Create(PlayerIdManager.LocalSmallId, constraintEntity.Id);
+        var data = ConstraintDeleteData.Create(PlayerIDManager.LocalSmallID, constraintEntity.ID);
 
         MessageRelay.RelayNative(data, NativeMessageTag.ConstraintDelete, NetworkChannel.Reliable, RelayType.ToClients);
 

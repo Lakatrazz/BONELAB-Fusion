@@ -80,7 +80,7 @@ namespace LabFusion.Marrow.Integration
 
         public int GetPlayerCount()
         {
-            return PlayerIdManager.PlayerCount;
+            return PlayerIDManager.PlayerCount;
         }
 #else
         public UltEventHolder onServerJoinedHolder;

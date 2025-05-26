@@ -42,7 +42,7 @@ public class EntityUnqueueResponseMessage : NativeMessageHandler
 #if DEBUG
         if (success)
         {
-            FusionLogger.Log($"Unqueued Entity with allocated id {entity.Id}.");
+            FusionLogger.Log($"Unqueued Entity with allocated id {entity.ID}.");
         }
 #endif
     }

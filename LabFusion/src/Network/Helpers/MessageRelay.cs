@@ -12,7 +12,7 @@ public static class MessageRelay
 
         data.Serialize(writer);
 
-        byte? sender = type == RelayType.None ? null : PlayerIdManager.LocalSmallId;
+        byte? sender = type == RelayType.None ? null : PlayerIDManager.LocalSmallID;
 
         using var message = FusionMessage.Create(tag, writer, type, channel, sender, target);
 
@@ -25,7 +25,7 @@ public static class MessageRelay
 
         data.Serialize(writer);
 
-        byte? sender = type == RelayType.None ? null : PlayerIdManager.LocalSmallId;
+        byte? sender = type == RelayType.None ? null : PlayerIDManager.LocalSmallID;
 
         using var message = FusionMessage.ModuleCreate<TMessage>(writer, type, channel, sender, target);
 

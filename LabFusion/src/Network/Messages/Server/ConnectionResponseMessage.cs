@@ -7,7 +7,7 @@ namespace LabFusion.Network;
 
 public class ConnectionResponseData : INetSerializable
 {
-    public PlayerId playerId = null;
+    public PlayerID playerId = null;
     public string avatarBarcode = null;
     public SerializedAvatarStats avatarStats = null;
     public bool isInitialJoin = false;
@@ -20,7 +20,7 @@ public class ConnectionResponseData : INetSerializable
         serializer.SerializeValue(ref isInitialJoin);
     }
 
-    public static ConnectionResponseData Create(PlayerId id, string avatarBarcode, SerializedAvatarStats stats, bool isInitialJoin)
+    public static ConnectionResponseData Create(PlayerID id, string avatarBarcode, SerializedAvatarStats stats, bool isInitialJoin)
     {
         return new ConnectionResponseData()
         {
@@ -47,9 +47,9 @@ public class ConnectionResponseMessage : NativeMessageHandler
 
         // Check the id to see if its our own
         // If it is, just update our self reference
-        if (data.playerId.LongId == PlayerIdManager.LocalLongId)
+        if (data.playerId.PlatformID == PlayerIDManager.LocalPlatformID)
         {
-            PlayerIdManager.ApplyLocalId();
+            PlayerIDManager.ApplyLocalID();
 
             NetworkPlayerManager.CreateLocalPlayer();
 
@@ -77,7 +77,7 @@ public class ConnectionResponseMessage : NativeMessageHandler
         }
     }
 
-    private static void CatchupPlayer(PlayerId player)
+    private static void CatchupPlayer(PlayerID player)
     {
         // SERVER CATCHUP
         // Catchup hooked events

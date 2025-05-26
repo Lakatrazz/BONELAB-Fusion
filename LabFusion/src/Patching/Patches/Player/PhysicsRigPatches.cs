@@ -48,7 +48,7 @@ public static class PhysicsRigPatches
 
         if (__instance.manager.IsLocalPlayer())
         {
-            var data = PhysicsRigStateData.Create(PlayerIdManager.LocalSmallId, PhysicsRigStateType.RAGDOLL, true);
+            var data = PhysicsRigStateData.Create(PlayerIDManager.LocalSmallID, PhysicsRigStateType.RAGDOLL, true);
 
             MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
@@ -71,7 +71,7 @@ public static class PhysicsRigPatches
                 return false;
             }
 
-            var data = PhysicsRigStateData.Create(PlayerIdManager.LocalSmallId, PhysicsRigStateType.RAGDOLL, false);
+            var data = PhysicsRigStateData.Create(PlayerIDManager.LocalSmallID, PhysicsRigStateType.RAGDOLL, false);
 
             MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
@@ -90,7 +90,7 @@ public static class PhysicsRigPatches
 
         if (__instance.manager.IsLocalPlayer())
         {
-            var data = PhysicsRigStateData.Create(PlayerIdManager.LocalSmallId, PhysicsRigStateType.SHUTDOWN, true);
+            var data = PhysicsRigStateData.Create(PlayerIDManager.LocalSmallID, PhysicsRigStateType.SHUTDOWN, true);
 
             MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
@@ -116,7 +116,7 @@ public static class PhysicsRigPatches
             return false;
         }
 
-        var data = PhysicsRigStateData.Create(PlayerIdManager.LocalSmallId, PhysicsRigStateType.SHUTDOWN, false);
+        var data = PhysicsRigStateData.Create(PlayerIDManager.LocalSmallID, PhysicsRigStateType.SHUTDOWN, false);
 
         MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, NetworkChannel.Reliable, RelayType.ToOtherClients);
 
@@ -134,7 +134,7 @@ public static class PhysicsRigPatches
 
         if (__instance.manager.IsLocalPlayer())
         {
-            var data = PhysicsRigStateData.Create(PlayerIdManager.LocalSmallId, PhysicsRigStateType.PHYSICAL_LEGS, true);
+            var data = PhysicsRigStateData.Create(PlayerIDManager.LocalSmallID, PhysicsRigStateType.PHYSICAL_LEGS, true);
 
             MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
@@ -151,7 +151,7 @@ public static class PhysicsRigPatches
 
         if (__instance.manager.IsLocalPlayer())
         {
-            var data = PhysicsRigStateData.Create(PlayerIdManager.LocalSmallId, PhysicsRigStateType.PHYSICAL_LEGS, false);
+            var data = PhysicsRigStateData.Create(PlayerIDManager.LocalSmallID, PhysicsRigStateType.PHYSICAL_LEGS, false);
 
             MessageRelay.RelayNative(data, NativeMessageTag.PhysicsRigState, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }

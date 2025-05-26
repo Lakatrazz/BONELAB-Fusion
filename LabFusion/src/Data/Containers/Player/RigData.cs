@@ -77,7 +77,7 @@ public static class RigData
         }
 
         // Send body vitals to network
-        var data = PlayerRepVitalsData.Create(PlayerIdManager.LocalSmallId, PlayerRefs.Instance.PlayerBodyVitals);
+        var data = PlayerRepVitalsData.Create(PlayerIDManager.LocalSmallID, PlayerRefs.Instance.PlayerBodyVitals);
 
         MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepVitals, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }

@@ -3,11 +3,11 @@ using LabFusion.Senders;
 
 namespace LabFusion.Utilities;
 
-public delegate bool UserAccessEvent(PlayerId playerId, out string reason);
+public delegate bool UserAccessEvent(PlayerID playerId, out string reason);
 public delegate void ServerEvent();
 public delegate void UpdateEvent();
-public delegate void PlayerUpdate(PlayerId playerId);
-public delegate void PlayerAction(PlayerId playerId, PlayerActionType type, PlayerId otherPlayer = null);
+public delegate void PlayerUpdate(PlayerID playerId);
+public delegate void PlayerAction(PlayerID playerId, PlayerActionType type, PlayerID otherPlayer = null);
 
 /// <summary>
 /// Hooks for getting events from the server, players, etc.
@@ -23,7 +23,7 @@ public static class MultiplayerHooking
     public static event PlayerUpdate OnPlayerJoined, OnPlayerLeft;
     public static event PlayerAction OnPlayerAction;
 
-    internal static bool CheckShouldAllowConnection(PlayerId playerId, out string reason)
+    internal static bool CheckShouldAllowConnection(PlayerID playerId, out string reason)
     {
         reason = "";
 
@@ -47,11 +47,11 @@ public static class MultiplayerHooking
 
     internal static void InvokeOnDisconnected() => OnDisconnected.InvokeSafe("executing OnDisconnected hook");
 
-    internal static void InvokeOnPlayerJoined(PlayerId id) => OnPlayerJoined.InvokeSafe(id, "executing OnPlayerJoined hook");
+    internal static void InvokeOnPlayerJoined(PlayerID id) => OnPlayerJoined.InvokeSafe(id, "executing OnPlayerJoined hook");
 
-    internal static void InvokeOnPlayerLeft(PlayerId id) => OnPlayerLeft.InvokeSafe(id, "executing OnPlayerLeft hook");
+    internal static void InvokeOnPlayerLeft(PlayerID id) => OnPlayerLeft.InvokeSafe(id, "executing OnPlayerLeft hook");
 
-    internal static void InvokeOnPlayerAction(PlayerId id, PlayerActionType type, PlayerId otherPlayer = null) => OnPlayerAction.InvokeSafe(id, type, otherPlayer, "executing OnPlayerAction hook");
+    internal static void InvokeOnPlayerAction(PlayerID id, PlayerActionType type, PlayerID otherPlayer = null) => OnPlayerAction.InvokeSafe(id, type, otherPlayer, "executing OnPlayerAction hook");
 
     // Unity hooks
     /// <summary>

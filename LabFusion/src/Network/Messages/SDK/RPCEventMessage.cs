@@ -54,7 +54,7 @@ public static class RPCEventSender
             hasNetworkEntity = true;
             var extender = entity.GetExtender<RPCEventExtender>();
 
-            entityId = entity.Id;
+            entityId = entity.ID;
             componentIndex = extender.GetIndex(rpcEvent).Value;
         }
         else if (rpcEvent.requiresOwnership && !NetworkInfo.IsHost)

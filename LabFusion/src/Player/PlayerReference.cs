@@ -18,21 +18,21 @@ public struct PlayerReference : INetSerializable
         serializer.SerializeValue(ref Id);
     }
 
-    public readonly bool TryGetPlayer(out PlayerId player)
+    public readonly bool TryGetPlayer(out PlayerID player)
     {
         player = GetPlayer();
 
         return player != null;
     }
 
-    public readonly PlayerId GetPlayer()
+    public readonly PlayerID GetPlayer()
     {
-        return PlayerIdManager.GetPlayerId(Id);
+        return PlayerIDManager.GetPlayerID(Id);
     }
 
     public PlayerReference() : this(0) { }
 
-    public PlayerReference(PlayerId player) : this(player.SmallId) { }
+    public PlayerReference(PlayerID player) : this(player.SmallID) { }
 
     public PlayerReference(byte id)
     {

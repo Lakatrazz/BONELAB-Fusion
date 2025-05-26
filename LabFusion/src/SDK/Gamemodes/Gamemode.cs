@@ -215,15 +215,15 @@ public abstract class Gamemode
     /// Invoked if a new Player joins while the Gamemode is already started.
     /// </summary>
     /// <param name="playerId"></param>
-    protected virtual void OnPlayerJoined(PlayerId playerId) { }
+    protected virtual void OnPlayerJoined(PlayerID playerId) { }
 
     /// <summary>
     /// Invoked if a Player leaves while the Gamemode is still active.
     /// </summary>
     /// <param name="playerId"></param>
-    protected virtual void OnPlayerLeft(PlayerId playerId) { }
+    protected virtual void OnPlayerLeft(PlayerID playerId) { }
 
-    private void OnPlayerJoinedCallback(PlayerId playerId)
+    private void OnPlayerJoinedCallback(PlayerID playerId)
     {
         if (!IsStarted)
         {
@@ -233,7 +233,7 @@ public abstract class Gamemode
         OnPlayerJoined(playerId);
     }
 
-    private void OnPlayerLeftCallback(PlayerId playerId)
+    private void OnPlayerLeftCallback(PlayerID playerId)
     {
         if (!IsStarted)
         {
@@ -332,5 +332,5 @@ public abstract class Gamemode
     /// </summary>
     /// <param name="player">The player to check.</param>
     /// <returns>True if the player can be attacked, False otherwise.</returns>
-    public virtual bool CanAttack(PlayerId player) => true;
+    public virtual bool CanAttack(PlayerID player) => true;
 }

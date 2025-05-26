@@ -64,7 +64,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         networkEntity.OnEntityUnregistered += OnPropUnregistered;
     }
 
-    private void OnEntityOwnershipTransfer(NetworkEntity entity, PlayerId player)
+    private void OnEntityOwnershipTransfer(NetworkEntity entity, PlayerID player)
     {
         OnReregisterUpdates();
     }
@@ -230,7 +230,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         if (NetworkEntity != null && NetworkEntity.IsRegistered)
         {
 #if DEBUG
-            FusionLogger.Log($"Unregistered prop at ID {NetworkEntity.Id} after the GameObject was destroyed.");
+            FusionLogger.Log($"Unregistered prop at ID {NetworkEntity.ID} after the GameObject was destroyed.");
 #endif
 
             NetworkEntityManager.IdManager.UnregisterEntity(NetworkEntity);
@@ -328,7 +328,7 @@ public class NetworkProp : IEntityExtender, IMarrowEntityExtender, IEntityUpdata
         }
 
         // Send pose
-        var data = EntityPoseUpdateData.Create(NetworkEntity.Id, EntityPose);
+        var data = EntityPoseUpdateData.Create(NetworkEntity.ID, EntityPose);
 
         MessageRelay.RelayNative(data, NativeMessageTag.EntityPoseUpdate, NetworkChannel.Unreliable, RelayType.ToOtherClients);
 

@@ -38,12 +38,12 @@ public static class SimpleGripEventsPatches
             {
                 if (!__instance.leftHand && !__instance.rightHand)
                 {
-                    SendGripEvent(entity.Id, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.ATTACH);
+                    SendGripEvent(entity.ID, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.ATTACH);
                 }
             }
             else
             {
-                SendGripEvent(entity.Id, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.ATTACH);
+                SendGripEvent(entity.ID, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.ATTACH);
             }
 
             return false;
@@ -85,7 +85,7 @@ public static class SimpleGripEventsPatches
                 }
             }
 
-            SendGripEvent(entity.Id, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.DETACH);
+            SendGripEvent(entity.ID, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.DETACH);
 
             return false;
         }
@@ -111,12 +111,12 @@ public static class SimpleGripEventsPatches
         {
             if (hand._indexButtonDown)
             {
-                SendGripEvent(entity.Id, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.TRIGGER_DOWN);
+                SendGripEvent(entity.ID, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.TRIGGER_DOWN);
             }
 
             if (hand.Controller.GetMenuTap())
             {
-                SendGripEvent(entity.Id, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.MENU_TAP);
+                SendGripEvent(entity.ID, (byte)extender.GetIndex(__instance).Value, SimpleGripEventType.MENU_TAP);
             }
 
             return false;

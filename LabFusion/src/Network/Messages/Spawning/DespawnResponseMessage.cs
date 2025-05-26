@@ -58,7 +58,7 @@ public class DespawnResponseMessage : NativeMessageHandler
             var poolee = pooleeExtender.Component;
 
 #if DEBUG
-            FusionLogger.Log($"Unregistering entity at ID {entity.Id} after despawning.");
+            FusionLogger.Log($"Unregistering entity at ID {entity.ID} after despawning.");
 #endif
 
             var marrowEntity = entity.GetExtender<IMarrowEntityExtender>();

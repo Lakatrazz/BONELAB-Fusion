@@ -58,7 +58,7 @@ public class ConstraintDeleteMessage : NativeMessageHandler
         ConstraintTrackerPatches.IgnorePatches = false;
 
 #if DEBUG
-        FusionLogger.Log($"Unregistered constraint at ID {entity.Id}.");
+        FusionLogger.Log($"Unregistered constraint at ID {entity.ID}.");
 #endif
 
         NetworkEntityManager.IdManager.UnregisterEntity(entity);

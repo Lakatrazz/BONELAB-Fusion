@@ -162,7 +162,7 @@ public class SpawnResponseMessage : NativeMessageHandler
         // Remove the existing entity on this poolee if it exists
         if (PooleeExtender.Cache.TryGet(poolee, out var conflictingEntity))
         {
-            FusionLogger.Warn($"Unregistered entity {conflictingEntity.Id} on poolee {poolee.name} due to conflicting id.");
+            FusionLogger.Warn($"Unregistered entity {conflictingEntity.ID} on poolee {poolee.name} due to conflicting id.");
 
             NetworkEntityManager.IdManager.UnregisterEntity(conflictingEntity);
         }
@@ -176,7 +176,7 @@ public class SpawnResponseMessage : NativeMessageHandler
         if (marrowEntity != null)
         {
             // Create a network entity
-            var ownerId = PlayerIdManager.GetPlayerId(owner);
+            var ownerId = PlayerIDManager.GetPlayerID(owner);
 
             newEntity = new();
             newEntity.SetOwner(ownerId);
@@ -202,7 +202,7 @@ public class SpawnResponseMessage : NativeMessageHandler
         }
 
         // Invoke spawn callback
-        if (owner == PlayerIdManager.LocalSmallId)
+        if (owner == PlayerIDManager.LocalSmallID)
         {
             NetworkAssetSpawner.OnSpawnComplete(trackerId, new NetworkAssetSpawner.SpawnCallbackInfo()
             {

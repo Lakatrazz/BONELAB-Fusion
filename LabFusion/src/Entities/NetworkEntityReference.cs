@@ -37,7 +37,7 @@ public struct NetworkEntityReference : INetSerializable
 
     public NetworkEntityReference() : this(0) { }
 
-    public NetworkEntityReference(NetworkEntity entity) : this(entity.Id) { }
+    public NetworkEntityReference(NetworkEntity entity) : this(entity.ID) { }
 
     public NetworkEntityReference(ushort id)
     {

@@ -66,7 +66,7 @@ public class PlayerRepGrabMessage : NativeMessageHandler
         var data = received.ReadData<PlayerRepGrabData>();
 
         // Make sure this isn't us
-        if (data.smallId == PlayerIdManager.LocalSmallId)
+        if (data.smallId == PlayerIDManager.LocalSmallID)
         {
             return;
         }

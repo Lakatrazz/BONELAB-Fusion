@@ -39,10 +39,10 @@ public class BouncingStrong : Achievement
         });
     }
 
-    private void OnPlayerAction(PlayerId player, PlayerActionType type, PlayerId otherPlayer)
+    private void OnPlayerAction(PlayerID player, PlayerActionType type, PlayerID otherPlayer)
     {
         // Make sure there's other players
-        if (!PlayerIdManager.HasOtherPlayers)
+        if (!PlayerIDManager.HasOtherPlayers)
             return;
 
         // Make sure this is us, and that we jumped

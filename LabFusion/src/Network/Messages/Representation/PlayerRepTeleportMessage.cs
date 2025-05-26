@@ -52,7 +52,7 @@ public class PlayerRepTeleportMessage : NativeMessageHandler
         var data = received.ReadData<PlayerRepTeleportData>();
 
         // Make sure this is us
-        if (data.teleportedUser != PlayerIdManager.LocalSmallId)
+        if (data.teleportedUser != PlayerIDManager.LocalSmallID)
         {
             return;
         }

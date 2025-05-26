@@ -188,7 +188,7 @@ public class SmashBones : Gamemode
 
     public override bool CheckReadyConditions()
     {
-        return PlayerIdManager.PlayerCount >= MinimumPlayers;
+        return PlayerIDManager.PlayerCount >= MinimumPlayers;
     }
 
     public override void OnGamemodeRegistered()
@@ -239,7 +239,7 @@ public class SmashBones : Gamemode
         LocalHealth.OnAttackedByPlayer -= OnAttackedByPlayer;
     }
 
-    private void OnAssignedToTeam(PlayerId player, Team team)
+    private void OnAssignedToTeam(PlayerID player, Team team)
     {
         bool spectator = team == SpectatorTeam;
         bool selfSpectator = TeamManager.GetLocalTeam() == SpectatorTeam;
@@ -256,7 +256,7 @@ public class SmashBones : Gamemode
         }
     }
 
-    private void OnRemovedFromTeam(PlayerId player, Team team)
+    private void OnRemovedFromTeam(PlayerID player, Team team)
     {
         if (NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
         {
@@ -278,7 +278,7 @@ public class SmashBones : Gamemode
 
     private void OnCheckPlayerHiding(bool selfSpectator)
     {
-        foreach (var player in PlayerIdManager.PlayerIds)
+        foreach (var player in PlayerIDManager.PlayerIds)
         {
             if (player.IsMe)
             {
@@ -296,7 +296,7 @@ public class SmashBones : Gamemode
         }
     }
 
-    private void OnAttackedByPlayer(Attack attack, PlayerDamageReceiver.BodyPart bodyPart, PlayerId player)
+    private void OnAttackedByPlayer(Attack attack, PlayerDamageReceiver.BodyPart bodyPart, PlayerID player)
     {
         if (!IsStarted)
         {
@@ -304,7 +304,7 @@ public class SmashBones : Gamemode
         }
 
         // Increase damage
-        var damageVariable = PlayerDamageKeeper.GetVariable(PlayerIdManager.LocalId);
+        var damageVariable = PlayerDamageKeeper.GetVariable(PlayerIDManager.LocalID);
         float damage = damageVariable.GetValue();
 
         float addedDamage = attack.damage;
@@ -325,7 +325,7 @@ public class SmashBones : Gamemode
 
         PlayerDamageEvent.TryInvoke(JsonSerializer.Serialize(new DamageInfo()
         {
-            LongId = PlayerIdManager.LocalLongId,
+            LongId = PlayerIDManager.LocalPlatformID,
             Damage = damage,
         }));
 
@@ -430,7 +430,7 @@ public class SmashBones : Gamemode
 
         var damageInfo = JsonSerializer.Deserialize<DamageInfo>(value);
 
-        var playerId = PlayerIdManager.GetPlayerId(damageInfo.LongId);
+        var playerId = PlayerIDManager.GetPlayerID(damageInfo.LongId);
 
         PlayerDamageKeeper.GetVariable(playerId).SetValue(damageInfo.Damage);
     }
@@ -444,7 +444,7 @@ public class SmashBones : Gamemode
 
         var deathInfo = JsonSerializer.Deserialize<DeathInfo>(value);
 
-        var playerId = PlayerIdManager.GetPlayerId(deathInfo.LongId);
+        var playerId = PlayerIDManager.GetPlayerID(deathInfo.LongId);
 
         if (NetworkInfo.IsHost)
         {
@@ -470,7 +470,7 @@ public class SmashBones : Gamemode
         SpawnExplosion(deathInfo.Position.ToUnityVector3(), -deathInfo.Direction.ToUnityVector3());
     }
 
-    private void OnLivesChanged(PlayerId player, int lives)
+    private void OnLivesChanged(PlayerID player, int lives)
     {
         if (!IsStarted)
         {
@@ -498,9 +498,9 @@ public class SmashBones : Gamemode
 
     private void CheckFreeForAllStocksVictory()
     {
-        var livingPlayers = new List<PlayerId>();
+        var livingPlayers = new List<PlayerID>();
 
-        foreach (var player in PlayerIdManager.PlayerIds)
+        foreach (var player in PlayerIDManager.PlayerIds)
         {
             var stocks = PlayerStocksKeeper.GetScore(player);
 
@@ -510,7 +510,7 @@ public class SmashBones : Gamemode
             }
         }
 
-        int minimumCount = PlayerIdManager.HasOtherPlayers ? 1 : 0;
+        int minimumCount = PlayerIDManager.HasOtherPlayers ? 1 : 0;
 
         if (livingPlayers.Count <= minimumCount)
         {
@@ -564,7 +564,7 @@ public class SmashBones : Gamemode
         _previousStocks = lives;
     }
 
-    private void OnDamageChanged(PlayerId player, MetadataFloat damage)
+    private void OnDamageChanged(PlayerID player, MetadataFloat damage)
     {
         if (!IsStarted)
         {
@@ -618,10 +618,10 @@ public class SmashBones : Gamemode
 
         Playlist.StartPlaylist();
 
-        OnSetSpawn(SpectatorTeam.HasPlayer(PlayerIdManager.LocalId));
+        OnSetSpawn(SpectatorTeam.HasPlayer(PlayerIDManager.LocalID));
     }
 
-    protected override void OnPlayerJoined(PlayerId playerId)
+    protected override void OnPlayerJoined(PlayerID playerId)
     {
         if (NetworkInfo.IsHost)
         {
@@ -666,7 +666,7 @@ public class SmashBones : Gamemode
         var secondPlace = PlayerScoreKeeper.GetPlayerByPlace(1);
         var thirdPlace = PlayerScoreKeeper.GetPlayerByPlace(2);
 
-        var selfPlace = PlayerScoreKeeper.GetPlace(PlayerIdManager.LocalId) + 1;
+        var selfPlace = PlayerScoreKeeper.GetPlace(PlayerIDManager.LocalID) + 1;
 
         string message = "No one ran out of stocks!";
 
@@ -691,7 +691,7 @@ public class SmashBones : Gamemode
         }
 
         // Play victory/failure sounds
-        int playerCount = PlayerIdManager.PlayerCount;
+        int playerCount = PlayerIDManager.PlayerCount;
 
         if (playerCount > 1)
         {
@@ -741,7 +741,7 @@ public class SmashBones : Gamemode
 
         PlayerDeathEvent.TryInvoke(JsonSerializer.Serialize(new DeathInfo()
         {
-            LongId = PlayerIdManager.LocalLongId,
+            LongId = PlayerIDManager.LocalPlatformID,
             Position = new(pelvis.position),
             Direction = new(pelvis.velocity.normalized),
         }));
@@ -774,13 +774,13 @@ public class SmashBones : Gamemode
 
     private void AssignTeams()
     {
-        foreach (var player in PlayerIdManager.PlayerIds)
+        foreach (var player in PlayerIDManager.PlayerIds)
         {
             SetupPlayer(player);
         }
     }
 
-    private void SetupPlayer(PlayerId player)
+    private void SetupPlayer(PlayerID player)
     {
         TeamManager.TryAssignTeam(player, FreeForAllTeam);
         PlayerDamageKeeper.GetVariable(player).SetValue(0f);

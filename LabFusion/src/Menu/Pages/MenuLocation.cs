@@ -146,7 +146,7 @@ public static class MenuLocation
         element.ServerVersionElement
             .WithTitle($"v{FusionMod.Version}");
 
-        var playerCount = PlayerIdManager.PlayerCount;
+        var playerCount = PlayerIDManager.PlayerCount;
 
         element.PlayersElement
             .Cleared()
@@ -315,7 +315,7 @@ public static class MenuLocation
         element.ServerVersionElement
             .WithTitle($"v{FusionMod.Version}");
 
-        var playerCount = PlayerIdManager.PlayerCount;
+        var playerCount = PlayerIDManager.PlayerCount;
 
         element.PlayersElement
             .Cleared()
@@ -490,7 +490,7 @@ public static class MenuLocation
 
         var playerListPage = element.PlayerBrowserElement.AddPage();
 
-        foreach (var player in PlayerIdManager.PlayerIds)
+        foreach (var player in PlayerIDManager.PlayerIds)
         {
             MetadataHelper.TryGetDisplayName(player, out var name);
 
@@ -553,7 +553,7 @@ public static class MenuLocation
         }
     }
 
-    private static void OnShowPlayer(PlayerId player)
+    private static void OnShowPlayer(PlayerID player)
     {
         if (!player.IsValid)
         {
@@ -611,7 +611,7 @@ public static class MenuLocation
         element.PermissionsElement.gameObject.SetActive(false);
     }
 
-    private static void ApplyPlayerToElement(PlayerElement element, PlayerId player)
+    private static void ApplyPlayerToElement(PlayerElement element, PlayerID player)
     {
         // Apply name and description
         var username = TextFilter.Filter(player.Metadata.Username.GetValue());
@@ -634,9 +634,9 @@ public static class MenuLocation
         ElementIconHelper.SetProfileIcon(element, avatarTitle, modId);
 
         // Get permissions
-        FusionPermissions.FetchPermissionLevel(PlayerIdManager.LocalLongId, out var selfLevel, out _);
+        FusionPermissions.FetchPermissionLevel(PlayerIDManager.LocalPlatformID, out var selfLevel, out _);
 
-        FusionPermissions.FetchPermissionLevel(player.LongId, out var level, out Color color);
+        FusionPermissions.FetchPermissionLevel(player.PlatformID, out var level, out Color color);
 
         var activeLobbyInfo = LobbyInfoManager.LobbyInfo;
 
@@ -675,7 +675,7 @@ public static class MenuLocation
 
         permissionsElement.OnValueChanged += (v) =>
         {
-            FusionPermissions.TrySetPermission(player.LongId, username, (PermissionLevel)v);
+            FusionPermissions.TrySetPermission(player.PlatformID, username, (PermissionLevel)v);
         };
 
         permissionsElement.Interactable = !player.IsMe && NetworkInfo.IsHost;
@@ -687,7 +687,7 @@ public static class MenuLocation
             .WithColor(Color.red)
             .WithInteractability(false);
 
-        platformIDElement.Value = player.LongId.ToString();
+        platformIDElement.Value = player.PlatformID.ToString();
 
         // Actions
         element.ActionsElement.Clear();
@@ -696,7 +696,7 @@ public static class MenuLocation
         AddModerationGroup(activeLobbyInfo, actionsPage, player, selfLevel, level);
     }
 
-    private static void AddModerationGroup(LobbyInfo lobbyInfo, PageElement actionsPage, PlayerId player, PermissionLevel selfLevel, PermissionLevel level)
+    private static void AddModerationGroup(LobbyInfo lobbyInfo, PageElement actionsPage, PlayerID player, PermissionLevel selfLevel, PermissionLevel level)
     {
         if (player.IsMe)
         {
@@ -832,7 +832,7 @@ public static class MenuLocation
             .Do(() => PooleeUtilities.DespawnAll());
         var playersGroup = element.AddElement<GroupElement>("Players");
 
-        FusionPermissions.FetchPermissionLevel(PlayerIdManager.LocalLongId, out var selfLevel, out _);
+        FusionPermissions.FetchPermissionLevel(PlayerIDManager.LocalPlatformID, out var selfLevel, out _);
         var activeLobbyInfo = LobbyInfoManager.LobbyInfo;
 
         var teleportAllElement = playersGroup.AddElement<FunctionElement>("Teleport All")
@@ -840,9 +840,9 @@ public static class MenuLocation
             {
                 if (FusionPermissions.HasSufficientPermissions(selfLevel, activeLobbyInfo.Teleportation))
                 {
-                    foreach (var playerId in PlayerIdManager.PlayerIds)
+                    foreach (var playerId in PlayerIDManager.PlayerIds)
                     {
-                        if (playerId != PlayerIdManager.LocalSmallId)
+                        if (playerId != PlayerIDManager.LocalSmallID)
                             PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_ME, playerId);
                     }
                 }

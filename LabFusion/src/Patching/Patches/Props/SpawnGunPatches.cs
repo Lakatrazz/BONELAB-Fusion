@@ -95,7 +95,7 @@ public static class SpawnGunPatches
             barcode = crate.Barcode.ID;
         }
 
-        var data = SpawnGunSelectData.Create(PlayerIdManager.LocalSmallId, entity.Id, barcode);
+        var data = SpawnGunSelectData.Create(PlayerIDManager.LocalSmallID, entity.ID, barcode);
 
         MessageRelay.RelayNative(data, NativeMessageTag.SpawnGunSelect, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
@@ -141,7 +141,7 @@ public static class SpawnGunPatches
     private static void OnFireSpawn(SpawnGun spawnGun)
     {
         // Check for prevention
-        if (FusionDevTools.PreventSpawnGun(PlayerIdManager.LocalId))
+        if (FusionDevTools.PreventSpawnGun(PlayerIDManager.LocalID))
         {
             return;
         }
@@ -154,7 +154,7 @@ public static class SpawnGunPatches
         }
 
         // Reward achievement
-        if (PlayerIdManager.HasOtherPlayers && AchievementManager.TryGetAchievement<LavaGang>(out var achievement))
+        if (PlayerIDManager.HasOtherPlayers && AchievementManager.TryGetAchievement<LavaGang>(out var achievement))
             achievement.IncrementTask();
 
         // Send a spawn request
@@ -209,7 +209,7 @@ public static class SpawnGunPatches
         }
 
         // Reward achievement
-        if (PlayerIdManager.HasOtherPlayers && AchievementManager.TryGetAchievement<CleanupCrew>(out var achievement))
+        if (PlayerIDManager.HasOtherPlayers && AchievementManager.TryGetAchievement<CleanupCrew>(out var achievement))
         {
             achievement.IncrementTask();
         }
@@ -219,7 +219,7 @@ public static class SpawnGunPatches
 
         if (PooleeExtender.Cache.TryGet(poolee, out var entity) && entity.IsRegistered)
         {
-            PooleeUtilities.RequestDespawn(entity.Id, true);
+            PooleeUtilities.RequestDespawn(entity.ID, true);
         }
 
         // Flash the spawn gun

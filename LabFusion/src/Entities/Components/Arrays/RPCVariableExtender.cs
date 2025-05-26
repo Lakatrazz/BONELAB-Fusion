@@ -32,7 +32,7 @@ public class RPCVariableExtender : EntityComponentArrayExtender<RPCVariable>
         entity.OnEntityDataCatchup -= OnEntityDataCatchup;
     }
 
-    private void OnEntityDataCatchup(NetworkEntity entity, PlayerId player)
+    private void OnEntityDataCatchup(NetworkEntity entity, PlayerID player)
     {
         foreach (var component in Components)
         {

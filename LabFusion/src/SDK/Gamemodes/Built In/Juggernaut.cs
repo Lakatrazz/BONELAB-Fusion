@@ -195,7 +195,7 @@ public class Juggernaut : Gamemode
 
     public override bool CheckReadyConditions()
     {
-        return PlayerIdManager.PlayerCount >= MinimumPlayers;
+        return PlayerIDManager.PlayerCount >= MinimumPlayers;
     }
 
     protected override void OnUpdate()
@@ -210,7 +210,7 @@ public class Juggernaut : Gamemode
         Playlist.Update();
     }
 
-    public override bool CanAttack(PlayerId player)
+    public override bool CanAttack(PlayerID player)
     {
         if (!IsStarted)
         {
@@ -255,7 +255,7 @@ public class Juggernaut : Gamemode
         Playlist.Shuffle();
     }
 
-    private void OnPlayerAction(PlayerId player, PlayerActionType type, PlayerId otherPlayer = null)
+    private void OnPlayerAction(PlayerID player, PlayerActionType type, PlayerID otherPlayer = null)
     {
         if (!IsStarted)
         {
@@ -281,9 +281,9 @@ public class Juggernaut : Gamemode
         if (selfKill)
         {
             // Juggernaut killed themselves? Give the title to a random player
-            if (juggernautWasKilled && PlayerIdManager.HasOtherPlayers)
+            if (juggernautWasKilled && PlayerIDManager.HasOtherPlayers)
             {
-                var otherPlayers = PlayerIdManager.PlayerIds.Where(id => id.SmallId != player.SmallId);
+                var otherPlayers = PlayerIDManager.PlayerIds.Where(id => id.SmallID != player.SmallID);
                 SwapJuggernaut(otherPlayers.GetRandom(), player);
             }
 
@@ -311,7 +311,7 @@ public class Juggernaut : Gamemode
         }
     }
 
-    private void OnPlayerJoin(PlayerId playerId)
+    private void OnPlayerJoin(PlayerID playerId)
     {
         if (!IsStarted || !NetworkInfo.IsHost)
         {
@@ -321,7 +321,7 @@ public class Juggernaut : Gamemode
         TeamManager.TryAssignTeam(playerId, SurvivorTeam);
     }
 
-    private void OnPlayerLeave(PlayerId playerId)
+    private void OnPlayerLeave(PlayerID playerId)
     {
         if (!IsStarted || !NetworkInfo.IsHost)
         {
@@ -332,7 +332,7 @@ public class Juggernaut : Gamemode
 
         if (isJuggernaut)
         {
-            TeamManager.TryAssignTeam(PlayerIdManager.PlayerIds.GetRandom(), JuggernautTeam);
+            TeamManager.TryAssignTeam(PlayerIDManager.PlayerIds.GetRandom(), JuggernautTeam);
         }
 
         TeamManager.TryUnassignTeam(playerId);
@@ -345,8 +345,8 @@ public class Juggernaut : Gamemode
         var secondPlace = JuggernautScoreKeeper.GetPlayerByPlace(1);
         var thirdPlace = JuggernautScoreKeeper.GetPlayerByPlace(2);
 
-        var selfPlace = JuggernautScoreKeeper.GetPlace(PlayerIdManager.LocalId) + 1;
-        var selfScore = JuggernautScoreKeeper.GetScore(PlayerIdManager.LocalId);
+        var selfPlace = JuggernautScoreKeeper.GetPlace(PlayerIDManager.LocalID) + 1;
+        var selfScore = JuggernautScoreKeeper.GetScore(PlayerIDManager.LocalID);
 
         string message = "No one scored points!";
 
@@ -371,7 +371,7 @@ public class Juggernaut : Gamemode
         }
 
         // Play victory/failure sounds
-        int playerCount = PlayerIdManager.PlayerCount;
+        int playerCount = PlayerIDManager.PlayerCount;
 
         if (playerCount > 1)
         {
@@ -431,7 +431,7 @@ public class Juggernaut : Gamemode
         }));
     }
 
-    private void OnScoreChanged(PlayerId player, int score)
+    private void OnScoreChanged(PlayerID player, int score)
     {
         if (score == 0)
         {
@@ -440,7 +440,7 @@ public class Juggernaut : Gamemode
 
         if (TeamManager.GetPlayerTeam(player) != JuggernautTeam)
         {
-            FusionLogger.Warn($"Player {player.SmallId} increased in score, but they aren't the Juggernaut?");
+            FusionLogger.Warn($"Player {player.SmallID} increased in score, but they aren't the Juggernaut?");
 
             return;
         }
@@ -460,7 +460,7 @@ public class Juggernaut : Gamemode
 
     private static float CalculateJuggernautHealth()
     {
-        var otherPlayers = Mathf.Max(1, PlayerIdManager.PlayerCount - 1);
+        var otherPlayers = Mathf.Max(1, PlayerIDManager.PlayerCount - 1);
 
         float health = Defaults.JuggernautVitality * Mathf.Sqrt(otherPlayers);
 
@@ -474,7 +474,7 @@ public class Juggernaut : Gamemode
         return Mathf.Clamp(Mathf.RoundToInt(percent * Defaults.MaxBits), 0, Defaults.MaxBits);
     }
 
-    private void OnAssignedToTeam(PlayerId player, Team team)
+    private void OnAssignedToTeam(PlayerID player, Team team)
     {
         if (player.IsMe)
         {
@@ -486,7 +486,7 @@ public class Juggernaut : Gamemode
         }
     }
 
-    private void OnRemovedFromTeam(PlayerId player, Team team)
+    private void OnRemovedFromTeam(PlayerID player, Team team)
     {
         if (team == JuggernautTeam && NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
         {
@@ -532,7 +532,7 @@ public class Juggernaut : Gamemode
         }
     }
 
-    private void OnOtherAssignedToTeam(PlayerId player, Team team)
+    private void OnOtherAssignedToTeam(PlayerID player, Team team)
     {
         bool healthBarVisible = false;
 
@@ -558,7 +558,7 @@ public class Juggernaut : Gamemode
         }
     }
 
-    private void SwapJuggernaut(PlayerId killer, PlayerId juggernaut)
+    private void SwapJuggernaut(PlayerID killer, PlayerID juggernaut)
     {
         TeamManager.TryAssignTeam(killer, JuggernautTeam);
         TeamManager.TryAssignTeam(juggernaut, SurvivorTeam);
@@ -567,7 +567,7 @@ public class Juggernaut : Gamemode
     private void AssignTeams()
     {
         // Shuffle the players for randomness
-        var players = new List<PlayerId>(PlayerIdManager.PlayerIds);
+        var players = new List<PlayerID>(PlayerIDManager.PlayerIds);
         players.Shuffle();
 
         // Assign Juggernaut

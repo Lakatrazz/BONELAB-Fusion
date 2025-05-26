@@ -9,7 +9,7 @@ namespace LabFusion.Network;
 
 public static class MetadataHelper
 {
-    public static bool TryGetPermissionLevel(this PlayerId id, out PermissionLevel level)
+    public static bool TryGetPermissionLevel(this PlayerID id, out PermissionLevel level)
     {
         var rawLevel = id.Metadata.PermissionLevel.GetValue();
 
@@ -23,7 +23,7 @@ public static class MetadataHelper
         return false;
     }
 
-    public static bool TryGetDisplayName(this PlayerId id, out string name)
+    public static bool TryGetDisplayName(this PlayerID id, out string name)
     {
         var username = id.Metadata.Username.GetValue();
         var nickname = id.Metadata.Nickname.GetValue();
@@ -32,12 +32,12 @@ public static class MetadataHelper
         nickname = TextFilter.Filter(nickname);
 
         // Check validity
-        if (FusionMasterList.VerifyPlayer(id.LongId, username) == FusionMasterResult.IMPERSONATOR)
+        if (FusionMasterList.VerifyPlayer(id.PlatformID, username) == FusionMasterResult.IMPERSONATOR)
         {
             username = $"{username} (FAKE)";
         }
 
-        if (FusionMasterList.VerifyPlayer(id.LongId, nickname) == FusionMasterResult.IMPERSONATOR)
+        if (FusionMasterList.VerifyPlayer(id.PlatformID, nickname) == FusionMasterResult.IMPERSONATOR)
         {
             nickname = $"{nickname} (FAKE)";
         }
@@ -66,7 +66,7 @@ public static class MetadataHelper
             name = username;
         }
 
-        name = name.LimitLength(PlayerIdManager.MaxNameLength);
+        name = name.LimitLength(PlayerIDManager.MaxNameLength);
 
         return !string.IsNullOrWhiteSpace(name);
     }

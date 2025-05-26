@@ -74,7 +74,7 @@ public class ConnectionRequestMessage : NativeMessageHandler
             return;
         }
 
-        var newSmallId = PlayerIdManager.GetUnusedPlayerId();
+        var newSmallId = PlayerIDManager.GetUnusedPlayerID();
 
         // No unused ids available
         if (!newSmallId.HasValue)
@@ -84,7 +84,7 @@ public class ConnectionRequestMessage : NativeMessageHandler
         }
 
         // Player already is in the server?
-        if (PlayerIdManager.GetPlayerId(data.longId) != null)
+        if (PlayerIDManager.GetPlayerID(data.longId) != null)
         {
             ConnectionSender.SendConnectionDeny(data.longId, "You attempted to join, but the server detects you as already in it?");
         }
@@ -97,7 +97,7 @@ public class ConnectionRequestMessage : NativeMessageHandler
         }
 
         // Check if theres too many players
-        if (PlayerIdManager.PlayerCount >= byte.MaxValue || PlayerIdManager.PlayerCount >= SavedServerSettings.MaxPlayers.Value)
+        if (PlayerIDManager.PlayerCount >= byte.MaxValue || PlayerIDManager.PlayerCount >= SavedServerSettings.MaxPlayers.Value)
         {
             ConnectionSender.SendConnectionDeny(data.longId, "Server is full! Wait for someone to leave.");
             return;
@@ -164,7 +164,7 @@ public class ConnectionRequestMessage : NativeMessageHandler
         data.initialMetadata[nameof(PlayerMetadata.PermissionLevel)] = level.ToString();
 
         // Create new PlayerID
-        var playerId = new PlayerId(data.longId, newSmallId.Value, data.initialMetadata, data.initialEquippedItems);
+        var playerId = new PlayerID(data.longId, newSmallId.Value, data.initialMetadata, data.initialEquippedItems);
 
         // Finally, check for dynamic connection disallowing
         if (!MultiplayerHooking.CheckShouldAllowConnection(playerId, out string reason))
@@ -177,16 +177,16 @@ public class ConnectionRequestMessage : NativeMessageHandler
         OnConnectionAllowed(playerId, data);
     }
 
-    private static void OnConnectionAllowed(PlayerId playerId, ConnectionRequestData data)
+    private static void OnConnectionAllowed(PlayerID playerId, ConnectionRequestData data)
     {
         // Send the new player to all existing players (and the new player so they know they exist)
         ConnectionSender.SendPlayerJoin(playerId, data.avatarBarcode, data.avatarStats);
 
         // Now we send all of our other players to the new player
-        foreach (var id in PlayerIdManager.PlayerIds)
+        foreach (var id in PlayerIDManager.PlayerIds)
         {
             // Don't resend the new player to themselves
-            if (id.SmallId == playerId.SmallId)
+            if (id.SmallID == playerId.SmallID)
             {
                 continue;
             }
@@ -194,12 +194,12 @@ public class ConnectionRequestMessage : NativeMessageHandler
             string barcode;
             SerializedAvatarStats stats;
 
-            if (id.SmallId == PlayerIdManager.HostSmallId)
+            if (id.SmallID == PlayerIDManager.HostSmallID)
             {
                 barcode = RigData.RigAvatarId;
                 stats = RigData.RigAvatarStats;
             }
-            else if (NetworkPlayerManager.TryGetPlayer(id.SmallId, out var rep))
+            else if (NetworkPlayerManager.TryGetPlayer(id.SmallID, out var rep))
             {
                 barcode = rep.AvatarSetter.AvatarBarcode;
                 stats = rep.AvatarSetter.AvatarStats;

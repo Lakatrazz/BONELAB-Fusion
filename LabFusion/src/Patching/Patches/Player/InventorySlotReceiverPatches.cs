@@ -61,7 +61,7 @@ public class InventorySlotReceiverPatches
         }
 
         // Send a receiver drop message
-        var data = InventorySlotDropData.Create(slotEntity.Id, PlayerIdManager.LocalSmallId, index.Value, handedness);
+        var data = InventorySlotDropData.Create(slotEntity.ID, PlayerIDManager.LocalSmallID, index.Value, handedness);
 
         MessageRelay.RelayNative(data, NativeMessageTag.InventorySlotDrop, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
@@ -124,7 +124,7 @@ public class InventorySlotReceiverDrop
             return;
         }
 
-        var data = InventorySlotInsertData.Create(slotEntity.Id, weaponEntity.Id, index.Value);
+        var data = InventorySlotInsertData.Create(slotEntity.ID, weaponEntity.ID, index.Value);
 
         MessageRelay.RelayNative(data, NativeMessageTag.InventorySlotInsert, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }

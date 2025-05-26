@@ -18,7 +18,7 @@ public static class InternalLayerHelpers
         NetworkLayerManager.Layer?.OnLateUpdateLayer();
     }
 
-    public static void OnUserJoin(PlayerId id)
+    public static void OnUserJoin(PlayerID id)
     {
         NetworkLayerManager.Layer?.OnUserJoin(id);
     }

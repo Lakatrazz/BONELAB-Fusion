@@ -44,7 +44,7 @@ public static class PullCordDevicePatches
     {
         if (NetworkInfo.HasServer && __instance.rm.IsLocalPlayer())
         {
-            MessageRelay.RelayModule<BodyLogToggleMessage, BodyLogToggleData>(new() { PlayerID = PlayerIdManager.LocalSmallId, IsEnabled = true, }, NetworkChannel.Reliable, RelayType.ToOtherClients);
+            MessageRelay.RelayModule<BodyLogToggleMessage, BodyLogToggleData>(new() { PlayerID = PlayerIDManager.LocalSmallID, IsEnabled = true, }, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
     }
 
@@ -54,7 +54,7 @@ public static class PullCordDevicePatches
     {
         if (NetworkInfo.HasServer && __instance.rm.IsLocalPlayer())
         {
-            MessageRelay.RelayModule<BodyLogToggleMessage, BodyLogToggleData>(new() { PlayerID = PlayerIdManager.LocalSmallId, IsEnabled = false, }, NetworkChannel.Reliable, RelayType.ToOtherClients);
+            MessageRelay.RelayModule<BodyLogToggleMessage, BodyLogToggleData>(new() { PlayerID = PlayerIDManager.LocalSmallID, IsEnabled = false, }, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
     }
 
@@ -64,7 +64,7 @@ public static class PullCordDevicePatches
     {
         if (NetworkInfo.HasServer && __instance.rm.IsLocalPlayer())
         {
-            MessageRelay.RelayModule<BodyLogEffectMessage, BodyLogEffectData>(new() { PlayerID = PlayerIdManager.LocalSmallId }, NetworkChannel.Unreliable, RelayType.ToOtherClients);
+            MessageRelay.RelayModule<BodyLogEffectMessage, BodyLogEffectData>(new() { PlayerID = PlayerIDManager.LocalSmallID }, NetworkChannel.Unreliable, RelayType.ToOtherClients);
         }
     }
 

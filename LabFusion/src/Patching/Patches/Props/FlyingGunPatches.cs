@@ -69,7 +69,7 @@ public static class FlyingGunPatches
             return;
         }
 
-        var data = NimbusGunNoclipData.Create(entity.Id, __instance._noClipping);
+        var data = NimbusGunNoclipData.Create(entity.ID, __instance._noClipping);
 
         MessageRelay.RelayNative(data, NativeMessageTag.NimbusGunNoclip, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }

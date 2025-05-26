@@ -7,7 +7,7 @@ namespace LabFusion.Senders
     {
         public static void SendPermissionRequest(PermissionCommandType type, byte? otherPlayer = null)
         {
-            var data = PermissionCommandRequestData.Create(PlayerIdManager.LocalSmallId, type, otherPlayer);
+            var data = PermissionCommandRequestData.Create(PlayerIDManager.LocalSmallID, type, otherPlayer);
 
             MessageRelay.RelayNative(data, NativeMessageTag.PermissionCommandRequest, NetworkChannel.Reliable, RelayType.ToServer);
         }

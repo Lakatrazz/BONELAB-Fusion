@@ -187,7 +187,7 @@ public class Deathmatch : Gamemode
     private int GetRewardedBits()
     {
         // Change the max bit count based on player count
-        int playerCount = PlayerIdManager.PlayerCount - 1;
+        int playerCount = PlayerIDManager.PlayerCount - 1;
 
         // 10 and 100 are the min and max values for the max bit count
         float playerPercent = (float)playerCount / 3f;
@@ -195,7 +195,7 @@ public class Deathmatch : Gamemode
         int maxRand = maxBits / 10;
 
         // Get the scores
-        int score = ScoreKeeper.GetScore(PlayerIdManager.LocalId);
+        int score = ScoreKeeper.GetScore(PlayerIDManager.LocalID);
         int totalScore = ScoreKeeper.GetTotalScore();
 
         // Prevent divide by 0
@@ -268,7 +268,7 @@ public class Deathmatch : Gamemode
         }
     }
 
-    protected bool OnValidateNametag(PlayerId id)
+    protected bool OnValidateNametag(PlayerID id)
     {
         if (!IsStarted)
             return true;
@@ -276,7 +276,7 @@ public class Deathmatch : Gamemode
         return false;
     }
 
-    protected void OnPlayerAction(PlayerId player, PlayerActionType type, PlayerId otherPlayer = null)
+    protected void OnPlayerAction(PlayerID player, PlayerActionType type, PlayerID otherPlayer = null)
     {
         if (!IsStarted)
         {
@@ -313,7 +313,7 @@ public class Deathmatch : Gamemode
 
     public override bool CheckReadyConditions()
     {
-        return PlayerIdManager.PlayerCount >= _minimumPlayers;
+        return PlayerIDManager.PlayerCount >= _minimumPlayers;
     }
 
     public override void OnGamemodeStarted()
@@ -422,8 +422,8 @@ public class Deathmatch : Gamemode
         var secondPlace = ScoreKeeper.GetPlayerByPlace(1);
         var thirdPlace = ScoreKeeper.GetPlayerByPlace(2);
 
-        var selfPlace = ScoreKeeper.GetPlace(PlayerIdManager.LocalId);
-        var selfScore = ScoreKeeper.GetScore(PlayerIdManager.LocalId);
+        var selfPlace = ScoreKeeper.GetPlace(PlayerIDManager.LocalID);
+        var selfScore = ScoreKeeper.GetScore(PlayerIDManager.LocalID);
 
         string message = "No one scored points!";
 
@@ -448,7 +448,7 @@ public class Deathmatch : Gamemode
         }
 
         // Play victory/failure sounds
-        int playerCount = PlayerIdManager.PlayerCount;
+        int playerCount = PlayerIDManager.PlayerCount;
 
         if (playerCount > 1)
         {
@@ -563,7 +563,7 @@ public class Deathmatch : Gamemode
         }
     }
 
-    private void OnScoreChanged(PlayerId player, int score)
+    private void OnScoreChanged(PlayerID player, int score)
     {
         if (player.IsMe && score != 0)
         {

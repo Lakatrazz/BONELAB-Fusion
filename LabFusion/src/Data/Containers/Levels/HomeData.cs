@@ -59,7 +59,7 @@ public class HomeData : LevelDataHandler
     private static void OnTaxiSeatRegistered()
     {
         // Give the achievement in a server with more than 1 player
-        if (NetworkInfo.HasServer && PlayerIdManager.HasOtherPlayers)
+        if (NetworkInfo.HasServer && PlayerIDManager.HasOtherPlayers)
         {
             // Increment the achievement task
             if (AchievementManager.TryGetAchievement<OneMoreTime>(out var achievement))

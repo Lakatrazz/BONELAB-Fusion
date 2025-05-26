@@ -46,7 +46,7 @@ public static class PooleeUtilities
         {
             var data = new DespawnResponseData()
             {
-                Despawner = new(PlayerIdManager.LocalSmallId),
+                Despawner = new(PlayerIDManager.LocalSmallID),
                 Entity = new(entityId),
                 DespawnEffect = despawnEffect,
             };

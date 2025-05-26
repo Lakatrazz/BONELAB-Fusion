@@ -32,7 +32,7 @@ public class PooleeOnDespawnPatch
         }
 
 #if DEBUG
-        FusionLogger.Log($"Unregistered entity at ID {entity.Id} after OnDespawnEvent.");
+        FusionLogger.Log($"Unregistered entity at ID {entity.ID} after OnDespawnEvent.");
 #endif
 
         NetworkEntityManager.IdManager.UnregisterEntity(entity);
@@ -53,7 +53,7 @@ public class PooleeDespawnPatch
 
             if (player != null)
             {
-                FusionLogger.Warn($"Prevented Poolee.Despawn of player at ID {entity.Id}!");
+                FusionLogger.Warn($"Prevented Poolee.Despawn of player at ID {entity.ID}!");
                 return true;
             }
         }
@@ -67,7 +67,7 @@ public class PooleeDespawnPatch
 
             if (player != null)
             {
-                FusionLogger.Warn($"Prevented Poolee.Despawn of player at ID {entity.Id}!");
+                FusionLogger.Warn($"Prevented Poolee.Despawn of player at ID {entity.ID}!");
                 return true;
             }
         }
@@ -127,7 +127,7 @@ public class PooleeDespawnPatch
             return;
         }
 
-        PooleeUtilities.SendDespawn(entity.Id, false);
+        PooleeUtilities.SendDespawn(entity.ID, false);
         NetworkEntityManager.IdManager.UnregisterEntity(entity);
     }
 }

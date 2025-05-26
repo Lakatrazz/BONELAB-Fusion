@@ -12,17 +12,17 @@ public static class ConnectionSender
     {
         if (NetworkInfo.IsHost)
         {
-            foreach (var id in PlayerIdManager.PlayerIds)
+            foreach (var id in PlayerIDManager.PlayerIds)
             {
                 if (id.IsMe)
                     continue;
 
                 using var writer = NetWriter.Create();
-                var disconnect = DisconnectMessageData.Create(id.LongId, reason);
+                var disconnect = DisconnectMessageData.Create(id.PlatformID, reason);
                 writer.SerializeValue(ref disconnect);
 
                 using var message = FusionMessage.Create(NativeMessageTag.Disconnect, writer);
-                MessageSender.SendFromServer(id.LongId, NetworkChannel.Reliable, message);
+                MessageSender.SendFromServer(id.PlatformID, NetworkChannel.Reliable, message);
             }
         }
     }
@@ -59,7 +59,7 @@ public static class ConnectionSender
         {
             using var writer = NetWriter.Create();
 
-            var data = ConnectionRequestData.Create(PlayerIdManager.LocalLongId, FusionMod.Version, RigData.GetAvatarBarcode(), RigData.RigAvatarStats);
+            var data = ConnectionRequestData.Create(PlayerIDManager.LocalPlatformID, FusionMod.Version, RigData.GetAvatarBarcode(), RigData.RigAvatarStats);
             data.Serialize(writer);
 
             using FusionMessage message = FusionMessage.Create(NativeMessageTag.ConnectionRequest, writer);
@@ -71,7 +71,7 @@ public static class ConnectionSender
         }
     }
 
-    public static void SendPlayerCatchup(ulong newUser, PlayerId id, string avatar, SerializedAvatarStats stats)
+    public static void SendPlayerCatchup(ulong newUser, PlayerID id, string avatar, SerializedAvatarStats stats)
     {
         using var writer = NetWriter.Create();
         var response = ConnectionResponseData.Create(id, avatar, stats, false);
@@ -81,7 +81,7 @@ public static class ConnectionSender
         MessageSender.SendFromServer(newUser, NetworkChannel.Reliable, message);
     }
 
-    public static void SendPlayerJoin(PlayerId id, string avatar, SerializedAvatarStats stats)
+    public static void SendPlayerJoin(PlayerID id, string avatar, SerializedAvatarStats stats)
     {
         using var writer = NetWriter.Create();
         var response = ConnectionResponseData.Create(id, avatar, stats, true);

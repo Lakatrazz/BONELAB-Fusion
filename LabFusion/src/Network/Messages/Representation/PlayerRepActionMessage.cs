@@ -45,7 +45,7 @@ public class PlayerRepActionMessage : NativeMessageHandler
             return;
         }
 
-        PlayerId otherPlayer = data.otherPlayer.HasValue ? PlayerIdManager.GetPlayerId(data.otherPlayer.Value) : null;
+        PlayerID otherPlayer = data.otherPlayer.HasValue ? PlayerIDManager.GetPlayerID(data.otherPlayer.Value) : null;
 
         // If this isn't our rig, call these functions
         if (!player.NetworkEntity.IsOwner && player.HasRig)

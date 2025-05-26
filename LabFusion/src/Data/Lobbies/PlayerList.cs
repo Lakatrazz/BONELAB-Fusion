@@ -13,10 +13,10 @@ public class PlayerList
     public void WritePlayers()
     {
         // Create player info array from all players
-        Players = new PlayerInfo[PlayerIdManager.PlayerCount];
+        Players = new PlayerInfo[PlayerIDManager.PlayerCount];
         int index = 0;
 
-        foreach (var player in PlayerIdManager.PlayerIds)
+        foreach (var player in PlayerIDManager.PlayerIds)
         {
             Players[index++] = new PlayerInfo(player);
         }

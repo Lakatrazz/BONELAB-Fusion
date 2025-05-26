@@ -34,7 +34,7 @@ namespace LabFusion.SDK.Achievements
         private void OnMainSceneInitialized()
         {
             // Make sure we have a server and this level hasn't already been visited
-            if (NetworkInfo.HasServer && PlayerIdManager.HasOtherPlayers && !_levels.Contains(FusionSceneManager.Barcode))
+            if (NetworkInfo.HasServer && PlayerIDManager.HasOtherPlayers && !_levels.Contains(FusionSceneManager.Barcode))
             {
                 _levels.Add(FusionSceneManager.Barcode);
 

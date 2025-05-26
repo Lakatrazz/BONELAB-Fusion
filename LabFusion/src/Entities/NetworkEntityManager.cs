@@ -83,7 +83,7 @@ public static class NetworkEntityManager
 
     private static void OnEntityRegistered(NetworkEntity entity)
     {
-        var id = entity.Id;
+        var id = entity.ID;
 
         if (_entityRegisteredCallbacks.TryGetValue(id, out var callbacks))
         {
@@ -103,12 +103,12 @@ public static class NetworkEntityManager
         }
     }
 
-    private static void OnPlayerServerCatchup(PlayerId playerId)
+    private static void OnPlayerServerCatchup(PlayerID playerId)
     {
         MelonCoroutines.Start(SendCreationCatchupCoroutine(playerId));
     }
 
-    private static IEnumerator SendCreationCatchupCoroutine(PlayerId playerId)
+    private static IEnumerator SendCreationCatchupCoroutine(PlayerID playerId)
     {
         var catchupQueue = new Queue<NetworkEntity>(IdManager.RegisteredEntities.IdEntityLookup.Values);
 
@@ -134,7 +134,7 @@ public static class NetworkEntityManager
         }
     }
 
-    private static bool SendCreationCatchup(NetworkEntity entity, PlayerId playerId)
+    private static bool SendCreationCatchup(NetworkEntity entity, PlayerID playerId)
     {
         try
         {
@@ -200,17 +200,17 @@ public static class NetworkEntityManager
             return;
         }
 
-        var data = EntityUnqueueRequestData.Create(PlayerIdManager.LocalSmallId, queuedId);
+        var data = EntityUnqueueRequestData.Create(PlayerIDManager.LocalSmallID, queuedId);
 
         MessageRelay.RelayNative(data, NativeMessageTag.EntityUnqueueRequest, NetworkChannel.Reliable, RelayType.ToServer);
     }
 
-    public static void TransferOwnership(NetworkEntity entity, PlayerId ownerId)
+    public static void TransferOwnership(NetworkEntity entity, PlayerID ownerId)
     {
         if (!OwnershipTransferValidators.Validate(entity, ownerId))
         {
 #if DEBUG
-            FusionLogger.Log($"Prevented ownership transfer for NetworkEntity at id {entity.Id} due to failed validation!");
+            FusionLogger.Log($"Prevented ownership transfer for NetworkEntity at id {entity.ID} due to failed validation!");
 #endif
 
             return;
@@ -218,19 +218,19 @@ public static class NetworkEntityManager
 
         if (entity.IsOwnerLocked)
         {
-            FusionLogger.Warn($"Attempted to transfer ownership for NetworkEntity at id {entity.Id}, but ownership was locked!");
+            FusionLogger.Warn($"Attempted to transfer ownership for NetworkEntity at id {entity.ID}, but ownership was locked!");
             return;
         }
 
         if (!entity.IsRegistered)
         {
-            FusionLogger.Warn($"Attempted to transfer ownership for NetworkEntity at id {entity.Id}, but it wasn't registered!");
+            FusionLogger.Warn($"Attempted to transfer ownership for NetworkEntity at id {entity.ID}, but it wasn't registered!");
             return;
         }
 
         var request = new EntityPlayerData()
         {
-            PlayerId = ownerId.SmallId,
+            PlayerId = ownerId.SmallID,
             Entity = new(entity),
         };
 
@@ -245,7 +245,7 @@ public static class NetworkEntityManager
             return;
         }
 
-        TransferOwnership(entity, PlayerIdManager.LocalId);
+        TransferOwnership(entity, PlayerIDManager.LocalID);
     }
 
     public static void HookEntityRegistered(ushort id, NetworkEntityDelegate callback)

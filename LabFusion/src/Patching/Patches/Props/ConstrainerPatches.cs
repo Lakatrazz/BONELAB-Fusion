@@ -148,7 +148,7 @@ public static class ConstrainerPatches
             ConstraintTrackerPatches.IgnorePatches = false;
 
             // Send create message
-            var data = ConstraintCreateData.Create(PlayerIdManager.LocalSmallId, entity.Id, new ConstrainerPointPair(__instance));
+            var data = ConstraintCreateData.Create(PlayerIDManager.LocalSmallID, entity.ID, new ConstrainerPointPair(__instance));
 
             MessageRelay.RelayNative(data, NativeMessageTag.ConstraintCreate, NetworkChannel.Reliable, RelayType.ToServer);
         }
@@ -205,7 +205,7 @@ public static class ConstrainerPatches
                     nextMode++;
                 }
 
-                var data = ConstrainerModeData.Create(PlayerIdManager.LocalSmallId, syncable.Id, nextMode);
+                var data = ConstrainerModeData.Create(PlayerIDManager.LocalSmallID, syncable.ID, nextMode);
 
                 MessageRelay.RelayNative(data, NativeMessageTag.ConstrainerMode, NetworkChannel.Reliable, RelayType.ToOtherClients);
             }

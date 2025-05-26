@@ -46,7 +46,7 @@ public class KartRaceData : LevelDataHandler
 
         // If we are in Monogon Motorway, spawn extra go-karts
         // Link these spawns up to the reset race button too
-        var extraPlayers = PlayerIdManager.PlayerCount - 1;
+        var extraPlayers = PlayerIDManager.PlayerCount - 1;
 
         // Get the gokart spawner
         GameObject gokartSpawner = GameObject.Find(GokartName);

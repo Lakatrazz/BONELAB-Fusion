@@ -12,7 +12,7 @@ public static class CatchupManager
     /// <summary>
     /// Callback invoked when a new player joins the server and needs to be caught up on past server messages.
     /// </summary>
-    public static event Action<PlayerId> OnPlayerServerCatchup;
+    public static event Action<PlayerID> OnPlayerServerCatchup;
 
     /// <summary>
     /// Invoked on the entity owner's end when a Player finishes creating a NetworkEntity and needs its data to be caught up.
@@ -26,19 +26,19 @@ public static class CatchupManager
             return;
         }
 
-        RequestEntityDataCatchup(entity.OwnerId ?? PlayerIdManager.GetHostId(), entityReference);
+        RequestEntityDataCatchup(entity.OwnerID ?? PlayerIDManager.GetHostID(), entityReference);
     }
 
-    public static void RequestEntityDataCatchup(PlayerId ownerId, NetworkEntityReference entityReference)
+    public static void RequestEntityDataCatchup(PlayerID ownerId, NetworkEntityReference entityReference)
     {
-        var data = new EntityPlayerData() { PlayerId = PlayerIdManager.LocalSmallId, Entity = entityReference };
+        var data = new EntityPlayerData() { PlayerId = PlayerIDManager.LocalSmallID, Entity = entityReference };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.EntityDataRequest, NetworkChannel.Reliable, RelayType.ToTarget, ownerId.SmallId);
+        MessageRelay.RelayNative(data, NativeMessageTag.EntityDataRequest, NetworkChannel.Reliable, RelayType.ToTarget, ownerId.SmallID);
     }
 
-    internal static void InvokePlayerServerCatchup(PlayerId playerId) => OnPlayerServerCatchup.InvokeSafe(playerId, "executing OnPlayerCatchup hook");
+    internal static void InvokePlayerServerCatchup(PlayerID playerId) => OnPlayerServerCatchup.InvokeSafe(playerId, "executing OnPlayerCatchup hook");
 
-    internal static void InvokeEntityDataCatchup(PlayerId playerId, NetworkEntityReference entityReference)
+    internal static void InvokeEntityDataCatchup(PlayerID playerId, NetworkEntityReference entityReference)
     {
         if (!entityReference.TryGetEntity(out var entity))
         {

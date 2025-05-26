@@ -33,7 +33,7 @@ public static class BoardSpawnerAsyncPatches
         if (body != null && MarrowBodyExtender.Cache.TryGet(body, out var entity))
         {
             hasBody = true;
-            entityId = entity.Id;
+            entityId = entity.ID;
 
             var bodyExtender = entity.GetExtender<MarrowBodyExtender>();
             bodyIndex = bodyExtender.GetIndex(body).Value;
@@ -102,8 +102,8 @@ public static class BoardSpawnerAsyncPatches
                 info.Spawned.transform.localScale = GetBoardScale(distance.magnitude);
 
                 // Get the entity ids
-                var boardId = info.Entity.Id;
-                var boardGeneratorId = generatorEntity.Id;
+                var boardId = info.Entity.ID;
+                var boardGeneratorId = generatorEntity.ID;
 
                 // Get points
                 var firstPoint = GetPointData(boardGenerator.firstPoint, boardGenerator.FirstRb);
@@ -112,7 +112,7 @@ public static class BoardSpawnerAsyncPatches
                 // Send the generator message
                 var data = new BoardGeneratorData()
                 {
-                    OwnerID = PlayerIdManager.LocalSmallId,
+                    OwnerID = PlayerIDManager.LocalSmallID,
                     BoardID = boardId,
                     BoardGeneratorID = boardGeneratorId,
                     FirstPoint = firstPoint,

@@ -22,13 +22,13 @@ public sealed class Contact
         return element;
     }
 
-    public Contact(PlayerId id)
+    public Contact(PlayerID id)
     {
         Update(id);
         volume = 1f;
     }
 
-    public void Update(PlayerId id)
+    public void Update(PlayerID id)
     {
         this.id = id;
         username = id.Metadata.Username.GetValue();
@@ -95,7 +95,7 @@ public static class ContactsList
         _file.WriteFile(entries);
     }
 
-    public static Contact GetContact(PlayerId id)
+    public static Contact GetContact(PlayerID id)
     {
         Contact contact;
 

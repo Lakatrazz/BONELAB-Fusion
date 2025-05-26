@@ -3,14 +3,14 @@ using LabFusion.SDK.Metadata;
 
 namespace LabFusion.SDK.Gamemodes;
 
-public sealed class PlayerScoreKeeper : ScoreKeeper<PlayerId>
+public sealed class PlayerScoreKeeper : ScoreKeeper<PlayerID>
 {
-    public override string GetKeyWithProperty(PlayerId property)
+    public override string GetKeyWithProperty(PlayerID property)
     {
         return KeyHelper.GetKeyFromPlayer(Key, property);
     }
 
-    public override PlayerId GetPropertyWithKey(string key)
+    public override PlayerID GetPropertyWithKey(string key)
     {
         return KeyHelper.GetPlayerFromKey(key);
     }
@@ -19,9 +19,9 @@ public sealed class PlayerScoreKeeper : ScoreKeeper<PlayerId>
     /// Returns all players ordered from highest score to lowest score.
     /// </summary>
     /// <returns></returns>
-    public IReadOnlyList<PlayerId> GetPlacedPlayers()
+    public IReadOnlyList<PlayerID> GetPlacedPlayers()
     {
-        List<PlayerId> leaders = new(PlayerIdManager.PlayerIds);
+        List<PlayerID> leaders = new(PlayerIDManager.PlayerIds);
         leaders = leaders.OrderBy(id => GetScore(id)).ToList();
         leaders.Reverse();
 
@@ -32,9 +32,9 @@ public sealed class PlayerScoreKeeper : ScoreKeeper<PlayerId>
     /// Returns all players ordered from lowest score to the highest score.
     /// </summary>
     /// <returns></returns>
-    public IReadOnlyList<PlayerId> GetOrderedPlayers()
+    public IReadOnlyList<PlayerID> GetOrderedPlayers()
     {
-        List<PlayerId> leaders = new(PlayerIdManager.PlayerIds);
+        List<PlayerID> leaders = new(PlayerIDManager.PlayerIds);
         leaders = leaders.OrderBy(id => GetScore(id)).ToList();
 
         return leaders;
@@ -45,7 +45,7 @@ public sealed class PlayerScoreKeeper : ScoreKeeper<PlayerId>
     /// </summary>
     /// <param name="place">The place to check, starting at index 0.</param>
     /// <returns>The player at the specified place.</returns>
-    public PlayerId GetPlayerByPlace(int place)
+    public PlayerID GetPlayerByPlace(int place)
     {
         var players = GetPlacedPlayers();
 
@@ -62,7 +62,7 @@ public sealed class PlayerScoreKeeper : ScoreKeeper<PlayerId>
     /// </summary>
     /// <param name="player">The player to get the index of.</param>
     /// <returns></returns>
-    public int GetPlace(PlayerId player)
+    public int GetPlace(PlayerID player)
     {
         var players = GetPlacedPlayers();
 

@@ -91,7 +91,7 @@ public class InventoryAmmoReceiverGrab
         }
 
         // Send claim message
-        var data = MagazineClaimData.Create(PlayerIdManager.LocalSmallId, info.Entity.Id, handedness);
+        var data = MagazineClaimData.Create(PlayerIDManager.LocalSmallID, info.Entity.ID, handedness);
 
         MessageRelay.RelayNative(data, NativeMessageTag.MagazineClaim, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
@@ -136,10 +136,10 @@ public class InventoryAmmoReceiverDrop
         if (!magazineExtender.Component.magazinePlug._isLocked)
         {
             // Despawn the magazine
-            PooleeUtilities.RequestDespawn(entity.Id, false);
+            PooleeUtilities.RequestDespawn(entity.ID, false);
 
             // Play the ammo release sound effect
-            var data = InventoryAmmoReceiverDropData.Create(PlayerIdManager.LocalId);
+            var data = InventoryAmmoReceiverDropData.Create(PlayerIDManager.LocalID);
 
             MessageRelay.RelayNative(data, NativeMessageTag.InventoryAmmoReceiverDrop, NetworkChannel.Reliable, RelayType.ToClients);
         }

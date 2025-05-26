@@ -63,7 +63,7 @@ public class BitMiner : PointItem
             return;
         }
 
-        if (!PlayerIdManager.HasOtherPlayers)
+        if (!PlayerIDManager.HasOtherPlayers)
         {
             _bitTime = 0f;
             return;
@@ -85,7 +85,7 @@ public class BitMiner : PointItem
     {
         var baseCount = 2 + CurrentUpgradeIndex;
 
-        var otherPlayers = PlayerIdManager.PlayerCount - 1;
+        var otherPlayers = PlayerIDManager.PlayerCount - 1;
 
         // Multiplicatively increase bits by player count
         var finalCount = baseCount * otherPlayers;

@@ -22,7 +22,7 @@ public abstract class LevelDataHandler
     }
 
     protected virtual void MainSceneInitialized() { }
-    protected virtual void PlayerCatchup(PlayerId playerId) { }
+    protected virtual void PlayerCatchup(PlayerID playerId) { }
 
     private static void OnMainSceneInitialized()
     {
@@ -37,7 +37,7 @@ public abstract class LevelDataHandler
         }
     }
 
-    private static void OnPlayerCatchup(PlayerId playerId)
+    private static void OnPlayerCatchup(PlayerID playerId)
     {
         for (var i = 0; i < Handlers.Count; i++)
         {

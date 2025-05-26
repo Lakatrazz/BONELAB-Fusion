@@ -34,7 +34,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     private NetworkEntity _networkEntity = null;
 
-    private PlayerId _playerId = null;
+    private PlayerID _playerId = null;
 
     private string _username = "No Name";
 
@@ -43,7 +43,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private MarrowEntity _marrowEntity = null;
     public MarrowEntity MarrowEntity => _marrowEntity;
 
-    public PlayerId PlayerId => _playerId;
+    public PlayerID PlayerId => _playerId;
 
     public string Username => _username;
 
@@ -180,7 +180,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
 
     public JawFlapper JawFlapper => _flapper;
 
-    public NetworkPlayer(NetworkEntity networkEntity, PlayerId playerId)
+    public NetworkPlayer(NetworkEntity networkEntity, PlayerID playerId)
     {
         _networkEntity = networkEntity;
         _playerId = playerId;
@@ -287,7 +287,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         MarkDirty();
 
         // Rename the rig to match our ID
-        rigManager.gameObject.name = $"{PlayerRepUtilities.PlayerRepName} (ID {PlayerId.SmallId})";
+        rigManager.gameObject.name = $"{PlayerRepUtilities.PlayerRepName} (ID {PlayerId.SmallID})";
 
         // Hook into the rig
         OnFoundRigManager(rigManager);
@@ -541,7 +541,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     private void OnPlayerUnregistered(NetworkEntity entity)
     {
 #if DEBUG
-        FusionLogger.Log($"Unregistered NetworkPlayer with ID {PlayerId.SmallId}.");
+        FusionLogger.Log($"Unregistered NetworkPlayer with ID {PlayerId.SmallID}.");
 #endif
 
         Players.Remove(this);

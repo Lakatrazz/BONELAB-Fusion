@@ -66,7 +66,7 @@ public class UnityVoiceSpeaker : VoiceSpeaker
 
     private float _silentTimer = 0f;
 
-    public UnityVoiceSpeaker(PlayerId id)
+    public UnityVoiceSpeaker(PlayerID id)
     {
         // Save the id
         _id = id;
@@ -159,7 +159,7 @@ public class UnityVoiceSpeaker : VoiceSpeaker
 
     private void OnContactUpdated(Contact contact)
     {
-        if (contact.id != _id.LongId)
+        if (contact.id != _id.PlatformID)
         {
             return;
         }

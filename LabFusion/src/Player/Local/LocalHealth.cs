@@ -64,7 +64,7 @@ public static class LocalHealth
     /// <summary>
     /// Callback that is invoked when the local player is attacked by another player. Passes in the Attack, the hit BodyPart, and the attacking PlayerId.
     /// </summary>
-    public static event Action<Attack, PlayerDamageReceiver.BodyPart, PlayerId> OnAttackedByPlayer;
+    public static event Action<Attack, PlayerDamageReceiver.BodyPart, PlayerID> OnAttackedByPlayer;
 
     /// <summary>
     /// Sets the Local Player's health to full.
@@ -111,7 +111,7 @@ public static class LocalHealth
         OnRespawn?.InvokeSafe("executing LocalHealth.OnRespawn");
     }
 
-    internal static void InvokeAttackedByPlayer(Attack attack, PlayerDamageReceiver.BodyPart bodyPart, PlayerId playerId)
+    internal static void InvokeAttackedByPlayer(Attack attack, PlayerDamageReceiver.BodyPart bodyPart, PlayerID playerId)
     {
         OnAttackedByPlayer?.InvokeSafe(attack, bodyPart, playerId, "executing LocalHealth.OnAttackedByPlayer");
     }

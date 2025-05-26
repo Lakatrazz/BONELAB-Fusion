@@ -72,7 +72,7 @@ public class RigAvatarSetter
 
         long maxBytes = DataConversions.ConvertMegabytesToBytes(ClientSettings.Downloading.MaxFileSize.Value);
 
-        var owner = _entity.OwnerId.SmallId;
+        var owner = _entity.OwnerID.SmallID;
 
         NetworkModRequester.RequestAndInstallMod(new NetworkModRequester.ModInstallInfo()
         {
@@ -98,7 +98,7 @@ public class RigAvatarSetter
 
         if (info.result != ModResult.SUCCEEDED)
         {
-            FusionLogger.Warn($"Failed downloading avatar for rig {_entity.Id}!");
+            FusionLogger.Warn($"Failed downloading avatar for rig {_entity.ID}!");
             return;
         }
 

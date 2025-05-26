@@ -77,7 +77,7 @@ public static class NetworkHelper
     /// Kicks a user from the game.
     /// </summary>
     /// <param name="id"></param>
-    public static void KickUser(PlayerId id)
+    public static void KickUser(PlayerID id)
     {
         // Don't kick blessed users
         if (FusionBlessings.IsBlessed(id))
@@ -106,7 +106,7 @@ public static class NetworkHelper
     /// Bans a user from the game.
     /// </summary>
     /// <param name="id"></param>
-    public static void BanUser(PlayerId id)
+    public static void BanUser(PlayerID id)
     {
         // Don't ban blessed users
         if (FusionBlessings.IsBlessed(id))

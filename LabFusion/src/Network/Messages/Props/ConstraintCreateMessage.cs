@@ -220,7 +220,7 @@ public class ConstraintCreateMessage : NativeMessageHandler
             tran2.SetPositionAndRotation(go2Pos, go2Rot);
 
             // Events when the constrainer is from another player
-            if (data.SmallId != PlayerIdManager.LocalSmallId)
+            if (data.SmallId != PlayerIDManager.LocalSmallID)
             {
                 if (hasConstrainer)
                 {
@@ -230,7 +230,7 @@ public class ConstraintCreateMessage : NativeMessageHandler
                 }
 
                 // Check for host constraint achievement
-                if (data.SmallId == PlayerIdManager.HostSmallId && AchievementManager.TryGetAchievement<ClassStruggle>(out var achievement))
+                if (data.SmallId == PlayerIDManager.HostSmallID && AchievementManager.TryGetAchievement<ClassStruggle>(out var achievement))
                 {
                     bool tracker1IsSelf = tracker1HasPlayer && tracker1Player.NetworkEntity.IsOwner;
                     bool tracker2IsSelf = tracker2HasPlayer && tracker2Player.NetworkEntity.IsOwner;

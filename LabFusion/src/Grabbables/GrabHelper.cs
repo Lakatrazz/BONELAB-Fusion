@@ -45,7 +45,7 @@ public static class GrabHelper
         }
 
         // Get base values for the message
-        byte smallId = PlayerIdManager.LocalSmallId;
+        byte smallId = PlayerIDManager.LocalSmallID;
 
         // Do we already have a synced object?
         if (GripExtender.Cache.TryGet(grip, out var entity))
@@ -83,7 +83,7 @@ public static class GrabHelper
         var handedness = hand.handedness;
 
         // Get base values for the message
-        byte smallId = PlayerIdManager.LocalSmallId;
+        byte smallId = PlayerIDManager.LocalSmallID;
         GrabGroup group = GrabGroup.UNKNOWN;
         SerializedGrab serializedGrab = null;
 
@@ -137,7 +137,7 @@ public static class GrabHelper
                 {
                     var gripExtender = entity.GetExtender<GripExtender>();
 
-                    serializedGrab = new SerializedEntityGrab(gripExtender.GetIndex(grip).Value, entity.Id);
+                    serializedGrab = new SerializedEntityGrab(gripExtender.GetIndex(grip).Value, entity.ID);
                     OnFinish();
                 });
             }
@@ -153,7 +153,7 @@ public static class GrabHelper
                 void OnEntityFinish(NetworkProp prop)
                 {
                     var gripExtender = prop.NetworkEntity.GetExtender<GripExtender>();
-                    serializedGrab = new SerializedEntityGrab(gripExtender.GetIndex(grip).Value, prop.NetworkEntity.Id);
+                    serializedGrab = new SerializedEntityGrab(gripExtender.GetIndex(grip).Value, prop.NetworkEntity.ID);
 
                     OnFinish();
                 }
@@ -204,7 +204,7 @@ public static class GrabHelper
             return;
         }
 
-        var data = PlayerRepReleaseData.Create(PlayerIdManager.LocalSmallId, handedness);
+        var data = PlayerRepReleaseData.Create(PlayerIDManager.LocalSmallID, handedness);
 
         MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepRelease, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }

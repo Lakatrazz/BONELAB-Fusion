@@ -101,7 +101,7 @@ public static class MarrowEntityPatches
 
             if (player != null)
             {
-                FusionLogger.Warn($"Prevented MarrowEntity.Despawn of player at ID {entity.Id}!");
+                FusionLogger.Warn($"Prevented MarrowEntity.Despawn of player at ID {entity.ID}!");
                 return false;
             }
         }

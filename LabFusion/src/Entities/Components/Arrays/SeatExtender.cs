@@ -30,7 +30,7 @@ public class SeatExtender : EntityComponentArrayExtender<Seat>
         entity.OnEntityDataCatchup -= OnEntityDataCatchup;
     }
 
-    private void OnEntityDataCatchup(NetworkEntity entity, PlayerId player)
+    private void OnEntityDataCatchup(NetworkEntity entity, PlayerID player)
     {
         foreach (var component in Components)
         {
@@ -38,7 +38,7 @@ public class SeatExtender : EntityComponentArrayExtender<Seat>
         }
     }
 
-    private void OnEntityDataCatchup(Seat seat, NetworkEntity entity, PlayerId player)
+    private void OnEntityDataCatchup(Seat seat, NetworkEntity entity, PlayerID player)
     {
         if (seat.rigManager == null)
         {
@@ -50,7 +50,7 @@ public class SeatExtender : EntityComponentArrayExtender<Seat>
             return;
         }
 
-        var data = PlayerRepSeatData.Create(seatedPlayer.PlayerId, entity.Id, (byte)GetIndex(seat).Value, true);
+        var data = PlayerRepSeatData.Create(seatedPlayer.PlayerId, entity.ID, (byte)GetIndex(seat).Value, true);
 
         MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepSeat, NetworkChannel.Reliable, RelayType.ToTarget, player);
     }

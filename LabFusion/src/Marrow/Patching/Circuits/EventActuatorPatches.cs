@@ -137,7 +137,7 @@ public static class EventActuatorPatches
             return;
         }
 
-        var data = EventActuatorData.Create(PlayerIdManager.LocalSmallId, hashData, type, value);
+        var data = EventActuatorData.Create(PlayerIDManager.LocalSmallID, hashData, type, value);
 
         MessageRelay.RelayModule<EventActuatorMessage, EventActuatorData>(data, NetworkChannel.Reliable, RelayType.ToClients);
     }

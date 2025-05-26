@@ -140,7 +140,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
                         break;
                     }
 
-                    PlayerIdManager.SetLongId(SteamId.Value);
+                    PlayerIDManager.SetLongID(SteamId.Value);
                     NetDataWriter writer = NewWriter(MessageTypes.GetUsername);
                     writer.Put(SteamId.Value);
                     SendToProxyServer(writer);
@@ -158,7 +158,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
                 break;
             case (ulong)MessageTypes.OnDisconnected:
                 ulong longId = dataReader.GetULong();
-                if (PlayerIdManager.HasPlayerId(longId))
+                if (PlayerIDManager.HasPlayerID(longId))
                 {
                     // Update the mod so it knows this user has left
                     InternalServerHelpers.OnPlayerLeft(longId);
@@ -367,11 +367,11 @@ public abstract class ProxyNetworkLayer : NetworkLayer
 
     public override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message)
     {
-        var id = PlayerIdManager.GetPlayerId(userId);
+        var id = PlayerIDManager.GetPlayerID(userId);
 
         if (id != null)
         {
-            SendFromServer(id.LongId, channel, message);
+            SendFromServer(id.PlatformID, channel, message);
         }
     }
 
@@ -491,7 +491,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
         _currentLobby = new ProxyNetworkLobby();
     }
 
-    private void OnPlayerJoin(PlayerId id)
+    private void OnPlayerJoin(PlayerID id)
     {
         if (!id.IsMe)
             _voiceManager.GetSpeaker(id);
@@ -499,7 +499,7 @@ public abstract class ProxyNetworkLayer : NetworkLayer
         OnUpdateLobby();
     }
 
-    private void OnPlayerLeave(PlayerId id)
+    private void OnPlayerLeave(PlayerID id)
     {
         _voiceManager.RemoveSpeaker(id);
     }

@@ -39,7 +39,7 @@ public class ModInfoResponseMessage : NativeMessageHandler
         var data = received.ReadData<ModInfoResponseData>();
 
         // Make sure we're the target
-        if (received.Target != PlayerIdManager.LocalSmallId)
+        if (received.Target != PlayerIDManager.LocalSmallID)
         {
             throw new Exception($"Received a ModInfoResponse, but we were not the desired target of {received.Target.Value}!");
         }

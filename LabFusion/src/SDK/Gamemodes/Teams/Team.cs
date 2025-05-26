@@ -24,22 +24,22 @@ public class Team
         TeamName = teamName;
     }
 
-    private readonly HashSet<PlayerId> _players = new();
-    public HashSet<PlayerId> Players => _players;
+    private readonly HashSet<PlayerID> _players = new();
+    public HashSet<PlayerID> Players => _players;
 
     public int PlayerCount => _players.Count;
 
-    public bool HasPlayer(PlayerId player)
+    public bool HasPlayer(PlayerID player)
     {
         return Players.Contains(player);
     }
 
-    public void ForceAddPlayer(PlayerId player)
+    public void ForceAddPlayer(PlayerID player)
     {
         _players.Add(player);
     }
 
-    public void ForceRemovePlayer(PlayerId player)
+    public void ForceRemovePlayer(PlayerID player)
     {
         _players.Remove(player);
     }

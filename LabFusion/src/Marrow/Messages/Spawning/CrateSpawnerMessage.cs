@@ -1,10 +1,14 @@
-﻿using LabFusion.Patching;
+﻿using LabFusion.Marrow.Patching;
 using LabFusion.Entities;
 using LabFusion.Network.Serialization;
 using LabFusion.Data;
-using LabFusion.Senders;
+using LabFusion.SDK.Modules;
+using LabFusion.Network;
+using LabFusion.Player;
 
-namespace LabFusion.Network;
+using Il2CppSLZ.Marrow.Warehouse;
+
+namespace LabFusion.Marrow.Messages;
 
 public class CrateSpawnerData : INetSerializable
 {
@@ -30,10 +34,8 @@ public class CrateSpawnerData : INetSerializable
 }
 
 [Net.SkipHandleWhileLoading]
-public class CrateSpawnerMessage : NativeMessageHandler
+public class CrateSpawnerMessage : ModuleMessageHandler
 {
-    public override byte Tag => NativeMessageTag.CrateSpawner;
-
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<CrateSpawnerData>();
@@ -60,8 +62,24 @@ public class CrateSpawnerMessage : NativeMessageHandler
 
             entity.OnEntityDataCatchup += (entity, player) =>
             {
-                SpawnSender.SendCrateSpawnerCatchup(crateSpawner, entity, player);
+                SendCrateSpawnerMessage(crateSpawner, entity.ID, player);
             };
+        }
+    }
+
+    public static void SendCrateSpawnerMessage(CrateSpawner crateSpawner, ushort entityID, PlayerID target = null)
+    {
+        var hashData = CrateSpawnerPatches.HashTable.GetDataFromComponent(crateSpawner);
+
+        var data = CrateSpawnerData.Create(entityID, hashData);
+
+        if (target != null)
+        {
+            MessageRelay.RelayModule<CrateSpawnerMessage, CrateSpawnerData>(data, NetworkChannel.Reliable, RelayType.ToTarget, target.SmallID);
+        }
+        else
+        {
+            MessageRelay.RelayModule<CrateSpawnerMessage, CrateSpawnerData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
     }
 }

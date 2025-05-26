@@ -9,7 +9,7 @@ public static class VoiceHelper
         VoiceInfo.VoiceManager?.UpdateManager();
     }
 
-    public static void OnVoiceDataReceived(PlayerId player, byte[] data)
+    public static void OnVoiceDataReceived(PlayerID player, byte[] data)
     {
         if (VoiceInfo.IsDeafened)
         {

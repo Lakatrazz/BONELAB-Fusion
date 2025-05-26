@@ -25,7 +25,7 @@ public class PuppetMasterExtender : EntityComponentExtender<PuppetMaster>
         // Update puppet drives if theres already an owner
         if (NetworkEntity.HasOwner)
         {
-            OnPuppetOwnershipTransfer(entity, entity.OwnerId);
+            OnPuppetOwnershipTransfer(entity, entity.OwnerID);
         }
     }
 
@@ -38,7 +38,7 @@ public class PuppetMasterExtender : EntityComponentExtender<PuppetMaster>
         entity.OnEntityDataCatchup -= OnEntityDataCatchup;
     }
 
-    private void OnPuppetOwnershipTransfer(NetworkEntity entity, PlayerId playerId)
+    private void OnPuppetOwnershipTransfer(NetworkEntity entity, PlayerID playerId)
     {
         // If we aren't the owner, clear the puppet's pd drives so we can control it with forces
         bool isOwner = entity.IsOwner;
@@ -60,13 +60,13 @@ public class PuppetMasterExtender : EntityComponentExtender<PuppetMaster>
         }
     }
 
-    private void OnEntityDataCatchup(NetworkEntity entity, PlayerId player)
+    private void OnEntityDataCatchup(NetworkEntity entity, PlayerID player)
     {
         if (Component.isDead)
         {
             var data = new NetworkEntityReference(entity);
 
-            MessageRelay.RelayModule<PuppetMasterKillMessage, NetworkEntityReference>(data, NetworkChannel.Reliable, RelayType.ToTarget, player.SmallId);
+            MessageRelay.RelayModule<PuppetMasterKillMessage, NetworkEntityReference>(data, NetworkChannel.Reliable, RelayType.ToTarget, player.SmallID);
         }
     }
 }

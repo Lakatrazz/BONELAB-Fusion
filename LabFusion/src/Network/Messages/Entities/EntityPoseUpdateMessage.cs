@@ -49,7 +49,7 @@ public class EntityPoseUpdateMessage : NativeMessageHandler
         var entity = data.GetEntity();
 
         // Validate the entity
-        if (entity == null || !entity.IsRegistered || entity.OwnerId == null || entity.OwnerId != received.Sender)
+        if (entity == null || !entity.IsRegistered || entity.OwnerID == null || entity.OwnerID != received.Sender)
         {
             return;
         }

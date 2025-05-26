@@ -15,6 +15,6 @@ public class EntityOwnershipResponseMessage : NativeMessageHandler
 
         var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.Entity.Id);
 
-        entity?.SetOwner(PlayerIdManager.GetPlayerId(data.PlayerId));
+        entity?.SetOwner(PlayerIDManager.GetPlayerID(data.PlayerId));
     }
 }

@@ -15,7 +15,7 @@ public static class PropSender
     /// Sends a catchup sync message for a scene object.
     /// </summary>
     /// <param name="prop"></param>
-    public static void SendCatchupCreation(NetworkProp prop, PlayerId playerId)
+    public static void SendCatchupCreation(NetworkProp prop, PlayerID playerId)
     {
         if (!NetworkInfo.IsHost)
         {
@@ -32,9 +32,9 @@ public static class PropSender
 
         var networkEntity = prop.NetworkEntity;
 
-        var data = NetworkPropCreateData.Create(networkEntity.OwnerId, hashData, networkEntity.Id);
+        var data = NetworkPropCreateData.Create(networkEntity.OwnerID, hashData, networkEntity.ID);
 
-        MessageRelay.RelayNative(data, NativeMessageTag.NetworkPropCreate, NetworkChannel.Reliable, RelayType.ToTarget, playerId.SmallId);
+        MessageRelay.RelayNative(data, NativeMessageTag.NetworkPropCreate, NetworkChannel.Reliable, RelayType.ToTarget, playerId.SmallID);
     }
 
     private struct PropCreationInfo
@@ -117,7 +117,7 @@ public static class PropSender
                 return;
             }
 
-            var data = NetworkPropCreateData.Create(PlayerIdManager.LocalSmallId, hashData, newEntity.Id);
+            var data = NetworkPropCreateData.Create(PlayerIDManager.LocalSmallID, hashData, newEntity.ID);
 
             MessageRelay.RelayNative(data, NativeMessageTag.NetworkPropCreate, NetworkChannel.Reliable, RelayType.ToOtherClients);
 
@@ -126,7 +126,7 @@ public static class PropSender
 
         void OnFinish()
         {
-            newEntity.SetOwner(PlayerIdManager.LocalId);
+            newEntity.SetOwner(PlayerIDManager.LocalID);
             info.onFinished?.Invoke(newEntity);
         }
     }

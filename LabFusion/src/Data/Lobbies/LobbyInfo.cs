@@ -114,14 +114,14 @@ public class LobbyInfo
     public void WriteLobby()
     {
         // Info
-        LobbyId = PlayerIdManager.LocalLongId;
+        LobbyId = PlayerIDManager.LocalPlatformID;
         LobbyCode = NetworkHelper.GetServerCode();
         LobbyName = SavedServerSettings.ServerName.Value;
         LobbyDescription = SavedServerSettings.ServerDescription.Value;
         LobbyVersion = FusionMod.Version;
         LobbyHostName = LocalPlayer.Username;
 
-        PlayerCount = PlayerIdManager.PlayerCount;
+        PlayerCount = PlayerIDManager.PlayerCount;
 
         var playerList = new PlayerList();
         playerList.WritePlayers();

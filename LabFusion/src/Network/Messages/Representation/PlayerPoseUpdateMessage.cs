@@ -39,7 +39,7 @@ public class PlayerPoseUpdateMessage : NativeMessageHandler
         var playerId = received.Sender.Value;
 
         // Make sure this isn't us
-        if (playerId == PlayerIdManager.LocalSmallId)
+        if (playerId == PlayerIDManager.LocalSmallID)
         {
             throw new Exception("Player received a pose for their own player.");
         }

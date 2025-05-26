@@ -5,12 +5,12 @@ namespace LabFusion.Entities;
 
 public delegate void NetworkEntityDelegate(NetworkEntity entity);
 
-public delegate void NetworkEntityPlayerDelegate(NetworkEntity entity, PlayerId player);
+public delegate void NetworkEntityPlayerDelegate(NetworkEntity entity, PlayerID player);
 
 public class NetworkEntity : INetworkRegistrable, INetworkOwnable
 {
     private ushort _id = 0;
-    private ushort _queueId = 0;
+    private ushort _queueID = 0;
 
     private bool _isRegistered = false;
     private bool _isQueued = false;
@@ -18,11 +18,11 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
 
     private bool _isOwnerLocked = false;
 
-    public ushort Id => _id;
+    public ushort ID => _id;
 
-    private PlayerId _ownerId = null;
+    private PlayerID _ownerID = null;
 
-    public ushort QueueId => _queueId;
+    public ushort QueueID => _queueID;
 
     public bool IsRegistered => _isRegistered;
 
@@ -30,11 +30,11 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
 
     public bool IsDestroyed => _isDestroyed;
 
-    public PlayerId OwnerId => _ownerId;
+    public PlayerID OwnerID => _ownerID;
 
-    public bool IsOwner => HasOwner && _ownerId.IsMe;
+    public bool IsOwner => HasOwner && _ownerID.IsMe;
 
-    public bool HasOwner => _ownerId != null;
+    public bool HasOwner => _ownerID != null;
 
     public bool IsOwnerLocked => _isOwnerLocked;
 
@@ -98,26 +98,26 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
         return null;
     }
 
-    public bool InvokeCreationCatchup(PlayerId playerId)
+    public bool InvokeCreationCatchup(PlayerID playerID)
     {
         if (OnEntityCreationCatchup == null)
         {
             return false;
         }
 
-        OnEntityCreationCatchup?.Invoke(this, playerId);
+        OnEntityCreationCatchup?.Invoke(this, playerID);
 
         return true;
     }
 
-    public bool InvokeDataCatchup(PlayerId playerId)
+    public bool InvokeDataCatchup(PlayerID playerID)
     {
         if (OnEntityDataCatchup == null)
         {
             return false;
         }
 
-        OnEntityDataCatchup?.Invoke(this, playerId);
+        OnEntityDataCatchup?.Invoke(this, playerID);
 
         return true;
     }
@@ -136,7 +136,7 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
 
     public void Queue(ushort queuedId)
     {
-        _queueId = queuedId;
+        _queueID = queuedId;
         _isQueued = true;
 
         _isRegistered = false;
@@ -146,7 +146,7 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
     public void Register(ushort id)
     {
         _isQueued = false;
-        _queueId = 0;
+        _queueID = 0;
 
         _isRegistered = true;
         _id = id;
@@ -158,7 +158,7 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
     public void Unregister()
     {
         _isQueued = false;
-        _queueId = 0;
+        _queueID = 0;
 
         _isRegistered = false;
         _id = 0;
@@ -174,19 +174,19 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
         RemoveOwner();
     }
 
-    public void SetOwner(PlayerId ownerId)
+    public void SetOwner(PlayerID ownerID)
     {
         if (IsOwnerLocked)
         {
 #if DEBUG
-            FusionLogger.Warn($"Tried setting the owner of a NetworkEntity at id {Id} to {ownerId.SmallId}, but it was locked!");
+            FusionLogger.Warn($"Tried setting the owner of a NetworkEntity at id {ID} to {ownerID.SmallID}, but it was locked!");
 #endif
             return;
         }
 
-        _ownerId = ownerId;
+        _ownerID = ownerID;
 
-        OnEntityOwnershipTransfer?.Invoke(this, ownerId);
+        OnEntityOwnershipTransfer?.Invoke(this, ownerID);
     }
 
     public void RemoveOwner()
@@ -194,12 +194,12 @@ public class NetworkEntity : INetworkRegistrable, INetworkOwnable
         if (IsOwnerLocked)
         {
 #if DEBUG
-            FusionLogger.Warn($"Tried removing the owner of a NetworkEntity at id {Id}, but it was locked!");
+            FusionLogger.Warn($"Tried removing the owner of a NetworkEntity at id {ID}, but it was locked!");
 #endif
             return;
         }
 
-        _ownerId = null;
+        _ownerID = null;
 
         OnEntityOwnershipTransfer?.Invoke(this, null);
     }

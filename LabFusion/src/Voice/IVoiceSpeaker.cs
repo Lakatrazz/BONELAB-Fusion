@@ -7,7 +7,7 @@ namespace LabFusion.Voice;
 
 public interface IVoiceSpeaker
 {
-    PlayerId ID { get; }
+    PlayerID ID { get; }
     NetworkPlayer Player { get; }
     AudioSource Source { get; }
 
@@ -27,8 +27,8 @@ public interface IVoiceSpeaker
 
 public abstract class VoiceSpeaker : IVoiceSpeaker
 {
-    protected PlayerId _id;
-    public PlayerId ID { get { return _id; } }
+    protected PlayerID _id;
+    public PlayerID ID { get { return _id; } }
 
     protected NetworkPlayer _player;
     protected bool _hasPlayer;
@@ -63,7 +63,7 @@ public abstract class VoiceSpeaker : IVoiceSpeaker
 
     public virtual void CreateAudioSource()
     {
-        _sourceGo = new GameObject($"{ID.SmallId} Voice Source");
+        _sourceGo = new GameObject($"{ID.SmallID} Voice Source");
         _source = _sourceGo.AddComponent<AudioSource>();
 
         _source.volume = Volume;

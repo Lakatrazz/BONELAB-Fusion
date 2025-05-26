@@ -57,18 +57,18 @@ public static class NetworkSceneManager
     /// <summary>
     /// Invoked when a player loads into a level. Passes in the PlayerId and the level's barcode.
     /// </summary>
-    public static event Action<PlayerId, string> OnPlayerLoadedIntoLevel;
+    public static event Action<PlayerID, string> OnPlayerLoadedIntoLevel;
 
     /// <summary>
     /// Invoked when a player begins to load into a different level. Passes in the PlayerId.
     /// </summary>
-    public static event Action<PlayerId> OnPlayerStartedLoading;
+    public static event Action<PlayerID> OnPlayerStartedLoading;
 
     private static bool _allPlayersLoaded = false;
 
     internal static void OnInitializeMelon()
     {
-        PlayerId.OnMetadataChangedEvent += OnMetadataChangedCallback;
+        PlayerID.OnMetadataChangedEvent += OnMetadataChangedCallback;
         MultiplayerHooking.OnPlayerLeft += OnPlayerLeft;
         MultiplayerHooking.OnMainSceneInitialized += OnMainSceneInitialized;
     }
@@ -80,12 +80,12 @@ public static class NetworkSceneManager
         CheckAllPlayersLoaded();
     }
 
-    private static void OnPlayerLeft(PlayerId playerId)
+    private static void OnPlayerLeft(PlayerID playerId)
     {
         CheckAllPlayersLoaded();
     }
 
-    private static void OnMetadataChangedCallback(PlayerId playerId, string key, string value)
+    private static void OnMetadataChangedCallback(PlayerID playerId, string key, string value)
     {
         if (key == playerId.Metadata.Loading.Key)
         {
@@ -133,7 +133,7 @@ public static class NetworkSceneManager
     /// </summary>
     /// <param name="player"></param>
     /// <returns></returns>
-    public static bool InCurrentLevel(PlayerId player)
+    public static bool InCurrentLevel(PlayerID player)
     {
         if (player.IsMe)
         {
@@ -154,7 +154,7 @@ public static class NetworkSceneManager
     /// <param name="player">The player to check.</param>
     /// <param name="barcode">The barcode of the level.</param>
     /// <returns></returns>
-    public static bool InLevel(PlayerId player, string barcode)
+    public static bool InLevel(PlayerID player, string barcode)
     {
         return GetLevelBarcode(player) == barcode;
     }
@@ -164,7 +164,7 @@ public static class NetworkSceneManager
     /// </summary>
     /// <param name="player">The player to check.</param>
     /// <returns></returns>
-    public static string GetLevelBarcode(PlayerId player)
+    public static string GetLevelBarcode(PlayerID player)
     {
         return player.Metadata.LevelBarcode.GetValue();
     }
@@ -174,11 +174,11 @@ public static class NetworkSceneManager
     /// </summary>
     /// <param name="barcode">The barcode level.</param>
     /// <returns></returns>
-    public static List<PlayerId> GetPlayersInLevel(string barcode)
+    public static List<PlayerID> GetPlayersInLevel(string barcode)
     {
-        var players = new List<PlayerId>(PlayerIdManager.PlayerIds.Count);
+        var players = new List<PlayerID>(PlayerIDManager.PlayerIds.Count);
 
-        foreach (var player in PlayerIdManager.PlayerIds)
+        foreach (var player in PlayerIDManager.PlayerIds)
         {
             if (InLevel(player, barcode))
             {
@@ -193,7 +193,7 @@ public static class NetworkSceneManager
     /// Returns a list of all players in the Local Player's current level.
     /// </summary>
     /// <returns></returns>
-    public static List<PlayerId> GetPlayersInCurrentLevel()
+    public static List<PlayerID> GetPlayersInCurrentLevel()
     {
         return GetPlayersInLevel(FusionSceneManager.Barcode);
     }
