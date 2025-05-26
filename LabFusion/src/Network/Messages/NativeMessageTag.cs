@@ -57,16 +57,9 @@ public static class NativeMessageTag
         ArenaMenu = 35,
         GeoSelect = 36,
 
-        DescentNoose = 37,
-        DescentElevator = 38,
-
         MagmaGateEvent = 40,
 
-        DescentIntro = 41,
-
         BodyLogEffect = 42,
-
-        BonelabHubEvent = 43,
 
         PlayerSettings = 44,
         ServerSettings = 45,

@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 
 using LabFusion.Network;
-using LabFusion.Player;
+using LabFusion.Bonelab.Messages;
 using LabFusion.Utilities;
 using LabFusion.Entities;
 using LabFusion.Bonelab.Extenders;

@@ -3,6 +3,7 @@ using LabFusion.SDK.Achievements;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 using LabFusion.Player;
+using LabFusion.Bonelab.Messages;
 
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow;
@@ -13,35 +14,35 @@ namespace LabFusion.Data;
 
 public struct DescentIntroEvent
 {
-    public int selectionNumber;
-    public DescentIntroType type;
+    public int SelectionNumber;
+    public DescentIntroType Type;
 
     public DescentIntroEvent(int selectionNumber, DescentIntroType type)
     {
-        this.selectionNumber = selectionNumber;
-        this.type = type;
+        this.SelectionNumber = selectionNumber;
+        this.Type = type;
     }
 }
 
 public struct DescentElevatorEvent
 {
-    public DescentElevatorType type;
+    public DescentElevatorType Type;
 
     public DescentElevatorEvent(DescentElevatorType type)
     {
-        this.type = type;
+        this.Type = type;
     }
 }
 
 public struct DescentNooseEvent
 {
-    public byte smallId;
-    public DescentNooseType type;
+    public byte PlayerId;
+    public DescentNooseType Type;
 
-    public DescentNooseEvent(byte smallId, DescentNooseType type)
+    public DescentNooseEvent(byte playerId, DescentNooseType type)
     {
-        this.smallId = smallId;
-        this.type = type;
+        this.PlayerId = playerId;
+        this.Type = type;
     }
 }
 
@@ -67,7 +68,9 @@ public class DescentData : LevelDataHandler
         var value = new DescentIntroEvent(selectionNumber, type);
 
         if (NetworkInfo.IsHost)
+        {
             _introEvents.Add(value);
+        }
 
         return value;
     }
@@ -77,7 +80,9 @@ public class DescentData : LevelDataHandler
         var value = new DescentNooseEvent(smallId, type);
 
         if (NetworkInfo.IsHost)
+        {
             _nooseEvents.Add(value);
+        }
 
         return value;
     }
@@ -87,7 +92,9 @@ public class DescentData : LevelDataHandler
         var value = new DescentElevatorEvent(type);
 
         if (NetworkInfo.IsHost)
+        {
             _elevatorEvents.Add(value);
+        }
 
         return value;
     }
@@ -144,19 +151,19 @@ public class DescentData : LevelDataHandler
         // Send all intro events
         foreach (var intro in _introEvents)
         {
-            CampaignSender.SendDescentIntro(intro, playerId);
+            MessageRelay.RelayModule<DescentIntroMessage, DescentIntroData>(new DescentIntroData() { Type = intro.Type, SelectionNumber = (byte)intro.SelectionNumber }, NetworkChannel.Reliable, RelayType.ToTarget, playerId.SmallId);
         }
 
         // Send all noose events
         foreach (var noose in _nooseEvents)
         {
-            CampaignSender.SendDescentNoose(noose, playerId);
+            MessageRelay.RelayModule<DescentNooseMessage, DescentNooseData>(new DescentNooseData() { Type = noose.Type, PlayerId = noose.PlayerId }, NetworkChannel.Reliable, RelayType.ToTarget, playerId.SmallId);
         }
 
         // Send all elevator events
         foreach (var elevator in _elevatorEvents)
         {
-            CampaignSender.SendDescentElevator(elevator, playerId);
+            MessageRelay.RelayModule<DescentElevatorMessage, DescentElevatorData>(new DescentElevatorData() { Type = elevator.Type }, NetworkChannel.Reliable, RelayType.ToTarget, playerId.SmallId);
         }
     }
 }

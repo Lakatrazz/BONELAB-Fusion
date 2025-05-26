@@ -5,7 +5,7 @@ using LabFusion.SDK.Modules;
 using LabFusion.Bonelab.Extenders;
 using LabFusion.Network.Serialization;
 
-namespace LabFusion.Bonelab;
+namespace LabFusion.Bonelab.Messages;
 
 public class FlashlightToggleData : INetSerializable
 {

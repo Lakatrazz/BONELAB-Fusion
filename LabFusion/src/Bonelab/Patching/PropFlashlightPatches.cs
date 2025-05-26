@@ -2,6 +2,7 @@
 
 using LabFusion.Network;
 using LabFusion.Bonelab.Extenders;
+using LabFusion.Bonelab.Messages;
 
 using Il2CppSLZ.Bonelab;
 

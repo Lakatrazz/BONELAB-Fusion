@@ -10,7 +10,7 @@ namespace LabFusion.Patching;
 [HarmonyPatch(typeof(SceneStreamer))]
 public class SceneLoadPatch
 {
-    public static bool IgnorePatches = false;
+    public static bool IgnorePatches { get; set; } = false;
 
     [HarmonyPatch(nameof(SceneStreamer.Reload))]
     [HarmonyPrefix]

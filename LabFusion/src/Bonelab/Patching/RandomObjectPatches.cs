@@ -4,7 +4,7 @@ using Il2CppSLZ.Bonelab;
 
 using LabFusion.Bonelab.Extenders;
 using LabFusion.Network;
-using LabFusion.Player;
+using LabFusion.Bonelab.Messages;
 
 using Random = UnityEngine.Random;
 

@@ -4,7 +4,7 @@ using LabFusion.Network;
 using LabFusion.Network.Serialization;
 using LabFusion.SDK.Modules;
 
-namespace LabFusion.Bonelab;
+namespace LabFusion.Bonelab.Messages;
 
 public enum SimpleGripEventType
 {

@@ -4,7 +4,7 @@ using Il2CppSLZ.Bonelab;
 
 using LabFusion.Network;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Bonelab.Patching;
 
 [HarmonyPatch(typeof(FadeVolume))]
 public static class FadeAndDespawnVolumePatches

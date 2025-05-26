@@ -1,4 +1,5 @@
 ﻿using LabFusion.SDK.Modules;
+using LabFusion.Bonelab.Messages;
 
 namespace LabFusion.Bonelab;
 
@@ -15,6 +16,8 @@ public class BonelabModule : Module
         ModuleMessageHandler.RegisterHandler<RandomObjectMessage>();
         ModuleMessageHandler.RegisterHandler<SimpleGripEventMessage>();
         ModuleMessageHandler.RegisterHandler<FlashlightToggleMessage>();
+        ModuleMessageHandler.RegisterHandler<BonelabHubEventMessage>();
+        ModuleMessageHandler.RegisterHandler<DescentElevatorMessage>();
     }
 
     protected override void OnModuleUnregistered()
