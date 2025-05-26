@@ -225,6 +225,11 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
 
     public void Serialize(INetSerializer serializer)
     {
+        if (serializer.IsReader)
+        {
+            Metadata.CreateMetadata();
+        }
+
         var longId = LongId;
         var smallId = SmallId;
         var metadata = Metadata.Metadata.LocalDictionary;
