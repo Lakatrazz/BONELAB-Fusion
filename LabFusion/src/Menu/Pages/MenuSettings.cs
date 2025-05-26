@@ -249,34 +249,6 @@ public static class MenuSettings
                     physRig.leftHand.rb.AddForce(Vector3Extensions.down * force, ForceMode.VelocityChange);
                 }
             });
-
-        var developerGroup = page.AddElement<GroupElement>("Developer");
-
-        developerGroup.AddElement<StringElement>("Word")
-            .WithValue(_profanityWord)
-            .OnValueChanged += (v) =>
-            {
-                _profanityWord = v;
-            };
-
-        developerGroup.AddElement<FunctionElement>("Export Word to Profanity List")
-            .Do(() =>
-            {
-                ProfanityListManager.ExportWord(_profanityWord);
-            });
-
-        developerGroup.AddElement<FunctionElement>("Export Sample Global Mod Blacklist")
-            .Do(() =>
-            {
-                GlobalModBlacklistManager.List.Mods.Add(new ModInfo()
-                {
-                    ModID = -1,
-                    Barcodes = { "Barcode Goes Here", },
-                    NameID = "name-id",
-                });
-
-                GlobalModBlacklistManager.ExportFile();
-            });
     }
 
 #endif
