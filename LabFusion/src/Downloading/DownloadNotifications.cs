@@ -19,6 +19,7 @@ public static class DownloadNotifications
         Notifier.Send(new()
         {
             ShowPopup = true,
+            SaveToMenu = false,
             Title = "Download Completed",
             Tag = NotificationTag,
             Type = NotificationType.SUCCESS,
