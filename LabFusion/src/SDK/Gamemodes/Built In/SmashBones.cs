@@ -1047,7 +1047,7 @@ public class SmashBones : Gamemode
 
         if (avatarMass >= Defaults.WeakMobilityMass)
         {
-            float percentMass = ManagedMathf.Clamp01((avatarMass - Defaults.WeakMobilityMass) / (Defaults.WeakestMobilityMass - Defaults.WeakMobilityMass)) * 0.8f;
+            float percentMass = ManagedMathf.Clamp01((avatarMass - Defaults.WeakMobilityMass) / (Defaults.WeakestMobilityMass - Defaults.WeakMobilityMass)) * 0.9f;
 
             mobilityMultiplier = 1f - percentMass;
         }
