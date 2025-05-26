@@ -226,6 +226,12 @@ public static class MenuLocation
             .WithTitle("Knockout")
             .WithValue(info.Knockout);
 
+        KnockoutLengthElement
+            .Cleared()
+            .WithInteractability(ownsSettings)
+            .WithTitle("Knockout Length")
+            .WithValue(info.KnockoutLength);
+
         PlayerConstrainingElement
             .Cleared()
             .WithInteractability(ownsSettings)
@@ -235,8 +241,6 @@ public static class MenuLocation
         MaxAvatarHeightElement
             .Cleared()
             .WithInteractability(ownsSettings)
-            .WithLimits(2f, 30f)
-            .WithIncrement(1f)
             .WithTitle("Max Avatar Height")
             .WithValue(info.MaxAvatarHeight);
 
@@ -649,6 +653,8 @@ public static class MenuLocation
                 .WithIncrement(0.1f)
                 .WithLimits(0f, 2f);
 
+            volumeElement.gameObject.SetActive(true);
+
             volumeElement.Value = ContactsList.GetContact(player).volume;
             volumeElement.OnValueChanged += (v) =>
             {
@@ -688,10 +694,6 @@ public static class MenuLocation
         var actionsPage = element.ActionsElement.AddPage();
 
         AddModerationGroup(activeLobbyInfo, actionsPage, player, selfLevel, level);
-
-#if DEBUG
-        AddDeveloperGroup(actionsPage, player);
-#endif
     }
 
     private static void AddModerationGroup(LobbyInfo lobbyInfo, PageElement actionsPage, PlayerId player, PermissionLevel selfLevel, PermissionLevel level)
@@ -709,11 +711,13 @@ public static class MenuLocation
             return;
         }
 
-        var moderationGroup = actionsPage.AddElement<GroupElement>("Moderation");
+        GroupElement moderationGroup = null;
 
         // Kick button
         if (higherPerms && FusionPermissions.HasSufficientPermissions(selfLevel, lobbyInfo.Kicking))
         {
+            moderationGroup ??= actionsPage.AddElement<GroupElement>("Moderation");
+
             moderationGroup.AddElement<FunctionElement>("Kick")
                 .WithColor(Color.red)
                 .Do(() =>
@@ -725,6 +729,8 @@ public static class MenuLocation
         // Ban button
         if (higherPerms && FusionPermissions.HasSufficientPermissions(selfLevel, lobbyInfo.Banning))
         {
+            moderationGroup ??= actionsPage.AddElement<GroupElement>("Moderation");
+
             moderationGroup.AddElement<FunctionElement>("Ban")
                 .WithColor(Color.red)
                 .Do(() =>
@@ -736,6 +742,8 @@ public static class MenuLocation
         // Teleport buttons
         if (FusionPermissions.HasSufficientPermissions(selfLevel, lobbyInfo.Teleportation))
         {
+            moderationGroup ??= actionsPage.AddElement<GroupElement>("Moderation");
+
             moderationGroup.AddElement<FunctionElement>("Teleport To Them")
                 .WithColor(Color.red)
                 .Do(() =>
@@ -751,26 +759,6 @@ public static class MenuLocation
                 });
         }
     }
-
-#if DEBUG
-    private static void AddDeveloperGroup(PageElement actionsPage, PlayerId player)
-    {
-        if (player.IsMe)
-        {
-            return;
-        }
-
-        var developerGroup = actionsPage.AddElement<GroupElement>("Developer")
-            .WithColor(Color.yellow);
-
-        developerGroup.AddElement<FunctionElement>("Export Global Ban")
-            .WithColor(Color.red)
-            .Do(() =>
-            {
-                GlobalBanManager.ExportBan(new PlayerInfo(player), "Reason Goes Here");
-            });
-    }
-#endif
 
     public static void PopulateLocation(GameObject locationPage)
     {

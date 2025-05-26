@@ -8,8 +8,6 @@ public static class VoiceVolume
 {
     public const float DefaultSampleMultiplier = 10f;
 
-    public const float DefaultVolumeMultiplier = 2.5f;
-
     public const float MinimumVoiceVolume = 0.3f;
 
     public const float SilencingVolume = 0.1f;
@@ -20,6 +18,6 @@ public static class VoiceVolume
     {
         float audioPercent = Audio3dManager.audio_SFXVolume * 0.1f;
 
-        return ClientSettings.VoiceChat.GlobalVolume.Value * audioPercent * DefaultVolumeMultiplier;
+        return ClientSettings.VoiceChat.GlobalVolume.Value * audioPercent;
     }
 }

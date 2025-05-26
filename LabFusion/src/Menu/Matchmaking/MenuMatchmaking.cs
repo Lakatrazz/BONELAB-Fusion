@@ -661,30 +661,7 @@ public static class MenuMatchmaking
 
         ElementIconHelper.SetProfileIcon(element, info.AvatarTitle, info.AvatarModId);
 
-#if DEBUG
-        // Actions
-        element.ActionsElement.Clear();
-        var actionsPage = element.ActionsElement.AddPage();
-
-        AddDeveloperGroup(actionsPage, info);
-#endif
-
         // Disable unnecessary elements
         element.VolumeElement.gameObject.SetActive(false);
     }
-
-#if DEBUG
-    private static void AddDeveloperGroup(PageElement actionsPage, PlayerInfo info)
-    {
-        var developerGroup = actionsPage.AddElement<GroupElement>("Developer")
-            .WithColor(Color.yellow);
-
-        developerGroup.AddElement<FunctionElement>("Export Global Ban")
-            .WithColor(Color.red)
-            .Do(() =>
-            {
-                GlobalBanManager.ExportBan(info, "Reason Goes Here");
-            });
-    }
-#endif
 }

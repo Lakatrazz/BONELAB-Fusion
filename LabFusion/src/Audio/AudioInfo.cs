@@ -18,7 +18,7 @@ public static class AudioInfo
                 return _toneClip;
             }
 
-            _toneClip = AudioClip.Create("Tone", 256, 1, OutputSampleRate, false, (PCMReaderCallback)(data =>
+            _toneClip = AudioClip.Create("Tone", 256, 1, OutputSampleRate, false, false, (PCMReaderCallback)(data =>
             {
                 var length = data.Length;
 
