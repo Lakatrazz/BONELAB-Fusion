@@ -49,8 +49,8 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
         }
     }
 
-    private List<string> _internalEquippedItems = new List<string>();
-    public List<string> EquippedItems => _internalEquippedItems;
+    private List<string> _equippedItems = new();
+    public List<string> EquippedItems => _equippedItems;
 
     public PlayerId() 
     {
@@ -64,7 +64,7 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
         LongId = longId;
         SmallId = smallId;
 
-        _internalEquippedItems = equippedItems;
+        _equippedItems = equippedItems;
 
         foreach (var pair in metadata)
         {
@@ -169,20 +169,20 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
             return EquippedItems.Contains(item.Barcode);
     }
 
-    internal void Internal_ForceSetEquipped(string barcode, bool value)
+    internal void ForceSetEquipped(string barcode, bool value)
     {
         // Remove/add to the list
-        if (value && !_internalEquippedItems.Contains(barcode))
+        if (value && !_equippedItems.Contains(barcode))
         {
-            _internalEquippedItems.Add(barcode);
+            _equippedItems.Add(barcode);
         }
-        else if (!value && _internalEquippedItems.Contains(barcode))
+        else if (!value && _equippedItems.Contains(barcode))
         {
-            _internalEquippedItems.Remove(barcode);
+            _equippedItems.Remove(barcode);
         }
 
         // Invoke the events on the item
-        PointItemManager.Internal_OnEquipChange(this, barcode, value);
+        PointItemManager.OnEquipChanged(this, barcode, value);
     }
 
     public void Insert()
@@ -233,7 +233,7 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
         var longId = LongId;
         var smallId = SmallId;
         var metadata = Metadata.Metadata.LocalDictionary;
-        var equippedItems = _internalEquippedItems.ToArray();
+        var equippedItems = _equippedItems.ToArray();
 
         serializer.SerializeValue(ref longId);
         serializer.SerializeValue(ref smallId);
@@ -253,7 +253,7 @@ public class PlayerId : INetSerializable, IEquatable<PlayerId>
 
             foreach (var item in equippedItems)
             {
-                Internal_ForceSetEquipped(item, true);
+                ForceSetEquipped(item, true);
             }
 
             OnAfterCreateId();

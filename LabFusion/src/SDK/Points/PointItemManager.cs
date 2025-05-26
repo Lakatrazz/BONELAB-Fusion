@@ -232,13 +232,13 @@ public static class PointItemManager
 
         if (item.IsEquipped)
         {
-            Internal_OnEquipChange(PlayerIdManager.LocalId, item.Barcode, true);
+            OnEquipChanged(PlayerIdManager.LocalId, item.Barcode, true);
         }
     }
 
     public static bool TryGetPointItem(string barcode, out PointItem item)
     {
-        if (barcode == null)
+        if (string.IsNullOrWhiteSpace(barcode))
         {
             item = null;
             return false;
@@ -357,7 +357,7 @@ public static class PointItemManager
         return true;
     }
 
-    internal static void Internal_OnEquipChange(PlayerId id, string barcode, bool isEquipped)
+    internal static void OnEquipChanged(PlayerId id, string barcode, bool isEquipped)
     {
         if (!TryGetPointItem(barcode, out var item))
         {
@@ -370,11 +370,21 @@ public static class PointItemManager
 
         if (id == null || id.IsMe)
         {
+            if (!RigData.HasPlayer)
+            {
+                return;
+            }
+
             manager = RigData.Refs.RigManager;
             type = PointItemPayloadType.SELF;
         }
         else if (NetworkPlayerManager.TryGetPlayer(id, out var rep))
         {
+            if (!rep.HasRig)
+            {
+                return;
+            }
+
             manager = rep.RigRefs.RigManager;
             type = PointItemPayloadType.PLAYER_REP;
         }
@@ -443,7 +453,7 @@ public static class PointItemManager
             return;
         }
 
-        Internal_OnEquipChange(PlayerIdManager.LocalId, item.Barcode, isEquipped);
+        OnEquipChanged(PlayerIdManager.LocalId, item.Barcode, isEquipped);
         PointSaveManager.SetEquipped(item.Barcode, isEquipped);
         PointItemSender.SendPointItemEquip(item.Barcode, isEquipped);
     }
