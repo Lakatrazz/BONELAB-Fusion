@@ -8,7 +8,7 @@ using Il2CppSLZ.Marrow.Interaction;
 
 using UnityEngine;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Bonelab.Patching;
 
 [HarmonyPatch(typeof(PullCordForceChange))]
 public static class PullCordForceChangePatches

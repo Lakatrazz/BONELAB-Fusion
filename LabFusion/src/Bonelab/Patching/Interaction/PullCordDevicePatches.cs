@@ -2,15 +2,16 @@
 
 using LabFusion.Data;
 using LabFusion.Network;
-using LabFusion.Senders;
 using LabFusion.Utilities;
 using LabFusion.Entities;
+using LabFusion.Bonelab.Messages;
+using LabFusion.Player;
 
 using Il2CppSLZ.Marrow.Warehouse;
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Bonelab.Patching;
 
 [HarmonyPatch(typeof(PullCordDevice))]
 public static class PullCordDevicePatches
@@ -43,7 +44,7 @@ public static class PullCordDevicePatches
     {
         if (NetworkInfo.HasServer && __instance.rm.IsLocalPlayer())
         {
-            PullCordSender.SendBodyLogToggle(true);
+            MessageRelay.RelayModule<BodyLogToggleMessage, BodyLogToggleData>(new() { PlayerID = PlayerIdManager.LocalSmallId, IsEnabled = true, }, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
     }
 
@@ -53,7 +54,7 @@ public static class PullCordDevicePatches
     {
         if (NetworkInfo.HasServer && __instance.rm.IsLocalPlayer())
         {
-            PullCordSender.SendBodyLogToggle(false);
+            MessageRelay.RelayModule<BodyLogToggleMessage, BodyLogToggleData>(new() { PlayerID = PlayerIdManager.LocalSmallId, IsEnabled = false, }, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
     }
 
@@ -63,7 +64,7 @@ public static class PullCordDevicePatches
     {
         if (NetworkInfo.HasServer && __instance.rm.IsLocalPlayer())
         {
-            PullCordSender.SendBodyLogEffect();
+            MessageRelay.RelayModule<BodyLogEffectMessage, BodyLogEffectData>(new() { PlayerID = PlayerIdManager.LocalSmallId }, NetworkChannel.Unreliable, RelayType.ToOtherClients);
         }
     }
 

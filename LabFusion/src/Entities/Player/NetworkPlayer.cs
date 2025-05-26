@@ -278,43 +278,8 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         }
     }
 
-    public void PlayPullCordEffects()
-    {
-        if (!HasRig)
-            return;
-
-        var pullCord = RigRefs.RigManager.GetComponentInChildren<PullCordDevice>(true);
-        pullCord.PlayAvatarParticleEffects();
-
-        pullCord._map3.PlayAtPoint(pullCord.switchAvatar, pullCord.transform.position, null, pullCord.switchVolume, 1f, new(0f), 1f, 1f);
-    }
-
-    public void SetBallEnabled(bool isEnabled)
-    {
-        if (!HasRig)
-        {
-            return;
-        }
-
-        var pullCord = RigRefs.RigManager.GetComponentInChildren<PullCordDevice>(true);
-
-        // If the ball should be enabled, make the distance required infinity so it always shows
-        if (isEnabled)
-        {
-            pullCord.handShowDist = float.PositiveInfinity;
-        }
-        // If it should be disabled, make the distance zero so that it disables itself
-        else
-        {
-            pullCord.handShowDist = 0f;
-        }
-    }
-
     private void OnPuppetCreated(RigManager rigManager)
     {
-        // Disable the bodylog
-        SetBallEnabled(false);
-
         // Spawn the head ui
         _headUI.Spawn();
 

@@ -27,6 +27,9 @@ public class BonelabModule : Module
         ModuleMessageHandler.RegisterHandler<MagmaGateEventMessage>();
         ModuleMessageHandler.RegisterHandler<MineDiveCartMessage>();
 
+        ModuleMessageHandler.RegisterHandler<BodyLogEffectMessage>();
+        ModuleMessageHandler.RegisterHandler<BodyLogToggleMessage>();
+
         ModuleMessageHandler.RegisterHandler<BaseGameControllerMessage>();
         ModuleMessageHandler.RegisterHandler<HolodeckEventMessage>();
         ModuleMessageHandler.RegisterHandler<TimeTrialGameControllerMessage>();

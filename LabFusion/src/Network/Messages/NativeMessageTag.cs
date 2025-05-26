@@ -46,8 +46,6 @@ public static class NativeMessageTag
         MagazineInsert = 27,
         MagazineEject = 28,
 
-        BodyLogEffect = 42,
-
         PlayerSettings = 44,
         ServerSettings = 45,
 
@@ -70,8 +68,6 @@ public static class NativeMessageTag
         PlayerMetadataResponse = 60,
 
         LevelRequest = 62,
-
-        BodyLogToggle = 63,
 
         PlayerRepDamage = 64,
 

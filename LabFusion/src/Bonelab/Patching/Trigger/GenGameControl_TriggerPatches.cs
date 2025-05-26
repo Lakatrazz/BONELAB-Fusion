@@ -9,7 +9,7 @@ using Il2CppSLZ.Marrow;
 
 using UnityEngine;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Bonelab.Patching;
 
 [HarmonyPatch(typeof(GenGameControl_Trigger))]
 public static class GenGameControl_TriggerPatches
