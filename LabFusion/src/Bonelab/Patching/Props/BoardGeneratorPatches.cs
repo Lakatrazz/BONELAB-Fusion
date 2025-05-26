@@ -7,12 +7,14 @@ using LabFusion.Entities;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.RPC;
+using LabFusion.Bonelab.Messages;
+using LabFusion.Bonelab.Extenders;
 
 using UnityEngine;
 
 using Random = UnityEngine.Random;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Bonelab.Patching;
 
 [HarmonyPatch(typeof(BoardGenerator._BoardSpawnerAsync_d__29))]
 public static class BoardSpawnerAsyncPatches
@@ -39,10 +41,10 @@ public static class BoardSpawnerAsyncPatches
 
         return new BoardPointData()
         {
-            point = point,
-            hasBody = hasBody,
-            entityId = entityId,
-            bodyIndex = bodyIndex,
+            Point = point,
+            HasBody = hasBody,
+            EntityID = entityId,
+            BodyIndex = bodyIndex,
         };
     }
 
@@ -108,9 +110,16 @@ public static class BoardSpawnerAsyncPatches
                 var endPoint = GetPointData(boardGenerator.EndPoint, boardGenerator.EndRb);
 
                 // Send the generator message
-                var data = BoardGeneratorData.Create(PlayerIdManager.LocalSmallId, boardId, boardGeneratorId, firstPoint, endPoint);
+                var data = new BoardGeneratorData()
+                {
+                    OwnerID = PlayerIdManager.LocalSmallId,
+                    BoardID = boardId,
+                    BoardGeneratorID = boardGeneratorId,
+                    FirstPoint = firstPoint,
+                    EndPoint = endPoint,
+                };
 
-                MessageRelay.RelayNative(data, NativeMessageTag.BoardGenerator, NetworkChannel.Reliable, RelayType.ToClients);
+                MessageRelay.RelayModule<BoardGeneratorMessage, BoardGeneratorData>(data, NetworkChannel.Reliable, RelayType.ToClients);
             }
         });
 

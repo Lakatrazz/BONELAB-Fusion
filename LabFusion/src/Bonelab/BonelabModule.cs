@@ -32,9 +32,11 @@ public class BonelabModule : Module
         ModuleMessageHandler.RegisterHandler<TimeTrialGameControllerMessage>();
         ModuleMessageHandler.RegisterHandler<TrialSpawnerEventsMessage>();
 
+        ModuleMessageHandler.RegisterHandler<BoardGeneratorMessage>();
         ModuleMessageHandler.RegisterHandler<FlashlightToggleMessage>();
-        ModuleMessageHandler.RegisterHandler<RandomObjectMessage>();
         ModuleMessageHandler.RegisterHandler<SimpleGripEventMessage>();
+
+        ModuleMessageHandler.RegisterHandler<RandomObjectMessage>();
     }
 
     protected override void OnModuleUnregistered()

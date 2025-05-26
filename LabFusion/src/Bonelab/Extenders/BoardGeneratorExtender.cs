@@ -1,8 +1,9 @@
 ﻿using Il2CppSLZ.Bonelab;
 
+using LabFusion.Entities;
 using LabFusion.Utilities;
 
-namespace LabFusion.Entities;
+namespace LabFusion.Bonelab.Extenders;
 
 public class BoardGeneratorExtender : EntityComponentExtender<BoardGenerator>
 {
