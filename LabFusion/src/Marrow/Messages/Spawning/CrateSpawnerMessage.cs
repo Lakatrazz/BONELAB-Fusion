@@ -12,7 +12,9 @@ namespace LabFusion.Marrow.Messages;
 
 public class CrateSpawnerData : INetSerializable
 {
-    public const int Size = sizeof(ushort);
+    public const int Size = sizeof(ushort) + ComponentHashData.Size;
+
+    public int? GetSize() => Size;
 
     public ushort SpawnedId;
     public ComponentHashData HashData;
