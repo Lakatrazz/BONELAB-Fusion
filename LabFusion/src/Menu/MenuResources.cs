@@ -11,6 +11,8 @@ public static class MenuResources
     public static Dictionary<string, Texture> AvatarIconLookup { get; private set; } = null;
     public static Dictionary<string, Texture> GamemodeIconLookup { get; private set; } = null;
 
+    public static Dictionary<string, Texture> PointIconLookup { get; private set; } = null;
+
     public const string ModsIconTitle = "Mods";
 
     public const string SandboxIconTitle = "Sandbox";
@@ -60,6 +62,21 @@ public static class MenuResources
         return null;
     }
 
+    public static Texture GetPointIcon(string pointTitle)
+    {
+        if (string.IsNullOrWhiteSpace(pointTitle))
+        {
+            return null;
+        }
+
+        if (PointIconLookup.TryGetValue(pointTitle, out var texture))
+        {
+            return texture;
+        }
+
+        return null;
+    }
+
     public static void GetResources(Transform resourcesTransform)
     {
         // Menu icon
@@ -70,12 +87,19 @@ public static class MenuResources
             MenuIconSprite = menuIcon.GetComponent<SpriteRenderer>().sprite;
         }
 
-        // Level icons
-        var levelIcons = resourcesTransform.Find("Level Icons");
+        LevelIconLookup = LoadIcons(resourcesTransform, "Level Icons");
+        AvatarIconLookup = LoadIcons(resourcesTransform, "Avatar Icons");
+        GamemodeIconLookup = LoadIcons(resourcesTransform, "Gamemode Icons");
+        PointIconLookup = LoadIcons(resourcesTransform, "Point Icons");
+    }
 
-        LevelIconLookup = new();
+    private static Dictionary<string, Texture> LoadIcons(Transform resources, string name)
+    {
+        var icons = resources.Find(name);
 
-        foreach (var icon in levelIcons)
+        var lookup = new Dictionary<string, Texture>();
+
+        foreach (var icon in icons)
         {
             var iconTransform = icon.TryCast<Transform>();
 
@@ -91,55 +115,9 @@ public static class MenuResources
                 continue;
             }
 
-            LevelIconLookup.Add(iconTransform.name, image.texture);
+            lookup.Add(iconTransform.name, image.texture);
         }
 
-        // Avatar icons
-        var avatarIcons = resourcesTransform.Find("Avatar Icons");
-
-        AvatarIconLookup = new();
-
-        foreach (var icon in avatarIcons)
-        {
-            var iconTransform = icon.TryCast<Transform>();
-
-            if (iconTransform == null)
-            {
-                continue;
-            }
-
-            var image = iconTransform.GetComponent<RawImage>();
-
-            if (image == null)
-            {
-                continue;
-            }
-
-            AvatarIconLookup.Add(iconTransform.name, image.texture);
-        }
-
-        // Gamemode icons
-        var gamemodeIcons = resourcesTransform.Find("Gamemode Icons");
-
-        GamemodeIconLookup = new();
-
-        foreach (var icon in gamemodeIcons)
-        {
-            var iconTransform = icon.TryCast<Transform>();
-
-            if (iconTransform == null)
-            {
-                continue;
-            }
-
-            var image = iconTransform.GetComponent<RawImage>();
-
-            if (image == null)
-            {
-                continue;
-            }
-
-            GamemodeIconLookup.Add(iconTransform.name, image.texture);
-        }
+        return lookup;
     }
 }

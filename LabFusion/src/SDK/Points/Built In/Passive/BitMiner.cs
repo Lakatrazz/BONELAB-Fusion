@@ -1,4 +1,5 @@
-﻿using LabFusion.Network;
+﻿using LabFusion.Menu;
+using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Utilities;
 
@@ -82,7 +83,7 @@ public class BitMiner : PointItem
 
     private int CalculateBitReward()
     {
-        var baseCount = 2 + UpgradeLevel;
+        var baseCount = 2 + CurrentUpgradeIndex;
 
         var otherPlayers = PlayerIdManager.PlayerCount - 1;
 
@@ -94,6 +95,6 @@ public class BitMiner : PointItem
 
     public override void LoadPreviewIcon(Action<Texture2D> onLoaded)
     {
-        onLoaded(FusionPointItemLoader.GetPair(nameof(BitMiner)).Preview);
+        onLoaded(MenuResources.GetPointIcon(Title).TryCast<Texture2D>());
     }
 }

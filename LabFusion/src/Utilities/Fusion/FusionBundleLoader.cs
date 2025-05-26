@@ -66,14 +66,12 @@ public static class FusionBundleLoader
     public static void OnBundleLoad()
     {
         FusionContentLoader.OnBundleLoad();
-        FusionPointItemLoader.OnBundleLoad();
         FusionAchievementLoader.OnBundleLoad();
     }
 
     public static void OnBundleUnloaded()
     {
         FusionContentLoader.OnBundleUnloaded();
-        FusionPointItemLoader.OnBundleUnloaded();
         FusionAchievementLoader.OnBundleUnloaded();
     }
 }

@@ -31,6 +31,11 @@ public static class BitPopup
 
     public static void Send(int amount)
     {
+        if (amount == 0)
+        {
+            return;
+        }
+
         _bitQueue.Enqueue(amount);
     }
 

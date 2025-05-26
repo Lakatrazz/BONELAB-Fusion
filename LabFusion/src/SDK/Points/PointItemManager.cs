@@ -39,8 +39,6 @@ public enum SortMode
     PRICE,
     NAME,
     TAG,
-    AUTHOR,
-    RARITY,
     EQUIPPED,
     UNEQUIPPED,
     LAST_SORT,
@@ -123,6 +121,26 @@ public static class PointItemManager
             RarityLevel.Purple => new Color(0.5f, 0f, 0.5f),
             _ => Color.white,
         };
+    }
+
+    public static string ParsePrice(int price, bool unlocked = false)
+    {
+        if (unlocked)
+        {
+            return "Bought";
+        }
+
+        if (price <= 0)
+        {
+            return "Free";
+        }
+
+        if (price > BitEconomy.PricelessValue)
+        {
+            return "Priceless";
+        }
+
+        return $"{price} Bits";
     }
 
     internal static void HookEvents()
@@ -292,7 +310,7 @@ public static class PointItemManager
             return false;
         }
 
-        int price = item.ActivePrice;
+        int price = item.CurrentPrice;
         int bits = GetBitCount();
 
         if (price < 0)
@@ -317,7 +335,7 @@ public static class PointItemManager
             return false;
         }
 
-        int price = item.AdjustedPrice;
+        int price = item.Price;
         int bits = GetBitCount();
 
         if (price < 0)
@@ -492,16 +510,13 @@ public static class PointItemManager
         switch (sort)
         {
             case SortMode.PRICE:
-                items.Sort((x, y) => x.AdjustedPrice - y.AdjustedPrice);
+                items.Sort((x, y) => x.Price - y.Price);
                 break;
             case SortMode.TAG:
                 items.Sort((x, y) => x.MainTag.CompareTo(y.MainTag));
                 break;
             case SortMode.NAME:
                 items.Sort((x, y) => x.Title.CompareTo(y.Title));
-                break;
-            case SortMode.AUTHOR:
-                items.Sort((x, y) => x.Author.CompareTo(y.Author));
                 break;
         }
     }

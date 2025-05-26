@@ -16,8 +16,6 @@ namespace LabFusion.Marrow.Proxies
 #if MELONLOADER
         public MenuPage(IntPtr intPtr) : base(intPtr) { }
 
-        public static MenuPage SelectedPage { get; private set; } = null;
-
         public Action OnShown;
 
         public Action OnEnabled, OnDisabled;
@@ -32,6 +30,28 @@ namespace LabFusion.Marrow.Proxies
         public int DefaultPageIndex { get; set; } = 0;
 
         public MenuPage Parent { get; set; } = null;
+
+        public MenuPage Root
+        {
+            get
+            {
+                if (Parent == null)
+                {
+                    return this;
+                }
+
+                return Parent.Root;
+            }
+        }
+
+        private MenuPage _rootCurrentPage = null;
+        public MenuPage RootCurrentPage
+        {
+            get
+            {
+                return Root._rootCurrentPage;
+            }
+        }
 
         private void Awake()
         {
@@ -116,7 +136,7 @@ namespace LabFusion.Marrow.Proxies
             CurrentPage = page;
             CurrentPage.ShowPage();
 
-            SelectedPage = page;
+            Root._rootCurrentPage = page;
         }
 
         public void SelectSubPage(int index)

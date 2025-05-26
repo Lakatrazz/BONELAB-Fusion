@@ -263,7 +263,7 @@ public static class MenuCreator
 
     private static void OnBackArrowPressed()
     {
-        var selectedPage = MenuPage.SelectedPage;
+        var selectedPage = MenuPageHelper.RootPage.RootCurrentPage;
 
         GoBack(selectedPage);
     }

@@ -9,12 +9,6 @@ namespace LabFusion.SDK.Points;
 
 public static class PointShopHelper
 {
-    public static void CompleteBitMart(GameObject gameObject)
-    {
-        // Currently just needs to add the PointShop script
-        gameObject.AddComponent<PointShop>();
-    }
-
     public static void SpawnBitMart(Vector3 position, Quaternion rotation)
     {
         var spawnable = new Spawnable()

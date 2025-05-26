@@ -201,31 +201,6 @@ public static class MenuSettings
         generalGroup.AddElement<BoolElement>("Download Mature Content")
             .AsPref(ClientSettings.Downloading.DownloadMatureContent)
             .WithColor(Color.red);
-
-        var quickDownloads = page.AddElement<GroupElement>("Quick Downloads");
-
-        quickDownloads.AddElement<FunctionElement>("Download Cosmetics")
-            .Do(() =>
-            {
-                ModIODownloader.EnqueueDownload(new ModTransaction()
-                {
-                    ModFile = new ModIOFile(ModReferences.FusionCosmeticsId),
-                    Callback = (info) =>
-                    {
-                        if (info.result != Downloading.ModResult.SUCCEEDED)
-                        {
-                            Notifier.Send(new Notification()
-                            {
-                                Title = "Download Failed",
-                                Message = "Failed to download Fusion Cosmetics!",
-                                SaveToMenu = false,
-                                ShowPopup = true,
-                                Type = NotificationType.ERROR,
-                            });
-                        }
-                    },
-                });
-            });
     }
 
     private static void PopulateSafetySettings(PageElement page)
