@@ -2,8 +2,10 @@
 using LabFusion.Extensions;
 using LabFusion.Entities;
 using LabFusion.Network.Serialization;
+using LabFusion.SDK.Modules;
+using LabFusion.Network;
 
-namespace LabFusion.Network;
+namespace LabFusion.Marrow.Messages;
 
 public class MagazineInsertData : INetSerializable
 {
@@ -22,10 +24,8 @@ public class MagazineInsertData : INetSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class MagazineInsertMessage : NativeMessageHandler
+public class MagazineInsertMessage : ModuleMessageHandler
 {
-    public override byte Tag => NativeMessageTag.MagazineInsert;
-
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<MagazineInsertData>();

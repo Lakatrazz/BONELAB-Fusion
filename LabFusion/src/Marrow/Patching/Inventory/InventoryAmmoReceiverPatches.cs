@@ -5,18 +5,22 @@ using LabFusion.Player;
 using LabFusion.RPC;
 using LabFusion.Utilities;
 using LabFusion.Entities;
+using LabFusion.Marrow.Messages;
+using LabFusion.Scene;
 
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Marrow.Patching;
 
-[HarmonyPatch(typeof(InventoryAmmoReceiver), nameof(InventoryAmmoReceiver.OnHandGrab))]
-public class InventoryAmmoReceiverGrab
+[HarmonyPatch(typeof(InventoryAmmoReceiver))]
+public static class InventoryAmmoReceiverPatches
 {
-    public static bool Prefix(InventoryAmmoReceiver __instance, Hand hand)
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(InventoryAmmoReceiver.OnHandGrab))]
+    public static bool OnHandGrabPrefix(InventoryAmmoReceiver __instance, Hand hand)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }
@@ -67,9 +71,7 @@ public class InventoryAmmoReceiverGrab
         }
         catch (Exception e)
         {
-#if DEBUG
             FusionLogger.LogException("patching InventoryAmmoReceiver.OnHandGrab", e);
-#endif
         }
 
         return true;
@@ -91,18 +93,15 @@ public class InventoryAmmoReceiverGrab
         }
 
         // Send claim message
-        var data = MagazineClaimData.Create(PlayerIDManager.LocalSmallID, info.Entity.ID, handedness);
+        var data = new MagazineClaimData() { OwnerID = PlayerIDManager.LocalSmallID, EntityID = info.Entity.ID, Handedness = handedness };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.MagazineClaim, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<MagazineClaimMessage, MagazineClaimData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
-}
 
-[HarmonyPatch(typeof(InventoryAmmoReceiver), nameof(InventoryAmmoReceiver.OnHandDrop))]
-public class InventoryAmmoReceiverDrop
-{
-    public static bool Prefix(InventoryAmmoReceiver __instance, IGrippable host)
+    [HarmonyPatch(nameof(InventoryAmmoReceiver.OnHandDrop))]
+    public static bool OnHandDropPrefix(InventoryAmmoReceiver __instance, IGrippable host)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }
@@ -136,12 +135,16 @@ public class InventoryAmmoReceiverDrop
         if (!magazineExtender.Component.magazinePlug._isLocked)
         {
             // Despawn the magazine
-            PooleeUtilities.RequestDespawn(entity.ID, false);
+            NetworkAssetSpawner.Despawn(new NetworkAssetSpawner.DespawnRequestInfo()
+            {
+                EntityId = entity.ID,
+                DespawnEffect = false,
+            });
 
             // Play the ammo release sound effect
-            var data = InventoryAmmoReceiverDropData.Create(PlayerIDManager.LocalID);
+            var data = new InventoryAmmoReceiverDropData() { EntityID = PlayerIDManager.LocalID };
 
-            MessageRelay.RelayNative(data, NativeMessageTag.InventoryAmmoReceiverDrop, NetworkChannel.Reliable, RelayType.ToClients);
+            MessageRelay.RelayModule<InventoryAmmoReceiverDropMessage, InventoryAmmoReceiverDropData>(data, NetworkChannel.Reliable, RelayType.ToClients);
         }
 
         return false;

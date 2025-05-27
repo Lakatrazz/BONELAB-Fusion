@@ -3,51 +3,42 @@ using LabFusion.Extensions;
 using LabFusion.Entities;
 using LabFusion.Network.Serialization;
 using LabFusion.Utilities;
+using LabFusion.Network;
+using LabFusion.SDK.Modules;
 
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow;
 
-namespace LabFusion.Network;
+namespace LabFusion.Marrow.Messages;
 
 public class InventorySlotDropData : INetSerializable
 {
     public const int Size = sizeof(byte) * 3 + sizeof(ushort);
 
-    public ushort slotEntityId;
-    public byte grabber;
-    public byte slotIndex;
-    public Handedness handedness;
+    public int? GetSize() => Size;
+
+    public ushort SlotEntityID;
+    public byte GrabberID;
+    public byte SlotIndex;
+    public Handedness Handedness;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref slotEntityId);
-        serializer.SerializeValue(ref grabber);
-        serializer.SerializeValue(ref slotIndex);
-        serializer.SerializeValue(ref handedness, Precision.OneByte);
-    }
-
-    public static InventorySlotDropData Create(ushort slotEntityId, byte grabber, byte slotIndex, Handedness handedness)
-    {
-        return new InventorySlotDropData()
-        {
-            slotEntityId = slotEntityId,
-            grabber = grabber,
-            slotIndex = slotIndex,
-            handedness = handedness,
-        };
+        serializer.SerializeValue(ref SlotEntityID);
+        serializer.SerializeValue(ref GrabberID);
+        serializer.SerializeValue(ref SlotIndex);
+        serializer.SerializeValue(ref Handedness, Precision.OneByte);
     }
 }
 
 [Net.SkipHandleWhileLoading]
-public class InventorySlotDropMessage : NativeMessageHandler
+public class InventorySlotDropMessage : ModuleMessageHandler
 {
-    public override byte Tag => NativeMessageTag.InventorySlotDrop;
-
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<InventorySlotDropData>();
 
-        var slotEntity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.slotEntityId);
+        var slotEntity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.SlotEntityID);
 
         if (slotEntity == null)
         {
@@ -61,7 +52,7 @@ public class InventorySlotDropMessage : NativeMessageHandler
             return;
         }
 
-        var slotReceiver = slotExtender.GetComponent(data.slotIndex);
+        var slotReceiver = slotExtender.GetComponent(data.SlotIndex);
         WeaponSlot weaponSlot = null;
 
         if (slotReceiver != null && slotReceiver._weaponHost != null)
@@ -84,20 +75,20 @@ public class InventorySlotDropMessage : NativeMessageHandler
 
         InventorySlotReceiverPatches.IgnorePatches = false;
 
-        if (data.handedness == Handedness.UNDEFINED)
+        if (data.Handedness == Handedness.UNDEFINED)
         {
             return;
         }
 
-        if (NetworkPlayerManager.TryGetPlayer(data.grabber, out var grabber) && !grabber.NetworkEntity.IsOwner)
+        if (NetworkPlayerManager.TryGetPlayer(data.GrabberID, out var grabber) && !grabber.NetworkEntity.IsOwner)
         {
             if (weaponSlot && weaponSlot.grip)
             {
-                weaponSlot.grip.MoveIntoHand(grabber.RigRefs.GetHand(data.handedness));
-                grabber.Grabber.Attach(data.handedness, weaponSlot.grip);
+                weaponSlot.grip.MoveIntoHand(grabber.RigRefs.GetHand(data.Handedness));
+                grabber.Grabber.Attach(data.Handedness, weaponSlot.grip);
             }
 
-            var hand = grabber.RigRefs.GetHand(data.handedness);
+            var hand = grabber.RigRefs.GetHand(data.Handedness);
 
             if (hand)
             {

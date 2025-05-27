@@ -39,13 +39,6 @@ public static class NativeMessageTag
         DespawnRequest = 22,
         DespawnResponse = 23,
 
-        InventorySlotInsert = 24,
-        InventorySlotDrop = 25,
-        InventoryAmmoReceiverDrop = 26,
-
-        MagazineInsert = 27,
-        MagazineEject = 28,
-
         PlayerSettings = 44,
         ServerSettings = 45,
 
@@ -75,8 +68,6 @@ public static class NativeMessageTag
         PlayerRepTeleport = 69,
 
         SpawnGunSelect = 72,
-
-        MagazineClaim = 76,
 
         ModInfoRequest = 77,
         ModInfoResponse = 78,

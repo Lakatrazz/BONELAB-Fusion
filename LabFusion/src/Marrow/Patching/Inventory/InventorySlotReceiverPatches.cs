@@ -7,6 +7,7 @@ using LabFusion.Entities;
 using LabFusion.Scene;
 using LabFusion.Utilities;
 using LabFusion.RPC;
+using LabFusion.Marrow.Messages;
 
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow;
@@ -68,9 +69,9 @@ public class InventorySlotReceiverPatches
         }
 
         // Send a receiver drop message
-        var data = InventorySlotDropData.Create(slotEntity.ID, PlayerIDManager.LocalSmallID, index.Value, handedness);
+        var data = new InventorySlotDropData() { SlotEntityID = slotEntity.ID, GrabberID = PlayerIDManager.LocalSmallID, SlotIndex = index.Value, Handedness = handedness };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.InventorySlotDrop, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<InventorySlotDropMessage, InventorySlotDropData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 
     [HarmonyPrefix]
@@ -127,9 +128,14 @@ public class InventorySlotReceiverPatches
             return;
         }
 
-        var data = InventorySlotInsertData.Create(slotEntity.ID, weaponEntity.ID, index.Value);
+        var data = new InventorySlotInsertData()
+        {
+            SlotEntityID = slotEntity.ID,
+            WeaponID = weaponEntity.ID,
+            SlotIndex = index.Value,
+        };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.InventorySlotInsert, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<InventorySlotInsertMessage, InventorySlotInsertData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 
     [HarmonyPrefix]

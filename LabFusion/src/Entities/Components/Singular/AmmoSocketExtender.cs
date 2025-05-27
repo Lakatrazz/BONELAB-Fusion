@@ -1,6 +1,7 @@
 ﻿using LabFusion.Utilities;
 using LabFusion.Player;
 using LabFusion.Network;
+using LabFusion.Marrow.Messages;
 
 using Il2CppSLZ.Marrow;
 
@@ -59,6 +60,6 @@ public class AmmoSocketExtender : EntityComponentExtender<AmmoSocket>
 
         var data = new MagazineInsertData() { MagazineId = magEntity.ID, GunId = gunEntity.ID };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.MagazineInsert, NetworkChannel.Reliable, RelayType.ToTarget, player.SmallID);
+        MessageRelay.RelayModule<MagazineInsertMessage, MagazineInsertData>(data, NetworkChannel.Reliable, RelayType.ToTarget, player.SmallID);
     }
 }

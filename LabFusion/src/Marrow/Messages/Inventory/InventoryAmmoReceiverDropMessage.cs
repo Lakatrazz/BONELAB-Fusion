@@ -1,42 +1,34 @@
 ﻿using LabFusion.Entities;
-using LabFusion.Marrow;
+using LabFusion.Network;
+using LabFusion.Network.Serialization;
+using LabFusion.SDK.Modules;
 
 using Il2CppSLZ.Marrow.Audio;
 
-using LabFusion.Network.Serialization;
-
-namespace LabFusion.Network;
+namespace LabFusion.Marrow.Messages;
 
 public class InventoryAmmoReceiverDropData : INetSerializable
 {
     public const int Size = sizeof(ushort);
 
-    public ushort entityId;
+    public int? GetSize() => Size;
+
+    public ushort EntityID;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref entityId);
-    }
-
-    public static InventoryAmmoReceiverDropData Create(ushort entityId)
-    {
-        return new InventoryAmmoReceiverDropData()
-        {
-            entityId = entityId,
-        };
+        serializer.SerializeValue(ref EntityID);
     }
 }
 
 [Net.SkipHandleWhileLoading]
-public class InventoryAmmoReceiverDropMessage : NativeMessageHandler
+public class InventoryAmmoReceiverDropMessage : ModuleMessageHandler
 {
-    public override byte Tag => NativeMessageTag.InventoryAmmoReceiverDrop;
-
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<InventoryAmmoReceiverDropData>();
 
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.entityId);
+        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.EntityID);
 
         if (entity == null)
         {

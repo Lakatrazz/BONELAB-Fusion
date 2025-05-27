@@ -20,6 +20,13 @@ public class MarrowModule : Module
         ModuleMessageHandler.RegisterHandler<GunShotMessage>();
         ModuleMessageHandler.RegisterHandler<PuppetMasterKillMessage>();
 
+        ModuleMessageHandler.RegisterHandler<InventoryAmmoReceiverDropMessage>();
+        ModuleMessageHandler.RegisterHandler<InventorySlotDropMessage>();
+        ModuleMessageHandler.RegisterHandler<InventorySlotInsertMessage>();
+
+        ModuleMessageHandler.RegisterHandler<MagazineClaimMessage>();
+        ModuleMessageHandler.RegisterHandler<MagazineEjectMessage>();
+        ModuleMessageHandler.RegisterHandler<MagazineInsertMessage>();
         ModuleMessageHandler.RegisterHandler<ObjectDestructibleDestroyMessage>();
 
         ModuleMessageHandler.RegisterHandler<CrateSpawnerMessage>();

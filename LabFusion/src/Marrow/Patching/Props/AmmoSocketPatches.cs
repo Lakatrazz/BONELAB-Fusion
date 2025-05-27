@@ -4,6 +4,7 @@ using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Interaction;
 
 using LabFusion.Entities;
+using LabFusion.Marrow.Messages;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Scene;
@@ -81,7 +82,7 @@ public static class AmmoSocketPatches
 
         var data = new MagazineInsertData() { MagazineId = magEntity.ID, GunId = gunEntity.ID };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.MagazineInsert, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<MagazineInsertMessage, MagazineInsertData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 
     [HarmonyPatch(nameof(AmmoSocket.OnPlugUnlocked))]
@@ -127,8 +128,8 @@ public static class AmmoSocketPatches
         Hand hand = ammoPlug.host.GetHand(0);
         Handedness handedness = hand != null ? hand.handedness : Handedness.UNDEFINED;
 
-        var data = MagazineEjectData.Create(PlayerIDManager.LocalSmallID, magEntity.ID, gunEntity.ID, handedness);
+        var data = new MagazineEjectData() { PlayerID = PlayerIDManager.LocalSmallID, MagazineID = magEntity.ID, GunID = gunEntity.ID, Handedness = handedness };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.MagazineEject, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<MagazineEjectMessage, MagazineEjectData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 }

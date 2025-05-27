@@ -3,42 +3,32 @@ using LabFusion.Extensions;
 using LabFusion.Entities;
 using LabFusion.Network.Serialization;
 using LabFusion.Utilities;
+using LabFusion.Network;
+using LabFusion.SDK.Modules;
 
-namespace LabFusion.Network;
+namespace LabFusion.Marrow.Messages;
 
 public class InventorySlotInsertData : INetSerializable
 {
     public const int Size = sizeof(ushort) * 2 + sizeof(byte);
 
-    public ushort slotEntityId;
-    public ushort weaponId;
-    public byte slotIndex;
+    public ushort SlotEntityID;
+    public ushort WeaponID;
+    public byte SlotIndex;
 
     public int? GetSize() => Size;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref slotEntityId);
-        serializer.SerializeValue(ref weaponId);
-        serializer.SerializeValue(ref slotIndex);
-    }
-
-    public static InventorySlotInsertData Create(ushort slotEntityId, ushort weaponId, byte slotIndex)
-    {
-        return new InventorySlotInsertData()
-        {
-            slotEntityId = slotEntityId,
-            weaponId = weaponId,
-            slotIndex = slotIndex,
-        };
+        serializer.SerializeValue(ref SlotEntityID);
+        serializer.SerializeValue(ref WeaponID);
+        serializer.SerializeValue(ref SlotIndex);
     }
 }
 
 [Net.SkipHandleWhileLoading]
-public class InventorySlotInsertMessage : NativeMessageHandler
+public class InventorySlotInsertMessage : ModuleMessageHandler
 {
-    public override byte Tag => NativeMessageTag.InventorySlotInsert;
-
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<InventorySlotInsertData>();
@@ -46,13 +36,13 @@ public class InventorySlotInsertMessage : NativeMessageHandler
         NetworkEntity weaponEntity = null;
         NetworkEntity slotEntity = null;
 
-        NetworkEntityManager.HookEntityRegistered(data.weaponId, OnWeaponRegistered);
+        NetworkEntityManager.HookEntityRegistered(data.WeaponID, OnWeaponRegistered);
 
         void OnWeaponRegistered(NetworkEntity entity)
         {
             weaponEntity = entity;
 
-            NetworkEntityManager.HookEntityRegistered(data.slotEntityId, OnSlotRegistered);
+            NetworkEntityManager.HookEntityRegistered(data.SlotEntityID, OnSlotRegistered);
         }
 
         void OnSlotRegistered(NetworkEntity entity)
@@ -91,7 +81,7 @@ public class InventorySlotInsertMessage : NativeMessageHandler
 
             try
             {
-                slotExtender.GetComponent(data.slotIndex).InsertInSlot(weaponExtender.Component.interactableHost);
+                slotExtender.GetComponent(data.SlotIndex).InsertInSlot(weaponExtender.Component.interactableHost);
             }
             catch (Exception e)
             {

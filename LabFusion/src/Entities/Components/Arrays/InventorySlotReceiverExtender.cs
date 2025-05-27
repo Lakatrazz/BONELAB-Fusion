@@ -1,5 +1,6 @@
 ﻿using Il2CppSLZ.Marrow;
 
+using LabFusion.Marrow.Messages;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Utilities;
@@ -59,8 +60,13 @@ public class InventorySlotReceiverExtender : EntityComponentArrayExtender<Invent
             return;
         }
 
-        var data = InventorySlotInsertData.Create(entity.ID, weaponEntity.ID, index.Value);
+        var data = new InventorySlotInsertData()
+        {
+            SlotEntityID = entity.ID,
+            WeaponID = weaponEntity.ID,
+            SlotIndex = index.Value,
+        };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.InventorySlotInsert, NetworkChannel.Reliable, RelayType.ToTarget, player);
+        MessageRelay.RelayModule<InventorySlotInsertMessage, InventorySlotInsertData>(data, NetworkChannel.Reliable, RelayType.ToTarget, player);
     }
 }
