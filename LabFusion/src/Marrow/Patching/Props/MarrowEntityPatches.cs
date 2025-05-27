@@ -5,11 +5,10 @@ using Il2CppSLZ.Marrow.Zones;
 
 using LabFusion.Data;
 using LabFusion.Entities;
-using LabFusion.Marrow;
 using LabFusion.Network;
 using LabFusion.Utilities;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Marrow.Patching;
 
 [HarmonyPatch(typeof(MarrowEntity))]
 public static class MarrowEntityPatches

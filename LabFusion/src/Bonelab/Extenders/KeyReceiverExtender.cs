@@ -1,8 +1,9 @@
 ﻿using LabFusion.Utilities;
+using LabFusion.Entities;
 
 using Il2CppSLZ.Interaction;
 
-namespace LabFusion.Entities;
+namespace LabFusion.Bonelab.Extenders;
 
 public class KeyReceiverExtender : EntityComponentArrayExtender<KeyReceiver>
 {

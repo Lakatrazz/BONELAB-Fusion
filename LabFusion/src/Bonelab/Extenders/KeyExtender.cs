@@ -1,12 +1,13 @@
 ﻿using LabFusion.Utilities;
+using LabFusion.Entities;
 
 using Il2CppSLZ.Interaction;
 
-namespace LabFusion.Entities;
+namespace LabFusion.Bonelab.Extenders;
 
 public class KeyExtender : EntityComponentExtender<Key>
 {
-    public static FusionComponentCache<Key, NetworkEntity> Cache = new();
+    public static readonly FusionComponentCache<Key, NetworkEntity> Cache = new();
 
     protected override void OnRegister(NetworkEntity entity, Key component)
     {

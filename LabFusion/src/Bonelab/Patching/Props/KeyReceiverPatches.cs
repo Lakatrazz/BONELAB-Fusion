@@ -1,16 +1,17 @@
 ﻿using HarmonyLib;
 
 using LabFusion.Network;
-using LabFusion.Entities;
+using LabFusion.Bonelab.Extenders;
 using LabFusion.MonoBehaviours;
 using LabFusion.Data;
 using LabFusion.Marrow;
 using LabFusion.Utilities;
+using LabFusion.Bonelab.Messages;
 
 using Il2CppSLZ.Interaction;
 using Il2CppSLZ.Marrow;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Bonelab.Patching;
 
 [HarmonyPatch(typeof(KeyReceiver))]
 public static class KeyReceiverPatches
@@ -97,6 +98,6 @@ public static class KeyReceiverPatches
             ReceiverData = ComponentPathData.Create(hasEntity, entityId, componentIndex, hashData),
         };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.KeySlot, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<KeySlotMessage, KeySlotData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 }

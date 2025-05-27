@@ -42,8 +42,6 @@ public static class NativeMessageTag
         PlayerSettings = 44,
         ServerSettings = 45,
 
-        KeySlot = 48,
-
         NimbusGunNoclip = 49,
 
         PlayerRepAction = 50,

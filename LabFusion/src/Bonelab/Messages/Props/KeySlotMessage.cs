@@ -1,13 +1,16 @@
 ﻿using LabFusion.Network.Serialization;
-using LabFusion.Patching;
+using LabFusion.Bonelab.Patching;
 using LabFusion.Entities;
+using LabFusion.Bonelab.Extenders;
 using LabFusion.Extensions;
+using LabFusion.Network;
+using LabFusion.SDK.Modules;
 
 using Il2CppSLZ.Interaction;
 
 using Il2CppSLZ.Marrow;
 
-namespace LabFusion.Network;
+namespace LabFusion.Bonelab.Messages;
 
 public class KeySlotData : INetSerializable
 {
@@ -27,10 +30,8 @@ public class KeySlotData : INetSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class KeySlotMessage : NativeMessageHandler
+public class KeySlotMessage : ModuleMessageHandler
 {
-    public override byte Tag => NativeMessageTag.KeySlot;
-
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<KeySlotData>();

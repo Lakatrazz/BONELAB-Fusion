@@ -440,6 +440,8 @@
 
   <ItemGroup>
     <Folder Include="src\Data\Interfaces\" />
+    <Folder Include="src\Network\Messages\Magazines\" />
+    <Folder Include="src\Patching\Patches\Plugs\" />
   </ItemGroup>
 
 </Project>
