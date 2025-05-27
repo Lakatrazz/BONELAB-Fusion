@@ -4,6 +4,7 @@ using LabFusion.Entities;
 using LabFusion.Network.Serialization;
 using LabFusion.SDK.Modules;
 using LabFusion.Network;
+using LabFusion.Utilities;
 
 using Il2CppSLZ.Marrow.Interaction;
 
@@ -50,24 +51,43 @@ public class MagazineEjectMessage : ModuleMessageHandler
             return;
         }
 
-        // Eject mag from gun
-        if (ammoSocketExtender.Component._magazinePlug)
+        var ammoSocket = ammoSocketExtender.Component;
+
+        if (!ammoSocket._magazinePlug)
         {
-            AmmoSocketPatches.IgnorePatch = true;
-
-            var ammoPlug = ammoSocketExtender.Component._magazinePlug;
-
-            if (ammoPlug.magazine && MagazineExtender.Cache.TryGet(ammoPlug.magazine, out var magEntity) && magEntity.ID == data.MagazineID)
-            {
-                ammoPlug.ForceEject();
-
-                if (data.Handedness != Handedness.UNDEFINED && NetworkPlayerManager.TryGetPlayer(data.PlayerID, out var player) && !player.NetworkEntity.IsOwner)
-                {
-                    player.Grabber.Attach(data.Handedness, ammoPlug.magazine.grip);
-                }
-            }
-
-            AmmoSocketPatches.IgnorePatch = false;
+            return;
         }
+
+        var ammoPlug = ammoSocket._magazinePlug;
+
+        if (!ammoPlug.magazine)
+        {
+            return;
+        }
+
+        var magEntity = MagazineExtender.Cache.Get(ammoPlug.magazine);
+
+        if (magEntity == null || magEntity.ID != data.MagazineID)
+        {
+            return;
+        }
+
+        AmmoSocketPatches.IgnorePatch = true;
+
+        try
+        {
+            ammoPlug.ForceEject();
+
+            if (data.Handedness != Handedness.UNDEFINED && NetworkPlayerManager.TryGetPlayer(data.PlayerID, out var player) && !player.NetworkEntity.IsOwner)
+            {
+                player.Grabber.Attach(data.Handedness, ammoPlug.magazine.grip);
+            }
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("ejecting AmmoPlug", e);
+        }
+
+        AmmoSocketPatches.IgnorePatch = false;
     }
 }

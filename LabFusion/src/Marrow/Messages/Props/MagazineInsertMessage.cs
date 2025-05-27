@@ -4,6 +4,7 @@ using LabFusion.Entities;
 using LabFusion.Network.Serialization;
 using LabFusion.SDK.Modules;
 using LabFusion.Network;
+using LabFusion.Utilities;
 
 namespace LabFusion.Marrow.Messages;
 
@@ -67,9 +68,16 @@ public class MagazineInsertMessage : ModuleMessageHandler
             {
                 AmmoSocketPatches.IgnorePatch = true;
 
-                if (otherPlug)
+                try
                 {
-                    otherPlug.ForceEject();
+                    if (otherPlug)
+                    {
+                        otherPlug.ForceEject();
+                    }
+                }
+                catch (Exception e)
+                {
+                    FusionLogger.LogException("ejecting other AmmoPlug", e);
                 }
 
                 AmmoSocketPatches.IgnorePatch = false;
@@ -80,7 +88,14 @@ public class MagazineInsertMessage : ModuleMessageHandler
 
         AmmoSocketPatches.IgnorePatch = true;
 
-        magExtender.Component.magazinePlug.InsertPlug(socketExtender.Component);
+        try
+        {
+            magExtender.Component.magazinePlug.InsertPlug(socketExtender.Component);
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("inserting AmmoPlug", e);
+        }
 
         AmmoSocketPatches.IgnorePatch = false;
     }
