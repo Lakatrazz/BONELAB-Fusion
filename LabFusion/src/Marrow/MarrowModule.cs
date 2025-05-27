@@ -30,6 +30,7 @@ public class MarrowModule : Module
         ModuleMessageHandler.RegisterHandler<MagazineClaimMessage>();
         ModuleMessageHandler.RegisterHandler<MagazineEjectMessage>();
         ModuleMessageHandler.RegisterHandler<MagazineInsertMessage>();
+        ModuleMessageHandler.RegisterHandler<NimbusGunNoclipMessage>();
         ModuleMessageHandler.RegisterHandler<ObjectDestructibleDestroyMessage>();
 
         ModuleMessageHandler.RegisterHandler<CrateSpawnerMessage>();

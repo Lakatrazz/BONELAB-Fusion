@@ -1,11 +1,12 @@
 ﻿using LabFusion.Utilities;
 using LabFusion.Network;
+using LabFusion.Entities;
 
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow.Pool;
 using Il2CppSLZ.Marrow;
 
-namespace LabFusion.Entities;
+namespace LabFusion.Bonelab.Extenders;
 
 public class SpawnGunExtender : EntityComponentExtender<SpawnGun>
 {

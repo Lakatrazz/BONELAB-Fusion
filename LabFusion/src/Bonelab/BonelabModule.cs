@@ -39,6 +39,7 @@ public class BonelabModule : Module
         ModuleMessageHandler.RegisterHandler<FlashlightToggleMessage>();
         ModuleMessageHandler.RegisterHandler<KeySlotMessage>();
         ModuleMessageHandler.RegisterHandler<SimpleGripEventMessage>();
+        ModuleMessageHandler.RegisterHandler<SpawnGunSelectMessage>();
 
         ModuleMessageHandler.RegisterHandler<RandomObjectMessage>();
     }

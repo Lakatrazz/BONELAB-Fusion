@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 
-using LabFusion.Network;
 using LabFusion.RPC;
 using LabFusion.Scene;
 
@@ -9,12 +8,12 @@ using Il2CppSLZ.Bonelab;
 
 using Action = Il2CppSystem.Action;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Bonelab.Patching;
 
 [HarmonyPatch(typeof(PopUpMenuView))]
-public static class AddSpawnMenuPatches
+public static class PopUpMenuViewPatches
 {
-    public static bool DisableMethods = false;
+    public static bool DisableMethods { get; set; } = false;
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(PopUpMenuView.AddSpawnMenu))]
@@ -39,12 +38,10 @@ public static class AddSpawnMenuPatches
 
         return true;
     }
-}
 
-[HarmonyPatch(typeof(PopUpMenuView), nameof(PopUpMenuView.AddDevMenu))]
-public static class AddDevMenuPatch
-{
-    public static void Prefix(PopUpMenuView __instance, ref Action spawnDelegate)
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(PopUpMenuView.AddDevMenu))]
+    public static void AddDevMenuPrefix(PopUpMenuView __instance, ref Action spawnDelegate)
     {
         // Completely override the spawn delegate with our networked version
         var originalDelegate = Action.Combine(spawnDelegate).TryCast<Action>();

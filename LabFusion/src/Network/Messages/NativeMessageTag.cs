@@ -42,8 +42,6 @@ public static class NativeMessageTag
         PlayerSettings = 44,
         ServerSettings = 45,
 
-        NimbusGunNoclip = 49,
-
         PlayerRepAction = 50,
 
         SlowMoButton = 58,
@@ -60,8 +58,6 @@ public static class NativeMessageTag
         PermissionCommandRequest = 68,
 
         PlayerRepTeleport = 69,
-
-        SpawnGunSelect = 72,
 
         ModInfoRequest = 77,
         ModInfoResponse = 78,

@@ -1,21 +1,22 @@
 ﻿using HarmonyLib;
 
 using LabFusion.Network;
-using LabFusion.Player;
-using LabFusion.Entities;
+using LabFusion.Marrow.Extenders;
+using LabFusion.Marrow.Messages;
 using LabFusion.Utilities;
+using LabFusion.Scene;
 
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Marrow.Patching;
 
 [HarmonyPatch(typeof(FlyingGun))]
 public static class FlyingGunPatches
 {
     [HarmonyPrefix]
     [HarmonyPatch(nameof(FlyingGun.OnTriggerGripUpdate))]
-    public static bool OnTriggerGripUpdate(FlyingGun __instance, Hand hand, ref bool __state)
+    public static bool OnTriggerGripUpdatePrefix(FlyingGun __instance, Hand hand, ref bool __state)
     {
         // In a server, prevent two nimbus guns from sending you flying out of the map
         // Due to SLZ running these forces on update for whatever reason, the forces are inconsistent
@@ -32,7 +33,9 @@ public static class FlyingGunPatches
                     var host = otherGrip.Host.GetHostGameObject();
 
                     if (host.GetComponent<FlyingGun>() != null)
+                    {
                         return false;
+                    }
                 }
             }
         }
@@ -46,7 +49,7 @@ public static class FlyingGunPatches
     [HarmonyPatch(nameof(FlyingGun.OnTriggerGripUpdate))]
     public static void OnTriggerGripUpdatePostfix(FlyingGun __instance, Hand hand, bool __state)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }
@@ -69,8 +72,12 @@ public static class FlyingGunPatches
             return;
         }
 
-        var data = NimbusGunNoclipData.Create(entity.ID, __instance._noClipping);
+        var data = new NimbusGunNoClipData()
+        {
+            NimbusGunID = entity.ID,
+            NoClip = __instance._noClipping,
+        };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.NimbusGunNoclip, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<NimbusGunNoclipMessage, NimbusGunNoClipData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 }

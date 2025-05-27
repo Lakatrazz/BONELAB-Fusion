@@ -13,28 +13,30 @@ using LabFusion.RPC;
 using LabFusion.SDK.Achievements;
 using LabFusion.Utilities;
 using LabFusion.Scene;
+using LabFusion.Bonelab.Messages;
+using LabFusion.Bonelab.Extenders;
 
 using HarmonyLib;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Bonelab.Patching;
 
 [HarmonyPatch(typeof(SpawnGun))]
 public static class SpawnGunPatches
 {
-    public static bool IgnorePatches = false;
+    public static bool IgnorePatches { get; set; } = false;
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(SpawnGun.OnTriggerGripAttached))]
     public static void OnTriggerGripAttachedPrefix(Hand hand)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }
 
         if (!hand.manager.IsLocalPlayer())
         {
-            AddSpawnMenuPatches.DisableMethods = true;
+            PopUpMenuViewPatches.DisableMethods = true;
         }
     }
 
@@ -42,21 +44,21 @@ public static class SpawnGunPatches
     [HarmonyPatch(nameof(SpawnGun.OnTriggerGripAttached))]
     public static void OnTriggerGripAttachedPostfix()
     {
-        AddSpawnMenuPatches.DisableMethods = false;
+        PopUpMenuViewPatches.DisableMethods = false;
     }
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(SpawnGun.OnTriggerGripDetached))]
     public static void OnTriggerGripDetachedPrefix(Hand hand)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }
 
         if (!hand.manager.IsLocalPlayer())
         {
-            AddSpawnMenuPatches.DisableMethods = true;
+            PopUpMenuViewPatches.DisableMethods = true;
         }
     }
 
@@ -64,7 +66,7 @@ public static class SpawnGunPatches
     [HarmonyPatch(nameof(SpawnGun.OnTriggerGripDetached))]
     public static void OnTriggerGripDetachedPostfix()
     {
-        AddSpawnMenuPatches.DisableMethods = false;
+        PopUpMenuViewPatches.DisableMethods = false;
     }
 
     [HarmonyPostfix]
@@ -95,9 +97,13 @@ public static class SpawnGunPatches
             barcode = crate.Barcode.ID;
         }
 
-        var data = SpawnGunSelectData.Create(PlayerIDManager.LocalSmallID, entity.ID, barcode);
+        var data = new SpawnGunSelectData()
+        {
+            SpawnGunID = entity.ID,
+            Barcode = barcode,
+        };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.SpawnGunSelect, NetworkChannel.Reliable, RelayType.ToOtherClients);
+        MessageRelay.RelayModule<SpawnGunSelectMessage, SpawnGunSelectData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 
     [HarmonyPrefix]
@@ -155,7 +161,9 @@ public static class SpawnGunPatches
 
         // Reward achievement
         if (PlayerIDManager.HasOtherPlayers && AchievementManager.TryGetAchievement<LavaGang>(out var achievement))
+        {
             achievement.IncrementTask();
+        }
 
         // Send a spawn request
         var spawnable = new Spawnable() { crateRef = new SpawnableCrateReference(crate.Barcode) };
