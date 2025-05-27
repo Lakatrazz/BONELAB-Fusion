@@ -24,6 +24,9 @@ public class MarrowModule : Module
         ModuleMessageHandler.RegisterHandler<InventorySlotDropMessage>();
         ModuleMessageHandler.RegisterHandler<InventorySlotInsertMessage>();
 
+        ModuleMessageHandler.RegisterHandler<ConstrainerModeMessage>();
+        ModuleMessageHandler.RegisterHandler<ConstraintCreateMessage>();
+        ModuleMessageHandler.RegisterHandler<ConstraintDeleteMessage>();
         ModuleMessageHandler.RegisterHandler<MagazineClaimMessage>();
         ModuleMessageHandler.RegisterHandler<MagazineEjectMessage>();
         ModuleMessageHandler.RegisterHandler<MagazineInsertMessage>();

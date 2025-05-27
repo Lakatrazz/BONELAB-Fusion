@@ -1,47 +1,45 @@
 ﻿using LabFusion.Entities;
+using LabFusion.SDK.Modules;
+using LabFusion.Network;
+using LabFusion.Network.Serialization;
 
 using Il2CppSLZ.Marrow;
 
-using LabFusion.Network.Serialization;
-
-namespace LabFusion.Network;
+namespace LabFusion.Marrow.Messages;
 
 public class ConstrainerModeData : INetSerializable
 {
-    public const int Size = sizeof(byte) * 2 + sizeof(ushort);
+    public const int Size = sizeof(byte) + sizeof(ushort);
 
-    public byte smallId;
-    public ushort constrainerId;
-    public Constrainer.ConstraintMode mode;
+    public int? GetSize() => Size;
+
+    public ushort ConstrainerID;
+    public Constrainer.ConstraintMode Mode;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref smallId);
-        serializer.SerializeValue(ref constrainerId);
-        serializer.SerializeValue(ref mode, Precision.OneByte);
+        serializer.SerializeValue(ref ConstrainerID);
+        serializer.SerializeValue(ref Mode, Precision.OneByte);
     }
 
     public static ConstrainerModeData Create(byte smallId, ushort constrainerId, Constrainer.ConstraintMode mode)
     {
         return new ConstrainerModeData()
         {
-            smallId = smallId,
-            constrainerId = constrainerId,
-            mode = mode,
+            ConstrainerID = constrainerId,
+            Mode = mode,
         };
     }
 }
 
 [Net.SkipHandleWhileLoading]
-public class ConstrainerModeMessage : NativeMessageHandler
+public class ConstrainerModeMessage : ModuleMessageHandler
 {
-    public override byte Tag => NativeMessageTag.ConstrainerMode;
-
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<ConstrainerModeData>();
 
-        var constrainer = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.constrainerId);
+        var constrainer = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.ConstrainerID);
 
         if (constrainer == null)
         {
@@ -58,6 +56,6 @@ public class ConstrainerModeMessage : NativeMessageHandler
         // Change the mode
         var comp = extender.Component;
 
-        comp.mode = data.mode;
+        comp.mode = data.Mode;
     }
 }

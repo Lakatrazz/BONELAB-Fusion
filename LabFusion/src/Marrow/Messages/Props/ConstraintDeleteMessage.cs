@@ -1,45 +1,33 @@
-﻿using LabFusion.Data;
-using LabFusion.Patching;
+﻿using LabFusion.Marrow.Patching;
+using LabFusion.Network;
 using LabFusion.Entities;
 using LabFusion.Utilities;
 using LabFusion.Network.Serialization;
+using LabFusion.SDK.Modules;
+using LabFusion.Marrow.Extenders;
 
-namespace LabFusion.Network;
+namespace LabFusion.Marrow.Messages;
 
 public class ConstraintDeleteData : INetSerializable
 {
-    public const int Size = sizeof(byte) + sizeof(ushort) * 2;
+    public const int Size = sizeof(ushort);
 
-    public byte smallId;
-
-    public ushort constraintId;
+    public ushort ConstraintID;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref smallId);
-        serializer.SerializeValue(ref constraintId);
-    }
-
-    public static ConstraintDeleteData Create(byte smallId, ushort constraintId)
-    {
-        return new ConstraintDeleteData()
-        {
-            smallId = smallId,
-            constraintId = constraintId,
-        };
+        serializer.SerializeValue(ref ConstraintID);
     }
 }
 
 [Net.DelayWhileTargetLoading]
-public class ConstraintDeleteMessage : NativeMessageHandler
+public class ConstraintDeleteMessage : ModuleMessageHandler
 {
-    public override byte Tag => NativeMessageTag.ConstraintDelete;
-
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<ConstraintDeleteData>();
 
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.constraintId);
+        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.ConstraintID);
 
         if (entity == null)
         {
@@ -54,7 +42,16 @@ public class ConstraintDeleteMessage : NativeMessageHandler
         }
 
         ConstraintTrackerPatches.IgnorePatches = true;
-        networkConstraint.Tracker.DeleteConstraint();
+
+        try
+        {
+            networkConstraint.Tracker.DeleteConstraint();
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("deleting constraint", e);
+        }
+
         ConstraintTrackerPatches.IgnorePatches = false;
 
 #if DEBUG

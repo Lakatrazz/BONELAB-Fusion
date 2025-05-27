@@ -1,24 +1,26 @@
 ﻿using LabFusion.Data;
 using LabFusion.Player;
 using LabFusion.Utilities;
-using LabFusion.Patching;
+using LabFusion.Network;
+using LabFusion.Marrow.Patching;
 using LabFusion.SDK.Achievements;
 using LabFusion.Entities;
 using LabFusion.Scene;
 using LabFusion.Network.Serialization;
 using LabFusion.Data.Serializables;
+using LabFusion.SDK.Modules;
 
 using UnityEngine;
 
 using Il2CppSLZ.Marrow;
 
-namespace LabFusion.Network;
+namespace LabFusion.Marrow.Messages;
 
 public class ConstraintCreateData : INetSerializable
 {
-    public byte SmallId;
+    public byte SmallID;
 
-    public ushort? ConstrainerId;
+    public ushort? ConstrainerID;
 
     public Constrainer.ConstraintMode Mode;
 
@@ -54,8 +56,8 @@ public class ConstraintCreateData : INetSerializable
         var encodedPoint1 = NetworkTransformManager.EncodePosition(Point1);
         var encodedPoint2 = NetworkTransformManager.EncodePosition(Point2);
 
-        serializer.SerializeValue(ref SmallId);
-        serializer.SerializeValue(ref ConstrainerId);
+        serializer.SerializeValue(ref SmallID);
+        serializer.SerializeValue(ref ConstrainerID);
         serializer.SerializeValue(ref Mode, Precision.OneByte);
 
         serializer.SerializeValue(ref Tracker1);
@@ -84,8 +86,8 @@ public class ConstraintCreateData : INetSerializable
     {
         return new ConstraintCreateData()
         {
-            SmallId = smallId,
-            ConstrainerId = constrainerId,
+            SmallID = smallId,
+            ConstrainerID = constrainerId,
             Mode = pair.mode,
             Tracker1 = new GameObjectReference(pair.go1),
             Tracker2 = new GameObjectReference(pair.go2),
@@ -104,15 +106,13 @@ public class ConstraintCreateData : INetSerializable
 }
 
 [Net.DelayWhileTargetLoading]
-public class ConstraintCreateMessage : NativeMessageHandler
+public class ConstraintCreateMessage : ModuleMessageHandler
 {
-    public override byte Tag => NativeMessageTag.ConstraintCreate;
-
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<ConstraintCreateData>();
 
-        var constrainerEntity = data.ConstrainerId.HasValue ? NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.ConstrainerId.Value) : null;
+        var constrainerEntity = data.ConstrainerID.HasValue ? NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.ConstrainerID.Value) : null;
         bool hasConstrainer = constrainerEntity != null;
 
         // Send message to other clients if server
@@ -125,7 +125,7 @@ public class ConstraintCreateMessage : NativeMessageHandler
                 data.Point1Id = NetworkEntityManager.IdManager.RegisteredEntities.AllocateNewId();
                 data.Point2Id = NetworkEntityManager.IdManager.RegisteredEntities.AllocateNewId();
 
-                MessageRelay.RelayNative(data, Tag, NetworkChannel.Reliable, RelayType.ToClients);
+                MessageRelay.RelayModule<ConstraintCreateMessage, ConstraintCreateData>(data, NetworkChannel.Reliable, RelayType.ToClients);
             }
 
             return;
@@ -220,7 +220,7 @@ public class ConstraintCreateMessage : NativeMessageHandler
             tran2.SetPositionAndRotation(go2Pos, go2Rot);
 
             // Events when the constrainer is from another player
-            if (data.SmallId != PlayerIDManager.LocalSmallID)
+            if (data.SmallID != PlayerIDManager.LocalSmallID)
             {
                 if (hasConstrainer)
                 {
@@ -230,7 +230,7 @@ public class ConstraintCreateMessage : NativeMessageHandler
                 }
 
                 // Check for host constraint achievement
-                if (data.SmallId == PlayerIDManager.HostSmallID && AchievementManager.TryGetAchievement<ClassStruggle>(out var achievement))
+                if (data.SmallID == PlayerIDManager.HostSmallID && AchievementManager.TryGetAchievement<ClassStruggle>(out var achievement))
                 {
                     bool tracker1IsSelf = tracker1HasPlayer && tracker1Player.NetworkEntity.IsOwner;
                     bool tracker2IsSelf = tracker2HasPlayer && tracker2Player.NetworkEntity.IsOwner;

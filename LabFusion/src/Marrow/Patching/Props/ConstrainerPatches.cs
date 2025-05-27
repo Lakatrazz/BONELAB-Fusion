@@ -5,13 +5,15 @@ using LabFusion.Player;
 using LabFusion.Entities;
 using LabFusion.Utilities;
 using LabFusion.Scene;
+using LabFusion.Marrow.Messages;
+using LabFusion.Marrow.Extenders;
 
 using UnityEngine;
 
 using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Interaction;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Marrow.Patching;
 
 public struct ConstrainerPointPair
 {
@@ -44,9 +46,9 @@ public struct ConstrainerPointPair
 [HarmonyPatch(typeof(Constrainer))]
 public static class ConstrainerPatches
 {
-    public static bool IsReceivingConstraints = false;
-    public static ushort FirstId;
-    public static ushort SecondId;
+    public static bool IsReceivingConstraints { get; set; } = false;
+    public static ushort FirstId { get; set; }
+    public static ushort SecondId { get; set; }
 
     private static bool IsPlayer(MarrowBody body)
     {
@@ -150,7 +152,7 @@ public static class ConstrainerPatches
             // Send create message
             var data = ConstraintCreateData.Create(PlayerIDManager.LocalSmallID, entity.ID, new ConstrainerPointPair(__instance));
 
-            MessageRelay.RelayNative(data, NativeMessageTag.ConstraintCreate, NetworkChannel.Reliable, RelayType.ToServer);
+            MessageRelay.RelayModule<ConstraintCreateMessage, ConstraintCreateData>(data, NetworkChannel.Reliable, RelayType.ToServer);
         }
         // If this is a received message, setup the constraints
         else
@@ -188,27 +190,36 @@ public static class ConstrainerPatches
         {
             return false;
         }
-        else if (ConstrainerExtender.Cache.TryGet(__instance, out var syncable))
+
+        var constrainerEntity = ConstrainerExtender.Cache.Get(__instance);
+
+        if (constrainerEntity == null)
         {
-            // Check if the mode was changed
-            if (hand.Controller.GetMenuTap())
+            return true;
+        }
+
+        // Check if the mode was changed
+        if (hand.Controller.GetMenuTap())
+        {
+            // Send mode message
+            Constrainer.ConstraintMode nextMode = __instance.mode;
+
+            if (nextMode == Constrainer.ConstraintMode.Remove)
             {
-                // Send mode message
-                Constrainer.ConstraintMode nextMode = __instance.mode;
-
-                if (nextMode == Constrainer.ConstraintMode.Remove)
-                {
-                    nextMode = Constrainer.ConstraintMode.Tether;
-                }
-                else
-                {
-                    nextMode++;
-                }
-
-                var data = ConstrainerModeData.Create(PlayerIDManager.LocalSmallID, syncable.ID, nextMode);
-
-                MessageRelay.RelayNative(data, NativeMessageTag.ConstrainerMode, NetworkChannel.Reliable, RelayType.ToOtherClients);
+                nextMode = Constrainer.ConstraintMode.Tether;
             }
+            else
+            {
+                nextMode++;
+            }
+
+            var data = new ConstrainerModeData()
+            {
+                ConstrainerID = constrainerEntity.ID,
+                Mode = nextMode,
+            };
+
+            MessageRelay.RelayModule<ConstrainerModeMessage, ConstrainerModeData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
         }
 
         return true;

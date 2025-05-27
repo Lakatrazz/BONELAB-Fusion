@@ -1,12 +1,13 @@
 ﻿using HarmonyLib;
 
 using LabFusion.Network;
-using LabFusion.Player;
-using LabFusion.Entities;
+using LabFusion.Marrow.Extenders;
+using LabFusion.Scene;
+using LabFusion.Marrow.Messages;
 
 using Il2CppSLZ.Marrow;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Marrow.Patching;
 
 [HarmonyPatch(typeof(ConstraintTracker))]
 public static class ConstraintTrackerPatches
@@ -17,7 +18,7 @@ public static class ConstraintTrackerPatches
     [HarmonyPatch(nameof(ConstraintTracker.DeleteConstraint))]
     public static bool DeleteConstraint(ConstraintTracker __instance)
     {
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return true;
         }
@@ -34,9 +35,12 @@ public static class ConstraintTrackerPatches
             return true;
         }
 
-        var data = ConstraintDeleteData.Create(PlayerIDManager.LocalSmallID, constraintEntity.ID);
+        var data = new ConstraintDeleteData()
+        {
+            ConstraintID = constraintEntity.ID,
+        };
 
-        MessageRelay.RelayNative(data, NativeMessageTag.ConstraintDelete, NetworkChannel.Reliable, RelayType.ToClients);
+        MessageRelay.RelayModule<ConstraintDeleteMessage, ConstraintDeleteData>(data, NetworkChannel.Reliable, RelayType.ToClients);
 
         // Return false, because constraints are deleted server side
         return false;

@@ -2,13 +2,15 @@
 
 using LabFusion.MonoBehaviours;
 using LabFusion.Network;
-using LabFusion.Patching;
+using LabFusion.Entities;
+using LabFusion.Marrow.Patching;
+using LabFusion.Marrow.Messages;
 using LabFusion.Player;
 using LabFusion.Utilities;
 
 using UnityEngine;
 
-namespace LabFusion.Entities;
+namespace LabFusion.Marrow.Extenders;
 
 public class NetworkConstraint : IEntityExtender
 {
@@ -82,7 +84,7 @@ public class NetworkConstraint : IEntityExtender
         data.Point1Id = NetworkEntity.ID;
         data.Point2Id = OtherId;
 
-        MessageRelay.RelayNative(data, NativeMessageTag.ConstraintCreate, NetworkChannel.Reliable, RelayType.ToTarget, player);
+        MessageRelay.RelayModule<ConstraintCreateMessage, ConstraintCreateData>(data, NetworkChannel.Reliable, RelayType.ToTarget, player);
     }
 
     private void OnSensorDestroyed()

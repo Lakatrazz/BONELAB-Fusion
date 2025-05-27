@@ -46,10 +46,6 @@ public static class NativeMessageTag
 
         PlayerRepAction = 50,
 
-        ConstrainerMode = 51,
-        ConstraintCreate = 52,
-        ConstraintDelete = 53,
-
         SlowMoButton = 58,
 
         PlayerMetadataRequest = 59,
