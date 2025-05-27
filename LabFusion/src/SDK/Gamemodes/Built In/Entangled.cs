@@ -266,7 +266,7 @@ public class Entangled : Gamemode
         // Remove all player partnerships
         if (NetworkInfo.IsHost)
         {
-            foreach (var player in PlayerIDManager.PlayerIds)
+            foreach (var player in PlayerIDManager.PlayerIDs)
             {
                 RemovePartners(player);
             }
@@ -287,7 +287,7 @@ public class Entangled : Gamemode
     {
         List<PlayerID> unassignedPlayers = new List<PlayerID>();
 
-        foreach (var player in PlayerIDManager.PlayerIds)
+        foreach (var player in PlayerIDManager.PlayerIDs)
         {
             if (GetPartner(player) == null)
                 unassignedPlayers.Add(player);
@@ -439,7 +439,7 @@ public class Entangled : Gamemode
 
     protected PlayerID GetPlayerId(string partnerKey)
     {
-        foreach (var id in PlayerIDManager.PlayerIds)
+        foreach (var id in PlayerIDManager.PlayerIDs)
         {
             if (GetPartnerKey(id) == partnerKey)
             {

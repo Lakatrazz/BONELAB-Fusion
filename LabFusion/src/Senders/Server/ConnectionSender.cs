@@ -12,7 +12,7 @@ public static class ConnectionSender
     {
         if (NetworkInfo.IsHost)
         {
-            foreach (var id in PlayerIDManager.PlayerIds)
+            foreach (var id in PlayerIDManager.PlayerIDs)
             {
                 if (id.IsMe)
                     continue;

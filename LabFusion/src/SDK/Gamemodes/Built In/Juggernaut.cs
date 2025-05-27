@@ -283,7 +283,7 @@ public class Juggernaut : Gamemode
             // Juggernaut killed themselves? Give the title to a random player
             if (juggernautWasKilled && PlayerIDManager.HasOtherPlayers)
             {
-                var otherPlayers = PlayerIDManager.PlayerIds.Where(id => id.SmallID != player.SmallID);
+                var otherPlayers = PlayerIDManager.PlayerIDs.Where(id => id.SmallID != player.SmallID);
                 SwapJuggernaut(otherPlayers.GetRandom(), player);
             }
 
@@ -332,7 +332,7 @@ public class Juggernaut : Gamemode
 
         if (isJuggernaut)
         {
-            TeamManager.TryAssignTeam(PlayerIDManager.PlayerIds.GetRandom(), JuggernautTeam);
+            TeamManager.TryAssignTeam(PlayerIDManager.PlayerIDs.GetRandom(), JuggernautTeam);
         }
 
         TeamManager.TryUnassignTeam(playerId);
@@ -567,7 +567,7 @@ public class Juggernaut : Gamemode
     private void AssignTeams()
     {
         // Shuffle the players for randomness
-        var players = new List<PlayerID>(PlayerIDManager.PlayerIds);
+        var players = new List<PlayerID>(PlayerIDManager.PlayerIDs);
         players.Shuffle();
 
         // Assign Juggernaut

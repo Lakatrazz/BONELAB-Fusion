@@ -21,7 +21,7 @@ public sealed class PlayerScoreKeeper : ScoreKeeper<PlayerID>
     /// <returns></returns>
     public IReadOnlyList<PlayerID> GetPlacedPlayers()
     {
-        List<PlayerID> leaders = new(PlayerIDManager.PlayerIds);
+        List<PlayerID> leaders = new(PlayerIDManager.PlayerIDs);
         leaders = leaders.OrderBy(id => GetScore(id)).ToList();
         leaders.Reverse();
 
@@ -34,7 +34,7 @@ public sealed class PlayerScoreKeeper : ScoreKeeper<PlayerID>
     /// <returns></returns>
     public IReadOnlyList<PlayerID> GetOrderedPlayers()
     {
-        List<PlayerID> leaders = new(PlayerIDManager.PlayerIds);
+        List<PlayerID> leaders = new(PlayerIDManager.PlayerIDs);
         leaders = leaders.OrderBy(id => GetScore(id)).ToList();
 
         return leaders;

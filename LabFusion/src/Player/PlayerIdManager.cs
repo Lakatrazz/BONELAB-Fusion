@@ -4,11 +4,11 @@ public static class PlayerIDManager
 {
     public const int MaxNameLength = 32;
 
-    public const int MinPlayerId = 0;
-    public const int MaxPlayerId = byte.MaxValue;
+    public const int MinPlayerID = 0;
+    public const int MaxPlayerID = byte.MaxValue;
 
-    public static readonly HashSet<PlayerID> PlayerIds = new();
-    public static int PlayerCount => PlayerIds.Count;
+    public static readonly HashSet<PlayerID> PlayerIDs = new();
+    public static int PlayerCount => PlayerIDs.Count;
     public static bool HasOtherPlayers => PlayerCount > 1;
 
     public static ulong LocalPlatformID { get; private set; }
@@ -34,12 +34,12 @@ public static class PlayerIDManager
 
     public static PlayerID GetPlayerID(byte smallId)
     {
-        return PlayerIds.FirstOrDefault(x => x.SmallID == smallId);
+        return PlayerIDs.FirstOrDefault(x => x.SmallID == smallId);
     }
 
     public static PlayerID GetPlayerID(ulong longId)
     {
-        return PlayerIds.FirstOrDefault(x => x.PlatformID == longId);
+        return PlayerIDs.FirstOrDefault(x => x.PlatformID == longId);
     }
 
     public static bool HasPlayerID(byte smallId) => GetPlayerID(smallId) != null;

@@ -278,7 +278,7 @@ public class SmashBones : Gamemode
 
     private void OnCheckPlayerHiding(bool selfSpectator)
     {
-        foreach (var player in PlayerIDManager.PlayerIds)
+        foreach (var player in PlayerIDManager.PlayerIDs)
         {
             if (player.IsMe)
             {
@@ -500,7 +500,7 @@ public class SmashBones : Gamemode
     {
         var livingPlayers = new List<PlayerID>();
 
-        foreach (var player in PlayerIDManager.PlayerIds)
+        foreach (var player in PlayerIDManager.PlayerIDs)
         {
             var stocks = PlayerStocksKeeper.GetScore(player);
 
@@ -774,7 +774,7 @@ public class SmashBones : Gamemode
 
     private void AssignTeams()
     {
-        foreach (var player in PlayerIDManager.PlayerIds)
+        foreach (var player in PlayerIDManager.PlayerIDs)
         {
             SetupPlayer(player);
         }

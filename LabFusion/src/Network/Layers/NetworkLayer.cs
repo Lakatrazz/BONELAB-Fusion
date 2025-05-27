@@ -176,7 +176,7 @@ public abstract class NetworkLayer
     /// <param name="message"></param>
     public virtual void BroadcastMessageExcept(byte userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
     {
-        foreach (var id in PlayerIDManager.PlayerIds)
+        foreach (var id in PlayerIDManager.PlayerIDs)
         {
             if (id.SmallID != userId && (id.SmallID != 0 || !ignoreHost))
             {
@@ -193,7 +193,7 @@ public abstract class NetworkLayer
     /// <param name="message"></param>
     public virtual void BroadcastMessageExcept(ulong userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
     {
-        foreach (var id in PlayerIDManager.PlayerIds)
+        foreach (var id in PlayerIDManager.PlayerIDs)
         {
             if (id.PlatformID != userId && (id.SmallID != 0 || !ignoreHost))
             {

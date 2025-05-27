@@ -490,7 +490,7 @@ public static class MenuLocation
 
         var playerListPage = element.PlayerBrowserElement.AddPage();
 
-        foreach (var player in PlayerIDManager.PlayerIds)
+        foreach (var player in PlayerIDManager.PlayerIDs)
         {
             MetadataHelper.TryGetDisplayName(player, out var name);
 
@@ -840,7 +840,7 @@ public static class MenuLocation
             {
                 if (FusionPermissions.HasSufficientPermissions(selfLevel, activeLobbyInfo.Teleportation))
                 {
-                    foreach (var playerId in PlayerIDManager.PlayerIds)
+                    foreach (var playerId in PlayerIDManager.PlayerIDs)
                     {
                         if (playerId != PlayerIDManager.LocalSmallID)
                             PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_ME, playerId);

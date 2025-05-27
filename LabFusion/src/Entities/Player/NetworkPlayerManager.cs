@@ -20,7 +20,7 @@ public static class NetworkPlayerManager
     public static void OnInitializeManager()
     {
         // Reserve all player ids
-        for (var i = PlayerIDManager.MinPlayerId; i <= PlayerIDManager.MaxPlayerId; i++)
+        for (var i = PlayerIDManager.MinPlayerID; i <= PlayerIDManager.MaxPlayerID; i++)
         {
             NetworkEntityManager.IdManager.RegisteredEntities.ReserveId((ushort)i);
         }

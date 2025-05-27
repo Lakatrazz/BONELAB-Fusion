@@ -183,7 +183,7 @@ public class ConnectionRequestMessage : NativeMessageHandler
         ConnectionSender.SendPlayerJoin(playerId, data.avatarBarcode, data.avatarStats);
 
         // Now we send all of our other players to the new player
-        foreach (var id in PlayerIDManager.PlayerIds)
+        foreach (var id in PlayerIDManager.PlayerIDs)
         {
             // Don't resend the new player to themselves
             if (id.SmallID == playerId.SmallID)

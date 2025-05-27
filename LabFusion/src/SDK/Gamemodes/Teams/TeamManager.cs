@@ -170,7 +170,7 @@ public class TeamManager
         }
 
         // Shuffle the players and teams for randomness
-        var shuffledPlayers = new List<PlayerID>(PlayerIDManager.PlayerIds);
+        var shuffledPlayers = new List<PlayerID>(PlayerIDManager.PlayerIDs);
         shuffledPlayers.Shuffle();
 
         var shuffledTeams = new List<Team>(Teams);
@@ -219,7 +219,7 @@ public class TeamManager
     /// </summary>
     public void UnassignAllPlayers()
     {
-        foreach (var player in PlayerIDManager.PlayerIds)
+        foreach (var player in PlayerIDManager.PlayerIDs)
         {
             TryUnassignTeam(player);
         }

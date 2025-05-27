@@ -170,15 +170,25 @@ public static class NetworkSceneManager
     }
 
     /// <summary>
+    /// Gets the proxy host of a level, or the server host if there is no players in that level.
+    /// </summary>
+    /// <param name="barcode">The level barcode.</param>
+    /// <returns>The level's host.</returns>
+    public static PlayerID GetLevelHost(string barcode)
+    {
+        return PlayerIDManager.GetHostID();
+    }
+
+    /// <summary>
     /// Returns a list of all players in a specific level.
     /// </summary>
     /// <param name="barcode">The barcode level.</param>
     /// <returns></returns>
     public static List<PlayerID> GetPlayersInLevel(string barcode)
     {
-        var players = new List<PlayerID>(PlayerIDManager.PlayerIds.Count);
+        var players = new List<PlayerID>(PlayerIDManager.PlayerIDs.Count);
 
-        foreach (var player in PlayerIDManager.PlayerIds)
+        foreach (var player in PlayerIDManager.PlayerIDs)
         {
             if (InLevel(player, barcode))
             {

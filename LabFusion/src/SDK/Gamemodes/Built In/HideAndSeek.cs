@@ -559,7 +559,7 @@ public class HideAndSeek : Gamemode
     private void AssignTeams()
     {
         // Shuffle the players for randomness
-        var players = new List<PlayerID>(PlayerIDManager.PlayerIds);
+        var players = new List<PlayerID>(PlayerIDManager.PlayerIDs);
         players.Shuffle();
 
         // Assign seekers

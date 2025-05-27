@@ -187,9 +187,9 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
 
     public void Insert()
     {
-        if (PlayerIDManager.PlayerIds.Any((id) => id.SmallID == SmallID))
+        if (PlayerIDManager.PlayerIDs.Any((id) => id.SmallID == SmallID))
         {
-            var list = PlayerIDManager.PlayerIds.Where((id) => id.SmallID == SmallID).ToList();
+            var list = PlayerIDManager.PlayerIDs.Where((id) => id.SmallID == SmallID).ToList();
 
             for (var i = 0; i < list.Count; i++)
             {
@@ -197,7 +197,7 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
             }
         }
 
-        PlayerIDManager.PlayerIds.Add(this);
+        PlayerIDManager.PlayerIDs.Add(this);
     }
 
     public void Cleanup()
@@ -208,7 +208,7 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
             return;
         }
 
-        PlayerIDManager.PlayerIds.Remove(this);
+        PlayerIDManager.PlayerIDs.Remove(this);
 
         if (PlayerIDManager.LocalID == this)
         {

@@ -23,7 +23,7 @@ public static class InternalServerHelpers
 
     private static void DisposeUsers()
     {
-        foreach (var id in PlayerIDManager.PlayerIds.ToList())
+        foreach (var id in PlayerIDManager.PlayerIDs.ToList())
         {
             DisposeUser(id);
         }

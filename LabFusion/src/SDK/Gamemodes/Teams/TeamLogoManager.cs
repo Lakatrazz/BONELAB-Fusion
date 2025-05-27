@@ -78,7 +78,7 @@ public class TeamLogoManager
     /// </summary>
     public void SetDirty()
     {
-        foreach (var player in PlayerIDManager.PlayerIds)
+        foreach (var player in PlayerIDManager.PlayerIDs)
         {
             if (!NetworkPlayerManager.TryGetPlayer(player, out var networkPlayer))
             {

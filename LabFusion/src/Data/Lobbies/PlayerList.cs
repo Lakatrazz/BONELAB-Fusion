@@ -16,7 +16,7 @@ public class PlayerList
         Players = new PlayerInfo[PlayerIDManager.PlayerCount];
         int index = 0;
 
-        foreach (var player in PlayerIDManager.PlayerIds)
+        foreach (var player in PlayerIDManager.PlayerIDs)
         {
             Players[index++] = new PlayerInfo(player);
         }
