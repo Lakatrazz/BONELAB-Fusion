@@ -440,7 +440,6 @@
 
   <ItemGroup>
     <Folder Include="src\Data\Interfaces\" />
-    <Folder Include="src\Network\Messages\Inventory\" />
   </ItemGroup>
 
 </Project>
