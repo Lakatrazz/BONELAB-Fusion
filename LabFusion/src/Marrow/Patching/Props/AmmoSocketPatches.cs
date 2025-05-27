@@ -1,98 +1,39 @@
 ﻿using HarmonyLib;
 
+using Il2CppSLZ.Marrow;
+using Il2CppSLZ.Marrow.Interaction;
+
+using LabFusion.Entities;
 using LabFusion.Network;
 using LabFusion.Player;
-using LabFusion.Entities;
+using LabFusion.Scene;
 
-using Il2CppSLZ.Marrow.Interaction;
-using Il2CppSLZ.Marrow;
-
-namespace LabFusion.Patching;
-
-[HarmonyPatch(typeof(AlignPlug))]
-public static class AlignPlugPatches
-{
-    [HarmonyPrefix]
-    [HarmonyPatch(nameof(AlignPlug.OnHandAttached))]
-    public static bool OnHandAttached(InteractableHost host, Hand hand)
-    {
-        if (NetworkInfo.HasServer && NetworkPlayerManager.HasExternalPlayer(hand.manager))
-            return false;
-
-        return true;
-    }
-
-    [HarmonyPrefix]
-    [HarmonyPatch(nameof(AlignPlug.OnHandDetached))]
-    public static bool OnHandDetached(InteractableHost host, Hand hand)
-    {
-        if (NetworkInfo.HasServer && NetworkPlayerManager.HasExternalPlayer(hand.manager))
-            return false;
-
-        return true;
-    }
-
-    [HarmonyPatch(nameof(AlignPlug.OnProxyGrab))]
-    [HarmonyPrefix]
-    public static bool OnProxyGrab(AlignPlug __instance, Hand hand)
-    {
-        if (NetworkInfo.HasServer && __instance.TryCast<AmmoPlug>() && NetworkPlayerManager.HasExternalPlayer(hand.manager))
-            return false;
-
-        return true;
-    }
-
-    [HarmonyPatch(nameof(AlignPlug.OnProxyRelease))]
-    [HarmonyPrefix]
-    public static bool OnProxyRelease(AlignPlug __instance, Hand hand)
-    {
-        if (NetworkInfo.HasServer && __instance.TryCast<AmmoPlug>() && NetworkPlayerManager.HasExternalPlayer(hand.manager))
-            return false;
-
-        return true;
-    }
-}
-
-[HarmonyPatch(typeof(AmmoPlug))]
-public static class AmmoPlugPatches
-{
-    [HarmonyPrefix]
-    [HarmonyPatch(nameof(AmmoPlug.OnPlugInsertComplete))]
-    public static void OnPlugInsertCompletePrefix()
-    {
-        PooleeDespawnPatch.IgnorePatch = true;
-        AmmoSocketPatches.IgnorePatch = true;
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch(nameof(AmmoPlug.OnPlugInsertComplete))]
-    public static void OnPlugInsertCompletePostfix()
-    {
-        PooleeDespawnPatch.IgnorePatch = false;
-        AmmoSocketPatches.IgnorePatch = false;
-    }
-}
+namespace LabFusion.Marrow.Patching;
 
 [HarmonyPatch(typeof(AmmoSocket))]
 public static class AmmoSocketPatches
 {
-    public static bool IgnorePatch = false;
+    public static bool IgnorePatch { get; set; } = false;
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(AmmoSocket.EjectMagazine))]
     public static bool EjectMagazine(AmmoSocket __instance)
     {
         if (IgnorePatch)
+        {
             return true;
+        }
 
         // If the gun is being held by another player, don't locally allow EjectMagazine
         var gun = __instance.gun;
-        if (NetworkInfo.HasServer && gun != null && gun.triggerGrip != null)
+        if (NetworkSceneManager.IsLevelNetworked && gun != null && gun.triggerGrip != null)
         {
             var hand = gun.triggerGrip.GetHand();
 
             if (hand != null && NetworkPlayerManager.HasExternalPlayer(hand.manager))
+            {
                 return false;
+            }
         }
 
         return true;
@@ -107,7 +48,7 @@ public static class AmmoSocketPatches
             return;
         }
 
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }
@@ -138,7 +79,7 @@ public static class AmmoSocketPatches
             return;
         }
 
-        var data = MagazineInsertData.Create(PlayerIDManager.LocalSmallID, magEntity.ID, gunEntity.ID);
+        var data = new MagazineInsertData() { MagazineId = magEntity.ID, GunId = gunEntity.ID };
 
         MessageRelay.RelayNative(data, NativeMessageTag.MagazineInsert, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
@@ -152,7 +93,7 @@ public static class AmmoSocketPatches
             return;
         }
 
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }

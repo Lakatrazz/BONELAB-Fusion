@@ -1,4 +1,4 @@
-﻿using LabFusion.Patching;
+﻿using LabFusion.Marrow.Patching;
 using LabFusion.Extensions;
 using LabFusion.Entities;
 using LabFusion.Network.Serialization;
@@ -7,27 +7,17 @@ namespace LabFusion.Network;
 
 public class MagazineInsertData : INetSerializable
 {
-    public const int Size = sizeof(byte) + sizeof(ushort) * 2;
+    public const int Size = sizeof(ushort) * 2;
 
-    public byte smallId;
-    public ushort magazineId;
-    public ushort gunId;
+    public int? GetSize() => Size;
+
+    public ushort MagazineId;
+    public ushort GunId;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref smallId);
-        serializer.SerializeValue(ref magazineId);
-        serializer.SerializeValue(ref gunId);
-    }
-
-    public static MagazineInsertData Create(byte smallId, ushort magazineId, ushort gunId)
-    {
-        return new MagazineInsertData()
-        {
-            smallId = smallId,
-            magazineId = magazineId,
-            gunId = gunId,
-        };
+        serializer.SerializeValue(ref MagazineId);
+        serializer.SerializeValue(ref GunId);
     }
 }
 
@@ -40,7 +30,7 @@ public class MagazineInsertMessage : NativeMessageHandler
     {
         var data = received.ReadData<MagazineInsertData>();
 
-        var mag = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.magazineId);
+        var mag = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.MagazineId);
 
         if (mag == null)
         {
@@ -54,7 +44,7 @@ public class MagazineInsertMessage : NativeMessageHandler
             return;
         }
 
-        var gun = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.gunId);
+        var gun = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.GunId);
 
         if (gun == null)
         {

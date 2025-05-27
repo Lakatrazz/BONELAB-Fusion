@@ -1,10 +1,9 @@
-﻿using LabFusion.Data;
-using LabFusion.Patching;
+﻿using LabFusion.Marrow.Patching;
 using LabFusion.Extensions;
 using LabFusion.Entities;
+using LabFusion.Network.Serialization;
 
 using Il2CppSLZ.Marrow.Interaction;
-using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 

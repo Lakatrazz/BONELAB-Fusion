@@ -7,7 +7,7 @@ namespace LabFusion.Entities;
 
 public class MagazineExtender : EntityComponentExtender<Magazine>
 {
-    public static FusionComponentCache<Magazine, NetworkEntity> Cache = new();
+    public static readonly FusionComponentCache<Magazine, NetworkEntity> Cache = new();
 
     private TimedDespawnHandler _despawnHandler = null;
 
