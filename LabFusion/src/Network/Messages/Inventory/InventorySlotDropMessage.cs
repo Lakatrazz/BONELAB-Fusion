@@ -1,10 +1,11 @@
-﻿using LabFusion.Patching;
+﻿using LabFusion.Marrow.Patching;
 using LabFusion.Extensions;
 using LabFusion.Entities;
+using LabFusion.Network.Serialization;
+using LabFusion.Utilities;
 
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow;
-using LabFusion.Network.Serialization;
 
 namespace LabFusion.Network;
 
@@ -72,7 +73,14 @@ public class InventorySlotDropMessage : NativeMessageHandler
 
         InventorySlotReceiverPatches.IgnorePatches = true;
 
-        slotReceiver.DropWeapon();
+        try
+        {
+            slotReceiver.DropWeapon();
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("executing InventorySlotReceiver.DropWeapon", e);
+        }
 
         InventorySlotReceiverPatches.IgnorePatches = false;
 

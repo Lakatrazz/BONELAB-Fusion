@@ -1,7 +1,8 @@
-﻿using LabFusion.Patching;
+﻿using LabFusion.Marrow.Patching;
 using LabFusion.Extensions;
 using LabFusion.Entities;
 using LabFusion.Network.Serialization;
+using LabFusion.Utilities;
 
 namespace LabFusion.Network;
 
@@ -86,11 +87,18 @@ public class InventorySlotInsertMessage : NativeMessageHandler
 
             weaponExtender.Component.interactableHost.TryDetach();
 
-            InventorySlotReceiverDrop.PreventInsertCheck = true;
+            InventorySlotReceiverPatches.IgnorePatches = true;
 
-            slotExtender.GetComponent(data.slotIndex).InsertInSlot(weaponExtender.Component.interactableHost);
+            try
+            {
+                slotExtender.GetComponent(data.slotIndex).InsertInSlot(weaponExtender.Component.interactableHost);
+            }
+            catch (Exception e)
+            {
+                FusionLogger.LogException("handling InventorySlotInsertMessage", e);
+            }
 
-            InventorySlotReceiverDrop.PreventInsertCheck = false;
+            InventorySlotReceiverPatches.IgnorePatches = false;
         }
     }
 }

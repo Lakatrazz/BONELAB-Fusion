@@ -4,16 +4,23 @@ using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.SDK.Achievements;
 using LabFusion.Entities;
+using LabFusion.Scene;
+using LabFusion.Utilities;
+using LabFusion.RPC;
 
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow;
+using Il2CppSLZ.Marrow.Warehouse;
+using Il2CppSLZ.Marrow.Data;
 
-namespace LabFusion.Patching;
+using Il2CppCysharp.Threading.Tasks;
+
+namespace LabFusion.Marrow.Patching;
 
 [HarmonyPatch(typeof(InventorySlotReceiver))]
 public class InventorySlotReceiverPatches
 {
-    public static bool IgnorePatches = false;
+    public static bool IgnorePatches { get; set; } = false;
 
     private static void OnDropWeapon(InventorySlotReceiver __instance, Hand hand = null)
     {
@@ -22,7 +29,7 @@ public class InventorySlotReceiverPatches
             return;
         }
 
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }
@@ -79,21 +86,17 @@ public class InventorySlotReceiverPatches
     {
         OnDropWeapon(__instance, hand);
     }
-}
 
-[HarmonyPatch(typeof(InventorySlotReceiver), nameof(InventorySlotReceiver.OnHandDrop))]
-public class InventorySlotReceiverDrop
-{
-    public static bool PreventInsertCheck = false;
-
-    public static void Postfix(InventorySlotReceiver __instance, IGrippable host)
+    [HarmonyPostfix]
+    [HarmonyPatch(nameof(InventorySlotReceiver.OnHandDrop))]
+    public static void OnHandDropPostfix(InventorySlotReceiver __instance, IGrippable host)
     {
-        if (PreventInsertCheck)
+        if (IgnorePatches)
         {
             return;
         }
 
-        if (!NetworkInfo.HasServer)
+        if (!NetworkSceneManager.IsLevelNetworked)
         {
             return;
         }
@@ -127,5 +130,80 @@ public class InventorySlotReceiverDrop
         var data = InventorySlotInsertData.Create(slotEntity.ID, weaponEntity.ID, index.Value);
 
         MessageRelay.RelayNative(data, NativeMessageTag.InventorySlotInsert, NetworkChannel.Reliable, RelayType.ToOtherClients);
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(InventorySlotReceiver.SpawnInSlotAsync))]
+    public static bool SpawnInSlotAsyncPrefix(InventorySlotReceiver __instance, Barcode barcode, ref UniTask<bool> __result)
+    {
+        if (!NetworkSceneManager.IsLevelNetworked)
+        {
+            return true;
+        }
+
+        __result = new UniTask<bool>(false);
+
+        FusionSceneManager.HookOnLevelLoad(() =>
+        {
+            SpawnInSlotAsyncOnLevelLoad(__instance, barcode);
+        });
+        return false;
+    }
+
+    private static void SpawnInSlotAsyncOnLevelLoad(InventorySlotReceiver slot, Barcode barcode)
+    {
+        if (!InventorySlotReceiverExtender.Cache.TryGet(slot, out var slotEntity))
+        {
+            return;
+        }
+
+        if (!slotEntity.IsOwner)
+        {
+            return;
+        }
+
+        try
+        {
+            NetworkSpawnInSlotAsync(slot, barcode);
+        }
+        catch (Exception e)
+        {
+            FusionLogger.LogException("executing NetworkSpawnInSlotAsync", e);
+        }
+    }
+
+    private static void NetworkSpawnInSlotAsync(InventorySlotReceiver slot, Barcode barcode)
+    {
+        var spawnable = new Spawnable()
+        {
+            crateRef = new(barcode),
+            policyData = null,
+        };
+
+        NetworkAssetSpawner.Spawn(new NetworkAssetSpawner.SpawnRequestInfo()
+        {
+            Spawnable = spawnable,
+            Position = slot.transform.position,
+            Rotation = slot.transform.rotation,
+            SpawnEffect = false,
+            SpawnCallback = (info) =>
+            {
+                var weaponSlotExtender = info.Entity.GetExtender<WeaponSlotExtender>();
+
+                if (weaponSlotExtender == null)
+                {
+                    return;
+                }
+
+                var weaponSlot = weaponSlotExtender.Component;
+
+                if (weaponSlot == null || weaponSlot.interactableHost == null)
+                {
+                    return;
+                }
+
+                slot.OnHandDrop(weaponSlot.interactableHost.TryCast<IGrippable>());
+            },
+        });
     }
 }
