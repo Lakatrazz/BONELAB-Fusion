@@ -4,7 +4,7 @@ using LabFusion.Utilities;
 
 using UnityEngine;
 
-namespace LabFusion.Marrow;
+namespace LabFusion.Marrow.Combat;
 
 public static class NetworkGunManager
 {

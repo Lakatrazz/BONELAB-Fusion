@@ -6,7 +6,7 @@ using UnityEngine;
 
 using Il2CppSLZ.Marrow;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Marrow.Patching;
 
 [HarmonyPatch(typeof(ImpactSFX))]
 public static class ImpactSFXPatches
@@ -29,7 +29,7 @@ public static class ImpactSFXPatches
 
         if (properties)
         {
-            return ImpactAttackValidator.ValidateAttack(__instance.gameObject, __instance._host, properties);
+            return ImpactAttackValidator.ValidateImpact(__instance.gameObject, __instance._host, properties);
         }
 
         return true;

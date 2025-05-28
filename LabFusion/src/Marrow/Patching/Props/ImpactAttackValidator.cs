@@ -1,12 +1,12 @@
-﻿using UnityEngine;
+﻿using Il2CppSLZ.Marrow;
 
-using Il2CppSLZ.Marrow;
+using UnityEngine;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Marrow.Patching;
 
 public static class ImpactAttackValidator
 {
-    public static bool ValidateAttack(GameObject weaponObject, InteractableHost weaponHost, ImpactProperties hitObject)
+    public static bool ValidateImpact(GameObject weaponObject, InteractableHost weaponHost, ImpactProperties hitObject)
     {
         var physRig = hitObject.GetComponentInParent<PhysicsRig>();
 
@@ -20,7 +20,9 @@ public static class ImpactAttackValidator
         foreach (var hand in weaponHost._hands)
         {
             if (hand.manager != physRig.manager)
+            {
                 return true;
+            }
         }
 
         // Check the last grabbed proxy
