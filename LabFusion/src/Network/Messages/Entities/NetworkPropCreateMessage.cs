@@ -10,26 +10,26 @@ namespace LabFusion.Network;
 
 public class NetworkPropCreateData : INetSerializable
 {
-    public const int Size = sizeof(byte) + sizeof(ushort);
+    public const int Size = sizeof(byte) + ComponentHashData.Size + sizeof(ushort);
 
-    public byte ownerId;
-    public ComponentHashData hashData;
-    public ushort entityId;
+    public byte OwnerID;
+    public ComponentHashData HashData;
+    public ushort EntityID;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref ownerId);
-        serializer.SerializeValue(ref hashData);
-        serializer.SerializeValue(ref entityId);
+        serializer.SerializeValue(ref OwnerID);
+        serializer.SerializeValue(ref HashData);
+        serializer.SerializeValue(ref EntityID);
     }
 
-    public static NetworkPropCreateData Create(byte ownerId, ComponentHashData hashData, ushort entityId)
+    public static NetworkPropCreateData Create(byte ownerID, ComponentHashData hashData, ushort entityID)
     {
         return new NetworkPropCreateData()
         {
-            ownerId = ownerId,
-            hashData = hashData,
-            entityId = entityId,
+            OwnerID = ownerID,
+            HashData = hashData,
+            EntityID = entityID,
         };
     }
 }
@@ -43,7 +43,7 @@ public class NetworkPropCreateMessage : NativeMessageHandler
     {
         var data = received.ReadData<NetworkPropCreateData>();
 
-        var marrowEntity = MarrowEntityHelper.GetEntityFromData(data.hashData);
+        var marrowEntity = MarrowEntityHelper.GetEntityFromData(data.HashData);
 
         // Make sure the marrow entity exists
         if (marrowEntity == null)
@@ -68,10 +68,10 @@ public class NetworkPropCreateMessage : NativeMessageHandler
         NetworkProp networkProp = new(networkEntity, marrowEntity);
 
         // Register the entity with the sent id
-        NetworkEntityManager.IdManager.RegisterEntity(data.entityId, networkEntity);
+        NetworkEntityManager.IdManager.RegisterEntity(data.EntityID, networkEntity);
 
         // Set the owner to the received owner id
-        var ownerId = PlayerIDManager.GetPlayerID(data.ownerId);
+        var ownerId = PlayerIDManager.GetPlayerID(data.OwnerID);
 
         networkEntity.SetOwner(ownerId);
 

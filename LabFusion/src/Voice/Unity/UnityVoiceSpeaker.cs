@@ -180,14 +180,16 @@ public class UnityVoiceSpeaker : VoiceSpeaker
         byte[] decompressed = VoiceCompressor.DecompressVoiceData(data);
 
         // Convert the byte array back to a float array and enqueue it
-        float volumeMultiplier = VoiceVolume.GetGlobalVolumeMultiplier();
+        float volume = VoiceVolume.GetGlobalVolumeMultiplier();
+
+        float logarithmicVolume = volume * volume;
 
         float amplitude = 0f;
         int sampleCount = 0;
 
         for (int i = 0; i < decompressed.Length; i += sizeof(float))
         {
-            float value = BitConverter.ToSingle(decompressed, i) * volumeMultiplier;
+            float value = BitConverter.ToSingle(decompressed, i) * logarithmicVolume;
 
             StreamFilter.ReadingQueue.Enqueue(value);
 

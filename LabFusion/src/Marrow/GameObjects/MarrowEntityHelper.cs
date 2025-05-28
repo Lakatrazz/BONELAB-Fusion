@@ -16,4 +16,6 @@ public static class MarrowEntityHelper
     {
         return MarrowEntityPatches.HashTable.GetDataFromComponent(entity);
     }
+
+    public static bool IsHashed(MarrowEntity entity) => MarrowEntityPatches.HashTable.IsHashed(entity);
 }

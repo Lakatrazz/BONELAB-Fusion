@@ -21,8 +21,6 @@ public static class VoiceVolume
 
         float volumePercent = sfxVolumePercent * voiceVolumePercent;
 
-        float logarithmicVolume = volumePercent * volumePercent;
-
-        return logarithmicVolume;
+        return volumePercent;
     }
 }

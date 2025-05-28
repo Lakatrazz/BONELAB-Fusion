@@ -90,6 +90,12 @@ public static class PropSender
                 return;
             }
 
+            // Make sure the entity was properly hashed before creating a new NetworkProp
+            if (!MarrowEntityHelper.IsHashed(info.marrowEntity))
+            {
+                return;
+            }
+
             // Create entity
             newEntity = new();
             newProp = new(newEntity, info.marrowEntity);

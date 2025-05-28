@@ -9,15 +9,15 @@ public class ComponentHashData : INetSerializable
 {
     public const int Size = sizeof(int) * 2;
 
-    public int hash;
-    public int index;
-
     public int? GetSize() => Size;
+
+    public int Hash;
+    public int Index;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref hash);
-        serializer.SerializeValue(ref index);
+        serializer.SerializeValue(ref Hash);
+        serializer.SerializeValue(ref Index);
     }
 }
 
@@ -67,17 +67,17 @@ public class ComponentHashTable<TComponent> where TComponent : Component
 
     public TComponent GetComponentFromData(ComponentHashData data)
     {
-        if (!HashToComponents.TryGetValue(data.hash, out var components))
+        if (!HashToComponents.TryGetValue(data.Hash, out var components))
         {
             return null;
         }
 
-        if (data.index >= components.Count || data.index < 0)
+        if (data.Index >= components.Count || data.Index < 0)
         {
             return null;
         }
 
-        return components[data.index];
+        return components[data.Index];
     }
 
     public ComponentHashData GetDataFromComponent(TComponent component)
@@ -92,8 +92,10 @@ public class ComponentHashTable<TComponent> where TComponent : Component
 
         return new ComponentHashData()
         {
-            hash = hash,
-            index = index,
+            Hash = hash,
+            Index = index,
         };
     }
+
+    public bool IsHashed(TComponent component) => ComponentToHash.ContainsKey(component);
 }
