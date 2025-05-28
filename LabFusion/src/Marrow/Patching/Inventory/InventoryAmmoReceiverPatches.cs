@@ -98,6 +98,7 @@ public static class InventoryAmmoReceiverPatches
         MessageRelay.RelayModule<MagazineClaimMessage, MagazineClaimData>(data, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
 
+    [HarmonyPrefix]
     [HarmonyPatch(nameof(InventoryAmmoReceiver.OnHandDrop))]
     public static bool OnHandDropPrefix(InventoryAmmoReceiver __instance, IGrippable host)
     {
