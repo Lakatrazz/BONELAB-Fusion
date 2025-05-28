@@ -1,6 +1,5 @@
 ﻿using LabFusion.Data;
 using LabFusion.Network;
-using LabFusion.Syncables;
 using LabFusion.Player;
 using LabFusion.Senders;
 using LabFusion.Entities;
@@ -143,12 +142,6 @@ public static class GrabHelper
             }
             else
             {
-                // Make sure the GameObject is whitelisted before syncing
-                if (!marrowEntity.gameObject.IsSyncWhitelisted())
-                {
-                    return;
-                }
-
                 // Invoked when the NetworkProp is finished being created
                 void OnEntityFinish(NetworkProp prop)
                 {

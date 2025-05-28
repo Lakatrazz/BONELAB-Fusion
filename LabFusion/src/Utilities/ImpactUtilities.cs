@@ -2,7 +2,6 @@
 
 using LabFusion.Entities;
 using LabFusion.Senders;
-using LabFusion.Syncables;
 
 using UnityEngine;
 
@@ -42,12 +41,6 @@ public static class ImpactUtilities
         // Create a new network entity
         else
         {
-            // Check the blacklist
-            if (!go.IsSyncWhitelisted())
-            {
-                return;
-            }
-
             DelayUtilities.Delay(() => { PropSender.SendPropCreation(marrowBody.Entity); }, 4);
         }
     }

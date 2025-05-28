@@ -1,5 +1,4 @@
 ﻿using LabFusion.Data;
-using LabFusion.Syncables;
 using LabFusion.Senders;
 using LabFusion.Entities;
 using LabFusion.Player;
@@ -47,12 +46,6 @@ public class NetworkPropCreateMessage : NativeMessageHandler
 
         // Make sure the marrow entity exists
         if (marrowEntity == null)
-        {
-            return;
-        }
-
-        // Check if its blacklisted
-        if (!marrowEntity.gameObject.IsSyncWhitelisted())
         {
             return;
         }

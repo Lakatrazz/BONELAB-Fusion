@@ -12,8 +12,10 @@ using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow.Warehouse;
+using Il2CppSLZ.Marrow.Pool;
 
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using LabFusion.MonoBehaviours;
 
 namespace LabFusion.Representation;
 
@@ -87,6 +89,9 @@ public static class PlayerRepUtilities
         // Destroy is "safe", and waits for the next frame to destroy the object.
         // However, this means methods on that object will be called, even if we want it to have never existed in the first place.
         // Using regular Destroy may cause weird effects!
+
+        // Add an AntiHasher to prevent this rig's MarrowEntity from being hashed, which would cause strange syncing issues
+        rigManager.gameObject.AddComponent<AntiHasher>();
 
         // Get the controller rig
         var openControllerRig = rigManager.ControllerRig.TryCast<OpenControllerRig>();

@@ -41,12 +41,46 @@ public static class GripPatches
 {
     public static readonly ComponentHashTable<Grip> HashTable = new();
 
+    private static bool HasMarrowEntity(Grip grip)
+    {
+        if (grip._marrowEntity != null)
+        {
+            return true;
+        }
+
+        // Sometimes grips don't have their marrow entity set yet on Awake, but the InteractableHost does
+        var host = grip.GetComponentInParent<InteractableHost>();
+
+        if (host != null && host.marrowEntity != null)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool IsRuntimeCreated(Grip grip)
+    {
+        if (grip.TryCast<WorldGrip>() != null)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     [HarmonyPatch(nameof(Grip.Awake))]
     [HarmonyPrefix]
     private static void Awake(Grip __instance)
     {
-        // Only hash grips which don't have an entity (aka static grips)
-        if (__instance._marrowEntity != null)
+        // Only hash grips which don't have an entity (static grips)
+        if (HasMarrowEntity(__instance))
+        {
+            return;
+        }
+
+        // Don't hash runtime created grips either (ex. world grips)
+        if (IsRuntimeCreated(__instance))
         {
             return;
         }

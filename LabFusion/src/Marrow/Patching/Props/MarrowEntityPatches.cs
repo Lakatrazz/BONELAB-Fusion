@@ -2,9 +2,11 @@
 
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow.Zones;
+using Il2CppSLZ.VRMK;
 
 using LabFusion.Data;
 using LabFusion.Entities;
+using LabFusion.MonoBehaviours;
 using LabFusion.Network;
 using LabFusion.Utilities;
 
@@ -32,13 +34,34 @@ public static class MarrowEntityPatches
         return true;
     }
 
+    private static bool IsRuntimeCreated(MarrowEntity entity)
+    {
+        if (entity.GetComponentInParent<Avatar>())
+        {
+            return true;
+        }
+
+        if (entity.GetComponentInParent<AntiHasher>())
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     [HarmonyPrefix]
     [HarmonyPatch(nameof(MarrowEntity.Awake))]
     public static void Awake(MarrowEntity __instance)
     {
-        // Don't hash pooled entities, we manually sync spawned objects
+        // Don't hash pooled entities, we automatically network spawned objects
         // Hashing pooled entities can cause more conflicts
         if (IsPooled(__instance))
+        {
+            return;
+        }
+
+        // Same with any other runtime created entities (modded avatars, for example)
+        if (IsRuntimeCreated(__instance))
         {
             return;
         }
