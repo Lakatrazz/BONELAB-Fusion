@@ -32,7 +32,7 @@ public static class NetworkAssetSpawner
 
     public struct DespawnRequestInfo
     {
-        public ushort EntityId;
+        public ushort EntityID;
 
         public bool DespawnEffect;
     }
@@ -64,6 +64,6 @@ public static class NetworkAssetSpawner
 
     public static void Despawn(DespawnRequestInfo info)
     {
-        PooleeUtilities.RequestDespawn(info.EntityId, info.DespawnEffect);
+        PooleeUtilities.RequestDespawn(info.EntityID, info.DespawnEffect);
     }
 }

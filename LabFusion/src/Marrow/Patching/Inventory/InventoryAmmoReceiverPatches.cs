@@ -137,7 +137,7 @@ public static class InventoryAmmoReceiverPatches
             // Despawn the magazine
             NetworkAssetSpawner.Despawn(new NetworkAssetSpawner.DespawnRequestInfo()
             {
-                EntityId = entity.ID,
+                EntityID = entity.ID,
                 DespawnEffect = false,
             });
 

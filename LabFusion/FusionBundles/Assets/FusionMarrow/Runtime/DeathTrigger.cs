@@ -108,7 +108,7 @@ namespace LabFusion.Marrow.Integration
 
             NetworkAssetSpawner.Despawn(new NetworkAssetSpawner.DespawnRequestInfo()
             {
-                EntityId = networkEntity.ID,
+                EntityID = networkEntity.ID,
                 DespawnEffect = true,
             });
         }
