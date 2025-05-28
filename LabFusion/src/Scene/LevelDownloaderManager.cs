@@ -7,7 +7,7 @@ using LabFusion.Downloading.ModIO;
 using LabFusion.Marrow;
 using LabFusion.Marrow.Proxies;
 using LabFusion.Menu;
-using LabFusion.Patching;
+using LabFusion.Marrow.Patching;
 using LabFusion.Preferences.Client;
 using LabFusion.RPC;
 using LabFusion.Utilities;
@@ -98,11 +98,11 @@ public static class LevelDownloaderManager
 
     private static void LoadWaitingScene()
     {
-        SceneLoadPatch.IgnorePatches = true;
+        SceneStreamerPatches.IgnorePatches = true;
 
         SceneStreamer.Load(new Barcode(FusionLevelReferences.LoadDownloadingReference.Barcode));
 
-        SceneLoadPatch.IgnorePatches = false;
+        SceneStreamerPatches.IgnorePatches = false;
     }
 
     private static void OnUpdate()

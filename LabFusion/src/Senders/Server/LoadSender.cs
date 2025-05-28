@@ -28,7 +28,13 @@ public static class LoadSender
         }
 
         using var writer = NetWriter.Create();
-        var data = SceneLoadData.Create(barcode, loadBarcode);
+
+        var data = new LevelLoadData()
+        {
+            LevelBarcode = barcode,
+            LoadingScreenBarcode = loadBarcode,
+        };
+
         writer.SerializeValue(ref data);
 
         using var message = FusionMessage.Create(NativeMessageTag.SceneLoad, writer);
@@ -47,7 +53,11 @@ public static class LoadSender
             return;
         }
 
-        var data = SceneLoadData.Create(barcode, loadBarcode);
+        var data = new LevelLoadData()
+        {
+            LevelBarcode = barcode,
+            LoadingScreenBarcode = loadBarcode,
+        };
 
         MessageRelay.RelayNative(data, NativeMessageTag.SceneLoad, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }

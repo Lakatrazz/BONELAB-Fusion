@@ -5,10 +5,10 @@ using LabFusion.Network;
 using Il2CppSLZ.Marrow.SceneStreaming;
 using Il2CppSLZ.Marrow.Warehouse;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Marrow.Patching;
 
 [HarmonyPatch(typeof(SceneStreamer))]
-public class SceneLoadPatch
+public class SceneStreamerPatches
 {
     public static bool IgnorePatches { get; set; } = false;
 

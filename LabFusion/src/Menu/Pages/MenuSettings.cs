@@ -212,9 +212,6 @@ public static class MenuSettings
     }
 
 #if DEBUG
-
-    private static string _profanityWord = null;
-
     private static void PopulateDebugSettings(PageElement page)
     {
         var generalGroup = page.AddElement<GroupElement>("General");
@@ -250,6 +247,5 @@ public static class MenuSettings
                 }
             });
     }
-
 #endif
 }

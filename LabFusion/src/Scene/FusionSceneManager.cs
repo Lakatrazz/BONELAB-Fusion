@@ -1,10 +1,10 @@
 ﻿using LabFusion.Network;
-using LabFusion.Patching;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 using LabFusion.Marrow;
 using LabFusion.Player;
 using LabFusion.Preferences.Client;
+using LabFusion.Marrow.Patching;
 
 using Il2CppSLZ.Marrow.SceneStreaming;
 using Il2CppSLZ.Marrow.Warehouse;
@@ -191,11 +191,11 @@ public static partial class FusionSceneManager
 
     public static void LoadTargetScene()
     {
-        SceneLoadPatch.IgnorePatches = true;
+        SceneStreamerPatches.IgnorePatches = true;
 
         SceneStreamer.Load(new Barcode(_targetServerScene), new Barcode(_targetServerLoadScene));
 
-        SceneLoadPatch.IgnorePatches = false;
+        SceneStreamerPatches.IgnorePatches = false;
 
         _hasStartedLoadingTarget = true;
     }
