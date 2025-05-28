@@ -103,16 +103,16 @@ public static class NetworkEntityManager
         }
     }
 
-    private static void OnPlayerServerCatchup(PlayerID playerId)
+    private static void OnPlayerServerCatchup(PlayerID playerID)
     {
-        MelonCoroutines.Start(SendCreationCatchupCoroutine(playerId));
+        MelonCoroutines.Start(SendCreationCatchupCoroutine(playerID));
     }
 
-    private static IEnumerator SendCreationCatchupCoroutine(PlayerID playerId)
+    private static IEnumerator SendCreationCatchupCoroutine(PlayerID playerID)
     {
         var catchupQueue = new Queue<NetworkEntity>(IdManager.RegisteredEntities.IdEntityLookup.Values);
 
-        while (catchupQueue.Count > 0 && !FusionSceneManager.IsLoading() && playerId.IsValid)
+        while (catchupQueue.Count > 0 && !FusionSceneManager.IsLoading() && playerID.IsValid)
         {
             var entity = catchupQueue.Dequeue();
 
@@ -121,7 +121,7 @@ public static class NetworkEntityManager
                 continue;
             }
 
-            bool sent = SendCreationCatchup(entity, playerId);
+            bool sent = SendCreationCatchup(entity, playerID);
 
             if (!sent)
             {
@@ -193,14 +193,14 @@ public static class NetworkEntityManager
         }
     }
 
-    public static void RequestUnqueue(ushort queuedId)
+    public static void RequestUnqueue(ushort queuedID)
     {
         if (!NetworkInfo.HasServer)
         {
             return;
         }
 
-        var data = EntityUnqueueRequestData.Create(PlayerIDManager.LocalSmallID, queuedId);
+        var data = EntityUnqueueRequestData.Create(PlayerIDManager.LocalSmallID, queuedID);
 
         MessageRelay.RelayNative(data, NativeMessageTag.EntityUnqueueRequest, NetworkChannel.Reliable, RelayType.ToServer);
     }
