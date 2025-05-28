@@ -4,8 +4,9 @@ using LabFusion.Marrow.Messages;
 using LabFusion.Network;
 using LabFusion.Player;
 using LabFusion.Utilities;
+using LabFusion.Entities;
 
-namespace LabFusion.Entities;
+namespace LabFusion.Marrow.Extenders;
 
 public class InventorySlotReceiverExtender : EntityComponentArrayExtender<InventorySlotReceiver>
 {

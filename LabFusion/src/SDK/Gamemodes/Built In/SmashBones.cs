@@ -583,6 +583,7 @@ public class SmashBones : Gamemode
         DeathTrigger.KillDamageOverride = false;
         LocalControls.DisableSlowMo = true;
         LocalControls.DisableAmmoPouch = true;
+        LocalControls.DisableInventory = true;
 
         // Lock the avatar and limit max height
         LocalAvatar.HeightOverride = ManagedMathf.Clamp(LocalAvatar.AvatarHeight, 0f, Defaults.MaxAvatarHeight);
@@ -638,6 +639,7 @@ public class SmashBones : Gamemode
         LocalControls.DisableInteraction = false;
         LocalControls.DisableSlowMo = false;
         LocalControls.DisableAmmoPouch = false;
+        LocalControls.DisableInventory = false;
 
         LocalAvatar.HeightOverride = null;
         LocalAvatar.AvatarOverride = null;

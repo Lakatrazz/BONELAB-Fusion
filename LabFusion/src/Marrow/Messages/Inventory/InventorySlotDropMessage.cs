@@ -5,6 +5,7 @@ using LabFusion.Network.Serialization;
 using LabFusion.Utilities;
 using LabFusion.Network;
 using LabFusion.SDK.Modules;
+using LabFusion.Marrow.Extenders;
 
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow;

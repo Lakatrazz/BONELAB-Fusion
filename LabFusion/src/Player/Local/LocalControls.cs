@@ -69,18 +69,9 @@ public static class LocalControls
         }
     }
 
-    private static bool _disableAmmoPouch = false;
-    public static bool DisableAmmoPouch
-    {
-        get
-        {
-            return _disableAmmoPouch;
-        }
-        set
-        {
-            _disableAmmoPouch = value;
-        }
-    }
+    public static bool DisableAmmoPouch { get; set; } = false;
+
+    public static bool DisableInventory { get; set; } = false;
 
     internal static void OnInitializeMelon()
     {

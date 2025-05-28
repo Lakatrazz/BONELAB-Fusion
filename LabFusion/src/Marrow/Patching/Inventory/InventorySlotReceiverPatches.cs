@@ -8,6 +8,7 @@ using LabFusion.Scene;
 using LabFusion.Utilities;
 using LabFusion.RPC;
 using LabFusion.Marrow.Messages;
+using LabFusion.Marrow.Extenders;
 
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow;
@@ -86,6 +87,28 @@ public class InventorySlotReceiverPatches
     public static void OnHandGrabPrefix(InventorySlotReceiver __instance, Hand hand)
     {
         OnDropWeapon(__instance, hand);
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(nameof(InventorySlotReceiver.OnHandDrop))]
+    public static bool OnHandDropPrefix() 
+    {
+        if (IgnorePatches)
+        {
+            return true;
+        }
+
+        if (!NetworkSceneManager.IsLevelNetworked)
+        {
+            return true;
+        }
+
+        if (LocalControls.DisableInteraction || LocalControls.DisableInventory)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     [HarmonyPostfix]
