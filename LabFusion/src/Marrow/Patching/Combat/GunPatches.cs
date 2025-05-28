@@ -5,6 +5,7 @@ using LabFusion.Utilities;
 using LabFusion.Marrow.Messages;
 using LabFusion.Entities;
 using LabFusion.Scene;
+using LabFusion.Marrow.Combat;
 
 using Il2CppSLZ.Marrow;
 

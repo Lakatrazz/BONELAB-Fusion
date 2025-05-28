@@ -1,6 +1,7 @@
 ﻿using LabFusion.SDK.Modules;
 using LabFusion.Utilities;
 using LabFusion.Marrow.Messages;
+using LabFusion.Marrow.Combat;
 
 namespace LabFusion.Marrow;
 
