@@ -19,6 +19,7 @@ using LabFusion.SDK.Triggers;
 using LabFusion.Network;
 using LabFusion.Extensions;
 using LabFusion.UI.Popups;
+using LabFusion.SDK.Points;
 
 using UnityEngine;
 
@@ -109,6 +110,9 @@ public class SmashBones : Gamemode
         public const float WeakMobilityMass = 100f;
 
         public const float WeakestMobilityMass = 250f;
+
+        // Rewards
+        public const int BitRewardPerPlayer = 100;
     }
 
     private int _minimumPlayers = 2;
@@ -716,6 +720,28 @@ public class SmashBones : Gamemode
             SaveToMenu = false,
             ShowPopup = true,
         });
+
+        // Give bit reward
+        RewardBits(selfPlace, playerCount);
+    }
+
+    private static void RewardBits(int placement, int playerCount)
+    {
+        // There needs to be other players
+        if (playerCount <= 1)
+        {
+            return;
+        }
+
+        // Only first three places should get bits
+        if (placement > 3)
+        {
+            return;
+        }
+
+        var bitReward = (Defaults.BitRewardPerPlayer * playerCount) / placement;
+
+        PointItemManager.RewardBits(bitReward);
     }
 
     private static void OnSetSpawn(bool spectator)
