@@ -216,9 +216,10 @@ public class ConnectionRequestMessage : NativeMessageHandler
         LoadSender.SendLevelLoad(FusionSceneManager.Barcode, FusionSceneManager.LoadBarcode, data.longId);
 
         // Send the dynamics list
-        using (var writer = NetWriter.Create())
+        var assignData = DynamicsAssignData.Create();
+
+        using (var writer = NetWriter.Create(assignData.GetSize()))
         {
-            var assignData = DynamicsAssignData.Create();
             assignData.Serialize(writer);
 
             using var message = FusionMessage.Create(NativeMessageTag.DynamicsAssignment, writer);
