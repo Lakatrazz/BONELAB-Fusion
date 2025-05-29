@@ -307,6 +307,18 @@ public class SmashBones : Gamemode
             return;
         }
 
+        // Spectators cannot attack
+        if (TeamManager.GetPlayerTeam(player) == SpectatorTeam)
+        {
+            return;
+        }
+
+        // Spectators also cannot be attacked
+        if (TeamManager.GetLocalTeam() == SpectatorTeam)
+        {
+            return;
+        }
+
         // Increase damage
         var damageVariable = PlayerDamageKeeper.GetVariable(PlayerIDManager.LocalID);
         float damage = damageVariable.GetValue();
