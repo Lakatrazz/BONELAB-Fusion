@@ -136,7 +136,6 @@ public class FusionMod : MelonMod
         var onReady = () =>
         {
             CosmeticLoader.OnAssetWarehouseReady();
-            ScannableEvents.OnAssetWarehouseReady();
         };
         AssetWarehouse.OnReady(onReady);
 
