@@ -1,4 +1,4 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Bonelab.Scene;
 using LabFusion.Network.Serialization;
 using LabFusion.Network;
 using LabFusion.Bonelab.Patching;
@@ -45,13 +45,13 @@ public class DescentIntroMessage : ModuleMessageHandler
                 case DescentIntroType.UNKNOWN:
                     break;
                 case DescentIntroType.SEQUENCE:
-                    DescentData.GameController.SEQUENCE(data.SelectionNumber);
+                    DescentEventHandler.GameController.SEQUENCE(data.SelectionNumber);
                     break;
                 case DescentIntroType.BUTTON_CONFIRM:
-                    DescentData.BodyMeasurementsUI.BUTTON_CONFIRM();
+                    DescentEventHandler.BodyMeasurementsUI.BUTTON_CONFIRM();
                     break;
                 case DescentIntroType.CONFIRM_FORCE_GRAB:
-                    DescentData.GameController.CONFIRMFORCEGRAB();
+                    DescentEventHandler.GameController.CONFIRMFORCEGRAB();
                     break;
             }
         }

@@ -1,4 +1,4 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Bonelab.Scene;
 using LabFusion.Network.Serialization;
 using LabFusion.Network;
 using LabFusion.SDK.Modules;
@@ -36,9 +36,9 @@ public class DescentElevatorMessage : ModuleMessageHandler
     {
         var data = received.ReadData<DescentElevatorData>();
 
-        if (!DescentData.Elevator)
+        if (!DescentEventHandler.Elevator)
         {
-            DescentData.Instance.CacheValues();
+            DescentEventHandler.Instance.CacheValues();
         }
 
         TutorialElevatorPatches.IgnorePatches = true;
@@ -51,25 +51,25 @@ public class DescentElevatorMessage : ModuleMessageHandler
                 case DescentElevatorType.UNKNOWN:
                     break;
                 case DescentElevatorType.START_ELEVATOR:
-                    DescentData.Elevator.StartElevator();
+                    DescentEventHandler.Elevator.StartElevator();
                     break;
                 case DescentElevatorType.STOP_ELEVATOR:
-                    DescentData.Elevator.StopDoorRoutine();
+                    DescentEventHandler.Elevator.StopDoorRoutine();
                     break;
                 case DescentElevatorType.SEAL_DOORS:
-                    DescentData.Elevator.SealDoors();
+                    DescentEventHandler.Elevator.SealDoors();
                     break;
                 case DescentElevatorType.START_MOVE_UPWARD:
-                    DescentData.Elevator.StartMoveUpward();
+                    DescentEventHandler.Elevator.StartMoveUpward();
                     break;
                 case DescentElevatorType.SLOW_UPWARD_MOVEMENT:
-                    DescentData.Elevator.SlowUpwardMovement();
+                    DescentEventHandler.Elevator.SlowUpwardMovement();
                     break;
                 case DescentElevatorType.OPEN_DOORS:
-                    DescentData.Elevator.OpenDoors();
+                    DescentEventHandler.Elevator.OpenDoors();
                     break;
                 case DescentElevatorType.CLOSE_DOORS:
-                    DescentData.Elevator.CloseDoors();
+                    DescentEventHandler.Elevator.CloseDoors();
                     break;
             }
         }

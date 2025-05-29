@@ -1,4 +1,4 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Bonelab.Scene;
 using LabFusion.Network;
 using LabFusion.Network.Serialization;
 using LabFusion.SDK.Modules;
@@ -24,6 +24,6 @@ public class MineDiveCartMessage : ModuleMessageHandler
     {
         var data = received.ReadData<MineDiveCartData>();
 
-        MineDiveData.CreateExtraCarts(data.Amount);
+        MineDiveEventHandler.CreateExtraCarts(data.Amount);
     }
 }

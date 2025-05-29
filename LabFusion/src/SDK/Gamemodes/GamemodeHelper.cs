@@ -82,4 +82,30 @@ public static class GamemodeHelper
             LocalPlayer.TeleportToCheckpoint();
         }
     }
+
+    /// <summary>
+    /// Creates GamemodeMarkers at provided positions with provided teams.
+    /// </summary>
+    /// <param name="positions">The positions to create GamemodeMarkers at.</param>
+    /// <param name="teams">The teams to add to the GamemodeMarkers.</param>
+    public static void CreateMarkers(Vector3[] positions, params string[] teams)
+    {
+        foreach (var position in positions)
+        {
+            GameObject markerGameObject = new("Gamemode Marker");
+            markerGameObject.transform.position = position;
+            
+            foreach (var team in teams)
+            {
+                var marker = markerGameObject.AddComponent<GamemodeMarker>();
+
+                if (string.IsNullOrWhiteSpace(team))
+                {
+                    continue;
+                }
+
+                marker.AddTeam(team);
+            }
+        }
+    }
 }

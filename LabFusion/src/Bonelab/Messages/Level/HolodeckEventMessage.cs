@@ -1,4 +1,4 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Bonelab.Scene;
 using LabFusion.Network.Serialization;
 using LabFusion.Bonelab.Patching;
 using LabFusion.Network;
@@ -35,7 +35,7 @@ public class HolodeckEventMessage : ModuleMessageHandler
     {
         var data = received.ReadData<HolodeckEventData>();
 
-        var deck = HolodeckData.GameController;
+        var deck = HoloChamberEventHandler.GameController;
 
         if (deck == null)
         {

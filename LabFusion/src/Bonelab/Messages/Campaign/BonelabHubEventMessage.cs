@@ -1,4 +1,4 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Bonelab.Scene;
 using LabFusion.Network.Serialization;
 using LabFusion.Bonelab.Patching;
 using LabFusion.SDK.Modules;
@@ -35,32 +35,34 @@ public class BonelabHubEventMessage : ModuleMessageHandler
     {
         var data = received.ReadData<BonelabHubEventData>();
 
+        var controller = BonelabHubEventHandler.GameController;
+
+        if (controller == null)
+        {
+            return;
+        }
+
         GameControl_HubPatches.IgnorePatches = true;
 
         try
         {
-            var controller = HubData.GameController;
-
-            if (controller)
+            switch (data.Type)
             {
-                switch (data.Type)
-                {
-                    default:
-                    case BonelabHubEventType.UNKNOWN:
-                        break;
-                    case BonelabHubEventType.ELEVATOR_BREAKOUT:
-                        controller.ELEVATORBREAKOUT();
-                        break;
-                    case BonelabHubEventType.SETUP_ELEVATOR:
-                        controller.SETUPELEVATOR();
-                        break;
-                    case BonelabHubEventType.OPEN_BW_DOOR:
-                        controller.OPENBWDOOR();
-                        break;
-                    case BonelabHubEventType.BW_BOX_DESTROYED:
-                        controller.BWBOXDESTROYED();
-                        break;
-                }
+                default:
+                case BonelabHubEventType.UNKNOWN:
+                    break;
+                case BonelabHubEventType.ELEVATOR_BREAKOUT:
+                    controller.ELEVATORBREAKOUT();
+                    break;
+                case BonelabHubEventType.SETUP_ELEVATOR:
+                    controller.SETUPELEVATOR();
+                    break;
+                case BonelabHubEventType.OPEN_BW_DOOR:
+                    controller.OPENBWDOOR();
+                    break;
+                case BonelabHubEventType.BW_BOX_DESTROYED:
+                    controller.BWBOXDESTROYED();
+                    break;
             }
         }
         catch (Exception e)

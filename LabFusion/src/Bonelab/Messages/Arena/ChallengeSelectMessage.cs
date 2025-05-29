@@ -1,4 +1,4 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Bonelab.Scene;
 using LabFusion.Network.Serialization;
 using LabFusion.Bonelab.Patching;
 using LabFusion.SDK.Modules;
@@ -46,7 +46,7 @@ public class ChallengeSelectMessage : ModuleMessageHandler
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<ChallengeSelectData>();
-        var menu = ArenaData.GetMenu(data.MenuIndex);
+        var menu = ArenaEventHandler.GetMenu(data.MenuIndex);
 
         if (!menu)
         {

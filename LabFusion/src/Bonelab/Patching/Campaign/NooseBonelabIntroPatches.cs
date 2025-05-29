@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-using LabFusion.Data;
+using LabFusion.Bonelab.Scene;
 using LabFusion.Network;
 using LabFusion.Bonelab.Messages;
 using LabFusion.Player;
@@ -29,7 +29,7 @@ public static class NooseBonelabIntroPatches
             return;
         }
 
-        var nooseEvent = DescentData.CreateNooseEvent(PlayerIDManager.LocalSmallID, DescentNooseType.ATTACH_NOOSE);
+        var nooseEvent = DescentEventHandler.CreateNooseEvent(PlayerIDManager.LocalSmallID, DescentNooseType.ATTACH_NOOSE);
 
         MessageRelay.RelayModule<DescentNooseMessage, DescentNooseData>(new DescentNooseData() { PlayerId = nooseEvent.PlayerId, Type = nooseEvent.Type }, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }
@@ -48,7 +48,7 @@ public static class NooseBonelabIntroPatches
             return;
         }
 
-        var nooseEvent = DescentData.CreateNooseEvent(PlayerIDManager.LocalSmallID, DescentNooseType.CUT_NOOSE);
+        var nooseEvent = DescentEventHandler.CreateNooseEvent(PlayerIDManager.LocalSmallID, DescentNooseType.CUT_NOOSE);
 
         MessageRelay.RelayModule<DescentNooseMessage, DescentNooseData>(new DescentNooseData() { PlayerId = nooseEvent.PlayerId, Type = nooseEvent.Type }, NetworkChannel.Reliable, RelayType.ToOtherClients);
     }

@@ -1,4 +1,4 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Bonelab.Scene;
 using LabFusion.Network;
 using LabFusion.Bonelab.Patching;
 using LabFusion.Entities;
@@ -37,7 +37,7 @@ public class DescentNooseMessage : ModuleMessageHandler
         NooseBonelabIntroPatches.IgnorePatches = true;
 
         // Register a noose event for catchup
-        _ = DescentData.CreateNooseEvent(data.PlayerId, data.Type);
+        _ = DescentEventHandler.CreateNooseEvent(data.PlayerId, data.Type);
 
         try
         {
@@ -52,18 +52,18 @@ public class DescentNooseMessage : ModuleMessageHandler
                         // Assign the RigManager and Health to the noose
                         // We assign the rigmanager so the noose knows what neck to joint to
                         // The player health is also assigned so it doesn't damage the local player
-                        DescentData.Noose.rM = player.RigRefs.RigManager;
-                        DescentData.Noose.pH = player.RigRefs.Health;
+                        DescentEventHandler.Noose.rM = player.RigRefs.RigManager;
+                        DescentEventHandler.Noose.pH = player.RigRefs.Health;
 
                         // Now we actually attach the neck of the player
-                        DescentData.Noose.AttachNeck();
+                        DescentEventHandler.Noose.AttachNeck();
                     }
                     break;
                 case DescentNooseType.CUT_NOOSE:
                     // This function is called to cut the noose as if a knife cut it
-                    DescentData.Noose.NooseCut();
+                    DescentEventHandler.Noose.NooseCut();
 
-                    DescentData.CheckAchievement();
+                    DescentEventHandler.CheckAchievement();
                     break;
             }
         }

@@ -112,7 +112,6 @@ public class FusionMod : MelonMod
         InitializeBaseModules();
 
         // Register our base handlers
-        LevelDataHandler.OnInitializeMelon();
         NativeMessageHandler.RegisterHandlersFromAssembly(FusionAssembly);
         GrabGroupHandler.RegisterHandlersFromAssembly(FusionAssembly);
         NetworkLayer.RegisterLayersFromAssembly(FusionAssembly);

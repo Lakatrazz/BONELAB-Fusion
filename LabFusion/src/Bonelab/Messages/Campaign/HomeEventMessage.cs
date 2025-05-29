@@ -1,4 +1,4 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Bonelab.Scene;
 using LabFusion.Network.Serialization;
 using LabFusion.Bonelab.Patching;
 using LabFusion.Network;
@@ -40,7 +40,7 @@ public class HomeEventMessage : ModuleMessageHandler
     {
         var data = received.ReadData<HomeEventData>();
 
-        var controller = HomeData.GameController;
+        var controller = HomeEventHandler.GameController;
 
         if (!controller)
         {
@@ -69,7 +69,7 @@ public class HomeEventMessage : ModuleMessageHandler
                 case HomeEventType.ARM_HIDE:
                     controller.ArmHide();
 
-                    HomeData.TeleportToJimmyFinger();
+                    HomeEventHandler.TeleportToJimmyFinger();
                     break;
                 case HomeEventType.DRIVING_END:
                     controller.DrivingEnd();
@@ -78,7 +78,7 @@ public class HomeEventMessage : ModuleMessageHandler
                     controller.CompleteGame();
                     break;
                 case HomeEventType.SPLINE_LOOP_COUNTER:
-                    HomeData.TaxiController.SplineLoopCounter();
+                    HomeEventHandler.TaxiController.SplineLoopCounter();
                     break;
             }
         }

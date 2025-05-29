@@ -1,4 +1,4 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Bonelab.Scene;
 using LabFusion.Network.Serialization;
 using LabFusion.Bonelab.Patching;
 using LabFusion.Network;
@@ -39,7 +39,7 @@ public class ArenaMenuMessage : ModuleMessageHandler
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<ArenaMenuData>();
-        var menu = ArenaData.MenuController;
+        var menu = ArenaEventHandler.MenuController;
 
         if (!menu)
         {

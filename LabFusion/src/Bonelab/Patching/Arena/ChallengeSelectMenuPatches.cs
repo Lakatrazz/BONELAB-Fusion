@@ -2,7 +2,7 @@
 
 using Il2CppSLZ.Bonelab;
 
-using LabFusion.Data;
+using LabFusion.Bonelab.Scene;
 using LabFusion.Network;
 using LabFusion.Scene;
 using LabFusion.Bonelab.Messages;
@@ -18,14 +18,14 @@ public static class ChallengeSelectMenuPatches
     [HarmonyPatch(nameof(ChallengeSelectMenu.OnChallengeSelect))]
     public static bool OnChallengeSelect(ChallengeSelectMenu __instance)
     {
-        return SendChallengeSelect(ArenaData.GetIndex(__instance).Value, 0, ChallengeSelectType.ON_CHALLENGE_SELECT);
+        return SendChallengeSelect(ArenaEventHandler.GetIndex(__instance).Value, 0, ChallengeSelectType.ON_CHALLENGE_SELECT);
     }
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(ChallengeSelectMenu.SelectChallenge))]
     public static bool SelectChallenge(ChallengeSelectMenu __instance, int idx)
     {
-        return SendChallengeSelect(ArenaData.GetIndex(__instance).Value, idx, ChallengeSelectType.SELECT_CHALLENGE);
+        return SendChallengeSelect(ArenaEventHandler.GetIndex(__instance).Value, idx, ChallengeSelectType.SELECT_CHALLENGE);
     }
 
     private static bool SendChallengeSelect(int menuIndex, int challengeNumber, ChallengeSelectType type)

@@ -2,6 +2,7 @@
 using LabFusion.Utilities;
 using LabFusion.Marrow.Messages;
 using LabFusion.Marrow.Combat;
+using LabFusion.Marrow.Scene;
 
 namespace LabFusion.Marrow;
 
@@ -39,6 +40,8 @@ public class MarrowModule : Module
         ModuleMessageHandler.RegisterHandler<GamemodeDropperMessage>();
 
         MultiplayerHooking.OnMainSceneInitialized += NetworkGunManager.OnMainSceneInitialized;
+
+        LevelEventHandler.OnInitializeMelon();
     }
 
     protected override void OnModuleUnregistered()

@@ -1,4 +1,4 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Bonelab.Scene;
 using LabFusion.Network.Serialization;
 using LabFusion.Network;
 using LabFusion.SDK.Modules;
@@ -43,16 +43,16 @@ public class KartRaceEventMessage : ModuleMessageHandler
                 case KartRaceEventType.UNKNOWN:
                     break;
                 case KartRaceEventType.START_RACE:
-                    KartRaceData.GameController.STARTRACE();
+                    MonogonMotorwayEventHandler.GameController.STARTRACE();
                     break;
                 case KartRaceEventType.NEW_LAP:
-                    KartRaceData.GameController.NEWLAP();
+                    MonogonMotorwayEventHandler.GameController.NEWLAP();
                     break;
                 case KartRaceEventType.RESET_RACE:
-                    KartRaceData.GameController.RESETRACE();
+                    MonogonMotorwayEventHandler.GameController.RESETRACE();
                     break;
                 case KartRaceEventType.END_RACE:
-                    KartRaceData.GameController.ENDRACE();
+                    MonogonMotorwayEventHandler.GameController.ENDRACE();
                     break;
             }
         }

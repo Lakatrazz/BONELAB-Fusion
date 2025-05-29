@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-using LabFusion.Data;
+using LabFusion.Bonelab.Scene;
 using LabFusion.Network;
 using LabFusion.Bonelab.Messages;
 using LabFusion.Scene;
@@ -18,7 +18,7 @@ public static class Control_UI_BodyMeasurementsPatches
     [HarmonyPatch(nameof(Control_UI_BodyMeasurements.BUTTON_CONFIRM))]
     public static void BUTTON_CONFIRM()
     {
-        var introEvent = DescentData.CreateIntroEvent(0, DescentIntroType.BUTTON_CONFIRM);
+        var introEvent = DescentEventHandler.CreateIntroEvent(0, DescentIntroType.BUTTON_CONFIRM);
 
         if (IgnorePatches)
         {

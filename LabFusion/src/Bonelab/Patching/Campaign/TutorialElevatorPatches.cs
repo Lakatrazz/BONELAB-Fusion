@@ -1,12 +1,11 @@
 ﻿using HarmonyLib;
 
-using LabFusion.Data;
+using LabFusion.Bonelab.Scene;
 using LabFusion.Network;
-
-using Il2CppSLZ.Bonelab;
-
 using LabFusion.Bonelab.Messages;
 using LabFusion.Scene;
+
+using Il2CppSLZ.Bonelab;
 
 namespace LabFusion.Bonelab.Patching;
 
@@ -81,7 +80,7 @@ public static class TutorialElevatorPatches
             return false;
         }
 
-        var elevatorEvent = DescentData.CreateElevatorEvent(type);
+        var elevatorEvent = DescentEventHandler.CreateElevatorEvent(type);
 
         MessageRelay.RelayModule<DescentElevatorMessage, DescentElevatorData>(new DescentElevatorData() { Type = elevatorEvent.Type }, NetworkChannel.Reliable, RelayType.ToOtherClients);
         return true;

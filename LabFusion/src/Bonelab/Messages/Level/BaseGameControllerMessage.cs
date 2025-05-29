@@ -1,4 +1,4 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Bonelab.Scene;
 using LabFusion.Network.Serialization;
 using LabFusion.Bonelab.Patching;
 using LabFusion.Network;
@@ -33,7 +33,7 @@ public class BaseGameControllerMessage : ModuleMessageHandler
     {
         var data = received.ReadData<BaseGameControllerData>();
 
-        if (!GameControllerData.HasGameController)
+        if (!GameControllerEventHandler.HasGameController)
         {
             return;
         }
@@ -48,10 +48,10 @@ public class BaseGameControllerMessage : ModuleMessageHandler
                 case BaseGameControllerType.UNKNOWN:
                     break;
                 case BaseGameControllerType.BeginSession:
-                    GameControllerData.GameController.BeginSession();
+                    GameControllerEventHandler.GameController.BeginSession();
                     break;
                 case BaseGameControllerType.EndSession:
-                    GameControllerData.GameController.EndSession();
+                    GameControllerEventHandler.GameController.EndSession();
                     break;
             }
         }

@@ -1,4 +1,4 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Bonelab.Scene;
 using LabFusion.Network.Serialization;
 using LabFusion.Bonelab.Patching;
 using LabFusion.Network;
@@ -42,7 +42,7 @@ public class ArenaTransitionMessage : ModuleMessageHandler
     {
         var data = received.ReadData<ArenaTransitionData>();
 
-        if (!ArenaData.IsInArena)
+        if (!ArenaEventHandler.IsInArena)
         {
             return;
         }
@@ -57,42 +57,42 @@ public class ArenaTransitionMessage : ModuleMessageHandler
                 case ArenaTransitionType.UNKNOWN:
                     break;
                 case ArenaTransitionType.ARENA_PLAYER_ENTER:
-                    ArenaData.GameController.ARENA_PlayerEnter();
+                    ArenaEventHandler.GameController.ARENA_PlayerEnter();
                     break;
                 case ArenaTransitionType.INIT_OBJECTIVE_CONTAINER:
-                    ArenaData.GameController.InitObjectiveContainer();
+                    ArenaEventHandler.GameController.InitObjectiveContainer();
 
-                    if (ArenaData.GameControlDisplay)
+                    if (ArenaEventHandler.GameControlDisplay)
                     {
-                        ArenaData.GameControlDisplay.gameObject.SetActive(true);
+                        ArenaEventHandler.GameControlDisplay.gameObject.SetActive(true);
                     }
                     break;
                 case ArenaTransitionType.ARENA_START_MATCH:
-                    ArenaData.GameController.ARENA_StartMatch();
+                    ArenaEventHandler.GameController.ARENA_StartMatch();
                     break;
                 case ArenaTransitionType.START_NEXT_WAVE:
-                    ArenaData.GameController.StartNextWave();
+                    ArenaEventHandler.GameController.StartNextWave();
                     break;
                 case ArenaTransitionType.ARENA_QUIT_CHALLENGE:
-                    ArenaData.GameController.ARENA_QuitChallenge();
+                    ArenaEventHandler.GameController.ARENA_QuitChallenge();
                     break;
                 case ArenaTransitionType.ARENA_CANCEL_MATCH:
-                    ArenaData.GameController.ARENA_CancelMatch();
+                    ArenaEventHandler.GameController.ARENA_CancelMatch();
                     break;
                 case ArenaTransitionType.ARENA_RESET_THE_BELL:
-                    ArenaData.GameController.ARENA_ResetTheBell();
+                    ArenaEventHandler.GameController.ARENA_ResetTheBell();
                     break;
                 case ArenaTransitionType.ARENA_RING_THE_BELL:
-                    ArenaData.GameController.ARENA_RingTheBell();
+                    ArenaEventHandler.GameController.ARENA_RingTheBell();
                     break;
                 case ArenaTransitionType.FAIL_OBJECTIVE_MODE:
-                    ArenaData.GameController.FailObjectiveMode();
+                    ArenaEventHandler.GameController.FailObjectiveMode();
                     break;
                 case ArenaTransitionType.FAIL_ESCAPE_MODE:
-                    ArenaData.GameController.FailEscapeMode();
+                    ArenaEventHandler.GameController.FailEscapeMode();
                     break;
                 case ArenaTransitionType.SPAWN_LOOT:
-                    ArenaData.GameController.SpawnLoot();
+                    ArenaEventHandler.GameController.SpawnLoot();
                     break;
             }
         }

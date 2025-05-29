@@ -1,4 +1,4 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Bonelab.Scene;
 using LabFusion.Network.Serialization;
 using LabFusion.Bonelab.Patching;
 using LabFusion.Network;
@@ -26,7 +26,7 @@ public class GeoSelectMessage : ModuleMessageHandler
     {
         var data = received.ReadData<GeoSelectData>();
 
-        var manager = ArenaData.GeoManager;
+        var manager = ArenaEventHandler.GeoManager;
 
         if (!manager)
         {

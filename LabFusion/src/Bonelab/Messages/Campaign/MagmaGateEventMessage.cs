@@ -1,4 +1,4 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Bonelab.Scene;
 using LabFusion.Network.Serialization;
 using LabFusion.Bonelab.Patching;
 using LabFusion.SDK.Modules;
@@ -35,7 +35,7 @@ public class MagmaGateEventMessage : ModuleMessageHandler
     {
         var data = received.ReadData<MagmaGateEventData>();
 
-        var controller = MagmaGateData.GameController;
+        var controller = MagmaGateEventHandler.GameController;
 
         if (!controller)
         {

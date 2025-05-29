@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-using LabFusion.Data;
+using LabFusion.Bonelab.Scene;
 using LabFusion.Network;
 using LabFusion.Bonelab.Messages;
 using LabFusion.Scene;
@@ -18,7 +18,7 @@ public static class GameControl_DescentPatches
     [HarmonyPatch(nameof(GameControl_Descent.SEQUENCE))]
     public static void SEQUENCE(int gate_index)
     {
-        var introEvent = DescentData.CreateIntroEvent(gate_index, DescentIntroType.SEQUENCE);
+        var introEvent = DescentEventHandler.CreateIntroEvent(gate_index, DescentIntroType.SEQUENCE);
 
         if (IgnorePatches)
         {
@@ -37,7 +37,7 @@ public static class GameControl_DescentPatches
     [HarmonyPatch(nameof(GameControl_Descent.CONFIRMFORCEGRAB))]
     public static void CONFIRMFORCEGRAB()
     {
-        var introEvent = DescentData.CreateIntroEvent(0, DescentIntroType.CONFIRM_FORCE_GRAB);
+        var introEvent = DescentEventHandler.CreateIntroEvent(0, DescentIntroType.CONFIRM_FORCE_GRAB);
 
         if (IgnorePatches)
         {

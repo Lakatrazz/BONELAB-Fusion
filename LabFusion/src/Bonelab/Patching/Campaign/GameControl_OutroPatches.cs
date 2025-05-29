@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-using LabFusion.Data;
+using LabFusion.Bonelab.Scene;
 using LabFusion.Network;
 using LabFusion.Bonelab.Messages;
 using LabFusion.Scene;
@@ -43,7 +43,7 @@ public static class GameControl_OutroPatches
 
         if (result && NetworkSceneManager.IsLevelNetworked)
         {
-            HomeData.TeleportToJimmyFinger();
+            HomeEventHandler.TeleportToJimmyFinger();
         }
 
         return result;

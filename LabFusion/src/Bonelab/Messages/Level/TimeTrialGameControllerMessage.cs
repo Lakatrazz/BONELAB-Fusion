@@ -1,4 +1,4 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.Bonelab.Scene;
 using LabFusion.Network.Serialization;
 using LabFusion.Bonelab.Patching;
 using LabFusion.SDK.Modules;
@@ -38,7 +38,7 @@ public class TimeTrialGameControllerMessage : ModuleMessageHandler
     {
         var data = received.ReadData<TimeTrialGameControllerData>();
 
-        if (!TimeTrialData.IsInTimeTrial)
+        if (!TimeTrialEventHandler.IsInTimeTrial)
         {
             return;
         }
@@ -53,19 +53,19 @@ public class TimeTrialGameControllerMessage : ModuleMessageHandler
                 case TimeTrialGameControllerType.UNKNOWN:
                     break;
                 case TimeTrialGameControllerType.UpdateDifficulty:
-                    TimeTrialData.GameController.UpdateDifficulty(data.Value);
+                    TimeTrialEventHandler.GameController.UpdateDifficulty(data.Value);
                     break;
                 case TimeTrialGameControllerType.TIMETRIAL_PlayerStartTrigger:
-                    TimeTrialData.GameController.TIMETRIAL_PlayerStartTrigger();
+                    TimeTrialEventHandler.GameController.TIMETRIAL_PlayerStartTrigger();
                     break;
                 case TimeTrialGameControllerType.TIMETRIAL_PlayerEndTrigger:
-                    TimeTrialData.GameController.TIMETRIAL_PlayerEndTrigger();
+                    TimeTrialEventHandler.GameController.TIMETRIAL_PlayerEndTrigger();
                     break;
                 case TimeTrialGameControllerType.ProgPointKillCount:
-                    TimeTrialData.GameController.ProgPointKillCount(data.Value);
+                    TimeTrialEventHandler.GameController.ProgPointKillCount(data.Value);
                     break;
                 case TimeTrialGameControllerType.SetRequiredKillCount:
-                    TimeTrialData.GameController.SetRequiredKillCount(data.Value);
+                    TimeTrialEventHandler.GameController.SetRequiredKillCount(data.Value);
                     break;
             }
         }
