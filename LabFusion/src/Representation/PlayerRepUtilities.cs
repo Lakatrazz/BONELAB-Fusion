@@ -5,6 +5,7 @@ using LabFusion.Utilities;
 using LabFusion.Data;
 using LabFusion.Marrow;
 using LabFusion.Entities;
+using LabFusion.MonoBehaviours;
 
 using Il2Cpp;
 
@@ -12,10 +13,8 @@ using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow;
 using Il2CppSLZ.Marrow.Interaction;
 using Il2CppSLZ.Marrow.Warehouse;
-using Il2CppSLZ.Marrow.Pool;
 
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using LabFusion.MonoBehaviours;
 
 namespace LabFusion.Representation;
 

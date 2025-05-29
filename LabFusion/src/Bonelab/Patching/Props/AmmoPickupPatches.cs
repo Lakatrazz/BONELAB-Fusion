@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-using LabFusion.Network;
+using LabFusion.Scene;
 using LabFusion.Utilities;
 
 using UnityEngine;
@@ -8,7 +8,7 @@ using UnityEngine;
 using Il2CppSLZ.Bonelab;
 using Il2CppSLZ.Marrow;
 
-namespace LabFusion.Patching;
+namespace LabFusion.Bonelab.Patching;
 
 [HarmonyPatch(typeof(AmmoPickup))]
 public static class AmmoPickupPatches
@@ -17,8 +17,13 @@ public static class AmmoPickupPatches
     [HarmonyPatch(nameof(AmmoPickup.OnTriggerEnter))]
     public static bool OnTriggerEnter(Collider other)
     {
+        if (!NetworkSceneManager.IsLevelNetworked)
+        {
+            return true;
+        }
+
         // Make sure the ammo pickups are only triggered by ourselves and no one else
-        if (NetworkInfo.HasServer && other.attachedRigidbody != null)
+        if (other.attachedRigidbody != null)
         {
             var rigManager = other.GetComponentInParent<RigManager>();
 
