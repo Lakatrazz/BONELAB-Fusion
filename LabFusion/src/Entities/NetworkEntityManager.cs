@@ -45,7 +45,7 @@ public static class NetworkEntityManager
     public static void OnCleanupEntities()
     {
         // Clear registered entities
-        var registeredEntities = IdManager.RegisteredEntities.EntityIdLookup.Keys.ToList();
+        var registeredEntities = IdManager.RegisteredEntities.EntityIDLookup.Keys.ToList();
 
         foreach (var entity in registeredEntities)
         {
@@ -62,7 +62,7 @@ public static class NetworkEntityManager
         IdManager.RegisteredEntities.Clear();
 
         // Clear queued entities
-        var queuedEntities = IdManager.QueuedEntities.EntityIdLookup.Keys.ToList();
+        var queuedEntities = IdManager.QueuedEntities.EntityIDLookup.Keys.ToList();
 
         foreach (var entity in queuedEntities)
         {
@@ -110,7 +110,7 @@ public static class NetworkEntityManager
 
     private static IEnumerator SendCreationCatchupCoroutine(PlayerID playerID)
     {
-        var catchupQueue = new Queue<NetworkEntity>(IdManager.RegisteredEntities.IdEntityLookup.Values);
+        var catchupQueue = new Queue<NetworkEntity>(IdManager.RegisteredEntities.IDEntityLookup.Values);
 
         while (catchupQueue.Count > 0 && !FusionSceneManager.IsLoading() && playerID.IsValid)
         {

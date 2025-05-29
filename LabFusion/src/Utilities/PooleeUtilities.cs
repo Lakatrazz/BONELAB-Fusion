@@ -18,7 +18,7 @@ public static class PooleeUtilities
         }
 
         // Loop through all NetworkProps and despawn them
-        var entities = NetworkEntityManager.IdManager.RegisteredEntities.EntityIdLookup.Keys.ToArray();
+        var entities = NetworkEntityManager.IdManager.RegisteredEntities.EntityIDLookup.Keys.ToArray();
         foreach (var networkEntity in entities)
         {
             var prop = networkEntity.GetExtender<NetworkProp>();

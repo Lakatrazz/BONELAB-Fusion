@@ -22,7 +22,7 @@ public static class NetworkPlayerManager
         // Reserve all player ids
         for (var i = PlayerIDManager.MinPlayerID; i <= PlayerIDManager.MaxPlayerID; i++)
         {
-            NetworkEntityManager.IdManager.RegisteredEntities.ReserveId((ushort)i);
+            NetworkEntityManager.IdManager.RegisteredEntities.ReserveID((ushort)i);
         }
     }
 
