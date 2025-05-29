@@ -303,7 +303,7 @@ public class FusionMod : MelonMod
         GamemodeManager.OnUpdate();
 
         // Update delayed events at the very end of the frame
-        DelayUtilities.Internal_OnUpdate();
+        DelayUtilities.OnProcessDelays();
     }
 
     public override void OnFixedUpdate()

@@ -73,7 +73,7 @@ public static class ArtRigPatches
     {
         try
         {
-            DelayUtilities.Delay(() => { Internal_WaitForBarcode(inRig.manager, avatar); }, 2);
+            DelayUtilities.InvokeDelayed(() => { Internal_WaitForBarcode(inRig.manager, avatar); }, 2);
         }
         catch (Exception e)
         {

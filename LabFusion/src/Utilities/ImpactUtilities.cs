@@ -41,7 +41,7 @@ public static class ImpactUtilities
         // Create a new network entity
         else
         {
-            DelayUtilities.Delay(() => { PropSender.SendPropCreation(marrowBody.Entity); }, 4);
+            DelayUtilities.InvokeDelayed(() => { PropSender.SendPropCreation(marrowBody.Entity); }, 4);
         }
     }
 }

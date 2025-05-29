@@ -9,18 +9,20 @@ public class PlayerPoseUpdateData : INetSerializable
 {
     public const int Size = RigPose.Size;
 
-    public RigPose pose;
+    public int? GetSize() => Size;
+
+    public RigPose Pose;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref pose);
+        serializer.SerializeValue(ref Pose);
     }
 
     public static PlayerPoseUpdateData Create(RigPose pose)
     {
         var data = new PlayerPoseUpdateData
         {
-            pose = pose,
+            Pose = pose,
         };
 
         return data;
@@ -62,6 +64,6 @@ public class PlayerPoseUpdateMessage : NativeMessageHandler
         }
 
         // Apply pose
-        networkPlayer.OnReceivePose(data.pose);
+        networkPlayer.OnReceivePose(data.Pose);
     }
 }

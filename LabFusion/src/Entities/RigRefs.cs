@@ -79,7 +79,7 @@ public class RigRefs
             grip.DisableInteraction();
         }
 
-        DelayUtilities.Delay(Internal_DelayedEnableInteraction, 300);
+        DelayUtilities.InvokeDelayed(Internal_DelayedEnableInteraction, 300);
     }
 
     private void Internal_DelayedEnableInteraction()

@@ -45,12 +45,12 @@ public static class MagazineUtilities
         if (found)
         {
             // Delay by one frame to fix weird grabbing
-            DelayUtilities.Delay(() =>
+            DelayUtilities.InvokeNextFrame(() =>
             {
                 grip.MoveIntoHand(found);
 
                 grip.TryAttach(found, true);
-            }, 1);
+            });
         }
     }
 }

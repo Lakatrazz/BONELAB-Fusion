@@ -289,7 +289,11 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         rigManager.gameObject.name = $"{PlayerRepUtilities.PlayerRepName} (ID {PlayerId.SmallID})";
 
         // Hook into the rig
-        OnFoundRigManager(rigManager);
+        // Wait one frame so that the rig is properly initialized
+        DelayUtilities.InvokeNextFrame(() =>
+        {
+            OnFoundRigManager(rigManager);
+        });
     }
 
     public void MarkDirty()

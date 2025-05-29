@@ -26,7 +26,7 @@ public static class GamemodeHelper
 
         NetworkHelper.StartServer();
 
-        DelayUtilities.Delay(() =>
+        DelayUtilities.InvokeDelayed(() =>
         {
             FusionSceneManager.HookOnLevelLoad(() =>
             {

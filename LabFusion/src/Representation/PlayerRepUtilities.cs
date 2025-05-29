@@ -193,7 +193,7 @@ public static class PlayerRepUtilities
         PersistentAssetCreator.SetupImpactProperties(rigManager);
 
         // Spatialize wind audio
-        DelayUtilities.Delay(() => { Internal_SpatializeWind(rigManager.GetComponentInChildren<WindBuffetSFX>()); }, 5);
+        DelayUtilities.InvokeDelayed(() => { Internal_SpatializeWind(rigManager.GetComponentInChildren<WindBuffetSFX>()); }, 5);
     }
 
     private static void Internal_ClearHaptor(Haptor haptor)
