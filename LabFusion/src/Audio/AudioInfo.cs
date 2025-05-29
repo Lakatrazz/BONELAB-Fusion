@@ -8,27 +8,16 @@ public static class AudioInfo
 {
     public static readonly int OutputSampleRate = AudioSettings.outputSampleRate;
 
-    private static AudioClip _toneClip = null;
-    public static AudioClip ToneClip
+    public static AudioClip CreateToneClip()
     {
-        get
+        return AudioClip.Create("Tone", OutputSampleRate, 1, OutputSampleRate, false, (PCMReaderCallback)(data =>
         {
-            if (_toneClip != null)
+            var length = data.Length;
+
+            for (int i = 0; i < length; i++)
             {
-                return _toneClip;
+                data[i] = 1f;
             }
-
-            _toneClip = AudioClip.Create("Tone", 256, 1, OutputSampleRate, false, false, (PCMReaderCallback)(data =>
-            {
-                var length = data.Length;
-
-                for (int i = 0; i < length; i++)
-                {
-                    data[i] = 1f;
-                }
-            }));
-
-            return _toneClip;
-        }
+        }));
     }
 }

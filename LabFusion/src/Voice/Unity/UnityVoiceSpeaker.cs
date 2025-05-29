@@ -77,7 +77,7 @@ public class UnityVoiceSpeaker : VoiceSpeaker
         // Create the audio source and clip
         CreateAudioSource();
 
-        Source.clip = AudioInfo.ToneClip;
+        Source.clip = AudioInfo.CreateToneClip();
 
         StreamFilter = Source.gameObject.AddComponent<AudioStreamFilter>();
         LowPassFilter = Source.gameObject.AddComponent<AudioLowPassFilter>();
