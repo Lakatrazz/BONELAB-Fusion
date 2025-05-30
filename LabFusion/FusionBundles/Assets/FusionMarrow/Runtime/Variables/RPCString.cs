@@ -3,7 +3,8 @@ using Il2CppInterop.Runtime.Attributes;
 
 using LabFusion.Network;
 using LabFusion.Player;
-
+using LabFusion.Safety;
+using LabFusion.Utilities;
 using MelonLoader;
 #endif
 
@@ -28,14 +29,38 @@ namespace LabFusion.Marrow.Integration
 
         public bool SetValue(string value)
         {
+            string reason;
+            if (isUrl(value) && URLBanManager.IsLinkBanned(value, out reason))
+            {
+                FusionLogger.Warn($"Blocking sending the url {value}, for the reason of {reason} you sneaky little critter!");
+                return false;
+            }
+
             return RPCStringSender.SetValue(this, value);
         }
 
         public void ReceiveValue(string value)
         {
+            // makes sure the text actually is a url before checking if its banned
+            string reason;
+            if (isUrl(value) && URLBanManager.IsLinkBanned(value, out reason))
+            {
+                FusionLogger.Warn($"Received potentially dangerous URL. Blocking the url {value}, for the reason of {reason}");
+                return;
+            }
+
             _latestValue = value;
 
             InvokeHolder();
+        }
+
+        private static bool isUrl(string value)
+        {
+            //checks text to see if its a valid url
+            Uri uriResult;
+            bool result = Uri.TryCreate(value, UriKind.Absolute, out uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+
+            return result;
         }
 
         [HideFromIl2Cpp]
