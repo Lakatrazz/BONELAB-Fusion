@@ -8,27 +8,27 @@ using System.Threading.Tasks;
 
 namespace LabFusion.Safety
 {
-    public class URLBanInfo
+    public class URLInfo
     {
         [JsonPropertyName("url")]
         public string Url { get; set; }
-        [JsonPropertyName("reason")]
-        public string Reason { get; set; }
+        [JsonPropertyName("description")]
+        public string Description { get; set; }
     }
 
     [Serializable]
-    public class URLBanList
+    public class URLWhitelistList
     {
-        [JsonPropertyName("bans")]
-        public List<URLBanInfo> Bans { get; set; } = new();
+        [JsonPropertyName("whitelist")]
+        public List<URLInfo> Whitelist { get; set; } = new();
         
     }
 
-    public static class URLBanManager
+    public static class URLWhitelistManager
     {
-        public const string FileName = "UrlBans.json";
+        public const string FileName = "UrlWhitelist.json";
 
-        public static URLBanList urlList { get; private set; } = new();
+        public static URLWhitelistList urlList { get; private set; } = new();
 
         public static void FetchFile()
         {
@@ -38,23 +38,22 @@ namespace LabFusion.Safety
 
         private static void OnFileFetched(string text)
         {
-            urlList = DataSaver.ReadJsonFromText<URLBanList>(text);
+            urlList = DataSaver.ReadJsonFromText<URLWhitelistList>(text);
         }
 
-        public static bool IsLinkBanned(string link, out string reason)
+        public static bool IsLinkWhitelisted(string link, out string urlDomain)
         {
             Uri url = new Uri(link);
 
-            String domain = url.Host;
-            foreach(var ban in urlList.Bans)
+            urlDomain = url.Host;
+            
+            foreach(var whitelist in urlList.Whitelist)
             {
-                if(domain == ban.Url)
+                if(urlDomain == whitelist.Url)
                 {
-                    reason = ban.Reason;
                     return true;
                 }
             }
-            reason = null;
             return false;
         }
     }

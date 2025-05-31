@@ -7,6 +7,6 @@ public static class ListLoader
         GlobalBanManager.FetchFile();
         ProfanityListManager.FetchFile();
         GlobalModBlacklistManager.FetchFile();
-        URLBanManager.FetchFile();
+        URLWhitelistManager.FetchFile();
     }
 }

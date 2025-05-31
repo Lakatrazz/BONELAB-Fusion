@@ -29,10 +29,10 @@ namespace LabFusion.Marrow.Integration
 
         public bool SetValue(string value)
         {
-            string reason;
-            if (isUrl(value) && URLBanManager.IsLinkBanned(value, out reason))
+            string domain;
+            if (isUrl(value) && !URLWhitelistManager.IsLinkWhitelisted(value, out domain))
             {
-                FusionLogger.Warn($"Blocking sending the url {value}, for the reason of {reason} you sneaky little critter!");
+                FusionLogger.Warn($"Blocking sending the url {value}, as the domain {domain} is not whitelisted.");
                 return false;
             }
 
@@ -42,10 +42,10 @@ namespace LabFusion.Marrow.Integration
         public void ReceiveValue(string value)
         {
             // makes sure the text actually is a url before checking if its banned
-            string reason;
-            if (isUrl(value) && URLBanManager.IsLinkBanned(value, out reason))
+            string domain;
+            if (isUrl(value) && !URLWhitelistManager.IsLinkWhitelisted(value, out domain))
             {
-                FusionLogger.Warn($"Received potentially dangerous URL. Blocking the url {value}, for the reason of {reason}");
+                FusionLogger.Warn($"Received potentially dangerous URL. Blocking the url {value}, as the domain {domain} is not whitelisted.");
                 return;
             }
 
