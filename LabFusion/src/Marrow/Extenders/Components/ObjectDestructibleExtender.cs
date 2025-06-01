@@ -42,7 +42,7 @@ public class ObjectDestructibleExtender : EntityComponentArrayExtender<ObjectDes
 
     private void OnEntityDataCatchup(ObjectDestructible destructible, NetworkEntity entity, PlayerID player)
     {
-        bool destroyed = destructible._isDead || destructible.IsDespawned;
+        bool destroyed = IsDestroyed(destructible);
 
         if (!destroyed)
         {
@@ -52,5 +52,20 @@ public class ObjectDestructibleExtender : EntityComponentArrayExtender<ObjectDes
         var data = ComponentIndexData.Create(entity.ID, GetIndex(destructible).Value);
 
         MessageRelay.RelayModule<ObjectDestructibleDestroyMessage, ComponentIndexData>(data, NetworkChannel.Reliable, RelayType.ToTarget, player);
+    }
+
+    private static bool IsDestroyed(ObjectDestructible destructible)
+    {
+        if (destructible._isDead)
+        {
+            return true;
+        }
+
+        if (destructible._poolee != null && destructible.IsDespawned)
+        {
+            return true;
+        }
+
+        return false;
     }
 }
