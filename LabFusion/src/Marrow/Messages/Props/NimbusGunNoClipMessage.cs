@@ -23,7 +23,7 @@ public class NimbusGunNoClipData : INetSerializable
 }
 
 [Net.SkipHandleWhileLoading]
-public class NimbusGunNoclipMessage : ModuleMessageHandler
+public class NimbusGunNoClipMessage : ModuleMessageHandler
 {
     protected override void OnHandleMessage(ReceivedMessage received)
     {
