@@ -223,6 +223,8 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
         UnhookMetadata();
     }
 
+    public int? GetSize() => sizeof(ulong) + sizeof(byte) + Metadata.Metadata.LocalDictionary.GetSize() + EquippedItems.GetSize();
+
     public void Serialize(INetSerializer serializer)
     {
         if (serializer.IsReader)
@@ -230,21 +232,21 @@ public class PlayerID : INetSerializable, IEquatable<PlayerID>
             Metadata.CreateMetadata();
         }
 
-        var longId = PlatformID;
-        var smallId = SmallID;
+        var platformID = PlatformID;
+        var smallID = SmallID;
         var metadata = Metadata.Metadata.LocalDictionary;
         var equippedItems = _equippedItems.ToArray();
 
-        serializer.SerializeValue(ref longId);
-        serializer.SerializeValue(ref smallId);
+        serializer.SerializeValue(ref platformID);
+        serializer.SerializeValue(ref smallID);
 
         serializer.SerializeValue(ref metadata);
         serializer.SerializeValue(ref equippedItems);
 
         if (serializer.IsReader)
         {
-            PlatformID = longId;
-            SmallID = smallId;
+            PlatformID = platformID;
+            SmallID = smallID;
 
             foreach (var pair in metadata)
             {

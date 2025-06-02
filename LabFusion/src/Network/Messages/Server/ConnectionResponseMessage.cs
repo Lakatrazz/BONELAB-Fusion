@@ -7,27 +7,29 @@ namespace LabFusion.Network;
 
 public class ConnectionResponseData : INetSerializable
 {
-    public PlayerID playerId = null;
-    public string avatarBarcode = null;
-    public SerializedAvatarStats avatarStats = null;
-    public bool isInitialJoin = false;
+    public PlayerID PlayerID = null;
+    public string AvatarBarcode = null;
+    public SerializedAvatarStats AvatarStats = null;
+    public bool IsInitialJoin = false;
+
+    public int? GetSize() => PlayerID.GetSize() + AvatarBarcode.GetSize() + SerializedAvatarStats.Size + sizeof(bool);
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref playerId);
-        serializer.SerializeValue(ref avatarBarcode);
-        serializer.SerializeValue(ref avatarStats);
-        serializer.SerializeValue(ref isInitialJoin);
+        serializer.SerializeValue(ref PlayerID);
+        serializer.SerializeValue(ref AvatarBarcode);
+        serializer.SerializeValue(ref AvatarStats);
+        serializer.SerializeValue(ref IsInitialJoin);
     }
 
     public static ConnectionResponseData Create(PlayerID id, string avatarBarcode, SerializedAvatarStats stats, bool isInitialJoin)
     {
         return new ConnectionResponseData()
         {
-            playerId = id,
-            avatarBarcode = avatarBarcode,
-            avatarStats = stats,
-            isInitialJoin = isInitialJoin,
+            PlayerID = id,
+            AvatarBarcode = avatarBarcode,
+            AvatarStats = stats,
+            IsInitialJoin = isInitialJoin,
         };
     }
 }
@@ -43,11 +45,11 @@ public class ConnectionResponseMessage : NativeMessageHandler
         var data = received.ReadData<ConnectionResponseData>();
 
         // Insert the id into our list
-        data.playerId.Insert();
+        data.PlayerID.Insert();
 
         // Check the id to see if its our own
         // If it is, just update our self reference
-        if (data.playerId.PlatformID == PlayerIDManager.LocalPlatformID)
+        if (data.PlayerID.PlatformID == PlayerIDManager.LocalPlatformID)
         {
             PlayerIDManager.ApplyLocalID();
 
@@ -58,10 +60,10 @@ public class ConnectionResponseMessage : NativeMessageHandler
         // Otherwise, create a network player
         else
         {
-            InternalServerHelpers.OnPlayerJoined(data.playerId, data.isInitialJoin);
+            InternalServerHelpers.OnPlayerJoined(data.PlayerID, data.IsInitialJoin);
 
-            var networkPlayer = NetworkPlayerManager.CreateNetworkPlayer(data.playerId);
-            networkPlayer.AvatarSetter.SwapAvatar(data.avatarStats, data.avatarBarcode);
+            var networkPlayer = NetworkPlayerManager.CreateNetworkPlayer(data.PlayerID);
+            networkPlayer.AvatarSetter.SwapAvatar(data.AvatarStats, data.AvatarBarcode);
         }
 
         // Update our vitals to everyone
@@ -73,7 +75,7 @@ public class ConnectionResponseMessage : NativeMessageHandler
         // Send catchup messages now that the user is registered
         if (NetworkInfo.IsHost)
         {
-            CatchupPlayer(data.playerId);
+            CatchupPlayer(data.PlayerID);
         }
     }
 

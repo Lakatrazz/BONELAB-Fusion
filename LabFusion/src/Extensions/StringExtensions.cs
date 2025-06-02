@@ -85,16 +85,6 @@ public static class StringExtensions
         return str.Substring(0, maxLength + offset);
     }
 
-    public static int GetSize(this string str)
-    {
-        return GetSize(str, Encoding.UTF8);
-    }
-
-    public static int GetSize(this string str, Encoding encoding)
-    {
-        return encoding.GetByteCount(str) + sizeof(int);
-    }
-
     // .NET Core's string hashing isn't deterministic on game restart, only during the same instance.
     // Credits to https://andrewlock.net/why-is-string-gethashcode-different-each-time-i-run-my-program-in-net-core/#a-deterministic-gethashcode-implementation
     // In this case, I reaally need it to be deterministic, so

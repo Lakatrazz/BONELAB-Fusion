@@ -14,6 +14,8 @@ public class SerializedAvatarStats : INetSerializable
 {
     public const int Size = sizeof(float) * 73 + SerializableSoftEllipse.Size * 8;
 
+    public int? GetSize() => Size;
+
     // Root scale
     public Vector3 localScale;
 

@@ -10,6 +10,11 @@ namespace LabFusion.Menu.Gamemodes;
 
 public static class MenuGamemode
 {
+    public static MenuPage GamemodePage { get; private set; } = null;
+
+    public static MenuPage OverviewPage { get; private set; } = null;
+    public static MenuPage RoundsPage { get; private set; } = null;
+
     // Options grid
     public static RawImage GamemodeIcon { get; private set; } = null;
 
@@ -116,16 +121,20 @@ public static class MenuGamemode
 
     private static void ApplySettingsData(Gamemode gamemode)
     {
+        SettingsPageElement.AddElement<FunctionElement>("Round Settings")
+            .Do(OpenRoundSettings);
+
         var settingsGroup = gamemode.CreateSettingsGroup();
 
         if (settingsGroup.Elements.Count > 0)
         {
             ElementDataHelper.ApplyGroupData(SettingsPageElement, settingsGroup);
         }
-        else
-        {
-            SettingsGrid.SetActive(false);
-        }
+    }
+
+    private static void OpenRoundSettings()
+    {
+        GamemodePage.SelectSubPage(RoundsPage);
     }
 
     private static void UpdateMenuGamemode()
@@ -192,8 +201,13 @@ public static class MenuGamemode
 
     public static void PopulateGamemode(GameObject gamemodePage)
     {
+        GamemodePage = gamemodePage.GetComponent<MenuPage>();
+
+        var overviewPage = gamemodePage.transform.Find("page_Overview");
+        OverviewPage = overviewPage.GetComponent<MenuPage>();
+
         // Options grid
-        var optionsGrid = gamemodePage.transform.Find("grid_GamemodeOptions");
+        var optionsGrid = overviewPage.Find("grid_GamemodeOptions");
 
         GamemodeIcon = optionsGrid.Find("label_GamemodeIcon/icon_Mask/icon_Gamemode").GetComponent<RawImage>();
 
@@ -204,7 +218,7 @@ public static class MenuGamemode
         GamemodeStartedElement = optionsGrid.Find("label_GamemodeStarted").GetComponent<LabelElement>();
 
         // Selection grid
-        var selectionGrid = gamemodePage.transform.Find("grid_GamemodeSelection");
+        var selectionGrid = overviewPage.Find("grid_GamemodeSelection");
 
         GamemodeSelectionGrid = selectionGrid.gameObject;
 
@@ -220,6 +234,10 @@ public static class MenuGamemode
         ExitGamemodeElement = selectionGrid.Find("button_ExitGamemode").GetComponent<FunctionElement>()
             .WithTitle("Exit Gamemode")
             .Do(OnExitGamemodePressed);
+
+        // Rounds page
+        var roundsPage = gamemodePage.transform.Find("page_Rounds");
+        RoundsPage = roundsPage.GetComponent<MenuPage>();
 
         UpdateMenuGamemode();
 

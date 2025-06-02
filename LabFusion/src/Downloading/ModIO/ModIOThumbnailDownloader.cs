@@ -27,7 +27,7 @@ public static class ModIOThumbnailDownloader
 
     public static void GetThumbnail(int modId, Action<Texture> callback)
     {
-        if (ThumbnailCache.TryGetValue(modId, out var cachedTexture))
+        if (ThumbnailCache.TryGetValue(modId, out var cachedTexture) && cachedTexture != null)
         {
             callback?.Invoke(cachedTexture);
             return;
