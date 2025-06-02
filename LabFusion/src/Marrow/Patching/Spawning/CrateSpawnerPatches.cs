@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 
 using LabFusion.RPC;
-using LabFusion.Senders;
 using LabFusion.Scene;
 using LabFusion.Marrow.Integration;
 using LabFusion.Data;
@@ -21,8 +20,6 @@ namespace LabFusion.Marrow.Patching;
 public static class CrateSpawnerPatches
 {
     public static readonly ComponentHashTable<CrateSpawner> HashTable = new();
-
-    public static readonly HashSet<CrateSpawner> CurrentlySpawning = new();
 
     [HarmonyPrefix]
     [HarmonyPatch(nameof(CrateSpawner.Awake))]
@@ -68,8 +65,6 @@ public static class CrateSpawnerPatches
                 OnNetworkSpawn(spawner, info, source);
             },
         });
-
-        CurrentlySpawning.Add(spawner);
     }
 
     private static void OnNetworkSpawn(CrateSpawner spawner, NetworkAssetSpawner.SpawnCallbackInfo info, UniTaskCompletionSource<Poolee> source)
@@ -94,9 +89,6 @@ public static class CrateSpawnerPatches
 
     public static void OnFinishNetworkSpawn(this CrateSpawner spawner, GameObject go)
     {
-        // Remove from global spawning check
-        CurrentlySpawning.RemoveWhere((found) => found == spawner);
-
         // Invoke spawn events
         spawner.onSpawnEvent?.Invoke(spawner, go);
 
@@ -160,13 +152,6 @@ public static class CrateSpawnerPatches
             return false;
         }
 
-        // Make sure this isn't already spawning
-        if (CurrentlySpawning.Any((found) => found == spawner))
-        {
-            __result = new UniTask<Poolee>(null);
-            return false;
-        }
-        
         var source = new UniTaskCompletionSource<Poolee>();
         __result = new UniTask<Poolee>(source.TryCast<IUniTaskSource<Poolee>>(), default);
 
