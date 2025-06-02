@@ -79,6 +79,7 @@ public static class LocalHealth
         var health = RigData.Refs.Health;
 
         health.SetFullHealth();
+        health.isInstaDying = false;
     }
 
     internal static void OnInitializeMelon()
