@@ -877,8 +877,11 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
     {
         if (!ReceivedPose)
         {
+            RigRefs.RigManager.remapHeptaRig.inWeight = 0f;
             return;
         }
+
+        RigRefs.RigManager.remapHeptaRig.inWeight = 1f;
 
         for (var i = 0; i < RigAbstractor.TransformSyncCount; i++)
         {
