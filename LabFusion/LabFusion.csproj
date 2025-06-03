@@ -151,6 +151,12 @@
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\FloatElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\FunctionElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\GamemodeResultElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Gamemodes.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Gamemodes\GamemodeResultElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Gamemodes\LevelQueueResultElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Gamemodes\LevelResultElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Gamemodes\LevelRotationResultElement.cs.meta" />
+    <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\General.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Generic.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Generic\BoolElement.cs.meta" />
     <None Remove="FusionBundles\Assets\FusionProxies\Runtime\Menu\Elements\Generic\ButtonElement.cs.meta" />
@@ -441,8 +447,6 @@
   <ItemGroup>
     <Folder Include="src\Data\Containers\Levels\" />
     <Folder Include="src\Data\Interfaces\" />
-    <Folder Include="src\Patching\Patches\Plugs\" />
-    <Folder Include="src\Patching\Patches\UI\" />
   </ItemGroup>
 
 </Project>

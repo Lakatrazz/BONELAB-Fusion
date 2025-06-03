@@ -37,8 +37,6 @@ public class MarrowModule : Module
 
         ModuleMessageHandler.RegisterHandler<CrateSpawnerMessage>();
 
-        ModuleMessageHandler.RegisterHandler<GamemodeDropperMessage>();
-
         MultiplayerHooking.OnMainSceneInitialized += NetworkGunManager.OnMainSceneInitialized;
 
         LevelEventHandler.OnInitializeMelon();

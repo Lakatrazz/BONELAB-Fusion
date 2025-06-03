@@ -276,13 +276,15 @@ public static class MenuCreator
         {
             var upperParent = parent.Parent;
 
-            upperParent.SelectSubPage(parent);
-
             // Edge case fix
             // Could be avoided if I designed MenuPages better with FieldInjection but I do not care enough
-            if (upperParent.SubPages.Count <= 1 && upperParent.Parent != null)
+            if ((upperParent.SubPages.Count <= 1 || parent.SubPages.IndexOf(parent.CurrentPage) == parent.DefaultPageIndex) && upperParent.Parent != null)
             {
                 upperParent.Parent.SelectSubPage(upperParent);
+            }
+            else
+            {
+                upperParent.SelectSubPage(parent);
             }
 
             return;

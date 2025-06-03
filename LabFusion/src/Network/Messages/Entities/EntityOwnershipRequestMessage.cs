@@ -15,7 +15,7 @@ public class EntityOwnershipRequestMessage : NativeMessageHandler
         var response = new EntityPlayerData()
         {
             PlayerId = data.PlayerId,
-            Entity = new(data.Entity.Id),
+            Entity = new(data.Entity.ID),
         };
 
         MessageRelay.RelayNative(response, NativeMessageTag.EntityOwnershipResponse, NetworkChannel.Reliable, RelayType.ToClients);

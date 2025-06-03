@@ -13,7 +13,7 @@ public class EntityOwnershipResponseMessage : NativeMessageHandler
     {
         var data = received.ReadData<EntityPlayerData>();
 
-        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.Entity.Id);
+        var entity = NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(data.Entity.ID);
 
         entity?.SetOwner(PlayerIDManager.GetPlayerID(data.PlayerId));
     }

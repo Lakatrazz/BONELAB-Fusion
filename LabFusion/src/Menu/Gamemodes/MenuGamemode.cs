@@ -1,4 +1,6 @@
-﻿using LabFusion.Marrow.Proxies;
+﻿using Il2CppTMPro;
+
+using LabFusion.Marrow.Proxies;
 using LabFusion.Menu.Data;
 using LabFusion.Network;
 using LabFusion.SDK.Gamemodes;
@@ -11,9 +13,7 @@ namespace LabFusion.Menu.Gamemodes;
 public static class MenuGamemode
 {
     public static MenuPage GamemodePage { get; private set; } = null;
-
     public static MenuPage OverviewPage { get; private set; } = null;
-    public static MenuPage RoundsPage { get; private set; } = null;
 
     // Options grid
     public static RawImage GamemodeIcon { get; private set; } = null;
@@ -134,7 +134,16 @@ public static class MenuGamemode
 
     private static void OpenRoundSettings()
     {
-        GamemodePage.SelectSubPage(RoundsPage);
+        var gamemode = GamemodeManager.ActiveGamemode ?? SelectedGamemode;
+
+        if (gamemode == null)
+        {
+            return;
+        }
+
+        GamemodePage.SelectSubPage(MenuGamemodeRounds.RoundsPage);
+
+        MenuGamemodeRounds.ShowLevelRotations(gamemode.Barcode);
     }
 
     private static void UpdateMenuGamemode()
@@ -235,9 +244,7 @@ public static class MenuGamemode
             .WithTitle("Exit Gamemode")
             .Do(OnExitGamemodePressed);
 
-        // Rounds page
-        var roundsPage = gamemodePage.transform.Find("page_Rounds");
-        RoundsPage = roundsPage.GetComponent<MenuPage>();
+        MenuGamemodeRounds.PopulateRounds(gamemodePage.transform.Find("page_Rounds").gameObject);
 
         UpdateMenuGamemode();
 

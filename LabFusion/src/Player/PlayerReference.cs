@@ -3,19 +3,19 @@
 namespace LabFusion.Player;
 
 /// <summary>
-/// A serializable reference to a PlayerId.
+/// A serializable reference to a PlayerID.
 /// </summary>
 public struct PlayerReference : INetSerializable
 {
     public const int Size = sizeof(byte);
 
-    public byte Id;
+    public byte ID;
 
     public readonly int? GetSize() => Size;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref Id);
+        serializer.SerializeValue(ref ID);
     }
 
     public readonly bool TryGetPlayer(out PlayerID player)
@@ -27,7 +27,7 @@ public struct PlayerReference : INetSerializable
 
     public readonly PlayerID GetPlayer()
     {
-        return PlayerIDManager.GetPlayerID(Id);
+        return PlayerIDManager.GetPlayerID(ID);
     }
 
     public PlayerReference() : this(0) { }
@@ -36,6 +36,6 @@ public struct PlayerReference : INetSerializable
 
     public PlayerReference(byte id)
     {
-        Id = id;
+        ID = id;
     }
 }

@@ -96,7 +96,7 @@ public static class MenuLocation
 
     private static void UpdateLobbyIcons(LobbyElement element)
     {
-        ElementIconHelper.SetLevelIcon(element, FusionSceneManager.Title, CrateFilterer.GetModId(FusionSceneManager.Level.Pallet));
+        ElementIconHelper.SetLevelIcon(element, FusionSceneManager.Title, CrateFilterer.GetModID(FusionSceneManager.Level.Pallet));
         ElementIconHelper.SetGamemodeIcon(element, GamemodeManager.ActiveGamemode?.Title);
     }
 

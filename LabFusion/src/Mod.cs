@@ -131,6 +131,7 @@ public class FusionMod : MelonMod
 
         GamemodeManager.OnInitializeMelon();
         GamemodeConditionsChecker.OnInitializeMelon();
+        GamemodeRoundManager.OnInitializeMelon();
 
         // Hook into asset warehouse
         var onReady = () =>

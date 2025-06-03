@@ -9,18 +9,18 @@ public struct NetworkEntityReference : INetSerializable
 {
     public const int Size = sizeof(ushort);
 
-    public ushort Id;
+    public ushort ID;
 
     public readonly int? GetSize() => Size;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref Id);
+        serializer.SerializeValue(ref ID);
     }
 
     public readonly void HookEntityRegistered(NetworkEntityDelegate callback)
     {
-        NetworkEntityManager.HookEntityRegistered(Id, callback);
+        NetworkEntityManager.HookEntityRegistered(ID, callback);
     }
 
     public readonly bool TryGetEntity(out NetworkEntity entity)
@@ -32,7 +32,7 @@ public struct NetworkEntityReference : INetSerializable
 
     public readonly NetworkEntity GetEntity()
     {
-        return NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(Id);
+        return NetworkEntityManager.IdManager.RegisteredEntities.GetEntity(ID);
     }
 
     public NetworkEntityReference() : this(0) { }
@@ -41,6 +41,6 @@ public struct NetworkEntityReference : INetSerializable
 
     public NetworkEntityReference(ushort id)
     {
-        Id = id;
+        ID = id;
     }
 }

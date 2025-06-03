@@ -35,7 +35,7 @@ public static class MenuProfile
 
         PreviousAvatarTitle = avatarTitle;
 
-        ElementIconHelper.SetProfileIcon(element, avatarTitle, CrateFilterer.GetModId(avatarCrate.Pallet));
+        ElementIconHelper.SetProfileIcon(element, avatarTitle, CrateFilterer.GetModID(avatarCrate.Pallet));
     }
 
     private static void RefreshIcon()

@@ -15,6 +15,8 @@ public static class MenuResources
 
     public const string ModsIconTitle = "Mods";
 
+    public const string EmptyIconTitle = "Empty";
+
     public const string SandboxIconTitle = "Sandbox";
 
     public static Texture GetLevelIcon(string levelTitle)
