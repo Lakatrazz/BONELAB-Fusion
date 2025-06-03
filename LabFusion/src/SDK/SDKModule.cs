@@ -13,7 +13,7 @@ public sealed class SDKModule : Module
 
     protected override void OnModuleRegistered()
     {
-        ModuleMessageHandler.RegisterHandler<AnimationStateMessage>();
-        ModuleMessageHandler.RegisterHandler<GamemodeDropperMessage>();
+        ModuleMessageManager.RegisterHandler<AnimationStateMessage>();
+        ModuleMessageManager.RegisterHandler<GamemodeDropperMessage>();
     }
 }

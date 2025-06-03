@@ -8,11 +8,11 @@ public class ModuleMessage : NativeMessageHandler
 
     protected override bool OnPreRelayMessage(ReceivedMessage received)
     {
-        return ModuleMessageHandler.PreRelayMessage(received);
+        return ModuleMessageManager.PreRelayMessage(received);
     }
 
     protected override void OnHandleMessage(ReceivedMessage received)
     {
-        ModuleMessageHandler.ReadMessage(received);
+        ModuleMessageManager.ReadMessage(received);
     }
 }

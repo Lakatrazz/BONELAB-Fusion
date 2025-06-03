@@ -13,35 +13,35 @@ public class BonelabModule : Module
 
     protected override void OnModuleRegistered()
     {
-        ModuleMessageHandler.RegisterHandler<ArenaMenuMessage>();
-        ModuleMessageHandler.RegisterHandler<ArenaTransitionMessage>();
-        ModuleMessageHandler.RegisterHandler<ChallengeSelectMessage>();
-        ModuleMessageHandler.RegisterHandler<GeoSelectMessage>();
+        ModuleMessageManager.RegisterHandler<ArenaMenuMessage>();
+        ModuleMessageManager.RegisterHandler<ArenaTransitionMessage>();
+        ModuleMessageManager.RegisterHandler<ChallengeSelectMessage>();
+        ModuleMessageManager.RegisterHandler<GeoSelectMessage>();
 
-        ModuleMessageHandler.RegisterHandler<BonelabHubEventMessage>();
-        ModuleMessageHandler.RegisterHandler<DescentElevatorMessage>();
-        ModuleMessageHandler.RegisterHandler<DescentIntroMessage>();
-        ModuleMessageHandler.RegisterHandler<DescentNooseMessage>();
-        ModuleMessageHandler.RegisterHandler<HomeEventMessage>();
-        ModuleMessageHandler.RegisterHandler<KartRaceEventMessage>();
-        ModuleMessageHandler.RegisterHandler<MagmaGateEventMessage>();
-        ModuleMessageHandler.RegisterHandler<MineDiveCartMessage>();
+        ModuleMessageManager.RegisterHandler<BonelabHubEventMessage>();
+        ModuleMessageManager.RegisterHandler<DescentElevatorMessage>();
+        ModuleMessageManager.RegisterHandler<DescentIntroMessage>();
+        ModuleMessageManager.RegisterHandler<DescentNooseMessage>();
+        ModuleMessageManager.RegisterHandler<HomeEventMessage>();
+        ModuleMessageManager.RegisterHandler<KartRaceEventMessage>();
+        ModuleMessageManager.RegisterHandler<MagmaGateEventMessage>();
+        ModuleMessageManager.RegisterHandler<MineDiveCartMessage>();
 
-        ModuleMessageHandler.RegisterHandler<BodyLogEffectMessage>();
-        ModuleMessageHandler.RegisterHandler<BodyLogToggleMessage>();
+        ModuleMessageManager.RegisterHandler<BodyLogEffectMessage>();
+        ModuleMessageManager.RegisterHandler<BodyLogToggleMessage>();
 
-        ModuleMessageHandler.RegisterHandler<BaseGameControllerMessage>();
-        ModuleMessageHandler.RegisterHandler<HolodeckEventMessage>();
-        ModuleMessageHandler.RegisterHandler<TimeTrialGameControllerMessage>();
-        ModuleMessageHandler.RegisterHandler<TrialSpawnerEventsMessage>();
+        ModuleMessageManager.RegisterHandler<BaseGameControllerMessage>();
+        ModuleMessageManager.RegisterHandler<HolodeckEventMessage>();
+        ModuleMessageManager.RegisterHandler<TimeTrialGameControllerMessage>();
+        ModuleMessageManager.RegisterHandler<TrialSpawnerEventsMessage>();
 
-        ModuleMessageHandler.RegisterHandler<BoardGeneratorMessage>();
-        ModuleMessageHandler.RegisterHandler<FlashlightToggleMessage>();
-        ModuleMessageHandler.RegisterHandler<KeySlotMessage>();
-        ModuleMessageHandler.RegisterHandler<SimpleGripEventMessage>();
-        ModuleMessageHandler.RegisterHandler<SpawnGunSelectMessage>();
+        ModuleMessageManager.RegisterHandler<BoardGeneratorMessage>();
+        ModuleMessageManager.RegisterHandler<FlashlightToggleMessage>();
+        ModuleMessageManager.RegisterHandler<KeySlotMessage>();
+        ModuleMessageManager.RegisterHandler<SimpleGripEventMessage>();
+        ModuleMessageManager.RegisterHandler<SpawnGunSelectMessage>();
 
-        ModuleMessageHandler.RegisterHandler<RandomObjectMessage>();
+        ModuleMessageManager.RegisterHandler<RandomObjectMessage>();
     }
 
     protected override void OnModuleUnregistered()
