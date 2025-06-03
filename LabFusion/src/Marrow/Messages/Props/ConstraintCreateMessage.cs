@@ -9,6 +9,7 @@ using LabFusion.Scene;
 using LabFusion.Network.Serialization;
 using LabFusion.Data.Serializables;
 using LabFusion.SDK.Modules;
+using LabFusion.Safety;
 
 using UnityEngine;
 
@@ -108,6 +109,8 @@ public class ConstraintCreateData : INetSerializable
 [Net.DelayWhileTargetLoading]
 public class ConstraintCreateMessage : ModuleMessageHandler
 {
+    public const int MaxConstraintsPerSecond = 2;
+
     protected override void OnHandleMessage(ReceivedMessage received)
     {
         var data = received.ReadData<ConstraintCreateData>();
@@ -116,8 +119,23 @@ public class ConstraintCreateMessage : ModuleMessageHandler
         bool hasConstrainer = constrainerEntity != null;
 
         // Send message to other clients if server
+        // NOTE: OLD RELAY SYSTEM! REPLACE!
         if (received.IsServerHandled)
         {
+            // If the player isn't hosting a level, limit the amount of constraints per second
+            if (!NetworkSceneManager.PlayerIsLevelHost(PlayerIDManager.GetPlayerID(received.Sender.Value)))
+            {
+                var activity = LimitedActivityManager.GetTracker(nameof(ConstraintCreateMessage)).GetActivity(received.Sender.Value);
+
+                activity.Increment();
+
+                if (activity.Counter > MaxConstraintsPerSecond)
+                {
+                    FusionLogger.Warn($"Blocking Player {received.Sender.Value}'s constraint creation because they have tried to spawn {activity.Counter} entities in one second!");
+                    return;
+                }
+            }
+
             // Make sure we have a constrainer server side (and it's being held)
             if (hasConstrainer)
             {

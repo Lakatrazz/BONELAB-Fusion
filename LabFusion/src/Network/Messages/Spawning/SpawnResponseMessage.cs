@@ -1,7 +1,6 @@
 ﻿using LabFusion.Data;
 using LabFusion.Player;
 using LabFusion.Utilities;
-using LabFusion.Extensions;
 using LabFusion.Senders;
 using LabFusion.RPC;
 using LabFusion.Marrow;
@@ -22,45 +21,40 @@ namespace LabFusion.Network;
 
 public class SpawnResponseData : INetSerializable
 {
-    public const int DefaultSize = sizeof(byte) * 2 + sizeof(ushort) + SerializedTransform.Size;
+    public int? GetSize() => sizeof(byte) + Barcode.GetSize() + sizeof(ushort) + SerializedTransform.Size + sizeof(uint) + sizeof(bool);
 
-    public byte owner;
-    public string barcode;
-    public ushort entityId;
+    public byte OwnerID;
+    public string Barcode;
+    public ushort EntityID;
 
-    public SerializedTransform serializedTransform;
+    public SerializedTransform SerializedTransform;
 
-    public uint trackerId;
+    public uint TrackerId;
 
-    public bool spawnEffect;
-
-    public static int GetSize(string barcode)
-    {
-        return DefaultSize + barcode.GetSize();
-    }
+    public bool SpawnEffect;
 
     public void Serialize(INetSerializer serializer)
     {
-        serializer.SerializeValue(ref owner);
-        serializer.SerializeValue(ref barcode);
-        serializer.SerializeValue(ref entityId);
-        serializer.SerializeValue(ref serializedTransform);
+        serializer.SerializeValue(ref OwnerID);
+        serializer.SerializeValue(ref Barcode);
+        serializer.SerializeValue(ref EntityID);
+        serializer.SerializeValue(ref SerializedTransform);
 
-        serializer.SerializeValue(ref trackerId);
+        serializer.SerializeValue(ref TrackerId);
 
-        serializer.SerializeValue(ref spawnEffect);
+        serializer.SerializeValue(ref SpawnEffect);
     }
 
     public static SpawnResponseData Create(byte owner, string barcode, ushort entityId, SerializedTransform serializedTransform, uint trackerId = 0, bool spawnEffect = false)
     {
         return new SpawnResponseData()
         {
-            owner = owner,
-            barcode = barcode,
-            entityId = entityId,
-            serializedTransform = serializedTransform,
-            trackerId = trackerId,
-            spawnEffect = spawnEffect,
+            OwnerID = owner,
+            Barcode = barcode,
+            EntityID = entityId,
+            SerializedTransform = serializedTransform,
+            TrackerId = trackerId,
+            SpawnEffect = spawnEffect,
         };
     }
 }
@@ -76,17 +70,17 @@ public class SpawnResponseMessage : NativeMessageHandler
     {
         var data = received.ReadData<SpawnResponseData>();
 
-        byte owner = data.owner;
-        string barcode = data.barcode;
-        ushort entityId = data.entityId;
-        var trackerId = data.trackerId;
-        var spawnEffect = data.spawnEffect;
+        byte owner = data.OwnerID;
+        string barcode = data.Barcode;
+        ushort entityId = data.EntityID;
+        var trackerId = data.TrackerId;
+        var spawnEffect = data.SpawnEffect;
 
         // Check for spawnable blacklist
         if (ModBlacklist.IsBlacklisted(barcode) || GlobalModBlacklistManager.IsBarcodeBlacklisted(barcode))
         {
 #if DEBUG
-            FusionLogger.Warn($"Blocking client spawn of spawnable {data.barcode} because it is blacklisted!");
+            FusionLogger.Warn($"Blocking client spawn of spawnable {data.Barcode} because it is blacklisted!");
 #endif
 
             return;
@@ -149,7 +143,7 @@ public class SpawnResponseMessage : NativeMessageHandler
                 OnSpawnFinished(owner, barcode, entityId, go, trackerId, spawnEffect);
             }
 
-            SafeAssetSpawner.Spawn(spawnable, data.serializedTransform.position, data.serializedTransform.rotation, OnPooleeSpawned);
+            SafeAssetSpawner.Spawn(spawnable, data.SerializedTransform.position, data.SerializedTransform.rotation, OnPooleeSpawned);
         }
     }
 
