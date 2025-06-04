@@ -23,9 +23,9 @@ public static class StabSlashPatches
 
         // StabSlash freaks out when stabbing rigidbodies that don't have a MarrowBody
         // For stability purposes, prevent this in fusion
-        if (c.rigidbody != null && MarrowBody.Cache.Get(c.rigidbody.gameObject) != null)
+        if (c.rigidbody != null && MarrowBody.Cache.Get(c.rigidbody.gameObject) == null)
         {
-            return false;
+            c.m_Body = null;
         }
 
         var host = __instance._host;
