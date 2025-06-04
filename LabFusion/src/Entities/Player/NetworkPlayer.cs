@@ -523,7 +523,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
             OnHandUpdate(RigRefs.LeftHand);
             OnHandUpdate(RigRefs.RightHand);
 
-            VoiceSource.UpdateVoiceSource(RigRefs.RigManager.physicsRig.headSfx.mouthSrc.transform, DistanceSqr, deltaTime);
+            VoiceSource.UpdateVoiceSource(DistanceSqr, deltaTime);
 
             remapRig._crouchTarget = RigPose.CrouchTarget;
             remapRig._feetOffset = RigPose.FeetOffset;
@@ -843,7 +843,7 @@ public class NetworkPlayer : IEntityExtender, IMarrowEntityExtender, IEntityUpda
         _art = new(rigManager);
         _physics = new(rigManager);
 
-        _voiceSource = new RigVoiceSource(JawFlapper);
+        _voiceSource = new RigVoiceSource(JawFlapper, rigManager.physicsRig.headSfx.mouthSrc.transform);
         _voiceSource.CreateVoiceSource(PlayerID.SmallID);
 
         HookRig();

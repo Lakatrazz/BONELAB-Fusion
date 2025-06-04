@@ -107,6 +107,7 @@ public class FusionMod : MelonMod
 
         // Initialize player
         LocalPlayer.OnInitializeMelon();
+        VoiceSourceManager.OnInitializeMelon();
 
         // Register base modules
         InitializeBaseModules();

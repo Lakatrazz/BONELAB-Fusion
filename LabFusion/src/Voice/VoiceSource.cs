@@ -78,6 +78,8 @@ public class VoiceSource : MonoBehaviour
     private void Awake()
     {
         GetAudioSource();
+
+        StopSources();
     }
 
     private void OnEnable()
@@ -101,7 +103,7 @@ public class VoiceSource : MonoBehaviour
             return;
         }
 
-        if (StreamFilter.ReadingQueue.Count <= 0 || Amplitude < VoiceVolume.MinimumVoiceVolume)
+        if (StreamFilter.ReadingQueue.Count <= 0)
         {
             _timeSinceInput += Time.deltaTime;
         }
@@ -124,20 +126,30 @@ public class VoiceSource : MonoBehaviour
 
         if (Playing)
         {
-            StreamFilter.enabled = true;
-            AudioSource.Play();
-
-            Amplitude = 0f;
+            PlaySources();
         }
         else
         {
-            AudioSource.Stop();
-            StreamFilter.enabled = false;
-
-            StreamFilter.ReadingQueue.Clear();
-
-            Amplitude = 0f;
+            StopSources();
         }
+    }
+
+    private void PlaySources()
+    {
+        StreamFilter.enabled = true;
+        AudioSource.Play();
+
+        Amplitude = 0f;
+    }
+
+    private void StopSources()
+    {
+        AudioSource.Stop();
+        StreamFilter.enabled = false;
+
+        StreamFilter.ReadingQueue.Clear();
+
+        Amplitude = 0f;
     }
 
     [HideFromIl2Cpp]
@@ -163,7 +175,6 @@ public class VoiceSource : MonoBehaviour
         var source = gameObject.AddComponent<AudioSource>();
 
         source.volume = 1f;
-        source.outputAudioMixerGroup = null;
         source.spatialBlend = 1f;
         source.dopplerLevel = 0.5f;
         source.spread = 60f;
@@ -175,6 +186,8 @@ public class VoiceSource : MonoBehaviour
     private void SetSourceSettings()
     {
         AudioSource.loop = true;
+        AudioSource.playOnAwake = false;
+        AudioSource.outputAudioMixerGroup = null;
 
         StreamFilter = gameObject.AddComponent<AudioStreamFilter>();
 

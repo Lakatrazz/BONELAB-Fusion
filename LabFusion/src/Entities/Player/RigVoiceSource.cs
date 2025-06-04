@@ -26,11 +26,14 @@ public class RigVoiceSource
     public float MinMicrophoneDistance { get; set; } = 1f;
     public float MaxMicrophoneDistance { get; set; } = 30f;
 
+    public Transform Mouth { get; private set; } = null;
+
     public JawFlapper JawFlapper { get; set; } = null;
 
-    public RigVoiceSource(JawFlapper jawFlapper)
+    public RigVoiceSource(JawFlapper jawFlapper, Transform mouth)
     {
         JawFlapper = jawFlapper;
+        Mouth = mouth;
     }
 
     public void CreateVoiceSource(int id)
@@ -40,8 +43,12 @@ public class RigVoiceSource
         GameObject = VoiceSource.gameObject;
         Transform = GameObject.transform;
 
+        Transform.parent = Mouth;
+        Transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+
         LowPassFilter = GameObject.AddComponent<AudioLowPassFilter>();
         LowPassFilter.lowpassResonanceQ = 0.1f;
+        LowPassFilter.cutoffFrequency = HighFrequency;
 
         VoiceSource.AudioSource.minDistance = MinMicrophoneDistance;
     }
@@ -56,10 +63,8 @@ public class RigVoiceSource
         GameObject.Destroy(GameObject);
     }
 
-    public void UpdateVoiceSource(Transform mouth, float distanceSqr, float deltaTime)
+    public void UpdateVoiceSource(float distanceSqr, float deltaTime)
     {
-        Transform.position = mouth.position;
-
         bool muted = distanceSqr > MaxMicrophoneDistance * MaxMicrophoneDistance * 1.2f;
 
         VoiceSource.Muted = muted;
