@@ -3,6 +3,7 @@ using LabFusion.Marrow.Integration;
 using LabFusion.Network.Serialization;
 using LabFusion.Player;
 using LabFusion.Scene;
+using LabFusion.SDK.Extenders;
 
 using UnityEngine;
 

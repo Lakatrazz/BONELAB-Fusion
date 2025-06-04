@@ -114,7 +114,7 @@ public static class MirrorPatches
                 return true;
             }
 
-            byte targetId = player.PlayerId.SmallID;
+            byte targetId = player.PlayerID.SmallID;
 
             // Add identifiers
             identifier = __instance.gameObject.AddComponent<MirrorIdentifier>();

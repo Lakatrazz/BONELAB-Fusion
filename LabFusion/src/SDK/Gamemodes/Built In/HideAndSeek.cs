@@ -605,9 +605,9 @@ public class HideAndSeek : Gamemode
         }
 
         // Check if they're a hider, and if they are, tag them
-        if (HiderTeam.HasPlayer(player.PlayerId))
+        if (HiderTeam.HasPlayer(player.PlayerID))
         {
-            var longId = player.PlayerId.PlatformID;
+            var longId = player.PlayerID.PlatformID;
 
             _tagRewards.Add(longId);
 

@@ -56,7 +56,7 @@ public class AtvExtender : EntityComponentExtender<Atv>
 
         if (NetworkPlayerManager.TryGetPlayer(rigManager, out var player))
         {
-            NetworkEntity.SetOwner(player.PlayerId);
+            NetworkEntity.SetOwner(player.PlayerID);
             NetworkEntity.LockOwner();
         }
     }

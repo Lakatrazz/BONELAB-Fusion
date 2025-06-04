@@ -1,5 +1,5 @@
 ﻿using LabFusion.Entities;
-using LabFusion.Extensions;
+using LabFusion.SDK.Extenders;
 using LabFusion.Marrow.Integration;
 using LabFusion.Network.Serialization;
 using LabFusion.Player;

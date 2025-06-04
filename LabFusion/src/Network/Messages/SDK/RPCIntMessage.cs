@@ -2,6 +2,7 @@
 using LabFusion.Marrow.Integration;
 using LabFusion.Network.Serialization;
 using LabFusion.Player;
+using LabFusion.SDK.Extenders;
 using LabFusion.Scene;
 
 namespace LabFusion.Network;

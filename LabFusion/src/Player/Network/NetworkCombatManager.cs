@@ -16,7 +16,7 @@ public static class NetworkCombatManager
         // If a Gamemode is active, check if the gamemode gives attack permission
         if (GamemodeManager.IsGamemodeStarted)
         {
-            return GamemodeManager.ActiveGamemode.CanAttack(player.PlayerId);
+            return GamemodeManager.ActiveGamemode.CanAttack(player.PlayerID);
         }
 
         bool friendlyFire = LobbyInfoManager.LobbyInfo.FriendlyFire;

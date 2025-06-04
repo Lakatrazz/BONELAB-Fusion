@@ -50,7 +50,7 @@ public class SeatExtender : EntityComponentArrayExtender<Seat>
             return;
         }
 
-        var data = PlayerRepSeatData.Create(seatedPlayer.PlayerId, entity.ID, (byte)GetIndex(seat).Value, true);
+        var data = PlayerRepSeatData.Create(seatedPlayer.PlayerID, entity.ID, (byte)GetIndex(seat).Value, true);
 
         MessageRelay.RelayNative(data, NativeMessageTag.PlayerRepSeat, NetworkChannel.Reliable, RelayType.ToTarget, player);
     }

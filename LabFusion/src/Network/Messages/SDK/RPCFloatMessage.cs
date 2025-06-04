@@ -1,4 +1,4 @@
-﻿using LabFusion.Data;
+﻿using LabFusion.SDK.Extenders;
 using LabFusion.Entities;
 using LabFusion.Marrow.Integration;
 using LabFusion.Network.Serialization;

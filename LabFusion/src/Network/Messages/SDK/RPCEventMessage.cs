@@ -1,5 +1,6 @@
 ﻿using LabFusion.Entities;
 using LabFusion.Marrow.Integration;
+using LabFusion.SDK.Extenders;
 
 namespace LabFusion.Network;
 
