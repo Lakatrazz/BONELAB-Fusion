@@ -95,7 +95,7 @@ public static class ModIODownloader
             void OnRequestedMod(ModCallbackInfo info)
             {
                 // Check if the mod request failed
-                if (info.result != ModResult.SUCCEEDED)
+                if (info.Result != ModResult.SUCCEEDED)
                 {
                     FusionLogger.Warn($"Failed getting a mod file for mod {modFile.ModID}, cancelling download!");
 
@@ -104,25 +104,25 @@ public static class ModIODownloader
                 }
 
                 // Check for maturity
-                if (info.data.Mature && !ClientSettings.Downloading.DownloadMatureContent.Value)
+                if (info.Data.Mature && !ClientSettings.Downloading.DownloadMatureContent.Value)
                 {
-                    FusionLogger.Warn($"Skipped download of mod {info.data.NameId} due to it containing mature content.");
+                    FusionLogger.Warn($"Skipped download of mod {info.Data.NameID} due to it containing mature content.");
 
                     FailDownload();
                     return;
                 }
 
                 // Check for blacklist
-                if (ModBlacklist.IsBlacklisted(info.data.NameId) || ModBlacklist.IsBlacklisted(info.data.Id.ToString())
-                    || GlobalModBlacklistManager.IsNameIDBlacklisted(info.data.NameId) || GlobalModBlacklistManager.IsModIDBlacklisted(info.data.Id))
+                if (ModBlacklist.IsBlacklisted(info.Data.NameID) || ModBlacklist.IsBlacklisted(info.Data.ID.ToString())
+                    || GlobalModBlacklistManager.IsNameIDBlacklisted(info.Data.NameID) || GlobalModBlacklistManager.IsModIDBlacklisted(info.Data.ID))
                 {
-                    FusionLogger.Warn($"Skipped download of mod {info.data.NameId} due to it being blacklisted!");
+                    FusionLogger.Warn($"Skipped download of mod {info.Data.NameID} due to it being blacklisted!");
 
                     FailDownload();
                     return;
                 }
 
-                var platform = ModIOManager.GetValidPlatform(info.data);
+                var platform = ModIOManager.GetValidPlatform(info.Data);
 
                 if (!platform.HasValue)
                 {
@@ -132,7 +132,7 @@ public static class ModIODownloader
                     return;
                 }
 
-                modFile = new ModIOFile(info.data.Id, platform.Value.ModfileLive);
+                modFile = new ModIOFile(info.Data.ID, platform.Value.ModfileLive);
 
                 OnReceivedFile(modFile);
             }

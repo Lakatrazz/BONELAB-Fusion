@@ -8,20 +8,21 @@ public struct ModCallbackInfo
 {
     public static readonly ModCallbackInfo FailedCallback = new()
     {
-        data = default,
-        result = ModResult.FAILED,
+        Data = default,
+        Result = ModResult.FAILED,
     };
 
-    public ModData data;
-    public ModResult result;
+    public ModData Data;
+
+    public ModResult Result;
 }
 
 [Serializable]
 public readonly struct ModData
 {
-    public string NameId { get; }
+    public string NameID { get; }
 
-    public int Id { get; }
+    public int ID { get; }
 
     public int MaturityOption { get; }
 
@@ -33,9 +34,9 @@ public readonly struct ModData
 
     public ModData(JToken token)
     {
-        NameId = token.Value<string>("name_id");
+        NameID = token.Value<string>("name_id");
 
-        Id = token.Value<int>("id");
+        ID = token.Value<int>("id");
 
         MaturityOption = token.Value<int>("maturity_option");
 

@@ -129,8 +129,8 @@ public static class ModIOManager
         var modData = new ModData(jObject);
         var modCallbackInfo = new ModCallbackInfo()
         {
-            data = modData,
-            result = ModResult.SUCCEEDED,
+            Data = modData,
+            Result = ModResult.SUCCEEDED,
         };
 
         modCallback?.Invoke(modCallbackInfo);

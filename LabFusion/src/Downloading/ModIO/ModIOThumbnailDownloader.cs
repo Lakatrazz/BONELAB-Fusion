@@ -42,12 +42,12 @@ public static class ModIOThumbnailDownloader
 
         void OnModReceived(ModCallbackInfo info)
         {
-            if (info.result != ModResult.SUCCEEDED)
+            if (info.Result != ModResult.SUCCEEDED)
             {
                 return;
             }
 
-            var url = info.data.ThumbnailUrl;
+            var url = info.Data.ThumbnailUrl;
 
             GetThumbnail(url, callback);
         }
